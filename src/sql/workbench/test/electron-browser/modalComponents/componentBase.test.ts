@@ -106,7 +106,7 @@ suite('ComponentBase Tests', () => {
 		});
 	});
 
-	test('Container child validity changes cause the parent container validity to change', done => {
+	test('Container child validity changes cause the parent container validity to change', async done => {
 		testContainer.registerEventHandler(event => {
 			try {
 				if (event.eventType === ComponentEventType.validityChanged) {
@@ -120,7 +120,7 @@ suite('ComponentBase Tests', () => {
 		});
 		testComponent.addValidation(() => false);
 		testContainer.addToContainer(testComponent.descriptor, undefined);
-		testComponent.validate();
+		await testComponent.validate();
 	});
 
 	test('Inserting a component to a container adds the component to the right place', () => {

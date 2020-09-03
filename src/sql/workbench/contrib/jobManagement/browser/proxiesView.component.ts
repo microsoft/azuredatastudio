@@ -159,7 +159,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 			}
 		} else {
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-			this._jobManagementService.getProxies(ownerUri).then((result) => {
+			void this._jobManagementService.getProxies(ownerUri).then((result) => {
 				if (result && result.proxies) {
 					self.proxies = result.proxies;
 					self._proxiesCacheObject.proxies = result.proxies;
@@ -220,7 +220,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 
 	public openCreateProxyDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getCredentials(ownerUri).then(async (result) => {
+		void this._jobManagementService.getCredentials(ownerUri).then(async (result) => {
 			if (result && result.credentials) {
 				await this._commandService.executeCommand('agent.openProxyDialog', ownerUri, undefined, result.credentials);
 			}

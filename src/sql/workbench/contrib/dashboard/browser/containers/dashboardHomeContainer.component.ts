@@ -71,7 +71,7 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 				this._propertiesClass.collapsed = !this._propertiesClass.collapsed;
 				this._propertiesClass.showTitle = !this._propertiesClass.showTitle;
 				this._cd.detectChanges();
-				this._configurationService.updateValue(`dashboard.${this.properties.context}.properties`,
+				void this._configurationService.updateValue(`dashboard.${this.properties.context}.properties`,
 					this._propertiesClass.collapsed ? 'collapsed' : true, ConfigurationTarget.USER);
 			}
 		}));

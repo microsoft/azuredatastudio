@@ -86,7 +86,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 			this._register(
 				this._queryModelService.onEditSessionReady((result) => {
 					if (this.uri === result.ownerUri) {
-						this._results.editDataGridPanel.onRefreshComplete.then(() => {
+						void this._results.editDataGridPanel.onRefreshComplete.then(() => {
 							this.initEditEnd(result);
 						});
 					}
@@ -203,7 +203,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 	public dispose(): void {
 		// Dispose our edit session then disconnect our input
-		this._queryModelService.disposeEdit(this.uri).then(() => {
+		void this._queryModelService.disposeEdit(this.uri).then(() => {
 			return this._connectionManagementService.disconnectEditor(this, true);
 		});
 		this._queryModelService.disposeQuery(this.uri);

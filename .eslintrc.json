@@ -982,13 +982,7 @@
             "rules": {
                 "no-sync": "warn",
                 "strict": ["warn", "never"],
-                "no-console": "warn",
-                "@typescript-eslint/no-floating-promises": [
-                    "error",
-                    {
-                        "ignoreVoid": true
-                    }
-                ]
+                "no-console": "warn"
             }
         },
         {

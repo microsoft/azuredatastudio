@@ -153,7 +153,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			connectButton.label = localize('serverTree.addConnection', "Add Connection");
 			this._register(attachButtonStyler(connectButton, this._themeService));
 			this._register(connectButton.onDidClick(() => {
-				this._connectionManagementService.showConnectionDialog();
+				void this._connectionManagementService.showConnectionDialog();
 			}));
 		}
 
@@ -175,7 +175,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 					}
 				}
 				if (connectionProfile) {
-					this._connectionManagementService.showDashboard(connectionProfile);
+					void this._connectionManagementService.showDashboard(connectionProfile);
 				}
 			}));
 			this._register(this._connectionManagementService.onConnectionChanged(() => {
@@ -264,7 +264,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 					// Re-render to update the connection status badge
 					this._tree.rerender(newConnectionProfile);
 					this._tree.setSelection([newConnectionProfile]);
-					this._tree.expand(newConnectionProfile);
+					await this._tree.expand(newConnectionProfile);
 				}
 			}
 
@@ -435,7 +435,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 					this._tree.getFocus();
 					if (this._tree instanceof AsyncServerTree) {
 						await Promise.all(ConnectionProfileGroup.getSubgroups(treeInput).map(subgroup => {
-							this._tree.expand(subgroup);
+							return this._tree.expand(subgroup);
 						}));
 					} else {
 						await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
@@ -477,7 +477,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				this._tree.getFocus();
 				if (this._tree instanceof AsyncServerTree) {
 					await Promise.all(ConnectionProfileGroup.getSubgroups(treeInput).map(subgroup => {
-						this._tree.expand(subgroup);
+						return this._tree.expand(subgroup);
 					}));
 				} else {
 					await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));

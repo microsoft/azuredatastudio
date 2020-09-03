@@ -131,8 +131,8 @@ export class QueryResultsEditor extends BaseEditor {
 		this.resultsView.layout(dimension);
 	}
 
-	setInput(input: QueryResultsInput, options: EditorOptions): Promise<void> {
-		super.setInput(input, options, CancellationToken.None);
+	async setInput(input: QueryResultsInput, options: EditorOptions): Promise<void> {
+		await super.setInput(input, options, CancellationToken.None);
 		this.resultsView.input = input;
 		return Promise.resolve<void>(null);
 	}

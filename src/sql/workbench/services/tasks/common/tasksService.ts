@@ -162,7 +162,7 @@ export class TaskService implements ITaskService {
 		return new Promise<boolean>((resolve, reject) => {
 			let numOfInprogressTasks = this.getNumberOfInProgressTasks();
 			if (numOfInprogressTasks > 0) {
-				this.dialogService.show(Severity.Warning, message, options).then(choice => {
+				void this.dialogService.show(Severity.Warning, message, options).then(choice => {
 					switch (choice.choice) {
 						case 0:
 							let timeout: any;
@@ -216,7 +216,7 @@ export class TaskService implements ITaskService {
 			if ((task.status === TaskStatus.Succeeded || task.status === TaskStatus.SucceededWithWarning)
 				&& eventArgs.script && eventArgs.script !== '') {
 				if (task.taskExecutionMode === TaskExecutionMode.script) {
-					this.queryEditorService.newSqlEditor({ initalContent: eventArgs.script });
+					void this.queryEditorService.newSqlEditor({ initalContent: eventArgs.script });
 				} else if (task.taskExecutionMode === TaskExecutionMode.executeAndScript) {
 					task.script = eventArgs.script;
 				}

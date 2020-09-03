@@ -288,7 +288,7 @@ export class NewProfilerAction extends Task {
 				showDashboard: false,
 				showFirewallRuleOnError: true
 			};
-			accessor.get<IConnectionManagementService>(IConnectionManagementService).connect(this._connectionProfile, profilerInput.id, options);
+			void accessor.get<IConnectionManagementService>(IConnectionManagementService).connect(this._connectionProfile, profilerInput.id, options);
 
 			return Promise.resolve(void 0);
 		});

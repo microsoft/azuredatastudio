@@ -42,11 +42,11 @@ export class ExtHostTasks implements ExtHostTasksShape {
 		}
 
 		this._tasks.set(id, { callback, thisArg, description });
-		this._proxy.$registerTask(id);
+		void this._proxy.$registerTask(id);
 
 		return new extHostTypes.Disposable(() => {
 			if (this._tasks.delete(id)) {
-				this._proxy.$unregisterTask(id);
+				void this._proxy.$unregisterTask(id);
 			}
 		});
 	}

@@ -62,7 +62,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	 */
 	public registerProvider(provider: azdata.CapabilitiesProvider): void {
 		// request the capabilities from server
-		provider.getServerCapabilities(clientCapabilities).then(serverCapabilities => {
+		void provider.getServerCapabilities(clientCapabilities).then(serverCapabilities => {
 			this._legacyProviders.set(serverCapabilities.providerName, serverCapabilities);
 		});
 	}

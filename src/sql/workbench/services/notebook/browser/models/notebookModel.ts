@@ -940,7 +940,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					display_name: spec.display_name,
 					language: spec.language
 				};
-				this.clientSession.configureKernel(this._savedKernelInfo);
+				await this.clientSession.configureKernel(this._savedKernelInfo);
 			} catch (err) {
 				// Don't worry about this for now. Just use saved values
 			}
@@ -1015,7 +1015,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	// Disconnect any connections that were added through the "Change connection" functionality in the Attach To dropdown
 	private async disconnectAttachToConnections(): Promise<void> {
-		notebookUtils.asyncForEach(this._connectionUrisToDispose, async conn => {
+		await notebookUtils.asyncForEach(this._connectionUrisToDispose, async conn => {
 			await this.notebookOptions.connectionService.disconnect(conn).catch(e => this.logService.error(e));
 		});
 		this._connectionUrisToDispose = [];

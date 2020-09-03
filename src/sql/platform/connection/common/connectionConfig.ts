@@ -151,7 +151,7 @@ export class ConnectionConfig {
 			if (fromConfig) {
 				profiles = deepClone(fromConfig);
 				if (this.fixConnectionIds(profiles)) {
-					this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, configTarget);
+					void this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, configTarget);
 				}
 			} else {
 				profiles = [];

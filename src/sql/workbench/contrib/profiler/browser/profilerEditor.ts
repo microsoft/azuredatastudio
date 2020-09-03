@@ -353,7 +353,7 @@ export class ProfilerEditor extends BaseEditor {
 
 		const expandPanel = () => {
 			if (this._collapsedPanelAction.collapsed) {
-				this._collapsedPanelAction.run(this.input);
+				void this._collapsedPanelAction.run(this.input);
 			}
 		};
 
@@ -440,8 +440,8 @@ export class ProfilerEditor extends BaseEditor {
 		this._editor.setVisible(true);
 		this._untitledTextEditorModel = this._instantiationService.createInstance(UntitledTextEditorModel, URI.from({ scheme: Schemas.untitled }), false, undefined, 'sql', undefined);
 		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, this._untitledTextEditorModel);
-		this._editor.setInput(this._editorInput, undefined);
-		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
+		void this._editor.setInput(this._editorInput, undefined);
+		void this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
 		return editorContainer;
 	}
 
@@ -460,8 +460,8 @@ export class ProfilerEditor extends BaseEditor {
 			return Promise.resolve(null);
 		}
 
-		return super.setInput(input, options, CancellationToken.None).then(() => {
-			this._profilerTableEditor.setInput(input);
+		return super.setInput(input, options, CancellationToken.None).then(async () => {
+			await this._profilerTableEditor.setInput(input);
 
 			if (input.viewTemplate) {
 				this._viewTemplateSelector.selectWithOptionName(input.viewTemplate.name);
@@ -500,7 +500,7 @@ export class ProfilerEditor extends BaseEditor {
 			let editor = this._editor.getControl() as ICodeEditor;
 			let controller = CommonFindController.get(editor);
 			if (controller) {
-				controller.start({
+				void controller.start({
 					forceRevealReplace: false,
 					seedSearchStringFromGlobalClipboard: false,
 					seedSearchStringFromSelection: (controller.getState().searchString.length === 0),
@@ -536,7 +536,7 @@ export class ProfilerEditor extends BaseEditor {
 				let uiState = this._profilerService.getSessionViewState(this.input.id);
 				let previousSessionName = uiState && uiState.previousSessionName;
 				if (!this.input.sessionName && !previousSessionName) {
-					this._profilerService.launchCreateSessionDialog(this.input);
+					void this._profilerService.launchCreateSessionDialog(this.input);
 				}
 
 				this._updateSessionSelector(previousSessionName);
@@ -572,7 +572,7 @@ export class ProfilerEditor extends BaseEditor {
 
 	private _updateSessionSelector(previousSessionName: string = undefined) {
 		this._sessionSelector.enable();
-		this._profilerService.getXEventSessions(this.input.id).then((r) => {
+		void this._profilerService.getXEventSessions(this.input.id).then((r) => {
 			if (!r) {
 				r = [];
 			}

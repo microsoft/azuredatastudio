@@ -23,6 +23,6 @@ export function handleCopyRequest(clipboardService: IClipboardService, textResou
 				results += textResourcePropertiesService.getEOL(URI.from({ scheme: Schemas.untitled }));
 			}
 		}
-		clipboardService.writeText(results);
+		void clipboardService.writeText(results);
 	}
 }

@@ -211,9 +211,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this.uiController.closeDatabaseDropdown();
 		} else {
 			if (params && params.input && params.connectionType === ConnectionType.editor) {
-				this._connectionManagementService.cancelEditorConnection(params.input);
+				void this._connectionManagementService.cancelEditorConnection(params.input);
 			} else {
-				this._connectionManagementService.cancelConnection(this._model);
+				void this._connectionManagementService.cancelConnection(this._model);
 			}
 			if (params && params.input && params.input.onConnectCanceled) {
 				params.input.onConnectCanceled();

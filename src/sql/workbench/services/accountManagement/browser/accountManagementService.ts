@@ -89,7 +89,6 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @param updatedAccount Account with the updated properties
 	 */
 	public accountUpdated(updatedAccount: azdata.Account): Promise<void> {
-		let self = this;
 
 		// 1) Update the account in the store
 		// 2a) If the account was added, then the account provider incorrectly called this method.
@@ -98,15 +97,15 @@ export class AccountManagementService implements IAccountManagementService {
 		//     listeners that the account provider's list changed
 		// 3) Handle any errors
 		return this.doWithProvider(updatedAccount.key.providerId, provider => {
-			return self._accountStore.addOrUpdate(updatedAccount)
-				.then(result => {
+			return this._accountStore.addOrUpdate(updatedAccount)
+				.then(async result => {
 					if (result.accountAdded) {
-						self._accountStore.remove(updatedAccount.key);
+						await this._accountStore.remove(updatedAccount.key);
 						return Promise.reject('Called with a new account!');
 					}
 					if (result.accountModified) {
-						self.spliceModifiedAccount(provider, result.changedAccount);
-						self.fireAccountListUpdate(provider, false);
+						this.spliceModifiedAccount(provider, result.changedAccount);
+						this.fireAccountListUpdate(provider, false);
 					}
 					return Promise.resolve();
 				});

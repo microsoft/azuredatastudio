@@ -29,7 +29,7 @@ import { extUri } from 'vs/base/common/resources';
 
 suite('Query Input Factory', () => {
 
-	test('sync query editor input is connected if global connection exists (OE)', () => {
+	test('sync query editor input is connected if global connection exists (OE)', async () => {
 		const editorService = new MockEditorService();
 		const instantiationService = workbenchInstantiationService();
 		const connectionManagementService = new MockConnectionManagementService();
@@ -38,7 +38,7 @@ suite('Query Input Factory', () => {
 		instantiationService.stub(IEditorService, editorService);
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
 		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined, undefined);
-		queryEditorLanguageAssociation.convertInput(input);
+		await queryEditorLanguageAssociation.convertInput(input);
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active OE connection exists');
 	});
 
@@ -57,7 +57,7 @@ suite('Query Input Factory', () => {
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active OE connection exists');
 	});
 
-	test('sync query editor input is connected if global connection exists (Editor)', () => {
+	test('sync query editor input is connected if global connection exists (Editor)', async () => {
 		const instantiationService = workbenchInstantiationService();
 		const editorService = new MockEditorService(instantiationService);
 		const connectionManagementService = new MockConnectionManagementService();
@@ -66,7 +66,7 @@ suite('Query Input Factory', () => {
 		instantiationService.stub(IEditorService, editorService);
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
 		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined, undefined);
-		queryEditorLanguageAssociation.convertInput(input);
+		await queryEditorLanguageAssociation.convertInput(input);
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active editor connection exists');
 	});
 

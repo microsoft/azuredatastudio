@@ -176,7 +176,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected async _handleClipboard(): Promise<void> {
 		if (this._configurationService.getValue<boolean>('connection.parseClipboardForConnectionString')) {
 			let paste = await this._clipboardService.readText();
-			this._connectionManagementService.buildConnectionInfo(paste, this._providerName).then(e => {
+			await this._connectionManagementService.buildConnectionInfo(paste, this._providerName).then(e => {
 				if (e) {
 					let profile = new ConnectionProfile(this._capabilitiesService, this._providerName);
 					profile.options = e.options;

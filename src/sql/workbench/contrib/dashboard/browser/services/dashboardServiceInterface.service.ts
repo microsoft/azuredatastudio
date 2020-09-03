@@ -105,7 +105,7 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 	}
 
 	public writeSettings(type: string, value: any, target: ConfigurationTarget) {
-		this._configService.updateValue([DASHBOARD_SETTINGS, type].join('.'), value, target);
+		void this._configService.updateValue([DASHBOARD_SETTINGS, type].join('.'), value, target);
 	}
 
 	private handleDashboardEvent(event: IAngularEvent): void {

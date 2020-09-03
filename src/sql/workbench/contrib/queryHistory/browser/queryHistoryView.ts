@@ -129,7 +129,7 @@ export class QueryHistoryView extends ViewPane {
 		this._tree.setInput(rootNode).then(() => {
 			// Make sure to expand all folders that were expanded in the previous session
 			if (targetsToExpand) {
-				this._tree.expandAll(targetsToExpand);
+				void this._tree.expandAll(targetsToExpand);
 			}
 			if (selectedElement) {
 				this._tree.select(selectedElement);

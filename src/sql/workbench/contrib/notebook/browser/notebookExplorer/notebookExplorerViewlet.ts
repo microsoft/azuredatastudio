@@ -189,7 +189,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		const options = { preserveFocus: true, triggeredOnType: false, delay: 0, ..._options };
 
 		if (!this.pauseSearching) {
-			this.triggerQueryDelayer.trigger(() => {
+			void this.triggerQueryDelayer.trigger(() => {
 				this._onQueryChanged(options.preserveFocus, options.triggeredOnType);
 			}, options.delay);
 		}
@@ -271,7 +271,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 						let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
 						query.folderQueries.push(folderToSearch);
 						filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-						this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
+						void this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
 					});
 				});
 			}

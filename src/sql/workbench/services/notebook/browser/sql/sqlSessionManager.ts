@@ -439,7 +439,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		};
 		this._msg = msg;
 		if (this.doneHandler) {
-			this.doneHandler.handle(msg);
+			void this.doneHandler.handle(msg);
 		}
 		this.doneDeferred.resolve(msg);
 		this._querySubsetResultMap.clear();
@@ -469,7 +469,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 					message = this.convertToDisplayMessage(msg);
 				}
 			}
-			this.ioHandler.handle(message);
+			void this.ioHandler.handle(message);
 		}
 	}
 
@@ -546,7 +546,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			metadata: undefined,
 			parent_header: undefined
 		};
-		this.ioHandler.handle(msg);
+		void this.ioHandler.handle(msg);
 		this._querySubsetResultMap.delete(resultSet.id);
 	}
 

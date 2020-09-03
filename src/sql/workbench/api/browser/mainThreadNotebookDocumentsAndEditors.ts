@@ -48,7 +48,7 @@ class MainThreadNotebookEditor extends Disposable {
 
 	constructor(public readonly editor: INotebookEditor, private readonly textFileService: ITextFileService) {
 		super();
-		editor.modelReady.then(model => {
+		void editor.modelReady.then(model => {
 			this._providerId = model.providerId;
 
 			this._register(model.contentChanged((e) => this._contentChangedEmitter.fire(e)));
@@ -62,7 +62,7 @@ class MainThreadNotebookEditor extends Disposable {
 				this._providerId = provider;
 			}));
 		});
-		editor.notebookParams.providerInfo.then(info => {
+		void editor.notebookParams.providerInfo.then(info => {
 			this._providers = info.providers;
 		});
 	}

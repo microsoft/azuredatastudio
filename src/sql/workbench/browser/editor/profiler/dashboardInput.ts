@@ -107,7 +107,7 @@ export class DashboardInput extends EditorInput {
 		if (this._onConnectionChanged) {
 			this._onConnectionChanged.dispose();
 		}
-		this._connectionService.disconnect(this._uri);
+		void this._connectionService.disconnect(this._uri);
 		super.dispose();
 	}
 

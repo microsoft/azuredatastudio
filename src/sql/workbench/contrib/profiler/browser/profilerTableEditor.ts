@@ -259,7 +259,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		if (e.searchString) {
 			if (this._input && this._input.data) {
 				if (this._findState.searchString) {
-					this._input.data.find(this._findState.searchString, PROFILER_MAX_MATCHES).then(p => {
+					void this._input.data.find(this._findState.searchString, PROFILER_MAX_MATCHES).then(p => {
 						if (p) {
 							this._profilerTable.setActiveCell(p.row, p.col);
 							this._updateFinderMatchState();

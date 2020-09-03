@@ -84,7 +84,7 @@ export class DashboardEditor extends BaseEditor {
 
 		const parentElement = this.getContainer();
 
-		super.setInput(input, options, CancellationToken.None);
+		await super.setInput(input, options, CancellationToken.None);
 
 		DOM.clearNode(parentElement);
 

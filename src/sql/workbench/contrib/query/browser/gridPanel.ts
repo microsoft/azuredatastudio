@@ -464,7 +464,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.rowNumberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
 		let copyHandler = new CopyKeybind<T>();
 		copyHandler.onCopy(e => {
-			new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
+			void new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
 		});
 		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
@@ -594,7 +594,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		let column = this.resultSet.columnInfo[event.cell.cell - 1];
 		// handle if a showplan link was clicked
 		if (column && (column.isXml || column.isJson)) {
-			this.gridDataProvider.getRowData(event.cell.row, 1).then(async d => {
+			void this.gridDataProvider.getRowData(event.cell.row, 1).then(async d => {
 				let value = d.rows[0][event.cell.cell - 1];
 				let content = value.displayValue;
 

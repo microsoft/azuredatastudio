@@ -130,13 +130,13 @@ export class TreeSelectionHandler {
 				if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
 					connectionProfile = TreeUpdateUtils.getConnectionProfile(treeNode);
 					if (connectionProfile) {
-						connectionManagementService.showDashboard(connectionProfile);
+						void connectionManagementService.showDashboard(connectionProfile);
 					}
 				}
 			}
 
 			if (isKeyboard) {
-				tree.toggleExpansion(selection[0]);
+				void tree.toggleExpansion(selection[0]);
 			}
 		}
 	}

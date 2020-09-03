@@ -429,14 +429,14 @@ suite('Cell Model', function (): void {
 					text: 'Printed hello world'
 				}
 			};
-			onIopub.handle(message);
+			await onIopub.handle(message);
 			// Then I expect an output to be added
 			assert.equal(outputs.length, 1);
 			assert.equal(outputs[0].output_type, 'stream');
 
 			message = objects.deepClone(message);
 			message.header.msg_type = 'display_data';
-			onIopub.handle(message);
+			await onIopub.handle(message);
 			assert.equal(outputs[1].output_type, 'display_data');
 		});
 
@@ -528,7 +528,7 @@ suite('Cell Model', function (): void {
 					transient: 'transient data'
 				}
 			};
-			onIopub.handle(message);
+			await onIopub.handle(message);
 			//Output array's length should be 1
 			//'transient' tag should no longer exist in the output
 			assert.equal(outputs.length, 1);

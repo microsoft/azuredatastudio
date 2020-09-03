@@ -277,7 +277,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		}
 
 		this.layoutTable();
-		this.validate();
+		void this.validate();
 	}
 
 	private updateTableCells(cellInfos): void {

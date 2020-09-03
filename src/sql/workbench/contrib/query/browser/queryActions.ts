@@ -109,7 +109,7 @@ export abstract class QueryTaskbarAction extends Action {
 			runQueryOnCompletion: runQueryOnCompletion ? runQueryOnCompletion : RunQueryOnConnectionMode.none,
 			queryRange: range
 		};
-		this.connectionManagementService.showConnectionDialog(params);
+		void this.connectionManagementService.showConnectionDialog(params);
 	}
 }
 
@@ -394,7 +394,7 @@ export class DisconnectDatabaseAction extends QueryTaskbarAction {
 	public async run(): Promise<void> {
 		// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
 		// determine if we need to disconnect, cancel an in-progress conneciton, or do nothing
-		this.connectionManagementService.disconnectEditor(this.editor.input);
+		await this.connectionManagementService.disconnectEditor(this.editor.input);
 		return;
 	}
 }
@@ -482,7 +482,7 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 			if (this.connected) {
 				// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
 				// determine if we need to disconnect, cancel an in-progress connection, or do nothing
-				this.connectionManagementService.disconnectEditor(this.editor.input);
+				await this.connectionManagementService.disconnectEditor(this.editor.input);
 			} else {
 				this.connectEditor(this.editor);
 			}
@@ -561,7 +561,7 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 			this.logService.error('editor input was null');
 			return;
 		}
-		this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions);
+		await this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions);
 
 		// set intellisense options
 		toSqlCmdState ? this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sqlcmd', 'MSSQL') : this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sql', 'MSSQL');
@@ -772,7 +772,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 			return;
 		}
 
-		this.connectionManagementService.listDatabases(uri)
+		void this.connectionManagementService.listDatabases(uri)
 			.then(result => {
 				if (result && result.databaseNames) {
 					this._dropdown.values = result.databaseNames;
@@ -794,7 +794,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 			if (!uri) {
 				return;
 			}
-			this.connectionManagementService.listDatabases(uri)
+			void this.connectionManagementService.listDatabases(uri)
 				.then(result => {
 					if (result && result.databaseNames) {
 						this._databaseSelectBox.setOptions(result.databaseNames);
@@ -834,6 +834,6 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 	}
 
 	public async run(): Promise<void> {
-		this._commandService.executeCommand('mssql.exportSqlAsNotebook', this.editor.input.uri);
+		return this._commandService.executeCommand('mssql.exportSqlAsNotebook', this.editor.input.uri);
 	}
 }

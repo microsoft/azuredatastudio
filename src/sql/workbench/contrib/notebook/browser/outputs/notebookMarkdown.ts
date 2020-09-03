@@ -158,7 +158,7 @@ export class NotebookMarkdownRenderer {
 				});
 
 				if (options.codeBlockRenderCallback) {
-					promise.then(options.codeBlockRenderCallback);
+					void promise.then(options.codeBlockRenderCallback);
 				}
 
 				return `<div class="code" data-code="${id}">${escape(code)}</div>`;

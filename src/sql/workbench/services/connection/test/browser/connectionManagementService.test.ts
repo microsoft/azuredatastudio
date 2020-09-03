@@ -487,18 +487,17 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 	});
 
-	test('changeGroupIdForconnection should change the groupId for a connection profile', () => {
+	test('changeGroupIdForconnection should change the groupId for a connection profile', async () => {
 		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		let newGroupId = 'new_group_id';
 		connectionStore.setup(x => x.changeGroupIdForConnection(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
-		connectionManagementService.changeGroupIdForConnection(profile, newGroupId).then(() => {
-			assert.equal(profile.groupId, newGroupId);
-		});
+		await connectionManagementService.changeGroupIdForConnection(profile, newGroupId);
+		assert.equal(profile.groupId, newGroupId);
 	});
 
-	test('changeGroupIdForConnectionGroup should call changeGroupIdForConnectionGroup in ConnectionStore', () => {
+	test('changeGroupIdForConnectionGroup should call changeGroupIdForConnectionGroup in ConnectionStore', async () => {
 		let sourceProfileGroup = createConnectionGroup('original_id');
 		let targetProfileGroup = createConnectionGroup('new_id');
 		let called = false;
@@ -506,9 +505,8 @@ suite('SQL ConnectionManagementService tests', () => {
 			called = true;
 			return Promise.resolve();
 		});
-		connectionManagementService.changeGroupIdForConnectionGroup(sourceProfileGroup, targetProfileGroup).then(() => {
-			assert.ok(called, 'expected changeGroupIdForConnectionGroup to be called on ConnectionStore');
-		});
+		await connectionManagementService.changeGroupIdForConnectionGroup(sourceProfileGroup, targetProfileGroup);
+		assert.ok(called, 'expected changeGroupIdForConnectionGroup to be called on ConnectionStore');
 	});
 
 	test('findExistingConnection should find connection for connectionProfile with same info', () => {
@@ -798,12 +796,11 @@ suite('SQL ConnectionManagementService tests', () => {
 		assert.equal(propertyNames[5], advancedProperties[5].name);
 	});
 
-	test('saveProfileGroup should return groupId from connection group', () => {
+	test('saveProfileGroup should return groupId from connection group', async () => {
 		let newConnectionGroup = createConnectionGroup(connectionProfile.groupId);
 		connectionStore.setup(x => x.saveProfileGroup(TypeMoq.It.isAny())).returns(() => Promise.resolve(connectionProfile.groupId));
-		connectionManagementService.saveProfileGroup(newConnectionGroup).then(result => {
-			assert.equal(result, connectionProfile.groupId);
-		});
+		let result = await connectionManagementService.saveProfileGroup(newConnectionGroup);
+		assert.equal(result, connectionProfile.groupId);
 	});
 
 	test('editGroup should fire onAddConnectionProfile', () => {

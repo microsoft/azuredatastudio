@@ -158,7 +158,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 			}
 		} else {
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-			this._jobManagementService.getAlerts(ownerUri).then((result) => {
+			void this._jobManagementService.getAlerts(ownerUri).then((result) => {
 				if (result && result.alerts) {
 					self.alerts = result.alerts;
 					self._alertsCacheObject.alerts = result.alerts;

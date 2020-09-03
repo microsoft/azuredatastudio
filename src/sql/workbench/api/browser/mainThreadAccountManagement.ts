@@ -44,7 +44,7 @@ export class MainThreadAccountManagement extends Disposable implements MainThrea
 			}
 
 			const providerHandle = parseInt(Object.keys(this._providerMetadata)[providerMetadataIndex]);
-			this._proxy.$accountsChanged(providerHandle, e.accountList);
+			void this._proxy.$accountsChanged(providerHandle, e.accountList);
 		});
 	}
 
@@ -57,7 +57,7 @@ export class MainThreadAccountManagement extends Disposable implements MainThrea
 	}
 
 	$accountUpdated(updatedAccount: azdata.Account): void {
-		this._accountManagementService.accountUpdated(updatedAccount);
+		void this._accountManagementService.accountUpdated(updatedAccount);
 	}
 
 	public $getAccountsForProvider(providerId: string): Thenable<azdata.Account[]> {

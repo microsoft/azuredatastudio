@@ -142,7 +142,7 @@ export class CopyAction extends Action {
 		super(CopyAction.ID, CopyAction.LABEL, CopyAction.ICON);
 	}
 
-	public run(context: IChartActionContext): Promise<boolean> {
+	public async run(context: IChartActionContext): Promise<boolean> {
 		if (context.insight instanceof Graph) {
 			let data = context.insight.getCanvasData();
 			if (!data) {
@@ -150,7 +150,7 @@ export class CopyAction extends Action {
 				return Promise.resolve(false);
 			}
 
-			this.clipboardService.writeImageDataUrl(data);
+			await this.clipboardService.writeImageDataUrl(data);
 			return Promise.resolve(true);
 		}
 		return Promise.resolve(false);
@@ -196,7 +196,7 @@ export class SaveImageAction extends Action {
 					if (err) {
 						this.notificationService.error(err.message);
 					} else {
-						this.openerService.open(filePath, { openExternal: true });
+						await this.openerService.open(filePath, { openExternal: true });
 						this.notificationService.notify({
 							severity: Severity.Error,
 							message: localize('chartSaved', "Saved Chart to path: {0}", filePath.toString())

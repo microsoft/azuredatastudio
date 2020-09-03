@@ -53,14 +53,14 @@ CommandsRegistry.registerCommand({
 			});
 		}
 
-		return promise.then(() => {
+		return promise.then(async () => {
 			if (!connectionProfile) {
 				connectionProfile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionService, editorService) as ConnectionProfile;
 			}
 
 			if (connectionProfile && connectionProfile.providerName === mssqlProviderName) {
 				let profilerInput = instantiationService.createInstance(ProfilerInput, connectionProfile);
-				editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP).then(() => Promise.resolve(true));
+				await editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP).then(() => Promise.resolve(true));
 			}
 		});
 	}

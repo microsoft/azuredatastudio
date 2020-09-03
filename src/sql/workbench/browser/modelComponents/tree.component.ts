@@ -69,7 +69,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-			this.createTreeControl();
+			void this.createTreeControl();
 		}
 	}
 
@@ -79,7 +79,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 
 	public setDataProvider(handle: number, componentId: string, context: any): any {
 		this._dataProvider = new TreeViewDataProvider(handle, componentId, context);
-		this.createTreeControl();
+		void this.createTreeControl();
 	}
 
 	public refreshDataProvider(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem }): void {
@@ -89,12 +89,12 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 
 		if (this._tree) {
 			for (const item of values(itemsToRefreshByHandle)) {
-				this._tree.refresh(<ITreeComponentItem>item);
+				void this._tree.refresh(<ITreeComponentItem>item);
 			}
 		}
 	}
 
-	private createTreeControl(): void {
+	private async createTreeControl(): Promise<void> {
 		if (!this._tree && this._dataProvider) {
 			const dataSource = this._instantiationService.createInstance(TreeComponentDataSource, this._dataProvider);
 			const renderer = new TreeComponentRenderer(this._dataProvider, this.themeService, { withCheckbox: this.withCheckbox });
@@ -112,7 +112,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 					twistiePixels: 20,
 					ariaLabel: 'Tree Node'
 				});
-			this._tree.setInput(new Root());
+			await this._tree.setInput(new Root());
 			this._tree.domFocus();
 			this._register(this._tree);
 			this._register(attachListStyler(this._tree, this.themeService));
@@ -124,11 +124,11 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 				// but if not stopped here then will propagate up.
 				// This might have unintended effects such as a dialog closing.
 				if (e.keyCode === KeyCode.Enter) {
-					this._tree.toggleExpansion(this._tree.getFocus());
+					void this._tree.toggleExpansion(this._tree.getFocus());
 					DOM.EventHelper.stop(e, true);
 				}
 			});
-			this._tree.refresh();
+			await this._tree.refresh();
 			this.layout();
 		}
 	}
@@ -138,7 +138,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	public layout(): void {
 		if (this._tree) {
 			this.layoutTree();
-			this._tree.refresh();
+			void this._tree.refresh();
 		}
 		super.layout();
 	}

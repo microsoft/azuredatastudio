@@ -69,7 +69,7 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 						id: 'queryHistory.toggleCapture',
 						handler: (accessor) => {
 							const queryHistoryService = accessor.get(IQueryHistoryService);
-							queryHistoryService.toggleCaptureEnabled();
+							return queryHistoryService.toggleCaptureEnabled();
 						}
 					});
 

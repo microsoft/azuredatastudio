@@ -279,7 +279,7 @@ export class QueryResultsView extends Disposable {
 
 		this.runnerDisposables.add(runner.onQueryEnd(() => {
 			if (runner.isQueryPlan) {
-				runner.planXml.then(e => {
+				void runner.planXml.then(e => {
 					this.showPlan(e);
 				});
 			}

@@ -96,7 +96,7 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 		if (this.required) {
 			this._input.required = this.required;
 		}
-		this.validate();
+		void this.validate();
 	}
 
 	// CSS-bound properties

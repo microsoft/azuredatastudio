@@ -128,7 +128,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
-		this._telemetryService.publicLog(TelemetryKeys.JobsView);
+		void this._telemetryService.publicLog(TelemetryKeys.JobsView);
 	}
 
 	ngOnDestroy() {
@@ -208,7 +208,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			}
 		} else {
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-			this._jobManagementService.getJobs(ownerUri).then((result) => {
+			void this._jobManagementService.getJobs(ownerUri).then((result) => {
 				if (result && result.jobs) {
 					self.jobs = result.jobs;
 					self._jobCacheObject.jobs = self.jobs;

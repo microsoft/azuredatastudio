@@ -93,7 +93,7 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 			let element = this._tree.getFocus();
 			this._tree.select(element);
 		});
-		this._tree.setInput(new JobStepsViewModel());
+		void this._tree.setInput(new JobStepsViewModel());
 	}
 
 	ngOnInit() {
@@ -111,7 +111,7 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 			this._treeDataSource.data = data;
 			await this._tree.refresh();
 		});
-		this._telemetryService.publicLog(TelemetryKeys.JobStepsView);
+		void this._telemetryService.publicLog(TelemetryKeys.JobStepsView);
 	}
 
 	public onFirstVisible() {

@@ -69,7 +69,7 @@ class DataWindow<T> {
 			return;
 		}
 
-		this.loadFunction(offset, length).then(data => {
+		void this.loadFunction(offset, length).then(data => {
 			if (!currentCancellation.token.isCancellationRequested) {
 				this._data = data;
 				this.loadCompleteCallback(this._offsetFromDataSource, this._offsetFromDataSource + this._length);

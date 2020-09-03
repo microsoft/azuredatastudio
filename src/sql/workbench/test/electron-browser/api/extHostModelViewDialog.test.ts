@@ -140,7 +140,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		assert.deepEqual(wizard.pages, []);
 	});
 
-	test('Opening a wizard updates its pages and buttons on the main thread', () => {
+	test('Opening a wizard updates its pages and buttons on the main thread', async () => {
 		mockProxy.setup(x => x.$openWizard(It.isAny()));
 		mockProxy.setup(x => x.$setWizardDetails(It.isAny(), It.isAny()));
 		mockProxy.setup(x => x.$setWizardPageDetails(It.isAny(), It.isAny()));
@@ -162,7 +162,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		wizard.customButtons = [button1, button2];
 
 		// Open the wizard and verify that the correct main thread methods were called
-		extHostModelViewDialog.openWizard(wizard);
+		await extHostModelViewDialog.openWizard(wizard);
 		mockProxy.verify(x => x.$setButtonDetails(It.isAny(), It.is(details => {
 			return details.enabled === false && details.label === button1Label;
 		})), Times.atLeastOnce());
@@ -182,7 +182,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		mockProxy.verify(x => x.$openWizard(It.isAny()), Times.once());
 	});
 
-	test('Wizard page changed events are handled correctly', () => {
+	test('Wizard page changed events are handled correctly', async () => {
 		// Set up the main thread mock to record the handle assigned to the wizard
 		let wizardHandle: number;
 		mockProxy.setup(x => x.$setWizardDetails(It.isAny(), It.isAny())).callback((handle, details) => wizardHandle = handle);
@@ -192,7 +192,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		let page1 = extHostModelViewDialog.createWizardPage('page_1');
 		let page2 = extHostModelViewDialog.createWizardPage('page_2');
 		wizard.pages = [page1, page2];
-		extHostModelViewDialog.updateWizard(wizard);
+		await extHostModelViewDialog.updateWizard(wizard);
 
 		// Record page changed events
 		let actualPageChangeInfo = [];
@@ -238,7 +238,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		assert.equal(tab2.valid, false);
 	});
 
-	test('Verify validity changed events update validity for all panel types', () => {
+	test('Verify validity changed events update validity for all panel types', async () => {
 		// Set up the main thread mock to record handles for the tab, dialog, and page
 		let tabHandle: number;
 		let dialogHandle: number;
@@ -253,7 +253,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		let dialog = extHostModelViewDialog.createDialog('dialog_1');
 		extHostModelViewDialog.updateDialogContent(dialog);
 		let page = extHostModelViewDialog.createWizardPage('page_1');
-		extHostModelViewDialog.updateWizardPage(page);
+		await extHostModelViewDialog.updateWizardPage(page);
 
 		// Call the validity changed event on each object and verify that the object's validity was updated
 		extHostModelViewDialog.$onPanelValidityChanged(tabHandle, false);
@@ -264,14 +264,14 @@ suite('ExtHostModelViewDialog Tests', () => {
 		assert.equal(page.valid, false);
 	});
 
-	test('Main thread can execute wizard navigation validation', () => {
+	test('Main thread can execute wizard navigation validation', async () => {
 		// Set up the main thread mock to record the wizard handle
 		let wizardHandle: number;
 		mockProxy.setup(x => x.$setWizardDetails(It.isAny(), It.isAny())).callback((handle, details) => wizardHandle = handle);
 
 		// Create the wizard and add a validation that records that it has been called
 		let wizard = extHostModelViewDialog.createWizard('wizard_1');
-		extHostModelViewDialog.updateWizard(wizard);
+		await extHostModelViewDialog.updateWizard(wizard);
 		let validationInfo: azdata.window.WizardPageChangeInfo;
 		wizard.registerNavigationValidator(info => {
 			validationInfo = info;
@@ -281,7 +281,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		// If I call the validation from the main thread then it should run and record the correct page change info
 		let lastPage = 0;
 		let newPage = 1;
-		extHostModelViewDialog.$validateNavigation(wizardHandle, {
+		await extHostModelViewDialog.$validateNavigation(wizardHandle, {
 			lastPage: lastPage,
 			newPage: newPage
 		});
@@ -306,7 +306,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		mockProxy.verify(x => x.$setWizardDetails(It.isAny(), It.is(x => x.message === newMessage)), Times.once());
 	});
 
-	test('Main thread can execute dialog close validation', () => {
+	test('Main thread can execute dialog close validation', async () => {
 		// Set up the main thread mock to record the dialog handle
 		let dialogHandle: number;
 		mockProxy.setup(x => x.$setDialogDetails(It.isAny(), It.isAny())).callback((handle, details) => dialogHandle = handle);
@@ -321,7 +321,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		});
 
 		// If I call the validation from the main thread then it should run
-		extHostModelViewDialog.$validateDialogClose(dialogHandle);
+		await extHostModelViewDialog.$validateDialogClose(dialogHandle);
 		assert.equal(callCount, 1);
 	});
 });

@@ -118,7 +118,7 @@ export class BackupUiService implements IBackupUiService {
 	}
 
 	private handleOptionDialogClosed() {
-		this._disasterRecoveryService.backup(this._connectionUri, this._optionValues, TaskExecutionMode.executeAndScript);
+		void this._disasterRecoveryService.backup(this._connectionUri, this._optionValues, TaskExecutionMode.executeAndScript);
 	}
 
 }

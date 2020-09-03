@@ -275,7 +275,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				return;
 			}
 			else {
-				self.dataService.deleteRow(index)
+				void self.dataService.deleteRow(index)
 					.then(() => self.dataService.commitEdit())
 					.then(() => self.removeRow(index));
 			}
@@ -421,7 +421,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	 * @param scrollTop The scrolltop value, if not called by the scroll event should be 0
 	 */
 	onScroll(scrollTop): void {
-		this.refreshGrid();
+		void this.refreshGrid();
 	}
 
 	/**
@@ -538,7 +538,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			// revert our last new row
 			this.removingNewRow = true;
 
-			this.dataService.revertRow(this.rowIdMappings[currentNewRowIndex])
+			await this.dataService.revertRow(this.rowIdMappings[currentNewRowIndex])
 				.then(() => {
 					return this.removeRow(currentNewRowIndex);
 				}).then(() => {

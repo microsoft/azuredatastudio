@@ -92,7 +92,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		this._register(attachInputBoxStyler(this._input, this.themeService));
 		this._register(this._table);
 		this._register(this._input.onDidChange(e => {
-			this._filterDelayer.trigger(async () => {
+			void this._filterDelayer.trigger(async () => {
 				this._table.filter(e);
 			});
 		}));

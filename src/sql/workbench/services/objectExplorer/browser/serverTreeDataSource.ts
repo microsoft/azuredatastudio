@@ -74,7 +74,7 @@ export class ServerTreeDataSource implements IDataSource {
 					this.showError(expandError);
 					// collapse node and refresh in case of error so remove tree cache
 					setTimeout(() => {
-						tree.collapse(element).then(() => tree.refresh(element));
+						void tree.collapse(element).then(() => tree.refresh(element));
 					});
 					return [];
 				}

@@ -223,7 +223,7 @@ suite('Account Management Service Tests:', () => {
 		// Setup: Create account management service with a provider
 		let state = getTestState();
 		let mockProvider = getFailingMockAccountProvider(false);
-		state.accountManagementService.registerProvider(noAccountProvider, mockProvider.object);
+		await state.accountManagementService.registerProvider(noAccountProvider, mockProvider.object);
 
 		// If: I ask to add an account and the user cancels
 		// Then: Nothing should have happened and the promise should be resolved
@@ -233,11 +233,11 @@ suite('Account Management Service Tests:', () => {
 		} catch (e) { }
 	});
 
-	test('Add account - provider exists, user cancelled', () => {
+	test('Add account - provider exists, user cancelled', async () => {
 		// Setup: Create account management service with a provider
 		let state = getTestState();
 		let mockProvider = getFailingMockAccountProvider(true);
-		state.accountManagementService.registerProvider(noAccountProvider, mockProvider.object);
+		await state.accountManagementService.registerProvider(noAccountProvider, mockProvider.object);
 
 		// If: I ask to add an account and the user cancels
 		// Then: Nothing should have happened and the promise should be resolved
@@ -447,11 +447,11 @@ suite('Account Management Service Tests:', () => {
 
 		// If: I open the account dialog for a second time
 		return state.accountManagementService.openAccountListDialog()
-			.then(() => {
+			.then(async () => {
 				setTimeout(() => {
 					mockAccountDialogCloseEvent.fire();
 				}, 1000);
-				state.accountManagementService.openAccountListDialog();
+				await state.accountManagementService.openAccountListDialog();
 			})
 			.then(() => {
 				// Then:

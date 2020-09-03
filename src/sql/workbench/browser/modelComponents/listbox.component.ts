@@ -62,7 +62,7 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 						}
 
 						// Copy to clipboard
-						this.clipboardService.writeText(textToCopy);
+						void this.clipboardService.writeText(textToCopy);
 
 						e.stopPropagation();
 					}
@@ -102,7 +102,7 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 		super.setProperties(properties);
 		this._input.setOptions(this.values.map(value => { return { text: value }; }), this.selectedRow);
 
-		this.validate();
+		void this.validate();
 	}
 
 	// CSS-bound properties

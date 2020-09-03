@@ -34,7 +34,7 @@ export class StatusUpdater extends lifecycle.Disposable implements ext.IWorkbenc
 		super();
 
 		this._register(this.taskService.onAddNewTask(args => {
-			this.panelService.openPanel(TASKS_CONTAINER_ID, true);
+			void this.panelService.openPanel(TASKS_CONTAINER_ID, true);
 			this.onServiceChange();
 		}));
 

@@ -323,7 +323,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 		this._selectBox.render(body);
 		this._register(this._selectBox.onDidSelect(e => {
 			this._element!.changeSort(e.index === 0 ? 'event' : 'column');
-			this._tree!.refresh(this._element!, true);
+			void this._tree!.refresh(this._element!, true);
 		}));
 		this._treeContainer = DOM.append(body, DOM.$('.profiler-column-tree'));
 		const renderer = new TreeRenderer();

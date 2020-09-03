@@ -27,7 +27,7 @@ CommandsRegistry.registerCommand({
 		const commandService = accessor.get(ICommandService);
 		const payload = args.$treeItem?.payload;
 		if (payload) {
-			commandService.executeCommand('azure.resource.openInAzurePortal', payload);
+			return commandService.executeCommand('azure.resource.openInAzurePortal', payload);
 		}
 	}
 });

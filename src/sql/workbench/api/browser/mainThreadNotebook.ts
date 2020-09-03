@@ -423,7 +423,7 @@ class FutureWrapper implements FutureInternal {
 		let handler = this._messageHandlers.get(type);
 		if (handler) {
 			try {
-				handler.handle(payload);
+				void handler.handle(payload);
 			} catch (error) {
 				// TODO log errors from the handler
 			}

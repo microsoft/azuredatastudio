@@ -78,12 +78,12 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 								visualizerExtensionNotificationService
 							);
 							const installAllAction = this.instantiationService.createInstance(InstallRecommendedExtensionsByScenarioAction, scenarioType, recommendations);
-							installAllAction.run();
+							void installAllAction.run();
 							installAllAction.dispose();
 						}
 					}, {
 						label: localize('showRecommendations', "Show Recommendations"),
-						run: () => {
+						run: async () => {
 							this.adsTelemetryService.sendActionEvent(
 								TelemetryKeys.TelemetryView.ExtensionRecommendationDialog,
 								TelemetryKeys.TelemetryAction.Click,
@@ -91,7 +91,7 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 								visualizerExtensionNotificationService
 							);
 							const showAction = this.instantiationService.createInstance(ShowRecommendedExtensionsByScenarioAction, scenarioType);
-							showAction.run();
+							await showAction.run();
 							showAction.dispose();
 						}
 					}, {

@@ -157,7 +157,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 	private handleOnRestore(isScriptOnly: boolean = false): void {
 		let restoreOption = this.setRestoreOption(isScriptOnly ? TaskExecutionMode.script : TaskExecutionMode.executeAndScript);
 
-		this._restoreService.restore(this._ownerUri, restoreOption).then(result => {
+		void this._restoreService.restore(this._ownerUri, restoreOption).then(result => {
 			const self = this;
 			let connectionProfile = self._connectionService.getConnectionProfile(self._ownerUri);
 			let activeNode = self._objectExplorerService.getObjectExplorerNode(connectionProfile);
@@ -284,8 +284,8 @@ export class RestoreDialogController implements IRestoreDialogController {
 	private handleOnCancel(): void {
 		let restoreInfo = new MssqlRestoreInfo(TaskExecutionMode.execute);
 		restoreInfo.sessionId = this._sessionId;
-		this._restoreService.cancelRestorePlan(this._ownerUri, restoreInfo).then(() => {
-			this._connectionService.disconnect(this._ownerUri);
+		void this._restoreService.cancelRestorePlan(this._ownerUri, restoreInfo).then(() => {
+			return this._connectionService.disconnect(this._ownerUri);
 		});
 	}
 
@@ -349,7 +349,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 	}
 
 	private fetchDatabases(provider: string): void {
-		this._connectionService.listDatabases(this._ownerUri).then(result => {
+		void this._connectionService.listDatabases(this._ownerUri).then(result => {
 			if (result && result.databaseNames) {
 				(<RestoreDialog>this._restoreDialogs[provider]).databaseListOptions = result.databaseNames;
 			}

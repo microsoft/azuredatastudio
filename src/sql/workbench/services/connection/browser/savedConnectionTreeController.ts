@@ -24,7 +24,7 @@ export class SavedConnectionTreeController extends DefaultController {
 		let selection = tree.getSelection();
 
 		this.clickcb(selection[0], event, 'keyboard');
-		tree.toggleExpansion(selection[0]);
+		void tree.toggleExpansion(selection[0]);
 		return true;
 	}
 }

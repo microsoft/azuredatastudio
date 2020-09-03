@@ -293,7 +293,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			manager.forEach(m => {
 				if (m.serverManager) {
 					// TODO should this thenable be awaited?
-					m.serverManager.stopServer();
+					void m.serverManager.stopServer();
 				}
 			});
 		});

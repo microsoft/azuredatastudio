@@ -159,7 +159,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 			}
 		} else {
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-			this._jobManagementService.getOperators(ownerUri).then((result) => {
+			void this._jobManagementService.getOperators(ownerUri).then((result) => {
 				if (result && result.operators) {
 					self.operators = result.operators;
 					self._operatorsCacheObject.operators = result.operators;

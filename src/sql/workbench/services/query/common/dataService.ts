@@ -141,7 +141,7 @@ export class DataService {
 	 */
 	sendSaveRequest(saveRequest: ISaveRequest): void {
 		let serializer = this._instantiationService.createInstance(ResultSerializer);
-		serializer.saveResults(this._uri, saveRequest);
+		void serializer.saveResults(this._uri, saveRequest);
 	}
 
 	/**

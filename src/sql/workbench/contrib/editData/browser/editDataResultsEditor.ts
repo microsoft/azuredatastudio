@@ -63,8 +63,8 @@ export class EditDataResultsEditor extends BaseEditor {
 	public layout(dimension: DOM.Dimension): void {
 	}
 
-	public setInput(input: EditDataResultsInput, options: EditorOptions): Promise<void> {
-		super.setInput(input, options, CancellationToken.None);
+	public async setInput(input: EditDataResultsInput, options: EditorOptions): Promise<void> {
+		await super.setInput(input, options, CancellationToken.None);
 		this._applySettings();
 		if (!input.hasBootstrapped) {
 			this.createGridPanel();

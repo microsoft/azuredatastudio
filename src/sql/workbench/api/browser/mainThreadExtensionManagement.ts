@@ -50,7 +50,7 @@ export class MainThreadExtensionManagement extends Disposable implements MainThr
 			[{
 				label: localize('dontShowAgain', "Don't Show Again"),
 				run: () => {
-					this._configurationService.updateValue('workbench.enableObsoleteApiUsageNotification', false, ConfigurationTarget.USER);
+					void this._configurationService.updateValue('workbench.enableObsoleteApiUsageNotification', false, ConfigurationTarget.USER);
 				},
 				isSecondary: true
 			}]);

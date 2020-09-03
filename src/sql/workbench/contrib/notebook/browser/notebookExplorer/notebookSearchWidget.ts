@@ -213,7 +213,7 @@ export class NotebookSearchWidget extends Widget {
 		const value = this.searchInput.getValue();
 		const useGlobalFindBuffer = this.searchConfiguration.globalFindClipboard;
 		if (value && useGlobalFindBuffer) {
-			this.clipboardServce.writeFindText(value);
+			void this.clipboardServce.writeFindText(value);
 		}
 		this._onSearchSubmit.fire({ triggeredOnType, delay });
 	}

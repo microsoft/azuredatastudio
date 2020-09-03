@@ -71,7 +71,7 @@ export default class HyperlinkComponent extends TitledComponent implements IComp
 			args: undefined
 		});
 		if (this.url) {
-			this.openerService.open(this.url);
+			void this.openerService.open(this.url);
 		}
 		DOM.EventHelper.stop(e, true);
 	}

@@ -101,7 +101,7 @@ export class RunQueryKeyboardAction extends Action {
 	public run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor || editor instanceof EditDataEditor) {
-			editor.runQuery();
+			void editor.runQuery();
 		}
 		return Promise.resolve(null);
 	}
@@ -126,7 +126,7 @@ export class RunCurrentQueryKeyboardAction extends Action {
 	public run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
-			editor.runCurrentQuery();
+			void editor.runCurrentQuery();
 		}
 		return Promise.resolve(null);
 	}
@@ -148,7 +148,7 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 	public run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
-			editor.runCurrentQueryWithActualPlan();
+			void editor.runCurrentQueryWithActualPlan();
 		}
 		return Promise.resolve(null);
 	}
@@ -174,7 +174,7 @@ export class CancelQueryKeyboardAction extends Action {
 	public run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor || editor instanceof EditDataEditor) {
-			editor.cancelQuery();
+			void editor.cancelQuery();
 		}
 		return Promise.resolve(null);
 	}
@@ -200,7 +200,7 @@ export class RefreshIntellisenseKeyboardAction extends Action {
 	public run(): Promise<void> {
 		const editor = this.editorService.activeEditor;
 		if (editor instanceof QueryEditorInput) {
-			this.connectionManagementService.rebuildIntelliSenseCache(editor.uri);
+			void this.connectionManagementService.rebuildIntelliSenseCache(editor.uri);
 		}
 		return Promise.resolve(null);
 	}
@@ -412,7 +412,7 @@ export class ParseSyntaxAction extends Action {
 					if (text === '') {
 						text = editor.getAllText();
 					}
-					this.queryManagementService.parseSyntax(editor.input.uri, text).then(result => {
+					void this.queryManagementService.parseSyntax(editor.input.uri, text).then(result => {
 						if (result && result.parseable) {
 							this.notificationService.notify({
 								severity: Severity.Info,

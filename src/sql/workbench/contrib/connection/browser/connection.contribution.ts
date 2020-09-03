@@ -89,7 +89,7 @@ CommandsRegistry.registerCommand('azdata.connect',
 			};
 			const connectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesServices, profile);
 
-			connectionManagementService.connect(connectionProfile, undefined, {
+			return connectionManagementService.connect(connectionProfile, undefined, {
 				saveTheConnection: true,
 				showDashboard: true,
 				params: undefined,
@@ -97,7 +97,7 @@ CommandsRegistry.registerCommand('azdata.connect',
 				showFirewallRuleOnError: true
 			});
 		} else {
-			connectionManagementService.showConnectionDialog();
+			return connectionManagementService.showConnectionDialog();
 		}
 	});
 

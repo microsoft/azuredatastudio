@@ -551,7 +551,7 @@ export class TableView<T> implements IDisposable {
 		this.updateRowInDOM(row, index);
 
 		if (row.datapromise) {
-			row.datapromise.then(() => this.renderRow(row, index));
+			void row.datapromise.then(() => this.renderRow(row, index));
 			// in this case we can special case the row count column
 			for (const [i, column] of this.staticColumns.entries()) {
 				const cell = row.cells![i];

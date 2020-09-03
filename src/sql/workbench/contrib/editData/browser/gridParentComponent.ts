@@ -234,7 +234,7 @@ export abstract class GridParentComponent extends Disposable {
 	private copySelection(): void {
 		let messageText = this.getMessageText();
 		if (messageText.length > 0) {
-			this.clipboardService.writeText(messageText);
+			void this.clipboardService.writeText(messageText);
 		} else {
 			let activeGrid = this.activeGrid;
 			this.dataService.copyResults(this.getSelection(activeGrid), this.renderedDataSets[activeGrid].batchId, this.renderedDataSets[activeGrid].resultId);
@@ -255,7 +255,7 @@ export abstract class GridParentComponent extends Disposable {
 			messageText = this.getMessageText();
 		}
 		if (messageText.length > 0) {
-			this.clipboardService.writeText(messageText);
+			void this.clipboardService.writeText(messageText);
 		}
 	}
 

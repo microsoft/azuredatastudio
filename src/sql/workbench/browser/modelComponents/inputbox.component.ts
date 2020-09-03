@@ -209,7 +209,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.setInputProperties(this.inputElement);
-		this.validate();
+		void this.validate();
 	}
 
 	private setInputProperties(input: InputBox): void {

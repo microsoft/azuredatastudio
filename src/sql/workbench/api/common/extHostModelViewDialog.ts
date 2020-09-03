@@ -42,7 +42,7 @@ class ModelViewPanelImpl implements azdata.window.ModelViewPanel {
 			this.setModelViewId(viewId);
 			this._extHostModelView.$registerProvider(viewId, modelView => {
 				this._modelView = modelView;
-				handler(modelView);
+				void handler(modelView); // whats the point of defining this as a thenable if you aren't going to do anything about that
 			}, this._extension);
 		}
 	}
@@ -333,7 +333,7 @@ class WizardPageImpl extends ModelViewPanelImpl implements azdata.window.WizardP
 
 	public set enabled(enabled: boolean) {
 		this._enabled = enabled;
-		this._extHostModelViewDialog.updateWizardPage(this);
+		void this._extHostModelViewDialog.updateWizardPage(this);
 	}
 
 	public get content(): string {
@@ -350,7 +350,7 @@ class WizardPageImpl extends ModelViewPanelImpl implements azdata.window.WizardP
 
 	public set description(description: string) {
 		this._description = description;
-		this._extHostModelViewDialog.updateWizardPage(this);
+		void this._extHostModelViewDialog.updateWizardPage(this);
 	}
 }
 
@@ -419,7 +419,7 @@ class WizardImpl implements azdata.window.Wizard {
 
 	public set message(value: azdata.window.DialogMessage) {
 		this._message = value;
-		this._extHostModelViewDialog.updateWizard(this);
+		void this._extHostModelViewDialog.updateWizard(this);
 	}
 
 	public get displayPageTitles(): boolean {
@@ -428,12 +428,12 @@ class WizardImpl implements azdata.window.Wizard {
 
 	public set displayPageTitles(value: boolean) {
 		this._displayPageTitles = value;
-		this._extHostModelViewDialog.updateWizard(this);
+		void this._extHostModelViewDialog.updateWizard(this);
 	}
 
 	public addPage(page: azdata.window.WizardPage, index?: number): Thenable<void> {
 		return this._extHostModelViewDialog.updateWizardPage(page).then(() => {
-			this._extHostModelViewDialog.addPage(this, page, index);
+			return this._extHostModelViewDialog.addPage(this, page, index);
 		});
 	}
 
@@ -639,13 +639,13 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	public openDialog(dialog: azdata.window.Dialog): void {
 		let handle = this.getHandle(dialog);
 		this.updateDialogContent(dialog);
-		dialog.dialogName ? this._proxy.$openDialog(handle, dialog.dialogName) :
-			this._proxy.$openDialog(handle);
+		void (dialog.dialogName ? this._proxy.$openDialog(handle, dialog.dialogName) :
+			this._proxy.$openDialog(handle));
 	}
 
 	public closeDialog(dialog: azdata.window.Dialog): void {
 		let handle = this.getHandle(dialog);
-		this._proxy.$closeDialog(handle);
+		void this._proxy.$closeDialog(handle);
 	}
 
 	public createModelViewEditor(title: string, extension: IExtensionDescription, options?: azdata.ModelViewEditorOptions): azdata.workspace.ModelViewEditor {
@@ -678,7 +678,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		} else {
 			dialogWidth = 'narrow';
 		}
-		this._proxy.$setDialogDetails(handle, {
+		void this._proxy.$setDialogDetails(handle, {
 			title: dialog.title,
 			width: dialogWidth,
 			okButton: this.getHandle(dialog.okButton),
@@ -691,7 +691,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 
 	public updateTabContent(tab: azdata.window.DialogTab): void {
 		let handle = this.getHandle(tab);
-		this._proxy.$setTabDetails(handle, {
+		void this._proxy.$setTabDetails(handle, {
 			title: tab.title,
 			content: tab.content
 		});
@@ -699,7 +699,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 
 	public updateButton(button: azdata.window.Button): void {
 		let handle = this.getHandle(button);
-		this._proxy.$setButtonDetails(handle, {
+		void this._proxy.$setButtonDetails(handle, {
 			label: button.label,
 			enabled: button.enabled,
 			hidden: button.hidden,
@@ -822,9 +822,11 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	}
 
 	public openWizard(wizard: azdata.window.Wizard): Thenable<void> {
-		let handle = this.getHandle(wizard);
-		this.updateWizard(wizard);
-		return this._proxy.$openWizard(handle);
+		return (async () => {
+			let handle = this.getHandle(wizard);
+			await this.updateWizard(wizard);
+			return this._proxy.$openWizard(handle);
+		})();
 	}
 
 	public closeWizard(wizard: azdata.window.Wizard): Thenable<void> {

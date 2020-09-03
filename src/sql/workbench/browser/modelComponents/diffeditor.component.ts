@@ -92,14 +92,14 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		let editorinput1 = this._instantiationService.createInstance(ResourceEditorInput, uri1, 'source', undefined, undefined);
 		let editorinput2 = this._instantiationService.createInstance(ResourceEditorInput, uri2, 'target', undefined, undefined);
 		this._editorInput = new DiffEditorInput('DiffEditor', undefined, editorinput1, editorinput2, true);
-		this._editor.setInput(this._editorInput, undefined, cancellationTokenSource.token);
+		void this._editor.setInput(this._editorInput, undefined, cancellationTokenSource.token);
 
 
-		this._editorInput.resolve().then(model => {
+		void this._editorInput.resolve().then(model => {
 			this._editorModel = model as TextDiffEditorModel;
 			this.updateModel();
 			this.layout();
-			this.validate();
+			void this.validate();
 		});
 
 		this._register(this._editor);
@@ -171,7 +171,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		this._minimumHeight = this.minimumHeight;
 		this._title = this.title;
 		this.layout();
-		this.validate();
+		void this.validate();
 	}
 
 	// CSS-bound properties

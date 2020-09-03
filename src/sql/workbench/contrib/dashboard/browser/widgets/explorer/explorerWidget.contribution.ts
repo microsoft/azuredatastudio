@@ -19,7 +19,7 @@ registerDashboardWidget('explorer-widget', '', explorerSchema);
 
 CommandsRegistry.registerCommand(ExplorerManageAction.ID, (accessor, context) => {
 	const instantiationService = accessor.get(IInstantiationService);
-	instantiationService.createInstance(ExplorerManageAction, ExplorerManageAction.ID, ExplorerManageAction.LABEL).run(context);
+	return instantiationService.createInstance(ExplorerManageAction, ExplorerManageAction.ID, ExplorerManageAction.LABEL).run(context);
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {

@@ -53,7 +53,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 	let wizardHandle = 13;
 	let page3Handle = 14;
 
-	setup(() => {
+	setup(async () => {
 		mockExtHostModelViewDialog = Mock.ofInstance(<ExtHostModelViewDialogShape>{
 			$onButtonClick: handle => undefined,
 			$onPanelValidityChanged: (handle, valid) => undefined,
@@ -165,26 +165,26 @@ suite('MainThreadModelViewDialog Tests', () => {
 		};
 
 		// Register the buttons, tabs, and dialog
-		mainThreadModelViewDialog.$setButtonDetails(button1Handle, button1Details);
-		mainThreadModelViewDialog.$setButtonDetails(button2Handle, button2Details);
-		mainThreadModelViewDialog.$setButtonDetails(okButtonHandle, okButtonDetails);
-		mainThreadModelViewDialog.$setButtonDetails(cancelButtonHandle, cancelButtonDetails);
-		mainThreadModelViewDialog.$setTabDetails(tab1Handle, tab1Details);
-		mainThreadModelViewDialog.$setTabDetails(tab2Handle, tab2Details);
-		mainThreadModelViewDialog.$setDialogDetails(dialogHandle, dialogDetails);
+		await mainThreadModelViewDialog.$setButtonDetails(button1Handle, button1Details);
+		await mainThreadModelViewDialog.$setButtonDetails(button2Handle, button2Details);
+		await mainThreadModelViewDialog.$setButtonDetails(okButtonHandle, okButtonDetails);
+		await mainThreadModelViewDialog.$setButtonDetails(cancelButtonHandle, cancelButtonDetails);
+		await mainThreadModelViewDialog.$setTabDetails(tab1Handle, tab1Details);
+		await mainThreadModelViewDialog.$setTabDetails(tab2Handle, tab2Details);
+		await mainThreadModelViewDialog.$setDialogDetails(dialogHandle, dialogDetails);
 
 		// Register the wizard and its pages and buttons
-		mainThreadModelViewDialog.$setButtonDetails(nextButtonHandle, nextButtonDetails);
-		mainThreadModelViewDialog.$setButtonDetails(backButtonHandle, backButtonDetails);
-		mainThreadModelViewDialog.$setButtonDetails(generateScriptButtonHandle, generateScriptButtonDetails);
-		mainThreadModelViewDialog.$setWizardPageDetails(page1Handle, page1Details);
-		mainThreadModelViewDialog.$setWizardPageDetails(page2Handle, page2Details);
-		mainThreadModelViewDialog.$setWizardDetails(wizardHandle, wizardDetails);
+		await mainThreadModelViewDialog.$setButtonDetails(nextButtonHandle, nextButtonDetails);
+		await mainThreadModelViewDialog.$setButtonDetails(backButtonHandle, backButtonDetails);
+		await mainThreadModelViewDialog.$setButtonDetails(generateScriptButtonHandle, generateScriptButtonDetails);
+		await mainThreadModelViewDialog.$setWizardPageDetails(page1Handle, page1Details);
+		await mainThreadModelViewDialog.$setWizardPageDetails(page2Handle, page2Details);
+		await mainThreadModelViewDialog.$setWizardDetails(wizardHandle, wizardDetails);
 	});
 
-	test('Creating a dialog and calling open on it causes a dialog with correct content and buttons to open', () => {
+	test('Creating a dialog and calling open on it causes a dialog with correct content and buttons to open', async () => {
 		// If I open the dialog
-		mainThreadModelViewDialog.$openDialog(dialogHandle);
+		await mainThreadModelViewDialog.$openDialog(dialogHandle);
 
 		// Then the opened dialog's content and buttons match what was set
 		mockDialogService.verify(x => x.showDialog(It.isAny(), undefined, It.isAny()), Times.once());
@@ -206,13 +206,13 @@ suite('MainThreadModelViewDialog Tests', () => {
 		assert.equal((openedDialog.content[1] as DialogTab).title, tab2Details.title);
 	});
 
-	test('Button presses are forwarded to the extension host', () => {
+	test('Button presses are forwarded to the extension host', async () => {
 		// Set up the mock proxy to capture button presses
 		let pressedHandles = [];
 		mockExtHostModelViewDialog.setup(x => x.$onButtonClick(It.isAny())).callback(handle => pressedHandles.push(handle));
 
 		// Open the dialog so that its buttons can be accessed
-		mainThreadModelViewDialog.$openDialog(dialogHandle);
+		await mainThreadModelViewDialog.$openDialog(dialogHandle);
 
 		// Set up click emitters for each button
 		let okEmitter = new Emitter<void>();
@@ -238,9 +238,9 @@ suite('MainThreadModelViewDialog Tests', () => {
 		assert.deepEqual(pressedHandles, [button1Handle, button2Handle, okButtonHandle, cancelButtonHandle, button2Handle, cancelButtonHandle, button1Handle, okButtonHandle]);
 	});
 
-	test('Creating a wizard and calling open on it causes a wizard with correct pages and buttons to open', () => {
+	test('Creating a wizard and calling open on it causes a wizard with correct pages and buttons to open', async () => {
 		// If I open the wizard
-		mainThreadModelViewDialog.$openWizard(wizardHandle);
+		await mainThreadModelViewDialog.$openWizard(wizardHandle);
 
 		// Then the opened wizard's content and buttons match what was set
 		mockDialogService.verify(x => x.showWizard(It.isAny(), It.isAny()), Times.once());
@@ -270,11 +270,11 @@ suite('MainThreadModelViewDialog Tests', () => {
 		assert.equal(page2.description, page2Details.description);
 	});
 
-	test('The extension host gets notified when wizard page change events occur', () => {
+	test('The extension host gets notified when wizard page change events occur', async () => {
 		mockExtHostModelViewDialog.setup(x => x.$onWizardPageChanged(It.isAny(), It.isAny()));
 
 		// If I open the wizard and change the page to index 1
-		mainThreadModelViewDialog.$openWizard(wizardHandle);
+		await mainThreadModelViewDialog.$openWizard(wizardHandle);
 		openedWizard.setCurrentPage(1);
 
 		// Then a page changed event gets sent to the extension host
@@ -282,11 +282,11 @@ suite('MainThreadModelViewDialog Tests', () => {
 			It.is(pageChangeInfo => pageChangeInfo.lastPage === 0 && pageChangeInfo.newPage === 1)), Times.once());
 	});
 
-	test('Validity changed events are forwarded to the extension host', () => {
+	test('Validity changed events are forwarded to the extension host', async () => {
 		mockExtHostModelViewDialog.setup(x => x.$onPanelValidityChanged(It.isAny(), It.isAny()));
 
 		// If I open the dialog and set its validity and its 2nd tab's validity to false
-		mainThreadModelViewDialog.$openDialog(dialogHandle);
+		await mainThreadModelViewDialog.$openDialog(dialogHandle);
 		(openedDialog.content[1] as DialogTab).notifyValidityChanged(false);
 		openedDialog.notifyValidityChanged(false);
 
@@ -295,7 +295,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		mockExtHostModelViewDialog.verify(x => x.$onPanelValidityChanged(It.is(handle => handle === tab2Handle), It.is(valid => valid === false)), Times.once());
 	});
 
-	test('addWizardPage method inserts pages at the correct spot and notifies the extension host', () => {
+	test('addWizardPage method inserts pages at the correct spot and notifies the extension host', async () => {
 		mockExtHostModelViewDialog.setup(x => x.$updateWizardPageInfo(It.isAny(), It.isAny(), It.isAny()));
 		page3Details = {
 			title: 'page_3',
@@ -306,9 +306,9 @@ suite('MainThreadModelViewDialog Tests', () => {
 		};
 
 		// If I open the wizard and then add a page
-		mainThreadModelViewDialog.$openWizard(wizardHandle);
-		mainThreadModelViewDialog.$setWizardPageDetails(page3Handle, page3Details);
-		mainThreadModelViewDialog.$addWizardPage(wizardHandle, page3Handle, 0);
+		await mainThreadModelViewDialog.$openWizard(wizardHandle);
+		await mainThreadModelViewDialog.$setWizardPageDetails(page3Handle, page3Details);
+		await mainThreadModelViewDialog.$addWizardPage(wizardHandle, page3Handle, 0);
 
 		// Then the updated page info gets sent to the extension host
 		mockExtHostModelViewDialog.verify(x => x.$updateWizardPageInfo(
@@ -317,12 +317,12 @@ suite('MainThreadModelViewDialog Tests', () => {
 			It.is(currentPage => currentPage === 1)), Times.once());
 	});
 
-	test('removeWizardPage method removes pages at the correct spot and notifies the extension host', () => {
+	test('removeWizardPage method removes pages at the correct spot and notifies the extension host', async () => {
 		mockExtHostModelViewDialog.setup(x => x.$updateWizardPageInfo(It.isAny(), It.isAny(), It.isAny()));
 
 		// If I open the wizard and then remove a page
-		mainThreadModelViewDialog.$openWizard(wizardHandle);
-		mainThreadModelViewDialog.$removeWizardPage(wizardHandle, 0);
+		await mainThreadModelViewDialog.$openWizard(wizardHandle);
+		await mainThreadModelViewDialog.$removeWizardPage(wizardHandle, 0);
 
 		// Then the updated page info gets sent to the extension host
 		mockExtHostModelViewDialog.verify(x => x.$updateWizardPageInfo(
@@ -331,19 +331,19 @@ suite('MainThreadModelViewDialog Tests', () => {
 			It.is(currentPage => currentPage === 0)), Times.once());
 	});
 
-	test('Creating a wizard adds a navigation validation that calls the extension host', () => {
+	test('Creating a wizard adds a navigation validation that calls the extension host', async () => {
 		mockExtHostModelViewDialog.setup(x => x.$validateNavigation(It.isAny(), It.isAny()));
 
 		// If I call validateNavigation on the wizard that gets created
-		mainThreadModelViewDialog.$openWizard(wizardHandle);
-		openedWizard.validateNavigation(1);
+		await mainThreadModelViewDialog.$openWizard(wizardHandle);
+		await openedWizard.validateNavigation(1);
 
 		// Then the call gets forwarded to the extension host
 		mockExtHostModelViewDialog.verify(x => x.$validateNavigation(It.is(handle => handle === wizardHandle), It.is(info => info.newPage === 1)), Times.once());
 	});
 
-	test('Adding a message to a wizard fires events on the created wizard', () => {
-		mainThreadModelViewDialog.$openWizard(wizardHandle);
+	test('Adding a message to a wizard fires events on the created wizard', async () => {
+		await mainThreadModelViewDialog.$openWizard(wizardHandle);
 		let newMessage: DialogMessage;
 		openedWizard.onMessageChange(message => newMessage = message);
 
@@ -352,19 +352,19 @@ suite('MainThreadModelViewDialog Tests', () => {
 			level: MessageLevel.Error,
 			text: 'test message'
 		};
-		mainThreadModelViewDialog.$setWizardDetails(wizardHandle, wizardDetails);
+		await mainThreadModelViewDialog.$setWizardDetails(wizardHandle, wizardDetails);
 
 		// Then the message gets changed on the wizard
 		assert.equal(newMessage, wizardDetails.message, 'New message was not included in the fired event');
 		assert.equal(openedWizard.message, wizardDetails.message, 'New message was not set on the wizard');
 	});
 
-	test('Creating a dialog adds a close validation that calls the extension host', () => {
+	test('Creating a dialog adds a close validation that calls the extension host', async () => {
 		mockExtHostModelViewDialog.setup(x => x.$validateDialogClose(It.isAny()));
 
 		// If I call validateClose on the dialog that gets created
-		mainThreadModelViewDialog.$openDialog(dialogHandle);
-		openedDialog.validateClose();
+		await mainThreadModelViewDialog.$openDialog(dialogHandle);
+		await openedDialog.validateClose();
 
 		// Then the call gets forwarded to the extension host
 		mockExtHostModelViewDialog.verify(x => x.$validateDialogClose(It.is(handle => handle === dialogHandle)), Times.once());

@@ -128,7 +128,7 @@ const ExplorerNotebookActionID = 'explorer.notebook';
 CommandsRegistry.registerCommand(ExplorerNotebookActionID, (accessor, context: ManageActionContext) => {
 	const instantiationService = accessor.get(IInstantiationService);
 	const connectedContext: ConnectedContext = { connectionProfile: context.profile };
-	instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run({ connectionProfile: connectedContext.connectionProfile, isConnectionNode: false, nodeInfo: undefined });
+	return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run({ connectionProfile: connectedContext.connectionProfile, isConnectionNode: false, nodeInfo: undefined });
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {

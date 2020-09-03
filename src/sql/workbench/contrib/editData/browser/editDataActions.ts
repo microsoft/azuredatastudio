@@ -117,9 +117,9 @@ export class StopRefreshTableAction extends EditDataAction {
 		this.label = nls.localize('editData.stop', "Stop");
 	}
 
-	public run(): Promise<void> {
+	public async run(): Promise<void> {
 		let input = this.editor.editDataInput;
-		this._queryModelService.disposeEdit(input.uri);
+		await this._queryModelService.disposeEdit(input.uri);
 		return Promise.resolve(null);
 	}
 }

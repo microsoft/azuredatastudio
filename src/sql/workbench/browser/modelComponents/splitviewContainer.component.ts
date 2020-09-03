@@ -114,7 +114,7 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 		if (this._componentWrappers) {
 			this._componentWrappers.forEach(item => {
 				let component = item.modelStore.getComponent(item.descriptor.id);
-				item.modelStore.validate(component).then(value => {
+				void item.modelStore.validate(component).then(value => {
 					if (value === true) {
 						let view = this.GetCorrespondingView(component, this._orientation);
 						this._splitView.addView(view, Sizing.Distribute);

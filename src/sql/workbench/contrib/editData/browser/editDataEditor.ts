@@ -683,21 +683,21 @@ export class EditDataEditor extends BaseEditor {
 	 * Calls the run method of this editor's showQueryPaneAction
 	 */
 	public runShowQueryPane(): void {
-		this._showQueryPaneAction.run();
+		void this._showQueryPaneAction.run();
 	}
 
 	/**
 	 * Calls the run method of this editor's RunQueryAction
 	 */
 	public runQuery(): void {
-		this._refreshTableAction.run();
+		void this._refreshTableAction.run();
 	}
 
 	/**
 	 * Calls the run method of this editor's CancelQueryAction
 	 */
 	public cancelQuery(): void {
-		this._stopRefreshTableAction.run();
+		void this._stopRefreshTableAction.run();
 	}
 
 	public toggleQueryPane(): void {

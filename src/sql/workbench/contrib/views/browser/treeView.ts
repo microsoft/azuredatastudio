@@ -438,7 +438,7 @@ export class TreeView extends Disposable implements ITreeView {
 		this._register(this.tree.onDidChangeFocus(e => {  // tracked change
 			this.nodeContext.set({ node: e.elements[0], viewId: this.id });
 		}));
-		this.tree.setInput(this.root).then(() => this.updateContentAreas());
+		void this.tree.setInput(this.root).then(() => this.updateContentAreas());
 
 		this._register(this.tree.onDidOpen(e => {
 			if (!e.browserEvent) {
@@ -446,7 +446,7 @@ export class TreeView extends Disposable implements ITreeView {
 			}
 			const selection = this.tree!.getSelection();
 			if ((selection.length === 1) && selection[0].command) {
-				this.commandService.executeCommand(selection[0].command.id, ...(selection[0].command.arguments || []));
+				void this.commandService.executeCommand(selection[0].command.id, ...(selection[0].command.arguments || []));
 			}
 		}));
 	}
@@ -681,7 +681,7 @@ class TreeDataSource implements IAsyncDataSource<ITreeItem, ITreeItem> {
 					if (err instanceof UserCancelledConnectionError) {
 						return;
 					}
-					this.treeView.refresh([node]);
+					void this.treeView.refresh([node]);
 				});
 				return [];
 			}
@@ -1025,7 +1025,7 @@ export class CustomTreeView extends TreeView {
 
 	private activate() {
 		if (!this.activated) {
-			this.progressService.withProgress({ location: this.id }, () => this.extensionService.activateByEvent(`onView:${this.id}`))
+			void this.progressService.withProgress({ location: this.id }, () => this.extensionService.activateByEvent(`onView:${this.id}`))
 				.then(() => timeout(2000))
 				.then(() => {
 					this.updateMessage();

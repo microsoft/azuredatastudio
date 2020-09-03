@@ -212,7 +212,7 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	public updateChartData(rowCount: number, columnCount: number, gridDataProvider: IGridDataProvider): void {
-		gridDataProvider.getRowData(0, rowCount).then(result => {
+		void gridDataProvider.getRowData(0, rowCount).then(result => {
 			let range = new Slick.Range(0, 0, rowCount - 1, columnCount - 1);
 			let columns = gridDataProvider.getColumnHeaders(range);
 			this._chart.setData(result.rows, columns);
@@ -275,7 +275,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
 		try {
 			let results = await getResultsString(this, selection, includeHeaders);
-			this._clipboardService.writeText(results);
+			await this._clipboardService.writeText(results);
 		} catch (error) {
 			this._notificationService.error(localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
 		}

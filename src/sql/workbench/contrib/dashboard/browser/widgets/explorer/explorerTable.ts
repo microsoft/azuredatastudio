@@ -137,7 +137,7 @@ export class ExplorerTable extends Disposable {
 
 	private handleDoubleClick(item: Slick.SlickData): void {
 		if (this.context === 'server') {
-			this.progressService.showWhile(this.bootStrapService.connectionManagementService.changeDatabase(item[NameProperty]).then(result => {
+			void this.progressService.showWhile(this.bootStrapService.connectionManagementService.changeDatabase(item[NameProperty]).then(result => {
 				this.router.navigate(['database-dashboard']).catch(onUnexpectedError);
 			}));
 		}
@@ -218,4 +218,3 @@ export class ExplorerTable extends Disposable {
 		return properties;
 	}
 }
-

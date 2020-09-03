@@ -99,11 +99,11 @@ export class CopyResultAction extends Action {
 
 	public run(context: IGridActionContext): Promise<boolean> {
 		if (this.accountForNumberColumn) {
-			context.gridDataProvider.copyResults(
+			void context.gridDataProvider.copyResults(
 				mapForNumberColumn(context.selection),
 				this.copyHeader);
 		} else {
-			context.gridDataProvider.copyResults(context.selection, this.copyHeader);
+			void context.gridDataProvider.copyResults(context.selection, this.copyHeader);
 		}
 		return Promise.resolve(true);
 	}

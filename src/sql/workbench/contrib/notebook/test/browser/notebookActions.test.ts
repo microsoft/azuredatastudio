@@ -252,7 +252,7 @@ suite('Notebook Actions', function (): void {
 			});
 
 		let action = new NewNotebookAction('TestId', 'TestLabel', mockCommandService.object, undefined);
-		action.run(undefined);
+		await action.run(undefined);
 
 		assert.strictEqual(actualCmdId, NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID);
 	});

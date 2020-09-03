@@ -123,7 +123,7 @@ export class ConnectionViewletPanel extends ViewPane {
 	}
 
 	public clearSearch() {
-		this._serverTreeView.refreshTree();
+		void this._serverTreeView.refreshTree();
 	}
 
 	public search(value: string): void {

@@ -186,7 +186,7 @@ export class AccountPicker extends Disposable {
 		this.updateTheme(this._themeService.getColorTheme());
 
 		// Load the initial contents of the view model
-		this.viewModel.initialize()
+		void this.viewModel.initialize()
 			.then((accounts: azdata.Account[]) => {
 				this.updateAccountList(accounts);
 			});

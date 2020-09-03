@@ -201,17 +201,17 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 
 				if (source instanceof ConnectionProfile) {
 					// Change group id of profile
-					this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id).then(() => {
+					void this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id).then(() => {
 						if (tree) {
-							TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
+							void TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
 						}
 
 					});
 				} else if (source instanceof ConnectionProfileGroup) {
 					// Change parent id of group
-					this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup).then(() => {
+					void this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup).then(() => {
 						if (tree) {
-							TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
+							void TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
 						}
 
 					});

@@ -96,7 +96,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		this.properties = properties;
 		this.updateStyles();
 		this.layout();
-		this.validate();
+		void this.validate();
 	}
 
 	// Helper Function to update single property
@@ -105,7 +105,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 			this.properties[key] = value;
 			this.updateStyles();
 			this.layout();
-			this.validate();
+			void this.validate();
 		}
 	}
 
@@ -124,7 +124,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 			eventType: ComponentEventType.PropertiesChanged,
 			args: this.getProperties()
 		});
-		this.validate();
+		void this.validate();
 	}
 
 	public get enabled(): boolean {
@@ -305,9 +305,9 @@ export abstract class ContainerBase<T> extends ComponentBase {
 		} else {
 			throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", index));
 		}
-		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => component.registerEventHandler(event => {
+		void this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => component.registerEventHandler(event => {
 			if (event.eventType === ComponentEventType.validityChanged) {
-				this.validate();
+				void this.validate();
 			}
 		}));
 		this._changeRef.detectChanges();
@@ -333,7 +333,7 @@ export abstract class ContainerBase<T> extends ComponentBase {
 		this.items = [];
 		this.onItemsUpdated();
 		this._changeRef.detectChanges();
-		this.validate();
+		void this.validate();
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {

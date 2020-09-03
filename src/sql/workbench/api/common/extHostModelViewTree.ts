@@ -137,7 +137,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 		const hasRoot = elements.some(element => !element);
 		if (hasRoot) {
 			this.clearAll(); // clear cache
-			this.modelViewProxy.$refreshDataProvider(this.handle, this.componentId);
+			void this.modelViewProxy.$refreshDataProvider(this.handle, this.componentId);
 		} else {
 			const handlesToRefresh = this.getHandlesToRefresh(elements);
 			if (handlesToRefresh.length) {

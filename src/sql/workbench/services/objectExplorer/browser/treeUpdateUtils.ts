@@ -178,8 +178,8 @@ export class TreeUpdateUtils {
 				} else if (tree) {
 					// Show the spinner in OE by adding the 'loading' trait to the connection, and set up callbacks to hide the spinner
 					tree.addTraits('loading', [connection]);
-					let rejectOrCancelCallback = () => {
-						tree.collapse(connection);
+					let rejectOrCancelCallback = async () => {
+						await tree.collapse(connection);
 						tree.removeTraits('loading', [connection]);
 					};
 					callbacks = {

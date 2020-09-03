@@ -35,8 +35,6 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 
 	// - EXTENSION HOST AVAILABLE METHODS //////////////////////////////////
 	public $registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, provider: azdata.ResourceProvider): Disposable {
-		let self = this;
-
 		// Look for any account providers that have the same provider ID
 		let matchingProviderIndex = firstIndex(values(this._providers), (provider: ResourceProviderWithMetadata) => {
 			return provider.metadata.id === providerMetadata.id;
@@ -53,12 +51,12 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 		};
 
 		// Register the provider in the main thread via the proxy
-		this._proxy.$registerResourceProvider(providerMetadata, handle);
+		void this._proxy.$registerResourceProvider(providerMetadata, handle);
 
 		// Return a disposable to cleanup the provider
 		return new Disposable(() => {
-			delete self._providers[handle];
-			self._proxy.$unregisterResourceProvider(handle);
+			delete this._providers[handle];
+			void this._proxy.$unregisterResourceProvider(handle);
 		});
 	}
 

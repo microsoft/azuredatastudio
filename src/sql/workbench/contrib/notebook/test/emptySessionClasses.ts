@@ -217,7 +217,7 @@ export class EmptyFuture implements FutureInternal {
 				metadata: undefined,
 				parent_header: undefined
 			};
-			handler.handle(msg);
+			void handler.handle(msg);
 		}, 10);
 	}
 	registerMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {

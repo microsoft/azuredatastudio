@@ -104,7 +104,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		this._parentComponent = this._agentViewComponent;
 		this._agentNotebookInfo = this._agentViewComponent.agentNotebookInfo;
 		this.initActionBar();
-		this._telemetryService.publicLog(TelemetryKeys.JobHistoryView);
+		void this._telemetryService.publicLog(TelemetryKeys.JobHistoryView);
 	}
 
 	private loadHistory() {
@@ -113,7 +113,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		let jobName = this._agentViewComponent.agentNotebookInfo.name;
 		let jobId = this._agentViewComponent.notebookId;
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
-		this._jobManagementService.getNotebookHistory(ownerUri, jobId, jobName, targetDatabase).then((result) => {
+		void this._jobManagementService.getNotebookHistory(ownerUri, jobId, jobName, targetDatabase).then((result) => {
 			if (result && result.histories) {
 				this.notebookHistories = result.histories;
 				self._notebookCacheObject.setNotebookHistory(jobId, this.notebookHistories);
@@ -288,7 +288,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		}
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
-		this._jobManagementService.getMaterialziedNotebook(ownerUri, targetDatabase, history.materializedNotebookId).then(async (result) => {
+		void this._jobManagementService.getMaterialziedNotebook(ownerUri, targetDatabase, history.materializedNotebookId).then(async (result) => {
 			if (result) {
 				let regex = /:|-/gi;
 				let readableDataTimeString = history.runDate.replace(regex, '').replace(' ', '');
@@ -302,7 +302,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		//TODO: Implement deletenotebook context menu action
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
-		this._jobManagementService.deleteMaterializedNotebook(ownerUri, history, targetDatabase).then(async (result) => {
+		void this._jobManagementService.deleteMaterializedNotebook(ownerUri, history, targetDatabase).then(async (result) => {
 			if (result) {
 				this.loadHistory();
 			}
@@ -314,7 +314,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
 		let jobId = this._agentViewComponent.agentNotebookInfo.jobId;
 
-		this._jobManagementService.getTemplateNotebook(ownerUri, targetDatabase, jobId).then(async (result) => {
+		void this._jobManagementService.getTemplateNotebook(ownerUri, targetDatabase, jobId).then(async (result) => {
 			if (result) {
 				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', this._agentViewComponent.agentNotebookInfo.name, result.notebookTemplate, this.agentNotebookInfo, ownerUri);
 			}
@@ -326,7 +326,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		let notebookRunName = (history.materializedNotebookName === '') ? defaultDateTime : history.materializedNotebookName;
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
-		this._quickInputService.input({ placeHolder: notebookRunName }).then(async (value) => {
+		void this._quickInputService.input({ placeHolder: notebookRunName }).then(async (value) => {
 			if (value) {
 				if (!/\S/.test(value)) {
 					value = '';
@@ -345,7 +345,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	public toggleNotebookPin(history: azdata.AgentNotebookHistoryInfo, pin: boolean) {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
-		this._jobManagementService.updateNotebookMaterializedPin(ownerUri, history, targetDatabase, pin).then(async (result) => {
+		void this._jobManagementService.updateNotebookMaterializedPin(ownerUri, history, targetDatabase, pin).then(async (result) => {
 			if (result) {
 				history.materializedNotebookPin = pin;
 				this.loadHistory();

@@ -356,7 +356,7 @@ suite('ConnectionStore', () => {
 		assert.equal(group, undefined, 'Returned group was not undefined when there was no group with the given ID');
 	});
 
-	test('getGroupFromId returns the group that has the given ID', () => {
+	test('getGroupFromId returns the group that has the given ID', async () => {
 		const storageService = new InMemoryStorageService();
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
@@ -381,7 +381,7 @@ suite('ConnectionStore', () => {
 			}
 		];
 
-		configurationService.updateValue('datasource.connectionGroups', groups, ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connectionGroups', groups, ConfigurationTarget.USER);
 		let connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
 
@@ -456,7 +456,7 @@ suite('ConnectionStore', () => {
 			}
 		];
 
-		configurationService.updateValue('datasource.connectionGroups', groups, ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connectionGroups', groups, ConfigurationTarget.USER);
 
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
@@ -527,10 +527,10 @@ suite('ConnectionStore', () => {
 			id: 'server1'
 		};
 
-		configurationService.updateValue('datasource.connectionGroups', [group], ConfigurationTarget.USER);
-		configurationService.updateValue('datasource.connections', [connection], ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connectionGroups', [group], ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connections', [connection], ConfigurationTarget.USER);
 
-		connectionStore.addRecentConnection(ConnectionProfile.fromIConnectionProfile(capabilitiesService, connection));
+		await connectionStore.addRecentConnection(ConnectionProfile.fromIConnectionProfile(capabilitiesService, connection));
 
 		const connections = connectionStore.getRecentlyUsedConnections();
 

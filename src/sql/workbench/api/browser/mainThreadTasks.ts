@@ -46,7 +46,7 @@ export class MainThreadTasks implements MainThreadTasksShape {
 				if (profile instanceof ConnectionProfile) {
 					profile = profile.toIConnectionProfile();
 				}
-				this._proxy.$executeContributedTask(id, profile, ...args);
+				return this._proxy.$executeContributedTask(id, profile, ...args);
 			})
 		);
 		return undefined;

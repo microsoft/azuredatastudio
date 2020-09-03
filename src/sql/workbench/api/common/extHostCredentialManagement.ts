@@ -58,7 +58,7 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 		this._adapter[provider.handle] = new CredentialAdapter(provider);
 
 		// Register the credential provider with the main thread
-		this._proxy.$registerCredentialProvider(provider.handle);
+		void this._proxy.$registerCredentialProvider(provider.handle);
 
 		// Resolve the credential provider registration promise
 		this._registrationPromiseResolve();
@@ -126,7 +126,7 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 	private _createDisposable(handle: number): Disposable {
 		return new Disposable(() => {
 			delete this._adapter[handle];
-			this._proxy.$unregisterCredentialProvider(handle);
+			void this._proxy.$unregisterCredentialProvider(handle);
 		});
 	}
 

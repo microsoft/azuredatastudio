@@ -57,7 +57,7 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 		});
 		this._treeView.setOnDoubleClickedCallback((arg) => this.onDoubleClicked(arg));
 		this._register(this._treeView);
-		this._viewModel.openFileBrowser(0, false);
+		void this._viewModel.openFileBrowser(0, false);
 	}
 
 	private onClicked(selectedNode: FileNode) {
@@ -116,7 +116,7 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this.validate();
+		void this.validate();
 		if (this.ownerUri) {
 			this.initialize();
 		}

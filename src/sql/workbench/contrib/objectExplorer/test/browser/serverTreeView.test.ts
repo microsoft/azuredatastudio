@@ -79,7 +79,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 	test('reveal', async () => {
 		mockTree.setup(x => x.reveal(TypeMoq.It.isAny()));
-		serverTreeView.reveal(newProfile);
+		await serverTreeView.reveal(newProfile);
 		mockTree.verify(x => x.reveal(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
@@ -92,20 +92,20 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 	test('setExpandedState', async () => {
 		mockTree.setup(x => x.collapse(TypeMoq.It.isAny()));
 		mockTree.setup(x => x.expand(TypeMoq.It.isAny()));
-		serverTreeView.setExpandedState(newProfile, TreeItemCollapsibleState.Collapsed);
+		await serverTreeView.setExpandedState(newProfile, TreeItemCollapsibleState.Collapsed);
 		mockTree.verify(x => x.collapse(TypeMoq.It.isAny()), TypeMoq.Times.once());
-		serverTreeView.setExpandedState(newProfile, TreeItemCollapsibleState.Expanded);
+		await serverTreeView.setExpandedState(newProfile, TreeItemCollapsibleState.Expanded);
 		mockTree.verify(x => x.expand(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	test('setSelected', async () => {
 		mockTree.setup(x => x.reveal(TypeMoq.It.isAny()));
 		mockTree.setup(x => x.deselect(TypeMoq.It.isAny()));
-		serverTreeView.setSelected(newProfile, true, true);
+		await serverTreeView.setSelected(newProfile, true, true);
 		mockTree.verify(x => x.clearSelection(), TypeMoq.Times.once());
 		mockTree.verify(x => x.select(TypeMoq.It.isAny()), TypeMoq.Times.once());
 		mockTree.verify(x => x.reveal(TypeMoq.It.isAny()), TypeMoq.Times.once());
-		serverTreeView.setSelected(newProfile, false, false);
+		await serverTreeView.setSelected(newProfile, false, false);
 		mockTree.verify(x => x.deselect(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
@@ -117,7 +117,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 	test('refreshElement', async () => {
 		mockTree.setup(x => x.refresh(TypeMoq.It.isAny()));
-		serverTreeView.refreshElement(newProfile);
+		await serverTreeView.refreshElement(newProfile);
 		mockTree.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 

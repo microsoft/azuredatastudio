@@ -261,7 +261,7 @@ class WelcomePage extends Disposable {
 		}
 
 		showOnStartup.addEventListener('click', e => {
-			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePageWithTour' : 'newUntitledFile', ConfigurationTarget.USER);
+			void this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePageWithTour' : 'newUntitledFile', ConfigurationTarget.USER);
 		});
 		const prodName = container.querySelector('.welcomePage .title .caption') as HTMLElement;
 		if (prodName) {
@@ -435,14 +435,14 @@ class WelcomePage extends Disposable {
 		guidedTourNotificationContainer.appendChild(containerRight);
 
 		startTourBtn.onDidClick((e) => {
-			this.configurationService.updateValue(configurationKey, 'welcomePageWithTour', ConfigurationTarget.USER);
+			void this.configurationService.updateValue(configurationKey, 'welcomePageWithTour', ConfigurationTarget.USER);
 			this.layoutService.setSideBarHidden(true);
 			guidedTour.create();
 		});
 
 
 		removeTourBtn.addEventListener('click', (e: MouseEvent) => {
-			this.configurationService.updateValue(configurationKey, 'welcomePage', ConfigurationTarget.USER);
+			void this.configurationService.updateValue(configurationKey, 'welcomePage', ConfigurationTarget.USER);
 			guidedTourNotificationContainer.classList.add('hide');
 			guidedTourNotificationContainer.classList.remove('show');
 		});
@@ -657,11 +657,11 @@ class WelcomePage extends Disposable {
 		a.href = 'javascript:void(0)';
 
 		a.addEventListener('click', e => {
-			this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
+			void this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
 				id: 'openRecentFolder',
 				from: telemetryFrom
 			});
-			this.hostService.openWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
+			void this.hostService.openWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
 			e.preventDefault();
 			e.stopPropagation();
 		});
@@ -823,7 +823,7 @@ class WelcomePage extends Disposable {
 				"extensionId": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 			}
 		*/
-		this.telemetryService.publicLog(extensionPackStrings.installEvent, {
+		void this.telemetryService.publicLog(extensionPackStrings.installEvent, {
 			from: telemetryFrom,
 			extensionId: extensionSuggestion.id,
 		});
@@ -837,7 +837,7 @@ class WelcomePage extends Disposable {
 						"outcome": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 					}
 				*/
-				this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
+				void this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
 					from: telemetryFrom,
 					extensionId: extensionSuggestion.id,
 					outcome: 'already_enabled',
@@ -871,7 +871,7 @@ class WelcomePage extends Disposable {
 							this.notificationService.info(extensionPackStrings.reloadAfterInstall(extensionSuggestion.name));
 						}, 300);
 						const extensionsToDisable = extensions.filter(extension => isKeymapExtension(this.tipsService, extension) && extension.globallyEnabled).map(extension => extension.local);
-						extensionsToDisable.length ? this.extensionEnablementService.setEnablement(extensionsToDisable, EnablementState.DisabledGlobally) : Promise.resolve()
+						((extensionsToDisable.length ? this.extensionEnablementService.setEnablement(extensionsToDisable, EnablementState.DisabledGlobally) : Promise.resolve()) as Promise<void>)
 							.then(() => {
 								return foundAndInstalled.then(foundExtension => {
 									messageDelay.cancel();
@@ -885,7 +885,7 @@ class WelcomePage extends Disposable {
 														"outcome": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 													}
 												*/
-												this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
+												void this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
 													from: telemetryFrom,
 													extensionId: extensionSuggestion.id,
 													outcome: installedExtension ? 'enabled' : 'installed',
@@ -900,7 +900,7 @@ class WelcomePage extends Disposable {
 												"outcome": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 											}
 										*/
-										this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
+										void this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
 											from: telemetryFrom,
 											extensionId: extensionSuggestion.id,
 											outcome: 'not_found',
@@ -917,7 +917,7 @@ class WelcomePage extends Disposable {
 										"outcome": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 									}
 								*/
-								this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
+								void this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
 									from: telemetryFrom,
 									extensionId: extensionSuggestion.id,
 									outcome: isPromiseCanceledError(err) ? 'canceled' : 'error',
@@ -934,7 +934,7 @@ class WelcomePage extends Disposable {
 								"extensionId": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 							}
 						*/
-						this.telemetryService.publicLog(extensionPackStrings.detailsEvent, {
+						void this.telemetryService.publicLog(extensionPackStrings.detailsEvent, {
 							from: telemetryFrom,
 							extensionId: extensionSuggestion.id,
 						});
@@ -952,7 +952,7 @@ class WelcomePage extends Disposable {
 					"outcome": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 				}
 			*/
-			this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
+			void this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
 				from: telemetryFrom,
 				extensionId: extensionSuggestion.id,
 				outcome: isPromiseCanceledError(err) ? 'canceled' : 'error',

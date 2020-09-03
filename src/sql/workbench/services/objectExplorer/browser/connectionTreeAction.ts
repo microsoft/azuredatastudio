@@ -225,8 +225,8 @@ export class EditServerGroupAction extends Action {
 		this.class = 'edit-server-group-action';
 	}
 
-	public run(): Promise<boolean> {
-		this.serverGroupController.showEditGroupDialog(this._group);
+	public async run(): Promise<boolean> {
+		await this.serverGroupController.showEditGroupDialog(this._group);
 		return Promise.resolve(true);
 	}
 }
@@ -353,11 +353,11 @@ export class DeleteConnectionAction extends Action {
 		}
 	}
 
-	public run(): Promise<boolean> {
+	public async run(): Promise<boolean> {
 		if (this.element instanceof ConnectionProfile) {
-			this._connectionManagementService.deleteConnection(this.element);
+			await this._connectionManagementService.deleteConnection(this.element);
 		} else if (this.element instanceof ConnectionProfileGroup) {
-			this._connectionManagementService.deleteConnectionGroup(this.element);
+			await this._connectionManagementService.deleteConnectionGroup(this.element);
 		}
 		return Promise.resolve(true);
 	}

@@ -398,10 +398,10 @@ suite('Notebook Find Model', function (): void {
 
 		assert.equal(notebookFindModel.getFindIndex(), 1, 'Failed to get the correct find index');
 
-		notebookFindModel.findNext();
+		await notebookFindModel.findNext();
 		assert.equal(notebookFindModel.getFindIndex(), 2, 'Failed to get the correct find index');
 
-		notebookFindModel.findPrevious();
+		await notebookFindModel.findPrevious();
 		assert.equal(notebookFindModel.getFindIndex(), 1, 'Failed to get the correct find index');
 	});
 

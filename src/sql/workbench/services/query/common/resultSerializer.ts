@@ -330,7 +330,7 @@ export class ResultSerializer {
 				[{
 					label: nls.localize('openFile', "Open file"),
 					run: () => {
-						this.openerService.open(filePath, { openExternal: true });
+						return this.openerService.open(filePath, { openExternal: true });
 					}
 				}]
 			);

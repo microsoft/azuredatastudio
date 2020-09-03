@@ -75,14 +75,13 @@ export class ClearRecentConnectionsAction extends Action {
 	}
 
 	private promptQuickOpenService(): Promise<boolean> {
-		const self = this;
 		return new Promise<boolean>((resolve, reject) => {
 			let choices: { key, value }[] = [
 				{ key: nls.localize('connectionAction.yes', "Yes"), value: true },
 				{ key: nls.localize('connectionAction.no', "No"), value: false }
 			];
 
-			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('ClearRecentlyUsedLabel', "Clear List"), ignoreFocusLost: true }).then((choice) => {
+			void this._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('ClearRecentlyUsedLabel', "Clear List"), ignoreFocusLost: true }).then((choice) => {
 				let confirm = find(choices, x => x.key === choice);
 				resolve(confirm && confirm.value);
 			});
@@ -98,7 +97,7 @@ export class ClearRecentConnectionsAction extends Action {
 		};
 
 		return new Promise<IConfirmationResult>((resolve, reject) => {
-			this._dialogService.confirm(confirm).then((confirmed) => {
+			void this._dialogService.confirm(confirm).then((confirmed) => {
 				resolve(confirmed);
 			});
 		});
@@ -153,27 +152,24 @@ export class GetCurrentConnectionStringAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
-			let activeInput = this._editorService.activeEditor;
-			if (activeInput && (activeInput instanceof QueryEditorInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput)
-				&& this._connectionManagementService.isConnected(activeInput.uri)) {
-				let includePassword = false;
-				let connectionProfile = this._connectionManagementService.getConnectionProfile(activeInput.uri);
-				this._connectionManagementService.getConnectionString(connectionProfile.id, includePassword).then(result => {
+	public async run(): Promise<void> {
+		let activeInput = this._editorService.activeEditor;
+		if (activeInput && (activeInput instanceof QueryEditorInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput)
+			&& this._connectionManagementService.isConnected(activeInput.uri)) {
+			let includePassword = false;
+			let connectionProfile = this._connectionManagementService.getConnectionProfile(activeInput.uri);
+			let result = await this._connectionManagementService.getConnectionString(connectionProfile.id, includePassword);
 
-					//Copy to clipboard
-					this._clipboardService.writeText(result);
+			//Copy to clipboard
+			await this._clipboardService.writeText(result);
 
-					let message = result
-						? result
-						: nls.localize('connectionAction.connectionString', "Connection string not available");
-					this._notificationService.info(message);
-				});
-			} else {
-				let message = nls.localize('connectionAction.noConnection', "No active connection available");
-				this._notificationService.info(message);
-			}
-		});
+			let message = result
+				? result
+				: nls.localize('connectionAction.connectionString', "Connection string not available");
+			this._notificationService.info(message);
+		} else {
+			let message = nls.localize('connectionAction.noConnection', "No active connection available");
+			this._notificationService.info(message);
+		}
 	}
 }

@@ -60,7 +60,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			autoscroll: true
 		});
 
-		this._profilerService.registerSession(uriPrefixes.connection + generateUuid(), connection, this).then((id) => {
+		void this._profilerService.registerSession(uriPrefixes.connection + generateUuid(), connection, this).then((id) => {
 			this._id = id;
 			this.state.change({ isConnected: true });
 		});
@@ -284,7 +284,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	dispose() {
 		super.dispose();
-		this._profilerService.disconnectSession(this.id);
+		void this._profilerService.disconnectSession(this.id);
 	}
 
 	get resource(): URI | undefined {

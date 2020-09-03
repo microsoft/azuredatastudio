@@ -227,11 +227,11 @@ suite('ConnectionConfig', () => {
 		return true;
 	}
 
-	test('getAllGroups should merge user and workspace settings correctly', () => {
+	test('getAllGroups should merge user and workspace settings correctly', async () => {
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(0, 3), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(0, 3), ConfigurationTarget.USER);
 		// we intentionally overlap these values with the expectation that the function to should return each group once
-		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(2, testGroups.length), ConfigurationTarget.WORKSPACE);
+		await configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(2, testGroups.length), ConfigurationTarget.WORKSPACE);
 
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allGroups = config.getAllGroups();
@@ -260,8 +260,8 @@ suite('ConnectionConfig', () => {
 		};
 
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
-		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = 'database';
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
@@ -292,8 +292,8 @@ suite('ConnectionConfig', () => {
 		};
 
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
-		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = existingConnection.options['databaseName'];
@@ -325,8 +325,8 @@ suite('ConnectionConfig', () => {
 		};
 
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
-		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
@@ -336,27 +336,27 @@ suite('ConnectionConfig', () => {
 		assert.equal(configurationService.inspect<IConnectionProfileStore[]>('datasource.connectionGroups').userValue!.length, testGroups.length + 1);
 	});
 
-	test('getConnections should return connections from user and workspace settings given getWorkspaceConnections set to true', () => {
+	test('getConnections should return connections from user and workspace settings given getWorkspaceConnections set to true', async () => {
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(0, 1), ConfigurationTarget.USER);
-		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(1, testConnections.length), ConfigurationTarget.WORKSPACE);
+		await configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(0, 1), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(1, testConnections.length), ConfigurationTarget.WORKSPACE);
 
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allConnections = config.getConnections(true);
 		assert.equal(allConnections.length, testConnections.length);
 	});
 
-	test('getConnections should return connections from user settings given getWorkspaceConnections set to false', () => {
+	test('getConnections should return connections from user settings given getWorkspaceConnections set to false', async () => {
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(0, 2), ConfigurationTarget.USER);
-		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(2, testConnections.length), ConfigurationTarget.WORKSPACE);
+		await configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(0, 2), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(2, testConnections.length), ConfigurationTarget.WORKSPACE);
 
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allConnections = config.getConnections(false);
 		assert.equal(allConnections.length, 2);
 	});
 
-	test('getConnections should return connections with a valid id', () => {
+	test('getConnections should return connections with a valid id', async () => {
 		let workspaceConnections = deepClone(testConnections).map(c => {
 			c.id = c.options['serverName'];
 			return c;
@@ -366,8 +366,8 @@ suite('ConnectionConfig', () => {
 			return c;
 		});
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connections', userConnections, ConfigurationTarget.USER);
-		configurationService.updateValue('datasource.connections', workspaceConnections, ConfigurationTarget.WORKSPACE);
+		await configurationService.updateValue('datasource.connections', userConnections, ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connections', workspaceConnections, ConfigurationTarget.WORKSPACE);
 
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allConnections = config.getConnections(false);
@@ -443,7 +443,7 @@ suite('ConnectionConfig', () => {
 			connectionName: undefined!
 		};
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = 'database';
@@ -473,8 +473,8 @@ suite('ConnectionConfig', () => {
 			connectionName: undefined!
 		};
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
-		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		connectionProfile.options['databaseDisplayName'] = 'database';
@@ -510,7 +510,7 @@ suite('ConnectionConfig', () => {
 			connectionName: undefined!
 		};
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
@@ -521,7 +521,7 @@ suite('ConnectionConfig', () => {
 
 	test('renameGroup should change group name', async () => {
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
 
 		let connectionProfileGroup = new ConnectionProfileGroup('g-renamed', undefined, 'g2', undefined, undefined);
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
@@ -537,7 +537,7 @@ suite('ConnectionConfig', () => {
 
 	test('edit group should throw if there is a confliction', async () => {
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
 
 		let sameNameGroup = new ConnectionProfileGroup('g3', undefined, 'g2', undefined, undefined);
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
@@ -555,7 +555,7 @@ suite('ConnectionConfig', () => {
 
 	test('change group(parent) for connection group', async () => {
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
 
 		let sourceProfileGroup = new ConnectionProfileGroup('g2', undefined, 'g2', undefined, undefined);
 		let targetProfileGroup = new ConnectionProfileGroup('g3', undefined, 'g3', undefined, undefined);
@@ -610,7 +610,7 @@ suite('ConnectionConfig', () => {
 		let _testConnections = [...deepClone(testConnections), existingProfile, changingProfile];
 
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connections', _testConnections, ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connections', _testConnections, ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, changingProfile);
 
@@ -648,7 +648,7 @@ suite('ConnectionConfig', () => {
 		};
 
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
 
 		let connectionProfile = new ConnectionProfile(capabilitiesService.object, newProfile);
 		let newId = 'newid';
@@ -666,8 +666,8 @@ suite('ConnectionConfig', () => {
 	test('addConnection should not move the connection when editing', async () => {
 		// Set up the connection config
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
-		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connections', deepClone(testConnections), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 
 		// Clone a connection and modify an option
@@ -697,7 +697,7 @@ suite('ConnectionConfig', () => {
 			description: 'new group'
 		};
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
 
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 
@@ -717,7 +717,7 @@ suite('ConnectionConfig', () => {
 			description: 'new group'
 		};
 		let configurationService = new TestConfigurationService();
-		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
+		await configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups), ConfigurationTarget.USER);
 
 		const config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		try {

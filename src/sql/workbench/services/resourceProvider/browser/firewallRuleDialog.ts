@@ -127,7 +127,7 @@ export class FirewallRuleDialog extends Modal {
 		this._helpLink.setAttribute('href', firewallHelpUri);
 		this._helpLink.innerHTML += localize('firewallRuleHelpDescription', "Learn more about firewall settings");
 		this._helpLink.onclick = () => {
-			this.openerService.open(URI.parse(firewallHelpUri));
+			void this.openerService.open(URI.parse(firewallHelpUri));
 		};
 
 		// Create account picker with event handling

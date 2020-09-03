@@ -127,7 +127,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
-		this._telemetryService.publicLog(TelemetryKeys.JobsView);
+		void this._telemetryService.publicLog(TelemetryKeys.JobsView);
 	}
 
 	ngOnDestroy() {
@@ -207,7 +207,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			}
 		} else {
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-			this._jobManagementService.getNotebooks(ownerUri).then((result) => {
+			void this._jobManagementService.getNotebooks(ownerUri).then((result) => {
 				if (result && result.notebooks) {
 					self.notebooks = result.notebooks;
 					self._notebookCacheObject.notebooks = self.notebooks;

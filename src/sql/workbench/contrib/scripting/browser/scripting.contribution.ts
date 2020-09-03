@@ -229,7 +229,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 
 CommandsRegistry.registerCommand(commands.ExplorerScriptSelectAction.ID, (accessor, context) => {
 	const instantiationService = accessor.get(IInstantiationService);
-	instantiationService.createInstance(commands.ExplorerScriptSelectAction, commands.ExplorerScriptSelectAction.ID, commands.ExplorerScriptSelectAction.LABEL).run(context);
+	return instantiationService.createInstance(commands.ExplorerScriptSelectAction, commands.ExplorerScriptSelectAction.ID, commands.ExplorerScriptSelectAction.LABEL).run(context);
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
@@ -244,7 +244,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 const ExplorerEditDataActionID = 'explorer.editData';
 CommandsRegistry.registerCommand(ExplorerEditDataActionID, (accessor, context) => {
 	const instantiationService = accessor.get(IInstantiationService);
-	instantiationService.createInstance(EditDataAction, EditDataAction.ID, EditDataAction.LABEL).run(context);
+	return instantiationService.createInstance(EditDataAction, EditDataAction.ID, EditDataAction.LABEL).run(context);
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
@@ -258,7 +258,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 
 CommandsRegistry.registerCommand(commands.ExplorerScriptExecuteAction.ID, (accessor, context) => {
 	const instantiationService = accessor.get(IInstantiationService);
-	instantiationService.createInstance(commands.ExplorerScriptExecuteAction, commands.ExplorerScriptExecuteAction.ID, commands.ExplorerScriptExecuteAction.LABEL).run(context);
+	return instantiationService.createInstance(commands.ExplorerScriptExecuteAction, commands.ExplorerScriptExecuteAction.ID, commands.ExplorerScriptExecuteAction.LABEL).run(context);
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
@@ -272,7 +272,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 
 CommandsRegistry.registerCommand(commands.ExplorerScriptAlterAction.ID, (accessor, context) => {
 	const instantiationService = accessor.get(IInstantiationService);
-	instantiationService.createInstance(commands.ExplorerScriptAlterAction, commands.ExplorerScriptAlterAction.ID, commands.ExplorerScriptAlterAction.LABEL).run(context);
+	return instantiationService.createInstance(commands.ExplorerScriptAlterAction, commands.ExplorerScriptAlterAction.ID, commands.ExplorerScriptAlterAction.LABEL).run(context);
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
@@ -304,7 +304,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 
 CommandsRegistry.registerCommand(commands.ExplorerScriptCreateAction.ID, (accessor, context) => {
 	const instantiationService = accessor.get(IInstantiationService);
-	instantiationService.createInstance(commands.ExplorerScriptCreateAction, commands.ExplorerScriptCreateAction.ID, commands.ExplorerScriptCreateAction.LABEL).run(context);
+	return instantiationService.createInstance(commands.ExplorerScriptCreateAction, commands.ExplorerScriptCreateAction.ID, commands.ExplorerScriptCreateAction.LABEL).run(context);
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {

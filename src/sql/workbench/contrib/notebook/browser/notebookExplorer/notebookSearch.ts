@@ -212,7 +212,7 @@ export class NotebookSearchView extends SearchView {
 
 		this.messageDisposables.push(dom.addDisposableListener(openFolderLink, dom.EventType.CLICK, async (e: MouseEvent) => {
 			dom.EventHelper.stop(e, false);
-			this.commandService.executeCommand('notebook.command.openNotebookFolder');
+			await this.commandService.executeCommand('notebook.command.openNotebookFolder');
 			this.setExpanded(false);
 		}));
 	}
@@ -229,7 +229,7 @@ export class NotebookSearchView extends SearchView {
 				let element = this.tree.getSelection()[0] as Match;
 				const resource = element instanceof Match ? element.parent().resource : (<FileMatch>element).resource;
 				if (resource.fsPath.endsWith('.md')) {
-					this.commandService.executeCommand('markdown.showPreview', resource);
+					await this.commandService.executeCommand('markdown.showPreview', resource);
 				} else {
 					await this.open(this.tree.getSelection()[0] as Match, true, false, false);
 				}
@@ -239,7 +239,7 @@ export class NotebookSearchView extends SearchView {
 
 	public startSearch(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: NotebookSearchWidget): Thenable<void> {
 		let progressComplete: () => void;
-		this.progressService.withProgress({ location: this.getProgressLocation(), delay: triggeredOnType ? 300 : 0 }, _progress => {
+		void this.progressService.withProgress({ location: this.getProgressLocation(), delay: triggeredOnType ? 300 : 0 }, _progress => {
 			return new Promise(resolve => progressComplete = resolve);
 		});
 

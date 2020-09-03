@@ -312,7 +312,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public dispose() {
 		super.dispose(); // we want to dispose first so that for future logic we know we are disposed
 		this.queryModelService.disposeQuery(this.uri);
-		this.connectionManagementService.disconnectEditor(this, true);
+		void this.connectionManagementService.disconnectEditor(this, true);
 	}
 
 	public get isSharedSession(): boolean {

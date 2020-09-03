@@ -190,7 +190,7 @@ export class AccountDialog extends Modal {
 		this.viewModel.updateAccountListEvent(arg => { this.updateProviderAccounts(arg); });
 
 		// Load the initial contents of the view model
-		this.viewModel.initialize()
+		void this.viewModel.initialize()
 			.then(addedProviders => {
 				for (const addedProvider of addedProviders) {
 					this.addProvider(addedProvider);
@@ -254,7 +254,7 @@ export class AccountDialog extends Modal {
 				return;
 			}
 
-			v.addAccountAction.run();
+			void v.addAccountAction.run();
 		}));
 
 		DOM.append(container, this._noaccountViewContainer);

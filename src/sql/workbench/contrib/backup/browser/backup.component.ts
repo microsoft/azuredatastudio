@@ -281,7 +281,7 @@ export class BackupComponent extends AngularDisposable {
 					}
 
 					// Copy to clipboard
-					this.clipboardService.writeText(textToCopy);
+					void this.clipboardService.writeText(textToCopy);
 
 					e.stopPropagation();
 				}
@@ -369,7 +369,7 @@ export class BackupComponent extends AngularDisposable {
 		this._uri = param.ownerUri;
 
 		// Get backup configuration info
-		this._backupService.getBackupConfigInfo(this._uri).then(configInfo => {
+		void this._backupService.getBackupConfigInfo(this._uri).then(configInfo => {
 			if (configInfo) {
 				this.defaultNewBackupFolder = configInfo.defaultBackupFolder;
 				this.recoveryModel = configInfo.recoveryModel;
@@ -579,18 +579,18 @@ export class BackupComponent extends AngularDisposable {
 	* UI event handlers
 	*/
 	private onScript(): void {
-		this._backupService.backup(this._uri, this.createBackupInfo(), TaskExecutionMode.script);
+		void this._backupService.backup(this._uri, this.createBackupInfo(), TaskExecutionMode.script);
 		this.close();
 	}
 
 	private onOk(): void {
-		this._backupService.backup(this._uri, this.createBackupInfo(), TaskExecutionMode.executeAndScript);
+		void this._backupService.backup(this._uri, this.createBackupInfo(), TaskExecutionMode.executeAndScript);
 		this.close();
 	}
 
 	private onCancel(): void {
 		this.close();
-		this.connectionManagementService.disconnect(this._uri);
+		void this.connectionManagementService.disconnect(this._uri);
 	}
 
 	private close(): void {

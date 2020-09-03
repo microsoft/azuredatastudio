@@ -22,7 +22,7 @@ class TelemetryEventImpl implements ITelemetryEvent {
 
 	public send(): void {
 		try {
-			this._telemetryService.publicLog(this._eventName, { properties: this._properties, measurements: this._measurements });
+			void this._telemetryService.publicLog(this._eventName, { properties: this._properties, measurements: this._measurements });
 		}
 		catch (e) {
 			// We don't want exceptions sending telemetry to break functionality so just log and ignore

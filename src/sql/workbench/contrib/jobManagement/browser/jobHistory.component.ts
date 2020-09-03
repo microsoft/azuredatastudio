@@ -149,7 +149,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}, { verticalScrollMode: ScrollbarVisibility.Visible });
 		this._register(attachListStyler(this._tree, this.themeService));
 		this._tree.layout(dom.getContentHeight(this._tableContainer.nativeElement));
-		this._telemetryService.publicLog(TelemetryKeys.JobHistoryView);
+		void this._telemetryService.publicLog(TelemetryKeys.JobHistoryView);
 	}
 
 	private loadHistory() {
@@ -157,7 +157,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		let jobName = this._agentViewComponent.agentJobInfo.name;
 		let jobId = this._agentViewComponent.jobId;
-		this._jobManagementService.getJobHistory(ownerUri, jobId, jobName).then((result) => {
+		void this._jobManagementService.getJobHistory(ownerUri, jobId, jobName).then((result) => {
 			if (result && result.histories) {
 				self._jobCacheObject.setJobHistory(jobId, result.histories);
 				self._jobCacheObject.setJobAlerts(jobId, result.alerts);
@@ -242,7 +242,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			return date2 - date1;
 		});
 		self._treeDataSource.data = sortedRows;
-		self._tree.setInput(new JobHistoryModel());
+		void self._tree.setInput(new JobHistoryModel());
 		self.agentJobHistoryInfo = self._treeController.jobHistories[0];
 		if (self.agentJobHistoryInfo) {
 			self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);

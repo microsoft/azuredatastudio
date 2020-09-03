@@ -563,7 +563,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
 		let connectionManagementInfo = this._connectionStatusManager.findConnection(uri);
 		if (options.showDashboard) {
-			this.showDashboardForConnectionManagementInfo(connectionManagementInfo.connectionProfile);
+			void this.showDashboardForConnectionManagementInfo(connectionManagementInfo.connectionProfile);
 		}
 
 		let connectionProfile = connectionManagementInfo.connectionProfile;
@@ -576,7 +576,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (iconProvider) {
 			let serverInfo: azdata.ServerInfo = this.getServerInfo(connectionProfile.id);
 			let profile: interfaces.IConnectionProfile = connectionProfile.toIConnectionProfile();
-			iconProvider.getConnectionIconId(profile, serverInfo).then(iconId => {
+			void iconProvider.getConnectionIconId(profile, serverInfo).then(iconId => {
 				if (iconId && this._mementoObj && this._mementoContext) {
 					if (!this._mementoObj.CONNECTION_ICON_ID) {
 						this._mementoObj.CONNECTION_ICON_ID = <any>{};
@@ -854,7 +854,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		await this.extensionService.activateByEvent(`onConnect:${connection.providerName}`);
 
 		return this._providers.get(connection.providerName).onReady.then((provider) => {
-			provider.connect(uri, connectionInfo);
+			void provider.connect(uri, connectionInfo); // should this be await?
 			this._onConnectRequestSent.fire();
 
 			// TODO make this generic enough to handle non-SQL languages too
@@ -870,7 +870,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		return this._providers.get(providerId).onReady.then(provider => {
-			provider.disconnect(uri);
+			void provider.disconnect(uri); // should this be await
 			return true;
 		});
 	}
@@ -882,7 +882,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		return this._providers.get(providerId).onReady.then(provider => {
-			provider.cancelConnect(uri);
+			void provider.cancelConnect(uri); // chould this be await
 			return true;
 		});
 	}

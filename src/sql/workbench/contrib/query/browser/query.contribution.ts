@@ -435,7 +435,7 @@ for (let i = 0; i < 9; i++) {
 		when: QueryEditorVisibleCondition,
 		primary: defaultPrimary,
 		handler: accessor => {
-			accessor.get(IInstantiationService).createInstance(RunQueryShortcutAction).run(queryIndex);
+			return accessor.get(IInstantiationService).createInstance(RunQueryShortcutAction).run(queryIndex);
 		}
 	});
 	shortCutConfiguration.properties[settingKey] = {
