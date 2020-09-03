@@ -56,6 +56,8 @@ export class Project {
 	 * Reads the project setting and contents from the file
 	 */
 	public async readProjFile() {
+		this.resetProject();
+
 		const projFileText = await fs.readFile(this.projectFilePath);
 		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 
@@ -153,6 +155,17 @@ export class Project {
 
 			this.databaseReferences.push(new SqlProjectReferenceProjectEntry(Uri.file(utils.getPlatformSafeFileEntryPath(filepath)), name, suppressMissingDependences));
 		}
+	}
+
+	private resetProject() {
+		this.files = [];
+		this.importedTargets = [];
+		this.databaseReferences = [];
+		this.sqlCmdVariables = {};
+		this.preDeployScripts = [];
+		this.postDeployScripts = [];
+		this.noneDeployScripts = [];
+		this.projFileXmlDoc = undefined;
 	}
 
 	public async updateProjectForRoundTrip() {
@@ -493,7 +506,6 @@ export class Project {
 		if (isSystemDatabaseProjectEntry) {
 			this.addSystemDatabaseReferenceToProjFile(<SystemDatabaseReferenceProjectEntry>entry);
 		} else {
-
 			const referenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 			referenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
 			this.addDatabaseReferenceChildren(referenceNode, entry);
@@ -513,12 +525,29 @@ export class Project {
 		suppressMissingDependenciesErrorNode.appendChild(suppressMissingDependenciesErrorTextNode);
 		referenceNode.appendChild(suppressMissingDependenciesErrorNode);
 
-		// TODO: add support for sqlcmd vars and server https://github.com/microsoft/azuredatastudio/issues/12036
-		if (entry.databaseVariableLiteralValue) {
+		if ((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable) {
+			const databaseSqlCmdVariableElement = this.projFileXmlDoc.createElement(constants.DatabaseSqlCmdVariable);
+			const databaseSqlCmdVariableTextNode = this.projFileXmlDoc.createTextNode((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable);
+			databaseSqlCmdVariableElement.appendChild(databaseSqlCmdVariableTextNode);
+			referenceNode.appendChild(databaseSqlCmdVariableElement);
+
+			// add SQLCMD variable
+			this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).databaseName);
+		} else if (entry.databaseVariableLiteralValue) {
 			const databaseVariableLiteralValueElement = this.projFileXmlDoc.createElement(constants.DatabaseVariableLiteralValue);
 			const databaseTextNode = this.projFileXmlDoc.createTextNode(entry.databaseVariableLiteralValue);
 			databaseVariableLiteralValueElement.appendChild(databaseTextNode);
 			referenceNode.appendChild(databaseVariableLiteralValueElement);
+		}
+
+		if ((<DacpacReferenceProjectEntry>entry).serverSqlCmdVariable) {
+			const serverSqlCmdVariableElement = this.projFileXmlDoc.createElement(constants.ServerSqlCmdVariable);
+			const serverSqlCmdVariableTextNode = this.projFileXmlDoc.createTextNode((<DacpacReferenceProjectEntry>entry).serverSqlCmdVariable);
+			serverSqlCmdVariableElement.appendChild(serverSqlCmdVariableTextNode);
+			referenceNode.appendChild(serverSqlCmdVariableElement);
+
+			// add SQLCMD variable
+			this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).serverSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).serverName!);
 		}
 	}
 
@@ -555,7 +584,7 @@ export class Project {
 	 */
 	private getNextSqlCmdVariableCounter(): number {
 		const sqlCmdVariableNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable);
-		let highestNumber = 1;
+		let highestNumber = 0;
 
 		for (let i = 0; i < sqlCmdVariableNodes.length; i++) {
 			const value: string = sqlCmdVariableNodes[i].getElementsByTagName(constants.Value)[0].childNodes[0].nodeValue;
@@ -766,12 +795,18 @@ export interface IDatabaseReferenceProjectEntry extends FileProjectEntry {
 export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
 	databaseLocation: DatabaseReferenceLocation;
 	databaseVariableLiteralValue?: string;
+	databaseSqlCmdVariable?: string;
+	serverName?: string;
+	serverSqlCmdVariable?: string;
 	suppressMissingDependenciesErrors: boolean;
 
 	constructor(settings: IDacpacReferenceSettings) {
 		super(settings.dacpacFileLocation, '', EntryType.DatabaseReference);
 		this.databaseLocation = settings.databaseLocation;
+		this.databaseSqlCmdVariable = settings.databaseVariable;
 		this.databaseVariableLiteralValue = settings.databaseName;
+		this.serverName = settings.serverName;
+		this.serverSqlCmdVariable = settings.serverVariable;
 		this.suppressMissingDependenciesErrors = settings.suppressMissingDependenciesErrors;
 	}
 

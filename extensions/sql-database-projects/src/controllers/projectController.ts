@@ -432,6 +432,45 @@ export class ProjectsController {
 	}
 
 	/**
+	 * Opens the .sqlproj file for the given project. Upon update of file, prompts user to
+	 * reload their project.
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async editProjectFile(context: BaseProjectTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(context);
+
+		try {
+			await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(project.projectFilePath));
+			const projFileWatcher: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher(project.projectFilePath);
+
+			projFileWatcher.onDidChange(async (projectFileUri: vscode.Uri) => {
+				const result = await vscode.window.showInformationMessage(constants.reloadProject, constants.yesString, constants.noString);
+
+				if (result === constants.yesString) {
+					this.reloadProject(projectFileUri);
+				}
+			});
+		} catch (err) {
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	/**
+	 * Reloads the given project. Throws an error if given project is not a valid open project.
+	 * @param projectFileUri the uri of the project to be reloaded
+	 */
+	public async reloadProject(projectFileUri: vscode.Uri) {
+		const project = this.projects.find((e) => e.projectFilePath === projectFileUri.fsPath);
+		if (project) {
+			// won't open any newly referenced projects, but otherwise matches the behavior of reopening the project
+			await project.readProjFile();
+			this.refreshProjectsTree();
+		} else {
+			throw new Error(constants.invalidProjectReload);
+		}
+	}
+
+	/**
 	 * Adds a database reference to the project
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */

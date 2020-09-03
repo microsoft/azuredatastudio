@@ -812,7 +812,9 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 
 		if (iconUrl || sqlIcon) {
 			templateData.icon.className = 'custom-view-tree-node-item-icon';
-			DOM.toggleClass(templateData.icon, sqlIcon ?? '', !!sqlIcon);  // tracked change
+			if (sqlIcon) {
+				DOM.toggleClass(templateData.icon, sqlIcon, !!sqlIcon);  // tracked change
+			}
 			DOM.toggleClass(templateData.icon, 'icon', !!sqlIcon);
 			templateData.icon.style.backgroundImage = iconUrl ? DOM.asCSSUrl(iconUrl) : '';
 		} else {
