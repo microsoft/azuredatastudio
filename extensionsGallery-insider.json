@@ -3675,7 +3675,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/kusto/resources/images/azure_data_explorer_query_124x124.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/kusto/resources/images/ADX.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
