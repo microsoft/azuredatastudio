@@ -30,7 +30,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 You can run experiments and create models in Python with a notebook in Azure Data Studio. You can also run T-SQL code, and run Python and R with SQL Server Machine Learning Services, in a notebook.
 
-Click on **Create notebook** to create a new notebook in Azure Data Studio. For more information, see [how to create a notebook with the Machine Learning extension](https://go.microsoft.com/fwlink/?linkid=2129920).
+Select on **Create notebook** to create a new notebook in Azure Data Studio. For more information, see [how to create a notebook with the Machine Learning extension](https://go.microsoft.com/fwlink/?linkid=2129920).
 
 ## Peek definitions
 
