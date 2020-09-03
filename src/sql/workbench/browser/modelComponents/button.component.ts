@@ -99,12 +99,12 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		}
 		if (this._informationalInputContainer) {
 			this._infoButton = new InfoButton(this._informationalInputContainer.nativeElement, {
-				description: this.description,
-				iconClass: this._iconClass,
-				iconHeight: this.iconHeight,
-				iconPath: this.iconPath,
-				iconWidth: this.iconWidth,
-				title: this.title
+				description: this.properties.description,
+				iconClass: this.properties._iconClass,
+				iconHeight: this.properties.iconHeight,
+				iconPath: this.properties.iconPath,
+				iconWidth: this.properties.iconWidth,
+				textTitle: this.properties.title
 			});
 
 			this._register(this._infoButton);
@@ -152,9 +152,9 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		}
 
 		if (this._informationalInputContainer) {
-			this._infoButton.description = this.description;
-			this._infoButton.title = this.title;
-			this._infoButton.iconPath = this.iconPath;
+			//this._infoButton.description = this.properties.description;
+			this._infoButton.textTitle = this.properties.title;
+			//this._infoButton.iconPath = this.properties.iconPath;
 		}
 
 		this.updateIcon();
