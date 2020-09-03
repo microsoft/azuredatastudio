@@ -438,19 +438,19 @@ export class ProjectsController {
 			const projFileWatcher: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher(project.projectFilePath);
 
 			projFileWatcher.onDidChange(async (projectFileUri: vscode.Uri) => {
-				const result = await vscode.window.showInformationMessage(constants.refreshProject, constants.yesString, constants.noString);
+				const result = await vscode.window.showInformationMessage(constants.reloadProject, constants.yesString, constants.noString);
 
 				if (result === constants.yesString) {
-					// Is there a better way to refresh a project with a changed .sqlproj file than close
-					//	and open project again?
-					this.projects = this.projects.filter((e) => { return e.projectFilePath !== projectFileUri.fsPath; });
-					await this.openProject(projectFileUri);
+					const project: Project = this.projects.filter((e) => { return e.projectFilePath === projectFileUri.fsPath; })[0];
+
+					// won't open any newly referenced projects, but otherwise matches the behavior of reopening the project
+					await project.readProjFile();
+					this.refreshProjectsTree();
 				}
 			});
 		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
-
 	}
 
 	/**
