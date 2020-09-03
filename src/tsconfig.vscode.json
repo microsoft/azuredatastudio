@@ -89,6 +89,7 @@
 		"./vs/workbench/api/node/**/*.ts", // 328 errors
 		"./vs/workbench/api/worker/**/*.ts", // 294 errors
 		"./vs/workbench/contrib/backup/**/*.ts", // 3162 errors
+		"./vs/workbench/contrib/bulkEdit/**/*.ts",
 		"./vs/workbench/contrib/codeEditor/**/*.ts", // 3162 errors
 		"./vs/workbench/contrib/comments/**/*.ts", // 64 errors
 		"./vs/workbench/contrib/configExporter/**/*.ts", // 3162 errors
