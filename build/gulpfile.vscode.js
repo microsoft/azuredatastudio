@@ -42,6 +42,7 @@ const vscodeEntryPoints = _.flatten([
 	buildfile.entrypoint('vs/workbench/workbench.desktop.main'),
 	buildfile.base,
 	buildfile.workerExtensionHost,
+	buildfile.workerNotebook,
 	buildfile.workbenchDesktop,
 	buildfile.code
 ]);
