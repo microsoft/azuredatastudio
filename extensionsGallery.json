@@ -3419,6 +3419,67 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "73",
+					"extensionName": "sql-server-diagnostic-book",
+					"displayName": "SQL Server Diagnostic Book",
+					"shortDescription": "A collection of notebooks to troubleshoot and diagnose any version of SQL Server",
+					"publisher": {
+						"displayName":"Emanuele Meazzo",
+						"publisherId": "emanuelemeazzo",
+						"publisherName":"emanuelemeazzo"
+					},
+					"versions": [
+				  		{
+							"version": "0.0.1",
+							"lastUpdated": "9/3/2020",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/EmanueleMeazzo/tsql.tech-Code-snippets/releases/tag/v1.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://tsql.tech/wp-content/uploads/2018/01/LogoSmall.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/EmanueleMeazzo/SQL-Server-Diagnostic-Book/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/EmanueleMeazzo/SQL-Server-Diagnostic-Book/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/EmanueleMeazzo/SQL-Server-Diagnostic-Book/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.21.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/EmanueleMeazzo/SQL-Server-Diagnostic-Book"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -3427,7 +3488,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 58
+							"count": 59
 						}
 					]
 				}
