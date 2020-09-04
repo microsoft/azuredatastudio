@@ -3540,9 +3540,9 @@
 					"displayName": "eltsnap: Simple Dataflow",
 					"shortDescription": "Easily copy a table from one SQL Server to Another",
 					"publisher": {
-						"displayName":"Jim-BITracks",
+						"displayName": "Jim-BITracks",
 						"publisherId": "bitracks",
-						"publisherName":"bitracks"
+						"publisherName": "bitracks"
 					},
 					"versions": [
 						{
@@ -3571,7 +3571,7 @@
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
 									"source": "https://raw.githubusercontent.com/Jim-BITracks/eltsnap-simpleDataFlow/master/LICENSE"
 								}
-							],		
+							],
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
@@ -3715,12 +3715,12 @@
 					"displayName": "SQL Server Diagnostic Book",
 					"shortDescription": "A collection of notebooks to troubleshoot and diagnose any version of SQL Server",
 					"publisher": {
-						"displayName":"Emanuele Meazzo",
+						"displayName": "Emanuele Meazzo",
 						"publisherId": "emanuelemeazzo",
-						"publisherName":"emanuelemeazzo"
+						"publisherName": "emanuelemeazzo"
 					},
 					"versions": [
-				  		{
+						{
 							"version": "0.1.0",
 							"lastUpdated": "9/3/2020",
 							"assetUri": "",
@@ -3769,6 +3769,63 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "76",
+					"extensionName": "asde-deployment",
+					"displayName": "Azure SQL Edge Deployment Extension",
+					"shortDescription": "Provides a notebook-based experience to deploy Azure SQL Edge",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "0.1.0",
+							"lastUpdated": "9/3/2020",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/asde-deployment/asde-deployment-0.1.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/asde-deployment/images/extension.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/asde-deployment/readme.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/asde-deployment/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.22.0"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -3777,7 +3834,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 64
+							"count": 65
 						}
 					]
 				}
