@@ -5,7 +5,7 @@ Connect and query Azure Data Explorer (Kusto) clusters and databases with Azure 
 - Connect to Azure Data Explorer anywhere.
 - Searchable object explorer view for database objects.
 - Query authoring and editing with Intellisense and syntax highlighting.
-- Create a Jupyter notebook with Kusto.
+- Create a notebook with Kusto.
 - View query results and save to CSV, JSON, XML, Excel, or as a chart.
 
 For more information, see the [Kusto extension for Azure Data Studio documentation](https://go.microsoft.com/fwlink/?linkid=2129918).
@@ -16,17 +16,21 @@ You can connect to an Azure Data Explorer cluster with Azure Data Studio.
 
 Select **New Connection** and choose **Kusto** for the **Connection Type**.
 
-For more information, see [how to create a notebook with the Machine Learning extension](https://go.microsoft.com/fwlink/?linkid=2129920).
+Once connected to a cluster, you can start writing a KQL query, run it and a view the results to save it to CSV, JSON, XML, Excel, or as a chart as shown below.
+
+:::image type="complex" source="media/KustoReadme-Query.gif" alt-text="KQL query in Azure Data Studio"::::::image-end:::
+
+For more information, see [how to create a notebook with the Kusto extension](https://go.microsoft.com/fwlink/?linkid=2129920).
 
 ## Create notebooks using the Kusto Kernel
 
 You can run Kusto in a notebook with Azure Data Studio.
 
-Select on **Create notebook** to create a new notebook in Azure Data Studio. For more information, see [how to create a notebook with the Kusto extension](https://go.microsoft.com/fwlink/?linkid=2129920).
+Select on **Create notebook** to create a new notebook in Azure Data Studio.
 
-## Code of Conduct
+:::image type="complex" source="media/KustoReadme-Notebook.gif" alt-text="Kusto notebook in Azure Data Studio"::::::image-end:::
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+For more information, see [how to create a notebook with the Kusto extension](https://go.microsoft.com/fwlink/?linkid=2129920).
 
 You can run experiments and create models in Python with a notebook in Azure Data Studio. You can also run T-SQL code, and run Python and R with SQL Server Machine Learning Services, in a notebook.
 
