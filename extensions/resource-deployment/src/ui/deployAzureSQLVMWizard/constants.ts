@@ -15,7 +15,7 @@ export const MissingRequiredInformationErrorMessage = localize('deployCluster.Mi
 
 // Azure settings page constants
 export const AzureSettingsPageTitle = localize('deployAzureSQLVM.AzureSettingsPageTitle', "Azure settings");
-export const AzureSettingsPageDescription = localize('deployAzureSQLVM.AzureSettingsPageDescription', "");
+export const AzureSettingsPageDescription = localize('deployAzureSQLVM.AzureSettingsPageDescription', "   ");
 export const AzureAccountDropdownLabel = localize('deployAzureSQLVM.AzureAccountDropdownLabel', "Azure Account");
 export const AzureAccountSubscriptionDropdownLabel = localize('deployAzureSQLVM.AzureSubscriptionDropdownLabel', "Subscription");
 export const AzureAccountResourceGroupDropdownLabel = localize('deployAzureSQLVM.ResourceGroup', "Resource Group");
@@ -23,7 +23,7 @@ export const AzureAccountRegionDropdownLabel = localize('deployAzureSQLVM.AzureR
 
 // VM settings page constants
 export const VmSettingsPageTitle = localize('deployeAzureSQLVM.VmSettingsPageTitle', "Virtual machine settings");
-export const VmSettingsPageDescription = localize('deployAzureSQLVM.VmSettingsPageDescription', "");
+export const VmSettingsPageDescription = localize('deployAzureSQLVM.VmSettingsPageDescription', "   ");
 export const VmNameTextBoxLabel = localize('deployAzureSQLVM.VmNameTextBoxLabel', "Virtual machine name");
 export const VmAdminUsernameTextBoxLabel = localize('deployAzureSQLVM.VmAdminUsernameTextBoxLabel', "Administrator account username");
 export const VmAdminPasswordTextBoxLabel = localize('deployAzureSQLVM.VmAdminPasswordTextBoxLabel', "Administrator account password");
