@@ -36,12 +36,12 @@ export const VmSizeDropdownLabel = localize('deployAzureSQLVM.VmSizeDropdownLabe
 // Network settings page constants
 export const NetworkSettingsPageTitle = localize('deployAzureSQLVM.NetworkSettingsPageTitle', "Networking");
 export const NetworkSettingsPageDescription = localize('deployAzureSQLVM.NetworkSettingsPageDescription', "Configure network settings");
-export const NetworkSettingsNewVirtualNetwork = localize('deployAzureSQLVM.NetworkSettingsNewVirtualNetwork', 'New virtual network');
+export const NetworkSettingsNewVirtualNetwork = localize('deployAzureSQLVM.NetworkSettingsNewVirtualNetwork', "New virtual network");
 export const VirtualNetworkDropdownLabel = localize('deployAzureSQLVM.VirtualNetworkDropdownLabel', "Virtual Network");
 export const NetworkSettingsNewSubnet = localize('deployAzureSQLVM.NetworkSettingsNewSubnet', "New subnet");
 export const SubnetDropdownLabel = localize('deployAzureSQLVM.SubnetDropdownLabel', "Subnet");
 export const PublicIPDropdownLabel = localize('deployAzureSQLVM.PublicIPDropdownLabel', "Public IP");
-export const NetworkSettingsNewPublicIp = localize('deployAzureSQLVM.NetworkSettingsUseExistingPublicIp', 'New public ip');
+export const NetworkSettingsNewPublicIp = localize('deployAzureSQLVM.NetworkSettingsUseExistingPublicIp', "New public ip");
 export const RDPAllowCheckboxLabel = localize('deployAzureSQLVM.VmRDPAllowCheckboxLabel', "Enable RDP(3389) inbound Port");
 
 // SQL Server settings page constants
