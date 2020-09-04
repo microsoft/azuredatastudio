@@ -169,7 +169,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 
 class DataResourceTable extends GridTableBase<any> {
 
-	private _gridDataProvider: IGridDataProvider;
+	private _gridDataProvider: DataResourceDataProvider;
 	private _chart: ChartView;
 	private _chartContainer: HTMLElement;
 	private _batchId: number;
@@ -279,6 +279,11 @@ class DataResourceTable extends GridTableBase<any> {
 		this.cellOutput.metadata.azdata_chartOptions = options;
 		this.cellModel.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
 	}
+
+	public updateResult(set: ResultSetSummary) {
+		super.updateResult(set);
+		this._gridDataProvider.updateResultSet(set);
+	}
 }
 
 export class DataResourceDataProvider implements IGridDataProvider {
@@ -286,12 +291,13 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	private _queryRunner: QueryRunner;
 	private _batchId: number;
 	private _id: number;
+	private _resultSet: ResultSetSummary;
 	constructor(
 		batchId: number,
 		id: number,
 		queryRunner: QueryRunner,
 		source: IDataResource,
-		private resultSet: ResultSetSummary,
+		resultSet: ResultSetSummary,
 		private documentUri: string,
 		@INotificationService private _notificationService: INotificationService,
 		@IClipboardService private _clipboardService: IClipboardService,
@@ -303,7 +309,12 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		this._queryRunner = queryRunner;
 		this._batchId = batchId;
 		this._id = id;
+		this._resultSet = resultSet;
 		this.transformSource(source);
+	}
+
+	public updateResultSet(set: ResultSetSummary) {
+		this._resultSet = set;
 	}
 
 	private transformSource(source: IDataResource): void {
@@ -361,7 +372,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	getColumnHeaders(range: Slick.Range): string[] {
-		let headers: string[] = this.resultSet.columnInfo.slice(range.fromCell, range.toCell + 1).map((info, i) => {
+		let headers: string[] = this._resultSet.columnInfo.slice(range.fromCell, range.toCell + 1).map((info, i) => {
 			return info.columnName;
 		});
 		return headers;
@@ -372,6 +383,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	serializeResults(format: SaveFormat, selection: Slick.Range[]): Thenable<void> {
+		selection = selection ? selection : [new Slick.Range(0, 0, this._resultSet.rowCount - 1, this._resultSet.columnInfo.length - 1)];
 		if (this._queryRunner) {
 			return this._queryRunner.serializeResults(this._batchId, this._id, format, selection);
 		}
@@ -384,7 +396,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			return Promise.resolve(undefined);
 		}
 		// TODO implement selection support
-		let columns = this.resultSet.columnInfo;
+		let columns = this._resultSet.columnInfo;
 		let rowLength = this.rows.length;
 		let minRow = 0;
 		let maxRow = this.rows.length;

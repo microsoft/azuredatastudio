@@ -577,21 +577,21 @@ export class CellModel extends Disposable implements ICellModel {
 		//     this._displayIdMap.set(displayId, targets);
 		// }
 		if (output) {
+			let outputExists = false;
 			if (output.output_type === 'execute_result') {
 				this.notebookModel.setGridDataConversionComplete((<nb.IExecuteResult>output).conversionComplete);
-			}
-			let outputExists = false;
-			for (let i = 0; i < this._outputs.length; i++) {
-				let o = this._outputs[i];
-				if (o.output_type === 'execute_result'
-					&& (<nb.IExecuteResult>o).batchId === (<nb.IExecuteResult>output).batchId
-					&& (<nb.IExecuteResult>o).id === (<nb.IExecuteResult>output).id) {
-					outputExists = true;
-					// deletes transient node in the serialized JSON
-					delete output['transient'];
-					// update output with correct mimeType and html data
-					this._outputs[i] = this.rewriteOutputUrls(output);
-					break;
+				// if output already exists, update the output's data and don't re-render output component
+				for (let i = 0; i < this._outputs.length; i++) {
+					let o = this._outputs[i];
+					if (o.output_type === 'execute_result'
+						&& (<nb.IExecuteResult>o).batchId === (<nb.IExecuteResult>output).batchId
+						&& (<nb.IExecuteResult>o).id === (<nb.IExecuteResult>output).id) {
+						outputExists = true;
+						delete output['transient'];
+						// update output with correct mimeType and html data
+						this._outputs[i] = this.rewriteOutputUrls(output);
+						break;
+					}
 				}
 			}
 			if (!outputExists) {

@@ -75,7 +75,7 @@ export class NotebookEditorModel extends EditorModel {
 			}));
 		} else {
 			if (this.textEditorModel instanceof TextFileEditorModel) {
-				this._register(this.textEditorModel.onDidSave(async () => {
+				this._register(this.textEditorModel.onDidSave(() => {
 					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 					this.setDirty(dirty);
 					this.sendNotebookSerializationStateChange();
