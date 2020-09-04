@@ -68,12 +68,12 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
 
-<<<<<<< HEAD
+
 export function imageFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 	return `<img src="${value.text}" />`;
 }
 
-=======
+
 export function htmlFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 	let cellClasses = 'grid-cell-value-container';
 	let valueToDisplay = '';
@@ -95,7 +95,7 @@ export function htmlFormatter(row: number | undefined, cell: any | undefined, va
 
 	return `<div class="${cellClasses}">${valueToDisplay}</div>`;
 }
->>>>>>> 4d70b3c55d... table component enhancement
+
 /**
  * Provide slick grid cell with encoded ariaLabel and plain text.
  * text will be escaped by the textFormatter and ariaLabel will be consumed by slickgrid directly.

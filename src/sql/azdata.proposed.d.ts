@@ -670,16 +670,13 @@ declare module 'azdata' {
 		 */
 		delete?: boolean;
 	}
-<<<<<<< HEAD
+
 	export interface DiffEditorComponent {
 		/**
 		 * Title of editor
 		 */
 		title: string;
 	}
-=======
-<<<<<<< HEAD
-=======
 
 	export interface TextColumnOption {
 		content?: string
@@ -695,19 +692,6 @@ declare module 'azdata' {
 	export interface TableColumn {
 		field?: string
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> a7439d2e3... recent PR comments
->>>>>>> 08ffe5d409... recent PR comments
-<<<<<<< HEAD
->>>>>>> 9b978a2da7... recent PR comments
-=======
-=======
->>>>>>> fc62dcbc5b... rebase fix
-<<<<<<< HEAD
->>>>>>> 33931b8a1b... rebase fix
-=======
-=======
 
 	export interface TableComponentProperties extends ComponentProperties {
 		headerFilter?: boolean,
@@ -718,6 +702,4 @@ declare module 'azdata' {
 	export interface TableComponent extends Component, TableComponentProperties {
 		appendData(data: any[]);
 	}
->>>>>>> 5141322aa7... addressing PR comments
->>>>>>> 5077a506b9... addressing PR comments
 }
