@@ -76,7 +76,6 @@ export class NotebookEditorModel extends EditorModel {
 		} else {
 			if (this.textEditorModel instanceof TextFileEditorModel) {
 				this._register(this.textEditorModel.onDidSave(async () => {
-					await this.getNotebookModel().gridDataConversionComplete;
 					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 					this.setDirty(dirty);
 					this.sendNotebookSerializationStateChange();
