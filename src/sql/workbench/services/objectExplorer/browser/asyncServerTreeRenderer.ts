@@ -107,9 +107,7 @@ class ConnectionProfileTemplate extends Disposable {
 				this._connectionStatusBadge.classList.remove('connected');
 				this._connectionStatusBadge.classList.add('disconnected');
 			}
-			if (iconPath) {
-				renderServerIcon(this._icon, iconPath);
-			}
+			renderServerIcon(this._icon, iconPath);
 		}
 
 		let label = element.title;
@@ -285,7 +283,7 @@ function getIconPath(connection: ConnectionProfile, connectionManagementService:
 	return iconPath;
 }
 
-function renderServerIcon(element: HTMLElement, iconPath: IconPath): void {
+function renderServerIcon(element: HTMLElement, iconPath?: IconPath): void {
 	if (!element) { return; }
 	if (iconPath) {
 		iconRenderer.putIcon(element, iconPath);

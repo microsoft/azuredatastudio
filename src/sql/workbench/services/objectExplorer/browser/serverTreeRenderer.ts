@@ -197,7 +197,7 @@ export class ServerTreeRenderer implements IRenderer {
 		return iconPath;
 	}
 
-	private renderServerIcon(element: HTMLElement, iconPath: IconPath, isConnected: boolean): void {
+	private renderServerIcon(element: HTMLElement, iconPath: IconPath | undefined, isConnected: boolean): void {
 		if (!element) { return; }
 		if (iconPath) {
 			iconRenderer.putIcon(element, iconPath);
@@ -211,9 +211,6 @@ export class ServerTreeRenderer implements IRenderer {
 	private renderConnection(connection: ConnectionProfile, templateData: IConnectionTemplateData): void {
 		if (!this._isCompact) {
 			let iconPath = this.getIconPath(connection);
-			if (!iconPath) {
-				return;
-			}
 			if (this._connectionManagementService.isConnected(undefined, connection)) {
 				templateData.icon.classList.remove('disconnected');
 				templateData.icon.classList.add('connected');
