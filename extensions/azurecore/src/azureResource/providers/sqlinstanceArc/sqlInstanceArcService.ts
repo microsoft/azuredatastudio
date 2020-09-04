@@ -13,7 +13,7 @@ export interface SqlInstanceArcGraphData extends GraphData {
 	};
 }
 
-const instanceQuery = `where type == "${azureResource.AzureResourceType.sqlManagedInstanceAzureArc}"`;
+const instanceQuery = `where type == "${azureResource.AzureResourceType.azureArcSqlManagedInstance}"`;
 export class SqlInstanceArcResourceService extends ResourceServiceBase<SqlInstanceArcGraphData, azureResource.AzureResourceDatabaseServer> {
 
 	protected get query(): string {

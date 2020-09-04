@@ -108,10 +108,12 @@ export function getResourceTypeDisplayName(type: string): string {
 			return loc.sqlDatabase;
 		case azureResource.AzureResourceType.sqlManagedInstance:
 			return loc.sqlManagedInstance;
-		case azureResource.AzureResourceType.sqlManagedInstanceAzureArc:
-			return loc.sqlManagedInstanceAzureArc;
+		case azureResource.AzureResourceType.azureArcSqlManagedInstance:
+			return loc.azureArcsqlManagedInstance;
 		case azureResource.AzureResourceType.azureArcService:
 			return loc.azureArcService;
+		case azureResource.AzureResourceType.azureArcPostgresServer:
+			return loc.azureArcPostgresServer;
 	}
 	return type;
 }
