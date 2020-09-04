@@ -36,8 +36,6 @@ You can run experiments and create models in Python with a notebook in Azure Dat
 
 Select on **Create notebook** to create a new notebook in Azure Data Studio. For more information, see [how to create a notebook with the Machine Learning extension](https://go.microsoft.com/fwlink/?linkid=2129920).
 
-## Peek definitions
-
 ## Contributing to the Extension
 
 This extension lives in the [azuredatastudio repo](https://github.com/microsoft/azuredatastudio) and follows the same guidelines for contribution. If you are interested in fixing issues and contributing directly to the code base, see the document [How to Contribute](https://github.com/Microsoft/azuredatastudio/wiki/How-to-Contribute), which covers the following:
