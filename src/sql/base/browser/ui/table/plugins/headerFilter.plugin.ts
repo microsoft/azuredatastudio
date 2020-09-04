@@ -84,6 +84,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		if (column.id === '_detail_selector') {
 			return;
 		}
+		if ((<any>column).filterable === false) {
+			return;
+		}
 		const $el = jQuery('<div tabIndex="0"></div>')
 			.addClass('slick-header-menubutton')
 			.data('column', column);

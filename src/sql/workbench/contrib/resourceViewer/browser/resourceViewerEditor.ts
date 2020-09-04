@@ -12,7 +12,6 @@ import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IResourceViewerStateChangedEvent } from 'sql/workbench/common/editor/resourceViewer/resourceViewerState';
 import { ResourceViewerInput } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
 import { ResourceViewerTable } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerTable';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
@@ -39,22 +38,22 @@ export class ResourceViewerEditor extends EditorPane {
 		this._container.className = 'resource-viewer';
 		parent.appendChild(this._container);
 
-		this._createHeader();
+		const header = this.createHeader();
+		const tableContainer = this.createResourceViewerTable();
 
-		let tableContainer = this.createResourceViewerTable();
-
+		this._container.appendChild(header);
 		this._container.appendChild(tableContainer);
 	}
 
-	private _createHeader(): void {
+	private createHeader(): HTMLElement {
 		const header = document.createElement('div');
 		header.className = 'resource-viewer-header';
-		this._container.appendChild(header);
 		this._actionBar = this._register(new Taskbar(header));
 
 		this._actionBar.setContent([
 			// TODO - chgagnon add actions
 		]);
+		return header;
 	}
 
 	private createResourceViewerTable(): HTMLElement {
@@ -78,31 +77,17 @@ export class ResourceViewerEditor extends EditorPane {
 		this._inputDisposables.clear();
 
 		this._resourceViewerTable.data = input.data;
+		this._resourceViewerTable.columns = input.columns;
 		this._inputDisposables.add(input.onColumnsChanged(columns => {
 			this._resourceViewerTable.columns = columns;
 		}));
-
-		this._inputDisposables.add(input.data.onRowCountChange(() => {
-			this._resourceViewerTable.updateRowCount();
-		}));
-
-		this._inputDisposables.add(input.data.onFilterStateChange(() => {
-			this._resourceViewerTable.invalidateAllRows();
-			this._resourceViewerTable.updateRowCount();
+		this._inputDisposables.add(input.onDataChanged(() => {
+			this._resourceViewerTable.data = input.data;
 		}));
 
 		this._actionBar.context = input;
 
-		this._inputDisposables.add(input.state.onResourceViewerStateChange(e => this.onStateChange(e)));
-		this.onStateChange({
-		});
-
 		this._resourceViewerTable.focus();
-	}
-
-
-	private onStateChange(e: IResourceViewerStateChangedEvent): void {
-
 	}
 
 	public layout(dimension: DOM.Dimension): void {
