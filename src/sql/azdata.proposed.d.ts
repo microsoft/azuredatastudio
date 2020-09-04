@@ -6,6 +6,7 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
+import { DataProvider } from 'azdata';
 
 declare module 'azdata' {
 	/**
@@ -95,6 +96,61 @@ declare module 'azdata' {
 	export namespace dataprotocol {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 		export function registerSqlAssessmentServicesProvider(provider: SqlAssessmentServicesProvider): vscode.Disposable;
+		/**
+		 * Registers a DataGridProvider which is used to provide lists of items to a data grid
+		 * @param provider The provider implementation
+		 */
+		export function registerDataGridProvider(provider: DataGridProvider): vscode.Disposable;
+	}
+
+	export enum DataProviderType {
+		DataGridProvider = 'DataGridProvider'
+	}
+
+	/**
+	 * A column in a data grid
+	 */
+	export interface DataGridColumn {
+		/**
+		* The text to display on the column heading.
+		**/
+		name: string;
+		/**
+		* The property name in the DataGridItem
+		**/
+		field: string;
+		/**
+		* A unique identifier for the column within the grid.
+		*/
+		id: string;
+	}
+
+	/**
+	 * An item for displaying in a data grid
+	 */
+	export interface DataGridItem {
+		/**
+		 * A unique identifier for this item
+		 */
+		id: string;
+		/**
+		 * The other properties that will be displayed in the grid
+		 */
+		[key: string]: string;
+	}
+
+	/**
+	 * A data provider that provides lists of resource items for a data grid
+	 */
+	export interface DataGridProvider extends DataProvider {
+		/**
+		 * Gets the list of data grid items for this provider
+		 */
+		getDataGridItems(): Thenable<DataGridItem[]>;
+		/**
+		 * Gets the list of data grid columns for this provider
+		 */
+		getDataGridColumns(): Thenable<DataGridColumn[]>;
 	}
 
 	export interface HyperlinkComponent {
@@ -532,5 +588,4 @@ declare module 'azdata' {
 		 */
 		delete?: boolean;
 	}
-
 }
