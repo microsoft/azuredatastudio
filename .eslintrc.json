@@ -687,13 +687,13 @@
                 "restrictions": [
                     "vs/nls",
                     "vs/css!./**/*",
-                    "**/vs/base/**/{common,worker}/**",
-                    "**/vs/platform/**/common/**",
-                    "**/vs/editor/**",
-                    "**/vs/workbench/common/**",
-                    "**/vs/workbench/api/common/**",
-                    "**/vs/workbench/services/**/common/**",
-                    "**/vs/workbench/contrib/**/common/**"
+                    "**/{vs,sql}/base/**/{common,worker}/**",
+                    "**/{vs,sql}/platform/**/common/**",
+                    "**/{vs,sql}/editor/**",
+                    "**/{vs,sql}/workbench/common/**",
+                    "**/{vs,sql}/workbench/api/common/**",
+                    "**/{vs,sql}/workbench/services/**/common/**",
+                    "**/{vs,sql}/workbench/contrib/**/common/**"
                 ]
             },
             {
