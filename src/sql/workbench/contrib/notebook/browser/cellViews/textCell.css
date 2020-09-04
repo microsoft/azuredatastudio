@@ -17,6 +17,7 @@ text-cell-component .notebook-preview {
 	padding-left: 8px;
 	padding-right: 8px;
 	user-select: none;
+	width: 100%;
 }
 text-cell-component .show-markdown.show-preview code-component {
 	width: 50%
