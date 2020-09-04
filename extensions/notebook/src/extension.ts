@@ -27,7 +27,8 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	const appContext = new AppContext(extensionContext);
 	const createBookPath: string = path.posix.join(extensionContext.extensionPath, 'resources', 'notebooks', 'JupyterBooksCreate.ipynb');
 	/**
-	 * If changes are made to bookTreeView.openBook, please ensure backwards compatability with its current state.
+	 *  									***** IMPORTANT *****
+	 * If changes are made to bookTreeView.openBook, please ensure backwards compatibility with its current state.
 	 * This is the command used in the extension generator to open a Jupyter Book.
 	 */
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openBook', (bookPath: string, openAsUntitled: boolean, urlToOpen?: string) => openAsUntitled ? providedBookTreeViewProvider.openBook(bookPath, urlToOpen, true) : bookTreeViewProvider.openBook(bookPath, urlToOpen, true)));
