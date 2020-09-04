@@ -14,7 +14,6 @@ import { HttpClient } from '../common/httpClient';
 import * as utils from '../common/utils';
 import * as loc from '../localizedConstants';
 import * as constants from '../constants';
-import Logger from '../common/logger';
 
 const oldAzdataMock = <azdata.AzdataTool>{ path: '/path/to/azdata', cachedVersion: new SemVer('0.0.0') };
 const releaseJson = {
@@ -146,10 +145,8 @@ describe('azdata', function () {
 async function testLinuxUnsuccessfulUpdate() {
 	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').rejects();
 	const updateDone = await azdata.checkAndUpdateAzdata(oldAzdataMock);
-	Logger.log(`testLinuxUnsuccessfulUpdate: executeSudoCommandStub.callCount: ${executeSudoCommandStub.callCount}`);
 	should(updateDone).be.false();
 	should(executeSudoCommandStub.calledOnce).be.true();
-
 }
 
 async function testDarwinUnsuccessfulUpdate() {
@@ -166,7 +163,6 @@ async function testDarwinUnsuccessfulUpdate() {
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand')
 		.onThirdCall() //third call is brew info azdata-cli --json which needs to return json of new available azdata versions.
 		.callsFake(async (command: string, args: string[]) => {
-			Logger.log(`testDarwinUnsuccessfulUpdate: executeCommandStub call no:${executeCommandStub.callCount}, command:${[command, ...args].join(' ')}`);
 			return Promise.resolve({
 				stderr: '',
 				stdout: JSON.stringify(brewInfoOutput)
@@ -174,15 +170,12 @@ async function testDarwinUnsuccessfulUpdate() {
 		})
 		.onCall(5) //6th call is the first one to do actual update, the call number are 0 indexed
 		.callsFake(async (command: string, args: string[]) => {
-			Logger.log(`testDarwinUnsuccessfulUpdate: executeCommandStub call no:${executeCommandStub.callCount}, command:${[command, ...args].join(' ')}`);
 			return Promise.reject(new Error('not Found'));
 		})
 		.callsFake(async (command: string, args: string[]) => { // by default return success
-			Logger.log(`testDarwinUnsuccessfulUpdate: executeCommandStub call no:${executeCommandStub.callCount}, command:${[command, ...args].join(' ')}`);
 			return Promise.resolve({stderr: '', stdout: 'success'});
 		});
 	const updateDone = await azdata.checkAndUpdateAzdata(oldAzdataMock);
-	Logger.log(`testDarwinUnsuccessfulUpdate: executeCommandStub.callCount: ${executeCommandStub.callCount}`);
 	should(updateDone).be.false();
 	should(executeCommandStub.callCount).equal(6);
 }
@@ -190,7 +183,6 @@ async function testDarwinUnsuccessfulUpdate() {
 async function testWin32UnsuccessfulUpdate() {
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
-	Logger.log(`testDarwinUnsuccessfulUpdate: executeCommandStub.callCount: ${executeCommandStub.callCount}`);
 	const updateDone = await azdata.checkAndUpdateAzdata(oldAzdataMock);
 	should(updateDone).be.false();
 	should(executeCommandStub.calledOnce).be.true();
@@ -252,11 +244,9 @@ async function testWin32SuccessfulInstall() {
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand')
 		.onFirstCall()
 		.callsFake(async (_command: string, _args: string[]) => {
-			Logger.log(`testDarwinSuccessfulInstall: executeCommandStub call no:${executeCommandStub.callCount}, command:${[_command, ..._args].join(' ')}`);
 			return Promise.reject(new Error('not Found'));
 		})
 		.callsFake(async (command: string, args: string[]) => {
-			Logger.log(`testDarwinSuccessfulInstall: executeCommandStub call no:${executeCommandStub.callCount}, command:${[command, ...args].join(' ')}`);
 			should(command).be.equal('msiexec');
 			should(args[0]).be.equal('/qn');
 			should(args[1]).be.equal('/i');
@@ -271,11 +261,9 @@ async function testDarwinSuccessfulInstall() {
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand')
 		.onFirstCall()
 		.callsFake(async (_command: string, _args: string[]) => {
-			Logger.log(`testDarwinSuccessfulInstall: executeCommandStub call no:${executeCommandStub.callCount}, command:${[_command, ..._args].join(' ')}`);
 			return Promise.reject(new Error('not Found'));
 		})
 		.callsFake(async (_command: string, _args: string[]) => {
-			Logger.log(`testDarwinSuccessfulInstall: executeCommandStub call no:${executeCommandStub.callCount}, command:${[_command, ..._args].join(' ')}`);
 			return Promise.resolve({ stdout: '0.0.0', stderr: '' });
 		});
 	await azdata.checkAndInstallAzdata();
@@ -286,16 +274,13 @@ async function testLinuxSuccessfulInstall() {
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand')
 		.onFirstCall()
 		.callsFake(async (_command: string, _args: string[]) => {
-			Logger.log(`testDarwinSuccessfulInstall: executeCommandStub call no:${executeCommandStub.callCount}, command:${[_command, ..._args].join(' ')}`);
 			return Promise.reject(new Error('not Found'));
 		})
 		.callsFake(async (_command: string, _args: string[]) => {
-			Logger.log(`testDarwinSuccessfulInstall: executeCommandStub call no:${executeCommandStub.callCount}, command:${[_command, ..._args].join(' ')}`);
 			return Promise.resolve({ stdout: '0.0.0', stderr: '' });
 		});
 	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand')
 		.callsFake(async (command: string ) => {
-			Logger.log(`testDarwinSuccessfulInstall: executeSudoCommandStub called with command:${command}`);
 			return Promise.resolve({ stdout: 'success', stderr: '' });
 		});
 	await azdata.checkAndInstallAzdata();
