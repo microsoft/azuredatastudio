@@ -141,14 +141,14 @@ describe('Project: sqlproj content operations', function (): void {
 
 		let uri = project.getSystemDacpacUri(constants.masterDacpac);
 		let ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
-		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.masterDacpac)).fsPath);
-		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.masterDacpac)).fsPath);
-
-		project.changeDSP(TargetPlatform.Sql150.toString());
-		uri = project.getSystemDacpacUri(constants.masterDacpac);
-		ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.masterDacpac)).fsPath);
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.masterDacpac)).fsPath);
+
+		project.changeDSP(TargetPlatform.Sql130.toString());
+		uri = project.getSystemDacpacUri(constants.masterDacpac);
+		ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.masterDacpac)).fsPath);
+		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.masterDacpac)).fsPath);
 
 		project.changeDSP(TargetPlatform.SqlAzureV12.toString());
 		uri = project.getSystemDacpacUri(constants.masterDacpac);
@@ -163,14 +163,14 @@ describe('Project: sqlproj content operations', function (): void {
 
 		let uri = project.getSystemDacpacUri(constants.msdbDacpac);
 		let ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
-		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.msdbDacpac)).fsPath);
-		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.msdbDacpac)).fsPath);
-
-		project.changeDSP(TargetPlatform.Sql150.toString());
-		uri = project.getSystemDacpacUri(constants.msdbDacpac);
-		ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.msdbDacpac)).fsPath);
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.msdbDacpac)).fsPath);
+
+		project.changeDSP(TargetPlatform.Sql130.toString());
+		uri = project.getSystemDacpacUri(constants.msdbDacpac);
+		ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.msdbDacpac)).fsPath);
+		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.msdbDacpac)).fsPath);
 
 		project.changeDSP(TargetPlatform.SqlAzureV12.toString());
 		uri = project.getSystemDacpacUri(constants.msdbDacpac);
@@ -191,18 +191,20 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
-		await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master });
+		should(project.databaseReferences.length).equal(0, 'There should be no datbase references to start with');
+		await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false });
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
 		should(project.databaseReferences[0].databaseName).equal(constants.master, 'The database reference should be master');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[1].suppressMissingDependenciesErrors should be false');
 		// make sure reference to ADS master dacpac and SSDT master dacpac was added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacUri(constants.master).fsPath.substring(1)));
 		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacSsdtUri(constants.master).fsPath.substring(1)));
 
-		await project.addSystemDatabaseReference({ databaseName: 'msdb', systemDb: SystemDatabase.msdb });
+		await project.addSystemDatabaseReference({ databaseName: 'msdb', systemDb: SystemDatabase.msdb, suppressMissingDependenciesErrors: false });
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to msdb');
 		should(project.databaseReferences[1].databaseName).equal(constants.msdb, 'The database reference should be msdb');
+		should(project.databaseReferences[1].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[1].suppressMissingDependenciesErrors should be false');
 		// make sure reference to ADS msdb dacpac and SSDT msdb dacpac was added
 		projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacUri(constants.msdb).fsPath.substring(1)));
@@ -215,9 +217,10 @@ describe('Project: sqlproj content operations', function (): void {
 
 		// add database reference in the same database
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
-		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test1.dacpac'), databaseLocation: DatabaseReferenceLocation.sameDatabase });
+		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test1.dacpac'), databaseLocation: DatabaseReferenceLocation.sameDatabase, suppressMissingDependenciesErrors: true });
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test1');
 		should(project.databaseReferences[0].databaseName).equal('test1', 'The database reference should be test1');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(true, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be true');
 		// make sure reference to test.dacpac was added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql('test1.dacpac');
@@ -233,10 +236,12 @@ describe('Project: sqlproj content operations', function (): void {
 			dacpacFileLocation: Uri.file('test2.dacpac'),
 			databaseLocation: DatabaseReferenceLocation.differentDatabaseSameServer,
 			databaseName: 'test2DbName',
-			databaseVariable: 'test2Db'
+			databaseVariable: 'test2Db',
+			suppressMissingDependenciesErrors: false
 		});
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test2');
 		should(project.databaseReferences[0].databaseName).equal('test2', 'The database reference should be test2');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
 		// make sure reference to test2.dacpac and SQLCMD variable was added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql('test2.dacpac');
@@ -256,10 +261,12 @@ describe('Project: sqlproj content operations', function (): void {
 			databaseName: 'test3DbName',
 			databaseVariable: 'test3Db',
 			serverName: 'otherServerName',
-			serverVariable: 'otherServer'
+			serverVariable: 'otherServer',
+			suppressMissingDependenciesErrors: false
 		});
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test3');
 		should(project.databaseReferences[0].databaseName).equal('test3', 'The database reference should be test3');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
 		// make sure reference to test2.dacpac and SQLCMD variables were added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql('test3.dacpac');
@@ -274,20 +281,20 @@ describe('Project: sqlproj content operations', function (): void {
 		const project = await Project.openProject(projFilePath);
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
-		await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master });
+		await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false });
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
 		should(project.databaseReferences[0].databaseName).equal(constants.master, 'project.databaseReferences[0].databaseName should be master');
 
 		// try to add reference to master again
-		await testUtils.shouldThrowSpecificError(async () => await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master }), constants.databaseReferenceAlreadyExists);
+		await testUtils.shouldThrowSpecificError(async () => await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false }), constants.databaseReferenceAlreadyExists);
 		should(project.databaseReferences.length).equal(1, 'There should only be one database reference after trying to add a reference to master again');
 
-		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), databaseLocation: DatabaseReferenceLocation.sameDatabase });
+		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), databaseLocation: DatabaseReferenceLocation.sameDatabase, suppressMissingDependenciesErrors: false });
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to test.dacpac');
 		should(project.databaseReferences[1].databaseName).equal('test', 'project.databaseReferences[1].databaseName should be test');
 
 		// try to add reference to test.dacpac again
-		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), databaseLocation: DatabaseReferenceLocation.sameDatabase }), constants.databaseReferenceAlreadyExists);
+		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), databaseLocation: DatabaseReferenceLocation.sameDatabase, suppressMissingDependenciesErrors: false }), constants.databaseReferenceAlreadyExists);
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after trying to add a reference to test.dacpac again');
 	});
 

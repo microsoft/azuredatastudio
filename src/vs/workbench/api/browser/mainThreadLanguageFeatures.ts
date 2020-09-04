@@ -127,10 +127,13 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 	}
 
 	private static _reviveCodeActionDto(data: ReadonlyArray<ICodeActionDto>): modes.CodeAction[] {
-		if (data) {
+		let dataCast = data as unknown; // {{ SQL CARBON EDIT }}
+		let returnval = dataCast as modes.CodeAction[]; // {{ SQL CARBON EDIT }}
+		if (returnval) {
 			data.forEach(code => reviveWorkspaceEditDto(code.edit));
 		}
-		return <modes.CodeAction[]>data;
+
+		return <modes.CodeAction[]>returnval; // {{ SQL CARBON EDIT }}
 	}
 
 	private static _reviveLinkDTO(data: ILinkDto): modes.ILink {

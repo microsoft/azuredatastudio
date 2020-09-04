@@ -3040,7 +3040,7 @@ declare module 'azdata' {
 
 	export enum Orientation {
 		Horizontal = 'horizontal',
-		Vertical = 'vertial'
+		Vertical = 'vertical'
 	}
 
 	export interface ToolbarLayout {
