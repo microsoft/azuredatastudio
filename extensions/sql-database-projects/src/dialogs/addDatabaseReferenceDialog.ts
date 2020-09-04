@@ -195,6 +195,9 @@ export class AddDatabaseReferenceDialog {
 		} else {
 			systemDatabaseRadioButton.checked = true;
 			this.currentReferenceType = ReferenceType.systemDb;
+
+			// disable projects radio button if there aren't any projects that can be added as a reference
+			projectRadioButton.enabled = false;
 		}
 
 		let flexRadioButtonsModel: azdata.FlexContainer = this.view!.modelBuilder.flexContainer()
@@ -261,10 +264,16 @@ export class AddDatabaseReferenceDialog {
 				projectFiles[projectFiles.indexOf(p)] = path.parse(p).name;
 			});
 
-			// filter out current project
-			projectFiles = projectFiles.filter(p => p !== this.project.projectFileName);
+			// check if current project is in workspace (should only be able to add a reference to another project in
+			// the workspace if the current project is also in the workspace)
+			if (projectFiles.find(p => p === this.project.projectFileName)) {
+				// filter out current project
+				projectFiles = projectFiles.filter(p => p !== this.project.projectFileName);
 
-			this.projectDropdown.values = projectFiles;
+				this.projectDropdown.values = projectFiles;
+			} else {
+				this.projectDropdown.values = [];
+			}
 		}
 
 		return {
