@@ -16,12 +16,11 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
-  "forceReload": true,
+  "forceReload": false,
   "contributes": {
     "resourceDeploymentTypes": [
       {
         "name": "sql-edge",
-        "enabled": false,
         "displayName": "%resource-type-sql-edge-display-name%",
         "description": "%resource-type-sql-edge-description%",
         "platforms": "*",
