@@ -374,7 +374,7 @@ export enum CardType {
 
 export enum Orientation {
 	Horizontal = 'horizontal',
-	Vertical = 'vertial'
+	Vertical = 'vertical'
 }
 
 /**
