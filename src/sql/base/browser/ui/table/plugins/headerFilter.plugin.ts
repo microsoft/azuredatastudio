@@ -340,9 +340,16 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		const seen: Array<string> = [];
 		for (let i = 0; i < dataView.getLength(); i++) {
 			const value = dataView.getItem(i)[column.field!];
-
-			if (!seen.some(x => x === value)) {
-				seen.push(value);
+			if (value instanceof Array) {
+				for (let item = 0; item < value.length; item++) {
+					if (!seen.some(x => x === value[item])) {
+						seen.push(value[item]);
+					}
+				}
+			} else {
+				if (!seen.some(x => x === value)) {
+					seen.push(value);
+				}
 			}
 		}
 		return seen;
@@ -356,18 +363,39 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 		for (let i = 0; i < dataView.getLength(); i++) {
 			const value = dataView.getItem(i)[column.field];
-
-			if (filter.length > 0) {
-				const itemValue = !value ? '' : value;
-				const lowercaseFilter = filter.toString().toLowerCase();
-				const lowercaseVal = itemValue.toString().toLowerCase();
-				if (!seen.some(x => x === value) && lowercaseVal.indexOf(lowercaseFilter) > -1) {
-					seen.push(value);
+			if (value instanceof Array) {
+				if (filter.length > 0) {
+					const itemValue = !value ? [] : value;
+					const lowercaseFilter = filter.toString().toLowerCase();
+					const lowercaseVals = itemValue.map(v => v.toLowerCase());
+					for (let valIdx = 0; valIdx < value.length; valIdx++) {
+						if (!seen.some(x => x === value[valIdx]) && lowercaseVals[valIdx].indexOf(lowercaseFilter) > -1) {
+							seen.push(value[valIdx]);
+						}
+					}
 				}
-			}
-			else {
-				if (!seen.some(x => x === value)) {
-					seen.push(value);
+				else {
+					for (let item = 0; item < value.length; item++) {
+						if (!seen.some(x => x === value[item])) {
+							seen.push(value[item]);
+						}
+					}
+				}
+
+			} else {
+				if (filter.length > 0) {
+					const itemValue = !value ? '' : value;
+					const lowercaseFilter = filter.toString().toLowerCase();
+					const lowercaseVal = itemValue.toString().toLowerCase();
+
+					if (!seen.some(x => x === value) && lowercaseVal.indexOf(lowercaseFilter) > -1) {
+						seen.push(value);
+					}
+				}
+				else {
+					if (!seen.some(x => x === value)) {
+						seen.push(value);
+					}
 				}
 			}
 		}
@@ -379,9 +407,16 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		const seen: Array<any> = [];
 		for (let i = 0; i < data.length; i++) {
 			const value = data[i][column.field!];
-
-			if (!seen.some(x => x === value)) {
-				seen.push(value);
+			if (value instanceof Array) {
+				for (let item = 0; item < value.length; item++) {
+					if (!seen.some(x => x === value[item])) {
+						seen.push(value[item]);
+					}
+				}
+			} else {
+				if (!seen.some(x => x === value)) {
+					seen.push(value);
+				}
 			}
 		}
 
