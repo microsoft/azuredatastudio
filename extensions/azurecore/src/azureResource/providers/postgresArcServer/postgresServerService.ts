@@ -12,7 +12,7 @@ export interface PostgresArcServerGraphData extends GraphData {
 	};
 }
 
-export const serversQuery = 'where type == "microsoft.azuredata/postgresinstances"';
+export const serversQuery = `where type == "${azureResource.AzureResourceType.azureArcPostgresServer}"`;
 
 export class PostgresServerArcService extends ResourceServiceBase<PostgresArcServerGraphData, azureResource.AzureResourceDatabaseServer> {
 
