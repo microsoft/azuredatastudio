@@ -147,22 +147,20 @@ declare module 'azdata' {
 
 	export interface RadioCard {
 		id: string;
-		label: string;
-		descriptions?: RadioCardDescription[];
+		descriptions: RadioCardDescription[];
 		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 	}
 
 	export interface RadioCardDescription {
-		ariaLabel: string;
-		labelHeader: string;
-		contents: RadioCardLabelValuePair[];
-		valueHeader?: string;
+		textValue: string;
+		linkDisplayValue?: string;
+		displayLinkCodicon?: boolean;
+		textStyles?: CssStyles;
+		linkStyles?: CssStyles;
+		linkCodiconStyles?: CssStyles;
 	}
 
-	export interface RadioCardLabelValuePair {
-		label: string;
-		value?: string;
-	}
+	export type CssStyles = { [key: string]: string };
 
 	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
 		cards: RadioCard[];
@@ -171,13 +169,20 @@ declare module 'azdata' {
 		iconWidth?: string;
 		iconHeight?: string;
 		selectedCardId?: string;
+		orientation?: Orientation // Defaults to horizontal
 	}
+
+	export type RadioCardSelectionChangedEvent = { cardId: string; card: RadioCard };
+	export type RadioCardLinkClickEvent = { cardId: string, card: RadioCard, selectorText: RadioCardDescription };
 
 	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
 		/**
 		 * The card object returned from this function is a clone of the internal representation - changes will not impact the original object
 		 */
-		onSelectionChanged: vscode.Event<{ cardId: string; card?: RadioCard }>;
+		onSelectionChanged: vscode.Event<RadioCardSelectionChangedEvent>;
+
+		onLinkClick: vscode.Event<RadioCardLinkClickEvent>;
+
 	}
 
 	export interface SeparatorComponent extends Component {
