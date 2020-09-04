@@ -136,9 +136,9 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 		this.updateValue(this._vmImageSKU, model.vmImageSKU);
 		this.updateValue(this._vmImageVersion, model.vmImageVersion);
 		this.updateValue(this._vmImageSize, model.vmSize);
-		this.updateValue(this._virtualNetwork, ((model.existingVirtualNetwork === 'False' ? '(new) ' : '') + model.virtualNetworkName));
-		this.updateValue(this._subnetNetwork, ((model.existingSubnet === 'False' ? '(new) ' : '') + model.subnetName));
-		this.updateValue(this._publicIp, ((model.existingPublicIp === 'False' ? '(new) ' : '') + model.publicIpName));
+		this.updateValue(this._virtualNetwork, ((model.newVirtualNetwork === 'True' ? '(new) ' : '') + model.virtualNetworkName));
+		this.updateValue(this._subnetNetwork, ((model.newSubnet === 'True' ? '(new) ' : '') + model.subnetName));
+		this.updateValue(this._publicIp, ((model.newPublicIp === 'True' ? '(new) ' : '') + model.publicIpName));
 		this.updateValue(this._sqlConnectivity, model.sqlConnectivityType);
 		this.updateValue(this._port, model.port.toString());
 		this.updateValue(this._sqlUsername, model.sqlAuthenticationUsername);
