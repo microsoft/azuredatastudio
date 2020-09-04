@@ -153,11 +153,38 @@ async function testLinuxUnsuccessfulUpdate() {
 }
 
 async function testDarwinUnsuccessfulUpdate() {
-	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').rejects();
+	const brewInfoOutput = [{
+		name: 'azdata-cli',
+		full_name: 'microsoft/azdata-cli-release/azdata-cli',
+		versions: {
+			'stable': '9999.999.999',
+			'devel': null,
+			'head': null,
+			'bottle': true
+		}
+	}];
+	const executeCommandStub = sinon.stub(childProcess, 'executeCommand')
+		.onThirdCall() //third call is brew info azdata-cli --json which needs to return json of new available azdata versions.
+		.callsFake(async (command: string, args: string[]) => {
+			Logger.log(`testDarwinUnsuccessfulUpdate: executeCommandStub call no:${executeCommandStub.callCount}, command:${[command, ...args].join(' ')}`);
+			return Promise.resolve({
+				stderr: '',
+				stdout: JSON.stringify(brewInfoOutput)
+			});
+		})
+		.onCall(5) //6th call is the first one to do actual update, the call number are 0 indexed
+		.callsFake(async (command: string, args: string[]) => {
+			Logger.log(`testDarwinUnsuccessfulUpdate: executeCommandStub call no:${executeCommandStub.callCount}, command:${[command, ...args].join(' ')}`);
+			return Promise.reject(new Error('not Found'));
+		})
+		.callsFake(async (command: string, args: string[]) => { // by default return success
+			Logger.log(`testDarwinUnsuccessfulUpdate: executeCommandStub call no:${executeCommandStub.callCount}, command:${[command, ...args].join(' ')}`);
+			return Promise.resolve({stderr: '', stdout: 'success'});
+		});
 	const updateDone = await azdata.checkAndUpdateAzdata(oldAzdataMock);
 	Logger.log(`testDarwinUnsuccessfulUpdate: executeCommandStub.callCount: ${executeCommandStub.callCount}`);
 	should(updateDone).be.false();
-	should(executeCommandStub.calledOnce).be.true();
+	should(executeCommandStub.callCount).equal(6);
 }
 
 async function testWin32UnsuccessfulUpdate() {
@@ -226,7 +253,7 @@ async function testWin32SuccessfulInstall() {
 		.onFirstCall()
 		.callsFake(async (_command: string, _args: string[]) => {
 			Logger.log(`testDarwinSuccessfulInstall: executeCommandStub call no:${executeCommandStub.callCount}, command:${[_command, ..._args].join(' ')}`);
-			return Promise.reject('not Found');
+			return Promise.reject(new Error('not Found'));
 		})
 		.callsFake(async (command: string, args: string[]) => {
 			Logger.log(`testDarwinSuccessfulInstall: executeCommandStub call no:${executeCommandStub.callCount}, command:${[command, ...args].join(' ')}`);
@@ -245,7 +272,7 @@ async function testDarwinSuccessfulInstall() {
 		.onFirstCall()
 		.callsFake(async (_command: string, _args: string[]) => {
 			Logger.log(`testDarwinSuccessfulInstall: executeCommandStub call no:${executeCommandStub.callCount}, command:${[_command, ..._args].join(' ')}`);
-			return Promise.reject('not Found');
+			return Promise.reject(new Error('not Found'));
 		})
 		.callsFake(async (_command: string, _args: string[]) => {
 			Logger.log(`testDarwinSuccessfulInstall: executeCommandStub call no:${executeCommandStub.callCount}, command:${[_command, ..._args].join(' ')}`);
@@ -260,7 +287,7 @@ async function testLinuxSuccessfulInstall() {
 		.onFirstCall()
 		.callsFake(async (_command: string, _args: string[]) => {
 			Logger.log(`testDarwinSuccessfulInstall: executeCommandStub call no:${executeCommandStub.callCount}, command:${[_command, ..._args].join(' ')}`);
-			return Promise.reject('not Found');
+			return Promise.reject(new Error('not Found'));
 		})
 		.callsFake(async (_command: string, _args: string[]) => {
 			Logger.log(`testDarwinSuccessfulInstall: executeCommandStub call no:${executeCommandStub.callCount}, command:${[_command, ..._args].join(' ')}`);
