@@ -249,7 +249,6 @@ async function testDarwinSuccessfulInstall() {
 		})
 		.callsFake(async (_command: string, _args: string[]) => {
 			Logger.log(`testDarwinSuccessfulInstall: executeCommandStub call no:${executeCommandStub.callCount}, command:${[_command, ..._args].join(' ')}`);
-			should(_command).be.equal('brew');
 			return Promise.resolve({ stdout: '0.0.0', stderr: '' });
 		});
 	await azdata.checkAndInstallAzdata();
