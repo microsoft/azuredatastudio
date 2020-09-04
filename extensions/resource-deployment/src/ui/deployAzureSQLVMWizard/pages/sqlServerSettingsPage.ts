@@ -102,27 +102,34 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 
 	public async onEnter(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+			if (pcInfo.newPage < pcInfo.lastPage) {
+				return true;
+			}
 
 			let username = this._sqlAuthenticationTextbox.value!;
 
+			let showErrorMessage = '';
+
 			if (username.length < 2 || username.length > 128) {
-				this.wizard.showErrorMessage('Username must be between 2 and 128 characters long.');
+				showErrorMessage += 'Username must be between 2 and 128 characters long.\n';
 			}
 
 			if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
-				this.wizard.showErrorMessage('Username cannot contain special characters \/""[]:|<>+=;,?* .');
+				showErrorMessage += 'Username cannot contain special characters \/""[]:|<>+=;,?* .\n';
 			}
 
-
-			if (!this.wizard.validatePassword(this._sqlAuthenticationPasswordTextbox.value!)) {
-				return false;
-			}
+			showErrorMessage += this.wizard.validatePassword(this._sqlAuthenticationPasswordTextbox.value!);
 
 			if (this._sqlAuthenticationPasswordTextbox.value !== this._sqlAuthenticationPasswordConfirmationTextbox.value) {
-				this.wizard.showErrorMessage('Password and confirm password must match.');
+				showErrorMessage += ('Password and confirm password must match.');
 				return false;
 			}
 
+			this.wizard.showErrorMessage(showErrorMessage);
+
+			if (showErrorMessage !== '') {
+				return false;
+			}
 			return true;
 		});
 	}
