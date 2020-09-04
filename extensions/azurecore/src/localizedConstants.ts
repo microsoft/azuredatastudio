@@ -62,6 +62,6 @@ export const subscription = localize('azurecore.subscription', "Subscription");
 export const sqlServer = localize('azurecore.sqlServer', "SQL server");
 export const sqlDatabase = localize('azurecore.sqlDatabase', "SQL database");
 export const sqlServerArc = localize('azurecore.sqlServerArc', "SQL Server - Azure Arc");
-export const sqlManagedInstance = localize('azurecore.sqlManagedInstance', "SQL Managed Instance");
+export const sqlManagedInstance = localize('azurecore.sqlManagedInstance', "SQL managed instance");
 export const sqlManagedInstanceAzureArc = localize('azurecore.sqlManagedInstanceAzureArc', "SQL managed instance - Azure Arc");
 export const azureArcService = localize('azurecore.azureArcService', "Data Service - Azure Arc");
