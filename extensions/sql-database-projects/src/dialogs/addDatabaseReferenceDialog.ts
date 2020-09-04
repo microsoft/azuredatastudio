@@ -8,10 +8,10 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
 
-import { Project, SystemDatabase, DatabaseReferenceLocation } from '../models/project';
+import { Project, SystemDatabase } from '../models/project';
 import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
-import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { getSqlProjectFilesInFolder } from '../common/utils';
 
 export enum ReferenceType {
@@ -45,23 +45,16 @@ export class AddDatabaseReferenceDialog {
 	public exampleUsage: azdata.TextComponent | undefined;
 
 	public currentReferenceType: ReferenceType | undefined;
-	private referenceLocationMap: Map<string, DatabaseReferenceLocation>;
 
 	private toDispose: vscode.Disposable[] = [];
 	private initDialogComplete: Deferred<void> | undefined;
 	private initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
 
-	public addReference: ((proj: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings) => any) | undefined;
+	public addReference: ((proj: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings) => any) | undefined;
 
 	constructor(private project: Project) {
 		this.dialog = azdata.window.createModelViewDialog(constants.addDatabaseReferenceDialogName);
 		this.addDatabaseReferenceTab = azdata.window.createTab(constants.addDatabaseReferenceDialogName);
-
-		this.referenceLocationMap = new Map([
-			[constants.sameDatabase, DatabaseReferenceLocation.sameDatabase],
-			[constants.differentDbSameServer, DatabaseReferenceLocation.differentDatabaseSameServer],
-			[constants.differentDbDifferentServer, DatabaseReferenceLocation.differentDatabaseDifferentServer]
-		]);
 	}
 
 	public async openDialog(): Promise<void> {
@@ -123,13 +116,14 @@ export class AddDatabaseReferenceDialog {
 
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
+			this.updateEnabledInputBoxes();
 
 			this.initDialogComplete?.resolve();
 		});
 	}
 
 	public async addReferenceClick(): Promise<void> {
-		let referenceSettings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings;
+		let referenceSettings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings;
 
 		if (this.currentReferenceType === ReferenceType.systemDb) {
 			referenceSettings = {
@@ -137,17 +131,26 @@ export class AddDatabaseReferenceDialog {
 				systemDb: <string>this.systemDatabaseDropdown?.value === constants.master ? SystemDatabase.master : SystemDatabase.msdb,
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
+		} else if (this.currentReferenceType === ReferenceType.project) {
+			referenceSettings = {
+				projectName: <string>this.projectDropdown?.value,
+				projectGuid: '',
+				projectRelativePath: undefined,
+				databaseName: <string>this.databaseNameTextbox?.value,
+				databaseVariable: <string>this.databaseVariableTextbox?.value,
+				serverName: <string>this.serverNameTextbox?.value,
+				serverVariable: <string>this.serverVariableTextbox?.value,
+				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
+			};
 		} else { // this.currentReferenceType === ReferenceType.dacpac
 			referenceSettings = {
 				databaseName: <string>this.databaseNameTextbox?.value,
-				databaseLocation: <DatabaseReferenceLocation>this.referenceLocationMap.get(<string>this.locationDropdown?.value),
 				dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
 				databaseVariable: <string>this.databaseVariableTextbox?.value,
 				serverName: <string>this.serverNameTextbox?.value,
 				serverVariable: <string>this.serverVariableTextbox?.value,
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
-			// TODO: add project reference support
 		}
 
 		await this.addReference!(this.project, referenceSettings);

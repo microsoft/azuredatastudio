@@ -216,6 +216,8 @@ export const PostDeploy = 'PostDeploy';
 export const None = 'None';
 export const True = 'True';
 export const False = 'False';
+export const Private = 'Private';
+export const ProjectGuid = 'ProjectGuid';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';

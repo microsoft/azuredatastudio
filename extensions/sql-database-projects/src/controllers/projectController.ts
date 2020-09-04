@@ -28,7 +28,7 @@ import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
 import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
-import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 
 /**
  * Controller for managing project lifecycle
@@ -76,7 +76,7 @@ export class ProjectsController {
 				try {
 					await this.openProject(projUri, false, true);
 				} catch (e) {
-					vscode.window.showErrorMessage(e.message === constants.projectAlreadyOpened(projUri.fsPath) ? constants.circularProjectReference(newProject.projectFileName, proj.databaseName) : e.message);
+					// vscode.window.showErrorMessage(e.message === constants.projectAlreadyOpened(projUri.fsPath) ? constants.circularProjectReference(newProject.projectFileName, proj.databaseName) : e.message);
 				}
 			}
 
@@ -485,10 +485,19 @@ export class ProjectsController {
 		return addDatabaseReferenceDialog;
 	}
 
-	public async addDatabaseReferenceCallback(project: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings): Promise<void> {
+	public async addDatabaseReferenceCallback(project: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings): Promise<void> {
 		try {
 			if ((<ISystemDatabaseReferenceSettings>settings).systemDb !== undefined) {
 				await project.addSystemDatabaseReference(<ISystemDatabaseReferenceSettings>settings);
+			} else if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
+				// get project path and guid
+				let projectReferenceSettings = settings as IProjectReferenceSettings;
+				const referencedProject = this.projects.find(p => p.projectFileName === projectReferenceSettings.projectName);
+				const relativePath = path.relative(project.projectFolderPath, referencedProject?.projectFilePath!);
+				projectReferenceSettings.projectRelativePath = vscode.Uri.file(relativePath);
+				projectReferenceSettings.projectGuid = referencedProject?.projectGuid!;
+
+				await project.addProjectReference(projectReferenceSettings);
 			} else {
 				await project.addDatabaseReference(<IDacpacReferenceSettings>settings);
 			}
