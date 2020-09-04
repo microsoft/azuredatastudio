@@ -18,7 +18,7 @@ Select **New Connection** and choose **Kusto** for the **Connection Type**.
 
 Once connected to a cluster, you can start writing a KQL query, run it and a view the results to save it to CSV, JSON, XML, Excel, or as a chart as shown below.
 
-:::image type="complex" source="media/KustoReadme-Query.gif" alt-text="KQL query in Azure Data Studio"::::::image-end:::
+![KQL query in Azure Data Studio](media/KustoReadme-Query.gif)
 
 For more information, see [how to create a notebook with the Kusto extension](https://go.microsoft.com/fwlink/?linkid=2129920).
 
@@ -28,7 +28,7 @@ You can run Kusto in a notebook with Azure Data Studio.
 
 Select on **Create notebook** to create a new notebook in Azure Data Studio.
 
-:::image type="complex" source="media/KustoReadme-Notebook.gif" alt-text="Kusto notebook in Azure Data Studio"::::::image-end:::
+![Kusto notebook in Azure Data Studio](media/KustoReadme-Notebook.gif)
 
 For more information, see [how to create a notebook with the Kusto extension](https://go.microsoft.com/fwlink/?linkid=2129920).
 
