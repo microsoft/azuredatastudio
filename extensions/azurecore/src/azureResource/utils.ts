@@ -121,7 +121,7 @@ export async function getResourceGroups(appContext: AppContext, account?: azdata
 			const token = tokenResponse.token;
 			const tokenType = tokenResponse.tokenType;
 
-			result.resourceGroups.push(...await service.getResources(subscription, new TokenCredentials(token, tokenType), account));
+			result.resourceGroups.push(...await service.getResources([subscription], new TokenCredentials(token, tokenType), account));
 		} catch (err) {
 			const error = new Error(localize('azure.accounts.getResourceGroups.queryError', "Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
 				account.displayInfo.displayName,
@@ -140,7 +140,11 @@ export async function getResourceGroups(appContext: AppContext, account?: azdata
 	return result;
 }
 
-export async function runResourceQuery<T extends azureResource.AzureGraphResource>(appContext: AppContext, account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false, query: string) {
+export async function runResourceQuery<T extends azureResource.AzureGraphResource>(
+	account: azdata.Account,
+	subscriptions: azureResource.AzureResourceSubscription[],
+	ignoreErrors: boolean = false,
+	query: string): Promise<ResourceQueryResult<T>> {
 	const result: ResourceQueryResult<T> = { resources: [], errors: [] };
 	if (!account?.properties?.tenants || !isArray(account.properties.tenants)) {
 		const error = new Error(localize('azure.accounts.runResourceQuery.errors.invalidAccount', "Invalid account"));
@@ -151,51 +155,74 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 		return result;
 	}
 
-	if (!subscription.tenant) {
-		const error = new Error(localize('azure.accounts.runResourceQuery.errors.noTenantSpecifiedForSubscription', "Invalid tenant for subscription"));
-		if (!ignoreErrors) {
-			throw error;
+	// Check our subscriptions to ensure we have valid ones
+	subscriptions.forEach(subscription => {
+		if (!subscription.tenant) {
+			const error = new Error(localize('azure.accounts.runResourceQuery.errors.noTenantSpecifiedForSubscription', "Invalid tenant for subscription"));
+			if (!ignoreErrors) {
+				throw error;
+			}
+			result.errors.push(error);
 		}
-		result.errors.push(error);
+	});
+	if (result.errors.length > 0) {
 		return result;
 	}
 
-	const tokenResponse = await azdata.accounts.getAccountSecurityToken(account, subscription.tenant, azdata.AzureResource.ResourceManagement);
-	const token = tokenResponse.token;
-	const tokenType = tokenResponse.tokenType;
-	const credential = new TokenCredentials(token, tokenType);
-
-	const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
-
-	const allResources: T[] = [];
-	let totalProcessed = 0;
-
-	const doQuery = async (skipToken?: string) => {
-		const response = await resourceClient.resources({
-			subscriptions: [subscription.id],
-			query,
-			options: {
-				resultFormat: 'objectArray',
-				skipToken: skipToken
-			}
-		});
-		const resources: T[] = response.data;
-		totalProcessed += resources.length;
-		allResources.push(...resources);
-		if (response.skipToken && totalProcessed < response.totalRecords) {
-			await doQuery(response.skipToken);
+	// We need to get a different security token for each tenant to query the resources for the subscriptions on
+	// that tenant
+	for (let i = 0; i < account.properties.tenants.length; ++i) {
+		const tenant = account.properties.tenants[i];
+		const tenantSubscriptions = subscriptions.filter(subscription => subscription.tenant === tenant.id);
+		if (tenantSubscriptions.length < 1) {
+			// We may not have all subscriptions or the tenant might not have any subscriptions - just ignore these ones
+			continue;
 		}
-	};
-	try {
-		await doQuery();
-	} catch (err) {
-		console.error(err);
-		const error = new Error(localize('azure.accounts.runResourceQuery.errors.invalidQuery', "Invalid query"));
-		result.errors.push(error);
-	}
-	result.resources = allResources;
-	return result;
 
+		let resourceClient: ResourceGraphClient;
+		try {
+			const tokenResponse = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
+			const token = tokenResponse.token;
+			const tokenType = tokenResponse.tokenType;
+			const credential = new TokenCredentials(token, tokenType);
+
+			resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
+		} catch (err) {
+			console.error(err);
+			const error = new Error(localize('azure.accounts.runResourceQuery.errors.unableToFetchToken', "Unable to get token for tenant {0}", tenant.id));
+			result.errors.push(error);
+			continue;
+		}
+
+		const allResources: T[] = [];
+		let totalProcessed = 0;
+
+		const doQuery = async (skipToken?: string) => {
+			const response = await resourceClient.resources({
+				subscriptions: tenantSubscriptions.map(subscription => subscription.id),
+				query,
+				options: {
+					resultFormat: 'objectArray',
+					skipToken: skipToken
+				}
+			});
+			const resources: T[] = response.data;
+			totalProcessed += resources.length;
+			allResources.push(...resources);
+			if (response.skipToken && totalProcessed < response.totalRecords) {
+				await doQuery(response.skipToken);
+			}
+		};
+		try {
+			await doQuery();
+		} catch (err) {
+			console.error(err);
+			const error = new Error(localize('azure.accounts.runResourceQuery.errors.invalidQuery', "Invalid query"));
+			result.errors.push(error);
+		}
+		result.resources.push(...allResources);
+	}
+	return result;
 }
 
 export async function getSubscriptions(appContext: AppContext, account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> {
