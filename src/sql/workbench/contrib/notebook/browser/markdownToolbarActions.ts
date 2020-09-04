@@ -37,7 +37,7 @@ export class TransformMarkdownAction extends Action {
 	public run(context: any): Promise<boolean> {
 		return new Promise<boolean>(async (resolve, reject) => {
 			try {
-				if (!context?.cellModel?.isEditMode) {
+				if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
 					this.executeDocumentCommand();
 				} else {
 					let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel, this._instantiationService);
@@ -563,7 +563,7 @@ export class ToggleMarkdownViewAction extends Action {
 		context.removeActiveClassFromModeActions();
 		this.class += ' active';
 		context.cellModel.showPreview = false;
-		context.cellModel.isEditMode = true;
+		context.cellModel.showMarkdown = true;
 		return true;
 	}
 }
@@ -582,11 +582,11 @@ export class ToggleSplitViewAction extends Action {
 		context.removeActiveClassFromModeActions();
 		this.class += ' active';
 		context.cellModel.showPreview = true;
-		context.cellModel.isEditMode = true;
+		context.cellModel.showMarkdown = true;
 		return true;
 	}
 }
-export class ToggleTextViewAction extends Action {
+export class TogglePreviewAction extends Action {
 	constructor(
 		id: string,
 		label: string,
@@ -600,7 +600,7 @@ export class ToggleTextViewAction extends Action {
 		context.removeActiveClassFromModeActions();
 		this.class += ' active';
 		context.cellModel.showPreview = true;
-		context.cellModel.isEditMode = false;
+		context.cellModel.showMarkdown = false;
 		return true;
 	}
 }

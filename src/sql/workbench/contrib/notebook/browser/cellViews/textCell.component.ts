@@ -73,7 +73,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _content: string | string[];
 	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
-	private showPreview: boolean;
+	private _previewMode: boolean;
+	private _markdownMode: boolean;
 	private _sanitizer: ISanitizer;
 	private _model: NotebookModel;
 	private _activeCellId: string;
@@ -137,8 +138,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.setFocusAndScroll();
-		this.cellModel.isEditMode = true;
-		this.cellModel.showPreview = true;
+		this.cellModel.isEditMode = false;
+		// this.cellModel.showPreview = true;
+		// this.cellModel.showMarkdown = false;
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
 		}));
@@ -148,11 +150,13 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 			this._changeRef.detectChanges();
 		}));
-		this._register(this.cellModel.onCellPreviewChanged(preview => {
-			if (this.previewMode !== preview) {
-				this.previewMode = preview;
-			}
-			this._changeRef.detectChanges();
+		this._register(this.cellModel.onCellPreviewModeChanged(preview => {
+			this.previewMode = preview;
+			// this._changeRef.detectChanges();
+		}));
+		this._register(this.cellModel.onCellMarkdownModeChanged(markdown => {
+			this.markdownMode = markdown;
+			// this._changeRef.detectChanges();
 		}));
 	}
 
@@ -193,7 +197,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
 		let cellModelSourceJoined = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
 		let contentJoined = Array.isArray(this._content) ? this._content.join('') : this._content;
-		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0 || this.showPreview === true;
+		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0 || this._previewMode === true;
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if ((!cellModelSourceJoined) && !this.isEditMode) {
@@ -209,7 +213,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			});
 			this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
 			this.setLoading(false);
-			if (this.showPreview) {
+			if (this._previewMode) {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
@@ -256,18 +260,30 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.cellModel.isEditMode = this.isEditMode;
 		if (!this.isEditMode) {
 			this.previewMode = true;
+			this.markdownMode = false;
 		}
 		this.updatePreview();
 		this._changeRef.detectChanges();
 	}
 
 	public get previewMode(): boolean {
-		return this.showPreview;
+		return this._previewMode;
 	}
 	public set previewMode(value: boolean) {
-		if (this.showPreview !== value) {
-			this.showPreview = value;
+		if (this._previewMode !== value) {
+			this._previewMode = value;
 			this.updatePreview();
+			this._changeRef.detectChanges();
+		}
+	}
+
+	public get markdownMode(): boolean {
+		return this._markdownMode;
+	}
+	public set markdownMode(value: boolean) {
+		if (this._markdownMode !== value) {
+			this._markdownMode = value;
+			// this.updatePreview();
 			this._changeRef.detectChanges();
 		}
 	}

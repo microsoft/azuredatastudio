@@ -478,7 +478,9 @@ export interface ICellModel {
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
 	showPreview: boolean;
-	readonly onCellPreviewChanged: Event<boolean>;
+	showMarkdown: boolean;
+	readonly onCellPreviewModeChanged: Event<boolean>;
+	readonly onCellMarkdownModeChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
 }

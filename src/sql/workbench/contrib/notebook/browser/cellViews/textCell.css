@@ -18,10 +18,10 @@ text-cell-component .notebook-preview {
 	padding-right: 8px;
 	user-select: none;
 }
-text-cell-component .edit-mode.show-preview code-component {
+text-cell-component .show-markdown.show-preview code-component {
 	width: 50%
 }
-text-cell-component .edit-mode .notebook-preview {
+text-cell-component .show-markdown .notebook-preview {
 	border-color: transparent;
 	border-left-width: 1px;
 	border-style: solid;
