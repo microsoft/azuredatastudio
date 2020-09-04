@@ -10,8 +10,9 @@ import { AzureArcTreeDataProvider } from './ui/tree/azureArcTreeDataProvider';
 import { ControllerTreeNode } from './ui/tree/controllerTreeNode';
 import { TreeNode } from './ui/tree/treeNode';
 import { ConnectToControllerDialog } from './ui/dialogs/connectControllerDialog';
+import * as arc from 'arc';
 
-export async function activate(context: vscode.ExtensionContext): Promise<void> {
+export async function activate(context: vscode.ExtensionContext): Promise<arc.IExtension> {
 	IconPathHelper.setExtensionContext(context);
 
 	await vscode.commands.executeCommand('setContext', 'arc.loaded', false);
@@ -24,12 +25,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	});
 
 	vscode.commands.registerCommand('arc.connectToController', async () => {
-		const dialog = new ConnectToControllerDialog(treeDataProvider);
-		dialog.showDialog();
-		const model = await dialog.waitForClose();
-		if (model) {
-			await treeDataProvider.addOrUpdateController(model.controllerModel, model.password);
-		}
+		await connectToController(treeDataProvider);
 	});
 
 	vscode.commands.registerCommand('arc.removeController', async (controllerNode: ControllerTreeNode) => {
@@ -54,6 +50,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	});
 
 	await checkArcDeploymentExtension();
+
+	return {
+		getAzureArcTreeDataProvider: () => treeDataProvider
+	};
+}
+
+async function connectToController(treeDataProvider: AzureArcTreeDataProvider) {
+	const dialog = new ConnectToControllerDialog(treeDataProvider);
+	dialog.showDialog();
+	const model = await dialog.waitForClose();
+	if (model) {
+		await treeDataProvider.addOrUpdateController(model.controllerModel, model.password);
+	}
 }
 
 export function deactivate(): void {

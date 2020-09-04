@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { ControllerTreeNode } from './controllerTreeNode';
 import { TreeNode } from './treeNode';
 import { ControllerModel, ControllerInfo } from '../../models/controllerModel';
+import { IAzureArcTreeDataProvider } from 'arc';
 
 const mementoToken = 'arcControllers';
 
@@ -15,7 +16,7 @@ const mementoToken = 'arcControllers';
  * The TreeDataProvider for the Azure Arc view, which displays a list of registered
  * controllers and the resources under them.
  */
-export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNode> {
+export class AzureArcTreeDataProvider implements IAzureArcTreeDataProvider {
 
 	private _credentialsProvider = azdata.credentials.getProvider('arcControllerPasswords');
 	private _onDidChangeTreeData: vscode.EventEmitter<TreeNode | undefined> = new vscode.EventEmitter<TreeNode | undefined>();
