@@ -497,6 +497,16 @@ export class ProjectsController {
 				projectReferenceSettings.projectRelativePath = vscode.Uri.file(relativePath);
 				projectReferenceSettings.projectGuid = referencedProject?.projectGuid!;
 
+				// check for cirular dependency
+				for (let r of referencedProject?.databaseReferences!) {
+					if (r instanceof SqlProjectReferenceProjectEntry) {
+						if ((<SqlProjectReferenceProjectEntry>r).projectName === project.projectFileName) {
+							vscode.window.showErrorMessage(constants.cantAddCircularProjectReference(referencedProject?.projectFileName!));
+							return;
+						}
+					}
+				}
+
 				await project.addProjectReference(projectReferenceSettings);
 			} else {
 				await project.addDatabaseReference(<IDacpacReferenceSettings>settings);
