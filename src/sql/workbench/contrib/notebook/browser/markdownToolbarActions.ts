@@ -564,7 +564,6 @@ export class ToggleMarkdownViewAction extends Action {
 		this.class += ' active';
 		context.cellModel.showPreview = false;
 		context.cellModel.isEditMode = true;
-		// When this button is clicked, the perceived results are the same as when the textview button is clicked. However, the above values set are different than that of ToggleTextViewAction.
 		return true;
 	}
 }

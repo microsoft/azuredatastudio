@@ -6,7 +6,6 @@
 text-cell-component {
 	display: block;
 }
-
 text-cell-component .notebook-text {
 	display: flex;
 }
@@ -18,19 +17,10 @@ text-cell-component .notebook-preview {
 	padding-left: 8px;
 	padding-right: 8px;
 	user-select: none;
-	width: 100%;
 }
-
-/* Hide Markdown view initially */
-text-cell-component .edit-mode code-component {
-	width: 100%;
-}
-
-text-cell-component .show-preview.edit-mode code-component {
-	display: initial;
+text-cell-component .edit-mode.show-preview code-component {
 	width: 50%
 }
-
 text-cell-component .edit-mode .notebook-preview {
 	border-color: transparent;
 	border-left-width: 1px;
@@ -38,11 +28,9 @@ text-cell-component .edit-mode .notebook-preview {
 	border-top-width: 0;
 	width: 50%
 }
-
 .notebook-preview.actionselect {
 	user-select: text;
 }
-
 text-cell-component code-component .monaco-scrollable-element.editor-scrollable.vs {
 	left: 16px!important;
 }
