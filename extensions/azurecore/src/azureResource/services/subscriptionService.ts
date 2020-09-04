@@ -18,6 +18,7 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 		subs.forEach((sub) => subscriptions.push({
 			id: sub.subscriptionId,
 			name: sub.displayName,
+			subscriptionId: sub.subscriptionId,
 			tenant: tenantId
 		}));
 

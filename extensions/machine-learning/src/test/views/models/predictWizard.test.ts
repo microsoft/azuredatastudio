@@ -12,11 +12,10 @@ import {
 	ListAzureModelsEventName, ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, LoadModelParametersEventName, DownloadAzureModelEventName, DownloadRegisteredModelEventName, ModelSourceType, VerifyImportTableEventName
 }
 	from '../../../views/models/modelViewBase';
-import { ImportedModel, ModelParameters } from '../../../modelManagement/interfaces';
-import { azureResource } from '../../../typings/azure-resource';
+import { ImportedModel, ModelParameters, WorkspaceModel } from '../../../modelManagement/interfaces';
+import { azureResource } from 'azureResource';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { ViewBase } from '../../../views/viewBase';
-import { WorkspaceModel } from '../../../modelManagement/interfaces';
 import { PredictWizard } from '../../../views/models/prediction/predictWizard';
 import { DatabaseTable, TableColumn } from '../../../prediction/interfaces';
 
@@ -59,13 +58,15 @@ describe('Predict Wizard', () => {
 		let subscriptions: azureResource.AzureResourceSubscription[] = [
 			{
 				name: 'subscription',
-				id: '2'
+				id: '2',
+				subscriptionId: 'subscription'
 			}
 		];
 		let groups: azureResource.AzureResourceResourceGroup[] = [
 			{
 				name: 'group',
-				id: '3'
+				id: '3',
+				subscriptionId: 's1'
 			}
 		];
 		let workspaces: Workspace[] = [
