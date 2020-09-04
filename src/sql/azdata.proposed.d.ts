@@ -6,7 +6,6 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
-import { DataProvider } from 'azdata';
 
 declare module 'azdata' {
 	/**
