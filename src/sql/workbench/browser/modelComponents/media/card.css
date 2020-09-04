@@ -26,7 +26,8 @@
 	min-width: 30px;
 }
 
-.horizontal .model-card .card-vertical-button {
+.horizontal .model-card .card-vertical-button,
+.horizontal .model-card .text-container {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -48,7 +49,7 @@
 	line-height: 18px;
 }
 
-.horizontal .model-card .iconContainer {
+.horizontal .model-card .icon-container {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -60,7 +61,7 @@
 	border-color: rgb(214, 214, 214);
 }
 
-.horizontal .model-card .cardIcon {
+.horizontal .model-card .icon {
 	display: inline-block;
 	flex-grow: 1;
 	width: 100%;
@@ -91,7 +92,8 @@
 	text-align: center;
 }
 
-.horizontal .model-card-list-item .selection-indicator-container, .model-card .selection-indicator-container {
+.horizontal .model-card-list-item .selection-indicator-container,
+.horizontal .model-card .selection-indicator-container {
 	position: absolute;
 	top: 5px;
 	right: 5px;
@@ -105,7 +107,8 @@
 	border-style: solid;
 }
 
-.horizontal .model-card-list-item .selection-indicator-container, .model-card .selection-indicator-container {
+.horizontal .model-card-list-item .selection-indicator-container,
+.horizontal .model-card .selection-indicator-container {
 	position: absolute;
 	overflow: hidden;
 	width: 16px;
@@ -127,7 +130,8 @@
 	right: 5px;
 }
 
-.horizontal .model-card-list-item .selection-indicator, .model-card .selection-indicator {
+.horizontal .model-card-list-item .selection-indicator,
+.horizontal .model-card .selection-indicator {
 	margin: 4px;
 	width: 8px;
 	height: 8px;

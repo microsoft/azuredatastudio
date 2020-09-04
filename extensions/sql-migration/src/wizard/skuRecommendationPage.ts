@@ -105,12 +105,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		const rbg = this.view!.modelBuilder.radioCardGroup();
 		rbg.component().cards = [];
-		rbg.component().orientation = azdata.Orientation.Horizontal;
+		rbg.component().orientation = azdata.Orientation.Vertical;
 		rbg.component().iconHeight = '30px';
 		rbg.component().iconWidth = '30px';
 
 		products.forEach((product) => {
 			const imagePath = path.resolve(this.migrationStateModel.getExtensionPath(), 'media', product.icon ?? 'ads.svg');
+
 			const descriptions: azdata.RadioCardDescription[] = [
 				{
 					textValue: product.name,
@@ -118,7 +119,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					displayLinkCodicon: true,
 					textStyles: {
 						'font-size': '1rem',
-						'font-weight': '550'
+						'font-weight': 550,
 					},
 					linkCodiconStyles: {
 						'font-size': '1em',

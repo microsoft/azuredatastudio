@@ -79,7 +79,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 								textValue: resourceType.displayName,
 								textStyles: {
 									'font-size': '12px',
-									'font-weight': '700'
+									'font-weight': 700
 								}
 							}
 						]
