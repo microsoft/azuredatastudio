@@ -79,7 +79,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 							component: this.createSummaryRow(view, constants.VmNameTextBoxLabel, this._vmName)
 						},
 						{
-							component: this.createSummaryRow(view, constants.AzureAccountDropdownLabel, this._vmUser)
+							component: this.createSummaryRow(view, constants.VmAdminUsernameTextBoxLabel, this._vmUser)
 						},
 						{
 							component: this.createSummaryRow(view, constants.VmImageDropdownLabel, this._vmImage)

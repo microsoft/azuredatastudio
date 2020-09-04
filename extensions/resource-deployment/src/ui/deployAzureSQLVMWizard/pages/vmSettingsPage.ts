@@ -243,18 +243,21 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		response.data = response.data.reverse();
 		this.wizard.addDropdownValues(
 			this._vmImageDropdown,
-			response.data.map((value: any) => {
-				let sqlServerVersion = value.name.toLowerCase().match(new RegExp('sql(.*?)-'))[1];
-				let osVersion = value.name.toLowerCase().replace(new RegExp('sql(.*?)-'), '');
-				osVersion = osVersion.replace(new RegExp('ws'), 'Windows Server ');
-				osVersion = osVersion.replace(new RegExp('ubuntu'), 'Ubuntu Server ');
-				osVersion = osVersion.replace(new RegExp('sles'), 'SUSE Linux Enterprise Server (SLES) ');
-				osVersion = osVersion.replace(new RegExp('rhel'), 'Red Hat Enterprise Linux ');
-				return {
-					displayName: `SQL Server ${sqlServerVersion.toUpperCase()} on ${osVersion}`,
-					name: value.name
-				};
+			response.data.filter((value: any) => {
+				return !new RegExp('-byol').test(value.name);
 			})
+				.map((value: any) => {
+					let sqlServerVersion = value.name.toLowerCase().match(new RegExp('sql(.*?)-'))[1];
+					let osVersion = value.name.toLowerCase().replace(new RegExp('sql(.*?)-'), '');
+					osVersion = osVersion.replace(new RegExp('ws'), 'Windows Server ');
+					osVersion = osVersion.replace(new RegExp('ubuntu'), 'Ubuntu Server ');
+					osVersion = osVersion.replace(new RegExp('sles'), 'SUSE Linux Enterprise Server (SLES) ');
+					osVersion = osVersion.replace(new RegExp('rhel'), 'Red Hat Enterprise Linux ');
+					return {
+						displayName: `SQL Server ${sqlServerVersion.toUpperCase()} on ${osVersion}`,
+						name: value.name
+					};
+				})
 		);
 
 		this.wizard.model.vmImage = (this._vmImageDropdown.value as azdata.CategoryValue).name;
@@ -346,7 +349,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		}).component();
 
 		this._vmSizeDropdown.onValueChanged((value) => {
-			this.wizard.model.vmSize = (this._vmImageDropdown.value as azdata.CategoryValue).name;
+			this.wizard.model.vmSize = (this._vmSizeDropdown.value as azdata.CategoryValue).name;
 		});
 
 		this._vmSizeDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._vmSizeDropdown).component();
@@ -378,9 +381,9 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 					cores = value.capabilities.filter((c: any) => { return c.name === 'vCPUs'; })[0].value;
 				}
 				const memory = value.capabilities.filter((c: any) => { return c.name === 'MemoryGB'; })[0].value;
-				const discCount = Number(value.capabilities.filter((c: any) => { return c.name === 'OSVhdSizeMB'; })[0].value) / 1024;
-				const discSize = value.capabilities.filter((c: any) => { return c.name === 'MaxDataDiskCount'; })[0].value;
-				const displayText = `${value.name}	Cores:${cores}	Memory:${memory}	discCount:${discCount}	discSize:${discSize}`;
+				const discSize = Number(value.capabilities.filter((c: any) => { return c.name === 'MaxResourceVolumeMB'; })[0].value) / 1024;
+				const discCount = value.capabilities.filter((c: any) => { return c.name === 'MaxDataDiskCount'; })[0].value;
+				const displayText = `${value.name}	Cores: ${cores}	Memory: ${memory}GB	discCount: ${discCount}	discSize: ${discSize}GB`;
 				this._vmSize.push(displayText);
 				return {
 					name: value.name,
@@ -389,6 +392,8 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 			}
 			return;
 		});
+
+		dropDownValues.sort((a, b) => (a!.displayName > b!.displayName) ? 1 : -1);
 
 		this._vmSize = [];
 
