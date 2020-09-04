@@ -51,3 +51,17 @@ export const westEurope = localize('azurecore.westeurope', "West Europe");
 export const westIndia = localize('azurecore.westindia', "West India");
 export const westUS = localize('azurecore.westus', "West US");
 export const westUS2 = localize('azurecore.westus2', "West US 2");
+
+export const name = localize('azurecore.name', "Name");
+export const resourceType = localize('azurecore.resourceType', "Resource type");
+export const resourceGroup = localize('azurecore.resourceGroup', "Resource group");
+export const location = localize('azurecore.location', "Location");
+export const subscription = localize('azurecore.subscription', "Subscription");
+
+// Azure Resource Types
+export const sqlServer = localize('azurecore.sqlServer', "SQL server");
+export const sqlDatabase = localize('azurecore.sqlDatabase', "SQL database");
+export const sqlServerArc = localize('azurecore.sqlServerArc', "SQL Server - Azure Arc");
+export const sqlManagedInstance = localize('azurecore.sqlManagedInstance', "SQL Managed Instance");
+export const sqlManagedInstanceAzureArc = localize('azurecore.sqlManagedInstanceAzureArc', "SQL managed instance - Azure Arc");
+export const azureArcService = localize('azurecore.azureArcService', "Data Service - Azure Arc");
