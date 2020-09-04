@@ -11,6 +11,7 @@ export class DeployAzureSQLVMWizardModel extends Model {
 	public azureAccount!: azdata.Account;
 	public securityToken!: any;
 	public azureSubscription!: string;
+	public azureSubscriptionDisplayName!: string;
 	public azureResouceGroup!: string;
 	public azureRegion!: string;
 
@@ -58,7 +59,7 @@ export class DeployAzureSQLVMWizardModel extends Model {
 		statements.push(`azure_sqlvm_vmsize = '${this.vmSize}'`);
 		statements.push(`azure_sqlvm_virtnet = '${this.virtualNetworkName}'`);
 		statements.push(`azure_sqlvm_existingVirtualNetwork = ${this.existingVirtualNetwork}`);
-		statements.push(`azure_sqlvm_existingsubnet = '${this.existingSubnet}'`);
+		statements.push(`azure_sqlvm_existingsubnet = ${this.existingSubnet}`);
 		statements.push(`azure_sqlvm_subnet = '${this.subnetName}'`);
 		statements.push(`azure_sqlvm_publicip = '${this.publicIpName}'`);
 		statements.push(`azure_sqlvm_existingPublicIp = ${this.existingPublicIp}`);

@@ -166,6 +166,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 			let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
 			this.wizard.model.azureSubscription = currentSubscriptionValue.name;
+			this.wizard.model.azureSubscriptionDisplayName = currentSubscriptionValue.displayName;
 
 			this.wizard.model.securityToken = await azdata.accounts.getAccountSecurityToken(
 				this.wizard.model.azureAccount,
@@ -214,6 +215,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		);
 
 		this.wizard.model.azureSubscription = (this._azureSubscriptionsDropdown.value as azdata.CategoryValue).name;
+		this.wizard.model.azureSubscriptionDisplayName = (this._azureSubscriptionsDropdown.value as azdata.CategoryValue).displayName;
 
 		this.wizard.model.securityToken = await azdata.accounts.getAccountSecurityToken(
 			this.wizard.model.azureAccount,

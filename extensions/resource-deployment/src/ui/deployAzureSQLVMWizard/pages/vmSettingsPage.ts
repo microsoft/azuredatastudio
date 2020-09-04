@@ -107,39 +107,49 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		this.populateVmSizeDropdown();
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 
+			if (pcInfo.newPage < pcInfo.lastPage) {
+				return true;
+			}
+
 			let showErrorMessage = '';
-
-			let vmname = this._vmNameTextBox.value!;
-
+			/**
+			 * VM name rules:
+			 * 	1. 1-15 characters
+			 *  2. Cannot contain only numbers
+			 *  3. Cannot start with underscore and end with period or hyphen
+			 *  4. Virtual machine name cannot contain special characters \/""[]:|<>+=;,?*
+			 */
+			let vmname = this.wizard.model.vmName;
 			if (vmname.length < 1 && vmname.length > 15) {
 				showErrorMessage += 'Virtual machine name must be between 1 and 15 characters long.\n';
 			}
-
 			if (/^\d+$/.test(vmname)) {
 				showErrorMessage += 'Virtual machine name cannot contain only numbers.\n';
 			}
-
 			if (vmname.charAt(0) === '_' || vmname.slice(-1) === '.' || vmname.slice(-1) === '-') {
 				showErrorMessage += 'Virtual machine name Can\'t start with underscore. Can\'t end with period or hyphen\n';
 			}
-
 			if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(vmname)) {
 				showErrorMessage += 'Virtual machine name cannot contain special characters \/""[]:|<>+=;,?* .\n';
 			}
 
-			let username = this._adminUsernameTextBox.value!;
 
+			/**
+			 * VM admin/root username rules:
+			 *  1. 1-20 characters long
+			 *  2. cannot contain special characters \/""[]:|<>+=;,?*
+			 */
+			let username = this.wizard.model.vmUsername;
 			if (username.length < 1 || username.length > 20) {
 				showErrorMessage += 'Username must be between 1 and 20 characters long.\n';
 			}
-
 			if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
 				showErrorMessage += 'Username cannot contain special characters \/""[]:|<>+=;,?* .\n';
 			}
 
-			//showErrorMessage += this.wizard.validatePassword(this._adminPasswordTextBox.value!);
+			showErrorMessage += this.wizard.validatePassword(this.wizard.model.vmPassword);
 
-			if (this._adminPasswordTextBox.value !== this._adminComfirmPasswordTextBox.value) {
+			if (this.wizard.model.vmPassword !== this._adminComfirmPasswordTextBox.value) {
 				showErrorMessage += 'Password and confirm password must match.\n';
 			}
 
@@ -161,6 +171,8 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 			return false;
 		});
 	}
+
+
 	private async createVmNameTextBox(view: azdata.ModelView) {
 		this._vmNameTextBox = view.modelBuilder.inputBox().withProperties({
 		}).component();

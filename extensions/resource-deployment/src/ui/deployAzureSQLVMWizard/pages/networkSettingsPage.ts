@@ -91,10 +91,17 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 		this.populateVirtualNetworkDropdown();
 		this.populatePublicIpkDropdown();
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+			if (pcInfo.newPage < pcInfo.lastPage) {
+				return true;
+			}
 			let errorMessage = '';
 			if (this.wizard.model.existingVirtualNetwork === 'False') {
 				if (this.wizard.model.virtualNetworkName.length < 2 || this.wizard.model.virtualNetworkName.length > 64) {
 					errorMessage += 'Virtual Network name must be between 2 and 64 characters long\n';
+				}
+			} else {
+				if (this.wizard.model.virtualNetworkName === 'None') {
+					errorMessage += 'Create a new virtual network';
 				}
 			}
 
@@ -102,16 +109,25 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 				if (this.wizard.model.subnetName.length < 1 || this.wizard.model.virtualNetworkName.length > 80) {
 					errorMessage += 'Virtual Network name must be between 1 and 80 characters long\n';
 				}
+			} else {
+				if (this.wizard.model.subnetName === 'None') {
+					errorMessage += 'Create a new sub network';
+				}
 			}
 
 			if (this.wizard.model.existingPublicIp === 'False') {
 				if (this.wizard.model.publicIpName.length < 1 || this.wizard.model.publicIpName.length > 80) {
 					errorMessage += 'Virtual Network name must be between 1 and 80 characters long\n';
 				}
+			} else {
+				if (this.wizard.model.publicIpName === 'None') {
+					errorMessage += 'Create a new new public Ip';
+				}
 			}
 
+			this.wizard.showErrorMessage(errorMessage);
+
 			if (errorMessage !== '') {
-				this.wizard.showErrorMessage(errorMessage);
 				return false;
 			}
 			return true;
@@ -133,13 +149,7 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 
 		this._existingVirtualNetworkCheckbox.onChanged((event) => {
 			this.wizard.model.existingVirtualNetwork = event ? 'True' : 'False';
-			this._existingsubnetCheckbox.updateProperties({
-				enabled: event,
-				checked: event
-			});
-			this._subnetDropdown.updateProperties({
-				enabled: event
-			});
+
 			if (event) {
 				this.wizard.changeComponentDisplay(this._virtualNetworkDropdown, 'block');
 				this.wizard.changeComponentDisplay(this._newVirtualNetworkText, 'none');
@@ -203,21 +213,59 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 
 		let response = await this.wizard.getRequest(url);
 
-		let dropdownValues = response.data.value.map((value: any) => {
+		let dropdownValues = response.data.value.filter((value: any) => {
+			console.log(value);
+			return value.location === this.wizard.model.azureRegion;
+		}).map((value: any) => {
 			let resourceGroupName = value.id.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
 			return {
 				name: value.id,
 				displayName: `${value.name} \t\t resource group: (${resourceGroupName})`
 			};
+
 		});
 
+		if (!dropdownValues || dropdownValues.length === 0) {
+			dropdownValues = [
+				{
+					displayName: 'None',
+					name: 'None'
+				}
+			];
+			this.toggleNewVirtualNetwork(true);
+		} else {
+			this.toggleNewVirtualNetwork(false);
+		}
+
 		this._virtualNetworkDropdown.updateProperties({
-			value: dropdownValues[0],
 			values: dropdownValues
 		});
-		this.wizard.model.virtualNetworkName = (this._virtualNetworkDropdown.value as azdata.CategoryValue).name;
+
 		this._virtualNetworkDropdownLoader.loading = false;
 		await this.populateSubnetDropdown();
+	}
+
+	private toggleNewVirtualNetwork(show: boolean) {
+		if (show) {
+			this._existingVirtualNetworkCheckbox.checked = false;
+			this.wizard.changeComponentDisplay(this._virtualNetworkDropdownLoader, 'none');
+			this.wizard.changeComponentDisplay(this._newVirtualNetworkText, 'block');
+			this.wizard.model.virtualNetworkName = this._newVirtualNetworkText.value!;
+			this.wizard.model.existingVirtualNetwork = 'False';
+			this._existingsubnetCheckbox.updateProperties({
+				enabled: true,
+				checked: true
+			});
+			this._subnetDropdown.updateProperties({
+				enabled: true
+			});
+		} else {
+			this._existingVirtualNetworkCheckbox.checked = true;
+			this.wizard.changeComponentDisplay(this._virtualNetworkDropdownLoader, 'block');
+			this.wizard.changeComponentDisplay(this._newVirtualNetworkText, 'none');
+			this.wizard.model.virtualNetworkName = (this._virtualNetworkDropdown.value as azdata.CategoryValue).name;
+			this.wizard.model.existingVirtualNetwork = 'True';
+		}
 	}
 
 	private async createSubnetDropdown(view: azdata.ModelView) {
@@ -230,23 +278,7 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 		}).component();
 
 		this._existingsubnetCheckbox.onChanged((value) => {
-			if (value) {
-				this.wizard.model.existingSubnet = 'True';
-				this._subnetDropdown.updateProperties({
-					enabled: true
-				});
-				this.populateSubnetDropdown();
-			} else {
-				this.wizard.model.existingSubnet = 'False';
-				this.wizard.model.subnetName = this.wizard.model.vmName + 'subnet';
-				this._subnetDropdown.updateProperties({
-					enabled: false,
-					values: [{
-						name: `(new) ` + this.wizard.model.subnetName,
-						displayName: `(new) ` + this.wizard.model.subnetName
-					}]
-				});
-			}
+			this.toggleNewSubnet(!value);
 		});
 	}
 
@@ -264,11 +296,42 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 			};
 		});
 
+
+		if (!dropdownValues || dropdownValues.length === 0) {
+			dropdownValues = [{
+				displayName: 'None',
+				name: 'None'
+			}];
+			this.toggleNewSubnet(true);
+		} else {
+			this.toggleNewSubnet(false);
+		}
+
 		this._subnetDropdown.updateProperties({
 			value: dropdownValues[0],
 			values: dropdownValues
 		});
+
 		this.wizard.model.subnetName = (this._subnetDropdown.value as azdata.CategoryValue).name;
+	}
+
+	private toggleNewSubnet(show: boolean) {
+		if (show) {
+			this.wizard.model.existingSubnet = 'True';
+			this._subnetDropdown.updateProperties({
+				enabled: true
+			});
+		} else {
+			this.wizard.model.existingSubnet = 'False';
+			this.wizard.model.subnetName = this.wizard.model.vmName + 'subnet';
+			this._subnetDropdown.updateProperties({
+				enabled: false,
+				values: [{
+					name: `(new) ` + this.wizard.model.subnetName,
+					displayName: `(new) ` + this.wizard.model.subnetName
+				}]
+			});
+		}
 	}
 
 	private async createPublicIPDropdown(view: azdata.ModelView) {
@@ -279,18 +342,8 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 		}).component();
 
 		this._existingPublicIpCheckbox.onChanged((event) => {
-			this.wizard.model.existingPublicIp = event ? 'True' : 'False';
-			if (event) {
-				this.wizard.changeComponentDisplay(this._publicIpDropdownLoader, 'block');
-				this.wizard.changeComponentDisplay(this._publicIpNetworkText, 'none');
-			} else {
-				this.wizard.changeComponentDisplay(this._publicIpDropdownLoader, 'none');
-				this.wizard.changeComponentDisplay(this._publicIpNetworkText, 'block');
-			}
+			this.toggleNewPublicIp(!event);
 		});
-
-		this.wizard.model.existingPublicIp = this._existingPublicIpCheckbox.checked ? 'True' : 'False';
-
 
 		this._publicIpDropdown = view.modelBuilder.dropDown().withProperties({
 			required: true,
@@ -298,8 +351,7 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 		}).component();
 
 		this._publicIpDropdown.onValueChanged((value) => {
-			this.wizard.model.publicIpName = value.name;
-			//this.wizard.model.vmImageSKU = (this._virtualNetworkDropdown.value as azdata.CategoryValue).name;
+			this.wizard.model.publicIpName = (this._publicIpDropdown.value as azdata.CategoryValue).name;
 		});
 
 		this._publicIpDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._publicIpDropdown).component();
@@ -320,6 +372,8 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 		}).withItems(
 			[this._publicIpDropdownLoader, this._publicIpNetworkText]
 		).component();
+
+		this.toggleNewPublicIp(false);
 	}
 
 	private async populatePublicIpkDropdown() {
@@ -327,10 +381,10 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 		let url = `https://management.azure.com` +
 			`/subscriptions/${this.wizard.model.azureSubscription}` +
 			`/providers/Microsoft.Network/publicIPAddresses?api-version=2020-05-01`;
-
 		let response = await this.wizard.getRequest(url);
-
-		let dropdownValues = response.data.value.map((value: any) => {
+		let dropdownValues = response.data.value.filter((value: any) => {
+			return value.location === this.wizard.model.azureRegion;
+		}).map((value: any) => {
 			let resourceGroupName = value.id.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
 			return {
 				name: value.id,
@@ -338,15 +392,37 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 			};
 		});
 
+		if (!dropdownValues || dropdownValues.length === 0) {
+			dropdownValues = [{
+				displayName: 'None',
+				name: 'None'
+			}];
+			this.toggleNewPublicIp(true);
+		} else {
+
+			this.toggleNewPublicIp(false);
+		}
 		this._publicIpDropdown.updateProperties({
-			value: dropdownValues[0],
 			values: dropdownValues
 		});
-		this.wizard.model.publicIpName = (this._publicIpDropdown.value as azdata.CategoryValue).name;
 		this._publicIpDropdownLoader.loading = false;
 	}
 
-
+	private toggleNewPublicIp(show: boolean) {
+		if (show) {
+			this._existingPublicIpCheckbox.checked = false;
+			this.wizard.changeComponentDisplay(this._publicIpDropdownLoader, 'none');
+			this.wizard.changeComponentDisplay(this._publicIpNetworkText, 'block');
+			this.wizard.model.publicIpName = this._publicIpNetworkText.value!;
+			this.wizard.model.existingPublicIp = 'False';
+		} else {
+			this._existingPublicIpCheckbox.checked = true;
+			this.wizard.changeComponentDisplay(this._publicIpDropdownLoader, 'block');
+			this.wizard.changeComponentDisplay(this._publicIpNetworkText, 'none');
+			this.wizard.model.publicIpName = (this._publicIpDropdown.value as azdata.CategoryValue).name;
+			this.wizard.model.existingPublicIp = 'True';
+		}
+	}
 
 	private async createVmRDPAllowCheckbox(view: azdata.ModelView) {
 		this._vmRDPAllowCheckbox = view.modelBuilder.checkBox().withProperties({
