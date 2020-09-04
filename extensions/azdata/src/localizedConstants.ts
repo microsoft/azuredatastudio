@@ -18,6 +18,8 @@ export const azdataInstalled = localize('azdata.azdataInstalled', "Azure Data CL
 export const azdataUpdated = (version: string) => localize('azdata.azdataUpdated', "Azure Data CLI was successfully updated to version: {0}.", version);
 export const yes = localize('azdata.yes', "Yes");
 export const no = localize('azdata.no', "No");
+export const accept = localize('azdata.accept', "Accept");
+export const decline = localize('azdata.decline', "Decline");
 export const doNotAskAgain = localize('azdata.doNotAskAgain', "Don't Ask Again");
 export const askLater = localize('azdata.askLater', "Ask Later");
 export const downloadingTo = (name: string, location: string): string => localize('azdata.downloadingTo', "Downloading {0} to {1}", name, location);
@@ -42,7 +44,7 @@ export const updateError = (err: any): string => localize('azdata.updateError', 
 export const platformUnsupported = (platform: string): string => localize('azdata.platformUnsupported', "Platform '{0}' is currently unsupported", platform);
 export const unexpectedCommandError = (errMsg: string): string => localize('azdata.unexpectedCommandError', "Unexpected error executing command: {0}", errMsg);
 export const unexpectedExitCode = (code: number, err: string): string => localize('azdata.unexpectedExitCode', "Unexpected exit code from command: {1} ({0})", code, err);
-export const noAzdata = localize('azdata.NoAzdata', "No Azure Data CLI is available, execute command 'Azure Data CLI: Install' to unlock some functionality of Azure Data CLI to enable related features.");
+export const noAzdata = localize('azdata.NoAzdata', "No Azure Data CLI is available, [install the Azure Data CLI](command:azdata.install) to enable the features that require it.");
 export const skipInstall = (config: string): string => localize('azdata.skipInstall', "Skipping installation of azdata, since the operation was not user requested and config option: {0}.{1} is {2}", azdataConfigSection, azdataInstallKey, config);
 export const skipUpdate = (config: string): string => localize('azdata.skipUpdate', "Skipping update of azdata, since the operation was not user requested and config option: {0}.{1} is {2}", azdataConfigSection, azdataUpdateKey, config);
 
@@ -52,9 +54,9 @@ export const userResponseToInstallPrompt = (response: string | undefined): strin
 export const userResponseToUpdatePrompt = (response: string | undefined): string => localize('azdata.userResponseUpdate', "User Response on prompt to update azdata: {0}", response);
 export const userRequestedInstall = localize('azdata.userRequestedInstall', "User requested to install Azure Data CLI using 'Azure Data CLI: Install' command");
 export const userRequestedUpdate = localize('azdata.userRequestedUpdate', "User requested to update Azure Data CLI using 'Azure Data CLI: Check for Update' command");
-export const userRequestedAcceptEula = localize('azdata.acceptEula', "User requested to be prompted for accepting EULA by invoking 'Azure Data CLI: Accept Eula' command");
+export const userRequestedAcceptEula = localize('azdata.acceptEula', "User requested to be prompted for accepting EULA by invoking 'Azure Data CLI: Accept EULA' command");
 export const updateCheckSkipped = localize('azdata.updateCheckSkipped', "No check for new Azure Data CLI version availability performed as Azure Data CLI was not found to be installed");
-export const eulaNotAccepted = localize('azdata.eulaNotAccepted', "Microsoft Privacy statement and Azure Data CLI license terms have not been accepted, execute command 'Azure Data CLI: Accept Eula' and accept the licence terms to unlock related functionality.");
+export const eulaNotAccepted = localize('azdata.eulaNotAccepted', "Microsoft Privacy statement and Azure Data CLI license terms have not been accepted, [prompt to accept the EULA](command:azdata.acceptEula) to use these features.");
 export const installManually = (expectedVersion: string, instructionsUrl: string) => localize('azdata.installManually', "Azure Data CLI is not installed. Version: {0} needs to be installed or some features may not work. Please install it manually using these [instructions]({1}). Restart ADS when installation is done.", expectedVersion, instructionsUrl);
 export const installCorrectVersionManually = (currentVersion: string, expectedVersion: string, instructionsUrl: string) => localize('azdata.installCorrectVersionManually', "Azure Data CLI version: {0} is installed, version: {1} needs to be installed or some features may not work. Please uninstall the current version and then install the correct version manually using these [instructions]({2}). Restart ADS when installation is done.", currentVersion, expectedVersion, instructionsUrl);
 export const promptForEula = (privacyStatementUrl: string, eulaUrl: string) => localize('azdata.promptForEula', "It is required to accept the [Microsoft Privacy Statement]({0}) and the [Azure Data CLI license terms]({1}) to use this extension. Declining this will result in some features not working.", privacyStatementUrl, eulaUrl);

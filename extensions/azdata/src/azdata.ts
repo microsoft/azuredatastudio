@@ -293,8 +293,11 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
 		Logger.log(loc.skipInstall(config));
 		return false;
 	}
+	const responses = userRequested
+		? [loc.yes, loc.no]
+		: [loc.yes, loc.askLater, loc.doNotAskAgain];
 	if (config === AzdataDeployOption.prompt) {
-		response = await vscode.window.showErrorMessage(loc.promptForAzdataInstall, ...getResponses(userRequested));
+		response = await vscode.window.showErrorMessage(loc.promptForAzdataInstall, ...responses);
 		Logger.log(loc.userResponseToInstallPrompt(response));
 	}
 	if (response === loc.doNotAskAgain) {
@@ -371,15 +374,18 @@ export async function promptForEula(memento: vscode.Memento, userRequested: bool
 		Logger.show();
 		Logger.log(loc.userRequestedAcceptEula);
 	}
+	const responses = userRequested
+		? [loc.accept, loc.decline]
+		: [loc.accept, loc.askLater, loc.doNotAskAgain];
 	if (config === AzdataDeployOption.prompt || userRequested) {
 		Logger.show();
 		Logger.log(loc.promptForEulaLog(microsoftPrivacyStatementUrl, eulaUrl));
-		response = await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), ...getResponses(userRequested));
+		response = await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), ...responses);
 		Logger.log(loc.userResponseToEulaPrompt(response));
 	}
 	if (response === loc.doNotAskAgain) {
 		await setConfig(azdataAcceptEulaKey, AzdataDeployOption.dontPrompt);
-	} else if (response === loc.yes) {
+	} else if (response === loc.accept) {
 		await memento.update(eulaAccepted, true); // save a memento that eula was accepted
 		await vscode.commands.executeCommand('setContext', eulaAccepted, true); // save a context key that eula was accepted so that command for accepting eula is no longer available in commandPalette
 		return true;
