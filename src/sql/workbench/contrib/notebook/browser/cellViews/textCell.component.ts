@@ -277,7 +277,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			return;
 		}
 		if (userSelect) {
-			this._content = '';
 			DOM.addClass(this.output.nativeElement, USER_SELECT_CLASS);
 		} else {
 			DOM.removeClass(this.output.nativeElement, USER_SELECT_CLASS);

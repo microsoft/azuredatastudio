@@ -16,6 +16,7 @@ import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { SelectImageDialog } from 'sql/workbench/contrib/notebook/browser/selectImageDialog';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
 
 
 export class TransformMarkdownAction extends Action {
@@ -552,19 +553,17 @@ export class ToggleMarkdownViewAction extends Action {
 		id: string,
 		label: string,
 		cssClass: string,
-		tooltip: string,
-		// private _cellModel: ICellModel,
+		tooltip: string
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
 	}
 
-	public async run(context: any): Promise<boolean> {
-		// context = this._cellModel;
+	public async run(context: MarkdownToolbarComponent): Promise<boolean> {
+		context.removeActiveClassFromModeActions();
 		this.class += ' active';
 		context.cellModel.showPreview = false;
 		context.cellModel.isEditMode = true;
-		// context.cellModel.showTextView = false;
 		// When this button is clicked, the perceived results are the same as when the textview button is clicked. However, the above values set are different than that of ToggleTextViewAction.
 		return true;
 	}
@@ -575,18 +574,16 @@ export class ToggleSplitViewAction extends Action {
 		id: string,
 		label: string,
 		cssClass: string,
-		tooltip: string,
-		// private _cellModel: ICellModel,
+		tooltip: string
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
 	}
-	public async run(context: any): Promise<boolean> {
-		// context = this._cellModel;
+	public async run(context: MarkdownToolbarComponent): Promise<boolean> {
+		context.removeActiveClassFromModeActions();
 		this.class += ' active';
 		context.cellModel.showPreview = true;
 		context.cellModel.isEditMode = true;
-		// context.cellModelshowTextView = false;
 		return true;
 	}
 }
@@ -595,18 +592,16 @@ export class ToggleTextViewAction extends Action {
 		id: string,
 		label: string,
 		cssClass: string,
-		tooltip: string,
-		// private _cellModel: ICellModel,
+		tooltip: string
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
 	}
-	public async run(context: any): Promise<boolean> {
-		// context = this._cellModel;
+	public async run(context: MarkdownToolbarComponent): Promise<boolean> {
+		context.removeActiveClassFromModeActions();
 		this.class += ' active';
 		context.cellModel.showPreview = true;
 		context.cellModel.isEditMode = false;
-		// context.cellModel.showTextView = true;
 		return true;
 	}
 }

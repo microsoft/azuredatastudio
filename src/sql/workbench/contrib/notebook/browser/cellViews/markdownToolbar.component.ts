@@ -46,6 +46,9 @@ export class MarkdownToolbarComponent {
 
 	@Input() public cellModel: ICellModel;
 	private _actionBar: Taskbar;
+	_toggleTextViewAction: any;
+	_toggleSplitViewAction: any;
+	_toggleMarkdownViewAction: any;
 
 	constructor(
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
@@ -73,9 +76,9 @@ export class MarkdownToolbarComponent {
 		let heading3 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading3', this.optionHeading3, 'heading 3', this.optionHeading3, this.cellModel, MarkdownButtonType.HEADING3);
 		let paragraph = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.paragraph', this.optionParagraph, 'paragraph', this.optionParagraph, this.cellModel, MarkdownButtonType.PARAGRAPH);
 
-		let toggleTextView = this._instantiationService.createInstance(ToggleTextViewAction, 'notebook.toggleTextView', '', 'masked-icon show-text', this.textViewButton);
-		let toggleSplitView = this._instantiationService.createInstance(ToggleSplitViewAction, 'notebook.toggleSplitView', '', 'masked-icon split-toggle-on', this.splitViewButton);
-		let toggleMarkdownView = this._instantiationService.createInstance(ToggleMarkdownViewAction, 'notebook.toggleMarkdownView', '', 'masked-icon show-markdown', this.markdownButton);
+		this._toggleTextViewAction = this._instantiationService.createInstance(ToggleTextViewAction, 'notebook.toggleTextView', '', 'masked-icon show-text', this.textViewButton);
+		this._toggleSplitViewAction = this._instantiationService.createInstance(ToggleSplitViewAction, 'notebook.toggleSplitView', '', 'masked-icon split-toggle-on', this.splitViewButton);
+		this._toggleMarkdownViewAction = this._instantiationService.createInstance(ToggleMarkdownViewAction, 'notebook.toggleMarkdownView', '', 'masked-icon show-markdown', this.markdownButton);
 
 		let taskbar = <HTMLElement>this.mdtoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
@@ -108,9 +111,18 @@ export class MarkdownToolbarComponent {
 			{ action: orderedListButton },
 			{ action: imageButton },
 			{ element: buttonDropdownContainer },
-			{ action: toggleTextView },
-			{ action: toggleSplitView },
-			{ action: toggleMarkdownView }
+			{ action: this._toggleTextViewAction },
+			{ action: this._toggleSplitViewAction },
+			{ action: this._toggleMarkdownViewAction }
 		]);
+	}
+
+	public removeActiveClassFromModeActions() {
+		const activeClass = ' active';
+		for (let action of [this._toggleTextViewAction, this._toggleSplitViewAction, this._toggleMarkdownViewAction]) {
+			if (action.class.includes(activeClass)) {
+				action.class = action.class.replace(activeClass, '');
+			}
+		}
 	}
 }
