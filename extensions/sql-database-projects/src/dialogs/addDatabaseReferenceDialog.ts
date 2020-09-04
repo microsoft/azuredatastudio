@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as path from 'path';
 import * as constants from '../common/constants';
 
 import { Project, SystemDatabase, DatabaseReferenceLocation } from '../models/project';
@@ -218,6 +219,10 @@ export class AddDatabaseReferenceDialog {
 			ariaLabel: constants.databaseNameLabel
 		}).component();
 
+		this.systemDatabaseDropdown.onValueChanged(() => {
+			this.setDefaultDatabaseValues();
+		});
+
 		// only master is a valid system db reference for projects targetting Azure
 		if (this.project.getProjectTargetPlatform().toLowerCase().includes('azure')) {
 			this.systemDatabaseDropdown.values?.splice(1);
@@ -237,6 +242,7 @@ export class AddDatabaseReferenceDialog {
 		}).component();
 
 		this.dacpacTextbox.onTextChanged(() => {
+			this.setDefaultDatabaseValues();
 			this.tryEnableAddReferenceButton();
 			this.updateExampleUsage();
 		});
@@ -327,11 +333,38 @@ export class AddDatabaseReferenceDialog {
 			this.databaseVariableTextbox!.value = isSystemDb ? '' : this.databaseVariableTextbox!.value;
 			this.serverNameTextbox!.value = '';
 			this.serverVariableTextbox!.value = '';
+
+			// add default values in enabled fields
+			this.setDefaultDatabaseValues();
 		} else if (this.locationDropdown?.value === constants.differentDbDifferentServer) {
 			this.databaseNameTextbox!.enabled = true;
 			this.databaseVariableTextbox!.enabled = true;
 			this.serverNameTextbox!.enabled = true;
 			this.serverVariableTextbox!.enabled = true;
+
+			// add default values in enabled fields
+			this.setDefaultDatabaseValues();
+			this.serverNameTextbox!.value = constants.otherServer;
+			this.serverVariableTextbox!.value = constants.otherSeverVariable;
+		}
+	}
+
+	private setDefaultDatabaseValues(): void {
+		switch (this.currentReferenceType) {
+			case ReferenceType.project: {
+				// TODO: add when projects support is added
+				break;
+			}
+			case ReferenceType.systemDb: {
+				this.databaseNameTextbox!.value = <string>this.systemDatabaseDropdown?.value;
+				break;
+			}
+			case ReferenceType.dacpac: {
+				const dacpacName = this.dacpacTextbox!.value ? path.parse(this.dacpacTextbox!.value!).name : '';
+				this.databaseNameTextbox!.value = dacpacName;
+				this.databaseVariableTextbox!.value = dacpacName ? `$(${dacpacName})` : '';
+				break;
+			}
 		}
 	}
 
@@ -353,6 +386,7 @@ export class AddDatabaseReferenceDialog {
 		const serverVariableRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.serverVariable, true), this.serverVariableTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		const variableSection = this.view!.modelBuilder.flexContainer().withItems([databaseNameRow, databaseVariableRow, serverNameRow, serverVariableRow]).withLayout({ flexFlow: 'column' }).withProperties({ CSSStyles: { 'margin-bottom': '25px' } }).component();
+		this.setDefaultDatabaseValues();
 
 		return {
 			component: variableSection,
