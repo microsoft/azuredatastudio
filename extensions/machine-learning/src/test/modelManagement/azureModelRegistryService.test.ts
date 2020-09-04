@@ -11,7 +11,7 @@ import * as should from 'should';
 import { AzureModelRegistryService } from '../../modelManagement/azureModelRegistryService';
 import { Config } from '../../configurations/config';
 import { HttpClient } from '../../common/httpClient';
-import { azureResource } from '../../typings/azure-resource';
+import { azureResource } from 'azureResource';
 
 import * as utils from '../utils';
 import { Workspace, WorkspacesListByResourceGroupResponse } from '@azure/arm-machinelearningservices/esm/models';
@@ -81,13 +81,15 @@ function createContext(): TestContext {
 		subscriptions: [
 			{
 				name: 's1',
-				id: 's1'
+				id: 's1',
+				subscriptionId: 's1'
 			}
 		],
 		groups: [
 			{
 				name: 'g1',
-				id: 'g1'
+				id: 'g1',
+				subscriptionId: 's1'
 			}
 		],
 		workspaces: [{

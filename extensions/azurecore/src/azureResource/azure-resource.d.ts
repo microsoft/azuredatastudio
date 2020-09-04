@@ -24,6 +24,7 @@ declare module 'azureResource' {
 		export interface AzureResource {
 			name: string;
 			id: string;
+			subscriptionId: string;
 			tenant?: string;
 		}
 
