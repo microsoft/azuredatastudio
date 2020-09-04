@@ -87,7 +87,7 @@ export class TestObjectExplorerService implements IObjectExplorerService {
 
 	public registerServerTreeView(view: IServerTreeView): void { }
 
-	public getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string } { throw new Error('Method not implemented'); }
+	public getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string } | undefined { return undefined; }
 
 	public isFocused(): boolean { return true; }
 
