@@ -81,8 +81,7 @@ function createContext(): TestContext {
 		subscriptions: [
 			{
 				name: 's1',
-				id: 's1',
-				subscriptionId: 's1'
+				id: 's1'
 			}
 		],
 		groups: [

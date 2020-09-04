@@ -7,6 +7,20 @@ declare module 'azureResource' {
 	import { TreeDataProvider } from 'vscode';
 	import { DataProvider, Account, TreeItem } from 'azdata';
 	export namespace azureResource {
+
+		export const enum AzureResourceType {
+			resourceGroup = 'microsoft.resources/subscriptions/resourcegroups',
+			sqlServer = 'microsoft.sql/servers',
+			sqlDatabase = 'microsoft.sql/servers/databases',
+			sqlManagedInstance = 'microsoft.sql/managedinstances',
+			azureArcSqlManagedInstance = 'microsoft.azuredata/sqlinstances',
+			virtualMachines = 'microsoft.compute/virtualmachines',
+			kustoClusters = 'microsoft.kusto/clusters',
+			azureArcPostgresServer = 'microsoft.azuredata/postgresinstances',
+			postgresServer = 'microsoft.dbforpostgresql/servers',
+			azureArcService = 'microsoft.azuredata/datacontrollers'
+		}
+
 		export interface IAzureResourceProvider extends DataProvider {
 			getTreeDataProvider(): IAzureResourceTreeDataProvider;
 		}
@@ -28,7 +42,7 @@ declare module 'azureResource' {
 			tenant?: string;
 		}
 
-		export interface AzureResourceSubscription extends AzureResource {
+		export interface AzureResourceSubscription extends Omit<AzureResource, 'subscriptionId'> {
 		}
 
 		export interface AzureSqlResource extends AzureResource {

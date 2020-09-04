@@ -10,7 +10,7 @@ import { ResourceServiceBase } from '../resourceTreeDataProviderBase';
 export class AzureResourceGroupService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceResourceGroup> {
 
 	protected get query(): string {
-		return 'ResourceContainers | where type=="microsoft.resources/subscriptions/resourcegroups"';
+		return `ResourceContainers | where type=="${azureResource.AzureResourceType.resourceGroup}"`;
 	}
 
 	protected convertResource(resource: DbServerGraphData): azureResource.AzureResourceResourceGroup {
