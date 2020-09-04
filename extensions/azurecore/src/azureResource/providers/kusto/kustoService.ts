@@ -14,7 +14,7 @@ export interface KustoGraphData extends GraphData {
 	};
 }
 
-const instanceQuery = 'where type == "microsoft.kusto/clusters"';
+const instanceQuery = `where type == "${azureResource.AzureResourceType.kustoClusters}"`;
 
 export class KustoResourceService extends ResourceServiceBase<KustoGraphData, azureResource.AzureResourceDatabaseServer> {
 

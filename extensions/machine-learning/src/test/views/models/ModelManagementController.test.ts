@@ -35,8 +35,7 @@ const accounts: azdata.Account[] = [
 const subscriptions: azureResource.AzureResourceSubscription[] = [
 	{
 		name: 'subscription',
-		id: '2',
-		subscriptionId: 'subscription'
+		id: '2'
 	}
 ];
 const groups: azureResource.AzureResourceResourceGroup[] = [

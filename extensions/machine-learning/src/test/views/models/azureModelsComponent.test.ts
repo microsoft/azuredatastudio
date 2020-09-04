@@ -50,8 +50,7 @@ describe('Azure Models Component', () => {
 		let subscriptions: azureResource.AzureResourceSubscription[] = [
 			{
 				name: 'subscription',
-				id: '2',
-				subscriptionId: 'subscription'
+				id: '2'
 			}
 		];
 		let groups: azureResource.AzureResourceResourceGroup[] = [

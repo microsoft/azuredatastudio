@@ -15,7 +15,7 @@ interface DbServerGraphData extends GraphData {
 	};
 }
 
-const serversQuery = 'where type == "microsoft.dbforpostgresql/servers"';
+const serversQuery = `where type == "${azureResource.AzureResourceType.postgresServer}"`;
 
 export class PostgresServerService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceDatabaseServer> {
 

@@ -39,7 +39,7 @@ export type SqlManagedInstance = AzureProduct;
 export async function getAvailableManagedInstanceProducts(account: azdata.Account, subscription: Subscription): Promise<SqlManagedInstance[]> {
 	const api = await getAzureCoreAPI();
 
-	const result = await api.runGraphQuery<SqlManagedInstance>(account, [subscription], false, 'where type == "microsoft.sql/managedinstances"');
+	const result = await api.runGraphQuery<SqlManagedInstance>(account, [subscription], false, `where type == "${azureResource.AzureResourceType.sqlManagedInstance}"`);
 	return result.resources;
 }
 
@@ -47,7 +47,7 @@ export type SqlServer = AzureProduct;
 export async function getAvailableSqlServers(account: azdata.Account, subscription: Subscription): Promise<SqlServer[]> {
 	const api = await getAzureCoreAPI();
 
-	const result = await api.runGraphQuery<SqlServer>(account, [subscription], false, 'where type == "microsoft.sql/servers"');
+	const result = await api.runGraphQuery<SqlServer>(account, [subscription], false, `where type == "${azureResource.AzureResourceType.sqlServer}"`);
 	return result.resources;
 }
 
@@ -55,6 +55,6 @@ export type SqlVMServer = AzureProduct;
 export async function getAvailableSqlVMs(account: azdata.Account, subscription: Subscription): Promise<SqlVMServer[]> {
 	const api = await getAzureCoreAPI();
 
-	const result = await api.runGraphQuery<SqlVMServer>(account, [subscription], false, 'where type == "microsoft.compute/virtualmachines" and properties.storageProfile.imageReference.publisher == "microsoftsqlserver"');
+	const result = await api.runGraphQuery<SqlVMServer>(account, [subscription], false, `where type == "${azureResource.AzureResourceType.virtualMachines}" and properties.storageProfile.imageReference.publisher == "microsoftsqlserver"`);
 	return result.resources;
 }
