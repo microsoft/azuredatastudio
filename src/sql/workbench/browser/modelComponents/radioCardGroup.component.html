@@ -1,10 +1,8 @@
-<div [class]="orientation">
-	<div role="radiogroup" *ngIf="cards" class="card-group" style="flex-wrap:wrap" [style.height]="height"
-		[style.width]="width" [attr.aria-label]="ariaLabel" (keydown)="onKeyDown($event)">
+	<div role="radiogroup" *ngIf="cards" [class]="orientation + ' card-group'" class="card-group" style="flex-wrap:wrap"
+		[style.height]="height" [style.width]="width" [attr.aria-label]="ariaLabel" (keydown)="onKeyDown($event)">
 		<div #cardDiv role="radio" *ngFor="let card of cards" class="model-card" (click)="selectCard(card.id)"
 			[attr.aria-checked]="isCardSelected(card.id)" [tabIndex]="getTabIndex(card.id)" [style.width]="cardWidth"
-			[style.height]="cardHeight" (focus)="onCardFocus(card.id)" (blur)="onCardBlur(card.id)"
-			style="flex:0 0 auto;">
+			[style.height]="cardHeight" (focus)="onCardFocus(card.id)" (blur)="onCardBlur(card.id)" style="flex:0 0 auto;">
 
 			<div class="selection-indicator-container">
 				<div *ngIf="isCardSelected(card.id)" class="selection-indicator"></div>
@@ -17,7 +15,7 @@
 				<div *ngFor="let description of card.descriptions" class="inner-text-content">
 					<span class="text-value" [ngStyle]="description.textStyles">{{description.textValue}}</span>
 					<a *ngIf="description.linkDisplayValue" class="link-value" href="#"
-						(click)="onLinkClick(card.id, description);$event.stopPropagation()"
+						(click)="onLinkClick($event, card.id, description)"
 						[ngStyle]="description.linkStyles">
 						{{description.linkDisplayValue}}
 						<span *ngIf="description.displayLinkCodicon && description.linkDisplayValue"
@@ -27,4 +25,3 @@
 			</div>
 		</div>
 	</div>
-</div>

@@ -160,7 +160,8 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 		});
 	}
 
-	public onLinkClick(cardId: string, textContents: azdata.RadioCardDescription): void {
+	public onLinkClick(event: Event, cardId: string, textContents: azdata.RadioCardDescription): void {
+		event.stopPropagation();
 		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
 			args: {

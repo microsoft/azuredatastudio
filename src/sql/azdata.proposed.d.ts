@@ -6,7 +6,6 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
-import { PropertiesHyphen } from 'csstype';
 
 declare module 'azdata' {
 	/**
@@ -161,7 +160,7 @@ declare module 'azdata' {
 		linkCodiconStyles?: CssStyles;
 	}
 
-	export type CssStyles = PropertiesHyphen;
+	export type CssStyles = { [key: string]: string | number };
 
 	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
 		cards: RadioCard[];
