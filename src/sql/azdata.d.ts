@@ -413,7 +413,7 @@ declare module 'azdata' {
 		/**
 		 * database name
 		 */
-		databaseName: string;
+		databaseName?: string;
 		/**
 		 * user name
 		 */
