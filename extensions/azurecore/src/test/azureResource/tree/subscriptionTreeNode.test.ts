@@ -44,10 +44,12 @@ const mockAccount: azdata.Account = {
 };
 
 const mockTenantId: string = 'mock_tenant';
+const mockSubscriptionId: string = 'mock_subscription';
 
 const mockSubscription: azureResource.AzureResourceSubscription = {
-	id: 'mock_subscription',
+	id: mockSubscriptionId,
 	name: 'mock subscription',
+	subscriptionId: mockSubscriptionId,
 	tenant: mockTenantId
 };
 

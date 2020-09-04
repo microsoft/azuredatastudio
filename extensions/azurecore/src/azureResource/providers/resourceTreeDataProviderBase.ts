@@ -54,6 +54,7 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 }
 
 export interface GraphData {
+	subscriptionId: string,
 	tenantId: string;
 	id: string;
 	name: string;
