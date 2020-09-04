@@ -20,7 +20,6 @@ import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType'
 import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
 import { createObjectExplorerServiceMock } from 'sql/workbench/services/objectExplorer/test/browser/testObjectExplorerService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { TestTree } from 'sql/workbench/test/treeMock';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 
@@ -56,7 +55,7 @@ const oeActionArgs: ObjectExplorerActionsContext = { connectionProfile: connecti
 
 let instantiationService: IInstantiationService;
 let logServiceMock: TypeMoq.Mock<ILogService>;
-let treeMock: TypeMoq.Mock<ITree>;
+let treeMock: TypeMoq.Mock<TestTree>;
 
 suite('Scripting Actions', () => {
 
@@ -68,7 +67,7 @@ suite('Scripting Actions', () => {
 		const serverTreeViewMock = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Loose, connectionManagementServiceMock.object, instantiationService, undefined, undefined, undefined, undefined, capabilitiesService);
 		treeMock = TypeMoq.Mock.ofType(TestTree);
 		serverTreeViewMock.setup(x => x.tree).returns(() => treeMock.object);
-		collection.set(IObjectExplorerService, createObjectExplorerServiceMock({ serverTreeView: serverTreeViewMock.object, treeNode: treeNode }).object);
+		collection.set(IObjectExplorerService, createObjectExplorerServiceMock({ serverTreeView: serverTreeViewMock.object, treeNode: treeNode }));
 		logServiceMock = TypeMoq.Mock.ofInstance(new NullLogService());
 		collection.set(ILogService, logServiceMock.object);
 		collection.set(INotificationService, new TestNotificationService());

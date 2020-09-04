@@ -322,7 +322,7 @@ declare module 'azdata' {
 	export interface IConnectionProfile extends ConnectionInfo {
 		connectionName?: string;
 		serverName: string;
-		databaseName: string;
+		databaseName?: string;
 		userName: string;
 		password: string;
 		authenticationType: string;
@@ -749,7 +749,7 @@ declare module 'azdata' {
 	}
 
 	export interface ScriptingParamDetails {
-		filePath: string;
+		filePath?: string;
 		scriptCompatibilityOption: string;
 		targetDatabaseEngineEdition: string;
 		targetDatabaseEngineType: string;

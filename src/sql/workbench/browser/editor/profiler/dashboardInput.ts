@@ -95,7 +95,7 @@ export class DashboardInput extends EditorInput {
 
 	private isMasterMssql(): boolean {
 		return this.connectionProfile.providerName === mssqlProviderName
-			&& this.connectionProfile.databaseName.toLowerCase() === 'master';
+			&& this.connectionProfile.databaseName?.toLowerCase() === 'master';
 	}
 
 	public get uri(): string | undefined {
