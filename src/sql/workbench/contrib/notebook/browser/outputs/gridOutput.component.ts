@@ -14,7 +14,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IDataResource, MaxTableRowsConfigName, NotebookConfigSectionName } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import QueryRunner, { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
-import { ResultSetSummary, ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { ResultSetSummary, ResultSetSubset, ICellValue } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
@@ -28,15 +28,19 @@ import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimem
 import { GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import { GridTableBase } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { getErrorMessage } from 'vs/base/common/errors';
-import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
+import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
 import { SaveResultAction, IGridActionContext } from 'sql/workbench/contrib/query/browser/actions';
-import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
+import { SaveFormat, ResultSerializer, SaveResultsResponse } from 'sql/workbench/services/query/common/resultSerializer';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
+import { values } from 'vs/base/common/collections';
+import { URI } from 'vs/base/common/uri';
+import { assign } from 'vs/base/common/objects';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -54,13 +58,15 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	private _table: DataResourceTable;
 	private _batchId: number;
 	private _id: number;
+	private _queryRunnerUri: string;
 	private _queryRunner: QueryRunner;
 	private _configuredMaxRows: number;
 
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IThemeService) private readonly themeService: IThemeService,
-		@Inject(IConfigurationService) private configurationService: IConfigurationService
+		@Inject(IConfigurationService) private configurationService: IConfigurationService,
+		@Inject(IQueryManagementService) private queryManagementService: IQueryManagementService
 	) {
 		super();
 	}
@@ -101,8 +107,8 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		this._id = value;
 	}
 
-	@Input() set queryRunner(value: QueryRunner) {
-		this._queryRunner = value;
+	@Input() set queryRunnerUri(value: string) {
+		this._queryRunnerUri = value;
 	}
 
 	ngOnInit() {
@@ -113,6 +119,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 				this._configuredMaxRows = maxRows;
 			}
 		}
+		this._queryRunner = this.queryManagementService.getRunner(this._queryRunnerUri);
 		this.renderGrid();
 	}
 
@@ -129,7 +136,9 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			this._register(attachTableStyler(this._table, this.themeService));
 			this._table.onDidInsert();
 			this.layout();
-			this._register(this._queryRunner.onResultSetUpdate(resultSet => { this.updateResultSet(resultSet); }));
+			if (this._queryRunner) {
+				this._register(this._queryRunner.onResultSetUpdate(resultSet => { this.updateResultSet(resultSet); }));
+			}
 			this._initialized = true;
 		}
 	}
@@ -273,7 +282,7 @@ class DataResourceTable extends GridTableBase<any> {
 }
 
 export class DataResourceDataProvider implements IGridDataProvider {
-	// private rows: ICellValue[][];
+	private rows: ICellValue[][];
 	private _queryRunner: QueryRunner;
 	private _batchId: number;
 	private _id: number;
@@ -289,42 +298,43 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService,
 		@ISerializationService private _serializationService: ISerializationService,
-		// @IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		this._queryRunner = queryRunner;
 		this._batchId = batchId;
 		this._id = id;
-		// this.transformSource(source);
+		this.transformSource(source);
 	}
 
-	// private transformSource(source: IDataResource): void {
-	// this.rows = source.data.map(row => {
-	// 	let rowData: azdata.DbCellValue[] = [];
-	// 	Object.keys(row).forEach((val, index) => {
-	// 		let displayValue = String(values(row)[index]);
-	// 		// Since the columns[0] represents the row number, start at 1
-	// 		rowData.push({
-	// 			displayValue: displayValue,
-	// 			isNull: false,
-	// 			invariantCultureDisplayValue: displayValue
-	// 		});
-	// 	});
-	// 	return rowData;
-	// });
-	// }
+	private transformSource(source: IDataResource): void {
+		this.rows = source.data.map(row => {
+			let rowData: azdata.DbCellValue[] = [];
+			Object.keys(row).forEach((val, index) => {
+				let displayValue = String(values(row)[index]);
+				// Since the columns[0] represents the row number, start at 1
+				rowData.push({
+					displayValue: displayValue,
+					isNull: false,
+					invariantCultureDisplayValue: displayValue
+				});
+			});
+			return rowData;
+		});
+	}
 
 	getRowData(rowStart: number, numberOfRows: number): Thenable<ResultSetSubset> {
-		// let rowEnd = rowStart + numberOfRows;
-		// if (rowEnd > this.rows.length) {
-		// 	rowEnd = this.rows.length;
-		// }
-		// let resultSubset: ResultSetSubset = {
-		// 	rowCount: rowEnd - rowStart,
-		// 	rows: this.rows.slice(rowStart, rowEnd)
-		// };
-		// return Promise.resolve(resultSubset);
-		return this._queryRunner.getQueryRows(rowStart, numberOfRows, this._batchId, this._id);
-
+		if (this._queryRunner) {
+			return this._queryRunner.getQueryRows(rowStart, numberOfRows, this._batchId, this._id);
+		}
+		let rowEnd = rowStart + numberOfRows;
+		if (rowEnd > this.rows.length) {
+			rowEnd = this.rows.length;
+		}
+		let resultSubset: ResultSetSubset = {
+			rowCount: rowEnd - rowStart,
+			rows: this.rows.slice(rowStart, rowEnd)
+		};
+		return Promise.resolve(resultSubset);
 	}
 
 	async copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
@@ -362,75 +372,77 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	serializeResults(format: SaveFormat, selection: Slick.Range[]): Thenable<void> {
-		// let serializer = this._instantiationService.createInstance(ResultSerializer);
-		// return serializer.handleSerialization(this.documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
-		return this._queryRunner.serializeResults(this._batchId, this._id, format, selection);
+		if (this._queryRunner) {
+			return this._queryRunner.serializeResults(this._batchId, this._id, format, selection);
+		}
+		let serializer = this._instantiationService.createInstance(ResultSerializer);
+		return serializer.handleSerialization(this.documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
 	}
 
-	// 	private doSerialize(serializer: ResultSerializer, filePath: URI, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | undefined> {
-	// 		if (!this.canSerialize) {
-	// 			return Promise.resolve(undefined);
-	// 		}
-	// 		// TODO implement selection support
-	// 		let columns = this.resultSet.columnInfo;
-	// 		let rowLength = this.rows.length;
-	// 		let minRow = 0;
-	// 		let maxRow = this.rows.length;
-	// 		let singleSelection = selection && selection.length > 0 ? selection[0] : undefined;
-	// 		if (singleSelection && this.isSelected(singleSelection)) {
-	// 			rowLength = singleSelection.toRow - singleSelection.fromRow + 1;
-	// 			minRow = singleSelection.fromRow;
-	// 			maxRow = singleSelection.toRow + 1;
-	// 			columns = columns.slice(singleSelection.fromCell, singleSelection.toCell + 1);
-	// 		}
-	// 		let getRows: ((index: number, includeHeaders: boolean, rowCount: number) => ICellValue[][]) = (index, includeHeaders, rowCount) => {
-	// 			// Offset for selections by adding the selection startRow to the index
-	// 			index = index + minRow;
-	// 			if (rowLength === 0 || index < 0 || index >= maxRow) {
-	// 				return [];
-	// 			}
-	// 			let endIndex = index + rowCount;
-	// 			if (endIndex > maxRow) {
-	// 				endIndex = maxRow;
-	// 			}
-	// 			let result: ICellValue[][] = [];
-	// 			if (includeHeaders) {
-	// 				result.push(columns.map(col => {
-	// 					let headerData: azdata.DbCellValue;
-	// 					headerData = {
-	// 						displayValue: col.columnName,
-	// 						isNull: false,
-	// 						invariantCultureDisplayValue: col.columnName
-	// 					};
-	// 					return headerData;
-	// 				}));
-	// 			}
-	// 			result = result.concat(this.rows.slice(index, endIndex).map(row => {
-	// 				if (this.isSelected(singleSelection)) {
-	// 					return row.slice(singleSelection.fromCell, singleSelection.toCell + 1);
-	// 				} else {
-	// 					return row;
-	// 				}
-	// 			}));
-	// 			return result;
-	// 		};
+	private doSerialize(serializer: ResultSerializer, filePath: URI, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | undefined> {
+		if (!this.canSerialize) {
+			return Promise.resolve(undefined);
+		}
+		// TODO implement selection support
+		let columns = this.resultSet.columnInfo;
+		let rowLength = this.rows.length;
+		let minRow = 0;
+		let maxRow = this.rows.length;
+		let singleSelection = selection && selection.length > 0 ? selection[0] : undefined;
+		if (singleSelection && this.isSelected(singleSelection)) {
+			rowLength = singleSelection.toRow - singleSelection.fromRow + 1;
+			minRow = singleSelection.fromRow;
+			maxRow = singleSelection.toRow + 1;
+			columns = columns.slice(singleSelection.fromCell, singleSelection.toCell + 1);
+		}
+		let getRows: ((index: number, includeHeaders: boolean, rowCount: number) => ICellValue[][]) = (index, includeHeaders, rowCount) => {
+			// Offset for selections by adding the selection startRow to the index
+			index = index + minRow;
+			if (rowLength === 0 || index < 0 || index >= maxRow) {
+				return [];
+			}
+			let endIndex = index + rowCount;
+			if (endIndex > maxRow) {
+				endIndex = maxRow;
+			}
+			let result: ICellValue[][] = [];
+			if (includeHeaders) {
+				result.push(columns.map(col => {
+					let headerData: azdata.DbCellValue;
+					headerData = {
+						displayValue: col.columnName,
+						isNull: false,
+						invariantCultureDisplayValue: col.columnName
+					};
+					return headerData;
+				}));
+			}
+			result = result.concat(this.rows.slice(index, endIndex).map(row => {
+				if (this.isSelected(singleSelection)) {
+					return row.slice(singleSelection.fromCell, singleSelection.toCell + 1);
+				} else {
+					return row;
+				}
+			}));
+			return result;
+		};
 
-	// 		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
-	// 			saveFormat: format,
-	// 			columns: columns,
-	// 			filePath: filePath.fsPath,
-	// 			getRowRange: (rowStart, includeHeaders, numberOfRows) => getRows(rowStart, includeHeaders, numberOfRows),
-	// 			rowCount: rowLength
-	// 		});
-	// 		return this._serializationService.serializeResults(serializeRequestParams);
-	// 	}
+		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
+			saveFormat: format,
+			columns: columns,
+			filePath: filePath.fsPath,
+			getRowRange: (rowStart, includeHeaders, numberOfRows) => getRows(rowStart, includeHeaders, numberOfRows),
+			rowCount: rowLength
+		});
+		return this._serializationService.serializeResults(serializeRequestParams);
+	}
 
-	// 	/**
-	// 	 * Check if a range of cells were selected.
-	// 	 */
-	// 	private isSelected(selection: Slick.Range): boolean {
-	// 		return (selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
-	// 	}
+	/**
+	 * Check if a range of cells were selected.
+	 */
+	private isSelected(selection: Slick.Range): boolean {
+		return (selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
+	}
 }
 
 

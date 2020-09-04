@@ -75,7 +75,8 @@ export class NotebookEditorModel extends EditorModel {
 			}));
 		} else {
 			if (this.textEditorModel instanceof TextFileEditorModel) {
-				this._register(this.textEditorModel.onDidSave(() => {
+				this._register(this.textEditorModel.onDidSave(async () => {
+					await this.getNotebookModel().gridDataConversionComplete;
 					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 					this.setDirty(dirty);
 					this.sendNotebookSerializationStateChange();
@@ -290,6 +291,7 @@ export abstract class NotebookInput extends EditorInput {
 	}
 
 	async save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		await this._model.getNotebookModel().gridDataConversionComplete;
 		this.updateModel();
 		let input = await this.textInput.save(groupId, options);
 		await this.setTrustForNewEditor(input);

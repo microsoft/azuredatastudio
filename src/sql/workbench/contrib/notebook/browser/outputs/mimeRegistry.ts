@@ -11,7 +11,6 @@ import * as types from 'vs/base/common/types';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { values } from 'vs/base/common/collections';
 import { nb } from 'azdata';
-import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 
 export type FactoryIdentifier = string;
 
@@ -26,7 +25,7 @@ export interface IMimeComponent {
 	cellOutput?: nb.ICellOutput;
 	batchId?: number;
 	id?: number;
-	queryRunner?: QueryRunner;
+	queryRunnerUri?: string;
 	layout(): void;
 }
 

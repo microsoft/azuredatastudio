@@ -577,6 +577,9 @@ export class CellModel extends Disposable implements ICellModel {
 		//     this._displayIdMap.set(displayId, targets);
 		// }
 		if (output) {
+			if (output.output_type === 'execute_result') {
+				this.notebookModel.setGridDataConversionComplete((<nb.IExecuteResult>output).conversionComplete);
+			}
 			let outputExists = false;
 			for (let i = 0; i < this._outputs.length; i++) {
 				let o = this._outputs[i];
@@ -588,7 +591,6 @@ export class CellModel extends Disposable implements ICellModel {
 					delete output['transient'];
 					// update output with correct mimeType and html data
 					this._outputs[i] = this.rewriteOutputUrls(output);
-					this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 					break;
 				}
 			}
@@ -596,10 +598,10 @@ export class CellModel extends Disposable implements ICellModel {
 				// deletes transient node in the serialized JSON
 				delete output['transient'];
 				this._outputs.push(this.rewriteOutputUrls(output));
+				// Only scroll on 1st output being added
+				let shouldScroll = this._outputs.length === 1;
+				this.fireOutputsChanged(shouldScroll);
 			}
-			// Only scroll on 1st output being added
-			let shouldScroll = this._outputs.length === 1;
-			this.fireOutputsChanged(shouldScroll);
 		}
 	}
 

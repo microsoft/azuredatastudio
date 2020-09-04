@@ -29,6 +29,7 @@ import { startsWith } from 'vs/base/common/strings';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
+import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -176,7 +177,8 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ILogService private readonly logService: ILogService,
-		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
+		@IQueryManagementService private queryManagementService: IQueryManagementService
 	) {
 		super();
 		this.initMagics();
@@ -283,6 +285,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 		} else if (this._currentConnection && this._currentConnectionProfile) {
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionPath);
+			this.queryManagementService.registerRunner(this._queryRunner, this._connectionPath);
 			this._connectionManagementService.connect(this._currentConnectionProfile, this._connectionPath).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);
 				this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
@@ -499,7 +502,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 				resultsToAdd = resultSet.splice(0);
 			}
 			for (let set of resultsToAdd) {
-				this.sendIOPubMessage(set);
+				this.sendIOPubMessage(set, false);
 			}
 		} catch (err) {
 			// TODO should we output this somewhere else?
@@ -550,11 +553,11 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private sendResultSetAsIOPub(resultSet: ResultSetSummary): void {
 		if (this._querySubsetResultMap && this._querySubsetResultMap.get(resultSet.id)) {
 			let subsetResult = this._querySubsetResultMap.get(resultSet.id);
-			this.sendIOPubMessage(resultSet, subsetResult);
+			this.sendIOPubMessage(resultSet, true, subsetResult);
 		}
 	}
 
-	private sendIOPubMessage(resultSet: ResultSetSummary, subsetResult?: ResultSetSubset): void {
+	private sendIOPubMessage(resultSet: ResultSetSummary, conversionComplete?: boolean, subsetResult?: ResultSetSubset): void {
 		let msg: nb.IIOPubMessage = {
 			channel: 'iopub',
 			type: 'iopub',
@@ -572,7 +575,8 @@ export class SQLFuture extends Disposable implements FutureInternal {
 				},
 				batchId: resultSet.batchId,
 				id: resultSet.id,
-				queryRunner: this._queryRunner
+				queryRunnerUri: this._queryRunner.uri,
+				conversionComplete: conversionComplete
 			},
 			metadata: undefined,
 			parent_header: undefined

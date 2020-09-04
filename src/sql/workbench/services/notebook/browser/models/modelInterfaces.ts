@@ -238,6 +238,10 @@ export interface INotebookModel {
 	 */
 	readonly sessionLoadFinished: Promise<void>;
 	/**
+	 * Promise indicating when output grid data is converted to mimeType and html.
+	 */
+	gridDataConversionComplete: Promise<void>;
+	/**
 	 * LanguageInfo saved in the notebook
 	 */
 	readonly languageInfo: nb.ILanguageInfo;
@@ -395,6 +399,8 @@ export interface INotebookModel {
 	standardKernels: IStandardKernelWithProvider[];
 
 	requestConnection(): Promise<boolean>;
+
+	setGridDataConversionComplete(complete: boolean): void;
 
 }
 
