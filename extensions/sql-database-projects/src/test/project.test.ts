@@ -139,17 +139,16 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		project.changeDSP(TargetPlatform.Sql130.toString());
 		let uri = project.getSystemDacpacUri(constants.masterDacpac);
 		let ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
-		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.masterDacpac)).fsPath);
-		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.masterDacpac)).fsPath);
-
-		project.changeDSP(TargetPlatform.Sql150.toString());
-		uri = project.getSystemDacpacUri(constants.masterDacpac);
-		ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.masterDacpac)).fsPath);
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.masterDacpac)).fsPath);
+
+		project.changeDSP(TargetPlatform.Sql130.toString());
+		uri = project.getSystemDacpacUri(constants.masterDacpac);
+		ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.masterDacpac)).fsPath);
+		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.masterDacpac)).fsPath);
 
 		project.changeDSP(TargetPlatform.SqlAzureV12.toString());
 		uri = project.getSystemDacpacUri(constants.masterDacpac);
@@ -162,17 +161,16 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		project.changeDSP(TargetPlatform.Sql130.toString());
 		let uri = project.getSystemDacpacUri(constants.msdbDacpac);
 		let ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
-		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.msdbDacpac)).fsPath);
-		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.msdbDacpac)).fsPath);
-
-		project.changeDSP(TargetPlatform.Sql150.toString());
-		uri = project.getSystemDacpacUri(constants.msdbDacpac);
-		ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.msdbDacpac)).fsPath);
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.msdbDacpac)).fsPath);
+
+		project.changeDSP(TargetPlatform.Sql130.toString());
+		uri = project.getSystemDacpacUri(constants.msdbDacpac);
+		ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.msdbDacpac)).fsPath);
+		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.msdbDacpac)).fsPath);
 
 		project.changeDSP(TargetPlatform.SqlAzureV12.toString());
 		uri = project.getSystemDacpacUri(constants.msdbDacpac);
