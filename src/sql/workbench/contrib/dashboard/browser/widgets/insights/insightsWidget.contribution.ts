@@ -37,7 +37,7 @@ ExtensionsRegistry.registerExtensionPoint<IInsightTypeContrib | IInsightTypeCont
 
 	for (const extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray<IInsightTypeContrib>(value)) {
+		if (Array.isArray(value)) {
 			for (const command of value) {
 				handleCommand(command, extension);
 			}

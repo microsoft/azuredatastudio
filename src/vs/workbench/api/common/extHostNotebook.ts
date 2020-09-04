@@ -1083,7 +1083,7 @@ export class ExtHostNotebookController implements ExtHostNotebookShape, ExtHostN
 		const provider = this._notebookContentProviders.get(viewType);
 		const revivedUri = URI.revive(uri);
 		if (!provider) {
-			return undefined; // {{SQL CARBON EDIT}}
+			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 		}
 
 		const storageRoot = this._extensionStoragePaths.workspaceValue(provider.extension) ?? this._extensionStoragePaths.globalValue(provider.extension);
