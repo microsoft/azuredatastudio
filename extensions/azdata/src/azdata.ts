@@ -336,8 +336,11 @@ async function promptToUpdateAzdata(newVersion: string, userRequested: boolean =
 		Logger.log(loc.skipUpdate(config));
 		return false;
 	}
+	const responses = userRequested
+		? [loc.yes, loc.no]
+		: [loc.yes, loc.askLater, loc.doNotAskAgain];
 	if (config === AzdataDeployOption.prompt) {
-		response = await vscode.window.showInformationMessage(loc.promptForAzdataUpdate(newVersion), ...getResponses(userRequested));
+		response = await vscode.window.showInformationMessage(loc.promptForAzdataUpdate(newVersion), ...responses);
 		Logger.log(loc.userResponseToUpdatePrompt(response));
 	}
 	if (response === loc.doNotAskAgain) {
@@ -391,12 +394,6 @@ export async function promptForEula(memento: vscode.Memento, userRequested: bool
 		return true;
 	}
 	return false;
-}
-
-function getResponses(userRequested: boolean): string[] {
-	return userRequested
-		? [loc.yes, loc.no]
-		: [loc.yes, loc.askLater, loc.doNotAskAgain];
 }
 
 /**
