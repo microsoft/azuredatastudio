@@ -357,8 +357,10 @@ export class AddDatabaseReferenceDialog {
 	private createLocationDropdown(): azdata.FormComponent {
 		this.locationDropdown = this.view!.modelBuilder.dropDown().withProperties({
 			ariaLabel: constants.locationDropdown,
-			values: constants.systemDbLocationDropdownValues
+			values: this.currentReferenceType === ReferenceType.systemDb ? constants.systemDbLocationDropdownValues : constants.locationDropdownValues
 		}).component();
+
+		this.locationDropdown.value = constants.differentDbSameServer;
 
 		this.locationDropdown.onValueChanged(() => {
 			this.updateEnabledInputBoxes();
