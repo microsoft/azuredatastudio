@@ -73,7 +73,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _content: string | string[];
 	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
-	private _previewMode: boolean;
+	private _previewMode: boolean = true;
 	private _markdownMode: boolean;
 	private _sanitizer: ISanitizer;
 	private _model: NotebookModel;
