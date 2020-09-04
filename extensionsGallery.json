@@ -3421,7 +3421,7 @@
 					"flags": ""
 				},
 				{
-					"extensionId": "73",
+					"extensionId": "75",
 					"extensionName": "sql-server-diagnostic-book",
 					"displayName": "SQL Server Diagnostic Book",
 					"shortDescription": "A collection of notebooks to troubleshoot and diagnose any version of SQL Server",
@@ -3432,7 +3432,7 @@
 					},
 					"versions": [
 				  		{
-							"version": "0.0.1",
+							"version": "0.1.0",
 							"lastUpdated": "9/3/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
