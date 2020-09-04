@@ -108,7 +108,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function ():
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 
 		sinon.stub(azdata.accounts, 'getAccountSecurityToken').returns(Promise.resolve(mockToken));
-		mockDatabaseServerService.setup((o) => o.getResources(mockSubscription, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabaseServers));
+		mockDatabaseServerService.setup((o) => o.getResources([mockSubscription], TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabaseServers));
 		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});
 

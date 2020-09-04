@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionRecommendations, ExtensionRecommendation } from 'vs/workbench/contrib/extensions/browser/extensionRecommendations';
+import { ExtensionRecommendations, ExtensionRecommendation, PromptedExtensionRecommendations } from 'vs/workbench/contrib/extensions/browser/extensionRecommendations';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -19,6 +19,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { InstallRecommendedExtensionsByScenarioAction, ShowRecommendedExtensionsByScenarioAction } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
 import { IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
+import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 
 const choiceNever = localize('neverShowAgain', "Don't Show Again");
 
@@ -28,18 +29,20 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 	get recommendations(): ReadonlyArray<ExtensionRecommendation> { return this._recommendations; }
 
 	constructor(
-		isExtensionAllowedToBeRecommended: (extensionId: string) => boolean,
+		promptedExtensionRecommendations: PromptedExtensionRecommendations,
 		@IProductService private readonly productService: IProductService,
-		@IInstantiationService instantiationService: IInstantiationService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@INotificationService notificationService: INotificationService,
+		@INotificationService private readonly notificationService: INotificationService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IStorageService storageService: IStorageService,
-		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
+		@IStorageService private readonly storageService: IStorageService,
+		@IExtensionManagementService protected readonly extensionManagementService: IExtensionManagementService,
 		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService,
+		@IExtensionsWorkbenchService protected readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService: IStorageKeysSyncRegistryService
+
 	) {
-		super(isExtensionAllowedToBeRecommended, instantiationService, configurationService, notificationService, telemetryService, storageService, storageKeysSyncRegistryService);
+		super(promptedExtensionRecommendations);
 
 		// this._recommendations = productService.recommendedExtensionsByScenario.map(r => ({ extensionId: r, reason: { reasonId: ExtensionRecommendationReason.Application, reasonText: localize('defaultRecommendations', "This extension is recommended by Azure Data Studio.") }, source: 'application' }));
 	}
@@ -123,12 +126,11 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 		});
 	}
 
-	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]> {
+	async getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]> {
 		if (!scenarioType) {
 			return Promise.reject(new Error(localize('scenarioTypeUndefined', 'The scenario type for extension recommendations must be provided.')));
 		}
-		return Promise.resolve((this.productService.recommendedExtensionsByScenario[scenarioType] || [])
-			.filter(extensionId => this.isExtensionAllowedToBeRecommended(extensionId))
-			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));
+		return this.promptedExtensionRecommendations.filterIgnoredOrNotAllowed(this.productService.recommendedExtensionsByScenario[scenarioType] || [])
+			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] }));
 	}
 }
