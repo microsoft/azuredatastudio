@@ -143,3 +143,27 @@ export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 
 	return sqlCmdVariables;
 }
+
+/**
+ * 	Removes $() around a sqlcmd variable
+ * @param variable
+ */
+export function removeSqlCmdVariableFormatting(variable: string): string {
+	if (variable.startsWith('$(') && variable.endsWith(')')) {
+		variable = variable.substr(2, variable.length - 3);
+	}
+
+	return variable;
+}
+
+/**
+ * 	Format as sqlcmd variable by adding $() if necessary
+ * @param variable
+ */
+export function formatSqlCmdVariable(variable: string): string {
+	if (!(variable.startsWith('$(') && variable.endsWith(')'))) {
+		variable = `$(${variable})`;
+	}
+
+	return variable;
+}

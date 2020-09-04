@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 
 import { Project, SystemDatabase, DatabaseReferenceLocation } from '../models/project';
 import { cssStyles } from '../common/uiConstants';
@@ -138,9 +139,9 @@ export class AddDatabaseReferenceDialog {
 				databaseName: <string>this.databaseNameTextbox?.value,
 				databaseLocation: <DatabaseReferenceLocation>this.referenceLocationMap.get(<string>this.locationDropdown?.value),
 				dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
-				databaseVariable: <string>this.databaseVariableTextbox?.value,
+				databaseVariable: utils.removeSqlCmdVariableFormatting(<string>this.databaseVariableTextbox?.value),
 				serverName: <string>this.serverNameTextbox?.value,
-				serverVariable: <string>this.serverVariableTextbox?.value,
+				serverVariable: utils.removeSqlCmdVariableFormatting(<string>this.serverVariableTextbox?.value),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 			// TODO: add project reference support
@@ -447,7 +448,7 @@ export class AddDatabaseReferenceDialog {
 					newText = this.currentReferenceType === ReferenceType.systemDb ? constants.enterSystemDbName : constants.databaseNameRequiredVariableOptional;
 					fontStyle = cssStyles.fontStyle.italics;
 				} else {
-					const db = this.databaseVariableTextbox?.value ? this.databaseVariableTextbox?.value : this.databaseNameTextbox.value;
+					const db = this.databaseVariableTextbox?.value ? utils.formatSqlCmdVariable(this.databaseVariableTextbox?.value) : this.databaseNameTextbox.value;
 					newText = constants.differentDbSameServerExampleUsage(db);
 				}
 				break;
@@ -457,8 +458,8 @@ export class AddDatabaseReferenceDialog {
 					newText = constants.databaseNameServerNameVariableRequired;
 					fontStyle = cssStyles.fontStyle.italics;
 				} else {
-					const server = this.serverVariableTextbox.value;
-					const db = this.databaseVariableTextbox?.value ? this.databaseVariableTextbox?.value : this.databaseNameTextbox.value;
+					const server = utils.formatSqlCmdVariable(this.serverVariableTextbox.value);
+					const db = this.databaseVariableTextbox?.value ? utils.formatSqlCmdVariable(this.databaseVariableTextbox?.value) : this.databaseNameTextbox.value;
 					newText = constants.differentDbDifferentServerExampleUsage(server, db);
 				}
 				break;
