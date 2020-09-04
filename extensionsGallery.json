@@ -3508,7 +3508,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/asde-deployment/readme.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/asde-deployment/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
