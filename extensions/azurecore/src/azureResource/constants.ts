@@ -19,7 +19,6 @@ export enum AzureResourceItemType {
 export enum AzureResourceServiceNames {
 	resourceService = 'AzureResourceService',
 	resourceGroupService = 'AzureResourceGroupService',
-	resourceDatabaseServerService = 'AzureResourceDatabaseServerService',
 	cacheService = 'AzureResourceCacheService',
 	accountService = 'AzureResourceAccountService',
 	subscriptionService = 'AzureResourceSubscriptionService',

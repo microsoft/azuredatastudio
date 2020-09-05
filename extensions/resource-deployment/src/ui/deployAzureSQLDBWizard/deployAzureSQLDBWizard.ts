@@ -13,10 +13,8 @@ import { WizardPageBase } from '../wizardPageBase';
 import { DeployAzureSQLDBWizardModel } from './deployAzureSQLDBWizardModel';
 import { AzureSQLDBWizardInfo } from '../../interfaces';
 import { AzureSettingsPage } from './pages/azureSettingsPage';
-import { VmSettingsPage } from './pages/vmSettingsPage';
+import { DatabaseSettingsPage } from './pages/databaseSettingsPage';
 import axios, { AxiosRequestConfig } from 'axios';
-import { NetworkSettingsPage } from './pages/networkSettingsPage';
-import { SqlServerSettingsPage } from './pages/sqlServerSettingsPage';
 import { AzureSQLDBSummaryPage } from './pages/summaryPage';
 
 export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, WizardPageBase<DeployAzureSQLDBWizard>, DeployAzureSQLDBWizardModel> {
@@ -53,9 +51,7 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 	private getPages(): WizardPageBase<DeployAzureSQLDBWizard>[] {
 		const pages: WizardPageBase<DeployAzureSQLDBWizard>[] = [];
 		pages.push(new AzureSettingsPage(this));
-		// pages.push(new VmSettingsPage(this));
-		// pages.push(new NetworkSettingsPage(this));
-		// pages.push(new SqlServerSettingsPage(this));
+		pages.push(new DatabaseSettingsPage(this));
 		pages.push(new AzureSQLDBSummaryPage(this));
 		return pages;
 	}
@@ -72,8 +68,8 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 	}
 
 	private setEnvironmentVariables(env: NodeJS.ProcessEnv): void {
-		env['AZDATA_NB_VAR_AZURE_SQLVM_PASSWORD'] = this.model.vmPassword;
-		env['AZDATA_NB_VAR_AZURE_SQLVM_SQL_PASSWORD'] = this.model.sqlAuthenticationPassword;
+		// env['AZDATA_NB_VAR_AZURE_SQLVM_PASSWORD'] = this.model.vmPassword;
+		// env['AZDATA_NB_VAR_AZURE_SQLVM_SQL_PASSWORD'] = this.model.sqlAuthenticationPassword;
 	}
 
 	public async getRequest(url: string): Promise<any> {

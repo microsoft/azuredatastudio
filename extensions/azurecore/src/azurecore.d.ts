@@ -65,7 +65,6 @@ declare module 'azurecore' {
 	export interface IExtension {
 		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean): Thenable<GetSubscriptionsResult>;
 		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Thenable<GetResourceGroupsResult>;
-		getDatabaseServers(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Thenable<GetDatabaseServersResult>;
 		/**
 		 * Converts a region value (@see AzureRegion) into the localized Display Name
 		 * @param region The region value
@@ -78,7 +77,6 @@ declare module 'azurecore' {
 
 	export type GetSubscriptionsResult = { subscriptions: azureResource.AzureResourceSubscription[], errors: Error[] };
 	export type GetResourceGroupsResult = { resourceGroups: azureResource.AzureResourceResourceGroup[], errors: Error[] };
-	export type GetDatabaseServersResult = { databaseServers: azureResource.AzureResourceDatabaseServer[], errors: Error[] };
 
 	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
 }
