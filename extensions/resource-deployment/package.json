@@ -93,7 +93,7 @@
         "providers": [
           {
             "dialog": {
-              "notebook": "%sql-2017-docker-notebook%",
+              "notebook": "./notebooks/docker/2017/deploy-sql2017-image.ipynb",
               "title": "%docker-sql-2017-title%",
               "name": "docker-sql-2017-dialog",
               "tabs": [
@@ -144,7 +144,7 @@
           },
           {
             "dialog": {
-              "notebook": "%sql-2019-docker-notebook%",
+              "notebook": "./notebooks/docker/2019/deploy-sql2019-image.ipynb",
               "title": "%docker-sql-2019-title%",
               "name": "docker-sql-2019-dialog",
               "tabs": [
@@ -247,7 +247,7 @@
           {
             "bdcWizard": {
               "type": "new-aks",
-              "notebook": "%bdc-2019-aks-notebook%"
+              "notebook": "./notebooks/bdc/2019/deploy-bdc-aks.ipynb"
             },
             "requiredTools": [
               {
@@ -267,7 +267,7 @@
           {
             "bdcWizard": {
               "type": "existing-aks",
-              "notebook": "%bdc-2019-existing-aks-notebook%"
+              "notebook": "%./notebooks/bdc/2019/deploy-bdc-existing-aks.ipynb%"
             },
             "requiredTools": [
               {
@@ -284,7 +284,7 @@
           {
             "bdcWizard": {
               "type": "existing-kubeadm",
-              "notebook": "%bdc-2019-existing-kubeadm-notebook%"
+              "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-kubeadm.ipynb"
             },
             "requiredTools": [
               {
@@ -301,7 +301,7 @@
           {
             "bdcWizard": {
               "type": "existing-aro",
-              "notebook": "%bdc-2019-existing-aro-notebook%"
+              "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-aro.ipynb"
             },
             "requiredTools": [
               {
@@ -318,7 +318,7 @@
           {
             "bdcWizard": {
               "type": "existing-openshift",
-              "notebook": "%bdc-2019-existing-openshift-notebook%"
+              "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-openshift.ipynb"
             },
             "requiredTools": [
               {
