@@ -1230,6 +1230,14 @@ class DiffEditorWrapper extends ComponentWrapper implements azdata.DiffEditorCom
 	public set editorUriRight(v: string) {
 		this.setProperty('editorUriRight', v);
 	}
+
+	public get title(): string {
+		return this.properties['title'];
+	}
+
+	public set title(v: string) {
+		this.setProperty('title', v);
+	}
 }
 
 class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonComponent {

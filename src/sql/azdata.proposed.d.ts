@@ -242,6 +242,9 @@ declare module 'azdata' {
 
 	export interface SeparatorComponent extends Component {
 	}
+	export interface SeparatorComponentProperties extends ComponentProperties {
+
+	}
 
 	export interface DeclarativeTableProperties extends ComponentProperties {
 	}
@@ -250,7 +253,7 @@ declare module 'azdata' {
 		ariaHidden?: boolean;
 	}
 
-	export interface ComponentWithIconProperties {
+	export interface ComponentWithIconProperties extends ComponentProperties {
 		/**
 		 * The path for the icon with optional dark-theme away alternative
 		 */
@@ -413,7 +416,7 @@ declare module 'azdata' {
 	/**
 	 * Properties for configuring a PropertiesContainerComponent
 	 */
-	export interface PropertiesContainerComponentProperties {
+	export interface PropertiesContainerComponentProperties extends ComponentProperties {
 		/**
 		 * The properties to display
 		 */
@@ -426,7 +429,6 @@ declare module 'azdata' {
 		 */
 		export const onDidChangeActiveNotebookEditor: vscode.Event<NotebookEditor>;
 	}
-
 	export namespace window {
 		export interface ModelViewDashboard {
 			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
