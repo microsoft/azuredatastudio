@@ -106,22 +106,55 @@ declare module 'azdata' {
 		DataGridProvider = 'DataGridProvider'
 	}
 
+	export type DataGridColumnType = 'hyperlink' | 'text' | 'image';
 	/**
 	 * A column in a data grid
 	 */
 	export interface DataGridColumn {
 		/**
 		* The text to display on the column heading.
-		**/
+		 */
 		name: string;
+
 		/**
 		* The property name in the DataGridItem
-		**/
+		 */
 		field: string;
+
 		/**
 		* A unique identifier for the column within the grid.
 		*/
 		id: string;
+
+		/**
+		 * The type of column this is. This is used to determine how to render the contents.
+		 */
+		type: DataGridColumnType;
+
+		/**
+		 * Whether this column is sortable.
+		 */
+		sortable?: boolean;
+
+		/**
+		 * Whether this column is filterable
+		 */
+		filterable?: boolean;
+
+		/**
+		 * If false, column can no longer be resized.
+		 */
+		resizable?: boolean;
+
+		/**
+		 * If set to a non-empty string, a tooltip will appear on hover containing the string.
+		 */
+		tooltip?: string;
+
+		/**
+		 * Width of the column in pixels.
+		 */
+		width?: number
 	}
 
 	/**
@@ -133,9 +166,13 @@ declare module 'azdata' {
 		 */
 		id: string;
 		/**
+		 * The optional icon to display for this item
+		 */
+		iconPath?: string;
+		/**
 		 * The other properties that will be displayed in the grid
 		 */
-		[key: string]: string;
+		[key: string]: any;
 	}
 
 	/**
