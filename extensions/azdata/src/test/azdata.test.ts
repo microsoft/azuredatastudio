@@ -162,17 +162,17 @@ async function testDarwinUnsuccessfulUpdate() {
 	}];
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand')
 		.onThirdCall() //third call is brew info azdata-cli --json which needs to return json of new available azdata versions.
-		.callsFake(async (command: string, args: string[]) => {
+		.callsFake(async (_command: string, _args: string[]) => {
 			return Promise.resolve({
 				stderr: '',
 				stdout: JSON.stringify(brewInfoOutput)
 			});
 		})
 		.onCall(5) //6th call is the first one to do actual update, the call number are 0 indexed
-		.callsFake(async (command: string, args: string[]) => {
+		.callsFake(async (_command: string, _args: string[]) => {
 			return Promise.reject(new Error('not Found'));
 		})
-		.callsFake(async (command: string, args: string[]) => { // by default return success
+		.callsFake(async (_command: string, _args: string[]) => { // by default return success
 			return Promise.resolve({stderr: '', stdout: 'success'});
 		});
 	const updateDone = await azdata.checkAndUpdateAzdata(oldAzdataMock);
@@ -280,7 +280,7 @@ async function testLinuxSuccessfulInstall() {
 			return Promise.resolve({ stdout: '0.0.0', stderr: '' });
 		});
 	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand')
-		.callsFake(async (command: string ) => {
+		.callsFake(async (_command: string ) => {
 			return Promise.resolve({ stdout: 'success', stderr: '' });
 		});
 	await azdata.checkAndInstallAzdata();
