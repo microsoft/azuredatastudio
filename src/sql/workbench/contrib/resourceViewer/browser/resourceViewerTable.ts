@@ -10,9 +10,8 @@ import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectio
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { slickGridDataItemColumnValueExtractor } from 'sql/base/browser/ui/table/formatters';
-import { HeaderFilter, CommandEventArgs } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
+import { HeaderFilter, CommandEventArgs, IExtendedColumn } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { find } from 'vs/base/common/arrays';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 
 export class ResourceViewerTable extends Disposable {
@@ -74,16 +73,19 @@ export class ResourceViewerTable extends Disposable {
 	}
 
 	private filter(item: Slick.SlickData) {
-		let columns = this._resourceViewerTable.grid.getColumns();
+		const columns = this._resourceViewerTable.grid.getColumns();
 		let value = true;
 		for (let i = 0; i < columns.length; i++) {
-			let col: any = columns[i];
+			const col: IExtendedColumn<Slick.SlickData> = columns[i];
+			if (!col.field) {
+				continue;
+			}
 			let filterValues = col.filterValues;
 			if (filterValues && filterValues.length > 0) {
 				if (item._parent) {
-					value = value && find(filterValues, x => x === item._parent[col.field]);
+					value = value && !!filterValues.find(x => x === item._parent[col.field!]);
 				} else {
-					value = value && find(filterValues, x => x === item[col.field]);
+					value = value && !!filterValues.find(x => x === item[col.field!]);
 				}
 			}
 		}

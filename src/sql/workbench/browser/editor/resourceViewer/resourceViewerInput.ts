@@ -19,7 +19,7 @@ export interface ColumnDefinition extends Slick.Column<Slick.SlickData> {
 export class ResourceViewerInput extends EditorInput {
 
 	public static ID: string = 'workbench.editorInput.resourceViewerInput';
-	private _data: Slick.SlickData[];
+	private _data: Slick.SlickData[] = [];
 	private _columns: ColumnDefinition[] = [];
 
 	private _onColumnsChanged = new Emitter<Slick.Column<Slick.SlickData>[]>();

@@ -10,7 +10,7 @@ import { addDisposableListener } from 'vs/base/browser/dom';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { withNullAsUndefined } from 'vs/base/common/types';
 
-interface IExtendedColumn<T> extends Slick.Column<T> {
+export interface IExtendedColumn<T> extends Slick.Column<T> {
 	filterValues?: Array<string>;
 }
 
