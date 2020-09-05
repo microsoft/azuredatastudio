@@ -8,6 +8,7 @@ import { SqlMainContext, MainThreadCredentialManagementShape, ExtHostCredentialM
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
+import { Deferred } from 'sql/base/common/promise';
 
 class CredentialAdapter {
 	public provider: azdata.CredentialProvider;
@@ -36,19 +37,15 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 	private _adapter: { [handle: number]: Adapter } = Object.create(null);
 	private _handlePool: number = 0;
 	private _proxy: MainThreadCredentialManagementShape;
-	private _registrationPromise: Promise<void>;
-	private _registrationPromiseResolve;
+
+	// Create a promise to resolve when a credential provider has been registered.
+	// HACK: this gives us a deferred promise
+	private _registrationPromise = new Deferred();
 
 	constructor(mainContext: IMainContext) {
 		super();
 
-		let self = this;
-
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadCredentialManagement);
-
-		// Create a promise to resolve when a credential provider has been registered.
-		// HACK: this gives us a deferred promise
-		this._registrationPromise = new Promise((resolve) => { self._registrationPromiseResolve = resolve; });
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -61,7 +58,7 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 		this._proxy.$registerCredentialProvider(provider.handle);
 
 		// Resolve the credential provider registration promise
-		this._registrationPromiseResolve();
+		this._registrationPromise.resolve();
 		return this._createDisposable(provider.handle);
 	}
 

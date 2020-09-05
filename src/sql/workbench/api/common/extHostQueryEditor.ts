@@ -24,7 +24,7 @@ class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {
 	}
 
 	public createQueryTab(tab: azdata.window.DialogTab): void {
-		this._proxy.$createQueryTab(this.uri, tab.title, tab.content);
+		this._proxy.$createQueryTab(this.uri, tab.title!, tab.content!);
 	}
 
 	public connect(connectionProfile: azdata.connection.ConnectionProfile): Thenable<void> {
@@ -53,13 +53,13 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 	}
 
 	public $registerQueryInfoListener(providerId: string, listener: azdata.queryeditor.QueryEventListener): void {
-		this._queryListeners[this._nextListenerHandle] = listener;
+		this._queryListeners.set(this._nextListenerHandle, listener);
 		this._proxy.$registerQueryInfoListener(this._nextListenerHandle, providerId);
 		this._nextListenerHandle++;
 	}
 
 	public $onQueryEvent(handle: number, fileUri: string, event: IQueryEvent): void {
-		let listener: azdata.queryeditor.QueryEventListener = this._queryListeners[handle];
+		let listener = this._queryListeners.get(handle);
 		if (listener) {
 			let params = event.params && event.params.planXml ? event.params.planXml : event.params;
 			listener.onQueryEvent(event.type, new ExtHostQueryDocument(mssqlProviderName, fileUri, this._proxy), params);

@@ -84,7 +84,7 @@ export abstract class ExtHostDataProtocolShape {
 	 * @param handle the handle to use when looking up a provider
 	 * @param connectionString the connection string to serialize
 	 */
-	$buildConnectionInfo(handle: number, connectionString: string): Thenable<azdata.ConnectionInfo> { throw ni(); }
+	$buildConnectionInfo(handle: number, connectionString: string): Promise<azdata.ConnectionInfo | undefined> { throw ni(); }
 
 	/**
 	 * Notifies all listeners on the Extension Host side that a language change occurred
@@ -106,7 +106,7 @@ export abstract class ExtHostDataProtocolShape {
 
 	$getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> { throw ni(); }
 
-	$getConnectionIconId(handle: number, connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> { throw ni(); }
+	$getConnectionIconId(handle: number, connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string | undefined> { throw ni(); }
 
 	/**
 	 * Metadata service methods
@@ -573,7 +573,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerQueryProvider(providerId: string, handle: number): Promise<any>;
 	$registerProfilerProvider(providerId: string, handle: number): Promise<any>;
 	$registerObjectExplorerProvider(providerId: string, handle: number): Promise<any>;
-	$registerObjectExplorerNodeProvider(providerId: string, supportedProviderId: string, group: string, handle: number): Promise<any>;
+	$registerObjectExplorerNodeProvider(providerId: string, supportedProviderId: string, group: string | undefined, handle: number): Promise<any>;
 	$registerIconProvider(providerId: string, handle: number): Promise<any>;
 	$registerMetadataProvider(providerId: string, handle: number): Promise<any>;
 	$registerTaskServicesProvider(providerId: string, handle: number): Promise<any>;
@@ -611,7 +611,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	/**
 	 * Callback when a session has completed initialization
 	 */
-	$onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string);
+	$onEditSessionReady(handle: number, ownerUri: string, success: boolean, message: string): void;
 }
 
 export interface MainThreadConnectionManagementShape extends IDisposable {
@@ -623,7 +623,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getCurrentConnectionProfile(): Thenable<azdata.connection.ConnectionProfile>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 	$getServerInfo(connectedId: string): Thenable<azdata.ServerInfo>;
-	$openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection>;
+	$openConnectionDialog(providers?: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
@@ -722,17 +722,17 @@ export interface ExtHostDashboardWebviewsShape {
 }
 
 export interface MainThreadDashboardWebviewShape extends IDisposable {
-	$sendMessage(handle: number, message: string);
-	$registerProvider(widgetId: string);
-	$setHtml(handle: number, value: string);
+	$sendMessage(handle: number, message: string): Promise<void>;
+	$registerProvider(widgetId: string): Promise<void>;
+	$setHtml(handle: number, value?: string): Promise<void>;
 }
 
 export interface ExtHostModelViewShape {
-	$registerProvider(widgetId: string, handler: (webview: azdata.ModelView) => void, extension: IExtensionDescription): void;
+	$registerProvider(widgetId: string, handler: (webview: azdata.ModelView) => void, extension?: IExtensionDescription): void;
 	$onClosed(handle: number): void;
 	$registerWidget(handle: number, id: string, connection: azdata.connection.Connection, serverInfo: azdata.ServerInfo): void;
-	$handleEvent(handle: number, id: string, eventArgs: any);
-	$runCustomValidations(handle: number, id: string): Thenable<boolean>;
+	$handleEvent(handle: number, id: string, eventArgs: any): Promise<void>;
+	$runCustomValidations(handle: number, id: string): Promise<boolean>;
 }
 
 export interface ExtHostModelViewTreeViewsShape {
@@ -814,7 +814,7 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$closeWizard(handle: number): Thenable<void>;
 	$setWizardPageDetails(handle: number, details: IModelViewWizardPageDetails): Thenable<void>;
 	$setWizardDetails(handle: number, details: IModelViewWizardDetails): Thenable<void>;
-	$addWizardPage(wizardHandle: number, pageHandle: number, pageIndex: number): Thenable<void>;
+	$addWizardPage(wizardHandle: number, pageHandle: number, pageIndex?: number): Thenable<void>;
 	$removeWizardPage(wizardHandle: number, pageIndex: number): Thenable<void>;
 	$setWizardPage(wizardHandle: number, pageIndex: number): Thenable<void>;
 	$setDirty(handle: number, isDirty: boolean): void;
@@ -850,9 +850,9 @@ export interface ExtHostNotebookShape {
 	$save(managerHandle: number, notebookUri: UriComponents, notebook: azdata.nb.INotebookContents): Thenable<azdata.nb.INotebookContents>;
 
 	// Session Manager APIs
-	$refreshSpecs(managerHandle: number): Thenable<azdata.nb.IAllKernels>;
+	$refreshSpecs(managerHandle: number): Thenable<azdata.nb.IAllKernels | undefined>;
 	$startNewSession(managerHandle: number, options: azdata.nb.ISessionOptions): Thenable<INotebookSessionDetails>;
-	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void>;
+	$shutdownSession(managerHandle: number, sessionId: string): Promise<void>;
 
 	// Session APIs
 	$changeKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<INotebookKernelDetails>;
@@ -860,7 +860,7 @@ export interface ExtHostNotebookShape {
 	$configureConnection(sessionId: number, connection: azdata.IConnectionProfile): Thenable<void>;
 
 	// Kernel APIs
-	$getKernelReadyStatus(kernelId: number): Thenable<azdata.nb.IInfoReply>;
+	$getKernelReadyStatus(kernelId: number): Thenable<azdata.nb.IInfoReply | null>;
 	$getKernelSpec(kernelId: number): Thenable<azdata.nb.IKernelSpec>;
 	$requestComplete(kernelId: number, content: azdata.nb.ICompleteRequest): Thenable<azdata.nb.ICompleteReplyMsg>;
 	$requestExecute(kernelId: number, content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails>;
@@ -922,22 +922,22 @@ export interface INotebookShowOptions {
 }
 
 export interface ExtHostNotebookDocumentsAndEditorsShape {
-	$acceptDocumentsAndEditorsDelta(delta: INotebookDocumentsAndEditorsDelta): void;
-	$acceptModelChanged(strURL: UriComponents, e: INotebookModelChangedData);
-	$getNavigation(handle: number, uri: vscode.Uri): Thenable<azdata.nb.NavigationResult>;
+	$acceptDocumentsAndEditorsDelta(delta: INotebookDocumentsAndEditorsDelta): Promise<void>;
+	$acceptModelChanged(strURL: UriComponents, e: INotebookModelChangedData): Promise<void>;
+	$getNavigation(handle: number, uri: vscode.Uri): Promise<azdata.nb.NavigationResult>;
 }
 
 export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable {
-	$trySetTrusted(_uri: UriComponents, isTrusted: boolean): Thenable<boolean>;
-	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
+	$trySetTrusted(_uri: UriComponents, isTrusted: boolean): Promise<boolean>;
+	$trySaveDocument(uri: UriComponents): Promise<boolean>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
-	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;
+	$runCell(id: string, cellUri?: UriComponents): Promise<boolean>;
 	$runAllCells(id: string, startCellUri?: UriComponents, endCellUri?: UriComponents): Promise<boolean>;
-	$clearOutput(id: string, cellUri: UriComponents): Promise<boolean>;
+	$clearOutput(id: string, cellUri?: UriComponents): Promise<boolean>;
 	$clearAllOutputs(id: string): Promise<boolean>;
 	$changeKernel(id: string, kernel: azdata.nb.IKernelInfo): Promise<boolean>;
-	$registerNavigationProvider(providerId: string, handle: number);
+	$registerNavigationProvider(providerId: string, handle: number): Promise<void>;
 }
 
 export interface ExtHostExtensionManagementShape {

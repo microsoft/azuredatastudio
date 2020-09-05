@@ -16,6 +16,7 @@ import { Emitter } from 'vs/base/common/event';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { assign } from 'vs/base/common/objects';
 import { ILogService } from 'vs/platform/log/common/log';
+import { coalesce } from 'vs/base/common/arrays';
 
 export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape {
 	private _proxy: MainThreadModelViewShape;
@@ -86,7 +87,7 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 	}
 
 	private createExtHostTreeViewer<T>(handle: number, id: string, dataProvider: azdata.TreeComponentDataProvider<T>, extension: IExtensionDescription, logService: ILogService): ExtHostTreeView<T> {
-		const treeView = new ExtHostTreeView<T>(handle, id, dataProvider, this._proxy, undefined, extension, logService);
+		const treeView = new ExtHostTreeView<T>(handle, id, dataProvider, this._proxy, undefined!, extension, logService);
 		this.treeViews.set(`${handle}-${id}`, treeView);
 		return treeView;
 	}
@@ -102,7 +103,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 		private handle: number, private componentId: string, private componentDataProvider: azdata.TreeComponentDataProvider<T>,
 		private modelViewProxy: MainThreadModelViewShape, commands: CommandsConverter, extension: IExtensionDescription,
 		private readonly _logService: ILogService) {
-		super(componentId, { treeDataProvider: componentDataProvider }, undefined, commands, _logService, extension);
+		super(componentId, { treeDataProvider: componentDataProvider }, undefined!, commands, _logService, extension);
 	}
 
 	onNodeCheckedChanged(parentHandle?: vsTreeExt.TreeItemHandle, checked?: boolean): void {
@@ -116,9 +117,9 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 
 	onNodeSelectedChanged(parentHandles?: vsTreeExt.TreeItemHandle[]): void {
 		if (parentHandles) {
-			let nodes = parentHandles.map(parentHandle => {
-				return parentHandle ? this.getExtensionElement(parentHandle) : void 0;
-			});
+			let nodes = coalesce(parentHandles.map(parentHandle => {
+				return parentHandle ? this.getExtensionElement(parentHandle) : undefined;
+			}));
 			this._onChangeSelection.fire({ selection: nodes });
 		}
 	}
@@ -155,21 +156,21 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 						itemsToRefresh[treeItemHandle] = node.item;
 					}
 				})))
-			.then(() => Object.keys(itemsToRefresh).length ? this.modelViewProxy.$refreshDataProvider(this.handle, this.componentId, itemsToRefresh) : null);
+			.then(() => Object.keys(itemsToRefresh).length ? this.modelViewProxy.$refreshDataProvider(this.handle, this.componentId, itemsToRefresh) : undefined);
 	}
 
 	protected refreshNode(treeItemHandle: vsTreeExt.TreeItemHandle): Promise<vsTreeExt.TreeNode> {
 		const extElement = this.getExtensionElement(treeItemHandle);
-		const existing = this.nodes.get(extElement);
+		const existing = extElement ? this.nodes.get(extElement) : undefined;
 		//this.clearChildren(extElement); // clear children cache
-		return Promise.resolve(this.componentDataProvider.getTreeItem(extElement))
+		return Promise.resolve(this.componentDataProvider.getTreeItem(extElement!))
 			.then(extTreeItem => {
 				if (extTreeItem) {
-					const newNode = this.createTreeNode(extElement, extTreeItem, existing.parent);
-					this.updateNodeCache(extElement, newNode, existing, existing.parent);
+					const newNode = this.createTreeNode(extElement!, extTreeItem, existing!.parent);
+					this.updateNodeCache(extElement!, newNode, existing!, existing!.parent);
 					return newNode;
 				}
-				return null;
+				return null!;
 			});
 	}
 

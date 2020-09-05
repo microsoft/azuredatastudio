@@ -16,7 +16,7 @@ export class AzdataNodeModuleFactory implements INodeModuleFactory {
 	public readonly nodeModuleName = 'azdata';
 
 	private readonly _extApiImpl = new Map<string, typeof azdata>();
-	private _defaultApiImpl: typeof azdata;
+	private _defaultApiImpl?: typeof azdata;
 
 	constructor(
 		private readonly _apiFactory: IAzdataExtensionApiFactory,

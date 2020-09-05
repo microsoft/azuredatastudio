@@ -30,7 +30,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	private _disposables: Disposable[] = [];
 	private _adapters = new Map<number, Adapter>();
 
-	private _activeEditorId: string;
+	private _activeEditorId?: string;
 	private _proxy: MainThreadNotebookDocumentsAndEditorsShape;
 
 	private readonly _editors = new Map<string, ExtHostNotebookEditor>();
@@ -50,9 +50,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	constructor(
 		private readonly _mainContext: IMainContext,
 	) {
-		if (this._mainContext) {
-			this._proxy = this._mainContext.getProxy(SqlMainContext.MainThreadNotebookDocumentsAndEditors);
-		}
+		this._proxy = this._mainContext.getProxy(SqlMainContext.MainThreadNotebookDocumentsAndEditors);
 	}
 
 	dispose() {
@@ -60,7 +58,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	}
 
 	//#region Main Thread accessible methods
-	$acceptDocumentsAndEditorsDelta(delta: INotebookDocumentsAndEditorsDelta): void {
+	async $acceptDocumentsAndEditorsDelta(delta: INotebookDocumentsAndEditorsDelta): Promise<void> {
 
 		const removedDocuments: ExtHostNotebookDocumentData[] = [];
 		const addedDocuments: ExtHostNotebookDocumentData[] = [];
@@ -70,7 +68,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 			for (const uriComponent of delta.removedDocuments) {
 				const uri = URI.revive(uriComponent);
 				const id = uri.toString();
-				const data = this._documents.get(id);
+				const data = this._documents.get(id)!;
 				this._documents.delete(id);
 				removedDocuments.push(data);
 			}
@@ -97,7 +95,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 			for (const id of delta.removedEditors) {
 				const editor = this._editors.get(id);
 				this._editors.delete(id);
-				removedEditors.push(editor);
+				removedEditors.push(editor!);
 			}
 		}
 
@@ -107,7 +105,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 				ok(this._documents.has(resource.toString()), `document '${resource}' does not exist`);
 				ok(!this._editors.has(data.id), `editor '${data.id}' already exists!`);
 
-				const documentData = this._documents.get(resource.toString());
+				const documentData = this._documents.get(resource.toString())!;
 				const editor = new ExtHostNotebookEditor(
 					this._mainContext.getProxy(SqlMainContext.MainThreadNotebookDocumentsAndEditors),
 					data.id,
@@ -138,11 +136,11 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 			this._onDidChangeVisibleNotebookEditors.fire(this.getAllEditors());
 		}
 		if (delta.newActiveEditor !== undefined) {
-			this._onDidChangeActiveNotebookEditor.fire(this.getActiveEditor());
+			this._onDidChangeActiveNotebookEditor.fire(this.getActiveEditor()!);
 		}
 	}
 
-	$acceptModelChanged(uriComponents: UriComponents, e: INotebookModelChangedData): void {
+	async $acceptModelChanged(uriComponents: UriComponents, e: INotebookModelChangedData): Promise<void> {
 		const uri = URI.revive(uriComponents);
 		const strURL = uri.toString();
 		let data = this._documents.get(strURL);
@@ -174,11 +172,11 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		return adapter;
 	}
 
-	$getNavigation(handle: number, notebookUri: UriComponents): Thenable<azdata.nb.NavigationResult> {
+	$getNavigation(handle: number, notebookUri: UriComponents): Promise<azdata.nb.NavigationResult> {
 		let navProvider = this._getAdapter<azdata.nb.NavigationProvider>(handle);
 		if (navProvider) {
 			let uri = URI.revive(notebookUri);
-			return navProvider.getNavigation(uri);
+			return Promise.resolve(navProvider.getNavigation(uri));
 		}
 		throw new Error('No navigation provider found for handle ${handle}');
 	}
@@ -186,11 +184,11 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	//#endregion
 
 	//#region Extension accessible methods
-	showNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions): Thenable<azdata.nb.NotebookEditor> {
+	showNotebookDocument(uri: vscode.Uri, showOptions?: azdata.nb.NotebookShowOptions): Thenable<azdata.nb.NotebookEditor> {
 		return this.doShowNotebookDocument(uri, showOptions);
 	}
 
-	private async doShowNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions): Promise<azdata.nb.NotebookEditor> {
+	private async doShowNotebookDocument(uri: vscode.Uri, showOptions?: azdata.nb.NotebookShowOptions): Promise<azdata.nb.NotebookEditor> {
 		let options: INotebookShowOptions = {};
 		if (showOptions) {
 			options.preserveFocus = showOptions.preserveFocus;
@@ -217,7 +215,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		}
 	}
 
-	getDocument(strUrl: string): ExtHostNotebookDocumentData {
+	getDocument(strUrl: string): ExtHostNotebookDocumentData | undefined {
 		return this._documents.get(strUrl);
 	}
 
@@ -227,7 +225,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		return result;
 	}
 
-	getEditor(id: string): ExtHostNotebookEditor {
+	getEditor(id: string): ExtHostNotebookEditor | undefined {
 		return this._editors.get(id);
 	}
 

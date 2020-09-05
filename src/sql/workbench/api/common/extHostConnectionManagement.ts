@@ -21,14 +21,14 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 	}
 
 	public $onConnectionEvent(handle: number, type: azdata.connection.ConnectionEventType, ownerUri: string, profile: azdata.IConnectionProfile): void {
-		let listener = this._connectionListeners[handle];
+		let listener = this._connectionListeners.get(handle);
 		if (listener) {
 			listener.onConnectionEvent(type, ownerUri, profile);
 		}
 	}
 
 	public $registerConnectionEventListener(providerId: string, listener: azdata.connection.ConnectionEventListener): void {
-		this._connectionListeners[this._nextListenerHandle] = listener;
+		this._connectionListeners.set(this._nextListenerHandle, listener);
 		this._proxy.$registerConnectionEventListener(this._nextListenerHandle, providerId);
 		this._nextListenerHandle++;
 	}

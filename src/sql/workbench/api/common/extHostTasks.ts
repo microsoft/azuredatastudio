@@ -16,7 +16,7 @@ import { SqlMainContext, MainThreadTasksShape, ExtHostTasksShape } from 'sql/wor
 interface TaskHandler {
 	callback: Function;
 	thisArg: any;
-	description: ITaskHandlerDescription;
+	description?: ITaskHandlerDescription;
 }
 
 export class ExtHostTasks implements ExtHostTasksShape {

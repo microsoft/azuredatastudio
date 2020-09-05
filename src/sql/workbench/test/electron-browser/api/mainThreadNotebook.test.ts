@@ -158,7 +158,7 @@ class ExtHostNotebookStub implements ExtHostNotebookShape {
 	$startNewSession(managerHandle: number, options: azdata.nb.ISessionOptions): Thenable<INotebookSessionDetails> {
 		throw new Error('Method not implemented.');
 	}
-	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void> {
+	$shutdownSession(managerHandle: number, sessionId: string): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 	$changeKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<INotebookKernelDetails> {

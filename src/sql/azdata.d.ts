@@ -46,7 +46,7 @@ declare module 'azdata' {
 		 * @param providerId The ID that the provider was registered with
 		 * @param providerType The type of the provider
 		 */
-		export function getProvider<T extends DataProvider>(providerId: string, providerType: DataProviderType): T;
+		export function getProvider<T extends DataProvider>(providerId: string, providerType: DataProviderType): T | undefined;
 
 		/**
 		 * Get all registered providers of the given type
@@ -204,7 +204,7 @@ declare module 'azdata' {
 		 * @returns The node corresponding to the given connection and path,
 		 * or undefined if no such node exists.
 		 */
-		export function getNode(connectionId: string, nodePath?: string): Thenable<ObjectExplorerNode>;
+		export function getNode(connectionId: string, nodePath?: string): Thenable<ObjectExplorerNode | undefined>;
 
 		/**
 		 * Get all active Object Explorer connection nodes
@@ -267,7 +267,7 @@ declare module 'azdata' {
 			/**
 			 * Get the parent node. Returns undefined if there is none.
 			 */
-			getParent(): Thenable<ObjectExplorerNode>;
+			getParent(): Thenable<ObjectExplorerNode | undefined>;
 
 			/**
 			 * Refresh the node, expanding it if it has children
@@ -820,7 +820,7 @@ declare module 'azdata' {
 		getQueryRows(rowData: QueryExecuteSubsetParams): Thenable<QueryExecuteSubsetResult>;
 		disposeQuery(ownerUri: string): Thenable<void>;
 		saveResults(requestParams: SaveResultsRequestParams): Thenable<SaveResultRequestResult>;
-		setQueryExecutionOptions(ownerUri: string, options: QueryExecutionOptions): Thenable<void>;
+		setQueryExecutionOptions?(ownerUri: string, options: QueryExecutionOptions): Thenable<void>;
 
 		// Notifications
 		registerOnQueryComplete(handler: (result: QueryExecuteCompleteNotificationResult) => any): void;
@@ -1236,7 +1236,7 @@ declare module 'azdata' {
 
 	export interface ExpandNodeInfo {
 		sessionId: string;
-		nodePath: string | undefined;
+		nodePath?: string;
 	}
 
 	export interface FindNodesInfo {
@@ -1841,11 +1841,11 @@ declare module 'azdata' {
 		taskId: string;
 		status: TaskStatus;
 		taskExecutionMode: TaskExecutionMode;
-		serverName: string;
-		databaseName: string;
+		serverName?: string;
+		databaseName?: string;
 		name: string;
 		description: string;
-		providerName: string;
+		providerName?: string;
 		isCancelable: boolean;
 	}
 
@@ -1860,7 +1860,7 @@ declare module 'azdata' {
 	export interface TaskProgressInfo {
 		taskId: string;
 		status: TaskStatus;
-		message: string;
+		message?: string;
 		script?: string;
 	}
 
@@ -2384,22 +2384,22 @@ declare module 'azdata' {
 		/**
 		 * Title of the webview.
 		 */
-		title: string;
+		title?: string;
 
 		/**
 		 * Contents of the dialog body.
 		 */
-		html: string;
+		html?: string;
 
 		/**
 		 * The caption of the OK button.
 		 */
-		okTitle: string;
+		okTitle?: string;
 
 		/**
 		 * The caption of the Close button.
 		 */
-		closeTitle: string;
+		closeTitle?: string;
 
 		/**
 		 * Opens the dialog.
@@ -2460,7 +2460,7 @@ declare module 'azdata' {
 		/**
 		 * Contents of the dialog body.
 		 */
-		html: string;
+		html?: string;
 	}
 
 	export namespace dashboard {
@@ -2593,8 +2593,8 @@ declare module 'azdata' {
 	}
 
 	export interface NodeCheckedEventParameters<T> {
-		element: T;
-		checked: boolean;
+		element?: T;
+		checked?: boolean;
 	}
 
 	export interface TreeComponentView<T> extends vscode.Disposable {
@@ -3023,7 +3023,7 @@ declare module 'azdata' {
 		/**
 		 * An event called when the div is clicked
 		 */
-		onDidClick: vscode.Event<any>;
+		onDidClick?: vscode.Event<any>;
 	}
 
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
@@ -3409,8 +3409,8 @@ declare module 'azdata' {
 	}
 
 	export interface CardComponent extends Component, CardProperties {
-		onDidActionClick: vscode.Event<ActionDescriptor>;
-		onCardSelectedChanged: vscode.Event<any>;
+		onDidActionClick?: vscode.Event<ActionDescriptor>;
+		onCardSelectedChanged?: vscode.Event<any>;
 	}
 
 	export interface DomComponent extends Component, DomProperties {
@@ -3426,26 +3426,26 @@ declare module 'azdata' {
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
-		onTextChanged: vscode.Event<any>;
+		onTextChanged?: vscode.Event<any>;
 		/**
 		 * Event that's fired whenever enter is pressed within the input box
 		 */
-		onEnterKeyPressed: vscode.Event<string>;
+		onEnterKeyPressed?: vscode.Event<string>;
 	}
 
 	export interface RadioButtonComponent extends Component, RadioButtonProperties {
 		/**
 		 * An event called when the radio button is clicked
 		 */
-		onDidClick: vscode.Event<any>;
+		onDidClick?: vscode.Event<any>;
 	}
 
 	export interface CheckBoxComponent extends Component, CheckBoxProperties {
-		onChanged: vscode.Event<any>;
+		onChanged?: vscode.Event<any>;
 	}
 
 	export interface DropDownComponent extends Component, DropDownProperties {
-		onValueChanged: vscode.Event<any>;
+		onValueChanged?: vscode.Event<any>;
 	}
 
 	export interface TableCell {
@@ -3455,11 +3455,11 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableComponent extends Component, DeclarativeTableProperties {
-		onDataChanged: vscode.Event<any>;
+		onDataChanged?: vscode.Event<any>;
 	}
 
 	export interface ListBoxComponent extends Component, ListBoxProperties {
-		onRowSelected: vscode.Event<any>;
+		onRowSelected?: vscode.Event<any>;
 	}
 
 	export interface ICheckboxCellActionEventArgs extends ICellActionEventArgs {
@@ -3473,12 +3473,12 @@ declare module 'azdata' {
 	}
 
 	export interface TableComponent extends Component, TableComponentProperties {
-		onRowSelected: vscode.Event<any>;
+		onRowSelected?: vscode.Event<any>;
 		onCellAction?: vscode.Event<ICellActionEventArgs>;
 	}
 
 	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {
-		onDidChange: vscode.Event<any>;
+		onDidChange?: vscode.Event<any>;
 	}
 
 	export interface TreeComponent<T> extends Component, TreeProperties {
@@ -3488,7 +3488,7 @@ declare module 'azdata' {
 	export interface WebViewComponent extends Component {
 		html: string;
 		message: any;
-		onMessage: vscode.Event<any>;
+		readonly onMessage?: vscode.Event<any>;
 		readonly options: vscode.WebviewOptions;
 	}
 
@@ -3513,12 +3513,12 @@ declare module 'azdata' {
 		/**
 		 * An event called when the editor content is updated
 		 */
-		readonly onContentChanged: vscode.Event<any>;
+		readonly onContentChanged?: vscode.Event<any>;
 
 		/**
 		 * An event called when the editor is created
 		 */
-		readonly onEditorCreated: vscode.Event<any>;
+		readonly onEditorCreated?: vscode.Event<any>;
 
 		/**
 		 * Toggle for whether the editor should be automatically resized or not
@@ -3559,12 +3559,12 @@ declare module 'azdata' {
 		/**
 		 * An event called when the editor content is updated
 		 */
-		readonly onContentChanged: vscode.Event<any>;
+		readonly onContentChanged?: vscode.Event<any>;
 
 		/**
 		 * An event called when the editor is created
 		 */
-		readonly onEditorCreated: vscode.Event<any>;
+		readonly onEditorCreated?: vscode.Event<any>;
 
 		/**
 		 * Toggle for whether the editor should be automatically resized or not
@@ -3581,7 +3581,7 @@ declare module 'azdata' {
 		/**
 		 * An event called when the button is clicked
 		 */
-		onDidClick: vscode.Event<any>;
+		onDidClick?: vscode.Event<any>;
 	}
 
 	export interface DashboardWidgetComponent extends Component {
@@ -3758,7 +3758,7 @@ declare module 'azdata' {
 			/**
 			 * The title of the dialog
 			 */
-			title: string;
+			title?: string;
 
 			/**
 			 * Indicates the width of the dialog
@@ -3769,7 +3769,7 @@ declare module 'azdata' {
 			 * The content of the dialog. If multiple tabs are given they will be displayed with tabs
 			 * If a string is given, it should be the ID of the dialog's model view content
 			 */
-			content: string | DialogTab[];
+			content?: string | DialogTab[];
 
 			/**
 			 * The ok button
@@ -3784,7 +3784,7 @@ declare module 'azdata' {
 			/**
 			 * Any additional buttons that should be displayed
 			 */
-			customButtons: Button[];
+			customButtons?: Button[];
 
 			/**
 			 * Set the informational message shown in the dialog. Hidden when the message is
@@ -3818,12 +3818,12 @@ declare module 'azdata' {
 			/**
 			 * The title of the tab
 			 */
-			title: string;
+			title?: string;
 
 			/**
 			 * A string giving the ID of the tab's model view content
 			 */
-			content: string;
+			content?: string;
 		}
 
 		export interface Button {
@@ -3864,7 +3864,7 @@ declare module 'azdata' {
 			/**
 			 * The page number that the wizard changed from
 			 */
-			lastPage: number;
+			lastPage?: number;
 
 			/**
 			 * The new page number or undefined if the user is closing the wizard
@@ -3886,7 +3886,7 @@ declare module 'azdata' {
 			/**
 			 * Any additional buttons that should be displayed while the page is open
 			 */
-			customButtons: Button[];
+			customButtons?: Button[];
 
 			/**
 			 * Whether the page is enabled. If the page is not enabled, the user will not be
@@ -3910,7 +3910,7 @@ declare module 'azdata' {
 			 * The wizard's pages. Pages can be added/removed while the dialog is open by using
 			 * the addPage and removePage methods
 			 */
-			pages: WizardPage[];
+			pages?: WizardPage[];
 
 			/**
 			 * The index in the pages array of the active page, or undefined if the wizard is
@@ -3948,7 +3948,7 @@ declare module 'azdata' {
 			 * buttons are needed for specific pages they can be added using the customButtons
 			 * property on each page.
 			 */
-			customButtons: Button[];
+			customButtons?: Button[];
 
 			/**
 			 * When set to false page titles and descriptions will not be displayed at the top
@@ -4035,7 +4035,7 @@ declare module 'azdata' {
 		 * visualize: ResultSetSummary
 		 */
 		export interface QueryEventListener {
-			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined): void;
+			onQueryEvent(type: QueryEventType, document: QueryDocument, args?: ResultSetSummary | string): void;
 		}
 
 		// new extensibility interfaces
@@ -4208,7 +4208,7 @@ declare module 'azdata' {
 		/**
 		 * The actual operation to execute
 		 */
-		operation: (operation: BackgroundOperation) => void;
+		operation?: (operation: BackgroundOperation) => void;
 	}
 
 	export interface ConnectionResult {
@@ -4321,7 +4321,7 @@ declare module 'azdata' {
 			 * The spec for current kernel, if applicable. This will be undefined
 			 * until a kernel has been started
 			 */
-			readonly kernelSpec: IKernelSpec;
+			readonly kernelSpec?: IKernelSpec;
 
 			/**
 			 * Save the underlying file.
@@ -4794,7 +4794,7 @@ declare module 'azdata' {
 			 */
 			readonly ready: Thenable<void>;
 
-			readonly specs: IAllKernels | undefined;
+			readonly specs?: IAllKernels;
 
 			startNew(options: ISessionOptions): Thenable<ISession>;
 

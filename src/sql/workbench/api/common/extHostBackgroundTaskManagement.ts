@@ -69,7 +69,7 @@ export class ExtHostBackgroundTaskManagement implements ExtHostBackgroundTaskMan
 		let extOperationInfo = new ExtBackgroundOperation(operationId, this._mainContext);
 		this._operations.set(operationId, extOperationInfo);
 		let operationInfo = this._handlers.get(operationId);
-		if (operationInfo) {
+		if (operationInfo?.operation) {
 			operationInfo.operation(extOperationInfo);
 		}
 	}

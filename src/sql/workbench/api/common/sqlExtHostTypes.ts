@@ -252,7 +252,7 @@ export interface IModelViewDialogDetails {
 	content: string | number[];
 	okButton: number;
 	cancelButton: number;
-	customButtons: number[];
+	customButtons?: number[];
 	message: DialogMessage;
 	width: DialogWidth;
 }
@@ -274,7 +274,7 @@ export interface IModelViewWizardPageDetails {
 	title: string;
 	content: string;
 	enabled: boolean;
-	customButtons: number[];
+	customButtons?: number[];
 	description: string;
 }
 
@@ -287,7 +287,7 @@ export interface IModelViewWizardDetails {
 	generateScriptButton: number;
 	nextButton: number;
 	backButton: number;
-	customButtons: number[];
+	customButtons?: number[];
 	message: DialogMessage;
 	displayPageTitles: boolean;
 	width: DialogWidth;
@@ -540,7 +540,7 @@ export interface INotebookSessionDetails {
 	readonly name: string;
 	readonly type: string;
 	readonly status: string;
-	readonly kernelDetails: INotebookKernelDetails;
+	readonly kernelDetails?: INotebookKernelDetails;
 }
 
 export interface INotebookKernelDetails {
@@ -548,7 +548,7 @@ export interface INotebookKernelDetails {
 	readonly id: string;
 	readonly name: string;
 	readonly supportsIntellisense: boolean;
-	readonly requiresConnection: boolean;
+	readonly requiresConnection?: boolean;
 	readonly info?: any;
 }
 
@@ -565,8 +565,8 @@ export enum FutureMessageType {
 
 export interface INotebookFutureDone {
 	succeeded: boolean;
-	rejectReason: string;
-	message: nb.IShellMessage;
+	rejectReason?: string;
+	message?: nb.IShellMessage;
 }
 
 export interface ICellRange {

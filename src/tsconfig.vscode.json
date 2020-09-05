@@ -38,6 +38,9 @@
 			"winreg"
 		]
 	},
+	"files": [
+		"./vs/workbench/contrib/debug/common/debugProtocol.d.ts"
+	],
 	"include": [
 		"./**/*.d.ts",
 		"./sql/**/*.ts",
@@ -55,7 +58,6 @@
 	],
 	"exclude": [
 		"./sql/workbench/api/browser/**/*.ts", // 999 errors
-		"./sql/workbench/api/common/**/*.ts", // 300 errors
 		"./sql/workbench/browser/**/*.ts", // 2988 errors
 		"./sql/workbench/contrib/assessment/**/*.ts", // 2990 errors
 		"./sql/workbench/contrib/charts/**/*.ts", // 2988 errors

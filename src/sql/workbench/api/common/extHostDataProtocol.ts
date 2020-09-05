@@ -72,7 +72,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._createDisposable(provider.handle);
 	}
 
-	public getProvider<T extends azdata.DataProvider>(providerId: string, providerType: azdata.DataProviderType): T {
+	public getProvider<T extends azdata.DataProvider>(providerId: string, providerType: azdata.DataProviderType): T | undefined {
 		let providersForType = this._providersByType.get(providerType);
 		if (!providersForType) {
 			return undefined;
@@ -87,106 +87,106 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$registerConnectionProvider(provider: azdata.ConnectionProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.ConnectionProvider);
-		this._proxy.$registerConnectionProvider(provider.providerId, provider.handle);
+		this._proxy.$registerConnectionProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 
 	$registerBackupProvider(provider: azdata.BackupProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.BackupProvider);
-		this._proxy.$registerBackupProvider(provider.providerId, provider.handle);
+		this._proxy.$registerBackupProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 
 	$registerRestoreProvider(provider: azdata.RestoreProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.RestoreProvider);
-		this._proxy.$registerRestoreProvider(provider.providerId, provider.handle);
+		this._proxy.$registerRestoreProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 
 	$registerScriptingProvider(provider: azdata.ScriptingProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.ScriptingProvider);
-		this._proxy.$registerScriptingProvider(provider.providerId, provider.handle);
+		this._proxy.$registerScriptingProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 
 	$registerQueryProvider(provider: azdata.QueryProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.QueryProvider);
-		this._proxy.$registerQueryProvider(provider.providerId, provider.handle);
+		this._proxy.$registerQueryProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 
 	$registerMetadataProvider(provider: azdata.MetadataProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.MetadataProvider);
-		this._proxy.$registerMetadataProvider(provider.providerId, provider.handle);
+		this._proxy.$registerMetadataProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 
 	$registerTaskServicesProvider(provider: azdata.TaskServicesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.TaskServicesProvider);
-		this._proxy.$registerTaskServicesProvider(provider.providerId, provider.handle);
+		this._proxy.$registerTaskServicesProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 
 	$registerFileBrowserProvider(provider: azdata.FileBrowserProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.FileBrowserProvider);
-		this._proxy.$registerFileBrowserProvider(provider.providerId, provider.handle);
+		this._proxy.$registerFileBrowserProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 
 	$registerObjectExplorerProvider(provider: azdata.ObjectExplorerProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.ObjectExplorerProvider);
-		this._proxy.$registerObjectExplorerProvider(provider.providerId, provider.handle);
+		this._proxy.$registerObjectExplorerProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 
 	$registerObjectExplorerNodeProvider(provider: azdata.ObjectExplorerNodeProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.ObjectExplorerNodeProvider);
-		this._proxy.$registerObjectExplorerNodeProvider(provider.providerId, provider.supportedProviderId, provider.group, provider.handle);
+		this._proxy.$registerObjectExplorerNodeProvider(provider.providerId, provider.supportedProviderId, provider.group, provider.handle!);
 		return rt;
 	}
 
 	$registerIconProvider(provider: azdata.IconProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.IconProvider);
-		this._proxy.$registerIconProvider(provider.providerId, provider.handle);
+		this._proxy.$registerIconProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 
 	$registerProfilerProvider(provider: azdata.ProfilerProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.ProfilerProvider);
-		this._proxy.$registerProfilerProvider(provider.providerId, provider.handle);
+		this._proxy.$registerProfilerProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 
 	$registerAdminServicesProvider(provider: azdata.AdminServicesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.AdminServicesProvider);
-		this._proxy.$registerAdminServicesProvider(provider.providerId, provider.handle);
+		this._proxy.$registerAdminServicesProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 
 	$registerAgentServiceProvider(provider: azdata.AgentServicesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.AgentServicesProvider);
-		this._proxy.$registerAgentServicesProvider(provider.providerId, provider.handle);
+		this._proxy.$registerAgentServicesProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 	$registerSqlAssessmentServiceProvider(provider: azdata.SqlAssessmentServicesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.SqlAssessmentServicesProvider);
-		this._proxy.$registerSqlAssessmentServicesProvider(provider.providerId, provider.handle);
+		this._proxy.$registerSqlAssessmentServicesProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 	$registerDataGridProvider(provider: azdata.DataGridProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.DataGridProvider);
-		this._proxy.$registerDataGridProvider(provider.providerId, provider.handle);
+		this._proxy.$registerDataGridProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 	$registerCapabilitiesServiceProvider(provider: azdata.CapabilitiesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.CapabilitiesProvider);
-		this._proxy.$registerCapabilitiesServiceProvider(provider.providerId, provider.handle);
+		this._proxy.$registerCapabilitiesServiceProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 
 	$registerSerializationProvider(provider: azdata.SerializationProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.QueryProvider);
-		this._proxy.$registerSerializationProvider(provider.providerId, provider.handle);
+		this._proxy.$registerSerializationProvider(provider.providerId, provider.handle!);
 		return rt;
 	}
 
@@ -223,10 +223,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.ConnectionProvider>(handle).getConnectionString(connectionUri, includePassword);
 	}
 
-	$buildConnectionInfo(handle: number, connectionString: string): Thenable<azdata.ConnectionInfo> {
+	$buildConnectionInfo(handle: number, connectionString: string): Promise<azdata.ConnectionInfo | undefined> {
 		let provider = this._resolveProvider<azdata.ConnectionProvider>(handle);
 		if (provider.buildConnectionInfo) {
-			return provider.buildConnectionInfo(connectionString);
+			return Promise.resolve(provider.buildConnectionInfo(connectionString));
 		} else {
 			return Promise.resolve(undefined);
 		}
@@ -283,8 +283,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	$setQueryExecutionOptions(handle: number, ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
-		if (this._resolveProvider<azdata.QueryProvider>(handle).setQueryExecutionOptions) {
-			return this._resolveProvider<azdata.QueryProvider>(handle).setQueryExecutionOptions(ownerUri, options);
+		if (this._resolveProvider<azdata.QueryProvider>(handle)?.setQueryExecutionOptions) {
+			return this._resolveProvider<azdata.QueryProvider>(handle)!.setQueryExecutionOptions!(ownerUri, options);
 		} else {
 			return new Promise((r) => r());
 		}
@@ -356,7 +356,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (!this.queuedMessages.has(message.ownerUri)) {
 			this.queuedMessages.set(message.ownerUri, []);
 		}
-		this.queuedMessages.get(message.ownerUri).push(message);
+		this.queuedMessages.get(message.ownerUri)?.push(message);
 		if (!this.messageRunner.isScheduled()) {
 			this.messageRunner.schedule();
 		}
@@ -413,8 +413,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		this._proxy.$onEditSessionReady(handle, ownerUri, success, message);
 	}
 
-	public $getConnectionIconId(handle: number, connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string> {
-		return this._resolveProvider<azdata.IconProvider>(handle).getConnectionIconId(connection, serverInfo);
+	public $getConnectionIconId(handle: number, connection: azdata.IConnectionProfile, serverInfo: azdata.ServerInfo): Thenable<string | undefined> {
+		return this._resolveProvider<azdata.IconProvider>(handle)?.getConnectionIconId(connection, serverInfo);
 	}
 
 	// Metadata handlers

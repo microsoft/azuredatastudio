@@ -136,7 +136,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				getUriForConnection(connectionId: string): Thenable<string> {
 					return extHostConnectionManagement.$getUriForConnection(connectionId);
 				},
-				connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<azdata.ConnectionResult> {
+				connect(connectionProfile: azdata.IConnectionProfile, saveConnection?: boolean, showDashboard?: boolean): Thenable<azdata.ConnectionResult> {
 					return extHostConnectionManagement.$connect(connectionProfile, saveConnection, showDashboard);
 				}
 			};
@@ -182,7 +182,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 			// namespace: objectexplorer
 			const objectExplorer: typeof azdata.objectexplorer = {
-				getNode(connectionId: string, nodePath?: string): Thenable<azdata.objectexplorer.ObjectExplorerNode> {
+				getNode(connectionId: string, nodePath?: string): Thenable<azdata.objectexplorer.ObjectExplorerNode | undefined> {
 					return extHostObjectExplorer.$getNode(connectionId, nodePath);
 				},
 				getActiveConnectionNodes(): Thenable<azdata.objectexplorer.ObjectExplorerNode[]> {
@@ -209,15 +209,15 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			let registerConnectionProvider = (provider: azdata.ConnectionProvider): vscode.Disposable => {
 				// Connection callbacks
 				provider.registerOnConnectionComplete((connSummary: azdata.ConnectionInfoSummary) => {
-					extHostDataProvider.$onConnectComplete(provider.handle, connSummary);
+					extHostDataProvider.$onConnectComplete(provider.handle!, connSummary);
 				});
 
 				provider.registerOnIntelliSenseCacheComplete((connectionUri: string) => {
-					extHostDataProvider.$onIntelliSenseCacheComplete(provider.handle, connectionUri);
+					extHostDataProvider.$onIntelliSenseCacheComplete(provider.handle!, connectionUri);
 				});
 
 				provider.registerOnConnectionChanged((changedConnInfo: azdata.ChangedConnectionInfo) => {
-					extHostDataProvider.$onConnectionChanged(provider.handle, changedConnInfo);
+					extHostDataProvider.$onConnectionChanged(provider.handle!, changedConnInfo);
 				});
 
 				return extHostDataProvider.$registerConnectionProvider(provider);
@@ -225,23 +225,23 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 			let registerQueryProvider = (provider: azdata.QueryProvider): vscode.Disposable => {
 				provider.registerOnQueryComplete((result: azdata.QueryExecuteCompleteNotificationResult) => {
-					extHostDataProvider.$onQueryComplete(provider.handle, result);
+					extHostDataProvider.$onQueryComplete(provider.handle!, result);
 				});
 
 				provider.registerOnBatchStart((batchInfo: azdata.QueryExecuteBatchNotificationParams) => {
-					extHostDataProvider.$onBatchStart(provider.handle, batchInfo);
+					extHostDataProvider.$onBatchStart(provider.handle!, batchInfo);
 				});
 
 				provider.registerOnBatchComplete((batchInfo: azdata.QueryExecuteBatchNotificationParams) => {
-					extHostDataProvider.$onBatchComplete(provider.handle, batchInfo);
+					extHostDataProvider.$onBatchComplete(provider.handle!, batchInfo);
 				});
 
 				provider.registerOnResultSetAvailable((resultSetInfo: azdata.QueryExecuteResultSetNotificationParams) => {
-					extHostDataProvider.$onResultSetAvailable(provider.handle, resultSetInfo);
+					extHostDataProvider.$onResultSetAvailable(provider.handle!, resultSetInfo);
 				});
 
 				provider.registerOnResultSetUpdated((resultSetInfo: azdata.QueryExecuteResultSetNotificationParams) => {
-					extHostDataProvider.$onResultSetUpdated(provider.handle, resultSetInfo);
+					extHostDataProvider.$onResultSetUpdated(provider.handle!, resultSetInfo);
 				});
 
 				provider.registerOnMessage((message: azdata.QueryExecuteMessageParams) => {
@@ -249,7 +249,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				});
 
 				provider.registerOnEditSessionReady((ownerUri: string, success: boolean, message: string) => {
-					extHostDataProvider.$onEditSessionReady(provider.handle, ownerUri, success, message);
+					extHostDataProvider.$onEditSessionReady(provider.handle!, ownerUri, success, message);
 				});
 
 				return extHostDataProvider.$registerQueryProvider(provider);
@@ -257,12 +257,12 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 			let registerObjectExplorerProvider = (provider: azdata.ObjectExplorerProvider): vscode.Disposable => {
 				provider.registerOnSessionCreated((response: azdata.ObjectExplorerSession) => {
-					extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
+					extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle!, response);
 				});
 
 				if (provider.registerOnSessionDisconnected) {
 					provider.registerOnSessionDisconnected((response: azdata.ObjectExplorerSession) => {
-						extHostDataProvider.$onObjectExplorerSessionDisconnected(provider.handle, response);
+						extHostDataProvider.$onObjectExplorerSessionDisconnected(provider.handle!, response);
 					});
 				}
 
@@ -287,11 +287,11 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 			let registerTaskServicesProvider = (provider: azdata.TaskServicesProvider): vscode.Disposable => {
 				provider.registerOnTaskCreated((response: azdata.TaskInfo) => {
-					extHostDataProvider.$onTaskCreated(provider.handle, response);
+					extHostDataProvider.$onTaskCreated(provider.handle!, response);
 				});
 
 				provider.registerOnTaskStatusChanged((response: azdata.TaskProgressInfo) => {
-					extHostDataProvider.$onTaskStatusChanged(provider.handle, response);
+					extHostDataProvider.$onTaskStatusChanged(provider.handle!, response);
 				});
 
 				return extHostDataProvider.$registerTaskServicesProvider(provider);
@@ -299,15 +299,15 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 			let registerFileBrowserProvider = (provider: azdata.FileBrowserProvider): vscode.Disposable => {
 				provider.registerOnFileBrowserOpened((response: azdata.FileBrowserOpenedParams) => {
-					extHostDataProvider.$onFileBrowserOpened(provider.handle, response);
+					extHostDataProvider.$onFileBrowserOpened(provider.handle!, response);
 				});
 
 				provider.registerOnFolderNodeExpanded((response: azdata.FileBrowserExpandedParams) => {
-					extHostDataProvider.$onFolderNodeExpanded(provider.handle, response);
+					extHostDataProvider.$onFolderNodeExpanded(provider.handle!, response);
 				});
 
 				provider.registerOnFilePathsValidated((response: azdata.FileBrowserValidatedParams) => {
-					extHostDataProvider.$onFilePathsValidated(provider.handle, response);
+					extHostDataProvider.$onFilePathsValidated(provider.handle!, response);
 				});
 
 				return extHostDataProvider.$registerFileBrowserProvider(provider);
@@ -315,7 +315,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 			let registerScriptingProvider = (provider: azdata.ScriptingProvider): vscode.Disposable => {
 				provider.registerOnScriptingComplete((response: azdata.ScriptingCompleteResult) => {
-					extHostDataProvider.$onScriptingComplete(provider.handle, response);
+					extHostDataProvider.$onScriptingComplete(provider.handle!, response);
 				});
 
 				return extHostDataProvider.$registerScriptingProvider(provider);
@@ -323,15 +323,15 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 			let registerProfilerProvider = (provider: azdata.ProfilerProvider): vscode.Disposable => {
 				provider.registerOnSessionEventsAvailable((response: azdata.ProfilerSessionEvents) => {
-					extHostDataProvider.$onSessionEventsAvailable(provider.handle, response);
+					extHostDataProvider.$onSessionEventsAvailable(provider.handle!, response);
 				});
 
 				provider.registerOnSessionStopped((response: azdata.ProfilerSessionStoppedParams) => {
-					extHostDataProvider.$onSessionStopped(provider.handle, response);
+					extHostDataProvider.$onSessionStopped(provider.handle!, response);
 				});
 
 				provider.registerOnProfilerSessionCreated((response: azdata.ProfilerSessionCreatedParams) => {
-					extHostDataProvider.$onProfilerSessionCreated(provider.handle, response);
+					extHostDataProvider.$onProfilerSessionCreated(provider.handle!, response);
 				});
 
 				return extHostDataProvider.$registerProfilerProvider(provider);
@@ -359,7 +359,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 			let registerAgentServicesProvider = (provider: azdata.AgentServicesProvider): vscode.Disposable => {
 				provider.registerOnUpdated(() => {
-					extHostDataProvider.$onJobDataUpdated(provider.handle);
+					extHostDataProvider.$onJobDataUpdated(provider.handle!);
 				});
 
 				return extHostDataProvider.$registerAgentServiceProvider(provider);
@@ -414,7 +414,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				},
 				// the 'width' parameter used to be boolean type named 'isWide', the optional boolean type for 'width' parameter is added for backward compatibility support of 'isWide' parameter.
 				createModelViewDialog(title: string, dialogName?: string, width?: boolean | azdata.window.DialogWidth): azdata.window.Dialog {
-					let dialogWidth: azdata.window.DialogWidth;
+					let dialogWidth: azdata.window.DialogWidth | undefined;
 					if (typeof width === 'boolean') {
 						dialogWidth = width === true ? 'wide' : 'narrow';
 					} else {
@@ -519,7 +519,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				get onDidChangeNotebookCell() {
 					return extHostNotebookDocumentsAndEditors.onDidChangeNotebookCell;
 				},
-				showNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions) {
+				showNotebookDocument(uri: vscode.Uri, showOptions?: azdata.nb.NotebookShowOptions) {
 					return extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, showOptions);
 				},
 				registerNotebookProvider(provider: azdata.nb.NotebookProvider): vscode.Disposable {

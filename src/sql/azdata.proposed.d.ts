@@ -219,8 +219,8 @@ declare module 'azdata' {
 
 	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
 		cards: RadioCard[];
-		cardWidth: string;
-		cardHeight: string;
+		cardWidth?: string;
+		cardHeight?: string;
 		iconWidth?: string;
 		iconHeight?: string;
 		selectedCardId?: string;
@@ -234,9 +234,9 @@ declare module 'azdata' {
 		/**
 		 * The card object returned from this function is a clone of the internal representation - changes will not impact the original object
 		 */
-		onSelectionChanged: vscode.Event<RadioCardSelectionChangedEvent>;
+		onSelectionChanged?: vscode.Event<RadioCardSelectionChangedEvent>;
 
-		onLinkClick: vscode.Event<RadioCardLinkClickEvent>;
+		onLinkClick?: vscode.Event<RadioCardLinkClickEvent>;
 
 	}
 
@@ -286,7 +286,7 @@ declare module 'azdata' {
 		 * An event triggered when the selected tab is changed.
 		 * The event argument is the id of the selected tab.
 		 */
-		onTabChanged: vscode.Event<string>;
+		onTabChanged?: vscode.Event<string>;
 
 		/**
 		 * update the tabs.

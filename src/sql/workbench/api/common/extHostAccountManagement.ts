@@ -89,12 +89,13 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return Promise.all(promises).then(() => resultAccounts);
 	}
 
+	/** @deprecated */
 	public $getSecurityToken(account: azdata.Account, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<{}> {
 		return this.$getAllAccounts().then(() => {
 			for (const handle in this._accounts) {
 				const providerHandle = parseInt(handle);
-				if (firstIndex(this._accounts[handle], (acct) => acct.key.accountId === account.key.accountId) !== -1) {
-					return this._withProvider(providerHandle, (provider: azdata.AccountProvider) => provider.getSecurityToken(account, resource));
+				if (this._accounts[handle].findIndex((acct) => acct.key.accountId === account.key.accountId) !== -1) {
+					return this._withProvider(providerHandle, async (provider: azdata.AccountProvider) => (await provider.getSecurityToken(account, resource))!);
 				}
 			}
 
@@ -106,8 +107,8 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return this.$getAllAccounts().then(() => {
 			for (const handle in this._accounts) {
 				const providerHandle = parseInt(handle);
-				if (firstIndex(this._accounts[handle], (acct) => acct.key.accountId === account.key.accountId) !== -1) {
-					return this._withProvider(providerHandle, (provider: azdata.AccountProvider) => provider.getAccountSecurityToken(account, tenant, resource));
+				if (this._accounts[handle].findIndex((acct) => acct.key.accountId === account.key.accountId) !== -1) {
+					return this._withProvider(providerHandle, async (provider: azdata.AccountProvider) => (await provider.getAccountSecurityToken(account, tenant, resource))!);
 				}
 			}
 

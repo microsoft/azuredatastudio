@@ -95,7 +95,7 @@ class MainThreadNotebookEditor extends Disposable {
 		return this.editor.model;
 	}
 
-	public save(): Thenable<boolean> {
+	public save(): Promise<boolean> {
 		return this.textFileService.save(this.uri).then(uri => !!uri);
 	}
 
@@ -348,7 +348,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 	}
 
 	//#region extension host callable APIs
-	$trySaveDocument(uri: UriComponents): Thenable<boolean> {
+	$trySaveDocument(uri: UriComponents): Promise<boolean> {
 		let uriString = URI.revive(uri).toString();
 		let editor = this._notebookEditors.get(uriString);
 		if (editor) {
@@ -726,7 +726,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		});
 	}
 
-	$registerNavigationProvider(providerId: string, handle: number): void {
+	async $registerNavigationProvider(providerId: string, handle: number): Promise<void> {
 		this._notebookService.registerNavigationProvider({
 			providerId: providerId,
 			hasNavigation: true,

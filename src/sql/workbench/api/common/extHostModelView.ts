@@ -279,7 +279,10 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 	}
 
 	public runCustomValidations(componentId: string): boolean {
-		let component = this._componentBuilders.get(componentId).componentWrapper();
+		let component = this._componentBuilders.get(componentId)?.componentWrapper();
+		if (!component) {
+			throw new Error(`Component with id ${componentId} not found.`);
+		}
 		return component.runCustomValidations();
 	}
 
@@ -313,7 +316,7 @@ class ComponentBuilderImpl<T extends azdata.Component> implements azdata.Compone
 	}
 
 	withValidation(validation: (component: T) => boolean): azdata.ComponentBuilder<T> {
-		this._component.customValidations.push(validation);
+		this._component.customValidations.push(validation as ((component: ThisType<ComponentWrapper>) => boolean));
 		return this;
 	}
 
@@ -378,7 +381,7 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 				}
 			}
 		}
-		let actions: string[] = undefined;
+		let actions: string[] | undefined = undefined;
 		if (formComponent.actions) {
 			actions = formComponent.actions.map(action => {
 				let actionComponentWrapper = action as ComponentWrapper;
@@ -514,7 +517,7 @@ class TabbedPanelComponentBuilder extends ContainerBuilderImpl<azdata.TabbedPane
 }
 
 function createFromTabs(items: (azdata.Tab | azdata.TabGroup)[]): InternalItemConfig[] {
-	const itemConfigs = [];
+	const itemConfigs: InternalItemConfig[] = [];
 	items.forEach(item => {
 		if (item && 'tabs' in item) {
 			item.tabs.forEach(tab => {
@@ -711,7 +714,7 @@ class ComponentWrapper implements azdata.Component {
 		return false;
 	}
 
-	public insertItem(item: azdata.Component, index: number, itemLayout?: any) {
+	public insertItem(item: azdata.Component, index?: number, itemLayout?: any) {
 		this.addItem(item, itemLayout, index);
 	}
 
@@ -921,12 +924,12 @@ class CardWrapper extends ComponentWrapper implements azdata.CardComponent {
 		this.setProperty('iconWidth', v);
 	}
 
-	public get onDidActionClick(): vscode.Event<azdata.ActionDescriptor> {
+	public get onDidActionClick(): vscode.Event<azdata.ActionDescriptor> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
 
-	public get onCardSelectedChanged(): vscode.Event<any> {
+	public get onCardSelectedChanged(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
@@ -1011,12 +1014,12 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('stopEnterPropagation', v);
 	}
 
-	public get onTextChanged(): vscode.Event<any> {
+	public get onTextChanged(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
 
-	public get onEnterKeyPressed(): vscode.Event<string> {
+	public get onEnterKeyPressed(): vscode.Event<string> | undefined {
 		const emitter = this._emitterMap.get(ComponentEventType.onEnterKeyPressed);
 		return emitter && emitter.event;
 	}
@@ -1044,7 +1047,7 @@ class CheckBoxWrapper extends ComponentWrapper implements azdata.CheckBoxCompone
 		this.setProperty('label', v);
 	}
 
-	public get onChanged(): vscode.Event<any> {
+	public get onChanged(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
@@ -1073,7 +1076,7 @@ class WebViewWrapper extends ComponentWrapper implements azdata.WebViewComponent
 		this.setProperty('html', html);
 	}
 
-	public get onMessage(): vscode.Event<any> {
+	public get onMessage(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onMessage);
 		return emitter && emitter.event;
 	}
@@ -1143,12 +1146,12 @@ class EditorWrapper extends ComponentWrapper implements azdata.EditorComponent {
 		this.setProperty('minimumHeight', v);
 	}
 
-	public get onContentChanged(): vscode.Event<any> {
+	public get onContentChanged(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
 
-	public get onEditorCreated(): vscode.Event<any> {
+	public get onEditorCreated(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onComponentCreated);
 		return emitter && emitter.event;
 	}
@@ -1205,12 +1208,12 @@ class DiffEditorWrapper extends ComponentWrapper implements azdata.DiffEditorCom
 		this.setProperty('minimumHeight', v);
 	}
 
-	public get onContentChanged(): vscode.Event<any> {
+	public get onContentChanged(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
 
-	public get onEditorCreated(): vscode.Event<any> {
+	public get onEditorCreated(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onComponentCreated);
 		return emitter && emitter.event;
 	}
@@ -1267,7 +1270,7 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 		this.setProperty('checked', v);
 	}
 
-	public get onDidClick(): vscode.Event<any> {
+	public get onDidClick(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
@@ -1384,12 +1387,12 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('updateCells', v);
 	}
 
-	public get onRowSelected(): vscode.Event<any> {
+	public get onRowSelected(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
 	}
 
-	public get onCellAction(): vscode.Event<any> {
+	public get onCellAction(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onCellAction);
 		return emitter && emitter.event;
 	}
@@ -1437,7 +1440,7 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 		this.setProperty('fireOnTextChange', v);
 	}
 
-	public get onValueChanged(): vscode.Event<any> {
+	public get onValueChanged(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
@@ -1466,7 +1469,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		this.setProperty('columns', v);
 	}
 
-	public get onDataChanged(): vscode.Event<any> {
+	public get onDataChanged(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
@@ -1534,7 +1537,7 @@ class ListBoxWrapper extends ComponentWrapper implements azdata.ListBoxComponent
 		this.setProperty('values', v);
 	}
 
-	public get onRowSelected(): vscode.Event<any> {
+	public get onRowSelected(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
 	}
@@ -1555,7 +1558,7 @@ class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonCom
 		this.setProperty('label', v);
 	}
 
-	public get onDidClick(): vscode.Event<any> {
+	public get onDidClick(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
@@ -1601,7 +1604,7 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements azdata
 		this.setProperty('ownerUri', value);
 	}
 
-	public get onDidChange(): vscode.Event<any> {
+	public get onDidChange(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
@@ -1636,7 +1639,7 @@ class DivContainerWrapper extends ComponentWrapper implements azdata.DivContaine
 		this.setProperty('yOffsetChange', value);
 	}
 
-	public get onDidClick(): vscode.Event<any> {
+	public get onDidClick(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
@@ -1686,7 +1689,7 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 		this.setProperty('url', v);
 	}
 
-	public get onDidClick(): vscode.Event<any> {
+	public get onDidClick(): vscode.Event<any> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
@@ -1756,12 +1759,12 @@ class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.
 		this.setProperty('orientation', orientation);
 	}
 
-	public get onSelectionChanged(): vscode.Event<azdata.RadioCardSelectionChangedEvent> {
+	public get onSelectionChanged(): vscode.Event<azdata.RadioCardSelectionChangedEvent> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
 
-	public get onLinkClick(): vscode.Event<azdata.RadioCardLinkClickEvent> {
+	public get onLinkClick(): vscode.Event<azdata.RadioCardLinkClickEvent> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
@@ -1793,7 +1796,7 @@ class TabbedPanelComponentWrapper extends ComponentWrapper implements azdata.Tab
 		this.doAction(ModelViewAction.SelectTab, id);
 	}
 
-	public get onTabChanged(): vscode.Event<string> {
+	public get onTabChanged(): vscode.Event<string> | undefined {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
@@ -1840,7 +1843,7 @@ class ModelViewImpl implements azdata.ModelView {
 	public readonly onValidityChanged = this._onValidityChangedEmitter.event;
 
 	private _modelBuilder: ModelBuilderImpl;
-	private _component: azdata.Component;
+	private _component?: azdata.Component;
 
 	constructor(
 		private readonly _proxy: MainThreadModelViewShape,
@@ -1871,7 +1874,7 @@ class ModelViewImpl implements azdata.ModelView {
 	}
 
 	public get valid(): boolean {
-		return this._component.valid;
+		return this._component!.valid;
 	}
 
 	public handleEvent(componentId: string, eventArgs: IComponentEventArgs): void {
@@ -1889,7 +1892,7 @@ class ModelViewImpl implements azdata.ModelView {
 	}
 
 	public validate(): Thenable<boolean> {
-		return this._proxy.$validate(this._handle, this._component.id);
+		return this._proxy.$validate(this._handle, this._component!.id);
 	}
 
 	public runCustomValidations(componentId: string): boolean {
@@ -1913,7 +1916,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	$onClosed(handle: number): void {
 		const view = this._modelViews.get(handle);
-		view.onClosedEmitter.fire(undefined);
+		view?.onClosedEmitter.fire(undefined);
 		this._modelViews.delete(handle);
 	}
 
@@ -1925,20 +1928,20 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	$registerWidget(handle: number, id: string, connection: azdata.connection.Connection, serverInfo: azdata.ServerInfo): void {
 		let extension = this._handlerToExtension.get(id);
-		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._extHostModelViewTree, extension, this.logService);
+		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._extHostModelViewTree, extension!, this.logService);
 		this._modelViews.set(handle, view);
-		this._handlers.get(id)(view);
+		this._handlers.get(id)!(view);
 	}
 
-	$handleEvent(handle: number, componentId: string, eventArgs: IComponentEventArgs): void {
+	async $handleEvent(handle: number, componentId: string, eventArgs: IComponentEventArgs): Promise<void> {
 		const view = this._modelViews.get(handle);
 		if (view) {
 			view.handleEvent(componentId, eventArgs);
 		}
 	}
 
-	$runCustomValidations(handle: number, componentId: string): Thenable<boolean> {
+	$runCustomValidations(handle: number, componentId: string): Promise<boolean> {
 		const view = this._modelViews.get(handle);
-		return Promise.resolve(view.runCustomValidations(componentId));
+		return Promise.resolve(view!.runCustomValidations(componentId));
 	}
 }

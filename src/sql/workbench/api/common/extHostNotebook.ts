@@ -39,7 +39,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		}
 
 		return {
-			handle: adapter.handle,
+			handle: adapter.handle!,
 			hasContentManager: !!adapter.contentManager,
 			hasServerManager: !!adapter.serverManager
 		};
@@ -50,7 +50,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		let manager = this.findManagerForUri(uriString);
 		if (manager) {
 			manager.provider.handleNotebookClosed(uri);
-			this._adapters.delete(manager.handle);
+			this._adapters.delete(manager.handle!);
 		}
 	}
 
@@ -70,7 +70,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this._withContentManager(managerHandle, (contentManager) => contentManager.save(URI.revive(notebookUri), notebook));
 	}
 
-	$refreshSpecs(managerHandle: number): Thenable<azdata.nb.IAllKernels> {
+	$refreshSpecs(managerHandle: number): Thenable<azdata.nb.IAllKernels | undefined> {
 		return this._withSessionManager(managerHandle, async (sessionManager) => {
 			await sessionManager.ready;
 			return sessionManager.specs;
@@ -82,7 +82,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 			try {
 				let session = await sessionManager.startNew(options);
 				let sessionId = this._addNewAdapter(session);
-				let kernelDetails: INotebookKernelDetails = undefined;
+				let kernelDetails: INotebookKernelDetails | undefined = undefined;
 				if (session.kernel) {
 					kernelDetails = this.saveKernel(session.kernel);
 				}
@@ -116,7 +116,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return kernelDetails;
 	}
 
-	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void> {
+	async $shutdownSession(managerHandle: number, sessionId: string): Promise<void> {
 		// If manager handle has already been removed, don't try to access it again when shutting down
 		if (this._adapters.get(managerHandle) === undefined) {
 			return undefined;
@@ -133,15 +133,15 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 
 	$configureKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<void> {
 		let session = this._getAdapter<azdata.nb.ISession>(sessionId);
-		return session.configureKernel(kernelInfo).then(() => null);
+		return session.configureKernel(kernelInfo).then();
 	}
 
 	$configureConnection(sessionId: number, connection: azdata.IConnectionProfile): Thenable<void> {
 		let session = this._getAdapter<azdata.nb.ISession>(sessionId);
-		return session.configureConnection(connection).then(() => null);
+		return session.configureConnection(connection).then();
 	}
 
-	$getKernelReadyStatus(kernelId: number): Thenable<azdata.nb.IInfoReply> {
+	$getKernelReadyStatus(kernelId: number): Thenable<azdata.nb.IInfoReply | null> {
 		let kernel = this._getAdapter<azdata.nb.IKernel>(kernelId);
 		return kernel.ready.then(success => kernel.info);
 	}
@@ -223,8 +223,8 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 
 	//#region private methods
 
-	private getAdapters<A>(ctor: { new(...args: any[]): A }): A[] {
-		let matchingAdapters = [];
+	private getAdapters<A extends Adapter>(ctor: { new(...args: any[]): A }): A[] {
+		let matchingAdapters: Array<A> = [];
 		this._adapters.forEach(a => {
 			if (a instanceof ctor) {
 				matchingAdapters.push(a);
@@ -233,7 +233,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return matchingAdapters;
 	}
 
-	private findManagerForUri(uriString: string): NotebookManagerAdapter {
+	private findManagerForUri(uriString: string): NotebookManagerAdapter | undefined {
 		for (let manager of this.getAdapters(NotebookManagerAdapter)) {
 			if (manager.uriString === uriString) {
 				return manager;
@@ -334,7 +334,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 
 
 class NotebookManagerAdapter implements azdata.nb.NotebookManager {
-	public handle: number;
+	public handle?: number;
 	constructor(
 		public readonly provider: azdata.nb.NotebookProvider,
 		private manager: azdata.nb.NotebookManager,
@@ -350,7 +350,7 @@ class NotebookManagerAdapter implements azdata.nb.NotebookManager {
 		return this.manager.sessionManager;
 	}
 
-	public get serverManager(): azdata.nb.ServerManager {
+	public get serverManager(): azdata.nb.ServerManager | undefined {
 		return this.manager.serverManager;
 	}
 }

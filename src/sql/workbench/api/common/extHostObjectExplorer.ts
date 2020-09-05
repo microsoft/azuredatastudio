@@ -26,9 +26,9 @@ export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape {
 
 		function convertDataExplorerArgument(arg: TreeViewItemHandleArg): any {
 			return <azdata.ObjectExplorerContext>{
-				connectionProfile: arg.$treeItem.payload,
+				connectionProfile: arg.$treeItem?.payload,
 				isConnectionNode: arg.$treeItem?.type === NodeType.Server || arg.$treeItem?.type === NodeType.Database,
-				nodeInfo: arg.$treeItem.nodeInfo
+				nodeInfo: arg.$treeItem?.nodeInfo
 			};
 		}
 
@@ -42,7 +42,7 @@ export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape {
 		});
 	}
 
-	public $getNode(connectionId: string, nodePath?: string): Thenable<azdata.objectexplorer.ObjectExplorerNode> {
+	public $getNode(connectionId: string, nodePath?: string): Thenable<azdata.objectexplorer.ObjectExplorerNode | undefined> {
 		return this._proxy.$getNode(connectionId, nodePath).then(nodeInfo => nodeInfo === undefined ? undefined : new ExtHostObjectExplorerNode(nodeInfo, connectionId, this._proxy));
 	}
 
@@ -65,14 +65,14 @@ export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape {
 
 export class ExtHostObjectExplorerNode implements azdata.objectexplorer.ObjectExplorerNode {
 	public connectionId: string;
-	public nodePath: string;
-	public nodeType: string;
-	public nodeSubType: string;
-	public nodeStatus: string;
-	public label: string;
-	public isLeaf: boolean;
-	public metadata: azdata.ObjectMetadata;
-	public errorMessage: string;
+	public nodePath!: string;
+	public nodeType!: string;
+	public nodeSubType?: string;
+	public nodeStatus?: string;
+	public label!: string;
+	public isLeaf!: boolean;
+	public metadata?: azdata.ObjectMetadata;
+	public errorMessage?: string;
 
 	constructor(nodeInfo: azdata.NodeInfo, connectionId: string, private _proxy: MainThreadObjectExplorerShape) {
 		this.getDetailsFromInfo(nodeInfo);
@@ -87,7 +87,7 @@ export class ExtHostObjectExplorerNode implements azdata.objectexplorer.ObjectEx
 		return this._proxy.$setExpandedState(this.connectionId, this.nodePath, expandedState);
 	}
 
-	setSelected(selected: boolean, clearOtherSelections: boolean = undefined): Thenable<void> {
+	setSelected(selected: boolean, clearOtherSelections?: boolean): Thenable<void> {
 		return this._proxy.$setSelected(this.connectionId, this.nodePath, selected, clearOtherSelections);
 	}
 
@@ -95,7 +95,7 @@ export class ExtHostObjectExplorerNode implements azdata.objectexplorer.ObjectEx
 		return this._proxy.$getChildren(this.connectionId, this.nodePath).then(children => children.map(nodeInfo => new ExtHostObjectExplorerNode(nodeInfo, this.connectionId, this._proxy)));
 	}
 
-	getParent(): Thenable<azdata.objectexplorer.ObjectExplorerNode> {
+	getParent(): Thenable<azdata.objectexplorer.ObjectExplorerNode | undefined> {
 		// Object nodes have a name like <schema>.<name> in the nodePath - we can't use label because
 		// that may have additional display information appended to it. Items without metadata are nodes
 		// such as folders that don't correspond to actual objects and so just use the label

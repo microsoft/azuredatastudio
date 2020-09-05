@@ -18,7 +18,7 @@ import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
 
 export interface INotebookEditOperation {
 	range: azdata.nb.CellRange;
-	cell: Partial<azdata.nb.ICellContents>;
+	cell: Partial<azdata.nb.ICellContents> | null;
 	forceMoveMarkers: boolean;
 }
 
@@ -44,7 +44,7 @@ export class NotebookEditorEdit {
 	private readonly _undoStopBefore: boolean;
 	private readonly _undoStopAfter: boolean;
 
-	constructor(document: azdata.nb.NotebookDocument, options: { undoStopBefore: boolean; undoStopAfter: boolean; }) {
+	constructor(document: azdata.nb.NotebookDocument, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }) {
 		this._document = document;
 		// TODO add version handling
 		this._documentVersionId = 0;
@@ -69,7 +69,7 @@ export class NotebookEditorEdit {
 	}
 
 	private getAsRange(location: number | CellRange): CellRange {
-		let range: CellRange = null;
+		let range: CellRange | null = null;
 		if (typeof (location) === 'number') {
 			range = new CellRange(location, location + 1);
 		}
@@ -104,7 +104,7 @@ export class NotebookEditorEdit {
 	}
 
 	deleteCell(index: number): void {
-		let range: CellRange = null;
+		let range: CellRange | null = null;
 
 		if (typeof (index) === 'number') {
 			// Currently only allowing single-cell deletion.
@@ -118,7 +118,7 @@ export class NotebookEditorEdit {
 		this._pushEdit(range, null, true);
 	}
 
-	private _pushEdit(range: azdata.nb.CellRange, cell: Partial<azdata.nb.ICellContents>, forceMoveMarkers: boolean): void {
+	private _pushEdit(range: azdata.nb.CellRange, cell: Partial<azdata.nb.ICellContents> | null, forceMoveMarkers: boolean): void {
 		let validRange = this._document.validateCellRange(range);
 		this._collectedEdits.push({
 			range: validRange,
@@ -135,7 +135,7 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 		private _proxy: MainThreadNotebookDocumentsAndEditorsShape,
 		private _id: string,
 		private readonly _documentData: ExtHostNotebookDocumentData,
-		private _viewColumn: vscode.ViewColumn
+		private _viewColumn?: vscode.ViewColumn
 	) {
 
 	}
@@ -153,7 +153,7 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 		throw readonly('document');
 	}
 
-	get viewColumn(): vscode.ViewColumn {
+	get viewColumn(): vscode.ViewColumn | undefined {
 		return this._viewColumn;
 	}
 
@@ -232,7 +232,7 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 		let edits: ISingleNotebookEditOperation[] = editData.edits.map((edit) => {
 			return {
 				range: toICellRange(edit.range),
-				cell: edit.cell,
+				cell: edit.cell!,
 				forceMoveMarkers: edit.forceMoveMarkers
 			};
 		});

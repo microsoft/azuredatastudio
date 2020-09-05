@@ -14,7 +14,7 @@ import * as azdata from 'azdata';
 
 class ExtHostDashboardWebview implements azdata.DashboardWebview {
 
-	private _html: string;
+	private _html?: string;
 	public onMessageEmitter = new Emitter<any>();
 	public onClosedEmitter = new Emitter<any>();
 
@@ -45,11 +45,11 @@ class ExtHostDashboardWebview implements azdata.DashboardWebview {
 		return deepClone(this._serverInfo);
 	}
 
-	get html(): string {
+	get html(): string | undefined {
 		return this._html;
 	}
 
-	set html(value: string) {
+	set html(value: string | undefined) {
 		if (this._html !== value) {
 			this._html = value;
 			this._proxy.$setHtml(this._handle, value);
@@ -71,12 +71,12 @@ export class ExtHostDashboardWebviews implements ExtHostDashboardWebviewsShape {
 
 	$onMessage(handle: number, message: any): void {
 		const webview = this._webviews.get(handle);
-		webview.onMessageEmitter.fire(message);
+		webview?.onMessageEmitter.fire(message);
 	}
 
 	$onClosed(handle: number): void {
 		const webview = this._webviews.get(handle);
-		webview.onClosedEmitter.fire(undefined);
+		webview?.onClosedEmitter.fire(undefined);
 		this._webviews.delete(handle);
 	}
 
@@ -88,6 +88,8 @@ export class ExtHostDashboardWebviews implements ExtHostDashboardWebviewsShape {
 	$registerWidget(handle: number, id: string, connection: azdata.connection.Connection, serverInfo: azdata.ServerInfo): void {
 		let webview = new ExtHostDashboardWebview(this._proxy, handle, connection, serverInfo);
 		this._webviews.set(handle, webview);
-		this._handlers.get(id)(webview);
+		if (this._handlers.has(id)) {
+			this._handlers.get(id)!(webview);
+		}
 	}
 }

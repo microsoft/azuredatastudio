@@ -10,10 +10,10 @@ import * as azdata from 'azdata';
 import { Emitter } from 'vs/base/common/event';
 
 class ExtHostDialog implements azdata.ModalDialog {
-	private _title: string;
-	private _html: string;
-	private _okTitle: string;
-	private _closeTitle: string;
+	private _title?: string;
+	private _html?: string;
+	private _okTitle?: string;
+	private _closeTitle?: string;
 	public onMessageEmitter = new Emitter<any>();
 	public onClosedEmitter = new Emitter<any>();
 
@@ -22,41 +22,45 @@ class ExtHostDialog implements azdata.ModalDialog {
 		private readonly _handle: number,
 	) { }
 
-	get title(): string {
+	get title(): string | undefined {
 		return this._title;
 	}
 
-	set title(value: string) {
+	set title(value: string | undefined) {
 		if (this._title !== value) {
 			this._title = value;
-			this._proxy.$setTitle(this._handle, value);
+			if (value) {
+				this._proxy.$setTitle(this._handle, value);
+			}
 		}
 	}
 
-	get html(): string {
+	get html(): string | undefined {
 		return this._html;
 	}
 
-	set html(value: string) {
+	set html(value: string | undefined) {
 		if (this._html !== value) {
 			this._html = value;
-			this._proxy.$setHtml(this._handle, value);
+			if (value) {
+				this._proxy.$setHtml(this._handle, value);
+			}
 		}
 	}
 
-	public set okTitle(value: string) {
+	public set okTitle(value: string | undefined) {
 		this._okTitle = value;
 	}
 
-	public get okTitle(): string {
+	public get okTitle(): string | undefined {
 		return this._okTitle;
 	}
 
-	public set closeTitle(value: string) {
+	public set closeTitle(value: string | undefined) {
 		this._closeTitle = value;
 	}
 
-	public get closeTitle(): string {
+	public get closeTitle(): string | undefined {
 		return this._closeTitle;
 	}
 
@@ -110,11 +114,11 @@ export class ExtHostModalDialogs implements ExtHostModalDialogsShape {
 
 	$onMessage(handle: number, message: any): void {
 		const webview = this._webviews.get(handle);
-		webview.onMessageEmitter.fire(message);
+		webview?.onMessageEmitter.fire(message);
 	}
 
 	$onClosed(handle: number): void {
 		const webview = this._webviews.get(handle);
-		webview.onClosedEmitter.fire(undefined);
+		webview?.onClosedEmitter.fire(undefined);
 	}
 }

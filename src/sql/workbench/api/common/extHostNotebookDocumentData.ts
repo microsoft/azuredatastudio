@@ -14,9 +14,9 @@ import { CellRange } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 
 export class ExtHostNotebookDocumentData implements IDisposable {
-	private _document: azdata.nb.NotebookDocument;
+	private _document?: azdata.nb.NotebookDocument;
 	private _isDisposed: boolean = false;
-	private _kernelSpec: azdata.nb.IKernelSpec;
+	private _kernelSpec?: azdata.nb.IKernelSpec;
 
 	constructor(private readonly _proxy: MainThreadNotebookDocumentsAndEditorsShape,
 		private readonly _uri: URI,
