@@ -200,7 +200,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			resetPasswordButton.onDidClick(async () => {
+			resetPasswordButton.onDidClick!(async () => {
 				resetPasswordButton.enabled = false;
 				try {
 					const password = await promptAndConfirmPassword(input => !input ? loc.enterANonEmptyPassword : '');
@@ -226,7 +226,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			deleteButton.onDidClick(async () => {
+			deleteButton.onDidClick!(async () => {
 				deleteButton.enabled = false;
 				try {
 					/*
@@ -250,7 +250,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			refreshButton.onDidClick(async () => {
+			refreshButton.onDidClick!(async () => {
 				refreshButton.enabled = false;
 				try {
 					this.propertiesLoading!.loading = true;
@@ -277,7 +277,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			openInAzurePortalButton.onDidClick(async () => {
+			openInAzurePortalButton.onDidClick!(async () => {
 				/*
 				const r = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
 				if (!r) {

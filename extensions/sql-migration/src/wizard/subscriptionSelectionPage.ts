@@ -55,7 +55,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 			values: [],
 		});
 
-		this.disposables.push(dropDown.component().onValueChanged(() => {
+		this.disposables.push(dropDown.component().onValueChanged!(() => {
 			this.accountValueChanged().catch(console.error);
 		}));
 
@@ -70,7 +70,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 			values: [],
 		});
 
-		this.disposables.push(dropDown.component().onValueChanged(() => {
+		this.disposables.push(dropDown.component().onValueChanged!(() => {
 			this.subscriptionValueChanged().catch(console.error);
 		}));
 

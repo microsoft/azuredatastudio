@@ -236,7 +236,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					height: 15,
 					checked: false
 				}).component();
-				checkbox.onChanged(() => {
+				checkbox.onChanged!(() => {
 					onSelectItem(checkbox.checked || false);
 				});
 				selectModelButton = checkbox;
@@ -248,7 +248,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					height: 15,
 					checked: false
 				}).component();
-				radioButton.onDidClick(() => {
+				radioButton.onDidClick!(() => {
 					onSelectItem(radioButton.checked || false);
 				});
 				selectModelButton = radioButton;
@@ -271,7 +271,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				width: 15,
 				height: 15
 			}).component();
-			dropButton.onDidClick(async () => {
+			dropButton.onDidClick!(async () => {
 				try {
 					const confirm = await utils.promptConfirm(constants.confirmDeleteModel(model.modelName), this._apiWrapper);
 					if (confirm) {
@@ -295,7 +295,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				width: 15,
 				height: 15
 			}).component();
-			editButton.onDidClick(async () => {
+			editButton.onDidClick!(async () => {
 				await this.sendDataRequest(EditModelEventName, model);
 			});
 		}

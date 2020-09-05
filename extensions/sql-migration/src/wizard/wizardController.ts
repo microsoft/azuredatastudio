@@ -47,7 +47,7 @@ export class WizardController {
 			const newPage = pageChangeInfo.newPage;
 			const lastPage = pageChangeInfo.lastPage;
 
-			await pages[lastPage]?.onPageLeave();
+			await pages[lastPage!]?.onPageLeave();
 			await pages[newPage]?.onPageEnter();
 		});
 

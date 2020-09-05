@@ -268,7 +268,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					componentWidth: '100%'
 				}
 			);
-			this.wizard.registerDisposable(authModeDropdown.onValueChanged(() => {
+			this.wizard.registerDisposable(authModeDropdown.onValueChanged!(() => {
 				const isBasicAuthMode = (<azdata.CategoryValue>authModeDropdown.value).name === 'basic';
 				getInputBoxComponent(VariableNames.OrganizationalUnitDistinguishedName_VariableName, this.inputComponents).required = !isBasicAuthMode;
 				getInputBoxComponent(VariableNames.DomainControllerFQDNs_VariableName, this.inputComponents).required = !isBasicAuthMode;
@@ -329,7 +329,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 			this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 				this.wizard.wizardObject.message = { text: '' };
-				if (pcInfo.newPage > pcInfo.lastPage) {
+				if (pcInfo.newPage > pcInfo.lastPage!) {
 					const messages: string[] = [];
 					const password = getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents).value!;
 					const confirmPassword = getInputBoxComponent(ConfirmPasswordName, this.inputComponents).value!;

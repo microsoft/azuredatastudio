@@ -145,7 +145,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			newInstance.onDidClick(async () => {
+			newInstance.onDidClick!(async () => {
 				await vscode.commands.executeCommand('azdata.resource.deploy', 'arc.sql', ['arc.sql', 'arc.postgres']);
 			}));
 
@@ -156,7 +156,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			refreshButton.onDidClick(async () => {
+			refreshButton.onDidClick!(async () => {
 				refreshButton.enabled = false;
 				try {
 					this._propertiesLoadingComponent!.loading = true;
@@ -174,7 +174,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this._openInAzurePortalButton.onDidClick(async () => {
+			this._openInAzurePortalButton.onDidClick!(async () => {
 				const config = this._controllerModel.controllerConfig;
 				if (config) {
 					vscode.env.openExternal(vscode.Uri.parse(

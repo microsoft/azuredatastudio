@@ -35,7 +35,7 @@ export class FileBrowserDialog {
 			this._selectedPathTextBox = view.modelBuilder.inputBox()
 				.withProperties({ inputType: 'text' })
 				.component();
-			this._fileBrowserTree.onDidChange((args) => {
+			this._fileBrowserTree.onDidChange!((args) => {
 				if (this._selectedPathTextBox) {
 					this._selectedPathTextBox.value = args.fullPath;
 				}

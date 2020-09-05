@@ -130,7 +130,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 				this.setModelValuesByProfile(profile);
 				radioButton.focus();
 			}
-			this.wizard.registerDisposable(radioButton.onDidClick(() => {
+			this.wizard.registerDisposable(radioButton.onDidClick!(() => {
 				this.wizard.wizardObject.message = { text: '' };
 				this.setModelValuesByProfile(profile);
 			}));
@@ -219,7 +219,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 	public async onEnter(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
-			if (pcInfo.newPage > pcInfo.lastPage) {
+			if (pcInfo.newPage > pcInfo.lastPage!) {
 				const isValid = this.wizard.model.getStringValue(VariableNames.DeploymentProfile_VariableName) !== undefined;
 				if (!isValid) {
 					this.wizard.wizardObject.message = {

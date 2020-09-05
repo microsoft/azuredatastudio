@@ -116,7 +116,7 @@ export abstract class BaseInputKeyValue extends KeyValue {
 			height: '17px'
 		}).component();
 
-		this.disposables.push(copy.onDidClick(async () => {
+		this.disposables.push(copy.onDidClick!(async () => {
 			vscode.env.clipboard.writeText(value);
 			vscode.window.showInformationMessage(loc.copiedToClipboard(key));
 		}));

@@ -46,7 +46,7 @@ export class AddEditLanguageTab extends LanguageViewBase {
 					label: constants.extLangInstallButtonText,
 					width: '100px'
 				}).component();
-				this.saveButton.onDidClick(async () => {
+				this.saveButton.onDidClick!(async () => {
 					try {
 						await this.updateLanguage(this.updatedData);
 					} catch (err) {

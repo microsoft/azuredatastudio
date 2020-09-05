@@ -133,7 +133,7 @@ export class MiaaModel extends ResourceModel {
 
 			const provider = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(this._connectionProfile.providerName, azdata.DataProviderType.MetadataProvider);
 			const ownerUri = await azdata.connection.getUriForConnection(this._activeConnectionId);
-			const databases = await provider.getDatabases(ownerUri);
+			const databases = await provider!.getDatabases(ownerUri);
 			if (!databases) {
 				throw new Error('Could not fetch databases');
 			}

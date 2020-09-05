@@ -69,7 +69,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			refreshButton.onDidClick(async () => {
+			refreshButton.onDidClick!(async () => {
 				refreshButton.enabled = false;
 				try {
 					this.loading!.loading = true;

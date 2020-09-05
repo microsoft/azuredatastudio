@@ -303,7 +303,7 @@ export class DashboardWidget {
 				'margin': '0px'
 			}
 		}).component();
-		video1Container.onDidClick(async () => {
+		video1Container.onDidClick!(async () => {
 			if (linkMetaData.link) {
 				await this._apiWrapper.openExternal(vscode.Uri.parse(linkMetaData.link));
 			}
@@ -591,7 +591,7 @@ export class DashboardWidget {
 				'border': '1px solid'
 			}
 		});
-		mainContainer.onDidClick(async () => {
+		mainContainer.onDidClick!(async () => {
 			if (mainContainer.enabled && taskMetaData.command) {
 				await this._apiWrapper.executeCommand(taskMetaData.command);
 			}

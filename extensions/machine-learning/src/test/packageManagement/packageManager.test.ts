@@ -75,7 +75,7 @@ describe('Package Manager', () => {
 	it('installDependencies Should download R sqlmlutils if does not exist', async function (): Promise<void> {
 		let testContext = createContext();
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
-			operationInfo.operation(testContext.op);
+			operationInfo.operation!(testContext.op);
 		});
 
 		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
@@ -98,7 +98,7 @@ describe('Package Manager', () => {
 			{"name":"sqlmlutils","version":"1.1.1"}
 		]`;
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
-			operationInfo.operation(testContext.op);
+			operationInfo.operation!(testContext.op);
 		});
 		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command) => {
 			if (command.indexOf('pip install') > 0) {
@@ -124,7 +124,7 @@ describe('Package Manager', () => {
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
 		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
-			operationInfo.operation(testContext.op);
+			operationInfo.operation!(testContext.op);
 		});
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns(() => Promise.resolve(''));
 		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
@@ -148,7 +148,7 @@ describe('Package Manager', () => {
 			{"name":"sqlmlutils","version":"1.1.1"}
 		]`;
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
-			operationInfo.operation(testContext.op);
+			operationInfo.operation!(testContext.op);
 		});
 		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns(() => Promise.resolve(constants.learnMoreTitle));
 		testContext.apiWrapper.setup(x => x.openExternal(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
@@ -173,7 +173,7 @@ describe('Package Manager', () => {
 			label: 'Yes'
 		}));
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
-			operationInfo.operation(testContext.op);
+			operationInfo.operation!(testContext.op);
 		});
 		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command) => {
 			if (command.indexOf('pip install') > 0) {
@@ -200,7 +200,7 @@ describe('Package Manager', () => {
 			label: 'Yes'
 		}));
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
-			operationInfo.operation(testContext.op);
+			operationInfo.operation!(testContext.op);
 		});
 		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command) => {
 			if (command.indexOf('pip install') > 0 || command.indexOf('install.packages') > 0) {
@@ -225,7 +225,7 @@ describe('Package Manager', () => {
 			label: 'Yes'
 		}));
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
-			operationInfo.operation(testContext.op);
+			operationInfo.operation!(testContext.op);
 		});
 		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command) => {
 			if (command.indexOf('pip install') > 0) {
@@ -244,7 +244,7 @@ describe('Package Manager', () => {
 		let testContext = createContext();
 		let packagesInstalled = false;
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
-			operationInfo.operation(testContext.op);
+			operationInfo.operation!(testContext.op);
 		});
 		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
 			label: 'Yes'
@@ -274,7 +274,7 @@ describe('Package Manager', () => {
 			{"name":"pymssql","version":"2.1.4"}
 		]`;
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
-			operationInfo.operation(testContext.op);
+			operationInfo.operation!(testContext.op);
 		});
 		testContext.httpClient.setup(x => x.download(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.reject());
 		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((command) => {

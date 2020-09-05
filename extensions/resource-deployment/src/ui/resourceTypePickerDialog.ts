@@ -92,7 +92,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				ariaLabel: localize('deploymentDialog.deploymentOptions', "Deployment options"),
 				width: '1100px'
 			}).component();
-			this._toDispose.push(this._cardGroup.onSelectionChanged(({ cardId }) => {
+			this._toDispose.push(this._cardGroup.onSelectionChanged!(({ cardId }) => {
 				const resourceType = resourceTypes.find(rt => { return rt.name === cardId; });
 				if (resourceType) {
 					this.selectResourceType(resourceType);
@@ -200,7 +200,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 					ariaLabel: option.displayName
 				}).component();
 
-				this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
+				this._toDispose.push(optionSelectBox.onValueChanged!(() => { this.updateToolsDisplayTable(); }));
 				this._optionDropDownMap.set(option.name, optionSelectBox);
 				const row = this._view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 				this._optionsContainer.addItem(row);
@@ -317,7 +317,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			required: true
 		}).component();
 		checkbox.checked = false;
-		this._toDispose.push(checkbox.onChanged(() => {
+		this._toDispose.push(checkbox.onChanged!(() => {
 			this._agreementCheckboxChecked = !!checkbox.checked;
 		}));
 		const text = this._view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({

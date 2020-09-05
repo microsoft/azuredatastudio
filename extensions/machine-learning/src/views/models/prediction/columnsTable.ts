@@ -215,7 +215,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				justifyContent: 'flex-start'
 			}).component();
 			const warningButton = this.createWarningButton(constants.outputColumnDataTypeNotSupportedWarning);
-			warningButton.onDidClick(() => {
+			warningButton.onDidClick!(() => {
 			});
 			const css = {
 				'padding-top': '5px',
@@ -248,7 +248,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 
 			this._parameters.push({ columnName: name, paramName: name, dataType: dataType });
 
-			nameInput.onValueChanged(() => {
+			nameInput.onValueChanged!(() => {
 				const value = <string>nameInput.value;
 				if (value !== modelParameter.type) {
 					let selectedRow = this._parameters.find(x => x.paramName === name);
@@ -267,7 +267,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				value: name,
 				width: 200
 			}).component();
-			displayNameInput.onTextChanged(() => {
+			displayNameInput.onTextChanged!(() => {
 				let selectedRow = this._parameters.find(x => x.paramName === name);
 				if (selectedRow) {
 					selectedRow.columnName = displayNameInput.value || name;
@@ -307,7 +307,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				justifyContent: 'flex-start'
 			}).component();
 			const warningButton = this.createWarningButton(constants.columnDataTypeMismatchWarning);
-			warningButton.onDidClick(() => {
+			warningButton.onDidClick!(() => {
 			});
 
 			const css = {
@@ -316,7 +316,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				'margin': '0px'
 			};
 
-			nameInput.onValueChanged(() => {
+			nameInput.onValueChanged!(() => {
 				const selectedColumn = nameInput.value;
 				const value = selectedColumn ? (<azdata.CategoryValue>selectedColumn).name : undefined;
 

@@ -53,7 +53,7 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 					this._currentRadioOption = radioOption;
 					this._onValueChangedEmitter.fire();
 				}
-				this._onNewDisposableCreated(radioOption.onDidClick(() => {
+				this._onNewDisposableCreated(radioOption.onDidClick!(() => {
 					this._optionsDivContainer.items
 						.filter(otherOption => otherOption !== radioOption)
 						.forEach(otherOption => (otherOption as azdata.RadioButtonComponent).checked = false);

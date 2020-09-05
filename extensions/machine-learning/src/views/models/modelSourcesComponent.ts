@@ -65,7 +65,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 				width: 50
 			}).component();
 
-		this._localModel.onCardSelectedChanged(() => {
+		this._localModel.onCardSelectedChanged!(() => {
 			this._sourceType = ModelSourceType.Local;
 			this.sendRequest(SourceModelSelectedEventName, this._sourceType);
 			if (this._amlModel && this._registeredModels) {
@@ -73,7 +73,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 				this._registeredModels.selected = false;
 			}
 		});
-		this._amlModel.onCardSelectedChanged(() => {
+		this._amlModel.onCardSelectedChanged!(() => {
 			this._sourceType = ModelSourceType.Azure;
 			this.sendRequest(SourceModelSelectedEventName, this._sourceType);
 			if (this._localModel && this._registeredModels) {
@@ -81,7 +81,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 				this._registeredModels.selected = false;
 			}
 		});
-		this._registeredModels.onCardSelectedChanged(() => {
+		this._registeredModels.onCardSelectedChanged!(() => {
 			this._sourceType = ModelSourceType.RegisteredModels;
 			this.sendRequest(SourceModelSelectedEventName, this._sourceType);
 			if (this._localModel && this._amlModel) {

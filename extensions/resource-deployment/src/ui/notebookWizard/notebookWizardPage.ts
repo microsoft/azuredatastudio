@@ -71,7 +71,7 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
-			if (pcInfo.newPage > pcInfo.lastPage) {
+			if (pcInfo.newPage > pcInfo.lastPage!) {
 				const messages: string[] = [];
 
 				this.validators.forEach((validator) => {

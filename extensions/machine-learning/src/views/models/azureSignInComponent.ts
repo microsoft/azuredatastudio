@@ -26,7 +26,7 @@ export class AzureSignInComponent extends ModelViewBase {
 			width: componentWidth,
 			label: constants.azureSignIn,
 		}).component();
-		this._signInButton.onDidClick(() => {
+		this._signInButton.onDidClick!(() => {
 			this.sendRequest(SignInToAzureEventName);
 		});
 

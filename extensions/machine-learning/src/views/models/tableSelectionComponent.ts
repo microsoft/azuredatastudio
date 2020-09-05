@@ -59,7 +59,7 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 			width: this.componentMaxLength - 10,
 		}).component();
 
-		this._databases.onValueChanged(async () => {
+		this._databases.onValueChanged!(async () => {
 			await this.onDatabaseSelected();
 		});
 
@@ -90,22 +90,22 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 			}
 		}).component();
 
-		this._existingTableButton.onDidClick(() => {
+		this._existingTableButton.onDidClick!(() => {
 			this._existingTablesSelected = true;
 			this.refreshTableComponent();
 		});
-		this._newTableButton.onDidClick(() => {
+		this._newTableButton.onDidClick!(() => {
 			this._existingTablesSelected = false;
 			this.refreshTableComponent();
 		});
-		this._newTableName.onTextChanged(async () => {
+		this._newTableName.onTextChanged!(async () => {
 			if (this._newTableName) {
 				this._selectedTableName = this._newTableName.value || '';
 				await this.onTableSelected();
 			}
 		});
 
-		this._tables.onValueChanged(async (value) => {
+		this._tables.onValueChanged!(async (value) => {
 			// There's an issue with dropdown doesn't set the value in editable mode. this is the workaround
 
 			if (this._tables && value) {

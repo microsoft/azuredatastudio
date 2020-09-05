@@ -135,12 +135,12 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 				value: model.modelDetails.description,
 				width: this.componentMaxLength
 			}).component();
-			descriptionComponent.onTextChanged(() => {
+			descriptionComponent.onTextChanged!(() => {
 				if (model.modelDetails) {
 					model.modelDetails.description = descriptionComponent.value;
 				}
 			});
-			nameComponent.onTextChanged(() => {
+			nameComponent.onTextChanged!(() => {
 				if (model.modelDetails) {
 					model.modelDetails.modelName = nameComponent.value || '';
 				}
@@ -155,7 +155,7 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 					light: this.asAbsolutePath('images/light/delete.svg')
 				},
 			}).component();
-			deleteButton.onDidClick(async () => {
+			deleteButton.onDidClick!(async () => {
 				this.modelsViewData = this.modelsViewData.filter(x => x !== model);
 				await this.refresh();
 			});

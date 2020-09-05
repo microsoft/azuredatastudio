@@ -41,7 +41,7 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 			label: constants.browseModels,
 			width: this.browseButtonMaxLength
 		}).component();
-		this._localBrowse.onDidClick(async () => {
+		this._localBrowse.onDidClick!(async () => {
 
 			let options: vscode.OpenDialogOptions = {
 				canSelectFiles: true,

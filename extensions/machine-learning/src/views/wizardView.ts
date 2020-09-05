@@ -99,8 +99,8 @@ export class WizardView extends MainViewBase {
 			let idx = pageInfo.newPage;
 			let page = this._pages[idx];
 			if (page && page.onEnter) {
-				if (this._wizard && this._wizard.pages.length > idx) {
-					this._wizard.pages[idx].title = page.title;
+				if (this._wizard && this._wizard.pages!.length > idx) {
+					this._wizard.pages![idx].title = page.title;
 				}
 				await page.onEnter();
 			}
@@ -114,7 +114,7 @@ export class WizardView extends MainViewBase {
 	public async refresh(): Promise<void> {
 		for (let index = 0; index < this._pages.length; index++) {
 			const page = this._pages[index];
-			if (this._wizard?.pages[index]?.title !== page.title) {
+			if (this._wizard?.pages![index]?.title !== page.title) {
 				this.addWizardPage(page, index);
 			}
 		}

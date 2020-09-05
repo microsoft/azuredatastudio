@@ -29,7 +29,7 @@ export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model
 		this.initialize();
 		this.wizardObject.customButtons = this.customButtons;
 		this.toDispose.push(this.wizardObject.onPageChanged(async (e) => {
-			let previousPage = this.pages[e.lastPage];
+			let previousPage = this.pages[e.lastPage!];
 			let newPage = this.pages[e.newPage];
 			previousPage.onLeave();
 			await newPage.onEnter();

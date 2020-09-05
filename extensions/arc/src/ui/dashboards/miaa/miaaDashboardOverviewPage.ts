@@ -194,7 +194,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			deleteButton.onDidClick(async () => {
+			deleteButton.onDidClick!(async () => {
 				deleteButton.enabled = false;
 				try {
 					if (await promptForResourceDeletion(this._miaaModel.info.name)) {
@@ -216,7 +216,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			refreshButton.onDidClick(async () => {
+			refreshButton.onDidClick!(async () => {
 				refreshButton.enabled = false;
 				try {
 					this._propertiesLoading!.loading = true;
@@ -237,7 +237,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this._openInAzurePortalButton.onDidClick(async () => {
+			this._openInAzurePortalButton.onDidClick!(async () => {
 				const config = this._controllerModel.controllerConfig;
 				if (config) {
 					vscode.env.openExternal(vscode.Uri.parse(

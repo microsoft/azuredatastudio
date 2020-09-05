@@ -232,7 +232,7 @@ export class PublishDatabaseDialog {
 			}).component();
 
 		this.connectionsRadioButton.checked = true;
-		this.connectionsRadioButton.onDidClick(() => {
+		this.connectionsRadioButton.onDidClick!(() => {
 			this.formBuilder!.removeFormItem(<azdata.FormComponent>this.dataSourcesFormComponent);
 			// TODO: fix this when data sources are enabled again
 			// this.formBuilder!.insertFormItem(<azdata.FormComponent>this.targetConnectionTextBox, 2);
@@ -246,7 +246,7 @@ export class PublishDatabaseDialog {
 				label: constants.dataSourceRadioButtonLabel
 			}).component();
 
-		this.dataSourcesRadioButton.onDidClick(() => {
+		this.dataSourcesRadioButton.onDidClick!(() => {
 			// TODO: fix this when data sources are enabled again
 			// this.formBuilder!.removeFormItem(<azdata.FormComponent>this.targetConnectionTextBox);
 			this.formBuilder!.insertFormItem(<azdata.FormComponent>this.dataSourcesFormComponent, 2);
@@ -273,7 +273,7 @@ export class PublishDatabaseDialog {
 			enabled: false
 		}).component();
 
-		this.targetConnectionTextBox.onTextChanged(() => {
+		this.targetConnectionTextBox.onTextChanged!(() => {
 			this.tryEnableGenerateScriptAndOkButtons();
 		});
 
@@ -311,7 +311,7 @@ export class PublishDatabaseDialog {
 		}).component();
 
 
-		this.dataSourcesDropDown.onValueChanged(() => {
+		this.dataSourcesDropDown.onValueChanged!(() => {
 			this.setDatabaseToSelectedDataSourceDatabase();
 			this.tryEnableGenerateScriptAndOkButtons();
 		});
@@ -373,7 +373,7 @@ export class PublishDatabaseDialog {
 			fireOnTextChange: true
 		}).component();
 
-		this.targetDatabaseDropDown.onValueChanged(() => {
+		this.targetDatabaseDropDown.onValueChanged!(() => {
 			this.tryEnableGenerateScriptAndOkButtons();
 		});
 
@@ -414,7 +414,7 @@ export class PublishDatabaseDialog {
 			width: '420px'
 		}).component();
 
-		table.onDataChanged(() => {
+		table.onDataChanged!(() => {
 			this.sqlCmdVars = {};
 			table.data.forEach((row) => {
 				(<Record<string, string>>this.sqlCmdVars)[row[0]] = row[1];
@@ -437,7 +437,7 @@ export class PublishDatabaseDialog {
 			CSSStyles: { 'font-size': '13px' }
 		}).component();
 
-		loadSqlCmdVarsButton.onDidClick(async () => {
+		loadSqlCmdVarsButton.onDidClick!(async () => {
 			this.sqlCmdVars = { ...this.project.sqlCmdVariables };
 
 			const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
@@ -459,7 +459,7 @@ export class PublishDatabaseDialog {
 			width: '16px'
 		}).component();
 
-		selectConnectionButton.onDidClick(async () => {
+		selectConnectionButton.onDidClick!(async () => {
 			let connection = await azdata.connection.openConnectionDialog();
 			this.connectionId = connection.connectionId;
 
@@ -512,7 +512,7 @@ export class PublishDatabaseDialog {
 			width: '16px'
 		}).component();
 
-		loadProfileButton.onDidClick(async () => {
+		loadProfileButton.onDidClick!(async () => {
 			const fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
@@ -583,10 +583,10 @@ export class PublishDatabaseDialog {
 			|| this.connectionIsDataSource && this.targetDatabaseDropDown!.value)
 			&& this.allSqlCmdVariablesFilled()) {
 			this.dialog.okButton.enabled = true;
-			this.dialog.customButtons[0].enabled = true;
+			this.dialog.customButtons![0].enabled = true;
 		} else {
 			this.dialog.okButton.enabled = false;
-			this.dialog.customButtons[0].enabled = false;
+			this.dialog.customButtons![0].enabled = false;
 		}
 	}
 

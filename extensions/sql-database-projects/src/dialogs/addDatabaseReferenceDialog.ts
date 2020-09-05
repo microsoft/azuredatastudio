@@ -159,7 +159,7 @@ export class AddDatabaseReferenceDialog {
 			}).component();
 
 		systemDatabaseRadioButton.checked = true;
-		systemDatabaseRadioButton.onDidClick(() => {
+		systemDatabaseRadioButton.onDidClick!(() => {
 			this.systemDbRadioButtonClick();
 		});
 
@@ -169,7 +169,7 @@ export class AddDatabaseReferenceDialog {
 				label: constants.dacpacText
 			}).component();
 
-		dacpacRadioButton.onDidClick(() => {
+		dacpacRadioButton.onDidClick!(() => {
 			this.dacpacRadioButtonClick();
 		});
 
@@ -236,7 +236,7 @@ export class AddDatabaseReferenceDialog {
 			width: '400px'
 		}).component();
 
-		this.dacpacTextbox.onTextChanged(() => {
+		this.dacpacTextbox.onTextChanged!(() => {
 			this.tryEnableAddReferenceButton();
 			this.updateExampleUsage();
 		});
@@ -259,7 +259,7 @@ export class AddDatabaseReferenceDialog {
 			width: '16px'
 		}).component();
 
-		loadDacpacButton.onDidClick(async () => {
+		loadDacpacButton.onDidClick!(async () => {
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
@@ -289,7 +289,7 @@ export class AddDatabaseReferenceDialog {
 			values: constants.systemDbLocationDropdownValues
 		}).component();
 
-		this.locationDropdown.onValueChanged(() => {
+		this.locationDropdown.onValueChanged!(() => {
 			this.updateEnabledInputBoxes();
 			this.tryEnableAddReferenceButton();
 			this.updateExampleUsage();
@@ -377,7 +377,7 @@ export class AddDatabaseReferenceDialog {
 			width: cssStyles.addDatabaseReferenceInputboxWidth
 		}).component();
 
-		inputBox.onTextChanged(() => {
+		inputBox.onTextChanged!(() => {
 			this.tryEnableAddReferenceButton();
 			this.updateExampleUsage();
 		});

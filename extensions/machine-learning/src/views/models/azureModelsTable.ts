@@ -154,7 +154,7 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 					height: 15,
 					checked: false
 				}).component();
-				checkbox.onChanged(() => {
+				checkbox.onChanged!(() => {
 					onSelectItem(checkbox.checked || false);
 				});
 				selectModelButton = checkbox;
@@ -166,7 +166,7 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 					height: 15,
 					checked: false
 				}).component();
-				radioButton.onDidClick(() => {
+				radioButton.onDidClick!(() => {
 					onSelectItem(radioButton.checked || false);
 				});
 				selectModelButton = radioButton;

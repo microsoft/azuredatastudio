@@ -481,7 +481,7 @@ function processTextField(context: FieldContext): void {
 			}
 		};
 
-		context.onNewDisposableCreated(input.onTextChanged(() => {
+		context.onNewDisposableCreated(input.onTextChanged!(() => {
 			removeInvalidInputMessage();
 		}));
 
@@ -507,7 +507,7 @@ function processPasswordField(context: FieldContext): void {
 
 	if (context.fieldInfo.type === FieldType.SQLPassword) {
 		const invalidPasswordMessage = getInvalidSQLPasswordMessage(context.fieldInfo.label);
-		context.onNewDisposableCreated(passwordInput.onTextChanged(() => {
+		context.onNewDisposableCreated(passwordInput.onTextChanged!(() => {
 			if (context.fieldInfo.type === FieldType.SQLPassword && isValidSQLPassword(passwordInput.value!, context.fieldInfo.userName)) {
 				removeValidationMessage(context.container, invalidPasswordMessage);
 			}
@@ -540,10 +540,10 @@ function processPasswordField(context: FieldContext): void {
 			}
 		};
 
-		context.onNewDisposableCreated(passwordInput.onTextChanged(() => {
+		context.onNewDisposableCreated(passwordInput.onTextChanged!(() => {
 			updatePasswordMismatchMessage();
 		}));
-		context.onNewDisposableCreated(confirmPasswordInput.onTextChanged(() => {
+		context.onNewDisposableCreated(confirmPasswordInput.onTextChanged!(() => {
 			updatePasswordMismatchMessage();
 		}));
 	}
@@ -640,7 +640,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 		filter = {};
 		filter[filterName] = fieldInfo.filter.fileTypes;
 	}
-	context.onNewDisposableCreated(browseFileButton.onDidClick(async () => {
+	context.onNewDisposableCreated(browseFileButton.onDidClick!(async () => {
 		let fileUris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
 			canSelectFolders: false,
@@ -739,7 +739,7 @@ async function processKubeConfigClusterPickerField(context: KubeClusterContextFi
 	});
 
 	const radioOptionsGroup = await createRadioOptions(context, getClusterContexts(filePicker.input.value!));
-	context.onNewDisposableCreated(filePicker.input.onTextChanged(async () =>
+	context.onNewDisposableCreated(filePicker.input.onTextChanged!(async () =>
 		await radioOptionsGroup.loadOptions(getClusterContexts(filePicker.input.value!))
 	));
 
@@ -807,13 +807,13 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 				newRGNameInput.value = '';
 			}
 		};
-		context.onNewDisposableCreated(newRGCheckbox.onChanged(() => {
+		context.onNewDisposableCreated(newRGCheckbox.onChanged!(() => {
 			setRGStatus(newRGCheckbox.checked!);
 		}));
 		setRGStatus(false);
 	}
 	const locationDropdown = context.fieldInfo.locations && await processAzureLocationsField(context);
-	accountDropdown.onValueChanged(async selectedItem => {
+	accountDropdown.onValueChanged!(async selectedItem => {
 		const selectedAccount = accountValueToAccountMap.get(selectedItem.selected)!;
 		await handleSelectedAccountChanged(context, selectedAccount, subscriptionDropdown, subscriptionValueToSubscriptionMap, resourceGroupDropdown, locationDropdown);
 	});
@@ -836,10 +836,10 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 		}
 	};
 
-	context.onNewDisposableCreated(accountComponents.refreshAccountsButton.onDidClick(async () => {
+	context.onNewDisposableCreated(accountComponents.refreshAccountsButton.onDidClick!(async () => {
 		await populateAzureAccounts();
 	}));
-	context.onNewDisposableCreated(accountComponents.signInButton.onDidClick(async () => {
+	context.onNewDisposableCreated(accountComponents.signInButton.onDidClick!(async () => {
 		await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 		await populateAzureAccounts();
 	}));
@@ -1080,10 +1080,10 @@ function createAzureResourceGroupsDropdown(
 		variableName: context.fieldInfo.resourceGroupVariableName
 	});
 	const rgValueChangedEmitter = new vscode.EventEmitter<void>();
-	resourceGroupDropdown.onValueChanged(() => rgValueChangedEmitter.fire());
+	resourceGroupDropdown.onValueChanged!(() => rgValueChangedEmitter.fire());
 	context.onNewInputComponentCreated(context.fieldInfo.resourceGroupVariableName!, { component: resourceGroupDropdown });
 	addLabelInputPairToContainer(context.view, context.components, label, resourceGroupDropdown, context.fieldInfo);
-	subscriptionDropdown.onValueChanged(async selectedItem => {
+	subscriptionDropdown.onValueChanged!(async selectedItem => {
 		const selectedAccount = !accountDropdown || !accountDropdown.value ? undefined : accountValueToAccountMap.get(accountDropdown.value.toString());
 		const selectedSubscription = subscriptionValueToSubscriptionMap.get(selectedItem.selected);
 		await handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
@@ -1244,4 +1244,3 @@ function getInputComponentValue(inputComponents: InputComponents, key: string): 
 export function isInputBoxEmpty(input: azdata.InputBoxComponent): boolean {
 	return input.value === undefined || input.value === '';
 }
-

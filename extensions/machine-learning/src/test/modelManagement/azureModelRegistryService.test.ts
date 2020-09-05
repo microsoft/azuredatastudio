@@ -220,7 +220,7 @@ describe('AzureModelRegistryService', () => {
 		testContext.client.setup(x => x.sendOperationRequest(TypeMoq.It.isAny(),
 			TypeMoq.It.is(p => p.path !== undefined && p.path.startsWith('artifact')), TypeMoq.It.isAny())).returns(() => Promise.resolve(artifactResponse));
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
-			operationInfo.operation(testContext.op);
+			operationInfo.operation!(testContext.op);
 		});
 		testContext.httpClient.setup(x => x.download(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		let service = new AzureModelRegistryService(

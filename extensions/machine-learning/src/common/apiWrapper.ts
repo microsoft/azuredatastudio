@@ -43,7 +43,7 @@ export class ApiWrapper {
 		return azdata.connection.getUriForConnection(connectionId);
 	}
 
-	public getProvider<T extends azdata.DataProvider>(providerId: string, providerType: azdata.DataProviderType): T {
+	public getProvider<T extends azdata.DataProvider>(providerId: string, providerType: azdata.DataProviderType): T | undefined {
 		return azdata.dataprotocol.getProvider<T>(providerId, providerType);
 	}
 

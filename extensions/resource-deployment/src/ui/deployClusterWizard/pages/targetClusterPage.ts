@@ -59,7 +59,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 		}
 
 		this.wizard.wizardObject.registerNavigationValidator((e) => {
-			if (e.lastPage > e.newPage) {
+			if (e.lastPage! > e.newPage) {
 				this.wizard.wizardObject.message = { text: '' };
 				return true;
 			}
@@ -106,7 +106,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 			CSSStyles: { 'margin- top': '10px' }
 		});
 
-		this.wizard.registerDisposable(this.browseFileButton.onDidClick(async () => {
+		this.wizard.registerDisposable(this.browseFileButton.onDidClick!(async () => {
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
@@ -161,7 +161,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 					self.wizard.wizardObject.message = { text: '' };
 				}
 
-				this.wizard.registerDisposable(option.onDidClick(() => {
+				this.wizard.registerDisposable(option.onDidClick!(() => {
 					self.wizard.model.setPropertyValue(ClusterContext_VariableName, clusterContext.name);
 					self.wizard.wizardObject.message = { text: '' };
 				}));

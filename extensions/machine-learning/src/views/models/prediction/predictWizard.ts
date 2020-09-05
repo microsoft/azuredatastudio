@@ -63,7 +63,7 @@ export class PredictWizard extends ModelViewBase {
 		});
 		wizard.registerNavigationValidator(async (pageInfo: azdata.window.WizardPageChangeInfo) => {
 			let validated: boolean = true;
-			if (pageInfo.newPage === undefined || pageInfo.newPage > pageInfo.lastPage) {
+			if (pageInfo.newPage === undefined || pageInfo.newPage > pageInfo.lastPage!) {
 				validated = this.wizardView ? await this.wizardView.validate(pageInfo) : false;
 			}
 			if (validated) {

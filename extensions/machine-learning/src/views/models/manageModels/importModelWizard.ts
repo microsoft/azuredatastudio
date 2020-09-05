@@ -54,7 +54,7 @@ export class ImportModelWizard extends ModelViewBase {
 		wizard.displayPageTitles = true;
 		wizard.registerNavigationValidator(async (pageInfo: azdata.window.WizardPageChangeInfo) => {
 			let validated: boolean = true;
-			if (pageInfo.newPage > pageInfo.lastPage) {
+			if (pageInfo.newPage > pageInfo.lastPage!) {
 				validated = this.wizardView ? await this.wizardView.validate(pageInfo) : false;
 			}
 			if (validated && pageInfo.newPage === undefined) {

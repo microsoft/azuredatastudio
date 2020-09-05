@@ -156,7 +156,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	private handleSparkSettingEvents(): void {
 		const sparkInstanceInput = getInputBoxComponent(VariableNames.SparkPoolScale_VariableName, this.inputComponents);
 		const includeSparkCheckbox = getCheckboxComponent(VariableNames.IncludeSpark_VariableName, this.inputComponents);
-		this.wizard.registerDisposable(includeSparkCheckbox.onChanged(() => {
+		this.wizard.registerDisposable(includeSparkCheckbox.onChanged!(() => {
 			if (!includeSparkCheckbox.checked && !(sparkInstanceInput.value && Number.parseInt(sparkInstanceInput.value) > 0)) {
 				sparkInstanceInput.value = '1';
 			}
@@ -380,7 +380,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
-			if (pcInfo.newPage > pcInfo.lastPage) {
+			if (pcInfo.newPage > pcInfo.lastPage!) {
 				const sparkEnabled = Number.parseInt(getInputBoxComponent(VariableNames.SparkPoolScale_VariableName, this.inputComponents).value!) !== 0
 					|| getCheckboxComponent(VariableNames.IncludeSpark_VariableName, this.inputComponents).checked!;
 

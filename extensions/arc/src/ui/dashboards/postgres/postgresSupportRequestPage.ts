@@ -47,7 +47,7 @@ export class PostgresSupportRequestPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			supportRequestButton.onDidClick(() => {
+			supportRequestButton.onDidClick!(() => {
 				/*
 				const r = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
 				if (!r) {

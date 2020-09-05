@@ -158,7 +158,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			refreshButton.onDidClick(async () => {
+			refreshButton.onDidClick!(async () => {
 				refreshButton.enabled = false;
 				try {
 					this.podsLoading!.loading = true;

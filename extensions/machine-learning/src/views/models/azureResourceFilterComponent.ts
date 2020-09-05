@@ -48,17 +48,17 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			width: componentWidth
 		}).component();
 
-		this._accounts.onValueChanged(async () => {
+		this._accounts.onValueChanged!(async () => {
 			await this.onAccountSelected();
 		});
 
-		this._subscriptions.onValueChanged(async () => {
+		this._subscriptions.onValueChanged!(async () => {
 			await this.onSubscriptionSelected();
 		});
-		this._groups.onValueChanged(async () => {
+		this._groups.onValueChanged!(async () => {
 			await this.onGroupSelected();
 		});
-		this._workspaces.onValueChanged(async () => {
+		this._workspaces.onValueChanged!(async () => {
 			await this.onWorkspaceSelectedChanged();
 		});
 

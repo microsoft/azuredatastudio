@@ -128,7 +128,7 @@ export class LanguagesTable extends LanguageViewBase {
 				width: 15,
 				height: 15
 			}).component();
-			dropLanguageButton.onDidClick(async () => {
+			dropLanguageButton.onDidClick!(async () => {
 				await this.deleteLanguage({
 					language: language,
 					content: content,
@@ -146,7 +146,7 @@ export class LanguagesTable extends LanguageViewBase {
 				width: 15,
 				height: 15
 			}).component();
-			editLanguageButton.onDidClick(() => {
+			editLanguageButton.onDidClick!(() => {
 				this.onEditLanguage({
 					language: language,
 					content: content,

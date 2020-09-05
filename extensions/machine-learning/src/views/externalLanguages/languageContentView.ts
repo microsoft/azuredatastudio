@@ -45,10 +45,10 @@ export class LanguageContentView extends LanguageViewBase {
 				label: this.getServerTitle(),
 			}).component();
 
-		this._localPath.onDidClick(() => {
+		this._localPath.onDidClick!(() => {
 			this._isLocalPath = true;
 		});
-		this._serverPath.onDidClick(() => {
+		this._serverPath.onDidClick!(() => {
 			this._isLocalPath = false;
 		});
 
@@ -84,7 +84,7 @@ export class LanguageContentView extends LanguageViewBase {
 		this.filePathSelected(args => {
 			this.extensionFile.value = args.filePath;
 		});
-		fileBrowser.onDidClick(async () => {
+		fileBrowser.onDidClick!(async () => {
 			this.onOpenFileBrowser({ filePath: '', target: this._isLocalPath ? constants.localhost : this.connectionUrl });
 		});
 
