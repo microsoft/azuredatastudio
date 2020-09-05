@@ -57,6 +57,7 @@ export const resourceType = localize('azurecore.resourceType', "Resource type");
 export const resourceGroup = localize('azurecore.resourceGroup', "Resource group");
 export const location = localize('azurecore.location', "Location");
 export const subscription = localize('azurecore.subscription', "Subscription");
+export const typeIcon = localize('azurecore.typeIcon', "Type Icon");
 
 // Azure Resource Types
 export const sqlServer = localize('azurecore.sqlServer', "SQL server");
