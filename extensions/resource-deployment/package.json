@@ -393,6 +393,63 @@
         ]
       },
       {
+        "name": "sql-azure-setup",
+        "displayName": "%azure-sqldb-display-name%",
+        "description": "%azure-sqldb-description%",
+        "platforms": "*",
+        "icon": {
+          "light": "./images/sql_server_on_azure.svg",
+          "dark": "./images/sql_server_on_azure.svg"
+        },
+        "options": [
+          {
+            "name": "resource-type",
+            "displayName": "%resource-type-display-name%",
+            "values": [
+              {
+                "name": "single-database",
+                "displayName": "%sql-azure-single-database-display-name%"
+              },
+              {
+                "name": "elastic-pool",
+                "displayName": "%sql-azure-elastic-pool-display-name%"
+              },
+              {
+                "name": "database-server",
+                "displayName": "%sql-azure-database-server-display-name%"
+              }
+            ]
+          }
+        ],
+        "providers": [
+          {
+            "azureSQLDBWizard":{
+              "notebook": "./notebooks/azuredb/create-sqldb.ipynb"
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli"
+              }
+            ],
+            "when": "resource-type=single-database"
+          },
+          {
+            "name": "elastic-pool-link",
+            "displayName": "Elastic Pool (Requires visiting Azure portal)",
+            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLElasticDatabasePool",
+            "requiredTools": [],
+            "when": "resource-type=elastic-pool"
+          },
+          {
+            "name": "database-server-link",
+            "displayName": "Database Server (Requires visiting Azure portal)",
+            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLServer",
+            "requiredTools": [],
+            "when": "resource-type=database-server"
+          }
+        ]
+      },
+      {
         "name": "azure-sql-vm",
         "displayName": "%azure-sqlvm-display-name%",
         "description": "%azure-sqlvm-description%",
