@@ -398,8 +398,8 @@
         "description": "%azure-sqldb-description%",
         "platforms": "*",
         "icon": {
-          "light": "./images/sql_server_on_azure.svg",
-          "dark": "./images/sql_server_on_azure.svg"
+          "light": "./images/azure-sql-db.svg",
+          "dark": "./images/azure-sql-db.svg"
         },
         "options": [
           {
