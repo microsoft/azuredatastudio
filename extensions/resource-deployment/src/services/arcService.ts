@@ -11,7 +11,7 @@ export class ArcService {
 		this._arcApi = vscode.extensions.getExtension(arc.extension.name)?.exports;
 	}
 
-	public getAzureArcTreeDataProvider(): arc.IAzureArcTreeDataProvider {
-		return this._arcApi.getAzureArcTreeDataProvider();
+	public async getRegisteredDataControllers(): Promise<arc.ControllerInfo[]> {
+		return await this._arcApi.getRegisteredDataControllers();
 	}
 }

@@ -5,14 +5,15 @@
 
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
-import * as vscode from 'vscode';
-import * as loc from '../../../localizedConstants';
 import * as azurecore from 'azurecore';
-import { DashboardPage } from '../../components/dashboardPage';
-import { IconPathHelper, cssStyles, Endpoints, ResourceType } from '../../../constants';
-import { ControllerModel } from '../../../models/controllerModel';
+import * as vscode from 'vscode';
 import { getDatabaseStateDisplayText, promptForResourceDeletion } from '../../../common/utils';
+import { cssStyles, Endpoints, IconPathHelper } from '../../../constants';
+import * as loc from '../../../localizedConstants';
+import { ControllerModel } from '../../../models/controllerModel';
 import { MiaaModel } from '../../../models/miaaModel';
+import { DashboardPage } from '../../components/dashboardPage';
+import { ResourceType } from 'arc';
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
 

@@ -9,7 +9,7 @@ import { ArcService } from '../services/arcService';
 
 suite('arc service Tests', function (): void {
 	const arcService = new ArcService();
-	test('arc service fetches AzureArcTreeDataProvider properly', () => {
-		should(arcService.getAzureArcTreeDataProvider()).not.be.undefined();
+	test('arc service fetches registered arc data controllers() successfully', () => {
+		should(arcService.getRegisteredDataControllers()).not.be.undefined();
 	});
 });

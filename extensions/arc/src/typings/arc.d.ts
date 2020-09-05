@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 declare module 'arc' {
 	import * as vscode from 'vscode';
 
@@ -15,17 +14,28 @@ declare module 'arc' {
 	export const enum extension {
 		name = 'Microsoft.arc'
 	}
-
-	export interface ITreeNode extends vscode.TreeItem {
-		getChildren(): Thenable<ITreeNode[]>;
-		openDashboard(): Thenable<void>;
+	export const enum ResourceType {
+		dataControllers = 'dataControllers',
+		postgresInstances = 'postgresInstances',
+		sqlManagedInstances = 'sqlManagedInstances'
 	}
 
-	export interface IAzureArcTreeDataProvider extends vscode.TreeDataProvider<ITreeNode> {
+	export type ResourceInfo = {
+		name: string,
+		resourceType: ResourceType | string,
+		connectionId?: string
+	};
 
-	}
+	export type ControllerInfo = {
+		id: string,
+		url: string,
+		name: string,
+		username: string,
+		rememberPassword: boolean,
+		resources: ResourceInfo[]
+	};
 
 	export interface IExtension {
-		getAzureArcTreeDataProvider(): IAzureArcTreeDataProvider;
+		getRegisteredDataControllers(): Promise<ControllerInfo[]>;
 	}
 }
