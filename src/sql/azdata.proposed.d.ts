@@ -594,4 +594,10 @@ declare module 'azdata' {
 		 */
 		delete?: boolean;
 	}
+	export interface DiffEditorComponent {
+		/**
+		 * Title of editor
+		 */
+		title: string;
+	}
 }
