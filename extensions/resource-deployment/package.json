@@ -267,7 +267,7 @@
           {
             "bdcWizard": {
               "type": "existing-aks",
-              "notebook": "%./notebooks/bdc/2019/deploy-bdc-existing-aks.ipynb%"
+              "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-aks.ipynb"
             },
             "requiredTools": [
               {
