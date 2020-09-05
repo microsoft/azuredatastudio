@@ -6,6 +6,7 @@
 import { azureResource } from 'azureResource';
 import * as loc from './localizedConstants';
 import { AzureRegion } from 'azurecore';
+import { AppContext } from './appContext';
 
 /**
  * Converts a region value (@see AzureRegion) into the localized Display Name
@@ -108,6 +109,8 @@ export function getResourceTypeDisplayName(type: string): string {
 			return loc.sqlDatabase;
 		case azureResource.AzureResourceType.sqlManagedInstance:
 			return loc.sqlManagedInstance;
+		case azureResource.AzureResourceType.postgresServer:
+			return loc.postgresServer;
 		case azureResource.AzureResourceType.azureArcSqlManagedInstance:
 			return loc.azureArcsqlManagedInstance;
 		case azureResource.AzureResourceType.azureArcService:
@@ -116,4 +119,24 @@ export function getResourceTypeDisplayName(type: string): string {
 			return loc.azureArcPostgresServer;
 	}
 	return type;
+}
+
+export function getResourceTypeIcon(appContext: AppContext, type: string): string {
+	switch (type) {
+		case azureResource.AzureResourceType.sqlServer:
+			return appContext.extensionContext.asAbsolutePath('resources/sqlServer.svg');
+		case azureResource.AzureResourceType.sqlDatabase:
+			return appContext.extensionContext.asAbsolutePath('resources/sqlDatabase.svg');
+		case azureResource.AzureResourceType.sqlManagedInstance:
+			return appContext.extensionContext.asAbsolutePath('resources/sqlManagedInstance.svg');
+		case azureResource.AzureResourceType.postgresServer:
+			return appContext.extensionContext.asAbsolutePath('resources/postgresServer.svg');
+		case azureResource.AzureResourceType.azureArcSqlManagedInstance:
+			return appContext.extensionContext.asAbsolutePath('resources/azureArcSqlManagedInstance.svg');
+		case azureResource.AzureResourceType.azureArcService:
+			return appContext.extensionContext.asAbsolutePath('resources/azureArcService.svg');
+		case azureResource.AzureResourceType.azureArcPostgresServer:
+			return appContext.extensionContext.asAbsolutePath('resources/azureArcPostgresServer.svg');
+	}
+	return '';
 }
