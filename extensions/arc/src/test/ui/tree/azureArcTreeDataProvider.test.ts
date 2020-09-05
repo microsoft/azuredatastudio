@@ -3,12 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ControllerInfo } from 'arc';
 import 'mocha';
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import { v4 as uuid } from 'uuid';
 import * as vscode from 'vscode';
-import { ControllerModel, ControllerInfo } from '../../../models/controllerModel';
+import { ControllerModel } from '../../../models/controllerModel';
 import { AzureArcTreeDataProvider } from '../../../ui/tree/azureArcTreeDataProvider';
 import { ControllerTreeNode } from '../../../ui/tree/controllerTreeNode';
 import { FakeControllerModel } from '../../mocks/fakeControllerModel';

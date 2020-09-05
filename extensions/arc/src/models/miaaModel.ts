@@ -3,15 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ResourceInfo } from 'arc';
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
-import { ResourceModel } from './resourceModel';
-import { ResourceInfo, Registration, ControllerModel } from './controllerModel';
-import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { Deferred } from '../common/promise';
-import * as loc from '../localizedConstants';
 import { UserCancelledError } from '../common/utils';
+import * as loc from '../localizedConstants';
+import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
+import { ControllerModel, Registration } from './controllerModel';
+import { ResourceModel } from './resourceModel';
 
 export type DatabaseModel = { name: string, status: string };
 
