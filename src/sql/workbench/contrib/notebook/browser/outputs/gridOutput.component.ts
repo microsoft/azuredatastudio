@@ -335,17 +335,20 @@ export class DataResourceDataProvider implements IGridDataProvider {
 
 	getRowData(rowStart: number, numberOfRows: number): Thenable<ResultSetSubset> {
 		if (this._queryRunner) {
-			return this._queryRunner.getQueryRows(rowStart, numberOfRows, this._batchId, this._id);
+			let rows = this._queryRunner.getQueryRows(rowStart, numberOfRows, this._batchId, this._id);
+
+			return rows;
+		} else {
+			let rowEnd = rowStart + numberOfRows;
+			if (rowEnd > this.rows.length) {
+				rowEnd = this.rows.length;
+			}
+			let resultSubset: ResultSetSubset = {
+				rowCount: rowEnd - rowStart,
+				rows: this.rows.slice(rowStart, rowEnd)
+			};
+			return Promise.resolve(resultSubset);
 		}
-		let rowEnd = rowStart + numberOfRows;
-		if (rowEnd > this.rows.length) {
-			rowEnd = this.rows.length;
-		}
-		let resultSubset: ResultSetSubset = {
-			rowCount: rowEnd - rowStart,
-			rows: this.rows.slice(rowStart, rowEnd)
-		};
-		return Promise.resolve(resultSubset);
 	}
 
 	async copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
@@ -386,9 +389,10 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		selection = selection ? selection : [new Slick.Range(0, 0, this._resultSet.rowCount - 1, this._resultSet.columnInfo.length - 1)];
 		if (this._queryRunner) {
 			return this._queryRunner.serializeResults(this._batchId, this._id, format, selection);
+		} else {
+			let serializer = this._instantiationService.createInstance(ResultSerializer);
+			return serializer.handleSerialization(this.documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
 		}
-		let serializer = this._instantiationService.createInstance(ResultSerializer);
-		return serializer.handleSerialization(this.documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
 	}
 
 	private doSerialize(serializer: ResultSerializer, filePath: URI, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | undefined> {

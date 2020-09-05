@@ -240,7 +240,7 @@ export interface INotebookModel {
 	/**
 	 * Promise indicating when output grid data is converted to mimeType and html.
 	 */
-	gridDataConversionComplete: Promise<void>;
+	gridDataConversionComplete: Promise<any[]>;
 	/**
 	 * LanguageInfo saved in the notebook
 	 */
@@ -400,8 +400,6 @@ export interface INotebookModel {
 
 	requestConnection(): Promise<boolean>;
 
-	setGridDataConversionComplete(complete: boolean): void;
-
 }
 
 export interface NotebookContentChange {
@@ -486,6 +484,7 @@ export interface ICellModel {
 	showPreview: boolean;
 	readonly onCellPreviewChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;
+	gridDataConversionComplete: Promise<void>
 }
 
 export interface IModelFactory {

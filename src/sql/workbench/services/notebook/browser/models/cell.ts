@@ -29,6 +29,7 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { Deferred } from 'sql/base/common/promise';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -64,6 +65,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _showPreview: boolean = true;
 	private _onCellPreviewChanged = new Emitter<boolean>();
 	private _isCommandExecutionSettingEnabled: boolean = false;
+	private _gridDataConversionComplete: Deferred<void> = new Deferred<void>();
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -100,6 +102,7 @@ export class CellModel extends Disposable implements ICellModel {
 				}
 			}));
 		}
+		this._gridDataConversionComplete.resolve();
 	}
 
 	public equals(other: ICellModel) {
@@ -523,6 +526,10 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._outputs;
 	}
 
+	public get gridDataConversionComplete(): Promise<void> {
+		return this._gridDataConversionComplete;
+	}
+
 	public get renderedOutputTextContent(): string[] {
 		return this._renderedOutputTextContent;
 	}
@@ -579,7 +586,12 @@ export class CellModel extends Disposable implements ICellModel {
 		if (output) {
 			let outputExists = false;
 			if (output.output_type === 'execute_result') {
-				this.notebookModel.setGridDataConversionComplete((<nb.IExecuteResult>output).conversionComplete);
+				this._gridDataConversionComplete.resolve();
+				if ((<nb.IExecuteResult>output).conversionComplete) {
+					this._gridDataConversionComplete.resolve();
+				} else {
+					this._gridDataConversionComplete = new Deferred<void>();
+				}
 				// if output already exists, update the output's data and don't re-render output component
 				for (let i = 0; i < this._outputs.length; i++) {
 					let o = this._outputs[i];

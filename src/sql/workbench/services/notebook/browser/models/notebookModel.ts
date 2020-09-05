@@ -56,7 +56,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _inErrorState: boolean = false;
 	private _activeClientSession: IClientSession;
 	private _sessionLoadFinished = new Deferred<void>();
-	private _gridDataConversionComplete = new Deferred<void>();
 	private _onClientSessionReady = new Emitter<IClientSession>();
 	private _onProviderIdChanged = new Emitter<string>();
 	private _trustedMode: boolean;
@@ -107,7 +106,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._notebookOptions.layoutChanged(() => this._layoutChanged.fire());
 		}
 		this._defaultKernel = _notebookOptions.defaultKernel;
-		this._gridDataConversionComplete.resolve();
 	}
 
 	public get notebookManagers(): INotebookManager[] {
@@ -266,16 +264,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	/**
 	 * Indicates all result grid output has been converted to mimeType and html.
 	 */
-	public get gridDataConversionComplete(): Promise<void> {
-		return this._gridDataConversionComplete;
-	}
-
-	public setGridDataConversionComplete(complete: boolean): void {
-		if (complete) {
-			this._gridDataConversionComplete.resolve();
-		} else {
-			this._gridDataConversionComplete = new Deferred<void>();
+	public get gridDataConversionComplete(): Promise<any[]> {
+		let promises = [];
+		for (let cell of this._cells) {
+			promises.push(cell.gridDataConversionComplete);
 		}
+		return Promise.all(promises);
 	}
 
 	/**
