@@ -6,7 +6,7 @@ schedules:
   displayName: Mon-Fri at 7:00
   branches:
     include:
-    - main
+    - master
 
 resources:
   containers:

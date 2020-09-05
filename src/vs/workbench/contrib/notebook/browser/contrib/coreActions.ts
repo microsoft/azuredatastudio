@@ -160,9 +160,6 @@ abstract class NotebookAction extends Action2 {
 		}
 
 		const activeCell = editor.getActiveCell();
-		if (!activeCell) {
-			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
-		}
 
 		return {
 			cell: activeCell,
