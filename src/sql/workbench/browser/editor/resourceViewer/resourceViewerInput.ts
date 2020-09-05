@@ -30,9 +30,7 @@ export class ResourceViewerInput extends EditorInput {
 
 	constructor(private _providerId: string, @IDataGridProviderService private _dataGridProvider: IDataGridProviderService) {
 		super();
-		this.fetchColumns();
-		this.fetchItems();
-
+		this.refresh().catch(err => onUnexpectedError(err));
 	}
 
 	public getTypeId(): string {
@@ -62,6 +60,13 @@ export class ResourceViewerInput extends EditorInput {
 
 	public get resource(): URI | undefined {
 		return undefined;
+	}
+
+	public async refresh(): Promise<void> {
+		await Promise.all([
+			this.fetchColumns(),
+			this.fetchItems()
+		]);
 	}
 
 	private fetchColumns(): void {
