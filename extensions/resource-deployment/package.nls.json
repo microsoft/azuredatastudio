@@ -81,7 +81,7 @@
 	"azure-sqldb-display-name": "Azure SQL databases",
 	"azure-sqldb-description": "Best for new applications or existing on-premises applications that want to use the latest stable SQL Server features and that are migrated to the cloud with minimal changes.",
 	"resource-type-display-name": "Resource Type",
-	"sql-azure-single-database-display-name": "Single Database",
-	"sql-azure-elastic-pool-display-name": "Elastic Pool",
-	"sql-azure-database-server-display-name": "Database Server"
+	"sql-azure-single-database-display-name": "Single Database (script to notebook)",
+	"sql-azure-elastic-pool-display-name": "Elastic Pool (open link for creation)",
+	"sql-azure-database-server-display-name": "Database Server (open link for creation)"
 }

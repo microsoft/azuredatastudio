@@ -421,28 +421,17 @@
             ]
           }
         ],
-        "providers": [
-          {
-            "azureSQLDBWizard":{
-              "notebook": "./notebooks/azuredb/create-sqldb.ipynb"
-            },
-            "requiredTools": [
-              {
-                "name": "azure-cli"
-              }
-            ],
+        "providers": [ {
+            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLElasticDatabasePool",
+            "requiredTools": [],
             "when": "resource-type=single-database"
           },
           {
-            "name": "elastic-pool-link",
-            "displayName": "Elastic Pool (Requires visiting Azure portal)",
             "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLElasticDatabasePool",
             "requiredTools": [],
             "when": "resource-type=elastic-pool"
           },
           {
-            "name": "database-server-link",
-            "displayName": "Database Server (Requires visiting Azure portal)",
             "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLServer",
             "requiredTools": [],
             "when": "resource-type=database-server"
