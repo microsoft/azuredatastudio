@@ -9,13 +9,15 @@ import * as vscode from 'vscode';
 import * as should from 'should';
 import { ArcService } from '../services/arcService';
 
-suite('arc service Tests', function (): void {
+suite.skip('arc service Tests', function (): void {
 	before(async () => {
 		const arcExtension = vscode.extensions.getExtension<arc.IExtension>(arc.extension.name);
-		if (arcExtension && !arcExtension.isActive) {
-			arcExtension.activate();
-		} else {
-			console.log(`arc extension was already activated when the tests started`);
+		if (arcExtension) {
+			if (!arcExtension.isActive) {
+				arcExtension.activate();
+			} else {
+				console.log(`arc extension was already activated when the tests started`);
+			}
 		}
 	});
 
