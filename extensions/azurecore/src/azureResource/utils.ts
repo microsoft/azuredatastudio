@@ -6,9 +6,10 @@
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { azureResource } from 'azureResource';
-import { GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult } from 'azurecore';
+import { GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetDatabaseServersResult } from 'azurecore';
 import { isArray } from 'util';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
+import { AzureResourceDatabaseServerService } from './providers/databaseServer/databaseServerService';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { AppContext } from '../appContext';
 import { IAzureResourceSubscriptionService } from './interfaces';
@@ -102,6 +103,42 @@ export function equals(one: any, other: any): boolean {
 		}
 	}
 	return true;
+}
+
+export async function getDatabaseServers(appContext: AppContext, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false): Promise<GetDatabaseServersResult> {
+	const result: GetDatabaseServersResult = { databaseServers: [], errors: [] };
+	if (!account?.properties?.tenants || !isArray(account.properties.tenants) || !subscription) {
+		const error = new Error(localize('azure.accounts.getDatabaseServers.invalidParamsError', "Invalid account or subscription"));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+		return result;
+	}
+	const service = appContext.getService<AzureResourceDatabaseServerService>(AzureResourceServiceNames.resourceDatabaseServerService);
+	await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {
+		try {
+			const tokenResponse = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
+			const token = tokenResponse.token;
+			const tokenType = tokenResponse.tokenType;
+
+			result.databaseServers.push(...await service.getResources([subscription], new TokenCredentials(token, tokenType), account));
+		} catch (err) {
+			const error = new Error(localize('azure.accounts.getDatabaseServers.queryError', "Error fetching database servers for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
+				account.displayInfo.displayName,
+				account.displayInfo.userId,
+				subscription.id,
+				subscription.name,
+				tenant.id,
+				err instanceof Error ? err.message : err));
+			console.warn(error);
+			if (!ignoreErrors) {
+				throw error;
+			}
+			result.errors.push(error);
+		}
+	}));
+	return result;
 }
 
 export async function getResourceGroups(appContext: AppContext, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false): Promise<GetResourceGroupsResult> {
