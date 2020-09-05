@@ -40,130 +40,148 @@ export const EDIT_DATA_COMMAND_ID = 'dataExplorer.scriptAsEdit';
 // Script as Create
 CommandsRegistry.registerCommand({
 	id: SCRIPT_AS_CREATE_COMMAND_ID,
-	handler: async (accessor, args: TreeViewItemHandleArg) => {
-		const capabilitiesService = accessor.get(ICapabilitiesService);
-		const oeShimService = accessor.get(IOEShimService);
-		const queryEditorService = accessor.get(IQueryEditorService);
-		const connectionManagementService = accessor.get(IConnectionManagementService);
-		const scriptingService = accessor.get(IScriptingService);
-		const errorMessageService = accessor.get(IErrorMessageService);
-		const progressService = accessor.get(IProgressService);
-		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		const baseContext: BaseActionContext = {
-			profile: profile,
-			object: oeShimService.getNodeInfoForTreeItem(args.$treeItem).metadata
-		};
-		const scriptCreateAction = new ScriptCreateAction(ScriptCreateAction.ID, ScriptCreateAction.LABEL,
-			queryEditorService, connectionManagementService, scriptingService, errorMessageService);
-		return progressService.withProgress({ location: VIEWLET_ID }, () => scriptCreateAction.run(baseContext));
+	handler: async (accessor, args: TreeViewItemHandleArg): Promise<boolean | undefined> => {
+		if (args.$treeItem?.payload) {
+			const capabilitiesService = accessor.get(ICapabilitiesService);
+			const oeShimService = accessor.get(IOEShimService);
+			const queryEditorService = accessor.get(IQueryEditorService);
+			const connectionManagementService = accessor.get(IConnectionManagementService);
+			const scriptingService = accessor.get(IScriptingService);
+			const errorMessageService = accessor.get(IErrorMessageService);
+			const progressService = accessor.get(IProgressService);
+			const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+			const baseContext: BaseActionContext = {
+				profile: profile,
+				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
+			};
+			const scriptCreateAction = new ScriptCreateAction(ScriptCreateAction.ID, ScriptCreateAction.LABEL,
+				queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+			return progressService.withProgress({ location: VIEWLET_ID }, () => scriptCreateAction.run(baseContext));
+		}
+		return undefined;
 	}
 });
 
 // Script as Delete
 CommandsRegistry.registerCommand({
 	id: SCRIPT_AS_DELETE_COMMAND_ID,
-	handler: async (accessor, args: TreeViewItemHandleArg) => {
-		const capabilitiesService = accessor.get(ICapabilitiesService);
-		const oeShimService = accessor.get(IOEShimService);
-		const queryEditorService = accessor.get(IQueryEditorService);
-		const connectionManagementService = accessor.get(IConnectionManagementService);
-		const scriptingService = accessor.get(IScriptingService);
-		const errorMessageService = accessor.get(IErrorMessageService);
-		const progressService = accessor.get(IProgressService);
-		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		const baseContext: BaseActionContext = {
-			profile: profile,
-			object: oeShimService.getNodeInfoForTreeItem(args.$treeItem).metadata
-		};
-		const scriptDeleteAction = new ScriptDeleteAction(ScriptDeleteAction.ID, ScriptDeleteAction.LABEL,
-			queryEditorService, connectionManagementService, scriptingService, errorMessageService);
-		return progressService.withProgress({ location: VIEWLET_ID }, () => scriptDeleteAction.run(baseContext));
+	handler: async (accessor, args: TreeViewItemHandleArg): Promise<boolean | undefined> => {
+		if (args.$treeItem?.payload) {
+			const capabilitiesService = accessor.get(ICapabilitiesService);
+			const oeShimService = accessor.get(IOEShimService);
+			const queryEditorService = accessor.get(IQueryEditorService);
+			const connectionManagementService = accessor.get(IConnectionManagementService);
+			const scriptingService = accessor.get(IScriptingService);
+			const errorMessageService = accessor.get(IErrorMessageService);
+			const progressService = accessor.get(IProgressService);
+			const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+			const baseContext: BaseActionContext = {
+				profile: profile,
+				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
+			};
+			const scriptDeleteAction = new ScriptDeleteAction(ScriptDeleteAction.ID, ScriptDeleteAction.LABEL,
+				queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+			return progressService.withProgress({ location: VIEWLET_ID }, () => scriptDeleteAction.run(baseContext));
+		}
+		return undefined;
 	}
 });
 
 // Script as Select
 CommandsRegistry.registerCommand({
 	id: SCRIPT_AS_SELECT_COMMAND_ID,
-	handler: async (accessor, args: TreeViewItemHandleArg) => {
-		const capabilitiesService = accessor.get(ICapabilitiesService);
-		const oeShimService = accessor.get(IOEShimService);
-		const queryEditorService = accessor.get(IQueryEditorService);
-		const connectionManagementService = accessor.get(IConnectionManagementService);
-		const scriptingService = accessor.get(IScriptingService);
-		const progressService = accessor.get(IProgressService);
-		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		const baseContext: BaseActionContext = {
-			profile: profile,
-			object: oeShimService.getNodeInfoForTreeItem(args.$treeItem).metadata
-		};
-		const scriptSelectAction = new ScriptSelectAction(ScriptSelectAction.ID, ScriptSelectAction.LABEL,
-			queryEditorService, connectionManagementService, scriptingService);
-		return progressService.withProgress({ location: VIEWLET_ID }, () => scriptSelectAction.run(baseContext));
+	handler: async (accessor, args: TreeViewItemHandleArg): Promise<boolean | undefined> => {
+		if (args.$treeItem?.payload) {
+			const capabilitiesService = accessor.get(ICapabilitiesService);
+			const oeShimService = accessor.get(IOEShimService);
+			const queryEditorService = accessor.get(IQueryEditorService);
+			const connectionManagementService = accessor.get(IConnectionManagementService);
+			const scriptingService = accessor.get(IScriptingService);
+			const progressService = accessor.get(IProgressService);
+			const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+			const baseContext: BaseActionContext = {
+				profile: profile,
+				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
+			};
+			const scriptSelectAction = new ScriptSelectAction(ScriptSelectAction.ID, ScriptSelectAction.LABEL,
+				queryEditorService, connectionManagementService, scriptingService);
+			return progressService.withProgress({ location: VIEWLET_ID }, () => scriptSelectAction.run(baseContext));
+		}
+		return undefined;
 	}
 });
 
 // Script as Execute
 CommandsRegistry.registerCommand({
 	id: SCRIPT_AS_EXECUTE_COMMAND_ID,
-	handler: async (accessor, args: TreeViewItemHandleArg) => {
-		const capabilitiesService = accessor.get(ICapabilitiesService);
-		const oeShimService = accessor.get(IOEShimService);
-		const queryEditorService = accessor.get(IQueryEditorService);
-		const connectionManagementService = accessor.get(IConnectionManagementService);
-		const scriptingService = accessor.get(IScriptingService);
-		const progressService = accessor.get(IProgressService);
-		const errorMessageService = accessor.get(IErrorMessageService);
-		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		const baseContext: BaseActionContext = {
-			profile: profile,
-			object: oeShimService.getNodeInfoForTreeItem(args.$treeItem).metadata
-		};
-		const scriptExecuteAction = new ScriptExecuteAction(ScriptExecuteAction.ID, ScriptExecuteAction.LABEL,
-			queryEditorService, connectionManagementService, scriptingService, errorMessageService);
-		return progressService.withProgress({ location: VIEWLET_ID }, () => scriptExecuteAction.run(baseContext));
+	handler: async (accessor, args: TreeViewItemHandleArg): Promise<boolean | undefined> => {
+		if (args.$treeItem?.payload) {
+			const capabilitiesService = accessor.get(ICapabilitiesService);
+			const oeShimService = accessor.get(IOEShimService);
+			const queryEditorService = accessor.get(IQueryEditorService);
+			const connectionManagementService = accessor.get(IConnectionManagementService);
+			const scriptingService = accessor.get(IScriptingService);
+			const progressService = accessor.get(IProgressService);
+			const errorMessageService = accessor.get(IErrorMessageService);
+			const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+			const baseContext: BaseActionContext = {
+				profile: profile,
+				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
+			};
+			const scriptExecuteAction = new ScriptExecuteAction(ScriptExecuteAction.ID, ScriptExecuteAction.LABEL,
+				queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+			return progressService.withProgress({ location: VIEWLET_ID }, () => scriptExecuteAction.run(baseContext));
+		}
+		return undefined;
 	}
 });
 
 // Script as Alter
 CommandsRegistry.registerCommand({
 	id: SCRIPT_AS_ALTER_COMMAND_ID,
-	handler: async (accessor, args: TreeViewItemHandleArg) => {
-		const capabilitiesService = accessor.get(ICapabilitiesService);
-		const oeShimService = accessor.get(IOEShimService);
-		const queryEditorService = accessor.get(IQueryEditorService);
-		const connectionManagementService = accessor.get(IConnectionManagementService);
-		const scriptingService = accessor.get(IScriptingService);
-		const progressService = accessor.get(IProgressService);
-		const errorMessageService = accessor.get(IErrorMessageService);
-		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		const baseContext: BaseActionContext = {
-			profile: profile,
-			object: oeShimService.getNodeInfoForTreeItem(args.$treeItem).metadata
-		};
-		const scriptAlterAction = new ScriptAlterAction(ScriptAlterAction.ID, ScriptAlterAction.LABEL,
-			queryEditorService, connectionManagementService, scriptingService, errorMessageService);
-		return progressService.withProgress({ location: VIEWLET_ID }, () => scriptAlterAction.run(baseContext));
+	handler: async (accessor, args: TreeViewItemHandleArg): Promise<boolean | undefined> => {
+		if (args.$treeItem?.payload) {
+			const capabilitiesService = accessor.get(ICapabilitiesService);
+			const oeShimService = accessor.get(IOEShimService);
+			const queryEditorService = accessor.get(IQueryEditorService);
+			const connectionManagementService = accessor.get(IConnectionManagementService);
+			const scriptingService = accessor.get(IScriptingService);
+			const progressService = accessor.get(IProgressService);
+			const errorMessageService = accessor.get(IErrorMessageService);
+			const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+			const baseContext: BaseActionContext = {
+				profile: profile,
+				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
+			};
+			const scriptAlterAction = new ScriptAlterAction(ScriptAlterAction.ID, ScriptAlterAction.LABEL,
+				queryEditorService, connectionManagementService, scriptingService, errorMessageService);
+			return progressService.withProgress({ location: VIEWLET_ID }, () => scriptAlterAction.run(baseContext));
+		}
+		return undefined;
 	}
 });
 
 // Edit Data
 CommandsRegistry.registerCommand({
 	id: EDIT_DATA_COMMAND_ID,
-	handler: async (accessor, args: TreeViewItemHandleArg) => {
-		const capabilitiesService = accessor.get(ICapabilitiesService);
-		const oeShimService = accessor.get(IOEShimService);
-		const queryEditorService = accessor.get(IQueryEditorService);
-		const connectionManagementService = accessor.get(IConnectionManagementService);
-		const scriptingService = accessor.get(IScriptingService);
-		const progressService = accessor.get(IProgressService);
-		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		const baseContext: BaseActionContext = {
-			profile: profile,
-			object: oeShimService.getNodeInfoForTreeItem(args.$treeItem).metadata
-		};
-		const editDataAction = new EditDataAction(EditDataAction.ID, EditDataAction.LABEL,
-			queryEditorService, connectionManagementService, scriptingService);
-		return progressService.withProgress({ location: VIEWLET_ID }, () => editDataAction.run(baseContext));
+	handler: async (accessor, args: TreeViewItemHandleArg): Promise<boolean | undefined> => {
+		if (args.$treeItem?.payload) {
+			const capabilitiesService = accessor.get(ICapabilitiesService);
+			const oeShimService = accessor.get(IOEShimService);
+			const queryEditorService = accessor.get(IQueryEditorService);
+			const connectionManagementService = accessor.get(IConnectionManagementService);
+			const scriptingService = accessor.get(IScriptingService);
+			const progressService = accessor.get(IProgressService);
+			const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+			const baseContext: BaseActionContext = {
+				profile: profile,
+				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
+			};
+			const editDataAction = new EditDataAction(EditDataAction.ID, EditDataAction.LABEL,
+				queryEditorService, connectionManagementService, scriptingService);
+			return progressService.withProgress({ location: VIEWLET_ID }, () => editDataAction.run(baseContext));
+		}
+		return undefined;
 	}
 });
 //#endregion
@@ -186,9 +204,9 @@ CommandsRegistry.registerCommand({
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const objectExplorerService = accessor.get(IObjectExplorerService);
 		const selectionHandler = instantiationService.createInstance(TreeSelectionHandler);
-		const node = await getTreeNode(args, objectExplorerService);
+		const node = (await getTreeNode(args, objectExplorerService))!;
 		selectionHandler.onTreeActionStateChange(true);
-		let connectionProfile = TreeUpdateUtils.getConnectionProfile(node);
+		let connectionProfile = TreeUpdateUtils.getConnectionProfile(node)!;
 		let ownerUri = connectionManagementService.getConnectionUri(connectionProfile);
 		ownerUri = connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
 		let metadata = node.metadata;
@@ -207,7 +225,7 @@ CommandsRegistry.registerCommand({
 		const instantiationService = accessor.get(IInstantiationService);
 		const objectExplorerService = accessor.get(IObjectExplorerService);
 		const selectionHandler = instantiationService.createInstance(TreeSelectionHandler);
-		const node = await getTreeNode(args, objectExplorerService);
+		const node = (await getTreeNode(args, objectExplorerService))!;
 		selectionHandler.onTreeActionStateChange(true);
 		let connectionProfile = TreeUpdateUtils.getConnectionProfile(node);
 		let metadata = node.metadata;
@@ -227,9 +245,9 @@ CommandsRegistry.registerCommand({
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const objectExplorerService = accessor.get(IObjectExplorerService);
 		const selectionHandler = instantiationService.createInstance(TreeSelectionHandler);
-		const node = await getTreeNode(args, objectExplorerService);
+		const node = (await getTreeNode(args, objectExplorerService))!;
 		selectionHandler.onTreeActionStateChange(true);
-		let connectionProfile = TreeUpdateUtils.getConnectionProfile(node);
+		let connectionProfile = TreeUpdateUtils.getConnectionProfile(node)!;
 		let metadata = node.metadata;
 		let ownerUri = connectionManagementService.getConnectionUri(connectionProfile);
 		ownerUri = connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
@@ -249,9 +267,9 @@ CommandsRegistry.registerCommand({
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const objectExplorerService = accessor.get(IObjectExplorerService);
 		const selectionHandler = instantiationService.createInstance(TreeSelectionHandler);
-		const node = await getTreeNode(args, objectExplorerService);
+		const node = (await getTreeNode(args, objectExplorerService))!;
 		selectionHandler.onTreeActionStateChange(true);
-		let connectionProfile = TreeUpdateUtils.getConnectionProfile(node);
+		let connectionProfile = TreeUpdateUtils.getConnectionProfile(node)!;
 		let metadata = node.metadata;
 		let ownerUri = connectionManagementService.getConnectionUri(connectionProfile);
 		ownerUri = connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
@@ -271,9 +289,9 @@ CommandsRegistry.registerCommand({
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const objectExplorerService = accessor.get(IObjectExplorerService);
 		const selectionHandler = instantiationService.createInstance(TreeSelectionHandler);
-		const node = await getTreeNode(args, objectExplorerService);
+		const node = (await getTreeNode(args, objectExplorerService))!;
 		selectionHandler.onTreeActionStateChange(true);
-		let connectionProfile = TreeUpdateUtils.getConnectionProfile(node);
+		let connectionProfile = TreeUpdateUtils.getConnectionProfile(node)!;
 		let metadata = node.metadata;
 		let ownerUri = connectionManagementService.getConnectionUri(connectionProfile);
 		ownerUri = connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
@@ -297,8 +315,8 @@ CommandsRegistry.registerCommand({
 		//set objectExplorerTreeNode for context menu clicks
 		const node = await getTreeNode(args, objectExplorerService);
 		selectionHandler.onTreeActionStateChange(true);
-		const connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>node);
-		const metadata = node.metadata;
+		const connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>node)!;
+		const metadata = node!.metadata;
 		let ownerUri = connectionManagementService.getConnectionUri(connectionProfile);
 		ownerUri = connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
 
@@ -320,9 +338,9 @@ export async function handleOeRefreshCommand(accessor: ServicesAccessor, args: O
 	const logService = accessor.get(ILogService);
 	const notificationService = accessor.get(INotificationService);
 	const treeNode = await getTreeNode(args, objectExplorerService);
-	const tree = objectExplorerService.getServerTreeView().tree;
+	const tree = objectExplorerService.getServerTreeView()!.tree;
 	try {
-		await objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
+		await objectExplorerService.refreshTreeNode(treeNode!.getSession()!, treeNode!);
 		if (tree instanceof AsyncServerTree) {
 			await tree.updateChildren(treeNode);
 		} else {
@@ -330,7 +348,7 @@ export async function handleOeRefreshCommand(accessor: ServicesAccessor, args: O
 		}
 	} catch (err) {
 		// Display message to the user but also log the entire error to the console for the stack trace
-		notificationService.error(localize('refreshError', "An error occurred refreshing node '{0}': {1}", args.nodeInfo.label, getErrorMessage(err)));
+		notificationService.error(localize('refreshError', "An error occurred refreshing node '{0}': {1}", args.nodeInfo?.label, getErrorMessage(err)));
 		logService.error(err);
 	}
 }

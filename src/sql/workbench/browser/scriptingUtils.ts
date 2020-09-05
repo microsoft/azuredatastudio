@@ -42,7 +42,7 @@ const targetDatabaseEngineEditionMap = {
  */
 export async function scriptSelect(connectionProfile: IConnectionProfile, metadata: azdata.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<boolean> {
 	const connectionResult = await connectionService.connectIfNotConnected(connectionProfile);
-	let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
+	let paramDetails = getScriptingParamDetails(connectionService, connectionResult, metadata)!;
 	const result = await scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails);
 	if (result && result.script) {
 		const owner = await queryEditorService.newSqlEditor({ initalContent: result.script }, connectionProfile?.providerName);
@@ -68,8 +68,8 @@ export async function scriptSelect(connectionProfile: IConnectionProfile, metada
  */
 export async function scriptEditSelect(connectionProfile: IConnectionProfile, metadata: azdata.ObjectMetadata, connectionService: IConnectionManagementService, queryEditorService: IQueryEditorService, scriptingService: IScriptingService): Promise<boolean> {
 	const connectionResult = await connectionService.connectIfNotConnected(connectionProfile);
-	let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
-	const result = await scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails);
+	let paramDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
+	const result = await scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails!);
 	if (result && result.script) {
 		const owner = await queryEditorService.newEditDataEditor(metadata.schema, metadata.name, result.script);
 		// Connect our editor
@@ -120,7 +120,7 @@ export async function script(connectionProfile: IConnectionProfile, metadata: az
 	operation: ScriptOperation,
 	errorMessageService: IErrorMessageService): Promise<boolean> {
 	const connectionResult = await connectionService.connectIfNotConnected(connectionProfile);
-	let paramDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
+	let paramDetails = getScriptingParamDetails(connectionService, connectionResult, metadata)!;
 	const result = await scriptingService.script(connectionResult, metadata, operation, paramDetails);
 	if (result) {
 		let script: string = result.script;
@@ -160,18 +160,21 @@ export async function script(connectionProfile: IConnectionProfile, metadata: az
 	}
 }
 
-function getScriptingParamDetails(connectionService: IConnectionManagementService, ownerUri: string, metadata: azdata.ObjectMetadata): azdata.ScriptingParamDetails {
-	let serverInfo: azdata.ServerInfo = getServerInfo(connectionService, ownerUri);
-	let paramDetails: azdata.ScriptingParamDetails = {
-		filePath: undefined,
-		scriptCompatibilityOption: scriptCompatibilityOptionMap[serverInfo.serverMajorVersion],
-		targetDatabaseEngineEdition: targetDatabaseEngineEditionMap[serverInfo.engineEditionId],
-		targetDatabaseEngineType: serverInfo.isCloud ? 'SqlAzure' : 'SingleInstance'
-	};
-	return paramDetails;
+function getScriptingParamDetails(connectionService: IConnectionManagementService, ownerUri: string, metadata: azdata.ObjectMetadata): azdata.ScriptingParamDetails | undefined {
+	let serverInfo: azdata.ServerInfo | undefined = getServerInfo(connectionService, ownerUri);
+	if (serverInfo) {
+		let paramDetails: azdata.ScriptingParamDetails = {
+			filePath: undefined,
+			scriptCompatibilityOption: scriptCompatibilityOptionMap[serverInfo.serverMajorVersion as keyof typeof scriptCompatibilityOptionMap],
+			targetDatabaseEngineEdition: targetDatabaseEngineEditionMap[serverInfo.engineEditionId as keyof typeof targetDatabaseEngineEditionMap],
+			targetDatabaseEngineType: serverInfo.isCloud ? 'SqlAzure' : 'SingleInstance'
+		};
+		return paramDetails;
+	}
+	return undefined;
 }
 
-function getServerInfo(connectionService: IConnectionManagementService, ownerUri: string): azdata.ServerInfo {
+function getServerInfo(connectionService: IConnectionManagementService, ownerUri: string): azdata.ServerInfo | undefined {
 	let connection: ConnectionManagementInfo = connectionService.getConnectionInfo(ownerUri);
 	return connection.serverInfo;
 }

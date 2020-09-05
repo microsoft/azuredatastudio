@@ -74,7 +74,6 @@
 		"./sql/workbench/contrib/profiler/**/*.ts", // 100 errors
 		"./sql/workbench/contrib/query/**/*.ts", // 3077 errors
 		"./sql/workbench/contrib/queryHistory/**/*.ts", // 290 errors
-		"./sql/workbench/contrib/scripting/**/*.ts", // 179 errors
 		"./sql/workbench/contrib/welcome/**/*.ts", // 66 errors
 		"./sql/workbench/services/connection/**/*.ts", // 3130 errors
 		"./sql/workbench/services/dialog/**/*.ts", // 2995 errors

@@ -28,7 +28,7 @@ export class QueryHistoryInfo {
 		public connectionProfile: IConnectionProfile,
 		public startTime: Date,
 		status?: QueryStatus) {
-		this.database = connectionProfile ? connectionProfile.databaseName : '';
+		this.database = connectionProfile?.databaseName ?? '';
 		this.status = status;
 	}
 }
