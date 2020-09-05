@@ -32,11 +32,15 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 		).component();
 
 		await view.initializeModel(form);
+
+		let connectionUri: string = await azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnection.connectionId);
+		this.migrationStateModel.migrationService.getAssessments(connectionUri).then(results => {
+			if (results) {
+				this.migrationStateModel.assessmentResults = results.items;
+				this.migrationStateModel.currentState = State.TARGET_SELECTION;
+			}
+		});
 	}
-
-	// private async createInformationGatheredPage(view: azdata.ModelView){
-
-	// }
 
 	private async enterErrorState() {
 		const component = this.gatheringInfoComponent.component as azdata.TextComponent;

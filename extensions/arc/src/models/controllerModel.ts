@@ -12,6 +12,7 @@ import * as loc from '../localizedConstants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 
 export type ControllerInfo = {
+	id: string,
 	url: string,
 	name: string,
 	username: string,
@@ -41,17 +42,28 @@ export class ControllerModel {
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.DcConfigShowResult | undefined>();
 	private readonly _onEndpointsUpdated = new vscode.EventEmitter<azdataExt.DcEndpointListResult[]>();
 	private readonly _onRegistrationsUpdated = new vscode.EventEmitter<Registration[]>();
+	private readonly _onInfoUpdated = new vscode.EventEmitter<ControllerInfo>();
 
 	public onConfigUpdated = this._onConfigUpdated.event;
 	public onEndpointsUpdated = this._onEndpointsUpdated.event;
 	public onRegistrationsUpdated = this._onRegistrationsUpdated.event;
+	public onInfoUpdated = this._onInfoUpdated.event;
 
 	public configLastUpdated?: Date;
 	public endpointsLastUpdated?: Date;
 	public registrationsLastUpdated?: Date;
 
-	constructor(public treeDataProvider: AzureArcTreeDataProvider, public info: ControllerInfo, private _password?: string) {
+	constructor(public treeDataProvider: AzureArcTreeDataProvider, private _info: ControllerInfo, private _password?: string) {
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+	}
+
+	public get info(): ControllerInfo {
+		return this._info;
+	}
+
+	public set info(value: ControllerInfo) {
+		this._info = value;
+		this._onInfoUpdated.fire(this._info);
 	}
 
 	/**
@@ -66,13 +78,13 @@ export class ControllerModel {
 				// It should be in the credentials store, get it from there
 				this._password = await this.treeDataProvider.getPassword(this.info);
 			}
-			if (promptReconnect) {
+			if (promptReconnect || !this._password) {
 				// No password yet or we want to re-prompt for credentials so prompt for it from the user
 				const dialog = new ConnectToControllerDialog(this.treeDataProvider);
 				dialog.showDialog(this.info, this._password);
 				const model = await dialog.waitForClose();
 				if (model) {
-					this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
+					await this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
 					this._password = model.password;
 				} else {
 					throw new UserCancelledError();
@@ -185,15 +197,6 @@ export class ControllerModel {
 			await this._registrationRouter.apiV1RegistrationNsNameIsDeletedDelete(this._namespace, r.customObjectName, true);
 		}
 		*/
-	}
-
-	/**
-	 * Tests whether this model is for the same controller as another
-	 * @param other The other instance to test
-	 */
-	public equals(other: ControllerModel): boolean {
-		return this.info.url === other.info.url &&
-			this.info.username === other.info.username;
 	}
 
 	/**

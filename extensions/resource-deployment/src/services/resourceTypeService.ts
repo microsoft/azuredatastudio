@@ -42,7 +42,7 @@ export class ResourceTypeService implements IResourceTypeService {
 			vscode.extensions.all.forEach((extension) => {
 				const extensionResourceTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.resourceDeploymentTypes as ResourceType[];
 				if (extensionResourceTypes) {
-					extensionResourceTypes.forEach((resourceType) => {
+					extensionResourceTypes.forEach((resourceType: ResourceType) => {
 						this.updatePathProperties(resourceType, extension.extensionPath);
 						resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
 						this._resourceTypes.push(resourceType);
@@ -245,7 +245,7 @@ export class ResourceTypeService implements IResourceTypeService {
 			const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService, this.toolsService);
 			wizard.open();
 		} else if (instanceOfDialogDeploymentProvider(provider)) {
-			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, provider.dialog);
+			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, this.toolsService, provider.dialog);
 			dialog.open();
 		} else if (instanceOfNotebookDeploymentProvider(provider)) {
 			this.notebookService.launchNotebook(provider.notebook);

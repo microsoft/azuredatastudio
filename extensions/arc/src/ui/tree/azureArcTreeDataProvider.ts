@@ -65,19 +65,25 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 	}
 
 	public getControllerNode(model: ControllerModel): ControllerTreeNode | undefined {
-		return this._controllerNodes.find(node => model.equals(node.model));
+		return this._controllerNodes.find(node => model.info.id === node.model.info.id);
 	}
 
 	public async removeController(controllerNode: ControllerTreeNode): Promise<void> {
 		this._controllerNodes = this._controllerNodes.filter(node => node !== controllerNode);
+		await this.deletePassword(controllerNode.model.info);
 		this._onDidChangeTreeData.fire(undefined);
 		await this.saveControllers();
 	}
 
 	public async getPassword(info: ControllerInfo): Promise<string> {
 		const provider = await this._credentialsProvider;
-		const credential = await provider.readCredential(getCredentialId(info));
+		const credential = await provider.readCredential(info.id);
 		return credential.password;
+	}
+
+	private async deletePassword(info: ControllerInfo): Promise<void> {
+		const provider = await this._credentialsProvider;
+		await provider.deleteCredential(info.id);
 	}
 
 	/**
@@ -91,9 +97,9 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 	private async updatePassword(model: ControllerModel, password: string): Promise<void> {
 		const provider = await this._credentialsProvider;
 		if (model.info.rememberPassword) {
-			provider.saveCredential(getCredentialId(model.info), password);
+			await provider.saveCredential(model.info.id, password);
 		} else {
-			provider.deleteCredential(getCredentialId(model.info));
+			await provider.deleteCredential(model.info.id);
 		}
 	}
 
@@ -126,17 +132,12 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 		if (controllerNode) {
 			const resourceNode = controllerNode.getResourceNode(resourceType, name);
 			if (resourceNode) {
-
+				await resourceNode.openDashboard();
 			} else {
 				console.log(`Couldn't find resource node for ${name} (${resourceType})`);
 			}
-			await resourceNode?.openDashboard();
 		} else {
 			console.log('Couldn\'t find controller node for opening dashboard');
 		}
 	}
-}
-
-function getCredentialId(info: ControllerInfo): string {
-	return `${info.url}::${info.username}`;
 }

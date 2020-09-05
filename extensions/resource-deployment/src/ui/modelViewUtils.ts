@@ -17,6 +17,8 @@ import { assert, getDateTimeString, getErrorMessage } from '../utils';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
+import { IToolsService } from '../services/toolsService';
+import { KubeCtlToolName, KubeCtlTool } from '../services/tools/kubeCtlTool';
 
 const localize = nls.loadMessageBundle();
 
@@ -107,6 +109,7 @@ interface AzureAccountComponents {
 
 interface ContextBase {
 	container: azdata.window.Dialog | azdata.window.Wizard;
+	toolsService: IToolsService,
 	inputComponents: InputComponents;
 	onNewValidatorCreated: (validator: Validator) => void;
 	onNewDisposableCreated: (disposable: vscode.Disposable) => void;
@@ -197,7 +200,8 @@ export function initializeDialog(dialogContext: DialogContext): void {
 					onNewInputComponentCreated: dialogContext.onNewInputComponentCreated,
 					onNewValidatorCreated: dialogContext.onNewValidatorCreated,
 					container: dialogContext.container,
-					inputComponents: dialogContext.inputComponents
+					inputComponents: dialogContext.inputComponents,
+					toolsService: dialogContext.toolsService
 				});
 			}));
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
@@ -229,6 +233,7 @@ export function initializeWizardPage(context: WizardPageContext): void {
 			return createSection({
 				view: view,
 				container: context.container,
+				toolsService: context.toolsService,
 				inputComponents: context.inputComponents,
 				onNewDisposableCreated: context.onNewDisposableCreated,
 				onNewInputComponentCreated: context.onNewInputComponentCreated,
@@ -299,7 +304,8 @@ async function processFields(fieldInfoArray: FieldInfo[], components: azdata.Com
 			fieldInfo: fieldInfo,
 			container: context.container,
 			inputComponents: context.inputComponents,
-			components: components
+			components: components,
+			toolsService: context.toolsService
 		});
 		if (spaceBetweenFields && i < fieldInfoArray.length - 1) {
 			components.push(context.view.modelBuilder.divContainer().withLayout({ width: spaceBetweenFields }).component());
@@ -379,6 +385,9 @@ async function processField(context: FieldContext): Promise<void> {
 			break;
 		case FieldType.KubeClusterContextPicker:
 			processKubeConfigClusterPickerField(context);
+			break;
+		case FieldType.KubeStorageClass:
+			await processKubeStorageClassField(context);
 			break;
 		default:
 			throw new Error(localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", context.fieldInfo.type));
@@ -719,7 +728,8 @@ async function processKubeConfigClusterPickerField(context: KubeClusterContextFi
 			variableName: kubeConfigFilePathVariableName,
 			labelPosition: LabelPosition.Left,
 			required: true
-		}
+		},
+		toolsService: context.toolsService
 	};
 	const filePicker = processFilePickerField(filePickerContext);
 	context.fieldInfo.subFields = context.fieldInfo.subFields || [];
@@ -839,6 +849,42 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 		await populateAzureAccounts();
 	}, 0);
 }
+
+async function processKubeStorageClassField(context: FieldContext): Promise<void> {
+	const label = createLabel(context.view, {
+		text: context.fieldInfo.label,
+		description: context.fieldInfo.description,
+		required: context.fieldInfo.required,
+		width: context.fieldInfo.labelWidth,
+		cssStyles: context.fieldInfo.labelCSSStyles
+	});
+
+	// Try to query for the available storage classes - but if this fails the dropdown is editable
+	// so users can still enter their own
+	let storageClasses: string[] = [];
+	let defaultStorageClass = '';
+	try {
+		const kubeCtlTool = context.toolsService.getToolByName(KubeCtlToolName) as KubeCtlTool;
+		const response = await kubeCtlTool.getStorageClasses();
+		storageClasses = response.storageClasses;
+		defaultStorageClass = response.defaultStorageClass;
+	} catch (err) {
+		vscode.window.showErrorMessage(localize('resourceDeployment.errorFetchingStorageClasses', "Unexpected error fetching available kubectl storage classes : {0}", err.message ?? err));
+	}
+
+	const storageClassDropdown = createDropdown(context.view, {
+		width: context.fieldInfo.inputWidth,
+		editable: true,
+		required: context.fieldInfo.required,
+		label: context.fieldInfo.label,
+		values: storageClasses,
+		defaultValue: defaultStorageClass
+	});
+	storageClassDropdown.fireOnTextChange = true;
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: storageClassDropdown });
+	addLabelInputPairToContainer(context.view, context.components, label, storageClassDropdown, context.fieldInfo);
+}
+
 
 function getAccountDisplayString(account: azdata.Account) {
 	return `${account.displayInfo.displayName} (${account.displayInfo.userId})`;

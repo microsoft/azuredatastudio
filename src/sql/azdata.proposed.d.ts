@@ -34,7 +34,7 @@ declare module 'azdata' {
 			/**
 			 * Sets the trust mode for the notebook document.
 			 */
-			setTrusted(state: boolean);
+			setTrusted(state: boolean): void;
 		}
 
 		export interface IStandardKernel {
@@ -95,6 +95,61 @@ declare module 'azdata' {
 	export namespace dataprotocol {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 		export function registerSqlAssessmentServicesProvider(provider: SqlAssessmentServicesProvider): vscode.Disposable;
+		/**
+		 * Registers a DataGridProvider which is used to provide lists of items to a data grid
+		 * @param provider The provider implementation
+		 */
+		export function registerDataGridProvider(provider: DataGridProvider): vscode.Disposable;
+	}
+
+	export enum DataProviderType {
+		DataGridProvider = 'DataGridProvider'
+	}
+
+	/**
+	 * A column in a data grid
+	 */
+	export interface DataGridColumn {
+		/**
+		* The text to display on the column heading.
+		**/
+		name: string;
+		/**
+		* The property name in the DataGridItem
+		**/
+		field: string;
+		/**
+		* A unique identifier for the column within the grid.
+		*/
+		id: string;
+	}
+
+	/**
+	 * An item for displaying in a data grid
+	 */
+	export interface DataGridItem {
+		/**
+		 * A unique identifier for this item
+		 */
+		id: string;
+		/**
+		 * The other properties that will be displayed in the grid
+		 */
+		[key: string]: string;
+	}
+
+	/**
+	 * A data provider that provides lists of resource items for a data grid
+	 */
+	export interface DataGridProvider extends DataProvider {
+		/**
+		 * Gets the list of data grid items for this provider
+		 */
+		getDataGridItems(): Thenable<DataGridItem[]>;
+		/**
+		 * Gets the list of data grid columns for this provider
+		 */
+		getDataGridColumns(): Thenable<DataGridColumn[]>;
 	}
 
 	export interface HyperlinkComponent {
@@ -147,22 +202,20 @@ declare module 'azdata' {
 
 	export interface RadioCard {
 		id: string;
-		label: string;
-		descriptions?: RadioCardDescription[];
+		descriptions: RadioCardDescription[];
 		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 	}
 
 	export interface RadioCardDescription {
-		ariaLabel: string;
-		labelHeader: string;
-		contents: RadioCardLabelValuePair[];
-		valueHeader?: string;
+		textValue: string;
+		linkDisplayValue?: string;
+		displayLinkCodicon?: boolean;
+		textStyles?: CssStyles;
+		linkStyles?: CssStyles;
+		linkCodiconStyles?: CssStyles;
 	}
 
-	export interface RadioCardLabelValuePair {
-		label: string;
-		value?: string;
-	}
+	export type CssStyles = { [key: string]: string | number };
 
 	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
 		cards: RadioCard[];
@@ -171,10 +224,20 @@ declare module 'azdata' {
 		iconWidth?: string;
 		iconHeight?: string;
 		selectedCardId?: string;
+		orientation?: Orientation // Defaults to horizontal
 	}
 
+	export type RadioCardSelectionChangedEvent = { cardId: string; card: RadioCard };
+	export type RadioCardLinkClickEvent = { cardId: string, card: RadioCard, selectorText: RadioCardDescription };
+
 	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
-		onSelectionChanged: vscode.Event<any>;
+		/**
+		 * The card object returned from this function is a clone of the internal representation - changes will not impact the original object
+		 */
+		onSelectionChanged: vscode.Event<RadioCardSelectionChangedEvent>;
+
+		onLinkClick: vscode.Event<RadioCardLinkClickEvent>;
+
 	}
 
 	export interface SeparatorComponent extends Component {
@@ -529,5 +592,4 @@ declare module 'azdata' {
 		 */
 		delete?: boolean;
 	}
-
 }

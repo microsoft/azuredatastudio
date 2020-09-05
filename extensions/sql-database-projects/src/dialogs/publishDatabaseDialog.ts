@@ -269,7 +269,8 @@ export class PublishDatabaseDialog {
 			value: '',
 			ariaLabel: constants.targetConnectionLabel,
 			placeHolder: constants.selectConnection,
-			width: cssStyles.publishDialogTextboxWidth
+			width: cssStyles.publishDialogTextboxWidth,
+			enabled: false
 		}).component();
 
 		this.targetConnectionTextBox.onTextChanged(() => {
@@ -350,13 +351,13 @@ export class PublishDatabaseDialog {
 		this.targetConnectionTextBox = this.createTargetConnectionComponent(view);
 		const selectConnectionButton: azdata.Component = this.createSelectConnectionButton(view);
 
-		const connectionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: constants.connection,
+		const serverLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: constants.server,
 			requiredIndicator: true,
 			width: cssStyles.publishDialogLabelWidth
 		}).component();
 
-		const connectionRow = view.modelBuilder.flexContainer().withItems([connectionLabel, this.targetConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, this.targetConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 		connectionRow.insertItem(selectConnectionButton, 2, { CSSStyles: { 'margin-right': '0px' } });
 
 		return connectionRow;
@@ -410,7 +411,7 @@ export class PublishDatabaseDialog {
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: cssStyles.tableRow
 				}],
-			width: '410px'
+			width: '420px'
 		}).component();
 
 		table.onDataChanged(() => {
@@ -453,7 +454,7 @@ export class PublishDatabaseDialog {
 	private createSelectConnectionButton(view: azdata.ModelView): azdata.Component {
 		let selectConnectionButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
 			ariaLabel: constants.selectConnection,
-			iconPath: IconPathHelper.edit,
+			iconPath: IconPathHelper.selectConnection,
 			height: '16px',
 			width: '16px'
 		}).component();
@@ -462,35 +463,53 @@ export class PublishDatabaseDialog {
 			let connection = await azdata.connection.openConnectionDialog();
 			this.connectionId = connection.connectionId;
 
-			// show connection name if there is one, otherwise show connection string
+			// show connection name if there is one, otherwise show connection in format that shows in OE
+			let connectionTextboxValue: string;
 			if (connection.options['connectionName']) {
-				this.targetConnectionTextBox!.value = connection.options['connectionName'];
+				connectionTextboxValue = connection.options['connectionName'];
 			} else {
-				this.targetConnectionTextBox!.value = await azdata.connection.getConnectionString(connection.connectionId, false);
+				let user = connection.options['user'];
+				if (!user) {
+					user = constants.defaultUser;
+				}
+
+				connectionTextboxValue = `${connection.options['server']} (${user})`;
 			}
 
-			// populate database dropdown with the databases for this connection
-			const databaseValues = (await azdata.connection.listDatabases(this.connectionId))
-				// filter out system dbs
-				.filter(db => constants.systemDbs.find(systemdb => db === systemdb) === undefined);
-
-			this.targetDatabaseDropDown!.values = databaseValues;
+			this.updateConnectionComponents(connectionTextboxValue, this.connectionId);
 
 			// change the database inputbox value to the connection's database if there is one
 			if (connection.options.database && connection.options.database !== constants.master) {
 				this.targetDatabaseDropDown!.value = connection.options.database;
 			}
+
+			// change icon to the one without a plus sign
+			selectConnectionButton.iconPath = IconPathHelper.connect;
 		});
 
 		return selectConnectionButton;
 	}
 
+	private async updateConnectionComponents(connectionTextboxValue: string, connectionId: string) {
+		this.targetConnectionTextBox!.value = connectionTextboxValue;
+		this.targetConnectionTextBox!.placeHolder = connectionTextboxValue;
+
+		// populate database dropdown with the databases for this connection
+		if (connectionId) {
+			const databaseValues = (await azdata.connection.listDatabases(connectionId))
+				// filter out system dbs
+				.filter(db => constants.systemDbs.find(systemdb => db === systemdb) === undefined);
+
+			this.targetDatabaseDropDown!.values = databaseValues;
+		}
+	}
+
 	private createLoadProfileButton(view: azdata.ModelView): azdata.ButtonComponent {
 		let loadProfileButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
 			ariaLabel: constants.loadProfilePlaceholderText,
-			iconPath: IconPathHelper.folder,
+			iconPath: IconPathHelper.folder_blue,
 			height: '16px',
-			width: '15px'
+			width: '16px'
 		}).component();
 
 		loadProfileButton.onDidClick(async () => {
@@ -512,10 +531,12 @@ export class PublishDatabaseDialog {
 
 			if (this.readPublishProfile) {
 				const result = await this.readPublishProfile(fileUris[0]);
+				// clear out old database dropdown values. They'll get populated later if there was a connection specified in the profile
+				(<azdata.DropDownComponent>this.targetDatabaseDropDown).values = [];
 				(<azdata.DropDownComponent>this.targetDatabaseDropDown).value = result.databaseName;
 
 				this.connectionId = result.connectionId;
-				(<azdata.InputBoxComponent>this.targetConnectionTextBox).value = result.connectionString;
+				await this.updateConnectionComponents(result.connection, <string>this.connectionId);
 
 				for (let key in result.sqlCmdVariables) {
 					(<Record<string, string>>this.sqlCmdVars)[key] = result.sqlCmdVariables[key];
@@ -538,8 +559,9 @@ export class PublishDatabaseDialog {
 					this.formBuilder?.removeFormItem(<azdata.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
 				}
 
-				// show file path in text box
+				// show file path in text box and hover text
 				this.loadProfileTextBox!.value = fileUris[0].fsPath;
+				this.loadProfileTextBox!.placeHolder = fileUris[0].fsPath;
 			}
 		});
 

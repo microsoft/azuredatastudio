@@ -75,9 +75,11 @@ export class ErrorMessageDialog extends Modal {
 
 	private createCopyButton() {
 		let copyButtonLabel = localize('copyDetails', "Copy details");
-		if (this._messageDetails) {
-			this._copyButton = this.addFooterButton(copyButtonLabel, () => this._clipboardService.writeText(this._messageDetails!).catch(err => onUnexpectedError(err)), 'left');
-		}
+		this._copyButton = this.addFooterButton(copyButtonLabel, () => {
+			if (this._messageDetails) {
+				this._clipboardService.writeText(this._messageDetails!).catch(err => onUnexpectedError(err));
+			}
+		}, 'left');
 		this._copyButton!.icon = 'codicon scriptToClipboard';
 		this._copyButton!.element.title = copyButtonLabel;
 		this._register(attachButtonStyler(this._copyButton!, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));

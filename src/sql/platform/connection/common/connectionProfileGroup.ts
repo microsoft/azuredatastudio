@@ -18,7 +18,7 @@ export interface INewConnectionProfileGroup {
 }
 
 export interface IConnectionProfileGroup extends INewConnectionProfileGroup {
-	id: string;
+	id?: string;
 }
 
 export class ConnectionProfileGroup extends Disposable implements IConnectionProfileGroup {
@@ -30,8 +30,8 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	public readonly isRoot: boolean = false;
 	public constructor(
 		public name: string,
-		public parent: ConnectionProfileGroup | undefined,
-		public id: string,
+		public parent?: ConnectionProfileGroup,
+		public id?: string,
 		public color?: string,
 		public description?: string
 	) {
