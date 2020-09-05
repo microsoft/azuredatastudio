@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ControllerInfo } from 'arc';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { ControllerModel } from '../../models/controllerModel';
 import { ControllerTreeNode } from './controllerTreeNode';
 import { TreeNode } from './treeNode';
-import { ControllerModel, ControllerInfo } from '../../models/controllerModel';
 
 const mementoToken = 'arcControllers';
 
