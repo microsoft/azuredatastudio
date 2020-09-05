@@ -194,6 +194,7 @@ export class AddDatabaseReferenceDialog {
 
 		// update dropdown values because only different database, same server is a valid location for system db references
 		this.locationDropdown!.values = constants.systemDbLocationDropdownValues;
+		this.locationDropdown!.value = constants.differentDbSameServer;
 
 		this.currentReferenceType = ReferenceType.systemDb;
 		this.updateEnabledInputBoxes(true);

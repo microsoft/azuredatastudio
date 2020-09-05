@@ -151,6 +151,9 @@ export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 export function removeSqlCmdVariableFormatting(variable: string): string {
 	if (variable.startsWith('$(') && variable.endsWith(')')) {
 		variable = variable.substr(2, variable.length - 3);
+	} else if (variable.startsWith('$(') && !variable.endsWith(')')) {
+		// a variable in the format $(variable is also valid even though it's missing the closing parenthesis
+		variable = variable.substr(2);
 	}
 
 	return variable;
@@ -158,11 +161,17 @@ export function removeSqlCmdVariableFormatting(variable: string): string {
 
 /**
  * 	Format as sqlcmd variable by adding $() if necessary
+ * if the variable already starts with $(, then add )
  * @param variable
  */
 export function formatSqlCmdVariable(variable: string): string {
-	if (!(variable.startsWith('$(') && variable.endsWith(')'))) {
+	// TODO: check if it's a valid variable name and just return if it isn't
+
+	if (!variable.startsWith('$(') && !variable.endsWith(')')) {
 		variable = `$(${variable})`;
+	} else if (variable.startsWith('$(') && !variable.endsWith(')')) {
+		// add missing end parenthesis, same behavior as SSDT
+		variable = `${variable})`;
 	}
 
 	return variable;
