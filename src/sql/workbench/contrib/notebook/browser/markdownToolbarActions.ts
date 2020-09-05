@@ -449,7 +449,7 @@ function getStartTextToReplace(type: MarkdownButtonType): string[] {
 function getStartTextToInsert(type: MarkdownButtonType): string {
 	switch (type) {
 		case MarkdownButtonType.BOLD:
-			return '<b>';
+			return '**';
 		case MarkdownButtonType.ITALIC:
 			return '_';
 		case MarkdownButtonType.UNDERLINE:
@@ -484,7 +484,7 @@ function getStartTextToInsert(type: MarkdownButtonType): string {
 function getEndTextToInsert(type: MarkdownButtonType): string {
 	switch (type) {
 		case MarkdownButtonType.BOLD:
-			return '</b>';
+			return '**';
 		case MarkdownButtonType.ITALIC:
 			return '_';
 		case MarkdownButtonType.UNDERLINE:

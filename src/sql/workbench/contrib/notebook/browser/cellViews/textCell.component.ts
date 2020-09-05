@@ -83,7 +83,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownRenderer: NotebookMarkdownRenderer;
 	private markdownResult: IMarkdownRenderResult;
 	public previewFeaturesEnabled: boolean = false;
-	public turnDownService = new TurndownService({ 'emDelimiter': '*' });
+	public turnDownService = new TurndownService({ 'emDelimiter': '_' }).keep('u');
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -139,8 +139,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.updateTheme(this.themeService.getColorTheme());
 		this.setFocusAndScroll();
 		this.cellModel.isEditMode = false;
-		// this.cellModel.showPreview = true;
-		// this.cellModel.showMarkdown = false;
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
 		}));
@@ -152,11 +150,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}));
 		this._register(this.cellModel.onCellPreviewModeChanged(preview => {
 			this.previewMode = preview;
-			// this._changeRef.detectChanges();
+			this.focusIfPreviewMode();
 		}));
 		this._register(this.cellModel.onCellMarkdownModeChanged(markdown => {
 			this.markdownMode = markdown;
-			// this._changeRef.detectChanges();
+			this.focusIfPreviewMode();
 		}));
 	}
 
@@ -217,6 +215,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
+				outputElement.focus();
 			}
 		}
 	}
@@ -303,7 +302,17 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.toggleEditMode(this.isActive());
 
 		if (this.output && this.output.nativeElement) {
-			(<HTMLElement>this.output.nativeElement).scrollTo({ behavior: 'smooth' });
+			let outputElement = this.output.nativeElement as HTMLElement;
+			outputElement.scrollTo({ behavior: 'smooth' });
+		}
+	}
+
+	private focusIfPreviewMode(): void {
+		if (this.previewMode && !this.markdownMode) {
+			let outputElement = this.output?.nativeElement as HTMLElement;
+			if (outputElement) {
+				outputElement.focus();
+			}
 		}
 	}
 
