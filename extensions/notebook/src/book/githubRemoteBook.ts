@@ -14,7 +14,7 @@ import { IAsset } from './remoteBookController';
 import * as constants from '../common/constants';
 
 export class GitHubRemoteBook extends RemoteBook {
-	constructor(public remotePath: vscode.Uri, public outputChannel: vscode.OutputChannel, public asset: IAsset) {
+	constructor(public readonly remotePath: vscode.Uri, public readonly outputChannel: vscode.OutputChannel, public readonly asset: IAsset) {
 		super(remotePath, outputChannel, asset);
 	}
 

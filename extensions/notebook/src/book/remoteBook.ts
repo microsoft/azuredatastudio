@@ -10,7 +10,7 @@ import { IAsset } from './remoteBookController';
 export abstract class RemoteBook {
 	public localPath: vscode.Uri;
 
-	constructor(public remotePath: vscode.Uri, public outputChannel: vscode.OutputChannel, protected _asset?: IAsset) {
+	constructor(public readonly remotePath: vscode.Uri, public readonly outputChannel: vscode.OutputChannel, public readonly _asset?: IAsset) {
 		this.remotePath = remotePath;
 	}
 

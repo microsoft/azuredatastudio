@@ -91,7 +91,7 @@ describe('Github Remote Book', function () {
 				.persist()
 				.get('/microsoft/test/releases/download/v1/CU-1.0-EN.zip')
 				.replyWithFile(200, __filename);
-		await should(model.remoteBook.createLocalCopy()).be.fulfilled();
+		await model.remoteBook.createLocalCopy();
 		should(setExtractSpy.calledOnceWith(vscode.Uri.file(model.remoteBook.localPath.fsPath)));
 		await fs.promises.stat(model.remoteBook.localPath.fsPath);
 	});
@@ -111,7 +111,6 @@ describe('Github Remote Book', function () {
 				.reply(404)
 		const createLocalCopy =  model.remoteBook.createLocalCopy();
 		await should(createLocalCopy).be.rejected();
-
 	});
 });
 
