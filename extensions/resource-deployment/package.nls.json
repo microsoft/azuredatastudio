@@ -80,6 +80,7 @@
 	"azure-sqlvm-vm-azure-resource-name-validation-description": "Azure resource names cannot contain special characters \/\"\"[]:|<>+=;,?*@&, whitespace, or begin with '_' or end with '.' or '-'",
 	"azure-sqldb-display-name": "Azure SQL databases",
 	"azure-sqldb-description": "Best for new applications or existing on-premises applications that want to use the latest stable SQL Server features and that are migrated to the cloud with minimal changes.",
+	"resource-type-display-name": "Resource Type",
 	"sql-azure-single-database-display-name": "Single Database",
 	"sql-azure-elastic-pool-display-name": "Elastic Pool",
 	"sql-azure-database-server-display-name": "Database Server"
