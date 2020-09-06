@@ -11,7 +11,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IDataResource, MaxTableRowsConfigName, NotebookConfigSectionName } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
+import { IDataResource, MaxTableRowsConfigName, NotebookConfigSectionName, IDataResourceSchema, IDataResourceFields } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import QueryRunner, { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, ResultSetSubset, ICellValue } from 'sql/workbench/services/query/common/query';
@@ -193,7 +193,7 @@ class DataResourceTable extends GridTableBase<any> {
 		this._batchId = batchId;
 		this._id = id;
 		this._queryRunner = queryRunner;
-		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, this._batchId, this._id, this._queryRunner, source, this.resultSet, this.cellModel.notebookModel.notebookUri.toString());
+		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, this._batchId, this._id, this._queryRunner, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
 		if (!this.cellOutput.metadata) {
@@ -287,18 +287,21 @@ class DataResourceTable extends GridTableBase<any> {
 }
 
 export class DataResourceDataProvider implements IGridDataProvider {
+	private _documentUri: string;
 	private rows: ICellValue[][];
 	private _queryRunner: QueryRunner;
 	private _batchId: number;
 	private _id: number;
 	private _resultSet: ResultSetSummary;
+	private _lastRowCount: number = 0;
+	private _data: any;
 	constructor(
 		batchId: number,
 		id: number,
 		queryRunner: QueryRunner,
 		source: IDataResource,
 		resultSet: ResultSetSummary,
-		private documentUri: string,
+		private cellModel: ICellModel,
 		@INotificationService private _notificationService: INotificationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IConfigurationService private _configurationService: IConfigurationService,
@@ -306,15 +309,41 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		@ISerializationService private _serializationService: ISerializationService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
+		this._documentUri = this.cellModel.notebookModel.notebookUri.toString();
 		this._queryRunner = queryRunner;
 		this._batchId = batchId;
 		this._id = id;
 		this._resultSet = resultSet;
+		this.initializeData();
 		this.transformSource(source);
 	}
 
-	public updateResultSet(set: ResultSetSummary) {
-		this._resultSet = set;
+	private initializeData(): void {
+		// Set up data resource
+		let columnsResources: IDataResourceSchema[] = [];
+		this._resultSet.columnInfo.forEach(column => {
+			columnsResources.push({ name: escape(column.columnName) });
+		});
+		let columnsFields: IDataResourceFields = { fields: columnsResources };
+		let dataResource = {
+			schema: columnsFields,
+			data: []
+		};
+		// Set up html table string
+		let htmlTable: string[] = new Array(3);
+		htmlTable[0] = '<table>';
+		let columnHeaders = '<tr>';
+		for (let column of this._resultSet.columnInfo) {
+			columnHeaders += `<th>${escape(column.columnName)}</th>`;
+		}
+		columnHeaders += '</tr>';
+		htmlTable[1] = columnHeaders;
+		htmlTable[2] = '</table>';
+
+		this._data = {
+			'application/vnd.dataresource+json': dataResource,
+			'text/html': htmlTable
+		};
 	}
 
 	private transformSource(source: IDataResource): void {
@@ -333,10 +362,30 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		});
 	}
 
+	public updateResultSet(set: ResultSetSummary): void {
+		if (this._resultSet.rowCount !== set.rowCount) {
+			this._resultSet = set;
+			let startRow = this._lastRowCount;
+			let numberOfRows = this._resultSet.rowCount - this._lastRowCount;
+			this._lastRowCount = set.rowCount;
+			this.cellModel.addGridDataConversionPromise(this.convertData(startRow, numberOfRows));
+		}
+	}
+
+	private async convertData(startRow: number, numberOfRows: number): Promise<void> {
+		let rows = this._queryRunner.getQueryRows(startRow, numberOfRows, this._batchId, this._id);
+		rows.then(result => {
+			let dataResourceRows = this.convertToDataResource(result);
+			let htmlStringArr = this.convertToHtmlTable(result);
+			this._data['application/vnd.dataresource+json'].data = this._data['application/vnd.dataresource+json'].data.concat(dataResourceRows);
+			this._data['text/html'].splice(this._data['text/html'].length - 1, 0, ...htmlStringArr);
+		});
+		this.cellModel.updateOutputData(this._batchId, this._id, this._data);
+	}
+
 	getRowData(rowStart: number, numberOfRows: number): Thenable<ResultSetSubset> {
 		if (this._queryRunner) {
 			let rows = this._queryRunner.getQueryRows(rowStart, numberOfRows, this._batchId, this._id);
-
 			return rows;
 		} else {
 			let rowEnd = rowStart + numberOfRows;
@@ -365,7 +414,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	getEolString(): string {
-		return getEolString(this._textResourcePropertiesService, this.documentUri);
+		return getEolString(this._textResourcePropertiesService, this._documentUri);
 	}
 	shouldIncludeHeaders(includeHeaders: boolean): boolean {
 		return shouldIncludeHeaders(includeHeaders, this._configurationService);
@@ -391,7 +440,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			return this._queryRunner.serializeResults(this._batchId, this._id, format, selection);
 		} else {
 			let serializer = this._instantiationService.createInstance(ResultSerializer);
-			return serializer.handleSerialization(this.documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
+			return serializer.handleSerialization(this._documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
 		}
 	}
 
@@ -458,6 +507,29 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	 */
 	private isSelected(selection: Slick.Range): boolean {
 		return (selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
+	}
+
+	private convertToDataResource(subset: ResultSetSubset): any[] {
+		return subset.rows.map(row => {
+			let rowObject: { [key: string]: any; } = {};
+			row.forEach((val, index) => {
+				rowObject[index] = val.displayValue;
+			});
+			return rowObject;
+		});
+	}
+
+	private convertToHtmlTable(subset: ResultSetSubset): string[] {
+		let htmlStringArr = [];
+		for (const row of subset.rows) {
+			let rowData = '<tr>';
+			for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
+				rowData += `<td>${escape(row[columnIndex].displayValue)}</td>`;
+			}
+			rowData += '</tr>';
+			htmlStringArr.push(rowData);
+		}
+		return htmlStringArr;
 	}
 }
 

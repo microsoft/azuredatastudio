@@ -4750,7 +4750,7 @@ declare module 'azdata' {
 			execution_count: number;
 			batchId?: number;
 			id?: number;
-			conversionComplete?: boolean;
+			data: any;
 		}
 		export interface IErrorResult extends ICellOutput {
 			/**

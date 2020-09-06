@@ -22,6 +22,7 @@ import { SaveFormat, ResultSerializer } from 'sql/workbench/services/query/commo
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { URI } from 'vs/base/common/uri';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 
 export class TestSerializationProvider implements azdata.SerializationProvider {
 	providerId: string;
@@ -65,8 +66,7 @@ suite('Data Resource Data Provider', function () {
 			id: 0,
 			rowCount: 2
 		};
-
-		let documentUri = 'untitled:Notebook-0';
+		let cellModel = TypeMoq.Mock.ofType(CellModel);
 		tempFolderPath = path.join(os.tmpdir(), `TestDataResourceDataProvider_${uuid.v4()}`);
 		await fs.mkdir(tempFolderPath);
 
@@ -96,7 +96,7 @@ suite('Data Resource Data Provider', function () {
 			queryRunner.object,
 			source,
 			resultSet,
-			documentUri,
+			cellModel.object,
 			_notificationService,
 			undefined, // IClipboardService
 			undefined, // IConfigurationService

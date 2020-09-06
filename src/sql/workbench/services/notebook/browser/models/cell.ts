@@ -29,7 +29,6 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { Deferred } from 'sql/base/common/promise';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -65,7 +64,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _showPreview: boolean = true;
 	private _onCellPreviewChanged = new Emitter<boolean>();
 	private _isCommandExecutionSettingEnabled: boolean = false;
-	private _gridDataConversionComplete: Deferred<void> = new Deferred<void>();
+	private _gridDataConversionComplete: Promise<void>[] = [];
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -102,7 +101,6 @@ export class CellModel extends Disposable implements ICellModel {
 				}
 			}));
 		}
-		this._gridDataConversionComplete.resolve();
 	}
 
 	public equals(other: ICellModel) {
@@ -526,8 +524,23 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._outputs;
 	}
 
-	public get gridDataConversionComplete(): Promise<void> {
-		return this._gridDataConversionComplete;
+	public updateOutputData(batchId: number, id: number, data: any) {
+		for (let i = 0; i < this._outputs.length; i++) {
+			if (this._outputs[i].output_type === 'execute_result'
+				&& (<nb.IExecuteResult>this._outputs[i]).batchId === batchId
+				&& (<nb.IExecuteResult>this._outputs[i]).id === id) {
+				(<nb.IExecuteResult>this._outputs[i]).data = data;
+				break;
+			}
+		}
+	}
+
+	public get gridDataConversionComplete(): Promise<void[]> {
+		return Promise.all(this._gridDataConversionComplete);
+	}
+
+	public addGridDataConversionPromise(complete: Promise<void>): void {
+		this._gridDataConversionComplete.push(complete);
 	}
 
 	public get renderedOutputTextContent(): string[] {
@@ -584,36 +597,12 @@ export class CellModel extends Disposable implements ICellModel {
 		//     this._displayIdMap.set(displayId, targets);
 		// }
 		if (output) {
-			let outputExists = false;
-			if (output.output_type === 'execute_result') {
-				this._gridDataConversionComplete.resolve();
-				if ((<nb.IExecuteResult>output).conversionComplete) {
-					this._gridDataConversionComplete.resolve();
-				} else {
-					this._gridDataConversionComplete = new Deferred<void>();
-				}
-				// if output already exists, update the output's data and don't re-render output component
-				for (let i = 0; i < this._outputs.length; i++) {
-					let o = this._outputs[i];
-					if (o.output_type === 'execute_result'
-						&& (<nb.IExecuteResult>o).batchId === (<nb.IExecuteResult>output).batchId
-						&& (<nb.IExecuteResult>o).id === (<nb.IExecuteResult>output).id) {
-						outputExists = true;
-						delete output['transient'];
-						// update output with correct mimeType and html data
-						this._outputs[i] = this.rewriteOutputUrls(output);
-						break;
-					}
-				}
-			}
-			if (!outputExists) {
-				// deletes transient node in the serialized JSON
-				delete output['transient'];
-				this._outputs.push(this.rewriteOutputUrls(output));
-				// Only scroll on 1st output being added
-				let shouldScroll = this._outputs.length === 1;
-				this.fireOutputsChanged(shouldScroll);
-			}
+			// deletes transient node in the serialized JSON
+			delete output['transient'];
+			this._outputs.push(this.rewriteOutputUrls(output));
+			// Only scroll on 1st output being added
+			let shouldScroll = this._outputs.length === 1;
+			this.fireOutputsChanged(shouldScroll);
 		}
 	}
 
