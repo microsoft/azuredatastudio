@@ -45,4 +45,10 @@ export const NetworkSettingsNewPublicIp = localize('deployAzureSQLVM.NetworkSett
 export const RDPAllowCheckboxLabel = localize('deployAzureSQLVM.VmRDPAllowCheckboxLabel', "Enable RDP(3389) inbound Port");
 
 // SQL Server settings page constants
-export const SqlServerSettingsPageTitle = localize('deployAzureSQLVM', "SQL Servers settings");
+export const SqlServerSettingsPageTitle = localize('deployAzureSQLVM.SqlServerSettingsPageTitle', "SQL Servers settings");
+export const SqlConnectivityTypeDropdownLabel = localize('deployAzureSQLVM.SqlConnectivityTypeDropdownLabel', "SQL connectivity");
+export const SqlPortLabel = localize('deployAzureSQLVM.SqlPortLabel', "Port");
+export const SqlEnableSQLAuthenticationLabel = localize('deployAzureSQLVM.SqlEnableSQLAuthenticationLabel', "Enable SQL authentication");
+export const SqlAuthenticationUsernameLabel = localize('deployAzureSQLVM.SqlAuthenticationUsernameLabel', "Username");
+export const SqlAuthenticationPasswordLabel = localize('deployAzureSQLVM.SqlAuthenticationPasswordLabel', "Password");
+export const SqlAuthenticationConfirmPasswordLabel = localize('deployAzureSQLVM.SqlAuthenticationConfirmPasswordLabel', "Confirm password");
