@@ -88,7 +88,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 			labelPosition: LabelPosition.Left,
 			labelWidth: '150px',
 			inputWidth: '200px',
-			title: constants.AzureSettingsPageTitle,
+			title: constants.VmSettingsPageTitle,
 			rows: [
 				{
 					items: [
@@ -145,7 +145,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 			labelPosition: LabelPosition.Left,
 			labelWidth: '150px',
 			inputWidth: '200px',
-			title: constants.AzureSettingsPageTitle,
+			title: constants.NetworkSettingsPageTitle,
 			rows: [
 				{
 					items: [
@@ -181,7 +181,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 			labelPosition: LabelPosition.Left,
 			labelWidth: '150px',
 			inputWidth: '200px',
-			title: constants.AzureSettingsPageTitle,
+			title: constants.SqlServerSettingsPageTitle,
 			rows: [
 			]
 		};
