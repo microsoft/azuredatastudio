@@ -9,7 +9,7 @@ import { WizardPageBase } from '../../wizardPageBase';
 import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 import { apiService } from '../../../services/apiService';
 import { azureResource } from 'azureResource';
-import * as  vscode from 'vscode';
+import * as vscode from 'vscode';
 
 export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 	// <- means depends on
@@ -49,10 +49,13 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	public async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
-			await this.createAzureAccountsDropdown(view);
-			await this.createAzureSubscriptionsDropdown(view);
-			await this.createResourceDropdown(view);
-			await this.createAzureRegionsDropdown(view);
+
+			await Promise.all([
+				this.createAzureAccountsDropdown(view),
+				this.createAzureSubscriptionsDropdown(view),
+				this.createResourceDropdown(view),
+				this.createAzureRegionsDropdown(view)
+			]);
 			this.populateAzureAccountsDropdown();
 
 			this._form = view.modelBuilder.formContainer()

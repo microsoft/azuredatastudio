@@ -37,9 +37,12 @@ export class SqlServerSettingsPage extends BasePage {
 	public async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 
-			this.createSqlConnectivityDropdown(view);
-			this.createPortText(view);
-			this.createSqlAuthentication(view);
+			await Promise.all([
+				this.createSqlConnectivityDropdown(view),
+				this.createPortText(view),
+				this.createSqlAuthentication(view),
+			]);
+
 
 			// this._sqlStorageOptimiazationDropdown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 			// 	values: [{
@@ -240,29 +243,29 @@ export class SqlServerSettingsPage extends BasePage {
 
 	protected formValidation(): string {
 
-		let showErrorMessage = '';
+		let showErrorMessage = [];
 
 		if ((this._sqlAuthenticationDropdown.value as azdata.CategoryValue).name === 'Yes') {
 			let username = this._sqlAuthenticationTextbox.value!;
 
 			if (username.length < 2 || username.length > 128) {
-				showErrorMessage += 'Username must be between 2 and 128 characters long.\n';
+				showErrorMessage.push('Username must be between 2 and 128 characters long.');
 			}
 
 			if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
-				showErrorMessage += 'Username cannot contain special characters \/""[]:|<>+=;,?* .\n';
+				showErrorMessage.push('Username cannot contain special characters \/""[]:|<>+=;,?* .');
 			}
 
-			showErrorMessage += this.wizard.validatePassword(this._sqlAuthenticationPasswordTextbox.value!);
+			showErrorMessage.push(this.wizard.validatePassword(this._sqlAuthenticationPasswordTextbox.value!));
 
 			if (this._sqlAuthenticationPasswordTextbox.value !== this._sqlAuthenticationPasswordConfirmationTextbox.value) {
-				showErrorMessage += ('Password and confirm password must match.');
+				showErrorMessage.push('Password and confirm password must match.');
 			}
 		}
 
 
-		this.wizard.showErrorMessage(showErrorMessage);
+		this.wizard.showErrorMessage(showErrorMessage.join('\n'));
 
-		return showErrorMessage;
+		return showErrorMessage.join('\n');
 	}
 }

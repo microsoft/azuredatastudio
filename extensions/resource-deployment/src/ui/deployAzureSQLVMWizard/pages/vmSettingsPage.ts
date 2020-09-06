@@ -53,14 +53,17 @@ export class VmSettingsPage extends BasePage {
 	public async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 
-			await this.createVmNameTextBox(view);
-			await this.createAdminUsernameTextBox(view);
-			await this.createAdminPasswordTextBox(view);
-			await this.createAdminPasswordConfirmTextBox(view);
-			await this.createVmImageDropdown(view);
-			await this.createVMImageSkuDropdown(view);
-			await this.createVMImageVersionDropdown(view);
-			await this.createVmSizeDropdown(view);
+			await Promise.all([
+				this.createVmNameTextBox(view),
+				this.createAdminUsernameTextBox(view),
+				this.createAdminPasswordTextBox(view),
+				this.createAdminPasswordConfirmTextBox(view),
+				this.createVmImageDropdown(view),
+				this.createVMImageSkuDropdown(view),
+				this.createVMImageVersionDropdown(view),
+				this.createVmSizeDropdown(view),
+			]);
+
 
 			this.liveValidation = false;
 
@@ -128,7 +131,7 @@ export class VmSettingsPage extends BasePage {
 
 	public onLeave(): void {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
-			return false;
+			return true;
 		});
 	}
 
@@ -372,7 +375,7 @@ export class VmSettingsPage extends BasePage {
 
 	protected formValidation(): string {
 
-		let showErrorMessage = '';
+		let showErrorMessage = [];
 		/**
 		 * VM name rules:
 		 * 	1. 1-15 characters
@@ -382,16 +385,16 @@ export class VmSettingsPage extends BasePage {
 		 */
 		let vmname = this.wizard.model.vmName;
 		if (vmname.length < 1 && vmname.length > 15) {
-			showErrorMessage += 'Virtual machine name must be between 1 and 15 characters long.\n';
+			showErrorMessage.push('Virtual machine name must be between 1 and 15 characters long.');
 		}
 		if (/^\d+$/.test(vmname)) {
-			showErrorMessage += 'Virtual machine name cannot contain only numbers.\n';
+			showErrorMessage.push('Virtual machine name cannot contain only numbers.');
 		}
 		if (vmname.charAt(0) === '_' || vmname.slice(-1) === '.' || vmname.slice(-1) === '-') {
-			showErrorMessage += 'Virtual machine name Can\'t start with underscore. Can\'t end with period or hyphen\n';
+			showErrorMessage.push('Virtual machine name Can\'t start with underscore. Can\'t end with period or hyphen');
 		}
 		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(vmname)) {
-			showErrorMessage += 'Virtual machine name cannot contain special characters \/""[]:|<>+=;,?* .\n';
+			showErrorMessage.push('Virtual machine name cannot contain special characters \/""[]:|<>+=;,?* .');
 		}
 
 
@@ -402,24 +405,24 @@ export class VmSettingsPage extends BasePage {
 		 */
 		let username = this.wizard.model.vmUsername;
 		if (username.length < 1 || username.length > 20) {
-			showErrorMessage += 'Username must be between 1 and 20 characters long.\n';
+			showErrorMessage.push('Username must be between 1 and 20 characters long.');
 		}
 		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
-			showErrorMessage += 'Username cannot contain special characters \/""[]:|<>+=;,?* .\n';
+			showErrorMessage.push('Username cannot contain special characters \/""[]:|<>+=;,?* .');
 		}
 
-		showErrorMessage += this.wizard.validatePassword(this.wizard.model.vmPassword);
+		showErrorMessage.push(this.wizard.validatePassword(this.wizard.model.vmPassword));
 
 		if (this.wizard.model.vmPassword !== this._adminComfirmPasswordTextBox.value) {
-			showErrorMessage += 'Password and confirm password must match.\n';
+			showErrorMessage.push('Password and confirm password must match.');
 		}
 
 		if (this._vmSize.includes((this._vmSizeDropdown.value as azdata.CategoryValue).name)) {
-			showErrorMessage += 'Select a virtual machine size.\n';
+			showErrorMessage.push('Select a virtual machine size.');
 		}
 
-		this.wizard.showErrorMessage(showErrorMessage);
+		this.wizard.showErrorMessage(showErrorMessage.join('\n'));
 
-		return showErrorMessage;
+		return showErrorMessage.join('\n');
 	}
 }
