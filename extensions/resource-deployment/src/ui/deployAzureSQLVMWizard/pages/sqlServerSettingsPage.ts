@@ -5,15 +5,15 @@
 
 import * as azdata from 'azdata';
 import * as constants from '../constants';
-import { WizardPageBase } from '../../wizardPageBase';
 import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
+import { BasePage } from './basePage';
 
-export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
+export class SqlServerSettingsPage extends BasePage {
 
 	private _sqlConnectivityDropdown!: azdata.DropDownComponent;
 	private _portTextRow!: azdata.FlexContainer;
 	private _portTextBox!: azdata.InputBoxComponent;
-	private _sqlAuthenticationCheckbox!: azdata.CheckBoxComponent;
+	private _sqlAuthenticationDropdown!: azdata.DropDownComponent;
 	private _sqlAuthenticationTextbox!: azdata.InputBoxComponent;
 	private _sqlAuthenticationTextRow!: azdata.FlexContainer;
 	private _sqlAuthenticationPasswordTextbox!: azdata.InputBoxComponent;
@@ -73,7 +73,7 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 							component: this._portTextRow
 						},
 						{
-							component: this._sqlAuthenticationCheckbox
+							component: this.wizard.createFormRowComponent(view, 'Enable SQL authentication', '', this._sqlAuthenticationDropdown, true)
 						},
 						{
 							component: this._sqlAuthenticationTextRow
@@ -101,31 +101,17 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 	}
 
 	public async onEnter(): Promise<void> {
+
+		this.liveValidation = false;
+
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
 			}
 
-			let username = this._sqlAuthenticationTextbox.value!;
+			this.liveValidation = true;
 
-			let showErrorMessage = '';
-
-			if (username.length < 2 || username.length > 128) {
-				showErrorMessage += 'Username must be between 2 and 128 characters long.\n';
-			}
-
-			if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
-				showErrorMessage += 'Username cannot contain special characters \/""[]:|<>+=;,?* .\n';
-			}
-
-			showErrorMessage += this.wizard.validatePassword(this._sqlAuthenticationPasswordTextbox.value!);
-
-			if (this._sqlAuthenticationPasswordTextbox.value !== this._sqlAuthenticationPasswordConfirmationTextbox.value) {
-				showErrorMessage += ('Password and confirm password must match.');
-				return false;
-			}
-
-			this.wizard.showErrorMessage(showErrorMessage);
+			let showErrorMessage = this.formValidation();
 
 			if (showErrorMessage !== '') {
 				return false;
@@ -189,6 +175,7 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 
 		this._portTextBox.onTextChanged((value) => {
 			this.wizard.model.port = value;
+			this.liveFormValidation();
 		});
 
 		this._portTextRow = this.wizard.createFormRowComponent(view, 'Port', '', this._portTextBox, true);
@@ -196,19 +183,29 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 
 	private createSqlAuthentication(view: azdata.ModelView) {
 
-		this._sqlAuthenticationCheckbox = view.modelBuilder.checkBox().withProperties(<azdata.CheckBoxComponent>{
-			label: 'Enable SQL authentication',
-			checked: true
+		this._sqlAuthenticationDropdown = view.modelBuilder.dropDown().withProperties(<azdata.DropDownComponent>{
+			values: [
+				{
+					displayName: 'Yes',
+					name: 'True'
+				},
+				{
+					displayName: 'No',
+					name: 'False'
+				}
+			]
 		}).component();
 
-		this._sqlAuthenticationCheckbox.onChanged((value) => {
-			this.wizard.changeRowDisplay(this._sqlAuthenticationTextRow, value ? 'block' : 'none');
-			this.wizard.changeRowDisplay(this._sqlAuthenticationPasswordTextRow, value ? 'block' : 'none');
-			this.wizard.changeRowDisplay(this._sqlAuthenticationPasswordConfirmationTextRow, value ? 'block' : 'none');
-			this.wizard.model.enableSqlAuthentication = value ? 'True' : 'False';
+		this._sqlAuthenticationDropdown.onValueChanged((value) => {
+			let dropdownValue = (this._sqlAuthenticationDropdown.value as azdata.CategoryValue).name;
+			let displayValue: 'block' | 'none' = dropdownValue === 'True' ? 'block' : 'none';
+			this.wizard.changeRowDisplay(this._sqlAuthenticationTextRow, displayValue);
+			this.wizard.changeRowDisplay(this._sqlAuthenticationPasswordTextRow, displayValue);
+			this.wizard.changeRowDisplay(this._sqlAuthenticationPasswordConfirmationTextRow, displayValue);
+			this.wizard.model.enableSqlAuthentication = dropdownValue;
 		});
 
-		this.wizard.model.enableSqlAuthentication = this._sqlAuthenticationCheckbox.checked ? 'True' : 'False';
+		this.wizard.model.enableSqlAuthentication = (this._sqlAuthenticationDropdown.value as azdata.CategoryValue).name;
 
 
 		this._sqlAuthenticationTextbox = view.modelBuilder.inputBox().component();
@@ -230,13 +227,38 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 
 		this._sqlAuthenticationTextbox.onTextChanged((value) => {
 			this.wizard.model.sqlAuthenticationUsername = value;
+			this.liveFormValidation();
 		});
 
 		this._sqlAuthenticationPasswordTextbox.onTextChanged((value) => {
 			this.wizard.model.sqlAuthenticationPassword = value;
+			this.liveFormValidation();
 		});
 
 	}
 
 
+	protected formValidation(): string {
+		let username = this._sqlAuthenticationTextbox.value!;
+
+		let showErrorMessage = '';
+
+		if (username.length < 2 || username.length > 128) {
+			showErrorMessage += 'Username must be between 2 and 128 characters long.\n';
+		}
+
+		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
+			showErrorMessage += 'Username cannot contain special characters \/""[]:|<>+=;,?* .\n';
+		}
+
+		showErrorMessage += this.wizard.validatePassword(this._sqlAuthenticationPasswordTextbox.value!);
+
+		if (this._sqlAuthenticationPasswordTextbox.value !== this._sqlAuthenticationPasswordConfirmationTextbox.value) {
+			showErrorMessage += ('Password and confirm password must match.');
+		}
+
+		this.wizard.showErrorMessage(showErrorMessage);
+
+		return showErrorMessage;
+	}
 }
