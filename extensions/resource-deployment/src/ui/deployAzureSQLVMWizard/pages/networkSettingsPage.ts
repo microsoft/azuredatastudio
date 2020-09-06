@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { WizardPageBase } from '../../wizardPageBase';
 import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 import * as constants from '../constants';
+import { BasePage } from './basePage';
 
-export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
+export class NetworkSettingsPage extends BasePage {
 
 	// virtual network components
 	private _newVirtualNetworkCheckbox!: azdata.CheckBoxComponent;
@@ -58,19 +58,10 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 				.withFormItems(
 					[
 						{
-							component: this._newVirtualNetworkCheckbox,
-						},
-						{
 							component: this.wizard.createFormRowComponent(view, constants.VirtualNetworkDropdownLabel, '', this._virtualNetworkFlexContainer, true)
 						},
 						{
-							component: this._newSubnetCheckbox
-						},
-						{
 							component: this.wizard.createFormRowComponent(view, constants.SubnetDropdownLabel, '', this._subnetFlexContainer, true)
-						},
-						{
-							component: this._newPublicIpCheckbox,
 						},
 						{
 							component: this.wizard.createFormRowComponent(view, constants.PublicIPDropdownLabel, '', this._publicIpFlexContainer, true)
@@ -93,42 +84,13 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 	public async onEnter(): Promise<void> {
 		this.populateVirtualNetworkDropdown();
 		this.populatePublicIpkDropdown();
+		this.liveValidation = false;
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
 			}
-			let errorMessage = '';
-			if (this.wizard.model.newVirtualNetwork === 'True') {
-				if (this.wizard.model.virtualNetworkName.length < 2 || this.wizard.model.virtualNetworkName.length > 64) {
-					errorMessage += 'Virtual Network name must be between 2 and 64 characters long\n';
-				}
-			} else {
-				if (this.wizard.model.virtualNetworkName === 'None') {
-					errorMessage += 'Create a new virtual network';
-				}
-			}
-
-			if (this.wizard.model.newSubnet === 'True') {
-				if (this.wizard.model.subnetName.length < 1 || this.wizard.model.virtualNetworkName.length > 80) {
-					errorMessage += 'Subnet name must be between 1 and 80 characters long\n';
-				}
-			} else {
-				if (this.wizard.model.subnetName === 'None') {
-					errorMessage += 'Create a new sub network';
-				}
-			}
-
-			if (this.wizard.model.newPublicIp === 'True') {
-				if (this.wizard.model.publicIpName.length < 1 || this.wizard.model.publicIpName.length > 80) {
-					errorMessage += 'Public IP name must be between 1 and 80 characters long\n';
-				}
-			} else {
-				if (this.wizard.model.publicIpName === 'None') {
-					errorMessage += 'Create a new new public Ip';
-				}
-			}
-
-			this.wizard.showErrorMessage(errorMessage);
+			this.liveValidation = true;
+			let errorMessage = this.formValidation();
 
 			if (errorMessage !== '') {
 				return false;
@@ -174,12 +136,13 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 
 		this._newVirtualNetworkText.onTextChanged((e) => {
 			this.wizard.model.virtualNetworkName = e;
+			this.liveFormValidation();
 		});
 
 		this._virtualNetworkFlexContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 		}).withItems(
-			[this._virtualNetworkDropdownLoader, this._newVirtualNetworkText]
+			[this._virtualNetworkDropdownLoader, this._newVirtualNetworkText, this._newVirtualNetworkCheckbox]
 		).component();
 
 	}
@@ -272,12 +235,13 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 
 		this._newsubnetText.onTextChanged((e) => {
 			this.wizard.model.subnetName = e;
+			this.liveFormValidation();
 		});
 
 		this._subnetFlexContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 		}).withItems(
-			[this._subnetDropdownLoader, this._newsubnetText]
+			[this._subnetDropdownLoader, this._newsubnetText, this._newSubnetCheckbox]
 		).component();
 
 	}
@@ -354,6 +318,7 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 
 		this._publicIpNetworkText.onTextChanged((e) => {
 			this.wizard.model.publicIpName = e;
+			this.liveFormValidation();
 		});
 
 		this.wizard.changeComponentDisplay(this._publicIpNetworkText, 'none');
@@ -361,7 +326,7 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 		this._publicIpFlexContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 		}).withItems(
-			[this._publicIpDropdownLoader, this._publicIpNetworkText]
+			[this._publicIpDropdownLoader, this._publicIpNetworkText, this._newPublicIpCheckbox]
 		).component();
 
 	}
@@ -467,5 +432,42 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 			};
 		});
 		return dropdownValues;
+	}
+
+	protected formValidation(): string {
+		let errorMessage = '';
+		if (this.wizard.model.newVirtualNetwork === 'True') {
+			if (this.wizard.model.virtualNetworkName.length < 2 || this.wizard.model.virtualNetworkName.length > 64) {
+				errorMessage += 'Virtual Network name must be between 2 and 64 characters long\n';
+			}
+		} else {
+			if (this.wizard.model.virtualNetworkName === 'None') {
+				errorMessage += 'Create a new virtual network';
+			}
+		}
+
+		if (this.wizard.model.newSubnet === 'True') {
+			if (this.wizard.model.subnetName.length < 1 || this.wizard.model.virtualNetworkName.length > 80) {
+				errorMessage += 'Subnet name must be between 1 and 80 characters long\n';
+			}
+		} else {
+			if (this.wizard.model.subnetName === 'None') {
+				errorMessage += 'Create a new sub network';
+			}
+		}
+
+		if (this.wizard.model.newPublicIp === 'True') {
+			if (this.wizard.model.publicIpName.length < 1 || this.wizard.model.publicIpName.length > 80) {
+				errorMessage += 'Public IP name must be between 1 and 80 characters long\n';
+			}
+		} else {
+			if (this.wizard.model.publicIpName === 'None') {
+				errorMessage += 'Create a new new public Ip';
+			}
+		}
+
+		this.wizard.showErrorMessage(errorMessage);
+		return errorMessage;
+
 	}
 }
