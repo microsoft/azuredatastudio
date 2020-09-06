@@ -201,7 +201,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 			sqlConnectivityItems.push(
 				{
 					type: FieldType.ReadonlyText,
-					label: constants.SubnetDropdownLabel,
+					label: constants.SqlPortLabel,
 					defaultValue: constants.SqlPortLabel,
 					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				}
@@ -217,8 +217,8 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 			[
 				{
 					type: FieldType.ReadonlyText,
-					label: (model.enableSqlAuthentication === 'True' ? 'Yes ' : 'No '),
-					defaultValue: model.sqlConnectivityType,
+					label: constants.SqlEnableSQLAuthenticationLabel,
+					defaultValue: (model.enableSqlAuthentication === 'True' ? 'Yes ' : 'No '),
 					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				}
 
