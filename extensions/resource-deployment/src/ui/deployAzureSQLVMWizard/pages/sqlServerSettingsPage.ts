@@ -67,13 +67,13 @@ export class SqlServerSettingsPage extends BasePage {
 				.withFormItems(
 					[
 						{
-							component: this.wizard.createFormRowComponent(view, 'SQL connectivity', '', this._sqlConnectivityDropdown, true)
+							component: this.wizard.createFormRowComponent(view, constants.SqlConnectivityTypeDropdownLabel, '', this._sqlConnectivityDropdown, true)
 						},
 						{
 							component: this._portTextRow
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, 'Enable SQL authentication', '', this._sqlAuthenticationDropdown, true)
+							component: this.wizard.createFormRowComponent(view, constants.SqlEnableSQLAuthenticationLabel, '', this._sqlAuthenticationDropdown, true)
 						},
 						{
 							component: this._sqlAuthenticationTextRow
@@ -178,7 +178,7 @@ export class SqlServerSettingsPage extends BasePage {
 			this.liveFormValidation();
 		});
 
-		this._portTextRow = this.wizard.createFormRowComponent(view, 'Port', '', this._portTextBox, true);
+		this._portTextRow = this.wizard.createFormRowComponent(view, constants.SqlPortLabel, '', this._portTextBox, true);
 	}
 
 	private createSqlAuthentication(view: azdata.ModelView) {
@@ -210,19 +210,19 @@ export class SqlServerSettingsPage extends BasePage {
 
 		this._sqlAuthenticationTextbox = view.modelBuilder.inputBox().component();
 
-		this._sqlAuthenticationTextRow = this.wizard.createFormRowComponent(view, 'Username', '', this._sqlAuthenticationTextbox, true);
+		this._sqlAuthenticationTextRow = this.wizard.createFormRowComponent(view, constants.SqlAuthenticationUsernameLabel, '', this._sqlAuthenticationTextbox, true);
 
 		this._sqlAuthenticationPasswordTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			inputType: 'password'
 		}).component();
 
-		this._sqlAuthenticationPasswordTextRow = this.wizard.createFormRowComponent(view, 'Password', '', this._sqlAuthenticationPasswordTextbox, true);
+		this._sqlAuthenticationPasswordTextRow = this.wizard.createFormRowComponent(view, constants.SqlAuthenticationPasswordLabel, '', this._sqlAuthenticationPasswordTextbox, true);
 
 		this._sqlAuthenticationPasswordConfirmationTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			inputType: 'password'
 		}).component();
 
-		this._sqlAuthenticationPasswordConfirmationTextRow = this.wizard.createFormRowComponent(view, 'Confirm password', '', this._sqlAuthenticationPasswordConfirmationTextbox, true);
+		this._sqlAuthenticationPasswordConfirmationTextRow = this.wizard.createFormRowComponent(view, constants.SqlAuthenticationConfirmPasswordLabel, '', this._sqlAuthenticationPasswordConfirmationTextbox, true);
 
 
 		this._sqlAuthenticationTextbox.onTextChanged((value) => {
