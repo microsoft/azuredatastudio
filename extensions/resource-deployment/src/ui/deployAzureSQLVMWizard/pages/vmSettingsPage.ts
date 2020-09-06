@@ -5,10 +5,10 @@
 
 import * as azdata from 'azdata';
 import * as constants from '../constants';
-import { WizardPageBase } from '../../wizardPageBase';
 import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
+import { BasePage } from './basePage';
 
-export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
+export class VmSettingsPage extends BasePage {
 
 	private _vmSize: string[] = [];
 
@@ -62,6 +62,8 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 			await this.createVMImageVersionDropdown(view);
 			await this.createVmSizeDropdown(view);
 
+			this.liveValidation = false;
+
 			this._form = view.modelBuilder.formContainer()
 				.withFormItems(
 					[
@@ -105,61 +107,19 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 	public async onEnter(): Promise<void> {
 		this.populateVmImageDropdown();
 		this.populateVmSizeDropdown();
+
+		this.liveValidation = false;
+
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+			this.liveValidation = true;
 
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
 			}
 
-			let showErrorMessage = '';
-			/**
-			 * VM name rules:
-			 * 	1. 1-15 characters
-			 *  2. Cannot contain only numbers
-			 *  3. Cannot start with underscore and end with period or hyphen
-			 *  4. Virtual machine name cannot contain special characters \/""[]:|<>+=;,?*
-			 */
-			let vmname = this.wizard.model.vmName;
-			if (vmname.length < 1 && vmname.length > 15) {
-				showErrorMessage += 'Virtual machine name must be between 1 and 15 characters long.\n';
-			}
-			if (/^\d+$/.test(vmname)) {
-				showErrorMessage += 'Virtual machine name cannot contain only numbers.\n';
-			}
-			if (vmname.charAt(0) === '_' || vmname.slice(-1) === '.' || vmname.slice(-1) === '-') {
-				showErrorMessage += 'Virtual machine name Can\'t start with underscore. Can\'t end with period or hyphen\n';
-			}
-			if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(vmname)) {
-				showErrorMessage += 'Virtual machine name cannot contain special characters \/""[]:|<>+=;,?* .\n';
-			}
+			let errorMessage = this.formValidation();
 
-
-			/**
-			 * VM admin/root username rules:
-			 *  1. 1-20 characters long
-			 *  2. cannot contain special characters \/""[]:|<>+=;,?*
-			 */
-			let username = this.wizard.model.vmUsername;
-			if (username.length < 1 || username.length > 20) {
-				showErrorMessage += 'Username must be between 1 and 20 characters long.\n';
-			}
-			if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
-				showErrorMessage += 'Username cannot contain special characters \/""[]:|<>+=;,?* .\n';
-			}
-
-			showErrorMessage += this.wizard.validatePassword(this.wizard.model.vmPassword);
-
-			if (this.wizard.model.vmPassword !== this._adminComfirmPasswordTextBox.value) {
-				showErrorMessage += 'Password and confirm password must match.\n';
-			}
-
-			if (this._vmSize.includes((this._vmSizeDropdown.value as azdata.CategoryValue).name)) {
-				showErrorMessage += 'Select a virtual machine size.\n';
-			}
-
-			this.wizard.showErrorMessage(showErrorMessage);
-
-			if (showErrorMessage !== '') {
+			if (errorMessage !== '') {
 				return false;
 			}
 			return true;
@@ -179,6 +139,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 		this._vmNameTextBox.onTextChanged((value) => {
 			this.wizard.model.vmName = value;
+			this.liveFormValidation();
 		});
 	}
 
@@ -188,6 +149,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 		this._adminUsernameTextBox.onTextChanged((value) => {
 			this.wizard.model.vmUsername = value;
+			this.liveFormValidation();
 		});
 	}
 
@@ -198,6 +160,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 		this._adminPasswordTextBox.onTextChanged((value) => {
 			this.wizard.model.vmPassword = value;
+			this.liveFormValidation();
 		});
 	}
 
@@ -207,6 +170,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		}).component();
 
 		this._adminComfirmPasswordTextBox.onTextChanged((value) => {
+			this.liveFormValidation();
 		});
 	}
 
@@ -244,7 +208,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		this.wizard.addDropdownValues(
 			this._vmImageDropdown,
 			response.data.filter((value: any) => {
-				return !new RegExp('-byol').test(value.name);
+				return !new RegExp('-byol').test(value.name.toLowerCase());
 			})
 				.map((value: any) => {
 					let sqlServerVersion = value.name.toLowerCase().match(new RegExp('sql(.*?)-'))[1];
@@ -406,5 +370,56 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 		this._vmSizeDropdownLoader.loading = false;
 	}
 
+	protected formValidation(): string {
 
+		let showErrorMessage = '';
+		/**
+		 * VM name rules:
+		 * 	1. 1-15 characters
+		 *  2. Cannot contain only numbers
+		 *  3. Cannot start with underscore and end with period or hyphen
+		 *  4. Virtual machine name cannot contain special characters \/""[]:|<>+=;,?*
+		 */
+		let vmname = this.wizard.model.vmName;
+		if (vmname.length < 1 && vmname.length > 15) {
+			showErrorMessage += 'Virtual machine name must be between 1 and 15 characters long.\n';
+		}
+		if (/^\d+$/.test(vmname)) {
+			showErrorMessage += 'Virtual machine name cannot contain only numbers.\n';
+		}
+		if (vmname.charAt(0) === '_' || vmname.slice(-1) === '.' || vmname.slice(-1) === '-') {
+			showErrorMessage += 'Virtual machine name Can\'t start with underscore. Can\'t end with period or hyphen\n';
+		}
+		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(vmname)) {
+			showErrorMessage += 'Virtual machine name cannot contain special characters \/""[]:|<>+=;,?* .\n';
+		}
+
+
+		/**
+		 * VM admin/root username rules:
+		 *  1. 1-20 characters long
+		 *  2. cannot contain special characters \/""[]:|<>+=;,?*
+		 */
+		let username = this.wizard.model.vmUsername;
+		if (username.length < 1 || username.length > 20) {
+			showErrorMessage += 'Username must be between 1 and 20 characters long.\n';
+		}
+		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
+			showErrorMessage += 'Username cannot contain special characters \/""[]:|<>+=;,?* .\n';
+		}
+
+		showErrorMessage += this.wizard.validatePassword(this.wizard.model.vmPassword);
+
+		if (this.wizard.model.vmPassword !== this._adminComfirmPasswordTextBox.value) {
+			showErrorMessage += 'Password and confirm password must match.\n';
+		}
+
+		if (this._vmSize.includes((this._vmSizeDropdown.value as azdata.CategoryValue).name)) {
+			showErrorMessage += 'Select a virtual machine size.\n';
+		}
+
+		this.wizard.showErrorMessage(showErrorMessage);
+
+		return showErrorMessage;
+	}
 }

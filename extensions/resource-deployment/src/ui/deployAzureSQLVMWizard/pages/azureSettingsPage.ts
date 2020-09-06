@@ -274,7 +274,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createAzureRegionsDropdown(view: azdata.ModelView) {
 		this._azureRegionsDropdown = view.modelBuilder.dropDown().withProperties({
-			//required: true
+			required: true
 		}).component();
 
 		this._azureRegionsLoader = view.modelBuilder.loadingComponent().withItem(this._azureRegionsDropdown).component();
