@@ -47,10 +47,12 @@ export class NetworkSettingsPage extends BasePage {
 	public async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 
-			await this.createVirtualNetworkDropdown(view);
-			await this.createSubnetDropdown(view);
-			await this.createPublicIPDropdown(view);
-			await this.createVmRDPAllowCheckbox(view);
+			await Promise.all([
+				this.createVirtualNetworkDropdown(view),
+				this.createSubnetDropdown(view),
+				this.createPublicIPDropdown(view),
+				this.createVmRDPAllowCheckbox(view)
+			]);
 
 
 
@@ -435,39 +437,39 @@ export class NetworkSettingsPage extends BasePage {
 	}
 
 	protected formValidation(): string {
-		let errorMessage = '';
+		let errorMessage = [];
 		if (this.wizard.model.newVirtualNetwork === 'True') {
 			if (this.wizard.model.virtualNetworkName.length < 2 || this.wizard.model.virtualNetworkName.length > 64) {
-				errorMessage += 'Virtual Network name must be between 2 and 64 characters long\n';
+				errorMessage.push('Virtual Network name must be between 2 and 64 characters long');
 			}
 		} else {
 			if (this.wizard.model.virtualNetworkName === 'None') {
-				errorMessage += 'Create a new virtual network';
+				errorMessage.push('Create a new virtual network');
 			}
 		}
 
 		if (this.wizard.model.newSubnet === 'True') {
 			if (this.wizard.model.subnetName.length < 1 || this.wizard.model.virtualNetworkName.length > 80) {
-				errorMessage += 'Subnet name must be between 1 and 80 characters long\n';
+				errorMessage.push('Subnet name must be between 1 and 80 characters long');
 			}
 		} else {
 			if (this.wizard.model.subnetName === 'None') {
-				errorMessage += 'Create a new sub network';
+				errorMessage.push('Create a new sub network');
 			}
 		}
 
 		if (this.wizard.model.newPublicIp === 'True') {
 			if (this.wizard.model.publicIpName.length < 1 || this.wizard.model.publicIpName.length > 80) {
-				errorMessage += 'Public IP name must be between 1 and 80 characters long\n';
+				errorMessage.push('Public IP name must be between 1 and 80 characters long');
 			}
 		} else {
 			if (this.wizard.model.publicIpName === 'None') {
-				errorMessage += 'Create a new new public Ip';
+				errorMessage.push('Create a new new public Ip');
 			}
 		}
 
-		this.wizard.showErrorMessage(errorMessage);
-		return errorMessage;
+		this.wizard.showErrorMessage(errorMessage.join('\n'));
+		return errorMessage.join('\n');
 
 	}
 }
