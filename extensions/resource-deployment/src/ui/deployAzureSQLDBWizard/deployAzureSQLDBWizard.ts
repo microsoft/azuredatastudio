@@ -68,8 +68,8 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 	}
 
 	private setEnvironmentVariables(env: NodeJS.ProcessEnv): void {
-		// env['AZDATA_NB_VAR_AZURE_SQLVM_PASSWORD'] = this.model.vmPassword;
-		// env['AZDATA_NB_VAR_AZURE_SQLVM_SQL_PASSWORD'] = this.model.sqlAuthenticationPassword;
+		// env['AZDATA_NB_VAR_AZURE_SQLDB_PASSWORD'] = this.model.vmPassword;
+		// env['AZDATA_NB_VAR_AZURE_SQLDB_SQL_PASSWORD'] = this.model.sqlAuthenticationPassword;
 	}
 
 	public async getRequest(url: string): Promise<any> {
