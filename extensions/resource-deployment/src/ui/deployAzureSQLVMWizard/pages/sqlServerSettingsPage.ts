@@ -239,23 +239,27 @@ export class SqlServerSettingsPage extends BasePage {
 
 
 	protected formValidation(): string {
-		let username = this._sqlAuthenticationTextbox.value!;
 
 		let showErrorMessage = '';
 
-		if (username.length < 2 || username.length > 128) {
-			showErrorMessage += 'Username must be between 2 and 128 characters long.\n';
+		if ((this._sqlAuthenticationDropdown.value as azdata.CategoryValue).name === 'Yes') {
+			let username = this._sqlAuthenticationTextbox.value!;
+
+			if (username.length < 2 || username.length > 128) {
+				showErrorMessage += 'Username must be between 2 and 128 characters long.\n';
+			}
+
+			if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
+				showErrorMessage += 'Username cannot contain special characters \/""[]:|<>+=;,?* .\n';
+			}
+
+			showErrorMessage += this.wizard.validatePassword(this._sqlAuthenticationPasswordTextbox.value!);
+
+			if (this._sqlAuthenticationPasswordTextbox.value !== this._sqlAuthenticationPasswordConfirmationTextbox.value) {
+				showErrorMessage += ('Password and confirm password must match.');
+			}
 		}
 
-		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
-			showErrorMessage += 'Username cannot contain special characters \/""[]:|<>+=;,?* .\n';
-		}
-
-		showErrorMessage += this.wizard.validatePassword(this._sqlAuthenticationPasswordTextbox.value!);
-
-		if (this._sqlAuthenticationPasswordTextbox.value !== this._sqlAuthenticationPasswordConfirmationTextbox.value) {
-			showErrorMessage += ('Password and confirm password must match.');
-		}
 
 		this.wizard.showErrorMessage(showErrorMessage);
 
