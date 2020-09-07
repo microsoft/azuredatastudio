@@ -106,22 +106,55 @@ declare module 'azdata' {
 		DataGridProvider = 'DataGridProvider'
 	}
 
+	export type DataGridColumnType = 'hyperlink' | 'text' | 'image';
 	/**
 	 * A column in a data grid
 	 */
 	export interface DataGridColumn {
 		/**
 		* The text to display on the column heading.
-		**/
+		 */
 		name: string;
+
 		/**
 		* The property name in the DataGridItem
-		**/
+		 */
 		field: string;
+
 		/**
 		* A unique identifier for the column within the grid.
 		*/
 		id: string;
+
+		/**
+		 * The type of column this is. This is used to determine how to render the contents.
+		 */
+		type: DataGridColumnType;
+
+		/**
+		 * Whether this column is sortable.
+		 */
+		sortable?: boolean;
+
+		/**
+		 * Whether this column is filterable
+		 */
+		filterable?: boolean;
+
+		/**
+		 * If false, column can no longer be resized.
+		 */
+		resizable?: boolean;
+
+		/**
+		 * If set to a non-empty string, a tooltip will appear on hover containing the string.
+		 */
+		tooltip?: string;
+
+		/**
+		 * Width of the column in pixels.
+		 */
+		width?: number
 	}
 
 	/**
@@ -133,9 +166,13 @@ declare module 'azdata' {
 		 */
 		id: string;
 		/**
+		 * The optional icon to display for this item
+		 */
+		iconPath?: string;
+		/**
 		 * The other properties that will be displayed in the grid
 		 */
-		[key: string]: string;
+		[key: string]: any;
 	}
 
 	/**
@@ -202,22 +239,20 @@ declare module 'azdata' {
 
 	export interface RadioCard {
 		id: string;
-		label: string;
-		descriptions?: RadioCardDescription[];
+		descriptions: RadioCardDescription[];
 		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 	}
 
 	export interface RadioCardDescription {
-		ariaLabel: string;
-		labelHeader: string;
-		contents: RadioCardLabelValuePair[];
-		valueHeader?: string;
+		textValue: string;
+		linkDisplayValue?: string;
+		displayLinkCodicon?: boolean;
+		textStyles?: CssStyles;
+		linkStyles?: CssStyles;
+		linkCodiconStyles?: CssStyles;
 	}
 
-	export interface RadioCardLabelValuePair {
-		label: string;
-		value?: string;
-	}
+	export type CssStyles = { [key: string]: string | number };
 
 	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
 		cards: RadioCard[];
@@ -226,13 +261,20 @@ declare module 'azdata' {
 		iconWidth?: string;
 		iconHeight?: string;
 		selectedCardId?: string;
+		orientation?: Orientation // Defaults to horizontal
 	}
+
+	export type RadioCardSelectionChangedEvent = { cardId: string; card: RadioCard };
+	export type RadioCardLinkClickEvent = { cardId: string, card: RadioCard, selectorText: RadioCardDescription };
 
 	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
 		/**
 		 * The card object returned from this function is a clone of the internal representation - changes will not impact the original object
 		 */
-		onSelectionChanged: vscode.Event<{ cardId: string; card?: RadioCard }>;
+		onSelectionChanged: vscode.Event<RadioCardSelectionChangedEvent>;
+
+		onLinkClick: vscode.Event<RadioCardLinkClickEvent>;
+
 	}
 
 	export interface SeparatorComponent extends Component {

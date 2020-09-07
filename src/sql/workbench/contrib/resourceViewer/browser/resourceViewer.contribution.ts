@@ -11,14 +11,18 @@ import { ResourceViewerInput } from 'sql/workbench/browser/editor/resourceViewer
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
+import { isString } from 'vs/base/common/types';
 
 CommandsRegistry.registerCommand({
-	id: 'resourceViewer.newResourceViewer',
-	handler: (accessor: ServicesAccessor, ...args: any[]): void => {
+	id: 'resourceViewer.openResourceViewer',
+	handler: async (accessor: ServicesAccessor, ...args: any[]): Promise<void> => {
 		const instantiationService: IInstantiationService = accessor.get(IInstantiationService);
 		const editorService: IEditorService = accessor.get(IEditorService);
+		if (!isString(args[0])) {
+			throw new Error('First argument must be the ProviderId');
+		}
 
-		const resourceViewerInput = instantiationService.createInstance(ResourceViewerInput);
+		const resourceViewerInput = instantiationService.createInstance(ResourceViewerInput, args[0]);
 		editorService.openEditor(resourceViewerInput, { pinned: true }, ACTIVE_GROUP);
 	}
 });

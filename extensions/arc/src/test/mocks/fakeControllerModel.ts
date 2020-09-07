@@ -3,8 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ControllerInfo } from 'arc';
 import { v4 as uuid } from 'uuid';
-import { ControllerModel, ControllerInfo } from '../../models/controllerModel';
+import { ControllerModel } from '../../models/controllerModel';
 import { AzureArcTreeDataProvider } from '../../ui/tree/azureArcTreeDataProvider';
 
 export class FakeControllerModel extends ControllerModel {

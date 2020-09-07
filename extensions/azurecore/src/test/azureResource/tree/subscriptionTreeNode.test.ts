@@ -49,7 +49,6 @@ const mockSubscriptionId: string = 'mock_subscription';
 const mockSubscription: azureResource.AzureResourceSubscription = {
 	id: mockSubscriptionId,
 	name: 'mock subscription',
-	subscriptionId: mockSubscriptionId,
 	tenant: mockTenantId
 };
 

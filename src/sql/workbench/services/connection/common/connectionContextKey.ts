@@ -18,7 +18,7 @@ export class ConnectionContextKey implements IContextKey<IConnectionProfile> {
 
 	private _providerKey: IContextKey<string>;
 	private _serverKey: IContextKey<string>;
-	private _databaseKey: IContextKey<string>;
+	private _databaseKey: IContextKey<string | undefined>;
 	private _connectionKey: IContextKey<IConnectionProfile>;
 	private _isQueryProviderKey: IContextKey<boolean>;
 	private _canOpenInAzurePortal: IContextKey<boolean>;

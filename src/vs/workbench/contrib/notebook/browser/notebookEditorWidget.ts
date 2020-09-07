@@ -192,8 +192,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 
 	get activeCodeEditor(): IEditor | undefined {
 		if (this._isDisposed) {
-			// {{SQL CARBON EDIT}}
-			return undefined;
+			return undefined; // {{SQL CARBON EDIT}} strict-null-check
 		}
 
 		const [focused] = this._list!.getFocusedElements();
@@ -769,14 +768,14 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 				await this._loadKernelPreloads(this.activeKernel.extensionLocation, this.activeKernel);
 
 				if (tokenSource.token.isCancellationRequested) {
-					return undefined; // {{ SQL CARBON EDIT }}
+					return undefined; // {{SQL CARBON EDIT}} strict-null-check
 				}
 
 				this._activeKernelResolvePromise = (this.activeKernel as INotebookKernelInfo2).resolve(this.viewModel!.uri, this.getId(), tokenSource.token);
 				await this._activeKernelResolvePromise;
 
 				if (tokenSource.token.isCancellationRequested) {
-					return undefined; // {{ SQL CARBON EDIT }}
+					return undefined; // {{SQL CARBON EDIT}} strict-null-check
 				}
 			}
 
