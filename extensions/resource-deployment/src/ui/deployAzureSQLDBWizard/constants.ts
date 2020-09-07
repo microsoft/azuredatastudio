@@ -25,7 +25,9 @@ export const AzureAccountRegionDropdownLabel = localize('deployAzureSQLVM.AzureR
 // Database settings page constants
 export const DatabaseSettingsPageTitle = localize('deployAzureSQLDB.DatabaseSettingsPageTitle', "Database settings");
 export const DatabaseSettingsPageDescription = localize('deployAzureSQLDB.DatabaseSettingsPageDescription', "");
-export const PublicIPDropdownLabel = localize('deployAzureSQLVM.PublicIPDropdownLabel', "Public IP");
-export const NetworkSettingsNewPublicIp = localize('deployAzureSQLVM.NetworkSettingsUseExistingPublicIp', "New public ip");
+export const PublicIPDropdownLabel = localize('deployAzureSQLDB.PublicIPDropdownLabel', "Public IP");
+export const DatabaseSettingsNewPublicIp = localize('deployAzureSQLDB.DatabaseSettingsNewPublicIp', "New public ip");
+export const FirewallRuleNameLabel = localize('deployAzureSQLDB.FirewallRuleNameLabel', 'Firewall rule name');
+export const DatabaseNameLabel = localize('deployAzureSQLDB.DatabaseNameLabel', 'SQL database name');
 export const StartIpAddressLabel = localize('deployAzureSQLDB.StartIpAddressLabel', "Start IP Address");
 export const EndIpAddressLabel = localize('deployAzureSQLDB.EndIpAddressLabel', "End IP Address");

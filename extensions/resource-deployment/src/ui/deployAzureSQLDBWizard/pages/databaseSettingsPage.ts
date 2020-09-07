@@ -16,6 +16,10 @@ export class DatabaseSettingsPage extends BasePage {
 	private _publicIpDropdown!: azdata.DropDownComponent;
 	private _publicIpDropdownLoader!: azdata.LoadingComponent;
 	private _publicIpNetworkText!: azdata.InputBoxComponent;
+	private _firewallRuleNameTextbox!: azdata.InputBoxComponent;
+	private _firewallRuleNameTextRow!: azdata.FlexContainer;
+	private _databaseNameTextbox!: azdata.InputBoxComponent;
+	private _databaseNameTextRow!: azdata.FlexContainer;
 
 	private _form!: azdata.FormContainer;
 
@@ -30,13 +34,21 @@ export class DatabaseSettingsPage extends BasePage {
 	public async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 			await Promise.all([
-				this.createPublicIPDropdown(view)
+				this.createPublicIPDropdown(view),
+				this.createFirewallNameText(view),
+				this.createDatabaseNameText(view)
 			]);
 			this._form = view.modelBuilder.formContainer()
 				.withFormItems(
 					[
 						{
 							component: this.wizard.createFormRowComponent(view, constants.PublicIPDropdownLabel, '', this._publicIpFlexContainer, true)
+						},
+						{
+							component: this._firewallRuleNameTextRow
+						},
+						{
+							component: this._databaseNameTextRow
 						}
 					],
 					{
@@ -76,7 +88,7 @@ export class DatabaseSettingsPage extends BasePage {
 	private async createPublicIPDropdown(view: azdata.ModelView) {
 
 		this._newPublicIpCheckbox = view.modelBuilder.checkBox().withProperties(<azdata.CheckBoxProperties>{
-			label: constants.NetworkSettingsNewPublicIp,
+			label: constants.DatabaseSettingsNewPublicIp,
 			checked: false
 		}).component();
 
@@ -177,8 +189,35 @@ export class DatabaseSettingsPage extends BasePage {
 		return dropdownValues;
 	}
 
+
+	private createFirewallNameText(view: azdata.ModelView) {
+
+		this._firewallRuleNameTextbox = view.modelBuilder.inputBox().component();
+
+		this._firewallRuleNameTextRow = this.wizard.createFormRowComponent(view, constants.FirewallRuleNameLabel, '', this._firewallRuleNameTextbox, true);
+
+		this._firewallRuleNameTextbox.onTextChanged((value) => {
+			this.wizard.model.firewallRuleName = value;
+			this.liveFormValidation();
+		});
+	}
+
+	private createDatabaseNameText(view: azdata.ModelView) {
+
+		this._databaseNameTextbox = view.modelBuilder.inputBox().component();
+
+		this._databaseNameTextRow = this.wizard.createFormRowComponent(view, constants.DatabaseNameLabel, '', this._databaseNameTextbox, true);
+
+		this._databaseNameTextbox.onTextChanged((value) => {
+			this.wizard.model.databaseName = value;
+			this.liveFormValidation();
+		});
+	}
+
 	protected formValidation(): string {
 		let errorMessage = [];
+		let firewallname = this._firewallRuleNameTextbox.value!;
+		let databasename = this._databaseNameTextbox.value!;
 
 		if (this.wizard.model.newPublicIp === 'True') {
 			if (this.wizard.model.startIpAddress.length < 1 || this.wizard.model.startIpAddress.length > 80
@@ -189,6 +228,22 @@ export class DatabaseSettingsPage extends BasePage {
 			if (this.wizard.model.startIpAddress === 'None' || this.wizard.model.startIpAddress === 'None') {
 				errorMessage.push('Create a new new public Ip');
 			}
+		}
+
+		if (firewallname.length < 2 || firewallname.length > 128) {
+			errorMessage.push('Firewall name must be between 2 and 128 characters long.');
+		}
+
+		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(firewallname)) {
+			errorMessage.push('Firewall name cannot contain special characters \/""[]:|<>+=;,?* .');
+		}
+
+		if (databasename.length < 2 || databasename.length > 128) {
+			errorMessage.push('Database name must be between 2 and 128 characters long.');
+		}
+
+		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(databasename)) {
+			errorMessage.push('Database name cannot contain special characters \/""[]:|<>+=;,?* .');
 		}
 
 		this.wizard.showErrorMessage(errorMessage.join('\n'));

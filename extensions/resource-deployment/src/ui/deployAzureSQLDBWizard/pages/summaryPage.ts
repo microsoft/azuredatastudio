@@ -84,6 +84,43 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 			]
 		};
 
+		const databaseSettingSection: SectionInfo = {
+			labelPosition: LabelPosition.Left,
+			labelWidth: '150px',
+			inputWidth: '200px',
+			title: constants.DatabaseSettingsPageTitle,
+			rows: [
+				{
+					items: [
+						{
+							type: FieldType.ReadonlyText,
+							label: constants.PublicIPDropdownLabel,
+							defaultValue: ((model.newPublicIp === 'True' ? '(new) ' : '') + this.processPublicIp()),
+							labelCSSStyles: { fontWeight: FontWeight.Bold }
+						}
+					]
+				},
+				{
+					items: [
+						{
+							type: FieldType.ReadonlyText,
+							label: constants.FirewallRuleNameLabel,
+							defaultValue: model.firewallRuleName,
+							labelCSSStyles: { fontWeight: FontWeight.Bold }
+						},
+						{
+							type: FieldType.ReadonlyText,
+							label: constants.DatabaseNameLabel,
+							defaultValue: model.databaseName,
+							labelCSSStyles: { fontWeight: FontWeight.Bold }
+						}
+					]
+
+				}
+			]
+		};
+
+
 		const createSectionFunc = async (sectionInfo: SectionInfo): Promise<azdata.FormComponent> => {
 			return {
 				title: '',
@@ -101,9 +138,9 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 		};
 
 		const azureSection = await createSectionFunc(auzreSettingSection);
+		const databaseSection = await createSectionFunc(databaseSettingSection);
 
-
-		this.formItems.push(azureSection);
+		this.formItems.push(azureSection, databaseSection);
 		this._form.addFormItems(this.formItems);
 
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
@@ -146,5 +183,15 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 			.component();
 
 		return flexContainer;
+	}
+
+	public processPublicIp(): string {
+		if (this.wizard.model.newPublicIp === 'True') {
+			return this.wizard.model.startIpAddress;
+		}
+
+		let resourceGroupName = this.wizard.model.startIpAddress.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
+		let pipName = this.wizard.model.startIpAddress.replace(RegExp('^(.*?)/publicIPAddresses/'), '');
+		return `(${resourceGroupName}) ${pipName}`;
 	}
 }
