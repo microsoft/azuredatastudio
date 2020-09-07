@@ -302,7 +302,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					repl.setAttribute('data-markjs', 'true');
 					repl.textContent = node.textContent;
 					repl.setAttribute('class', 'rangeHighlight');
-					// DOM.addClass(repl, 'rangeHighlight');
 					node.parentNode.replaceChild(repl, node);
 				});
 				ele.scrollIntoView({ behavior: 'smooth' });
