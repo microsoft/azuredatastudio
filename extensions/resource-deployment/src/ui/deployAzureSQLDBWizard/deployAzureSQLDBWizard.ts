@@ -57,7 +57,6 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 	}
 
 	private async scriptToNotebook(): Promise<void> {
-		this.setEnvironmentVariables(process.env);
 		const variableValueStatements = this.model.getCodeCellContentForNotebook();
 		const insertionPosition = 2; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
 		try {
@@ -67,10 +66,6 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 		}
 	}
 
-	private setEnvironmentVariables(env: NodeJS.ProcessEnv): void {
-		// env['AZDATA_NB_VAR_AZURE_SQLDB_PASSWORD'] = this.model.vmPassword;
-		// env['AZDATA_NB_VAR_AZURE_SQLDB_SQL_PASSWORD'] = this.model.sqlAuthenticationPassword;
-	}
 
 	public async getRequest(url: string): Promise<any> {
 		let token = this.model.securityToken.token;
@@ -154,42 +149,5 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 			text: message,
 			level: azdata.window.MessageLevel.Error
 		};
-	}
-
-	public validatePassword(password: string): string {
-		/**
-		 * 1. Password length should be between 12 and 123.
-		 * 2. Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.
-		 */
-
-		let errorMessage = '';
-
-		if (password.length < 12 || password.length > 123) {
-			errorMessage += 'Password must be between 12 and 123 characters long.\n';
-		}
-
-		let charTypeCounter = 0;
-
-		if (new RegExp('.*[a-z].*').test(password)) {
-			charTypeCounter++;
-		}
-
-		if (new RegExp('.*[A-Z].*').test(password)) {
-			charTypeCounter++;
-		}
-
-		if (new RegExp('.*[0-9].*').test(password)) {
-			charTypeCounter++;
-		}
-
-		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password)) {
-			charTypeCounter++;
-		}
-
-		if (charTypeCounter < 3) {
-			errorMessage += 'Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.\n';
-		}
-
-		return errorMessage;
 	}
 }
