@@ -259,9 +259,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 			this._layoutEmitter.fire();
 		}));
-		// this._register(this.cellModel.onCellTextViewChanged((e) => {
-		// 	this._layoutEmitter.fire();
-		// }));
 
 		this.layout();
 
@@ -290,7 +287,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	/// Editor Functions
-	public updateModel() {
+	private updateModel() {
 		if (this._editorModel) {
 			let cellModelSource: string;
 			cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;

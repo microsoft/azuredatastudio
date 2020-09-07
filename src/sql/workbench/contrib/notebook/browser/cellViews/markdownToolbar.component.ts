@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { TransformMarkdownAction, MarkdownButtonType, ToggleMarkdownViewAction, ToggleSplitViewAction, TogglePreviewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
+import { TransformMarkdownAction, MarkdownButtonType, ToggleViewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 
@@ -39,10 +39,8 @@ export class MarkdownToolbarComponent {
 	public optionParagraph = localize('optionParagraph', "Paragraph");
 
 	public textViewButton = localize('textViewButton', "View as Text");
-	public splitViewButton = localize('splitViewButton', "View splitview");
+	public splitViewButton = localize('splitViewButton', "View as Split");
 	public markdownButton = localize('markdownButton', "View as Markdown");
-
-
 
 	@Input() public cellModel: ICellModel;
 	private _actionBar: Taskbar;
@@ -76,9 +74,9 @@ export class MarkdownToolbarComponent {
 		let heading3 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading3', this.optionHeading3, 'heading 3', this.optionHeading3, this.cellModel, MarkdownButtonType.HEADING3);
 		let paragraph = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.paragraph', this.optionParagraph, 'paragraph', this.optionParagraph, this.cellModel, MarkdownButtonType.PARAGRAPH);
 
-		this._toggleTextViewAction = this._instantiationService.createInstance(TogglePreviewAction, 'notebook.toggleTextView', '', 'masked-icon show-text active', this.textViewButton);
-		this._toggleSplitViewAction = this._instantiationService.createInstance(ToggleSplitViewAction, 'notebook.toggleSplitView', '', 'masked-icon split-toggle-on', this.splitViewButton);
-		this._toggleMarkdownViewAction = this._instantiationService.createInstance(ToggleMarkdownViewAction, 'notebook.toggleMarkdownView', '', 'masked-icon show-markdown', this.markdownButton);
+		this._toggleTextViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleTextView', '', 'masked-icon show-text active', this.textViewButton, true, false);
+		this._toggleSplitViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleSplitView', '', 'masked-icon split-toggle-on', this.splitViewButton, true, true);
+		this._toggleMarkdownViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleMarkdownView', '', 'masked-icon show-markdown', this.markdownButton, false, true);
 
 		let taskbar = <HTMLElement>this.mdtoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);

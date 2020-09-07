@@ -83,7 +83,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownRenderer: NotebookMarkdownRenderer;
 	private markdownResult: IMarkdownRenderResult;
 	public previewFeaturesEnabled: boolean = false;
-	public turnDownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-' }).keep('u');
+	private turndownService;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -92,13 +92,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
-		this.turnDownService.use(turndownPluginGfm.gfm);
-		this.turnDownService.addRule('pre', {
-			filter: 'pre',
-			replacement: function (content, node) {
-				return '\n```\n' + node.textContent + '\n```\n';
-			}
-		});
+		this.setTurndownOptions();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
@@ -228,7 +222,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private updateCellSource(): void {
 		let textOutputElement = <HTMLElement>this.output.nativeElement;
-		let newCellSource: string = this.turnDownService.turndown(textOutputElement.innerHTML, { gfm: true });
+		let newCellSource: string = this.turndownService.turndown(textOutputElement.innerHTML, { gfm: true });
 		this.cellModel.source = newCellSource;
 		this._changeRef.detectChanges();
 	}
@@ -288,7 +282,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public set markdownMode(value: boolean) {
 		if (this._markdownMode !== value) {
 			this._markdownMode = value;
-			// this.updatePreview();
 			this._changeRef.detectChanges();
 		}
 	}
@@ -322,8 +315,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
-	public isActive(): boolean {
-		return this.cellModel && !!this.cellModel.active;
+	protected isActive(): boolean {
+		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
 
 	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
@@ -405,5 +398,32 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 		});
 		return textOutput;
+	}
+
+	private setTurndownOptions() {
+		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-' });
+		this.turndownService.keep(['u', 'mark']);
+		this.turndownService.use(turndownPluginGfm.gfm);
+		this.turndownService.addRule('pre', {
+			filter: 'pre',
+			replacement: function (content, node) {
+				return '\n```\n' + node.textContent + '\n```\n';
+			}
+		});
+		this.turndownService.addRule('span', {
+			filter: function (node, options) {
+				return (
+					node.nodeName === 'MARK' ||
+					(node.nodeName === 'SPAN' &&
+						node.getAttribute('style') === 'background-color: yellow;')
+				);
+			},
+			replacement: function (content, node) {
+				if (node.nodeName === 'SPAN') {
+					return '<mark>' + node.textContent + '</mark>';
+				}
+				return node.textContent;
+			}
+		});
 	}
 }

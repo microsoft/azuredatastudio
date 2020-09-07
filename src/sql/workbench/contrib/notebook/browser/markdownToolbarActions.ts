@@ -14,8 +14,6 @@ import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryText
 import { Selection } from 'vs/editor/common/core/selection';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
-import { SelectImageDialog } from 'sql/workbench/contrib/notebook/browser/selectImageDialog';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
 
 
@@ -28,20 +26,19 @@ export class TransformMarkdownAction extends Action {
 		tooltip: string,
 		private _cellModel: ICellModel,
 		private _type: MarkdownButtonType,
-		@INotebookService private _notebookService: INotebookService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@INotebookService private _notebookService: INotebookService
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
 	}
 	public run(context: any): Promise<boolean> {
-		return new Promise<boolean>(async (resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			try {
 				if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
-					this.executeDocumentCommand();
+					this.transformDocumentCommand();
 				} else {
-					let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel, this._instantiationService);
-					await markdownTextTransformer.transformText(this._type);
+					let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel);
+					markdownTextTransformer.transformText(this._type);
 				}
 				resolve(true);
 			} catch (e) {
@@ -50,7 +47,7 @@ export class TransformMarkdownAction extends Action {
 		});
 	}
 
-	private executeDocumentCommand() {
+	private transformDocumentCommand() {
 		switch (this._type) {
 			case MarkdownButtonType.BOLD:
 				document.execCommand('bold');
@@ -68,23 +65,16 @@ export class TransformMarkdownAction extends Action {
 				document.execCommand('formatBlock', false, 'H3');
 				break;
 			case MarkdownButtonType.HIGHLIGHT:
-				// The following doesn't work and requires investigation
-				// document.execCommand('formatBlock', false, 'MARK');
-
-				// Can probably use window.getSelection and then do a
-				// document.execCommand('insertHTML', false, '<mark>' + window.getSelection() + '</mark>' worst case
-
-				// For now, let's just test undo
-				document.execCommand('undo');
+				document.execCommand('hiliteColor', false, 'Yellow');
 				break;
 			case MarkdownButtonType.IMAGE:
-				document.execCommand('bold');
+				// TODO
 				break;
 			case MarkdownButtonType.ITALIC:
 				document.execCommand('italic');
 				break;
 			case MarkdownButtonType.LINK:
-				document.execCommand('createLink');
+				document.execCommand('createLink', false, window.getSelection()?.focusNode?.textContent);
 				break;
 			case MarkdownButtonType.ORDERED_LIST:
 				document.execCommand('insertOrderedList');
@@ -104,22 +94,18 @@ export class TransformMarkdownAction extends Action {
 
 export class MarkdownTextTransformer {
 
-	private _selectImageDialog: SelectImageDialog;
-
 	constructor(
 		private _notebookService: INotebookService,
 		private _cellModel: ICellModel,
-		private _instantiationService: IInstantiationService,
 		private _notebookEditor?: INotebookEditor) { }
 
 	public get notebookEditor(): INotebookEditor {
 		return this._notebookEditor;
 	}
 
-	public async transformText(type: MarkdownButtonType): Promise<void> {
+	public transformText(type: MarkdownButtonType): void {
 		let editorControl = this.getEditorControl();
 		if (editorControl) {
-
 			let selections = editorControl.getSelections();
 			// TODO: Support replacement for multiple selections
 			let selection = selections[0];
@@ -131,19 +117,8 @@ export class MarkdownTextTransformer {
 				endLineNumber: selection.startLineNumber
 			};
 
-			let beginInsertedText: string;
-			let endInsertedText: string;
-			if (type === MarkdownButtonType.IMAGE) {
-				if (!this._selectImageDialog) {
-					this._selectImageDialog = this._instantiationService.createInstance(SelectImageDialog);
-					this._selectImageDialog.render();
-				}
-				let selectImageOptions = await this._selectImageDialog.open();
-				beginInsertedText = selectImageOptions.imageHtml;
-			} else {
-				beginInsertedText = getStartTextToInsert(type);
-				endInsertedText = getEndTextToInsert(type);
-			}
+			let beginInsertedText = getStartTextToInsert(type);
+			let endInsertedText = getEndTextToInsert(type);
 
 			let endRange: IRange = {
 				startColumn: selection.endColumn,
@@ -548,12 +523,14 @@ function getColumnOffsetForSelection(type: MarkdownButtonType, nothingSelected: 
 	}
 }
 
-export class ToggleMarkdownViewAction extends Action {
+export class ToggleViewAction extends Action {
 	constructor(
 		id: string,
 		label: string,
 		cssClass: string,
-		tooltip: string
+		tooltip: string,
+		private showPreview: boolean,
+		private showMarkdown: boolean
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
@@ -562,45 +539,45 @@ export class ToggleMarkdownViewAction extends Action {
 	public async run(context: MarkdownToolbarComponent): Promise<boolean> {
 		context.removeActiveClassFromModeActions();
 		this.class += ' active';
-		context.cellModel.showPreview = false;
-		context.cellModel.showMarkdown = true;
+		context.cellModel.showPreview = this.showPreview;
+		context.cellModel.showMarkdown = this.showMarkdown;
 		return true;
 	}
 }
 
-export class ToggleSplitViewAction extends Action {
-	constructor(
-		id: string,
-		label: string,
-		cssClass: string,
-		tooltip: string
-	) {
-		super(id, label, cssClass);
-		this._tooltip = tooltip;
-	}
-	public async run(context: MarkdownToolbarComponent): Promise<boolean> {
-		context.removeActiveClassFromModeActions();
-		this.class += ' active';
-		context.cellModel.showPreview = true;
-		context.cellModel.showMarkdown = true;
-		return true;
-	}
-}
-export class TogglePreviewAction extends Action {
-	constructor(
-		id: string,
-		label: string,
-		cssClass: string,
-		tooltip: string
-	) {
-		super(id, label, cssClass);
-		this._tooltip = tooltip;
-	}
-	public async run(context: MarkdownToolbarComponent): Promise<boolean> {
-		context.removeActiveClassFromModeActions();
-		this.class += ' active';
-		context.cellModel.showPreview = true;
-		context.cellModel.showMarkdown = false;
-		return true;
-	}
-}
+// export class ToggleSplitViewAction extends Action {
+// 	constructor(
+// 		id: string,
+// 		label: string,
+// 		cssClass: string,
+// 		tooltip: string
+// 	) {
+// 		super(id, label, cssClass);
+// 		this._tooltip = tooltip;
+// 	}
+// 	public async run(context: MarkdownToolbarComponent): Promise<boolean> {
+// 		context.removeActiveClassFromModeActions();
+// 		this.class += ' active';
+// 		context.cellModel.showPreview = true;
+// 		context.cellModel.showMarkdown = true;
+// 		return true;
+// 	}
+// }
+// export class TogglePreviewAction extends Action {
+// 	constructor(
+// 		id: string,
+// 		label: string,
+// 		cssClass: string,
+// 		tooltip: string
+// 	) {
+// 		super(id, label, cssClass);
+// 		this._tooltip = tooltip;
+// 	}
+// 	public async run(context: MarkdownToolbarComponent): Promise<boolean> {
+// 		context.removeActiveClassFromModeActions();
+// 		this.class += ' active';
+// 		context.cellModel.showPreview = true;
+// 		context.cellModel.showMarkdown = false;
+// 		return true;
+// 	}
+// }

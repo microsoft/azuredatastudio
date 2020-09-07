@@ -8,6 +8,7 @@ text-cell-component {
 }
 text-cell-component .notebook-text {
 	display: flex;
+	outline: none;
 }
 text-cell-component code-component {
 	flex-direction: column;
@@ -18,6 +19,7 @@ text-cell-component .notebook-preview {
 	padding-right: 8px;
 	user-select: none;
 	width: 100%;
+	outline: none;
 }
 text-cell-component .show-markdown.show-preview code-component {
 	width: 50%

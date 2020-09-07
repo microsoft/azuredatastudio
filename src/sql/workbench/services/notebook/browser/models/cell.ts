@@ -330,9 +330,7 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._cellSourceChanged;
 	}
 	public set cellSourceChanged(val: boolean) {
-		if (val !== this._cellSourceChanged) {
-			this._cellSourceChanged = val;
-		}
+		this._cellSourceChanged = val;
 	}
 
 	public get onCellPreviewModeChanged(): Event<boolean> {
