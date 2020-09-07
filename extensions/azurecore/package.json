@@ -179,14 +179,14 @@
         {
           "id": "azureResourceExplorer_dialog",
           "name": "%azure.resource.explorer.title%",
-          "when": "config.workbench.enablePreviewFeatures"
+          "when": "config.connection.dialog.browse"
         }
       ],
       "dataExplorer": [
         {
           "id": "azureResourceExplorer",
           "name": "%azure.resource.explorer.title%",
-          "when": "!config.workbench.enablePreviewFeatures"
+          "when": "!config.connection.dialog.browse"
         }
       ]
     },

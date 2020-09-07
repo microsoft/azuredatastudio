@@ -5,14 +5,15 @@
 
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
-import * as vscode from 'vscode';
-import * as loc from '../../../localizedConstants';
 import * as azurecore from 'azurecore';
-import { DashboardPage } from '../../components/dashboardPage';
-import { IconPathHelper, cssStyles, Endpoints, ResourceType } from '../../../constants';
-import { ControllerModel } from '../../../models/controllerModel';
+import * as vscode from 'vscode';
 import { getDatabaseStateDisplayText, promptForResourceDeletion } from '../../../common/utils';
+import { cssStyles, Endpoints, IconPathHelper } from '../../../constants';
+import * as loc from '../../../localizedConstants';
+import { ControllerModel } from '../../../models/controllerModel';
 import { MiaaModel } from '../../../models/miaaModel';
+import { DashboardPage } from '../../components/dashboardPage';
+import { ResourceType } from 'arc';
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
 
@@ -50,7 +51,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
 		this.disposables.push(
 			this._controllerModel.onRegistrationsUpdated(() => this.handleRegistrationsUpdated()),
-			this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated())),
+			this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshDashboardLinks())),
 			this._miaaModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleMiaaConfigUpdated())),
 			this._miaaModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated()))
 		);
@@ -114,7 +115,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		// Update loaded components with data
 		this.handleRegistrationsUpdated();
 		this.handleMiaaConfigUpdated();
-		this.handleEndpointsUpdated();
+		this.refreshDashboardLinks();
 		this.handleDatabasesUpdated();
 
 		// Assign the loading component after it has data
@@ -277,23 +278,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		}
 
 		this.refreshDisplayedProperties();
-	}
-
-	private handleEndpointsUpdated(): void {
-		const kibanaEndpoint = this._controllerModel.getEndpoint(Endpoints.logsui);
-		const kibanaQuery = `kubernetes_namespace:"${this._miaaModel.config?.metadata.namespace}" and instance_name :"${this._miaaModel.config?.metadata.name}"`;
-		const kibanaUrl = kibanaEndpoint ? `${kibanaEndpoint.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))` : '';
-		this._kibanaLink.label = kibanaUrl;
-		this._kibanaLink.url = kibanaUrl;
-
-		const grafanaEndpoint = this._controllerModel.getEndpoint(Endpoints.metricsui);
-		const grafanaQuery = `var-hostname=${this._miaaModel.info.name}-0`;
-		const grafanaUrl = grafanaEndpoint ? `${grafanaEndpoint.endpoint}/d/wZx3OUdmz/azure-sql-db-managed-instance-metrics?${grafanaQuery}` : '';
-		this._grafanaLink.label = grafanaUrl;
-		this._grafanaLink.url = grafanaUrl;
-
-		this._kibanaLoading!.loading = !this._controllerModel.endpointsLastUpdated;
-		this._grafanaLoading!.loading = !this._controllerModel.endpointsLastUpdated;
+		this.refreshDashboardLinks();
 	}
 
 	private handleDatabasesUpdated(): void {
@@ -344,5 +329,25 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			!this._controllerModel.registrationsLastUpdated &&
 			!this._miaaModel.configLastUpdated &&
 			!this._miaaModel.databasesLastUpdated;
+	}
+
+	private refreshDashboardLinks(): void {
+		const kibanaEndpoint = this._controllerModel.getEndpoint(Endpoints.logsui);
+		if (kibanaEndpoint && this._miaaModel.config) {
+			const kibanaQuery = `kubernetes_namespace:"${this._miaaModel.config.metadata.namespace}" and custom_resource_name :"${this._miaaModel.config.metadata.name}"`;
+			const kibanaUrl = `${kibanaEndpoint.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
+			this._kibanaLink.label = kibanaUrl;
+			this._kibanaLink.url = kibanaUrl;
+			this._kibanaLoading!.loading = false;
+		}
+
+		const grafanaEndpoint = this._controllerModel.getEndpoint(Endpoints.metricsui);
+		if (grafanaEndpoint && this._miaaModel.config) {
+			const grafanaQuery = `var-hostname=${this._miaaModel.info.name}-0`;
+			const grafanaUrl = grafanaEndpoint ? `${grafanaEndpoint.endpoint}/d/40q72HnGk/sql-managed-instance-metrics?${grafanaQuery}` : '';
+			this._grafanaLink.label = grafanaUrl;
+			this._grafanaLink.url = grafanaUrl;
+			this._grafanaLoading!.loading = false;
+		}
 	}
 }

@@ -3,12 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ControllerInfo } from 'arc';
 import * as should from 'should';
 import * as sinon from 'sinon';
-import { ControllerInfo, ControllerModel } from '../../../models/controllerModel';
-import { ConnectToControllerDialog } from '../../../ui/dialogs/connectControllerDialog';
-import * as loc from '../../../localizedConstants';
 import { v4 as uuid } from 'uuid';
+import * as loc from '../../../localizedConstants';
+import { ControllerModel } from '../../../models/controllerModel';
+import { ConnectToControllerDialog } from '../../../ui/dialogs/connectControllerDialog';
 
 describe('ConnectControllerDialog', function (): void {
 	afterEach(function (): void {

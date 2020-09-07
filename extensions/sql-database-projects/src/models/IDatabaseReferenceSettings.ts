@@ -7,7 +7,8 @@ import { DatabaseReferenceLocation, SystemDatabase } from './project';
 import { Uri } from 'vscode';
 
 export interface IDatabaseReferenceSettings {
-	databaseName: string;
+	databaseName?: string;
+	suppressMissingDependenciesErrors: boolean;
 }
 
 export interface ISystemDatabaseReferenceSettings extends IDatabaseReferenceSettings {

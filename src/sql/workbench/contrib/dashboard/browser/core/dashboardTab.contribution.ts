@@ -161,7 +161,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 
 	for (const extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray<IDashboardTabContrib>(value)) {
+		if (Array.isArray(value)) {
 			for (const command of value) {
 				handleTab(command, extension);
 			}
@@ -215,7 +215,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 
 	for (const extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray<IDashboardTabGroupContrib>(value)) {
+		if (Array.isArray(value)) {
 			for (const command of value) {
 				handleTabGroup(command, extension);
 			}

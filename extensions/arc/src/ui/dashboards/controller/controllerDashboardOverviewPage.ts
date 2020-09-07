@@ -3,14 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ResourceType } from 'arc';
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as azurecore from 'azurecore';
+import * as vscode from 'vscode';
+import { getConnectionModeDisplayText, getResourceTypeIcon, parseInstanceName, resourceTypeToDisplayName } from '../../../common/utils';
+import { cssStyles, Endpoints, IconPathHelper, iconSize } from '../../../constants';
 import * as loc from '../../../localizedConstants';
-import { DashboardPage } from '../../components/dashboardPage';
-import { IconPathHelper, cssStyles, iconSize, ResourceType, Endpoints } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
-import { resourceTypeToDisplayName, getResourceTypeIcon, parseInstanceName, getConnectionModeDisplayText } from '../../../common/utils';
+import { DashboardPage } from '../../components/dashboardPage';
 
 export class ControllerDashboardOverviewPage extends DashboardPage {
 
@@ -218,16 +219,26 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 						iconHeight: iconSize,
 						iconWidth: iconSize
 					}).component();
-				const nameLink = this.modelView.modelBuilder.hyperlink()
-					.withProperties<azdata.HyperlinkComponentProperties>({
-						label: r.instanceName || '',
-						url: ''
-					}).component();
-				nameLink.onDidClick(async () => {
-					await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', parseInstanceName(r.instanceName));
-				});
+				let nameComponent: azdata.Component;
+				if (r.instanceType === ResourceType.postgresInstances) {
+					nameComponent = this.modelView.modelBuilder.text()
+						.withProperties<azdata.TextComponentProperties>({
+							value: r.instanceName || '',
+							CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+						}).component();
+				} else {
+					nameComponent = this.modelView.modelBuilder.hyperlink()
+						.withProperties<azdata.HyperlinkComponentProperties>({
+							label: r.instanceName || '',
+							url: ''
+						}).component();
+					(<azdata.HyperlinkComponent>nameComponent).onDidClick(async () => {
+						await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', parseInstanceName(r.instanceName));
+					});
+				}
+
 				// TODO chgagnon
-				return [imageComponent, nameLink, resourceTypeToDisplayName(r.instanceType), '-'/* loc.numVCores(r.vCores) */];
+				return [imageComponent, nameComponent, resourceTypeToDisplayName(r.instanceType), '-'/* loc.numVCores(r.vCores) */];
 			});
 		this._arcResourcesLoadingComponent.loading = !this._controllerModel.registrationsLastUpdated;
 	}

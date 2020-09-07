@@ -15,7 +15,7 @@ export interface DbServerGraphData extends GraphData {
 	};
 }
 
-export const serversQuery = 'where type == "microsoft.sql/servers"';
+export const serversQuery = `where type == "${azureResource.AzureResourceType.sqlServer}"`;
 
 export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceDatabaseServer> {
 
@@ -30,6 +30,7 @@ export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbSe
 			fullName: resource.properties.fullyQualifiedDomainName,
 			loginName: resource.properties.administratorLogin,
 			defaultDatabaseName: 'master',
+			subscriptionId: resource.subscriptionId,
 			tenant: resource.tenantId
 		};
 	}

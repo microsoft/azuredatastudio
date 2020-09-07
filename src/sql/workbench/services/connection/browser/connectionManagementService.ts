@@ -1372,7 +1372,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return credentials;
 	}
 
-	public getServerInfo(profileId: string): azdata.ServerInfo {
+	public getServerInfo(profileId: string): azdata.ServerInfo | undefined {
 		let profile = this._connectionStatusManager.findConnectionByProfileId(profileId);
 		if (!profile) {
 			return undefined;

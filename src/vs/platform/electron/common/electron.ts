@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Event } from 'vs/base/common/event';
-import { MessageBoxOptions, MessageBoxReturnValue, OpenDevToolsOptions, SaveDialogOptions, OpenDialogOptions, OpenDialogReturnValue, SaveDialogReturnValue, CrashReporterStartOptions, MouseInputEvent } from 'vs/base/parts/sandbox/common/electronTypes';
+import { MessageBoxOptions, MessageBoxReturnValue, OpenDevToolsOptions, SaveDialogOptions, OpenDialogOptions, OpenDialogReturnValue, SaveDialogReturnValue, MouseInputEvent } from 'vs/base/parts/sandbox/common/electronTypes';
 import { IOpenedWindow, IWindowOpenable, IOpenEmptyWindowOptions, IOpenWindowOptions } from 'vs/platform/windows/common/windows';
 import { INativeOpenDialogOptions } from 'vs/platform/dialogs/common/dialogs';
 import { ISerializableCommandAction } from 'vs/platform/actions/common/actions';
@@ -44,7 +44,15 @@ export interface ICommonElectronService {
 	unmaximizeWindow(): Promise<void>;
 	minimizeWindow(): Promise<void>;
 
-	focusWindow(options?: { windowId?: number }): Promise<void>;
+	/**
+	 * Make the window focused.
+	 *
+	 * @param options Pass `force: true` if you want to make the window take
+	 * focus even if the application does not have focus currently. This option
+	 * should only be used if it is necessary to steal focus from the current
+	 * focused application which may not be VSCode.
+	 */
+	focusWindow(options?: { windowId?: number, force?: boolean }): Promise<void>;
 
 	// Dialogs
 	showMessageBox(options: MessageBoxOptions): Promise<MessageBoxReturnValue>;
@@ -98,7 +106,6 @@ export interface ICommonElectronService {
 	// Development
 	openDevTools(options?: OpenDevToolsOptions): Promise<void>;
 	toggleDevTools(): Promise<void>;
-	startCrashReporter(options: CrashReporterStartOptions): Promise<void>;
 	sendInputEvent(event: MouseInputEvent): Promise<void>;
 
 	// Connectivity

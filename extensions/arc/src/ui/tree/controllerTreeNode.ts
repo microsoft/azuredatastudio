@@ -3,20 +3,20 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ResourceInfo, ResourceType } from 'arc';
 import * as vscode from 'vscode';
-import { TreeNode } from './treeNode';
-import { MiaaTreeNode } from './miaaTreeNode';
-import { ResourceType } from '../../constants';
-import { PostgresTreeNode } from './postgresTreeNode';
-import { ControllerModel, Registration, ResourceInfo } from '../../models/controllerModel';
-import { ControllerDashboard } from '../dashboards/controller/controllerDashboard';
-import { PostgresModel } from '../../models/postgresModel';
 import { parseInstanceName, UserCancelledError } from '../../common/utils';
+import * as loc from '../../localizedConstants';
+import { ControllerModel, Registration } from '../../models/controllerModel';
 import { MiaaModel } from '../../models/miaaModel';
+import { PostgresModel } from '../../models/postgresModel';
+import { ControllerDashboard } from '../dashboards/controller/controllerDashboard';
+import { AzureArcTreeDataProvider } from './azureArcTreeDataProvider';
+import { MiaaTreeNode } from './miaaTreeNode';
+import { PostgresTreeNode } from './postgresTreeNode';
 import { RefreshTreeNode } from './refreshTreeNode';
 import { ResourceTreeNode } from './resourceTreeNode';
-import { AzureArcTreeDataProvider } from './azureArcTreeDataProvider';
-import * as loc from '../../localizedConstants';
+import { TreeNode } from './treeNode';
 
 /**
  * The TreeNode for displaying an Azure Arc Controller
@@ -29,6 +29,9 @@ export class ControllerTreeNode extends TreeNode {
 		super(model.label, vscode.TreeItemCollapsibleState.Collapsed, ResourceType.dataControllers);
 		model.onInfoUpdated(_ => {
 			this.label = model.label;
+		});
+		model.onRegistrationsUpdated(registrations => {
+			this.updateChildren(registrations);
 		});
 	}
 

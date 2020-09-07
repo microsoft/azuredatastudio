@@ -139,7 +139,9 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		id: commands.OE_SCRIPT_AS_EXECUTE_COMMAND_ID,
 		title: localize('scriptExecute', "Script as Execute")
 	},
-	when: ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('MSSQL'), TreeNodeContextKey.NodeType.isEqualTo('StoredProcedure'))
+	when: ContextKeyExpr.or(
+		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('MSSQL'), TreeNodeContextKey.NodeType.isEqualTo('StoredProcedure')),
+		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('KUSTO'), TreeNodeContextKey.NodeType.isEqualTo('Function')))
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
@@ -169,6 +171,10 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 			ContextKeyExpr.and(
 				ConnectionContextKey.Provider.isEqualTo('MSSQL'),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.TableValuedFunction)),
+			ContextKeyExpr.and(
+				ConnectionContextKey.Provider.isEqualTo('KUSTO'),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Function)
+			)
 		)
 });
 

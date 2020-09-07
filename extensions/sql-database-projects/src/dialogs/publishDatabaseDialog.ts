@@ -509,7 +509,7 @@ export class PublishDatabaseDialog {
 			ariaLabel: constants.loadProfilePlaceholderText,
 			iconPath: IconPathHelper.folder_blue,
 			height: '16px',
-			width: '15px'
+			width: '16px'
 		}).component();
 
 		loadProfileButton.onDidClick(async () => {

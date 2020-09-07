@@ -24,6 +24,7 @@ import * as nls from 'vscode-nls';
 import { LanguageExtensionService } from './languageExtension/languageExtensionService';
 import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
 import { NotebookConvertService } from './notebookConvert/notebookConvertService';
+import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -163,7 +164,8 @@ function getClientOptions(context: AppContext): ClientOptions {
 			CmsService.asFeature(context),
 			SqlAssessmentService.asFeature(context),
 			NotebookConvertService.asFeature(context),
-			ProfilerFeature
+			ProfilerFeature,
+			SqlMigrationService.asFeature(context),
 		],
 		outputChannel: new CustomOutputChannel()
 	};

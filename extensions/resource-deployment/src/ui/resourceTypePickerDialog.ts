@@ -73,7 +73,16 @@ export class ResourceTypePickerDialog extends DialogBase {
 					return <azdata.RadioCard>{
 						id: resourceType.name,
 						label: resourceType.displayName,
-						icon: resourceType.icon
+						icon: resourceType.icon,
+						descriptions: [
+							{
+								textValue: resourceType.displayName,
+								textStyles: {
+									'font-size': '12px',
+									'font-weight': 700
+								}
+							}
+						]
 					};
 				}),
 				iconHeight: '50px',
@@ -83,7 +92,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				ariaLabel: localize('deploymentDialog.deploymentOptions', "Deployment options"),
 				width: '1100px'
 			}).component();
-			this._toDispose.push(this._cardGroup.onSelectionChanged((cardId: string) => {
+			this._toDispose.push(this._cardGroup.onSelectionChanged(({ cardId }) => {
 				const resourceType = resourceTypes.find(rt => { return rt.name === cardId; });
 				if (resourceType) {
 					this.selectResourceType(resourceType);

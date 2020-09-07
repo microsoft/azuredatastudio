@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ControllerInfo } from 'arc';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { ControllerModel } from '../../models/controllerModel';
 import { ControllerTreeNode } from './controllerTreeNode';
 import { TreeNode } from './treeNode';
-import { ControllerModel, ControllerInfo } from '../../models/controllerModel';
 
 const mementoToken = 'arcControllers';
 
@@ -132,11 +133,10 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 		if (controllerNode) {
 			const resourceNode = controllerNode.getResourceNode(resourceType, name);
 			if (resourceNode) {
-
+				await resourceNode.openDashboard();
 			} else {
 				console.log(`Couldn't find resource node for ${name} (${resourceType})`);
 			}
-			await resourceNode?.openDashboard();
 		} else {
 			console.log('Couldn\'t find controller node for opening dashboard');
 		}
