@@ -6,15 +6,15 @@ import 'vs/css!./media/modelViewEditor';
 
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { EditorOptions } from 'vs/workbench/common/editor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
+import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 
 import { ModelViewInput } from 'sql/workbench/browser/modelComponents/modelViewInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 
-export class ModelViewEditor extends BaseEditor {
+export class ModelViewEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.modelViewEditor';
 
@@ -62,7 +62,7 @@ export class ModelViewEditor extends BaseEditor {
 		}
 	}
 
-	async setInput(input: ModelViewInput, options?: EditorOptions): Promise<void> {
+	async setInput(input: ModelViewInput, options?: EditorOptions, context?: IEditorOpenContext): Promise<void> {
 		if (this.input && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}
@@ -73,7 +73,7 @@ export class ModelViewEditor extends BaseEditor {
 		input.container.style.visibility = 'visible';
 		this._content.setAttribute('aria-flowto', input.container.id);
 
-		await super.setInput(input, options, CancellationToken.None);
+		await super.setInput(input, options, context, CancellationToken.None);
 		this.doUpdateContainer();
 	}
 

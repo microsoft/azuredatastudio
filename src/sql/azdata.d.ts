@@ -322,7 +322,7 @@ declare module 'azdata' {
 	export interface IConnectionProfile extends ConnectionInfo {
 		connectionName?: string;
 		serverName: string;
-		databaseName: string;
+		databaseName?: string;
 		userName: string;
 		password: string;
 		authenticationType: string;
@@ -413,7 +413,7 @@ declare module 'azdata' {
 		/**
 		 * database name
 		 */
-		databaseName: string;
+		databaseName?: string;
 		/**
 		 * user name
 		 */
@@ -749,7 +749,7 @@ declare module 'azdata' {
 	}
 
 	export interface ScriptingParamDetails {
-		filePath: string;
+		filePath?: string;
 		scriptCompatibilityOption: string;
 		targetDatabaseEngineEdition: string;
 		targetDatabaseEngineType: string;
@@ -1879,7 +1879,10 @@ declare module 'azdata' {
 	export interface BackupConfigInfo {
 		recoveryModel: string;
 		defaultBackupFolder: string;
-		backupEncryptors: {};
+		backupEncryptors: {
+			encryptorType: number;
+			encryptorName: string;
+		}[];
 	}
 
 	export interface BackupResponse {
@@ -1901,7 +1904,7 @@ declare module 'azdata' {
 
 	export interface RestoreInfo {
 		options: { [key: string]: any };
-		taskExecutionMode: TaskExecutionMode;
+		taskExecutionMode?: TaskExecutionMode;
 	}
 
 	export interface RestoreDatabaseFileInfo {
@@ -1939,7 +1942,7 @@ declare module 'azdata' {
 		sessionId: string;
 		backupSetsToRestore: DatabaseFileInfo[];
 		canRestore: boolean;
-		errorMessage: string;
+		errorMessage?: string;
 		dbFiles: RestoreDatabaseFileInfo[];
 		databaseNamesFromBackupSets: string[];
 		planDetails: { [key: string]: RestorePlanDetailInfo };
@@ -3037,7 +3040,7 @@ declare module 'azdata' {
 
 	export enum Orientation {
 		Horizontal = 'horizontal',
-		Vertical = 'vertial'
+		Vertical = 'vertical'
 	}
 
 	export interface ToolbarLayout {

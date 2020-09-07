@@ -51,7 +51,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	// initialize client last so we don't have features stuck behind it
 	const server = new KustoServer();
 	context.subscriptions.push(server);
-	await server.start(appContext);
+	await server.start(appContext);		// Commented out until we have Kusto binaries properly setup in Blob location.
 
 	return createKustoApi(appContext);
 }

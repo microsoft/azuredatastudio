@@ -7,8 +7,8 @@ import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 
-import { EditorOptions, EditorInput, IEditorControl, IEditorPane } from 'vs/workbench/common/editor';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorOptions, EditorInput, IEditorControl, IEditorPane, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -41,7 +41,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
  */
-export class EditDataEditor extends BaseEditor {
+export class EditDataEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.editDataEditor';
 
@@ -213,7 +213,7 @@ export class EditDataEditor extends BaseEditor {
 	/**
 	 * Sets the input data for this editor.
 	 */
-	public setInput(newInput: EditDataInput, options?: EditorOptions): Promise<void> {
+	public setInput(newInput: EditDataInput, options?: EditorOptions, context?: IEditorOpenContext): Promise<void> {
 		let oldInput = <EditDataInput>this.input;
 		if (!newInput.setup) {
 			this._initialized = false;
@@ -224,7 +224,7 @@ export class EditDataEditor extends BaseEditor {
 			newInput.setupComplete();
 		}
 
-		return super.setInput(newInput, options, CancellationToken.None)
+		return super.setInput(newInput, options, context, CancellationToken.None)
 			.then(() => this._updateInput(oldInput, newInput, options));
 	}
 
@@ -251,7 +251,7 @@ export class EditDataEditor extends BaseEditor {
 	}
 
 	// PRIVATE METHODS ////////////////////////////////////////////////////////////
-	private _createEditor(editorInput: EditorInput, container: HTMLElement): Promise<BaseEditor> {
+	private _createEditor(editorInput: EditorInput, container: HTMLElement): Promise<EditorPane> {
 		const descriptor = this._editorDescriptorService.getEditor(editorInput);
 		if (!descriptor) {
 			return Promise.reject(new Error(strings.format('Can not find a registered editor for the input {0}', editorInput)));
@@ -493,7 +493,7 @@ export class EditDataEditor extends BaseEditor {
 	 */
 	private _onResultsEditorCreated(resultsEditor: EditDataResultsEditor, resultsInput: EditDataResultsInput, options: EditorOptions): Promise<void> {
 		this._resultsEditor = resultsEditor;
-		return this._resultsEditor.setInput(resultsInput, options);
+		return this._resultsEditor.setInput(resultsInput, options, undefined);
 	}
 
 	/**
@@ -501,7 +501,7 @@ export class EditDataEditor extends BaseEditor {
 	 */
 	private _onSqlEditorCreated(sqlEditor: TextResourceEditor, sqlInput: UntitledTextEditorInput, options: EditorOptions): Thenable<void> {
 		this._sqlEditor = sqlEditor;
-		return this._sqlEditor.setInput(sqlInput, options, CancellationToken.None);
+		return this._sqlEditor.setInput(sqlInput, options, undefined, CancellationToken.None);
 	}
 
 	private _resizeGridContents(): void {

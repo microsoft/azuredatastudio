@@ -211,8 +211,8 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	public $setWizardPage(wizardHandle: number, pageIndex: number): Thenable<void> {
 		let wizard = this.getWizard(wizardHandle);
-		wizard.setCurrentPage(pageIndex);
-		return Promise.resolve();
+		const modal = this._dialogService.getWizardModal(wizard);
+		return modal.showPage(pageIndex);
 	}
 
 	public $openWizard(handle: number): Thenable<void> {

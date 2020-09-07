@@ -3,14 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import * as should from 'should';
+import { ResourceType } from 'arc';
 import 'mocha';
-import { resourceTypeToDisplayName, parseEndpoint, parseInstanceName, getAzurecoreApi, getResourceTypeIcon, getConnectionModeDisplayText, getDatabaseStateDisplayText, promptForResourceDeletion, promptAndConfirmPassword, getErrorMessage, parseIpAndPort } from '../../common/utils';
-
+import * as should from 'should';
+import * as vscode from 'vscode';
+import { getAzurecoreApi, getConnectionModeDisplayText, getDatabaseStateDisplayText, getErrorMessage, getResourceTypeIcon, parseEndpoint, parseInstanceName, parseIpAndPort, promptAndConfirmPassword, promptForResourceDeletion, resourceTypeToDisplayName } from '../../common/utils';
+import { ConnectionMode as ConnectionMode, IconPathHelper } from '../../constants';
 import * as loc from '../../localizedConstants';
-import { ResourceType, IconPathHelper, ConnectionMode as ConnectionMode } from '../../constants';
 import { MockInputBox } from '../stubs';
+
 
 describe('resourceTypeToDisplayName Method Tests', function (): void {
 	it('Display Name should be correct for valid ResourceType', function (): void {

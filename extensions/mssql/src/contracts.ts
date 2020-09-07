@@ -777,3 +777,243 @@ export interface ConvertSqlToNotebookResult extends azdata.ResultStatus {
 }
 
 // ------------------------------- <Convert Notebook> -----------------------------
+
+// ------------------------------- < SQL Profiler > ------------------------------------
+
+/**
+ * Parameters to start a profiler session
+ */
+export interface CreateXEventSessionParams {
+	/**
+	 * Session Owner URI
+	 */
+	ownerUri: string;
+
+	/**
+	 * Session name
+	 */
+	sessionName: string;
+
+	/**
+	 * Profiler Session template
+	 */
+	template: ProfilerSessionTemplate;
+}
+
+export interface CreateXEventSessionResponse { }
+
+/**
+ * Parameters to start a profiler session
+ */
+export interface StartProfilingParams {
+	/**
+	 * Session Owner URI
+	 */
+	ownerUri: string;
+
+	/**
+	 * Session name
+	 */
+	sessionName: string;
+}
+
+export interface StartProfilingResponse { }
+
+/**
+ * Parameters to stop a profiler session
+ */
+export interface StopProfilingParams {
+	/**
+	 * Session Owner URI
+	 */
+	ownerUri: string;
+}
+
+export interface StopProfilingResponse { }
+
+/**
+ * Parameters to pause a profiler session
+ */
+export interface PauseProfilingParams {
+	/**
+	 * Session Owner URI
+	 */
+	ownerUri: string;
+}
+
+export interface PauseProfilingResponse { }
+
+/**
+ * Parameters to get a list of XEvent sessions
+ */
+export interface GetXEventSessionsParams {
+	/**
+	 * Session Owner URI
+	 */
+	ownerUri: string;
+}
+
+export interface GetXEventSessionsResponse {
+	/**
+	 * List of all running XEvent Sessions on target server
+	 */
+	sessions: string[];
+}
+
+export interface DisconnectSessionParams {
+	/**
+	 * Session Owner URI
+	 */
+	ownerUri: string;
+}
+
+export interface DisconnectSessionResponse { }
+
+/**
+ * Profiler Event
+ */
+export interface ProfilerEvent {
+	/**
+	 * Event class name
+	 */
+	name: string;
+
+	/**
+	 * Event timestamp
+	 */
+	timestamp: string;
+
+	/**
+	 * Event values
+	 */
+	values: {};
+}
+
+/**
+ * Profiler Session Template
+ */
+export interface ProfilerSessionTemplate {
+	/**
+	 * Template name
+	 */
+	name: string;
+
+	/**
+	 * Default view for template
+	 */
+	defaultView: string;
+
+	/**
+	 * TSQL for creating a session
+	 */
+	createStatement: string;
+}
+
+/**
+ * Profiler events available notification parameters
+ */
+export interface ProfilerEventsAvailableParams {
+	/**
+	 * Session owner URI
+	 */
+	ownerUri: string;
+
+	/**
+	 * New profiler events available
+	 */
+	events: ProfilerEvent[];
+
+	/**
+	 * If events may have been dropped
+	 */
+	eventsLost: boolean;
+}
+
+/**
+ * Profiler events available notification parameters
+ */
+export interface ProfilerSessionStoppedParams {
+	/**
+	 * Session owner URI
+	 */
+	ownerUri: string;
+
+	/**
+	 * Stopped session Id
+	 */
+	sessionId: number;
+}
+
+/**
+ * Profiler session created notification parameters
+ */
+export interface ProfilerSessionCreatedParams {
+	/**
+	 * Session owner URI
+	 */
+	ownerUri: string;
+
+	/**
+	 * Created session name
+	 */
+	sessionName: string;
+
+	/**
+	 * Template used to create session
+	 */
+	templateName: string;
+}
+
+export namespace CreateXEventSessionRequest {
+	export const type = new RequestType<CreateXEventSessionParams, CreateXEventSessionResponse, void, void>('profiler/createsession');
+}
+
+export namespace StartProfilingRequest {
+	export const type = new RequestType<StartProfilingParams, StartProfilingResponse, void, void>('profiler/start');
+}
+
+export namespace StopProfilingRequest {
+	export const type = new RequestType<StopProfilingParams, StopProfilingResponse, void, void>('profiler/stop');
+}
+
+export namespace PauseProfilingRequest {
+	export const type = new RequestType<PauseProfilingParams, PauseProfilingResponse, void, void>('profiler/pause');
+}
+
+export namespace GetXEventSessionsRequest {
+	export const type = new RequestType<GetXEventSessionsParams, GetXEventSessionsResponse, void, void>('profiler/getsessions');
+}
+
+export namespace DisconnectSessionRequest {
+	export const type = new RequestType<DisconnectSessionParams, DisconnectSessionResponse, void, void>('profiler/disconnect');
+}
+
+export namespace ProfilerEventsAvailableNotification {
+	export const type = new NotificationType<ProfilerEventsAvailableParams, void>('profiler/eventsavailable');
+}
+
+export namespace ProfilerSessionStoppedNotification {
+	export const type = new NotificationType<ProfilerSessionStoppedParams, void>('profiler/sessionstopped');
+}
+
+export namespace ProfilerSessionCreatedNotification {
+	export const type = new NotificationType<ProfilerSessionCreatedParams, void>('profiler/sessioncreated');
+}
+
+// ------------------------------- < SQL Profiler > ------------------------------------
+
+/// ------------------------------- <Sql Migration> -----------------------------
+
+export interface SqlAssessmentResult extends azdata.ResultStatus {
+	items: mssql.SqlMigrationAssessmentResultItem[];
+}
+
+export interface SqlMigrationAssessmentParams {
+	ownerUri: string;
+}
+
+export namespace GetSqlMigrationAssessmentItemsRequest {
+	export const type = new RequestType<SqlAssessmentParams, SqlAssessmentResult, void, void>('migration/getassessments');
+}
+
+// ------------------------------- <Sql Migration> -----------------------------

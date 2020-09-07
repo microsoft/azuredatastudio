@@ -42,6 +42,7 @@ const vscodeEntryPoints = _.flatten([
 	buildfile.entrypoint('vs/workbench/workbench.desktop.main'),
 	buildfile.base,
 	buildfile.workerExtensionHost,
+	buildfile.workerNotebook,
 	buildfile.workbenchDesktop,
 	buildfile.code
 ]);
@@ -97,7 +98,7 @@ const vscodeResources = [
 	'out-build/sql/workbench/parts/notebook/media/**/*.svg',
 	'out-build/sql/setup.js', // {{SQL CARBON EDIT}} end
 	'out-build/vs/code/electron-sandbox/processExplorer/processExplorer.js',
-	'out-build/vs/platform/auth/common/auth.css',
+	'out-build/vs/code/electron-sandbox/proxy/auth.js',
 	'!**/test/**'
 ];
 

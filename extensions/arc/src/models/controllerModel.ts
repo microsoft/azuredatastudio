@@ -3,27 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ControllerInfo, ResourceType } from 'arc';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { parseInstanceName, UserCancelledError } from '../common/utils';
-import { ResourceType } from '../constants';
-import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import * as loc from '../localizedConstants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
-
-export type ControllerInfo = {
-	url: string,
-	name: string,
-	username: string,
-	rememberPassword: boolean,
-	resources: ResourceInfo[]
-};
-
-export type ResourceInfo = {
-	name: string,
-	resourceType: ResourceType | string,
-	connectionId?: string
-};
+import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 
 export type Registration = {
 	instanceName: string,
@@ -41,17 +27,28 @@ export class ControllerModel {
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.DcConfigShowResult | undefined>();
 	private readonly _onEndpointsUpdated = new vscode.EventEmitter<azdataExt.DcEndpointListResult[]>();
 	private readonly _onRegistrationsUpdated = new vscode.EventEmitter<Registration[]>();
+	private readonly _onInfoUpdated = new vscode.EventEmitter<ControllerInfo>();
 
 	public onConfigUpdated = this._onConfigUpdated.event;
 	public onEndpointsUpdated = this._onEndpointsUpdated.event;
 	public onRegistrationsUpdated = this._onRegistrationsUpdated.event;
+	public onInfoUpdated = this._onInfoUpdated.event;
 
 	public configLastUpdated?: Date;
 	public endpointsLastUpdated?: Date;
 	public registrationsLastUpdated?: Date;
 
-	constructor(public treeDataProvider: AzureArcTreeDataProvider, public info: ControllerInfo, private _password?: string) {
+	constructor(public treeDataProvider: AzureArcTreeDataProvider, private _info: ControllerInfo, private _password?: string) {
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+	}
+
+	public get info(): ControllerInfo {
+		return this._info;
+	}
+
+	public set info(value: ControllerInfo) {
+		this._info = value;
+		this._onInfoUpdated.fire(this._info);
 	}
 
 	/**
@@ -185,15 +182,6 @@ export class ControllerModel {
 			await this._registrationRouter.apiV1RegistrationNsNameIsDeletedDelete(this._namespace, r.customObjectName, true);
 		}
 		*/
-	}
-
-	/**
-	 * Tests whether this model is for the same controller as another
-	 * @param other The other instance to test
-	 */
-	public equals(other: ControllerModel): boolean {
-		return this.info.url === other.info.url &&
-			this.info.username === other.info.username;
 	}
 
 	/**

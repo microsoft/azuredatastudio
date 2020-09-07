@@ -203,7 +203,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
 		const model = this._instantiationService.createInstance(UntitledTextEditorModel, uri, false, cellModelSource, this.cellModel.language, undefined);
 		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
-		await this._editor.setInput(this._editorInput, undefined);
+		await this._editor.setInput(this._editorInput, undefined, undefined);
 		this.setFocusAndScroll();
 
 		let untitledEditorModel = await this._editorInput.resolve() as UntitledTextEditorModel;
