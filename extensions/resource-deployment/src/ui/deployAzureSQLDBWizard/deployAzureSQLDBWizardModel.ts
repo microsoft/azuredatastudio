@@ -12,7 +12,6 @@ export class DeployAzureSQLDBWizardModel extends Model {
 	public securityToken!: any;
 	public azureSubscription!: string;
 	public azureResouceGroup!: string;
-	public azureRegion!: string;
 	public azureServerName!: string;
 
 	public databaseName!: string;
@@ -32,7 +31,6 @@ export class DeployAzureSQLDBWizardModel extends Model {
 		try {
 			statements.push(`azure_sqldb_nb_var_subscription = '${this.azureSubscription}'`);
 			statements.push(`azure_sqldb_nb_var_resource_group_name = '${this.azureResouceGroup}'`);
-			statements.push(`azure_sqldb_location = '${this.azureRegion}'`);
 			statements.push(`azure_sqldb_server_name = '${this.azureServerName}'`);
 		}
 		catch (error) {

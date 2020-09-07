@@ -33,10 +33,6 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 	private _serverGroupDropdown!: azdata.DropDownComponent;
 	private _serverGroupLoader!: azdata.LoadingComponent;
 
-	//dropdown for azure regions <- subscription dropdown
-	private _azureRegionsDropdown!: azdata.DropDownComponent;
-	private _azureRegionsLoader!: azdata.LoadingComponent;
-
 	private _form!: azdata.FormContainer;
 
 	private _accountsMap!: Map<string, azdata.Account>;
@@ -56,7 +52,6 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 			await this.createAzureAccountsDropdown(view);
 			await this.createAzureSubscriptionsDropdown(view);
 			await this.createResourceDropdown(view);
-			await this.createAzureRegionsDropdown(view);
 			await this.createServerDropdown(view);
 			this.populateAzureAccountsDropdown();
 
@@ -73,13 +68,10 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 							component: this.wizard.createFormRowComponent(view, constants.AzureAccountSubscriptionDropdownLabel, '', this._azureSubscriptionLoader, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.AzureAccountDatabaseServersDropdownLabel, '', this._azureSubscriptionLoader, true)
+							component: this.wizard.createFormRowComponent(view, constants.AzureAccountDatabaseServersDropdownLabel, '', this._serverGroupDropdown, true)
 						},
 						{
 							component: this.wizard.createFormRowComponent(view, constants.AzureAccountResourceGroupDropdownLabel, '', this._resourceGroupDropdown, true)
-						},
-						{
-							component: this.wizard.createFormRowComponent(view, constants.AzureAccountRegionDropdownLabel, '', this._azureRegionsLoader, true)
 						}
 					],
 					{
@@ -182,7 +174,6 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 			);
 
 			this.populateResourceGroupDropdown();
-			this.populateAzureRegionsDropdown();
 		});
 	}
 
@@ -193,7 +184,6 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 		if (currentAccountDropdownValue === undefined) {
 			this._azureSubscriptionLoader.loading = false;
 			await this.populateResourceGroupDropdown();
-			await this.populateAzureRegionsDropdown();
 			return;
 		}
 		let currentAccount = this._accountsMap.get(currentAccountDropdownValue.name);
@@ -204,7 +194,6 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 			});
 			this._azureSubscriptionLoader.loading = false;
 			await this.populateResourceGroupDropdown();
-			await this.populateAzureRegionsDropdown();
 			return;
 		}
 		subscriptions.sort((a, b) => a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()));
@@ -230,7 +219,6 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 		);
 		this._azureSubscriptionLoader.loading = false;
 		await this.populateResourceGroupDropdown();
-		await this.populateAzureRegionsDropdown();
 	}
 
 	private async createServerDropdown(view: azdata.ModelView) {
@@ -266,15 +254,17 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 		}
 		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/resourceGroups/${this.wizard.model.azureResouceGroup}/providers/Microsoft.Sql/servers?api-version=2019-06-01-preview`;
 		const response = await this.wizard.getRequest(url);
-		this.wizard.addDropdownValues(
-			this._serverGroupDropdown,
-			response.data.value.map((value: any) => {
-				return {
-					displayName: value.name,
-					name: value.name
-				};
-			})
-		);
+		if (response.data.value !== '') {
+			this.wizard.addDropdownValues(
+				this._serverGroupDropdown,
+				response.data.value.map((value: any) => {
+					return {
+						displayName: value.name,
+						name: value.name
+					};
+				})
+			);
+		}
 		this.wizard.model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).name;
 		this._serverGroupLoader.loading = false;
 		return;
@@ -327,35 +317,5 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 		this.wizard.model.azureResouceGroup = (this._resourceGroupDropdown.value as azdata.CategoryValue).name;
 		this._resourceGroupLoader.loading = false;
 		await this.populateServerGroupDropdown();
-	}
-
-	private async createAzureRegionsDropdown(view: azdata.ModelView) {
-		this._azureRegionsDropdown = view.modelBuilder.dropDown().withProperties({
-			//required: true
-		}).component();
-
-		this._azureRegionsLoader = view.modelBuilder.loadingComponent().withItem(this._azureRegionsDropdown).component();
-
-		this._azureRegionsDropdown.onValueChanged((value) => {
-			this.wizard.model.azureRegion = (this._azureRegionsDropdown.value as azdata.CategoryValue).name;
-		});
-	}
-
-	private async populateAzureRegionsDropdown() {
-		this._azureRegionsLoader.loading = true;
-		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/locations?api-version=2020-01-01`;
-		const response = await this.wizard.getRequest(url);
-
-		this.wizard.addDropdownValues(
-			this._azureRegionsDropdown,
-			response.data.value.map((value: any) => {
-				return {
-					displayName: value.displayName,
-					name: value.name
-				};
-			})
-		);
-		this.wizard.model.azureRegion = (this._azureRegionsDropdown.value as azdata.CategoryValue).name;
-		this._azureRegionsLoader.loading = false;
 	}
 }

@@ -421,9 +421,16 @@
             ]
           }
         ],
-        "providers": [ {
-            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLElasticDatabasePool",
-            "requiredTools": [],
+        "providers": [
+          {
+            "azureSQLDBWizard": {
+              "notebook": "./notebooks/azurevm/create-sqldb.ipynb"
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli"
+              }
+            ],
             "when": "resource-type=single-database"
           },
           {
@@ -436,7 +443,24 @@
             "requiredTools": [],
             "when": "resource-type=database-server"
           }
-        ]
+        ],
+        "agreement": {
+          "template": "%azure-sqlvm-agreement%",
+          "links": [
+            {
+              "text": "%microsoft-privacy-statement%",
+              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+            },
+            {
+              "text": "%azure-sqlvm-agreement-sqlvm-eula%",
+              "url": "https://go.microsoft.com/fwlink/?LinkId=2002534"
+            },
+            {
+              "text": "%azure-sqlvm-agreement-azdata-eula%",
+              "url": "https://aka.ms/eula-azdata-en"
+            }
+          ]
+        }
       },
       {
         "name": "azure-sql-vm",
@@ -449,7 +473,7 @@
         },
         "providers": [
           {
-            "azureSQLVMWizard":{
+            "azureSQLVMWizard": {
               "notebook": "./notebooks/azurevm/create-sqlvm.ipynb"
             },
             "requiredTools": [
