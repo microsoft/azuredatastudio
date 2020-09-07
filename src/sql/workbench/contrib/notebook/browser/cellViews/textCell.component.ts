@@ -83,7 +83,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownRenderer: NotebookMarkdownRenderer;
 	private markdownResult: IMarkdownRenderResult;
 	public previewFeaturesEnabled: boolean = false;
-	public turnDownService = new TurndownService({ 'emDelimiter': '_' }).keep('u');
+	public turnDownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-' }).keep('u');
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -93,6 +93,12 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	) {
 		super();
 		this.turnDownService.use(turndownPluginGfm.gfm);
+		this.turnDownService.addRule('pre', {
+			filter: 'pre',
+			replacement: function (content, node) {
+				return '\n```\n' + node.textContent + '\n```\n';
+			}
+		});
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {

@@ -56,7 +56,7 @@ export class TransformMarkdownAction extends Action {
 				document.execCommand('bold');
 				break;
 			case MarkdownButtonType.CODE:
-				document.execCommand('');
+				document.execCommand('formatBlock', false, 'pre');
 				break;
 			case MarkdownButtonType.HEADING1:
 				document.execCommand('formatBlock', false, 'H1');
