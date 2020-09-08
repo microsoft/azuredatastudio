@@ -104,6 +104,7 @@ export class ProjectsController {
 		catch (err) {
 			// if the project didnt load - remove it from the list of open projects
 			this.projects = this.projects.filter((e) => { return e !== newProject; });
+
 			throw err;
 		}
 
