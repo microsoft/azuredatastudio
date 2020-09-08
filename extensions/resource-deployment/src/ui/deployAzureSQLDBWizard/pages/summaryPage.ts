@@ -104,13 +104,13 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 					items: [
 						{
 							type: FieldType.ReadonlyText,
-							label: constants.StartIpAddressLabel,
+							label: constants.StartIpAddressShortLabel,
 							defaultValue: model.startIpAddress,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						},
 						{
 							type: FieldType.ReadonlyText,
-							label: constants.EndIpAddressLabel,
+							label: constants.EndIpAddressShortLabel,
 							defaultValue: model.endIpAddress,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						}
