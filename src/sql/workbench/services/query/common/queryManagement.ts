@@ -39,7 +39,7 @@ export interface IQueryManagementService {
 	isProviderRegistered(providerId: string): boolean;
 	getRegisteredProviders(): string[];
 	registerRunner(runner: QueryRunner, uri: string): void;
-	getRunner(uri: string): QueryRunner;
+	getRunner(uri: string): QueryRunner | undefined;
 
 	cancelQuery(ownerUri: string): Promise<QueryCancelResult>;
 	runQuery(ownerUri: string, range?: IRange, runOptions?: ExecutionPlanOptions): Promise<void>;

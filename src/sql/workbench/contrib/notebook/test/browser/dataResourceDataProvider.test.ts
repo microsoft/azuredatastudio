@@ -103,7 +103,8 @@ suite('Data Resource Data Provider', function () {
 			undefined, // IConfigurationService
 			undefined, // ITextResourcePropertiesService
 			_serializationService,
-			_instantiationService.object
+			_instantiationService.object,
+			undefined // LogService
 		);
 	});
 

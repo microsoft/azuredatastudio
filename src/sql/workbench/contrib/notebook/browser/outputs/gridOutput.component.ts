@@ -41,6 +41,7 @@ import { IQueryManagementService } from 'sql/workbench/services/query/common/que
 import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
 import { assign } from 'vs/base/common/objects';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -316,7 +317,8 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService,
 		@ISerializationService private _serializationService: ISerializationService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@ILogService private readonly logService: ILogService,
 	) {
 		this._documentUri = this.cellModel.notebookModel.notebookUri.toString();
 		this._queryRunner = queryRunner;
@@ -374,13 +376,17 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	public async convertAllData(result: ResultSetSummary): Promise<void> {
 		// Querying 50 rows at a time. Querying large amount of rows will be slow and
 		// affect table rendering since each time the user scrolls, getRowData is called.
-		let numRows = 50;
-		for (let i = 0; i < result.rowCount; i += 50) {
-			if (i + 50 > result.rowCount) {
-				numRows += result.rowCount - i;
+		try {
+			let numRows = 50;
+			for (let i = 0; i < result.rowCount; i += 50) {
+				if (i + 50 > result.rowCount) {
+					numRows += result.rowCount - i;
+				}
+				let rows = await this._queryRunner.getQueryRows(i, numRows, this._batchId, this._id);
+				this.convertData(rows);
 			}
-			let rows = await this._queryRunner.getQueryRows(i, numRows, this._batchId, this._id);
-			this.convertData(rows);
+		} catch (err) {
+			this.logService.error(`Error converting rows to mimeType and html: ${err}`);
 		}
 
 	}
