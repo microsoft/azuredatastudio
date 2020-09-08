@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/qp';
 import * as QP from 'html-query-plan';
 
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
