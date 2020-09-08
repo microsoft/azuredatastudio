@@ -104,8 +104,6 @@ export function equals(one: any, other: any): boolean {
 	return true;
 }
 
-
-
 export async function getResourceGroups(appContext: AppContext, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false): Promise<GetResourceGroupsResult> {
 	const result: GetResourceGroupsResult = { resourceGroups: [], errors: [] };
 	if (!account?.properties?.tenants || !isArray(account.properties.tenants) || !subscription) {
