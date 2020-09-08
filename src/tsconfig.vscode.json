@@ -70,7 +70,6 @@
 		"./sql/workbench/contrib/dashboard/**/*.ts", // 1015 errors
 		"./sql/workbench/contrib/dataExplorer/**/*.ts", // 2667 errors
 		"./sql/workbench/contrib/editData/**/*.ts", // 441 errors
-		"./sql/workbench/contrib/editorReplacement/**/*.ts", // 6 errors
 		"./sql/workbench/contrib/editorReplacement/test/**/*.ts",
 		"./sql/workbench/contrib/jobManagement/**/*.ts", // 315 errors
 		"./sql/workbench/contrib/modelView/**/*.ts", // 2646 errors
@@ -92,7 +91,6 @@
 		"./sql/workbench/services/notebook/**/*.ts", // 200 errors
 		"./sql/workbench/services/objectExplorer/**/*.ts", // 185 errors
 		"./sql/workbench/services/query/test/**/*.ts",
-		"./sql/workbench/services/queryEditor/**/*.ts", // 10 errors
 		"./sql/workbench/services/queryEditor/test/**/*.ts",
 		"./sql/workbench/test/**/*.ts", // 2975 errors
 		"./sql/workbench/update/**/*.ts", // 2646 errors
