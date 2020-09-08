@@ -424,7 +424,7 @@
         "providers": [
           {
             "azureSQLDBWizard": {
-              "notebook": "./notebooks/azurevm/create-sqldb.ipynb"
+              "notebook": "./notebooks/azuredb/create-sqldb.ipynb"
             },
             "requiredTools": [
               {

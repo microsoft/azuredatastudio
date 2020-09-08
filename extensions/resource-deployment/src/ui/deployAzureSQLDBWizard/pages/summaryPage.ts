@@ -90,12 +90,28 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 			inputWidth: '200px',
 			title: constants.DatabaseSettingsPageTitle,
 			rows: [
+				// {
+				// 	items: [
+				// 		{
+				// 			type: FieldType.ReadonlyText,
+				// 			label: constants.PublicIPDropdownLabel,
+				// 			defaultValue: ((model.newPublicIp === 'True' ? '(new) ' : '') + this.processPublicIp()),
+				// 			labelCSSStyles: { fontWeight: FontWeight.Bold }
+				// 		}
+				// 	]
+				// },
 				{
 					items: [
 						{
 							type: FieldType.ReadonlyText,
-							label: constants.PublicIPDropdownLabel,
-							defaultValue: ((model.newPublicIp === 'True' ? '(new) ' : '') + this.processPublicIp()),
+							label: constants.StartIpAddressLabel,
+							defaultValue: model.startIpAddress,
+							labelCSSStyles: { fontWeight: FontWeight.Bold }
+						},
+						{
+							type: FieldType.ReadonlyText,
+							label: constants.EndIpAddressLabel,
+							defaultValue: model.endIpAddress,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						}
 					]
@@ -115,7 +131,6 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						}
 					]
-
 				}
 			]
 		};
@@ -185,13 +200,13 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 		return flexContainer;
 	}
 
-	public processPublicIp(): string {
-		if (this.wizard.model.newPublicIp === 'True') {
-			return this.wizard.model.startIpAddress;
-		}
+	// public processPublicIp(): string {
+	// 	if (this.wizard.model.newPublicIp === 'True') {
+	// 		return this.wizard.model.startIpAddress;
+	// 	}
 
-		let resourceGroupName = this.wizard.model.startIpAddress.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
-		let pipName = this.wizard.model.startIpAddress.replace(RegExp('^(.*?)/publicIPAddresses/'), '');
-		return `(${resourceGroupName}) ${pipName}`;
-	}
+	// 	let resourceGroupName = this.wizard.model.startIpAddress.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
+	// 	let pipName = this.wizard.model.startIpAddress.replace(RegExp('^(.*?)/publicIPAddresses/'), '');
+	// 	return `(${resourceGroupName}) ${pipName}`;
+	// }
 }

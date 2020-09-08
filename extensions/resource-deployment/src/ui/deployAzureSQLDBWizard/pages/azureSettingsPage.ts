@@ -33,9 +33,9 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 	private _serverGroupDropdown!: azdata.DropDownComponent;
 	private _serverGroupLoader!: azdata.LoadingComponent;
 
-	//dropdown for azure regions <- subscription dropdown
-	private _azureRegionsDropdown!: azdata.DropDownComponent;
-	private _azureRegionsLoader!: azdata.LoadingComponent;
+	// //dropdown for azure regions <- subscription dropdown
+	// private _azureRegionsDropdown!: azdata.DropDownComponent;
+	// private _azureRegionsLoader!: azdata.LoadingComponent;
 
 	private _form!: azdata.FormContainer;
 
@@ -59,7 +59,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 				this.createAzureSubscriptionsDropdown(view),
 				this.createResourceDropdown(view),
 				this.createServerDropdown(view),
-				this.createAzureRegionsDropdown(view)
+				//this.createAzureRegionsDropdown(view)
 			]);
 			this.populateAzureAccountsDropdown();
 
@@ -80,10 +80,10 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 						},
 						{
 							component: this.wizard.createFormRowComponent(view, constants.AzureAccountDatabaseServersDropdownLabel, '', this._serverGroupDropdown, true)
-						},
-						{
-							component: this.wizard.createFormRowComponent(view, constants.AzureAccountRegionDropdownLabel, '', this._azureRegionsLoader, true)
 						}
+						// {
+						// 	component: this.wizard.createFormRowComponent(view, constants.AzureAccountRegionDropdownLabel, '', this._azureRegionsLoader, true)
+						// }
 					],
 					{
 						horizontal: false,
@@ -186,7 +186,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 			);
 
 			this.populateResourceGroupDropdown();
-			this.populateAzureRegionsDropdown();
+			//this.populateAzureRegionsDropdown();
 		});
 	}
 
@@ -197,7 +197,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 		if (currentAccountDropdownValue === undefined) {
 			this._azureSubscriptionLoader.loading = false;
 			await this.populateResourceGroupDropdown();
-			await this.populateAzureRegionsDropdown();
+			//await this.populateAzureRegionsDropdown();
 			return;
 		}
 		let currentAccount = this._accountsMap.get(currentAccountDropdownValue.name);
@@ -208,7 +208,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 			});
 			this._azureSubscriptionLoader.loading = false;
 			await this.populateResourceGroupDropdown();
-			await this.populateAzureRegionsDropdown();
+			//await this.populateAzureRegionsDropdown();
 			return;
 		}
 		subscriptions.sort((a, b) => a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()));
@@ -235,7 +235,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 		);
 		this._azureSubscriptionLoader.loading = false;
 		await this.populateResourceGroupDropdown();
-		await this.populateAzureRegionsDropdown();
+		//await this.populateAzureRegionsDropdown();
 	}
 
 	private async createServerDropdown(view: azdata.ModelView) {
@@ -271,18 +271,19 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 		}
 		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/resourceGroups/${this.wizard.model.azureResouceGroup}/providers/Microsoft.Sql/servers?api-version=2019-06-01-preview`;
 		const response = await this.wizard.getRequest(url);
-		if (response.data.value !== '') {
-			this.wizard.addDropdownValues(
-				this._serverGroupDropdown,
-				response.data.value.map((value: any) => {
-					return {
-						displayName: value.name,
-						name: value.name
-					};
-				})
-			);
+
+		this.wizard.addDropdownValues(
+			this._serverGroupDropdown,
+			response.data.value.map((value: any) => {
+				return {
+					displayName: value.name,
+					name: value.name
+				};
+			})
+		);
+		if (this._serverGroupDropdown.value) {
+			this.wizard.model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).name;
 		}
-		this.wizard.model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).name;
 		this._serverGroupLoader.loading = false;
 		return;
 	}
@@ -336,33 +337,33 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 		await this.populateServerGroupDropdown();
 	}
 
-	private async createAzureRegionsDropdown(view: azdata.ModelView) {
-		this._azureRegionsDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true
-		}).component();
+	// private async createAzureRegionsDropdown(view: azdata.ModelView) {
+	// 	this._azureRegionsDropdown = view.modelBuilder.dropDown().withProperties({
+	// 		required: true
+	// 	}).component();
 
-		this._azureRegionsLoader = view.modelBuilder.loadingComponent().withItem(this._azureRegionsDropdown).component();
+	// 	this._azureRegionsLoader = view.modelBuilder.loadingComponent().withItem(this._azureRegionsDropdown).component();
 
-		this._azureRegionsDropdown.onValueChanged((value) => {
-			this.wizard.model.azureRegion = (this._azureRegionsDropdown.value as azdata.CategoryValue).name;
-		});
-	}
+	// 	this._azureRegionsDropdown.onValueChanged((value) => {
+	// 		this.wizard.model.azureRegion = (this._azureRegionsDropdown.value as azdata.CategoryValue).name;
+	// 	});
+	// }
 
-	private async populateAzureRegionsDropdown() {
-		this._azureRegionsLoader.loading = true;
-		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/locations?api-version=2020-01-01`;
-		const response = await this.wizard.getRequest(url);
+	// private async populateAzureRegionsDropdown() {
+	// 	this._azureRegionsLoader.loading = true;
+	// 	let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/locations?api-version=2020-01-01`;
+	// 	const response = await this.wizard.getRequest(url);
 
-		this.wizard.addDropdownValues(
-			this._azureRegionsDropdown,
-			response.data.value.map((value: any) => {
-				return {
-					displayName: value.displayName,
-					name: value.name
-				};
-			})
-		);
-		this.wizard.model.azureRegion = (this._azureRegionsDropdown.value as azdata.CategoryValue).name;
-		this._azureRegionsLoader.loading = false;
-	}
+	// 	this.wizard.addDropdownValues(
+	// 		this._azureRegionsDropdown,
+	// 		response.data.value.map((value: any) => {
+	// 			return {
+	// 				displayName: value.displayName,
+	// 				name: value.name
+	// 			};
+	// 		})
+	// 	);
+	// 	this.wizard.model.azureRegion = (this._azureRegionsDropdown.value as azdata.CategoryValue).name;
+	// 	this._azureRegionsLoader.loading = false;
+	// }
 }

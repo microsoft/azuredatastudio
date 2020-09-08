@@ -25,9 +25,9 @@ export const AzureAccountRegionDropdownLabel = localize('deployAzureSQLVM.AzureR
 // Database settings page constants
 export const DatabaseSettingsPageTitle = localize('deployAzureSQLDB.DatabaseSettingsPageTitle', "Database settings");
 export const DatabaseSettingsPageDescription = localize('deployAzureSQLDB.DatabaseSettingsPageDescription', "");
-export const PublicIPDropdownLabel = localize('deployAzureSQLDB.PublicIPDropdownLabel', "Public IP");
-export const DatabaseSettingsNewPublicIp = localize('deployAzureSQLDB.DatabaseSettingsNewPublicIp', "New public ip");
+//export const PublicIPDropdownLabel = localize('deployAzureSQLDB.PublicIPDropdownLabel', "Public IP");
+//export const DatabaseSettingsNewPublicIp = localize('deployAzureSQLDB.DatabaseSettingsNewPublicIp', "New public ip");
 export const FirewallRuleNameLabel = localize('deployAzureSQLDB.FirewallRuleNameLabel', 'Firewall rule name');
 export const DatabaseNameLabel = localize('deployAzureSQLDB.DatabaseNameLabel', 'SQL database name');
-export const StartIpAddressLabel = localize('deployAzureSQLDB.StartIpAddressLabel', "Start IP Address");
-export const EndIpAddressLabel = localize('deployAzureSQLDB.EndIpAddressLabel', "End IP Address");
+export const StartIpAddressLabel = localize('deployAzureSQLDB.StartIpAddressLabel', "Min Ip Address in firewall allowed IP Range (Set to 0.0.0.0 for all Azure-internal IP addresses)");
+export const EndIpAddressLabel = localize('deployAzureSQLDB.EndIpAddressLabel', "Max IP Address in firewall allowed IP Range (Set to 0.0.0.0 for all Azure-internal IP addresses)");
