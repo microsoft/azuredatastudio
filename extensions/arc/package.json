@@ -839,7 +839,6 @@
                 "name": "kubectl"
               },
               {
-
                 "name": "azdata",
                 "version": "20.1.0"
               }
