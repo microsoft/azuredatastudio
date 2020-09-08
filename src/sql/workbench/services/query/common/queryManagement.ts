@@ -139,7 +139,7 @@ export class QueryManagementService implements IQueryManagementService {
 		}
 	}
 
-	public getRunner(uri: string): QueryRunner {
+	public getRunner(uri: string): QueryRunner | undefined {
 		return this._queryRunners.get(uri);
 	}
 
