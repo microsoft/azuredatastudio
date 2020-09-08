@@ -836,11 +836,12 @@
             },
             "requiredTools": [
               {
-                "name": "azdata",
-                "version": "20.1.0"
+                "name": "kubectl"
               },
               {
-                "name": "kubectl"
+
+                "name": "azdata",
+                "version": "20.1.0"
               }
             ],
             "when": "resourceType=postgres"
