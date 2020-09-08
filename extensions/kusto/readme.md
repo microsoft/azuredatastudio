@@ -28,7 +28,7 @@ You can run Kusto in a notebook with Azure Data Studio.
 
 Select on **Create notebook** to create a new notebook in Azure Data Studio.
 
-![Kusto notebook in Azure Data Studio](media/usto-readme-notebook.gif)
+![Kusto notebook in Azure Data Studio](media/kusto-readme-notebook.gif)
 
 For more information, see [how to create a notebook with the Kusto extension](https://go.microsoft.com/fwlink/?linkid=2129920).
 
