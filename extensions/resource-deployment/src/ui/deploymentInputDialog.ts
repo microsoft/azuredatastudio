@@ -105,7 +105,7 @@ export class DeploymentInputDialog extends DialogBase {
 				const notebook = Array.isArray(this.dialogInfo.notebook) ?
 					this.dialogInfo.notebook.find(nb => nb.type === model.getStringValue(NotebookTypeVariableName))?.path :
 					this.dialogInfo.notebook;
-				this.notebookService.launchNotebook(notebook!).then(() => { }, (error) => {
+				this.notebookService.launchNotebook(notebook!).catch(error => {
 					vscode.window.showErrorMessage(error);
 				});
 			}
@@ -115,6 +115,6 @@ export class DeploymentInputDialog extends DialogBase {
 	}
 
 	private executeNotebook(notebookDialogInfo: NotebookBasedDialogInfo): void {
-		this.notebookService.backgroundExecuteNotebook(notebookDialogInfo.taskName, <string | NotebookPathInfo>notebookDialogInfo.notebook, 'deploy', this.platformService);
+		this.notebookService.backgroundExecuteNotebook(notebookDialogInfo.taskName, notebookDialogInfo.notebook as string | NotebookPathInfo, 'deploy', this.platformService);
 	}
 }
