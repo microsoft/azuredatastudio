@@ -133,9 +133,6 @@ export class NotebookModelStub implements INotebookModel {
 	requestConnection(): Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}
-	setGridDataConversionComplete(value: boolean) {
-		throw new Error('method not implemented.');
-	}
 }
 
 export class NotebookFindModelStub implements INotebookFindModel {

@@ -291,10 +291,6 @@ class DataResourceTable extends GridTableBase<any> {
 		this.cellModel.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
 	}
 
-	public updateResult(set: ResultSetSummary) {
-		super.updateResult(set);
-	}
-
 	public convertData(set: ResultSetSummary): Promise<void> {
 		return this._gridDataProvider.convertAllData(set);
 	}
@@ -376,6 +372,8 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	public async convertAllData(result: ResultSetSummary): Promise<void> {
+		// Querying 50 rows at a time. Querying large amount of rows will be slow and
+		// affect table rendering since each time the user scrolls, getRowData is called.
 		let numRows = 50;
 		for (let i = 0; i < result.rowCount; i += 50) {
 			if (i + 50 > result.rowCount) {
