@@ -3328,8 +3328,6 @@ declare module 'azdata' {
 		 * Content settings for the webview.
 		 */
 		options?: vscode.WebviewOptions;
-
-
 	}
 
 	export interface DomProperties extends ComponentProperties {
