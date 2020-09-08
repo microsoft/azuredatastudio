@@ -147,9 +147,9 @@ export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 
 export async function getSqlProjectFilesInFolder(folderPath: string): Promise<string[]> {
 	// path needs to use forward slashes for glob to work
-	let escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
-	let sqlprojFilter = path.posix.join(escapedPath, '**', '*.sqlproj');
-	let results = await glob(sqlprojFilter);
+	const escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
+	const sqlprojFilter = path.posix.join(escapedPath, '**', '*.sqlproj');
+	const results = await glob(sqlprojFilter);
 
 	return results;
 }

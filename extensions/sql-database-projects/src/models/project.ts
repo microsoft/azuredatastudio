@@ -159,7 +159,7 @@ export class Project {
 			this.databaseReferences.push(new SqlProjectReferenceProjectEntry({
 				projectRelativePath: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
 				projectName: name,
-				projectGuid: '', // don't care when just reading from project
+				projectGuid: '', // don't care when just reading project as a reference
 				suppressMissingDependenciesErrors: suppressMissingDependencies
 			}));
 		}

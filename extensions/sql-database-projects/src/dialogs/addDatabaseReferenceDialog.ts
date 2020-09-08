@@ -125,13 +125,7 @@ export class AddDatabaseReferenceDialog {
 	public async addReferenceClick(): Promise<void> {
 		let referenceSettings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings;
 
-		if (this.currentReferenceType === ReferenceType.systemDb) {
-			referenceSettings = {
-				databaseName: <string>this.databaseNameTextbox?.value,
-				systemDb: <string>this.systemDatabaseDropdown?.value === constants.master ? SystemDatabase.master : SystemDatabase.msdb,
-				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
-			};
-		} else if (this.currentReferenceType === ReferenceType.project) {
+		if (this.currentReferenceType === ReferenceType.project) {
 			referenceSettings = {
 				projectName: <string>this.projectDropdown?.value,
 				projectGuid: '',
@@ -140,6 +134,12 @@ export class AddDatabaseReferenceDialog {
 				databaseVariable: <string>this.databaseVariableTextbox?.value,
 				serverName: <string>this.serverNameTextbox?.value,
 				serverVariable: <string>this.serverVariableTextbox?.value,
+				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
+			};
+		} else if (this.currentReferenceType === ReferenceType.systemDb) {
+			referenceSettings = {
+				databaseName: <string>this.databaseNameTextbox?.value,
+				systemDb: <string>this.systemDatabaseDropdown?.value === constants.master ? SystemDatabase.master : SystemDatabase.msdb,
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 		} else { // this.currentReferenceType === ReferenceType.dacpac

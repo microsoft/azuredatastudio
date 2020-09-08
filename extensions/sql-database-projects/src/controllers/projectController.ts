@@ -76,7 +76,6 @@ export class ProjectsController {
 				try {
 					await this.openProject(projUri, false, true);
 				} catch (e) {
-					// vscode.window.showErrorMessage(e.message === constants.projectAlreadyOpened(projUri.fsPath) ? constants.circularProjectReference(newProject.projectFileName, proj.databaseName) : e.message);
 				}
 			}
 
@@ -487,11 +486,9 @@ export class ProjectsController {
 
 	public async addDatabaseReferenceCallback(project: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings): Promise<void> {
 		try {
-			if ((<ISystemDatabaseReferenceSettings>settings).systemDb !== undefined) {
-				await project.addSystemDatabaseReference(<ISystemDatabaseReferenceSettings>settings);
-			} else if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
+			if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
 				// get project path and guid
-				let projectReferenceSettings = settings as IProjectReferenceSettings;
+				const projectReferenceSettings = settings as IProjectReferenceSettings;
 				const referencedProject = this.projects.find(p => p.projectFileName === projectReferenceSettings.projectName);
 				const relativePath = path.relative(project.projectFolderPath, referencedProject?.projectFilePath!);
 				projectReferenceSettings.projectRelativePath = vscode.Uri.file(relativePath);
@@ -508,6 +505,8 @@ export class ProjectsController {
 				}
 
 				await project.addProjectReference(projectReferenceSettings);
+			} else if ((<ISystemDatabaseReferenceSettings>settings).systemDb !== undefined) {
+				await project.addSystemDatabaseReference(<ISystemDatabaseReferenceSettings>settings);
 			} else {
 				await project.addDatabaseReference(<IDacpacReferenceSettings>settings);
 			}
