@@ -3,38 +3,45 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
-import { AssessmentDialogComponent } from './assessmentResultComponent';
+import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
 
 export class SqlDatabaseTree extends AssessmentDialogComponent {
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
 
 		return view.modelBuilder.divContainer().withItems([
-			this.createTreeComponent(view)
+			this.createTableComponent(view)
 		]
 		).component();
 	}
 
-	private createTreeComponent(view: azdata.ModelView): azdata.TreeComponent<any> {
-		const tree = view.modelBuilder.tree<azdata.TreeComponentItem>().component();
+	private createTableComponent(view: azdata.ModelView): azdata.DeclarativeTableComponent {
 
-		tree.registerDataProvider<any>(new SqlDatabaseTreeDataProvider());
+		const table = view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>(
+			{
+				columns: [
+					{
+						displayName: 'Database', // TODO localize
+						valueType: azdata.DeclarativeDataType.string,
+						width: 50,
+						isReadOnly: true,
+						showCheckAll: true
+					},
+					{
+						displayName: '', // Incidents
+						valueType: azdata.DeclarativeDataType.string,
+						width: 5,
+						isReadOnly: true,
+						showCheckAll: false
+					}
+				],
+				data: [
+					['DB1', '1'],
+					['DB2', '0']
+				],
+				width: '200px'
+			}
+		);
 
-		return tree;
-	}
-}
-
-class SqlDatabaseTreeDataProvider implements azdata.TreeComponentDataProvider<string> {
-	getTreeItem(element: string): azdata.TreeComponentItem | Thenable<azdata.TreeComponentItem> {
-		throw new Error('Method not implemented.');
-	}
-	onDidChangeTreeData?: vscode.Event<string> | undefined;
-	getChildren(element?: string): vscode.ProviderResult<string[]> {
-		return [
-			'DB1',
-			'DB2',
-			'DB3',
-			'DB4'
-		];
+		return table.component();
 	}
 }

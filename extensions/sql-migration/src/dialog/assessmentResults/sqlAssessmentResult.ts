@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 
-import { AssessmentDialogComponent } from './assessmentResultComponent';
+import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
 
-export class SqlAssessmentResultComponent extends AssessmentDialogComponent {
+export class SqlAssessmentResult extends AssessmentDialogComponent {
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
 
 		const title = this.createTitleComponent(view);
