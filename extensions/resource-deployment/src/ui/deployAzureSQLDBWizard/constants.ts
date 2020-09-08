@@ -15,7 +15,7 @@ export const MissingRequiredInformationErrorMessage = localize('deployCluster.Mi
 
 // Azure settings page constants
 export const AzureSettingsPageTitle = localize('deployAzureSQLDB.AzureSettingsPageTitle', "Azure settings");
-export const AzureSettingsPageDescription = localize('deployAzureSQLDB.AzureSettingsPageDescription', "");
+export const AzureSettingsPageDescription = localize('deployAzureSQLDB.AzureSettingsPageDescription', "   ");
 export const AzureAccountDropdownLabel = localize('deployAzureSQLDB.AzureAccountDropdownLabel', "Azure Account");
 export const AzureAccountSubscriptionDropdownLabel = localize('deployAzureSQLDB.AzureSubscriptionDropdownLabel', "Subscription");
 export const AzureAccountDatabaseServersDropdownLabel = localize('deployAzureSQLDB.AzureDatabaseServersDropdownLabel', "Server");
