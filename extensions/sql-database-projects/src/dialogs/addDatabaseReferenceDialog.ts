@@ -230,9 +230,10 @@ export class AddDatabaseReferenceDialog {
 
 		// update dropdown values because only different database, same server is a valid location for system db references
 		this.locationDropdown!.values = constants.systemDbLocationDropdownValues;
+		this.locationDropdown!.value = constants.differentDbSameServer;
 
 		this.currentReferenceType = ReferenceType.systemDb;
-		this.updateEnabledInputBoxes(true);
+		this.updateEnabledInputBoxes();
 		this.tryEnableAddReferenceButton();
 		this.updateExampleUsage();
 	}
@@ -378,7 +379,9 @@ export class AddDatabaseReferenceDialog {
 	 * Update the enabled input boxes based on what the location of the database reference selected in the dropdown is
 	 * @param isSystemDb
 	 */
-	public updateEnabledInputBoxes(isSystemDb: boolean = false): void {
+	public updateEnabledInputBoxes(): void {
+		const isSystemDb = this.currentReferenceType === ReferenceType.systemDb;
+
 		if (this.locationDropdown?.value === constants.sameDatabase) {
 			this.databaseNameTextbox!.enabled = false;
 			this.databaseVariableTextbox!.enabled = false;
