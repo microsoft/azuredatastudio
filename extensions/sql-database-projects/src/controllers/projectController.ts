@@ -33,27 +33,18 @@ import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 export class ProjectsController {
 	private projectTreeViewProvider: SqlDatabaseProjectTreeViewProvider;
 	private netCoreTool: NetCoreTool;
-	private _buildHelper: BuildHelper;
+	private buildHelper: BuildHelper;
 
 	projects: Project[] = [];
-	projectMap: Map<string, Project> = new Map<string, Project>();
 
 	constructor(projTreeViewProvider: SqlDatabaseProjectTreeViewProvider) {
 		this.projectTreeViewProvider = projTreeViewProvider;
 		this.netCoreTool = new NetCoreTool();
-		this._buildHelper = new BuildHelper();
-	}
-
-	public get buildHelper(): BuildHelper {
-		return this._buildHelper;
+		this.buildHelper = new BuildHelper();
 	}
 
 	public refreshProjectsTree() {
 		this.projectTreeViewProvider.load(this.projects);
-		this.projectMap.clear();
-		for (const project of this.projects) {
-			this.projectMap.set(project.projectFileName, project);
-		}
 	}
 
 	public async openProject(projectFile: vscode.Uri, focusProject: boolean = true, isReferencedProject: boolean = false): Promise<Project> {

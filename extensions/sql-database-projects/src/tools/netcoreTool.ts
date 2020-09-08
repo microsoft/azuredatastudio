@@ -21,7 +21,7 @@ export const UpdateNetCoreLocation: string = localize('sqlDatabaseProjects.Updat
 export const InstallNetCore: string = localize('sqlDatabaseProjects.InstallNetCore', "Install .Net Core SDK");
 
 const projectsOutputChannel = localize('sqlDatabaseProjects.outputChannel', "Database Projects");
-export const dotnet = os.platform() === 'win32' ? 'dotnet.exe' : 'dotnet';
+const dotnet = os.platform() === 'win32' ? 'dotnet.exe' : 'dotnet';
 
 export interface DotNetCommandOptions {
 	workingDirectory?: string;
