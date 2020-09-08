@@ -104,7 +104,7 @@
 	"arc.postgres.server.group.workers": "Number of workers",
 	"arc.postgres.server.group.port": "Port",
 	"arc.postgres.server.group.engine.version": "Engine Version",
-	"arc.postgres.server.group.extensions.label": "PostgreSQL extensions to enable",
+	"arc.postgres.server.group.extensions.label": "Extensions",
 	"arc.postgres.server.group.extensions.description": "A comma-separated list of the Postgres extensions that should be loaded on startup. Please refer to the postgres documentation for supported values.",
 	"arc.postgres.server.group.volume.size.backups.label": "Volume Size (Backups)",
 	"arc.postgres.server.group.volume.size.backups.description": "The volume size for the storage classes to be used for backups",
