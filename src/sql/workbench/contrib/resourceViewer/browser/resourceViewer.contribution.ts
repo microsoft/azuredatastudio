@@ -59,9 +59,10 @@ class ResourceViewerContributor implements IWorkbenchContribution {
 		if (await this.extensionService.getExtension('Microsoft.arc')) {
 			registerResourceViewerContainer();
 		} else {
-			this.extensionService.onDidChangeExtensions(async () => {
+			const disposable = this.extensionService.onDidChangeExtensions(async () => {
 				if (await this.extensionService.getExtension('Microsoft.arc')) {
 					registerResourceViewerContainer();
+					disposable.dispose();
 				}
 			});
 		}
