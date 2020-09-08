@@ -1696,7 +1696,9 @@ class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.RadioCardGroup, id);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<azdata.RadioCardSelectionChangedEvent>());
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<azdata.RadioCardLinkClickEvent>());
 	}
 
 	public get iconWidth(): string | undefined {
@@ -1746,8 +1748,21 @@ class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.
 		this.setProperty('selectedCardId', v);
 	}
 
-	public get onSelectionChanged(): vscode.Event<any> {
+	public get orientation(): azdata.Orientation | undefined {
+		return this.properties['orientation'];
+	}
+
+	public set orientation(orientation: azdata.Orientation | undefined) {
+		this.setProperty('orientation', orientation);
+	}
+
+	public get onSelectionChanged(): vscode.Event<azdata.RadioCardSelectionChangedEvent> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+
+	public get onLinkClick(): vscode.Event<azdata.RadioCardLinkClickEvent> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
 }

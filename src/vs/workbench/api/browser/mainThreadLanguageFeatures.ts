@@ -130,7 +130,8 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 		if (data) {
 			data.forEach(code => reviveWorkspaceEditDto(code.edit));
 		}
-		return <modes.CodeAction[]>data;
+
+		return <modes.CodeAction[]><unknown>data; // {{SQL CARBON EDIT}} strict-null-check
 	}
 
 	private static _reviveLinkDTO(data: ILinkDto): modes.ILink {

@@ -3,28 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ControllerInfo, ResourceType } from 'arc';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { parseInstanceName, UserCancelledError } from '../common/utils';
-import { ResourceType } from '../constants';
-import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import * as loc from '../localizedConstants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
-
-export type ControllerInfo = {
-	id: string,
-	url: string,
-	name: string,
-	username: string,
-	rememberPassword: boolean,
-	resources: ResourceInfo[]
-};
-
-export type ResourceInfo = {
-	name: string,
-	resourceType: ResourceType | string,
-	connectionId?: string
-};
+import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 
 export type Registration = {
 	instanceName: string,

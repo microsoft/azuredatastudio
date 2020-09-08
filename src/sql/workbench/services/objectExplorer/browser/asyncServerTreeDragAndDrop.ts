@@ -37,15 +37,15 @@ export class AsyncServerTreeDragAndDrop implements ITreeDragAndDrop<ServerTreeEl
 	 * Returns a uri if the given element should be allowed to drag.
 	 * Returns null, otherwise.
 	 */
-	public getDragURI(element: ServerTreeElement): string {
-		return this._dragAndDrop.getDragURI(this._tree, element);
+	public getDragURI(element: ServerTreeElement): string | null {
+		return this._dragAndDrop.getDragURI(this._tree!, element);
 	}
 
 	/**
 	 * Returns a label(name) to display when dragging the element.
 	 */
 	public getDragLabel(elements: ServerTreeElement[]): string {
-		return this._dragAndDrop.getDragLabel(this._tree, elements);
+		return this._dragAndDrop.getDragLabel(this._tree!, elements);
 	}
 
 	/**
@@ -54,17 +54,17 @@ export class AsyncServerTreeDragAndDrop implements ITreeDragAndDrop<ServerTreeEl
 	public onDragStart(dragAndDropData: IDragAndDropData, originalEvent: DragEvent): void {
 		// Force the event cast while in preview - we don't use any of the mouse properties on the
 		// implementation so this is fine for now
-		return this._dragAndDrop.onDragStart(this._tree, dragAndDropData, <any>originalEvent);
+		return this._dragAndDrop.onDragStart(this._tree!, dragAndDropData, <any>originalEvent);
 	}
 
-	public onDragOver(data: IDragAndDropData, targetElement: ServerTreeElement, targetIndex: number, originalEvent: DragEvent): boolean | ITreeDragOverReaction {
+	public onDragOver(data: IDragAndDropData, targetElement: ServerTreeElement | undefined, targetIndex: number, originalEvent: DragEvent): boolean | ITreeDragOverReaction {
 		// Dropping onto an empty space (undefined targetElement) we treat as wanting to move into the root connection group
 		if (!targetElement) {
 			targetElement = this._tree?.getInput();
 		}
 		// Force the event cast while in preview - we don't use any of the mouse properties on the
 		// implementation so this is fine for now
-		const canDragOver = this._dragAndDrop.onDragOver(this._tree, data, targetElement, <any>originalEvent);
+		const canDragOver = this._dragAndDrop.onDragOver(this._tree!, data, targetElement, <any>originalEvent);
 
 		if (canDragOver.accept) {
 			return TreeDragOverReactions.acceptBubbleDown(canDragOver.autoExpand);
@@ -76,14 +76,14 @@ export class AsyncServerTreeDragAndDrop implements ITreeDragAndDrop<ServerTreeEl
 	/**
 	 * Handle a drop in the server tree.
 	 */
-	public drop(data: IDragAndDropData, targetElement: ServerTreeElement, targetIndex: number, originalEvent: DragEvent): void {
+	public drop(data: IDragAndDropData, targetElement: ServerTreeElement | undefined, targetIndex: number, originalEvent: DragEvent): void {
 		// Dropping onto an empty space (undefined targetElement) we treat as wanting to move into the root connection group
 		if (!targetElement) {
 			targetElement = this._tree?.getInput();
 		}
 		// Force the event cast while in preview - we don't use any of the mouse properties on the
 		// implementation so this is fine for now
-		this._dragAndDrop.drop(this._tree, data, targetElement, <any>originalEvent);
+		this._dragAndDrop.drop(this._tree!, data, targetElement, <any>originalEvent);
 	}
 
 	public onDragEnd(originalEvent: DragEvent): void {
@@ -102,7 +102,7 @@ export class AsyncRecentConnectionsDragAndDrop implements ITreeDragAndDrop<Serve
 			return (<ConnectionProfile>element).id;
 		}
 		else if (element instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>element).id;
+			return (<ConnectionProfileGroup>element).id ?? null;
 		}
 		return null;
 	}
@@ -117,7 +117,7 @@ export class AsyncRecentConnectionsDragAndDrop implements ITreeDragAndDrop<Serve
 		else if (elements[0] instanceof ConnectionProfileGroup) {
 			return elements[0].name;
 		}
-		return undefined;
+		return '';
 	}
 
 	/**

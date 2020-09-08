@@ -10,14 +10,20 @@ import { addDisposableListener } from 'vs/base/browser/dom';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { withNullAsUndefined } from 'vs/base/common/types';
 
-interface IExtendedColumn<T> extends Slick.Column<T> {
+export interface IExtendedColumn<T> extends Slick.Column<T> {
 	filterValues?: Array<string>;
+}
+
+export interface CommandEventArgs<T extends Slick.SlickData> {
+		grid: Slick.Grid<T>,
+		column: Slick.Column<T>,
+		command: string
 }
 
 export class HeaderFilter<T extends Slick.SlickData> {
 
 	public onFilterApplied = new Slick.Event();
-	public onCommand = new Slick.Event();
+	public onCommand = new Slick.Event<CommandEventArgs<T>>();
 
 	private grid!: Slick.Grid<T>;
 	private handler = new Slick.EventHandler();
@@ -78,14 +84,23 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		if (column.id === '_detail_selector') {
 			return;
 		}
+		if ((<any>column).filterable === false) {
+			return;
+		}
 		const $el = jQuery('<div tabIndex="0"></div>')
 			.addClass('slick-header-menubutton')
 			.data('column', column);
 
-		$el.bind('click', (e: KeyboardEvent) => this.showFilter(e)).appendTo(args.node);
+		$el.bind('click', (e: KeyboardEvent) => {
+			this.showFilter(e);
+			e.preventDefault();
+			e.stopPropagation();
+		}).appendTo(args.node);
 		$el.bind('keydown', (e: KeyboardEvent) => {
 			if (e.key === 'Enter' || e.keyCode === 13) {
 				this.showFilter(e);
+				e.preventDefault();
+				e.stopPropagation();
 			}
 		}).appendTo(args.node);
 	}
@@ -377,9 +392,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		this.hideMenu();
 
 		this.onCommand.notify({
-			'grid': this.grid,
-			'column': columnDef,
-			'command': command
+			grid: this.grid,
+			column: columnDef,
+			command: command
 		}, e, self);
 
 		e.preventDefault();

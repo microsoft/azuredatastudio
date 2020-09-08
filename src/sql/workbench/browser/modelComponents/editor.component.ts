@@ -70,7 +70,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this._editor.setVisible(true);
 		let uri = this.createUri();
 		this._editorInput = this.editorService.createEditorInput({ forceUntitled: true, resource: uri, mode: 'plaintext' }) as UntitledTextEditorInput;
-		await this._editor.setInput(this._editorInput, undefined);
+		await this._editor.setInput(this._editorInput, undefined, undefined);
 		const model = await this._editorInput.resolve();
 		this._editorModel = model.textEditorModel;
 		this.fireEvent({
