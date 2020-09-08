@@ -2610,7 +2610,6 @@ declare module 'azdata' {
 	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
 		component(): TComponent;
 		withProperties<U>(properties: U): ComponentBuilder<TComponent, TPropertyBag>;
-		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
 		withValidation(validation: (component: TComponent) => boolean): ComponentBuilder<TComponent, TPropertyBag>;
 	}
 	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ComponentProperties> extends ComponentBuilder<TComponent, TPropertyBag> {

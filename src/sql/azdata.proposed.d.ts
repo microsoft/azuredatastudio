@@ -200,6 +200,10 @@ declare module 'azdata' {
 		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
 	}
 
+	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
+		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
+	}
+
 	export interface RadioCard {
 		id: string;
 		descriptions: RadioCardDescription[];
