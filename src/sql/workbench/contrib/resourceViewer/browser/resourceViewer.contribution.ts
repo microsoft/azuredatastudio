@@ -18,9 +18,10 @@ import { localize } from 'vs/nls';
 import { Codicon } from 'vs/base/common/codicons';
 import { ResourceViewerViewlet } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerViewlet';
 import { ResourceViewerView } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerView';
-import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
+import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { ResourceViewResourcesExtensionHandler } from 'sql/workbench/contrib/resourceViewer/common/resourceViewerViewExtensionPoint';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 
 CommandsRegistry.registerCommand({
 	id: 'resourceViewer.openResourceViewer',
@@ -47,7 +48,23 @@ Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(ResourceViewResourcesExtensionHandler, LifecyclePhase.Ready);
 
-registerResourceViewerContainer();
+class ResourceViewerContributor implements IWorkbenchContribution {
+	constructor(
+		@IExtensionService extensionService: IExtensionService
+	) {
+		if (extensionService.getExtension('arc')) {
+			registerResourceViewerContainer();
+		} else {
+			extensionService.onDidChangeExtensions(() => {
+				if (extensionService.getExtension('arc')) {
+					registerResourceViewerContainer();
+				}
+			});
+		}
+	}
+}
+
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(ResourceViewerContributor, LifecyclePhase.Ready);
 
 function registerResourceViewerContainer() {
 	const viewContainer = Registry.as<IViewContainersRegistry>(ViewExtensions.ViewContainersRegistry).registerViewContainer({
