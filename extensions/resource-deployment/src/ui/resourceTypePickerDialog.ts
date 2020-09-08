@@ -18,7 +18,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private toolRefreshTimestamp: number = 0;
 	private _selectedResourceType: ResourceType;
 	private _view!: azdata.ModelView;
-	private _resourceDescriptionLabel!: azdata.TextComponent;
 	private _optionsContainer!: azdata.FlexContainer;
 	private _toolsTable!: azdata.TableComponent;
 	private _cardGroup!: azdata.RadioCardGroupComponent;
@@ -76,21 +75,22 @@ export class ResourceTypePickerDialog extends DialogBase {
 						icon: resourceType.icon,
 						descriptions: [
 							{
-								textValue: resourceType.displayName,
+								textValue: resourceType.description,
 								textStyles: {
 									'font-size': '12px',
 									'font-weight': 700
 								}
-							}
+							},
 						]
 					};
 				}),
-				iconHeight: '50px',
-				iconWidth: '50px',
-				cardWidth: '220px',
-				cardHeight: '180px',
+				iconHeight: '35px',
+				iconWidth: '35px',
+				cardWidth: '300px',
+				cardHeight: '150px',
 				ariaLabel: localize('deploymentDialog.deploymentOptions', "Deployment options"),
-				width: '1100px'
+				width: '1100px',
+				cardStyle: 'portalCard'
 			}).component();
 			this._toDispose.push(this._cardGroup.onSelectionChanged(({ cardId }) => {
 				const resourceType = resourceTypes.find(rt => { return rt.name === cardId; });
@@ -98,7 +98,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 					this.selectResourceType(resourceType);
 				}
 			}));
-			this._resourceDescriptionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this._selectedResourceType ? this._selectedResourceType.description : undefined }).component();
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
@@ -145,9 +144,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 						component: this._cardGroup,
 						title: ''
 					}, {
-						component: this._resourceDescriptionLabel,
-						title: ''
-					}, {
 						component: this._agreementContainer,
 						title: ''
 					},
@@ -177,7 +173,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 	private selectResourceType(resourceType: ResourceType): void {
 		this._selectedResourceType = resourceType;
-		this._resourceDescriptionLabel.value = resourceType.description;
 		this._agreementCheckboxChecked = false;
 		this._agreementContainer.clearItems();
 		if (resourceType.agreement) {
