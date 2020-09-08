@@ -24,10 +24,11 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
-import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { Mark } from '../../../../common/markjs/vanilla';
+import * as mark from 'mark.js';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -84,7 +85,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IConfigurationService) private _configurationService: IConfigurationService
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
+		@Inject(INotebookService) private _notebookService: INotebookService,
+
 	) {
 		super();
 		this.isEditMode = true;
@@ -287,34 +290,42 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (range && this.output && this.output.nativeElement) {
 			let elements = this.getHtmlElements();
 			let ele = elements[range.startLineNumber - 1];
-			let m = new Mark(ele as HTMLElement);
-			let renderedText = this.getRenderedTextOutput();
-			let textElement = renderedText[range.startLineNumber - 1];
-
-			let searchString = textElement.substr(range.startColumn - 1, range.endColumn - range.startColumn);
-
-			// Need to find which # this is to avoid highlighting everything
-			if (m) {
-				let elementsAndRanges = m.getElementsAndRanges(searchString);
-				elementsAndRanges.forEach(er => {
-					const node = er.node.nextSibling;
-					let repl = document.createElement('mark');
-					repl.setAttribute('data-markjs', 'true');
-					repl.textContent = node.textContent;
-					repl.setAttribute('class', 'rangeHighlight');
-					node.parentNode.replaceChild(repl, node);
-				});
-				ele.scrollIntoView({ behavior: 'smooth' });
+			let m = new mark(ele);
+			let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
+			if (editor) {
+				let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
+				if (findModel && findModel.findMatches?.length > 0) {
+					let searchString = findModel.findExpression;
+					let findIndex = findModel.getFindIndex(); // Note: this is 1-based
+					// Check for how many occurrences of string exist in the same element
+					let numOccurrencesBefore = 0;
+					findIndex--;
+					if (findIndex > 0) {
+						// Search the element before it
+						findIndex--;
+						for (; findIndex >= 0; findIndex--) {
+							if (findModel.findMatches[findIndex].range.cell.id === range.cell.id) {
+								numOccurrencesBefore++;
+							}
+						}
+					}
+					m.mark(searchString, {
+						filter: function (node: Element, term: string, marksSoFar: number, marksTotal: number) {
+							return marksSoFar <= numOccurrencesBefore;
+						}
+					});
+					ele.scrollIntoView({ behavior: 'smooth' });
+				}
 			}
 		}
 	}
 
 	private removeDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
-			let children = this.getHtmlElements();
-			let ele = children[range.startLineNumber - 1];
-			let m = new Mark(ele as HTMLElement);
-			m.unmark();
+			let elements = this.getHtmlElements();
+			let ele = elements[range.startLineNumber - 1];
+			let m = new mark(ele);
+			m.unmark({ acrossElements: true });
 		}
 	}
 
