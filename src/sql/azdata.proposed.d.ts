@@ -194,10 +194,14 @@ declare module 'azdata' {
 	}
 
 	export interface ModelBuilder {
-		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
+		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent, RadioCardGroupComponentProperties>;
 		tabbedPanel(): TabbedPanelComponentBuilder;
-		separator(): ComponentBuilder<SeparatorComponent>;
-		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent>;
+		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
+		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
+	}
+
+	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
+		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
 	}
 
 	export interface RadioCard {
@@ -375,12 +379,12 @@ declare module 'azdata' {
 	/**
 	 * Builder for TabbedPannelComponent
 	 */
-	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any> {
+	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties> {
 		/**
 		 * Add the tabs to the component
 		 * @param tabs tabs/tab groups to be added
 		 */
-		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any>;
+		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties>;
 	}
 
 	export interface InputBoxProperties extends ComponentProperties {
