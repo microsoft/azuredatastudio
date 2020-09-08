@@ -204,7 +204,7 @@ export class BookModel {
 				} else {
 					let pathToNotebook: string;
 					let pathToMarkdown: string;
-					if (BookVersion.v2) {
+					if (book.version === BookVersion.v2) {
 						pathToNotebook = path.join(book.root, (sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
 						pathToMarkdown = path.join(book.root, (sections[i] as IJupyterBookSectionV2).file.concat('.md'));
 					} else if (sections[i].url) {
