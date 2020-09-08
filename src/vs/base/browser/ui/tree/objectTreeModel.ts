@@ -189,7 +189,7 @@ export class ObjectTreeModel<T extends NonNullable<any>, TFilterData extends Non
 		let childrenNodes = [...node.children] as ITreeNode<T, TFilterData>[];
 
 		if (recursive || first) {
-			childrenNodes = mergeSort(childrenNodes, this.sorter!.compare.bind(this.sorter)) as ITreeNode<T, TFilterData>[];
+			childrenNodes = mergeSort(childrenNodes, this.sorter!.compare.bind(this.sorter)) as ITreeNode<T, TFilterData>[]; // {{SQL CARBON EDIT}} strict-null-checks
 		}
 
 		return Iterable.map<ITreeNode<T | null, TFilterData>, ITreeElement<T>>(childrenNodes, node => ({

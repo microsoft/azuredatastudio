@@ -21,7 +21,6 @@
     "resourceDeploymentTypes": [
       {
         "name": "sql-edge",
-        "enabled": false,
         "displayName": "%resource-type-sql-edge-display-name%",
         "description": "%resource-type-sql-edge-description%",
         "platforms": "*",

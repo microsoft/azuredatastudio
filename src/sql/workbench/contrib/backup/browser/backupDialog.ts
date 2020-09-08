@@ -20,11 +20,12 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { NgModuleRef } from '@angular/core';
 
 export class BackupDialog extends Modal {
-	private _body: HTMLElement;
-	private _backupTitle: string;
-	private _moduleRef: any;
+	private _body?: HTMLElement;
+	private _backupTitle?: string;
+	private _moduleRef?: NgModuleRef<typeof BackupModule>;
 
 	constructor(
 		@IThemeService themeService: IThemeService,
@@ -48,7 +49,7 @@ export class BackupDialog extends Modal {
 		attachModalDialogStyler(this, this._themeService);
 
 		// Add angular component template to dialog body
-		this.bootstrapAngular(this._body);
+		this.bootstrapAngular(this._body!);
 	}
 
 	/**
@@ -61,7 +62,7 @@ export class BackupDialog extends Modal {
 			BACKUP_SELECTOR,
 			undefined,
 			undefined,
-			(moduleRef) => this._moduleRef = moduleRef);
+			(moduleRef: NgModuleRef<typeof BackupModule>) => this._moduleRef = moduleRef);
 	}
 
 	public hideError() {

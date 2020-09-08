@@ -173,6 +173,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		this._proxy.$registerSqlAssessmentServicesProvider(provider.providerId, provider.handle);
 		return rt;
 	}
+	$registerDataGridProvider(provider: azdata.DataGridProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.DataGridProvider);
+		this._proxy.$registerDataGridProvider(provider.providerId, provider.handle);
+		return rt;
+	}
 	$registerCapabilitiesServiceProvider(provider: azdata.CapabilitiesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.CapabilitiesProvider);
 		this._proxy.$registerCapabilitiesServiceProvider(provider.providerId, provider.handle);
@@ -855,5 +860,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	public $generateAssessmentScript(handle: number, items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> {
 		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).generateAssessmentScript(items);
+	}
+
+	public $getDataGridItems(handle: number): Thenable<azdata.DataGridItem[]> {
+		return this._resolveProvider<azdata.DataGridProvider>(handle).getDataGridItems();
+	}
+
+	public $getDataGridColumns(handle: number): Thenable<azdata.DataGridColumn[]> {
+		return this._resolveProvider<azdata.DataGridProvider>(handle).getDataGridColumns();
 	}
 }

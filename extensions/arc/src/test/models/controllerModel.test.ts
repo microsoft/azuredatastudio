@@ -3,17 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ControllerInfo } from 'arc';
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
+import * as should from 'should';
 import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
-import * as vscode from 'vscode';
-import * as should from 'should';
 import { v4 as uuid } from 'uuid';
-import { ConnectToControllerDialog } from '../../ui/dialogs/connectControllerDialog';
-import { ControllerModel, ControllerInfo } from '../../models/controllerModel';
-import { AzureArcTreeDataProvider } from '../../ui/tree/azureArcTreeDataProvider';
+import * as vscode from 'vscode';
 import { UserCancelledError } from '../../common/utils';
+import { ControllerModel } from '../../models/controllerModel';
+import { ConnectToControllerDialog } from '../../ui/dialogs/connectControllerDialog';
+import { AzureArcTreeDataProvider } from '../../ui/tree/azureArcTreeDataProvider';
 
 describe('ControllerModel', function (): void {
 	afterEach(function (): void {

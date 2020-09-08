@@ -115,6 +115,7 @@ export class ScrollableView extends Disposable {
 		}
 
 		this.scrollableElement.setScrollDimensions(scrollDimensions);
+		this.rerender(this.getRenderRange(this.lastRenderTop, this.lastRenderHeight));
 	}
 
 	setScrollTop(scrollTop: number): void {

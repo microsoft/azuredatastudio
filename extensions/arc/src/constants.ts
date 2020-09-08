@@ -118,11 +118,6 @@ export class IconPathHelper {
 	}
 }
 
-export const enum ResourceType {
-	dataControllers = 'dataControllers',
-	postgresInstances = 'postgresInstances',
-	sqlManagedInstances = 'sqlManagedInstances'
-}
 
 export const enum Endpoints {
 	mgmtproxy = 'mgmtproxy',

@@ -147,6 +147,19 @@ interface IWindowIndicator {
 	command?: string;
 }
 
+interface IInitialColorTheme {
+
+	/**
+	 * Initial color theme type.
+	 */
+	themeType: 'light' | 'dark' | 'hc';
+
+	/**
+	 * A list of workbench colors to apply initially.
+	 */
+	colors?: { [colorId: string]: string };
+}
+
 interface IDefaultSideBarLayout {
 	visible?: boolean;
 	containers?: ({
@@ -232,6 +245,8 @@ interface IWorkbenchConstructionOptions {
 
 	/**
 	 * Session id of the current authenticated user
+	 *
+	 * @deprecated Instead pass current authenticated user info through [credentialsProvider](#credentialsProvider)
 	 */
 	readonly authenticationSessionId?: string;
 
@@ -284,7 +299,9 @@ interface IWorkbenchConstructionOptions {
 	userDataProvider?: IFileSystemProvider;
 
 	/**
-	 * Enables user data sync by default and syncs into the current authenticated user account using the provided [authenticationSessionId}(#authenticationSessionId).
+	 * Enables Settings Sync by default.
+	 *
+	 * Syncs with the current authenticated user account (provided in [credentialsProvider](#credentialsProvider)) by default.
 	 */
 	readonly enableSyncByDefault?: boolean;
 
@@ -380,6 +397,15 @@ interface IWorkbenchConstructionOptions {
 	 * Optional override for properties of the window indicator in the status bar.
 	 */
 	readonly windowIndicator?: IWindowIndicator;
+
+	/**
+	 * Specifies the default theme type (LIGHT, DARK..) and allows to provide initial colors that are shown
+	 * until the color theme that is specified in the settings (`editor.colorTheme`) is loaded and applied.
+	 * Once there are persisted colors from a last run these will be used.
+	 *
+	 * The idea is that the colors match the main colors from the theme defined in the `configurationDefaults`.
+	 */
+	readonly initialColorTheme?: IInitialColorTheme;
 
 	//#endregion
 
@@ -536,6 +562,7 @@ export {
 	IHomeIndicator,
 	IProductConfiguration,
 	IWindowIndicator,
+	IInitialColorTheme,
 
 	// Default layout
 	IDefaultView,

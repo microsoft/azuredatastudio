@@ -141,7 +141,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		assert.equal(conn.serverName, undefined);
 		conn.connectionName = connectionProfile.connectionName!;
 		conn.serverName = connectionProfile.serverName;
-		conn.databaseName = connectionProfile.databaseName;
+		conn.databaseName = connectionProfile.databaseName!;
 		conn.authenticationType = connectionProfile.authenticationType;
 		conn.password = connectionProfile.password;
 		conn.userName = connectionProfile.userName;
@@ -157,7 +157,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, mssqlProviderName);
 		assert.equal(conn.serverName, undefined);
 		conn.serverName = connectionProfile.serverName;
-		conn.databaseName = connectionProfile.databaseName;
+		conn.databaseName = connectionProfile.databaseName!;
 		conn.authenticationType = connectionProfile.authenticationType;
 		conn.password = connectionProfile.password;
 		conn.userName = connectionProfile.userName;

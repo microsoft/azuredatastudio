@@ -95,7 +95,7 @@ export class DashboardInput extends EditorInput {
 
 	private isMasterMssql(): boolean {
 		return this.connectionProfile.providerName === mssqlProviderName
-			&& this.connectionProfile.databaseName.toLowerCase() === 'master';
+			&& this.connectionProfile.databaseName?.toLowerCase() === 'master';
 	}
 
 	public get uri(): string | undefined {
@@ -122,12 +122,12 @@ export class DashboardInput extends EditorInput {
 		}
 	}
 
-	set container(container: HTMLElement) {
+	set container(container: HTMLElement | undefined) {
 		this._disposeContainer();
 		this._parentContainer = container;
 	}
 
-	getContainer(): HTMLElement | undefined {
+	get container(): HTMLElement | undefined {
 		return this._parentContainer;
 	}
 
