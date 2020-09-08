@@ -10,7 +10,6 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ParsedArgs } from 'vs/platform/environment/node/argv';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -29,8 +28,8 @@ import { IURLService, IURLHandler } from 'vs/platform/url/common/url';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { find } from 'vs/base/common/arrays';
-import { INativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/environment/common/environment';
+import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 
 export interface SqlArgs {
 	_?: string[];
@@ -79,7 +78,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		@IDialogService private readonly dialogService: IDialogService
 	) {
 		if (ipc) {
-			ipc.on('ads:processCommandLine', (event: any, args: ParsedArgs) => this.onLaunched(args));
+			ipc.on('ads:processCommandLine', (event: any, args: NativeParsedArgs) => this.onLaunched(args));
 		}
 		// we only get the ipc from main during window reuse
 		if (environmentService) {
@@ -90,7 +89,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		}
 	}
 
-	private onLaunched(args: ParsedArgs) {
+	private onLaunched(args: NativeParsedArgs) {
 		let sqlProvider = this._capabilitiesService.getCapabilities(Constants.mssqlProviderName);
 		// We can't connect to object explorer until the MSSQL connection provider is registered
 		if (sqlProvider) {

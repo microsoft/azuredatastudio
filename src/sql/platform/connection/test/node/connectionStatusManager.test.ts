@@ -81,7 +81,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 		capabilitiesService = new TestCapabilitiesService();
 		connectionProfileObject = new ConnectionProfile(capabilitiesService, connectionProfile);
 
-		const environmentService = new EnvironmentService(parseArgs(process.argv, OPTIONS), process.execPath);
+		const environmentService = new EnvironmentService(parseArgs(process.argv, OPTIONS));
 		connections = new ConnectionStatusManager(capabilitiesService, new NullLogService(), environmentService, new TestNotificationService());
 		connection1Id = Utils.generateUri(connectionProfile);
 		connection2Id = 'connection2Id';
