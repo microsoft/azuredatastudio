@@ -24,6 +24,9 @@ text-cell-component .notebook-preview {
 text-cell-component .show-markdown.show-preview code-component {
 	width: 50%
 }
+text-cell-component .notebook-preview {
+	margin: 14px 0px 13px 8px;
+}
 text-cell-component .show-markdown .notebook-preview {
 	border-color: transparent;
 	border-left-width: 1px;
