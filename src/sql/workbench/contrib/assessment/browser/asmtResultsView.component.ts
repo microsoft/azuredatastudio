@@ -197,7 +197,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 	}
 
 	public get isBusy(): boolean {
-		return find(Object.values(this.spinner), item => item.style.visibility === 'visible') !== undefined;
+		return Object.values(this.spinner).find(item => item.style.visibility === 'visible') !== undefined;
 	}
 
 	public layout(): void {
@@ -515,7 +515,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 	}
 
 	private renderTarget(_row, _cell, _value, _columnDef, dataContext) {
-		return `<div class='carbon-taskbar' style='white-space: nowrap;	text-overflow: ellipsis; overflow: hidden;'><span class='action-label codicon ${TARGET_ICON_CLASS[dataContext.targetType]}' title='${dataContext.targetName}'>${dataContext.targetName}</span></div>`;
+		return `<div class='carbon-taskbar ellps'><span class='action-label codicon ${TARGET_ICON_CLASS[dataContext.targetType]}' title='${dataContext.targetName}'>${dataContext.targetName}</span></div>`;
 	}
 
 	private detailSelectionFormatter(_row: number, _cell: number, _value: any, _columnDef: Slick.Column<Slick.SlickData>, dataContext: Slick.SlickData): string | undefined {
