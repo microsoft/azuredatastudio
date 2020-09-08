@@ -96,6 +96,10 @@ suite('ConfigurationEditingService', () => {
 		globalTasksFile = path.join(workspaceDir, 'tasks.json');
 		workspaceSettingsDir = path.join(workspaceDir, '.azuredatastudio'); // {{SQL CARBON EDIT}} .vscode to .azuredatastudio
 
+		// {{SQL CARBON EDIT}} add .vscode folder for tasks tests
+		const tasksSettingsDir = path.join(workspaceDir, '.vscode');
+		await mkdirp(tasksSettingsDir, 493);
+
 		return await mkdirp(workspaceSettingsDir, 493);
 	}
 
