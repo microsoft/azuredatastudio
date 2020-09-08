@@ -50,13 +50,17 @@ Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).regi
 
 class ResourceViewerContributor implements IWorkbenchContribution {
 	constructor(
-		@IExtensionService extensionService: IExtensionService
+		@IExtensionService private readonly extensionService: IExtensionService
 	) {
-		if (extensionService.getExtension('arc')) {
+		this.checkForArc();
+	}
+
+	private async checkForArc(): Promise<void> {
+		if (await this.extensionService.getExtension('Microsoft.arc')) {
 			registerResourceViewerContainer();
 		} else {
-			extensionService.onDidChangeExtensions(() => {
-				if (extensionService.getExtension('arc')) {
+			this.extensionService.onDidChangeExtensions(async () => {
+				if (await this.extensionService.getExtension('Microsoft.arc')) {
 					registerResourceViewerContainer();
 				}
 			});
