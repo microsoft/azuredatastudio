@@ -11,16 +11,17 @@ import * as constants from '../common/constants';
 import { IPrompter, IQuestion, confirm } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
-import { BookModel } from './bookModel';
+import { BookModel, BookVersion } from './bookModel';
 import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
 import { isNullOrUndefined } from 'util';
-import { IJupyterBookSectionV2 } from '../contracts/content';
+import { IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
 import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 
+const content = 'content';
 
 interface BookSearchResults {
 	notebookPaths: string[];
@@ -247,7 +248,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					const sectionToOpen = bookRoot.findChildSection(urlToOpen);
 					urlPath = sectionToOpen?.url;
 				} else {
-					urlPath = this.currentBook.version === 'v1' ? this.currentBook.bookItems[0].tableOfContents.sections[0].url : (this.currentBook.bookItems[0].tableOfContents.sections[0] as IJupyterBookSectionV2).file;
+					urlPath = this.currentBook.version === BookVersion.v1 ? (this.currentBook.bookItems[0].tableOfContents.sections[0] as IJupyterBookSectionV1).url : (this.currentBook.bookItems[0].tableOfContents.sections[0] as IJupyterBookSectionV2).file;
 				}
 			}
 			if (urlPath) {
@@ -411,13 +412,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public async searchJupyterBooks(treeItem?: BookTreeItem): Promise<void> {
 		let folderToSearch: string;
 		if (treeItem && treeItem.sections !== undefined) {
-			if (treeItem.version === 'v1') {
+			if (treeItem.version === BookVersion.v1) {
 				if (treeItem.uri) {
-					folderToSearch = path.join(treeItem.book.root, 'content', path.dirname(treeItem.uri));
+					folderToSearch = path.join(treeItem.book.root, content, path.dirname(treeItem.uri));
 				} else {
-					folderToSearch = path.join(treeItem.root, 'content');
+					folderToSearch = path.join(treeItem.root, content);
 				}
-			} else if (treeItem.version === 'v2') {
+			} else if (treeItem.version === BookVersion.v2) {
 				if (treeItem.uri) {
 					folderToSearch = path.join(treeItem.book.root, path.dirname(treeItem.uri));
 				} else {
@@ -553,7 +554,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
 		if (element?.uri) {
 			let parentPath: string;
-			let contentFolder = element.book.version === 'v1' ? path.join(element.book.root, 'content') : element.book.root;
+			let contentFolder = element.book.version === BookVersion.v1 ? path.join(element.book.root, content) : element.book.root;
 			parentPath = path.join(contentFolder, element.uri.substring(0, element.uri.lastIndexOf(path.posix.sep)));
 			if (parentPath === element.root) {
 				return undefined;

@@ -14,6 +14,12 @@ import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, JupyterBookSection, IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
 
 const fsPromises = fileServices.promises;
+const content = 'content';
+
+export enum BookVersion {
+	v1 = 'v1',
+	v2 = 'v2'
+}
 
 export class BookModel {
 	private _bookItems: BookTreeItem[];
@@ -21,7 +27,7 @@ export class BookModel {
 	private _tableOfContentsPath: string;
 	private _contentFolderPath: string;
 	private _configPath: string;
-	private _bookVersion: string;
+	private _bookVersion: BookVersion;
 	private _rootPath: string;
 	private _errorMessage: string;
 
@@ -50,7 +56,7 @@ export class BookModel {
 		let isOlderVersion: boolean;
 		this._configPath = path.posix.join(folderPath, '_config.yml');
 		try {
-			isOlderVersion = (await fs.stat(path.posix.join(folderPath, '_data'))).isDirectory() && (await fs.stat(path.posix.join(folderPath, 'content'))).isDirectory();
+			isOlderVersion = (await fs.stat(path.posix.join(folderPath, '_data'))).isDirectory() && (await fs.stat(path.posix.join(folderPath, content))).isDirectory();
 		} catch {
 			isOlderVersion = false;
 		}
@@ -60,14 +66,14 @@ export class BookModel {
 			if (isTocFile) {
 				this._tableOfContentsPath = path.posix.join(folderPath, '_data', 'toc.yml');
 			}
-			this._bookVersion = 'v1';
-			this._contentFolderPath = path.posix.join(folderPath, 'content/');
+			this._bookVersion = BookVersion.v1;
+			this._contentFolderPath = path.posix.join(folderPath, content, '');
 			this._rootPath = path.dirname(path.dirname(this._tableOfContentsPath));
 		} else {
 			this._contentFolderPath = folderPath;
 			this._tableOfContentsPath = path.posix.join(folderPath, '_toc.yml');
 			this._rootPath = path.dirname(this._tableOfContentsPath);
-			this._bookVersion = 'v2';
+			this._bookVersion = BookVersion.v2;
 		}
 	}
 
@@ -176,7 +182,7 @@ export class BookModel {
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url || (sections[i] as IJupyterBookSectionV2).file) {
-				if (sections[i].url && ((sections[i] as IJupyterBookSectionV1).external || book.version === 'v2')) {
+				if (sections[i].url && ((sections[i] as IJupyterBookSectionV1).external || book.version === BookVersion.v2)) {
 					let externalLink: BookTreeItem = new BookTreeItem({
 						title: sections[i].title,
 						contentPath: undefined,
@@ -198,12 +204,12 @@ export class BookModel {
 				} else {
 					let pathToNotebook: string;
 					let pathToMarkdown: string;
-					if (book.version === 'v2') {
+					if (BookVersion.v2) {
 						pathToNotebook = path.join(book.root, (sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
 						pathToMarkdown = path.join(book.root, (sections[i] as IJupyterBookSectionV2).file.concat('.md'));
 					} else if (sections[i].url) {
-						pathToNotebook = path.join(book.root, 'content', (sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
-						pathToMarkdown = path.join(book.root, 'content', (sections[i] as IJupyterBookSectionV1).url.concat('.md'));
+						pathToNotebook = path.join(book.root, content, (sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
+						pathToMarkdown = path.join(book.root, content, (sections[i] as IJupyterBookSectionV1).url.concat('.md'));
 					}
 
 					// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
@@ -277,7 +283,6 @@ export class BookModel {
 		try {
 			return section.reduce((acc, val) => Array.isArray(val.sections) ?
 				acc.concat(val).concat(this.parseJupyterSections(val.sections)) : acc.concat(val), []);
-
 		} catch (e) {
 			this._errorMessage = loc.invalidTocFileError();
 			if (section.length > 0) {
@@ -285,7 +290,6 @@ export class BookModel {
 			}
 			throw this._errorMessage;
 		}
-
 	}
 
 	public get tableOfContentsPath(): string {
