@@ -409,7 +409,7 @@ export class AttachToDropdown extends SelectBox {
 			let currentKernelName = this.model.clientSession.kernel.name.toLowerCase();
 			let currentKernelSpec = find(this.model.specs.kernels, kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
 			if (currentKernelSpec) {
-				//KernelDisplay Name should be Kusto when connecting to Kusto connection
+				//kernelDisplayName should be Kusto when connecting to Kusto connection
 				if ((this.model.context?.serverCapabilities.notebookKernelAlias && this.model.currentKernelAlias === this.model.context?.serverCapabilities.notebookKernelAlias) || (this.model.kernelAliases.includes(this.model.currentKernel) && this.model.currentKernel)) {
 					kernelDisplayName = this.model.context?.serverCapabilities.notebookKernelAlias || this.model.currentKernel;
 				} else {
