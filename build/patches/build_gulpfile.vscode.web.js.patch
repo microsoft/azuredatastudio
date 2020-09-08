@@ -1,5 +1,5 @@
 diff --git a/build/gulpfile.vscode.web.js b/build/gulpfile.vscode.web.js
-index f3a95a3a1fe..8835e93611a 100644
+index f3a95a3a1fe..b6e68be8876 100644
 --- a/build/gulpfile.vscode.web.js
 +++ b/build/gulpfile.vscode.web.js
 @@ -1,6 +1,6 @@
@@ -10,17 +10,7 @@ index f3a95a3a1fe..8835e93611a 100644
   *--------------------------------------------------------------------------------------------*/
  
  'use strict';
-@@ -31,11 +31,16 @@ const commit = util.getVersion(REPO_ROOT);
- const quality = product.quality;
- const version = (quality && quality !== 'stable') ? `${packageJson.version}-${quality}` : packageJson.version;
- 
--const productionDependencies = deps.getProductionDependencies(WEB_FOLDER);
-+const productionDependencies = deps.getProductionDependencies(WEB_FOLDER).concat([
-+	'rxjs/Observable',
-+	'rxjs/add/observable/fromPromise',
-+	'rxjs/Subject',
-+	'rxjs/Observer',
-+]);
+@@ -35,7 +35,7 @@ const productionDependencies = deps.getProductionDependencies(WEB_FOLDER);
  
  const vscodeWebResourceIncludes = [
  	// Workbench
@@ -29,7 +19,7 @@ index f3a95a3a1fe..8835e93611a 100644
  	'out-build/vs/code/browser/workbench/*.html',
  	'out-build/vs/base/browser/ui/codicons/codicon/**/*.ttf',
  	'out-build/vs/**/markdown.css',
-@@ -54,7 +59,7 @@ const vscodeWebResources = [
+@@ -54,7 +54,7 @@ const vscodeWebResources = [
  	...vscodeWebResourceIncludes,
  
  	// Excludes
