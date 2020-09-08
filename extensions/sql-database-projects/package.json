@@ -28,6 +28,11 @@
     "Microsoft.schema-compare"
   ],
   "contributes": {
+    "problemMatchers": [
+      {
+        "name": "sqlproj"
+      }
+    ],
     "configuration": [
       {
         "title": "%sqlDatabaseProjects.Settings%",
