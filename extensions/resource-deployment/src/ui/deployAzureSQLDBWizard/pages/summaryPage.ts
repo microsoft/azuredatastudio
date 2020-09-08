@@ -90,16 +90,6 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 			inputWidth: '200px',
 			title: constants.DatabaseSettingsPageTitle,
 			rows: [
-				// {
-				// 	items: [
-				// 		{
-				// 			type: FieldType.ReadonlyText,
-				// 			label: constants.PublicIPDropdownLabel,
-				// 			defaultValue: ((model.newPublicIp === 'True' ? '(new) ' : '') + this.processPublicIp()),
-				// 			labelCSSStyles: { fontWeight: FontWeight.Bold }
-				// 		}
-				// 	]
-				// },
 				{
 					items: [
 						{
@@ -199,14 +189,4 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 
 		return flexContainer;
 	}
-
-	// public processPublicIp(): string {
-	// 	if (this.wizard.model.newPublicIp === 'True') {
-	// 		return this.wizard.model.startIpAddress;
-	// 	}
-
-	// 	let resourceGroupName = this.wizard.model.startIpAddress.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
-	// 	let pipName = this.wizard.model.startIpAddress.replace(RegExp('^(.*?)/publicIPAddresses/'), '');
-	// 	return `(${resourceGroupName}) ${pipName}`;
-	// }
 }

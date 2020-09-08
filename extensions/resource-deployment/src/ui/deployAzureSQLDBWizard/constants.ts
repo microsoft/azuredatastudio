@@ -20,13 +20,12 @@ export const AzureAccountDropdownLabel = localize('deployAzureSQLDB.AzureAccount
 export const AzureAccountSubscriptionDropdownLabel = localize('deployAzureSQLDB.AzureSubscriptionDropdownLabel', "Subscription");
 export const AzureAccountDatabaseServersDropdownLabel = localize('deployAzureSQLDB.AzureDatabaseServersDropdownLabel', "Server");
 export const AzureAccountResourceGroupDropdownLabel = localize('deployAzureSQLDB.ResourceGroup', "Resource Group");
+//@todo alma1 9/8/20 Region label used for upcoming server creation feature.
 //export const AzureAccountRegionDropdownLabel = localize('deployAzureSQLDB.AzureRegionDropdownLabel', "Region (for Public IP Address)");
 
 // Database settings page constants
 export const DatabaseSettingsPageTitle = localize('deployAzureSQLDB.DatabaseSettingsPageTitle', "Database settings");
 export const DatabaseSettingsPageDescription = localize('deployAzureSQLDB.DatabaseSettingsPageDescription', "   ");
-//export const PublicIPDropdownLabel = localize('deployAzureSQLDB.PublicIPDropdownLabel', "Public IP");
-//export const DatabaseSettingsNewPublicIp = localize('deployAzureSQLDB.DatabaseSettingsNewPublicIp', "New public ip");
 export const FirewallRuleNameLabel = localize('deployAzureSQLDB.FirewallRuleNameLabel', 'Firewall rule name');
 export const DatabaseNameLabel = localize('deployAzureSQLDB.DatabaseNameLabel', 'SQL database name');
 export const StartIpAddressLabel = localize('deployAzureSQLDB.StartIpAddressLabel', "Min Ip Address in firewall allowed IP Range (Set to 0.0.0.0 for all Azure-internal IP addresses)");
