@@ -84,7 +84,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
 	private _kernelAliases: string[] = [];
 	private _currentKernelAlias: string;
-	private _currentKernel: string;
+	private _selectedKernelDisplayName: string;
 
 	public requestConnectionHandler: () => Promise<boolean>;
 
@@ -246,8 +246,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._currentKernelAlias;
 	}
 
-	public get currentKernel(): string {
-		return this._currentKernel;
+	public get selectedKernelDisplayName(): string {
+		return this._selectedKernelDisplayName;
 	}
 
 	public set trustedMode(isTrusted: boolean) {
@@ -721,7 +721,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public changeKernel(displayName: string): void {
-		this._currentKernel = displayName;
+		this._selectedKernelDisplayName = displayName;
 		this._currentKernelAlias = this.context?.serverCapabilities.notebookKernelAlias;
 		if (this.kernelAliases.includes(this.currentKernelAlias) && displayName === this.currentKernelAlias) {
 			this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));

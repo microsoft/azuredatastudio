@@ -409,9 +409,9 @@ export class AttachToDropdown extends SelectBox {
 			let currentKernelName = this.model.clientSession.kernel.name.toLowerCase();
 			let currentKernelSpec = find(this.model.specs.kernels, kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
 			if (currentKernelSpec) {
-				//kernelDisplayName should be Kusto when connecting to Kusto connection
-				if ((this.model.context?.serverCapabilities.notebookKernelAlias && this.model.currentKernelAlias === this.model.context?.serverCapabilities.notebookKernelAlias) || (this.model.kernelAliases.includes(this.model.currentKernel) && this.model.currentKernel)) {
-					kernelDisplayName = this.model.context?.serverCapabilities.notebookKernelAlias || this.model.currentKernel;
+				//KernelDisplayName should be Kusto when connecting to Kusto connection
+				if ((this.model.context?.serverCapabilities.notebookKernelAlias && this.model.currentKernelAlias === this.model.context?.serverCapabilities.notebookKernelAlias) || (this.model.kernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.selectedKernelDisplayName)) {
+					kernelDisplayName = this.model.context?.serverCapabilities.notebookKernelAlias || this.model.selectedKernelDisplayName;
 				} else {
 					kernelDisplayName = currentKernelSpec.display_name;
 				}
@@ -433,7 +433,7 @@ export class AttachToDropdown extends SelectBox {
 			this.setOptions(connections, 0);
 			this.enable();
 
-			if (this.model.kernelAliases.includes(currentKernel) && this.model.currentKernel !== currentKernel) {
+			if (this.model.kernelAliases.includes(currentKernel) && this.model.selectedKernelDisplayName !== currentKernel) {
 				this.model.changeKernel(currentKernel);
 			}
 		}
