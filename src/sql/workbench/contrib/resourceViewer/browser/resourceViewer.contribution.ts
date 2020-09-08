@@ -52,7 +52,7 @@ class ResourceViewerContributor implements IWorkbenchContribution {
 	constructor(
 		@IExtensionService private readonly extensionService: IExtensionService
 	) {
-		this.checkForArc();
+		void this.checkForArc();
 	}
 
 	private async checkForArc(): Promise<void> {
