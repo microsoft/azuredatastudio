@@ -24,7 +24,7 @@ export const AzureAccountResourceGroupDropdownLabel = localize('deployAzureSQLDB
 
 // Database settings page constants
 export const DatabaseSettingsPageTitle = localize('deployAzureSQLDB.DatabaseSettingsPageTitle', "Database settings");
-export const DatabaseSettingsPageDescription = localize('deployAzureSQLDB.DatabaseSettingsPageDescription', "");
+export const DatabaseSettingsPageDescription = localize('deployAzureSQLDB.DatabaseSettingsPageDescription', "   ");
 //export const PublicIPDropdownLabel = localize('deployAzureSQLDB.PublicIPDropdownLabel', "Public IP");
 //export const DatabaseSettingsNewPublicIp = localize('deployAzureSQLDB.DatabaseSettingsNewPublicIp', "New public ip");
 export const FirewallRuleNameLabel = localize('deployAzureSQLDB.FirewallRuleNameLabel', 'Firewall rule name');
