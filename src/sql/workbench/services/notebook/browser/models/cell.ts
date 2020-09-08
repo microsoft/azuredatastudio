@@ -339,6 +339,8 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public async runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean> {
 		try {
+			// Clear grid data conversion promises from previous execution results
+			this._gridDataConversionComplete = [];
 			if (!this.active && this !== this.notebookModel.activeCell) {
 				this.notebookModel.updateActiveCell(this);
 				this.active = true;

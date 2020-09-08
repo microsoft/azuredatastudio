@@ -21,8 +21,8 @@ import { SerializationService } from 'sql/platform/serialization/common/serializ
 import { SaveFormat, ResultSerializer } from 'sql/workbench/services/query/common/resultSerializer';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { URI } from 'vs/base/common/uri';
-import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
+import { createandLoadNotebookModel } from 'sql/workbench/contrib/notebook/test/browser/cellToolbarActions.test';
 
 export class TestSerializationProvider implements azdata.SerializationProvider {
 	providerId: string;
@@ -53,7 +53,6 @@ suite('Data Resource Data Provider', function () {
 	let dataResourceDataProvider: DataResourceDataProvider;
 
 	suiteSetup(async () => {
-		let queryRunner: TypeMoq.Mock<QueryRunner> = TypeMoq.Mock.ofType(QueryRunner);
 		// Create test data with two rows and two columns
 		let source: IDataResource = {
 			data: [{ 0: '1', 1: '2' }, { 0: '3', 1: '4' }],
@@ -67,6 +66,8 @@ suite('Data Resource Data Provider', function () {
 			rowCount: 2
 		};
 		let cellModel = TypeMoq.Mock.ofType(CellModel);
+		let notebookModel = await createandLoadNotebookModel();
+		cellModel.setup(x => x.notebookModel).returns(() => notebookModel);
 		tempFolderPath = path.join(os.tmpdir(), `TestDataResourceDataProvider_${uuid.v4()}`);
 		await fs.mkdir(tempFolderPath);
 
@@ -93,7 +94,7 @@ suite('Data Resource Data Provider', function () {
 		dataResourceDataProvider = new DataResourceDataProvider(
 			0, // batchId
 			0, // id
-			queryRunner.object,
+			undefined, // QueryRunner
 			source,
 			resultSet,
 			cellModel.object,

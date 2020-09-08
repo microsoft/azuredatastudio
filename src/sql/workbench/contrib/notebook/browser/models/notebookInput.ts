@@ -33,6 +33,9 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 import { NotebookFindModel } from 'sql/workbench/contrib/notebook/browser/find/notebookFindModel';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { INotification, INotificationService } from 'vs/platform/notification/common/notification';
+import Severity from 'vs/base/common/severity';
+import * as nls from 'vs/nls';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -221,7 +224,8 @@ export abstract class NotebookInput extends EditorInput {
 		@ITextModelService private textModelService: ITextModelService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@INotebookService private notebookService: INotebookService,
-		@IExtensionService private extensionService: IExtensionService
+		@IExtensionService private extensionService: IExtensionService,
+		@INotificationService private notificationService: INotificationService
 	) {
 		super();
 		this._standardKernels = [];
@@ -290,7 +294,16 @@ export abstract class NotebookInput extends EditorInput {
 	}
 
 	async save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		const conversionNotification: INotification = {
+			severity: Severity.Info,
+			message: nls.localize('convertingData', "Waiting for table data conversion to complete..."),
+			progress: {
+				infinite: true
+			}
+		};
+		const notificationHandle = this.notificationService.notify(conversionNotification);
 		await this._model.getNotebookModel().gridDataConversionComplete;
+		notificationHandle.close();
 		this.updateModel();
 		let input = await this.textInput.save(groupId, options);
 		await this.setTrustForNewEditor(input);
