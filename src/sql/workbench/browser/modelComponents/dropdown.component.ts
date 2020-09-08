@@ -32,7 +32,7 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 	</div>
 	`
 })
-export default class DropDownComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class DropDownComponent extends ComponentBase<azdata.DropDownProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _editableDropdown: Dropdown;
@@ -186,15 +186,15 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	// CSS-bound properties
 
 	private get value(): string | azdata.CategoryValue {
-		return this.getPropertyOrDefault<azdata.DropDownProperties, string | azdata.CategoryValue>((props) => props.value, '');
+		return this.getPropertyOrDefault<string | azdata.CategoryValue>((props) => props.value, '');
 	}
 
 	private get editable(): boolean {
-		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.editable, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.editable, false);
 	}
 
 	private get fireOnTextChange(): boolean {
-		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.fireOnTextChange, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.fireOnTextChange, false);
 	}
 
 	public getEditableDisplay(): string {
@@ -206,15 +206,15 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	}
 
 	private set value(newValue: string | azdata.CategoryValue) {
-		this.setPropertyFromUI<azdata.DropDownProperties, string | azdata.CategoryValue>(this.setValueProperties, newValue);
+		this.setPropertyFromUI<string | azdata.CategoryValue>(this.setValueProperties, newValue);
 	}
 
 	private get values(): string[] | azdata.CategoryValue[] {
-		return this.getPropertyOrDefault<azdata.DropDownProperties, string[] | azdata.CategoryValue[]>((props) => props.values, []);
+		return this.getPropertyOrDefault<string[] | azdata.CategoryValue[]>((props) => props.values, []);
 	}
 
 	private set values(newValue: string[] | azdata.CategoryValue[]) {
-		this.setPropertyFromUI<azdata.DropDownProperties, string[] | azdata.CategoryValue[]>(this.setValuesProperties, newValue);
+		this.setPropertyFromUI<string[] | azdata.CategoryValue[]>(this.setValuesProperties, newValue);
 	}
 
 	private setValueProperties(properties: azdata.DropDownProperties, value: string | azdata.CategoryValue): void {
@@ -226,11 +226,11 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	}
 
 	public get required(): boolean {
-		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.required, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.required, false);
 	}
 
 	public set required(newValue: boolean) {
-		this.setPropertyFromUI<azdata.DropDownProperties, boolean>((props, value) => props.required = value, newValue);
+		this.setPropertyFromUI<boolean>((props, value) => props.required = value, newValue);
 	}
 
 	public focus(): void {
