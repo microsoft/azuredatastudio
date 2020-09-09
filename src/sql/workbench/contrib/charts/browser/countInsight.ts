@@ -8,11 +8,11 @@ import 'vs/css!./media/countInsight';
 import { IInsight } from './interfaces';
 
 import { $, clearNode } from 'vs/base/browser/dom';
-import { InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
 export class CountInsight implements IInsight {
-	public options;
+	public options: IInsightOptions = { type: InsightType.Count };
 	public static readonly types = [InsightType.Count];
 	public readonly types = CountInsight.types;
 

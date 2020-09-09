@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { WizardController } from './wizard/wizardController';
+import { AssessmentResultsDialog } from './dialog/assessmentResults/assessmentResultsDialog';
 
 class SQLMigration {
 
@@ -22,8 +23,13 @@ class SQLMigration {
 				const connection = await azdata.connection.openConnectionDialog();
 
 				const wizardController = new WizardController(this.context);
-				wizardController.openWizard(connection);
+				await wizardController.openWizard(connection);
 			}),
+
+			vscode.commands.registerCommand('sqlmigration.testDialog', async () => {
+				let dialog = new AssessmentResultsDialog('ownerUri', undefined!, 'Assessment Dialog');
+				await dialog.openDialog();
+			})
 		];
 
 		this.context.subscriptions.push(...commandDisposables);
