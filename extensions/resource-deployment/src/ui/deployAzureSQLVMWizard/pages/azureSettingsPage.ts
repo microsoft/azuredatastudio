@@ -9,7 +9,7 @@ import { WizardPageBase } from '../../wizardPageBase';
 import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 import { apiService } from '../../../services/apiService';
 import { azureResource } from 'azureResource';
-import * as vscode from 'vscode';
+import * as  vscode from 'vscode';
 
 export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 	// <- means depends on
@@ -49,13 +49,10 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	public async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
-
-			await Promise.all([
-				this.createAzureAccountsDropdown(view),
-				this.createAzureSubscriptionsDropdown(view),
-				this.createResourceDropdown(view),
-				this.createAzureRegionsDropdown(view)
-			]);
+			await this.createAzureAccountsDropdown(view);
+			await this.createAzureSubscriptionsDropdown(view);
+			await this.createResourceDropdown(view);
+			await this.createAzureRegionsDropdown(view);
 			this.populateAzureAccountsDropdown();
 
 			this._form = view.modelBuilder.formContainer()
@@ -277,7 +274,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async createAzureRegionsDropdown(view: azdata.ModelView) {
 		this._azureRegionsDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true
+			//required: true
 		}).component();
 
 		this._azureRegionsLoader = view.modelBuilder.loadingComponent().withItem(this._azureRegionsDropdown).component();

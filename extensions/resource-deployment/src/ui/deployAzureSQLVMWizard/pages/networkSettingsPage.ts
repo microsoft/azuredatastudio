@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { WizardPageBase } from '../../wizardPageBase';
 import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 import * as constants from '../constants';
-import { BasePage } from './basePage';
 
-export class NetworkSettingsPage extends BasePage {
+export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	// virtual network components
 	private _newVirtualNetworkCheckbox!: azdata.CheckBoxComponent;
@@ -47,12 +47,10 @@ export class NetworkSettingsPage extends BasePage {
 	public async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 
-			await Promise.all([
-				this.createVirtualNetworkDropdown(view),
-				this.createSubnetDropdown(view),
-				this.createPublicIPDropdown(view),
-				this.createVmRDPAllowCheckbox(view)
-			]);
+			await this.createVirtualNetworkDropdown(view);
+			await this.createSubnetDropdown(view);
+			await this.createPublicIPDropdown(view);
+			await this.createVmRDPAllowCheckbox(view);
 
 
 
@@ -60,10 +58,19 @@ export class NetworkSettingsPage extends BasePage {
 				.withFormItems(
 					[
 						{
+							component: this._newVirtualNetworkCheckbox,
+						},
+						{
 							component: this.wizard.createFormRowComponent(view, constants.VirtualNetworkDropdownLabel, '', this._virtualNetworkFlexContainer, true)
 						},
 						{
+							component: this._newSubnetCheckbox
+						},
+						{
 							component: this.wizard.createFormRowComponent(view, constants.SubnetDropdownLabel, '', this._subnetFlexContainer, true)
+						},
+						{
+							component: this._newPublicIpCheckbox,
 						},
 						{
 							component: this.wizard.createFormRowComponent(view, constants.PublicIPDropdownLabel, '', this._publicIpFlexContainer, true)
@@ -86,13 +93,42 @@ export class NetworkSettingsPage extends BasePage {
 	public async onEnter(): Promise<void> {
 		this.populateVirtualNetworkDropdown();
 		this.populatePublicIpkDropdown();
-		this.liveValidation = false;
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
 			}
-			this.liveValidation = true;
-			let errorMessage = this.formValidation();
+			let errorMessage = '';
+			if (this.wizard.model.newVirtualNetwork === 'True') {
+				if (this.wizard.model.virtualNetworkName.length < 2 || this.wizard.model.virtualNetworkName.length > 64) {
+					errorMessage += 'Virtual Network name must be between 2 and 64 characters long\n';
+				}
+			} else {
+				if (this.wizard.model.virtualNetworkName === 'None') {
+					errorMessage += 'Create a new virtual network';
+				}
+			}
+
+			if (this.wizard.model.newSubnet === 'True') {
+				if (this.wizard.model.subnetName.length < 1 || this.wizard.model.virtualNetworkName.length > 80) {
+					errorMessage += 'Subnet name must be between 1 and 80 characters long\n';
+				}
+			} else {
+				if (this.wizard.model.subnetName === 'None') {
+					errorMessage += 'Create a new sub network';
+				}
+			}
+
+			if (this.wizard.model.newPublicIp === 'True') {
+				if (this.wizard.model.publicIpName.length < 1 || this.wizard.model.publicIpName.length > 80) {
+					errorMessage += 'Public IP name must be between 1 and 80 characters long\n';
+				}
+			} else {
+				if (this.wizard.model.publicIpName === 'None') {
+					errorMessage += 'Create a new new public Ip';
+				}
+			}
+
+			this.wizard.showErrorMessage(errorMessage);
 
 			if (errorMessage !== '') {
 				return false;
@@ -138,13 +174,12 @@ export class NetworkSettingsPage extends BasePage {
 
 		this._newVirtualNetworkText.onTextChanged((e) => {
 			this.wizard.model.virtualNetworkName = e;
-			this.liveFormValidation();
 		});
 
 		this._virtualNetworkFlexContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 		}).withItems(
-			[this._virtualNetworkDropdownLoader, this._newVirtualNetworkText, this._newVirtualNetworkCheckbox]
+			[this._virtualNetworkDropdownLoader, this._newVirtualNetworkText]
 		).component();
 
 	}
@@ -163,13 +198,13 @@ export class NetworkSettingsPage extends BasePage {
 			this._virtualNetworkDropdown.updateProperties({
 				values: vnets
 			});
-			this._newVirtualNetworkCheckbox.checked = true;
+			this._newVirtualNetworkCheckbox.enabled = false;
 			this.toggleNewVirtualNetwork();
 		} else {
 			this._virtualNetworkDropdown.updateProperties({
 				values: vnets
 			});
-			this._newVirtualNetworkCheckbox.checked = false;
+			this._newVirtualNetworkCheckbox.enabled = true;
 			this.toggleNewVirtualNetwork();
 		}
 		this._virtualNetworkDropdownLoader.loading = false;
@@ -180,7 +215,7 @@ export class NetworkSettingsPage extends BasePage {
 
 	private toggleNewVirtualNetwork() {
 
-		let newVirtualNetwork = this._newVirtualNetworkCheckbox.checked;
+		let newVirtualNetwork = this._newVirtualNetworkCheckbox.checked!;
 
 		this.wizard.model.newVirtualNetwork = newVirtualNetwork ? 'True' : 'False';
 
@@ -237,13 +272,12 @@ export class NetworkSettingsPage extends BasePage {
 
 		this._newsubnetText.onTextChanged((e) => {
 			this.wizard.model.subnetName = e;
-			this.liveFormValidation();
 		});
 
 		this._subnetFlexContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 		}).withItems(
-			[this._subnetDropdownLoader, this._newsubnetText, this._newSubnetCheckbox]
+			[this._subnetDropdownLoader, this._newsubnetText]
 		).component();
 
 	}
@@ -261,13 +295,13 @@ export class NetworkSettingsPage extends BasePage {
 			this._subnetDropdown.updateProperties({
 				values: subnets
 			});
-			this._newSubnetCheckbox.checked = true;
+			this._newSubnetCheckbox.enabled = false;
 			this.toggleNewSubnet();
 		} else {
 			this._subnetDropdown.updateProperties({
 				values: subnets
 			});
-			this._newSubnetCheckbox.checked = false;
+			this._newSubnetCheckbox.enabled = true;
 			this.toggleNewSubnet();
 		}
 
@@ -320,7 +354,6 @@ export class NetworkSettingsPage extends BasePage {
 
 		this._publicIpNetworkText.onTextChanged((e) => {
 			this.wizard.model.publicIpName = e;
-			this.liveFormValidation();
 		});
 
 		this.wizard.changeComponentDisplay(this._publicIpNetworkText, 'none');
@@ -328,7 +361,7 @@ export class NetworkSettingsPage extends BasePage {
 		this._publicIpFlexContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 		}).withItems(
-			[this._publicIpDropdownLoader, this._publicIpNetworkText, this._newPublicIpCheckbox]
+			[this._publicIpDropdownLoader, this._publicIpNetworkText]
 		).component();
 
 	}
@@ -346,13 +379,13 @@ export class NetworkSettingsPage extends BasePage {
 			this._publicIpDropdown.updateProperties({
 				values: publicIps
 			});
-			this._newPublicIpCheckbox.checked = true;
+			this._newPublicIpCheckbox.enabled = false;
 			this.toggleNewPublicIp();
 		} else {
 			this._publicIpDropdown.updateProperties({
 				values: publicIps
 			});
-			this._newPublicIpCheckbox.checked = false;
+			this._newPublicIpCheckbox.enabled = true;
 			this.toggleNewPublicIp();
 		}
 		this._publicIpDropdownLoader.loading = false;
@@ -434,42 +467,5 @@ export class NetworkSettingsPage extends BasePage {
 			};
 		});
 		return dropdownValues;
-	}
-
-	protected formValidation(): string {
-		let errorMessage = [];
-		if (this.wizard.model.newVirtualNetwork === 'True') {
-			if (this.wizard.model.virtualNetworkName.length < 2 || this.wizard.model.virtualNetworkName.length > 64) {
-				errorMessage.push('Virtual Network name must be between 2 and 64 characters long');
-			}
-		} else {
-			if (this.wizard.model.virtualNetworkName === 'None') {
-				errorMessage.push('Create a new virtual network');
-			}
-		}
-
-		if (this.wizard.model.newSubnet === 'True') {
-			if (this.wizard.model.subnetName.length < 1 || this.wizard.model.virtualNetworkName.length > 80) {
-				errorMessage.push('Subnet name must be between 1 and 80 characters long');
-			}
-		} else {
-			if (this.wizard.model.subnetName === 'None') {
-				errorMessage.push('Create a new sub network');
-			}
-		}
-
-		if (this.wizard.model.newPublicIp === 'True') {
-			if (this.wizard.model.publicIpName.length < 1 || this.wizard.model.publicIpName.length > 80) {
-				errorMessage.push('Public IP name must be between 1 and 80 characters long');
-			}
-		} else {
-			if (this.wizard.model.publicIpName === 'None') {
-				errorMessage.push('Create a new new public Ip');
-			}
-		}
-
-		this.wizard.showErrorMessage(errorMessage.join('\n'));
-		return errorMessage.join('\n');
-
 	}
 }

@@ -160,16 +160,16 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 		};
 	}
 
-	public validatePassword(password: string): string[] {
+	public validatePassword(password: string): string {
 		/**
 		 * 1. Password length should be between 12 and 123.
 		 * 2. Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.
 		 */
 
-		let errorMessage = [];
+		let errorMessage = '';
 
 		if (password.length < 12 || password.length > 123) {
-			errorMessage.push('Password must be between 12 and 123 characters long.');
+			errorMessage += 'Password must be between 12 and 123 characters long.\n';
 		}
 
 		let charTypeCounter = 0;
@@ -191,7 +191,7 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 		}
 
 		if (charTypeCounter < 3) {
-			errorMessage.push('Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.');
+			errorMessage += 'Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.\n';
 		}
 
 		return errorMessage;

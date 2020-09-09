@@ -5,15 +5,15 @@
 
 import * as azdata from 'azdata';
 import * as constants from '../constants';
+import { WizardPageBase } from '../../wizardPageBase';
 import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
-import { BasePage } from './basePage';
 
-export class SqlServerSettingsPage extends BasePage {
+export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private _sqlConnectivityDropdown!: azdata.DropDownComponent;
 	private _portTextRow!: azdata.FlexContainer;
 	private _portTextBox!: azdata.InputBoxComponent;
-	private _sqlAuthenticationDropdown!: azdata.DropDownComponent;
+	private _sqlAuthenticationCheckbox!: azdata.CheckBoxComponent;
 	private _sqlAuthenticationTextbox!: azdata.InputBoxComponent;
 	private _sqlAuthenticationTextRow!: azdata.FlexContainer;
 	private _sqlAuthenticationPasswordTextbox!: azdata.InputBoxComponent;
@@ -37,12 +37,9 @@ export class SqlServerSettingsPage extends BasePage {
 	public async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 
-			await Promise.all([
-				this.createSqlConnectivityDropdown(view),
-				this.createPortText(view),
-				this.createSqlAuthentication(view),
-			]);
-
+			this.createSqlConnectivityDropdown(view);
+			this.createPortText(view);
+			this.createSqlAuthentication(view);
 
 			// this._sqlStorageOptimiazationDropdown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 			// 	values: [{
@@ -70,13 +67,13 @@ export class SqlServerSettingsPage extends BasePage {
 				.withFormItems(
 					[
 						{
-							component: this.wizard.createFormRowComponent(view, constants.SqlConnectivityTypeDropdownLabel, '', this._sqlConnectivityDropdown, true)
+							component: this.wizard.createFormRowComponent(view, 'SQL connectivity', '', this._sqlConnectivityDropdown, true)
 						},
 						{
 							component: this._portTextRow
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.SqlEnableSQLAuthenticationLabel, '', this._sqlAuthenticationDropdown, true)
+							component: this._sqlAuthenticationCheckbox
 						},
 						{
 							component: this._sqlAuthenticationTextRow
@@ -104,17 +101,31 @@ export class SqlServerSettingsPage extends BasePage {
 	}
 
 	public async onEnter(): Promise<void> {
-
-		this.liveValidation = false;
-
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
 			}
 
-			this.liveValidation = true;
+			let username = this._sqlAuthenticationTextbox.value!;
 
-			let showErrorMessage = this.formValidation();
+			let showErrorMessage = '';
+
+			if (username.length < 2 || username.length > 128) {
+				showErrorMessage += 'Username must be between 2 and 128 characters long.\n';
+			}
+
+			if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
+				showErrorMessage += 'Username cannot contain special characters \/""[]:|<>+=;,?* .\n';
+			}
+
+			showErrorMessage += this.wizard.validatePassword(this._sqlAuthenticationPasswordTextbox.value!);
+
+			if (this._sqlAuthenticationPasswordTextbox.value !== this._sqlAuthenticationPasswordConfirmationTextbox.value) {
+				showErrorMessage += ('Password and confirm password must match.');
+				return false;
+			}
+
+			this.wizard.showErrorMessage(showErrorMessage);
 
 			if (showErrorMessage !== '') {
 				return false;
@@ -178,94 +189,54 @@ export class SqlServerSettingsPage extends BasePage {
 
 		this._portTextBox.onTextChanged((value) => {
 			this.wizard.model.port = value;
-			this.liveFormValidation();
 		});
 
-		this._portTextRow = this.wizard.createFormRowComponent(view, constants.SqlPortLabel, '', this._portTextBox, true);
+		this._portTextRow = this.wizard.createFormRowComponent(view, 'Port', '', this._portTextBox, true);
 	}
 
 	private createSqlAuthentication(view: azdata.ModelView) {
 
-		this._sqlAuthenticationDropdown = view.modelBuilder.dropDown().withProperties(<azdata.DropDownComponent>{
-			values: [
-				{
-					displayName: 'Yes',
-					name: 'True'
-				},
-				{
-					displayName: 'No',
-					name: 'False'
-				}
-			]
+		this._sqlAuthenticationCheckbox = view.modelBuilder.checkBox().withProperties(<azdata.CheckBoxComponent>{
+			label: 'Enable SQL authentication',
+			checked: true
 		}).component();
 
-		this._sqlAuthenticationDropdown.onValueChanged((value) => {
-			let dropdownValue = (this._sqlAuthenticationDropdown.value as azdata.CategoryValue).name;
-			let displayValue: 'block' | 'none' = dropdownValue === 'True' ? 'block' : 'none';
-			this.wizard.changeRowDisplay(this._sqlAuthenticationTextRow, displayValue);
-			this.wizard.changeRowDisplay(this._sqlAuthenticationPasswordTextRow, displayValue);
-			this.wizard.changeRowDisplay(this._sqlAuthenticationPasswordConfirmationTextRow, displayValue);
-			this.wizard.model.enableSqlAuthentication = dropdownValue;
+		this._sqlAuthenticationCheckbox.onChanged((value) => {
+			this.wizard.changeRowDisplay(this._sqlAuthenticationTextRow, value ? 'block' : 'none');
+			this.wizard.changeRowDisplay(this._sqlAuthenticationPasswordTextRow, value ? 'block' : 'none');
+			this.wizard.changeRowDisplay(this._sqlAuthenticationPasswordConfirmationTextRow, value ? 'block' : 'none');
+			this.wizard.model.enableSqlAuthentication = value ? 'True' : 'False';
 		});
 
-		this.wizard.model.enableSqlAuthentication = (this._sqlAuthenticationDropdown.value as azdata.CategoryValue).name;
+		this.wizard.model.enableSqlAuthentication = this._sqlAuthenticationCheckbox.checked ? 'True' : 'False';
 
 
 		this._sqlAuthenticationTextbox = view.modelBuilder.inputBox().component();
 
-		this._sqlAuthenticationTextRow = this.wizard.createFormRowComponent(view, constants.SqlAuthenticationUsernameLabel, '', this._sqlAuthenticationTextbox, true);
+		this._sqlAuthenticationTextRow = this.wizard.createFormRowComponent(view, 'Username', '', this._sqlAuthenticationTextbox, true);
 
 		this._sqlAuthenticationPasswordTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			inputType: 'password'
 		}).component();
 
-		this._sqlAuthenticationPasswordTextRow = this.wizard.createFormRowComponent(view, constants.SqlAuthenticationPasswordLabel, '', this._sqlAuthenticationPasswordTextbox, true);
+		this._sqlAuthenticationPasswordTextRow = this.wizard.createFormRowComponent(view, 'Password', '', this._sqlAuthenticationPasswordTextbox, true);
 
 		this._sqlAuthenticationPasswordConfirmationTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			inputType: 'password'
 		}).component();
 
-		this._sqlAuthenticationPasswordConfirmationTextRow = this.wizard.createFormRowComponent(view, constants.SqlAuthenticationConfirmPasswordLabel, '', this._sqlAuthenticationPasswordConfirmationTextbox, true);
+		this._sqlAuthenticationPasswordConfirmationTextRow = this.wizard.createFormRowComponent(view, 'Confirm password', '', this._sqlAuthenticationPasswordConfirmationTextbox, true);
 
 
 		this._sqlAuthenticationTextbox.onTextChanged((value) => {
 			this.wizard.model.sqlAuthenticationUsername = value;
-			this.liveFormValidation();
 		});
 
 		this._sqlAuthenticationPasswordTextbox.onTextChanged((value) => {
 			this.wizard.model.sqlAuthenticationPassword = value;
-			this.liveFormValidation();
 		});
 
 	}
 
 
-	protected formValidation(): string {
-
-		let showErrorMessage = [];
-
-		if ((this._sqlAuthenticationDropdown.value as azdata.CategoryValue).name === 'Yes') {
-			let username = this._sqlAuthenticationTextbox.value!;
-
-			if (username.length < 2 || username.length > 128) {
-				showErrorMessage.push('Username must be between 2 and 128 characters long.');
-			}
-
-			if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
-				showErrorMessage.push('Username cannot contain special characters \/""[]:|<>+=;,?* .');
-			}
-
-			showErrorMessage.push(this.wizard.validatePassword(this._sqlAuthenticationPasswordTextbox.value!));
-
-			if (this._sqlAuthenticationPasswordTextbox.value !== this._sqlAuthenticationPasswordConfirmationTextbox.value) {
-				showErrorMessage.push('Password and confirm password must match.');
-			}
-		}
-
-
-		this.wizard.showErrorMessage(showErrorMessage.join('\n'));
-
-		return showErrorMessage.join('\n');
-	}
 }
