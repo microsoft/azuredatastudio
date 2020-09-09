@@ -58,7 +58,7 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 
 	private async scriptToNotebook(): Promise<void> {
 		const variableValueStatements = this.model.getCodeCellContentForNotebook();
-		const insertionPosition = 2; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
+		const insertionPosition = 2; // Cell number 2 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
 		try {
 			await this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
 		} catch (error) {
