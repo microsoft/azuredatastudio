@@ -732,8 +732,8 @@
 					"plotly.js-dist-min",
 					"angular2-grid",
 					"html-query-plan",
-					"turndown/**",
-					"turndown-plugin-gfm/**"
+					"turndown",
+					"turndown-plugin-gfm"
                 ]
             },
             {
