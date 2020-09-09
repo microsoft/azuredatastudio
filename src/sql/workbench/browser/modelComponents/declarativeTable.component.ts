@@ -34,8 +34,9 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
-	private data: any[][] = [];
+	private _data: azdata.DeclarativeTableCellValue[][] = [];
 	private columns: azdata.DeclarativeTableColumn[] = [];
+	private _selectedRow: number;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -70,14 +71,19 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 		return !column.isReadOnly;
 	}
 
-	private isLabel(colIdx: number): boolean {
+	private isLabel(colIdx: number, r?: number): boolean {
 		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
 		return column.isReadOnly && column.valueType === DeclarativeDataType.string;
 	}
 
 	public isChecked(rowIdx: number, colIdx: number): boolean {
 		let cellData = this.data[rowIdx][colIdx];
-		return cellData;
+		if (cellData?.value === false) {
+			return false;
+		}
+		// Disabling it to check for null and undefined.
+		// eslint-disable-next-line eqeqeq
+		return cellData != undefined;
 	}
 
 	public onInputBoxChanged(e: string, rowIdx: number, colIdx: number): void {
@@ -86,10 +92,11 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 
 	public onCheckBoxChanged(e: boolean, rowIdx: number, colIdx: number): void {
 		this.onCellDataChanged(e, rowIdx, colIdx);
+		// If all of the rows in that column are now checked, let's update the header.
 		if (this.columns[colIdx].showCheckAll) {
 			if (e) {
 				for (let rowIdx = 0; rowIdx < this.data.length; rowIdx++) {
-					if (!this.data[rowIdx][colIdx]) {
+					if (this.data[rowIdx][colIdx].value === false) {
 						return;
 					}
 				}
@@ -102,20 +109,20 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 	public onHeaderCheckBoxChanged(e: boolean, colIdx: number): void {
 		this.columns[colIdx].isChecked = e;
 		this.data.forEach((row, rowIdx) => {
-			if (row[colIdx] !== e) {
+			if (row[colIdx].value !== e) {
 				this.onCellDataChanged(e, rowIdx, colIdx);
 			}
 		});
 		this._changeRef.detectChanges();
 	}
 
-	public trackByFnCols(index: number, item: any): any {
+	public trackByFnCols(index: number, _item: any): number {
 		return index;
 	}
 
 	public onSelectBoxChanged(e: ISelectData | string, rowIdx: number, colIdx: number): void {
-
 		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
+
 		if (column.categoryValues) {
 			if (typeof e === 'string') {
 				let category = find(column.categoryValues, c => c.displayName === e);
@@ -130,8 +137,8 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 		}
 	}
 
-	private onCellDataChanged(newValue: any, rowIdx: number, colIdx: number): void {
-		this.data[rowIdx][colIdx] = newValue;
+	private onCellDataChanged(newValue: string | number | boolean | any, rowIdx: number, colIdx: number): void {
+		this.data[rowIdx][colIdx].value = newValue;
 		this.setPropertyFromUI<any[][]>((props, value) => props.data = value, this.data);
 		let newCellData: azdata.TableCell = {
 			row: rowIdx,
@@ -177,11 +184,11 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
 		let cellData = this.data[rowIdx][colIdx];
 		if (cellData && column.categoryValues) {
-			let category = find(column.categoryValues, v => v.name === cellData);
+			let category = find(column.categoryValues, v => v.name === cellData.value);
 			if (category) {
 				return category.displayName;
 			} else if (this.isEditableSelectBox(colIdx)) {
-				return cellData;
+				return String(cellData.value);
 			} else {
 				return undefined;
 			}
@@ -192,7 +199,19 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 
 	public getAriaLabel(rowIdx: number, colIdx: number): string {
 		const cellData = this.data[rowIdx][colIdx];
-		return this.isLabel(colIdx) ? (cellData && cellData !== '' ? cellData : localize('blankValue', "blank")) : '';
+		if (this.isLabel(colIdx)) {
+			if (cellData) {
+				if (cellData.ariaLabel) {
+					return cellData.ariaLabel;
+				} else if (cellData.value) {
+					return String(cellData.value);
+				}
+			} else {
+				return localize('blankValue', "blank");
+			}
+		}
+
+		return '';
 	}
 
 	public getItemDescriptor(componentId: string): IComponentDescriptor {
@@ -206,12 +225,34 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
-		const newData = properties.data ?? [];
+	private static ACCEPTABLE_VALUES = new Set<string>(['number', 'string', 'boolean']);
+	public setProperties(properties: azdata.DeclarativeTableProperties): void {
+		const basicData: any[][] = properties.data ?? [];
+		const complexData: azdata.DeclarativeTableCellValue[][] = properties.dataValues;
+		let finalData: azdata.DeclarativeTableCellValue[][];
+
+		finalData = basicData.map(row => {
+			return row.map((value): azdata.DeclarativeTableCellValue => {
+				if (DeclarativeTableComponent.ACCEPTABLE_VALUES.has(typeof (value))) {
+					return {
+						value: value
+					};
+				} else {
+					return {
+						value: JSON.stringify(value)
+					};
+				}
+			});
+		});
+
+		if (finalData.length <= 0) {
+			finalData = complexData;
+		}
+
 		this.columns = properties.columns ?? [];
 
 		// check whether the data property is changed before actually setting the properties.
-		const isDataPropertyChanged = !arrayEquals(this.data, newData ?? [], (a, b) => {
+		const isDataPropertyChanged = !arrayEquals(this.data, finalData ?? [], (a, b) => {
 			return arrayEquals(a, b);
 		});
 
@@ -221,15 +262,37 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 		// so that the events can be passed upwards through the control hierarchy.
 		if (isDataPropertyChanged) {
 			this.clearContainer();
-			this.data = newData;
+			this._data = finalData;
 			this.data?.forEach(row => {
 				for (let i = 0; i < row.length; i++) {
 					if (this.isComponent(i)) {
-						this.addToContainer(this.getItemDescriptor(row[i] as string), undefined);
+						this.addToContainer(this.getItemDescriptor(row[i].value as string), undefined);
 					}
 				}
 			});
 		}
 		super.setProperties(properties);
+	}
+
+	public get data(): azdata.DeclarativeTableCellValue[][] {
+		return this._data;
+	}
+
+	public isRowSelected(row: number): boolean {
+		return this._selectedRow === row;
+	}
+
+	public onCellClick(row: number) {
+		if (!this.isRowSelected(row)) {
+			this._selectedRow = row;
+			this._changeRef.detectChanges();
+
+			this.fireEvent({
+				eventType: ComponentEventType.onDidClick,
+				args: {
+					row
+				}
+			});
+		}
 	}
 }

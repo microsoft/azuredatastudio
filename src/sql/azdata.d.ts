@@ -3306,7 +3306,7 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableProperties {
-		data: any[][];
+		data?: any[][];
 		columns: DeclarativeTableColumn[];
 	}
 
