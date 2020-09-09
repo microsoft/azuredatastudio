@@ -417,7 +417,8 @@ export class ProjectsController {
 
 		if (root && fileOrFolder) {
 			// use relative path and not tree paths for files and folder
-			return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)));
+			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
+			return allFileEntries.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)));
 		}
 		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
 	}
