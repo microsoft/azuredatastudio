@@ -89,7 +89,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
 
-
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,

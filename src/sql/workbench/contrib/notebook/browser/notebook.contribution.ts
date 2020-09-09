@@ -224,7 +224,7 @@ configurationRegistry.registerConfiguration({
 		'notebook.enableDoubleClickEdit': {
 			'type': 'boolean',
 			'default': true,
-			'description': localize('notebook.enableDoublClickEdit', "Enable double click to edit for text cells in notebooks")
+			'description': localize('notebook.enableDoubleClickEdit', "Enable double click to edit for text cells in notebooks")
 		}
 	}
 });

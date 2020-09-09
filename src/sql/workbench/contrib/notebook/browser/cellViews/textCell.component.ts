@@ -28,7 +28,6 @@ import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/noteb
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
-
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
 
