@@ -6,7 +6,7 @@
 import { nb, IResultMessage } from 'azdata';
 import { localize } from 'vs/nls';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { ResultSetSummary, ResultSetSubset, IColumn } from 'sql/workbench/services/query/common/query';
+import { ResultSetSummary, ResultSetSubset, IColumn, BatchSummary } from 'sql/workbench/services/query/common/query';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
@@ -356,6 +356,11 @@ class SqlKernel extends Disposable implements nb.IKernel {
 				this._future.onResultSet(resultSet);
 			}
 		}));
+		this._register(queryRunner.onBatchEnd(batch => {
+			if (this._future) {
+				this._future.onBatchEnd(batch);
+			}
+		}));
 	}
 
 	private async queryComplete(): Promise<void> {
@@ -384,9 +389,11 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private ioHandler: nb.MessageHandler<nb.IIOPubMessage>;
 	private doneHandler: nb.MessageHandler<nb.IShellMessage>;
 	private doneDeferred = new Deferred<nb.IShellMessage>();
+	private configuredMaxRows: number = MAX_ROWS;
 	private _outputAddedPromises: Promise<void>[] = [];
 	private _errorOccurred: boolean = false;
 	private _stopOnError: boolean = true;
+
 	constructor(
 		private _queryRunner: QueryRunner,
 		private _executionCount: number | undefined,
@@ -396,6 +403,10 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		super();
 		let config = configurationService.getValue(NotebookConfigSectionName);
 		if (config) {
+			let maxRows = config[MaxTableRowsConfigName] ? config[MaxTableRowsConfigName] : undefined;
+			if (maxRows && maxRows > 0) {
+				this.configuredMaxRows = maxRows;
+			}
 			this._stopOnError = !!config[SqlStopOnErrorConfigName];
 		}
 	}
@@ -471,6 +482,16 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	public onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]): void {
 		if (this.ioHandler) {
 			this._outputAddedPromises.push(this.sendInitialResultSets(resultSet));
+		}
+	}
+
+	public onBatchEnd(batch: BatchSummary): void {
+		if (this.ioHandler) {
+			for (let set of batch.resultSetSummaries) {
+				if (set.rowCount > this.configuredMaxRows) {
+					this.handleMessage(localize('sqlMaxRowsDisplayed', "Displaying Top {0} rows.", this.configuredMaxRows));
+				}
+			}
 		}
 	}
 
