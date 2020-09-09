@@ -374,15 +374,14 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	public async convertAllData(result: ResultSetSummary): Promise<void> {
 		// Querying 50 rows at a time. Querying large amount of rows will be slow and
 		// affect table rendering since each time the user scrolls, getRowData is called.
-		let numRows = 50;
-		for (let i = 0; i < result.rowCount; i += 50) {
-			if (i + 50 > result.rowCount) {
+		let numRows = 100;
+		for (let i = 0; i < result.rowCount; i += 100) {
+			if (i + 100 > result.rowCount) {
 				numRows += result.rowCount - i;
 			}
 			let rows = await this._queryRunner.getQueryRows(i, numRows, this._batchId, this._id);
 			this.convertData(rows);
 		}
-
 	}
 
 	private convertData(rows: ResultSetSubset): void {
