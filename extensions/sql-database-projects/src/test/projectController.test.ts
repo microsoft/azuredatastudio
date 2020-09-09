@@ -19,7 +19,7 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { createContext, TestContext, mockDacFxResult } from './testContext';
-import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
+import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry } from '../models/project';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { exists } from '../common/utils';
@@ -500,7 +500,7 @@ describe('ProjectsController', function (): void {
 			let opened = false;
 
 			let addDbReferenceDialog = TypeMoq.Mock.ofType(AddDatabaseReferenceDialog);
-			addDbReferenceDialog.setup(x => x.openDialog()).returns(() => { opened = true; return Promise.resolve(undefined) });
+			addDbReferenceDialog.setup(x => x.openDialog()).returns(() => { opened = true; return Promise.resolve(undefined); });
 
 			let projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
@@ -549,18 +549,14 @@ describe('ProjectsController', function (): void {
 			const project1 = await projController.openProject(vscode.Uri.file(projPath1));
 			const project2 = await projController.openProject(vscode.Uri.file(projPath2));
 
-			should(project1.databaseReferences.filter(r => r instanceof SqlProjectReferenceProjectEntry).length).equal(0, 'Project1 should start with no project references');
-			should(project2.databaseReferences.filter(r => r instanceof SqlProjectReferenceProjectEntry).length).equal(0, 'Project2 should start with no project references');
-
-			// directly add project reference from project1 to project2
+			// add project reference from project1 to project2
 			await projController.addDatabaseReferenceCallback(project1, {
 				projectGuid: '',
 				projectName: 'TestProject',
 				projectRelativePath: undefined,
 				suppressMissingDependenciesErrors: false
 			});
-
-			should(project1.databaseReferences.filter(r => r instanceof SqlProjectReferenceProjectEntry).length).equal(1, 'Project1 should have a new project reference');
+			should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
 
 			// try to add circular reference
 			await projController.addDatabaseReferenceCallback(project2, {
@@ -569,9 +565,7 @@ describe('ProjectsController', function (): void {
 				projectRelativePath: undefined,
 				suppressMissingDependenciesErrors: false
 			});
-
 			should(showErrorMessageSpy.called).be.true('showErrorMessage should have been called');
-			should(project2.databaseReferences.filter(r => r instanceof SqlProjectReferenceProjectEntry).length).equal(0, 'Project2 should not have any project references');
 		});
 
 	});
