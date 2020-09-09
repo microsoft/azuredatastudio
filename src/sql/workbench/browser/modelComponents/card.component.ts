@@ -57,7 +57,7 @@ export enum CardType {
 @Component({
 	templateUrl: decodeURI(require.toUrl('./card.component.html'))
 })
-export default class CardComponent extends ComponentWithIconBase implements IComponent, OnDestroy {
+export default class CardComponent extends ComponentWithIconBase<azdata.CardProperties> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -156,23 +156,23 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 	// CSS-bound properties
 
 	public get label(): string {
-		return this.getPropertyOrDefault<CardProperties, string>((props) => props.label, '');
+		return this.getPropertyOrDefault<string>((props) => props.label, '');
 	}
 
 	public get value(): string {
-		return this.getPropertyOrDefault<CardProperties, string>((props) => props.value, '');
+		return this.getPropertyOrDefault<string>((props) => props.value, '');
 	}
 
 	public get cardType(): string {
-		return this.getPropertyOrDefault<CardProperties, string>((props) => props.cardType, 'Details');
+		return this.getPropertyOrDefault<string>((props) => props.cardType, 'Details');
 	}
 
 	public get selected(): boolean {
-		return this.getPropertyOrDefault<azdata.CardProperties, boolean>((props) => props.selected, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.selected, false);
 	}
 
 	public set selected(newValue: boolean) {
-		this.setPropertyFromUI<azdata.CardProperties, boolean>((props, value) => props.selected = value, newValue);
+		this.setPropertyFromUI<boolean>((props, value) => props.selected = value, newValue);
 	}
 
 	public get isDetailsCard(): boolean {
@@ -196,20 +196,20 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 	}
 
 	public get descriptions(): CardDescriptionItem[] {
-		return this.getPropertyOrDefault<CardProperties, CardDescriptionItem[]>((props) => props.descriptions, []);
+		return this.getPropertyOrDefault<CardDescriptionItem[]>((props) => props.descriptions, []);
 	}
 
 	public get actions(): ActionDescriptor[] {
-		return this.getPropertyOrDefault<CardProperties, ActionDescriptor[]>((props) => props.actions, []);
+		return this.getPropertyOrDefault<ActionDescriptor[]>((props) => props.actions, []);
 	}
 
 	public hasStatus(): boolean {
-		let status = this.getPropertyOrDefault<CardProperties, StatusIndicator>((props) => props.status, StatusIndicator.None);
+		let status = this.getPropertyOrDefault<StatusIndicator>((props) => props.status, StatusIndicator.None);
 		return status !== StatusIndicator.None;
 	}
 
 	public get statusColor(): string {
-		let status = this.getPropertyOrDefault<CardProperties, StatusIndicator>((props) => props.status, StatusIndicator.None);
+		let status = this.getPropertyOrDefault<StatusIndicator>((props) => props.status, StatusIndicator.None);
 		switch (status) {
 			case StatusIndicator.Ok:
 				return 'green';

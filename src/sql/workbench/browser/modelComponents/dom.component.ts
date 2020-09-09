@@ -20,7 +20,7 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dash
 	template: '',
 	selector: 'modelview-dom-component'
 })
-export default class DomComponent extends ComponentBase implements IComponent, OnDestroy {
+export default class DomComponent extends ComponentBase<azdata.DomProperties> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _renderedHtml: string;
@@ -82,10 +82,10 @@ export default class DomComponent extends ComponentBase implements IComponent, O
 
 	// CSS-bound properties
 	public get html(): string {
-		return this.getPropertyOrDefault<azdata.DomProperties, string>((props) => props.html, '');
+		return this.getPropertyOrDefault<string>((props) => props.html, '');
 	}
 
 	public set html(newValue: string) {
-		this.setPropertyFromUI<azdata.DomProperties, string>((properties, html) => { properties.html = html; }, newValue);
+		this.setPropertyFromUI<string>((properties, html) => { properties.html = html; }, newValue);
 	}
 }
