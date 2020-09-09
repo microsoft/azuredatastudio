@@ -211,6 +211,13 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		return this.getPropertyOrDefault((props) => props.description, '');
 	}
 
+	// public get height(): string | number {
+	// 	return this.getPropertyOrDefault<azdata.ButtonProperties, number>((props) => props.height, 0);
+	// }
+	// public get width(): string | number {
+	// 	return this.getPropertyOrDefault<azdata.ButtonProperties, number>((props) => props.width, 0);
+	// }
+
 	public get isFile(): boolean {
 		return this.getPropertyOrDefault<boolean>((props) => props.isFile, false);
 	}

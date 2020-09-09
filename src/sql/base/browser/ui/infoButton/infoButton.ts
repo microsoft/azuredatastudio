@@ -7,9 +7,6 @@ import 'vs/css!./infoButton';
 import { Button as sqlButton } from 'sql/base/browser/ui/button/button';
 import * as DOM from 'vs/base/browser/dom';
 import { IButtonOptions } from 'vs/base/browser/ui/button/button';
-import { URI } from 'vs/base/common/uri';
-
-type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 
 export interface IInfoButtonOptions extends IButtonOptions {
 	buttonMaxHeight: number,
