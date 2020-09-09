@@ -33,7 +33,7 @@ import turndownPluginGfm = require('turndown-plugin-gfm');
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
-const ADD_CONTENT = localize('addContent', "<i>Add content here...</i>");
+const ADD_CONTENT = localize('addContent', "<p><i>Add content here...</i></p>");
 
 @Component({
 	selector: TEXT_SELECTOR,
@@ -201,9 +201,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if ((!cellModelSourceJoined) && !this.isEditMode) {
 				this._content = ADD_CONTENT;
 			} else {
-				this._content = this.cellModel.source;
+				this._content = this.cellModel.source[0] === '' ? '<p>&nbsp;</p>' : this.cellModel.source;
 			}
-
 			this.markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
 			this.markdownResult = this.markdownRenderer.render({
 				isTrusted: true,
