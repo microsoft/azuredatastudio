@@ -109,7 +109,6 @@ export function instanceOfAzureSQLDBDeploymentProvider(obj: any): obj is AzureSQ
 	return obj && 'azureSQLDBWizard' in obj;
 }
 
-
 export interface DeploymentProviderBase {
 	requiredTools: ToolRequirementInfo[];
 	when: string;
