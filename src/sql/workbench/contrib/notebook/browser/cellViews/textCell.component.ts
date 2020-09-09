@@ -289,17 +289,19 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private addDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
 			let elements = this.getHtmlElements();
-			let ele = elements[range.startLineNumber - 1];
-			let mark = new Mark(ele);
-			let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
-			if (editor) {
-				let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
-				if (findModel && findModel.findMatches?.length > 0) {
-					let searchString = findModel.findExpression;
-					mark.mark(searchString, {
-						className: 'rangeHighlight'
-					});
-					ele.scrollIntoView({ behavior: 'smooth' });
+			if (elements?.length >= range.startLineNumber) {
+				let elementContainingText = elements[range.startLineNumber - 1];
+				let mark = new Mark(elementContainingText);
+				let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
+				if (editor) {
+					let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
+					if (findModel?.findMatches?.length > 0) {
+						let searchString = findModel.findExpression;
+						mark.mark(searchString, {
+							className: 'rangeHighlight'
+						});
+						elementContainingText.scrollIntoView({ behavior: 'smooth' });
+					}
 				}
 			}
 		}
@@ -308,8 +310,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private removeDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
 			let elements = this.getHtmlElements();
-			let ele = elements[range.startLineNumber - 1];
-			let mark = new Mark(ele);
+			let elementContainingText = elements[range.startLineNumber - 1];
+			let mark = new Mark(elementContainingText);
 			mark.unmark({ acrossElements: true, className: 'rangeHighlight' });
 		}
 	}
