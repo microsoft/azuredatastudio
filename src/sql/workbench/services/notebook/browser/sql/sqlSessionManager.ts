@@ -502,7 +502,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			if (!Array.isArray(resultSet)) {
 				resultsToAdd = [resultSet];
 			} else {
-				resultsToAdd = resultSet.splice(0);
+				resultsToAdd = resultSet?.splice(0);
 			}
 			for (let set of resultsToAdd) {
 				this.sendIOPubMessage(set, false);

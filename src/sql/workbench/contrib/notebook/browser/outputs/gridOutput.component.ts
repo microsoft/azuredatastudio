@@ -150,7 +150,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		if (!Array.isArray(resultSet)) {
 			resultsToUpdate = [resultSet];
 		} else {
-			resultsToUpdate = resultSet.splice(0);
+			resultsToUpdate = resultSet?.splice(0);
 		}
 		for (let set of resultsToUpdate) {
 			if (this._batchId === set.batchId && this._id === set.id) {
