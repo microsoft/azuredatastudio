@@ -39,6 +39,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 
 	public async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
+
 			this._azureAccount = view.modelBuilder.text().component();
 			this._subscription = view.modelBuilder.text().component();
 			this._resourceGroup = view.modelBuilder.text().component();
@@ -101,14 +102,12 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							component: this.createSummaryRow(view, constants.PublicIPDropdownLabel, this._publicIp)
 						},
-
 						{
 							component: this.createSummaryRow(view, 'Sql connectivity', this._sqlConnectivity)
 						},
 						{
 							component: this.createSummaryRow(view, 'Sql port', this._port)
 						},
-
 						{
 							component: this.createSummaryRow(view, 'Sql auth username', this._sqlUsername)
 						}
