@@ -4,7 +4,7 @@
 		[attr.aria-checked]="isCardSelected(card.id)" [tabIndex]="getTabIndex(card.id)" [style.width]="cardWidth"
 		[style.height]="cardHeight" (focus)="onCardFocus(card.id)" (blur)="onCardBlur(card.id)" style="flex:0 0 auto;">
 
-		<div *ngIf="isDefaultCard()">
+		<div *ngIf="isIconPositionTop()">
 			<div class="selection-indicator-container">
 				<div *ngIf="isCardSelected(card.id)" class="selection-indicator"></div>
 			</div>
@@ -24,17 +24,17 @@
 			</div>
 		</div>
 
-		<div *ngIf="isPortalCard()" class="model-portal-card">
+		<div *ngIf="isIconPositionLeft()" class="model-left-icon-card">
 			<span class="selection-indicator-container">
 				<div *ngIf="isCardSelected(card.id)" class="selection-indicator"></div>
 			</span>
-			<div *ngIf="card.icon" class="portal-icon-container">
+			<div *ngIf="card.icon" class="left-icon-container">
 				<div [class]="getIconClass(card.id)" [style.width]="iconWidth" [style.height]="iconHeight"></div>
 			</div>
-			<div class="portal-detail-container">
-				<div class="portal-card-label">{{card.label}}</div>
+			<div class="detail-container">
+				<div class="card-label">{{card.label}}</div>
 				<div *ngFor="let description of card.descriptions">
-					<div class="portal-card-description">{{description.textValue}}</div>
+					<div class="card-description">{{description.textValue}}</div>
 				</div>
 			</div>
 		</div>

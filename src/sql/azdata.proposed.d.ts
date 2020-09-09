@@ -262,7 +262,7 @@ declare module 'azdata' {
 		iconHeight?: string;
 		selectedCardId?: string;
 		orientation?: Orientation; // Defaults to horizontal
-		cardStyle?: 'regular' | 'portalCard'; // Defaults to regular
+		iconPosition?: 'top' | 'left'; // Defaults to top
 	}
 
 	export type RadioCardSelectionChangedEvent = { cardId: string; card: RadioCard };

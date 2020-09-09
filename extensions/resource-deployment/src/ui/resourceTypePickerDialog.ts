@@ -90,7 +90,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				cardHeight: '150px',
 				ariaLabel: localize('deploymentDialog.deploymentOptions', "Deployment options"),
 				width: '1100px',
-				cardStyle: 'portalCard'
+				iconPosition: 'left'
 			}).component();
 			this._toDispose.push(this._cardGroup.onSelectionChanged(({ cardId }) => {
 				const resourceType = resourceTypes.find(rt => { return rt.name === cardId; });
