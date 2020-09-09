@@ -33,7 +33,7 @@ import { convertSize } from 'sql/base/browser/dom';
 	</div>
 	`
 })
-export default class ButtonComponent extends ComponentWithIconBase implements IComponent, OnDestroy, AfterViewInit {
+export default class ButtonComponent extends ComponentWithIconBase<azdata.ButtonProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _button: Button;
@@ -151,27 +151,27 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	// CSS-bound properties
 
 	private get label(): string {
-		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.label, '');
+		return this.getPropertyOrDefault<string>((props) => props.label, '');
 	}
 
 	private set label(newValue: string) {
-		this.setPropertyFromUI<azdata.ButtonProperties, string>(this.setValueProperties, newValue);
+		this.setPropertyFromUI<string>(this.setValueProperties, newValue);
 	}
 
 	public get isFile(): boolean {
-		return this.getPropertyOrDefault<azdata.ButtonProperties, boolean>((props) => props.isFile, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.isFile, false);
 	}
 
 	public set isFile(newValue: boolean) {
-		this.setPropertyFromUI<azdata.ButtonProperties, boolean>(this.setFileProperties, newValue);
+		this.setPropertyFromUI<boolean>(this.setFileProperties, newValue);
 	}
 
 	private get fileContent(): string {
-		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.fileContent, '');
+		return this.getPropertyOrDefault<string>((props) => props.fileContent, '');
 	}
 
 	private set fileContent(newValue: string) {
-		this.setPropertyFromUI<azdata.ButtonProperties, string>(this.setFileContentProperties, newValue);
+		this.setPropertyFromUI<string>(this.setFileContentProperties, newValue);
 	}
 
 	private setFileContentProperties(properties: azdata.ButtonProperties, fileContent: string): void {
