@@ -517,7 +517,7 @@ export class DashboardWidget {
 	private createTaskButton(view: azdata.ModelView, taskMetaData: IActionMetadata): azdata.Component {
 		const maxHeight: number = 84;
 		const maxWidth: number = 256;
-		const buttonContainer = view.modelBuilder.button().withProperties<any>({
+		const buttonContainer = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			description: taskMetaData.description,
 			height: maxHeight,
 			iconHeight: '32px',

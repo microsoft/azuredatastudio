@@ -143,7 +143,7 @@ export class InfoButton extends sqlButton {
 		return this._iconWidth;
 	}
 	public set iconWidth(value: string | number | undefined) {
-		this._iconHeight = value;
+		this._iconWidth = value;
 		// console.log('---------------------> ', this._iconWidth.toString() );
 		// Not working
 		this._iconElement.style.width = this._iconWidth.toString();
