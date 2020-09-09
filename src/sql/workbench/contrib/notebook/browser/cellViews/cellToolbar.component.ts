@@ -107,4 +107,10 @@ export class CellToolbarComponent {
 
 		this._actionBar.setContent(taskbarContent);
 	}
+
+	public enableCellEditMode() {
+		if (!this._editCellAction.editMode) {
+			this._editCellAction.editMode = !this._editCellAction.editMode;
+		}
+	}
 }
