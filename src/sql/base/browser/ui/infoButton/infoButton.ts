@@ -52,7 +52,6 @@ export class InfoButton extends sqlButton {
 			this._main.style.display = 'flex';
 
 			this._iconContainer = document.createElement('div');
-			// DOM.addClass(this._iconContainer, 'flexContainer');
 			this._iconContainer.style.alignItems = 'flex-start';
 			this._iconContainer.style.display = 'flex';
 			this._iconContainer.style.flexFlow = 'column';
@@ -63,7 +62,6 @@ export class InfoButton extends sqlButton {
 			DOM.addClass(this._iconElement, 'icon');
 
 			this._textContainer = document.createElement('div');
-			// DOM.addClass(this._textContainer, 'flexContainer');
 			this._textContainer.style.color = '#006ab1';
 			this._textContainer.style.display = 'flex';
 			this._textContainer.style.flexFlow = 'column';
@@ -135,7 +133,6 @@ export class InfoButton extends sqlButton {
 	}
 	public set iconHeight(value: string | number | undefined) {
 		this._iconHeight = value;
-		// console.log('---------------------> ', this._iconHeight.toString() );
 		this._iconElement.style.height = this._iconHeight.toString();
 	}
 
@@ -144,8 +141,6 @@ export class InfoButton extends sqlButton {
 	}
 	public set iconWidth(value: string | number | undefined) {
 		this._iconWidth = value;
-		// console.log('---------------------> ', this._iconWidth.toString() );
-		// Not working
 		this._iconElement.style.width = this._iconWidth.toString();
 	}
 
