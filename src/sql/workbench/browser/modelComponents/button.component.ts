@@ -118,12 +118,14 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		super.setProperties(properties);
 		if (this._informationalInputContainer) {
 			let button = this._button as InfoButton;
+			button.buttonMaxHeight = this.properties.height;
 			button.textTitle = this.properties.title;
 			button.description = this.properties.description;
 			button.iconClass = this.properties.iconClass;
 			button.iconPath = createIconCssClass(this.properties.iconPath);
 			button.iconHeight = this.properties.iconHeight;
 			button.iconWidth = this.properties.iconWidth;
+			button.buttonMaxWidth = this.properties.width;
 		} else {
 			this._button.enabled = this.enabled;
 			this._button.label = this.label;
@@ -210,6 +212,13 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	public get description(): string {
 		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.description, '');
 	}
+
+	// public get height(): string | number {
+	// 	return this.getPropertyOrDefault<azdata.ButtonProperties, number>((props) => props.height, 0);
+	// }
+	// public get width(): string | number {
+	// 	return this.getPropertyOrDefault<azdata.ButtonProperties, number>((props) => props.width, 0);
+	// }
 
 	public get isFile(): boolean {
 		return this.getPropertyOrDefault<azdata.ButtonProperties, boolean>((props) => props.isFile, false);

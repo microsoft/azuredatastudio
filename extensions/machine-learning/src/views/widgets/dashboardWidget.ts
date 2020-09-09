@@ -515,8 +515,8 @@ export class DashboardWidget {
 	}
 
 	private createTaskButton(view: azdata.ModelView, taskMetaData: IActionMetadata): azdata.Component {
-		const maxHeight = 116;
-		const maxWidth = 250;
+		const maxHeight: number = 84;
+		const maxWidth: number = 256;
 		const buttonContainer = view.modelBuilder.button().withProperties<any>({
 			description: taskMetaData.description,
 			height: maxHeight,
@@ -534,87 +534,5 @@ export class DashboardWidget {
 			}
 		});
 		return view.modelBuilder.divContainer().withItems([buttonContainer]).component();
-
-
-		// const mainContainer = view.modelBuilder.divContainer().withLayout({
-		// 	width: maxWidth,
-		// 	height: maxHeight
-		// }).withProperties({
-		// 	clickable: true,
-		// 	ariaRole: taskMetaData.title
-		// }).component();
-		// const iconContainer = view.modelBuilder.flexContainer().withLayout({
-		// 	flexFlow: 'row',
-		// 	width: maxWidth,
-		// 	height: maxHeight - 23,
-		// 	alignItems: 'flex-start'
-		// }).component();
-		// const labelsContainer = view.modelBuilder.flexContainer().withLayout({
-		// 	flexFlow: 'column',
-		// 	width: maxWidth - 50,
-		// 	height: maxHeight - 20,
-		// 	justifyContent: 'space-between'
-		// }).component();
-		// const titleComponent = view.modelBuilder.text().withProperties({
-		// 	value: taskMetaData.title,
-		// 	CSSStyles: {
-		// 		'font-size': '14px',
-		// 		'font-weight': 'bold',
-		// 		'margin': '0px'
-		// 	}
-		// }).component();
-		// const descriptionComponent = view.modelBuilder.text().withProperties({
-		// 	value: taskMetaData.description,
-		// 	CSSStyles: {
-		// 		'font-size': '13px',
-		// 		'margin': '0px'
-		// 	}
-		// }).component();
-		// const linkComponent = view.modelBuilder.hyperlink().withProperties({
-		// 	label: constants.learnMoreTitle,
-		// 	url: taskMetaData.link
-		// }).component();
-		// const image = view.modelBuilder.image().withProperties({
-		// 	width: '20px',
-		// 	height: '20px',
-		// 	iconPath: taskMetaData.iconPath,
-		// 	iconHeight: '20px',
-		// 	iconWidth: '20px'
-		// }).component();
-		// labelsContainer.addItems([titleComponent, descriptionComponent, linkComponent], {
-		// 	CSSStyles: {
-		// 		'padding': '0px',
-		// 		'padding-bottom': '5px',
-		// 		'width': '200px',
-		// 		'margin': '0px',
-		// 		'color': '#006ab1'
-		// 	}
-		// });
-		// iconContainer.addItem(image, {
-		// 	CSSStyles: {
-		// 		'padding-top': '10px',
-		// 		'padding-right': '10px'
-		// 	}
-		// });
-		// iconContainer.addItem(labelsContainer, {
-		// 	CSSStyles: {
-		// 		'padding-top': '5px',
-		// 		'padding-right': '10px'
-		// 	}
-		// });
-		// mainContainer.addItems([iconContainer], {
-		// 	CSSStyles: {
-		// 		'padding': '10px',
-		// 		'border-radius': '5px',
-		// 		'border-color': '#f2f2f2',
-		// 		'border': '1px solid'
-		// 	}
-		// });
-		// mainContainer.onDidClick(async () => {
-		// 	if (mainContainer.enabled && taskMetaData.command) {
-		// 		await this._apiWrapper.executeCommand(taskMetaData.command);
-		// 	}
-		// });
-		// return mainContainer;
 	}
 }
