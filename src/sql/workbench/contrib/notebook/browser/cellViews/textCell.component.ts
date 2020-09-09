@@ -27,7 +27,7 @@ import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/
 import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import * as mark from 'mark.js';
+import * as Mark from 'mark.js';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
@@ -290,29 +290,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (range && this.output && this.output.nativeElement) {
 			let elements = this.getHtmlElements();
 			let ele = elements[range.startLineNumber - 1];
-			let m = new mark(ele);
+			let mark = new Mark(ele);
 			let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
 			if (editor) {
 				let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
 				if (findModel && findModel.findMatches?.length > 0) {
 					let searchString = findModel.findExpression;
-					let findIndex = findModel.getFindIndex(); // Note: this is 1-based
-					// Check for how many occurrences of string exist in the same element
-					let numOccurrencesBefore = 0;
-					findIndex--;
-					if (findIndex > 0) {
-						// Search the element before it
-						findIndex--;
-						for (; findIndex >= 0; findIndex--) {
-							if (findModel.findMatches[findIndex].range.cell.id === range.cell.id) {
-								numOccurrencesBefore++;
-							}
-						}
-					}
-					m.mark(searchString, {
-						filter: function (node: Element, term: string, marksSoFar: number, marksTotal: number) {
-							return marksSoFar <= numOccurrencesBefore;
-						}
+					mark.mark(searchString, {
+						className: 'rangeHighlight'
 					});
 					ele.scrollIntoView({ behavior: 'smooth' });
 				}
@@ -324,8 +309,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (range && this.output && this.output.nativeElement) {
 			let elements = this.getHtmlElements();
 			let ele = elements[range.startLineNumber - 1];
-			let m = new mark(ele);
-			m.unmark({ acrossElements: true });
+			let mark = new Mark(ele);
+			mark.unmark({ acrossElements: true, className: 'rangeHighlight' });
 		}
 	}
 

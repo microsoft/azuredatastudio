@@ -113,7 +113,6 @@
     "@types/graceful-fs": "4.1.2",
     "@types/http-proxy-agent": "^2.0.1",
     "@types/keytar": "^4.4.0",
-    "@types/mark.js": "^8.11.5",
     "@types/minimist": "^1.2.0",
     "@types/mocha": "2.2.39",
     "@types/node": "^12.11.7",
