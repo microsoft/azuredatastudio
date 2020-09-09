@@ -69,7 +69,7 @@
 			}
 		},
 		{
-			"type": "chrome",
+			"type": "pwa-chrome",
 			"request": "attach",
 			"name": "Attach to azuredatastudio",
 			"port": 9222
@@ -141,7 +141,7 @@
 			}
 		},
 		{
-			"type": "chrome",
+			"type": "pwa-chrome",
 			"request": "launch",
 			"name": "Launch ADS (Web, Chrome) (TBD)",
 			"url": "http://localhost:8080",
@@ -220,7 +220,7 @@
 			}
 		},
 		{
-			"type": "chrome",
+			"type": "pwa-chrome",
 			"request": "launch",
 			"name": "Run Extension Unit Tests",
 			"windows": {
@@ -236,7 +236,7 @@
 			"timeout": 45000
 		},
 		{
-			"type": "chrome",
+			"type": "pwa-chrome",
 			"request": "launch",
 			"name": "Run Extension Integration Tests",
 			"windows": {
