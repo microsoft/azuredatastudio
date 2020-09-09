@@ -503,6 +503,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 				output_type: 'execute_result',
 				metadata: {},
 				execution_count: this._executionCount,
+				// Initial data sent to notebook only contains column headers since
+				// onResultSet only returns the column info (and no row data).
+				// Row data conversion will be handled in DataResourceDataProvider
 				data: {
 					'application/vnd.dataresource+json': this.convertToDataResource(resultSet.columnInfo),
 					'text/html': this.convertToHtmlTable(resultSet.columnInfo)
@@ -515,6 +518,17 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			parent_header: undefined
 		};
 		this.ioHandler.handle(msg);
+	}
+
+	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
+		this.ioHandler = handler;
+	}
+
+	registerMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
+		// no-op
+	}
+	removeMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
+		// no-op
 	}
 
 	private convertToDataResource(columns: IColumn[]): IDataResource {
@@ -532,25 +546,16 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private convertToHtmlTable(columns: IColumn[]): string[] {
 		let htmlTable: string[] = new Array(3);
 		htmlTable[0] = '<table>';
-		let columnHeaders = '<tr>';
-		for (let column of columns) {
-			columnHeaders += `<th>${escape(column.columnName)}</th>`;
+		if (columns.length > 0) {
+			let columnHeaders = '<tr>';
+			for (let column of columns) {
+				columnHeaders += `<th>${escape(column.columnName)}</th>`;
+			}
+			columnHeaders += '</tr>';
+			htmlTable[1] = columnHeaders;
 		}
-		columnHeaders += '</tr>';
-		htmlTable[1] = columnHeaders;
 		htmlTable[2] = '</table>';
 		return htmlTable;
-	}
-
-	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
-		this.ioHandler = handler;
-	}
-
-	registerMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
-		// no-op
-	}
-	removeMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
-		// no-op
 	}
 
 	private convertToDisplayMessage(msg: IResultMessage | string): nb.IIOPubMessage {

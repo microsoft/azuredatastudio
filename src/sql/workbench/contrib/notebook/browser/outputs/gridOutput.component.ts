@@ -386,8 +386,8 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	private convertData(rows: ResultSetSubset): void {
-		let dataResourceRows = this.convertToDataResource(rows);
-		let htmlStringArr = this.convertToHtmlTable(rows);
+		let dataResourceRows = this.convertRowsToDataResource(rows);
+		let htmlStringArr = this.convertRowsToHtml(rows);
 		this._data['application/vnd.dataresource+json'].data = this._data['application/vnd.dataresource+json'].data.concat(dataResourceRows);
 		this._data['text/html'].splice(this._data['text/html'].length - 1, 0, ...htmlStringArr);
 		this.cellModel.updateOutputData(this._batchId, this._id, this._data);
@@ -518,7 +518,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		return (selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
 	}
 
-	private convertToDataResource(subset: ResultSetSubset): any[] {
+	private convertRowsToDataResource(subset: ResultSetSubset): any[] {
 		return subset.rows.map(row => {
 			let rowObject: { [key: string]: any; } = {};
 			row.forEach((val, index) => {
@@ -528,7 +528,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		});
 	}
 
-	private convertToHtmlTable(subset: ResultSetSubset): string[] {
+	private convertRowsToHtml(subset: ResultSetSubset): string[] {
 		let htmlStringArr = [];
 		for (const row of subset.rows) {
 			let rowData = '<tr>';

@@ -298,7 +298,7 @@ export abstract class NotebookInput extends EditorInput {
 			severity: Severity.Info,
 			message: nls.localize('convertingData', "Waiting for table data conversion to complete..."),
 			progress: {
-				infinite: true
+				infinite: true // Keep showing conversion notification until notificationHandle is closed
 			}
 		};
 		const notificationHandle = this.notificationService.notify(conversionNotification);
