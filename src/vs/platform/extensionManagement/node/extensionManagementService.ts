@@ -44,7 +44,6 @@ import { IExtensionManifest, ExtensionType } from 'vs/platform/extensions/common
 import { ExtensionsDownloader } from 'vs/platform/extensionManagement/node/extensionDownloader';
 import { ExtensionsScanner, IMetadata } from 'vs/platform/extensionManagement/node/extensionsScanner';
 import { ExtensionsLifecycle } from 'vs/platform/extensionManagement/node/extensionLifecycle';
-import { IStringDictionary } from 'vs/base/common/collections';
 
 const INSTALL_ERROR_UNSET_UNINSTALLED = 'unsetUninstalled';
 const INSTALL_ERROR_DOWNLOADING = 'downloading';
@@ -693,8 +692,8 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	private setUninstalled(...extensions: ILocalExtension[]): Promise<{ [id: string]: boolean }> {
 		const ids: ExtensionIdentifierWithVersion[] = extensions.map(e => new ExtensionIdentifierWithVersion(e.identifier, e.manifest.version));
 		return this.extensionsScanner.withUninstalledExtensions(uninstalled => {
-			const newUninstalled = (ids.reduce<IStringDictionary<boolean>>((result, id) => { result[id.key()] = true; return result; }, {}));
-			return { ...uninstalled, ...newUninstalled };
+			ids.forEach(id => uninstalled[id.key()] = true);
+			return uninstalled;
 		});
 	}
 
