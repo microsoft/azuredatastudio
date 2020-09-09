@@ -11,7 +11,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IDataResource, MaxTableRowsConfigName, NotebookConfigSectionName, IDataResourceSchema, IDataResourceFields } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
+import { IDataResource, MaxTableRowsConfigName, NotebookConfigSectionName, IDataResourceSchema, IDataResourceFields, MAX_ROWS } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import QueryRunner, { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, ResultSetSubset, ICellValue, BatchSummary } from 'sql/workbench/services/query/common/query';
@@ -60,7 +60,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	private _id: number;
 	private _queryRunnerUri: string;
 	private _queryRunner: QueryRunner;
-	private _configuredMaxRows: number;
+	private _configuredMaxRows: number = MAX_ROWS;
 
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
