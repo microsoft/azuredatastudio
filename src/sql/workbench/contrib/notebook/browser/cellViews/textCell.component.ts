@@ -70,6 +70,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		document.execCommand('selectAll');
 	}
 
+	@HostListener('document:keydown.meta.z', ['$event'])
+	onUndo(e) {
+		document.execCommand('undo');
+	}
+
 	private _content: string | string[];
 	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
