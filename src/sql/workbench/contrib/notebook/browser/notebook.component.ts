@@ -210,9 +210,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.model.updateActiveCell(undefined);
 		this.detectChanges();
 	}
-	public editActiveCell() {
+
+	// Handles double click to edit icon change
+	// See textcell.component.ts for changing edit behavior
+	public enableActiveCellIconOnDoubleClick() {
 		if (this.doubleClickEditEnabled) {
-			this.cellToolbar.first.enableCellEditMode();
+			this.cellToolbar.first.enableCellEditModeIcon();
 		}
 	}
 

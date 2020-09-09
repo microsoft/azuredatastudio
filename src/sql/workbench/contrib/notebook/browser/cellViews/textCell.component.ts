@@ -61,12 +61,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	// Double click to edit text cell in notebook
 	@HostListener('dblclick', ['$event']) onDblClick() {
-		if (!this.isEditMode && this.doubleClickEditEnabled) {
-			this.toggleEditMode(true);
-		}
-		this.cellModel.active = true;
-		this._model.updateActiveCell(this.cellModel);
-
+		this.enableActiveCellEditOnDoubleClick();
 	}
 
 	@HostListener('document:keydown.meta.a', ['$event'])
@@ -192,7 +187,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	/**
 	 * Updates the preview of markdown component with latest changes
-	 * If content is empty and in non-edit mode, default it to 'Add content here...'
+	 * If content is empty and in non-edit mode, default it to 'Add content here...' or 'Double-click to edit' depending on setting
 	 * Sanitizes the data to be shown in markdown cell
 	 */
 	private updatePreview(): void {
@@ -369,5 +364,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 		});
 		return textOutput;
+	}
+
+	// Enables edit mode on double clicking active cell
+	private enableActiveCellEditOnDoubleClick() {
+		if (!this.isEditMode && this.doubleClickEditEnabled) {
+			this.toggleEditMode(true);
+		}
+		this.cellModel.active = true;
+		this._model.updateActiveCell(this.cellModel);
 	}
 }
