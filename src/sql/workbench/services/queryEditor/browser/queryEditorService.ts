@@ -53,11 +53,11 @@ export class QueryEditorService implements IQueryEditorService {
 
 		// Create a sql document pane with accoutrements
 		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: this._connectionManagementService.getProviderLanguageMode(connectionProviderName) }) as UntitledTextEditorInput;
-		let untitledEditorModel = await fileInput.resolve() as UntitledTextEditorModel;
+		let untitledEditorModel = await fileInput.resolve();
 		if (options.initalContent) {
 			untitledEditorModel.textEditorModel.setValue(options.initalContent);
 			if (options.dirty === false || (options.dirty === undefined && !this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').promptToSaveGeneratedFiles)) {
-				untitledEditorModel.setDirty(false);
+				(untitledEditorModel as UntitledTextEditorModel).setDirty(false);
 			}
 		}
 
@@ -82,9 +82,9 @@ export class QueryEditorService implements IQueryEditorService {
 
 		// Create a sql document pane with accoutrements
 		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: 'sql' }) as UntitledTextEditorInput;
-		const m = await fileInput.resolve() as UntitledTextEditorModel;
+		const m = await fileInput.resolve();
 		//when associatedResource editor is created it is dirty, this must be set to false to be able to detect changes to the editor.
-		m.setDirty(false);
+		(m as UntitledTextEditorModel).setDirty(false);
 		// Create an EditDataInput for editing
 		const resultsInput: EditDataResultsInput = this._instantiationService.createInstance(EditDataResultsInput, docUri.toString());
 		let editDataInput: EditDataInput = this._instantiationService.createInstance(EditDataInput, docUri, schemaName, tableName, fileInput, sqlContent, resultsInput);
@@ -94,7 +94,7 @@ export class QueryEditorService implements IQueryEditorService {
 			//Setting the value of the textEditorModel to sqlContent marks editor as dirty, editDataInput handles it.
 			m.textEditorModel.setValue(sqlContent);
 		}
-		const editor = await this._editorService.openEditor(editDataInput, { pinned: true });
+		const editor = (await this._editorService.openEditor(editDataInput, { pinned: true }))!;
 		let params = editor.input as EditDataInput;
 		return params;
 	}
