@@ -163,13 +163,13 @@ export class NetworkSettingsPage extends BasePage {
 			this._virtualNetworkDropdown.updateProperties({
 				values: vnets
 			});
-			this._newVirtualNetworkCheckbox.enabled = false;
+			this._newVirtualNetworkCheckbox.checked = true;
 			this.toggleNewVirtualNetwork();
 		} else {
 			this._virtualNetworkDropdown.updateProperties({
 				values: vnets
 			});
-			this._newVirtualNetworkCheckbox.enabled = true;
+			this._newVirtualNetworkCheckbox.checked = false;
 			this.toggleNewVirtualNetwork();
 		}
 		this._virtualNetworkDropdownLoader.loading = false;
@@ -180,7 +180,7 @@ export class NetworkSettingsPage extends BasePage {
 
 	private toggleNewVirtualNetwork() {
 
-		let newVirtualNetwork = this._newVirtualNetworkCheckbox.checked!;
+		let newVirtualNetwork = this._newVirtualNetworkCheckbox.checked;
 
 		this.wizard.model.newVirtualNetwork = newVirtualNetwork ? 'True' : 'False';
 
@@ -261,13 +261,13 @@ export class NetworkSettingsPage extends BasePage {
 			this._subnetDropdown.updateProperties({
 				values: subnets
 			});
-			this._newSubnetCheckbox.enabled = false;
+			this._newSubnetCheckbox.checked = true;
 			this.toggleNewSubnet();
 		} else {
 			this._subnetDropdown.updateProperties({
 				values: subnets
 			});
-			this._newSubnetCheckbox.enabled = true;
+			this._newSubnetCheckbox.checked = false;
 			this.toggleNewSubnet();
 		}
 
@@ -346,13 +346,13 @@ export class NetworkSettingsPage extends BasePage {
 			this._publicIpDropdown.updateProperties({
 				values: publicIps
 			});
-			this._newPublicIpCheckbox.enabled = false;
+			this._newPublicIpCheckbox.checked = true;
 			this.toggleNewPublicIp();
 		} else {
 			this._publicIpDropdown.updateProperties({
 				values: publicIps
 			});
-			this._newPublicIpCheckbox.enabled = true;
+			this._newPublicIpCheckbox.checked = false;
 			this.toggleNewPublicIp();
 		}
 		this._publicIpDropdownLoader.loading = false;
