@@ -589,7 +589,10 @@ export class ExtensionsListView extends ViewPane {
 			.then(local => {
 				return this.extensionRecommendationsService.getOtherRecommendations().then((recommmended) => {
 					const installedExtensions = local.map(x => `${x.publisher}.${x.name}`);
-					options = assign(options, { text: value, source: 'searchText' });
+					options = {
+						...options,
+						text: value, source: 'searchText'
+					};
 					return this.extensionsWorkbenchService.queryGallery(options, token).then((pager) => {
 						// filter out installed extensions
 						pager.firstPage = pager.firstPage.filter((p) => {
