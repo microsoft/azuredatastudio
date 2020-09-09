@@ -1476,7 +1476,7 @@ export class TabsTitleControl extends TitleControl {
 		let sqlEditor = editor as any;
 		const tabColorMode = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').tabColorMode;
 		if (tabColorMode === 'off' || (tabColorMode !== 'border' && tabColorMode !== 'fill')
-			|| this.themeService.getColorTheme().type === HIGH_CONTRAST || !sqlEditor.tabColor) {
+			|| this.themeService.getColorTheme().type === ColorScheme.HIGH_CONTRAST || !sqlEditor.tabColor) {
 			tabContainer.style.borderTopColor = '';
 			tabContainer.style.borderTopWidth = '';
 			tabContainer.style.borderTopStyle = '';
