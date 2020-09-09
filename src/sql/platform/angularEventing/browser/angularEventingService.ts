@@ -41,5 +41,5 @@ export interface IAngularEventingService {
 	 * @param uri Uri of the dashboard to send the event to
 	 * @param event event to send
 	 */
-	sendAngularEvent(uri: string, event: AngularEventType, payload?: any): void;
+	sendAngularEvent(uri: string | undefined, event: AngularEventType, payload?: any): void;
 }

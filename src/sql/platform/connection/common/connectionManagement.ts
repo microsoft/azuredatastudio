@@ -66,9 +66,9 @@ export interface IConnectionCompletionOptions {
 
 export interface IConnectionResult {
 	connected: boolean;
-	errorMessage: string;
-	errorCode: number;
-	callStack: string;
+	errorMessage?: string;
+	errorCode?: number;
+	callStack?: string;
 	errorHandled?: boolean;
 	connectionProfile?: IConnectionProfile;
 }
@@ -89,7 +89,7 @@ export interface IConnectionManagementService {
 	_serviceBrand: undefined;
 
 	// Event Emitters
-	onAddConnectionProfile: Event<IConnectionProfile>;
+	onAddConnectionProfile: Event<IConnectionProfile | undefined>;
 	onDeleteConnectionProfile: Event<void>;
 	onConnect: Event<IConnectionParams>;
 	onDisconnect: Event<IConnectionParams>;
@@ -112,7 +112,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Load the password and opens a new connection
 	 */
-	connect(connection: IConnectionProfile, uri?: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
+	connect(connection: IConnectionProfile, uri?: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult | undefined>;
 
 	/**
 	 * Opens a new connection and save the profile in settings
@@ -123,7 +123,7 @@ export interface IConnectionManagementService {
 	 * Finds existing connection for given profile and purpose is any exists.
 	 * The purpose is connection by default
 	 */
-	findExistingConnection(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): ConnectionProfile;
+	findExistingConnection(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): ConnectionProfile | undefined;
 
 	/**
 	 * If there's already a connection for given profile and purpose, returns the ownerUri for the connection
@@ -161,25 +161,25 @@ export interface IConnectionManagementService {
 
 	deleteConnectionGroup(group: ConnectionProfileGroup): Promise<boolean>;
 
-	getAdvancedProperties(): azdata.ConnectionOption[];
+	getAdvancedProperties(): azdata.ConnectionOption[] | undefined;
 
 	getConnectionUri(connectionProfile: IConnectionProfile): string;
 
 	getFormattedUri(uri: string, connectionProfile: IConnectionProfile): string;
 
-	getConnectionUriFromId(connectionId: string): string;
+	getConnectionUriFromId(connectionId: string): string | undefined;
 
 	isConnected(fileUri: string): boolean;
 
 	/**
 	 * Returns true if the connection profile is connected
 	 */
-	isProfileConnected(connectionProfile: IConnectionProfile): boolean;
+	isProfileConnected(connectionProfile: IConnectionProfile): boolean | undefined;
 
 	/**
 	 * Returns true if the connection profile is connecting
 	 */
-	isProfileConnecting(connectionProfile: IConnectionProfile): boolean;
+	isProfileConnecting(connectionProfile: IConnectionProfile): boolean | undefined;
 
 	isRecent(connectionProfile: ConnectionProfile): boolean;
 
@@ -193,7 +193,7 @@ export interface IConnectionManagementService {
 
 	addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile>;
 
-	listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult>;
+	listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult | undefined>;
 
 	/**
 	 * Register a connection provider
@@ -204,11 +204,11 @@ export interface IConnectionManagementService {
 
 	editGroup(group: ConnectionProfileGroup): Promise<void>;
 
-	getConnectionProfile(fileUri: string): IConnectionProfile;
+	getConnectionProfile(fileUri: string): IConnectionProfile | undefined;
 
-	getConnectionInfo(fileUri: string): ConnectionManagementInfo;
+	getConnectionInfo(fileUri: string): ConnectionManagementInfo | undefined;
 
-	getDefaultProviderId(): string;
+	getDefaultProviderId(): string | undefined;
 
 	getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string };
 
@@ -237,7 +237,7 @@ export interface IConnectionManagementService {
 
 	canChangeConnectionConfig(profile: IConnectionProfile, newGroupID: string): boolean;
 
-	getTabColorForUri(uri: string): string;
+	getTabColorForUri(uri: string): string | undefined;
 
 	/**
 	 * Sends a notification that the language flavor for a given URI has changed.
@@ -273,36 +273,36 @@ export interface IConnectionManagementService {
 	 * @returns A dictionary containing the credentials as they would be included
 	 * in the connection profile's options dictionary, or undefined if the profile was not found
 	 */
-	getConnectionCredentials(profileId: string): Promise<{ [name: string]: string }>;
+	getConnectionCredentials(profileId: string): Promise<{ [name: string]: string } | undefined>;
 
 	/**
 	 * Get the ServerInfo for a connected connection profile
 	 * @param profileId The id of the connection profile to get the password for
 	 * @returns ServerInfo
 	 */
-	getServerInfo(profileId: string): azdata.ServerInfo;
+	getServerInfo(profileId: string): azdata.ServerInfo | undefined;
 
 	/**
 	 * Get the connection string for the provided connection ID
 	 */
-	getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
+	getConnectionString(connectionId: string, includePassword: boolean): Thenable<string | undefined>;
 
 	/**
 	 * Serialize connection string with optional provider
 	 */
-	buildConnectionInfo(connectionString: string, provider?: string): Thenable<azdata.ConnectionInfo>;
+	buildConnectionInfo(connectionString: string, provider?: string): Thenable<azdata.ConnectionInfo | undefined>;
 
 	providerRegistered(providerId: string): boolean;
 	/**
 	 * Get connection profile by id
 	 */
-	getConnectionProfileById(profileId: string): IConnectionProfile;
+	getConnectionProfileById(profileId: string): IConnectionProfile | undefined;
 
-	getProviderProperties(providerName: string): ConnectionProviderProperties;
+	getProviderProperties(providerName: string): ConnectionProviderProperties | undefined;
 
 	getProviderLanguageMode(providerName?: string): string;
 
-	getConnectionIconId(connectionId: string): string;
+	getConnectionIconId(connectionId: string): string | undefined;
 
 	/**
 	 * Get known connection profiles including active connections, recent connections and saved connections.
@@ -311,7 +311,7 @@ export interface IConnectionManagementService {
 	 */
 	getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[];
 
-	getConnection(uri: string): ConnectionProfile;
+	getConnection(uri: string): ConnectionProfile | undefined;
 }
 
 export enum RunQueryOnConnectionMode {
@@ -335,8 +335,8 @@ export interface INewConnectionParams {
 
 export interface IConnectableInput {
 	uri: string;
-	onConnectStart(): void;
-	onConnectReject(error?: string): void;
+	onConnectStart(): void | undefined;
+	onConnectReject(error?: string): void | undefined;
 	onConnectSuccess(params: INewConnectionParams, profile: IConnectionProfile): void;
 	onDisconnect(): void;
 	onConnectCanceled(): void;

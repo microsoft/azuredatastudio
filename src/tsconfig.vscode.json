@@ -88,7 +88,6 @@
 		"./sql/workbench/services/insights/**/*.ts", // 67 errors
 		"./sql/workbench/services/insights/test/**/*.ts",
 		"./sql/workbench/services/notebook/**/*.ts", // 200 errors
-		"./sql/workbench/services/objectExplorer/**/*.ts", // 185 errors
 		"./sql/workbench/services/query/test/**/*.ts",
 		"./sql/workbench/services/queryEditor/test/**/*.ts",
 		"./sql/workbench/test/**/*.ts", // 2975 errors

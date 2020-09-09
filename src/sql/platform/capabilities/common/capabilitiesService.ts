@@ -27,6 +27,7 @@ export interface ConnectionProviderProperties {
 	notebookKernelAlias?: string;
 	azureResource?: string;
 	connectionOptions: azdata.ConnectionOption[];
+	languageMode?: string;
 }
 
 export interface ProviderFeatures {

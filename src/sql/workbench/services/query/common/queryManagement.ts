@@ -192,7 +192,7 @@ export class QueryManagementService implements IQueryManagementService {
 	}
 
 	private _runAction<T>(uri: string, action: (handler: IQueryRequestHandler) => Promise<T>, fallBackToDefaultProvider: boolean = false): Promise<T> {
-		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
+		let providerId: string | undefined = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId && fallBackToDefaultProvider) {
 			providerId = this._connectionService.getDefaultProviderId();

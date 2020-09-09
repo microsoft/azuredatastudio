@@ -39,7 +39,7 @@ export interface IResourceProviderService {
 	/**
 	 * handle a firewall rule
 	 */
-	handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Promise<IHandleFirewallRuleResult>;
+	handleFirewallRule(errorCode: number | undefined, errorMessage: string | undefined, connectionTypeId: string): Promise<IHandleFirewallRuleResult>;
 
 	/**
 	 * Show firewall rule dialog

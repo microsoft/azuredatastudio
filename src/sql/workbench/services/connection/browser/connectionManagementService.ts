@@ -57,11 +57,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	_serviceBrand: undefined;
 
-	private _providers = new Map<string, { onReady: Promise<azdata.ConnectionProvider>, properties: ConnectionProviderProperties }>();
+	private _providers = new Map<string, { onReady: Promise<azdata.ConnectionProvider>, properties: ConnectionProviderProperties | undefined }>();
 	private _providerNameToDisplayNameMap: { [providerDisplayName: string]: string } = {};
 	private _iconProviders = new Map<string, azdata.IconProvider>();
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
-	private _onAddConnectionProfile = new Emitter<interfaces.IConnectionProfile>();
+	private _onAddConnectionProfile = new Emitter<interfaces.IConnectionProfile | undefined>();
 	private _onDeleteConnectionProfile = new Emitter<void>();
 	private _onConnect = new Emitter<IConnectionParams>();
 	private _onDisconnect = new Emitter<IConnectionParams>();
@@ -70,7 +70,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onLanguageFlavorChanged = new Emitter<azdata.DidChangeLanguageFlavorParams>();
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._notificationService);
 
-	private _mementoContext: Memento;
+	private _mementoContext?: Memento;
 	private _mementoObj: any;
 	private static readonly CONNECTION_MEMENTO = 'ConnectionManagement';
 	private static readonly _azureResources: AzureResource[] =
@@ -157,8 +157,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	// Event Emitters
-	public get onAddConnectionProfile(): Event<interfaces.IConnectionProfile> {
-		return this._onAddConnectionProfile.event;
+	public get onAddConnectionProfile(): Event<interfaces.IConnectionProfile | undefined> {
+		return this._onAddConnectionProfile.event!;
 	}
 
 	public get onDeleteConnectionProfile(): Event<void> {
@@ -201,7 +201,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		// we know this is a deferred promise because we made it
-		(this._providers.get(providerId).onReady as Deferred<azdata.ConnectionProvider>).resolve(provider);
+		(this._providers.get(providerId)?.onReady as Deferred<azdata.ConnectionProvider>)?.resolve(provider);
 	}
 
 	public registerIconProvider(providerId: string, iconProvider: azdata.IconProvider): void {
@@ -272,7 +272,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Get the connection providers map and filter out CMS.
 	 */
 	public getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string } {
-		let uniqueProvidersMap = {};
+		let uniqueProvidersMap: { [key: string]: string } = {};
 		let providerNames = entries(providerNameToDisplayNameMap);
 		providerNames.forEach(p => {
 			// Only add CMS provider if explicitly called from CMS extension
@@ -295,7 +295,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param owner of the connection. Can be the editors
 	 * @param options to use after the connection is complete
 	 */
-	private tryConnect(connection: interfaces.IConnectionProfile, owner: IConnectableInput, options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
+	private tryConnect(connection: interfaces.IConnectionProfile, owner: IConnectableInput, options?: IConnectionCompletionOptions): Promise<IConnectionResult | undefined> {
 		// Load the password if it's not already loaded
 		return this._connectionStore.addSavedPassword(connection).then(async result => {
 			let newConnection = result.profile;
@@ -365,28 +365,28 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param options to be used after the connection is completed
 	 * @param callbacks to call after the connection is completed
 	 */
-	public connect(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
+	public connect(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult | undefined> {
 		if (!uri) {
 			uri = Utils.generateUri(connection);
 		}
-		let input: IConnectableInput = options && options.params ? options.params.input : undefined;
+		let input: IConnectableInput | undefined = options && options.params ? options.params.input : undefined;
 		if (!input) {
 			input = {
-				onConnectReject: callbacks ? callbacks.onConnectReject : undefined,
-				onConnectStart: callbacks ? callbacks.onConnectStart : undefined,
-				onConnectSuccess: callbacks ? callbacks.onConnectSuccess : undefined,
-				onDisconnect: callbacks ? callbacks.onDisconnect : undefined,
-				onConnectCanceled: callbacks ? callbacks.onConnectCanceled : undefined,
+				onConnectReject: callbacks?.onConnectReject ?? undefined,
+				onConnectStart: callbacks?.onConnectStart ?? undefined,
+				onConnectSuccess: callbacks?.onConnectSuccess ?? undefined,
+				onDisconnect: callbacks?.onDisconnect ?? undefined,
+				onConnectCanceled: callbacks?.onConnectCanceled ?? undefined,
 				uri: uri
 			};
 		}
 
 
-		if (uri !== input.uri) {
+		if (uri !== input?.uri) {
 			//TODO: this should never happen. If the input is already passed, it should have the uri
-			this._logService.warn(`the given uri is different that the input uri. ${uri}|${input.uri}`);
+			this._logService.warn(`the given uri is different that the input uri. ${uri}|${input?.uri}`);
 		}
-		return this.tryConnect(connection, input, options);
+		return this.tryConnect(connection, input!, options);
 	}
 
 	/**
@@ -410,7 +410,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (connectionResult && connectionResult.connected) {
 					return this._connectionStatusManager.getOriginalOwnerUri(ownerUri);
 				} else {
-					throw connectionResult.errorMessage;
+					throw connectionResult?.errorMessage ?? new Error(nls.localize('connectIfNotConnected.error', 'unexpected problem when connecting'));
 				}
 			});
 		}
@@ -478,13 +478,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
 				// the options.saveTheConnection setting
 				let connectionMgmtInfo = this._connectionStatusManager.findConnection(uri);
-				this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
+				if (connectionMgmtInfo) {
+					this.tryAddActiveConnection(connectionMgmtInfo, connection, options!.saveTheConnection);
+				}
 
-				if (callbacks.onConnectSuccess) {
+				if (callbacks?.onConnectSuccess && options?.params && connectionResult?.connectionProfile) {
 					callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
 				}
-				if (options.saveTheConnection || isEdit) {
-					let matcher: interfaces.ProfileMatcher;
+				if (options?.saveTheConnection || isEdit) {
+					let matcher: interfaces.ProfileMatcher | undefined = undefined;
 					if (isEdit) {
 						matcher = (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile) => {
 							return a.id === b.id;
@@ -493,11 +495,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 					await this.saveToSettings(uri, connection, matcher).then(value => {
 						this._onAddConnectionProfile.fire(connection);
-						this.doActionsAfterConnectionComplete(value, options);
+						this.doActionsAfterConnectionComplete(value, options!);
 					});
 				} else {
 					connection.saveProfile = false;
-					this.doActionsAfterConnectionComplete(uri, options);
+					this.doActionsAfterConnectionComplete(uri, options!);
 				}
 				if (connection.savePassword) {
 					return this._connectionStore.savePassword(connection).then(() => {
@@ -507,20 +509,20 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					return connectionResult;
 				}
 			} else if (connectionResult && connectionResult.errorMessage) {
-				return this.handleConnectionError(connection, uri, options, callbacks, connectionResult).catch(handleConnectionError => {
-					if (callbacks.onConnectReject) {
+				return this.handleConnectionError(connection, uri, options!, callbacks!, connectionResult).catch(handleConnectionError => {
+					if (callbacks?.onConnectReject) {
 						callbacks.onConnectReject(handleConnectionError);
 					}
 					throw handleConnectionError;
 				});
 			} else {
-				if (callbacks.onConnectReject) {
+				if (callbacks?.onConnectReject) {
 					callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', "Connection Not Accepted"));
 				}
 				return connectionResult;
 			}
 		}).catch(err => {
-			if (callbacks.onConnectReject) {
+			if (callbacks?.onConnectReject) {
 				callbacks.onConnectReject(err);
 			}
 			throw err;
@@ -553,7 +555,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._resourceProviderService.handleFirewallRule(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(response => {
 			if (response.canHandleFirewallRule) {
 				connectionResult.errorHandled = true;
-				return this._resourceProviderService.showFirewallRuleDialog(connection, response.ipAddress, response.resourceProviderId);
+				return this._resourceProviderService.showFirewallRuleDialog(connection, response.ipAddress!, response.resourceProviderId!);
 			} else {
 				return false;
 			}
@@ -562,35 +564,39 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
 		let connectionManagementInfo = this._connectionStatusManager.findConnection(uri);
-		if (options.showDashboard) {
+		if (options.showDashboard && connectionManagementInfo) {
 			this.showDashboardForConnectionManagementInfo(connectionManagementInfo.connectionProfile);
 		}
 
-		let connectionProfile = connectionManagementInfo.connectionProfile;
+		let connectionProfile = connectionManagementInfo?.connectionProfile;
 		this._onConnect.fire(<IConnectionParams>{
 			connectionUri: uri,
 			connectionProfile: connectionProfile
 		});
-
-		let iconProvider = this._iconProviders.get(connectionManagementInfo.providerId);
-		if (iconProvider) {
-			let serverInfo: azdata.ServerInfo = this.getServerInfo(connectionProfile.id);
+		let iconProvider: azdata.IconProvider | undefined = undefined;
+		if (connectionManagementInfo) {
+			iconProvider = this._iconProviders.get(connectionManagementInfo.providerId);
+		}
+		if (iconProvider && connectionProfile) {
+			let serverInfo: azdata.ServerInfo | undefined = this.getServerInfo(connectionProfile.id);
 			let profile: interfaces.IConnectionProfile = connectionProfile.toIConnectionProfile();
-			iconProvider.getConnectionIconId(profile, serverInfo).then(iconId => {
-				if (iconId && this._mementoObj && this._mementoContext) {
-					if (!this._mementoObj.CONNECTION_ICON_ID) {
-						this._mementoObj.CONNECTION_ICON_ID = <any>{};
+			if (serverInfo) {
+				iconProvider.getConnectionIconId(profile, serverInfo).then(iconId => {
+					if (iconId && this._mementoObj && this._mementoContext) {
+						if (!this._mementoObj.CONNECTION_ICON_ID) {
+							this._mementoObj.CONNECTION_ICON_ID = <any>{};
+						}
+						if (this._mementoObj.CONNECTION_ICON_ID[connectionProfile!.id] !== iconId) {
+							this._mementoObj.CONNECTION_ICON_ID[connectionProfile!.id] = iconId;
+							this._mementoContext.saveMemento();
+						}
 					}
-					if (this._mementoObj.CONNECTION_ICON_ID[connectionProfile.id] !== iconId) {
-						this._mementoObj.CONNECTION_ICON_ID[connectionProfile.id] = iconId;
-						this._mementoContext.saveMemento();
-					}
-				}
-			});
+				});
+			}
 		}
 	}
 
-	public getConnectionIconId(connectionId: string): string {
+	public getConnectionIconId(connectionId: string): string | undefined {
 		if (!connectionId || !this._mementoObj || !this._mementoObj.CONNECTION_ICON_ID) {
 			return undefined;
 		}
@@ -604,9 +610,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private showDashboardForConnectionManagementInfo(connectionProfile: interfaces.IConnectionProfile): Thenable<boolean> {
 		// if dashboard profile is already open, focus on that tab
 		if (!this.focusDashboard(connectionProfile)) {
-			let dashboardInput: DashboardInput = this._instantiationService ? this._instantiationService.createInstance(DashboardInput, connectionProfile) : undefined;
-			return dashboardInput.initializedPromise.then(() => {
-				return this._editorService.openEditor(dashboardInput, { pinned: true }, ACTIVE_GROUP);
+			let dashboardInput: DashboardInput | undefined = this._instantiationService ? this._instantiationService.createInstance(DashboardInput, connectionProfile) : undefined;
+			return dashboardInput!.initializedPromise.then(() => {
+				return this._editorService.openEditor(dashboardInput!, { pinned: true }, ACTIVE_GROUP);
 			}).then(() => true);
 		} else {
 			return Promise.resolve(true);
@@ -662,7 +668,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.getActiveConnectionProfiles(providers);
 	}
 
-	public getConnectionUriFromId(connectionId: string): string {
+	public getConnectionUriFromId(connectionId: string): string | undefined {
 		let connectionInfo = this._connectionStatusManager.findConnectionByProfileId(connectionId);
 		if (connectionInfo) {
 			return connectionInfo.ownerUri;
@@ -679,7 +685,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	public getAdvancedProperties(): azdata.ConnectionOption[] {
+	public getAdvancedProperties(): azdata.ConnectionOption[] | undefined {
 
 		let providers = this._capabilitiesService.providers;
 		if (providers) {
@@ -701,7 +707,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return hasRegisteredServers;
 	}
 
-	private doHasRegisteredServers(root: ConnectionProfileGroup[]): boolean {
+	private doHasRegisteredServers(root?: ConnectionProfileGroup[]): boolean {
 
 		if (!root || root.length === 0) {
 			return false;
@@ -778,7 +784,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	public getDefaultProviderId(): string {
+	public getDefaultProviderId(): string | undefined {
 		let defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultEngine);
 		return defaultProvider && this._providers.has(defaultProvider) ? defaultProvider : undefined;
 	}
@@ -795,7 +801,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return AzureResource.Sql;
 		}
 
-		let result = find(ConnectionManagementService._azureResources, r => AzureResource[r] === provider.properties.azureResource);
+		let result = ConnectionManagementService._azureResources.find(r => {
+			return AzureResource[r] === provider?.properties?.azureResource;
+		});
 		return result ? result : AzureResource.Sql;
 	}
 
@@ -828,12 +836,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					}
 				}
 				const tenantId = connection.azureTenantId;
-				const token = await this._accountManagementService.getAccountSecurityToken(account, tenantId, azureResource);
+				const token = await this._accountManagementService.getAccountSecurityToken(account, tenantId!, azureResource);
 				this._logService.debug(`Got token for tenant ${token}`);
 				if (!token) {
 					this._logService.info(`No security tokens found for account`);
+					return false;
 				}
-				connection.options['azureAccountToken'] = token.token;
+				connection.options['azureAccountToken'] = token!.token;
 				connection.options['password'] = '';
 				return true;
 			} else {
@@ -853,7 +862,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		await this.extensionService.activateByEvent(`onConnect:${connection.providerName}`);
 
-		return this._providers.get(connection.providerName).onReady.then((provider) => {
+		return this._providers.get(connection.providerName)!.onReady.then((provider) => {
 			provider.connect(uri, connectionInfo);
 			this._onConnectRequestSent.fire();
 
@@ -869,7 +878,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return Promise.resolve(false);
 		}
 
-		return this._providers.get(providerId).onReady.then(provider => {
+		return this._providers.get(providerId)!.onReady.then(provider => {
 			provider.disconnect(uri);
 			return true;
 		});
@@ -881,19 +890,19 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return Promise.resolve(false);
 		}
 
-		return this._providers.get(providerId).onReady.then(provider => {
+		return this._providers.get(providerId)!.onReady.then(provider => {
 			provider.cancelConnect(uri);
 			return true;
 		});
 	}
 
-	private sendListDatabasesRequest(uri: string): Thenable<azdata.ListDatabasesResult> {
+	private sendListDatabasesRequest(uri: string): Thenable<azdata.ListDatabasesResult | undefined> {
 		let providerId: string = this.getProviderIdFromUri(uri);
 		if (!providerId) {
 			return Promise.resolve(undefined);
 		}
 
-		return this._providers.get(providerId).onReady.then(provider => {
+		return this._providers.get(providerId)!.onReady.then(provider => {
 			return provider.listDatabases(uri).then(result => {
 				if (result && result.databaseNames) {
 					result.databaseNames.sort();
@@ -916,12 +925,18 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (newConnection && addToMru) {
 			this._connectionStore.addRecentConnection(newConnection)
 				.then(() => {
-					connectionManagementInfo.connectHandler(true);
+					if (connectionManagementInfo.connectHandler) {
+						connectionManagementInfo.connectHandler(true);
+					}
 				}, err => {
-					connectionManagementInfo.connectHandler(false, err);
+					if (connectionManagementInfo.connectHandler) {
+						connectionManagementInfo.connectHandler(false, err);
+					}
 				});
 		} else {
-			connectionManagementInfo.connectHandler(false);
+			if (connectionManagementInfo.connectHandler) {
+				connectionManagementInfo.connectHandler(false);
+			}
 		}
 	}
 
@@ -940,12 +955,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			.send();
 	}
 
-	private addTelemetryForConnectionDisconnected(connection: interfaces.IConnectionProfile): void {
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseDisconnected)
-			.withAdditionalProperties({
-				provider: connection.providerName
-			})
-			.send();
+	private addTelemetryForConnectionDisconnected(connection?: interfaces.IConnectionProfile): void {
+		if (connection) {
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseDisconnected)
+				.withAdditionalProperties({
+					provider: connection.providerName
+				})
+				.send();
+		}
 	}
 
 	public onConnectionComplete(handle: number, info: azdata.ConnectionInfoSummary): void {
@@ -958,23 +975,27 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			connection.serverInfo = info.serverInfo;
 			connection.extensionTimer.stop();
 
-			connection.connectHandler(true);
+			if (connection.connectHandler) {
+				connection.connectHandler(true);
+			}
 			this.addTelemetryForConnection(connection);
 
 			if (this._connectionStatusManager.isDefaultTypeUri(info.ownerUri)) {
 				this._connectionGlobalStatus.setStatusToConnected(info.connectionSummary);
 			}
 		} else {
-			connection.connectHandler(false, info.errorMessage, info.errorNumber, info.messages);
+			if (connection.connectHandler) {
+				connection.connectHandler(false, info.errorMessage, info.errorNumber, info.messages);
+			}
 		}
 	}
 
 	public onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void {
-		let profile: interfaces.IConnectionProfile = this._connectionStatusManager.onConnectionChanged(changedConnInfo);
+		let profile: interfaces.IConnectionProfile | undefined = this._connectionStatusManager.onConnectionChanged(changedConnInfo);
 		this._notifyConnectionChanged(profile, changedConnInfo.connectionUri);
 	}
 
-	private _notifyConnectionChanged(profile: interfaces.IConnectionProfile, connectionUri: string): void {
+	private _notifyConnectionChanged(profile: interfaces.IConnectionProfile | undefined, connectionUri: string): void {
 		if (profile) {
 			this._onConnectionChanged.fire(<IConnectionParams>{
 				connectionProfile: profile,
@@ -1071,8 +1092,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						this._connectionStatusManager.deleteConnection(uri);
 						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					} else {
-						if (connectionMngInfo.serverInfo) {
-							connection.options.isCloud = connectionMngInfo.serverInfo.isCloud;
+						if (connectionMngInfo?.serverInfo) {
+							connection.options.isCloud = connectionMngInfo?.serverInfo.isCloud;
 						}
 						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					}
@@ -1085,18 +1106,28 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	// Ask user if they are sure they want to cancel connection request
-	private shouldCancelConnect(fileUri: string): Promise<boolean> {
+	private async shouldCancelConnect(fileUri: string): Promise<boolean> {
 		// Double check if the user actually wants to cancel their connection request
 		// Setup our cancellation choices
-		let choices: { key, value }[] = [
+		let choices: { key: string, value: boolean }[] = [
 			{ key: nls.localize('connectionService.yes', "Yes"), value: true },
 			{ key: nls.localize('connectionService.no', "No"), value: false }
 		];
 
-		return this._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', "Are you sure you want to cancel this connection?"), ignoreFocusLost: true }).then((choice) => {
-			let confirm = find(choices, x => x.key === choice);
-			return confirm && confirm.value;
-		});
+		const choice = await this._quickInputService.pick(choices.map(x => {
+			return {
+				label: x.key
+			};
+		}),
+			{
+				placeHolder: nls.localize('cancelConnectionConfirmation', "Are you sure you want to cancel this connection?"),
+				ignoreFocusLost: true,
+				canPickMany: false
+			}
+		);
+
+		const confirm = choices.find(x => x.key === choice?.label);
+		return confirm?.value ?? true;
 	}
 
 	private doDisconnect(fileUri: string, connection?: interfaces.IConnectionProfile): Promise<boolean> {
@@ -1128,7 +1159,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public disconnect(ownerUri: string): Promise<void>;
 	public disconnect(input: string | interfaces.IConnectionProfile): Promise<void> {
 		let uri: string;
-		let profile: interfaces.IConnectionProfile;
+		let profile: interfaces.IConnectionProfile | undefined;
 		if (typeof input === 'object') {
 			uri = Utils.generateUri(input);
 			profile = input;
@@ -1136,7 +1167,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			profile = this.getConnectionProfile(input);
 			uri = input;
 		}
-		return this.doDisconnect(uri, profile).then(result => {
+		return this.doDisconnect(uri!, profile!).then(result => {
 			if (result) {
 				this.addTelemetryForConnectionDisconnected(profile);
 				this._connectionStatusManager.removeConnection(uri);
@@ -1182,7 +1213,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Finds existing connection for given profile and purpose is any exists.
 	 * The purpose is connection by default
 	 */
-	public findExistingConnection(connection: interfaces.IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection' | 'notebook'): ConnectionProfile {
+	public findExistingConnection(connection: interfaces.IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection' | 'notebook'): ConnectionProfile | undefined {
 		let connectionUri = Utils.generateUri(connection, purpose);
 		let existingConnection = this._connectionStatusManager.findConnection(connectionUri);
 		if (existingConnection && this._connectionStatusManager.isConnected(connectionUri)) {
@@ -1192,29 +1223,29 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	public isProfileConnected(connectionProfile: interfaces.IConnectionProfile): boolean {
+	public isProfileConnected(connectionProfile: interfaces.IConnectionProfile): boolean | undefined {
 		let connectionManagement = this._connectionStatusManager.findConnectionProfile(connectionProfile);
-		return connectionManagement && !connectionManagement.connecting;
+		return !connectionManagement?.connecting;
 	}
 
-	public isProfileConnecting(connectionProfile: interfaces.IConnectionProfile): boolean {
+	public isProfileConnecting(connectionProfile: interfaces.IConnectionProfile): boolean | undefined {
 		let connectionManagement = this._connectionStatusManager.findConnectionProfile(connectionProfile);
-		return connectionManagement && connectionManagement.connecting;
+		return connectionManagement?.connecting;
 	}
 
 	private isConnecting(fileUri: string): boolean {
 		return this._connectionStatusManager.isConnecting(fileUri);
 	}
 
-	public getConnectionProfile(fileUri: string): interfaces.IConnectionProfile {
+	public getConnectionProfile(fileUri: string): interfaces.IConnectionProfile | undefined {
 		return this._connectionStatusManager.isConnected(fileUri) ? this._connectionStatusManager.getConnectionProfile(fileUri) : undefined;
 	}
 
-	public getConnectionInfo(fileUri: string): ConnectionManagementInfo {
+	public getConnectionInfo(fileUri: string): ConnectionManagementInfo | undefined {
 		return this._connectionStatusManager.isConnected(fileUri) ? this._connectionStatusManager.findConnection(fileUri) : undefined;
 	}
 
-	public listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult> {
+	public listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult | undefined> {
 		const self = this;
 		if (self.isConnected(connectionUri)) {
 			return self.sendListDatabasesRequest(connectionUri);
@@ -1229,10 +1260,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return Promise.resolve(false);
 			}
 
-			return this._providers.get(providerId).onReady.then(provider => {
+			return this._providers.get(providerId)!.onReady.then(provider => {
 				return provider.changeDatabase(connectionUri, databaseName).then(result => {
 					if (result) {
-						this.getConnectionProfile(connectionUri).databaseName = databaseName;
+						this.getConnectionProfile(connectionUri)!.databaseName = databaseName;
 					}
 					return result;
 				});
@@ -1290,7 +1321,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let connections = ConnectionProfileGroup.getConnectionsInGroup(group);
 
 		// Disconnect all these connections
-		let disconnected = [];
+		let disconnected: Promise<boolean>[] = [];
 		connections.forEach((con) => {
 			let uri = Utils.generateUri(con);
 			if (this.isConnected(uri)) {
@@ -1325,12 +1356,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return Promise.reject('No provider corresponding to the given URI');
 			}
 
-			return this._providers.get(providerId).onReady.then(provider => provider.rebuildIntelliSenseCache(connectionUri));
+			return this._providers.get(providerId)!.onReady.then(provider => provider.rebuildIntelliSenseCache(connectionUri));
 		}
 		return Promise.reject('The given URI is not currently connected');
 	}
 
-	public getTabColorForUri(uri: string): string {
+	public getTabColorForUri(uri: string): string | undefined {
 		if (this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').tabColorMode === 'off') {
 			return undefined;
 		}
@@ -1338,7 +1369,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (!connectionProfile) {
 			return undefined;
 		}
-		let matchingGroup = this._connectionStore.getGroupFromId(connectionProfile.groupId);
+		let matchingGroup: IConnectionProfileGroup | undefined = undefined;
+		if (connectionProfile.groupId) {
+			matchingGroup = this._connectionStore.getGroupFromId(connectionProfile.groupId);
+		}
 		if (!matchingGroup) {
 			return undefined;
 		}
@@ -1349,7 +1383,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStore.getProfileWithoutPassword(originalProfile);
 	}
 
-	public async getConnectionCredentials(profileId: string): Promise<{ [name: string]: string }> {
+	public async getConnectionCredentials(profileId: string): Promise<{ [name: string]: string } | undefined> {
 		let profile = find(this.getActiveConnections(), connectionProfile => connectionProfile.id === profileId);
 		if (!profile) {
 			// Couldn't find an active profile so try all profiles now - fetching the password if we found one
@@ -1361,13 +1395,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		// Find the password option for the connection provider
-		let passwordOption = find(this._capabilitiesService.getCapabilities(profile.providerName).connection.connectionOptions,
-			option => option.specialValueType === ConnectionOptionSpecialType.password);
+		let passwordOption: azdata.ConnectionOption | undefined = this._capabilitiesService.getCapabilities(profile.providerName)?.connection.connectionOptions.find(option => {
+			return option.specialValueType === ConnectionOptionSpecialType.password;
+		});
+
 		if (!passwordOption) {
 			return undefined;
 		}
 
-		let credentials = {};
+		let credentials: { [key: string]: string } = {};
 		credentials[passwordOption.name] = profile.options[passwordOption.name];
 		return credentials;
 	}
@@ -1383,7 +1419,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return serverInfo;
 	}
 
-	public getConnectionProfileById(profileId: string): interfaces.IConnectionProfile {
+	public getConnectionProfileById(profileId: string): interfaces.IConnectionProfile | undefined {
 		let profile = this._connectionStatusManager.findConnectionByProfileId(profileId);
 		if (!profile) {
 			return undefined;
@@ -1394,7 +1430,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Get the connection string for the provided connection ID
 	 */
-	public getConnectionString(connectionId: string, includePassword: boolean = false): Thenable<string> {
+	public getConnectionString(connectionId: string, includePassword: boolean = false): Thenable<string | undefined> {
 		let ownerUri = this.getConnectionUriFromId(connectionId);
 
 		if (!ownerUri) {
@@ -1406,8 +1442,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return Promise.resolve(undefined);
 		}
 
-		return this._providers.get(providerId).onReady.then(provider => {
-			return provider.getConnectionString(ownerUri, includePassword).then(connectionString => {
+		return this._providers.get(providerId)!.onReady.then(provider => {
+			return provider.getConnectionString(ownerUri!, includePassword).then(connectionString => {
 				return connectionString;
 			});
 		});
@@ -1417,17 +1453,20 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Serialize connection with options provider
 	 * TODO this could be a map reduce operation
 	 */
-	public buildConnectionInfo(connectionString: string, provider: string): Thenable<azdata.ConnectionInfo> {
+	public buildConnectionInfo(connectionString: string, provider: string): Thenable<azdata.ConnectionInfo | undefined> {
 		let connectionProvider = this._providers.get(provider);
 		if (connectionProvider) {
 			return connectionProvider.onReady.then(e => {
-				return e.buildConnectionInfo(connectionString);
+				if (e.buildConnectionInfo) {
+					return e.buildConnectionInfo(connectionString);
+				}
+				return undefined;
 			});
 		}
 		return Promise.resolve(undefined);
 	}
 
-	public getProviderProperties(providerName: string): ConnectionProviderProperties {
+	public getProviderProperties(providerName: string): ConnectionProviderProperties | undefined {
 		let connectionProvider = this._providers.get(providerName);
 		return connectionProvider && connectionProvider.properties;
 	}
@@ -1436,7 +1475,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Gets languageMode property of provider if it exists. Defaults to 'sql'
 	*/
 	public getProviderLanguageMode(providerName?: string): string {
-		return this._providers.get(providerName)?.properties?.['languageMode'] || 'sql';
+		if (!providerName) {
+			return 'sql';
+		}
+		return this._providers.get(providerName)?.properties?.languageMode ?? 'sql';
 	}
 
 	/**
@@ -1475,7 +1517,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return connections;
 	}
 
-	public getConnection(uri: string): ConnectionProfile {
+	public getConnection(uri: string): ConnectionProfile | undefined {
 		const connections = this.getActiveConnections();
 		if (connections) {
 			for (let connection of connections) {
