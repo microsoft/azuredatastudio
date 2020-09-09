@@ -188,8 +188,7 @@ export class ResourceTypeService implements IResourceTypeService {
 					&& !instanceOfWebPageDeploymentProvider(provider)
 					&& !instanceOfCommandDeploymentProvider(provider)
 					&& !instanceOfAzureSQLVMDeploymentProvider(provider)
-					&& !instanceOfAzureSQLDBDeploymentProvider(provider)
-				) {
+					&& !instanceOfAzureSQLDBDeploymentProvider(provider)) {
 					errorMessages.push(`No deployment method defined for the provider, ${providerPositionInfo}`);
 				}
 

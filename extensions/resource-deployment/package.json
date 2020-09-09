@@ -423,7 +423,7 @@
         ],
         "providers": [
           {
-            "azureSQLDBWizard": {
+            "azureSQLDBWizard":{
               "notebook": "./notebooks/azuredb/create-sqldb.ipynb"
             },
             "requiredTools": [
@@ -473,7 +473,7 @@
         },
         "providers": [
           {
-            "azureSQLVMWizard": {
+            "azureSQLVMWizard":{
               "notebook": "./notebooks/azurevm/create-sqlvm.ipynb"
             },
             "requiredTools": [
