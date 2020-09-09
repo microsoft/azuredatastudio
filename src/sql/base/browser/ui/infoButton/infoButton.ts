@@ -17,7 +17,7 @@ export interface IInfoButtonOptions extends IButtonOptions {
 	iconHeight: string | number,
 	iconWidth: string | number,
 	iconPath: IUserFriendlyIcon,
-	textTitle: string
+	textTitle: string,
 	buttonMaxWidth: number,
 }
 
