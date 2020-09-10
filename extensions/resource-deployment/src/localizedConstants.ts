@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
-import { FieldType, OptionsSourceType } from './interfaces';
+import { FieldType, OptionsType} from './interfaces';
+import { OptionsSourceType } from './helpers/optionSources';
 
 const localize = nls.loadMessageBundle();
 
@@ -25,5 +26,10 @@ export const unexpectedOptionsSourceType = (type: OptionsSourceType) => localize
 export const unknownFieldTypeError = (type: FieldType) => localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", type);
 export const variableValueFetchForUnsupportedVariable = (variableName: string) => localize('getVariableValue.unknownVariableName', "Attempt to get variable value for unknown variable:{0}", variableName);
 export const noControllersConnected = localize('noControllersConnected', "No ARC controllers are currently connected. Please run the command: 'Connect to Existing Azure Arc Controller' and then try again");
-
-
+export const noOptionsSourceDefined = (optionsSourceType: OptionsSourceType) => localize('noOptionsSourceDefined', "No OptionsSource defined for type: {0}", optionsSourceType);
+export const noControllerInfoFound = (name: string) => localize('noControllerInfoFound', "controllerInfo could not be found with name: {0}", name);
+export const noPasswordFound = (controllerName: string) => localize('noPasswordFound', "password could not be retrieved for controller: {0}", controllerName);
+export const optionsNotDefined = (fieldType: FieldType) => localize('optionsNotDefined', "FieldInfo.options was not defined for field type: {0}", fieldType);
+export const optionsNotObjectOrArray = localize('optionsNotObjectOrArray', "FieldInfo.options must be an object if it is not an array");
+export const optionsTypeNotFound = localize('optionsTypeNotFound', "When FieldInfo.options is an object it must have 'optionsType' property");
+export const optionsTypeRadioOrDropdown = localize('optionsTypeRadioOrDropdown', "When optionsType is not {0} then it must be {1}", OptionsType.Radio, OptionsType.Dropdown);

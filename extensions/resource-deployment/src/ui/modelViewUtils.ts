@@ -9,16 +9,17 @@ import { EOL, homedir as os_homedir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles, OptionsSource } from '../interfaces';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles} from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
 import { KubeCtlTool, KubeCtlToolName } from '../services/tools/kubeCtlTool';
 import { IToolsService } from '../services/toolsService';
-import { assert, getDateTimeString, getErrorMessage } from '../utils';
+import { throwUnless, getDateTimeString, getErrorMessage } from '../utils';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
+import { OptionsSource } from '../helpers/optionSources';
 
 const localize = nls.loadMessageBundle();
 
@@ -395,7 +396,7 @@ async function processField(context: FieldContext): Promise<void> {
 }
 
 async function processOptionsTypeField(context: FieldContext): Promise<void> {
-	assert(context.fieldInfo.options !== undefined, `FieldInfo.options must be defined for FieldType:${FieldType.Options}`);
+	throwUnless(context.fieldInfo.options !== undefined, loc.optionsNotDefined(context.fieldInfo.type));
 	if (Array.isArray(context.fieldInfo.options)) {
 		context.fieldInfo.options = <OptionsInfo>{
 			values: context.fieldInfo.options,
@@ -403,8 +404,8 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 			optionsType: OptionsType.Dropdown
 		};
 	}
-	assert(typeof context.fieldInfo.options === 'object', `FieldInfo.options must be an object if it is not an array`);
-	assert('optionsType' in context.fieldInfo.options, `When FieldInfo.options is an object it must have 'optionsType' property`);
+	throwUnless(typeof context.fieldInfo.options === 'object', loc.optionsNotObjectOrArray);
+	throwUnless('optionsType' in context.fieldInfo.options, loc.optionsTypeNotFound);
 	if (context.fieldInfo.options.source) {
 		context.fieldInfo.options.source = OptionsSource.construct(context.fieldInfo.options.source.type, context.fieldInfo.options.source);
 		context.fieldInfo.options.values = await context.fieldInfo.options.source.getOptions();
@@ -414,7 +415,7 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 	if (context.fieldInfo.options.optionsType === OptionsType.Radio) {
 		optionsComponent = await processRadioOptionsTypeField(context);
 	} else {
-		assert(context.fieldInfo.options.optionsType === OptionsType.Dropdown, `When optionsType is not ${OptionsType.Radio} then it must be ${OptionsType.Dropdown}`);
+		throwUnless(context.fieldInfo.options.optionsType === OptionsType.Dropdown, loc.optionsTypeRadioOrDropdown);
 		optionsComponent = processDropdownOptionsTypeField(context);
 	}
 	if (context.fieldInfo.options.source) {

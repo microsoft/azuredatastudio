@@ -5,8 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { OptionsSources } from './helpers/optionSources';
-
+import { OptionsSourceType, OptionsSource } from './helpers/optionSources';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 
@@ -173,8 +172,6 @@ export type ComponentCSSStyles = {
 	[key: string]: string;
 };
 
-export type OptionsSourceType = 'ArcControllersOptionsSource';
-
 export interface IOptionsSource {
 	readonly type: OptionsSourceType,
 	readonly variableNames: { [index: string]: string; },
@@ -182,32 +179,6 @@ export interface IOptionsSource {
 	getVariableValue(variableName: string, input: string): string;
 }
 
-export abstract class OptionsSource implements IOptionsSource {
-
-	private static sources: { [index: string]: new () => OptionsSource } = {
-		'ArcControllersOptionsSource': OptionsSources.ArcControllersOptionsSource
-	};
-	private _variableNames!: { [index: string]: string; };
-	private _type!: OptionsSourceType;
-
-	get type(): OptionsSourceType { return this._type; }
-	get variableNames(): { [index: string]: string; } { return this._variableNames; }
-	protected constructor() {
-	}
-	abstract async getOptions(): Promise<string[]>;
-	abstract getVariableValue(variableName: string, input: string): string;
-
-	static isConstructor(maybeConstructor: (new () => OptionsSource) | string): maybeConstructor is new () => OptionsSource {
-		return Object.getPrototypeOf(maybeConstructor) === OptionsSource;
-	}
-	static construct(optionsSourceConstructor: (new () => OptionsSource) | string, optionsSource: OptionsSource): OptionsSource {
-		const obj = OptionsSource.isConstructor(optionsSourceConstructor)
-			? new optionsSourceConstructor()
-			: new OptionsSource.sources[optionsSourceConstructor]();
-		obj._variableNames = optionsSource.variableNames;
-		return obj;
-	}
-}
 
 export interface OptionsInfo {
 	values?: string[] | azdata.CategoryValue[],
