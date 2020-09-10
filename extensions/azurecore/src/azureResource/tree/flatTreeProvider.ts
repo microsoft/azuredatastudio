@@ -108,6 +108,8 @@ class ResourceLoader {
 
 		let doRefresh = false;
 
+		// if we just fire every time we get an a new resource we crash the application
+		// this effectively buffers the event so that we don't cause hangs.
 		let interval = setInterval(() => {
 			if (doRefresh) {
 				doRefresh = false;
