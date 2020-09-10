@@ -16,6 +16,7 @@ import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/t
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 
 suite('ConnectionDialogService tests', () => {
 
@@ -47,11 +48,14 @@ suite('ConnectionDialogService tests', () => {
 			undefined, // connectionManagementService
 			undefined, // contextMenuService
 			undefined, // contextViewService
-			{ getViewContainerById: () => ({}), getViewContainerModel: () => ({}) }, // viewDescriptorService
 			undefined, // themeService
 			undefined, // layoutService
 			undefined, // telemetryService
-			new MockContextKeyService()
+			new MockContextKeyService(),
+			undefined, //clipboard service
+			undefined, // log service
+			undefined, //textResourcepropertiesService
+			new TestConfigurationService()
 		);
 		mockConnectionDialog.setup(c => c.resetConnection());
 		(connectionDialogService as any)._connectionDialog = mockConnectionDialog.object;
