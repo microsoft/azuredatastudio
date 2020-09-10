@@ -612,7 +612,7 @@ suite('SQL Object Explorer Service tests', () => {
 	});
 
 	test('findTreeNode returns undefined if the requested node does not exist', async () => {
-		const invalidNodePath = objectExplorerSession.rootNode.nodePath + '/invalidNode';
+		const invalidNodePath = `${objectExplorerSession.rootNode.nodePath}/invalidNode`;
 		await objectExplorerService.createNewSession(mssqlProviderName, connection);
 		objectExplorerService.onSessionCreated(1, objectExplorerSession);
 		const nodeInfo = await objectExplorerService.getTreeNode(connection.id, invalidNodePath);

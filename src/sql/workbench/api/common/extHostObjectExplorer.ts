@@ -100,7 +100,7 @@ export class ExtHostObjectExplorerNode implements azdata.objectexplorer.ObjectEx
 		// that may have additional display information appended to it. Items without metadata are nodes
 		// such as folders that don't correspond to actual objects and so just use the label
 		let nodePathName = this.metadata ?
-			`${this.metadata.schema ? this.metadata.schema + '.' : ''}${this.metadata.name}` :
+			`${this.metadata.schema ? `${this.metadata.schema}.` : ''}${this.metadata.name}` :
 			this.label;
 
 		// -1 to remove the / as well

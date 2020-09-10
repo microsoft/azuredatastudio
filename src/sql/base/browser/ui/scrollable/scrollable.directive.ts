@@ -46,7 +46,7 @@ export class ScrollableDirective extends AngularDisposable {
 
 		this.scrollableElement.onScroll(e => {
 			if (this.verticalScroll === ScrollbarVisibility.Auto) {
-				this.scrolled.style.bottom = e.scrollTop + 'px';
+				this.scrolled.style.bottom = `${e.scrollTop}px`;
 			} else if (this.horizontalScroll === ScrollbarVisibility.Auto) {
 				this.scrolled.scrollLeft = e.scrollLeft;
 			}

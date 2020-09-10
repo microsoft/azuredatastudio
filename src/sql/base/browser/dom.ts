@@ -23,7 +23,7 @@ export function convertSize(size: number | string | undefined, defaultValue?: st
 	}
 	let convertedSize: string = size ? size.toString() : defaultValue;
 	if (!endsWith(convertedSize.toLowerCase(), 'px') && !endsWith(convertedSize.toLowerCase(), '%')) {
-		convertedSize = convertedSize + 'px';
+		convertedSize = `${convertedSize}px`;
 	}
 	return convertedSize;
 }

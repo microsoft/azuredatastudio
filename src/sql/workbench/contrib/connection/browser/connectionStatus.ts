@@ -70,18 +70,18 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		let text: string = connectionProfile.serverName;
 		if (text) {
 			if (connectionProfile.databaseName && connectionProfile.databaseName !== '') {
-				text = text + ' : ' + connectionProfile.databaseName;
+				text = `${text} : ${connectionProfile.databaseName}`;
 			} else {
-				text = text + ' : ' + '<default>';
+				text = `${text} : ` + `<default>`;
 			}
 		}
 
 		let tooltip: string =
-			'Server: ' + connectionProfile.serverName + '\r\n' +
-			'Database: ' + (connectionProfile.databaseName ? connectionProfile.databaseName : '<default>') + '\r\n';
+			`Server: ${connectionProfile.serverName}\r\n` +
+			`Database: ${connectionProfile.databaseName ? connectionProfile.databaseName : '<default>'}\r\n`;
 
 		if (connectionProfile.userName && connectionProfile.userName !== '') {
-			tooltip = tooltip + 'Login: ' + connectionProfile.userName + '\r\n';
+			tooltip = `${tooltip}Login: ${connectionProfile.userName}\r\n`;
 		}
 
 		this.statusItem.update({

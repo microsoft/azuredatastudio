@@ -76,7 +76,7 @@ export class QueryEditorService implements IQueryEditorService {
 	public async newEditDataEditor(schemaName: string, tableName: string, sqlContent: string): Promise<IConnectableInput> {
 
 		// Create file path and file URI
-		let objectName = schemaName ? schemaName + '.' + tableName : tableName;
+		let objectName = schemaName ? `${schemaName}.${tableName}` : tableName;
 		let filePath = await this.createPrefixedSqlFilePath(objectName);
 		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
@@ -102,7 +102,7 @@ export class QueryEditorService implements IQueryEditorService {
 	////// Private functions
 	private createUntitledSqlFilePath(providerName?: string): Promise<string> {
 		if (providerName === 'KUSTO') {
-			return this.createPrefixedSqlFilePath(providerName + 'Query');
+			return this.createPrefixedSqlFilePath(`${providerName}Query`);
 		}
 
 		return this.createPrefixedSqlFilePath('SQLQuery');

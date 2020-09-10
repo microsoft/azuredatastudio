@@ -262,7 +262,7 @@ export class SelectBox extends vsSelectBox {
 		if (this.message && this.contextViewProvider && this.element) {
 			const message = this.message;
 			let div: HTMLElement;
-			let layout = () => div.style.width = dom.getTotalWidth(this.selectElement) + 'px';
+			let layout = () => div.style.width = `${dom.getTotalWidth(this.selectElement)}px`;
 
 			this.contextViewProvider.showContextView({
 				getAnchor: () => this.selectElement,

@@ -288,11 +288,11 @@ export class RestoreDialogController implements IRestoreDialogController {
 		return new Promise<void>((resolve, reject) => {
 			let result: void;
 
-			this._ownerUri = this._connectionService.getConnectionUri(connection)
+			this._ownerUri = `${this._connectionService.getConnectionUri(connection)
 				+ ProviderConnectionInfo.idSeparator
 				+ Utils.ConnectionUriRestoreIdAttributeName
 				+ ProviderConnectionInfo.nameValueSeparator
-				+ '0';
+				}0`;
 
 			if (!this._connectionService.isConnected(this._ownerUri)) {
 				this._connectionService.connect(connection, this._ownerUri).then(connectionResult => {
@@ -309,7 +309,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 							newRestoreDialog.onDatabaseListFocused(() => this.fetchDatabases(provider));
 						} else {
 							newRestoreDialog = this._instantiationService.createInstance(
-								OptionsDialog, 'Restore database - ' + connection.serverName + ':' + connection.databaseName, 'RestoreOptions', undefined);
+								OptionsDialog, `Restore database - ${connection.serverName}:${connection.databaseName}`, 'RestoreOptions', undefined);
 							newRestoreDialog.onOk(() => this.handleOnRestore());
 						}
 						newRestoreDialog.onCloseEvent(() => this.handleOnClose());

@@ -142,10 +142,10 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 
 	public get iconClass(): string {
 		if (this.isListItemCard) {
-			return this._iconClass + ' icon' + ' list-item-icon';
+			return `${this._iconClass} icon` + ` list-item-icon`;
 		}
 		else {
-			return this._iconClass + ' icon' + ' cardIcon';
+			return `${this._iconClass} icon` + ` cardIcon`;
 		}
 	}
 

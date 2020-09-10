@@ -137,7 +137,7 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 			});
 
 			this._scrollableElement.onScroll(e => {
-				scrollable.style.bottom = e.scrollTop + 'px';
+				scrollable.style.bottom = `${e.scrollTop}px`;
 			});
 
 			container.appendChild(this._scrollableElement.getDomNode());

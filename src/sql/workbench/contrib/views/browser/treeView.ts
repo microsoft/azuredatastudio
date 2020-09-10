@@ -529,7 +529,7 @@ export class TreeView extends Disposable implements ITreeView {
 			this._height = height;
 			this._width = width;
 			const treeHeight = height - DOM.getTotalHeight(this.messageElement);
-			this.treeContainer.style.height = treeHeight + 'px';
+			this.treeContainer.style.height = `${treeHeight}px`;
 			if (this.tree) {
 				this.tree.layout(treeHeight, width);
 			}

@@ -215,10 +215,10 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		let resultIndicatorClass = dataContext.enabled ? 'alertview-alertnameindicatorenabled' :
 			'alertview-alertnameindicatordisabled';
 
-		return '<table class="alertview-alertnametable"><tr class="alertview-alertnamerow">' +
-			'<td nowrap class=' + resultIndicatorClass + '></td>' +
-			'<td nowrap class="alertview-alertnametext">' + dataContext.name + '</td>' +
-			'</tr></table>';
+		return `${'<table class="alertview-alertnametable"><tr class="alertview-alertnamerow">' +
+			'<td nowrap class='}${resultIndicatorClass}></td>` +
+			`<td nowrap class="alertview-alertnametext">${dataContext.name}</td>` +
+			`</tr></table>`;
 	}
 
 	public async openCreateAlertDialog() {

@@ -111,8 +111,8 @@ class BadgeRenderer {
 	}
 
 	public addBadge(element: HTMLElement, badgeClass: string): void {
-		element.innerHTML = (element.innerHTML || '') +
-			`<div class="${badgeClass}" style="width: 0px; height: 0px;"><div>`;
+		element.innerHTML = `${element.innerHTML || ''
+			}<div class="${badgeClass}" style="width: 0px; height: 0px;"><div>`;
 	}
 
 	public removeBadge(element: HTMLElement, badgeClass: string): void {

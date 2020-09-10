@@ -107,7 +107,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout, GroupCont
 		if (this._containerLayout && this._containerLayout.width) {
 			let width: string = this._containerLayout.width.toString();
 			if (!endsWith(width, '%') && !endsWith(width.toLowerCase(), 'px')) {
-				width = width + 'px';
+				width = `${width}px`;
 			}
 			return width;
 		} else {

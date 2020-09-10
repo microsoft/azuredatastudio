@@ -165,15 +165,15 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	}
 
 	public toggleGridCollapse(i): void {
-		let notebookGrid = document.getElementById('notebook-grid' + i);
-		let checkbox: any = document.getElementById('accordion' + i);
-		let arrow = document.getElementById('history-grid-icon' + i);
-		if (notebookGrid.className === 'notebook-grid ' + i && checkbox.checked === true) {
-			notebookGrid.className = 'notebook-grid ' + i + ' collapsed';
+		let notebookGrid = document.getElementById(`notebook-grid${i}`);
+		let checkbox: any = document.getElementById(`accordion${i}`);
+		let arrow = document.getElementById(`history-grid-icon${i}`);
+		if (notebookGrid.className === `notebook-grid ${i}` && checkbox.checked === true) {
+			notebookGrid.className = `notebook-grid ${i} collapsed`;
 			notebookGrid.style.display = 'none';
 			arrow.className = 'resultsViewCollapsible collapsed';
-		} else if (notebookGrid.className === 'notebook-grid ' + i + ' collapsed' && checkbox.checked === false) {
-			notebookGrid.className = 'notebook-grid ' + i;
+		} else if (notebookGrid.className === `notebook-grid ${i} collapsed` && checkbox.checked === false) {
+			notebookGrid.className = `notebook-grid ${i}`;
 			notebookGrid.style.display = 'grid';
 			arrow.className = 'resultsViewCollapsible';
 		}
@@ -292,7 +292,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 			if (result) {
 				let regex = /:|-/gi;
 				let readableDataTimeString = history.runDate.replace(regex, '').replace(' ', '');
-				let tempNotebookFileName = this._agentViewComponent.agentNotebookInfo.name + '_' + readableDataTimeString;
+				let tempNotebookFileName = `${this._agentViewComponent.agentNotebookInfo.name}_${readableDataTimeString}`;
 				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', tempNotebookFileName, result.notebookMaterialized);
 			}
 		});
@@ -322,7 +322,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	}
 
 	public renameNotebook(history: azdata.AgentNotebookHistoryInfo) {
-		const defaultDateTime = new Date(history.runDate).toLocaleDateString() + ' ' + new Date(history.runDate).toLocaleTimeString();
+		const defaultDateTime = `${new Date(history.runDate).toLocaleDateString()} ${new Date(history.runDate).toLocaleTimeString()}`;
 		let notebookRunName = (history.materializedNotebookName === '') ? defaultDateTime : history.materializedNotebookName;
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
@@ -409,12 +409,12 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 			day: 'numeric'
 		};
 
-		tooltipString += '\n' + nls.localize('notebookHistory.dateCreatedTooltip', "Date Created: ") + new Date(history.runDate).toLocaleDateString(undefined, dateOptions);
+		tooltipString += `\n${nls.localize('notebookHistory.dateCreatedTooltip', "Date Created: ")}${new Date(history.runDate).toLocaleDateString(undefined, dateOptions)}`;
 		if (history.materializedNotebookErrorInfo && /\S/.test(history.materializedNotebookErrorInfo)) {
-			tooltipString += '\n' + nls.localize('notebookHistory.notebookErrorTooltip', "Notebook Error: ") + history.materializedNotebookErrorInfo;
+			tooltipString += `\n${nls.localize('notebookHistory.notebookErrorTooltip', "Notebook Error: ")}${history.materializedNotebookErrorInfo}`;
 		}
 		if (history.runStatus === 0 && history.message && /\S/.test(history.message)) {
-			tooltipString += '\n' + nls.localize('notebookHistory.ErrorTooltip', "Job Error: ") + history.message;
+			tooltipString += `\n${nls.localize('notebookHistory.ErrorTooltip', "Job Error: ")}${history.message}`;
 		}
 		return tooltipString;
 	}
@@ -474,18 +474,18 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 
 	public collapseGrid() {
 		for (let i = 0; i < this._grids.length; i++) {
-			let notebookGrid = document.getElementById('notebook-grid' + i);
-			let arrow = document.getElementById('history-grid-icon' + i);
+			let notebookGrid = document.getElementById(`notebook-grid${i}`);
+			let arrow = document.getElementById(`history-grid-icon${i}`);
 			if (notebookGrid) {
-				let checkbox: any = document.getElementById('accordion' + i);
+				let checkbox: any = document.getElementById(`accordion${i}`);
 				if (this._grids[i].style === 'none') {
-					notebookGrid.className = 'notebook-grid ' + i + ' collapsed';
+					notebookGrid.className = `notebook-grid ${i} collapsed`;
 					arrow.className = 'resultsViewCollapsible collapsed';
 					notebookGrid.style.display = 'none';
 					checkbox.checked = true;
 				}
 				else {
-					notebookGrid.className = 'notebook-grid ' + i;
+					notebookGrid.className = `notebook-grid ${i}`;
 					notebookGrid.style.display = 'grid';
 					arrow.className = 'resultsViewCollapsible';
 					checkbox.checked = false;

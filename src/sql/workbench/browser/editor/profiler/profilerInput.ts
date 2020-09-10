@@ -127,7 +127,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		if (!this.connection) {
 			return name;
 		}
-		name += ': ' + this.connection.serverName.substring(0, 20);
+		name += `: ${this.connection.serverName.substring(0, 20)}`;
 		return name;
 	}
 

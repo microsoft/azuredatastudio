@@ -264,7 +264,7 @@ export class Dropdown extends Disposable {
 				}
 			}, 0);
 			let height = filteredLength * this._renderer.getHeight() > this._options.maxHeight! ? this._options.maxHeight! : filteredLength * this._renderer.getHeight();
-			this._treeContainer.style.height = height + 'px';
+			this._treeContainer.style.height = `${height}px`;
 			this.updateTreeWidth();
 			this._tree.layout(parseInt(this._treeContainer.style.height));
 			this._tree.refresh().catch(e => onUnexpectedError(e));
@@ -294,7 +294,7 @@ export class Dropdown extends Disposable {
 			this._dataSource.options = vals.map(i => { return { value: i }; });
 			this.updateTreeWidth();
 			let height = this._dataSource.options.length * 22 > this._options.maxHeight! ? this._options.maxHeight! : this._dataSource.options.length * 22;
-			this._treeContainer.style.height = height + 'px';
+			this._treeContainer.style.height = `${height}px`;
 			this._tree.layout(parseInt(this._treeContainer.style.height));
 			this._tree.setInput(new DropdownModel()).catch(e => onUnexpectedError(e));
 			this._input.validate();

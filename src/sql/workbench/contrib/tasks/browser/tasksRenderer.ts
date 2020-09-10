@@ -101,7 +101,7 @@ export class TaskHistoryRenderer implements IRenderer {
 			templateData.icon.title = taskStatus;
 
 			// Determine the task title and set hover text equal to that
-			templateData.label.textContent = element.taskName + ' ' + taskStatus;
+			templateData.label.textContent = `${element.taskName} ${taskStatus}`;
 			templateData.label.title = templateData.label.textContent;
 
 			let description: string | undefined;
@@ -112,7 +112,7 @@ export class TaskHistoryRenderer implements IRenderer {
 			} else {
 				description = element.serverName;
 				if (element.databaseName) {
-					description += ' | ' + element.databaseName;
+					description += ` | ${element.databaseName}`;
 				}
 			}
 
@@ -130,19 +130,19 @@ export class TaskHistoryRenderer implements IRenderer {
 	private timer(taskNode: TaskNode, element: HTMLElement): void {
 		let timeLabel = '';
 		if (taskNode.status === TaskStatus.Failed) {
-			timeLabel += taskNode.startTime + ' Error: ' + taskNode.message;
+			timeLabel += `${taskNode.startTime} Error: ${taskNode.message}`;
 		} else {
 			if (taskNode.startTime) {
 				timeLabel = taskNode.startTime;
 			}
 			if (taskNode.endTime) {
-				timeLabel += ' - ' + taskNode.endTime;
+				timeLabel += ` - ${taskNode.endTime}`;
 			}
 
 			if (taskNode.timer) {
 				// Round task duration to seconds and then convert back to milliseconds
 				let duration = Math.floor(taskNode.timer.elapsed() / 1000) * 1000;
-				timeLabel += ' (' + Utils.parseNumAsTimeString(duration) + ')';
+				timeLabel += ` (${Utils.parseNumAsTimeString(duration)})`;
 			}
 		}
 		element.textContent = timeLabel;

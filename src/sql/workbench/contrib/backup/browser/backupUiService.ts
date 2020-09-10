@@ -66,7 +66,7 @@ export class BackupUiService implements IBackupUiService {
 			let backupOptions = this.getOptions(this._currentProvider);
 			if (backupOptions) {
 				backupDialog = this._instantiationService.createInstance(
-					OptionsDialog, 'Backup database - ' + connection.serverName + ':' + connection.databaseName, 'BackupOptions', undefined);
+					OptionsDialog, `Backup database - ${connection.serverName}:${connection.databaseName}`, 'BackupOptions', undefined);
 				backupDialog.onOk(() => this.handleOptionDialogClosed());
 			}
 			else {

@@ -244,7 +244,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		} else {
 			jobViews = notebooks.map((job) => {
 				return {
-					id: 'notebook' + job.jobId,
+					id: `notebook${job.jobId}`,
 					notebookId: job.jobId,
 					name: job.name,
 					targetDatabase: job.targetDatabase,
@@ -288,8 +288,8 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 							// style it all over again
 							let seenJobs = 0;
 							for (let i = 0; i < currentItems.length; i++) {
-								this._table.grid.removeCellCssStyles('error-row' + i.toString());
-								this._table.grid.removeCellCssStyles('notebook-error-row' + i.toString());
+								this._table.grid.removeCellCssStyles(`error-row${i.toString()}`);
+								this._table.grid.removeCellCssStyles(`notebook-error-row${i.toString()}`);
 								let item = this.dataView.getFilteredItems()[i];
 								if (item.lastRunOutcome === 'Failed') {
 									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
@@ -315,8 +315,8 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 				} else {
 					let seenNotebooks = 0;
 					for (let i = 0; i < this.notebooks.length; i++) {
-						this._table.grid.removeCellCssStyles('error-row' + i.toString());
-						this._table.grid.removeCellCssStyles('notebook-error-row' + i.toString());
+						this._table.grid.removeCellCssStyles(`error-row${i.toString()}`);
+						this._table.grid.removeCellCssStyles(`notebook-error-row${i.toString()}`);
 						let item = this.dataView.getItemByIdx(i);
 						// current filter
 						if (!!find(filterValues, x => x === item[args.column.field])) {
@@ -384,7 +384,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 				let jobHistories = self._notebookCacheObject.getNotebookHistory(job.jobId);
 				if (jobHistories) {
 					let previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
-					self.createJobChart('notebook' + job.jobId, previousRuns);
+					self.createJobChart(`notebook${job.jobId}`, previousRuns);
 				}
 			});
 		});
@@ -486,18 +486,18 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		hash = this.setRowWithErrorClass(hash, row + 1, 'error-row');
 		if (start) {
 			if (map['start']) {
-				map['start'].push(['error-row' + row.toString(), hash]);
+				map['start'].push([`error-row${row.toString()}`, hash]);
 			} else {
-				map['start'] = [['error-row' + row.toString(), hash]];
+				map['start'] = [[`error-row${row.toString()}`, hash]];
 			}
 		} else {
 			if (map[columnName]) {
-				map[columnName].push(['error-row' + row.toString(), hash]);
+				map[columnName].push([`error-row${row.toString()}`, hash]);
 			} else {
-				map[columnName] = [['error-row' + row.toString(), hash]];
+				map[columnName] = [[`error-row${row.toString()}`, hash]];
 			}
 		}
-		this._table.grid.setCellCssStyles('error-row' + row.toString(), hash);
+		this._table.grid.setCellCssStyles(`error-row${row.toString()}`, hash);
 	}
 
 	private addToErrorStyleHash(row: number, start: boolean, map: any, columnName: string) {
@@ -510,18 +510,18 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		hash = this.setRowWithErrorClass(hash, row + 1, 'notebook-error-row');
 		if (start) {
 			if (map['start']) {
-				map['start'].push(['notebook-error-row' + row.toString(), hash]);
+				map['start'].push([`notebook-error-row${row.toString()}`, hash]);
 			} else {
-				map['start'] = [['notebook-error-row' + row.toString(), hash]];
+				map['start'] = [[`notebook-error-row${row.toString()}`, hash]];
 			}
 		} else {
 			if (map[columnName]) {
-				map[columnName].push(['notebook-error-row' + row.toString(), hash]);
+				map[columnName].push([`notebook-error-row${row.toString()}`, hash]);
 			} else {
-				map[columnName] = [['notebook-error-row' + row.toString(), hash]];
+				map[columnName] = [[`notebook-error-row${row.toString()}`, hash]];
 			}
 		}
-		this._table.grid.setCellCssStyles('notebook-error-row' + row.toString(), hash);
+		this._table.grid.setCellCssStyles(`notebook-error-row${row.toString()}`, hash);
 	}
 
 	private renderName(row, cell, value, columnDef, dataContext) {
@@ -547,10 +547,10 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 				break;
 		}
 
-		return '<table class="jobview-jobnametable"><tr class="jobview-jobnamerow">' +
-			'<td nowrap class=' + resultIndicatorClass + '></td>' +
-			'<td nowrap class="jobview-jobnametext">' + escape(dataContext.name) + '</td>' +
-			'</tr></table>';
+		return `${'<table class="jobview-jobnametable"><tr class="jobview-jobnamerow">' +
+			'<td nowrap class='}${resultIndicatorClass}></td>` +
+			`<td nowrap class="jobview-jobnametext">${escape(dataContext.name)}</td>` +
+			`</tr></table>`;
 	}
 
 	private renderChartsPostHistory(row, cell, value, columnDef, dataContext) {
@@ -658,7 +658,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 
 				if (self._agentViewComponent.expandedNotebook.has(notebook.jobId)) {
 					let lastJobHistory = notebookHistories[notebookHistories.length - 1];
-					let item = self.dataView.getItemById('notebook' + notebook.jobId + '.error');
+					let item = self.dataView.getItemById(`notebook${notebook.jobId}.error`);
 					let noStepsMessage = nls.localize('notebooksView.noSteps', "No Steps available for this job.");
 					let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
 					if (item) {
@@ -669,10 +669,10 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 							item['name'] = nls.localize('notebooksView.notebookError', "Notebook Error: ") + notebook.lastRunNotebookError;
 						}
 						self._agentViewComponent.setExpandedNotebook(notebook.jobId, item['name']);
-						self.dataView.updateItem('notebook' + notebook.jobId + '.error', item);
+						self.dataView.updateItem(`notebook${notebook.jobId}.error`, item);
 					}
 				}
-				self.createJobChart('notebook' + notebook.jobId, previousRuns);
+				self.createJobChart(`notebook${notebook.jobId}`, previousRuns);
 			}
 		}
 	}
@@ -844,8 +844,8 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			}
 		} else {
 			for (let i = 0; i < this.notebooks.length; i++) {
-				this._table.grid.removeCellCssStyles('error-row' + i.toString());
-				this._table.grid.removeCellCssStyles('notebook-error-row' + i.toString());
+				this._table.grid.removeCellCssStyles(`error-row${i.toString()}`);
+				this._table.grid.removeCellCssStyles(`notebook-error-row${i.toString()}`);
 			}
 		}
 		// add new style to the items back again
@@ -891,7 +891,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		});
 		cells.toArray().forEach(cell => {
 			cell.style.background = bgColor.toString();
-			cell.style.border = borderColor ? '1px solid ' + borderColor.toString() : null;
+			cell.style.border = borderColor ? `1px solid ${borderColor.toString()}` : null;
 		});
 		cellDetails.toArray().forEach(cellDetail => {
 			cellDetail.style.background = cellColor.toString();
@@ -1021,7 +1021,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			if (result) {
 				let regex = /:|-/gi;
 				let readableDataTimeString = history.runDate.replace(regex, '').replace(' ', '');
-				let tempNotebookFileName = notebook.name + '_' + readableDataTimeString;
+				let tempNotebookFileName = `${notebook.name}_${readableDataTimeString}`;
 				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', tempNotebookFileName, result.notebookMaterialized);
 			}
 		}

@@ -78,7 +78,7 @@ export class ConnectionViewletPanel extends ViewPane {
 		const viewletContainer = DOM.append(container, DOM.$('div.server-explorer-viewlet'));
 		const viewContainer = DOM.append(viewletContainer, DOM.$('div.object-explorer-view'));
 		this._serverTreeView.renderBody(viewContainer).then(undefined, error => {
-			this.logService.warn('render registered servers: ' + error);
+			this.logService.warn(`render registered servers: ${error}`);
 		});
 		this._root = container;
 	}

@@ -218,7 +218,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 					return stepViewRow;
 				});
 				self._stepRows.unshift(new JobStepsViewRow());
-				self._stepRows[0].rowID = 'stepsColumn' + self._agentJobInfo.jobId;
+				self._stepRows[0].rowID = `stepsColumn${self._agentJobInfo.jobId}`;
 				self._stepRows[0].stepId = nls.localize('stepRow.stepID', "Step ID");
 				self._stepRows[0].stepName = nls.localize('stepRow.stepName', "Step Name");
 				self._stepRows[0].message = nls.localize('stepRow.message', "Message");

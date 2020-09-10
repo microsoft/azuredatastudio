@@ -598,7 +598,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		let isLeaf: boolean = nodeInfo.isLeaf;
 		if (nodeInfo.nodeType === NodeType.Database) {
 			if (nodeInfo.nodeStatus) {
-				nodeInfo.label = nodeInfo.label + ' (' + nodeInfo.nodeStatus + ')';
+				nodeInfo.label = `${nodeInfo.label} (${nodeInfo.nodeStatus})`;
 			}
 			if (isLeaf) {
 				// set to common status so we can have a single 'Unavailable' db icon

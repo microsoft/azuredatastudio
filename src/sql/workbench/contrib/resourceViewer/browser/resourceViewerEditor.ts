@@ -95,7 +95,7 @@ export class ResourceViewerEditor extends EditorPane {
 	}
 
 	public layout(dimension: DOM.Dimension): void {
-		this._container.style.width = dimension.width + 'px';
-		this._container.style.height = dimension.height + 'px';
+		this._container.style.width = `${dimension.width}px`;
+		this._container.style.height = `${dimension.height}px`;
 	}
 }

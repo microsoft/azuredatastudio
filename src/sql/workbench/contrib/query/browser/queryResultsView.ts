@@ -417,7 +417,7 @@ export class QueryResultsView extends Disposable {
 		tab.view.componentId = componentId;
 		this.dynamicModelViewTabs.push(tab);
 
-		this.input.state.visibleTabs.add('querymodelview;' + title + ';' + componentId);
+		this.input.state.visibleTabs.add(`querymodelview;${title};${componentId}`);
 		if (!this._panelView.contains(tab)) {
 			this._panelView.pushTab(tab, undefined, true);
 		}

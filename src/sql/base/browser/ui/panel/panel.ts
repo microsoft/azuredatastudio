@@ -91,7 +91,7 @@ export class TabbedPanel extends Disposable {
 		this.header.setAttribute('tabindex', '0');
 		this.tabList = DOM.$('.tabList');
 		this.tabList.setAttribute('role', 'tablist');
-		this.tabList.style.height = this.headersize + 'px';
+		this.tabList.style.height = `${this.headersize}px`;
 		this.header.appendChild(this.tabList);
 		let actionbarcontainer = DOM.$('.title-actions');
 		this._actionbar = new ActionBar(actionbarcontainer);
@@ -375,11 +375,11 @@ export class TabbedPanel extends Disposable {
 	public layout(dimension: DOM.Dimension): void {
 		if (dimension) {
 			this._currentDimensions = dimension;
-			this.parent.style.height = dimension.height + 'px';
-			this.header.style.width = dimension.width + 'px';
-			this.body.style.width = dimension.width + 'px';
+			this.parent.style.height = `${dimension.height}px`;
+			this.header.style.width = `${dimension.width}px`;
+			this.body.style.width = `${dimension.width}px`;
 			const bodyHeight = dimension.height - (this._headerVisible ? this.headersize : 0);
-			this.body.style.height = bodyHeight + 'px';
+			this.body.style.height = `${bodyHeight}px`;
 			this._layoutCurrentTab(new DOM.Dimension(dimension.width, bodyHeight));
 		}
 	}
@@ -388,8 +388,8 @@ export class TabbedPanel extends Disposable {
 		if (this._shownTabId) {
 			const tab = this._tabMap.get(this._shownTabId);
 			if (tab && tab.body) {
-				tab.body.style.width = dimension.width + 'px';
-				tab.body.style.height = dimension.height + 'px';
+				tab.body.style.width = `${dimension.width}px`;
+				tab.body.style.height = `${dimension.height}px`;
 				tab.tab.view.layout(dimension);
 			}
 		}

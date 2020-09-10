@@ -22,11 +22,11 @@ export class ConnectionGlobalStatus {
 			let connInfo: string = connectionSummary.serverName;
 			if (connInfo) {
 				if (connectionSummary.databaseName && connectionSummary.databaseName !== '') {
-					connInfo = connInfo + ' : ' + connectionSummary.databaseName;
+					connInfo = `${connInfo} : ${connectionSummary.databaseName}`;
 				} else {
-					connInfo = connInfo + ' : ' + '<default>';
+					connInfo = `${connInfo} : ` + `<default>`;
 				}
-				text = LocalizedConstants.onDidConnectMessage + ' ' + connInfo;
+				text = `${LocalizedConstants.onDidConnectMessage} ${connInfo}`;
 			}
 			this._notificationService.status(text, { hideAfter: this._displayTime });
 		}

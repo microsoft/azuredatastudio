@@ -86,7 +86,7 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 		if (theme.getColor(contrastBorder)) {
 			this._propertiesContainer.nativeElement.style.borderBottom = 'none';
 		} else {
-			this._propertiesContainer.nativeElement.style.borderBottom = '1px solid ' + border.toString();
+			this._propertiesContainer.nativeElement.style.borderBottom = `1px solid ${border.toString()}`;
 		}
 	}
 

@@ -90,7 +90,7 @@ export class QueryModelService implements IQueryModelService {
 			dataService = this._getQueryInfo(uri)!.dataService;
 		}
 		if (!dataService) {
-			throw new Error('Could not find data service for uri: ' + uri);
+			throw new Error(`Could not find data service for uri: ${uri}`);
 		}
 
 		return dataService;
@@ -225,7 +225,7 @@ export class QueryModelService implements IQueryModelService {
 			if (range.length < selectionSnippetMaxLen) {
 				info.selectionSnippet = range;
 			} else {
-				info.selectionSnippet = range.substring(0, selectionSnippetMaxLen - 3) + '...';
+				info.selectionSnippet = `${range.substring(0, selectionSnippetMaxLen - 3)}...`;
 			}
 			return queryRunner.runQuery(range, runOptions);
 		} else if (runCurrentStatement) {
@@ -502,7 +502,7 @@ export class QueryModelService implements IQueryModelService {
 			if (queryString.length < selectionSnippetMaxLen) {
 				info.selectionSnippet = queryString;
 			} else {
-				info.selectionSnippet = queryString.substring(0, selectionSnippetMaxLen - 3) + '...';
+				info.selectionSnippet = `${queryString.substring(0, selectionSnippetMaxLen - 3)}...`;
 			}
 		}
 

@@ -96,7 +96,7 @@ export class BackupDialog extends Modal {
 	 * Open the dialog
 	 */
 	public open(connection: IConnectionProfile) {
-		this._backupTitle = 'Backup database - ' + connection.serverName + ':' + connection.databaseName;
+		this._backupTitle = `Backup database - ${connection.serverName}:${connection.databaseName}`;
 		this.title = this._backupTitle;
 		this.show();
 	}

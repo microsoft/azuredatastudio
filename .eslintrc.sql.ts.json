@@ -15,6 +15,7 @@
 			{
 				"ignoreVoid": true
 			}
-		]
+		],
+		"prefer-template": "error"
 	}
 }

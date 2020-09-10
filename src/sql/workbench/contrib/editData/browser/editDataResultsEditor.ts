@@ -80,9 +80,9 @@ export class EditDataResultsEditor extends EditorPane {
 			}
 			let cssRuleText = '';
 			if (types.isNumber(this._rawOptions.cellPadding)) {
-				cssRuleText = this._rawOptions.cellPadding + 'px';
+				cssRuleText = `${this._rawOptions.cellPadding}px`;
 			} else {
-				cssRuleText = this._rawOptions.cellPadding.join('px ') + 'px;';
+				cssRuleText = `${this._rawOptions.cellPadding.join('px ')}px;`;
 			}
 			let content = `.grid .slick-cell { padding: ${cssRuleText}; }`;
 			content += `.grid-panel .monaco-table, .message-tree { ${getBareResultsGridInfoStyles(this._rawOptions)} }`;
@@ -96,7 +96,7 @@ export class EditDataResultsEditor extends EditorPane {
 		// Pass the correct DataService to the new angular component
 		let dataService = this._queryModelService.getDataService(uri);
 		if (!dataService) {
-			throw new Error('DataService not found for URI: ' + uri);
+			throw new Error(`DataService not found for URI: ${uri}`);
 		}
 		// Mark that we have bootstrapped
 		input.setBootstrappedTrue();

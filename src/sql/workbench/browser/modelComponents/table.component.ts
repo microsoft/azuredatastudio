@@ -324,7 +324,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		if (!this._buttonsColumns[col.value]) {
 			this._buttonsColumns[col.value] = new ButtonColumn({
 				title: col.title,
-				iconCssClass: 'modelview-table-button-icon  ' + (col.options ? createIconCssClass(col.options.icon) : '')
+				iconCssClass: `modelview-table-button-icon  ${col.options ? createIconCssClass(col.options.icon) : ''}`
 			});
 
 			this._register(this._buttonsColumns[col.value].onClick((state) => {

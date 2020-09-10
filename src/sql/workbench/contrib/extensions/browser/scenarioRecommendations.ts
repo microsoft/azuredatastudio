@@ -53,7 +53,7 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 
 	// {{SQL CARBON EDIT}}
 	promptRecommendedExtensionsByScenario(scenarioType: string): void {
-		const storageKey = 'extensionAssistant/RecommendationsIgnore/' + scenarioType;
+		const storageKey = `extensionAssistant/RecommendationsIgnore/${scenarioType}`;
 
 		if (this.storageService.getBoolean(storageKey, StorageScope.GLOBAL, false)) {
 			return;

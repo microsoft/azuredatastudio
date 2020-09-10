@@ -158,7 +158,7 @@ export abstract class GridParentComponent extends Disposable {
 					self.goToNextGrid();
 					break;
 				default:
-					this.logService.error('Unexpected grid content event type "' + type + '" sent');
+					this.logService.error(`Unexpected grid content event type "${type}" sent`);
 					break;
 			}
 		}));

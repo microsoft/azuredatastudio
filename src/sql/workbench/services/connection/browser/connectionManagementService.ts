@@ -221,7 +221,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			model = this._connectionStatusManager.getConnectionProfile(params.input.uri);
 		}
 		return this._connectionDialogService.showDialog(this, params, model, connectionResult, options).catch(dialogError => {
-			this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
+			this._logService.warn(`failed to open the connection dialog. error: ${dialogError}`);
 			throw dialogError;
 		});
 	}
@@ -243,7 +243,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		try {
 			return await this._connectionDialogService.showDialog(this, params, model);
 		} catch (dialogError) {
-			this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
+			this._logService.warn(`failed to open the connection dialog. error: ${dialogError}`);
 		}
 	}
 

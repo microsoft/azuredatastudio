@@ -104,9 +104,9 @@ export class QueryResultsEditor extends EditorPane {
 	private applySettings() {
 		let cssRuleText = '';
 		if (types.isNumber(this._rawOptions.cellPadding)) {
-			cssRuleText = this._rawOptions.cellPadding + 'px';
+			cssRuleText = `${this._rawOptions.cellPadding}px`;
 		} else {
-			cssRuleText = this._rawOptions.cellPadding.join('px ') + 'px;';
+			cssRuleText = `${this._rawOptions.cellPadding.join('px ')}px;`;
 		}
 		let content = `.grid-panel .monaco-table .slick-cell { padding: ${cssRuleText} }`;
 		content += `.grid-panel .monaco-table, .message-tree { ${getBareResultsGridInfoStyles(this._rawOptions)} }`;

@@ -164,7 +164,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	private getServerInfo() {
 		let databaseName = this.databaseName ? this.databaseName : '<default>';
 		let userName = this.userName ? this.userName : 'Windows Authentication';
-		return this.serverName + ', ' + databaseName + ' (' + userName + ')';
+		return `${this.serverName}, ${databaseName} (${userName})`;
 	}
 
 	/**

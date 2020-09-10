@@ -94,11 +94,11 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		let sqlProvider = this._capabilitiesService.getCapabilities(Constants.mssqlProviderName);
 		// We can't connect to object explorer until the MSSQL connection provider is registered
 		if (sqlProvider) {
-			this.processCommandLine(args).catch(reason => { this.logService.warn('processCommandLine failed: ' + reason); });
+			this.processCommandLine(args).catch(reason => { this.logService.warn(`processCommandLine failed: ${reason}`); });
 		} else {
 			this._capabilitiesService.onCapabilitiesRegistered(e => {
 				if (e.id === Constants.mssqlProviderName) {
-					this.processCommandLine(args).catch(reason => { this.logService.warn('processCommandLine failed: ' + reason); });
+					this.processCommandLine(args).catch(reason => { this.logService.warn(`processCommandLine failed: ${reason}`); });
 				}
 			});
 		}
@@ -139,7 +139,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 				let updatedProfile = this._connectionManagementService.getConnectionProfileById(profile.id);
 				connectedContext = { connectionProfile: new ConnectionProfile(this._capabilitiesService, updatedProfile).toIConnectionProfile() };
 			} catch (err) {
-				this.logService.warn('Failed to connect due to error' + getErrorMessage(err));
+				this.logService.warn(`Failed to connect due to error${getErrorMessage(err)}`);
 			}
 		}
 		if (commandName) {
@@ -162,7 +162,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 				try {
 					await this.instantiationService.invokeFunction(openNewQuery, profile);
 				} catch (error) {
-					this.logService.warn('unable to open query editor ' + error);
+					this.logService.warn(`unable to open query editor ${error}`);
 					// Note: we are intentionally swallowing this error.
 					// In part this is to accommodate unit testing where we don't want to set up the query stack
 				}

@@ -38,8 +38,8 @@ export default class ImageInsight implements IInsightsView, OnInit {
 
 	ngOnInit() {
 		const size = Math.min(this.container.nativeElement.parentElement.parentElement.offsetHeight, this.container.nativeElement.parentElement.parentElement.offsetWidth);
-		this.image.nativeElement.style.width = size + 'px';
-		this.image.nativeElement.style.height = size + 'px';
+		this.image.nativeElement.style.width = `${size}px`;
+		this.image.nativeElement.style.height = `${size}px`;
 	}
 
 	@Input() set config(config: { [key: string]: any }) {

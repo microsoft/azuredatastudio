@@ -203,7 +203,7 @@ export class ListBox extends SelectBox {
 
 	public showMessage(): void {
 		let div: HTMLElement;
-		let layout = () => div.style.width = dom.getTotalWidth(this.selectElement) + 'px';
+		let layout = () => div.style.width = `${dom.getTotalWidth(this.selectElement)}px`;
 
 		this.contextViewProvider.showContextView({
 			getAnchor: () => this.selectElement,

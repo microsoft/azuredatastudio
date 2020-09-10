@@ -183,8 +183,8 @@ export class GuidedTour extends Disposable {
 			container.style.position = 'absolute';
 			container.appendChild(flexContainer);
 			if (key === 'settings') {
-				container.style.top = (positionVertical - 330) + 'px';
-				container.style.left = positionHorizontal + 'px';
+				container.style.top = `${positionVertical - 330}px`;
+				container.style.left = `${positionHorizontal}px`;
 			}
 			else if (elementToAppendTo === 'center') {
 				container.style.margin = 'auto';
@@ -193,8 +193,8 @@ export class GuidedTour extends Disposable {
 				container.style.bottom = '0px';
 				container.style.top = '0px';
 			} else {
-				container.style.top = (positionVertical) + 'px';
-				container.style.left = positionHorizontal + 'px';
+				container.style.top = `${positionVertical}px`;
+				container.style.left = `${positionHorizontal}px`;
 			}
 			container.classList.add(arrow);
 			this._overlay.append(container, $(`.${elmClass}`));
@@ -234,8 +234,8 @@ export class GuidedTour extends Disposable {
 			subjectElement.style.pointerEvents = 'none';
 		}
 		if (elementClassToAppendTo === '.codicon-settings-gear') {
-			tourItem.style.top = (positionVertical - 330) + 'px';
-			tourItem.style.left = positionHorizontal + 'px';
+			tourItem.style.top = `${positionVertical - 330}px`;
+			tourItem.style.left = `${positionHorizontal}px`;
 		}
 		else if (elementClassToAppendTo === 'center') {
 			tourItem.style.margin = 'auto';
@@ -244,8 +244,8 @@ export class GuidedTour extends Disposable {
 			tourItem.style.bottom = '0px';
 			tourItem.style.top = '0px';
 		} else {
-			tourItem.style.top = (positionVertical) + 'px';
-			tourItem.style.left = positionHorizontal + 'px';
+			tourItem.style.top = `${positionVertical}px`;
+			tourItem.style.left = `${positionHorizontal}px`;
 		}
 		popups[i].classList.add('ads-tour-hide');
 		popups[i].classList.remove('ads-tour-show');
@@ -272,7 +272,7 @@ export class GuidedTour extends Disposable {
 				context.hide();
 				return;
 			});
-			btn.id = 'ads-tour-btn-' + popups[i];
+			btn.id = `ads-tour-btn-${popups[i]}`;
 			btn.addEventListener('keydown', (e: KeyboardEvent) => {
 				context.tourEvents(popups, popupsLength, i);
 			});

@@ -88,7 +88,7 @@ suite('Local Content Manager', function (): void {
 	});
 	test('Should ignore invalid content in the notebook file', async function (): Promise<void> {
 		// Given a file containing a notebook with some garbage properties
-		let invalidContent = notebookContentString + '\\nasddfdsafasdf';
+		let invalidContent = `${notebookContentString}\\nasddfdsafasdf`;
 		let localFile = tempWrite.sync(invalidContent, 'notebook.ipynb');
 		// when I read the content
 		let notebook = await contentManager.getNotebookContents(URI.file(localFile));

@@ -471,7 +471,7 @@ suite.skip('NotebookService:', function (): void {
 					continue; // if isTrusted is true or false then we need to do only one case of isModelTrusted value and we are arbitrarily choose true as isModelTrusted does not matter in that case.
 				}
 				test(`verify serializeNotebookStateCache serializes correctly when notebook:isTrusted:${isTrusted} && notebookModel:isTrusted:${isModelTrusted}`, async () => {
-					const notebookUri = URI.parse('uri' + testNo); //Generate a unique notebookUri for each test so that information stored by serializeNotebookStateChange is unique for each test.
+					const notebookUri = URI.parse(`uri${testNo}`); //Generate a unique notebookUri for each test so that information stored by serializeNotebookStateChange is unique for each test.
 					const model = new NotebookModelStub();
 					const modelMock = TypeMoq.Mock.ofInstance(model);
 					modelMock.callBase = true;

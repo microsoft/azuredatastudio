@@ -211,10 +211,10 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 	private renderName(row, cell, value, columnDef, dataContext) {
 		let resultIndicatorClass = dataContext.enabled ? 'operatorview-operatornameindicatorenabled' :
 			'operatorview-operatornameindicatordisabled';
-		return '<table class="operatorview-operatornametable"><tr class="operatorview-operatornamerow">' +
-			'<td nowrap class=' + resultIndicatorClass + '></td>' +
-			'<td nowrap class="operatorview-operatornametext">' + dataContext.name + '</td>' +
-			'</tr></table>';
+		return `${'<table class="operatorview-operatornametable"><tr class="operatorview-operatornamerow">' +
+			'<td nowrap class='}${resultIndicatorClass}></td>` +
+			`<td nowrap class="operatorview-operatornametext">${dataContext.name}</td>` +
+			`</tr></table>`;
 	}
 
 	public async openCreateOperatorDialog() {

@@ -73,7 +73,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 		this._buffer = createTextBuffer('', NotebookFindModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
 		this._versionId = 1;
-		this.id = '$model' + MODEL_ID;
+		this.id = `$model${MODEL_ID}`;
 	}
 
 	public set notebookModel(model: INotebookModel) {

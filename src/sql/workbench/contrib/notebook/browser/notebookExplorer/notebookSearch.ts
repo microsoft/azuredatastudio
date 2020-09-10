@@ -171,7 +171,7 @@ export class NotebookSearchView extends SearchView {
 		const searchResultContainerHeight = this.size.height -
 			messagesSize;
 
-		this.resultsElement.style.height = searchResultContainerHeight + 'px';
+		this.resultsElement.style.height = `${searchResultContainerHeight}px`;
 
 		this.tree.layout(searchResultContainerHeight, this.size.width);
 	}
@@ -551,7 +551,7 @@ class CancelSearchAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchStopIcon.classNames);
+		super(id, label, `search-action ${searchStopIcon.classNames}`);
 		this.update();
 	}
 
@@ -578,7 +578,7 @@ class ExpandAllAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchExpandAllIcon.classNames);
+		super(id, label, `search-action ${searchExpandAllIcon.classNames}`);
 		this.update();
 	}
 
@@ -607,7 +607,7 @@ class CollapseDeepestExpandedLevelAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchCollapseAllIcon.classNames);
+		super(id, label, `search-action ${searchCollapseAllIcon.classNames}`);
 		this.update();
 	}
 
@@ -663,7 +663,7 @@ class ClearSearchResultsAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchClearIcon.classNames);
+		super(id, label, `search-action ${searchClearIcon.classNames}`);
 		this.update();
 	}
 

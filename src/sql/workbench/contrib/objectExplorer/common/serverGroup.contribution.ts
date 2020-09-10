@@ -18,7 +18,7 @@ const serverGroupConfig: IConfigurationNode = {
 	id: 'Server Groups',
 	type: 'object',
 	properties: {
-		[SERVER_GROUP_CONFIG + '.' + SERVER_GROUP_COLORS_CONFIG]: <IJSONSchema>{
+		[`${SERVER_GROUP_CONFIG}.${SERVER_GROUP_COLORS_CONFIG}`]: <IJSONSchema>{
 			type: 'array',
 			items: 'string',
 			'description': localize('serverGroup.colors', "Server Group color palette used in the Object Explorer viewlet."),
@@ -33,7 +33,7 @@ const serverGroupConfig: IConfigurationNode = {
 				DefaultServerGroupColor
 			]
 		},
-		[SERVER_GROUP_CONFIG + '.' + SERVER_GROUP_AUTOEXPAND_CONFIG]: {
+		[`${SERVER_GROUP_CONFIG}.${SERVER_GROUP_AUTOEXPAND_CONFIG}`]: {
 			'type': 'boolean',
 			'description': localize('serverGroup.autoExpand', "Auto-expand Server Groups in the Object Explorer viewlet."),
 			'default': 'true'

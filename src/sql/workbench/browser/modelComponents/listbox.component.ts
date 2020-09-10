@@ -58,7 +58,7 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 					if (ctrlOrCmd && key === KeyCode.KEY_C) {
 						let textToCopy = this._input.selectedOptions[0];
 						for (let i = 1; i < this._input.selectedOptions.length; i++) {
-							textToCopy = textToCopy + ', ' + this._input.selectedOptions[i];
+							textToCopy = `${textToCopy}, ${this._input.selectedOptions[i]}`;
 						}
 
 						// Copy to clipboard

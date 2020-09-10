@@ -31,7 +31,7 @@ export class TestSerializationProvider implements azdata.SerializationProvider {
 		let data: string = '';
 		requestParams.rows.forEach((row) => {
 			row.forEach((element) => {
-				data += element.displayValue + ' ';
+				data += `${element.displayValue} `;
 			});
 			data += '\n';
 		});

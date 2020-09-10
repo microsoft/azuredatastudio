@@ -556,7 +556,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected set titleIconClassName(iconClassName: string) {
 		if (this._modalTitleIcon) {
-			this._modalTitleIcon.className = 'modal-title-icon ' + iconClassName;
+			this._modalTitleIcon.className = `modal-title-icon ${iconClassName}`;
 		}
 	}
 

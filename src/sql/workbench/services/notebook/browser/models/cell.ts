@@ -602,7 +602,7 @@ export class CellModel extends Disposable implements ICellModel {
 						if (gatewayEndpointInfo) {
 							let hostAndIp = notebookUtils.getHostAndPortFromEndpoint(gatewayEndpointInfo.endpoint);
 							let host = hostAndIp.host ? hostAndIp.host : model.context.serverName;
-							let port = hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
+							let port = hostAndIp.port ? `:${hostAndIp.port}` : defaultPort;
 							let html = result.data['text/html'];
 							// BDC Spark UI Link
 							html = notebookUtils.rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, host, port, yarnUi);

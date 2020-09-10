@@ -477,7 +477,7 @@ export class QueryEditor extends EditorPane {
 	public layout(dimension: DOM.Dimension): void {
 		this.dimension = dimension;
 		const queryEditorHeight = dimension.height - DOM.getTotalHeight(this.taskbar.getContainer());
-		this.splitviewContainer.style.height = queryEditorHeight + 'px';
+		this.splitviewContainer.style.height = `${queryEditorHeight}px`;
 		this.splitview.layout(queryEditorHeight);
 	}
 

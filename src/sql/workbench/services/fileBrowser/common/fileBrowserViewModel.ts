@@ -44,7 +44,7 @@ export class FileBrowserViewModel {
 		}
 		this.formattedFileFilters = [];
 		for (let i = 0; i < this._fileFilters.length; i++) {
-			let filterStr = this._fileFilters[i].label + '(' + this._fileFilters[i].filters.join(';') + ')';
+			let filterStr = `${this._fileFilters[i].label}(${this._fileFilters[i].filters.join(';')})`;
 			this.formattedFileFilters.push(filterStr);
 		}
 	}

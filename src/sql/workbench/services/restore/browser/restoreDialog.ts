@@ -611,7 +611,7 @@ export class RestoreDialog extends Modal {
 		if (strings.isFalsyOrWhitespace(this._filePathInputBox!.value)) {
 			this._filePathInputBox!.value = filepath;
 		} else {
-			this._filePathInputBox!.value = this._filePathInputBox!.value + ', ' + filepath;
+			this._filePathInputBox!.value = `${this._filePathInputBox!.value}, ${filepath}`;
 		}
 
 		if (oldFilePath !== this._filePathInputBox!.value) {
@@ -706,7 +706,7 @@ export class RestoreDialog extends Modal {
 	}
 
 	public open(serverName: string, ownerUri: string) {
-		this.title = this._restoreTitle + ' - ' + serverName;
+		this.title = `${this._restoreTitle} - ${serverName}`;
 		this._ownerUri = ownerUri;
 
 		this.show();

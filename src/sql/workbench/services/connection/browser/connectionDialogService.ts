@@ -178,7 +178,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 					let portPropertyName: string = 'port';
 					let portOption: string = profile.options[portPropertyName];
 					if (portOption && portOption.indexOf(',') === -1) {
-						profile.serverName = profile.serverName + ',' + portOption;
+						profile.serverName = `${profile.serverName},${portOption}`;
 					}
 					profile.options[portPropertyName] = undefined;
 					profile.providerName = Constants.mssqlProviderName;

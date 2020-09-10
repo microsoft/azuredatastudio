@@ -200,7 +200,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 				return this._data.rows.map((row, i) => {
 					return {
 						data: row.map(item => Number(item)),
-						label: 'Series' + i
+						label: `Series${i}`
 					};
 				});
 			}
@@ -216,7 +216,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 				return this._data.rows[0].slice(1).map((row, i) => {
 					return {
 						data: this._data.rows.map(row => Number(row[i + 1])),
-						label: 'Series' + (i + 1)
+						label: `Series${i + 1}`
 					};
 				});
 			}

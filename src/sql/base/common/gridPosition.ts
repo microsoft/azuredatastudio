@@ -152,7 +152,7 @@ export class GridPosition {
 	 * Convert to a human-readable representation.
 	 */
 	public toString(): string {
-		return '(' + this.row + ',' + this.column + ')';
+		return `(${this.row},${this.column})`;
 	}
 
 	// ---

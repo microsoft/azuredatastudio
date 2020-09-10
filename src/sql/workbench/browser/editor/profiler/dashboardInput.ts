@@ -88,7 +88,7 @@ export class DashboardInput extends EditorInput {
 		if (this.connectionProfile.databaseName
 			&& !this.isMasterMssql()) {
 			// Only add DB name if this is a non-default, non-master connection
-			name = name + ':' + this.connectionProfile.databaseName;
+			name = `${name}:${this.connectionProfile.databaseName}`;
 		}
 		return name;
 	}

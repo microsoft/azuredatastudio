@@ -58,10 +58,10 @@ export function renderDataResource(
 	let detailTable = new Table(tableContainer, {
 		dataProvider: tableResultsData, columns: columnsTransformed
 	}, {
-			rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
-			forceFitColumns: false,
-			defaultColumnWidth: 120
-		});
+		rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
+		forceFitColumns: false,
+		defaultColumnWidth: 120
+	});
 	detailTable.registerPlugin(rowNumberColumn);
 	detailTable.registerPlugin(new MouseWheelSupport());
 	detailTable.registerPlugin(new AutoColumnSize({ autoSizeOnRender: true }));
@@ -74,7 +74,7 @@ export function renderDataResource(
 		tableContainer.style.height = '100%';
 	} else {
 		// Set the height dynamically if the grid's height is < 500px high; otherwise, set height to 500px
-		tableContainer.style.height = rowsHeight >= 500 ? '500px' : rowsHeight.toString() + 'px';
+		tableContainer.style.height = rowsHeight >= 500 ? '500px' : `${rowsHeight.toString()}px`;
 	}
 
 	attachTableStyler(detailTable, options.themeService);

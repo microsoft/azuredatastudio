@@ -162,10 +162,10 @@ class TreeNodeTemplate extends Disposable {
 		} else {
 			iconName = element.nodeTypeId;
 			if (element.nodeStatus) {
-				iconName = element.nodeTypeId + '_' + element.nodeStatus;
+				iconName = `${element.nodeTypeId}_${element.nodeStatus}`;
 			}
 			if (element.nodeSubType) {
-				iconName = element.nodeTypeId + '_' + element.nodeSubType;
+				iconName = `${element.nodeTypeId}_${element.nodeSubType}`;
 			}
 		}
 

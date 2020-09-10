@@ -257,7 +257,7 @@ export class AccountPicker extends Disposable {
 			icon.classList.add('icon', account.displayInfo.accountType);
 
 			// TODO: Pick between the light and dark logo
-			label.innerText = account.displayInfo.displayName + ' (' + account.displayInfo.contextualDisplayName + ')';
+			label.innerText = `${account.displayInfo.displayName} (${account.displayInfo.contextualDisplayName})`;
 
 			if (account.isStale) {
 				badgeContent.className = 'badge-content codicon warning-badge';
@@ -266,7 +266,7 @@ export class AccountPicker extends Disposable {
 			}
 		} else {
 			const row = DOM.append(container, DOM.$('div.no-account-container'));
-			row.innerText = AddAccountAction.LABEL + '...';
+			row.innerText = `${AddAccountAction.LABEL}...`;
 		}
 		return null;
 	}

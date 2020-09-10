@@ -212,10 +212,10 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 	private renderName(row, cell, value, columnDef, dataContext) {
 		let resultIndicatorClass = dataContext.isEnabled ? 'proxyview-proxynameindicatorenabled' :
 			'proxyview-proxynameindicatordisabled';
-		return '<table class="proxyview-proxynametable"><tr class="proxyview-proxynamerow">' +
-			'<td nowrap class=' + resultIndicatorClass + '></td>' +
-			'<td nowrap class="proxyview-proxynametext">' + dataContext.accountName + '</td>' +
-			'</tr></table>';
+		return `${'<table class="proxyview-proxynametable"><tr class="proxyview-proxynamerow">' +
+			'<td nowrap class='}${resultIndicatorClass}></td>` +
+			`<td nowrap class="proxyview-proxynametext">${dataContext.accountName}</td>` +
+			`</tr></table>`;
 	}
 
 	public openCreateProxyDialog() {

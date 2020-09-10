@@ -286,7 +286,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 				el.style.borderStyle = 'solid';
 			} else if (borderColor) {
 				borderString = borderColor;
-				el.style.border = '1px solid ' + borderColor;
+				el.style.border = `1px solid ${borderColor}`;
 			} else {
 				el.style.border = 'none';
 			}

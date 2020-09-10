@@ -302,7 +302,7 @@ class BackgroundOperationHandler {
 
 		if (!this._operationInfo.operationId) {
 			let uniqueId = generateUuid();
-			this._operationInfo.operationId = 'OperationId' + uniqueId + this._name;
+			this._operationInfo.operationId = `OperationId${uniqueId}${this._name}`;
 		}
 
 		if (this._operationInfo.operation) {
@@ -391,7 +391,7 @@ class WizardImpl implements azdata.window.Wizard {
 		this._extHostModelViewDialog.registerWizardPageInfoChangedCallback(this, info => this.handlePageInfoChanged(info));
 		this._currentPage = 0;
 		this.onPageChanged(info => this._currentPage = info.newPage);
-		this._operationHandler = new BackgroundOperationHandler('wizard' + this.title, extHostTaskManagement);
+		this._operationHandler = new BackgroundOperationHandler(`wizard${this.title}`, extHostTaskManagement);
 		this.doneButton.onClick(() => {
 			this._operationHandler.createOperation();
 		});

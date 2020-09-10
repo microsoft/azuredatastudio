@@ -157,10 +157,10 @@ export class OEShimService extends Disposable implements IOEShimService {
 		} else {
 			icon = node.nodeTypeId;
 			if (node.nodeStatus) {
-				icon = node.nodeTypeId + '_' + node.nodeStatus;
+				icon = `${node.nodeTypeId}_${node.nodeStatus}`;
 			}
 			if (node.nodeSubType) {
-				icon = node.nodeTypeId + '_' + node.nodeSubType;
+				icon = `${node.nodeTypeId}_${node.nodeSubType}`;
 			}
 		}
 		icon = icon.toLowerCase();

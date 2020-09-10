@@ -143,7 +143,7 @@ abstract class MultiStateAction<T> extends Action {
 			this.logService.error(error);
 		}
 		this.label = this.states.label;
-		this.tooltip = keyboardShortcut ? this.states.tooltip + ` (${keyboardShortcut})` : this.states.tooltip;
+		this.tooltip = keyboardShortcut ? `${this.states.tooltip} (${keyboardShortcut})` : this.states.tooltip;
 		this.class = this.states.classes;
 	}
 

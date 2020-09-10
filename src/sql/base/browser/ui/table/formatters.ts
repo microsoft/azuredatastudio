@@ -50,7 +50,7 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {
 			valueToDisplay = value.displayValue.replace(/(\r\n|\n|\r)/g, ' ');
-			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+			valueToDisplay = escape(valueToDisplay.length > 250 ? `${valueToDisplay.slice(0, 250)}...` : valueToDisplay);
 			titleValue = valueToDisplay;
 		} else {
 			cellClasses += ' missing-value';
@@ -61,7 +61,7 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 		} else {
 			valueToDisplay = value;
 		}
-		valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+		valueToDisplay = escape(valueToDisplay.length > 250 ? `${valueToDisplay.slice(0, 250)}...` : valueToDisplay);
 		titleValue = valueToDisplay;
 	}
 

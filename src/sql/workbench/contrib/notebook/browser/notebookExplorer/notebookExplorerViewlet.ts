@@ -270,7 +270,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 						this.updateViewletsState();
 						let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
 						query.folderQueries.push(folderToSearch);
-						filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
+						filesToIncludeFiltered = `${filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md')},${path.join(folderToSearch.folder.fsPath, '**', '*.ipynb')},`;
 						this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
 					});
 				});

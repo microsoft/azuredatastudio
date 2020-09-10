@@ -209,10 +209,10 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		let id = super.getOptionsKey();
 		let databaseDisplayName: string = this.options['databaseDisplayName'];
 		if (databaseDisplayName) {
-			id += ProviderConnectionInfo.idSeparator + 'databaseDisplayName' + ProviderConnectionInfo.nameValueSeparator + databaseDisplayName;
+			id += `${ProviderConnectionInfo.idSeparator}databaseDisplayName${ProviderConnectionInfo.nameValueSeparator}${databaseDisplayName}`;
 		}
 
-		return id + ProviderConnectionInfo.idSeparator + 'group' + ProviderConnectionInfo.nameValueSeparator + this.groupId;
+		return `${id + ProviderConnectionInfo.idSeparator}group${ProviderConnectionInfo.nameValueSeparator}${this.groupId}`;
 	}
 
 	/**

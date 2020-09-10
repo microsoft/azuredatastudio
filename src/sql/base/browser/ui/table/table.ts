@@ -252,20 +252,20 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	layout(size: number, orientation: Orientation): void;
 	layout(sizing: number | DOM.Dimension, orientation?: Orientation): void {
 		if (sizing instanceof DOM.Dimension) {
-			this._container.style.width = sizing.width + 'px';
-			this._container.style.height = sizing.height + 'px';
-			this._tableContainer.style.width = sizing.width + 'px';
-			this._tableContainer.style.height = sizing.height + 'px';
+			this._container.style.width = `${sizing.width}px`;
+			this._container.style.height = `${sizing.height}px`;
+			this._tableContainer.style.width = `${sizing.width}px`;
+			this._tableContainer.style.height = `${sizing.height}px`;
 		} else {
 			if (orientation === Orientation.VERTICAL) {
 				this._container.style.width = '100%';
-				this._container.style.height = sizing + 'px';
+				this._container.style.height = `${sizing}px`;
 				this._tableContainer.style.width = '100%';
-				this._tableContainer.style.height = sizing + 'px';
+				this._tableContainer.style.height = `${sizing}px`;
 			} else {
-				this._container.style.width = sizing + 'px';
+				this._container.style.width = `${sizing}px`;
 				this._container.style.height = '100%';
-				this._tableContainer.style.width = sizing + 'px';
+				this._tableContainer.style.width = `${sizing}px`;
 				this._tableContainer.style.height = '100%';
 			}
 		}

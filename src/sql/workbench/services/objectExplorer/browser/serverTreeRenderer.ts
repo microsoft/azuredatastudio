@@ -139,10 +139,10 @@ export class ServerTreeRenderer implements IRenderer {
 		} else {
 			iconName = treeNode.nodeTypeId;
 			if (treeNode.nodeStatus) {
-				iconName = treeNode.nodeTypeId + '_' + treeNode.nodeStatus;
+				iconName = `${treeNode.nodeTypeId}_${treeNode.nodeStatus}`;
 			}
 			if (treeNode.nodeSubType) {
-				iconName = treeNode.nodeTypeId + '_' + treeNode.nodeSubType;
+				iconName = `${treeNode.nodeTypeId}_${treeNode.nodeSubType}`;
 			}
 		}
 

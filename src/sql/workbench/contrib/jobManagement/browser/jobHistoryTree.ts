@@ -129,7 +129,7 @@ export class JobHistoryRenderer implements tree.IRenderer {
 	}
 
 	public renderElement(tree: tree.ITree, element: JobHistoryRow, templateId: string, templateData: IListTemplate): void {
-		templateData.label.innerHTML = element.runDate + '&nbsp;&nbsp;' + element.runStatus;
+		templateData.label.innerHTML = `${element.runDate}&nbsp;&nbsp;${element.runStatus}`;
 		let statusClass: string;
 		if (element.runStatus === 'Succeeded') {
 			statusClass = 'status-icon job-passed';

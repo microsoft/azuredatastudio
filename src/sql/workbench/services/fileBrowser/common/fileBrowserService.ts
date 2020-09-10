@@ -145,7 +145,7 @@ export class FileBrowserService implements IFileBrowserService {
 	}
 
 	private generateResolveMapKey(ownerUri: string, expandPath: string): string {
-		return ownerUri + ':' + expandPath;
+		return `${ownerUri}:${expandPath}`;
 	}
 
 	private getProvider(connectionUri: string): azdata.FileBrowserProvider | undefined {

@@ -282,7 +282,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 							// style it all over again
 							let seenJobs = 0;
 							for (let i = 0; i < currentItems.length; i++) {
-								this._table.grid.removeCellCssStyles('error-row' + i.toString());
+								this._table.grid.removeCellCssStyles(`error-row${i.toString()}`);
 								let item = this.dataView.getFilteredItems()[i];
 								if (item.lastRunOutcome === 'Failed') {
 									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
@@ -308,7 +308,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 				} else {
 					let seenJobs = 0;
 					for (let i = 0; i < this.jobs.length; i++) {
-						this._table.grid.removeCellCssStyles('error-row' + i.toString());
+						this._table.grid.removeCellCssStyles(`error-row${i.toString()}`);
 						let item = this.dataView.getItemByIdx(i);
 						// current filter
 						if (find(filterValues, x => x === item[args.column.field])) {
@@ -464,18 +464,18 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		hash = this.setRowWithErrorClass(hash, row + 1, 'error-row');
 		if (start) {
 			if (map['start']) {
-				map['start'].push(['error-row' + row.toString(), hash]);
+				map['start'].push([`error-row${row.toString()}`, hash]);
 			} else {
-				map['start'] = [['error-row' + row.toString(), hash]];
+				map['start'] = [[`error-row${row.toString()}`, hash]];
 			}
 		} else {
 			if (map[columnName]) {
-				map[columnName].push(['error-row' + row.toString(), hash]);
+				map[columnName].push([`error-row${row.toString()}`, hash]);
 			} else {
-				map[columnName] = [['error-row' + row.toString(), hash]];
+				map[columnName] = [[`error-row${row.toString()}`, hash]];
 			}
 		}
-		this._table.grid.setCellCssStyles('error-row' + row.toString(), hash);
+		this._table.grid.setCellCssStyles(`error-row${row.toString()}`, hash);
 	}
 
 	private renderName(row, cell, value, columnDef, dataContext) {
@@ -498,10 +498,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 				break;
 		}
 
-		return '<table class="jobview-jobnametable"><tr class="jobview-jobnamerow">' +
-			'<td nowrap class=' + resultIndicatorClass + '></td>' +
-			'<td nowrap class="jobview-jobnametext">' + escape(dataContext.name) + '</td>' +
-			'</tr></table>';
+		return `${'<table class="jobview-jobnametable"><tr class="jobview-jobnamerow">' +
+			'<td nowrap class='}${resultIndicatorClass}></td>` +
+			`<td nowrap class="jobview-jobnametext">${escape(dataContext.name)}</td>` +
+			`</tr></table>`;
 	}
 
 	private renderChartsPostHistory(row, cell, value, columnDef, dataContext) {
@@ -611,13 +611,13 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 				self.createJobChart(job.jobId, previousRuns);
 				if (self._agentViewComponent.expanded.has(job.jobId)) {
 					let lastJobHistory = jobHistories[jobHistories.length - 1];
-					let item = self.dataView.getItemById(job.jobId + '.error');
+					let item = self.dataView.getItemById(`${job.jobId}.error`);
 					let noStepsMessage = nls.localize('jobsView.noSteps', "No Steps available for this job.");
 					let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
 					if (item) {
 						item['name'] = nls.localize('jobsView.error', "Error: ") + errorMessage;
 						self._agentViewComponent.setExpanded(job.jobId, item['name']);
-						self.dataView.updateItem(job.jobId + '.error', item);
+						self.dataView.updateItem(`${job.jobId}.error`, item);
 					}
 				}
 			}
@@ -810,7 +810,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			}
 		} else {
 			for (let i = 0; i < this.jobs.length; i++) {
-				this._table.grid.removeCellCssStyles('error-row' + i.toString());
+				this._table.grid.removeCellCssStyles(`error-row${i.toString()}`);
 			}
 		}
 		// add new style to the items back again
@@ -856,7 +856,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 		cells.toArray().forEach(cell => {
 			cell.style.background = bgColor.toString();
-			cell.style.border = borderColor ? '1px solid ' + borderColor.toString() : null;
+			cell.style.border = borderColor ? `1px solid ${borderColor.toString()}` : null;
 		});
 		cellDetails.toArray().forEach(cellDetail => {
 			cellDetail.style.background = cellColor.toString();

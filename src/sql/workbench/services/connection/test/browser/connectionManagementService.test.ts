@@ -227,7 +227,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	async function connect(uri: string, options?: IConnectionCompletionOptions, fromDialog?: boolean, connection?: IConnectionProfile, error?: string, errorCode?: number, errorCallStack?: string, serverInfo?: azdata.ServerInfo): Promise<IConnectionResult> {
 		let connectionToUse = connection ? connection : connectionProfile;
 		let id = connectionToUse.getOptionsKey();
-		let defaultUri = 'connection:' + (id ? id : connectionToUse.serverName + ':' + connectionToUse.databaseName);
+		let defaultUri = `connection:${id ? id : `${connectionToUse.serverName}:${connectionToUse.databaseName}`}`;
 		connectionManagementService.onConnectionRequestSent(() => {
 			let info: azdata.ConnectionInfoSummary = {
 				connectionId: error ? undefined : 'id',
@@ -534,9 +534,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true
 		};
-		let connectionInfoString = 'providerName:' + profile.providerName + '|authenticationType:'
-			+ profile.authenticationType + '|databaseName:' + profile.databaseName + '|serverName:'
-			+ profile.serverName + '|userName:' + profile.userName;
+		let connectionInfoString = `providerName:${profile.providerName}|authenticationType:${profile.authenticationType}|databaseName:${profile.databaseName}|serverName:${profile.serverName}|userName:${profile.userName}`;
 		return connect(uri1, options, true, profile).then(() => {
 			let returnedProfile = connectionManagementService.findExistingConnection(profile);
 			assert.equal(returnedProfile.getConnectionInfoId(), connectionInfoString);
@@ -1424,8 +1422,8 @@ suite('SQL ConnectionManagementService tests', () => {
 		// dupe connections have been seeded the numbers below already reflected the de-duped results
 
 		const verifyConnections = (actualConnections: ConnectionProfile[], expectedConnectionIds: string[], scenario: string) => {
-			assert.equal(actualConnections.length, expectedConnectionIds.length, 'incorrect number of connections returned, ' + scenario);
-			assert.deepEqual(actualConnections.map(conn => conn.id).sort(), expectedConnectionIds.sort(), 'connections do not match expectation, ' + scenario);
+			assert.equal(actualConnections.length, expectedConnectionIds.length, `incorrect number of connections returned, ${scenario}`);
+			assert.deepEqual(actualConnections.map(conn => conn.id).sort(), expectedConnectionIds.sort(), `connections do not match expectation, ${scenario}`);
 		};
 
 		// no parameter - default to false

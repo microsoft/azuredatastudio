@@ -164,7 +164,7 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 		texts.forEach((text, index) => {
 			let template;
 			if (formatFun) {
-				template = jQuery('<span>' + formatFun(index, colIndex, text, columnDef, data.getItem(index)) + '</span>');
+				template = jQuery(`<span>${formatFun(index, colIndex, text, columnDef, data.getItem(index))}</span>`);
 				text = template.text() || text;
 			}
 			let length = text ? this.getElementWidthUsingCanvas(rowEl, text) : 0;
@@ -202,7 +202,7 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 	}
 
 	private getElementWidthUsingCanvas(element: JQuery, text: string): number {
-		this._context.font = element.css('font-size') + ' ' + element.css('font-family');
+		this._context.font = `${element.css('font-size')} ${element.css('font-family')}`;
 		let metrics = this._context.measureText(text);
 		return metrics.width;
 	}

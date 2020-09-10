@@ -548,7 +548,7 @@ namespace Private {
 				let anchor = document.createElement('a');
 				anchor.target = '_self';
 				anchor.textContent = '¶';
-				anchor.href = '#' + header.id;
+				anchor.href = `#${header.id}`;
 				anchor.classList.add('jp-InternalAnchorLink');
 				header.appendChild(anchor);
 			}

@@ -166,7 +166,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 	});
 
 	test('updateConnection should update the connection info', () => {
-		let expected = connectionProfile.groupId + '1';
+		let expected = `${connectionProfile.groupId}1`;
 		let expectedConnectionId = 'new id';
 		connections.addConnection(connectionProfile, connection1Id);
 

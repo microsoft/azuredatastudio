@@ -356,7 +356,7 @@ interface IPolarAreaColors {
 }
 
 function rgba(colour: Color, alpha: number): string {
-	return 'rgba(' + colour.concat(alpha).join(',') + ')';
+	return `rgba(${colour.concat(alpha).join(',')})`;
 }
 
 function getRandomInt(min: number, max: number): number {

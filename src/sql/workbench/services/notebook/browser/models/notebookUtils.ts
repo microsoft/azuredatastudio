@@ -114,7 +114,7 @@ export function rewriteUrlUsingRegex(regex: RegExp, html: string, host: string, 
 	return html.replace(regex, function (a, b, c) {
 		let ret = '';
 		if (b !== '') {
-			ret = 'https://' + host + port + target;
+			ret = `https://${host}${port}${target}`;
 		}
 		if (c !== '') {
 			ret = ret + c;

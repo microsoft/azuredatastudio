@@ -215,7 +215,7 @@ export class PanelComponent extends Disposable implements IThemable {
 				// since we need to compare identifiers in this next step we are going to go through and make sure all tabs have one
 				this._tabs.forEach(i => {
 					if (!i.identifier) {
-						i.identifier = 'tabIndex_' + idPool++;
+						i.identifier = `tabIndex_${idPool++}`;
 					}
 				});
 

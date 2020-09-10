@@ -78,14 +78,14 @@ export function parseNumAsTimeString(value: number, includeFraction: boolean = t
 	let s = Math.floor(tempVal / msInS);
 	tempVal %= msInS;
 
-	let hs = h < 10 ? '0' + h : '' + h;
-	let ms = m < 10 ? '0' + m : '' + m;
-	let ss = s < 10 ? '0' + s : '' + s;
-	let mss = tempVal < 10 ? '00' + tempVal : tempVal < 100 ? '0' + tempVal : '' + tempVal;
+	let hs = h < 10 ? `0${h}` : `${h}`;
+	let ms = m < 10 ? `0${m}` : `${m}`;
+	let ss = s < 10 ? `0${s}` : `${s}`;
+	let mss = tempVal < 10 ? `00${tempVal}` : tempVal < 100 ? `0${tempVal}` : `${tempVal}`;
 
-	let rs = hs + ':' + ms + ':' + ss;
+	let rs = `${hs}:${ms}:${ss}`;
 
-	return tempVal > 0 && includeFraction ? rs + '.' + mss : rs;
+	return tempVal > 0 && includeFraction ? `${rs}.${mss}` : rs;
 }
 
 export function generateUri(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection' | 'notebook'): string {
@@ -110,7 +110,7 @@ export function getUriPrefix(ownerUri: string): string {
 
 export function generateUriWithPrefix(connection: IConnectionProfile, prefix: string): string {
 	let id = connection.getOptionsKey();
-	let uri = prefix + (id ? id : connection.serverName + ':' + connection.databaseName);
+	let uri = prefix + (id ? id : `${connection.serverName}:${connection.databaseName}`);
 
 	return uri;
 }

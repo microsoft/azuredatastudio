@@ -602,10 +602,10 @@ export class ProfilerEditor extends EditorPane {
 	}
 
 	public layout(dimension: DOM.Dimension): void {
-		this._container.style.width = dimension.width + 'px';
-		this._container.style.height = dimension.height + 'px';
-		this._body.style.width = dimension.width + 'px';
-		this._body.style.height = (dimension.height - (28 + 4)) + 'px';
+		this._container.style.width = `${dimension.width}px`;
+		this._container.style.height = `${dimension.height}px`;
+		this._body.style.width = `${dimension.width}px`;
+		this._body.style.height = `${dimension.height - (28 + 4)}px`;
 		this._splitView.layout(dimension.height - (28 + 4));
 	}
 

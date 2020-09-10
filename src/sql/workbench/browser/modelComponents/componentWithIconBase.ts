@@ -29,7 +29,7 @@ export abstract class ComponentWithIconBase<T extends azdata.ComponentWithIconPr
 	/// IComponent implementation
 
 	public get iconClass(): string {
-		return this._iconClass + ' icon';
+		return `${this._iconClass} icon`;
 	}
 
 	protected updateIcon() {

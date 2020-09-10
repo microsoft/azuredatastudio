@@ -98,7 +98,7 @@ export class NotebookMarkdownRenderer {
 			if (dimensions.length) {
 				attributes = attributes.concat(dimensions);
 			}
-			return '<img ' + attributes.join(' ') + '>';
+			return `<img ${attributes.join(' ')}>`;
 		};
 		renderer.link = (href: string, title: string, text: string): string => {
 			href = this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
@@ -216,18 +216,18 @@ export class NotebookMarkdownRenderer {
 	}
 
 	resolveUrl(base: string, href: string) {
-		if (!this._baseUrls[' ' + base]) {
+		if (!this._baseUrls[` ${base}`]) {
 			// we can ignore everything in base after the last slash of its path component,
 			// but we might need to add _that_
 			// https://tools.ietf.org/html/rfc3986#section-3
 			if (/^[^:]+:\/*[^/]*$/.test(base)) {
-				this._baseUrls[' ' + base] = base + '/';
+				this._baseUrls[` ${base}`] = `${base}/`;
 			} else {
 				// Remove trailing 'c's. /c*$/ is vulnerable to REDOS.
-				this._baseUrls[' ' + base] = base.replace(/c*$/, '');
+				this._baseUrls[` ${base}`] = base.replace(/c*$/, '');
 			}
 		}
-		base = this._baseUrls[' ' + base];
+		base = this._baseUrls[` ${base}`];
 
 		if (href.slice(0, 2) === '//') {
 			return base.replace(/:[\s\S]*/, ':') + href;

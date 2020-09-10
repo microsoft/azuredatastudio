@@ -195,7 +195,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
 
 		let conn2 = conn.clone();
-		conn2.serverName = conn.serverName + '1';
+		conn2.serverName = `${conn.serverName}1`;
 		assert.notEqual(conn.serverName, conn2.serverName);
 	});
 
@@ -223,7 +223,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 
 	test('getOptionsKey should create different id for different server names', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
-		let conn2 = new ProviderConnectionInfo(capabilitiesService, assign({}, connectionProfile, { serverName: connectionProfile.serverName + '1' }));
+		let conn2 = new ProviderConnectionInfo(capabilitiesService, assign({}, connectionProfile, { serverName: `${connectionProfile.serverName}1` }));
 
 		assert.notEqual(conn.getOptionsKey(), conn2.getOptionsKey());
 	});

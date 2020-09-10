@@ -14,7 +14,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { PagedModel } from 'vs/base/common/paging';
 
 function getScenarioID(scenarioType: string) {
-	return 'workbench.extensions.action.show' + scenarioType;
+	return `workbench.extensions.action.show${scenarioType}`;
 }
 
 export class ShowRecommendedExtensionsByScenarioAction extends Action {
@@ -29,7 +29,7 @@ export class ShowRecommendedExtensionsByScenarioAction extends Action {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
 			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
 			.then(viewlet => {
-				viewlet.search('@' + this.scenarioType);
+				viewlet.search(`@${this.scenarioType}`);
 				viewlet.focus();
 			});
 	}
@@ -55,10 +55,10 @@ export class InstallRecommendedExtensionsByScenarioAction extends Action {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
 			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
 			.then(viewlet => {
-				viewlet.search('@' + this.scenarioType);
+				viewlet.search(`@${this.scenarioType}`);
 				viewlet.focus();
 				const names = this.recommendations.map(({ extensionId }) => extensionId);
-				return this.extensionWorkbenchService.queryGallery({ names, source: 'install-' + this.scenarioType }, CancellationToken.None).then(pager => {
+				return this.extensionWorkbenchService.queryGallery({ names, source: `install-${this.scenarioType}` }, CancellationToken.None).then(pager => {
 					let installPromises: Promise<any>[] = [];
 					let model = new PagedModel(pager);
 					for (let i = 0; i < pager.total; i++) {

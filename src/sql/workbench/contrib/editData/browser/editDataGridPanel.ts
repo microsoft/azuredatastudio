@@ -140,7 +140,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					self.handleEditSessionReady(self, event);
 					break;
 				default:
-					this.logService.error('Unexpected query event type "' + event.type + '" sent');
+					this.logService.error(`Unexpected query event type "${event.type}" sent`);
 					break;
 			}
 		}));
@@ -1059,8 +1059,8 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	onBeforeEditCell(event: Slick.OnBeforeEditCellEventArgs<any>): void {
-		this.logService.debug('onBeforeEditCell called with grid: ' + event.grid + ' row: ' + event.row
-			+ ' cell: ' + event.cell + ' item: ' + event.item + ' column: ' + event.column);
+		this.logService.debug(`onBeforeEditCell called with grid: ${event.grid} row: ${event.row
+			} cell: ${event.cell} item: ${event.item} column: ${event.column}`);
 	}
 
 	handleInitializeTable(): void {
@@ -1088,8 +1088,8 @@ export class EditDataGridPanel extends GridParentComponent {
 			cellClasses += ' missing-value';
 		}
 		else if (Services.DBCellValue.isDBCellValue(value)) {
-			valueToDisplay = (value.displayValue + '');
-			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+			valueToDisplay = (`${value.displayValue}`);
+			valueToDisplay = escape(valueToDisplay.length > 250 ? `${valueToDisplay.slice(0, 250)}...` : valueToDisplay);
 		}
 		else if (typeof value === 'string' || (value && value.text)) {
 			if (value.text) {
@@ -1097,8 +1097,8 @@ export class EditDataGridPanel extends GridParentComponent {
 			} else {
 				valueToDisplay = value;
 			}
-			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+			valueToDisplay = escape(valueToDisplay.length > 250 ? `${valueToDisplay.slice(0, 250)}...` : valueToDisplay);
 		}
-		return '<span title="' + valueToDisplay + '" class="' + cellClasses + '">' + valueToDisplay + '</span>';
+		return `<span title="${valueToDisplay}" class="${cellClasses}">${valueToDisplay}</span>`;
 	}
 }

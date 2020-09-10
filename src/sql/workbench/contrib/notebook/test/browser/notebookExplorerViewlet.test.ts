@@ -56,7 +56,7 @@ suite('Notebook Explorer Views', () => {
 		let d: IViewDescriptor = { id: 'notebookView-test-1', name: 'Notebooks', ctorDescriptor: new SyncDescriptor(NotebookExplorerViewPaneContainer) };
 		Platform.Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([d], NOTEBOOK_VIEW_CONTAINER);
 		let retrieved = Platform.Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView('notebookView-test-1');
-		assert(d === retrieved, 'Could not register view :' + d.id + 'Retrieved: ' + retrieved);
+		assert(d === retrieved, `Could not register view :${d.id}Retrieved: ${retrieved}`);
 		let newCount = Platform.Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getViews(NOTEBOOK_VIEW_CONTAINER).length;
 		assert.equal(oldcount + 1, newCount, 'View registration failed');
 

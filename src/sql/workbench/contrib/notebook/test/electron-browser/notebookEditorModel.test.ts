@@ -200,7 +200,7 @@ suite('Notebook Editor Model', function (): void {
 		assert(notebookEditorModel.lastEditFullReplacement);
 
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(26), '        }');
@@ -235,7 +235,7 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellExecuted);
 
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": 1');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(26), '        }');
@@ -302,7 +302,7 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputCleared);
 
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [],');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(15), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(16), '        }');
@@ -332,7 +332,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0,
 			modelContentChangedEvent: {
-				changes: [{ range: new Range(1, 1, 1, 1), rangeLength: 0, rangeOffset: 0, text: 'This is a test' + os.EOL + 'Line 2 test' + os.EOL + 'Line 3 test' }],
+				changes: [{ range: new Range(1, 1, 1, 1), rangeLength: 0, rangeOffset: 0, text: `This is a test${os.EOL}Line 2 test${os.EOL}Line 3 test` }],
 				eol: os.EOL,
 				isFlush: false,
 				isRedoing: false,
@@ -348,7 +348,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10), '                "Line 2 test\\n",');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(11), '                "Line 3 test"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '            ],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(16), '            "outputs": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(27), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(28), '        }');
@@ -392,7 +392,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "This is a test"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10), '            ],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(26), '        }');
@@ -456,7 +456,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                ""');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10), '            ],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(26), '        }');
@@ -485,7 +485,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0,
 			modelContentChangedEvent: {
-				changes: [{ range: new Range(1, 1, 1, 1), rangeLength: 0, rangeOffset: 0, text: 'This is a test' + os.EOL + 'Line 2 test' + os.EOL + 'Line 3 test' }],
+				changes: [{ range: new Range(1, 1, 1, 1), rangeLength: 0, rangeOffset: 0, text: `This is a test${os.EOL}Line 2 test${os.EOL}Line 3 test` }],
 				eol: os.EOL,
 				isFlush: false,
 				isRedoing: false,
@@ -502,7 +502,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10), '                "Line 2 test\\n",');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(11), '                "Line 3 test"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '            ],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 
 		contentChange = {
 			changeType: NotebookChangeType.CellSourceUpdated,
@@ -524,7 +524,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "Tt"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10), '            ],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 	});
 
 	test('should not replace entire text model and affect only edited cell', async function (): Promise<void> {
@@ -572,7 +572,7 @@ suite('Notebook Editor Model', function (): void {
 			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8 + i * 21), '            "source": [');
 			if (i === 7) {
 				assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(9 + i * 21), '                "This is a test"');
-				assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12 + i * 21), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+				assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12 + i * 21), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 			} else {
 				assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(9 + i * 21), '                ""');
 			}
@@ -610,7 +610,7 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
 
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(23), '                }, {');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(31), '}');
@@ -649,7 +649,7 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
 
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(26), '    "text": "[0em"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(27), '}');
@@ -713,7 +713,7 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
 
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(23), '}');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": null');
@@ -850,13 +850,13 @@ suite('Notebook Editor Model', function (): void {
 		let newCell = notebookModel.addCell(CellTypes.Code);
 		setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
 
-		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '"test"' + os.EOL + 'test""');
+		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, `"test"${os.EOL}test""`);
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "\\"test\\"\\n",');
 
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10), '                "test\\"\\""');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(11), '            ],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(13), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(13), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(15), '            "outputs": [],');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(16), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(17), '        }');
@@ -872,13 +872,13 @@ suite('Notebook Editor Model', function (): void {
 		let newCell = notebookModel.addCell(CellTypes.Code);
 		setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
 
-		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '"""""test"' + os.EOL + '"""""""test\\""');
+		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, `"""""test"${os.EOL}"""""""test\\""`);
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "\\"\\"\\"\\"\\"test\\"\\n",');
 
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10), '                "\\"\\"\\"\\"\\"\\"\\"test\\\\\\"\\""');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(11), '            ],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(13), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(13), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(15), '            "outputs": [],');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(16), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(17), '        }');
@@ -938,7 +938,7 @@ suite('Notebook Editor Model', function (): void {
 	function ensureStaticContentInOneLineCellIsCorrect(notebookEditorModel: NotebookEditorModel, newCell: ICellModel) {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10), '            ],');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), `                "azdata_cell_guid": "${newCell.cellGuid}"`);
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [],');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(15), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(16), '        }');

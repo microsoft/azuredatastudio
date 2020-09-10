@@ -90,7 +90,7 @@ export class DropdownList extends Dropdown {
 	 */
 	protected renderContents(container: HTMLElement): IDisposable {
 		let div = DOM.append(container, this._contentContainer);
-		div.style.width = DOM.getTotalWidth(this.element) + 'px';
+		div.style.width = `${DOM.getTotalWidth(this.element)}px`;
 		return { dispose: () => { } };
 	}
 

@@ -30,7 +30,7 @@ function trimTitle(title: string): string {
 		return title;
 	} else {
 		const start = (length / 2) - (diff / 2);
-		return title.slice(0, start) + '...' + title.slice(start + diff, length);
+		return `${title.slice(0, start)}...${title.slice(start + diff, length)}`;
 	}
 }
 
@@ -201,7 +201,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			let profile = this.connectionManagementService.getConnectionProfile(this.uri);
 			let title = '';
 			if (this._description && this._description !== '') {
-				title = this._description + ' ';
+				title = `${this._description} `;
 			}
 			if (profile) {
 				if (profile.userName) {
@@ -212,7 +212,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			} else {
 				title += localize('disconnected', "disconnected");
 			}
-			return this.text.getName() + (longForm ? (' - ' + title) : ` - ${trimTitle(title)}`);
+			return this.text.getName() + (longForm ? (` - ${title}`) : ` - ${trimTitle(title)}`);
 		} else {
 			return this.text.getName();
 		}

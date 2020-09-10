@@ -122,19 +122,19 @@ export class ResultSerializer {
 		let fileName = 'Results';
 		switch (format) {
 			case SaveFormat.CSV:
-				fileName = fileName + '.csv';
+				fileName = `${fileName}.csv`;
 				break;
 			case SaveFormat.JSON:
-				fileName = fileName + '.json';
+				fileName = `${fileName}.json`;
 				break;
 			case SaveFormat.EXCEL:
-				fileName = fileName + '.xlsx';
+				fileName = `${fileName}.xlsx`;
 				break;
 			case SaveFormat.XML:
-				fileName = fileName + '.xml';
+				fileName = `${fileName}.xml`;
 				break;
 			default:
-				fileName = fileName + '.txt';
+				fileName = `${fileName}.txt`;
 		}
 		return fileName;
 	}

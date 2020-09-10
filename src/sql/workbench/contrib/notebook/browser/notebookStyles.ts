@@ -136,9 +136,9 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 
 		let cssRuleText = '';
 		if (types.isNumber(rawOptions.cellPadding)) {
-			cssRuleText = rawOptions.cellPadding + 'px';
+			cssRuleText = `${rawOptions.cellPadding}px`;
 		} else {
-			cssRuleText = rawOptions.cellPadding.join('px ') + 'px;';
+			cssRuleText = `${rawOptions.cellPadding.join('px ')}px;`;
 		}
 		collector.addRule(`.grid-panel .monaco-table .slick-cell {
 			padding: ${cssRuleText}

@@ -180,14 +180,14 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 		const colspan = this.getColspan(row, col);
 		const columnCount = this.convertToNumber(colspan, this.cols.length);
 
-		return columnCount * this.cellWidth + 'px';
+		return `${columnCount * this.cellWidth}px`;
 	}
 
 	protected getWidgetHeight(row: number, col: number): string {
 		const rowspan = this.getRowspan(row, col);
 		const rowCount = this.convertToNumber(rowspan, this.rows.length);
 
-		return rowCount * this.cellHeight + 'px';
+		return `${rowCount * this.cellHeight}px`;
 	}
 
 	private convertToNumber(value: string | number, maxNumber: number): number {

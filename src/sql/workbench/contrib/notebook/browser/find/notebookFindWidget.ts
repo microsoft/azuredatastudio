@@ -222,7 +222,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 	}
 
 	private _updateMatchesCount(): void {
-		this._matchesCount.style.minWidth = MAX_MATCHES_COUNT_WIDTH + 'px';
+		this._matchesCount.style.minWidth = `${MAX_MATCHES_COUNT_WIDTH}px`;
 		if (this._state.matchesCount >= NOTEBOOK_MAX_MATCHES) {
 			this._matchesCount.title = NLS_MATCHES_COUNT_LIMIT_TITLE;
 		} else {
@@ -238,7 +238,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 		if (this._state.matchesCount > 0) {
 			let matchesCount: string = String(this._state.matchesCount);
 			if (this._state.matchesCount >= NOTEBOOK_MAX_MATCHES) {
-				matchesCount = NOTEBOOK_MAX_MATCHES + '+';
+				matchesCount = `${NOTEBOOK_MAX_MATCHES}+`;
 			}
 			let matchesPosition: string = String(this._state.matchesPosition);
 			if (matchesPosition === '0') {
@@ -533,7 +533,7 @@ class SimpleButton extends Widget {
 		this._domNode = document.createElement('div');
 		this._domNode.title = this._opts.label;
 		this._domNode.tabIndex = 0;
-		this._domNode.className = 'button ' + this._opts.className;
+		this._domNode.className = `button ${this._opts.className}`;
 		this._domNode.setAttribute('role', 'button');
 		this._domNode.setAttribute('aria-label', this._opts.label);
 

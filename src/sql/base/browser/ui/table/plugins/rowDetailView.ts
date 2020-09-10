@@ -186,9 +186,9 @@ export class RowDetailView<T extends Slick.SlickData> {
 
 	// Saves the current state of the detail view
 	public saveDetailView(item: ExtendedItem<T>) {
-		const view = jQuery('#innerDetailView_' + item.id);
+		const view = jQuery(`#innerDetailView_${item.id}`);
 		if (view) {
-			const html = jQuery('#innerDetailView_' + item.id).html();
+			const html = jQuery(`#innerDetailView_${item.id}`).html();
 			if (html !== undefined) {
 				item._detailContent = html;
 			}
@@ -205,7 +205,7 @@ export class RowDetailView<T extends Slick.SlickData> {
 
 		item._collapsed = true;
 		for (let idx = 1; idx <= item._sizePadding!; idx++) {
-			this._dataView.deleteItem(item.id + '.' + idx);
+			this._dataView.deleteItem(`${item.id}.${idx}`);
 		}
 		item._sizePadding = 0;
 		this._dataView.updateItem(item.id!, item);
@@ -294,7 +294,7 @@ export class RowDetailView<T extends Slick.SlickData> {
 		for (const prop in this._grid.getData()) {
 			item[prop] = null;
 		}
-		item.id = parent.id + '.' + offset;
+		item.id = `${parent.id}.${offset}`;
 
 		//additional hidden padding metadata fields
 		item._collapsed = true;
@@ -306,7 +306,7 @@ export class RowDetailView<T extends Slick.SlickData> {
 
 	public getErrorItem(parent: ExtendedItem<T>, offset: number | string) {
 		const item: ExtendedItem<T> = Object.create(null);
-		item.id = parent.id + '.' + offset;
+		item.id = `${parent.id}.${offset}`;
 		item._collapsed = true;
 		item._isPadding = false;
 		item._parent = parent;

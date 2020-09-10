@@ -214,13 +214,13 @@ suite('ConnectionStore', () => {
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
 		const integratedCred = assign({}, defaultNamedProfile, {
-			serverName: defaultNamedProfile.serverName + 'Integrated',
+			serverName: `${defaultNamedProfile.serverName}Integrated`,
 			authenticationType: 'Integrated',
 			userName: '',
 			password: ''
 		});
 		const noPwdCred = assign({}, defaultNamedProfile, {
-			serverName: defaultNamedProfile.serverName + 'NoPwd',
+			serverName: `${defaultNamedProfile.serverName}NoPwd`,
 			password: ''
 		});
 		const connectionProfile = new ConnectionProfile(capabilitiesService, defaultNamedProfile);

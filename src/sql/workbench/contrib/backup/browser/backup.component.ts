@@ -279,7 +279,7 @@ export class BackupComponent extends AngularDisposable {
 				if (ctrlOrCmd && key === KeyCode.KEY_C) {
 					let textToCopy = this.pathListBox!.selectedOptions[0];
 					for (let i = 1; i < this.pathListBox!.selectedOptions.length; i++) {
-						textToCopy = textToCopy + ', ' + this.pathListBox!.selectedOptions[i];
+						textToCopy = `${textToCopy}, ${this.pathListBox!.selectedOptions[i]}`;
 					}
 
 					// Copy to clipboard
@@ -733,7 +733,7 @@ export class BackupComponent extends AngularDisposable {
 		let encryptorCombo: string[] = [];
 		this.backupEncryptors!.forEach((encryptor) => {
 			let encryptorTypeStr = (encryptor.encryptorType === 0 ? BackupConstants.serverCertificate : BackupConstants.asymmetricKey);
-			encryptorCombo.push(encryptor.encryptorName + '(' + encryptorTypeStr + ')');
+			encryptorCombo.push(`${encryptor.encryptorName}(${encryptorTypeStr})`);
 		});
 		return encryptorCombo;
 	}
@@ -741,7 +741,7 @@ export class BackupComponent extends AngularDisposable {
 	private setDefaultBackupName(): void {
 		if (this.backupNameBox && (!this.backupNameBox.value || this.backupNameBox.value.trim().length === 0)) {
 			let utc = new Date().toJSON().slice(0, 19);
-			this.backupNameBox.value = this.databaseName + '-' + this.getSelectedBackupType() + '-' + utc;
+			this.backupNameBox.value = `${this.databaseName}-${this.getSelectedBackupType()}-${utc}`;
 		}
 	}
 
@@ -755,7 +755,7 @@ export class BackupComponent extends AngularDisposable {
 			}
 			let d: Date = new Date();
 			let formattedDateTime: string = `-${d.getFullYear()}${d.getMonth() + 1}${d.getDate()}-${d.getHours()}-${d.getMinutes()}-${d.getSeconds()}`;
-			let defaultNewBackupLocation = this.defaultNewBackupFolder + serverPathSeparator + this.databaseName + formattedDateTime + '.bak';
+			let defaultNewBackupLocation = `${this.defaultNewBackupFolder + serverPathSeparator + this.databaseName + formattedDateTime}.bak`;
 
 			// Add a default new backup location
 			this.backupPathTypePairs![defaultNewBackupLocation] = BackupConstants.deviceTypeFile;

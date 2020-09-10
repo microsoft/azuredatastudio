@@ -204,7 +204,7 @@ export class GridRange {
 	 * Transform to a user presentable string representation.
 	 */
 	public toString(): string {
-		return '[' + this.startRow + ',' + this.startColumn + ' -> ' + this.endRow + ',' + this.endColumn + ']';
+		return `[${this.startRow},${this.startColumn} -> ${this.endRow},${this.endColumn}]`;
 	}
 
 	/**

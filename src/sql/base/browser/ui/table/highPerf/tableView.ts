@@ -223,8 +223,8 @@ export class TableView<T> implements IDisposable {
 	private renderHeader(container: HTMLElement): void {
 		this.headerContainer = DOM.append(container, DOM.$('.monaco-perftable-header'));
 		const sashContainer = DOM.append(this.headerContainer, DOM.$('.sash-container'));
-		this.headerContainer.style.height = this.headerHeight + 'px';
-		this.headerContainer.style.lineHeight = this.headerHeight + 'px';
+		this.headerContainer.style.height = `${this.headerHeight}px`;
+		this.headerContainer.style.lineHeight = `${this.headerHeight}px`;
 		this.headerContainer.setAttribute('role', 'rowgroup');
 		const headerCellContainer = DOM.append(this.headerContainer, DOM.$('.monaco-perftable-header-cell-container'));
 		headerCellContainer.setAttribute('role', 'row');
@@ -233,8 +233,8 @@ export class TableView<T> implements IDisposable {
 			this.createHeaderSash(sashContainer, column);
 			const domNode = DOM.append(headerCellContainer, DOM.$('.monaco-perftable-header-cell'));
 			domNode.setAttribute('role', 'columnheader');
-			domNode.style.width = column.width + 'px';
-			domNode.style.left = column.left + 'px';
+			domNode.style.width = `${column.width}px`;
+			domNode.style.left = `${column.left}px`;
 			domNode.innerText = column.name;
 			column.domNode = domNode;
 		}
@@ -293,11 +293,11 @@ export class TableView<T> implements IDisposable {
 		const adjustedDelta = sizes[index] + delta < column.minWidth! ? column.minWidth! - sizes[index] : delta;
 
 		column.width = sizes[index] + adjustedDelta;
-		column.domNode!.style.width = column.width + 'px';
+		column.domNode!.style.width = `${column.width}px`;
 		for (let i = index + 1; i < this.columns.length; i++) {
 			const resizeColumn = this.columns[i];
 			resizeColumn.left = lefts[i] + adjustedDelta;
-			resizeColumn.domNode!.style.left = resizeColumn.left + 'px';
+			resizeColumn.domNode!.style.left = `${resizeColumn.left}px`;
 		}
 		for (const [index, row] of this.visibleRows.entries()) {
 			if (row) {

@@ -15,9 +15,9 @@ export interface IExtendedColumn<T> extends Slick.Column<T> {
 }
 
 export interface CommandEventArgs<T extends Slick.SlickData> {
-		grid: Slick.Grid<T>,
-		column: Slick.Column<T>,
-		command: string
+	grid: Slick.Grid<T>,
+	column: Slick.Column<T>,
+	command: string
 }
 
 export class HeaderFilter<T extends Slick.SlickData> {
@@ -153,9 +153,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		for (let i = 0; i < filterItems.length; i++) {
 			const filtered = this.workingFilters.some(x => x === filterItems[i]);
 
-			filterOptions += '<label><input type="checkbox" value="' + i + '"'
-				+ (filtered ? ' checked="checked"' : '')
-				+ '/>' + filterItems[i] + '</label>';
+			filterOptions += `<label><input type="checkbox" value="${i}"${filtered ? ' checked="checked"' : ''
+				}/>${filterItems[i]}</label>`;
 		}
 		const $filter = menu.find('.filter');
 		$filter.empty().append(jQuery(filterOptions));
@@ -201,9 +200,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		for (let i = 0; i < filterItems.length; i++) {
 			const filtered = this.workingFilters.some(x => x === filterItems[i]);
 			if (filterItems[i] && filterItems[i].indexOf('Error:') < 0) {
-				filterOptions += '<label><input type="checkbox" value="' + i + '"'
-					+ (filtered ? ' checked="checked"' : '')
-					+ '/>' + escape(filterItems[i]) + '</label>';
+				filterOptions += `<label><input type="checkbox" value="${i}"${filtered ? ' checked="checked"' : ''
+					}/>${escape(filterItems[i])}</label>`;
 			}
 		}
 		const $filter = jQuery('<div class="filter">')

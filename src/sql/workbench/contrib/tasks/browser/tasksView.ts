@@ -159,7 +159,7 @@ export class TaskHistoryView extends ViewPane {
 			let isDoubleClick = isMouseOrigin && event.payload.originalEvent && event.payload.originalEvent.detail === 2;
 			if (isDoubleClick) {
 				if (task.status === TaskStatus.Failed) {
-					let err = task.taskName + ': ' + task.message;
+					let err = `${task.taskName}: ${task.message}`;
 					this.errorMessageService.showDialog(Severity.Error, localize('taskError', "Task error"), err);
 				}
 			}
