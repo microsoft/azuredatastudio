@@ -181,19 +181,17 @@
         }
       }
     ],
+    "connectionTreeProvider": [
+      {
+        "id": "connectionDialog/azureResourceExplorer",
+        "name": "%azure.resource.explorer.title%"
+      }
+    ],
     "dataExplorer": {
-      "dialog/connection": [
-        {
-          "id": "azureResourceExplorer_dialog",
-          "name": "%azure.resource.explorer.title%",
-          "when": "config.connection.dialog.browse"
-        }
-      ],
       "dataExplorer": [
         {
           "id": "azureResourceExplorer",
-          "name": "%azure.resource.explorer.title%",
-          "when": "!config.connection.dialog.browse"
+          "name": "%azure.resource.explorer.title%"
         }
       ]
     },

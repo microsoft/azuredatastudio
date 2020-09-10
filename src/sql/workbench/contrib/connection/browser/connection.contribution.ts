@@ -25,6 +25,8 @@ const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(Workbench
 
 workbenchRegistry.registerWorkbenchContribution(ConnectionStatusbarItem, LifecyclePhase.Restored);
 
+import 'sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint';
+
 // Connection Dashboard registration
 
 const actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);

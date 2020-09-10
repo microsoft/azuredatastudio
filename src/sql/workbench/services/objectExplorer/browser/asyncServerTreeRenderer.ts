@@ -196,9 +196,11 @@ export class TreeNodeRenderer implements ITreeRenderer<TreeNode, FuzzyScore, Tre
 	renderTemplate(container: HTMLElement): TreeNodeTemplate {
 		return this._instantiationService.createInstance(TreeNodeTemplate, container);
 	}
+
 	renderElement(node: ITreeNode<TreeNode, FuzzyScore>, index: number, template: TreeNodeTemplate): void {
 		template.set(node.element);
 	}
+
 	disposeTemplate(templateData: TreeNodeTemplate): void {
 		templateData.dispose();
 	}

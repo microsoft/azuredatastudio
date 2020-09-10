@@ -24,7 +24,7 @@ import * as styler from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { SIDE_BAR_BACKGROUND, PANEL_SECTION_HEADER_BACKGROUND, PANEL_SECTION_HEADER_FOREGROUND, PANEL_SECTION_HEADER_BORDER, PANEL_SECTION_DRAG_AND_DROP_BACKGROUND, PANEL_SECTION_BORDER } from 'vs/workbench/common/theme';
+import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
@@ -32,13 +32,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { entries } from 'sql/base/common/collections';
 import { attachTabbedPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
-import { IViewPaneContainer, IView, IViewContainersRegistry, Extensions as ViewContainerExtensions, ViewContainerLocation, IViewDescriptorService, ViewContainer, IViewContainerModel, IAddedViewDescriptorRef, IViewDescriptorRef, ITreeViewDescriptor } from 'vs/workbench/common/views';
-import { IAction, IActionViewItem } from 'vs/base/common/actions';
-import { Registry } from 'vs/platform/registry/common/platform';
-import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { ViewPane, IPaneColors } from 'vs/workbench/browser/parts/views/viewPaneContainer';
-import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
-import { ITreeView } from 'sql/workbench/common/views';
+
 import { IConnectionProfile } from 'azdata';
 import { TreeUpdateUtils, IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { SavedConnectionTreeController } from 'sql/workbench/services/connection/browser/savedConnectionTreeController';
@@ -46,17 +40,17 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { RecentConnectionActionsProvider, RecentConnectionTreeController } from 'sql/workbench/services/connection/browser/recentConnectionTreeController';
 import { ClearRecentConnectionsAction } from 'sql/workbench/services/connection/browser/connectionActions';
-import { combinedDisposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ConnectionBrowseTab, ITreeItemFromProvider } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
 	container: HTMLElement;
 }
 
-export class ConnectionDialogWidget extends Modal implements IViewPaneContainer {
+export class ConnectionDialogWidget extends Modal {
 	private _body: HTMLElement;
 	private _recentConnection: HTMLElement;
 	private _noRecentConnection: HTMLElement;
@@ -95,11 +89,10 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 	private _onResetConnection = new Emitter<void>();
 	public onResetConnection: Event<void> = this._onResetConnection.event;
 
+	private browsePanel: ConnectionBrowseTab;
+
 	private _connecting = false;
 
-	readonly viewContainer: ViewContainer;
-	protected readonly viewContainerModel: IViewContainerModel;
-	private paneItems: { pane: ViewPane, disposable: IDisposable }[] = [];
 	private orthogonalSize = 0;
 
 	constructor(
@@ -110,7 +103,6 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IContextViewService private readonly contextViewService: IContextViewService,
-		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
@@ -132,16 +124,16 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 			contextKeyService,
 			{ hasSpinner: true, spinnerTitle: localize('connecting', "Connecting"), hasErrors: true });
 
-		const container = viewDescriptorService.getViewContainerById(VIEW_CONTAINER.id);
-		if (!container) {
-			throw new Error('Could not find container');
-		}
-
-		this.viewContainer = container;
-		this.viewContainerModel = viewDescriptorService.getViewContainerModel(container);
-	}
-	getActionsContext(): unknown {
-		throw new Error('Method not implemented.');
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('connection.dialog.browse') && this.browsePanel) {
+				const doUseBrowsePanel = this._configurationService.getValue<boolean>('connection.dialog.browse');
+				if (doUseBrowsePanel && !this._panel.contains(this.browsePanel)) {
+					this._panel.pushTab(this.browsePanel);
+				} else if (!doUseBrowsePanel && this._panel.contains(this.browsePanel)) {
+					this._panel.removeTab(this.browsePanel.identifier);
+				}
+			}
+		}));
 	}
 
 	/**
@@ -262,6 +254,28 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 			}
 		});
 
+		this.browsePanel = new ConnectionBrowseTab(this.instantiationService);
+
+		this.browsePanel.view.onSelect(e => {
+			if (e.element instanceof ConnectionProfile) {
+				this.onConnectionClick(e.element);
+			} else if ((e.element as ITreeItemFromProvider)?.element?.payload) {
+				this.onConnectionClick((e.element as ITreeItemFromProvider).element.payload);
+			}
+		});
+
+		this.browsePanel.view.onDblClick(e => {
+			if (e.element instanceof ConnectionProfile) {
+				this.onConnectionClick(e.element, true);
+			} else if ((e.element as ITreeItemFromProvider)?.element?.payload) {
+				this.onConnectionClick((e.element as ITreeItemFromProvider).element.payload, true);
+			}
+		});
+
+		if (this._configurationService.getValue<boolean>('connection.dialog.browse')) {
+			this._panel.pushTab(this.browsePanel);
+		}
+
 		this._connectionDetailTitle = DOM.append(this._body, DOM.$('.connection-details-title'));
 
 		this._connectionDetailTitle.innerText = localize('connectionDetailsTitle', "Connection Details");
@@ -273,17 +287,6 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 
 		this._connectionUIContainer = DOM.$('.connection-provider-info', { id: 'connectionProviderInfo' });
 		this._body.append(this._connectionUIContainer);
-
-		this._register(this.viewContainerModel.onDidAddVisibleViewDescriptors(added => this.onDidAddViewDescriptors(added)));
-		this._register(this.viewContainerModel.onDidRemoveVisibleViewDescriptors(removed => this.onDidRemoveViewDescriptors(removed)));
-		const addedViews: IAddedViewDescriptorRef[] = this.viewContainerModel.visibleViewDescriptors.map((viewDescriptor, index) => {
-			const size = this.viewContainerModel.getSize(viewDescriptor.id);
-			const collapsed = this.viewContainerModel.isCollapsed(viewDescriptor.id);
-			return ({ viewDescriptor, index, size, collapsed });
-		});
-		if (addedViews.length) {
-			this.onDidAddViewDescriptors(addedViews);
-		}
 
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		this.updateTheme(this._themeService.getColorTheme());
@@ -502,9 +505,6 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		// Height is the overall height. Since we're laying out a specific component, always get its actual height
 		const width = DOM.getContentWidth(this._body);
 		this.orthogonalSize = width;
-		for (const { pane } of this.paneItems) {
-			pane.orthogonalSize = width;
-		}
 		this._panel.layout(new DOM.Dimension(this.orthogonalSize, height - 38 - 35 - 326)); // height - connection title - connection type input - connection widget
 	}
 
@@ -560,132 +560,4 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 	public get databaseDropdownExpanded(): boolean {
 		return this._databaseDropdownExpanded;
 	}
-
-	//#region ViewletContainer
-	public readonly onDidAddViews: Event<IView[]> = Event.None;
-	public readonly onDidRemoveViews: Event<IView[]> = Event.None;
-	public readonly onDidChangeViewVisibility: Event<IView> = Event.None;
-	public get views(): IView[] {
-		return [];
-	}
-
-	setVisible(visible: boolean): void {
-	}
-
-	isVisible(): boolean {
-		return true;
-	}
-
-	focus(): void {
-	}
-
-	getActions(): IAction[] {
-		return [];
-	}
-
-	getSecondaryActions(): IAction[] {
-		return [];
-	}
-
-	getActionViewItem(action: IAction): IActionViewItem {
-		throw new Error('Method not implemented.');
-	}
-
-	getView(viewId: string): IView {
-		throw new Error('Method not implemented.');
-	}
-
-	saveState(): void {
-	}
-
-	private onDidRemoveViewDescriptors(removed: IViewDescriptorRef[]): void {
-		for (const ref of removed) {
-			this.removePane(ref);
-		}
-	}
-
-	private removePane(ref: IViewDescriptorRef): void {
-		const item = this.paneItems.find(p => p.pane.id === ref.viewDescriptor.id);
-		this._panel.removeTab(item.pane.id);
-		dispose(item.disposable);
-	}
-
-	protected onDidAddViewDescriptors(added: IAddedViewDescriptorRef[]): ViewPane[] {
-		const panesToAdd: { pane: ViewPane, size: number, treeView: ITreeView }[] = [];
-
-		for (const { viewDescriptor, size } of added) {
-			const treeViewDescriptor = viewDescriptor as ITreeViewDescriptor;
-			const pane = this.createView(treeViewDescriptor,
-				{
-					id: viewDescriptor.id,
-					title: viewDescriptor.name,
-					expanded: true
-				});
-
-			pane.render();
-
-			panesToAdd.push({ pane, size: size || pane.minimumSize, treeView: treeViewDescriptor.treeView as ITreeView });
-		}
-
-		this.addPanes(panesToAdd);
-
-		const panes: ViewPane[] = [];
-		for (const { pane } of panesToAdd) {
-			pane.setVisible(this.isVisible());
-			pane.headerVisible = false;
-			panes.push(pane);
-		}
-		return panes;
-	}
-
-	protected createView(viewDescriptor: ITreeViewDescriptor, options: IViewletViewOptions): ViewPane {
-		return (this.instantiationService as any).createInstance(viewDescriptor.ctorDescriptor.ctor, ...(viewDescriptor.ctorDescriptor.staticArguments || []), options) as ViewPane;
-	}
-
-	private addPanes(panes: { pane: ViewPane, treeView: ITreeView, size: number }[]): void {
-
-		for (const { pane, treeView, size } of panes) {
-			this.addPane({ pane, treeView }, size);
-		}
-
-		// this._onDidAddViews.fire(panes.map(({ pane }) => pane));
-	}
-
-	private addPane({ pane, treeView }: { pane: ViewPane, treeView: ITreeView }, size: number): void {
-		const paneStyler = styler.attachStyler<IPaneColors>(this._themeService, {
-			headerForeground: PANEL_SECTION_HEADER_FOREGROUND,
-			headerBackground: PANEL_SECTION_HEADER_BACKGROUND,
-			headerBorder: PANEL_SECTION_HEADER_BORDER,
-			dropBackground: PANEL_SECTION_DRAG_AND_DROP_BACKGROUND,
-			leftBorder: PANEL_SECTION_BORDER
-		}, pane);
-
-		const disposable = combinedDisposable(pane, paneStyler);
-		const paneItem = { pane, disposable };
-		treeView.onDidChangeSelection(e => {
-			if (e.length > 0 && e[0].payload) {
-				this.onConnectionClick(e[0].payload);
-			}
-		});
-
-		this.paneItems.push(paneItem);
-		this._panel.pushTab({
-			identifier: pane.id,
-			title: pane.title,
-			view: {
-				focus: () => pane.focus(),
-				layout: d => pane.layout(d.height),
-				render: e => e.appendChild(pane.element),
-			}
-		});
-	}
-	//#endregion
 }
-
-export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
-	id: 'dialog/connection',
-	name: 'ConnectionDialog',
-	ctorDescriptor: new SyncDescriptor(class { }),
-	order: 0,
-	storageId: `dialog/connection.state`
-}, ViewContainerLocation.Dialog);

@@ -138,7 +138,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				},
 				connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<azdata.ConnectionResult> {
 					return extHostConnectionManagement.$connect(connectionProfile, saveConnection, showDashboard);
-				}
+				},
 			};
 
 			// Backcompat "sqlops" APIs
