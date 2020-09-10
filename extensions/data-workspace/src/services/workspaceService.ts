@@ -34,7 +34,7 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	async getProjectProvider(projectFilePath: string): Promise<dataworkspace.IProjectProvider | undefined> {
-		const projectType = path.extname(projectFilePath);
+		const projectType = path.extname(projectFilePath).replace(/\./g, '');
 		let provider = ProjectProviderRegistry.getProviderByProjectType(projectType);
 		if (!provider) {
 			await this.ensureProviderExtensionLoaded(projectType);
@@ -44,18 +44,18 @@ export class WorkspaceService implements IWorkspaceService {
 
 	/**
 	 * Ensure the project provider extension for the specified project is loaded
-	 * @param projectExtension The file extension of the project, if not specified, all project provider extensions will be loaded.
+	 * @param projectType The file extension of the project, if not specified, all project provider extensions will be loaded.
 	 */
-	private async ensureProviderExtensionLoaded(projectExtension: string | undefined = undefined): Promise<void> {
+	private async ensureProviderExtensionLoaded(projectType: string | undefined = undefined): Promise<void> {
 		const inactiveExtensions = vscode.extensions.all.filter(ext => !ext.isActive);
-		const projectType = projectExtension ? projectExtension.toUpperCase() : undefined;
+		const projType = projectType ? projectType.toUpperCase() : undefined;
 		let extension: vscode.Extension<any>;
 		for (extension of inactiveExtensions) {
 			const projectTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.projects as string[];
 			// Process only when this extension is contributing project providers
 			if (projectTypes && projectTypes.length > 0) {
-				if (projectType) {
-					if (projectTypes.findIndex((proj: string) => proj.toUpperCase() === projectType) !== -1) {
+				if (projType) {
+					if (projectTypes.findIndex((proj: string) => proj.toUpperCase() === projType) !== -1) {
 						await this.activateExtension(extension);
 						break;
 					}

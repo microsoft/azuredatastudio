@@ -29,7 +29,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	get supportedProjectTypes(): dataworkspace.IProjectType[] {
 		return [{
-			projectFileExtension: sqlprojExtension.replace(/./g, ''),
+			projectFileExtension: sqlprojExtension.replace(/\./g, ''),
 			displayName: projectTypeDisplayName,
 			icon: IconPathHelper.databaseProject
 		}];
