@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as dataworkspace from 'dataworkspace';
+import { IProjectProvider, IProjectType } from 'dataworkspace';
 import * as vscode from 'vscode';
 
 /**
@@ -14,7 +14,7 @@ export interface IProjectProviderRegistry {
 	 * Registers a new project provider
 	 * @param provider The project provider
 	 */
-	registerProvider(provider: dataworkspace.IProjectProvider): vscode.Disposable;
+	registerProvider(provider: IProjectProvider): vscode.Disposable;
 
 	/**
 	 * Clear the providers
@@ -24,7 +24,13 @@ export interface IProjectProviderRegistry {
 	/**
 	 * Gets all the registered providers
 	 */
-	readonly providers: dataworkspace.IProjectProvider[];
+	readonly providers: IProjectProvider[];
+
+	/**
+	 * Gets the project provider for the specified project type
+	 * @param projectType The project type, file extension of the project
+	 */
+	getProviderByProjectType(projectType: string): IProjectProvider | undefined;
 }
 
 /**
@@ -34,7 +40,7 @@ export interface IWorkspaceService {
 	/**
 	 * Gets all supported project types
 	 */
-	getAllProjectTypes(): Promise<dataworkspace.IProjectType[]>;
+	getAllProjectTypes(): Promise<IProjectType[]>;
 
 	/**
 	 * Gets the project files in current workspace
@@ -45,7 +51,7 @@ export interface IWorkspaceService {
 	 * Gets the project provider by project file
 	 * @param projectFilePath The full path of the project file
 	 */
-	getProjectProvider(projectFilePath: string): Promise<dataworkspace.IProjectProvider | undefined>;
+	getProjectProvider(projectFilePath: string): Promise<IProjectProvider | undefined>;
 }
 
 /**

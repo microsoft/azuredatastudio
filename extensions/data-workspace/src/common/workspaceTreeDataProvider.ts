@@ -36,8 +36,8 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 			const projects = await this._workspaceService.getProjectsInWorkspace();
 			const unknownProjects: string[] = [];
 			const treeItems: WorkspaceTreeItem[] = [];
-			for (let index = 0; index < projects.length; index++) {
-				const project = projects[index];
+			let project: string;
+			for (project in projects) {
 				const projectProvider = await this._workspaceService.getProjectProvider(project);
 				if (projectProvider === undefined) {
 					unknownProjects.push(project);
@@ -58,7 +58,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 				});
 			}
 			if (unknownProjects.length > 0) {
-				vscode.window.showErrorMessage(localize('UnknownProjectsError', "The following projects are not supported: {0}", unknownProjects.join(EOL)));
+				vscode.window.showErrorMessage(localize('UnknownProjectsError', "No provider was found for the following projects: {0}", unknownProjects.join(EOL)));
 			}
 			return treeItems;
 		}

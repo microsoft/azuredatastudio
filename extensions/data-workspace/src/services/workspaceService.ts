@@ -8,7 +8,10 @@ import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
 import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
+import * as nls from 'vscode-nls';
+import Logger from '../common/logger';
 
+const localize = nls.loadMessageBundle();
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
 
@@ -31,14 +34,12 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	async getProjectProvider(projectFilePath: string): Promise<dataworkspace.IProjectProvider | undefined> {
-		await this.ensureProviderExtensionLoaded(path.extname(projectFilePath));
-		const providers = ProjectProviderRegistry.providers;
-		for (let i = 0; i < providers.length; i++) {
-			if (providers[i].supportedProjectTypes.findIndex(pt => projectFilePath.toUpperCase().endsWith(pt.projectFileExtension.toUpperCase())) !== -1) {
-				return providers[i];
-			}
+		const projectType = path.extname(projectFilePath);
+		let provider = ProjectProviderRegistry.getProviderByProjectType(projectType);
+		if (!provider) {
+			await this.ensureProviderExtensionLoaded(projectType);
 		}
-		return undefined;
+		return ProjectProviderRegistry.getProviderByProjectType(projectType);
 	}
 
 	/**
@@ -47,19 +48,29 @@ export class WorkspaceService implements IWorkspaceService {
 	 */
 	private async ensureProviderExtensionLoaded(projectExtension: string | undefined = undefined): Promise<void> {
 		const inactiveExtensions = vscode.extensions.all.filter(ext => !ext.isActive);
-		for (let index = 0; index < inactiveExtensions.length; index++) {
-			const extension = inactiveExtensions[index];
+		const projectType = projectExtension ? projectExtension.toUpperCase() : undefined;
+		let extension: vscode.Extension<any>;
+		for (extension of inactiveExtensions) {
 			const projectTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.projects as string[];
+			// Process only when this extension is contributing project providers
 			if (projectTypes && projectTypes.length > 0) {
-				if (projectExtension) {
-					if (projectTypes.findIndex(proj => proj.toUpperCase() === projectExtension?.toUpperCase())) {
-						await extension.activate();
+				if (projectType) {
+					if (projectTypes.findIndex((proj: string) => proj.toUpperCase() === projectType) !== -1) {
+						await this.activateExtension(extension);
 						break;
 					}
 				} else {
-					await extension.activate();
+					await this.activateExtension(extension);
 				}
 			}
+		}
+	}
+
+	private async activateExtension(extension: vscode.Extension<any>): Promise<void> {
+		try {
+			await extension.activate();
+		} catch (err) {
+			Logger.error(localize('activateExtensionFailed', "Failed to load the project provider extension '{0}'. Error message: {1}", extension.id, err.message ?? err));
 		}
 	}
 }

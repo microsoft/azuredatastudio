@@ -37,6 +37,10 @@ suite('ProjectProviderRegistry Tests', function (): void {
 				projectFileExtension: 'testproj',
 				icon: '',
 				displayName: 'test project'
+			}, {
+				projectFileExtension: 'testproj1',
+				icon: '',
+				displayName: 'test project 1'
 			}
 		]);
 		const provider2 = createProjectProvider([
@@ -48,13 +52,34 @@ suite('ProjectProviderRegistry Tests', function (): void {
 		]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
 		const disposable1 = ProjectProviderRegistry.registerProvider(provider1);
+		let providerResult = ProjectProviderRegistry.getProviderByProjectType('testproj');
+		should.equal(providerResult, provider1, 'provider1 should be returned for testproj project type');
+		// make sure the project type is case-insensitive for getProviderByProjectType method
+		providerResult = ProjectProviderRegistry.getProviderByProjectType('TeStProJ');
+		should.equal(providerResult, provider1, 'provider1 should be returned for testproj project type');
+		providerResult = ProjectProviderRegistry.getProviderByProjectType('testproj1');
+		should.equal(providerResult, provider1, 'provider1 should be returned for testproj1 project type');
 		should.strictEqual(ProjectProviderRegistry.providers.length, 1, 'there should be only one project provider at this time');
 		const disposable2 = ProjectProviderRegistry.registerProvider(provider2);
+		providerResult = ProjectProviderRegistry.getProviderByProjectType('sqlproj');
+		should.equal(providerResult, provider2, 'provider2 should be returned for sqlproj project type');
 		should.strictEqual(ProjectProviderRegistry.providers.length, 2, 'there should be 2 project providers at this time');
+
+		// unregister provider1
 		disposable1.dispose();
+		providerResult = ProjectProviderRegistry.getProviderByProjectType('testproj');
+		should.equal(providerResult, undefined, 'undefined should be returned for testproj project type');
+		providerResult = ProjectProviderRegistry.getProviderByProjectType('testproj1');
+		should.equal(providerResult, undefined, 'undefined should be returned for testproj1 project type');
+		providerResult = ProjectProviderRegistry.getProviderByProjectType('sqlproj');
+		should.equal(providerResult, provider2, 'provider2 should be returned for sqlproj project type after provider1 is disposed');
 		should.strictEqual(ProjectProviderRegistry.providers.length, 1, 'there should be only one project provider after unregistering a provider');
 		should.strictEqual(ProjectProviderRegistry.providers[0].supportedProjectTypes[0].projectFileExtension, 'sqlproj', 'the remaining project provider should be sqlproj');
+
+		// unregister provider2
 		disposable2.dispose();
+		providerResult = ProjectProviderRegistry.getProviderByProjectType('sqlproj');
+		should.equal(providerResult, undefined, 'undefined should be returned for sqlproj project type after provider2 is disposed');
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider after unregistering the providers');
 	});
 

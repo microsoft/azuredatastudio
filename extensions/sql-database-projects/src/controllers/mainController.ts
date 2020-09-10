@@ -20,7 +20,7 @@ import { NetCoreTool } from '../tools/netcoreTool';
 import { Project } from '../models/project';
 import { FileNode, FolderNode } from '../models/tree/fileFolderTreeItem';
 import { IconPathHelper } from '../common/iconHelper';
-import { SqlDatabaseProjectProvider } from '../projectProvider/projectPrivider';
+import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
 
