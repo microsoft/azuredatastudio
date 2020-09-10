@@ -455,6 +455,7 @@ export class AttachToDropdown extends SelectBox {
 	 **/
 	public async openConnectionDialog(useProfile: boolean = false): Promise<boolean> {
 		try {
+			//Get all providers to show all available connections in connection dialog
 			let providers = [];
 			providers = this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name);
 			if (this.model.currentKernelAlias) {
