@@ -1279,8 +1279,9 @@ export interface IWorkspaceTextEditDto {
 export interface IWorkspaceCellEditDto {
 	_type: WorkspaceEditType.Cell;
 	resource: UriComponents;
-	edit: ICellEditOperation;
-	modelVersionId?: number;
+	edit?: ICellEditOperation;
+	notebookMetadata?: NotebookDocumentMetadata;
+	notebookVersionId?: number;
 	metadata?: IWorkspaceEditEntryMetadataDto;
 }
 
