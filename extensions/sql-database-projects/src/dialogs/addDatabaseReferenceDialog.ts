@@ -467,8 +467,24 @@ export class AddDatabaseReferenceDialog {
 			}
 		}
 
+		// check for invalid variables
+		if (!this.validSqlCmdVariables()) {
+			let invalidName = !utils.isValidSqlCmdVariableName(this.databaseVariableTextbox?.value) ? this.databaseVariableTextbox!.value! : this.serverVariableTextbox!.value!;
+			invalidName = utils.removeSqlCmdVariableFormatting(invalidName);
+			newText = constants.notValidVariableName(invalidName);
+		}
+
 		this.exampleUsage!.value = newText;
 		this.exampleUsage?.updateCssStyles({ 'font-style': fontStyle });
+	}
+
+	private validSqlCmdVariables(): boolean {
+		if (this.databaseVariableTextbox?.enabled && this.databaseVariableTextbox?.value && !utils.isValidSqlCmdVariableName(this.databaseVariableTextbox?.value)
+			|| this.serverVariableTextbox?.enabled && this.serverVariableTextbox?.value && !utils.isValidSqlCmdVariableName(this.serverVariableTextbox?.value)) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -491,8 +507,9 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private dacpacFieldsRequiredFieldsFilled(): boolean {
-		return !!this.dacpacTextbox?.value &&
-			((this.locationDropdown?.value === constants.sameDatabase)
+		return !!this.dacpacTextbox?.value
+			&& this.validSqlCmdVariables()
+			&& ((this.locationDropdown?.value === constants.sameDatabase)
 				|| (this.locationDropdown?.value === constants.differentDbSameServer && this.differentDatabaseSameServerRequiredFieldsFilled())
 				|| ((this.locationDropdown?.value === constants.differentDbDifferentServer && this.differentDatabaseDifferentServerRequiredFieldsFilled())));
 	}

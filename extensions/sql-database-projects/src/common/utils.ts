@@ -146,33 +146,71 @@ export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 
 /**
  * 	Removes $() around a sqlcmd variable
- * @param variable
+ * @param name
  */
-export function removeSqlCmdVariableFormatting(variable: string): string {
-	if (variable.startsWith('$(') && variable.endsWith(')')) {
-		variable = variable.substr(2, variable.length - 3);
-	} else if (variable.startsWith('$(') && !variable.endsWith(')')) {
-		// a variable in the format $(variable is also valid even though it's missing the closing parenthesis
-		variable = variable.substr(2);
+export function removeSqlCmdVariableFormatting(name: string | undefined): string {
+	if (!name || name === '') {
+		return '';
 	}
 
-	return variable;
+	if (name.length > 3) {
+		// Trim in case we get "  $(x)"
+		name = name.trim();
+		let indexStart = name.startsWith('$(') ? 2 : 0;
+		let indexEnd = name.endsWith(')') ? 1 : 0;
+		if (indexStart > 0 || indexEnd > 0) {
+			name = name.substr(indexStart, name.length - indexEnd - indexStart);
+		}
+	}
+
+	// Trim in case the customer types "  $(x   )"
+	return name.trim();
 }
 
 /**
  * 	Format as sqlcmd variable by adding $() if necessary
  * if the variable already starts with $(, then add )
- * @param variable
+ * @param name
  */
-export function formatSqlCmdVariable(variable: string): string {
+export function formatSqlCmdVariable(name: string): string {
 	// TODO: check if it's a valid variable name and just return if it isn't
-
-	if (!variable.startsWith('$(') && !variable.endsWith(')')) {
-		variable = `$(${variable})`;
-	} else if (variable.startsWith('$(') && !variable.endsWith(')')) {
-		// add missing end parenthesis, same behavior as SSDT
-		variable = `${variable})`;
+	if (!name || name === '') {
+		return name;
 	}
 
-	return variable;
+	// Trim in case we get "  $(x)"
+	name = name.trim();
+
+	if (!name.startsWith('$(') && !name.endsWith(')')) {
+		name = `$(${name})`;
+	} else if (name.startsWith('$(') && !name.endsWith(')')) {
+		// add missing end parenthesis, same behavior as SSDT
+		name = `${name})`;
+	}
+
+	return name;
+}
+
+/**
+ * Checks if it's a valid sqlcmd variable name
+ * https://docs.microsoft.com/en-us/sql/ssms/scripting/sqlcmd-use-with-scripting-variables?redirectedfrom=MSDN&view=sql-server-ver15#guidelines-for-scripting-variable-names-and-values
+ * @param name variable name to validate
+ */
+export function isValidSqlCmdVariableName(name: string | undefined): boolean {
+	// remove $() around named if it's there
+	name = removeSqlCmdVariableFormatting(name);
+
+	// can't contain whitespace
+	if (!name || name.trim() === '' || name.includes(' ')) {
+		return false;
+	}
+
+	// can't contain these characters
+	if (name.includes('$') || name.includes('@') || name.includes('#') || name.includes('"') || name.includes('\'') || name.includes('-')) {
+		return false;
+	}
+
+	// TODO: tsql parsing to check if it's a reserved keyword or invalid tsql https://github.com/microsoft/azuredatastudio/issues/12204
+
+	return true;
 }
