@@ -103,7 +103,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		}));
-		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		}));
