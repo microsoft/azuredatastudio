@@ -18,8 +18,8 @@ interface IActionMetadata {
 	command?: string
 }
 
-const maxWidth = 800;
-const headerMaxHeight = 300;
+const maxWidth = 810;
+const headerMaxHeight = 234;
 export class DashboardWidget {
 
 	/**
@@ -42,17 +42,18 @@ export class DashboardWidget {
 					CSSStyles: {
 						'background-image': `url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))}), linear-gradient(0deg, #F0F0F0 0%, rgba(242,242,242,0) 100%, rgba(242,242,242,0.04) 100%)`,
 						'background-repeat': 'no-repeat',
-						'background-position': 'center',
-						'background-size': `${maxWidth}px ${headerMaxHeight}px`,
+						'background-position': 'left 26px',
+						'background-size': '865px 210px',
 						'border': 'none',
 						'width': `${maxWidth}px`,
-						'height': '240px'
+						'height': `${headerMaxHeight}px`
 					}
 				});
 				container.addItem(footerContainer, {
 					CSSStyles: {
-						'width': `${maxWidth}px`,
 						'height': '500px',
+						'width': `${maxWidth}px`,
+						'margin-top': '16px'
 					}
 				});
 				const mainContainer = view.modelBuilder.flexContainer()
@@ -63,7 +64,7 @@ export class DashboardWidget {
 						position: 'absolute'
 					}).component();
 				mainContainer.addItem(container, {
-					CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' }
+					CSSStyles: { 'padding-top': '12px' }
 				});
 				await view.initializeModel(mainContainer);
 				resolve();
@@ -97,13 +98,14 @@ export class DashboardWidget {
 		}).component();
 		header.addItems([titleComponent, descComponent], {
 			CSSStyles: {
-				'padding-left': '10px'
+				'padding-left': '26px'
 			}
 		});
 		const tasksContainer = await this.createTasks(view);
 		header.addItem(tasksContainer, {
 			CSSStyles: {
-				'height': '84px',
+				'height': 'auto',
+				'margin-top': '67px',
 				'width': `${maxWidth}px`
 			}
 		});
@@ -470,12 +472,6 @@ export class DashboardWidget {
 			width: '100%',
 			height: '84px',
 		}).component();
-		tasksContainer.updateCssStyles(
-			{
-				'justify-content': 'space-around',
-				'margin-top': '87px'
-			}
-		);
 		const predictionMetadata: IActionMetadata = {
 			title: constants.makePredictionTitle,
 			description: constants.makePredictionDesc,

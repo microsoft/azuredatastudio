@@ -43,13 +43,12 @@ export class InfoButton extends sqlButton {
 
 		{ // Creates the elements
 			this._main = document.createElement('div');
-			DOM.addClass(this._main, 'divContainer');
+			DOM.addClass(this._main, 'flexContainer');
 			this._main.style.cursor = 'pointer';
 			this._main.style.backgroundColor = '#FFFFFF';
 			this._main.style.borderRadius = '4px';
 			this._main.style.boxShadow = '0px 1px 4px rgba(0, 0, 0, 0.14)';
 			this._main.style.padding = '10px';
-			this._main.style.display = 'flex';
 
 			this._iconContainer = document.createElement('div');
 			this._iconContainer.style.alignItems = 'flex-start';
@@ -89,6 +88,9 @@ export class InfoButton extends sqlButton {
 			this._main.appendChild(this._iconContainer);
 			this._main.appendChild(this._textContainer);
 			this.element.appendChild(this._main);
+			this.element.style.background = 'none';
+			this.element.style.display = 'flex';
+			this.element.style.justifyContent = 'space-around';
 		}
 		this.infoButtonOptions = options;
 	}
@@ -114,7 +116,7 @@ export class InfoButton extends sqlButton {
 	}
 	public set buttonMaxHeight(value: number | undefined) {
 		this._buttonMaxHeight = value;
-		this._main.style.height = this._buttonMaxHeight.toString() + 'px';
+		this._main.style.maxHeight = this._buttonMaxHeight.toString() + 'px';
 		this._iconContainer.style.height = (this._buttonMaxHeight - 20).toString() + 'px';
 		this._textContainer.style.height = (this._buttonMaxHeight - 20).toString() + 'px';
 	}
