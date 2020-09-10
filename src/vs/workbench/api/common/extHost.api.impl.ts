@@ -67,7 +67,6 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransformerService';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
-import { find } from 'vs/base/common/arrays';
 import { ExtHostNotebookController } from 'vs/workbench/api/common/extHostNotebook';
 import { ExtHostTheming } from 'vs/workbench/api/common/extHostTheming';
 import { IExtHostTunnelService } from 'vs/workbench/api/common/extHostTunnelService';
@@ -157,7 +156,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	// Check that no named customers are missing
 	// {{SQL CARBON EDIT}} filter out the services we don't expose
 	const filtered: ProxyIdentifier<any>[] = [ExtHostContext.ExtHostDebugService, ExtHostContext.ExtHostTask];
-	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => !find(filtered, x => x === v));
+	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => !filtered.find(x => x === v));
 	rpcProtocol.assertRegistered(expected);
 
 	// Other instances

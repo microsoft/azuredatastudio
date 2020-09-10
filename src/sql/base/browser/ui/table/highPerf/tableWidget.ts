@@ -8,7 +8,6 @@ import { ITableEvent, ITableRenderer, ITableMouseEvent, ITableContextMenuEvent, 
 import { IDisposable, dispose, DisposableStore } from 'vs/base/common/lifecycle';
 import { memoize } from 'vs/base/common/decorators';
 import { Event, Emitter, EventBufferer } from 'vs/base/common/event';
-import { find } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
 import { TableView, ITableViewOptions } from 'sql/base/browser/ui/table/highPerf/tableView';
 import { ScrollEvent } from 'vs/base/common/scrollable';
@@ -68,7 +67,7 @@ class TraitRenderer<T> implements ITableRenderer<T, ITraitTemplateData>
 
 	renderIndexes(indexes: IGridRange[]): void {
 		for (const { index, templateData } of this.renderedElements) {
-			if (!!find(indexes, v => GridRange.containsPosition(v, index))) {
+			if (!!indexes.find(v => GridRange.containsPosition(v, index))) {
 				this.trait.renderIndex(index, templateData);
 			}
 		}
@@ -194,7 +193,7 @@ class Trait<T> implements IDisposable {
 	}
 
 	contains(index: GridPosition): boolean {
-		return !!find(this.indexes, v => GridRange.containsPosition(v, index));
+		return !!this.indexes.find(v => GridRange.containsPosition(v, index));
 	}
 
 	dispose() {

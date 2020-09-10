@@ -19,7 +19,6 @@ import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { FilterData } from 'sql/workbench/services/profiler/browser/profilerFilter';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
-import { find } from 'vs/base/common/arrays';
 
 export interface ColumnDefinition extends Slick.Column<Slick.SlickData> {
 	name: string;
@@ -208,11 +207,11 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			this._notificationService.error(nls.localize("profiler.sessionCreationError", "Error while starting new session"));
 		} else {
 			this._sessionName = params.sessionName;
-			let sessionTemplate = find(this._profilerService.getSessionTemplates(), (template) => {
+			let sessionTemplate = this._profilerService.getSessionTemplates().find((template) => {
 				return template.name === params.templateName;
 			});
 			if (!types.isUndefinedOrNull(sessionTemplate)) {
-				let newView = find(this._profilerService.getViewTemplates(), (view) => {
+				let newView = this._profilerService.getViewTemplates().find((view) => {
 					return view.name === sessionTemplate!.defaultView;
 				});
 				if (!types.isUndefinedOrNull(newView)) {

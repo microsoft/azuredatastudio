@@ -50,7 +50,6 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
-import { find } from 'vs/base/common/arrays';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
@@ -344,7 +343,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 		if (DEFAULT_NOTEBOOK_PROVIDER === providerInfo.providerId) {
 			let providers = notebookUtils.getProvidersForFileName(this._notebookParams.notebookUri.fsPath, this.notebookService);
-			let tsqlProvider = find(providers, provider => provider === SQL_NOTEBOOK_PROVIDER);
+			let tsqlProvider = providers.find(provider => provider === SQL_NOTEBOOK_PROVIDER);
 			providerInfo.providerId = tsqlProvider ? SQL_NOTEBOOK_PROVIDER : providers[0];
 		}
 	}
@@ -747,7 +746,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let elBody: HTMLElement = document.body;
 		let tabBar = elBody.querySelector('.title.tabs') as HTMLElement;
 		let actionBar = elBody.querySelector('.editor-toolbar.actionbar-container') as HTMLElement;
-		let section = find(this.getSectionElements(), s => s.relativeUri && s.relativeUri.toLowerCase() === id);
+		let section = this.getSectionElements().find(s => s.relativeUri && s.relativeUri.toLowerCase() === id);
 		if (section) {
 			// Scroll this section to the top of the header instead of just bringing header into view.
 			if (tabBar && actionBar) {

@@ -22,7 +22,6 @@ import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
-import { find } from 'vs/base/common/arrays';
 import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -727,7 +726,7 @@ export class CellModel extends Disposable implements ICellModel {
 			if (serverInfo) {
 				let endpoints: notebookUtils.IEndpoint[] = notebookUtils.getClusterEndpoints(serverInfo);
 				if (endpoints && endpoints.length > 0) {
-					endpoint = find(endpoints, ep => ep.serviceName.toLowerCase() === notebookUtils.hadoopEndpointNameGateway);
+					endpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === notebookUtils.hadoopEndpointNameGateway);
 				}
 			}
 		}

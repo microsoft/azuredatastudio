@@ -21,7 +21,6 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { find } from 'vs/base/common/arrays';
 import { getServiceMachineId } from 'vs/platform/serviceMachineId/common/serviceMachineId';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { joinPath } from 'vs/base/common/resources';
@@ -574,16 +573,16 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		if (query.criteria) {
 			const ids = query.criteria.filter(x => x.filterType === FilterType.ExtensionId).map(v => v.value ? v.value.toLocaleLowerCase() : undefined);
 			if (ids && ids.length > 0) {
-				filteredExtensions = filteredExtensions.filter(e => e.extensionId && find(ids, x => x === e.extensionId.toLocaleLowerCase()));
+				filteredExtensions = filteredExtensions.filter(e => e.extensionId && ids.find(x => x === e.extensionId.toLocaleLowerCase()));
 			}
 			const names = query.criteria.filter(x => x.filterType === FilterType.ExtensionName).map(v => v.value ? v.value.toLocaleLowerCase() : undefined);
 			if (names && names.length > 0) {
-				filteredExtensions = filteredExtensions.filter(e => e.extensionName && e.publisher.publisherName && find(names, x => x === `${e.publisher.publisherName.toLocaleLowerCase()}.${e.extensionName.toLocaleLowerCase()}`));
+				filteredExtensions = filteredExtensions.filter(e => e.extensionName && e.publisher.publisherName && names.find(x => x === `${e.publisher.publisherName.toLocaleLowerCase()}.${e.extensionName.toLocaleLowerCase()}`));
 			}
 			const categoryFilters = query.criteria.filter(x => x.filterType === FilterType.Category).map(v => v.value ? v.value.toLowerCase() : undefined);
 			if (categoryFilters && categoryFilters.length > 0) {
 				// Implement the @category: "language packs" filtering
-				if (find(categoryFilters, x => x === 'language packs')) {
+				if (categoryFilters.find(x => x === 'language packs')) {
 					filteredExtensions = filteredExtensions.filter(e => {
 						// we only have 1 version for our extensions in the gallery file, so this should always be the case
 						if (e.versions.length === 1) {

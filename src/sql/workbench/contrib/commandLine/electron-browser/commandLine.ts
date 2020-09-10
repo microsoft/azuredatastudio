@@ -27,7 +27,6 @@ import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IURLService, IURLHandler } from 'vs/platform/url/common/url';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
-import { find } from 'vs/base/common/arrays';
 import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 
@@ -309,7 +308,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		if (groups && groups.length > 0) {
 			let rootGroup = groups[0];
 			let connections = ConnectionProfileGroup.getConnectionsInGroup(rootGroup);
-			match = find(connections, (c) => this.matchProfile(profile, c));
+			match = connections.find((c) => this.matchProfile(profile, c));
 		}
 		return match ? match : profile;
 	}

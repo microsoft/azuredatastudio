@@ -36,7 +36,6 @@ import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IContextKeyService, ContextKeyExpr, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ILogService } from 'vs/platform/log/common/log';
-import { find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
 import { RefreshWidgetAction, ToolbarAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
@@ -318,7 +317,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this._cd.detectChanges();
 
 		this._tabsDispose.push(this.dashboardService.onPinUnpinTab(e => {
-			const tabConfig = find(this._tabSettingConfigs, i => i.tabId === e.tabId);
+			const tabConfig = this._tabSettingConfigs.find(i => i.tabId === e.tabId);
 			if (tabConfig) {
 				tabConfig.isPinned = e.isPinned;
 			} else {
@@ -491,7 +490,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	}
 
 	private addNewTab(tab: TabConfig): void {
-		const existedTab = find(this.tabs, i => i.id === tab.id);
+		const existedTab = this.tabs.find(i => i.id === tab.id);
 		if (!existedTab) {
 			if (!tab.iconClass && tab.type !== 'group-header') {
 				tab.iconClass = 'default-tab-icon';

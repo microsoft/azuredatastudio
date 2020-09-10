@@ -50,7 +50,6 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { handleCopyRequest } from 'sql/workbench/contrib/profiler/browser/profilerCopyHandler';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { find } from 'vs/base/common/arrays';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
@@ -239,7 +238,7 @@ export class ProfilerEditor extends EditorPane {
 		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', "Select View"));
 		this._register(this._viewTemplateSelector.onDidSelect(e => {
 			if (this.input) {
-				this.input.setViewTemplate(find(this._viewTemplates, i => i.name === e.selected));
+				this.input.setViewTemplate(this._viewTemplates.find(i => i.name === e.selected));
 			}
 		}));
 		let viewTemplateContainer = document.createElement('div');
@@ -466,7 +465,7 @@ export class ProfilerEditor extends EditorPane {
 			if (input.viewTemplate) {
 				this._viewTemplateSelector.selectWithOptionName(input.viewTemplate.name);
 			} else {
-				input.setViewTemplate(find(this._viewTemplates, i => i.name === 'Standard View'));
+				input.setViewTemplate(this._viewTemplates.find(i => i.name === 'Standard View'));
 			}
 
 			this._actionBar.context = input;

@@ -13,7 +13,6 @@ import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/work
 import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardGridContainer.contribution';
 import { WEBVIEW_CONTAINER } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardWebviewContainer.contribution';
 import { values } from 'vs/base/common/collections';
-import { find } from 'vs/base/common/arrays';
 import { NavSectionConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 
 const containerTypes = [
@@ -78,7 +77,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboar
 		const containerkey = Object.keys(container)[0];
 		const containerValue = values(container)[0];
 
-		const containerTypeFound = find(containerTypes, c => c === containerkey);
+		const containerTypeFound = containerTypes.find(c => c === containerkey);
 		if (!containerTypeFound) {
 			extension.collector.error(localize('dashboardTab.contribution.unKnownContainerType', "Unknown container type defines in dashboard container for extension."));
 			return;

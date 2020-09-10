@@ -12,7 +12,6 @@ import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/e
 import { DATABASE_DASHBOARD_TABS } from 'sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.contribution';
 import { SERVER_DASHBOARD_TABS } from 'sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution';
 import { DASHBOARD_CONFIG_ID, DASHBOARD_TABS_KEY_PROPERTY } from 'sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution';
-import { find } from 'vs/base/common/arrays';
 import { IDashboardTab, IDashboardTabGroup } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
 
@@ -169,7 +168,7 @@ class DashboardRegistry implements IDashboardRegistry {
 
 	public registerTab(tab: IDashboardTab): void {
 		this._tabs.push(tab);
-		let dashboardConfig = find(this._configurationRegistry.getConfigurations(), c => c.id === DASHBOARD_CONFIG_ID);
+		let dashboardConfig = this._configurationRegistry.getConfigurations().find(c => c.id === DASHBOARD_CONFIG_ID);
 
 		if (dashboardConfig) {
 			let dashboardDatabaseTabProperty = (<IJSONSchema>dashboardConfig.properties[DATABASE_DASHBOARD_TABS].items).properties[DASHBOARD_TABS_KEY_PROPERTY];
