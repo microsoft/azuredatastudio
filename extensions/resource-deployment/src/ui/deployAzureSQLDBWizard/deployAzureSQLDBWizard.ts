@@ -19,20 +19,20 @@ import { AzureSQLDBSummaryPage } from './pages/summaryPage';
 
 export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, WizardPageBase<DeployAzureSQLDBWizard>, DeployAzureSQLDBWizardModel> {
 
-	public get notebookService(): INotebookService {
-		return this._notebookService;
-	}
-
-	public get toolService(): IToolsService {
-		return this._toolsService;
-	}
-
 	constructor(private wizardInfo: AzureSQLDBWizardInfo, private _notebookService: INotebookService, private _toolsService: IToolsService) {
 		super(
 			constants.WizardTitle,
 			new DeployAzureSQLDBWizardModel(),
 			_toolsService
 		);
+	}
+
+	public get notebookService(): INotebookService {
+		return this._notebookService;
+	}
+
+	public get toolService(): IToolsService {
+		return this._toolsService;
 	}
 
 	protected initialize(): void {

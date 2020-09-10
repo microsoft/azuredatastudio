@@ -25,9 +25,9 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 	private _azureSubscriptionsDropdown!: azdata.DropDownComponent;
 	private _azureSubscriptionLoader!: azdata.LoadingComponent;
 
-	//dropdown for resource groups <- subscription dropdown
-	private _resourceGroupDropdown!: azdata.DropDownComponent;
-	private _resourceGroupLoader!: azdata.LoadingComponent;
+	//dropdown for resource groups <- subscription dropdown //@todo alma1 9/9/2020 Used for upcoming server creation feature.
+	// private _resourceGroupDropdown!: azdata.DropDownComponent;
+	// private _resourceGroupLoader!: azdata.LoadingComponent;
 
 	//dropdown for SQL servers <- resource dropdown
 	private _serverGroupDropdown!: azdata.DropDownComponent;
@@ -57,7 +57,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 			await Promise.all([
 				this.createAzureAccountsDropdown(view),
 				this.createAzureSubscriptionsDropdown(view),
-				this.createResourceDropdown(view),
+				//this.createResourceDropdown(view), //@todo alma1 9/8/2020 used for upcoming server creation feature.
 				this.createServerDropdown(view),
 				//this.createAzureRegionsDropdown(view) //@todo alma1 9/8/2020 used for upcoming server creation feature.
 			]);
@@ -75,9 +75,9 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 						{
 							component: this.wizard.createFormRowComponent(view, constants.AzureAccountSubscriptionDropdownLabel, '', this._azureSubscriptionLoader, true)
 						},
-						{
-							component: this.wizard.createFormRowComponent(view, constants.AzureAccountResourceGroupDropdownLabel, '', this._resourceGroupDropdown, true)
-						},
+						// { //@todo alma1 9/9/2020 Used for upcoming server creation feature.
+						// 	component: this.wizard.createFormRowComponent(view, constants.AzureAccountResourceGroupDropdownLabel, '', this._resourceGroupDropdown, true)
+						// },
 						{
 							component: this.wizard.createFormRowComponent(view, constants.AzureAccountDatabaseServersDropdownLabel, '', this._serverGroupDropdown, true)
 						}
@@ -185,8 +185,10 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 				azdata.AzureResource.ResourceManagement
 			);
 
-			this.populateResourceGroupDropdown();
-			//this.populateAzureRegionsDropdown(); //@todo alma1 9/8/2020 used for upcoming server creation feature.
+			this.populateServerGroupDropdown();
+			//@todo alma1 9/8/2020 used for upcoming server creation feature.
+			//this.populateResourceGroupDropdown();
+			//this.populateAzureRegionsDropdown();
 		});
 	}
 
@@ -196,8 +198,10 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 		let currentAccountDropdownValue = (this._azureAccountsDropdown.value as azdata.CategoryValue);
 		if (currentAccountDropdownValue === undefined) {
 			this._azureSubscriptionLoader.loading = false;
-			await this.populateResourceGroupDropdown();
-			//await this.populateAzureRegionsDropdown(); //@todo alma1 9/8/2020 used for upcoming server creation feature.
+			await this.populateServerGroupDropdown();
+			//@todo alma1 9/8/2020 used for upcoming server creation feature.
+			//await this.populateResourceGroupDropdown();
+			//await this.populateAzureRegionsDropdown();
 			return;
 		}
 		let currentAccount = this._accountsMap.get(currentAccountDropdownValue.name);
@@ -207,8 +211,10 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 				values: []
 			});
 			this._azureSubscriptionLoader.loading = false;
-			await this.populateResourceGroupDropdown();
-			//await this.populateAzureRegionsDropdown(); //@todo alma1 9/8/2020 used for upcoming server creation feature.
+			await this.populateServerGroupDropdown();
+			//@todo alma1 9/8/2020 used for upcoming server creation feature.
+			//await this.populateResourceGroupDropdown();
+			//await this.populateAzureRegionsDropdown();
 			return;
 		}
 		subscriptions.sort((a, b) => a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()));
@@ -234,8 +240,10 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 			azdata.AzureResource.ResourceManagement
 		);
 		this._azureSubscriptionLoader.loading = false;
-		await this.populateResourceGroupDropdown();
-		//await this.populateAzureRegionsDropdown(); //@todo alma1 9/8/2020 used for upcoming server creation feature.
+		await this.populateServerGroupDropdown();
+		//@todo alma1 9/8/2020 used for upcoming server creation feature.
+		//await this.populateResourceGroupDropdown();
+		//await this.populateAzureRegionsDropdown();
 	}
 
 	private async createServerDropdown(view: azdata.ModelView) {
@@ -250,26 +258,19 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 
 	private async populateServerGroupDropdown() {
 		this._serverGroupLoader.loading = true;
-		let subService = await apiService.getAzurecoreApi();
 		let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
 		if (currentSubscriptionValue === undefined || currentSubscriptionValue.displayName === '') {
 
 			this._serverGroupDropdown.updateProperties({
-				values: []
+				values: [{
+					displayName: 'No servers found',
+					name: ''
+				}]
 			});
 			this._serverGroupLoader.loading = false;
 			return;
 		}
-		let currentSubscription = this._subscriptionsMap.get(currentSubscriptionValue.name);
-		let resourceGroups = (await subService.getResourceGroups(this.wizard.model.azureAccount, currentSubscription, true)).resourceGroups;
-		if (resourceGroups === undefined || resourceGroups.length === 0) {
-			this._serverGroupLoader.loading = false;
-			this._serverGroupDropdown.updateProperties({
-				values: []
-			});
-			return;
-		}
-		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/resourceGroups/${this.wizard.model.azureResouceGroup}/providers/Microsoft.Sql/servers?api-version=2019-06-01-preview`;
+		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/providers/Microsoft.Sql/servers?api-version=2019-06-01-preview`;
 		const response = await this.wizard.getRequest(url);
 
 		this.wizard.addDropdownValues(
@@ -277,67 +278,69 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 			response.data.value.map((value: any) => {
 				return {
 					displayName: value.name,
-					name: value.name
+					name: value.id,
 				};
 			})
 		);
 		if (this._serverGroupDropdown.value) {
-			this.wizard.model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).name;
+			this.wizard.model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
+			this.wizard.model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
 		}
 		this._serverGroupLoader.loading = false;
 		return;
 	}
 
-	private async createResourceDropdown(view: azdata.ModelView) {
-		this._resourceGroupDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true
-		}).component();
-		this._resourceGroupLoader = view.modelBuilder.loadingComponent().withItem(this._resourceGroupDropdown).component();
-		this._resourceGroupDropdown.onValueChanged(async (value) => {
-			this.wizard.model.azureResouceGroup = value.selected;
-			this.populateServerGroupDropdown();
-		});
-	}
+	//@todo alma1 9/8/2020 functions below are used for upcoming server creation feature.
 
-	private async populateResourceGroupDropdown() {
-		this._resourceGroupLoader.loading = true;
-		let subService = await apiService.getAzurecoreApi();
-		let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
-		if (currentSubscriptionValue === undefined || currentSubscriptionValue.displayName === '') {
+	// private async createResourceDropdown(view: azdata.ModelView) {
+	// 	this._resourceGroupDropdown = view.modelBuilder.dropDown().withProperties({
+	// 		required: true
+	// 	}).component();
+	// 	this._resourceGroupLoader = view.modelBuilder.loadingComponent().withItem(this._resourceGroupDropdown).component();
+	// 	this._resourceGroupDropdown.onValueChanged(async (value) => {
+	// 		this.wizard.model.azureResouceGroup = value.selected;
+	// 		this.populateServerGroupDropdown();
+	// 	});
+	// }
 
-			this._resourceGroupDropdown.updateProperties({
-				values: []
-			});
-			this._resourceGroupLoader.loading = false;
-			await this.populateServerGroupDropdown();
-			return;
-		}
-		let currentSubscription = this._subscriptionsMap.get(currentSubscriptionValue.name);
-		let resourceGroups = (await subService.getResourceGroups(this.wizard.model.azureAccount, currentSubscription, true)).resourceGroups;
-		if (resourceGroups === undefined || resourceGroups.length === 0) {
-			this._resourceGroupLoader.loading = false;
-			this._resourceGroupDropdown.updateProperties({
-				values: []
-			});
-			await this.populateServerGroupDropdown();
-			return;
-		}
+	// private async populateResourceGroupDropdown() {
+	// 	this._resourceGroupLoader.loading = true;
+	// 	let subService = await apiService.getAzurecoreApi();
+	// 	let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
+	// 	if (currentSubscriptionValue === undefined || currentSubscriptionValue.displayName === '') {
 
-		resourceGroups.sort((a, b) => a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()));
-		this._resourceGroupDropdown.updateProperties({
-			values: resourceGroups.map((resourceGroup) => {
-				return {
-					displayName: resourceGroup.name,
-					name: resourceGroup.name
-				};
-			})
-		});
-		this.wizard.model.azureResouceGroup = (this._resourceGroupDropdown.value as azdata.CategoryValue).name;
-		this._resourceGroupLoader.loading = false;
-		await this.populateServerGroupDropdown();
-	}
+	// 		this._resourceGroupDropdown.updateProperties({
+	// 			values: []
+	// 		});
+	// 		this._resourceGroupLoader.loading = false;
+	// 		await this.populateServerGroupDropdown();
+	// 		return;
+	// 	}
+	// 	let currentSubscription = this._subscriptionsMap.get(currentSubscriptionValue.name);
+	// 	let resourceGroups = (await subService.getResourceGroups(this.wizard.model.azureAccount, currentSubscription, true)).resourceGroups;
+	// 	if (resourceGroups === undefined || resourceGroups.length === 0) {
+	// 		this._resourceGroupLoader.loading = false;
+	// 		this._resourceGroupDropdown.updateProperties({
+	// 			values: []
+	// 		});
+	// 		await this.populateServerGroupDropdown();
+	// 		return;
+	// 	}
 
-	//@todo alma1 9/8/2020 both functions below are used for upcoming server creation feature.
+	// 	resourceGroups.sort((a, b) => a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()));
+	// 	this._resourceGroupDropdown.updateProperties({
+	// 		values: resourceGroups.map((resourceGroup) => {
+	// 			return {
+	// 				displayName: resourceGroup.name,
+	// 				name: resourceGroup.name
+	// 			};
+	// 		})
+	// 	});
+	// 	this.wizard.model.azureResouceGroup = (this._resourceGroupDropdown.value as azdata.CategoryValue).name;
+	// 	this._resourceGroupLoader.loading = false;
+	// 	await this.populateServerGroupDropdown();
+	// }
+
 	// private async createAzureRegionsDropdown(view: azdata.ModelView) {
 	// 	this._azureRegionsDropdown = view.modelBuilder.dropDown().withProperties({
 	// 		required: true

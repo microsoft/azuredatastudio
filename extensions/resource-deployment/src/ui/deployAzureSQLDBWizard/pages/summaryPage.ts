@@ -63,10 +63,6 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 							defaultValue: model.azureSubscriptionDisplayName,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						},
-					]
-				},
-				{
-					items: [
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.AzureAccountResourceGroupDropdownLabel,
@@ -94,20 +90,10 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 					items: [
 						{
 							type: FieldType.ReadonlyText,
-							label: constants.StartIpAddressShortLabel,
-							defaultValue: model.startIpAddress,
+							label: constants.DatabaseNameLabel,
+							defaultValue: model.databaseName,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						},
-						{
-							type: FieldType.ReadonlyText,
-							label: constants.EndIpAddressShortLabel,
-							defaultValue: model.endIpAddress,
-							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						}
-					]
-				},
-				{
-					items: [
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.FirewallRuleNameLabel,
@@ -116,8 +102,14 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 						},
 						{
 							type: FieldType.ReadonlyText,
-							label: constants.DatabaseNameLabel,
-							defaultValue: model.databaseName,
+							label: constants.StartIpAddressShortLabel,
+							defaultValue: model.startIpAddress,
+							labelCSSStyles: { fontWeight: FontWeight.Bold }
+						},
+						{
+							type: FieldType.ReadonlyText,
+							label: constants.EndIpAddressShortLabel,
+							defaultValue: model.endIpAddress,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						}
 					]

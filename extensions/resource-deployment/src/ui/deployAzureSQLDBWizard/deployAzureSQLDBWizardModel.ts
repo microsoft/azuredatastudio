@@ -40,6 +40,6 @@ export class DeployAzureSQLDBWizardModel extends Model {
 		statements.push(`azure_sqldb_firewall_name = '${this.firewallRuleName}'`);
 		//statements.push(`azure_sqldb_new_server = '${this.newServer}'`); //@todo alma1 9/8/2020 used for upcoming server creation feature.
 
-		return statements.map(line => line + EOL);
+		return statements.map(line => line.concat(EOL));
 	}
 }
