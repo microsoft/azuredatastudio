@@ -5,13 +5,13 @@
 
 import * as azdata from 'azdata';
 import * as constants from '../constants';
-import { WizardPageBase } from '../../wizardPageBase';
 import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 import { apiService } from '../../../services/apiService';
 import { azureResource } from 'azureResource';
 import * as vscode from 'vscode';
+import { BasePage } from './basePage';
 
-export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
+export class AzureSettingsPage extends BasePage {
 	// <- means depends on
 	//dropdown for azure accounts
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
@@ -97,6 +97,15 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 
 	public async onEnter(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+			if (pcInfo.newPage < pcInfo.lastPage) {
+				return true;
+			}
+			this.liveValidation = true;
+			let errorMessage = this.formValidation();
+
+			if (errorMessage !== '') {
+				return false;
+			}
 			return true;
 		});
 	}
@@ -248,11 +257,14 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 
 	private async createServerDropdown(view: azdata.ModelView) {
 		this._serverGroupDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true
+			required: true,
 		}).component();
 		this._serverGroupLoader = view.modelBuilder.loadingComponent().withItem(this._serverGroupDropdown).component();
 		this._serverGroupDropdown.onValueChanged(async (value) => {
-			this.wizard.model.azureServerName = value.selected;
+			if (value.selected === ((this._serverGroupDropdown.value as azdata.CategoryValue).displayName)) {
+				this.wizard.model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
+				this.wizard.model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
+			}
 		});
 	}
 
@@ -260,18 +272,26 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 		this._serverGroupLoader.loading = true;
 		let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
 		if (currentSubscriptionValue === undefined || currentSubscriptionValue.displayName === '') {
-
 			this._serverGroupDropdown.updateProperties({
-				values: [{
-					displayName: 'No servers found',
-					name: ''
-				}]
+				values: []
 			});
 			this._serverGroupLoader.loading = false;
 			return;
 		}
 		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/providers/Microsoft.Sql/servers?api-version=2019-06-01-preview`;
 		const response = await this.wizard.getRequest(url);
+		if (response.data.value.length === 0) {
+			this._serverGroupDropdown.updateProperties({
+				values: [
+					{
+						displayName: 'No servers found',
+						name: ''
+					}
+				],
+			});
+			this._serverGroupLoader.loading = false;
+			return;
+		}
 
 		this.wizard.addDropdownValues(
 			this._serverGroupDropdown,
@@ -370,4 +390,15 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 	// 	this.wizard.model.azureRegion = (this._azureRegionsDropdown.value as azdata.CategoryValue).name;
 	// 	this._azureRegionsLoader.loading = false;
 	// }
+
+	protected formValidation(): string {
+		let errorMessage = [];
+		let serverName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
+		if (serverName === 'No servers found') {
+			errorMessage.push('No servers found in current subscription, please select a different subscription');
+		}
+
+		this.wizard.showErrorMessage(errorMessage.join('\n'));
+		return errorMessage.join('\n');
+	}
 }

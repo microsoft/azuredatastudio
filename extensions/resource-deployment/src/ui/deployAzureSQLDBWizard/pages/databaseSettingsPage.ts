@@ -91,7 +91,7 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._startIpAddressTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			inputType: 'text',
-			value: 'localhost'
+			value: '127.0.0.1'
 		}).component();
 
 		this._startIpAddressTextbox.onTextChanged((value) => {
@@ -105,7 +105,7 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._endIpAddressTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			inputType: 'text',
-			value: 'localhost'
+			value: '127.0.0.1'
 		}).component();
 
 		this._endIpAddressTextbox.onTextChanged((value) => {
@@ -142,7 +142,7 @@ export class DatabaseSettingsPage extends BasePage {
 
 	protected formValidation(): string {
 		let errorMessage = [];
-		let ipRegex = /(^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$)|localhost/;
+		let ipRegex = /(^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$)/;
 		let startipvalue = this._startIpAddressTextbox.value!;
 		let endipvalue = this._endIpAddressTextbox.value!;
 		let firewallname = this._firewallRuleNameTextbox.value!;
