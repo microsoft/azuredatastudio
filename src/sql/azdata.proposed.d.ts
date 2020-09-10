@@ -143,6 +143,7 @@ declare module 'azdata' {
 
 	export interface DropDownProperties extends ComponentProperties {
 		loading?: boolean;
+		loadingText?: string;
 	}
 
 	export interface RadioCard {

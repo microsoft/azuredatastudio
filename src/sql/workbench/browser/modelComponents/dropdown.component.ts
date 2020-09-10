@@ -46,7 +46,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	@ViewChild('editableDropDown', { read: ElementRef }) private _editableDropDownContainer: ElementRef;
 	@ViewChild('dropDown', { read: ElementRef }) private _dropDownContainer: ElementRef;
-	@ViewChild('loadingDropdown', { read: ElementRef }) private _loadingBoxContainer: ElementRef;
+	@ViewChild('loadingBox', { read: ElementRef }) private _loadingBoxContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
@@ -111,7 +111,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		}
 
 		this._loadingBox = new InputBox(this._loadingBoxContainer.nativeElement, this.contextViewService, {
-			placeholder: 'Loading',
+			placeholder: this.loadingText,
 		});
 		this._loadingBox.inputElement.readOnly = true;
 		this._register(attachEditableDropdownStyler(this._loadingBox, this.themeService));
@@ -263,6 +263,15 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	public set loading(newValue: boolean) {
 		this.setPropertyFromUI<azdata.DropDownProperties, boolean>((props, value) => props.loading = value, newValue);
+		this._changeRef.detectChanges();
+	}
+
+	public get loadingText(): string {
+		return this.getPropertyOrDefault<azdata.DropDownProperties, string>((props) => props.loadingText, 'Loading');
+	}
+
+	public set loadingText(newValue: string) {
+		this.setPropertyFromUI<azdata.DropDownProperties, string>((props, value) => props.loadingText = value, newValue);
 		this._changeRef.detectChanges();
 	}
 }
