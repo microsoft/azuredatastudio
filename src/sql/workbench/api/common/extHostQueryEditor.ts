@@ -58,11 +58,11 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 		this._nextListenerHandle++;
 	}
 
-	public $onQueryEvent(handle: number, fileUri: string, event: IQueryEvent): void {
+	public $onQueryEvent(handle: number, fileUri: string, providerId: string, event: IQueryEvent): void {
 		let listener: azdata.queryeditor.QueryEventListener = this._queryListeners[handle];
 		if (listener) {
 			let params = event.params && event.params.planXml ? event.params.planXml : event.params;
-			listener.onQueryEvent(event.type, new ExtHostQueryDocument(mssqlProviderName, fileUri, this._proxy), params);
+			listener.onQueryEvent(event.type, new ExtHostQueryDocument(providerId, fileUri, this._proxy), params);
 		}
 	}
 
