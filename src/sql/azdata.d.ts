@@ -5077,7 +5077,7 @@ declare module 'azdata' {
 			/**
 			 * The original outgoing message.
 			 */
-			readonly msg: IMessage;
+			readonly msg: IMessage | undefined;
 
 			/**
 			 * A Thenable that resolves when the future is done.
@@ -5188,11 +5188,11 @@ declare module 'azdata' {
 		 * **See also:** [[IMessage]]
 		 */
 		export interface IHeader {
-			username: string;
-			version: string;
-			session: string;
-			msg_id: string;
 			msg_type: string;
+			username?: string;
+			version?: string;
+			session?: string;
+			msg_id?: string;
 		}
 
 		/**
@@ -5200,10 +5200,10 @@ declare module 'azdata' {
 		 */
 		export interface IMessage {
 			type: Channel;
-			header: IHeader;
-			parent_header: IHeader | {};
-			metadata: {};
 			content: any;
+			header?: IHeader;
+			parent_header?: IHeader | {};
+			metadata?: {};
 		}
 
 		/**
