@@ -199,6 +199,7 @@ class FiltersDropdownMenuActionViewItem extends DropdownMenuActionViewItem {
 				checked: this.filters.showErrors,
 				class: undefined,
 				enabled: true,
+				expanded: undefined, // {{SQL CARBON EDIT}}
 				id: 'showErrors',
 				label: Messages.MARKERS_PANEL_FILTER_LABEL_SHOW_ERRORS,
 				run: async () => this.filters.showErrors = !this.filters.showErrors,
@@ -209,6 +210,7 @@ class FiltersDropdownMenuActionViewItem extends DropdownMenuActionViewItem {
 				checked: this.filters.showWarnings,
 				class: undefined,
 				enabled: true,
+				expanded: undefined, // {{SQL CARBON EDIT}}
 				id: 'showWarnings',
 				label: Messages.MARKERS_PANEL_FILTER_LABEL_SHOW_WARNINGS,
 				run: async () => this.filters.showWarnings = !this.filters.showWarnings,
@@ -219,6 +221,7 @@ class FiltersDropdownMenuActionViewItem extends DropdownMenuActionViewItem {
 				checked: this.filters.showInfos,
 				class: undefined,
 				enabled: true,
+				expanded: undefined, // {{SQL CARBON EDIT}}
 				id: 'showInfos',
 				label: Messages.MARKERS_PANEL_FILTER_LABEL_SHOW_INFOS,
 				run: async () => this.filters.showInfos = !this.filters.showInfos,
@@ -231,6 +234,7 @@ class FiltersDropdownMenuActionViewItem extends DropdownMenuActionViewItem {
 				class: undefined,
 				enabled: true,
 				id: 'activeFile',
+				expanded: undefined, // {{SQL CARBON EDIT}}
 				label: Messages.MARKERS_PANEL_FILTER_LABEL_ACTIVE_FILE,
 				run: async () => this.filters.activeFile = !this.filters.activeFile,
 				tooltip: '',
@@ -240,6 +244,7 @@ class FiltersDropdownMenuActionViewItem extends DropdownMenuActionViewItem {
 				checked: this.filters.excludedFiles,
 				class: undefined,
 				enabled: true,
+				expanded: undefined, // {{SQL CARBON EDIT}}
 				id: 'useFilesExclude',
 				label: Messages.MARKERS_PANEL_FILTER_LABEL_EXCLUDED_FILES,
 				run: async () => this.filters.excludedFiles = !this.filters.excludedFiles,
@@ -274,7 +279,7 @@ export class MarkersFilterActionViewItem extends BaseActionViewItem {
 	) {
 		super(null, action);
 		this.focusContextKey = Constants.MarkerViewFilterFocusContextKey.bindTo(contextKeyService);
-		this.delayedFilterUpdate = new Delayer<void>(200);
+		this.delayedFilterUpdate = new Delayer<void>(400);
 		this._register(toDisposable(() => this.delayedFilterUpdate.cancel()));
 		this._register(filterController.onDidFocusFilter(() => this.focus()));
 		this._register(filterController.onDidClearFilterText(() => this.clearFilterText()));

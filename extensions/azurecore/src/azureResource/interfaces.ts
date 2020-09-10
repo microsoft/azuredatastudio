@@ -7,7 +7,7 @@ import * as msRest from '@azure/ms-rest-js';
 
 import { Account } from 'azdata';
 
-import { azureResource } from './azure-resource';
+import { azureResource } from 'azureResource';
 import { AzureAccount, Tenant } from '../account-provider/interfaces';
 
 export interface IAzureResourceSubscriptionService {
@@ -38,5 +38,5 @@ export interface IAzureResourceNodeWithProviderId {
 }
 
 export interface IAzureResourceService<T extends azureResource.AzureResource> {
-	getResources(subscription: azureResource.AzureResourceSubscription, credential: msRest.ServiceClientCredentials, account: Account): Promise<T[]>;
+	getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: Account): Promise<T[]>;
 }

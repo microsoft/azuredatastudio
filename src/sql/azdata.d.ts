@@ -284,9 +284,9 @@ declare module 'azdata' {
 	// Object Explorer interfaces  -----------------------------------------------------------------------
 	export interface ObjectExplorerSession {
 		success: boolean;
-		sessionId: string;
+		sessionId?: string;
 		rootNode: NodeInfo;
-		errorMessage: string;
+		errorMessage?: string;
 	}
 
 	/**
@@ -296,12 +296,12 @@ declare module 'azdata' {
 	export interface NodeInfo {
 		nodePath: string;
 		nodeType: string;
-		nodeSubType: string;
-		nodeStatus: string;
+		nodeSubType?: string;
+		nodeStatus?: string;
 		label: string;
 		isLeaf: boolean;
-		metadata: ObjectMetadata;
-		errorMessage: string;
+		metadata?: ObjectMetadata;
+		errorMessage?: string;
 		/**
 		 * Optional iconType for the object in the tree. Currently this only supports
 		 * an icon name or SqlThemeIcon name, rather than a path to an icon.
@@ -320,9 +320,9 @@ declare module 'azdata' {
 	}
 
 	export interface IConnectionProfile extends ConnectionInfo {
-		connectionName: string;
+		connectionName?: string;
 		serverName: string;
-		databaseName: string;
+		databaseName?: string;
 		userName: string;
 		password: string;
 		authenticationType: string;
@@ -333,7 +333,6 @@ declare module 'azdata' {
 		saveProfile: boolean;
 		id: string;
 		azureTenantId?: string;
-
 	}
 
 	/**
@@ -414,7 +413,7 @@ declare module 'azdata' {
 		/**
 		 * database name
 		 */
-		databaseName: string;
+		databaseName?: string;
 		/**
 		 * user name
 		 */
@@ -428,11 +427,11 @@ declare module 'azdata' {
 		/**
 		 * The major version of the instance.
 		 */
-		serverMajorVersion: number;
+		serverMajorVersion?: number;
 		/**
 		 * The minor version of the instance.
 		 */
-		serverMinorVersion: number;
+		serverMinorVersion?: number;
 		/**
 		 * The build of the instance.
 		 */
@@ -750,7 +749,7 @@ declare module 'azdata' {
 	}
 
 	export interface ScriptingParamDetails {
-		filePath: string;
+		filePath?: string;
 		scriptCompatibilityOption: string;
 		targetDatabaseEngineEdition: string;
 		targetDatabaseEngineType: string;
@@ -1229,15 +1228,15 @@ declare module 'azdata' {
 	}
 
 	export interface ObjectExplorerExpandInfo {
-		sessionId: string;
+		sessionId?: string;
 		nodePath: string;
 		nodes: NodeInfo[];
-		errorMessage: string;
+		errorMessage?: string;
 	}
 
 	export interface ExpandNodeInfo {
 		sessionId: string;
-		nodePath: string;
+		nodePath: string | undefined;
 	}
 
 	export interface FindNodesInfo {
@@ -1250,7 +1249,7 @@ declare module 'azdata' {
 	}
 
 	export interface ObjectExplorerCloseSessionInfo {
-		sessionId: string;
+		sessionId?: string;
 	}
 
 	export interface ObjectExplorerCloseSessionResponse {
@@ -1300,7 +1299,7 @@ declare module 'azdata' {
 	}
 
 	export interface IconProvider extends DataProvider {
-		getConnectionIconId(connection: IConnectionProfile, serverInfo: ServerInfo): Thenable<string>;
+		getConnectionIconId(connection: IConnectionProfile, serverInfo: ServerInfo): Thenable<string | undefined>;
 	}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
@@ -1799,8 +1798,6 @@ declare module 'azdata' {
 		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 
 		registerOnUpdated(handler: () => any): void;
-
-
 	}
 	// DacFx interfaces  -----------------------------------------------------------------------
 
@@ -1882,7 +1879,10 @@ declare module 'azdata' {
 	export interface BackupConfigInfo {
 		recoveryModel: string;
 		defaultBackupFolder: string;
-		backupEncryptors: {};
+		backupEncryptors: {
+			encryptorType: number;
+			encryptorName: string;
+		}[];
 	}
 
 	export interface BackupResponse {
@@ -1904,7 +1904,7 @@ declare module 'azdata' {
 
 	export interface RestoreInfo {
 		options: { [key: string]: any };
-		taskExecutionMode: TaskExecutionMode;
+		taskExecutionMode?: TaskExecutionMode;
 	}
 
 	export interface RestoreDatabaseFileInfo {
@@ -1942,7 +1942,7 @@ declare module 'azdata' {
 		sessionId: string;
 		backupSetsToRestore: DatabaseFileInfo[];
 		canRestore: boolean;
-		errorMessage: string;
+		errorMessage?: string;
 		dbFiles: RestoreDatabaseFileInfo[];
 		databaseNamesFromBackupSets: string[];
 		planDetails: { [key: string]: RestorePlanDetailInfo };
@@ -2003,7 +2003,7 @@ declare module 'azdata' {
 		/**
 		 * Event values
 		 */
-		values: {};
+		values: { [key: string]: any };
 	}
 
 	/**
@@ -2364,8 +2364,8 @@ declare module 'azdata' {
 	}
 
 	export interface FirewallRuleInfo {
-		startIpAddress: string;
-		endIpAddress: string;
+		startIpAddress?: string;
+		endIpAddress?: string;
 		serverName: string;
 		securityTokenMappings: {};
 	}
@@ -2555,37 +2555,37 @@ declare module 'azdata' {
 	 * Supports defining a model that can be instantiated as a view in the UI
 	 */
 	export interface ModelBuilder {
-		navContainer(): ContainerBuilder<NavContainer, any, any>;
+		navContainer(): ContainerBuilder<NavContainer, any, any, ComponentProperties>;
 		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
 		splitViewContainer(): SplitViewBuilder;
-		dom(): ComponentBuilder<DomComponent>;
+		dom(): ComponentBuilder<DomComponent, DomProperties>;
 		/**
 		 * @deprecated please use radioCardGroup component.
 		 */
-		card(): ComponentBuilder<CardComponent>;
-		inputBox(): ComponentBuilder<InputBoxComponent>;
-		checkBox(): ComponentBuilder<CheckBoxComponent>;
-		radioButton(): ComponentBuilder<RadioButtonComponent>;
-		webView(): ComponentBuilder<WebViewComponent>;
-		editor(): ComponentBuilder<EditorComponent>;
-		diffeditor(): ComponentBuilder<DiffEditorComponent>;
-		text(): ComponentBuilder<TextComponent>;
-		image(): ComponentBuilder<ImageComponent>;
-		button(): ComponentBuilder<ButtonComponent>;
-		dropDown(): ComponentBuilder<DropDownComponent>;
-		tree<T>(): ComponentBuilder<TreeComponent<T>>;
-		listBox(): ComponentBuilder<ListBoxComponent>;
-		table(): ComponentBuilder<TableComponent>;
-		declarativeTable(): ComponentBuilder<DeclarativeTableComponent>;
-		dashboardWidget(widgetId: string): ComponentBuilder<DashboardWidgetComponent>;
-		dashboardWebview(webviewId: string): ComponentBuilder<DashboardWebviewComponent>;
+		card(): ComponentBuilder<CardComponent, CardProperties>;
+		inputBox(): ComponentBuilder<InputBoxComponent, InputBoxProperties>;
+		checkBox(): ComponentBuilder<CheckBoxComponent, CheckBoxProperties>;
+		radioButton(): ComponentBuilder<RadioButtonComponent, RadioButtonProperties>;
+		webView(): ComponentBuilder<WebViewComponent, WebViewProperties>;
+		editor(): ComponentBuilder<EditorComponent, EditorProperties>;
+		diffeditor(): ComponentBuilder<DiffEditorComponent, DiffEditorComponent>;
+		text(): ComponentBuilder<TextComponent, TextComponentProperties>;
+		image(): ComponentBuilder<ImageComponent, ImageComponentProperties>;
+		button(): ComponentBuilder<ButtonComponent, ButtonProperties>;
+		dropDown(): ComponentBuilder<DropDownComponent, DropDownProperties>;
+		tree<T>(): ComponentBuilder<TreeComponent<T>, TreeProperties>;
+		listBox(): ComponentBuilder<ListBoxComponent, ListBoxProperties>;
+		table(): ComponentBuilder<TableComponent, TableComponentProperties>;
+		declarativeTable(): ComponentBuilder<DeclarativeTableComponent, DeclarativeTableProperties>;
+		dashboardWidget(widgetId: string): ComponentBuilder<DashboardWidgetComponent, ComponentProperties>;
+		dashboardWebview(webviewId: string): ComponentBuilder<DashboardWebviewComponent, ComponentProperties>;
 		formContainer(): FormBuilder;
 		groupContainer(): GroupBuilder;
 		toolbarContainer(): ToolbarBuilder;
 		loadingComponent(): LoadingComponentBuilder;
-		fileBrowserTree(): ComponentBuilder<FileBrowserTreeComponent>;
-		hyperlink(): ComponentBuilder<HyperlinkComponent>;
+		fileBrowserTree(): ComponentBuilder<FileBrowserTreeComponent, FileBrowserTreeProperties>;
+		hyperlink(): ComponentBuilder<HyperlinkComponent, HyperlinkComponentProperties>;
 	}
 
 	export interface TreeComponentDataProvider<T> extends vscode.TreeDataProvider<T> {
@@ -2607,31 +2607,31 @@ declare module 'azdata' {
 		enabled?: boolean;
 	}
 
-	export interface ComponentBuilder<T extends Component> {
-		component(): T;
-		withProperties<U>(properties: U): ComponentBuilder<T>;
-		withValidation(validation: (component: T) => boolean): ComponentBuilder<T>;
+	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
+		component(): TComponent;
+		withProperties<U>(properties: U): ComponentBuilder<TComponent, TPropertyBag>;
+		withValidation(validation: (component: TComponent) => boolean): ComponentBuilder<TComponent, TPropertyBag>;
 	}
-	export interface ContainerBuilder<T extends Component, TLayout, TItemLayout> extends ComponentBuilder<T> {
-		withLayout(layout: TLayout): ContainerBuilder<T, TLayout, TItemLayout>;
-		withItems(components: Array<Component>, itemLayout?: TItemLayout): ContainerBuilder<T, TLayout, TItemLayout>;
+	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ComponentProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
+		withLayout(layout: TLayout): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
+		withItems(components: Array<Component>, itemLayout?: TItemLayout): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
 	}
 
-	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout> {
+	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout, ComponentProperties> {
 	}
 
 	// Building on top of flex item
-	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, SplitViewLayout, FlexItemLayout> {
+	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, SplitViewLayout, FlexItemLayout, SplitViewContainer> {
 	}
 
-	export interface DivBuilder extends ContainerBuilder<DivContainer, DivLayout, DivItemLayout> {
+	export interface DivBuilder extends ContainerBuilder<DivContainer, DivLayout, DivItemLayout, DivContainerProperties> {
 	}
 
-	export interface GroupBuilder extends ContainerBuilder<GroupContainer, GroupLayout, GroupItemLayout> {
+	export interface GroupBuilder extends ContainerBuilder<GroupContainer, GroupLayout, GroupItemLayout, GroupContainerProperties> {
 	}
 
-	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, ToolbarLayout, any> {
-		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, ToolbarLayout, any>;
+	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, ToolbarLayout, any, ComponentProperties> {
+		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, ToolbarLayout, any, ComponentProperties>;
 
 		/**
 		 * Creates a collection of child components and adds them all to this container
@@ -2648,7 +2648,7 @@ declare module 'azdata' {
 		addToolbarItem(toolbarComponent: ToolbarComponent): void;
 	}
 
-	export interface LoadingComponentBuilder extends ComponentBuilder<LoadingComponent> {
+	export interface LoadingComponentBuilder extends ComponentBuilder<LoadingComponent, LoadingComponentProperties> {
 		/**
 		 * Set the component wrapped by the LoadingComponent
 		 * @param component The component to wrap
@@ -2656,7 +2656,7 @@ declare module 'azdata' {
 		withItem(component: Component): LoadingComponentBuilder;
 	}
 
-	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout> {
+	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout, ComponentProperties> {
 		withFormItems(components: (FormComponent | FormComponentGroup)[], itemLayout?: FormItemLayout): FormBuilder;
 
 		/**
@@ -2736,9 +2736,9 @@ declare module 'azdata' {
 		focus(): Thenable<void>;
 	}
 
-	export interface FormComponent {
-		component: Component;
-		title: string;
+	export interface FormComponent<T extends Component = Component> {
+		component: T;
+		title?: string;
 		actions?: Component[];
 		required?: boolean;
 	}
@@ -3040,7 +3040,7 @@ declare module 'azdata' {
 
 	export enum Orientation {
 		Horizontal = 'horizontal',
-		Vertical = 'vertial'
+		Vertical = 'vertical'
 	}
 
 	export interface ToolbarLayout {
@@ -3258,7 +3258,7 @@ declare module 'azdata' {
 		editableCategory = 'editableCategory'
 	}
 
-	export interface RadioButtonProperties {
+	export interface RadioButtonProperties extends ComponentProperties {
 		name?: string;
 		label?: string;
 		value?: string;
@@ -3275,7 +3275,7 @@ declare module 'azdata' {
 	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIcon {
 	}
 
-	export interface GroupContainerProperties {
+	export interface GroupContainerProperties extends ComponentProperties {
 		collapsed: boolean;
 	}
 
@@ -3310,7 +3310,7 @@ declare module 'azdata' {
 		columns: DeclarativeTableColumn[];
 	}
 
-	export interface ListBoxProperties {
+	export interface ListBoxProperties extends ComponentProperties {
 		selectedRow?: number;
 		values?: string[];
 	}
@@ -3353,6 +3353,18 @@ declare module 'azdata' {
 		 * Minimum height for editor component
 		 */
 		minimumHeight?: number;
+
+		/**
+		 * The editor Uri which will be used as a reference for VSCode Language Service.
+		 * Currently this is auto-generated by the framework but can be queried after
+		 * view initialization is completed
+		 */
+		readonly editorUri: string
+
+		/**
+		 * Toggle for whether the editor should be automatically resized or not
+		 */
+		isAutoResizable: boolean;
 	}
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
@@ -3376,7 +3388,7 @@ declare module 'azdata' {
 		title?: string;
 	}
 
-	export interface LoadingComponentProperties {
+	export interface LoadingComponentProperties extends ComponentProperties {
 		loading?: boolean;
 		showText?: boolean;
 		loadingText?: string;
@@ -3401,7 +3413,7 @@ declare module 'azdata' {
 		clickable?: boolean;
 	}
 
-	export interface TitledComponentProperties {
+	export interface TitledComponentProperties extends ComponentProperties {
 		/**
 		 * The title for the component. This title will show when hovered over
 		 */
@@ -3495,21 +3507,7 @@ declare module 'azdata' {
 	/**
 	 * Editor component for displaying the text code editor
 	 */
-	export interface EditorComponent extends Component {
-		/**
-		 * The content inside the text editor
-		 */
-		content: string;
-		/**
-		 * The languge mode for this text editor. The language mode is SQL by default.
-		 */
-		languageMode: string;
-		/**
-		 * The editor Uri which will be used as a reference for VSCode Language Service.
-		 * Currently this is auto-generated by the framework but can be queried after
-		 * view initialization is completed
-		 */
-		readonly editorUri: string;
+	export interface EditorComponent extends Component, EditorProperties {
 		/**
 		 * An event called when the editor content is updated
 		 */
@@ -3519,16 +3517,6 @@ declare module 'azdata' {
 		 * An event called when the editor is created
 		 */
 		readonly onEditorCreated: vscode.Event<any>;
-
-		/**
-		 * Toggle for whether the editor should be automatically resized or not
-		 */
-		isAutoResizable: boolean;
-
-		/**
-		 * Minimum height for editor component
-		 */
-		minimumHeight: number;
 	}
 
 	export interface DiffEditorComponent extends Component {
@@ -4133,7 +4121,7 @@ declare module 'azdata' {
 		 * Note that the connection is not guaranteed to be in a connected
 		 * state on click.
 		 */
-		connectionProfile: IConnectionProfile;
+		connectionProfile?: IConnectionProfile;
 	}
 
 	/**
@@ -4152,7 +4140,7 @@ declare module 'azdata' {
 		 * Node info for objects below a specific connection. This
 		 * may be null for a Connection-level object
 		 */
-		nodeInfo: NodeInfo;
+		nodeInfo?: NodeInfo;
 	}
 
 	/**
@@ -4701,7 +4689,7 @@ declare module 'azdata' {
 			output_type: OutputTypeName;
 			metadata?: {
 				azdata_chartOptions?: any;
-			}
+			};
 		}
 
 		/**

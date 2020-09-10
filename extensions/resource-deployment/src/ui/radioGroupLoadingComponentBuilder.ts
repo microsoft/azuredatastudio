@@ -4,15 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { OptionsInfo } from '../interfaces';
+import { OptionsInfo, FieldInfo } from '../interfaces';
 import { getErrorMessage } from '../utils';
 
-export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilder<azdata.LoadingComponent> {
+export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilder<azdata.LoadingComponent, azdata.LoadingComponentProperties> {
 	private _optionsDivContainer!: azdata.DivContainer;
 	private _optionsLoadingBuilder: azdata.LoadingComponentBuilder;
 	private _onValueChangedEmitter: vscode.EventEmitter<void> = new vscode.EventEmitter();
 	private _currentRadioOption!: azdata.RadioButtonComponent;
-	constructor(private _view: azdata.ModelView, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void) {
+	constructor(private _view: azdata.ModelView, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void, private _fieldInfo: FieldInfo) {
 		this._optionsDivContainer = this._view!.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
 		this._optionsLoadingBuilder = this._view!.modelBuilder.loadingComponent().withItem(this._optionsDivContainer);
 	}
@@ -21,11 +21,15 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 		return this._optionsLoadingBuilder.component();
 	}
 
-	withProperties<U>(properties: U): azdata.ComponentBuilder<azdata.LoadingComponent> {
+	withProperties<U>(properties: U): azdata.ComponentBuilder<azdata.LoadingComponent, azdata.LoadingComponentProperties> {
 		return this._optionsLoadingBuilder.withProperties(properties);
 	}
 
-	withValidation(validation: (component: azdata.LoadingComponent) => boolean): azdata.ComponentBuilder<azdata.LoadingComponent> {
+	withProps(properties: azdata.LoadingComponentProperties): azdata.ComponentBuilder<azdata.LoadingComponent, azdata.LoadingComponentProperties> {
+		return this._optionsLoadingBuilder.withProperties(properties);
+	}
+
+	withValidation(validation: (component: azdata.LoadingComponent) => boolean): azdata.ComponentBuilder<azdata.LoadingComponent, azdata.LoadingComponentProperties> {
 		return this._optionsLoadingBuilder.withValidation(validation);
 	}
 
@@ -47,6 +51,7 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 					label: option.displayName,
 					checked: option.displayName === defaultValue,
 					name: option.name,
+					enabled: this._fieldInfo.enabled
 				}).component();
 				if (radioOption.checked) {
 					this._currentRadioOption = radioOption;

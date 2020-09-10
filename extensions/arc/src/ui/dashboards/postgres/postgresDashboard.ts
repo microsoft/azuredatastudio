@@ -18,7 +18,7 @@ import { PostgresResourceHealthPage } from './postgresResourceHealthPage';
 
 export class PostgresDashboard extends Dashboard {
 	constructor(private _context: vscode.ExtensionContext, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
-		super(loc.postgresDashboard);
+		super(loc.postgresDashboard(_postgresModel.name));
 	}
 
 	public async showDashboard(): Promise<void> {
@@ -35,7 +35,7 @@ export class PostgresDashboard extends Dashboard {
 		const propertiesPage = new PostgresPropertiesPage(modelView, this._controllerModel, this._postgresModel);
 		const resourceHealthPage = new PostgresResourceHealthPage(modelView, this._postgresModel);
 		const diagnoseAndSolveProblemsPage = new PostgresDiagnoseAndSolveProblemsPage(modelView, this._context, this._postgresModel);
-		const supportRequestPage = new PostgresSupportRequestPage(modelView, this._controllerModel, this._postgresModel);
+		const supportRequestPage = new PostgresSupportRequestPage(modelView);
 
 		return [
 			overviewPage.tab,

@@ -1098,11 +1098,12 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('providerNameToDisplayNameMap should return all providers', () => {
-		let expectedNames = ['MSSQL', 'PGSQL'];
+		let expectedNames = ['MSSQL', 'PGSQL', 'KUSTO'];
 		let providerNames = Object.keys(connectionManagementService.providerNameToDisplayNameMap);
-		assert.equal(providerNames.length, 2);
+		assert.equal(providerNames.length, 3);
 		assert.equal(providerNames[0], expectedNames[0]);
 		assert.equal(providerNames[1], expectedNames[1]);
+		assert.equal(providerNames[2], expectedNames[2]);
 	});
 
 	test('ensureDefaultLanguageFlavor should not send event if uri is connected', () => {

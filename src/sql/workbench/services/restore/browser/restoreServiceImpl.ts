@@ -22,7 +22,6 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { invalidProvider } from 'sql/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
-import { find } from 'vs/base/common/arrays';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export class RestoreService implements IRestoreService {
@@ -76,7 +75,7 @@ export class RestoreService implements IRestoreService {
 		});
 	}
 
-	private getProvider(connectionUri: string): { provider: azdata.RestoreProvider, providerName: string } {
+	private getProvider(connectionUri: string): { provider: azdata.RestoreProvider, providerName: string } | undefined {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			return { provider: this._providers[providerId], providerName: providerId };
@@ -135,9 +134,9 @@ export class RestoreDialogController implements IRestoreDialogController {
 	_serviceBrand: undefined;
 
 	private _restoreDialogs: { [provider: string]: RestoreDialog | OptionsDialog } = {};
-	private _currentProvider: string;
-	private _ownerUri: string;
-	private _sessionId: string;
+	private _currentProvider?: string;
+	private _ownerUri?: string;
+	private _sessionId?: string;
 	private readonly _restoreFeature = 'Restore';
 	private readonly _restoreTaskName: string = 'Restore Database';
 	private readonly _restoreCompleted: string = 'Completed';
@@ -157,21 +156,20 @@ export class RestoreDialogController implements IRestoreDialogController {
 	private handleOnRestore(isScriptOnly: boolean = false): void {
 		let restoreOption = this.setRestoreOption(isScriptOnly ? TaskExecutionMode.script : TaskExecutionMode.executeAndScript);
 
-		this._restoreService.restore(this._ownerUri, restoreOption).then(result => {
-			const self = this;
-			let connectionProfile = self._connectionService.getConnectionProfile(self._ownerUri);
-			let activeNode = self._objectExplorerService.getObjectExplorerNode(connectionProfile);
+		this._restoreService.restore(this._ownerUri!, restoreOption).then(result => {
+			let connectionProfile = this._connectionService.getConnectionProfile(this._ownerUri!);
+			let activeNode = this._objectExplorerService.getObjectExplorerNode(connectionProfile)!;
 			this._taskService.onTaskComplete(async response => {
 				if (result.taskId === response.id && this.isSuccessfulRestore(response) && activeNode) {
 					try {
-						await self._objectExplorerService.refreshTreeNode(activeNode.getSession(), activeNode);
-						await self._objectExplorerService.getServerTreeView().refreshTree();
+						await this._objectExplorerService.refreshTreeNode(activeNode.getSession()!, activeNode);
+						await this._objectExplorerService.getServerTreeView()!.refreshTree();
 					} catch (e) {
 						this._logService.error(e);
 					}
 				}
 			});
-			let restoreDialog = this._restoreDialogs[this._currentProvider];
+			let restoreDialog = this._restoreDialogs[this._currentProvider!];
 			restoreDialog.close();
 		});
 	}
@@ -186,8 +184,8 @@ export class RestoreDialogController implements IRestoreDialogController {
 	}
 
 	private handleMssqlOnValidateFile(overwriteTargetDatabase: boolean = false): void {
-		let restoreDialog = this._restoreDialogs[this._currentProvider] as RestoreDialog;
-		this._restoreService.getRestorePlan(this._ownerUri, this.setRestoreOption(TaskExecutionMode.execute, overwriteTargetDatabase)).then(restorePlanResponse => {
+		let restoreDialog = this._restoreDialogs[this._currentProvider!] as RestoreDialog;
+		this._restoreService.getRestorePlan(this._ownerUri!, this.setRestoreOption(TaskExecutionMode.execute, overwriteTargetDatabase)).then(restorePlanResponse => {
 			this._sessionId = restorePlanResponse.sessionId;
 
 			if (restorePlanResponse.errorMessage) {
@@ -212,7 +210,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 	 * Will remove this function once there is a fix in the service (bug #2572)
 	 */
 	private isEmptyBackupset(): boolean {
-		let restoreDialog = this._restoreDialogs[this._currentProvider] as RestoreDialog;
+		let restoreDialog = this._restoreDialogs[this._currentProvider!] as RestoreDialog;
 		if (!types.isUndefinedOrNull(restoreDialog.viewModel.selectedBackupSets) && restoreDialog.viewModel.selectedBackupSets.length === 0) {
 			return true;
 		}
@@ -221,8 +219,8 @@ export class RestoreDialogController implements IRestoreDialogController {
 
 	private getMssqlRestoreConfigInfo(): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
-			let restoreDialog = this._restoreDialogs[this._currentProvider] as RestoreDialog;
-			this._restoreService.getRestoreConfigInfo(this._ownerUri).then(restoreConfigInfo => {
+			let restoreDialog = this._restoreDialogs[this._currentProvider!] as RestoreDialog;
+			this._restoreService.getRestoreConfigInfo(this._ownerUri!).then(restoreConfigInfo => {
 				restoreDialog.viewModel.updateOptionWithConfigInfo(restoreConfigInfo.configInfo);
 				resolve();
 			}, error => {
@@ -233,22 +231,20 @@ export class RestoreDialogController implements IRestoreDialogController {
 	}
 
 	private setRestoreOption(taskExecutionMode: TaskExecutionMode, overwriteTargetDatabase: boolean = false): azdata.RestoreInfo {
-		let restoreInfo = undefined;
-
 		let providerId: string = this.getCurrentProviderId();
 		if (providerId === ConnectionConstants.mssqlProviderName) {
-			restoreInfo = new MssqlRestoreInfo(taskExecutionMode);
+			let restoreInfo = new MssqlRestoreInfo(taskExecutionMode);
 
 			if (this._sessionId) {
 				restoreInfo.sessionId = this._sessionId;
 			}
 
 			let restoreDialog = this._restoreDialogs[providerId] as RestoreDialog;
-			restoreInfo.backupFilePaths = restoreDialog.viewModel.filePath;
+			restoreInfo.backupFilePaths = restoreDialog.viewModel.filePath!;
 
-			restoreInfo.readHeaderFromMedia = restoreDialog.viewModel.readHeaderFromMedia;
-			restoreInfo.selectedBackupSets = restoreDialog.viewModel.selectedBackupSets;
-			restoreInfo.sourceDatabaseName = restoreDialog.viewModel.sourceDatabaseName;
+			restoreInfo.readHeaderFromMedia = restoreDialog.viewModel.readHeaderFromMedia!;
+			restoreInfo.selectedBackupSets = restoreDialog.viewModel.selectedBackupSets!;
+			restoreInfo.sourceDatabaseName = restoreDialog.viewModel.sourceDatabaseName!;
 			if (restoreDialog.viewModel.targetDatabaseName) {
 				restoreInfo.targetDatabaseName = restoreDialog.viewModel.targetDatabaseName;
 			}
@@ -256,11 +252,10 @@ export class RestoreDialogController implements IRestoreDialogController {
 
 			// Set other restore options
 			restoreDialog.viewModel.getRestoreAdvancedOptions(restoreInfo.options);
+			return restoreInfo;
 		} else {
-			restoreInfo = { options: this._optionValues };
+			return { options: this._optionValues };
 		}
-
-		return restoreInfo;
 	}
 
 	private getRestoreOption(): azdata.ServiceOption[] {
@@ -269,7 +264,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 		let providerCapabilities = this._capabilitiesService.getLegacyCapabilities(providerId);
 
 		if (providerCapabilities) {
-			let restoreMetadataProvider = find(providerCapabilities.features, f => f.featureName === this._restoreFeature);
+			let restoreMetadataProvider = providerCapabilities.features.find(f => f.featureName === this._restoreFeature);
 			if (restoreMetadataProvider) {
 				options = restoreMetadataProvider.optionsMetadata;
 			}
@@ -278,14 +273,14 @@ export class RestoreDialogController implements IRestoreDialogController {
 	}
 
 	private handleOnClose(): void {
-		this._connectionService.disconnect(this._ownerUri).catch((e) => this._logService.error(e));
+		this._connectionService.disconnect(this._ownerUri!).catch((e) => this._logService.error(e));
 	}
 
 	private handleOnCancel(): void {
 		let restoreInfo = new MssqlRestoreInfo(TaskExecutionMode.execute);
-		restoreInfo.sessionId = this._sessionId;
-		this._restoreService.cancelRestorePlan(this._ownerUri, restoreInfo).then(() => {
-			this._connectionService.disconnect(this._ownerUri);
+		restoreInfo.sessionId = this._sessionId!;
+		this._restoreService.cancelRestorePlan(this._ownerUri!, restoreInfo).then(() => {
+			this._connectionService.disconnect(this._ownerUri!);
 		});
 	}
 
@@ -301,10 +296,10 @@ export class RestoreDialogController implements IRestoreDialogController {
 
 			if (!this._connectionService.isConnected(this._ownerUri)) {
 				this._connectionService.connect(connection, this._ownerUri).then(connectionResult => {
-					this._sessionId = null;
+					this._sessionId = undefined;
 					this._currentProvider = this.getCurrentProviderId();
 					if (!this._restoreDialogs[this._currentProvider]) {
-						let newRestoreDialog: RestoreDialog | OptionsDialog = undefined;
+						let newRestoreDialog: RestoreDialog | OptionsDialog;
 						if (this._currentProvider === ConnectionConstants.mssqlProviderName) {
 							let provider = this._currentProvider;
 							newRestoreDialog = this._instantiationService.createInstance(RestoreDialog, this.getRestoreOption());
@@ -324,9 +319,9 @@ export class RestoreDialogController implements IRestoreDialogController {
 
 					if (this._currentProvider === ConnectionConstants.mssqlProviderName) {
 						let restoreDialog = this._restoreDialogs[this._currentProvider] as RestoreDialog;
-						restoreDialog.viewModel.resetRestoreOptions(connection.databaseName);
+						restoreDialog.viewModel.resetRestoreOptions(connection.databaseName!);
 						this.getMssqlRestoreConfigInfo().then(() => {
-							restoreDialog.open(connection.serverName, this._ownerUri);
+							restoreDialog.open(connection.serverName, this._ownerUri!);
 							restoreDialog.validateRestore();
 						}, restoreConfigError => {
 							reject(restoreConfigError);
@@ -345,11 +340,11 @@ export class RestoreDialogController implements IRestoreDialogController {
 	}
 
 	private getCurrentProviderId(): string {
-		return this._connectionService.getProviderIdFromUri(this._ownerUri);
+		return this._connectionService.getProviderIdFromUri(this._ownerUri!);
 	}
 
 	private fetchDatabases(provider: string): void {
-		this._connectionService.listDatabases(this._ownerUri).then(result => {
+		this._connectionService.listDatabases(this._ownerUri!).then(result => {
 			if (result && result.databaseNames) {
 				(<RestoreDialog>this._restoreDialogs[provider]).databaseListOptions = result.databaseNames;
 			}

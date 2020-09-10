@@ -5,11 +5,10 @@
 
 import * as request from 'request';
 import * as loc from '../common/localizedConstants';
-import * as utils from '../common/utils';
 import * as vscode from 'vscode';
 import { RemoteBookDialogModel } from '../dialog/remoteBookDialogModel';
 import { GitHubRemoteBook } from '../book/githubRemoteBook';
-import { SharedRemoteBook } from '../book/sharedRemoteBook';
+import { winPlatform, macPlatform } from '../common/constants';
 
 const assetNameRE = /([a-zA-Z0-9]+)(?:-|_)([a-zA-Z0-9.]+)(?:-|_)([a-zA-Z0-9]+).(zip|tar.gz|tgz)/;
 
@@ -20,8 +19,6 @@ export class RemoteBookController {
 	public async setRemoteBook(url: vscode.Uri, remoteLocation: string, asset?: IAsset): Promise<void> {
 		if (remoteLocation === 'GitHub') {
 			this.model.remoteBook = new GitHubRemoteBook(url, this.outputChannel, asset);
-		} else {
-			this.model.remoteBook = new SharedRemoteBook(url, this.outputChannel);
 		}
 		return await this.model.remoteBook.createLocalCopy();
 	}
@@ -73,7 +70,7 @@ export class RemoteBookController {
 	public async getAssets(release?: IRelease): Promise<IAsset[]> {
 		if (release) {
 			let format: string[] = [];
-			if (utils.getOSPlatform() === utils.Platform.Windows || utils.getOSPlatform() === utils.Platform.Mac) {
+			if (process.platform === winPlatform || process.platform === macPlatform) {
 				format = ['zip'];
 			} else {
 				format = ['tar.gz', 'tgz'];

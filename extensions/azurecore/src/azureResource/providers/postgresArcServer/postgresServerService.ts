@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
-import { azureResource } from '../../azure-resource';
+import { azureResource } from 'azureResource';
 
 export interface PostgresArcServerGraphData extends GraphData {
 	properties: {
@@ -12,7 +12,7 @@ export interface PostgresArcServerGraphData extends GraphData {
 	};
 }
 
-export const serversQuery = 'where type == "microsoft.azuredata/postgresinstances"';
+export const serversQuery = `where type == "${azureResource.AzureResourceType.azureArcPostgresServer}"`;
 
 export class PostgresServerArcService extends ResourceServiceBase<PostgresArcServerGraphData, azureResource.AzureResourceDatabaseServer> {
 
@@ -27,6 +27,7 @@ export class PostgresServerArcService extends ResourceServiceBase<PostgresArcSer
 			fullName: resource.name,
 			loginName: resource.properties.admin,
 			defaultDatabaseName: 'postgres',
+			subscriptionId: resource.subscriptionId,
 			tenant: resource.tenantId
 		};
 	}

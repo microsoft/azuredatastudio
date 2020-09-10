@@ -37,11 +37,11 @@ export default class LoadingSpinner implements OnChanges {
 	}
 
 	@Input()
-	loading: boolean;
+	loading?: boolean;
 
 	@Input()
-	loadingMessage: string;
+	loadingMessage?: string;
 
 	@Input()
-	loadingCompletedMessage: string;
+	loadingCompletedMessage?: string;
 }

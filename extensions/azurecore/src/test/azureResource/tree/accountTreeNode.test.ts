@@ -12,7 +12,7 @@ import 'mocha';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { AppContext } from '../../../appContext';
 
-import { azureResource } from '../../../azureResource/azure-resource';
+import { azureResource } from 'azureResource';
 import {
 	IAzureResourceCacheService,
 	IAzureResourceSubscriptionService,
@@ -59,14 +59,16 @@ const mockAccount: azdata.Account = {
 	isStale: false
 };
 
+const mock_subscription_id_1 = 'mock_subscription_1';
 const mockSubscription1: azureResource.AzureResourceSubscription = {
-	id: 'mock_subscription_1',
+	id: mock_subscription_id_1,
 	name: 'mock subscription 1',
 	tenant: mockTenantId
 };
 
+const mock_subscription_id_2 = 'mock_subscription_2';
 const mockSubscription2: azureResource.AzureResourceSubscription = {
-	id: 'mock_subscription_2',
+	id: mock_subscription_id_2,
 	name: 'mock subscription 2',
 	tenant: mockTenantId
 };

@@ -3,16 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import * as should from 'should';
+import { ResourceType } from 'arc';
 import 'mocha';
-import { resourceTypeToDisplayName, parseEndpoint, parseInstanceName, getAzurecoreApi, getResourceTypeIcon, getConnectionModeDisplayText, getDatabaseStateDisplayText, promptForResourceDeletion, promptAndConfirmPassword, getErrorMessage } from '../../common/utils';
-
+import * as should from 'should';
+import * as vscode from 'vscode';
+import { getAzurecoreApi, getConnectionModeDisplayText, getDatabaseStateDisplayText, getErrorMessage, getResourceTypeIcon, parseEndpoint, parseInstanceName, parseIpAndPort, promptAndConfirmPassword, promptForResourceDeletion, resourceTypeToDisplayName } from '../../common/utils';
+import { ConnectionMode as ConnectionMode, IconPathHelper } from '../../constants';
 import * as loc from '../../localizedConstants';
-import { ResourceType, IconPathHelper, ConnectionMode as ConnectionMode } from '../../constants';
 import { MockInputBox } from '../stubs';
-import { HttpError } from '../../controller/generated/v1/api';
-import { IncomingMessage } from 'http';
+
 
 describe('resourceTypeToDisplayName Method Tests', function (): void {
 	it('Display Name should be correct for valid ResourceType', function (): void {
@@ -141,7 +140,7 @@ describe('promptForResourceDeletion Method Tests', function (): void {
 	});
 
 	it('Resolves as true when value entered is correct', function (done): void {
-		promptForResourceDeletion('mynamespace', 'myname').then((value: boolean) => {
+		promptForResourceDeletion('myname').then((value: boolean) => {
 			value ? done() : done(new Error('Expected return value to be true'));
 		});
 		mockInputBox.value = 'myname';
@@ -149,14 +148,14 @@ describe('promptForResourceDeletion Method Tests', function (): void {
 	});
 
 	it('Resolves as false when input box is closed early', function (done): void {
-		promptForResourceDeletion('mynamespace', 'myname').then((value: boolean) => {
+		promptForResourceDeletion('myname').then((value: boolean) => {
 			!value ? done() : done(new Error('Expected return value to be false'));
 		});
 		mockInputBox.hide();
 	});
 
 	it('Validation message is set when value entered is incorrect', async function (): Promise<void> {
-		promptForResourceDeletion('mynamespace', 'myname');
+		promptForResourceDeletion('myname');
 		mockInputBox.value = 'wrong value';
 		await mockInputBox.triggerAccept();
 		should(mockInputBox.validationMessage).not.be.equal('', 'Validation message should not be empty after incorrect value entered');
@@ -187,7 +186,7 @@ describe('promptAndConfirmPassword Method Tests', function (): void {
 			}
 		});
 		mockInputBox.value = password;
-		mockInputBox.triggerAccept().then( () => {
+		mockInputBox.triggerAccept().then(() => {
 			mockInputBox.value = password;
 			mockInputBox.triggerAccept();
 		});
@@ -214,7 +213,7 @@ describe('promptAndConfirmPassword Method Tests', function (): void {
 			}
 		});
 		mockInputBox.value = password;
-		mockInputBox.triggerAccept().then( () => {
+		mockInputBox.triggerAccept().then(() => {
 			mockInputBox.hide();
 		});
 	});
@@ -223,8 +222,8 @@ describe('promptAndConfirmPassword Method Tests', function (): void {
 		const testError = 'Test Error';
 		promptAndConfirmPassword((_: string) => { return testError; }).catch(err => done(err));
 		mockInputBox.value = '';
-		mockInputBox.triggerAccept().then( () => {
-			if(mockInputBox.validationMessage === testError) {
+		mockInputBox.triggerAccept().then(() => {
+			if (mockInputBox.validationMessage === testError) {
 				done();
 			} else {
 				done(new Error(`Validation message '${mockInputBox.validationMessage}' was expected to be '${testError}'`));
@@ -235,10 +234,10 @@ describe('promptAndConfirmPassword Method Tests', function (): void {
 	it('Error message displayed when passwords do not match', function (done): void {
 		promptAndConfirmPassword((_: string) => { return ''; }).catch(err => done(err));
 		mockInputBox.value = 'MyPassword';
-		mockInputBox.triggerAccept().then( () => {
+		mockInputBox.triggerAccept().then(() => {
 			mockInputBox.value = 'WrongPassword';
-			mockInputBox.triggerAccept().then( () => {
-				if(mockInputBox.validationMessage === loc.thePasswordsDoNotMatch) {
+			mockInputBox.triggerAccept().then(() => {
+				if (mockInputBox.validationMessage === loc.thePasswordsDoNotMatch) {
 					done();
 				} else {
 					done(new Error(`Validation message '${mockInputBox.validationMessage} was not the expected message`));
@@ -249,16 +248,6 @@ describe('promptAndConfirmPassword Method Tests', function (): void {
 });
 
 describe('getErrorMessage Method Tests', function () {
-	it('HttpError with reason', function (): void {
-		const httpReason = 'Test Reason';
-		should(getErrorMessage(new HttpError(<IncomingMessage>{ }, { reason: 'Test Reason' }))).equal(httpReason);
-	});
-
-	it('HttpError with status message', function (): void {
-		const httpStatusMessage = 'Test Status Message';
-		should(getErrorMessage(new HttpError(<IncomingMessage>{ statusMessage: httpStatusMessage}, { }))).containEql(`(${httpStatusMessage})`);
-	});
-
 	it('Error with message', function (): void {
 		const errorMessage = 'Test Message';
 		const error = new Error(errorMessage);
@@ -267,7 +256,7 @@ describe('getErrorMessage Method Tests', function () {
 
 	it('Error with no message', function (): void {
 		const error = new Error();
-		should(getErrorMessage(error)).equal(error);
+		should(getErrorMessage(error)).equal(error.message);
 	});
 });
 
@@ -284,5 +273,18 @@ describe('parseInstanceName Method Tests', function () {
 
 	it('Invalid name', function (): void {
 		should(() => parseInstanceName('Some_Invalid_Name')).throwError();
+	});
+});
+
+describe('parseIpAndPort', function (): void {
+	it('Valid address', function (): void {
+		const ip = '127.0.0.1';
+		const port = '80';
+		should(parseIpAndPort(`${ip}:${port}`)).deepEqual({ ip: ip, port: port });
+	});
+
+	it('invalid address - no port', function (): void {
+		const ip = '127.0.0.1';
+		should(() => parseIpAndPort(ip)).throwError();
 	});
 });

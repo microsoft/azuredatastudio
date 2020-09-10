@@ -5,7 +5,7 @@
 
 import { ExtensionContext } from 'vscode';
 
-import { azureResource } from '../../azure-resource';
+import { azureResource } from 'azureResource';
 import { IAzureResourceService } from '../../interfaces';
 import { PostgresServerArcTreeDataProvider as PostgresServerArcTreeDataProvider } from './postgresServerTreeDataProvider';
 

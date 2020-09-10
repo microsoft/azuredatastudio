@@ -27,9 +27,9 @@ export class MssqlNodeContext extends Disposable {
 	static readonly canCreateOrDelete = new Set([NodeType.AggregateFunction, NodeType.PartitionFunction, NodeType.ScalarValuedFunction,
 	NodeType.Schema, NodeType.StoredProcedure, NodeType.Table, NodeType.TableValuedFunction,
 	NodeType.User, NodeType.UserDefinedTableType, NodeType.View]);
-	static readonly canExecute = new Set([NodeType.StoredProcedure]);
+	static readonly canExecute = new Set([NodeType.StoredProcedure, NodeType.Function]);
 	static readonly canAlter = new Set([NodeType.AggregateFunction, NodeType.PartitionFunction, NodeType.ScalarValuedFunction,
-	NodeType.StoredProcedure, NodeType.TableValuedFunction, NodeType.View]);
+	NodeType.StoredProcedure, NodeType.TableValuedFunction, NodeType.View, NodeType.Function]);
 
 	// General node context keys
 	static NodeProvider = new RawContextKey<string>('nodeProvider', undefined);
@@ -48,19 +48,19 @@ export class MssqlNodeContext extends Disposable {
 	static CanScriptAsExecute = new RawContextKey<boolean>('canScriptAsExecute', false);
 	static CanScriptAsAlter = new RawContextKey<boolean>('canScriptAsAlter', false);
 
-	private nodeProviderKey: IContextKey<string>;
-	private isCloudKey: IContextKey<boolean>;
-	private nodeTypeKey: IContextKey<string>;
-	private nodeLabelKey: IContextKey<string>;
-	private isDatabaseOrServerKey: IContextKey<boolean>;
-	private engineEditionKey: IContextKey<number>;
-	private canOpenInAzurePortal: IContextKey<boolean>;
+	private nodeProviderKey!: IContextKey<string>;
+	private isCloudKey!: IContextKey<boolean>;
+	private nodeTypeKey!: IContextKey<string>;
+	private nodeLabelKey!: IContextKey<string>;
+	private isDatabaseOrServerKey!: IContextKey<boolean>;
+	private engineEditionKey!: IContextKey<number>;
+	private canOpenInAzurePortal!: IContextKey<boolean>;
 
-	private canScriptAsSelectKey: IContextKey<boolean>;
-	private canEditDataKey: IContextKey<boolean>;
-	private canScriptAsCreateOrDeleteKey: IContextKey<boolean>;
-	private canScriptAsExecuteKey: IContextKey<boolean>;
-	private canScriptAsAlterKey: IContextKey<boolean>;
+	private canScriptAsSelectKey!: IContextKey<boolean>;
+	private canEditDataKey!: IContextKey<boolean>;
+	private canScriptAsCreateOrDeleteKey!: IContextKey<boolean>;
+	private canScriptAsExecuteKey!: IContextKey<boolean>;
+	private canScriptAsAlterKey!: IContextKey<boolean>;
 
 	constructor(
 		private nodeContextValue: INodeContextValue,
@@ -113,9 +113,9 @@ export class MssqlNodeContext extends Disposable {
 	 * Helper function to get the node provider
 	 */
 	private setNodeProvider(): void {
-		if (this.nodeContextValue.node.payload.providerName) {
+		if (this?.nodeContextValue?.node?.payload?.providerName) {
 			this.nodeProviderKey.set(this.nodeContextValue.node.payload.providerName);
-		} else if (this.nodeContextValue.node.childProvider) {
+		} else if (this.nodeContextValue?.node?.childProvider) {
 			this.nodeProviderKey.set(this.nodeContextValue.node.childProvider);
 		}
 	}
@@ -124,7 +124,7 @@ export class MssqlNodeContext extends Disposable {
 	 * Helper function to tell whether a connected node is cloud or not
 	 */
 	private setIsCloud(): void {
-		let serverInfo: azdata.ServerInfo = this.getServerInfo();
+		let serverInfo = this.getServerInfo();
 		if (serverInfo && serverInfo.isCloud) {
 			this.isCloudKey.set(true);
 		}
@@ -145,7 +145,7 @@ export class MssqlNodeContext extends Disposable {
 	 */
 	private setEngineEdition(): void {
 
-		let serverInfo: azdata.ServerInfo = this.getServerInfo();
+		let serverInfo = this.getServerInfo();
 		if (serverInfo && serverInfo.engineEditionId) {
 			this.engineEditionKey.set(serverInfo.engineEditionId);
 		}
@@ -183,6 +183,9 @@ export class MssqlNodeContext extends Disposable {
 	 */
 	private setScriptingContextKeys(): void {
 		const nodeType = this.nodeContextValue.node.contextValue;
+		if (!nodeType) {
+			return;
+		}
 		if (MssqlNodeContext.canCreateOrDelete.has(nodeType)) {
 			this.canScriptAsCreateOrDeleteKey.set(true);
 		}

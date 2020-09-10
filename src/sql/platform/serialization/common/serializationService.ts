@@ -157,7 +157,7 @@ export class SerializationService implements ISerializationService {
 
 	private createStartRequest(serializationRequest: SerializeDataParams, index: number): azdata.SerializeDataStartRequestParams {
 		let batchSize = getBatchSize(serializationRequest.rowCount, index);
-		let rows = serializationRequest.getRowRange(index, serializationRequest.includeHeaders, batchSize);
+		let rows = serializationRequest.getRowRange(index, serializationRequest.includeHeaders ?? false, batchSize);
 		let columns: azdata.SimpleColumnInfo[] = serializationRequest.columns.map(c => {
 			// For now treat all as strings. In the future, would like to use the
 			// type info for correct data type mapping
@@ -186,7 +186,7 @@ export class SerializationService implements ISerializationService {
 
 	private createContinueRequest(serializationRequest: SerializeDataParams, index: number): azdata.SerializeDataContinueRequestParams {
 		let numberOfRows = getBatchSize(serializationRequest.rowCount, index);
-		let rows = serializationRequest.getRowRange(index, serializationRequest.includeHeaders, numberOfRows);
+		let rows = serializationRequest.getRowRange(index, serializationRequest.includeHeaders ?? false, numberOfRows);
 		let isLastBatch = index + rows.length >= serializationRequest.rowCount;
 		let continueSerializeRequest: azdata.SerializeDataContinueRequestParams = {
 			filePath: serializationRequest.filePath,

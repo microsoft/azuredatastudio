@@ -64,7 +64,7 @@ export type OutputType =
 	| 'update_display_data';
 
 export interface IJupyterBookToc {
-	sections: IJupyterBookSection[];
+	sections: JupyterBookSection[];
 }
 
 /**
@@ -73,7 +73,7 @@ export interface IJupyterBookToc {
  * This is taken from https://github.com/jupyter/jupyter-book/blob/master/jupyter_book/book_template/_data/toc.yml but is not
  * enforced so invalid JSON may result in expected values being undefined.
  */
-export interface IJupyterBookSection {
+export interface IJupyterBookSectionV1 {
 	/**
 	 * Title of chapter or section
 	 */
@@ -85,7 +85,7 @@ export interface IJupyterBookSection {
 	/**
 	 * Contains a list of more entries that make up the chapter's/section's sub-sections
 	 */
-	sections?: IJupyterBookSection[];
+	sections?: IJupyterBookSectionV1[];
 	/**
 	 * If the section shouldn't have a number in the sidebar
 	 */
@@ -114,3 +114,40 @@ export interface IJupyterBookSection {
 	 */
 	header?: boolean;
 }
+
+/**
+ * A section of a Jupyter book.
+ *
+ * This is taken from https://github.com/jupyter/jupyter-book/blob/master/jupyter_book/book_template/_toc.yml but is not
+ * enforced so invalid JSON may result in expected values being undefined.
+ */
+export interface IJupyterBookSectionV2 {
+	/**
+	 * Title of chapter or section
+	 */
+	title?: string;
+	/**
+	 * Path to notebook relative to root folder.
+	 */
+	file?: string;
+	/**
+	 * Contains a list of more entries that make up the chapter's/section's sub-sections
+	 */
+	sections?: IJupyterBookSectionV2[];
+	/**
+	 * If the section shouldn't have a number in the sidebar
+	 */
+	numbered?: boolean;
+	/**
+	 * If you'd like the sections of this chapter to always be expanded in the sidebar.
+	 */
+	expand_sections?: boolean;
+	/**
+	 * External link
+	 */
+	url?: string;
+}
+
+// type that supports new and old version
+export type JupyterBookSection = IJupyterBookSectionV1 | IJupyterBookSectionV2;
+
