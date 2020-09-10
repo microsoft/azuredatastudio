@@ -56,19 +56,31 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 							label: constants.AzureAccountDropdownLabel,
 							defaultValue: model.azureAccount.displayInfo.displayName,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						},
+						}
+					]
+				},
+				{
+					items: [
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.AzureAccountSubscriptionDropdownLabel,
 							defaultValue: model.azureSubscriptionDisplayName,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						},
+						}
+					]
+				},
+				{
+					items: [
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.AzureAccountResourceGroupDropdownLabel,
 							defaultValue: model.azureResouceGroup,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						},
+						}
+					]
+				},
+				{
+					items: [
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.AzureAccountDatabaseServersDropdownLabel,
@@ -93,19 +105,31 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 							label: constants.DatabaseNameLabel,
 							defaultValue: model.databaseName,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						},
+						}
+					]
+				},
+				{
+					items: [
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.FirewallRuleNameLabel,
 							defaultValue: model.firewallRuleName,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						},
+					]
+				},
+				{
+					items: [
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.StartIpAddressShortLabel,
 							defaultValue: model.startIpAddress,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						},
+						}
+					]
+				},
+				{
+					items: [
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.EndIpAddressShortLabel,
