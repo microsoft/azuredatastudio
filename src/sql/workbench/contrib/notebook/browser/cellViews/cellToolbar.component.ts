@@ -108,10 +108,7 @@ export class CellToolbarComponent {
 		this._actionBar.setContent(taskbarContent);
 	}
 
-	// Changes edit icon from edit to cancel
-	public enableCellEditModeIcon() {
-		if (!this._editCellAction.editMode) {
-			this._editCellAction.editMode = !this._editCellAction.editMode;
-		}
+	public getEditCellAction(): EditCellAction {
+		return this._editCellAction;
 	}
 }
