@@ -6,7 +6,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-//import { Deferred } from '../common/promise';
 import { JupyterBookSection, IJupyterBookToc, IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
 import * as loc from '../common/localizedConstants';
 import { isBookItemPinned } from '../common/utils';
@@ -40,7 +39,6 @@ export class BookTreeItem extends vscode.TreeItem {
 	private _nextUri: string;
 	public readonly version: string;
 	public command: vscode.Command;
-	//private _setUriDeferred: Deferred<void> = new Deferred<void>();
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, book.treeItemCollapsibleState);
