@@ -24,7 +24,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator, IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { find, firstIndex } from 'vs/base/common/arrays';
+import { find } from 'vs/base/common/arrays';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
@@ -272,7 +272,7 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	private removeRow(clauseId: string) {
-		const idx = firstIndex(this._clauseRows, (entry) => { return entry.id === clauseId; });
+		const idx = this._clauseRows.findIndex(entry => { return entry.id === clauseId; });
 		if (idx !== -1) {
 			this._clauseRows[idx].row.remove();
 			this._clauseRows.splice(idx, 1);

@@ -24,7 +24,7 @@ import { IFindNotebookController } from 'sql/workbench/contrib/notebook/browser/
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
-import { find, firstIndex } from 'vs/base/common/arrays';
+import { find } from 'vs/base/common/arrays';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
@@ -323,10 +323,10 @@ export class KernelsDropdown extends SelectBox {
 			if (kernels) {
 				let index;
 				if (standardKernel) {
-					index = firstIndex(kernels, kernel => kernel === standardKernel.displayName);
+					index = kernels.findIndex(kernel => kernel === standardKernel.displayName);
 				} else {
 					let kernelSpec = this.model.specs.kernels.find(k => k.name === kernel.name);
-					index = firstIndex(kernels, k => k === kernelSpec?.display_name);
+					index = kernels.findIndex(k => k === kernelSpec?.display_name);
 				}
 				if (nbKernelAlias) {
 					index = kernels.indexOf(nbKernelAlias);
@@ -485,7 +485,7 @@ export class AttachToDropdown extends SelectBox {
 			//To ignore n/a after we have at least one valid connection
 			attachToConnections = attachToConnections.filter(val => val !== msgSelectConnection);
 
-			let index = firstIndex(attachToConnections, connection => connection === connectedServer);
+			let index = attachToConnections.findIndex(connection => connection === connectedServer);
 			this.setOptions([]);
 			this.setOptions(attachToConnections);
 			if (!index || index < 0 || index >= attachToConnections.length) {

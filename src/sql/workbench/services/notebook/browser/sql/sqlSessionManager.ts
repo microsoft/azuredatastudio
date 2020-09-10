@@ -24,7 +24,6 @@ import { ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebook
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { URI } from 'vs/base/common/uri';
 import { getUriPrefix, uriPrefixes } from 'sql/platform/connection/common/utils';
-import { firstIndex } from 'vs/base/common/arrays';
 import { startsWith } from 'vs/base/common/strings';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
@@ -75,7 +74,7 @@ export class SqlSessionManager implements nb.SessionManager {
 
 	startNew(options: nb.ISessionOptions): Thenable<nb.ISession> {
 		let sqlSession = new SqlSession(options, this._instantiationService);
-		let index = firstIndex(SqlSessionManager._sessions, session => session.path === options.path);
+		let index = SqlSessionManager._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
 			SqlSessionManager._sessions.splice(index);
 		}
@@ -84,7 +83,7 @@ export class SqlSessionManager implements nb.SessionManager {
 	}
 
 	shutdown(id: string): Thenable<void> {
-		let index = firstIndex(SqlSessionManager._sessions, session => session.id === id);
+		let index = SqlSessionManager._sessions.findIndex(session => session.id === id);
 		if (index > -1) {
 			let sessionManager = SqlSessionManager._sessions[index];
 			SqlSessionManager._sessions.splice(index);

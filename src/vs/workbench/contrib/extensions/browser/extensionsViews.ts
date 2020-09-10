@@ -30,7 +30,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { coalesce, distinct, flatten, firstIndex } from 'vs/base/common/arrays'; // {{ SQL CARBON EDIT }}
+import { coalesce, distinct, flatten } from 'vs/base/common/arrays'; // {{ SQL CARBON EDIT }}
 import { IExperimentService, IExperiment, ExperimentActionType } from 'vs/workbench/contrib/experiments/common/experimentService';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { IListContextMenuEvent } from 'vs/base/browser/ui/list/list';
@@ -601,8 +601,8 @@ export class ExtensionsListView extends ViewPane {
 
 						// sort the marketplace extensions
 						pager.firstPage.sort((a, b) => {
-							let isRecommendedA: boolean = firstIndex(recommmended, ext => ext.extensionId === `${a.publisher}.${a.name}`) > -1;
-							let isRecommendedB: boolean = firstIndex(recommmended, ext => ext.extensionId === `${b.publisher}.${b.name}`) > -1;
+							let isRecommendedA: boolean = recommmended.findIndex(ext => ext.extensionId === `${a.publisher}.${a.name}`) > -1;
+							let isRecommendedB: boolean = recommmended.findIndex(ext => ext.extensionId === `${b.publisher}.${b.name}`) > -1;
 
 							// sort recommeded extensions before other extensions
 							if (isRecommendedA !== isRecommendedB) {
@@ -634,7 +634,7 @@ export class ExtensionsListView extends ViewPane {
 						// filter out installed extensions and the extensions not in the recommended list
 						pager.firstPage = pager.firstPage.filter((p) => {
 							const extensionId = `${p.publisher}.${p.name}`;
-							return installedExtensions.indexOf(extensionId) === -1 && firstIndex(recommmended, ext => ext.extensionId === extensionId) !== -1;
+							return installedExtensions.indexOf(extensionId) === -1 && recommmended.findIndex(ext => ext.extensionId === extensionId) !== -1;
 						});
 						pager.total = pager.firstPage.length;
 						pager.pageSize = pager.firstPage.length;

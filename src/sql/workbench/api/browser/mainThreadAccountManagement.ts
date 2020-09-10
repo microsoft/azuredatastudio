@@ -16,7 +16,6 @@ import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { values } from 'vs/base/common/collections';
-import { firstIndex } from 'vs/base/common/arrays';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAccountManagement)
 export class MainThreadAccountManagement extends Disposable implements MainThreadAccountManagementShape {
@@ -38,7 +37,7 @@ export class MainThreadAccountManagement extends Disposable implements MainThrea
 				return;
 			}
 
-			const providerMetadataIndex = firstIndex(values(this._providerMetadata), (providerMetadata: azdata.AccountProviderMetadata) => providerMetadata.id === e.providerId);
+			const providerMetadataIndex = values(this._providerMetadata).findIndex((providerMetadata: azdata.AccountProviderMetadata) => providerMetadata.id === e.providerId);
 			if (providerMetadataIndex === -1) {
 				return;
 			}

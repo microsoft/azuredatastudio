@@ -37,7 +37,6 @@ import { FuzzyScore, createMatches } from 'vs/base/common/filters';
 import { CollapseAllAction } from 'vs/base/browser/ui/tree/treeDefaults';
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
 import { SIDE_BAR_BACKGROUND, PANEL_BACKGROUND } from 'vs/workbench/common/theme';
-import { firstIndex } from 'vs/base/common/arrays';
 import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
 import { UserCancelledConnectionError } from 'sql/base/common/errors';
 import { IOEShimService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim';
@@ -976,7 +975,7 @@ class TreeMenus extends Disposable implements IDisposable {
 	}
 
 	private mergeActions(actions: IAction[][]): IAction[] {
-		return actions.reduce((p, c) => p.concat(...c.filter(a => firstIndex(p, x => x.id === a.id) === -1)), [] as IAction[]);
+		return actions.reduce((p, c) => p.concat(...c.filter(a => p.findIndex(x => x.id === a.id) === -1)), [] as IAction[]);
 	}
 
 	private getActions(menuId: MenuId, context: { key: string, value?: string }): { primary: IAction[]; secondary: IAction[]; } {

@@ -18,7 +18,6 @@ import { Range, IRange } from 'vs/base/common/range';
 import { getOrDefault } from 'vs/base/common/objects';
 import { memoize } from 'vs/base/common/decorators';
 import { Sash, Orientation, ISashEvent as IBaseSashEvent } from 'vs/base/browser/ui/sash/sash';
-import { firstIndex } from 'vs/base/common/arrays';
 
 import { CellCache, ICell } from 'sql/base/browser/ui/table/highPerf/cellCache';
 import { ITableRenderer, ITableDataSource, ITableMouseEvent, IStaticTableRenderer, ITableColumn } from 'sql/base/browser/ui/table/highPerf/table';
@@ -279,7 +278,7 @@ export class TableView<T> implements IDisposable {
 	}
 
 	private onSashStart({ sash, start }: ISashEvent<T>): void {
-		const index = firstIndex(this.columnSashs, item => item.sash === sash);
+		const index = this.columnSashs.findIndex(item => item.sash === sash);
 		const sizes = this.columns.map(i => i.width!);
 		const lefts = this.columns.map(i => i.left!);
 		this.sashDragState = { start, current: start, index, sizes, lefts };
@@ -506,7 +505,7 @@ export class TableView<T> implements IDisposable {
 	}
 
 	indexOfColumn(columnId: string): number | undefined {
-		return firstIndex(this.columns, v => v.id === columnId);
+		return this.columns.findIndex(v => v.id === columnId);
 	}
 
 	get renderHeight(): number {

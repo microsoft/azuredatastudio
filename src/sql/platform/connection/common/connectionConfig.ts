@@ -12,7 +12,7 @@ import * as Utils from 'sql/platform/connection/common/utils';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as nls from 'vs/nls';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { find, firstIndex } from 'vs/base/common/arrays';
+import { find } from 'vs/base/common/arrays';
 import { deepClone } from 'vs/base/common/objects';
 
 const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
@@ -78,7 +78,7 @@ export class ConnectionConfig {
 					return matcher(providerConnectionProfile, connectionProfile);
 				});
 				if (sameProfileInList) {
-					let profileIndex = firstIndex(profiles, value => value === sameProfileInList);
+					let profileIndex = profiles.findIndex(value => value === sameProfileInList);
 					newProfile.id = sameProfileInList.id;
 					connectionProfile.id = sameProfileInList.id;
 					profiles[profileIndex] = newProfile;

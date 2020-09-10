@@ -21,7 +21,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { getContentHeight, addDisposableListener, EventType } from 'vs/base/browser/dom';
-import { find, firstIndex } from 'vs/base/common/arrays';
+import { find } from 'vs/base/common/arrays';
 
 /**
  * Sorting function for dashboard widgets
@@ -209,10 +209,10 @@ export class WidgetContent extends AngularDisposable implements AfterViewInit {
 			this._grid.enableResize();
 			this._grid.enableDrag();
 			this._editDispose.push(this.dashboardService.onDeleteWidget(e => {
-				let index = firstIndex(this.widgets, i => i.id === e);
+				let index = this.widgets.findIndex(i => i.id === e);
 				this.widgets.splice(index, 1);
 
-				index = firstIndex(this.originalConfig, i => i.id === e);
+				index = this.originalConfig.findIndex(i => i.id === e);
 				this.originalConfig.splice(index, 1);
 
 				this._rewriteConfig();

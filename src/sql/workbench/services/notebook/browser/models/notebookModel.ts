@@ -24,7 +24,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getErrorMessage } from 'vs/base/common/errors';
-import { find, firstIndex } from 'vs/base/common/arrays';
+import { find } from 'vs/base/common/arrays';
 import { startsWith } from 'vs/base/common/strings';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
@@ -383,7 +383,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public findCellIndex(cellModel: ICellModel): number {
-		return firstIndex(this._cells, (cell) => cell.equals(cellModel));
+		return this._cells.findIndex(cell => cell.equals(cellModel));
 	}
 
 	public addCell(cellType: CellType, index?: number): ICellModel {
@@ -484,7 +484,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this.inErrorState || !this._cells) {
 			return;
 		}
-		let index = firstIndex(this._cells, (cell) => cell.equals(cellModel));
+		let index = this._cells.findIndex(cell => cell.equals(cellModel));
 		if (index > -1) {
 			this._cells.splice(index, 1);
 			if (this._activeCell === cellModel) {
@@ -805,7 +805,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (spec) {
 			// Ensure that the kernel we try to switch to is a valid kernel; if not, use the default
 			let kernelSpecs = this.getKernelSpecs();
-			if (kernelSpecs && kernelSpecs.length > 0 && firstIndex(kernelSpecs, k => k.display_name === spec.display_name) < 0) {
+			if (kernelSpecs && kernelSpecs.length > 0 && kernelSpecs.findIndex(k => k.display_name === spec.display_name) < 0) {
 				spec = find(kernelSpecs, spec => spec.name === this.notebookManager.sessionManager.specs.defaultKernel);
 			}
 		}

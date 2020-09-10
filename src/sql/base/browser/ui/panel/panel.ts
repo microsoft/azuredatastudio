@@ -14,7 +14,6 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Color } from 'vs/base/common/color';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { firstIndex } from 'vs/base/common/arrays';
 
 export interface ITabbedPanelStyles {
 	titleActiveForeground?: Color;
@@ -176,11 +175,11 @@ export class TabbedPanel extends Disposable {
 				e.stopImmediatePropagation();
 			}
 			if (event.equals(KeyCode.RightArrow)) {
-				let currentIndex = firstIndex(this._tabOrder, x => x === tab.tab.identifier);
+				let currentIndex = this._tabOrder.findIndex(x => x === tab.tab.identifier);
 				this.focusNextTab(currentIndex + 1);
 			}
 			if (event.equals(KeyCode.LeftArrow)) {
-				let currentIndex = firstIndex(this._tabOrder, x => x === tab.tab.identifier);
+				let currentIndex = this._tabOrder.findIndex(x => x === tab.tab.identifier);
 				this.focusNextTab(currentIndex - 1);
 			}
 			if (event.equals(KeyCode.Tab)) {
@@ -271,7 +270,7 @@ export class TabbedPanel extends Disposable {
 		}
 		actualTab.disposables.dispose();
 		this._tabMap.delete(tab);
-		let index = firstIndex(this._tabOrder, t => t === tab);
+		let index = this._tabOrder.findIndex(t => t === tab);
 		this._tabOrder.splice(index, 1);
 		if (this._shownTabId === tab) {
 			this._shownTabId = undefined;
