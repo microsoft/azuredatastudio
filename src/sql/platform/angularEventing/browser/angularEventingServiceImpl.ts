@@ -24,8 +24,8 @@ export class AngularEventingService implements IAngularEventingService {
 		return emitter.event;
 	}
 
-	public sendAngularEvent(uri: string | undefined, event: AngularEventType, payload?: any): void {
-		const emitter = uri !== undefined ? this._angularMap.get(uri) : undefined;
+	public sendAngularEvent(uri: string, event: AngularEventType, payload?: any): void {
+		const emitter = this._angularMap.get(uri);
 		if (!emitter) {
 			this.logService.warn('Got request to send an event to a dashboard that has not started listening');
 		} else {
