@@ -537,8 +537,8 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 	}
 
-	public get gridDataConversionComplete(): Promise<void[]> {
-		return Promise.all(this._gridDataConversionComplete);
+	public get gridDataConversionComplete(): Promise<void> {
+		return Promise.all(this._gridDataConversionComplete).then();
 	}
 
 	public addGridDataConversionPromise(complete: Promise<void>): void {

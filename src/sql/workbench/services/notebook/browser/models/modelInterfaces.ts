@@ -484,7 +484,7 @@ export interface ICellModel {
 	showPreview: boolean;
 	readonly onCellPreviewChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;
-	gridDataConversionComplete: Promise<void[]>;
+	gridDataConversionComplete: Promise<void>;
 	addGridDataConversionPromise(complete: Promise<void>): void;
 	updateOutputData(batchId: number, id: number, data: any): void;
 }
