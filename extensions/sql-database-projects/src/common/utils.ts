@@ -145,6 +145,10 @@ export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 	return sqlCmdVariables;
 }
 
+/**
+ * Recursively gets all the sqlproj files at any depth in a folder
+ * @param folderPath
+ */
 export async function getSqlProjectFilesInFolder(folderPath: string): Promise<string[]> {
 	// path needs to use forward slashes for glob to work
 	const escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));

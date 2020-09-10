@@ -494,13 +494,13 @@ export class ProjectsController {
 				projectReferenceSettings.projectRelativePath = vscode.Uri.file(relativePath);
 				projectReferenceSettings.projectGuid = referencedProject?.projectGuid!;
 
+				const projectReferences = referencedProject?.databaseReferences.filter(r => r instanceof SqlProjectReferenceProjectEntry) ?? [];
+
 				// check for cirular dependency
-				for (let r of referencedProject?.databaseReferences!) {
-					if (r instanceof SqlProjectReferenceProjectEntry) {
-						if ((<SqlProjectReferenceProjectEntry>r).projectName === project.projectFileName) {
-							vscode.window.showErrorMessage(constants.cantAddCircularProjectReference(referencedProject?.projectFileName!));
-							return;
-						}
+				for (let r of projectReferences) {
+					if ((<SqlProjectReferenceProjectEntry>r).projectName === project.projectFileName) {
+						vscode.window.showErrorMessage(constants.cantAddCircularProjectReference(referencedProject?.projectFileName!));
+						return;
 					}
 				}
 
