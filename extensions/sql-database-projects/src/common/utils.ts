@@ -173,7 +173,6 @@ export function removeSqlCmdVariableFormatting(name: string | undefined): string
  * @param name
  */
 export function formatSqlCmdVariable(name: string): string {
-	// TODO: check if it's a valid variable name and just return if it isn't
 	if (!name || name === '') {
 		return name;
 	}
@@ -211,6 +210,7 @@ export function isValidSqlCmdVariableName(name: string | undefined): boolean {
 	}
 
 	// TODO: tsql parsing to check if it's a reserved keyword or invalid tsql https://github.com/microsoft/azuredatastudio/issues/12204
+	// TODO: give more detail why variable name was invalid https://github.com/microsoft/azuredatastudio/issues/12231
 
 	return true;
 }
