@@ -21,12 +21,16 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { find } from 'vs/base/common/arrays';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 
 @Component({
 	selector: 'modelview-dropdown',
 	template: `
 
 	<div [style.width]="getWidth()">
+		<div [style.display]="getLoadingDisplay()" #loadingBox style="width: 100%; position: relative">
+			<div class="modelview-loadingComponent-spinner" style="position:absolute; right: 0px; margin-right: 5px; height:15px; z-index:1" #spinnerElement></div>
+		</div>
 		<div [style.display]="getEditableDisplay()" #editableDropDown style="width: 100%;"></div>
 		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
 	</div>
@@ -38,9 +42,11 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	private _editableDropdown: Dropdown;
 	private _selectBox: SelectBox;
 	private _isInAccessibilityMode: boolean;
+	private _loadingBox: InputBox;
 
 	@ViewChild('editableDropDown', { read: ElementRef }) private _editableDropDownContainer: ElementRef;
 	@ViewChild('dropDown', { read: ElementRef }) private _dropDownContainer: ElementRef;
+	@ViewChild('loadingDropdown', { read: ElementRef }) private _loadingBoxContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
@@ -103,6 +109,12 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 			}));
 			this._validations.push(() => !this.required || this.editable || !!this._selectBox.value);
 		}
+
+		this._loadingBox = new InputBox(this._loadingBoxContainer.nativeElement, this.contextViewService, {
+			placeholder: 'Loading',
+		});
+		this._loadingBox.inputElement.readOnly = true;
+		this._register(attachEditableDropdownStyler(this._loadingBox, this.themeService));
 	}
 
 	ngOnDestroy(): void {
@@ -198,11 +210,15 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	}
 
 	public getEditableDisplay(): string {
-		return this.editable && !this._isInAccessibilityMode ? '' : 'none';
+		return (this.editable && !this._isInAccessibilityMode) && !this.loading ? '' : 'none';
 	}
 
 	public getNotEditableDisplay(): string {
-		return !this.editable || this._isInAccessibilityMode ? '' : 'none';
+		return (!this.editable || this._isInAccessibilityMode) && !this.loading ? '' : 'none';
+	}
+
+	public getLoadingDisplay(): string {
+		return this.loading ? '' : 'none';
 	}
 
 	private set value(newValue: string | azdata.CategoryValue) {
@@ -239,5 +255,14 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		} else {
 			this._selectBox.focus();
 		}
+	}
+
+	public get loading(): boolean {
+		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.loading, false);
+	}
+
+	public set loading(newValue: boolean) {
+		this.setPropertyFromUI<azdata.DropDownProperties, boolean>((props, value) => props.loading = value, newValue);
+		this._changeRef.detectChanges();
 	}
 }

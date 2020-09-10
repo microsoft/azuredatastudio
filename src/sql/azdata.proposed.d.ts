@@ -141,6 +141,10 @@ declare module 'azdata' {
 		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent>;
 	}
 
+	export interface DropDownProperties extends ComponentProperties {
+		loading?: boolean;
+	}
+
 	export interface RadioCard {
 		id: string;
 		label: string;
