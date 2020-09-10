@@ -70,7 +70,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 	/**
 	 * Returns a label(name) to display when dragging the element.
 	 */
-	public getDragLabel(tree: AsyncServerTree | ITree, elements: any[]): string {
+	public getDragLabel(tree: AsyncServerTree | ITree, elements?: any[]): string {
 		if (elements) {
 			if (elements[0] instanceof ConnectionProfile) {
 				return (<ConnectionProfile>elements[0]).serverName;

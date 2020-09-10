@@ -305,7 +305,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	/**
 	 * Get the color that should be displayed
 	 */
-	public get tabColor(): string {
+	public get tabColor(): string | undefined {
 		return this.connectionManagementService.getTabColorForUri(this.uri);
 	}
 

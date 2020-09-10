@@ -220,7 +220,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (!model && params.input && params.input.uri) {
 			model = this._connectionStatusManager.getConnectionProfile(params.input.uri);
 		}
-		return this._connectionDialogService.showDialog(this, params, model, connectionResult, options).catch(dialogError => {
+		return this._connectionDialogService.showDialog(this, params, model!, connectionResult, options).catch(dialogError => {
 			this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
 			throw dialogError;
 		});
@@ -625,8 +625,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._editorService.editors.map(editor => {
 			if (editor instanceof DashboardInput) {
 				if (DashboardInput.profileMatches(profile, editor.connectionProfile)) {
-					editor.connectionProfile.connectionName = profile.connectionName;
-					editor.connectionProfile.databaseName = profile.databaseName;
+					editor.connectionProfile!.connectionName = profile.connectionName;
+					editor.connectionProfile!.databaseName = profile.databaseName;
 					this._editorService.openEditor(editor)
 						.then(() => {
 							if (!profile.databaseName || Utils.isMaster(profile)) {
@@ -1045,7 +1045,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		// If the URI is connected, disconnect it and the editor
 		if (this.isConnected(owner.uri)) {
 			let connection = this.getConnectionProfile(owner.uri);
-			owner.onDisconnect();
+			if (owner.onDisconnect) {
+				owner.onDisconnect();
+			}
 			return this.doDisconnect(owner.uri, connection);
 
 			// If the URI is connecting, prompt the user to cancel connecting
@@ -1054,19 +1056,24 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return this.shouldCancelConnect(owner.uri).then((result) => {
 					// If the user wants to cancel, then disconnect
 					if (result) {
-						owner.onDisconnect();
-						return this.cancelEditorConnection(owner);
+						if (owner.onDisconnect) {
+							owner.onDisconnect();
+						} return this.cancelEditorConnection(owner);
 					}
 					// If the user does not want to cancel, then ignore
 					return false;
 				});
 			} else {
-				owner.onDisconnect();
+				if (owner.onDisconnect) {
+					owner.onDisconnect();
+				}
 				return this.cancelEditorConnection(owner);
 			}
 		}
 		// If the URI is disconnected, ensure the UI state is consistent and resolve true
-		owner.onDisconnect();
+		if (owner.onDisconnect) {
+			owner.onDisconnect();
+		}
 		return Promise.resolve(true);
 	}
 
@@ -1456,12 +1463,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public buildConnectionInfo(connectionString: string, provider: string): Thenable<azdata.ConnectionInfo | undefined> {
 		let connectionProvider = this._providers.get(provider);
 		if (connectionProvider) {
-			return connectionProvider.onReady.then(e => {
-				if (e.buildConnectionInfo) {
-					return e.buildConnectionInfo(connectionString);
-				}
-				return undefined;
-			});
+			if (connectionProvider.onReady) {
+				return connectionProvider.onReady.then((e): Thenable<azdata.ConnectionInfo | undefined> => {
+					if (e.buildConnectionInfo) {
+						return e.buildConnectionInfo(connectionString);
+					}
+					return Promise.resolve(undefined);
+				});
+			}
 		}
 		return Promise.resolve(undefined);
 	}

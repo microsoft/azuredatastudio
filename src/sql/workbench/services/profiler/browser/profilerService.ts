@@ -264,7 +264,7 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public launchCreateSessionDialog(input: ProfilerInput): Thenable<void> {
-		const serverInfo = this._connectionService.getConnectionInfo(input.id).serverInfo;
+		const serverInfo = this._connectionService.getConnectionInfo(input.id)!.serverInfo;
 		let templates = this.getSessionTemplates();
 		if (serverInfo) {
 			const engineType = serverInfo.isCloud ? EngineType.AzureSQLDB : EngineType.Standalone;

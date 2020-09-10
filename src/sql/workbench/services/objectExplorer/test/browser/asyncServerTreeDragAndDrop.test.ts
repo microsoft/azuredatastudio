@@ -23,7 +23,7 @@ import { AsyncServerTreeDragAndDrop } from 'sql/workbench/services/objectExplore
 suite('AsyncServerTreeDragAndDrop', () => {
 	let serverTreeDragAndDrop: AsyncServerTreeDragAndDrop;
 	let msSQLCapabilities: ConnectionProviderProperties;
-	let capabilitiesService: TestCapabilitiesService;
+	let capabilitiesService: TestCapabilitiesService = undefined!;
 
 	let iConnectionProfileId: IConnectionProfile = {
 		connectionName: 'new name',
@@ -47,7 +47,7 @@ suite('AsyncServerTreeDragAndDrop', () => {
 	let connectionProfileArray = [connectionProfile];
 	let connectionProfileGroupId = new ConnectionProfileGroup('name', undefined, 'd936bb32-422b-49c3-963f-ae9532d63dc5', 'color', 'description');
 	let connectionProfileGroupArray = [connectionProfileGroupId];
-	let treeNode = new TreeNode('Column', 'label', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+	let treeNode = new TreeNode('Column', 'label', undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!);
 	let treeNodeArray = [treeNode];
 
 	setup(() => {
@@ -82,7 +82,7 @@ suite('AsyncServerTreeDragAndDrop', () => {
 		let uriGroup = serverTreeDragAndDrop.getDragURI(connectionProfileGroupId);
 		assert.equal(connectionProfileGroupId.id, uriGroup);
 
-		let uriUndefined = serverTreeDragAndDrop.getDragURI(undefined);
+		let uriUndefined = serverTreeDragAndDrop.getDragURI(undefined!);
 		assert.equal(null, uriUndefined);
 
 	});
@@ -97,7 +97,7 @@ suite('AsyncServerTreeDragAndDrop', () => {
 		let labelTreeNode = serverTreeDragAndDrop.getDragLabel(treeNodeArray);
 		assert.equal(treeNodeArray[0].label, labelTreeNode);
 
-		let labelUndefined = serverTreeDragAndDrop.getDragLabel(undefined);
+		let labelUndefined = serverTreeDragAndDrop.getDragLabel(undefined!);
 		assert.equal('', labelUndefined);
 
 	});

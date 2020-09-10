@@ -186,7 +186,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		this._register(attachListStyler(this._tree, this._themeService));
 
 		// Refresh Tree when these events are emitted
-		this._register(this._connectionManagementService.onAddConnectionProfile((newProfile: IConnectionProfile) => {
+		this._register(this._connectionManagementService.onAddConnectionProfile((newProfile: IConnectionProfile | undefined) => {
 			this.handleAddConnectionProfile(newProfile).catch(errors.onUnexpectedError);
 		}));
 		this._register(this._connectionManagementService.onDeleteConnectionProfile(() => {

@@ -213,7 +213,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		super.dispose();
 	}
 
-	public get tabColor(): string {
+	public get tabColor(): string | undefined {
 		return this._connectionManagementService.getTabColorForUri(this.uri);
 	}
 

@@ -11,7 +11,7 @@ export class CancelConnectParams {
 	/**
 	 * URI identifying the owner of the connection
 	 */
-	public ownerUri: string;
+	public ownerUri?: string;
 }
 
 // ------------------------------- </ Cancel Connect Request > --------------------------------------
@@ -21,7 +21,7 @@ export class CancelConnectParams {
 // Disconnect request message format
 export class DisconnectParams {
 	// URI identifying the owner of the connection
-	public ownerUri: string;
+	public ownerUri?: string;
 }
 
 // ------------------------------- </ Disconnect Request > ------------------------------------------

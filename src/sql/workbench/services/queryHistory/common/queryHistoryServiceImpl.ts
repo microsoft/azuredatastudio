@@ -63,7 +63,7 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 						// If no specific selection get the entire text
 						model.getValue();
 
-					const newInfo = new QueryHistoryInfo(text, _connectionManagementService.getConnectionProfile(e.uri), new Date(), QueryStatus.Succeeded);
+					const newInfo = new QueryHistoryInfo(text, _connectionManagementService.getConnectionProfile(e.uri)!, new Date(), QueryStatus.Succeeded);
 
 					// icon as required (for now logic is if any message has error query has error)
 					let error: boolean = false;

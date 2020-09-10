@@ -12,19 +12,19 @@ export class TestObjectExplorerProvider implements azdata.ObjectExplorerProvider
 	public readonly providerId = mssqlProviderName;
 
 	public createNewSession(connInfo: azdata.ConnectionInfo): Thenable<azdata.ObjectExplorerCloseSessionResponse> {
-		return Promise.resolve(undefined);
+		return Promise.resolve(undefined!);
 	}
 
 	public expandNode(nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
-		return Promise.resolve(undefined);
+		return Promise.resolve(undefined!);
 	}
 
 	public refreshNode(nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
-		return Promise.resolve(undefined);
+		return Promise.resolve(undefined!);
 	}
 
 	public closeSession(closeSessionInfo: azdata.ObjectExplorerCloseSessionInfo): Thenable<azdata.ObjectExplorerCloseSessionResponse> {
-		return Promise.resolve(undefined);
+		return Promise.resolve(undefined!);
 	}
 
 	public registerOnSessionCreated(handler: (response: azdata.ObjectExplorerSession) => any): void {
@@ -40,6 +40,6 @@ export class TestObjectExplorerProvider implements azdata.ObjectExplorerProvider
 	}
 
 	public findNodes(findNodesInfo: azdata.FindNodesInfo): Thenable<azdata.ObjectExplorerFindNodesResponse> {
-		return undefined;
+		return undefined!;
 	}
 }

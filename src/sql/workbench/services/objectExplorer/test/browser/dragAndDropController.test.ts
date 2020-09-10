@@ -48,11 +48,11 @@ suite('SQL Drag And Drop Controller tests', () => {
 		id: 'd936bb32-422b-49c3-963f-ae9532d63dc5'
 	};
 
-	let connectionProfileId = new ConnectionProfile(capabilitiesService, iConnectionProfileId);
+	let connectionProfileId = new ConnectionProfile(capabilitiesService!, iConnectionProfileId);
 	let connectionProfileArray = [connectionProfileId];
 	let connectionProfileGroupId = new ConnectionProfileGroup('name', undefined, 'd936bb32-422b-49c3-963f-ae9532d63dc5', 'color', 'description');
 	let connectionProfileGroupArray = [connectionProfileGroupId];
-	let treeNode = new TreeNode('Column', 'label', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+	let treeNode = new TreeNode('Column', 'label', undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!);
 	let treeNodeArray = [treeNode];
 
 	setup(() => {
@@ -102,7 +102,7 @@ suite('SQL Drag And Drop Controller tests', () => {
 		let labelTreeNode = serverTreeDragAndDrop.getDragLabel(testTree, treeNodeArray);
 		assert.equal(treeNodeArray[0].label, labelTreeNode);
 
-		let labelUndefined = serverTreeDragAndDrop.getDragLabel(testTree, null);
+		let labelUndefined = serverTreeDragAndDrop.getDragLabel(testTree, undefined!);
 		assert.equal('', labelUndefined);
 
 	});

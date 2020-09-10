@@ -74,11 +74,11 @@ export interface IConnectionResult {
 }
 
 export interface IConnectionCallbacks {
-	onConnectStart(): void;
-	onConnectReject(error?: string): void;
-	onConnectSuccess(params: INewConnectionParams, profile: IConnectionProfile): void;
-	onDisconnect(): void;
-	onConnectCanceled(): void;
+	onConnectStart?(): void;
+	onConnectReject?(error?: string): void;
+	onConnectSuccess?(params: INewConnectionParams, profile: IConnectionProfile): void;
+	onDisconnect?(): void;
+	onConnectCanceled?(): void;
 }
 
 export const SERVICE_ID = 'connectionManagementService';
@@ -335,11 +335,11 @@ export interface INewConnectionParams {
 
 export interface IConnectableInput {
 	uri: string;
-	onConnectStart(): void | undefined;
-	onConnectReject(error?: string): void | undefined;
-	onConnectSuccess(params: INewConnectionParams, profile: IConnectionProfile): void;
-	onDisconnect(): void;
-	onConnectCanceled(): void;
+	onConnectStart?(): void;
+	onConnectReject?(error?: string): void;
+	onConnectSuccess?(params: INewConnectionParams, profile: IConnectionProfile): void;
+	onDisconnect?(): void;
+	onConnectCanceled?(): void;
 }
 
 export enum ConnectionType {

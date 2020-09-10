@@ -94,8 +94,8 @@ export class DashboardInput extends EditorInput {
 	}
 
 	private isMasterMssql(): boolean {
-		return this.connectionProfile.providerName === mssqlProviderName
-			&& this.connectionProfile.databaseName?.toLowerCase() === 'master';
+		return this.connectionProfile!.providerName === mssqlProviderName
+			&& this.connectionProfile!.databaseName?.toLowerCase() === 'master';
 	}
 
 	public get uri(): string | undefined {
@@ -135,7 +135,7 @@ export class DashboardInput extends EditorInput {
 		return false;
 	}
 
-	public get connectionProfile(): IConnectionProfile {
+	public get connectionProfile(): IConnectionProfile | undefined {
 		return this._connectionService.getConnectionProfile(this._uri!);
 	}
 
@@ -153,7 +153,10 @@ export class DashboardInput extends EditorInput {
 	}
 
 	// similar to the default profile match but without databasename
-	public static profileMatches(profile1: IConnectionProfile, profile2: IConnectionProfile): boolean {
+	public static profileMatches(profile1?: IConnectionProfile, profile2?: IConnectionProfile): boolean {
+		if (!profile1 || !profile2) {
+			return false;
+		}
 		return profile1 && profile2
 			&& profile1.providerName === profile2.providerName
 			&& profile1.serverName === profile2.serverName
@@ -162,7 +165,7 @@ export class DashboardInput extends EditorInput {
 			&& profile1.groupFullName === profile2.groupFullName;
 	}
 
-	public get tabColor(): string {
+	public get tabColor(): string | undefined {
 		return this._connectionService.getTabColorForUri(this.uri!);
 	}
 }

@@ -54,7 +54,7 @@ export async function scriptSelect(connectionProfile: IConnectionProfile, metada
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true
 		};
-		const innerConnectionResult = await connectionService.connect(connectionProfile, owner.uri, options);
+		const innerConnectionResult = (await connectionService.connect(connectionProfile, owner.uri, options))!;
 
 		return Boolean(innerConnectionResult) && innerConnectionResult.connected;
 	} else {
@@ -80,7 +80,7 @@ export async function scriptEditSelect(connectionProfile: IConnectionProfile, me
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true
 		};
-		const innerConnectionResult = await connectionService.connect(connectionProfile, owner.uri, options);
+		const innerConnectionResult = (await connectionService.connect(connectionProfile, owner.uri, options))!;
 
 		return Boolean(innerConnectionResult) && innerConnectionResult.connected;
 	} else {
@@ -136,7 +136,7 @@ export async function script(connectionProfile: IConnectionProfile, metadata: az
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			};
-			const innerConnectionResult = await connectionService.connect(connectionProfile, owner.uri, options);
+			const innerConnectionResult = (await connectionService.connect(connectionProfile, owner.uri, options))!;
 
 			return Boolean(innerConnectionResult) && innerConnectionResult.connected;
 
@@ -175,6 +175,6 @@ function getScriptingParamDetails(connectionService: IConnectionManagementServic
 }
 
 function getServerInfo(connectionService: IConnectionManagementService, ownerUri: string): azdata.ServerInfo | undefined {
-	let connection: ConnectionManagementInfo = connectionService.getConnectionInfo(ownerUri);
-	return connection.serverInfo;
+	let connection: ConnectionManagementInfo | undefined = connectionService.getConnectionInfo(ownerUri);
+	return connection?.serverInfo;
 }

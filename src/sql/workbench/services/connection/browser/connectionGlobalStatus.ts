@@ -28,7 +28,7 @@ export class ConnectionGlobalStatus {
 				}
 				text = LocalizedConstants.onDidConnectMessage + ' ' + connInfo;
 			}
-			this._notificationService.status(text, { hideAfter: this._displayTime });
+			this._notificationService.status(text!, { hideAfter: this._displayTime });
 		}
 	}
 
