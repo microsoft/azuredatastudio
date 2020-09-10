@@ -166,9 +166,9 @@ has-flag@^3.0.0:
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-3.0.0.tgz#b5d454dc2199ae225699f3467e5a07f3b955bafd"
   integrity sha1-tdRU3CGZriJWmfNGfloH87lVuv0=
 
-"html-query-plan@git://github.com/anthonydresser/html-query-plan.git#2.6":
+"html-query-plan@git://github.com/kburtram/html-query-plan.git#2.6":
   version "2.5.0"
-  resolved "git://github.com/anthonydresser/html-query-plan.git#c524feb824e4960897ad875a37af068376a2b4a3"
+  resolved "git://github.com/kburtram/html-query-plan.git#c524feb824e4960897ad875a37af068376a2b4a3"
 
 htmlparser2@^3.10.0:
   version "3.10.1"
@@ -300,9 +300,9 @@ semver-umd@^5.5.7:
   resolved "https://registry.yarnpkg.com/semver-umd/-/semver-umd-5.5.7.tgz#966beb5e96c7da6fbf09c3da14c2872d6836c528"
   integrity sha512-XgjPNlD0J6aIc8xoTN6GQGwWc2Xg0kq8NzrqMVuKG/4Arl6ab1F8+Am5Y/XKKCR+FceFr2yN/Uv5ZJBhRyRqKg==
 
-"slickgrid@github:anthonydresser/SlickGrid#2.3.33":
+"slickgrid@github:kburtram/SlickGrid#2.3.33":
   version "2.3.33"
-  resolved "https://codeload.github.com/anthonydresser/SlickGrid/tar.gz/7555f28a55a6663469b716dcd288bb35179a8ffd"
+  resolved "https://codeload.github.com/kburtram/SlickGrid/tar.gz/7555f28a55a6663469b716dcd288bb35179a8ffd"
 
 source-map@^0.6.1:
   version "0.6.1"

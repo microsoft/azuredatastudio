@@ -4615,9 +4615,9 @@ html-escaper@^2.0.0:
   resolved "https://registry.yarnpkg.com/html-escaper/-/html-escaper-2.0.0.tgz#71e87f931de3fe09e56661ab9a29aadec707b491"
   integrity sha512-a4u9BeERWGu/S8JiWEAQcdrg9v4QArtP9keViQjGMdff20fBdd8waotXaNmODqBe6uZ3Nafi7K/ho4gCQHV3Ig==
 
-"html-query-plan@git://github.com/anthonydresser/html-query-plan.git#2.6":
+"html-query-plan@git://github.com/kburtram/html-query-plan.git#2.6":
   version "2.5.0"
-  resolved "git://github.com/anthonydresser/html-query-plan.git#c524feb824e4960897ad875a37af068376a2b4a3"
+  resolved "git://github.com/kburtram/html-query-plan.git#c524feb824e4960897ad875a37af068376a2b4a3"
 
 "htmlparser2@>= 3.7.3 < 4.0.0", htmlparser2@^3.9.1:
   version "3.9.2"
@@ -8534,9 +8534,9 @@ slice-ansi@^2.0.0, slice-ansi@^2.1.0:
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
 
-"slickgrid@github:anthonydresser/SlickGrid#2.3.33":
+"slickgrid@github:kburtram/SlickGrid#2.3.33":
   version "2.3.33"
-  resolved "https://codeload.github.com/anthonydresser/SlickGrid/tar.gz/7555f28a55a6663469b716dcd288bb35179a8ffd"
+  resolved "https://codeload.github.com/kburtram/SlickGrid/tar.gz/7555f28a55a6663469b716dcd288bb35179a8ffd"
 
 smart-buffer@4.0.2:
   version "4.0.2"
