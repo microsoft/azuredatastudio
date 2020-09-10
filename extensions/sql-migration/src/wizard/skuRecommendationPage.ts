@@ -10,7 +10,7 @@ import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import { Product, ProductLookupTable } from '../models/product';
 import { SKU_RECOMMENDATION_PAGE_TITLE, SKU_RECOMMENDATION_CHOOSE_A_TARGET } from '../models/strings';
 import { Disposable } from 'vscode';
-import { AssessmentResultsDialog } from './assessmentResultsDialog';
+import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
 
 export class SKURecommendationPage extends MigrationWizardPage {
 	// For future reference: DO NOT EXPOSE WIZARD DIRECTLY THROUGH HERE.
@@ -40,7 +40,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}).component();
 		assessmentLink.onDidClick(async () => {
 			let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog');
-			dialog.openDialog();
+			await dialog.openDialog();
 		});
 
 		const assessmentFormLink = {
