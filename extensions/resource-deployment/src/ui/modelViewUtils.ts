@@ -3,22 +3,22 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
+import { azureResource } from 'azureResource';
 import * as fs from 'fs';
 import { EOL, homedir as os_homedir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { azureResource } from 'azureResource';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles, OptionsSource } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
+import { KubeCtlTool, KubeCtlToolName } from '../services/tools/kubeCtlTool';
+import { IToolsService } from '../services/toolsService';
 import { assert, getDateTimeString, getErrorMessage } from '../utils';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
-import { IToolsService } from '../services/toolsService';
-import { KubeCtlToolName, KubeCtlTool } from '../services/tools/kubeCtlTool';
 
 const localize = nls.loadMessageBundle();
 
@@ -353,7 +353,7 @@ function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata
 async function processField(context: FieldContext): Promise<void> {
 	switch (context.fieldInfo.type) {
 		case FieldType.Options:
-			processOptionsTypeField(context);
+			await processOptionsTypeField(context);
 			break;
 		case FieldType.DateTimeText:
 			processDateTimeTextField(context);
@@ -390,11 +390,11 @@ async function processField(context: FieldContext): Promise<void> {
 			await processKubeStorageClassField(context);
 			break;
 		default:
-			throw new Error(localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", context.fieldInfo.type));
+			throw new Error(loc.unknownFieldTypeError(context.fieldInfo.type));
 	}
 }
 
-function processOptionsTypeField(context: FieldContext): void {
+async function processOptionsTypeField(context: FieldContext): Promise<void> {
 	assert(context.fieldInfo.options !== undefined, `FieldInfo.options must be defined for FieldType:${FieldType.Options}`);
 	if (Array.isArray(context.fieldInfo.options)) {
 		context.fieldInfo.options = <OptionsInfo>{
@@ -405,15 +405,35 @@ function processOptionsTypeField(context: FieldContext): void {
 	}
 	assert(typeof context.fieldInfo.options === 'object', `FieldInfo.options must be an object if it is not an array`);
 	assert('optionsType' in context.fieldInfo.options, `When FieldInfo.options is an object it must have 'optionsType' property`);
+	if (context.fieldInfo.options.source) {
+		context.fieldInfo.options.source = OptionsSource.construct(context.fieldInfo.options.source.type, context.fieldInfo.options.source);
+		context.fieldInfo.options.values = await context.fieldInfo.options.source.getOptions();
+		context.fieldInfo.subFields = context.fieldInfo.subFields || [];
+	}
+	let optionsComponent: InputComponent;
 	if (context.fieldInfo.options.optionsType === OptionsType.Radio) {
-		processRadioOptionsTypeField(context);
+		optionsComponent = await processRadioOptionsTypeField(context);
 	} else {
 		assert(context.fieldInfo.options.optionsType === OptionsType.Dropdown, `When optionsType is not ${OptionsType.Radio} then it must be ${OptionsType.Dropdown}`);
-		processDropdownOptionsTypeField(context);
+		optionsComponent = processDropdownOptionsTypeField(context);
 	}
+	if (context.fieldInfo.options.source) {
+		const optionsSource = context.fieldInfo.options.source;
+		for (const key of Object.keys(optionsSource.variableNames)) {
+			context.fieldInfo.subFields!.push({
+				label: context.fieldInfo.label,
+				variableName: optionsSource.variableNames[key]
+			});
+			context.onNewInputComponentCreated(optionsSource.variableNames[key], {
+				component: optionsComponent,
+				inputValueTransformer: (controllerName: string) => optionsSource.getVariableValue(key, controllerName)
+			});
+		}
+	}
+
 }
 
-function processDropdownOptionsTypeField(context: FieldContext): void {
+function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDownComponent {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const options = context.fieldInfo.options as OptionsInfo;
 	const dropdown = createDropdown(context.view, {
@@ -427,6 +447,7 @@ function processDropdownOptionsTypeField(context: FieldContext): void {
 	dropdown.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: dropdown });
 	addLabelInputPairToContainer(context.view, context.components, label, dropdown, context.fieldInfo);
+	return dropdown;
 }
 
 function processDateTimeTextField(context: FieldContext): void {

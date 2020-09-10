@@ -62,6 +62,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 				.filter(node => node instanceof ControllerTreeNode)
 				.map(node => (node as ControllerTreeNode).model.info);
 
+		},
+		getControllerPassword: async (controllerInfo: arc.ControllerInfo) => {
+			return await treeDataProvider.getPassword(controllerInfo);
 		}
 	};
 }

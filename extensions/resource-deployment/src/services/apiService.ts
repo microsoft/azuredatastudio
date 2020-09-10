@@ -5,14 +5,17 @@
 
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
+import * as arc from 'arc';
 
 export interface IApiService {
 	getAzurecoreApi(): Promise<azurecore.IExtension>;
+	getArcApi(): Promise<arc.IExtension>;
 }
 
 class ApiService implements IApiService {
 
 	private azurecoreApi: azurecore.IExtension | undefined;
+	private arcApi: arc.IExtension | undefined;
 
 	constructor() { }
 
@@ -24,6 +27,16 @@ class ApiService implements IApiService {
 			}
 		}
 		return this.azurecoreApi;
+	}
+
+	public async getArcApi(): Promise<arc.IExtension> {
+		if (!this.arcApi) {
+			this.arcApi = <arc.IExtension>(await vscode.extensions.getExtension(arc.extension.name)?.activate());
+			if (!this.arcApi) {
+				throw new Error('Unable to retrieve arc API');
+			}
+		}
+		return this.arcApi;
 	}
 }
 

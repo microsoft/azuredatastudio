@@ -92,6 +92,28 @@
 													}
                         },
                         {
+													"type": "options",
+													"label": "%wizard.data.controllers%",
+													"required": true,
+													"variableName": "AZDATA_NB_VAR_CONTROLLER",
+													"editable": false,
+													"options": {
+                            "source": {
+                              "type": "ArcControllersOptionsSource",
+                              "variableNames": {
+                                "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
+                                "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
+                              }
+                            },
+														"values":[
+															"ignored1",
+															"ignored2"
+														],
+														"defaultValue": "aks-dev-test",
+														"optionsType": "radio"
+													}
+                        },
+                        {
                           "label": "%wizard.dropdown.options.field%",
                           "variableName": "AZDATA_NB_VAR_DROPDOWN_OPTIONS",
                           "type": "options",

@@ -37,5 +37,6 @@ declare module 'arc' {
 
 	export interface IExtension {
 		getRegisteredDataControllers(): Promise<ControllerInfo[]>;
+		getControllerPassword(controllerInfo: ControllerInfo): Promise<string>;
 	}
 }
