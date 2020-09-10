@@ -261,17 +261,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.loading, false);
 	}
 
-	public set loading(newValue: boolean) {
-		this.setPropertyFromUI<azdata.DropDownProperties, boolean>((props, value) => props.loading = value, newValue);
-		this._changeRef.detectChanges();
-	}
-
 	public get loadingText(): string {
 		return this.getPropertyOrDefault<azdata.DropDownProperties, string>((props) => props.loadingText, 'Loading');
-	}
-
-	public set loadingText(newValue: string) {
-		this.setPropertyFromUI<azdata.DropDownProperties, string>((props, value) => props.loadingText = value, newValue);
-		this._changeRef.detectChanges();
 	}
 }
