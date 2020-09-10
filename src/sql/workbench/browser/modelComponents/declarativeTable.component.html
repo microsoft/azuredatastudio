@@ -31,7 +31,7 @@
 						</editable-select-box>
 						<input-box *ngIf="isInputBox(c)" [value]="cellData.value"
 							(onDidChange)="onInputBoxChanged($event,r,c)"></input-box>
-						<span *ngIf="isLabel(c,r)" (click)="onCellClick(r)">
+						<span *ngIf="isLabel(c)" (click)="onCellClick(r)">
 							{{cellData.value}}
 						</span>
 						<model-component-wrapper *ngIf="isComponent(c) && getItemDescriptor(cellData)"

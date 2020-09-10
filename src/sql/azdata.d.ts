@@ -3306,6 +3306,9 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableProperties {
+		/**
+		 * @deprecated Use dataValues instead.
+		 */
 		data?: any[][];
 		columns: DeclarativeTableColumn[];
 	}

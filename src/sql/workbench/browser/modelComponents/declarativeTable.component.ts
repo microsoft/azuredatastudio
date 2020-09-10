@@ -71,7 +71,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 		return !column.isReadOnly;
 	}
 
-	private isLabel(colIdx: number, r?: number): boolean {
+	private isLabel(colIdx: number): boolean {
 		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
 		return column.isReadOnly && column.valueType === DeclarativeDataType.string;
 	}

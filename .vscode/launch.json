@@ -69,7 +69,7 @@
 			}
 		},
 		{
-			"type": "pwa-chrome",
+			"type": "chrome",
 			"request": "attach",
 			"name": "Attach to azuredatastudio",
 			"port": 9222
