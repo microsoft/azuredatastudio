@@ -24,5 +24,6 @@ export const realm = localize('deployCluster.Realm', "Realm");
 export const unexpectedOptionsSourceType = (type: OptionsSourceType) => localize('optionsSourceType.Invalid', "Invalid options source type:{0}", type);
 export const unknownFieldTypeError = (type: FieldType) => localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", type);
 export const variableValueFetchForUnsupportedVariable = (variableName: string) => localize('getVariableValue.unknownVariableName', "Attempt to get variable value for unknown variable:{0}", variableName);
+export const noControllersConnected = localize('noControllersConnected', "No ARC controllers are currently connected. Please run the command: 'Connect to Existing Azure Arc Controller' and then try again");
 
 

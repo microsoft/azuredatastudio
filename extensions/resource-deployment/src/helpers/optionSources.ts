@@ -25,6 +25,9 @@ export namespace OptionsSources {
 			}
 			if (this._controllerInfos === undefined) {
 				this._controllerInfos = await this._arcApi.getRegisteredDataControllers();
+				if (this._controllerInfos === undefined || this._controllerInfos.length === 0) {
+					throw new Error(loc.noControllersConnected);
+				}
 			}
 			return await Promise.all(this._controllerInfos.map(async ci => {
 				this._passwordMap.set(ci, await this._arcApi!.getControllerPassword(ci));
