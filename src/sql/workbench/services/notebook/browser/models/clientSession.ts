@@ -30,22 +30,22 @@ export class ClientSession implements IClientSession {
 	private _unhandledMessageEmitter = new Emitter<nb.IMessage>();
 	private _propertyChangedEmitter = new Emitter<'path' | 'name' | 'type'>();
 	private _notebookUri: URI;
-	private _type: string;
-	private _name: string;
+	private _type: string | undefined = undefined;
+	private _name: string | undefined = undefined;
 	private _isReady: boolean;
 	private _ready: Deferred<void>;
 	private _kernelChangeCompleted: Deferred<void>;
-	private _kernelDisplayName: string;
-	private _errorMessage: string;
-	private _cachedKernelSpec: nb.IKernelSpec;
+	private _kernelDisplayName: string | undefined = undefined;
+	private _errorMessage: string | undefined;
+	private _cachedKernelSpec: nb.IKernelSpec | undefined = undefined;
 	private _kernelChangeHandlers: KernelChangeHandler[] = [];
 	private _defaultKernel: nb.IKernelSpec;
 
 	//#endregion
 
-	private _serverLoadFinished: Promise<void>;
-	private _session: nb.ISession;
-	private isServerStarted: boolean;
+	private _serverLoadFinished: Promise<void> = Promise.resolve();
+	private _session: nb.ISession | undefined = undefined;
+	private isServerStarted: boolean = false;
 	private notebookManager: INotebookManager;
 	private _kernelConfigActions: ((kernelName: string) => Promise<any>)[] = [];
 
@@ -71,7 +71,7 @@ export class ClientSession implements IClientSession {
 		this._isReady = true;
 		this._ready.resolve();
 		if (!this.isInErrorState && this._session && this._session.kernel) {
-			await this.notifyKernelChanged(undefined, this._session.kernel);
+			await this.notifyKernelChanged(this._session.kernel);
 		}
 	}
 
@@ -172,16 +172,16 @@ export class ClientSession implements IClientSession {
 	public get propertyChanged(): Event<'path' | 'name' | 'type'> {
 		return this._propertyChangedEmitter.event;
 	}
-	public get kernel(): nb.IKernel | null {
+	public get kernel(): nb.IKernel | undefined {
 		return this._session ? this._session.kernel : undefined;
 	}
 	public get notebookUri(): URI {
 		return this._notebookUri;
 	}
-	public get name(): string {
+	public get name(): string | undefined {
 		return this._name;
 	}
-	public get type(): string {
+	public get type(): string | undefined {
 		return this._type;
 	}
 	public get status(): nb.KernelStatus {
@@ -199,17 +199,17 @@ export class ClientSession implements IClientSession {
 	public get kernelChangeCompleted(): Promise<void> {
 		return this._kernelChangeCompleted.promise;
 	}
-	public get kernelDisplayName(): string {
+	public get kernelDisplayName(): string | undefined {
 		return this._kernelDisplayName;
 	}
-	public get errorMessage(): string {
+	public get errorMessage(): string | undefined {
 		return this._errorMessage;
 	}
 	public get isInErrorState(): boolean {
 		return !!this._errorMessage;
 	}
 
-	public get cachedKernelSpec(): nb.IKernelSpec {
+	public get cachedKernelSpec(): nb.IKernelSpec | undefined {
 		return this._cachedKernelSpec;
 	}
 	//#endregion
@@ -236,11 +236,11 @@ export class ClientSession implements IClientSession {
 		this._isReady = kernel.isReady;
 		await this.updateCachedKernelSpec();
 		// Send resolution events to listeners
-		await this.notifyKernelChanged(oldKernel, newKernel);
+		await this.notifyKernelChanged(newKernel, oldKernel);
 		return kernel;
 	}
 
-	private async notifyKernelChanged(oldKernel: nb.IKernel, newKernel: nb.IKernel): Promise<void> {
+	private async notifyKernelChanged(newKernel: nb.IKernel, oldKernel?: nb.IKernel): Promise<void> {
 		let changeArgs: nb.IKernelChangedArgs = {
 			oldValue: oldKernel,
 			newValue: newKernel
