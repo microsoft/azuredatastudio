@@ -33,27 +33,20 @@ export class DashboardWidget {
 			this._apiWrapper.registerWidget('mls.dashboard', async (view) => {
 				const container = view.modelBuilder.flexContainer().withLayout({
 					flexFlow: 'column',
-					width: '100%',
+					width: 'auto',
 					height: '100%'
 				}).component();
-				const header = this.createHeader(view);
-				const tasksContainer = await this.createTasks(view);
+				const header = await this.createHeader(view);
 				const footerContainer = this.createFooter(view);
 				container.addItem(header, {
 					CSSStyles: {
-						'background-image': `url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))})`,
+						'background-image': `url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))}), linear-gradient(0deg, #F0F0F0 0%, rgba(242,242,242,0) 100%, rgba(242,242,242,0.04) 100%)`,
 						'background-repeat': 'no-repeat',
-						'background-position': 'bottom',
-						'width': `${maxWidth}px`,
-						'height': '330px',
+						'background-position': 'center',
 						'background-size': `${maxWidth}px ${headerMaxHeight}px`,
-						'margin-bottom': '-60px'
-					}
-				});
-				container.addItem(tasksContainer, {
-					CSSStyles: {
+						'border': 'none',
 						'width': `${maxWidth}px`,
-						'height': '150px',
+						'height': '240px'
 					}
 				});
 				container.addItem(footerContainer, {
@@ -78,7 +71,7 @@ export class DashboardWidget {
 		});
 	}
 
-	private createHeader(view: azdata.ModelView): azdata.Component {
+	private async createHeader(view: azdata.ModelView): Promise<azdata.Component> {
 		const header = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: maxWidth,
@@ -88,7 +81,8 @@ export class DashboardWidget {
 			value: constants.dashboardTitle,
 			CSSStyles: {
 				'font-size': '36px',
-				'font-weight': 'bold',
+				'font-weight': '300',
+				'line-height': '48px',
 				'margin': '0px'
 			}
 		}).component();
@@ -96,14 +90,21 @@ export class DashboardWidget {
 			value: constants.dashboardDesc,
 			CSSStyles: {
 				'font-size': '14px',
-				'font-weight': 'bold',
+				'font-weight': '300',
+				'line-height': '20px',
 				'margin': '0px'
 			}
 		}).component();
 		header.addItems([titleComponent, descComponent], {
 			CSSStyles: {
-				'width': `${maxWidth}px`,
-				'padding': '5px'
+				'padding-left': '10px'
+			}
+		});
+		const tasksContainer = await this.createTasks(view);
+		header.addItem(tasksContainer, {
+			CSSStyles: {
+				'height': '84px',
+				'width': `${maxWidth}px`
 			}
 		});
 
@@ -467,8 +468,14 @@ export class DashboardWidget {
 		const tasksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			width: '100%',
-			height: '50px',
+			height: '84px',
 		}).component();
+		tasksContainer.updateCssStyles(
+			{
+				'justify-content': 'space-around',
+				'margin-top': '87px'
+			}
+		);
 		const predictionMetadata: IActionMetadata = {
 			title: constants.makePredictionTitle,
 			description: constants.makePredictionDesc,
@@ -479,7 +486,7 @@ export class DashboardWidget {
 			link: 'https://go.microsoft.com/fwlink/?linkid=2129795',
 			command: constants.mlsPredictModelCommand
 		};
-		const predictionButton = this.createTaskButton(view, predictionMetadata);
+		const predictionButton = await this.createTaskButton(view, predictionMetadata);
 		const importMetadata: IActionMetadata = {
 			title: constants.importModelTitle,
 			description: constants.importModelDesc,
@@ -490,7 +497,7 @@ export class DashboardWidget {
 			link: 'https://go.microsoft.com/fwlink/?linkid=2129796',
 			command: constants.mlManageModelsCommand
 		};
-		const importModelsButton = this.createTaskButton(view, importMetadata);
+		const importModelsButton = await this.createTaskButton(view, importMetadata);
 		const notebookMetadata: IActionMetadata = {
 			title: constants.createNotebookTitle,
 			description: constants.createNotebookDesc,
@@ -501,12 +508,8 @@ export class DashboardWidget {
 			link: 'https://go.microsoft.com/fwlink/?linkid=2129920',
 			command: constants.notebookCommandNew
 		};
-		const notebookModelsButton = this.createTaskButton(view, notebookMetadata);
-		tasksContainer.addItems([predictionButton, importModelsButton, notebookModelsButton], {
-			CSSStyles: {
-				'padding': '10px'
-			}
-		});
+		const notebookModelsButton = await this.createTaskButton(view, notebookMetadata);
+		tasksContainer.addItems([predictionButton, importModelsButton, notebookModelsButton]);
 		if (!await this._predictService.serverSupportOnnxModel()) {
 			console.log(constants.onnxNotSupportedError);
 		}
@@ -514,15 +517,15 @@ export class DashboardWidget {
 		return tasksContainer;
 	}
 
-	private createTaskButton(view: azdata.ModelView, taskMetaData: IActionMetadata): azdata.Component {
+	private async createTaskButton(view: azdata.ModelView, taskMetaData: IActionMetadata): Promise<azdata.Component> {
 		const maxHeight: number = 84;
-		const maxWidth: number = 256;
+		const maxWidth: number = 236;
 		const buttonContainer = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			description: taskMetaData.description,
 			height: maxHeight,
-			iconHeight: '32px',
+			iconHeight: 32,
 			iconPath: taskMetaData.iconPath,
-			iconWidth: '32px',
+			iconWidth: 32,
 			title: taskMetaData.title,
 			buttonType: azdata.ButtonType.Informational,
 			width: maxWidth,

@@ -14,8 +14,8 @@ export interface IInfoButtonOptions extends IButtonOptions {
 	description: string,
 	buttonMaxHeight: number,
 	iconClass: string,
-	iconHeight: string | number,
-	iconWidth: string | number,
+	iconHeight: number,
+	iconWidth: number,
 	iconPath: IUserFriendlyIcon,
 	textTitle: string,
 	buttonMaxWidth: number,
@@ -32,8 +32,8 @@ export class InfoButton extends sqlButton {
 	private _description?: string;
 	private _buttonMaxHeight?: number;
 	private _iconClass?: string;
-	private _iconHeight?: string | number;
-	private _iconWidth?: string | number;
+	private _iconHeight?: number;
+	private _iconWidth?: number;
 	private _iconPath?: IUserFriendlyIcon;
 	private _textTitle?: string;
 	private _buttonMaxWidth?: number;
@@ -55,7 +55,6 @@ export class InfoButton extends sqlButton {
 			this._iconContainer.style.alignItems = 'flex-start';
 			this._iconContainer.style.display = 'flex';
 			this._iconContainer.style.flexFlow = 'column';
-			this._iconContainer.style.paddingTop = '10px';
 			this._iconContainer.style.paddingRight = '10px';
 
 			this._iconElement = document.createElement('div');
@@ -66,18 +65,20 @@ export class InfoButton extends sqlButton {
 			this._textContainer.style.display = 'flex';
 			this._textContainer.style.flexFlow = 'column';
 			this._textContainer.style.justifyContent = 'space-between';
-			this._textContainer.style.padding = '0 0 5px 12px';
+			this._textContainer.style.padding = '0 0 0 10px';
 			this._textContainer.style.margin = '0px';
 
 			this._pTitle = document.createElement('p');
 			this._pTitle.setAttribute('aria-hidden', 'false');
 			this._pTitle.style.fontSize = '14px';
 			this._pTitle.style.fontWeight = 'bold';
+			this._pTitle.style.lineHeight = '20px';
 			this._pTitle.style.margin = '0px';
 
 			this._pDesc = document.createElement('p');
 			this._pDesc.setAttribute('aria-hidden', 'false');
-			this._pDesc.style.fontSize = '13px';
+			this._pDesc.style.fontSize = '12px';
+			this._pDesc.style.lineHeight = '16px';
 			this._pDesc.style.margin = '0px';
 
 			this._textContainer.appendChild(this._pTitle);
@@ -114,8 +115,8 @@ export class InfoButton extends sqlButton {
 	public set buttonMaxHeight(value: number | undefined) {
 		this._buttonMaxHeight = value;
 		this._main.style.height = this._buttonMaxHeight.toString() + 'px';
-		this._iconContainer.style.height = this._buttonMaxHeight.toString() + 'px';
-		this._textContainer.style.height = this._buttonMaxHeight.toString() + 'px';
+		this._iconContainer.style.height = (this._buttonMaxHeight - 20).toString() + 'px';
+		this._textContainer.style.height = (this._buttonMaxHeight - 20).toString() + 'px';
 	}
 
 	public get buttonMaxWidth(): number | undefined {
@@ -124,24 +125,24 @@ export class InfoButton extends sqlButton {
 	public set buttonMaxWidth(value: number | undefined) {
 		this._buttonMaxWidth = value;
 		this._main.style.width = this._buttonMaxWidth.toString() + 'px';
-		this._iconContainer.style.width = (this._buttonMaxWidth - 200).toString() + 'px';
-		this._textContainer.style.width = (this._buttonMaxWidth - 50).toString() + 'px';
+		this._textContainer.style.width = (this._buttonMaxWidth - this._iconWidth).toString() + 'px';
 	}
 
-	public get iconHeight(): string | number | undefined {
+	public get iconHeight(): number | undefined {
 		return this._iconHeight;
 	}
-	public set iconHeight(value: string | number | undefined) {
+	public set iconHeight(value: number | undefined) {
 		this._iconHeight = value;
-		this._iconElement.style.height = this._iconHeight.toString();
+		this._iconElement.style.height = this._iconHeight.toString() + 'px';
 	}
 
-	public get iconWidth(): string | number | undefined {
+	public get iconWidth(): number | undefined {
 		return this._iconWidth;
 	}
-	public set iconWidth(value: string | number | undefined) {
+	public set iconWidth(value: number | undefined) {
 		this._iconWidth = value;
-		this._iconElement.style.width = this._iconWidth.toString();
+		this._iconContainer.style.width = this._iconWidth.toString() + 'px';
+		this._iconElement.style.width = this._iconWidth.toString() + 'px';
 	}
 
 	public get iconClass(): string | undefined {
