@@ -225,6 +225,11 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'default': true,
 			'description': localize('notebook.enableDoubleClickEdit', "Enable double click to edit for text cells in notebooks")
+		},
+		'notebook.setRichTextViewByDefault': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('notebook.setRichTextViewByDefault', "Set Rich Text View mode by default for text cells")
 		}
 	}
 });
