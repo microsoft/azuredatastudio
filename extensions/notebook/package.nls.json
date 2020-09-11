@@ -10,6 +10,7 @@
 	"notebook.maxBookSearchDepth.description": "Maximum depth of subdirectories to search for Books (Enter 0 for infinite)",
 	"notebook.collapseBookItems.description": "Collapse Book items at root level in the Notebooks Viewlet",
 	"notebook.remoteBookDownloadTimeout.description": "Download timeout in milliseconds for GitHub books",
+	"notebook.pinnedNotebooks.description": "Notebooks that are pinned by the user for the current workspace",
 	"notebook.command.new": "New Notebook",
 	"notebook.command.open": "Open Notebook",
 	"notebook.analyzeJupyterNotebook": "Analyze in Notebook",
@@ -37,6 +38,7 @@
 	"title.searchJupyterBook": "Search Book",
 	"title.SavedBooks": "Notebooks",
 	"title.ProvidedBooks": "Provided Books",
+	"title.PinnedBooks": "Pinned notebooks",
 	"title.PreviewLocalizedBook": "Get localized SQL Server 2019 guide",
 	"title.openJupyterBook": "Open Jupyter Book",
 	"title.closeJupyterBook": "Close Jupyter Book",
@@ -44,5 +46,7 @@
 	"title.revealInBooksViewlet": "Reveal in Books",
 	"title.createJupyterBook": "Create Book (Preview)",
 	"title.openNotebookFolder": "Open Notebooks in Folder",
-	"title.openRemoteJupyterBook": "Add Remote Jupyter Book"
+	"title.openRemoteJupyterBook": "Add Remote Jupyter Book",
+	"title.pinNotebook": "Pin Notebook",
+	"title.unpinNotebook": "Unpin Notebook"
 }

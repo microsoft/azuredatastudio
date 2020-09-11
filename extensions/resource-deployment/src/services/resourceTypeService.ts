@@ -13,7 +13,7 @@ import * as nls from 'vscode-nls';
 import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
-import { ResourceType, ResourceTypeOption, NotebookPathInfo, DeploymentProvider, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookWizardDeploymentProvider } from '../interfaces';
+import { ResourceType, ResourceTypeOption, NotebookPathInfo, DeploymentProvider, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookWizardDeploymentProvider, NotebookInfo } from '../interfaces';
 import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
 import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
 
@@ -42,7 +42,7 @@ export class ResourceTypeService implements IResourceTypeService {
 			vscode.extensions.all.forEach((extension) => {
 				const extensionResourceTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.resourceDeploymentTypes as ResourceType[];
 				if (extensionResourceTypes) {
-					extensionResourceTypes.forEach((resourceType) => {
+					extensionResourceTypes.forEach((resourceType: ResourceType) => {
 						this.updatePathProperties(resourceType, extension.extensionPath);
 						resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
 						this._resourceTypes.push(resourceType);
@@ -77,10 +77,14 @@ export class ResourceTypeService implements IResourceTypeService {
 		});
 	}
 
-	private updateNotebookPath(objWithNotebookProperty: { notebook: string | NotebookPathInfo } | undefined, extensionPath: string): void {
+	private updateNotebookPath(objWithNotebookProperty: { notebook: string | NotebookPathInfo | NotebookInfo[] } | undefined, extensionPath: string): void {
 		if (objWithNotebookProperty && objWithNotebookProperty.notebook) {
 			if (typeof objWithNotebookProperty.notebook === 'string') {
 				objWithNotebookProperty.notebook = path.join(extensionPath, objWithNotebookProperty.notebook);
+			} else if (Array.isArray(objWithNotebookProperty.notebook)) {
+				objWithNotebookProperty.notebook.forEach(nb => {
+					nb.path = path.join(extensionPath, nb.path);
+				});
 			} else {
 				if (objWithNotebookProperty.notebook.darwin) {
 					objWithNotebookProperty.notebook.darwin = path.join(extensionPath, objWithNotebookProperty.notebook.darwin);
@@ -245,7 +249,7 @@ export class ResourceTypeService implements IResourceTypeService {
 			const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService, this.toolsService);
 			wizard.open();
 		} else if (instanceOfDialogDeploymentProvider(provider)) {
-			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, provider.dialog);
+			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, this.toolsService, provider.dialog);
 			dialog.open();
 		} else if (instanceOfNotebookDeploymentProvider(provider)) {
 			this.notebookService.launchNotebook(provider.notebook);

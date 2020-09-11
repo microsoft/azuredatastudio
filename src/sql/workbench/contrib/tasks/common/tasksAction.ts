@@ -24,7 +24,7 @@ export class CancelAction extends Action {
 		super(id, label);
 	}
 	public run(element: TaskNode): Promise<boolean> {
-		if (element instanceof TaskNode) {
+		if (element instanceof TaskNode && element.providerName) {
 			this._taskService.cancelTask(element.providerName, element.id).then((result) => {
 				if (!result) {
 					let error = localize('errorMsgFromCancelTask', "The task is failed to cancel.");

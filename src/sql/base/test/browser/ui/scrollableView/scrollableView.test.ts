@@ -8,6 +8,7 @@ import { Emitter } from 'vs/base/common/event';
 import * as assert from 'assert';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { timeout } from 'vs/base/common/async';
+import { scheduleAtNextAnimationFrame } from 'vs/base/browser/dom';
 
 class TestView extends Disposable implements IView {
 
@@ -20,7 +21,7 @@ class TestView extends Disposable implements IView {
 		this._onDidLayout.fire({ height, width });
 	}
 
-	private _size: number;
+	private _size: number = 0;
 	public get size(): number {
 		return this._size;
 	}
@@ -135,7 +136,7 @@ suite('ScrollableView', () => {
 
 		assert.equal(view1.size, 100, 'view1 is minimum size');
 		assert.equal(view2.size, 100, 'view2 is minimum size');
-		assert.equal(view3.size, undefined, 'view3 should not have been layout yet');
+		assert.equal(view3.size, 0, 'view3 should not have been layout yet');
 	});
 
 	test('reacts to changes in views', async () => {
@@ -157,7 +158,7 @@ suite('ScrollableView', () => {
 
 		assert.equal(view1.size, 130, 'view1 should be 130');
 		assert.equal(view2.size, 100, 'view2 should still be minimum size');
-		assert.equal(view3.size, undefined, 'view3 should not have been layout yet');
+		assert.equal(view3.size, 0, 'view3 should not have been layout yet');
 	});
 
 	test('programmatically scrolls', async () => {
@@ -174,20 +175,24 @@ suite('ScrollableView', () => {
 
 		assert.equal(view1.size, 100, 'view1 is minimum size');
 		assert.equal(view2.size, 100, 'view2 is minimum size');
-		assert.equal(view3.size, undefined, 'view3 should not have been layout yet');
+		assert.equal(view3.size, 0, 'view3 should not have been layout yet');
 		assert.equal(getViewChildren(container).length, 2, 'only 2 views are rendered');
 
 		scrollableView.setScrollTop(100);
 
 		await waitForAnimation();
+
 		assert.equal(view2.size, 100, 'view2 is minimum size');
 		assert.equal(view3.size, 100, 'view3 is minimum size');
 		assert.equal(getViewChildren(container).length, 2, 'only 2 views are rendered');
 	});
 });
 
-function waitForAnimation(): Promise<void> {
-	return timeout(200);
+async function waitForAnimation(): Promise<void> {
+	await timeout(50);
+	await new Promise<void>(r => scheduleAtNextAnimationFrame(r, -1000));
+	await new Promise<void>(r => scheduleAtNextAnimationFrame(r, -1000));
+	await timeout(50);
 }
 
 function getViewChildren(container: HTMLElement): NodeListOf<Element> {
