@@ -227,7 +227,7 @@ suite('Schema compare integration test suite', () => {
 			await utils.tryDeleteDB(server, targetDB, ownerUri);
 		}
 	});
-	test('Schema compare dacpac to dacpac comparison with include exclude', async function () {
+	test('Schema compare dacpac to dacpac comparison with include exclude @UNSTABLE@', async function () {
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 		const operationId = 'testOperationId_' + new Date().getTime().toString();
 
