@@ -27,8 +27,8 @@ import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/
 import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import * as turndownPluginGfm from '../turndownPluginGfm';
 import TurndownService = require('turndown');
-import turndownPluginGfm = require('turndown-plugin-gfm');
 
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
