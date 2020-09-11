@@ -55,7 +55,7 @@ describe('Add Database Reference Dialog', () => {
 		dialog.dacpacTextbox!.value = 'testDb.dacpac';
 		dialog.databaseNameTextbox!.value = 'testDb';
 		dialog.tryEnableAddReferenceButton();
-		should(dialog.dialog.okButton.enabled).equal(true, `Ok button should be enabled after the dacpac textbox is filled`);
+		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled after the dacpac textbox is filled');
 
 		// change location to different database, different server
 		dialog.locationDropdown!.value = constants.differentDbDifferentServer;
