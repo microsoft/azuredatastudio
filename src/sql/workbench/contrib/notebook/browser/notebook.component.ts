@@ -261,6 +261,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
+	public unselectActiveCell() {
+		this.model.updateActiveCell(undefined);
+		this.detectChanges();
+	}
+
 	// Add cell based on cell type
 	public addCell(cellType: CellType, index?: number, event?: Event) {
 		if (event) {
