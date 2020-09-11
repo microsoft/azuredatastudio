@@ -3,8 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/// <reference path='../../../../src/vs/vscode.d.ts'/>
-/// <reference path='../../../../src/sql/azdata.d.ts'/>
-/// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
-/// <reference path='../../../data-workspace/src/dataworkspace.d.ts'/>
-/// <reference types='@types/node'/>
+export class Log {
+	error(msg: string): void {
+		console.error(msg);
+	}
+}
+const Logger = new Log();
+export default Logger;

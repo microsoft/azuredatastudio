@@ -52,6 +52,7 @@ describe('Add Database Reference Dialog', () => {
 
 		// change location to different database, different server
 		dialog.locationDropdown!.value = constants.differentDbDifferentServer;
+		dialog.updateEnabledInputBoxes();
 		dialog.tryEnableAddReferenceButton();
 		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because server fields are not filled');
 
@@ -63,8 +64,13 @@ describe('Add Database Reference Dialog', () => {
 
 		// change location to same database
 		dialog.locationDropdown!.value = constants.sameDatabase;
+		dialog.updateEnabledInputBoxes();
 		dialog.tryEnableAddReferenceButton();
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled because only dacpac location is needed for a reference located on the same database');
+
+		// switch to project
+		dialog.projectRadioButtonClick();
+		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because there are no projects in the dropdown');
 
 		// change reference type back to system db
 		dialog.systemDbRadioButtonClick();
@@ -77,7 +83,7 @@ describe('Add Database Reference Dialog', () => {
 		const dialog = new AddDatabaseReferenceDialog(project);
 		await dialog.openDialog();
 
-		// dialog starts with system db
+		// dialog starts with system db because there aren't any other projects in the workspace
 		should(dialog.currentReferenceType).equal(ReferenceType.systemDb);
 		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: true, databaseVariableEnabled: false, serverNameEnabled: false, serverVariabledEnabled: false});
 
@@ -96,6 +102,12 @@ describe('Add Database Reference Dialog', () => {
 		dialog.locationDropdown!.value = constants.sameDatabase;
 		dialog.updateEnabledInputBoxes();
 		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: false, databaseVariableEnabled: false, serverNameEnabled: false, serverVariabledEnabled: false});
+
+		// change to project reference
+		dialog.projectRadioButtonClick();
+		should(dialog.currentReferenceType).equal(ReferenceType.project);
+		should(dialog.locationDropdown!.value).equal(constants.sameDatabase);
+		validateInputBoxEnabledStates(dialog, { databaseNameEnabled: false, databaseVariableEnabled: false, serverNameEnabled: false, serverVariabledEnabled: false});
 	});
 });
 
@@ -107,8 +119,8 @@ interface inputBoxExpectedStates {
 }
 
 function validateInputBoxEnabledStates(dialog: AddDatabaseReferenceDialog, expectedStates: inputBoxExpectedStates): void {
-	should(dialog.databaseNameTextbox?.enabled).equal(expectedStates.databaseNameEnabled);
-	should(dialog.databaseVariableTextbox?.enabled).equal(expectedStates.databaseVariableEnabled);
-	should(dialog.serverNameTextbox?.enabled).equal(expectedStates.serverNameEnabled);
-	should(dialog.serverVariableTextbox?.enabled).equal(expectedStates.serverVariabledEnabled);
+	should(dialog.databaseNameTextbox?.enabled).equal(expectedStates.databaseNameEnabled, `Database name text box should be ${expectedStates.databaseNameEnabled}. Actual: ${dialog.databaseNameTextbox?.enabled}`);
+	should(dialog.databaseVariableTextbox?.enabled).equal(expectedStates.databaseVariableEnabled, `Database variable text box should be ${expectedStates.databaseVariableEnabled}. Actual: ${dialog.databaseVariableTextbox?.enabled}`);
+	should(dialog.serverNameTextbox?.enabled).equal(expectedStates.serverNameEnabled,  `Server name text box should be ${expectedStates.serverNameEnabled}. Actual: ${dialog.serverNameTextbox?.enabled}`);
+	should(dialog.serverVariableTextbox?.enabled).equal(expectedStates.serverVariabledEnabled, `Server variable text box should be ${expectedStates.serverVariabledEnabled}. Actual: ${dialog.serverVariableTextbox?.enabled}`);
 }

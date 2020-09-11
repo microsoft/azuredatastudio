@@ -272,6 +272,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	/**
+	 * Indicates all result grid output has been converted to mimeType and html.
+	 */
+	public get gridDataConversionComplete(): Promise<any> {
+		let promises = [];
+		for (let cell of this._cells) {
+			promises.push(cell.gridDataConversionComplete);
+		}
+		return Promise.all(promises);
+	}
+
+	/**
 	 * Notifies when the client session is ready for use
 	 */
 	public get onClientSessionReady(): Event<IClientSession> {
@@ -593,8 +604,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let providers = this._capabilitiesService.providers;
 			for (const server in providers) {
 				let alias = providers[server].connection.notebookKernelAlias;
+				// Add Notebook Kernel Alias to kernelAliases
 				if (alias && this._kernelAliases.indexOf(alias) === -1) {
 					this._kernelAliases.push(providers[server].connection.notebookKernelAlias);
+					this._kernelDisplayNameToConnectionProviderIds.set(alias, [providers[server].connection.providerId]);
 				}
 			}
 		}
@@ -640,7 +653,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let standardKernels = find(this._standardKernels, kernel => this._defaultKernel && kernel.displayName === this._defaultKernel.display_name);
 			let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
 			let providerFeatures = this._capabilitiesService.getCapabilities(profile.providerName);
-			if (connectionProviderIds.length > 0) {
+			if (connectionProviderIds.length > 0 && this._currentKernelAlias) {
 				this._currentKernelAlias = providerFeatures?.connection.notebookKernelAlias;
 				this._kernelDisplayNameToConnectionProviderIds.set(this._currentKernelAlias, [profile.providerName]);
 			}
