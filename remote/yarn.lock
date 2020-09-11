@@ -833,6 +833,11 @@ lodash@^4.17.19:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
 
+mark.js@^8.11.1:
+  version "8.11.1"
+  resolved "https://registry.yarnpkg.com/mark.js/-/mark.js-8.11.1.tgz#180f1f9ebef8b0e638e4166ad52db879beb2ffc5"
+  integrity sha1-GA8fnr74sOY45BZq1S24eb6y/8U=
+
 mime-db@1.44.0:
   version "1.44.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.44.0.tgz#fa11c5eb0aca1334b4233cb4d52f10c5a6272f92"

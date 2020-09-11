@@ -733,7 +733,7 @@
 					"angular2-grid",
 					"html-query-plan",
 					"turndown",
-					"turndown-plugin-gfm"
+					"mark.js"
                 ]
             },
             {

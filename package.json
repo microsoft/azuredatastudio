@@ -72,6 +72,7 @@
     "jquery": "3.5.0",
     "jschardet": "2.2.1",
     "keytar": "^5.5.0",
+    "mark.js": "^8.11.1",
     "minimist": "^1.2.5",
     "native-is-elevated": "0.4.1",
     "native-keymap": "2.2.0",
