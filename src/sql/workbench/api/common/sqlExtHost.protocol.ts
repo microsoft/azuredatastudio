@@ -820,7 +820,7 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$setDirty(handle: number, isDirty: boolean): void;
 }
 export interface ExtHostQueryEditorShape {
-	$onQueryEvent(handle: number, fileUri: string, providerId: string, event: IQueryEvent): void;
+	$onQueryEvent(providerId: string, handle: number, fileUri: string, event: IQueryEvent): void;
 }
 
 export interface MainThreadQueryEditorShape extends IDisposable {
@@ -829,7 +829,7 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 	$runQuery(fileUri: string, runCurrentQuery?: boolean): void;
 	$createQueryTab(fileUri: string, title: string, content: string): void;
 	$setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
-	$registerQueryInfoListener(handle: number, providerId: string): void;
+	$registerQueryInfoListener(handle: number): void;
 }
 
 export interface ExtHostNotebookShape {
