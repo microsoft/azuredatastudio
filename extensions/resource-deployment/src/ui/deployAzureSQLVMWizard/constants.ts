@@ -42,7 +42,7 @@ export const NetworkSettingsNewSubnet = localize('deployAzureSQLVM.NetworkSettin
 export const SubnetDropdownLabel = localize('deployAzureSQLVM.SubnetDropdownLabel', "Subnet");
 export const PublicIPDropdownLabel = localize('deployAzureSQLVM.PublicIPDropdownLabel', "Public IP");
 export const NetworkSettingsNewPublicIp = localize('deployAzureSQLVM.NetworkSettingsUseExistingPublicIp', "New public ip");
-export const RDPAllowCheckboxLabel = localize('deployAzureSQLVM.VmRDPAllowCheckboxLabel', "Enable RDP(3389) inbound Port");
+export const RDPAllowCheckboxLabel = localize('deployAzureSQLVM.VmRDPAllowCheckboxLabel', "Enable Remote Desktop (RDP) inbound port (3389)");
 
 // SQL Server settings page constants
 export const SqlServerSettingsPageTitle = localize('deployAzureSQLVM.SqlServerSettingsPageTitle', "SQL Servers settings");

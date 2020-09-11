@@ -18,16 +18,10 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { NetworkSettingsPage } from './pages/networkSettingsPage';
 import { SqlServerSettingsPage } from './pages/sqlServerSettingsPage';
 import { AzureSQLVMSummaryPage } from './pages/summaryPage';
+import { EOL } from 'os';
 
 export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, WizardPageBase<DeployAzureSQLVMWizard>, DeployAzureSQLVMWizardModel> {
-
-	public get notebookService(): INotebookService {
-		return this._notebookService;
-	}
-
-	public get toolService(): IToolsService {
-		return this._toolsService;
-	}
+	private cache: Map<string, any> = new Map();
 
 	constructor(private wizardInfo: AzureSQLVMWizardInfo, private _notebookService: INotebookService, private _toolsService: IToolsService) {
 		super(
@@ -42,6 +36,17 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 		this.wizardObject.generateScriptButton.hidden = true;
 		this.wizardObject.doneButton.label = constants.WizardDoneButtonLabel;
 	}
+
+
+	public get notebookService(): INotebookService {
+		return this._notebookService;
+	}
+
+	public get toolService(): IToolsService {
+		return this._toolsService;
+	}
+
+
 
 	protected async onOk(): Promise<void> {
 		await this.scriptToNotebook();
@@ -76,7 +81,12 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 		env['AZDATA_NB_VAR_AZURE_SQLVM_SQL_PASSWORD'] = this.model.sqlAuthenticationPassword;
 	}
 
-	public async getRequest(url: string): Promise<any> {
+	public async getRequest(url: string, useCache = false): Promise<any> {
+		if (useCache) {
+			if (this.cache.has(url)) {
+				return this.cache.get(url);
+			}
+		}
 		let token = this.model.securityToken.token;
 		const config: AxiosRequestConfig = {
 			headers: {
@@ -86,6 +96,18 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 			validateStatus: () => true // Never throw
 		};
 		const response = await axios.get(url, config);
+		if (response.status !== 200) {
+			let errorMessage: string[] = [];
+			errorMessage.push(response.status.toString());
+			errorMessage.push(response.statusText);
+			if (response.data && response.data.error) {
+				errorMessage.push(`${response.data.error.code} : ${response.data.error.message}`);
+			}
+			vscode.window.showErrorMessage(errorMessage.join(EOL));
+		}
+		if (useCache) {
+			this.cache.set(url, response);
+		}
 		return response;
 	}
 

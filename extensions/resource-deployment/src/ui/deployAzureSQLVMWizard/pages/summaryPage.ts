@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { WizardPageBase } from '../../wizardPageBase';
 import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 import * as constants from '../constants';
-import { SectionInfo, LabelPosition, FontWeight, FieldType, FieldInfo } from '../../../interfaces';
+import { SectionInfo, LabelPosition, FontWeight, FieldType } from '../../../interfaces';
 import { createSection } from '../../modelViewUtils';
 
 export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard> {
@@ -43,10 +43,16 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 
 		let model = this.wizard.model;
 
+		const labelWidth = '150px';
+		const inputWidth = '400px';
+		const fieldHeight = '20px';
+
 		const auzreSettingSection: SectionInfo = {
 			labelPosition: LabelPosition.Left,
-			labelWidth: '150px',
-			inputWidth: '200px',
+			labelWidth: labelWidth,
+			inputWidth: inputWidth,
+			fieldHeight: fieldHeight,
+			spaceBetweenFields: '0',
 			title: constants.AzureSettingsPageTitle,
 			rows: [
 				{
@@ -57,12 +63,16 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 							defaultValue: model.azureAccount.displayInfo.displayName,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						},
+					]
+				},
+				{
+					items: [
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.AzureAccountSubscriptionDropdownLabel,
 							defaultValue: model.azureSubscriptionDisplayName,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						},
+						}
 					]
 				},
 				{
@@ -72,13 +82,17 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 							label: constants.AzureAccountResourceGroupDropdownLabel,
 							defaultValue: model.azureResouceGroup,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						},
+						}
+					]
+				},
+				{
+					items: [
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.AzureAccountRegionDropdownLabel,
 							defaultValue: model.azureRegion,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						},
+						}
 					]
 				}
 			]
@@ -86,8 +100,9 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 
 		const vmSettingSection: SectionInfo = {
 			labelPosition: LabelPosition.Left,
-			labelWidth: '150px',
-			inputWidth: '200px',
+			labelWidth: labelWidth,
+			inputWidth: inputWidth,
+			fieldHeight: fieldHeight,
 			title: constants.VmSettingsPageTitle,
 			rows: [
 				{
@@ -97,10 +112,14 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 							label: constants.VmNameTextBoxLabel,
 							defaultValue: model.vmName,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						},
+						}
+					]
+				},
+				{
+					items: [
 						{
 							type: FieldType.ReadonlyText,
-							label: constants.VmAdminUsernameTextBoxLabel,
+							label: constants.SqlAuthenticationUsernameLabel,
 							defaultValue: model.vmUsername,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						},
@@ -113,7 +132,11 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 							label: constants.VmImageDropdownLabel,
 							defaultValue: model.vmImage,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						},
+						}
+					]
+				},
+				{
+					items: [
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.VmSkuDropdownLabel,
@@ -129,13 +152,17 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 							label: constants.VmVersionDropdownLabel,
 							defaultValue: model.vmImageVersion,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						},
+						}
+					]
+				},
+				{
+					items: [
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.VmSizeDropdownLabel,
 							defaultValue: model.vmSize,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						},
+						}
 					]
 				},
 			]
@@ -143,8 +170,9 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 
 		const networkSettingSection: SectionInfo = {
 			labelPosition: LabelPosition.Left,
-			labelWidth: '150px',
-			inputWidth: '200px',
+			labelWidth: labelWidth,
+			inputWidth: inputWidth,
+			fieldHeight: fieldHeight,
 			title: constants.NetworkSettingsPageTitle,
 			rows: [
 				{
@@ -155,6 +183,11 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 							defaultValue: ((model.newVirtualNetwork === 'True' ? '(new) ' : '') + this.processVnetName()),
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						},
+					]
+
+				},
+				{
+					items: [
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.SubnetDropdownLabel,
@@ -179,65 +212,62 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 
 		const sqlServerSettingsPage: SectionInfo = {
 			labelPosition: LabelPosition.Left,
-			labelWidth: '150px',
-			inputWidth: '200px',
+			labelWidth: labelWidth,
+			inputWidth: inputWidth,
+			fieldHeight: fieldHeight,
 			title: constants.SqlServerSettingsPageTitle,
 			rows: [
 			]
 		};
 
-		let sqlConnectivityItems: FieldInfo[] =
-			[
+		sqlServerSettingsPage.rows?.push({
+			items: [
 				{
 					type: FieldType.ReadonlyText,
 					label: constants.SqlConnectivityTypeDropdownLabel,
 					defaultValue: model.sqlConnectivityType,
 					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				}
-
-			];
-
-		if (model.sqlConnectivityType !== 'local') {
-			sqlConnectivityItems.push(
-				{
-					type: FieldType.ReadonlyText,
-					label: constants.SqlPortLabel,
-					defaultValue: constants.SqlPortLabel,
-					labelCSSStyles: { fontWeight: FontWeight.Bold }
-				}
-			);
-		}
-
-		sqlServerSettingsPage.rows?.push({
-			items: sqlConnectivityItems
+			]
 		});
 
+		if (model.sqlConnectivityType !== 'local') {
+			sqlServerSettingsPage.rows?.push({
+				items: [
+					{
+						type: FieldType.ReadonlyText,
+						label: constants.SqlPortLabel,
+						defaultValue: constants.SqlPortLabel,
+						labelCSSStyles: { fontWeight: FontWeight.Bold }
+					}
+				]
+			});
+		}
 
-		let sqlAuthenticationItems: FieldInfo[] =
-			[
+
+		sqlServerSettingsPage.rows?.push({
+			items: [
 				{
 					type: FieldType.ReadonlyText,
 					label: constants.SqlEnableSQLAuthenticationLabel,
 					defaultValue: (model.enableSqlAuthentication === 'True' ? 'Yes ' : 'No '),
 					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				}
-
-			];
+			]
+		});
 
 		if (model.enableSqlAuthentication === 'True') {
-			sqlAuthenticationItems.push(
-				{
-					type: FieldType.ReadonlyText,
-					label: constants.SqlAuthenticationUsernameLabel,
-					defaultValue: model.sqlAuthenticationUsername,
-					labelCSSStyles: { fontWeight: FontWeight.Bold }
-				}
-			);
+			sqlServerSettingsPage.rows?.push({
+				items: [
+					{
+						type: FieldType.ReadonlyText,
+						label: constants.SqlAuthenticationUsernameLabel,
+						defaultValue: model.sqlAuthenticationUsername,
+						labelCSSStyles: { fontWeight: FontWeight.Bold }
+					}
+				]
+			});
 		}
-
-		sqlServerSettingsPage.rows?.push({
-			items: sqlAuthenticationItems
-		});
 
 		const createSectionFunc = async (sectionInfo: SectionInfo): Promise<azdata.FormComponent> => {
 			return {

@@ -289,12 +289,17 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private async populateAzureRegionsDropdown() {
 		this._azureRegionsLoader.loading = true;
-		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/locations?api-version=2020-01-01`;
-		const response = await this.wizard.getRequest(url);
 
+		let supportedRegions = 'eastus, eastus2, westus, centralus, northcentralus, southcentralus, northeurope, westeurope, eastasia, southeastasia, japaneast, japanwest, australiaeast, australiasoutheast, australiacentral, brazilsouth, southindia, centralindia, westindia, canadacentral, canadaeast, westus2, westcentralus, uksouth, ukwest, koreacentral, koreasouth, francecentral, southafricanorth, uaenorth, switzerlandnorth, germanywestcentral, norwayeast';
+		let supportedRegionsArray = supportedRegions.split(', ');
+		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/locations?api-version=2020-01-01`;
+		const response = await this.wizard.getRequest(url, true);
+		response.data.value = response.data.value.sort((a: any, b: any) => (a.displayName > b.displayName) ? 1 : -1);
 		this.wizard.addDropdownValues(
 			this._azureRegionsDropdown,
-			response.data.value.map((value: any) => {
+			response.data.value.filter((value: any) => {
+				return supportedRegionsArray.includes(value.name);
+			}).map((value: any) => {
 				return {
 					displayName: value.displayName,
 					name: value.name

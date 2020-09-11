@@ -113,14 +113,14 @@ export class VmSettingsPage extends BasePage {
 
 		this.liveValidation = false;
 
-		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
 			this.liveValidation = true;
 
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
 			}
 
-			let errorMessage = this.formValidation();
+			let errorMessage = await this.formValidation();
 
 			if (errorMessage !== '') {
 				return false;
@@ -206,8 +206,9 @@ export class VmSettingsPage extends BasePage {
 			`/artifacttypes/vmimage/offers` +
 			`?api-version=2019-12-01`;
 
-		let response = await this.wizard.getRequest(url);
+		let response = await this.wizard.getRequest(url, true);
 		response.data = response.data.reverse();
+
 		this.wizard.addDropdownValues(
 			this._vmImageDropdown,
 			response.data.filter((value: any) => {
@@ -254,7 +255,7 @@ export class VmSettingsPage extends BasePage {
 			`/artifacttypes/vmimage/offers/${this.wizard.model.vmImage}` +
 			`/skus?api-version=2019-12-01`;
 
-		let response = await this.wizard.getRequest(url);
+		let response = await this.wizard.getRequest(url, true);
 
 		this.wizard.addDropdownValues(
 			this._vmImageSkuDropdown,
@@ -293,7 +294,7 @@ export class VmSettingsPage extends BasePage {
 			`/skus/${this.wizard.model.vmImageSKU}` +
 			`/versions?api-version=2019-12-01`;
 
-		let response = await this.wizard.getRequest(url);
+		let response = await this.wizard.getRequest(url, true);
 
 		this.wizard.addDropdownValues(
 			this._vmImageVersionDropdown,
@@ -330,7 +331,7 @@ export class VmSettingsPage extends BasePage {
 			`/skus?api-version=2019-04-01` +
 			`&$filter=location eq '${this.wizard.model.azureRegion}'`;
 
-		let response = await this.wizard.getRequest(url);
+		let response = await this.wizard.getRequest(url, true);
 
 		let vmResouces: any[] = [];
 		response.data.value.map((res: any) => {
@@ -373,7 +374,7 @@ export class VmSettingsPage extends BasePage {
 		this._vmSizeDropdownLoader.loading = false;
 	}
 
-	protected formValidation(): string {
+	protected async formValidation(): Promise<string> {
 
 		let showErrorMessage = [];
 		/**
@@ -393,8 +394,11 @@ export class VmSettingsPage extends BasePage {
 		if (vmname.charAt(0) === '_' || vmname.slice(-1) === '.' || vmname.slice(-1) === '-') {
 			showErrorMessage.push('Virtual machine name Can\'t start with underscore. Can\'t end with period or hyphen');
 		}
-		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(vmname)) {
-			showErrorMessage.push('Virtual machine name cannot contain special characters \/""[]:|<>+=;,?* .');
+		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(vmname)) {
+			showErrorMessage.push('Virtual machine name cannot contain special characters \/""[]:|<>+=;,?*@&, .');
+		}
+		if (await this.vmNameExists(vmname)) {
+			showErrorMessage.push('Virtual machine name must be unique in the current resource group.');
 		}
 
 
@@ -403,12 +407,25 @@ export class VmSettingsPage extends BasePage {
 		 *  1. 1-20 characters long
 		 *  2. cannot contain special characters \/""[]:|<>+=;,?*
 		 */
+		const reservedVMUsernames: string[] = [
+			'administrator', 'admin', 'user', 'user1', 'test', 'user2',
+			'test1', 'user3', 'admin1', '1', '123', 'a', 'actuser', 'adm', 'admin2',
+			'aspnet', 'backup', 'console', 'david', 'guest', 'john', 'owner', 'root', 'server', 'sql', 'support',
+			'support_388945a0', 'sys', 'test2', 'test3', 'user4', 'user5'
+		];
 		let username = this.wizard.model.vmUsername;
 		if (username.length < 1 || username.length > 20) {
 			showErrorMessage.push('Username must be between 1 and 20 characters long.');
 		}
-		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
-			showErrorMessage.push('Username cannot contain special characters \/""[]:|<>+=;,?* .');
+		if (username.slice(-1) === '.') {
+			showErrorMessage.push('Username cannot end with period');
+		}
+		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&]/g.test(username)) {
+			showErrorMessage.push('Username cannot contain special characters \/""[]:|<>+=;,?*@& .');
+		}
+
+		if (reservedVMUsernames.includes(username)) {
+			showErrorMessage.push('Username must not include reserved words.');
 		}
 
 		showErrorMessage.push(this.wizard.validatePassword(this.wizard.model.vmPassword));
@@ -425,4 +442,21 @@ export class VmSettingsPage extends BasePage {
 
 		return showErrorMessage.join('\n');
 	}
+
+	protected async vmNameExists(vmName: string): Promise<boolean> {
+		const url = `https://management.azure.com` +
+			`/subscriptions/${this.wizard.model.azureSubscription}` +
+			`/resourceGroups/${this.wizard.model.azureResouceGroup}` +
+			`/providers/Microsoft.Compute` +
+			`/virtualMachines?api-version=2019-12-01`;
+
+		let response = await this.wizard.getRequest(url, true);
+
+		let nameArray = response.data.value.map((v: any) => { return v.name; });
+		return (nameArray.includes(vmName));
+
+	}
+
+
+
 }
