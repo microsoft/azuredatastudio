@@ -301,6 +301,11 @@ declare module 'azdata' {
 		 * dataValues will only be used if data is an empty array
 		 */
 		dataValues?: DeclarativeTableCellValue[][];
+
+		/**
+		 * Should the table react to user selections
+		 */
+		selectEffect?: boolean; // Defaults to false
 	}
 
 	export interface DeclarativeTableCellValue {

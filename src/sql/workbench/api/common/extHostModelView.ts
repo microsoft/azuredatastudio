@@ -1504,6 +1504,14 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		return this._proxy.$setProperties(this._handle, this._id, this.getPropertiesForMainThread());
 	}
 
+	public get selectEffect(): boolean | undefined {
+		return this.properties['selectEffect'];
+	}
+
+	public set selectEffect(v: boolean | undefined) {
+		this.setProperty('selectEffect', v);
+	}
+
 	public toComponentShape(): IComponentShape {
 		// Overridden to ensure we send the correct properties mapping.
 		return <IComponentShape>{

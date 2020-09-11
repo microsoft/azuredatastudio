@@ -23,6 +23,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 		const table = view.modelBuilder.declarativeTable().withProps(
 			{
+				selectEffect: true,
 				columns: [
 					{
 						displayName: '',

@@ -30,7 +30,7 @@ export enum DeclarativeDataType {
 	selector: 'modelview-declarativeTable',
 	templateUrl: decodeURI(require.toUrl('./declarativeTable.component.html'))
 })
-export default class DeclarativeTableComponent extends ContainerBase<any> implements IComponent, OnDestroy, AfterViewInit {
+export default class DeclarativeTableComponent extends ContainerBase<any, azdata.DeclarativeTableProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -279,10 +279,18 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 	}
 
 	public isRowSelected(row: number): boolean {
+		// Only react when the user wants you to
+		if (this.getProperties().selectEffect !== true) {
+			return false;
+		}
 		return this._selectedRow === row;
 	}
 
 	public onCellClick(row: number) {
+		// Only react when the user wants you to
+		if (this.getProperties().selectEffect !== true) {
+			return;
+		}
 		if (!this.isRowSelected(row)) {
 			this._selectedRow = row;
 			this._changeRef.detectChanges();
