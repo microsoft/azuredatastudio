@@ -26,6 +26,9 @@ export class TestQueryManagementService implements IQueryManagementService {
 	registerRunner(runner: QueryRunner, uri: string): void {
 		return;
 	}
+	getRunner(uri: string): QueryRunner {
+		throw new Error('Method not implemented.');
+	}
 	async cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult> {
 		return { messages: undefined };
 	}
