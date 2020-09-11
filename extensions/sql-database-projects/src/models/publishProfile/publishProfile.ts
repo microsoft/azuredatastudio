@@ -58,7 +58,7 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 
 	if (xmlDoc.documentElement.getElementsByTagName(constants.targetConnectionString).length > 0) {
 		const targetConnectionString = xmlDoc.documentElement.getElementsByTagName(constants.TargetConnectionString)[0].textContent;
-		const dataSource = new SqlConnectionDataSource('temp', targetConnectionString);
+		const dataSource = new SqlConnectionDataSource('', targetConnectionString);
 		let server: string = '';
 		let username: string = '';
 		const connectionProfile = dataSource.getConnectionProfile();

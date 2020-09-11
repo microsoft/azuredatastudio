@@ -283,5 +283,5 @@ export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
 
 // SQL queries
 export const sameDatabaseExampleUsage = 'SELECT * FROM [Schema1].[Table1]';
-export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]"`; }
+export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]`; }
 export function differentDbDifferentServerExampleUsage(server: string, db: string) { return `SELECT * FROM [${server}].[${db}].[Schema1].[Table1]`; }
