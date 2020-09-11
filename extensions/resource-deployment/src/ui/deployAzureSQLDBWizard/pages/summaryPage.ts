@@ -47,47 +47,32 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 			labelPosition: LabelPosition.Left,
 			labelWidth: '150px',
 			inputWidth: '200px',
+			fieldHeight: '50px',
 			title: constants.AzureSettingsSummaryPageTitle,
-			rows: [
+			fields: [
 				{
-					items: [
-						{
-							type: FieldType.ReadonlyText,
-							label: constants.AzureAccountDropdownLabel,
-							defaultValue: model.azureAccount.displayInfo.displayName,
-							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						}
-					]
+					type: FieldType.ReadonlyText,
+					label: constants.AzureAccountDropdownLabel,
+					defaultValue: model.azureAccount.displayInfo.displayName,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				},
 				{
-					items: [
-						{
-							type: FieldType.ReadonlyText,
-							label: constants.AzureAccountSubscriptionDropdownLabel,
-							defaultValue: model.azureSubscriptionDisplayName,
-							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						}
-					]
+					type: FieldType.ReadonlyText,
+					label: constants.AzureAccountSubscriptionDropdownLabel,
+					defaultValue: model.azureSubscriptionDisplayName,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				},
 				{
-					items: [
-						{
-							type: FieldType.ReadonlyText,
-							label: constants.AzureAccountResourceGroupDropdownLabel,
-							defaultValue: model.azureResouceGroup,
-							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						}
-					]
+					type: FieldType.ReadonlyText,
+					label: constants.AzureAccountResourceGroupDropdownLabel,
+					defaultValue: model.azureResouceGroup,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				},
 				{
-					items: [
-						{
-							type: FieldType.ReadonlyText,
-							label: constants.AzureAccountDatabaseServersDropdownLabel,
-							defaultValue: model.azureServerName,
-							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						}
-					]
+					type: FieldType.ReadonlyText,
+					label: constants.AzureAccountDatabaseServersDropdownLabel,
+					defaultValue: model.azureServerName,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				}
 			]
 		};
@@ -96,47 +81,32 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 			labelPosition: LabelPosition.Left,
 			labelWidth: '150px',
 			inputWidth: '200px',
+			fieldHeight: '50px',
 			title: constants.DatabaseSettingsPageTitle,
-			rows: [
+			fields: [
 				{
-					items: [
-						{
-							type: FieldType.ReadonlyText,
-							label: constants.DatabaseNameLabel,
-							defaultValue: model.databaseName,
-							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						}
-					]
+					type: FieldType.ReadonlyText,
+					label: constants.DatabaseNameLabel,
+					defaultValue: model.databaseName,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				},
 				{
-					items: [
-						{
-							type: FieldType.ReadonlyText,
-							label: constants.FirewallRuleNameLabel,
-							defaultValue: model.firewallRuleName,
-							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						},
-					]
+					type: FieldType.ReadonlyText,
+					label: constants.FirewallRuleNameLabel,
+					defaultValue: model.firewallRuleName,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				},
 				{
-					items: [
-						{
-							type: FieldType.ReadonlyText,
-							label: constants.StartIpAddressShortLabel,
-							defaultValue: model.startIpAddress,
-							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						}
-					]
+					type: FieldType.ReadonlyText,
+					label: constants.StartIpAddressShortLabel,
+					defaultValue: model.startIpAddress,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				},
 				{
-					items: [
-						{
-							type: FieldType.ReadonlyText,
-							label: constants.EndIpAddressShortLabel,
-							defaultValue: model.endIpAddress,
-							labelCSSStyles: { fontWeight: FontWeight.Bold }
-						}
-					]
+					type: FieldType.ReadonlyText,
+					label: constants.EndIpAddressShortLabel,
+					defaultValue: model.endIpAddress,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				}
 			]
 		};

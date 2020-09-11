@@ -168,8 +168,8 @@ export class DatabaseSettingsPage extends BasePage {
 			errorMessage.push('Database name must be between 2 and 128 characters long.');
 		}
 
-		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(databasename)) {
-			errorMessage.push('Database name cannot contain special characters \/""[]:|<>+=;,?* .');
+		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]+/.test(databasename)) {
+			errorMessage.push('Database name cannot contain special characters \/""[]:|<>+=;,?* or spaces.');
 		}
 
 		this.wizard.showErrorMessage(errorMessage.join('\n'));

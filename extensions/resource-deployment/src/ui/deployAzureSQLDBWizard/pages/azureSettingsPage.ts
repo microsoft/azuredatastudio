@@ -291,8 +291,9 @@ export class AzureSettingsPage extends BasePage {
 			});
 			this._serverGroupLoader.loading = false;
 			return;
+		} else {
+			response.data.value.sort((a: azdata.CategoryValue, b: azdata.CategoryValue) => (a!.name > b!.name) ? 1 : -1);
 		}
-
 		this.wizard.addDropdownValues(
 			this._serverGroupDropdown,
 			response.data.value.map((value: any) => {
