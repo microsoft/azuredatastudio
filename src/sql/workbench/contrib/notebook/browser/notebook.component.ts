@@ -251,11 +251,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._scrollTop = (<HTMLElement>event.srcElement).scrollTop;
 	}
 
-	public unselectActiveCell() {
-		this.model.updateActiveCell(undefined);
-		this.detectChanges();
-	}
-
 	// Handles double click to edit icon change
 	// See textcell.component.ts for changing edit behavior
 	public enableActiveCellIconOnDoubleClick() {
