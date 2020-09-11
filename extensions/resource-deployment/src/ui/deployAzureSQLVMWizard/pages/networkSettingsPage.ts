@@ -87,12 +87,12 @@ export class NetworkSettingsPage extends BasePage {
 		this.populateVirtualNetworkDropdown();
 		this.populatePublicIpkDropdown();
 		this.liveValidation = false;
-		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
 			}
 			this.liveValidation = true;
-			let errorMessage = this.formValidation();
+			let errorMessage = await this.formValidation();
 
 			if (errorMessage !== '') {
 				return false;
@@ -164,12 +164,14 @@ export class NetworkSettingsPage extends BasePage {
 				values: vnets
 			});
 			this._newVirtualNetworkCheckbox.checked = true;
+			this._newVirtualNetworkCheckbox.enabled = false;
 			this.toggleNewVirtualNetwork();
 		} else {
 			this._virtualNetworkDropdown.updateProperties({
 				values: vnets
 			});
 			this._newVirtualNetworkCheckbox.checked = false;
+			this._newVirtualNetworkCheckbox.enabled = true;
 			this.toggleNewVirtualNetwork();
 		}
 		this._virtualNetworkDropdownLoader.loading = false;
@@ -347,12 +349,15 @@ export class NetworkSettingsPage extends BasePage {
 				values: publicIps
 			});
 			this._newPublicIpCheckbox.checked = true;
+			this._newPublicIpCheckbox.enabled = false;
+
 			this.toggleNewPublicIp();
 		} else {
 			this._publicIpDropdown.updateProperties({
 				values: publicIps
 			});
 			this._newPublicIpCheckbox.checked = false;
+			this._newPublicIpCheckbox.enabled = true;
 			this.toggleNewPublicIp();
 		}
 		this._publicIpDropdownLoader.loading = false;
@@ -405,11 +410,13 @@ export class NetworkSettingsPage extends BasePage {
 	}
 
 	public async getSubnets(): Promise<any> {
+		if (!this.wizard.model.virtualNetworkName) {
+			return;
+		}
 		let url = `https://management.azure.com` +
 			`${this.wizard.model.virtualNetworkName}` +
 			`/subnets?api-version=2020-05-01`;
 		let response = await this.wizard.getRequest(url);
-
 		let dropdownValues = response.data.value.map((value: any) => {
 			return {
 				name: value.id,
@@ -436,7 +443,7 @@ export class NetworkSettingsPage extends BasePage {
 		return dropdownValues;
 	}
 
-	protected formValidation(): string {
+	protected async formValidation(): Promise<string> {
 		let errorMessage = [];
 		if (this.wizard.model.newVirtualNetwork === 'True') {
 			if (this.wizard.model.virtualNetworkName.length < 2 || this.wizard.model.virtualNetworkName.length > 64) {

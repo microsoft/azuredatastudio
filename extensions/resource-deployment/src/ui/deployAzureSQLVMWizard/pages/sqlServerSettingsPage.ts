@@ -107,14 +107,14 @@ export class SqlServerSettingsPage extends BasePage {
 
 		this.liveValidation = false;
 
-		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
 			}
 
 			this.liveValidation = true;
 
-			let showErrorMessage = this.formValidation();
+			let showErrorMessage = await this.formValidation();
 
 			if (showErrorMessage !== '') {
 				return false;
@@ -241,11 +241,11 @@ export class SqlServerSettingsPage extends BasePage {
 	}
 
 
-	protected formValidation(): string {
+	protected async formValidation(): Promise<string> {
 
 		let showErrorMessage = [];
 
-		if ((this._sqlAuthenticationDropdown.value as azdata.CategoryValue).name === 'Yes') {
+		if ((this._sqlAuthenticationDropdown.value as azdata.CategoryValue).name === 'True') {
 			let username = this._sqlAuthenticationTextbox.value!;
 
 			if (username.length < 2 || username.length > 128) {
