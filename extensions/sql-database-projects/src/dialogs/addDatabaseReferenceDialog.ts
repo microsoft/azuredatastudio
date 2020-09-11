@@ -264,9 +264,9 @@ export class AddDatabaseReferenceDialog {
 
 			// check if current project is in same open folder (should only be able to add a reference to another project in
 			// the folder if the current project is also in the folder)
-			if (projectFiles.find(p => p === this.project.projectFilePath)) {
+			if (projectFiles.find(p => p === utils.getPlatformSafeFileEntryPath(this.project.projectFilePath))) {
 				// filter out current project
-				projectFiles = projectFiles.filter(p => p !== this.project.projectFilePath);
+				projectFiles = projectFiles.filter(p => p !== utils.getPlatformSafeFileEntryPath(this.project.projectFilePath));
 
 				projectFiles.forEach(p => {
 					projectFiles[projectFiles.indexOf(p)] = path.parse(p).name;
