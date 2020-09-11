@@ -34,7 +34,7 @@ import { convertSize, convertSizeToNumber } from 'sql/base/browser/dom';
 			<div [style.display]="getTextAreaDisplay()" #textarea style="width: 100%"></div>
 	`
 })
-export default class InputBoxComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _input: InputBox;
@@ -250,95 +250,95 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	// CSS-bound properties
 
 	public get value(): string {
-		return this.getPropertyOrDefault<azdata.InputBoxProperties, string>((props) => props.value, '');
+		return this.getPropertyOrDefault<string>((props) => props.value, '');
 	}
 
 	public set value(newValue: string) {
-		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.value = value, newValue);
+		this.setPropertyFromUI<string>((props, value) => props.value = value, newValue);
 	}
 
 	public get ariaLive() {
-		return this.getPropertyOrDefault<azdata.InputBoxProperties, string>((props) => props.ariaLive, '');
+		return this.getPropertyOrDefault<string>((props) => props.ariaLive, '');
 	}
 
 	public get placeHolder(): string {
-		return this.getPropertyOrDefault<azdata.InputBoxProperties, string>((props) => props.placeHolder, '');
+		return this.getPropertyOrDefault<string>((props) => props.placeHolder, '');
 	}
 
 	public set placeHolder(newValue: string) {
-		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.placeHolder = value, newValue);
+		this.setPropertyFromUI<string>((props, value) => props.placeHolder = value, newValue);
 	}
 
 	public set columns(newValue: number) {
-		this.setPropertyFromUI<azdata.InputBoxProperties, number>((props, value) => props.columns = value, newValue);
+		this.setPropertyFromUI<number>((props, value) => props.columns = value, newValue);
 	}
 
 	public get rows(): number {
-		return this.getPropertyOrDefault<azdata.InputBoxProperties, number>((props) => props.rows, undefined);
+		return this.getPropertyOrDefault<number>((props) => props.rows, undefined);
 	}
 
 	public get columns(): number {
-		return this.getPropertyOrDefault<azdata.InputBoxProperties, number>((props) => props.columns, undefined);
+		return this.getPropertyOrDefault<number>((props) => props.columns, undefined);
 	}
 
 	public set rows(newValue: number) {
-		this.setPropertyFromUI<azdata.InputBoxProperties, number>((props, value) => props.rows = value, newValue);
+		this.setPropertyFromUI<number>((props, value) => props.rows = value, newValue);
 	}
 
 	public get min(): number {
-		return this.getPropertyOrDefault<azdata.InputBoxProperties, number>((props) => props.min, undefined);
+		return this.getPropertyOrDefault<number>((props) => props.min, undefined);
 	}
 
 	public set min(newValue: number) {
-		this.setPropertyFromUI<azdata.InputBoxProperties, number>((props, value) => props.min = value, newValue);
+		this.setPropertyFromUI<number>((props, value) => props.min = value, newValue);
 	}
 
 	public get max(): number {
-		return this.getPropertyOrDefault<azdata.InputBoxProperties, number>((props) => props.max, undefined);
+		return this.getPropertyOrDefault<number>((props) => props.max, undefined);
 	}
 
 	public set max(newValue: number) {
-		this.setPropertyFromUI<azdata.InputBoxProperties, number>((props, value) => props.max = value, newValue);
+		this.setPropertyFromUI<number>((props, value) => props.max = value, newValue);
 	}
 
 	public get inputType(): string {
-		return this.getPropertyOrDefault<azdata.InputBoxProperties, string>((props) => props.inputType, 'text');
+		return this.getPropertyOrDefault<string>((props) => props.inputType, 'text');
 	}
 
 	public set inputType(newValue: string) {
-		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.inputType = value, newValue);
+		this.setPropertyFromUI<string>((props, value) => props.inputType = value, newValue);
 	}
 
 	public get multiline(): boolean {
-		return this.getPropertyOrDefault<azdata.InputBoxProperties, boolean>((props) => props.multiline, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.multiline, false);
 	}
 
 	public set multiline(newValue: boolean) {
-		this.setPropertyFromUI<azdata.InputBoxProperties, boolean>((props, value) => props.multiline = value, newValue);
+		this.setPropertyFromUI<boolean>((props, value) => props.multiline = value, newValue);
 	}
 
 	public get readOnly(): boolean {
-		return this.getPropertyOrDefault<azdata.InputBoxProperties, boolean>((props) => props.readOnly, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.readOnly, false);
 	}
 
 	public set readOnly(newValue: boolean) {
-		this.setPropertyFromUI<azdata.InputBoxProperties, boolean>((props, value) => props.readOnly = value, newValue);
+		this.setPropertyFromUI<boolean>((props, value) => props.readOnly = value, newValue);
 	}
 
 	public get required(): boolean {
-		return this.getPropertyOrDefault<azdata.InputBoxProperties, boolean>((props) => props.required, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.required, false);
 	}
 
 	public set required(newValue: boolean) {
-		this.setPropertyFromUI<azdata.InputBoxProperties, boolean>((props, value) => props.required = value, newValue);
+		this.setPropertyFromUI<boolean>((props, value) => props.required = value, newValue);
 	}
 
 	public get stopEnterPropagation(): boolean {
-		return this.getPropertyOrDefault<azdata.InputBoxProperties, boolean>((props) => props.stopEnterPropagation, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.stopEnterPropagation, false);
 	}
 
 	public set stopEnterPropagation(newValue: boolean) {
-		this.setPropertyFromUI<azdata.InputBoxProperties, boolean>((props, value) => props.stopEnterPropagation = value, newValue);
+		this.setPropertyFromUI<boolean>((props, value) => props.stopEnterPropagation = value, newValue);
 	}
 
 	public focus(): void {
@@ -346,10 +346,10 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	}
 
 	public get validationErrorMessage(): string {
-		return this.getPropertyOrDefault<azdata.InputBoxProperties, string>((props) => props.validationErrorMessage, '');
+		return this.getPropertyOrDefault<string>((props) => props.validationErrorMessage, '');
 	}
 
 	public set validationErrorMessage(newValue: string) {
-		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.validationErrorMessage = value, newValue);
+		this.setPropertyFromUI<string>((props, value) => props.validationErrorMessage = value, newValue);
 	}
 }

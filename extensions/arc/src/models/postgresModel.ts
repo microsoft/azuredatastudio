@@ -3,9 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ResourceInfo } from 'arc';
 import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
-import { ResourceInfo, Registration } from './controllerModel';
+import { Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
 
 export enum PodRole {

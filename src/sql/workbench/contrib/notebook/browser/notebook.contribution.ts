@@ -220,6 +220,11 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'default': false,
 			'description': localize('notebook.allowADSCommands', "Allow notebooks to run Azure Data Studio commands.")
+		},
+		'notebook.enableDoubleClickEdit': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('notebook.enableDoubleClickEdit', "Enable double click to edit for text cells in notebooks")
 		}
 	}
 });

@@ -319,7 +319,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 
 					if (this._currentProvider === ConnectionConstants.mssqlProviderName) {
 						let restoreDialog = this._restoreDialogs[this._currentProvider] as RestoreDialog;
-						restoreDialog.viewModel.resetRestoreOptions(connection.databaseName);
+						restoreDialog.viewModel.resetRestoreOptions(connection.databaseName!);
 						this.getMssqlRestoreConfigInfo().then(() => {
 							restoreDialog.open(connection.serverName, this._ownerUri!);
 							restoreDialog.validateRestore();

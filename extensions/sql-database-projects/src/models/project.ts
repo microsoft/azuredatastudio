@@ -263,11 +263,11 @@ export class Project {
 		switch (itemType) {
 			case templates.preDeployScript:
 				xmlTag = constants.PreDeploy;
-				this.preDeployScripts.push(fileEntry);
+				this.preDeployScripts.length === 0 ? this.preDeployScripts.push(fileEntry) : this.noneDeployScripts.push(fileEntry);
 				break;
 			case templates.postDeployScript:
 				xmlTag = constants.PostDeploy;
-				this.postDeployScripts.push(fileEntry);
+				this.postDeployScripts.length === 0 ? this.postDeployScripts.push(fileEntry) : this.noneDeployScripts.push(fileEntry);
 				break;
 			default:
 				xmlTag = constants.Build;
@@ -280,14 +280,18 @@ export class Project {
 	}
 
 	public async exclude(entry: FileProjectEntry): Promise<void> {
-		const toExclude: FileProjectEntry[] = this.files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+		const toExclude: FileProjectEntry[] = this.files.concat(this.preDeployScripts).concat(this.postDeployScripts).concat(this.noneDeployScripts).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
 		await this.removeFromProjFile(toExclude);
+
 		this.files = this.files.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+		this.preDeployScripts = this.preDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+		this.postDeployScripts = this.postDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+		this.noneDeployScripts = this.noneDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
 	}
 
 	public async deleteFileFolder(entry: FileProjectEntry): Promise<void> {
 		// compile a list of folder contents to delete; if entry is a file, contents will contain only itself
-		const toDeleteFiles: FileProjectEntry[] = this.files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.File);
+		const toDeleteFiles: FileProjectEntry[] = this.files.concat(this.preDeployScripts).concat(this.postDeployScripts).concat(this.noneDeployScripts).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.File);
 		const toDeleteFolders: FileProjectEntry[] = this.files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.Folder).sort(x => -x.relativePath.length);
 
 		await Promise.all(toDeleteFiles.map(x => fs.unlink(x.fsUri.fsPath)));
@@ -436,10 +440,34 @@ export class Project {
 
 	private removeFileFromProjFile(path: string): void {
 		const fileNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Build);
+		const preDeployNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.PreDeploy);
+		const postDeployNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.PostDeploy);
+		const noneNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.None);
 
 		for (let i = 0; i < fileNodes.length; i++) {
 			if (fileNodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(path)) {
 				fileNodes[i].parentNode.removeChild(fileNodes[i]);
+				return;
+			}
+		}
+
+		for (let i = 0; i < preDeployNodes.length; i++) {
+			if (preDeployNodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(path)) {
+				preDeployNodes[i].parentNode.removeChild(preDeployNodes[i]);
+				return;
+			}
+		}
+
+		for (let i = 0; i < postDeployNodes.length; i++) {
+			if (postDeployNodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(path)) {
+				postDeployNodes[i].parentNode.removeChild(postDeployNodes[i]);
+				return;
+			}
+		}
+
+		for (let i = 0; i < noneNodes.length; i++) {
+			if (noneNodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(path)) {
+				noneNodes[i].parentNode.removeChild(noneNodes[i]);
 				return;
 			}
 		}

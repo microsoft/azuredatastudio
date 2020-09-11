@@ -42,7 +42,7 @@ export enum ColumnSizingMode {
 		<div #table style="height:100%;" [style.font-size]="fontSize" [style.width]="width"></div>
 	`
 })
-export default class TableComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class TableComponent extends ComponentBase<azdata.TableComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _table: Table<Slick.SlickData>;
@@ -368,62 +368,62 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	// CSS-bound properties
 
 	public get data(): any[][] {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, any[]>((props) => props.data, []);
+		return this.getPropertyOrDefault<any[]>((props) => props.data, []);
 	}
 
 	public set data(newValue: any[][]) {
-		this.setPropertyFromUI<azdata.TableComponentProperties, any[][]>((props, value) => props.data = value, newValue);
+		this.setPropertyFromUI<any[][]>((props, value) => props.data = value, newValue);
 	}
 
 	public get columns(): string[] | azdata.TableColumn[] {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, string[]>((props) => props.columns, []);
+		return this.getPropertyOrDefault<string[] | azdata.TableColumn[]>((props) => props.columns, []);
 	}
 
 	public get fontSize(): number | string {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, number | string>((props) => props.fontSize, '');
+		return this.getPropertyOrDefault<number | string>((props) => props.fontSize, '');
 	}
 
 	public set columns(newValue: string[] | azdata.TableColumn[]) {
-		this.setPropertyFromUI<azdata.TableComponentProperties, string[] | azdata.TableColumn[]>((props, value) => props.columns = value, newValue);
+		this.setPropertyFromUI<string[] | azdata.TableColumn[]>((props, value) => props.columns = value, newValue);
 	}
 
 	public get selectedRows(): number[] {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, number[]>((props) => props.selectedRows, []);
+		return this.getPropertyOrDefault<number[]>((props) => props.selectedRows, []);
 	}
 
 	public set selectedRows(newValue: number[]) {
-		this.setPropertyFromUI<azdata.TableComponentProperties, number[]>((props, value) => props.selectedRows = value, newValue);
+		this.setPropertyFromUI<number[]>((props, value) => props.selectedRows = value, newValue);
 	}
 
 	public get forceFitColumns() {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, ColumnSizingMode>((props) => props.forceFitColumns, ColumnSizingMode.ForceFit);
+		return this.getPropertyOrDefault<ColumnSizingMode>((props) => props.forceFitColumns, ColumnSizingMode.ForceFit);
 	}
 
 	public get title() {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, string>((props) => props.title, '');
+		return this.getPropertyOrDefault<string>((props) => props.title, '');
 	}
 
 	public get ariaRowCount(): number {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaRowCount, -1);
+		return this.getPropertyOrDefault<number>((props) => props.ariaRowCount, -1);
 	}
 
 	public get ariaColumnCount(): number {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaColumnCount, -1);
+		return this.getPropertyOrDefault<number>((props) => props.ariaColumnCount, -1);
 	}
 
 	public set moveFocusOutWithTab(newValue: boolean) {
-		this.setPropertyFromUI<azdata.TableComponentProperties, boolean>((props, value) => props.moveFocusOutWithTab = value, newValue);
+		this.setPropertyFromUI<boolean>((props, value) => props.moveFocusOutWithTab = value, newValue);
 	}
 
 	public get moveFocusOutWithTab(): boolean {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, boolean>((props) => props.moveFocusOutWithTab, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.moveFocusOutWithTab, false);
 	}
 
 	public get updateCells(): azdata.TableCell[] {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, azdata.TableCell[]>((props) => props.updateCells, undefined);
+		return this.getPropertyOrDefault<azdata.TableCell[]>((props) => props.updateCells, undefined);
 	}
 
 	public set updateCells(newValue: azdata.TableCell[]) {
-		this.setPropertyFromUI<azdata.TableComponentProperties, azdata.TableCell[]>((properties, value) => { properties.updateCells = value; }, newValue);
+		this.setPropertyFromUI<azdata.TableCell[]>((properties, value) => { properties.updateCells = value; }, newValue);
 	}
 }

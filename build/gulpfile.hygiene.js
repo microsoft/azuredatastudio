@@ -96,6 +96,7 @@ const indentationFilter = [
 	'!**/*.dockerfile',
 	'!extensions/markdown-language-features/media/*.js',
 	// {{SQL CARBON EDIT}}
+	'!**/*.gif',
 	'!build/actions/**/*.js',
 	'!**/*.{xlf,docx,sql,vsix,bacpac,ipynb,jpg}',
 	'!extensions/mssql/sqltoolsservice/**',

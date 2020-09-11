@@ -45,7 +45,7 @@ class Root implements ITreeComponentItem {
 		<div #input style="width: 100%;height:100%"></div>
 	`
 })
-export default class TreeComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class TreeComponent extends ComponentBase<azdata.TreeProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _tree: Tree;
@@ -163,10 +163,10 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	}
 
 	public get withCheckbox(): boolean {
-		return this.getPropertyOrDefault<azdata.TreeProperties, boolean>((props) => props.withCheckbox, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.withCheckbox, false);
 	}
 
 	public set withCheckbox(newValue: boolean) {
-		this.setPropertyFromUI<azdata.TreeProperties, boolean>((properties, value) => { properties.withCheckbox = value; }, newValue);
+		this.setPropertyFromUI<boolean>((properties, value) => { properties.withCheckbox = value; }, newValue);
 	}
 }

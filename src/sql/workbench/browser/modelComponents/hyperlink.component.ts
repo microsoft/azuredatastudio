@@ -21,7 +21,7 @@ import * as DOM from 'vs/base/browser/dom';
 	selector: 'modelview-hyperlink',
 	template: `<a [href]="url" [title]="title" [attr.aria-label]="ariaLabel" target="blank">{{label}}</a>`
 })
-export default class HyperlinkComponent extends TitledComponent implements IComponent, OnDestroy, AfterViewInit {
+export default class HyperlinkComponent extends TitledComponent<azdata.HyperlinkComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -50,19 +50,19 @@ export default class HyperlinkComponent extends TitledComponent implements IComp
 	}
 
 	public set label(newValue: string) {
-		this.setPropertyFromUI<azdata.HyperlinkComponentProperties, string>((properties, value) => { properties.label = value; }, newValue);
+		this.setPropertyFromUI<string>((properties, value) => { properties.label = value; }, newValue);
 	}
 
 	public get label(): string {
-		return this.getPropertyOrDefault<azdata.HyperlinkComponentProperties, string>((props) => props.label, '');
+		return this.getPropertyOrDefault<string>((props) => props.label, '');
 	}
 
 	public set url(newValue: string) {
-		this.setPropertyFromUI<azdata.HyperlinkComponentProperties, string>((properties, value) => { properties.url = value; }, newValue);
+		this.setPropertyFromUI<string>((properties, value) => { properties.url = value; }, newValue);
 	}
 
 	public get url(): string {
-		return this.getPropertyOrDefault<azdata.HyperlinkComponentProperties, string>((props) => props.url, '');
+		return this.getPropertyOrDefault<string>((props) => props.url, '');
 	}
 
 	public onClick(e: MouseEvent): void {
