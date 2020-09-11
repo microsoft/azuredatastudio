@@ -13,7 +13,7 @@ import * as azdata from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
-import { find, equals as arrayEquals } from 'vs/base/common/arrays';
+import { equals as arrayEquals } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
@@ -118,7 +118,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
 		if (column.categoryValues) {
 			if (typeof e === 'string') {
-				let category = find(column.categoryValues, c => c.displayName === e);
+				let category = column.categoryValues.find(c => c.displayName === e);
 				if (category) {
 					this.onCellDataChanged(category.name, rowIdx, colIdx);
 				} else {
@@ -177,7 +177,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any> implem
 		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
 		let cellData = this.data[rowIdx][colIdx];
 		if (cellData && column.categoryValues) {
-			let category = find(column.categoryValues, v => v.name === cellData);
+			let category = column.categoryValues.find(v => v.name === cellData);
 			if (category) {
 				return category.displayName;
 			} else if (this.isEditableSelectBox(colIdx)) {
