@@ -220,7 +220,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 						iconWidth: iconSize
 					}).component();
 				let nameComponent: azdata.Component;
-				if (r.instanceType === ResourceType.postgresInstances) {
+				if (false) {
 					nameComponent = this.modelView.modelBuilder.text()
 						.withProperties<azdata.TextComponentProperties>({
 							value: r.instanceName || '',

@@ -210,6 +210,7 @@ declare module 'azdata-ext' {
 			},
 			postgres: {
 				server: {
+					delete(name: string): Promise<AzdataOutput<void>>,
 					list(): Promise<AzdataOutput<PostgresServerListResult[]>>,
 					show(name: string): Promise<AzdataOutput<PostgresServerShowResult>>
 				}

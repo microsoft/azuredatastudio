@@ -5,12 +5,13 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as azdataExt from 'azdata-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles, Endpoints } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
-import { promptAndConfirmPassword } from '../../../common/utils';
+import { promptAndConfirmPassword, promptForResourceDeletion } from '../../../common/utils';
 
 export class PostgresOverviewPage extends DashboardPage {
 
@@ -24,8 +25,11 @@ export class PostgresOverviewPage extends DashboardPage {
 	private grafanaLink?: azdata.HyperlinkComponent;
 	private nodesTable?: azdata.DeclarativeTableComponent;
 
+	private readonly _azdataApi: azdataExt.IExtension;
+
 	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView);
+		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
 		this.disposables.push(
 			this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated())),
@@ -229,13 +233,11 @@ export class PostgresOverviewPage extends DashboardPage {
 			deleteButton.onDidClick(async () => {
 				deleteButton.enabled = false;
 				try {
-					/*
-					if (await promptForResourceDeletion(this._postgresModel.namespace, this._postgresModel.name)) {
-						await this._postgresModel.delete();
-						await this._controllerModel.deleteRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
-						vscode.window.showInformationMessage(loc.resourceDeleted(this._postgresModel.fullName));
+					if (await promptForResourceDeletion(this._postgresModel.info.name)) {
+						await this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name);
+						await this._controllerModel.refreshTreeNode();
+						vscode.window.showInformationMessage(loc.resourceDeleted(this._postgresModel.info.name));
 					}
-					*/
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._postgresModel.fullName, error));
 				} finally {
