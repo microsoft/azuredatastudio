@@ -645,30 +645,30 @@
 					},
 					"versions": [
 						{
-							"version": "0.5.0",
-							"lastUpdated": "9/8/2019",
+							"version": "0.6.0",
+							"lastUpdated": "9/21/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/dzsquared/sqlops-firstresponderkit/releases/tag/0.5.0"
+									"source": "https://github.com/dzsquared/sqlops-firstresponderkit/releases/tag/0.6.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/dzsquared/sqlops-firstresponderkit/master/images/first-responder-kit-sqlops-extension.png"
+									"source": "https://raw.githubusercontent.com/dzsquared/sqlops-firstresponderkit/main/images/first-responder-kit-sqlops-extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/dzsquared/sqlops-firstresponderkit/master/README.md"
+									"source": "https://raw.githubusercontent.com/dzsquared/sqlops-firstresponderkit/main/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/dzsquared/sqlops-firstresponderkit/master/package.json"
+									"source": "https://raw.githubusercontent.com/dzsquared/sqlops-firstresponderkit/main/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/dzsquared/sqlops-firstresponderkit/master/LICENSE"
+									"source": "https://raw.githubusercontent.com/dzsquared/sqlops-firstresponderkit/main/LICENSE"
 								}
 							],
 							"properties": [
@@ -682,7 +682,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.22.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
