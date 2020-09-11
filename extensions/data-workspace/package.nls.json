@@ -3,5 +3,6 @@
 	"extension-description": "Data workspace",
 	"data-workspace-view-container-name": "Projects",
 	"main-view-name": "Projects",
-	"add-project-command": "Add Project"
+	"add-project-command": "Add Project",
+	"refresh-workspace-command": "Refresh"
 }

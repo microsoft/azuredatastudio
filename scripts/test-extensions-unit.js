@@ -22,7 +22,9 @@ const extensionList = [
 	'notebook',
 	'resource-deployment',
 	'machine-learning',
-	'sql-database-projects'];
+	'sql-database-projects',
+	'data-workspace'
+];
 
 let argv = require('yargs')
 	.command('$0 [extensions...]')
