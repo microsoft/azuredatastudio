@@ -9,7 +9,7 @@ import * as path from 'path';
 import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
-import { ExtensionActivationErrorMessage } from '../common/strings';
+import { ExtensionActivationErrorMessage } from '../common/constants';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';

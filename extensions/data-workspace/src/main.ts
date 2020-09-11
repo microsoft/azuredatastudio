@@ -8,7 +8,7 @@ import * as dataworkspace from 'dataworkspace';
 import { WorkspaceTreeDataProvider } from './common/workspaceTreeDataProvider';
 import { WorkspaceService } from './services/workspaceService';
 import { DataWorkspaceExtension } from './dataWorkspaceExtension';
-import { SelectProjectFileActionName } from './common/strings';
+import { SelectProjectFileActionName } from './common/constants';
 
 export async function activate(context: vscode.ExtensionContext): Promise<dataworkspace.IExtension> {
 	const workspaceService = new WorkspaceService();
