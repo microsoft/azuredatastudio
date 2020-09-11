@@ -416,7 +416,7 @@ export class PublishDatabaseDialog {
 
 		table.onDataChanged(() => {
 			this.sqlCmdVars = {};
-			table.data.forEach((row) => {
+			table.data?.forEach((row) => {
 				(<Record<string, string>>this.sqlCmdVars)[row[0]] = row[1];
 			});
 
