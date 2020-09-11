@@ -855,7 +855,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 	private populatePropertiesFromSettings() {
 		if (this._configurationService) {
-			const enableWYSIWYGByDefaultKey = 'notebook.setWYSIWYG ByDefault';
+			const enableWYSIWYGByDefaultKey = 'notebook.setRichTextViewByDefault';
 			this._defaultToWYSIWYG = this._configurationService.getValue(enableWYSIWYGByDefaultKey);
 			if (!this._defaultToWYSIWYG) {
 				this.showMarkdown = true;
