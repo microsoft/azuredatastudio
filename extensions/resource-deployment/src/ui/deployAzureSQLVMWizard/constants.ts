@@ -32,6 +32,7 @@ export const VmImageDropdownLabel = localize('deployAzureSQLVM.VmImageDropdownLa
 export const VmSkuDropdownLabel = localize('deployAzureSQLVM.VmSkuDropdownLabel', "Image SKU");
 export const VmVersionDropdownLabel = localize('deployAzureSQLVM.VmImageVersionDropdownLabel', "Image Version");
 export const VmSizeDropdownLabel = localize('deployAzureSQLVM.VmSizeDropdownLabel', "Size");
+export const VmSizeLearnMoreLabel = localize('deployeAzureSQLVM.VmSizeLearnMoreLabel', "Click here to learn more about pricing and supported VM sizes");
 
 // Network settings page constants
 export const NetworkSettingsPageTitle = localize('deployAzureSQLVM.NetworkSettingsPageTitle', "Networking");

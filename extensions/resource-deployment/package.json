@@ -423,7 +423,7 @@
             },
             {
               "text": "%azure-sqlvm-agreement-sqlvm-eula%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=2002534"
+              "url": "https://azure.microsoft.com/support/legal/"
             },
             {
               "text": "%azure-sqlvm-agreement-azdata-eula%",
