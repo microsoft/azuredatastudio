@@ -203,15 +203,24 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableColumn {
-		headerCssStyles?: { [key: string]: string };
-		rowCssStyles?: { [key: string]: string };
+		headerCssStyles?: CssStyles;
+		rowCssStyles?: CssStyles;
 		ariaLabel?: string;
 		showCheckAll?: boolean;
 		isChecked?: boolean;
 	}
 
+
 	export enum DeclarativeDataType {
 		component = 'component'
+	}
+
+	export type DeclarativeTableRowSelectedEvent = {
+		row: number
+	};
+
+	export interface DeclarativeTableComponent extends Component, DeclarativeTableProperties {
+		onRowSelected: vscode.Event<DeclarativeTableRowSelectedEvent>;
 	}
 
 	/*
@@ -295,6 +304,21 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableProperties extends ComponentProperties {
+		/**
+		 * dataValues will only be used if data is an empty array
+		 */
+		dataValues?: DeclarativeTableCellValue[][];
+
+		/**
+		 * Should the table react to user selections
+		 */
+		selectEffect?: boolean; // Defaults to false
+	}
+
+	export interface DeclarativeTableCellValue {
+		value: string | number | boolean;
+		ariaLabel?: string;
+		style?: CssStyles
 	}
 
 	export interface ComponentProperties {
