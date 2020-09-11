@@ -4,7 +4,7 @@
 		[attr.aria-checked]="isCardSelected(card.id)" [tabIndex]="getTabIndex(card.id)" [style.width]="cardWidth"
 		[style.height]="cardHeight" (focus)="onCardFocus(card.id)" (blur)="onCardBlur(card.id)" style="flex:0 0 auto;">
 
-		<div *ngIf="isIconPositionTop()">
+		<ng-container *ngIf="isIconPositionTop()">
 			<div class="selection-indicator-container">
 				<div *ngIf="isCardSelected(card.id)" class="selection-indicator"></div>
 			</div>
@@ -22,7 +22,7 @@
 					</a>
 				</div>
 			</div>
-		</div>
+		</ng-container>
 
 		<div *ngIf="isIconPositionLeft()" class="model-left-icon-card">
 			<span class="selection-indicator-container">
@@ -32,9 +32,14 @@
 				<div [class]="getIconClass(card.id)" [style.width]="iconWidth" [style.height]="iconHeight"></div>
 			</div>
 			<div class="detail-container">
-				<div class="card-label">{{card.label}}</div>
-				<div *ngFor="let description of card.descriptions">
-					<div class="card-description">{{description.textValue}}</div>
+				<div *ngFor="let description of card.descriptions" style="margin-bottom:14px;">
+					<span class="text-value" [ngStyle]="description.textStyles">{{description.textValue}}</span>
+					<a *ngIf="description.linkDisplayValue" class="link-value" href="#"
+						(click)="onLinkClick($event, card.id, description)" [ngStyle]="description.linkStyles">
+						{{description.linkDisplayValue}}
+						<span *ngIf="description.displayLinkCodicon && description.linkDisplayValue"
+							class="codicon codicon-link-external" [ngStyle]="description.linkCodiconStyles"></span>
+					</a>
 				</div>
 			</div>
 		</div>

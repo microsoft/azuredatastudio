@@ -75,12 +75,15 @@ export class ResourceTypePickerDialog extends DialogBase {
 						icon: resourceType.icon,
 						descriptions: [
 							{
-								textValue: resourceType.description,
+								textValue: resourceType.displayName,
 								textStyles: {
-									'font-size': '12px',
-									'font-weight': 700
+									'font-size': '14px',
+									'font-weight': 'bold'
 								}
 							},
+							{
+								textValue: resourceType.description,
+							}
 						]
 					};
 				}),
