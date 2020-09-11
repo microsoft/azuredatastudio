@@ -849,7 +849,7 @@ export class FileProjectEntry extends ProjectEntry {
 	}
 
 	public pathForSqlProj(): string {
-		return utils.convertSlashesForSqlProj(this.fsUri.path);
+		return utils.convertSlashesForSqlProj(this.fsUri.fsPath);
 	}
 }
 
