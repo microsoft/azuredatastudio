@@ -82,7 +82,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 					let file = self._fileInputContainer.nativeElement.files[0];
 					let reader = new FileReader();
 					reader.onload = (e) => {
-						let text = (<FileReader>e.target).result;
+						let text = (e.target as FileReader).result;
 						self.fileContent = text.toString();
 						self.fireEvent({
 							eventType: ComponentEventType.onDidClick,
@@ -205,12 +205,12 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		if (this.isFile === true) {
 			return 'File' as azdata.ButtonType;
 		} else {
-			return this.getPropertyOrDefault<azdata.ButtonProperties, azdata.ButtonType>((props) => props.buttonType, 'Normal' as azdata.ButtonType);
+			return this.getPropertyOrDefault((props) => props.buttonType, 'Normal' as azdata.ButtonType);
 		}
 	}
 
 	public get description(): string {
-		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((props) => props.description, '');
+		return this.getPropertyOrDefault((props) => props.description, '');
 	}
 
 	public get isFile(): boolean {

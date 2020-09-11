@@ -101,8 +101,8 @@ export class DashboardWidget {
 				'padding-left': '26px'
 			}
 		});
-		const tasksContainer = await this.createTasks(view);
-		header.addItem(tasksContainer, {
+		const tasksContainer = this.createTasks(view);
+		header.addItem(await tasksContainer, {
 			CSSStyles: {
 				'height': 'auto',
 				'margin-top': '67px',
@@ -313,7 +313,7 @@ export class DashboardWidget {
 		});
 		videosContainer.addItem(video1Container, {
 			CSSStyles: {
-				'background-image': `url(${vscode.Uri.file(this.asAbsolutePath(<string>linkMetaData.iconPath?.light || ''))})`,
+				'background-image': `url(${vscode.Uri.file(this.asAbsolutePath(linkMetaData.iconPath?.light as string || ''))})`,
 				'background-repeat': 'no-repeat',
 				'background-position': 'top',
 				'width': `${maxWidth}px`,
@@ -482,7 +482,7 @@ export class DashboardWidget {
 			link: 'https://go.microsoft.com/fwlink/?linkid=2129795',
 			command: constants.mlsPredictModelCommand
 		};
-		const predictionButton = await this.createTaskButton(view, predictionMetadata);
+		const predictionButton = this.createTaskButton(view, predictionMetadata);
 		const importMetadata: IActionMetadata = {
 			title: constants.importModelTitle,
 			description: constants.importModelDesc,
@@ -493,7 +493,7 @@ export class DashboardWidget {
 			link: 'https://go.microsoft.com/fwlink/?linkid=2129796',
 			command: constants.mlManageModelsCommand
 		};
-		const importModelsButton = await this.createTaskButton(view, importMetadata);
+		const importModelsButton = this.createTaskButton(view, importMetadata);
 		const notebookMetadata: IActionMetadata = {
 			title: constants.createNotebookTitle,
 			description: constants.createNotebookDesc,
@@ -504,8 +504,9 @@ export class DashboardWidget {
 			link: 'https://go.microsoft.com/fwlink/?linkid=2129920',
 			command: constants.notebookCommandNew
 		};
-		const notebookModelsButton = await this.createTaskButton(view, notebookMetadata);
+		const notebookModelsButton = this.createTaskButton(view, notebookMetadata);
 		tasksContainer.addItems([predictionButton, importModelsButton, notebookModelsButton]);
+
 		if (!await this._predictService.serverSupportOnnxModel()) {
 			console.log(constants.onnxNotSupportedError);
 		}
@@ -513,7 +514,7 @@ export class DashboardWidget {
 		return tasksContainer;
 	}
 
-	private async createTaskButton(view: azdata.ModelView, taskMetaData: IActionMetadata): Promise<azdata.Component> {
+	private createTaskButton(view: azdata.ModelView, taskMetaData: IActionMetadata): azdata.Component {
 		const maxHeight: number = 84;
 		const maxWidth: number = 236;
 		const buttonContainer = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({

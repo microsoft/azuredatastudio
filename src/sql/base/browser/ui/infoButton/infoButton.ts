@@ -11,14 +11,14 @@ import { URI } from 'vs/base/common/uri';
 type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 
 export interface IInfoButtonOptions extends IButtonOptions {
-	description: string,
-	buttonMaxHeight: number,
-	iconClass: string,
-	iconHeight: number,
-	iconWidth: number,
-	iconPath: IUserFriendlyIcon,
-	textTitle: string,
-	buttonMaxWidth: number,
+	description?: string,
+	buttonMaxHeight?: number,
+	iconClass?: string,
+	iconHeight?: number,
+	iconWidth?: number,
+	iconPath?: IUserFriendlyIcon,
+	textTitle?: string,
+	buttonMaxWidth?: number,
 }
 
 export class InfoButton extends sqlButton {
