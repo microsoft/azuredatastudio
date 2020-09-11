@@ -483,6 +483,7 @@ export interface ICellModel {
 	isEditMode: boolean;
 	showPreview: boolean;
 	showMarkdown: boolean;
+	defaultToWYSIWYG: boolean;
 	readonly onCellPreviewModeChanged: Event<boolean>;
 	readonly onCellMarkdownModeChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;

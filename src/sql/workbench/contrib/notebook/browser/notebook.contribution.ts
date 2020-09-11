@@ -225,6 +225,11 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'default': true,
 			'description': localize('notebook.enableDoubleClickEdit', "Enable double click to edit for text cells in notebooks")
+		},
+		'notebook.setWYSIWYG ByDefault': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('notebook.setWYSIWYGByDefault', "Set WYSIWYG mode by default for text cells")
 		}
 	}
 });
