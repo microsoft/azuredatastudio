@@ -44,9 +44,9 @@ export class MarkdownToolbarComponent {
 
 	@Input() public cellModel: ICellModel;
 	private _actionBar: Taskbar;
-	_toggleTextViewAction: any;
-	_toggleSplitViewAction: any;
-	_toggleMarkdownViewAction: any;
+	_toggleTextViewAction: ToggleViewAction;
+	_toggleSplitViewAction: ToggleViewAction;
+	_toggleMarkdownViewAction: ToggleViewAction;
 
 	constructor(
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
