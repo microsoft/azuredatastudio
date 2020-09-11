@@ -18,7 +18,7 @@
   "typings": "./src/kusto",
   "scripts": {
     "compile": "gulp compile-extension:kusto-client",
-    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-kusto syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
+    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-kusto ./syntaxes/kusto.tmLanguage"
   },
   "contributes": {
     "commands": [
@@ -66,6 +66,11 @@
         "label": "[Kuskus] Kusto (Dark)",
         "uiTheme": "vs-dark",
         "path": "./themes/kuskus-kusto-dark.json"
+      },
+      {
+        "label": "[Kuskus] Kusto Explorer (Dark)",
+        "uiTheme": "vs-dark",
+        "path": "./themes/kuskus-kusto-explorer-dark.json"
       }
     ],
     "outputChannels": [
