@@ -133,7 +133,7 @@ export interface IClientSession extends IDisposable {
 	 */
 	readonly kernelDisplayName: string;
 
-	readonly cachedKernelSpec: nb.IKernelSpec;
+	readonly cachedKernelSpec: nb.IKernelSpec | undefined;
 
 	/**
 	 * Initializes the ClientSession, by starting the server and

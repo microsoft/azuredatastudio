@@ -5048,8 +5048,8 @@ declare module 'azdata' {
 		 * An arguments object for the kernel changed event.
 		 */
 		export interface IKernelChangedArgs {
-			oldValue: IKernel | null;
-			newValue: IKernel | null;
+			oldValue: IKernel | undefined;
+			newValue: IKernel | undefined;
 		}
 
 		/// -------- JSON objects, and objects primarily intended not to have methods -----------

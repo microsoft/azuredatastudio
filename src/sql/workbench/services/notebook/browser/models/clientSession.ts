@@ -218,21 +218,21 @@ export class ClientSession implements IClientSession {
 	/**
 	 * Change the current kernel associated with the document.
 	 */
-	async changeKernel(options: nb.IKernelSpec, oldValue?: nb.IKernel): Promise<nb.IKernel> {
+	async changeKernel(options: nb.IKernelSpec, oldValue?: nb.IKernel): Promise<nb.IKernel | undefined> {
 		this._kernelChangeCompleted = new Deferred<void>();
 		this._isReady = false;
 		let oldKernel = oldValue ? oldValue : this.kernel;
 
 		let kernel = await this.doChangeKernel(options);
 		try {
-			await kernel.ready;
+			await kernel?.ready;
 		} catch (error) {
 			// Cleanup some state before re-throwing
-			this._isReady = kernel.isReady;
+			this._isReady = kernel?.isReady;
 			this._kernelChangeCompleted.resolve();
 			throw error;
 		}
-		let newKernel = this._session ? kernel : this._session.kernel;
+		let newKernel = this._session ? this._session.kernel : kernel;
 		this._isReady = kernel.isReady;
 		await this.updateCachedKernelSpec();
 		// Send resolution events to listeners
@@ -266,8 +266,8 @@ export class ClientSession implements IClientSession {
 	/**
 	 * Helper method to either call ChangeKernel on current session, or start a new session
 	 */
-	private async doChangeKernel(options: nb.IKernelSpec): Promise<nb.IKernel> {
-		let kernel: nb.IKernel;
+	private async doChangeKernel(options: nb.IKernelSpec): Promise<nb.IKernel | undefined> {
+		let kernel: nb.IKernel | undefined;
 		if (this._session) {
 			kernel = await this._session.changeKernel(options);
 			await this.runKernelConfigActions(kernel.name);
@@ -288,7 +288,7 @@ export class ClientSession implements IClientSession {
 			// TODO is there any case where skipping causes errors? So far it seems like it gets called twice
 			return;
 		}
-		if (connection.id !== '-1') {
+		if (connection.id !== '-1' && this._session) {
 			await this._session.configureConnection(connection);
 		}
 	}
