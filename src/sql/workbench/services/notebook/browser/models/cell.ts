@@ -61,9 +61,13 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
-	private _showPreview: boolean = true;
 	private _onCellPreviewChanged = new Emitter<boolean>();
+	private _onCellMarkdownChanged = new Emitter<boolean>();
 	private _isCommandExecutionSettingEnabled: boolean = false;
+	private _showPreview: boolean = true;
+	private _showMarkdown: boolean = false;
+	private _cellSourceChanged: boolean = false;
+	private _gridDataConversionComplete: Promise<void>[] = [];
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -242,6 +246,7 @@ export class CellModel extends Disposable implements ICellModel {
 		if (this._source !== newSource) {
 			this._source = newSource;
 			this.sendChangeToNotebook(NotebookChangeType.CellSourceUpdated);
+			this.cellSourceChanged = true;
 		}
 		this._modelContentChangedEvent = undefined;
 	}
@@ -308,14 +313,33 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public set showPreview(val: boolean) {
-		if (val !== this._showPreview) {
-			this._showPreview = val;
-			this._onCellPreviewChanged.fire(this._showPreview);
-		}
+		this._showPreview = val;
+		this._onCellPreviewChanged.fire(this._showPreview);
 	}
 
-	public get onCellPreviewChanged(): Event<boolean> {
+	public get showMarkdown(): boolean {
+		return this._showMarkdown;
+	}
+
+	public set showMarkdown(val: boolean) {
+		this._showMarkdown = val;
+		this._onCellMarkdownChanged.fire(this._showMarkdown);
+	}
+
+
+	public get cellSourceChanged(): boolean {
+		return this._cellSourceChanged;
+	}
+	public set cellSourceChanged(val: boolean) {
+		this._cellSourceChanged = val;
+	}
+
+	public get onCellPreviewModeChanged(): Event<boolean> {
 		return this._onCellPreviewChanged.event;
+	}
+
+	public get onCellMarkdownModeChanged(): Event<boolean> {
+		return this._onCellMarkdownChanged.event;
 	}
 
 	private notifyExecutionComplete(): void {
@@ -338,6 +362,8 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public async runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean> {
 		try {
+			// Clear grid data conversion promises from previous execution results
+			this._gridDataConversionComplete = [];
 			if (!this.active && this !== this.notebookModel.activeCell) {
 				this.notebookModel.updateActiveCell(this);
 				this.active = true;
@@ -523,6 +549,25 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._outputs;
 	}
 
+	public updateOutputData(batchId: number, id: number, data: any) {
+		for (let i = 0; i < this._outputs.length; i++) {
+			if (this._outputs[i].output_type === 'execute_result'
+				&& (<nb.IExecuteResult>this._outputs[i]).batchId === batchId
+				&& (<nb.IExecuteResult>this._outputs[i]).id === id) {
+				(<nb.IExecuteResult>this._outputs[i]).data = data;
+				break;
+			}
+		}
+	}
+
+	public get gridDataConversionComplete(): Promise<void> {
+		return Promise.all(this._gridDataConversionComplete).then();
+	}
+
+	public addGridDataConversionPromise(complete: Promise<void>): void {
+		this._gridDataConversionComplete.push(complete);
+	}
+
 	public get renderedOutputTextContent(): string[] {
 		return this._renderedOutputTextContent;
 	}
@@ -579,7 +624,22 @@ export class CellModel extends Disposable implements ICellModel {
 		if (output) {
 			// deletes transient node in the serialized JSON
 			delete output['transient'];
-			this._outputs.push(this.rewriteOutputUrls(output));
+			// display message outputs before grid outputs
+			if (output.output_type === 'display_data' && this._outputs.length > 0) {
+				let added = false;
+				for (let i = 0; i < this._outputs.length; i++) {
+					if (this._outputs[i].output_type === 'execute_result') {
+						this._outputs.splice(i, 0, this.rewriteOutputUrls(output));
+						added = true;
+						break;
+					}
+				}
+				if (!added) {
+					this._outputs.push(this.rewriteOutputUrls(output));
+				}
+			} else {
+				this._outputs.push(this.rewriteOutputUrls(output));
+			}
 			// Only scroll on 1st output being added
 			let shouldScroll = this._outputs.length === 1;
 			this.fireOutputsChanged(shouldScroll);

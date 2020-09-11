@@ -405,9 +405,13 @@ Includes non-masked style declarations. */
 	mask-image: url("toolbar-preview-toggle-off.svg");
 }
 
-.codicon.markdown {
+.codicon.masked-icon.show-markdown::before {
 	-webkit-mask-image: url("markdown.svg");
 	mask-image: url("markdown.svg");
+}
+.codicon.masked-icon.show-text::before{
+	-webkit-mask-image: url("eye.svg");
+	mask-image: url("eye.svg");
 }
 
 .codicon:not(.masked-icon).icon-expand-cells {
