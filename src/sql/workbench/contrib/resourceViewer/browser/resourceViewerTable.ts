@@ -31,7 +31,8 @@ export class ResourceViewerTable extends Disposable {
 				this._dataView.sort(args);
 			}
 		}, {
-			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
+			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor,
+			forceFitColumns: true
 		}));
 		this._resourceViewerTable.setSelectionModel(new RowSelectionModel());
 		let filterPlugin = new HeaderFilter<Slick.SlickData>();
@@ -39,6 +40,7 @@ export class ResourceViewerTable extends Disposable {
 		this._register(attachTableStyler(this._resourceViewerTable, this._themeService));
 		filterPlugin.onFilterApplied.subscribe(() => {
 			this._dataView.filter();
+			this._resourceViewerTable.grid.invalidate();
 			this._resourceViewerTable.grid.render();
 			this._resourceViewerTable.grid.resetActiveCell();
 			this._resourceViewerTable.grid.resizeCanvas();
