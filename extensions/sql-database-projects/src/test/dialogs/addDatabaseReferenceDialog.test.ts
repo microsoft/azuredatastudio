@@ -61,13 +61,7 @@ describe('Add Database Reference Dialog', () => {
 		dialog.locationDropdown!.value = constants.differentDbDifferentServer;
 		dialog.updateEnabledInputBoxes();
 		dialog.tryEnableAddReferenceButton();
-		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because server fields are not filled');
-
-		// fill in server fields
-		dialog.serverNameTextbox!.value = 'serverName';
-		dialog.serverVariableTextbox!.value = '$(serverName)';
-		dialog.tryEnableAddReferenceButton();
-		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled after server fields are filled');
+		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled because server fields are filled');
 
 		// change location to same database
 		dialog.locationDropdown!.value = constants.sameDatabase;
