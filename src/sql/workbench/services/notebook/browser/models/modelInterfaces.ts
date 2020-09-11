@@ -482,8 +482,11 @@ export interface ICellModel {
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
 	showPreview: boolean;
-	readonly onCellPreviewChanged: Event<boolean>;
+	showMarkdown: boolean;
+	readonly onCellPreviewModeChanged: Event<boolean>;
+	readonly onCellMarkdownModeChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;
+	cellSourceChanged: boolean;
 	gridDataConversionComplete: Promise<void>;
 	addGridDataConversionPromise(complete: Promise<void>): void;
 	updateOutputData(batchId: number, id: number, data: any): void;
