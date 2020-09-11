@@ -7,7 +7,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
 import { localize } from 'vs/nls';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { TransformMarkdownAction, MarkdownButtonType, ToggleViewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -41,6 +41,9 @@ export class MarkdownToolbarComponent {
 	public textViewButton = localize('textViewButton', "View as Text");
 	public splitViewButton = localize('splitViewButton', "View as Split");
 	public markdownButton = localize('markdownButton', "View as Markdown");
+
+	private _taskbarContent: Array<ITaskbarContent>;
+	private _wysiwygTaskbarContent: Array<ITaskbarContent>;
 
 	@Input() public cellModel: ICellModel;
 	private _actionBar: Taskbar;
@@ -98,7 +101,7 @@ export class MarkdownToolbarComponent {
 		dropdownMenuActionViewItem.render(buttonDropdownContainer);
 		dropdownMenuActionViewItem.setActionContext(this);
 
-		this._actionBar.setContent([
+		this._taskbarContent = [
 			{ action: boldButton },
 			{ action: italicButton },
 			{ action: underlineButton },
@@ -112,7 +115,34 @@ export class MarkdownToolbarComponent {
 			{ action: this._toggleTextViewAction },
 			{ action: this._toggleSplitViewAction },
 			{ action: this._toggleMarkdownViewAction }
-		]);
+		];
+		this._wysiwygTaskbarContent = [
+			{ action: boldButton },
+			{ action: italicButton },
+			{ action: underlineButton },
+			{ action: highlightButton },
+			{ action: codeButton },
+			{ action: listButton },
+			{ action: orderedListButton },
+			{ element: buttonDropdownContainer },
+			{ action: this._toggleTextViewAction },
+			{ action: this._toggleSplitViewAction },
+			{ action: this._toggleMarkdownViewAction }
+		];
+		// Hide link and image buttons in WYSIWYG mode
+		if (this.cellModel.showPreview && !this.cellModel.showMarkdown) {
+			this._actionBar.setContent(this._wysiwygTaskbarContent);
+		} else {
+			this._actionBar.setContent(this._taskbarContent);
+		}
+	}
+
+	public hideLinkAndImageButtons() {
+		this._actionBar.setContent(this._wysiwygTaskbarContent);
+	}
+
+	public showLinkAndImageButtons() {
+		this._actionBar.setContent(this._taskbarContent);
 	}
 
 	public removeActiveClassFromModeActions() {
