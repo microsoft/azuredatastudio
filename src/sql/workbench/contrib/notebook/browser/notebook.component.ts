@@ -88,27 +88,47 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private navigationResult: nb.NavigationResult;
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
+	public enter: boolean = false;
 
 	@HostListener('document:keydown', ['$event'])
 	handleKeyboardEvent(event) {
+		const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
+		const toolbarEditCellAction = toolbarComponent.getEditCellAction();
 		switch (event.key) {
 			case 'Escape':
-				const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
-				const toolbarEditCellAction = toolbarComponent.getEditCellAction();
+				if (this._model.activeCell.isEditMode) {
+					this._model.activeCell.isEditMode = !this._model.activeCell.isEditMode;
+				}
 				if (toolbarEditCellAction.editMode) {
 					toolbarEditCellAction.editMode = !toolbarEditCellAction.editMode;
 				}
-			case 'ArrowRight':
-				let nextIndex = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
-				this.selectCell(this.cells[nextIndex]);
 				break;
+			case 'ArrowDown':
+			case 'ArrowRight':
+				if (this.model.activeCell.cellType !== 'code' && !this._model.activeCell.isEditMode) {
+					let nextIndex = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
+					this.selectCell(this.cells[nextIndex]);
+					break;
+				}
 			case 'ArrowUp':
 			case 'ArrowLeft':
-				let index = this.findCellIndex(this.model.activeCell);
-				if (index === 0) {
-					index = this.cells.length;
+				if (this.model.activeCell.cellType !== 'code' && !this._model.activeCell.isEditMode) {
+					let index = this.findCellIndex(this.model.activeCell);
+					if (index === 0) {
+						index = this.cells.length;
+					}
+					this.selectCell(this.cells[--index]);
+					break;
 				}
-				this.selectCell(this.cells[--index]);
+			case 'Enter':
+				if (!this._model.activeCell.isEditMode) {
+					event.preventDefault();
+					this._model.activeCell.isEditMode = !this._model.activeCell.isEditMode;
+				}
+				if (!toolbarEditCellAction.editMode) {
+					toolbarEditCellAction.editMode = !toolbarEditCellAction.editMode;
+				}
+				this.enter = true;
 				break;
 			default:
 				break;
