@@ -74,7 +74,7 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 				const connection = await azdata.connection.openConnectionDialog(undefined, connectionProfile);
 				connId = connection.connectionId;
 				server = connection.options['server'];
-				username = connection.options['username'];
+				username = connection.options['user'];
 			}
 
 			targetConnection = `${server} (${username})`;
