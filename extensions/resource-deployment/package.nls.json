@@ -48,7 +48,7 @@
 	"deployment.configuration.title": "Deployment configuration",
 	"azdata-install-location-description": "Location of the azdata package used for the install command",
 	"azure-sqlvm-display-name": "SQL Server on Azure Virtual Machine",
-	"azure-sqlvm-description": "Best for migrations and applications requiring OS-level access. Lift-and-shift ready.",
+	"azure-sqlvm-description": "Create SQL virtual machines on Azure. Best for migrations and applications requiring OS-level access. Lift-and-shift ready.",
 	"azure-sqlvm-deploy-dialog-title": "Deploy Azure SQL virtual machine",
 	"azure-sqlvm-deploy-dialog-action-text": "Script to notebook",
 	"azure-sqlvm-agreement": "I accept {0}, {1} and {2}.",
@@ -69,6 +69,5 @@
 	"azure-sqlvm-username-label": "Username",
 	"azure-sqlvm-password-label": "Password",
 	"azure-sqlvm-password-confirm-label": "Confirm password",
-	"azure-sqlvm-vm-summary-page-label": "Summary",
-	"azure-sqlvm-vm-azure-resource-name-validation-description": "Azure resource names cannot contain special characters \/\"\"[]:|<>+=;,?*@&, whitespace, or begin with '_' or end with '.' or '-'"
+	"azure-sqlvm-vm-summary-page-label": "Summary"
 }

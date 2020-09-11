@@ -39,6 +39,7 @@ export class VmSettingsPage extends BasePage {
 	// dropdown for sql vm size
 	private _vmSizeDropdown!: azdata.DropDownComponent;
 	private _vmSizeDropdownLoader!: azdata.LoadingComponent;
+	private _vmSizeLearnMoreLink!: azdata.HyperlinkComponent;
 
 	private _form!: azdata.FormContainer;
 
@@ -93,6 +94,9 @@ export class VmSettingsPage extends BasePage {
 						},
 						{
 							component: this.wizard.createFormRowComponent(view, constants.VmSizeDropdownLabel, '', this._vmSizeDropdownLoader, true)
+						},
+						{
+							component: this._vmSizeLearnMoreLink
 						}
 					],
 					{
@@ -321,6 +325,12 @@ export class VmSettingsPage extends BasePage {
 		});
 
 		this._vmSizeDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._vmSizeDropdown).component();
+
+		this._vmSizeLearnMoreLink = view.modelBuilder.hyperlink().withProperties(<azdata.HyperlinkComponent>{
+			label: constants.VmSizeLearnMoreLabel,
+			url: 'https://go.microsoft.com/fwlink/?linkid=2143101'
+
+		}).component();
 	}
 
 	private async populateVmSizeDropdown() {
