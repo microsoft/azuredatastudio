@@ -4642,15 +4642,10 @@ declare module 'azdata' {
 		}
 
 		export interface INotebookMetadata {
-			kernelspec: IKernelInfo;
+			kernelspec?: IKernelSpec;
 			language_info?: ILanguageInfo;
 			tags?: string[];
-		}
-
-		export interface IKernelInfo {
-			name: string;
-			language?: string;
-			display_name?: string;
+			azdata_notebook_guid?: string;
 		}
 
 		export interface ILanguageInfo {
@@ -5054,13 +5049,13 @@ declare module 'azdata' {
 
 		/// -------- JSON objects, and objects primarily intended not to have methods -----------
 		export interface IAllKernels {
-			defaultKernel: string;
 			kernels: IKernelSpec[];
+			defaultKernel?: string;
 		}
 		export interface IKernelSpec {
 			name: string;
+			display_name: string;
 			language?: string;
-			display_name?: string;
 		}
 
 		export interface MessageHandler<T extends IMessage> {

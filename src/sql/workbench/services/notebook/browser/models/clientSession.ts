@@ -228,15 +228,17 @@ export class ClientSession implements IClientSession {
 			await kernel?.ready;
 		} catch (error) {
 			// Cleanup some state before re-throwing
-			this._isReady = kernel?.isReady;
+			this._isReady = kernel ? kernel.isReady : false;
 			this._kernelChangeCompleted.resolve();
 			throw error;
 		}
 		let newKernel = this._session ? this._session.kernel : kernel;
-		this._isReady = kernel.isReady;
+		this._isReady = kernel ? kernel.isReady : false;
 		await this.updateCachedKernelSpec();
 		// Send resolution events to listeners
-		await this.notifyKernelChanged(newKernel, oldKernel);
+		if (newKernel) {
+			await this.notifyKernelChanged(newKernel, oldKernel);
+		}
 		return kernel;
 	}
 

@@ -188,7 +188,8 @@ async function createandLoadNotebookModel(codeContent?: nb.INotebookContents): P
 		metadata: {
 			kernelspec: {
 				name: 'python',
-				language: 'python'
+				language: 'python',
+				display_name: 'Python 3'
 			}
 		},
 		nbformat: 4,

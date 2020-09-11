@@ -46,7 +46,8 @@ let expectedNotebookContent: nb.INotebookContents = {
 	metadata: {
 		kernelspec: {
 			name: 'mssql',
-			language: 'sql'
+			language: 'sql',
+			display_name: 'SQL'
 		}
 	},
 	nbformat: 4,
@@ -184,7 +185,8 @@ suite('Notebook Find Model', function (): void {
 			metadata: {
 				kernelspec: {
 					name: 'mssql',
-					language: 'sql'
+					language: 'sql',
+					display_name: 'SQL'
 				}
 			},
 			nbformat: 4,
@@ -216,7 +218,8 @@ suite('Notebook Find Model', function (): void {
 			metadata: {
 				kernelspec: {
 					name: 'python',
-					language: 'python'
+					language: 'python',
+					display_name: 'Python'
 				}
 			},
 			nbformat: 4,
@@ -241,7 +244,8 @@ suite('Notebook Find Model', function (): void {
 			metadata: {
 				kernelspec: {
 					name: 'python',
-					language: 'python'
+					language: 'python',
+					display_name: 'Python'
 				}
 			},
 			nbformat: 4,
@@ -301,7 +305,8 @@ suite('Notebook Find Model', function (): void {
 			metadata: {
 				kernelspec: {
 					name: 'python',
-					language: 'python'
+					language: 'python',
+					display_name: 'Python'
 				}
 			},
 			nbformat: 4,
@@ -333,7 +338,8 @@ suite('Notebook Find Model', function (): void {
 			metadata: {
 				kernelspec: {
 					name: 'python',
-					language: 'python'
+					language: 'python',
+					display_name: 'Python'
 				}
 			},
 			nbformat: 4,
@@ -364,7 +370,8 @@ suite('Notebook Find Model', function (): void {
 			metadata: {
 				kernelspec: {
 					name: 'mssql',
-					language: 'sql'
+					language: 'sql',
+					display_name: 'SQL'
 				}
 			},
 			nbformat: 4,

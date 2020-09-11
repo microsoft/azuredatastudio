@@ -451,14 +451,12 @@ export class CellModel extends Disposable implements ICellModel {
 			await clientSession.kernelChangeCompleted;
 		}
 		if (!clientSession.kernel) {
-			let defaultKernel = model && model.defaultKernel && model.defaultKernel.name;
+			let defaultKernel = model && model.defaultKernel;
 			if (!defaultKernel) {
 				this.sendNotification(notificationService, Severity.Error, localize('noDefaultKernel', "No kernel is available for this notebook"));
 				return undefined;
 			}
-			await clientSession.changeKernel({
-				name: defaultKernel
-			});
+			await clientSession.changeKernel(defaultKernel);
 		}
 		return clientSession.kernel;
 	}

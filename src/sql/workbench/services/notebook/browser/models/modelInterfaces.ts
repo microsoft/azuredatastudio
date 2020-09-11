@@ -82,7 +82,7 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * The current kernel associated with the document.
 	 */
-	readonly kernel: nb.IKernel | null;
+	readonly kernel: nb.IKernel | undefined;
 
 	/**
 	 * The current path associated with the client session.
@@ -92,12 +92,12 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * The current name associated with the client session.
 	 */
-	readonly name: string;
+	readonly name: string | undefined;
 
 	/**
 	 * The type of the client session.
 	 */
-	readonly type: string;
+	readonly type: string | undefined;
 
 	/**
 	 * The current status of the client session.
@@ -116,7 +116,7 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * The error information, if this session is in an error state
 	 */
-	readonly errorMessage: string;
+	readonly errorMessage: string | undefined;
 
 	/**
 	 * A promise that is fulfilled when the session is ready.
@@ -131,7 +131,7 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * The display name of the kernel.
 	 */
-	readonly kernelDisplayName: string;
+	readonly kernelDisplayName: string | undefined;
 
 	readonly cachedKernelSpec: nb.IKernelSpec | undefined;
 
@@ -149,7 +149,7 @@ export interface IClientSession extends IDisposable {
 	changeKernel(
 		options: nb.IKernelSpec,
 		oldKernel?: nb.IKernel
-	): Promise<nb.IKernel>;
+	): Promise<nb.IKernel | undefined>;
 
 	/**
 	 * Configure the current kernel associated with the document.
@@ -232,7 +232,7 @@ export interface INotebookModel {
 	/**
 	 * Client Session in the notebook, used for sending requests to the notebook service
 	 */
-	readonly clientSession: IClientSession;
+	readonly clientSession: IClientSession | undefined;
 	/**
 	 * Promise indicating when client session is ready to use.
 	 */
@@ -266,7 +266,7 @@ export interface INotebookModel {
 	 * Event fired on first initialization of the kernels and
 	 * on subsequent change events
 	 */
-	readonly kernelsChanged: Event<nb.IKernelSpec>;
+	readonly kernelsChanged: Event<nb.IKernel>;
 
 	/**
 	 * Default kernel
@@ -310,7 +310,7 @@ export interface INotebookModel {
 	/**
 	 * Event fired on active cell change
 	 */
-	readonly onActiveCellChanged: Event<ICellModel>;
+	readonly onActiveCellChanged: Event<ICellModel | undefined>;
 
 	/**
 	 * Event fired on cell type change
@@ -385,7 +385,7 @@ export interface INotebookModel {
 	 * Get the standardKernelWithProvider by name
 	 * @param name The kernel name
 	 */
-	getStandardKernelFromName(name: string): IStandardKernelWithProvider;
+	getStandardKernelFromName(name: string): IStandardKernelWithProvider | undefined;
 
 	/** Event fired once we get call back from ConfigureConnection method in sqlops extension */
 	readonly onValidConnectionSelected: Event<boolean>;

@@ -53,7 +53,8 @@ let expectedNotebookContent: nb.INotebookContents = {
 	metadata: {
 		kernelspec: {
 			name: 'mssql',
-			language: 'sql'
+			language: 'sql',
+			display_name: 'SQL'
 		}
 	},
 	nbformat: 4,
@@ -70,7 +71,8 @@ let expectedNotebookContentOneCell: nb.INotebookContents = {
 	metadata: {
 		kernelspec: {
 			name: 'mssql',
-			language: 'sql'
+			language: 'sql',
+			display_name: 'SQL'
 		}
 	},
 	nbformat: 4,
@@ -144,7 +146,8 @@ suite('notebook model', function (): void {
 			metadata: {
 				kernelspec: {
 					name: 'mssql',
-					language: 'sql'
+					language: 'sql',
+					display_name: 'SQL'
 				}
 			},
 			nbformat: 4,
