@@ -52,7 +52,7 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 		return this._proxy.$runQuery(fileUri, runCurrentQuery);
 	}
 
-	public $registerQueryInfoListener(providerId: string, listener: azdata.queryeditor.QueryEventListener): void {
+	public $registerQueryInfoListener(listener: azdata.queryeditor.QueryEventListener): void {
 		this._queryListeners[this._nextListenerHandle] = listener;
 		this._proxy.$registerQueryInfoListener(this._nextListenerHandle);
 		this._nextListenerHandle++;
