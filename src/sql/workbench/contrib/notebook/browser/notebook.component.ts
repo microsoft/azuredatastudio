@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList, HostListener } from '@angular/core';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -88,6 +88,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private navigationResult: nb.NavigationResult;
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
+
+	@HostListener('document:keydown.escape', ['$event'])
+	handleKeyboardEvent() {
+		const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
+		const toolbarEditCellAction = toolbarComponent.getEditCellAction();
+		if (toolbarEditCellAction.editMode) {
+			toolbarEditCellAction.editMode = !toolbarEditCellAction.editMode;
+		}
+	}
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -229,7 +238,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model.addCell(cellType, index);
 	}
 
-	public onKeyDown(event) {
+	public onKeyDown(cell, event) {
 		switch (event.key) {
 			case 'ArrowDown':
 			case 'ArrowRight':
