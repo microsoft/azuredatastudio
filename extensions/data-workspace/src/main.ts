@@ -8,12 +8,35 @@ import * as dataworkspace from 'dataworkspace';
 import { WorkspaceTreeDataProvider } from './common/workspaceTreeDataProvider';
 import { WorkspaceService } from './services/workspaceService';
 import { DataWorkspaceExtension } from './dataWorkspaceExtension';
+import { SelectProjectFileActionName } from './common/strings';
 
 export async function activate(context: vscode.ExtensionContext): Promise<dataworkspace.IExtension> {
 	const workspaceService = new WorkspaceService();
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
-	context.subscriptions.push(vscode.commands.registerCommand('projects.addProject', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('projects.addProject', async () => {
+		// To Sakshi - You can replace the implementation with your complete dialog implementation
+		// but all the code here should be reusable by you
+		if (vscode.workspace.workspaceFile) {
+			const filter: { [name: string]: string[] } = {};
+			const projectTypes = await workspaceService.getAllProjectTypes();
+			projectTypes.forEach(type => {
+				filter[type.displayName] = projectTypes.map(projectType => projectType.projectFileExtension);
+			});
+			let fileUris = await vscode.window.showOpenDialog({
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				defaultUri: vscode.workspace.workspaceFolders![0].uri,
+				openLabel: SelectProjectFileActionName,
+				filters: filter
+			});
+			if (!fileUris || fileUris.length === 0) {
+				return;
+			}
+			await workspaceService.addProjectsToWorkspace([fileUris[0].fsPath]);
+			workspaceTreeDataProvider.refresh();
+		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', () => {

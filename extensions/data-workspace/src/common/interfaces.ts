@@ -52,6 +52,12 @@ export interface IWorkspaceService {
 	 * @param projectFilePath The full path of the project file
 	 */
 	getProjectProvider(projectFilePath: string): Promise<IProjectProvider | undefined>;
+
+	/**
+	 * Adds the projects to workspace, if a project is not in the workspace folder, its containing folder will be added to the workspace
+	 * @param projectFiles the list of project files to be added, the project file should be absolute path.
+	 */
+	addProjectsToWorkspace(projectFiles: string[]): Promise<void>;
 }
 
 /**

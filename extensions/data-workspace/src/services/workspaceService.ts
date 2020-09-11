@@ -8,14 +8,50 @@ import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
 import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
-import * as nls from 'vscode-nls';
 import Logger from '../common/logger';
+import { ExtensionActivationErrorMessage } from '../common/strings';
 
-const localize = nls.loadMessageBundle();
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
 
 export class WorkspaceService implements IWorkspaceService {
+	async addProjectsToWorkspace(projectFiles: string[]): Promise<void> {
+		if (vscode.workspace.workspaceFile) {
+			const currentProjects: string[] = await this.getProjectsInWorkspace();
+			const newWorkspaceFolders: string[] = [];
+			let newProjectFileAdded = false;
+			for (const projectFile of projectFiles) {
+				if (!currentProjects.includes(projectFile)) {
+					currentProjects.push(projectFile);
+					newProjectFileAdded = true;
+
+					// if the relativePath and the original path is the same, that means the project file is not under
+					// any workspace folders, we should add the parent folder of the project file to the workspace
+					const relativePath = vscode.workspace.asRelativePath(projectFile, false);
+					if (relativePath === projectFile) {
+						newWorkspaceFolders.push(path.dirname(projectFile));
+					}
+				}
+			}
+
+			if (newProjectFileAdded) {
+				await vscode.workspace.getConfiguration(WorkspaceConfigurationName).update(ProjectsConfigurationName,
+					currentProjects.map(projectFile => path.relative(path.dirname(vscode.workspace.workspaceFile!.fsPath), projectFile)),
+					vscode.ConfigurationTarget.Workspace);
+			}
+
+			if (newWorkspaceFolders.length > 0) {
+				vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length,
+					null, // means don't remove any workspace folders
+					...(newWorkspaceFolders.map(folder => {
+						return {
+							uri: vscode.Uri.file(folder)
+						};
+					})));
+			}
+		}
+	}
+
 	async getAllProjectTypes(): Promise<dataworkspace.IProjectType[]> {
 		await this.ensureProviderExtensionLoaded();
 		const projectTypes: dataworkspace.IProjectType[] = [];
@@ -28,7 +64,9 @@ export class WorkspaceService implements IWorkspaceService {
 	async getProjectsInWorkspace(): Promise<string[]> {
 		if (vscode.workspace.workspaceFile) {
 			const projects = <string[]>vscode.workspace.getConfiguration(WorkspaceConfigurationName).get(ProjectsConfigurationName);
-			return projects.map(project => path.isAbsolute(project) ? project : path.join(vscode.workspace.rootPath!, project));
+			return projects.map(project => {
+				return path.resolve(path.dirname(vscode.workspace.workspaceFile!.fsPath!), project);
+			});
 		}
 		return [];
 	}
@@ -70,7 +108,7 @@ export class WorkspaceService implements IWorkspaceService {
 		try {
 			await extension.activate();
 		} catch (err) {
-			Logger.error(localize('activateExtensionFailed', "Failed to load the project provider extension '{0}'. Error message: {1}", extension.id, err.message ?? err));
+			Logger.error(ExtensionActivationErrorMessage(extension.id, err));
 		}
 	}
 }
