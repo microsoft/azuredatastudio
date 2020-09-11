@@ -120,7 +120,7 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 	}
 
 	public get iconPosition(): string {
-		return this.getPropertyOrDefault<azdata.RadioCardGroupComponentProperties, string>((props) => props.iconPosition, 'top');
+		return this.getProperties().iconPosition ?? 'top';
 	}
 
 	public isIconPositionTop(): boolean {
