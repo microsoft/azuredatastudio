@@ -231,10 +231,14 @@ declare module 'azdata' {
 	}
 
 	export interface ModelBuilder {
-		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
+		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent, RadioCardGroupComponentProperties>;
 		tabbedPanel(): TabbedPanelComponentBuilder;
-		separator(): ComponentBuilder<SeparatorComponent>;
-		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent>;
+		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
+		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
+	}
+
+	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
+		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
 	}
 
 	export interface RadioCard {
@@ -279,6 +283,9 @@ declare module 'azdata' {
 
 	export interface SeparatorComponent extends Component {
 	}
+	export interface SeparatorComponentProperties extends ComponentProperties {
+
+	}
 
 	export interface DeclarativeTableProperties extends ComponentProperties {
 	}
@@ -287,7 +294,7 @@ declare module 'azdata' {
 		ariaHidden?: boolean;
 	}
 
-	export interface ComponentWithIconProperties {
+	export interface ComponentWithIconProperties extends ComponentProperties {
 		/**
 		 * The path for the icon with optional dark-theme away alternative
 		 */
@@ -409,12 +416,12 @@ declare module 'azdata' {
 	/**
 	 * Builder for TabbedPannelComponent
 	 */
-	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any> {
+	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties> {
 		/**
 		 * Add the tabs to the component
 		 * @param tabs tabs/tab groups to be added
 		 */
-		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any>;
+		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties>;
 	}
 
 	export interface InputBoxProperties extends ComponentProperties {
@@ -450,7 +457,7 @@ declare module 'azdata' {
 	/**
 	 * Properties for configuring a PropertiesContainerComponent
 	 */
-	export interface PropertiesContainerComponentProperties {
+	export interface PropertiesContainerComponentProperties extends ComponentProperties {
 		/**
 		 * The properties to display
 		 */
@@ -463,7 +470,6 @@ declare module 'azdata' {
 		 */
 		export const onDidChangeActiveNotebookEditor: vscode.Event<NotebookEditor>;
 	}
-
 	export namespace window {
 		export interface ModelViewDashboard {
 			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
@@ -628,5 +634,11 @@ declare module 'azdata' {
 		 * Specifies if an account should be deleted
 		 */
 		delete?: boolean;
+	}
+	export interface DiffEditorComponent {
+		/**
+		 * Title of editor
+		 */
+		title: string;
 	}
 }

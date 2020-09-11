@@ -211,39 +211,57 @@ describe('ProjectsController', function (): void {
 			it('Should delete nested ProjectEntry from node', async function (): Promise<void> {
 				let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
 				const setupResult = await setupDeleteExcludeTest(proj);
-				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1];
+				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
 
 				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 
 				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
 				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'anotherScript.sql')!);
+				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment1.sql')!);
+				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment2.sql')!);
+				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'Script.PostDeployment1.sql')!);
 
 				proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
 				// confirm result
 				should(proj.files.length).equal(1, 'number of file/folder entries'); // lowerEntry and the contained scripts should be deleted
 				should(proj.files[0].relativePath).equal('UpperFolder');
+				should(proj.preDeployScripts.length).equal(0);
+				should(proj.postDeployScripts.length).equal(0);
+				should(proj.noneDeployScripts.length).equal(0);
 
 				should(await exists(scriptEntry.fsUri.fsPath)).equal(false, 'script is supposed to be deleted');
+				should(await exists(preDeployEntry.fsUri.fsPath)).equal(false, 'pre-deployment script is supposed to be deleted');
+				should(await exists(postDeployEntry.fsUri.fsPath)).equal(false, 'post-deployment script is supposed to be deleted');
+				should(await exists(noneEntry.fsUri.fsPath)).equal(false, 'none entry pre-deployment script is supposed to be deleted');
 			});
 
 			it('Should exclude nested ProjectEntry from node', async function (): Promise<void> {
 				let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
 				const setupResult = await setupDeleteExcludeTest(proj);
-				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1];
+				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
 
 				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 
 				await projController.exclude(<FolderNode>projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
 				await projController.exclude(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'anotherScript.sql')!);
+				await projController.exclude(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment1.sql')!);
+				await projController.exclude(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment2.sql')!);
+				await projController.exclude(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'Script.PostDeployment1.sql')!);
 
 				proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
 				// confirm result
 				should(proj.files.length).equal(1, 'number of file/folder entries'); // LowerFolder and the contained scripts should be deleted
 				should(proj.files[0].relativePath).equal('UpperFolder'); // UpperFolder should still be there
+				should(proj.preDeployScripts.length).equal(0);
+				should(proj.postDeployScripts.length).equal(0);
+				should(proj.noneDeployScripts.length).equal(0);
 
 				should(await exists(scriptEntry.fsUri.fsPath)).equal(true, 'script is supposed to still exist on disk');
+				should(await exists(preDeployEntry.fsUri.fsPath)).equal(true, 'pre-deployment script is supposed to still exist on disk');
+				should(await exists(postDeployEntry.fsUri.fsPath)).equal(true, 'post-deployment script is supposed to still exist on disk');
+				should(await exists(noneEntry.fsUri.fsPath)).equal(true, 'none entry pre-deployment script is supposed to still exist on disk');
 			});
 
 			it('Should reload correctly after changing sqlproj file', async function (): Promise<void> {
@@ -604,20 +622,26 @@ describe.skip('ProjectsController: round trip feature with SSDT', function (): v
 });
 
 
-async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry, ProjectRootTreeItem]> {
+async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry, ProjectRootTreeItem, FileProjectEntry, FileProjectEntry, FileProjectEntry]> {
 	await proj.addFolderItem('UpperFolder');
 	await proj.addFolderItem('UpperFolder/LowerFolder');
 	const scriptEntry = await proj.addScriptItem('UpperFolder/LowerFolder/someScript.sql', 'not a real script');
 	await proj.addScriptItem('UpperFolder/LowerFolder/someOtherScript.sql', 'Also not a real script');
 	await proj.addScriptItem('../anotherScript.sql', 'Also not a real script');
+	const preDeployEntry = await proj.addScriptItem('Script.PreDeployment1.sql', 'pre-deployment stuff', templates.preDeployScript);
+	const noneEntry = await proj.addScriptItem('Script.PreDeployment2.sql', 'more pre-deployment stuff', templates.preDeployScript);
+	const postDeployEntry = await proj.addScriptItem('Script.PostDeployment1.sql', 'post-deployment stuff', templates.postDeployScript);
 
 	const projTreeRoot = new ProjectRootTreeItem(proj);
 	sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
 
 	// confirm setup
 	should(proj.files.length).equal(5, 'number of file/folder entries');
+	should(proj.preDeployScripts.length).equal(1, 'number of pre-deployment script entries');
+	should(proj.postDeployScripts.length).equal(1, 'number of post-deployment script entries');
+	should(proj.noneDeployScripts.length).equal(1, 'number of none script entries');
 	should(path.parse(scriptEntry.fsUri.fsPath).base).equal('someScript.sql');
 	should((await fs.readFile(scriptEntry.fsUri.fsPath)).toString()).equal('not a real script');
 
-	return [scriptEntry, projTreeRoot];
+	return [scriptEntry, projTreeRoot, preDeployEntry, postDeployEntry, noneEntry];
 }
