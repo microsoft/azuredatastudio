@@ -22,6 +22,7 @@ export interface IInfoButtonOptions extends IButtonOptions {
 }
 
 export class InfoButton extends sqlButton {
+	private _container: HTMLElement;
 	private _main: HTMLElement;
 	private _iconContainer: HTMLElement;
 	private _iconElement: HTMLElement;
@@ -40,8 +41,12 @@ export class InfoButton extends sqlButton {
 
 	constructor(container: HTMLElement, options?: IInfoButtonOptions) {
 		super(container, options);
+		this._container = container;
 
 		{ // Creates the elements
+			this._container.style.display = 'flex';
+			this._container.style.justifyContent = 'space-around';
+
 			this._main = document.createElement('div');
 			DOM.addClass(this._main, 'flexContainer');
 			this._main.style.cursor = 'pointer';
@@ -89,8 +94,7 @@ export class InfoButton extends sqlButton {
 			this._main.appendChild(this._textContainer);
 			this.element.appendChild(this._main);
 			this.element.style.background = 'none';
-			this.element.style.display = 'flex';
-			this.element.style.justifyContent = 'space-around';
+			this.element.style.display = 'inline-block';
 		}
 		this.infoButtonOptions = options;
 	}

@@ -469,8 +469,8 @@ export class DashboardWidget {
 	private async createTasks(view: azdata.ModelView): Promise<azdata.Component> {
 		const tasksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
-			width: '100%',
 			height: '84px',
+			width: '100%',
 		}).component();
 		const predictionMetadata: IActionMetadata = {
 			title: constants.makePredictionTitle,
