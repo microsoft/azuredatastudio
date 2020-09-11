@@ -30,11 +30,11 @@ export class DeployAzureSQLDBWizardModel extends Model {
 	public getCodeCellContentForNotebook(): string[] {
 		const statements: string[] = [];
 
-		statements.push(`azure_sqldb_nb_var_subscription = '${this.azureSubscription}'`);
-		statements.push(`azure_sqldb_nb_var_resource_group_name = '${this.azureResouceGroup}'`);
+		statements.push(`azure_sqldb_subscription = '${this.azureSubscription}'`);
+		statements.push(`azure_sqldb_resource_group_name = '${this.azureResouceGroup}'`);
 		statements.push(`azure_sqldb_server_name = '${this.azureServerName}'`);
 		statements.push(`azure_sqldb_database_name = '${this.databaseName}'`);
-		statements.push(`azure_sqldb_location = '${this.azureRegion}'`);
+		//statements.push(`azure_sqldb_location = '${this.azureRegion}'`);  //@todo alma1 9/10/2020 used for upcoming server creation feature.
 		statements.push(`azure_sqldb_ip_start = '${this.startIpAddress}'`);
 		statements.push(`azure_sqldb_ip_end = '${this.endIpAddress}'`);
 		statements.push(`azure_sqldb_firewall_name = '${this.firewallRuleName}'`);

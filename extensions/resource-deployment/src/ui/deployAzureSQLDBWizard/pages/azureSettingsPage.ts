@@ -395,7 +395,7 @@ export class AzureSettingsPage extends BasePage {
 		let errorMessage = [];
 		let serverName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
 		if (serverName === 'No servers found') {
-			errorMessage.push('No servers found in current subscription, please select a different subscription');
+			errorMessage.push('No servers found in current subscription.\nSelect a different subscription containing at least one server');
 		}
 
 		this.wizard.showErrorMessage(errorMessage.join('\n'));

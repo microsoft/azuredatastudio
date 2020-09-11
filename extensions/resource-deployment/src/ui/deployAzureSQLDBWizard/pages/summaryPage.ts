@@ -47,7 +47,7 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 			labelPosition: LabelPosition.Left,
 			labelWidth: '150px',
 			inputWidth: '200px',
-			title: constants.AzureSettingsPageTitle,
+			title: constants.AzureSettingsSummaryPageTitle,
 			rows: [
 				{
 					items: [
