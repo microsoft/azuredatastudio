@@ -58,6 +58,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._model.updateActiveCell(undefined);
 	}
 
+	// Double click to edit text cell in notebook
+	@HostListener('dblclick', ['$event']) onDblClick() {
+		this.enableActiveCellEditOnDoubleClick();
+	}
+
 	@HostListener('document:keydown.meta.a', ['$event'])
 	onkeydown(e) {
 		// use preventDefault() to avoid invoking the editor's select all
@@ -78,6 +83,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownRenderer: NotebookMarkdownRenderer;
 	private markdownResult: IMarkdownRenderResult;
 	public previewFeaturesEnabled: boolean = false;
+	public doubleClickEditEnabled: boolean;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -96,6 +102,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
+		}));
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		}));
 	}
 
@@ -176,7 +185,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	/**
 	 * Updates the preview of markdown component with latest changes
-	 * If content is empty and in non-edit mode, default it to 'Add content here...'
+	 * If content is empty and in non-edit mode, default it to 'Add content here...' or 'Double-click to edit' depending on setting
 	 * Sanitizes the data to be shown in markdown cell
 	 */
 	private updatePreview(): void {
@@ -187,7 +196,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if ((!cellModelSourceJoined) && !this.isEditMode) {
-				this._content = localize('addContent', "Add content here...");
+				if (this.doubleClickEditEnabled) {
+					this._content = localize('doubleClickEdit', "Double-click to edit");
+				} else {
+					this._content = localize('addContent', "Add content here...");
+				}
 			} else {
 				this._content = this.cellModel.source;
 			}
@@ -349,5 +362,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 		});
 		return textOutput;
+	}
+
+	// Enables edit mode on double clicking active cell
+	private enableActiveCellEditOnDoubleClick() {
+		if (!this.isEditMode && this.doubleClickEditEnabled) {
+			this.toggleEditMode(true);
+		}
+		this.cellModel.active = true;
+		this._model.updateActiveCell(this.cellModel);
 	}
 }
