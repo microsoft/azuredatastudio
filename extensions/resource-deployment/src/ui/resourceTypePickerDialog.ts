@@ -349,7 +349,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		return this._selectedResourceType.getProvider(options)!;
 	}
 
-	protected onComplete(): void {
+	protected async onComplete(): Promise<void> {
 		this.toolsService.toolsForCurrentProvider = this._tools;
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
 	}

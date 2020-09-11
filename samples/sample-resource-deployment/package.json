@@ -109,8 +109,7 @@
 															"ignored1",
 															"ignored2"
 														],
-														"defaultValue": "aks-dev-test",
-														"optionsType": "radio"
+														"optionsType": "dropdown"
 													}
                         },
                         {
@@ -267,7 +266,25 @@
 													"type": "readonly_text",
 													"isEvaluated": true,
 													"defaultValue": "$(AZDATA_NB_VAR_PROFILE)"
-												}
+												},
+												{
+													"label": "%wizard.dropdown.options.field%",
+													"type": "readonly_text",
+													"isEvaluated": true,
+													"defaultValue": "$(AZDATA_NB_VAR_DROPDOWN_OPTIONS)"
+												},
+                        {
+                          "label": "%wizard.summary.controller.username%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_CONTROLLER_USERNAME)"
+                        },
+                        {
+                          "label": "%wizard.summary.controller.password%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_CONTROLLER_PASSWORD)"
+                        }
 											]
 										}
 									]

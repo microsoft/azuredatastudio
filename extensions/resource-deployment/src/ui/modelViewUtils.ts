@@ -25,10 +25,12 @@ const localize = nls.loadMessageBundle();
 
 export type Validator = () => { valid: boolean, message: string };
 export type InputValueTransformer = (inputValue: string) => string;
+export type InputValueTransformerAsync = (inputValue: string) => Promise<string>;
 export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder;
 export type InputComponentInfo = {
 	component: InputComponent;
 	inputValueTransformer?: InputValueTransformer;
+	inputValueTransformerAsync?: InputValueTransformerAsync;
 	isPassword?: boolean
 };
 
@@ -395,6 +397,17 @@ async function processField(context: FieldContext): Promise<void> {
 	}
 }
 
+function disableControlButtons(container: azdata.window.Dialog | azdata.window.Wizard): void {
+	if ('okButton' in container) {
+		container.okButton.enabled = false;
+	} else {
+		container.doneButton.enabled = false;
+		container.nextButton.enabled = false;
+		container.backButton.enabled = false;
+		container.customButtons.forEach(b => b.enabled = false);
+	}
+}
+
 async function processOptionsTypeField(context: FieldContext): Promise<void> {
 	throwUnless(context.fieldInfo.options !== undefined, loc.optionsNotDefined(context.fieldInfo.type));
 	if (Array.isArray(context.fieldInfo.options)) {
@@ -407,8 +420,20 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 	throwUnless(typeof context.fieldInfo.options === 'object', loc.optionsNotObjectOrArray);
 	throwUnless('optionsType' in context.fieldInfo.options, loc.optionsTypeNotFound);
 	if (context.fieldInfo.options.source) {
-		context.fieldInfo.options.source = OptionsSource.construct(context.fieldInfo.options.source.type, context.fieldInfo.options.source);
-		context.fieldInfo.options.values = await context.fieldInfo.options.source.getOptions();
+		try {
+			// if options.source still points to the IOptionsSource interface make it to point to the implementation
+			context.fieldInfo.options.source = OptionsSource.construct(context.fieldInfo.options.source.type, context.fieldInfo.options.source.variableNames);
+			context.fieldInfo.options.values = await context.fieldInfo.options.source.getOptions();
+		}
+		catch (e) {
+			disableControlButtons(context.container);
+			context.container.message = {
+				text: getErrorMessage(e),
+				description: '',
+				level: azdata.window.MessageLevel.Error
+			};
+			context.fieldInfo.options.values = [];
+		}
 		context.fieldInfo.subFields = context.fieldInfo.subFields || [];
 	}
 	let optionsComponent: InputComponent;
@@ -427,11 +452,23 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 			});
 			context.onNewInputComponentCreated(optionsSource.variableNames[key], {
 				component: optionsComponent,
-				inputValueTransformer: (controllerName: string) => optionsSource.getVariableValue(key, controllerName)
+				inputValueTransformerAsync: async (controllerName: string) => {
+					try {
+						return await optionsSource.getVariableValue(key, controllerName);
+					} catch (e){
+						disableControlButtons(context.container);
+						context.container.message = {
+							text: getErrorMessage(e),
+							description: '',
+							level: azdata.window.MessageLevel.Error
+						};
+						return '';
+					}
+				},
+				isPassword: optionsSource.getIsPassword(key)
 			});
 		}
 	}
-
 }
 
 function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDownComponent {
@@ -601,8 +638,8 @@ function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
 	const readOnlyField = processReadonlyTextField(context, false /*allowEvaluation*/);
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
 		component: readOnlyField.text!,
-		inputValueTransformer: () => {
-			readOnlyField.text!.value = substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
+		inputValueTransformerAsync: async () => {
+			readOnlyField.text!.value = await substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
 			return readOnlyField.text?.value!;
 		}
 	});
@@ -618,14 +655,15 @@ function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
  * @param inputValue
  * @param inputComponents
  */
-function substituteVariableValues(inputComponents: InputComponents, inputValue?: string): string | undefined {
-	Object.keys(inputComponents)
+async function substituteVariableValues(inputComponents: InputComponents, inputValue?: string): Promise<string | undefined> {
+	await Promise.all(Object.keys(inputComponents)
 		.filter(key => key.startsWith(NoteBookEnvironmentVariablePrefix))
-		.forEach(key => {
-			const value = getInputComponentValue(inputComponents, key) ?? '<undefined>';
+		.map(async key => {
+			const value = (await getInputComponentValue(inputComponents, key)) ?? '<undefined>';
 			const re: RegExp = new RegExp(`\\\$\\\(${key}\\\)`, 'gi');
 			inputValue = inputValue?.replace(re, value);
-		});
+		})
+	);
 	return inputValue;
 }
 
@@ -1229,14 +1267,14 @@ export function getPasswordMismatchMessage(fieldName: string): string {
 	return localize('passwordNotMatch', "{0} doesn't match the confirmation password", fieldName);
 }
 
-export function setModelValues(inputComponents: InputComponents, model: Model): void {
-	Object.keys(inputComponents).forEach(key => {
-		const value = getInputComponentValue(inputComponents, key);
+export async function setModelValues(inputComponents: InputComponents, model: Model): Promise<void> {
+	await Promise.all(Object.keys(inputComponents).map(async key => {
+		const value = await getInputComponentValue(inputComponents, key);
 		model.setPropertyValue(key, value);
-	});
+	}));
 }
 
-function getInputComponentValue(inputComponents: InputComponents, key: string): string | undefined {
+async function getInputComponentValue(inputComponents: InputComponents, key: string): Promise<string | undefined> {
 	const input = inputComponents[key].component;
 	if (input === undefined) {
 		return undefined;
@@ -1257,8 +1295,11 @@ function getInputComponentValue(inputComponents: InputComponents, key: string): 
 		throw new Error(`Unknown input type with ID ${input.id}`);
 	}
 	const inputValueTransformer = inputComponents[key].inputValueTransformer;
+	const inputValueTransformerAsync = inputComponents[key].inputValueTransformerAsync;
 	if (inputValueTransformer) {
-		value = inputValueTransformer(value || '');
+		value = inputValueTransformer(value ?? '');
+	} else if (inputValueTransformerAsync) {
+		value = await inputValueTransformerAsync(value ?? '');
 	}
 	return value;
 }

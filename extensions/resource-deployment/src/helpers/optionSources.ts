@@ -8,6 +8,7 @@ import * as arc from 'arc';
 import { throwUnless } from '../utils';
 import * as loc from '../localizedConstants';
 import { IOptionsSource } from '../interfaces';
+import { CategoryValue } from 'azdata';
 
 
 export type OptionsSourceType = 'ArcControllersOptionsSource';
@@ -21,58 +22,72 @@ export abstract class OptionsSource implements IOptionsSource {
 	get type(): OptionsSourceType { return this._type; }
 	get variableNames(): { [index: string]: string; } { return this._variableNames; }
 
-	abstract async getOptions(): Promise<string[]>;
-	abstract getVariableValue(variableName: string, controllerName: string): string;
+	abstract async getOptions(): Promise<string[] | CategoryValue[]>;
+	abstract getVariableValue(variableName: string, input: string): Promise<string>;
+	abstract getIsPassword(variableName: string): boolean;
 
 	protected constructor() {
 	}
 
-	static construct(optionsSourceType: OptionsSourceType, optionsSource: OptionsSource): OptionsSource {
+	static construct(optionsSourceType: OptionsSourceType, variableNames: { [index: string]: string }): OptionsSource {
 		const sourceConstructor = OptionsSources.get(optionsSourceType);
 		throwUnless(sourceConstructor !== undefined, loc.noOptionsSourceDefined(optionsSourceType));
-		const obj =  new sourceConstructor();
-		obj._variableNames = optionsSource.variableNames;
+		const obj = new sourceConstructor();
+		obj._type = optionsSourceType;
+		obj._variableNames = variableNames;
 		return obj;
 	}
 }
 
 export class ArcControllersOptionsSource extends OptionsSource {
-	private _controllerInfos?: arc.ControllerInfo[];
-	private _passwordMap: Map<arc.ControllerInfo, string> = new Map<arc.ControllerInfo, string>();
 	private _arcApi?: arc.IExtension | undefined;
 
 	constructor() {
 		super();
 	}
 
-	async getOptions(): Promise<string[]> {
+	private async getArcApi(): Promise<arc.IExtension> {
 		if (this._arcApi === undefined) {
 			this._arcApi = await apiService.getArcApi();
 		}
-		if (this._controllerInfos === undefined) {
-			this._controllerInfos = await this._arcApi.getRegisteredDataControllers();
-			if (this._controllerInfos === undefined || this._controllerInfos.length === 0) {
-				throw new Error(loc.noControllersConnected);
-			}
-		}
-		return await Promise.all(this._controllerInfos.map(async ci => {
-			this._passwordMap.set(ci, await this._arcApi!.getControllerPassword(ci));
-			return ci.name;
-		}));
+		return this._arcApi;
 	}
 
-	getVariableValue(variableName: string, controllerName: string): string {
-		const controllerInfo = this._controllerInfos!.find(ci => ci.name === controllerName);
-		throwUnless(controllerInfo !== undefined, loc.noControllerInfoFound(controllerName));
+	async getOptions(): Promise<string[] | CategoryValue[]> {
+		const controllers = await (await this.getArcApi()).getRegisteredDataControllers();
+		throwUnless(controllers !== undefined && controllers.length !== 0, loc.noControllersConnected);
+		return controllers.map(ci => {
+			return ci.label;
+		});
+	}
+
+	async getVariableValue(variableName: string, controllerLabel: string): Promise<string> {
+		const controllers = await (await this.getArcApi()).getRegisteredDataControllers();
+		const controller = controllers!.find(ci => ci.label === controllerLabel);
+		throwUnless(controller !== undefined, loc.noControllerInfoFound(controllerLabel));
 		switch (variableName) {
 			case 'username':
-				return controllerInfo.username;
+				return controller.info.username;
 			case 'password':
-				const password = this._passwordMap.get(controllerInfo);
-				throwUnless(password !== undefined, loc.noPasswordFound(controllerName));
+				let password = await this._arcApi!.getControllerPassword(controller.info);
+				if (!password) {
+					password = await (await this.getArcApi()).promptForPassword(controller.info, password);
+				}
+				throwUnless(password !== undefined, loc.noPasswordFound(controllerLabel));
 				return password;
 			default:
 				throw new Error(loc.variableValueFetchForUnsupportedVariable(variableName));
+		}
+	}
+
+	getIsPassword(variableName: string): boolean {
+		switch (variableName) {
+			case 'username':
+				return false;
+			case 'password':
+				return true;
+			default:
+				throw new Error(loc.isPasswordFetchForUnsupportedVariable(variableName));
 		}
 	}
 }

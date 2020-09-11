@@ -593,6 +593,24 @@
                       "title": "%arc.sql.settings.section.title%",
                       "fields": [
                         {
+                          "label": "%arc.controller%",
+                          "variableName": "AZDATA_NB_VAR_ARC_CONTROLLER",
+                          "type": "options",
+                          "editable": false,
+                          "required": true,
+                          "options": {
+                            "source": {
+                              "type": "ArcControllersOptionsSource",
+                              "VariableNames": {
+                                "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
+                                "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
+                              }
+                            },
+                            "optionsType": "dropdown"
+                          },
+                          "labelWidth": "100%"
+                        },
+                        {
                           "label": "%arc.sql.instance.name%",
                           "variableName": "AZDATA_NB_VAR_SQL_INSTANCE_NAME",
                           "type": "text",
