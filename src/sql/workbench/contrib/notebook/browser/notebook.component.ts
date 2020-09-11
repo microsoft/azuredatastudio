@@ -89,13 +89,31 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
 
-	@HostListener('document:keydown.escape', ['$event'])
-	handleKeyboardEvent() {
-		const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
-		const toolbarEditCellAction = toolbarComponent.getEditCellAction();
-		if (toolbarEditCellAction.editMode) {
-			toolbarEditCellAction.editMode = !toolbarEditCellAction.editMode;
+	@HostListener('document:keydown', ['$event'])
+	handleKeyboardEvent(event) {
+		switch (event.key) {
+			case 'Escape':
+				const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
+				const toolbarEditCellAction = toolbarComponent.getEditCellAction();
+				if (toolbarEditCellAction.editMode) {
+					toolbarEditCellAction.editMode = !toolbarEditCellAction.editMode;
+				}
+			case 'ArrowRight':
+				let nextIndex = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
+				this.selectCell(this.cells[nextIndex]);
+				break;
+			case 'ArrowUp':
+			case 'ArrowLeft':
+				let index = this.findCellIndex(this.model.activeCell);
+				if (index === 0) {
+					index = this.cells.length;
+				}
+				this.selectCell(this.cells[--index]);
+				break;
+			default:
+				break;
 		}
+
 	}
 
 	constructor(
@@ -236,26 +254,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			event.stopPropagation();
 		}
 		this._model.addCell(cellType, index);
-	}
-
-	public onKeyDown(cell, event) {
-		switch (event.key) {
-			case 'ArrowDown':
-			case 'ArrowRight':
-				let nextIndex = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
-				this.selectCell(this.cells[nextIndex]);
-				break;
-			case 'ArrowUp':
-			case 'ArrowLeft':
-				let index = this.findCellIndex(this.model.activeCell);
-				if (index === 0) {
-					index = this.cells.length;
-				}
-				this.selectCell(this.cells[--index]);
-				break;
-			default:
-				break;
-		}
 	}
 
 	private setScrollPosition(): void {
