@@ -30,14 +30,14 @@ export class InfoButton extends sqlButton {
 	private _pTitle: HTMLElement;
 	private _pDesc: HTMLElement;
 
-	private _description: string;
-	private _buttonMaxHeight: number;
-	private _iconClass: string;
-	private _iconHeight: number;
-	private _iconWidth: number;
-	private _iconPath: IUserFriendlyIcon;
-	private _textTitle: string;
-	private _buttonMaxWidth: number;
+	private _description: string = '';
+	private _buttonMaxHeight: number = 0;
+	private _iconClass: string = '';
+	private _iconHeight: number = 0;
+	private _iconWidth: number = 0;
+	private _iconPath: IUserFriendlyIcon = { light: '', dark: '' };
+	private _textTitle: string = '';
+	private _buttonMaxWidth: number = 0;
 
 	constructor(container: HTMLElement, options?: IInfoButtonOptions) {
 		super(container, options);
@@ -180,3 +180,4 @@ export class InfoButton extends sqlButton {
 		this.textTitle = options.textTitle;
 	}
 }
+
