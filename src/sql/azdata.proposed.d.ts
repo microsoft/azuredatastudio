@@ -657,8 +657,8 @@ declare module 'azdata' {
 		File = 'File',
 		Normal = 'Normal',
 		Informational = 'Informational'
-  }
-                                                          
+	}
+
 	export interface DiffEditorComponent {
 		/**
 		 * Title of editor
