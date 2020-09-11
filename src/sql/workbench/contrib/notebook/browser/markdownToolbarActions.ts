@@ -541,6 +541,12 @@ export class ToggleViewAction extends Action {
 		this.class += ' active';
 		context.cellModel.showPreview = this.showPreview;
 		context.cellModel.showMarkdown = this.showMarkdown;
+		// Hide link and image buttons in WYSIWYG mode
+		if (this.showPreview && !this.showMarkdown) {
+			context.hideLinkAndImageButtons();
+		} else {
+			context.showLinkAndImageButtons();
+		}
 		return true;
 	}
 }
