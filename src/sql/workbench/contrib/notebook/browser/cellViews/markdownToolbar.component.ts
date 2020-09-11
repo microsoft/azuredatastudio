@@ -7,7 +7,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
 import { localize } from 'vs/nls';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { TransformMarkdownAction, MarkdownButtonType, ToggleViewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -42,16 +42,8 @@ export class MarkdownToolbarComponent {
 	public splitViewButton = localize('splitViewButton', "View as Split");
 	public markdownButton = localize('markdownButton', "View as Markdown");
 
-	private boldButton;
-	private italicButton;
-	private underlineButton;
-	private highlightButton;
-	private codeButton;
-	private linkButton;
-	private listButton;
-	private orderedListButton;
-	private imageButton;
-	private buttonDropdownContainer;
+	private taskbarContent: Array<ITaskbarContent>;
+	private wysiwygTaskbarContent: Array<ITaskbarContent>;
 
 	@Input() public cellModel: ICellModel;
 	private _actionBar: Taskbar;
@@ -69,15 +61,15 @@ export class MarkdownToolbarComponent {
 	}
 
 	private initActionBar() {
-		this.boldButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.boldText', '', 'bold masked-icon', this.buttonBold, this.cellModel, MarkdownButtonType.BOLD);
-		this.italicButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.italicText', '', 'italic masked-icon', this.buttonItalic, this.cellModel, MarkdownButtonType.ITALIC);
-		this.underlineButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.underlineText', '', 'underline masked-icon', this.buttonUnderline, this.cellModel, MarkdownButtonType.UNDERLINE);
-		this.highlightButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.highlightText', '', 'highlight masked-icon', this.buttonHighlight, this.cellModel, MarkdownButtonType.HIGHLIGHT);
-		this.codeButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.codeText', '', 'code masked-icon', this.buttonCode, this.cellModel, MarkdownButtonType.CODE);
-		this.linkButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkText', '', 'insert-link masked-icon', this.buttonLink, this.cellModel, MarkdownButtonType.LINK);
-		this.listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'list masked-icon', this.buttonList, this.cellModel, MarkdownButtonType.UNORDERED_LIST);
-		this.orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'ordered-list masked-icon', this.buttonOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
-		this.imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'insert-image masked-icon', this.buttonImage, this.cellModel, MarkdownButtonType.IMAGE);
+		let boldButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.boldText', '', 'bold masked-icon', this.buttonBold, this.cellModel, MarkdownButtonType.BOLD);
+		let italicButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.italicText', '', 'italic masked-icon', this.buttonItalic, this.cellModel, MarkdownButtonType.ITALIC);
+		let underlineButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.underlineText', '', 'underline masked-icon', this.buttonUnderline, this.cellModel, MarkdownButtonType.UNDERLINE);
+		let highlightButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.highlightText', '', 'highlight masked-icon', this.buttonHighlight, this.cellModel, MarkdownButtonType.HIGHLIGHT);
+		let codeButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.codeText', '', 'code masked-icon', this.buttonCode, this.cellModel, MarkdownButtonType.CODE);
+		let linkButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkText', '', 'insert-link masked-icon', this.buttonLink, this.cellModel, MarkdownButtonType.LINK);
+		let listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'list masked-icon', this.buttonList, this.cellModel, MarkdownButtonType.UNORDERED_LIST);
+		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'ordered-list masked-icon', this.buttonOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
+		let imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'insert-image masked-icon', this.buttonImage, this.cellModel, MarkdownButtonType.IMAGE);
 
 		let headingDropdown = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading', '', 'heading', this.dropdownHeading, this.cellModel, null);
 		let heading1 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading1', this.optionHeading1, 'heading 1', this.optionHeading1, this.cellModel, MarkdownButtonType.HEADING1);
@@ -93,8 +85,8 @@ export class MarkdownToolbarComponent {
 		this._actionBar = new Taskbar(taskbar);
 		this._actionBar.context = this;
 
-		this.buttonDropdownContainer = DOM.$('li.action-item');
-		this.buttonDropdownContainer.setAttribute('role', 'presentation');
+		let buttonDropdownContainer = DOM.$('li.action-item');
+		buttonDropdownContainer.setAttribute('role', 'presentation');
 		let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
 			headingDropdown,
 			[heading1, heading2, heading3, paragraph],
@@ -106,75 +98,51 @@ export class MarkdownToolbarComponent {
 			this.optionParagraph,
 			undefined
 		);
-		dropdownMenuActionViewItem.render(this.buttonDropdownContainer);
+		dropdownMenuActionViewItem.render(buttonDropdownContainer);
 		dropdownMenuActionViewItem.setActionContext(this);
 
+		this.taskbarContent = [
+			{ action: boldButton },
+			{ action: italicButton },
+			{ action: underlineButton },
+			{ action: highlightButton },
+			{ action: codeButton },
+			{ action: linkButton },
+			{ action: listButton },
+			{ action: orderedListButton },
+			{ action: imageButton },
+			{ element: buttonDropdownContainer },
+			{ action: this._toggleTextViewAction },
+			{ action: this._toggleSplitViewAction },
+			{ action: this._toggleMarkdownViewAction }
+		];
+		this.wysiwygTaskbarContent = [
+			{ action: boldButton },
+			{ action: italicButton },
+			{ action: underlineButton },
+			{ action: highlightButton },
+			{ action: codeButton },
+			{ action: listButton },
+			{ action: orderedListButton },
+			{ element: buttonDropdownContainer },
+			{ action: this._toggleTextViewAction },
+			{ action: this._toggleSplitViewAction },
+			{ action: this._toggleMarkdownViewAction }
+		];
 		// Hide link and image buttons in WYSIWYG mode
 		if (this.cellModel.showPreview && !this.cellModel.showMarkdown) {
-			this._actionBar.setContent([
-				{ action: this.boldButton },
-				{ action: this.italicButton },
-				{ action: this.underlineButton },
-				{ action: this.highlightButton },
-				{ action: this.codeButton },
-				{ action: this.listButton },
-				{ action: this.orderedListButton },
-				{ element: this.buttonDropdownContainer },
-				{ action: this._toggleTextViewAction },
-				{ action: this._toggleSplitViewAction },
-				{ action: this._toggleMarkdownViewAction }
-			]);
+			this._actionBar.setContent(this.wysiwygTaskbarContent);
 		} else {
-			this._actionBar.setContent([
-				{ action: this.boldButton },
-				{ action: this.italicButton },
-				{ action: this.underlineButton },
-				{ action: this.highlightButton },
-				{ action: this.codeButton },
-				{ action: this.linkButton },
-				{ action: this.listButton },
-				{ action: this.orderedListButton },
-				{ action: this.imageButton },
-				{ element: this.buttonDropdownContainer },
-				{ action: this._toggleTextViewAction },
-				{ action: this._toggleSplitViewAction },
-				{ action: this._toggleMarkdownViewAction }
-			]);
+			this._actionBar.setContent(this.taskbarContent);
 		}
 	}
 
 	public hideLinkAndImageButtons() {
-		this._actionBar.setContent([
-			{ action: this.boldButton },
-			{ action: this.italicButton },
-			{ action: this.underlineButton },
-			{ action: this.highlightButton },
-			{ action: this.codeButton },
-			{ action: this.listButton },
-			{ action: this.orderedListButton },
-			{ element: this.buttonDropdownContainer },
-			{ action: this._toggleTextViewAction },
-			{ action: this._toggleSplitViewAction },
-			{ action: this._toggleMarkdownViewAction }
-		]);
+		this._actionBar.setContent(this.wysiwygTaskbarContent);
 	}
 
 	public showLinkAndImageButtons() {
-		this._actionBar.setContent([
-			{ action: this.boldButton },
-			{ action: this.italicButton },
-			{ action: this.underlineButton },
-			{ action: this.highlightButton },
-			{ action: this.codeButton },
-			{ action: this.linkButton },
-			{ action: this.listButton },
-			{ action: this.orderedListButton },
-			{ action: this.imageButton },
-			{ element: this.buttonDropdownContainer },
-			{ action: this._toggleTextViewAction },
-			{ action: this._toggleSplitViewAction },
-			{ action: this._toggleMarkdownViewAction }
-		]);
+		this._actionBar.setContent(this.taskbarContent);
 	}
 
 	public removeActiveClassFromModeActions() {
