@@ -19,7 +19,7 @@ import { deepClone } from 'vs/base/common/objects';
 @Component({
 	templateUrl: decodeURI(require.toUrl('./radioCardGroup.component.html'))
 })
-export default class RadioCardGroup extends ComponentBase implements IComponent, OnDestroy {
+export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupComponentProperties> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	@ViewChildren('cardDiv') cardElements: QueryList<ElementRef>;
@@ -96,27 +96,27 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 	}
 
 	public get cards(): azdata.RadioCard[] {
-		return this.getSpecficProperties().cards ?? [];
+		return this.getProperties().cards ?? [];
 	}
 
 	public get cardWidth(): string | undefined {
-		return this.getSpecficProperties().cardWidth ?? undefined;
+		return this.getProperties().cardWidth ?? undefined;
 	}
 
 	public get cardHeight(): string | undefined {
-		return this.getSpecficProperties().cardHeight ?? undefined;
+		return this.getProperties().cardHeight ?? undefined;
 	}
 
 	public get iconWidth(): string | undefined {
-		return this.getSpecficProperties().iconWidth ?? undefined;
+		return this.getProperties().iconWidth ?? undefined;
 	}
 
 	public get iconHeight(): string | undefined {
-		return this.getSpecficProperties().iconHeight ?? undefined;
+		return this.getProperties().iconHeight ?? undefined;
 	}
 
 	public get selectedCardId(): string | undefined {
-		return this.getSpecficProperties().selectedCardId ?? undefined;
+		return this.getProperties().selectedCardId ?? undefined;
 	}
 
 	public get iconPosition(): string {
@@ -132,12 +132,8 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 	}
 
 	public get orientation(): string {
-		const x = this.getSpecficProperties().orientation ?? 'horizontal';
+		const x = this.getProperties().orientation ?? 'horizontal';
 		return x;
-	}
-
-	private getSpecficProperties(): azdata.RadioCardGroupComponentProperties {
-		return this.getProperties<azdata.RadioCardGroupComponentProperties>();
 	}
 
 	public getIconClass(cardId: string): string {
@@ -161,7 +157,7 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 		}
 		const cardElement = this.getCardElement(cardId);
 		cardElement.nativeElement.focus();
-		this.setPropertyFromUI<azdata.RadioCardGroupComponentProperties, string | undefined>((props, value) => props.selectedCardId = value, cardId);
+		this.setPropertyFromUI<string | undefined>((props, value) => props.selectedCardId = value, cardId);
 		this._changeRef.detectChanges();
 		this.fireEvent({
 			eventType: ComponentEventType.onDidChange,

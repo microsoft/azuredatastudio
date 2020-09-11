@@ -19,6 +19,13 @@
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
   "contributes": {
+    "resourceViewResources": [
+      {
+        "id": "azure-resources",
+        "name": "Azure",
+        "icon": "./resources/azure.svg"
+      }
+    ],
     "configuration": [
       {
         "type": "object",

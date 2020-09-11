@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/resourceViewerView';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { CancellationToken } from 'vs/base/common/cancellation';
