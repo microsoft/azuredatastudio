@@ -76,6 +76,5 @@
 	"[typescript]": {
 		"editor.defaultFormatter": "vscode.typescript-language-features"
 	},
-	"typescript.tsc.autoDetect": "off",
-	"debug.javascript.warnOnLongPrediction": false
+	"typescript.tsc.autoDetect": "off"
 }
