@@ -42,8 +42,8 @@ export class MarkdownToolbarComponent {
 	public splitViewButton = localize('splitViewButton', "View as Split");
 	public markdownButton = localize('markdownButton', "View as Markdown");
 
-	private taskbarContent: Array<ITaskbarContent>;
-	private wysiwygTaskbarContent: Array<ITaskbarContent>;
+	private _taskbarContent: Array<ITaskbarContent>;
+	private _wysiwygTaskbarContent: Array<ITaskbarContent>;
 
 	@Input() public cellModel: ICellModel;
 	private _actionBar: Taskbar;
@@ -101,7 +101,7 @@ export class MarkdownToolbarComponent {
 		dropdownMenuActionViewItem.render(buttonDropdownContainer);
 		dropdownMenuActionViewItem.setActionContext(this);
 
-		this.taskbarContent = [
+		this._taskbarContent = [
 			{ action: boldButton },
 			{ action: italicButton },
 			{ action: underlineButton },
@@ -116,7 +116,7 @@ export class MarkdownToolbarComponent {
 			{ action: this._toggleSplitViewAction },
 			{ action: this._toggleMarkdownViewAction }
 		];
-		this.wysiwygTaskbarContent = [
+		this._wysiwygTaskbarContent = [
 			{ action: boldButton },
 			{ action: italicButton },
 			{ action: underlineButton },
@@ -131,18 +131,18 @@ export class MarkdownToolbarComponent {
 		];
 		// Hide link and image buttons in WYSIWYG mode
 		if (this.cellModel.showPreview && !this.cellModel.showMarkdown) {
-			this._actionBar.setContent(this.wysiwygTaskbarContent);
+			this._actionBar.setContent(this._wysiwygTaskbarContent);
 		} else {
-			this._actionBar.setContent(this.taskbarContent);
+			this._actionBar.setContent(this._taskbarContent);
 		}
 	}
 
 	public hideLinkAndImageButtons() {
-		this._actionBar.setContent(this.wysiwygTaskbarContent);
+		this._actionBar.setContent(this._wysiwygTaskbarContent);
 	}
 
 	public showLinkAndImageButtons() {
-		this._actionBar.setContent(this.taskbarContent);
+		this._actionBar.setContent(this._taskbarContent);
 	}
 
 	public removeActiveClassFromModeActions() {
