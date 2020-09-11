@@ -233,7 +233,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			collector.addRule(`.notebook-cell.active.edit-mode code-cell-component > div { background-color: transparent }`);
 			collector.addRule(`.notebook-cell.active text-cell-component .notebook-text.edit-mode { background-color: ${cellEditModeBackgroundColor}; }`);
 		}
-
 		// Code editor colors
 		const codeEditorLineNumberColor = theme.getColor(codeEditorLineNumber);
 		if (codeEditorLineNumberColor) {

@@ -88,7 +88,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private navigationResult: nb.NavigationResult;
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
-	public enter: boolean = false;
 
 	@HostListener('document:keydown', ['$event'])
 	handleKeyboardEvent(event) {
@@ -128,7 +127,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				if (!toolbarEditCellAction.editMode) {
 					toolbarEditCellAction.editMode = !toolbarEditCellAction.editMode;
 				}
-				this.enter = true;
 				break;
 			default:
 				break;
