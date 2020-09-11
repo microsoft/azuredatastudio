@@ -44,6 +44,12 @@ declare module 'azdata' {
 		export interface IKernelChangedArgs {
 			nbKernelAlias?: string
 		}
+
+		export interface IExecuteResult {
+			data: any;
+			batchId?: number;
+			id?: number;
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
