@@ -592,8 +592,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let providers = this._capabilitiesService.providers;
 			for (const server in providers) {
 				let alias = providers[server].connection.notebookKernelAlias;
+				// Add Notebook Kernel Alias to kernelAliases
 				if (alias && this._kernelAliases.indexOf(alias) === -1) {
 					this._kernelAliases.push(providers[server].connection.notebookKernelAlias);
+					this._kernelDisplayNameToConnectionProviderIds.set(alias, [providers[server].connection.providerId]);
 				}
 			}
 		}
@@ -639,7 +641,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let standardKernels = this._standardKernels.find(kernel => this._defaultKernel && kernel.displayName === this._defaultKernel.display_name);
 			let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
 			let providerFeatures = this._capabilitiesService.getCapabilities(profile.providerName);
-			if (connectionProviderIds.length > 0) {
+			if (connectionProviderIds.length > 0 && this._currentKernelAlias) {
 				this._currentKernelAlias = providerFeatures?.connection.notebookKernelAlias;
 				this._kernelDisplayNameToConnectionProviderIds.set(this._currentKernelAlias, [profile.providerName]);
 			}
