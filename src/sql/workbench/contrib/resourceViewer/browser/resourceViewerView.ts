@@ -78,7 +78,7 @@ export class ResourceViewerView extends ViewPane {
 
 	private onDoubleClick(event: ITreeMouseEvent<TreeElement | null>) {
 		if (event.element) {
-			this.commandService.executeCommand('resourceViewer.openResourceViewer', event.element.id);
+			void this.commandService.executeCommand('resourceViewer.openResourceViewer', event.element.id);
 		}
 	}
 
