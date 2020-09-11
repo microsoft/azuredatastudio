@@ -69,10 +69,9 @@
 			}
 		},
 		{
-			"type": "pwa-chrome",
+			"type": "chrome",
 			"request": "attach",
 			"name": "Attach to azuredatastudio",
-			"timeout": 50000,
 			"port": 9222
 		},
 		{
@@ -113,7 +112,7 @@
 			"preLaunchTask": "Ensure Prelaunch Dependencies",
 		},
 		{
-			"type": "chrome",
+			"type": "node",
 			"request": "launch",
 			"name": "Launch ADS (Web) (TBD)",
 			"program": "${workspaceFolder}/resources/web/code-web.js",

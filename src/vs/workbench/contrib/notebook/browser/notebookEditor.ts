@@ -231,7 +231,6 @@ export class NotebookEditor extends EditorPane {
 				return group.activeEditorPane._widget.value?.getEditorViewState();
 			}
 		}
-
 		return undefined; // {{SQL CARBON EDIT}} strict-null-check
 	}
 
