@@ -59,7 +59,7 @@ export class BookTreeItem extends vscode.TreeItem {
 				if (book.isUntitled) {
 					this.contextValue = 'unsavedNotebook';
 				} else {
-					this.contextValue = 'savedNotebook';
+					this.contextValue = isBookItemPinned(book.contentPath) ? 'pinnedNotebook' : 'savedNotebook';
 				}
 			} else {
 				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? 'pinnedNotebook' : 'savedNotebook') : 'section';
