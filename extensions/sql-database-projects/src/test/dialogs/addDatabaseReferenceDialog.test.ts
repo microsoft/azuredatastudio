@@ -32,10 +32,15 @@ describe('Add Database Reference Dialog', () => {
 		should(dialog.dialog.okButton.enabled).equal(false);
 		should(dialog.currentReferenceType).equal(ReferenceType.systemDb);
 		dialog.tryEnableAddReferenceButton();
-		should(dialog.dialog.okButton.enabled).equal(false);
+		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled because there is a default value in the database name textbox');
+
+		// empty db name textbox
+		dialog.databaseNameTextbox!.value = '';
+		dialog.tryEnableAddReferenceButton();
+		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should be disabled after clearing the database name textbox');
 
 		// fill in db name and ok button should be enabled
-		dialog.databaseNameTextbox!.value = 'dbName';
+		dialog.databaseNameTextbox!.value = 'master';
 		dialog.tryEnableAddReferenceButton();
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled after the database name textbox is filled');
 
@@ -43,10 +48,12 @@ describe('Add Database Reference Dialog', () => {
 		dialog.dacpacRadioButtonClick();
 		should(dialog.currentReferenceType).equal(ReferenceType.dacpac);
 		should(dialog.locationDropdown?.value).equal(constants.differentDbSameServer);
+		should(dialog.databaseNameTextbox!.value).equal('', 'database name text box should be empty because no dacpac has been selected');
 		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because dacpac input box is not filled');
 
-		// fill in dacpac textbox
+		// fill in dacpac textbox and database name text box
 		dialog.dacpacTextbox!.value = 'testDb.dacpac';
+		dialog.databaseNameTextbox!.value = 'testDb';
 		dialog.tryEnableAddReferenceButton();
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled after the dacpac textbox is filled');
 
@@ -54,13 +61,7 @@ describe('Add Database Reference Dialog', () => {
 		dialog.locationDropdown!.value = constants.differentDbDifferentServer;
 		dialog.updateEnabledInputBoxes();
 		dialog.tryEnableAddReferenceButton();
-		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because server fields are not filled');
-
-		// fill in server fields
-		dialog.serverNameTextbox!.value = 'serverName';
-		dialog.serverVariableTextbox!.value = '$(serverName)';
-		dialog.tryEnableAddReferenceButton();
-		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled after server fields are filled');
+		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled because server fields are filled');
 
 		// change location to same database
 		dialog.locationDropdown!.value = constants.sameDatabase;
@@ -74,8 +75,9 @@ describe('Add Database Reference Dialog', () => {
 
 		// change reference type back to system db
 		dialog.systemDbRadioButtonClick();
-		should(dialog.databaseNameTextbox?.value).equal('', `Database name textbox should be empty. Actual:${dialog.databaseNameTextbox?.value}`);
-		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because database name is not filled out');
+		should(dialog.locationDropdown?.value).equal(constants.differentDbSameServer);
+		should(dialog.databaseNameTextbox?.value).equal('master', `Database name textbox should be set to master. Actual:${dialog.databaseNameTextbox?.value}`);
+		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled because database name is filled');
 	});
 
 	it('Should enable and disable input boxes depending on the reference type', async function (): Promise<void> {

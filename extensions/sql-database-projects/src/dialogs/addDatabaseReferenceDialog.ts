@@ -7,12 +7,12 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 
 import { Project, SystemDatabase } from '../models/project';
 import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
-import { getSqlProjectFilesInFolder } from '../common/utils';
 
 export enum ReferenceType {
 	project,
@@ -146,9 +146,9 @@ export class AddDatabaseReferenceDialog {
 			referenceSettings = {
 				databaseName: <string>this.databaseNameTextbox?.value,
 				dacpacFileLocation: vscode.Uri.file(<string>this.dacpacTextbox?.value),
-				databaseVariable: <string>this.databaseVariableTextbox?.value,
+				databaseVariable: utils.removeSqlCmdVariableFormatting(<string>this.databaseVariableTextbox?.value),
 				serverName: <string>this.serverNameTextbox?.value,
-				serverVariable: <string>this.serverVariableTextbox?.value,
+				serverVariable: utils.removeSqlCmdVariableFormatting(<string>this.serverVariableTextbox?.value),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 		}
@@ -260,13 +260,13 @@ export class AddDatabaseReferenceDialog {
 		// get projects in workspace
 		const workspaceFolders = vscode.workspace.workspaceFolders;
 		if (workspaceFolders?.length) {
-			let projectFiles = await getSqlProjectFilesInFolder(workspaceFolders[0].uri.fsPath);
+			let projectFiles = await utils.getSqlProjectFilesInFolder(workspaceFolders[0].uri.fsPath);
 
 			// check if current project is in same open folder (should only be able to add a reference to another project in
 			// the folder if the current project is also in the folder)
-			if (projectFiles.find(p => p === this.project.projectFilePath)) {
+			if (projectFiles.find(p => p === utils.getPlatformSafeFileEntryPath(this.project.projectFilePath))) {
 				// filter out current project
-				projectFiles = projectFiles.filter(p => p !== this.project.projectFilePath);
+				projectFiles = projectFiles.filter(p => p !== utils.getPlatformSafeFileEntryPath(this.project.projectFilePath));
 
 				projectFiles.forEach(p => {
 					projectFiles[projectFiles.indexOf(p)] = path.parse(p).name;
@@ -291,6 +291,10 @@ export class AddDatabaseReferenceDialog {
 			ariaLabel: constants.databaseNameLabel
 		}).component();
 
+		this.systemDatabaseDropdown.onValueChanged(() => {
+			this.setDefaultDatabaseValues();
+		});
+
 		// only master is a valid system db reference for projects targetting Azure
 		if (this.project.getProjectTargetPlatform().toLowerCase().includes('azure')) {
 			this.systemDatabaseDropdown.values?.splice(1);
@@ -310,6 +314,7 @@ export class AddDatabaseReferenceDialog {
 		}).component();
 
 		this.dacpacTextbox.onTextChanged(() => {
+			this.setDefaultDatabaseValues();
 			this.tryEnableAddReferenceButton();
 			this.updateExampleUsage();
 		});
@@ -404,11 +409,39 @@ export class AddDatabaseReferenceDialog {
 			this.databaseVariableTextbox!.value = isSystemDb ? '' : this.databaseVariableTextbox!.value;
 			this.serverNameTextbox!.value = '';
 			this.serverVariableTextbox!.value = '';
+
+			// add default values in enabled fields
+			this.setDefaultDatabaseValues();
 		} else if (this.locationDropdown?.value === constants.differentDbDifferentServer) {
 			this.databaseNameTextbox!.enabled = true;
 			this.databaseVariableTextbox!.enabled = true;
 			this.serverNameTextbox!.enabled = true;
 			this.serverVariableTextbox!.enabled = true;
+
+			// add default values in enabled fields
+			this.setDefaultDatabaseValues();
+			this.serverNameTextbox!.value = constants.otherServer;
+			this.serverVariableTextbox!.value = constants.otherSeverVariable;
+		}
+	}
+
+	private setDefaultDatabaseValues(): void {
+		switch (this.currentReferenceType) {
+			case ReferenceType.project: {
+				this.databaseNameTextbox!.value = <string>this.projectDropdown?.value;
+				this.databaseVariableTextbox!.value = `$(${this.projectDropdown?.value})`;
+				break;
+			}
+			case ReferenceType.systemDb: {
+				this.databaseNameTextbox!.value = <string>this.systemDatabaseDropdown?.value;
+				break;
+			}
+			case ReferenceType.dacpac: {
+				const dacpacName = this.dacpacTextbox!.value ? path.parse(this.dacpacTextbox!.value!).name : '';
+				this.databaseNameTextbox!.value = dacpacName;
+				this.databaseVariableTextbox!.value = dacpacName ? `$(${dacpacName})` : '';
+				break;
+			}
 		}
 	}
 
@@ -430,6 +463,7 @@ export class AddDatabaseReferenceDialog {
 		const serverVariableRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.serverVariable, true), this.serverVariableTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		const variableSection = this.view!.modelBuilder.flexContainer().withItems([databaseNameRow, databaseVariableRow, serverNameRow, serverVariableRow]).withLayout({ flexFlow: 'column' }).withProperties({ CSSStyles: { 'margin-bottom': '25px' } }).component();
+		this.setDefaultDatabaseValues();
 
 		return {
 			component: variableSection,
@@ -490,7 +524,7 @@ export class AddDatabaseReferenceDialog {
 					newText = this.currentReferenceType === ReferenceType.systemDb ? constants.enterSystemDbName : constants.databaseNameRequiredVariableOptional;
 					fontStyle = cssStyles.fontStyle.italics;
 				} else {
-					const db = this.databaseVariableTextbox?.value ? this.databaseVariableTextbox?.value : this.databaseNameTextbox.value;
+					const db = this.databaseVariableTextbox?.value ? utils.formatSqlCmdVariable(this.databaseVariableTextbox?.value) : this.databaseNameTextbox.value;
 					newText = constants.differentDbSameServerExampleUsage(db);
 				}
 				break;
@@ -500,16 +534,32 @@ export class AddDatabaseReferenceDialog {
 					newText = constants.databaseNameServerNameVariableRequired;
 					fontStyle = cssStyles.fontStyle.italics;
 				} else {
-					const server = this.serverVariableTextbox.value;
-					const db = this.databaseVariableTextbox?.value ? this.databaseVariableTextbox?.value : this.databaseNameTextbox.value;
+					const server = utils.formatSqlCmdVariable(this.serverVariableTextbox.value);
+					const db = this.databaseVariableTextbox?.value ? utils.formatSqlCmdVariable(this.databaseVariableTextbox?.value) : this.databaseNameTextbox.value;
 					newText = constants.differentDbDifferentServerExampleUsage(server, db);
 				}
 				break;
 			}
 		}
 
+		// check for invalid variables
+		if (!this.validSqlCmdVariables()) {
+			let invalidName = !utils.isValidSqlCmdVariableName(this.databaseVariableTextbox?.value) ? this.databaseVariableTextbox!.value! : this.serverVariableTextbox!.value!;
+			invalidName = utils.removeSqlCmdVariableFormatting(invalidName);
+			newText = constants.notValidVariableName(invalidName);
+		}
+
 		this.exampleUsage!.value = newText;
 		this.exampleUsage?.updateCssStyles({ 'font-style': fontStyle });
+	}
+
+	private validSqlCmdVariables(): boolean {
+		if (this.databaseVariableTextbox?.enabled && this.databaseVariableTextbox?.value && !utils.isValidSqlCmdVariableName(this.databaseVariableTextbox?.value)
+			|| this.serverVariableTextbox?.enabled && this.serverVariableTextbox?.value && !utils.isValidSqlCmdVariableName(this.serverVariableTextbox?.value)) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -533,8 +583,9 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private dacpacRequiredFieldsFilled(): boolean {
-		return !!this.dacpacTextbox?.value &&
-			((this.locationDropdown?.value === constants.sameDatabase)
+		return !!this.dacpacTextbox?.value
+			&& this.validSqlCmdVariables()
+			&& ((this.locationDropdown?.value === constants.sameDatabase)
 				|| (this.locationDropdown?.value === constants.differentDbSameServer && this.differentDatabaseSameServerRequiredFieldsFilled())
 				|| ((this.locationDropdown?.value === constants.differentDbDifferentServer && this.differentDatabaseDifferentServerRequiredFieldsFilled())));
 	}
