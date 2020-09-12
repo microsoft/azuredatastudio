@@ -1,0 +1,308 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.ads-initial-setup-wizard {
+	position: absolute;
+	margin: auto;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	width: 719px;
+	z-index: 9;
+	background: transparent;
+}
+
+.ads-initial-setup-show {
+	display: block;
+}
+
+.ads-initial-setup-hide {
+	display: none;
+}
+
+.ads-initial-setup-wizard:focus {
+	outline: 0 none !important;
+}
+
+.ads-initial-setup-wizard-text-container {
+	padding: 0 24px 22px 24px;
+}
+
+.ads-initial-setup-wizard h1 {
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.ads-initial-setup-wizard h2 {
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 22px;
+	margin: 24px 0 12px;
+}
+
+.monaco-workbench > .ads-initial-setup-wizard {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	z-index: 9999;
+	font-size: 1em;
+	transition: font-size 0.25s;
+	outline: 0;
+	position: absolute;
+	z-index: 1;
+	background: rgba(77, 77, 77, 0.65);
+	opacity: 0;
+	transition: opacity 1s;
+	transition-duration: 1s;
+}
+
+.monaco-workbench > .ads-initial-setup-wizard--open {
+	opacity: 1;
+}
+
+.monaco-workbench
+	> .ads-initial-setup-wizard--open
+	.ads-initial-setup-wizard-element.ads-initial-setup-animate {
+	animation-duration: 1s;
+	animation-fill-mode: forwards;
+	animation-name: fadeInFromNone;
+}
+
+@keyframes fadeInFromNone {
+	0% {
+		opacity: 0;
+		-webkit-transform: translate3d(0, 50px, 0);
+		transform: translate3d(0, 50px, 0);
+	}
+
+	1% {
+		opacity: 0;
+		-webkit-transform: translate3d(0, 50px, 0);
+		transform: translate3d(0, 50px, 0);
+	}
+
+	100% {
+		opacity: 1;
+		-webkit-transform: translate3d(0, 0, 0);
+		transform: translate3d(0, 0, 0);
+	}
+}
+
+.ads-initial-setup-wizard-popup
+	.ads-initial-setup-wizard-popup-content-container {
+	padding: 22px 0px 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	height: 100%;
+}
+
+.ads-initial-setup-wizard-popup
+	.ads-initial-setup-wizard-popup-content-container
+	p {
+	font-size: 1em;
+}
+
+.ads-initial-setup-wizard-popup {
+	position: absolute;
+	width: 720px;
+	max-height: 592px;
+	margin: auto;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	opacity: 0;
+}
+
+.ads-initial-setup-wizard-add-account.ads-initial-setup-wizard-interaction-container {
+	max-width: 109px;
+}
+
+.monaco-workbench > .ads-initial-setup-wizard .ads-initial-setup-wizard-step {
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.ads-initial-setup-wizard-btn-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.ads-initial-setup-wizard-previous-btn-container,
+.ads-initial-setup-wizard-next-btn-container {
+	margin: 0 4px;
+	width: 77px;
+}
+
+.ads-initial-setup-wizard-nav-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 15px 24px;
+	border-top: 1px solid #edebe9;
+}
+
+.ads-initial-setup-wizard-btn-container p {
+	font-size: 1.5em;
+	margin: 0;
+}
+
+.ads-initial-setup-wizard-btn-container:first-of-type(p) {
+	margin-bottom: 20px;
+}
+
+.ads-initial-setup-wizard-popup .flex.column {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.ads-initial-setup-wizard-popup h1,
+.ads-initial-setup-wizard-popup p {
+	font-family: Segoe UI, Frutiger, Frutiger Linotype, Dejavu Sans,
+		Helvetica Neue, Arial, sans-serif;
+	font-weight: 400;
+}
+
+.ads-initial-setup-wizard-popup h1 {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 24px;
+}
+
+.ads-initial-setup-wizard-popup {
+	display: none;
+	z-index: 1;
+}
+
+.ads-initial-setup-wizard-popup.ads-initial-setup-wizard-show {
+	display: block;
+	box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.14);
+	border-radius: 2px;
+	opacity: 1;
+}
+
+.ads-initial-setup-wizard-popup .ads-initial-setup-wizard-img {
+	width: 720px;
+	min-height: 264px;
+}
+
+.ads-initial-setup-wizard-popup .ads-initial-setup-wizard-docs-link {
+	align-self: center;
+	justify-self: flex-start;
+	margin-right: auto;
+	text-decoration: none;
+	width: 77px;
+}
+
+.ads-initial-setup-wizard-popup .icon-link {
+	display: inline-block;
+	width: 11px;
+	height: 11px;
+	margin-left: 4px;
+	-webkit-mask: url(../../media/link_icon.svg) no-repeat;
+	-webkit-mask-size: 11px 11px;
+	mask: url(../../media/link_icon.svg) no-repeat;
+	mask-size: 11px 11px;
+	height: 11px;
+}
+
+.ads-initial-setup-wizard-btn {
+	box-sizing: border-box;
+	width: 100%;
+	height: 34px;
+	padding-top: 1px;
+	font-size: 1.08em;
+	line-height: 29px;
+	border-radius: 2px;
+	display: flex;
+	align-content: center;
+	justify-content: center;
+	text-align: center;
+	text-decoration: none;
+	margin: 10px 0;
+}
+
+.monaco-workbench
+	.activitybar
+	> .content
+	:not(.monaco-menu)
+	> .monaco-action-bar
+	.action-label.codicon.subject-element-focused {
+	z-index: 1 !important;
+	pointer-events: none !important;
+}
+
+/* The switch - the box around the slider */
+.ads-initial-setup-wizard-switch {
+	position: relative;
+	display: inline-block;
+	width: 40px;
+	height: 20px;
+}
+
+.ads-initial-setup-wizard-checkbox-container {
+	display: flex;
+	align-items: center;
+}
+
+.ads-initial-setup-wizard-switch {
+	margin-right: 8px;
+}
+
+/* Hide default HTML checkbox */
+.ads-initial-setup-wizard-switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+/* The slider */
+.ads-initial-setup-wizard-slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	-webkit-transition: 0.4s;
+	transition: 0.4s;
+}
+
+.ads-initial-setup-wizard-slider:before {
+	position: absolute;
+	content: "";
+	height: 14px;
+	width: 13px;
+	left: 3px;
+	bottom: 3px;
+	-webkit-transition: 0.4s;
+	transition: 0.4s;
+}
+
+input:checked + .ads-initial-setup-wizard-slider:before {
+	-webkit-transform: translateX(20px);
+	-ms-transform: translateX(20px);
+	transform: translateX(20px);
+}
+
+/* Rounded sliders */
+.ads-initial-setup-wizard-slider.round {
+	border-radius: 34px;
+}
+
+.ads-initial-setup-wizard-slider.round:before {
+	border-radius: 50%;
+}

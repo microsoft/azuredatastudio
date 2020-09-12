@@ -47,11 +47,14 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { GettingStartedSetupWizard } from 'sql/workbench/contrib/welcome/gettingStarted/browser/initialSetupWizard';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
+// {{SQL CARBON EDIT}} - add initialSetupWizardKey
+const intialSetupWizardKey = 'workbench.initialSetup';
 
 export class WelcomePageContribution implements IWorkbenchContribution {
 
@@ -122,6 +125,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 	}
 }
 
+
 function isWelcomePageEnabled(configurationService: IConfigurationService, contextService: IWorkspaceContextService) {
 	const startupEditor = configurationService.inspect(configurationKey);
 	if (!startupEditor.userValue && !startupEditor.workspaceValue) {
@@ -130,8 +134,17 @@ function isWelcomePageEnabled(configurationService: IConfigurationService, conte
 			return welcomeEnabled.value;
 		}
 	}
-	// {{SQL CARBON EDIT}} - add welcomePageWithTour
-	return startupEditor.value === 'welcomePageWithTour' || startupEditor.value === 'welcomePage' || startupEditor.value === 'readme' || startupEditor.value === 'welcomePageInEmptyWorkbench' && contextService.getWorkbenchState() === WorkbenchState.EMPTY;
+	return startupEditor.value === 'welcomePage' || startupEditor.value === 'readme' || startupEditor.value === 'welcomePageInEmptyWorkbench' && contextService.getWorkbenchState() === WorkbenchState.EMPTY;
+}
+
+
+// {{SQL CARBON EDIT}} - add isInitialSetupWizardEnabled
+function isInitialSetupWizardEnabled(configurationService: IConfigurationService): boolean {
+	const initialSetupWizaredEnabled = configurationService.inspect(intialSetupWizardKey);
+	if (initialSetupWizaredEnabled.value === 'isInitialSetup') {
+		return true;
+	}
+	return false;
 }
 
 export class WelcomePageAction extends Action {
@@ -322,8 +335,17 @@ class WelcomePage extends Disposable {
 	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>): void {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
+		const wizardEnabled = isInitialSetupWizardEnabled(this.configurationService);
+
 		if (enabled) {
 			showOnStartup.setAttribute('checked', 'checked');
+		}
+		if (wizardEnabled) {
+			const context = this;
+			setTimeout(doSomething, 1000);
+			function doSomething() {
+				context.enableInitialSetupWizard();
+			}
 		}
 		showOnStartup.addEventListener('click', e => {
 			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePage' : 'newUntitledFile', ConfigurationTarget.USER);
@@ -372,6 +394,11 @@ class WelcomePage extends Disposable {
 				}
 			}
 		}));
+	}
+
+	private enableInitialSetupWizard(): void {
+		const gettingStartedSetupWizard = this.instantiationService.createInstance(GettingStartedSetupWizard);
+		gettingStartedSetupWizard.create();
 	}
 
 	private createListEntries(recents: (IRecentWorkspace | IRecentFolder)[]) {
