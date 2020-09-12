@@ -14,21 +14,18 @@ export class NetworkSettingsPage extends BasePage {
 	private _newVirtualNetworkCheckbox!: azdata.CheckBoxComponent;
 	private _virtualNetworkFlexContainer !: azdata.FlexContainer;
 	private _virtualNetworkDropdown!: azdata.DropDownComponent;
-	private _virtualNetworkDropdownLoader!: azdata.LoadingComponent;
 	private _newVirtualNetworkText!: azdata.InputBoxComponent;
 
 	// subnet network components
 	private _newSubnetCheckbox!: azdata.CheckBoxComponent;
 	private _subnetFlexContainer !: azdata.FlexContainer;
 	private _subnetDropdown!: azdata.DropDownComponent;
-	private _subnetDropdownLoader!: azdata.LoadingComponent;
 	private _newsubnetText!: azdata.InputBoxComponent;
 
 	// public ip components
 	private _newPublicIpCheckbox!: azdata.CheckBoxComponent;
 	private _publicIpFlexContainer !: azdata.FlexContainer;
 	private _publicIpDropdown!: azdata.DropDownComponent;
-	private _publicIpDropdownLoader!: azdata.LoadingComponent;
 	private _publicIpNetworkText!: azdata.InputBoxComponent;
 
 	// checkbox for RDP
@@ -128,8 +125,6 @@ export class NetworkSettingsPage extends BasePage {
 			this.populateSubnetDropdown();
 		});
 
-		this._virtualNetworkDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._virtualNetworkDropdown).component();
-
 		this._newVirtualNetworkText = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			width: constants.standardWidth,
 			required: true,
@@ -144,13 +139,13 @@ export class NetworkSettingsPage extends BasePage {
 		this._virtualNetworkFlexContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 		}).withItems(
-			[this._virtualNetworkDropdownLoader, this._newVirtualNetworkText, this._newVirtualNetworkCheckbox]
+			[this._virtualNetworkDropdown, this._newVirtualNetworkText, this._newVirtualNetworkCheckbox]
 		).component();
 
 	}
 
 	private async populateVirtualNetworkDropdown() {
-		this._virtualNetworkDropdownLoader.loading = true;
+		this._virtualNetworkDropdown.loading = true;
 
 		let vnets = await this.getVirtualNetworks();
 		if (!vnets || vnets.length === 0) {
@@ -174,7 +169,7 @@ export class NetworkSettingsPage extends BasePage {
 			this._newVirtualNetworkCheckbox.enabled = true;
 			this.toggleNewVirtualNetwork();
 		}
-		this._virtualNetworkDropdownLoader.loading = false;
+		this._virtualNetworkDropdown.loading = false;
 
 
 		await this.populateSubnetDropdown();
@@ -188,20 +183,20 @@ export class NetworkSettingsPage extends BasePage {
 
 		if (newVirtualNetwork) {
 
-			this.wizard.changeComponentDisplay(this._virtualNetworkDropdownLoader, 'none');
+			this.wizard.changeComponentDisplay(this._virtualNetworkDropdown, 'none');
 			this.wizard.changeComponentDisplay(this._newVirtualNetworkText, 'block');
 			this._newSubnetCheckbox.enabled = false;
-			this.wizard.changeComponentDisplay(this._subnetDropdownLoader, 'none');
+			this.wizard.changeComponentDisplay(this._subnetDropdown, 'none');
 			this.wizard.changeComponentDisplay(this._newsubnetText, 'block');
 			this.wizard.model.virtualNetworkName = this._newVirtualNetworkText.value!;
 			this.wizard.model.newSubnet = 'True';
 
 		} else {
 
-			this.wizard.changeComponentDisplay(this._virtualNetworkDropdownLoader, 'block');
+			this.wizard.changeComponentDisplay(this._virtualNetworkDropdown, 'block');
 			this.wizard.changeComponentDisplay(this._newVirtualNetworkText, 'none');
 			this._newSubnetCheckbox.enabled = true;
-			this.wizard.changeComponentDisplay(this._subnetDropdownLoader, 'block');
+			this.wizard.changeComponentDisplay(this._subnetDropdown, 'block');
 			this.wizard.changeComponentDisplay(this._newsubnetText, 'none');
 			this.wizard.model.virtualNetworkName = (this._virtualNetworkDropdown.value as azdata.CategoryValue).name;
 			this.wizard.model.newSubnet = this._newSubnetCheckbox.checked! ? 'True' : 'False';
@@ -229,8 +224,6 @@ export class NetworkSettingsPage extends BasePage {
 			this.wizard.model.subnetName = (this._subnetDropdown.value as azdata.CategoryValue).name;
 		});
 
-		this._subnetDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._subnetDropdown).component();
-
 		this._newsubnetText = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			width: constants.standardWidth,
 			required: true,
@@ -245,14 +238,14 @@ export class NetworkSettingsPage extends BasePage {
 		this._subnetFlexContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 		}).withItems(
-			[this._subnetDropdownLoader, this._newsubnetText, this._newSubnetCheckbox]
+			[this._subnetDropdown, this._newsubnetText, this._newSubnetCheckbox]
 		).component();
 
 	}
 
 
 	private async populateSubnetDropdown() {
-		this._subnetDropdownLoader.loading = true;
+		this._subnetDropdown.loading = true;
 
 		let subnets = await this.getSubnets();
 		if (!subnets || subnets.length === 0) {
@@ -273,7 +266,7 @@ export class NetworkSettingsPage extends BasePage {
 			this.toggleNewSubnet();
 		}
 
-		this._subnetDropdownLoader.loading = false;
+		this._subnetDropdown.loading = false;
 	}
 
 	private toggleNewSubnet() {
@@ -283,11 +276,11 @@ export class NetworkSettingsPage extends BasePage {
 		this.wizard.model.newSubnet = newSubnet ? 'True' : 'False';
 
 		if (newSubnet) {
-			this.wizard.changeComponentDisplay(this._subnetDropdownLoader, 'none');
+			this.wizard.changeComponentDisplay(this._subnetDropdown, 'none');
 			this.wizard.changeComponentDisplay(this._newsubnetText, 'block');
 			this.wizard.model.subnetName = this._newsubnetText.value!;
 		} else {
-			this.wizard.changeComponentDisplay(this._subnetDropdownLoader, 'block');
+			this.wizard.changeComponentDisplay(this._subnetDropdown, 'block');
 			this.wizard.changeComponentDisplay(this._newsubnetText, 'none');
 			this.wizard.model.subnetName = (this._subnetDropdown.value as azdata.CategoryValue).name;
 		}
@@ -313,8 +306,6 @@ export class NetworkSettingsPage extends BasePage {
 			this.wizard.model.publicIpName = (this._publicIpDropdown.value as azdata.CategoryValue).name;
 		});
 
-		this._publicIpDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._publicIpDropdown).component();
-
 		this._publicIpNetworkText = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			placeHolder: 'Enter name for new public IP',
 			width: constants.standardWidth
@@ -330,13 +321,13 @@ export class NetworkSettingsPage extends BasePage {
 		this._publicIpFlexContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 		}).withItems(
-			[this._publicIpDropdownLoader, this._publicIpNetworkText, this._newPublicIpCheckbox]
+			[this._publicIpDropdown, this._publicIpNetworkText, this._newPublicIpCheckbox]
 		).component();
 
 	}
 
 	private async populatePublicIpkDropdown() {
-		this._publicIpDropdownLoader.loading = true;
+		this._publicIpDropdown.loading = true;
 
 		let publicIps = await this.getPips();
 
@@ -360,7 +351,7 @@ export class NetworkSettingsPage extends BasePage {
 			this._newPublicIpCheckbox.enabled = true;
 			this.toggleNewPublicIp();
 		}
-		this._publicIpDropdownLoader.loading = false;
+		this._publicIpDropdown.loading = false;
 	}
 
 	private toggleNewPublicIp() {
@@ -369,11 +360,11 @@ export class NetworkSettingsPage extends BasePage {
 		this.wizard.model.newPublicIp = newPip ? 'True' : 'False';
 
 		if (newPip) {
-			this.wizard.changeComponentDisplay(this._publicIpDropdownLoader, 'none');
+			this.wizard.changeComponentDisplay(this._publicIpDropdown, 'none');
 			this.wizard.changeComponentDisplay(this._publicIpNetworkText, 'block');
 			this.wizard.model.publicIpName = this._publicIpNetworkText.value!;
 		} else {
-			this.wizard.changeComponentDisplay(this._publicIpDropdownLoader, 'block');
+			this.wizard.changeComponentDisplay(this._publicIpDropdown, 'block');
 			this.wizard.changeComponentDisplay(this._publicIpNetworkText, 'none');
 			this.wizard.model.publicIpName = (this._publicIpDropdown.value as azdata.CategoryValue).name;
 		}

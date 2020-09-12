@@ -26,19 +26,15 @@ export class VmSettingsPage extends BasePage {
 
 	// dropdown for sql vm image
 	private _vmImageDropdown!: azdata.DropDownComponent;
-	private _vmImageDropdownLoader!: azdata.LoadingComponent;
 
 	// dropdown for sql vm image sku <- sql vm image
 	private _vmImageSkuDropdown!: azdata.DropDownComponent;
-	private _vmImageSkuDropdownLoader!: azdata.LoadingComponent;
 
 	// dropdown for sql vm image version <- sql vm image sku
 	private _vmImageVersionDropdown!: azdata.DropDownComponent;
-	private _vmImageVersionDropdownLoader!: azdata.LoadingComponent;
 
 	// dropdown for sql vm size
 	private _vmSizeDropdown!: azdata.DropDownComponent;
-	private _vmSizeDropdownLoader!: azdata.LoadingComponent;
 	private _vmSizeLearnMoreLink!: azdata.HyperlinkComponent;
 
 	private _form!: azdata.FormContainer;
@@ -84,16 +80,16 @@ export class VmSettingsPage extends BasePage {
 							component: this.wizard.createFormRowComponent(view, constants.VmAdminConfirmPasswordTextBoxLabel, '', this._adminComfirmPasswordTextBox, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.VmImageDropdownLabel, '', this._vmImageDropdownLoader, true)
+							component: this.wizard.createFormRowComponent(view, constants.VmImageDropdownLabel, '', this._vmImageDropdown, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.VmSkuDropdownLabel, '', this._vmImageSkuDropdownLoader, true)
+							component: this.wizard.createFormRowComponent(view, constants.VmSkuDropdownLabel, '', this._vmImageSkuDropdown, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.VmVersionDropdownLabel, '', this._vmImageVersionDropdownLoader, true)
+							component: this.wizard.createFormRowComponent(view, constants.VmVersionDropdownLabel, '', this._vmImageVersionDropdown, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.VmSizeDropdownLabel, '', this._vmSizeDropdownLoader, true)
+							component: this.wizard.createFormRowComponent(view, constants.VmSizeDropdownLabel, '', this._vmSizeDropdown, true)
 						},
 						{
 							component: this._vmSizeLearnMoreLink
@@ -187,20 +183,17 @@ export class VmSettingsPage extends BasePage {
 
 		this._vmImageDropdown.onValueChanged((value) => {
 			this.wizard.model.vmImage = (this._vmImageDropdown.value as azdata.CategoryValue).name;
-			this._vmImageSkuDropdownLoader.loading = true;
-			this._vmImageVersionDropdownLoader.loading = true;
-			this._vmImageVersionDropdownLoader.loading = true;
+			this._vmImageSkuDropdown.loading = true;
+			this._vmImageVersionDropdown.loading = true;
 			this.populateVmImageSkuDropdown();
 		});
 
-		this._vmImageDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._vmImageDropdown).component();
 	}
 
 	private async populateVmImageDropdown() {
-		this._vmImageDropdownLoader.loading = true;
-		this._vmImageSkuDropdownLoader.loading = true;
-		this._vmImageVersionDropdownLoader.loading = true;
-		this._vmImageVersionDropdownLoader.loading = true;
+		this._vmImageDropdown.loading = true;
+		this._vmImageSkuDropdown.loading = true;
+		this._vmImageVersionDropdown.loading = true;
 
 		let url = `https://management.azure.com` +
 			`/subscriptions/${this.wizard.model.azureSubscription}` +
@@ -233,7 +226,7 @@ export class VmSettingsPage extends BasePage {
 		);
 
 		this.wizard.model.vmImage = (this._vmImageDropdown.value as azdata.CategoryValue).name;
-		this._vmImageDropdownLoader.loading = false;
+		this._vmImageDropdown.loading = false;
 		this.populateVmImageSkuDropdown();
 	}
 
@@ -246,11 +239,10 @@ export class VmSettingsPage extends BasePage {
 			this.populateVmImageVersionDropdown();
 		});
 
-		this._vmImageSkuDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._vmImageSkuDropdown).component();
 	}
 
 	private async populateVmImageSkuDropdown() {
-		this._vmImageSkuDropdownLoader.loading = true;
+		this._vmImageSkuDropdown.loading = true;
 		let url = `https://management.azure.com` +
 			`/subscriptions/${this.wizard.model.azureSubscription}` +
 			`/providers/Microsoft.Compute` +
@@ -272,7 +264,7 @@ export class VmSettingsPage extends BasePage {
 		);
 
 		this.wizard.model.vmImageSKU = (this._vmImageSkuDropdown.value as azdata.CategoryValue).name;
-		this._vmImageSkuDropdownLoader.loading = false;
+		this._vmImageSkuDropdown.loading = false;
 		this.populateVmImageVersionDropdown();
 	}
 
@@ -283,12 +275,10 @@ export class VmSettingsPage extends BasePage {
 		this._vmImageVersionDropdown.onValueChanged((value) => {
 			this.wizard.model.vmImageVersion = (this._vmImageVersionDropdown.value as azdata.CategoryValue).name;
 		});
-
-		this._vmImageVersionDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._vmImageVersionDropdown).component();
 	}
 
 	private async populateVmImageVersionDropdown() {
-		this._vmImageVersionDropdownLoader.loading = true;
+		this._vmImageVersionDropdown.loading = true;
 		let url = `https://management.azure.com` +
 			`/subscriptions/${this.wizard.model.azureSubscription}` +
 			`/providers/Microsoft.Compute` +
@@ -311,7 +301,7 @@ export class VmSettingsPage extends BasePage {
 		);
 
 		this.wizard.model.vmImageVersion = (this._vmImageVersionDropdown.value as azdata.CategoryValue).name;
-		this._vmImageVersionDropdownLoader.loading = false;
+		this._vmImageVersionDropdown.loading = false;
 	}
 
 
@@ -324,8 +314,6 @@ export class VmSettingsPage extends BasePage {
 			this.wizard.model.vmSize = (this._vmSizeDropdown.value as azdata.CategoryValue).name;
 		});
 
-		this._vmSizeDropdownLoader = view.modelBuilder.loadingComponent().withItem(this._vmSizeDropdown).component();
-
 		this._vmSizeLearnMoreLink = view.modelBuilder.hyperlink().withProperties(<azdata.HyperlinkComponent>{
 			label: constants.VmSizeLearnMoreLabel,
 			url: 'https://go.microsoft.com/fwlink/?linkid=2143101'
@@ -334,7 +322,7 @@ export class VmSettingsPage extends BasePage {
 	}
 
 	private async populateVmSizeDropdown() {
-		this._vmSizeDropdownLoader.loading = true;
+		this._vmSizeDropdown.loading = true;
 		let url = `https://management.azure.com` +
 			`/subscriptions/${this.wizard.model.azureSubscription}` +
 			`/providers/Microsoft.Compute` +
@@ -381,7 +369,7 @@ export class VmSettingsPage extends BasePage {
 			width: '480px'
 		});
 		this.wizard.model.vmSize = (this._vmSizeDropdown.value as azdata.CategoryValue).name;
-		this._vmSizeDropdownLoader.loading = false;
+		this._vmSizeDropdown.loading = false;
 	}
 
 	protected async formValidation(): Promise<string> {
