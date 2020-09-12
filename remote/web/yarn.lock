@@ -416,9 +416,9 @@ html-encoding-sniffer@^2.0.1:
   dependencies:
     whatwg-encoding "^1.0.5"
 
-"html-query-plan@git://github.com/anthonydresser/html-query-plan.git#2.6":
+"html-query-plan@git://github.com/kburtram/html-query-plan.git#2.6":
   version "2.5.0"
-  resolved "git://github.com/anthonydresser/html-query-plan.git#c524feb824e4960897ad875a37af068376a2b4a3"
+  resolved "git://github.com/kburtram/html-query-plan.git#c524feb824e4960897ad875a37af068376a2b4a3"
 
 htmlparser2@^3.10.0:
   version "3.10.1"
