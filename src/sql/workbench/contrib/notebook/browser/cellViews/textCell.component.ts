@@ -277,8 +277,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
 		this.cellModel.isEditMode = this.isEditMode;
 		if (!this.isEditMode) {
-			this.previewMode = true;
-			this.markdownMode = false;
+			this.cellModel.showPreview = true;
+			this.cellModel.showMarkdown = false;
 		}
 		this.updatePreview();
 		this._changeRef.detectChanges();
