@@ -60,9 +60,12 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
-	private _showPreview: boolean = true;
 	private _onCellPreviewChanged = new Emitter<boolean>();
+	private _onCellMarkdownChanged = new Emitter<boolean>();
 	private _isCommandExecutionSettingEnabled: boolean = false;
+	private _showPreview: boolean = true;
+	private _showMarkdown: boolean = false;
+	private _cellSourceChanged: boolean = false;
 	private _gridDataConversionComplete: Promise<void>[] = [];
 
 	constructor(cellData: nb.ICellContents,
@@ -242,6 +245,7 @@ export class CellModel extends Disposable implements ICellModel {
 		if (this._source !== newSource) {
 			this._source = newSource;
 			this.sendChangeToNotebook(NotebookChangeType.CellSourceUpdated);
+			this.cellSourceChanged = true;
 		}
 		this._modelContentChangedEvent = undefined;
 	}
@@ -308,14 +312,33 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public set showPreview(val: boolean) {
-		if (val !== this._showPreview) {
-			this._showPreview = val;
-			this._onCellPreviewChanged.fire(this._showPreview);
-		}
+		this._showPreview = val;
+		this._onCellPreviewChanged.fire(this._showPreview);
 	}
 
-	public get onCellPreviewChanged(): Event<boolean> {
+	public get showMarkdown(): boolean {
+		return this._showMarkdown;
+	}
+
+	public set showMarkdown(val: boolean) {
+		this._showMarkdown = val;
+		this._onCellMarkdownChanged.fire(this._showMarkdown);
+	}
+
+
+	public get cellSourceChanged(): boolean {
+		return this._cellSourceChanged;
+	}
+	public set cellSourceChanged(val: boolean) {
+		this._cellSourceChanged = val;
+	}
+
+	public get onCellPreviewModeChanged(): Event<boolean> {
 		return this._onCellPreviewChanged.event;
+	}
+
+	public get onCellMarkdownModeChanged(): Event<boolean> {
+		return this._onCellMarkdownChanged.event;
 	}
 
 	private notifyExecutionComplete(): void {

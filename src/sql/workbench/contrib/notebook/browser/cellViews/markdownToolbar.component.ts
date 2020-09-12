@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { TransformMarkdownAction, MarkdownButtonType, TogglePreviewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
+import { TransformMarkdownAction, MarkdownButtonType, ToggleViewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 
@@ -38,8 +38,15 @@ export class MarkdownToolbarComponent {
 	public optionHeading3 = localize('optionHeading3', "Heading 3");
 	public optionParagraph = localize('optionParagraph', "Paragraph");
 
+	public textViewButton = localize('textViewButton', "View as Text");
+	public splitViewButton = localize('splitViewButton', "View as Split");
+	public markdownButton = localize('markdownButton', "View as Markdown");
+
 	@Input() public cellModel: ICellModel;
 	private _actionBar: Taskbar;
+	_toggleTextViewAction: ToggleViewAction;
+	_toggleSplitViewAction: ToggleViewAction;
+	_toggleMarkdownViewAction: ToggleViewAction;
 
 	constructor(
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
@@ -60,13 +67,16 @@ export class MarkdownToolbarComponent {
 		let listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'list masked-icon', this.buttonList, this.cellModel, MarkdownButtonType.UNORDERED_LIST);
 		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'ordered-list masked-icon', this.buttonOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
 		let imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'insert-image masked-icon', this.buttonImage, this.cellModel, MarkdownButtonType.IMAGE);
-		let togglePreviewAction = this._instantiationService.createInstance(TogglePreviewAction, 'notebook.togglePreview masked-icon', true, this.cellModel.showPreview);
 
 		let headingDropdown = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading', '', 'heading', this.dropdownHeading, this.cellModel, null);
 		let heading1 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading1', this.optionHeading1, 'heading 1', this.optionHeading1, this.cellModel, MarkdownButtonType.HEADING1);
 		let heading2 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading2', this.optionHeading2, 'heading 2', this.optionHeading2, this.cellModel, MarkdownButtonType.HEADING2);
 		let heading3 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading3', this.optionHeading3, 'heading 3', this.optionHeading3, this.cellModel, MarkdownButtonType.HEADING3);
 		let paragraph = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.paragraph', this.optionParagraph, 'paragraph', this.optionParagraph, this.cellModel, MarkdownButtonType.PARAGRAPH);
+
+		this._toggleTextViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleTextView', '', 'masked-icon show-text active', this.textViewButton, true, false);
+		this._toggleSplitViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleSplitView', '', 'masked-icon split-toggle-on', this.splitViewButton, true, true);
+		this._toggleMarkdownViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleMarkdownView', '', 'masked-icon show-markdown', this.markdownButton, false, true);
 
 		let taskbar = <HTMLElement>this.mdtoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
@@ -99,7 +109,18 @@ export class MarkdownToolbarComponent {
 			{ action: orderedListButton },
 			{ action: imageButton },
 			{ element: buttonDropdownContainer },
-			{ action: togglePreviewAction }
+			{ action: this._toggleTextViewAction },
+			{ action: this._toggleSplitViewAction },
+			{ action: this._toggleMarkdownViewAction }
 		]);
+	}
+
+	public removeActiveClassFromModeActions() {
+		const activeClass = ' active';
+		for (let action of [this._toggleTextViewAction, this._toggleSplitViewAction, this._toggleMarkdownViewAction]) {
+			if (action.class.includes(activeClass)) {
+				action.class = action.class.replace(activeClass, '');
+			}
+		}
 	}
 }
