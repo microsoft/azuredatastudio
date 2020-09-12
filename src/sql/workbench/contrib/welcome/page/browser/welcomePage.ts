@@ -51,8 +51,12 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { GettingStartedSetupWizard } from 'sql/workbench/contrib/welcome/gettingStarted/browser/initialSetupWizard';
+
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
+const intialSetupWizardKey = 'workbench.initialSetup';
+const guidedTourKey = 'workbench.guidedTour';
 const telemetryFrom = 'welcomePage';
 
 export class WelcomePageContribution implements IWorkbenchContribution {
@@ -72,10 +76,10 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 	}
 	private async enableWelcomePage(): Promise<void> {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
-		const guidedTourEnabled = isGuidedTourEnabled(this.configurationService);
-		if (enabled && this.lifecycleService.startupKind !== StartupKind.ReloadedWindow || guidedTourEnabled) {
+		if (enabled && this.lifecycleService.startupKind !== StartupKind.ReloadedWindow) {
 			const hasBackups: boolean = await this.backupFileService.hasBackups();
 			const activeEditor = this.editorService.activeEditor;
+
 			if (!activeEditor && !hasBackups) {
 				const openWithReadme = this.configurationService.getValue(configurationKey) === 'readme';
 				if (openWithReadme) {
@@ -113,7 +117,6 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 	}
 }
 
-
 function isWelcomePageEnabled(configurationService: IConfigurationService, contextService: IWorkspaceContextService) {
 	const startupEditor = configurationService.inspect(configurationKey);
 	if (!startupEditor.userValue && !startupEditor.workspaceValue) {
@@ -125,9 +128,18 @@ function isWelcomePageEnabled(configurationService: IConfigurationService, conte
 	return startupEditor.value === 'welcomePage' || startupEditor.value === 'readme' || startupEditor.value === 'welcomePageInEmptyWorkbench' && contextService.getWorkbenchState() === WorkbenchState.EMPTY;
 }
 
+
 function isGuidedTourEnabled(configurationService: IConfigurationService): boolean {
-	const tourEnabled = configurationService.inspect(configurationKey);
-	if (tourEnabled.value === 'welcomePageWithTour') {
+	const tourEnabled = configurationService.inspect(guidedTourKey);
+	if (tourEnabled.value === 'isGuidedTour') {
+		return true;
+	}
+	return false;
+}
+
+function isInitialSetupWizardEnabled(configurationService: IConfigurationService): boolean {
+	const initialSetupWizaredEnabled = configurationService.inspect(intialSetupWizardKey);
+	if (initialSetupWizaredEnabled.value === 'isInitialSetup') {
 		return true;
 	}
 	return false;
@@ -253,15 +265,22 @@ class WelcomePage extends Disposable {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
 		const guidedTourEnabled = isGuidedTourEnabled(this.configurationService);
-		if (enabled || guidedTourEnabled) {
+		const wizardEnabled = isInitialSetupWizardEnabled(this.configurationService);
+
+		if (enabled) {
 			showOnStartup.setAttribute('checked', 'checked');
 		}
+
 		if (guidedTourEnabled) {
 			this.enableGuidedTour();
 		}
 
+		if (wizardEnabled) {
+			this.enableInitialSetupWizard();
+		}
+
 		showOnStartup.addEventListener('click', e => {
-			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePageWithTour' : 'newUntitledFile', ConfigurationTarget.USER);
+			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePage' : 'newUntitledFile', ConfigurationTarget.USER);
 		});
 		const prodName = container.querySelector('.welcomePage .title .caption') as HTMLElement;
 		if (prodName) {
@@ -400,6 +419,12 @@ class WelcomePage extends Disposable {
 		}
 	}
 
+	private enableInitialSetupWizard(): void {
+		const gettingStartedSetupWizard = this.instantiationService.createInstance(GettingStartedSetupWizard);
+		gettingStartedSetupWizard.create();
+		this.configurationService.updateValue(intialSetupWizardKey, 'notInitialSetup', ConfigurationTarget.USER);
+	}
+
 	private enableGuidedTour(): void {
 		const guidedTour = this.instantiationService.createInstance(GuidedTour);
 		const adsHomepage = document.querySelector('.ads-homepage');
@@ -435,14 +460,14 @@ class WelcomePage extends Disposable {
 		guidedTourNotificationContainer.appendChild(containerRight);
 
 		startTourBtn.onDidClick((e) => {
-			this.configurationService.updateValue(configurationKey, 'welcomePageWithTour', ConfigurationTarget.USER);
+			this.configurationService.updateValue(guidedTourKey, 'isGuidedTour', ConfigurationTarget.USER);
 			this.layoutService.setSideBarHidden(true);
 			guidedTour.create();
 		});
 
 
 		removeTourBtn.addEventListener('click', (e: MouseEvent) => {
-			this.configurationService.updateValue(configurationKey, 'welcomePage', ConfigurationTarget.USER);
+			this.configurationService.updateValue(guidedTourKey, 'notGuidedTour', ConfigurationTarget.USER);
 			guidedTourNotificationContainer.classList.add('hide');
 			guidedTourNotificationContainer.classList.remove('show');
 		});
@@ -700,6 +725,7 @@ class WelcomePage extends Disposable {
 		}
 		return result;
 	}
+
 	private addExtensionList(container: HTMLElement, listSelector: string): void {
 		const list = container.querySelector(listSelector);
 		if (list) {
