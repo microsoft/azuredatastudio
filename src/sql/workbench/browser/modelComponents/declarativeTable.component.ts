@@ -184,7 +184,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
 		let cellData = this.data[rowIdx][colIdx];
 		if (cellData && column.categoryValues) {
-			let category = column.categoryValues.find(v => v.name === cellData);
+			let category = column.categoryValues.find(v => v.name === cellData.value);
 			if (category) {
 				return category.displayName;
 			} else if (this.isEditableSelectBox(colIdx)) {
