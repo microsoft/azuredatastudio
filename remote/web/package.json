@@ -17,6 +17,7 @@
 		"iconv-lite-umd": "0.6.8",
 		"jschardet": "2.2.1",
 		"jquery": "3.5.0",
+		"mark.js": "^8.11.1",
 		"ng2-charts": "^1.6.0",
 		"reflect-metadata": "^0.1.8",
 		"rxjs": "5.4.0",
