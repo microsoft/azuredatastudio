@@ -371,6 +371,17 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 		return;
 	}
 
+	public mergeCss(...styles: azdata.CssStyles[]): azdata.CssStyles {
+		const x = styles.reduce((previous, current) => {
+			if (current) {
+				return Object.assign(previous, current);
+			}
+			return previous;
+		}, {});
+
+		return x;
+	}
+
 	protected onItemsUpdated(): void {
 	}
 
