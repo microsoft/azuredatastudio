@@ -3,10 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import { ResourceType } from 'arc';
 import * as azurecore from 'azurecore';
+import * as vscode from 'vscode';
+import { ConnectionMode, IconPath, IconPathHelper } from '../constants';
 import * as loc from '../localizedConstants';
-import { IconPathHelper, IconPath, ResourceType, ConnectionMode } from '../constants';
 
 export class UserCancelledError extends Error { }
 

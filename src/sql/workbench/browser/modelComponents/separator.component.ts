@@ -7,6 +7,7 @@ import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
 	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
+import * as azdata from 'azdata';
 
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
@@ -19,7 +20,7 @@ import { Separator } from 'sql/base/browser/ui/separator/separator';
 		<div #separator> </div>
 	`
 })
-export default class SeparatorComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class SeparatorComponent extends ComponentBase<azdata.SeparatorComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
 	private _separator: Separator;
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;

@@ -57,7 +57,7 @@ export class UserDataAutoSyncEnablementService extends Disposable {
 				return true;
 			case 'off':
 				return false;
-			default: return this.storageService.getBoolean(enablementKey, StorageScope.GLOBAL, this.environmentService.enableSyncByDefault);
+			default: return this.storageService.getBoolean(enablementKey, StorageScope.GLOBAL, this.environmentService.enableSyncByDefault); // {{SQL CARBON EDIT}} strict-null-checks move this to a default case
 		}
 	}
 

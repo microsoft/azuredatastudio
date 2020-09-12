@@ -3,12 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ControllerInfo } from 'arc';
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import { v4 as uuid } from 'uuid';
+import * as vscode from 'vscode';
 import { Deferred } from '../../common/promise';
 import * as loc from '../../localizedConstants';
-import { ControllerInfo, ControllerModel } from '../../models/controllerModel';
+import { ControllerModel } from '../../models/controllerModel';
 import { InitializingComponent } from '../components/initializingComponent';
 import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
 

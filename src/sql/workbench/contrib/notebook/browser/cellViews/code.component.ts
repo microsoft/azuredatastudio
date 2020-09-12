@@ -208,7 +208,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 		let untitledEditorModel = await this._editorInput.resolve() as UntitledTextEditorModel;
 		this._editorModel = untitledEditorModel.textEditorModel;
-
+		this.updateModel();
 		let isActive = this.cellModel.id === this._activeCellId;
 		this._editor.toggleEditorSelected(isActive);
 
@@ -252,8 +252,11 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.cellModel.onCollapseStateChanged(isCollapsed => {
 			this.onCellCollapse(isCollapsed);
 		}));
-
-		this._register(this.cellModel.onCellPreviewChanged(() => {
+		this._register(this.cellModel.onCellPreviewModeChanged((e) => {
+			if (!e && this._cellModel.cellSourceChanged) {
+				this.updateModel();
+				this._cellModel.cellSourceChanged = false;
+			}
 			this._layoutEmitter.fire();
 		}));
 

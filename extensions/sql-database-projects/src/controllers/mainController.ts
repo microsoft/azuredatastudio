@@ -5,20 +5,21 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as dataworkspace from 'dataworkspace';
 import * as templates from '../templates/templates';
 import * as constants from '../common/constants';
 import * as path from 'path';
-import * as glob from 'fast-glob';
 import * as newProjectTool from '../tools/newProjectTool';
 
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { getErrorMessage } from '../common/utils';
+import { getErrorMessage, getSqlProjectFilesInFolder } from '../common/utils';
 import { ProjectsController } from './projectController';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { NetCoreTool } from '../tools/netcoreTool';
 import { Project } from '../models/project';
 import { FileNode, FolderNode } from '../models/tree/fileFolderTreeItem';
 import { IconPathHelper } from '../common/iconHelper';
+import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
 
@@ -78,6 +79,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
+		this.registerProjectProvider();
 
 		// init view
 		const treeView = vscode.window.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, {
@@ -110,10 +112,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	public async loadProjectsInFolder(folderPath: string): Promise<void> {
-		// path needs to use forward slashes for glob to work
-		let escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
-		let sqlprojFilter = path.posix.join(escapedPath, '**', '*.sqlproj');
-		let results = await glob(sqlprojFilter);
+		const results = await getSqlProjectFilesInFolder(folderPath);
 
 		for (let f in results) {
 			// open the project, but don't switch focus to the file explorer viewlet
@@ -187,6 +186,13 @@ export default class MainController implements vscode.Disposable {
 		catch (err) {
 			vscode.window.showErrorMessage(getErrorMessage(err));
 			return undefined;
+		}
+	}
+
+	private registerProjectProvider(): void {
+		const dataWorkspaceApi: dataworkspace.IExtension = <dataworkspace.IExtension>vscode.extensions.getExtension(dataworkspace.extension.name)?.exports;
+		if (dataWorkspaceApi) {
+			dataWorkspaceApi.registerProjectProvider(new SqlDatabaseProjectProvider());
 		}
 	}
 
