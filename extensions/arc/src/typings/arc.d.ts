@@ -33,12 +33,15 @@ declare module 'arc' {
 		username: string,
 		rememberPassword: boolean,
 		resources: ResourceInfo[]
-
 	};
 
+	export interface DataController {
+		label: string,
+		info: ControllerInfo
+	}
 	export interface IExtension {
-		getRegisteredDataControllers(): Promise<{ label: string, info: ControllerInfo }[]>;
+		getRegisteredDataControllers(): Promise<DataController[]>;
 		getControllerPassword(controllerInfo: ControllerInfo): Promise<string>;
-		promptForPassword(controllerInfo: ControllerInfo, password: string): Promise<string>;
+		reacquireControllerPassword(controllerInfo: ControllerInfo, password: string, retryCount?: number): Promise<string>;
 	}
 }
