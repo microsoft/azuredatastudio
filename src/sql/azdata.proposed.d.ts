@@ -271,7 +271,8 @@ declare module 'azdata' {
 		iconWidth?: string;
 		iconHeight?: string;
 		selectedCardId?: string;
-		orientation?: Orientation // Defaults to horizontal
+		orientation?: Orientation; // Defaults to horizontal
+		iconPosition?: 'top' | 'left'; // Defaults to top
 	}
 
 	export type RadioCardSelectionChangedEvent = { cardId: string; card: RadioCard };
