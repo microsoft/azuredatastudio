@@ -33,11 +33,6 @@ export class ConnectToControllerDialog extends InitializingComponent {
 	constructor(protected _treeDataProvider: AzureArcTreeDataProvider, title: string = loc.connectToController) {
 		super();
 		this.dialog = azdata.window.createModelViewDialog(title);
-		this.dialog.okButton.onClick(() => {
-			this.dialog.message = {
-				text: ''
-			};
-		});
 	}
 
 	private getComponents(isPwReacquisition: boolean): (azdata.FormComponent<azdata.Component> & { layout?: azdata.FormItemLayout | undefined; })[] {

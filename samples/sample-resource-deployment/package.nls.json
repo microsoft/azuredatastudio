@@ -45,6 +45,8 @@
 	"wizard.summary.kube.config.file.path": "Kube config file path",
 	"wizard.summary.cluster.context": "Cluster context",
 	"wizard.summary.profile": "Config profile",
+	"wizard.summary.controller": "Controller",
+	"wizard.summary.controller.endpoint": "Controller endpoint",
 	"wizard.summary.controller.username": "Controller username",
 	"wizard.summary.controller.password": "Controller password",
 	"wizard.data.controller.agreement": "I accept {0} and {1}.",

@@ -159,5 +159,5 @@ export function couldNotFindAzureResource(name: string): string { return localiz
 export function passwordResetFailed(error: any): string { return localize('arc.passwordResetFailed', "Failed to reset password. {0}", getErrorMessage(error)); }
 export function errorConnectingToController(error: any): string { return localize('arc.errorConnectingToController', "Error connecting to controller. {0}", getErrorMessage(error)); }
 export function passwordAcquisitionFailed(error: any): string { return localize('arc.passwordAcquisitionFailed', "Failed to acquire password. {0}", getErrorMessage(error)); }
-export const invalidPassword = localize('arc.invalidPassword', "The password did not work, try again. {0}");
+export const invalidPassword = localize('arc.invalidPassword', "The password did not work, try again.");
 export function errorVerifyingPassword(error: any): string { return localize('arc.errorVerifyingPassword', "Error encountered while verifying password, take corrective actions, and try again. {0}", getErrorMessage(error)); }

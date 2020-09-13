@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
-import { FieldType, OptionsType} from './interfaces';
+import { FieldType, OptionsType } from './interfaces';
 import { OptionsSourceType } from './helpers/optionSources';
 
 const localize = nls.loadMessageBundle();

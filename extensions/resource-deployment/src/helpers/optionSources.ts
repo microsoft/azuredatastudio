@@ -69,6 +69,8 @@ export class ArcControllersOptionsSource extends OptionsSource {
 			const controller = controllers!.find(ci => ci.label === controllerLabel);
 			throwUnless(controller !== undefined, loc.noControllerInfoFound(controllerLabel));
 			switch (variableName) {
+				case 'endpoint':
+					return controller.info.url;
 				case 'username':
 					return controller.info.username;
 				case 'password':
@@ -91,6 +93,7 @@ export class ArcControllersOptionsSource extends OptionsSource {
 
 	getIsPassword(variableName: string): boolean {
 		switch (variableName) {
+			case 'endpoint':
 			case 'username':
 				return false;
 			case 'password':

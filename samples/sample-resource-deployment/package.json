@@ -101,6 +101,7 @@
                             "source": {
                               "type": "ArcControllersOptionsSource",
                               "variableNames": {
+                                "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
                                 "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
                                 "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
                               }
@@ -272,7 +273,19 @@
 													"type": "readonly_text",
 													"isEvaluated": true,
 													"defaultValue": "$(AZDATA_NB_VAR_DROPDOWN_OPTIONS)"
-												},
+                        },
+                        {
+                          "label": "%wizard.summary.controller%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_CONTROLLER)"
+                        },
+                        {
+                          "label": "%wizard.summary.controller.endpoint%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_CONTROLLER_ENDPOINT)"
+                        },
                         {
                           "label": "%wizard.summary.controller.username%",
                           "type": "readonly_text",

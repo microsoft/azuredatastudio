@@ -9,17 +9,17 @@ import { EOL, homedir as os_homedir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles} from '../interfaces';
+import { OptionsSource } from '../helpers/optionSources';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
 import { KubeCtlTool, KubeCtlToolName } from '../services/tools/kubeCtlTool';
 import { IToolsService } from '../services/toolsService';
-import { throwUnless, getDateTimeString, getErrorMessage } from '../utils';
+import { getDateTimeString, getErrorMessage, throwUnless } from '../utils';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
-import { OptionsSource } from '../helpers/optionSources';
 
 const localize = nls.loadMessageBundle();
 
@@ -455,7 +455,7 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 				inputValueTransformerAsync: async (controllerName: string) => {
 					try {
 						return await optionsSource.getVariableValue(key, controllerName);
-					} catch (e){
+					} catch (e) {
 						disableControlButtons(context.container);
 						context.container.message = {
 							text: getErrorMessage(e),
