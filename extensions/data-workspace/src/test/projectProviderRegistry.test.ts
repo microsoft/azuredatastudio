@@ -23,7 +23,7 @@ export function createProjectProvider(projectTypes: IProjectType[]): IProjectPro
 	const treeDataProvider = new MockTreeDataProvider();
 	const projectProvider: IProjectProvider = {
 		supportedProjectTypes: projectTypes,
-		getProjectTreeDataProvider: (projectFile: string): Promise<vscode.TreeDataProvider<any>> => {
+		getProjectTreeDataProvider: (projectFile: vscode.Uri): Promise<vscode.TreeDataProvider<any>> => {
 			return Promise.resolve(treeDataProvider);
 		}
 	};

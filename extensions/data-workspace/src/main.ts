@@ -34,7 +34,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<datawo
 			if (!fileUris || fileUris.length === 0) {
 				return;
 			}
-			await workspaceService.addProjectsToWorkspace([fileUris[0].fsPath]);
+			await workspaceService.addProjectsToWorkspace(fileUris);
 			workspaceTreeDataProvider.refresh();
 		}
 	}));

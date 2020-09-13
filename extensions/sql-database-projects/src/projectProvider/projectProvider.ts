@@ -15,11 +15,11 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 
 	/**
 	 * Gets the project tree data provider
-	 * @param projectFilePath The project file path
+	 * @param projectFile The project file Uri
 	 */
-	async getProjectTreeDataProvider(projectFilePath: string): Promise<vscode.TreeDataProvider<BaseProjectTreeItem>> {
+	async getProjectTreeDataProvider(projectFilePath: vscode.Uri): Promise<vscode.TreeDataProvider<BaseProjectTreeItem>> {
 		const provider = new SqlDatabaseProjectTreeViewProvider();
-		const project = await Project.openProject(projectFilePath);
+		const project = await Project.openProject(projectFilePath.fsPath);
 		provider.load([project]);
 		return provider;
 	}
