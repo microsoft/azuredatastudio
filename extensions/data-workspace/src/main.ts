@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as path from 'path';
 import * as dataworkspace from 'dataworkspace';
 import { WorkspaceTreeDataProvider } from './common/workspaceTreeDataProvider';
 import { WorkspaceService } from './services/workspaceService';
@@ -27,7 +28,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<datawo
 				canSelectFiles: true,
 				canSelectFolders: false,
 				canSelectMany: false,
-				defaultUri: vscode.workspace.workspaceFolders![0].uri,
+				defaultUri: vscode.Uri.file(path.dirname(vscode.workspace.workspaceFile.path)),
 				openLabel: SelectProjectFileActionName,
 				filters: filter
 			});
