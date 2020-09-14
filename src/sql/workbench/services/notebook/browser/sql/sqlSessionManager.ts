@@ -334,8 +334,11 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	interrupt(): Thenable<void> {
 		// TODO: figure out what to do with the QueryCancelResult
-		return this._queryRunner.cancelQuery().then((cancelResult) => {
-		});
+		if (this._queryRunner) {
+			return this._queryRunner.cancelQuery().then((cancelResult) => {
+			});
+		}
+		return Promise.resolve();
 	}
 
 	private addQueryEventListeners(queryRunner: QueryRunner): void {

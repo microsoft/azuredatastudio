@@ -505,8 +505,6 @@ export class AttachToDropdown extends SelectBox {
 			//Changes kernel based on connection attached to
 			if (this.model.kernelAliases.includes(connectionProfile.serverCapabilities.notebookKernelAlias)) {
 				this.model.changeKernel(connectionProfile.serverCapabilities.notebookKernelAlias);
-			} else {
-				this.model.changeKernel('SQL');
 			}
 			return true;
 		}
