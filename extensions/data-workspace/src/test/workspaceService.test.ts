@@ -11,7 +11,6 @@ import * as path from 'path';
 import { WorkspaceService } from '../services/workspaceService';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import { createProjectProvider } from './projectProviderRegistry.test';
-import Logger from '../common/logger';
 
 const DefaultWorkspaceFilePath = '/test/folder/ws.code-workspace';
 
@@ -129,7 +128,7 @@ suite('WorkspaceService Tests', function (): void {
 			}
 		]);
 		sinon.stub(ProjectProviderRegistry, 'providers').value([provider1, provider2]);
-		const logErrorStub = sinon.stub(Logger, 'error');
+		const consoleErrorStub = sinon.stub(console, 'error');
 		const projectTypes = await service.getAllProjectTypes();
 		should.strictEqual(projectTypes.length, 3);
 		should.strictEqual(projectTypes[0].projectFileExtension, 'testproj');
@@ -142,7 +141,7 @@ suite('WorkspaceService Tests', function (): void {
 		should.strictEqual(extension5.activationStub.called, true, 'extension5.activate() should have been called');
 		should.strictEqual(extension6.activationStub.notCalled, true, 'extension6.activate() should not have been called');
 		should.strictEqual(extension7.activationStub.notCalled, true, 'extension7.activate() should not have been called');
-		should.strictEqual(logErrorStub.calledOnce, true, 'Logger.error should be called once');
+		should.strictEqual(consoleErrorStub.calledOnce, true, 'Logger.error should be called once');
 	});
 
 	test('test getProjectProvider', async () => {
