@@ -34,11 +34,6 @@
 					"light": "./images/manageModels.svg",
 					"dark": "./images/manageModels.svg"
 				}
-      },
-      {
-        "command": "sqlmigration.testDialog",
-        "title": "SQL Migration test dialog",
-        "category": "SQL Migration"
       }
     ],
     "dashboard.tabs": [

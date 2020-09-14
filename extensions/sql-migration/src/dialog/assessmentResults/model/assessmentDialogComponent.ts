@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { MigrationProductType } from '../../../models/product';
 import { MigrationStateModel } from '../../../models/stateMachine';
 
 export abstract class AssessmentDialogComponent {
