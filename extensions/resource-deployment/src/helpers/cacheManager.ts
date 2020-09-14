@@ -39,32 +39,26 @@ export class CacheManager<K, T> {
 				pendingOperation: new Deferred<void>()
 			};
 			this._cache.set(key, state);
-			// now that we have the state entry initialized, retry in a different scheduling batch
-			let returnValue: T;
-			setTimeout(async () => {
-				returnValue = await this.getCacheEntry(key, retrieveEntry);
-			}, 0);
+			// now that we have the state entry initialized, retry to fetch the cacheEntry
+			let returnValue: T = await this.getCacheEntry(key, retrieveEntry);
 			await state.pendingOperation;
 			return returnValue!;
 		} else {
 			switch (cacheHit.status) {
 				case Status.notStarted: {
 					cacheHit.status = Status.inProgress;
-					// retrieve and populate the missed cache hit in a different scheduling batch.
-					setTimeout(async () => {
-						try {
-							cacheHit.entry = await retrieveEntry(key);
-						} catch (error) {
-							cacheHit.error = error;
-						} finally {
-							cacheHit.status = Status.done;
-							// we do not reject here even in error case because we do not want our awaits on pendingOperation to throw
-							// We track our own error state and if that is all done we throw the error saved. which results
-							// in the rejection of the promised returned by this method.
-							cacheHit.pendingOperation.resolve();
-						}
-					}, 0);
-					await cacheHit.pendingOperation;
+					// retrieve and populate the missed cache hit.
+					try {
+						cacheHit.entry = await retrieveEntry(key);
+					} catch (error) {
+						cacheHit.error = error;
+					} finally {
+						cacheHit.status = Status.done;
+						// we do not reject here even in error case because we do not want our awaits on pendingOperation to throw
+						// We track our own error state and if that is all done we throw the error saved. which results
+						// in the rejection of the promised returned by this method.
+						cacheHit.pendingOperation.resolve();
+					}
 					return await this.getCacheEntry(key, retrieveEntry);
 				}
 
