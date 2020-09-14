@@ -83,11 +83,11 @@ suite('WorkspaceService Tests', function (): void {
 		getConfigurationStub.restore();
 
 		// Projects are present
-		stubGetConfigurationValue(sinon.stub().returns(['abc.sqlproj', 'folder1/abc1.sqlproj', 'folder2\\abc2.sqlproj']));
+		stubGetConfigurationValue(sinon.stub().returns(['abc.sqlproj', 'folder1/abc1.sqlproj', 'folder2/abc2.sqlproj']));
 		projects = await service.getProjectsInWorkspace();
 		should.strictEqual(projects.length, 3, 'there should be 2 projects');
-		const project1 = vscode.Uri.file('\\test\\folder\\abc.sqlproj'); // windows style path separator
-		const project2 = vscode.Uri.file('/test/folder/folder1/abc1.sqlproj'); // UNIX style path separator
+		const project1 = vscode.Uri.file('/test/folder/abc.sqlproj');
+		const project2 = vscode.Uri.file('/test/folder/folder1/abc1.sqlproj');
 		const project3 = vscode.Uri.file('/test/folder/folder2/abc2.sqlproj');
 		should.strictEqual(projects[0].path, project1.path);
 		should.strictEqual(projects[1].path, project2.path);
