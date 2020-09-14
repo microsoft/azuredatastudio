@@ -432,7 +432,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private setTurndownOptions() {
-		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-' });
+		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx' });
 		this.turndownService.keep(['u', 'mark']);
 		this.turndownService.use(turndownPluginGfm.gfm);
 		this.turndownService.addRule('pre', {
