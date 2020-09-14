@@ -312,7 +312,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (shouldReveal || this._bookViewer?.visible) {
 			bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath) : undefined;
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
-			if (bookItem && bookItem.contextValue !== 'pinnedNotebook') {
+			if (bookItem?.contextValue !== 'pinnedNotebook') {
 				// Note: 3 is the maximum number of levels that the vscode APIs let you expand to
 				await this._bookViewer.reveal(bookItem, { select: true, focus: true, expand: true });
 			}
@@ -586,7 +586,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
 		let result: azdata.nb.NavigationResult;
 		let notebook = this.currentBook?.getNotebook(uri.fsPath);
-		if (notebook && notebook.contextValue !== 'pinnedNotebook') {
+		if (notebook?.contextValue !== 'pinnedNotebook') {
 			result = {
 				hasNavigation: true,
 				previous: notebook.previousUri ?
