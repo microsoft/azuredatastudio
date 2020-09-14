@@ -181,21 +181,32 @@ suite('WorkspaceService Tests', function (): void {
 	});
 
 	test('test addProjectsToWorkspace', async () => {
+		const processPath = (original: string): string => {
+			return original.replace(/\//g, path.sep);
+		};
 		stubWorkspaceFile(DefaultWorkspaceFilePath);
 		const updateConfigurationStub = sinon.stub();
-		const getConfigurationStub = sinon.stub().returns([`folder1${path.sep}proj2.sqlproj`]);
+		const getConfigurationStub = sinon.stub().returns([processPath('folder1/proj2.sqlproj')]);
 		stubGetConfigurationValue(getConfigurationStub, updateConfigurationStub);
 		const asRelativeStub = sinon.stub(vscode.workspace, 'asRelativePath');
 		sinon.stub(vscode.workspace, 'workspaceFolders').value(['.']);
 		asRelativeStub.onFirstCall().returns(`proj1.sqlproj`);
-		asRelativeStub.onSecondCall().returns(`${path.sep}test${path.sep}other${path.sep}proj3.sqlproj`);
+		asRelativeStub.onSecondCall().returns(processPath('/test/other/proj3.sqlproj'));
 		const updateWorkspaceFoldersStub = sinon.stub(vscode.workspace, 'updateWorkspaceFolders');
 		await service.addProjectsToWorkspace([
 			vscode.Uri.file('/test/folder/proj1.sqlproj'), // within the workspace folder
 			vscode.Uri.file('/test/folder/folder1/proj2.sqlproj'), //already exists
 			vscode.Uri.file('/test/other/proj3.sqlproj') // outside of workspace folder
 		]);
-		should.strictEqual(updateConfigurationStub.calledOnce, true, 'update configuration should have been called');
-		should.strictEqual(updateWorkspaceFoldersStub.calledOnce, true, 'updateWorkspaceFolders should have been called');
+		should.strictEqual(updateConfigurationStub.calledOnce, true, 'update configuration should have been called once');
+		should.strictEqual(updateWorkspaceFoldersStub.calledOnce, true, 'updateWorkspaceFolders should have been called once');
+		should.strictEqual(updateConfigurationStub.calledWith('projects', sinon.match.array.deepEquals([
+			processPath('folder1/proj2.sqlproj'),
+			processPath('proj1.sqlproj'),
+			processPath('../other/proj3.sqlproj')
+		]), vscode.ConfigurationTarget.Workspace), true, 'updateConfiguration parameters does not match expectation');
+		should.strictEqual(updateWorkspaceFoldersStub.calledWith(1, null, sinon.match((arg) => {
+			return arg.uri.path === '/test/other';
+		})), true, 'updateWorkspaceFolder parameters does not match expectation');
 	});
 });
