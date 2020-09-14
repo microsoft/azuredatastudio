@@ -131,7 +131,7 @@ function isWelcomePageEnabled(configurationService: IConfigurationService, conte
 
 function isGuidedTourEnabled(configurationService: IConfigurationService): boolean {
 	const tourEnabled = configurationService.inspect(guidedTourKey);
-	if (tourEnabled.value === 'isGuidedTour') {
+	if (tourEnabled.value) {
 		return true;
 	}
 	return false;
@@ -139,7 +139,7 @@ function isGuidedTourEnabled(configurationService: IConfigurationService): boole
 
 function isInitialSetupWizardEnabled(configurationService: IConfigurationService): boolean {
 	const initialSetupWizaredEnabled = configurationService.inspect(intialSetupWizardKey);
-	if (initialSetupWizaredEnabled.value === 'isInitialSetup') {
+	if (initialSetupWizaredEnabled.value) {
 		return true;
 	}
 	return false;
@@ -276,7 +276,11 @@ class WelcomePage extends Disposable {
 		}
 
 		if (wizardEnabled) {
-			this.enableInitialSetupWizard();
+			const context = this;
+			const initializeSetupWizard = () => {
+				context.enableInitialSetupWizard();
+			};
+			setTimeout(initializeSetupWizard, 1000);
 		}
 
 		showOnStartup.addEventListener('click', e => {
@@ -459,14 +463,14 @@ class WelcomePage extends Disposable {
 		guidedTourNotificationContainer.appendChild(containerRight);
 
 		startTourBtn.onDidClick((e) => {
-			this.configurationService.updateValue(guidedTourKey, 'isGuidedTour', ConfigurationTarget.USER);
+			this.configurationService.updateValue(guidedTourKey, true, ConfigurationTarget.USER);
 			this.layoutService.setSideBarHidden(true);
 			guidedTour.create();
 		});
 
 
 		removeTourBtn.addEventListener('click', (e: MouseEvent) => {
-			this.configurationService.updateValue(guidedTourKey, 'notGuidedTour', ConfigurationTarget.USER);
+			this.configurationService.updateValue(guidedTourKey, false, ConfigurationTarget.USER);
 			guidedTourNotificationContainer.classList.add('hide');
 			guidedTourNotificationContainer.classList.remove('show');
 		});

@@ -23,7 +23,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { buttonSecondary, buttonSecondaryBorder, buttonSecondaryHoverColor } from 'sql/platform/theme/common/colorRegistry';
+import { buttonSecondary, buttonSecondaryBorder, buttonSecondaryHoverColor, contentSeperatorLine, setupModalShadowOne, setupModalShadowTwo, setupOverlay } from 'sql/platform/theme/common/colorRegistry';
 const intialSetupWizardKey = 'workbench.initialSetup';
 
 const $ = dom.$;
@@ -377,7 +377,7 @@ export class GettingStartedSetupWizard implements IWorkbenchContribution {
 			const setupWizard = document.querySelector('.ads-initial-setup-wizard') as HTMLElement;
 
 			setTimeout(() => {
-				setupWizard.classList.add('ads-initial-setup-wizard--open');
+				setupWizard.classList.add('open');
 				firstSetupElement.classList.add('ads-initial-setup-animate');
 				firstSetupElement.classList.add('ads-initial-setup-wizard-show');
 			}, 1000);
@@ -406,7 +406,7 @@ export class GettingStartedSetupWizard implements IWorkbenchContribution {
 			this._overlay.style.display = 'none';
 			this._overlayVisible.reset();
 		}
-		this.configurationService.updateValue(intialSetupWizardKey, 'notInitialSetup', ConfigurationTarget.USER);
+		this.configurationService.updateValue(intialSetupWizardKey, false, ConfigurationTarget.USER);
 	}
 }
 
@@ -467,5 +467,18 @@ registerThemingParticipant((theme, collector) => {
 	if (activeLink) {
 		collector.addRule(`.monaco-workbench > .ads-initial-setup-wizard .ads-initial-setup-wizard-popup .ads-initial-setup-wizard-docs-link  { color: ${activeLink}; }`);
 		collector.addRule(`.monaco-workbench > .ads-initial-setup-wizard .ads-initial-setup-wizard-popup .themed-icon-alt { background-color: ${activeLink}; }`);
+	}
+	const contentSeperatorColor = theme.getColor(contentSeperatorLine);
+	if (contentSeperatorColor) {
+		collector.addRule(`.monaco-workbench > .ads-initial-setup-wizard .ads-initial-setup-wizard-popup .ads-initial-setup-wizard-nav-container  { border-color: ${contentSeperatorColor}; }`);
+	}
+	const modalShadowColorOne = theme.getColor(setupModalShadowOne);
+	const modalShadowColorTwo = theme.getColor(setupModalShadowTwo);
+	if (modalShadowColorOne && modalShadowColorTwo) {
+		collector.addRule(`.monaco-workbench > .ads-initial-setup-wizard .ads-initial-setup-wizard-popup.ads-initial-setup-wizard-show { box-shadow: 0 3px 6px ${modalShadowColorOne}, 0 3px 6px ${modalShadowColorTwo}; }`);
+	}
+	const setupOverlayColor = theme.getColor(setupOverlay);
+	if (setupOverlayColor) {
+		collector.addRule(`.monaco-workbench > .ads-initial-setup-wizard { background: ${setupOverlayColor}; }`);
 	}
 });

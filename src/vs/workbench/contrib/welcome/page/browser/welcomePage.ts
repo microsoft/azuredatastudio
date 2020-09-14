@@ -47,14 +47,13 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { GettingStartedSetupWizard } from 'sql/workbench/contrib/welcome/gettingStarted/browser/initialSetupWizard';
+import { GettingStartedSetupWizard } from 'sql/workbench/contrib/welcome/gettingStarted/browser/initialSetupWizard'; // {{SQL CARBON EDIT}} - add GettingStartedSetupWizard import
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
-// {{SQL CARBON EDIT}} - add initialSetupWizardKey
-const intialSetupWizardKey = 'workbench.initialSetup';
+const intialSetupWizardKey = 'workbench.initialSetup'; // {{SQL CARBON EDIT}} - add initialSetupWizardKey
 
 export class WelcomePageContribution implements IWorkbenchContribution {
 
@@ -67,8 +66,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 		@IWorkspaceContextService contextService: IWorkspaceContextService,
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
-		@ICommandService private readonly commandService: ICommandService,
-	) {
+		@ICommandService private readonly commandService: ICommandService) {
 		const enabled = isWelcomePageEnabled(configurationService, contextService);
 		if (enabled && lifecycleService.startupKind !== StartupKind.ReloadedWindow) {
 			backupFileService.hasBackups().then(hasBackups => {
@@ -141,7 +139,7 @@ function isWelcomePageEnabled(configurationService: IConfigurationService, conte
 // {{SQL CARBON EDIT}} - add isInitialSetupWizardEnabled
 function isInitialSetupWizardEnabled(configurationService: IConfigurationService): boolean {
 	const initialSetupWizaredEnabled = configurationService.inspect(intialSetupWizardKey);
-	if (initialSetupWizaredEnabled.value === 'isInitialSetup') {
+	if (initialSetupWizaredEnabled.value) {
 		return true;
 	}
 	return false;
@@ -305,9 +303,7 @@ class WelcomePage extends Disposable {
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IHostService private readonly hostService: IHostService,
-		@IProductService private readonly productService: IProductService,
-
-	) {
+		@IProductService private readonly productService: IProductService) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
 
@@ -335,18 +331,21 @@ class WelcomePage extends Disposable {
 	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>): void {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
-		const wizardEnabled = isInitialSetupWizardEnabled(this.configurationService);
+		const wizardEnabled = isInitialSetupWizardEnabled(this.configurationService); // {{SQL CARBON EDIT}} - is the initial setup wizard enabled boolean
 
 		if (enabled) {
 			showOnStartup.setAttribute('checked', 'checked');
 		}
+
+		// {{SQL CARBON EDIT}} - check if the initial setup wizard should be initialized
 		if (wizardEnabled) {
 			const context = this;
-			setTimeout(doSomething, 1000);
-			function doSomething() {
+			const initializeSetupWizard = () => {
 				context.enableInitialSetupWizard();
-			}
+			};
+			setTimeout(initializeSetupWizard, 1000);
 		}
+
 		showOnStartup.addEventListener('click', e => {
 			this.configurationService.updateValue(configurationKey, showOnStartup.checked ? 'welcomePage' : 'newUntitledFile', ConfigurationTarget.USER);
 		});
@@ -396,6 +395,7 @@ class WelcomePage extends Disposable {
 		}));
 	}
 
+	// {{SQL CARBON EDIT}} - function to initialize the initial setup wizard
 	private enableInitialSetupWizard(): void {
 		const gettingStartedSetupWizard = this.instantiationService.createInstance(GettingStartedSetupWizard);
 		gettingStartedSetupWizard.create();

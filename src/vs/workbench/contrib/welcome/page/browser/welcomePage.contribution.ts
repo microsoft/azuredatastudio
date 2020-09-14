@@ -42,12 +42,8 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 		...workbenchConfigurationNodeBase,
 		'properties': {
 			'workbench.initialSetup': {
-				'type': 'string',
-				'enum': ['notInitialSetup', 'isInitialSetup'],
-				'enumDescriptions': [
-					localize({ comment: ['This is the description for a setting. Values surrounded by single quotes are not to be translated.'], key: 'workbench.initialSetup.isInitialSetup' }, "Start with initial setup wizard"),
-				],
-				'default': 'isInitialSetup',
+				'type': 'boolean',
+				'default': true,
 				'description': localize('workbench.initialSetup', "Controls whether or not the intial setup wizard is shown.")
 			},
 		}
@@ -58,12 +54,8 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 		...workbenchConfigurationNodeBase,
 		'properties': {
 			'workbench.guidedTour': {
-				'type': 'string',
-				'enum': ['notGuidedTour', 'isGuidedTour'],
-				'enumDescriptions': [
-					localize({ comment: ['This is the description for a setting. Values surrounded by single quotes are not to be translated.'], key: 'workbench.guidedTour.isGuidedTour' }, "Open the welcome page with Getting Started Tour"),
-				],
-				'default': 'isGuidedTour',
+				'type': 'boolean',
+				'default': true,
 				'description': localize('workbench.guidedTour', "Controls whether or not to show the guided tour")
 			},
 		}

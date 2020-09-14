@@ -9,6 +9,8 @@ import * as nls from 'vs/nls';
 
 // -- Welcome Page Colors
 export const tileBoxShadowColor = new Color(new RGBA(0, 1, 4, 0.13));
+export const modalShadowOne = new Color(new RGBA(0, 0, 0, 0.16));
+export const modalShadowTwo = new Color(new RGBA(0, 0, 0, 0.23));
 export const textShadow = new Color(new RGBA(0, 0, 0, 0.25));
 export const dropdownBoxShadow = new Color(new RGBA(0, 0, 0, 0.25));
 export const extensionPackGradientOne = new Color(new RGBA(50, 49, 48, 0.55));
@@ -16,6 +18,14 @@ export const extensionPackGradientTwo = new Color(new RGBA(50, 49, 48, 0));
 export const gradientOneColorOne = new Color(new RGBA(0, 0, 0, .2));
 export const gradientTwoColorOne = new Color(new RGBA(156, 48, 48, 0));
 export const gradientTwoColorTwo = new Color(new RGBA(255, 255, 255, 0.1));
+export const overlayColor = new Color(new RGBA(255, 255, 255, 0.65));
+
+
+// - Initial Setup Wizard Colors
+export const contentSeperatorLine = registerColor('contentSeperatorLine', { light: '#edebe9', dark: '#edebe9', hc: '#fff' }, nls.localize('setupWizard.contentSeperatorLine', "The color used for either a top border or hr element to visually seperate content"));
+export const setupModalShadowOne = registerColor('setupModalShadowOne', { light: modalShadowOne, dark: modalShadowOne, hc: modalShadowOne }, nls.localize('setupWizard.setupModalShadowOne', "The first color used for the box shadow of the inital setup wizard modal"));
+export const setupModalShadowTwo = registerColor('setupModalShadowTwo', { light: modalShadowTwo, dark: modalShadowTwo, hc: modalShadowTwo }, nls.localize('setupWizard.setupModalShadowTwo', "The second color used for the box shadow of the inital setup wizard modal"));
+export const setupOverlay = registerColor('setupOverlay', { light: overlayColor, dark: overlayColor, hc: overlayColor }, nls.localize('setupWizard.setupOverlay', "The color is used for the overlay that sits behind the initial setup wizard"));
 
 // -- Tiles
 export const tileBorder = registerColor('tileBorder', { light: '#fff', dark: '#8A8886', hc: '#2B56F2' }, nls.localize('tileBorder', "The border color of tiles"));

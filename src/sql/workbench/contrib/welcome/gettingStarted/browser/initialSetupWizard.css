@@ -15,14 +15,6 @@
 	background: transparent;
 }
 
-.ads-initial-setup-show {
-	display: block;
-}
-
-.ads-initial-setup-hide {
-	display: none;
-}
-
 .ads-initial-setup-wizard:focus {
 	outline: 0 none !important;
 }
@@ -43,7 +35,7 @@
 	margin: 24px 0 12px;
 }
 
-.monaco-workbench > .ads-initial-setup-wizard {
+.ads-initial-setup-wizard {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -55,19 +47,16 @@
 	outline: 0;
 	position: absolute;
 	z-index: 1;
-	background: rgba(77, 77, 77, 0.65);
 	opacity: 0;
 	transition: opacity 1s;
 	transition-duration: 1s;
 }
 
-.monaco-workbench > .ads-initial-setup-wizard--open {
+.ads-initial-setup-wizard.open {
 	opacity: 1;
 }
 
-.monaco-workbench
-	> .ads-initial-setup-wizard--open
-	.ads-initial-setup-wizard-element.ads-initial-setup-animate {
+.ads-initial-setup-wizard.open .ads-initial-setup-wizard-element.ads-initial-setup-animate {
 	animation-duration: 1s;
 	animation-fill-mode: forwards;
 	animation-name: fadeInFromNone;
@@ -128,7 +117,7 @@
 	max-width: 109px;
 }
 
-.monaco-workbench > .ads-initial-setup-wizard .ads-initial-setup-wizard-step {
+.ads-initial-setup-wizard .ads-initial-setup-wizard-step {
 	font-size: 14px;
 	font-weight: 600;
 }
@@ -150,7 +139,7 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 15px 24px;
-	border-top: 1px solid #edebe9;
+	border-top: 1px solid;
 }
 
 .ads-initial-setup-wizard-btn-container p {
@@ -235,8 +224,7 @@
 	margin: 10px 0;
 }
 
-.monaco-workbench
-	.activitybar
+.activitybar
 	> .content
 	:not(.monaco-menu)
 	> .monaco-action-bar
