@@ -195,8 +195,6 @@ export class QueryTextEditor extends BaseTextEditor {
 			return;
 		}
 
-		let codeEditor = (this.getControl() as ICodeEditor);
-		codeEditor?._getViewModel()?.setHasFocus(this._selected);
 		const editorConfiguration = this.computeConfiguration(configuration);
 		let editorSettingsToApply = editorConfiguration;
 		this.getControl().updateOptions(editorSettingsToApply);

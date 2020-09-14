@@ -113,6 +113,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				if (toolbarEditCellAction.editMode) {
 					toolbarEditCellAction.editMode = !toolbarEditCellAction.editMode;
 				}
+				if (editorControl) {
+					editorControl.unfocus();
+				}
 				break;
 			case 'ArrowDown':
 			case 'ArrowRight':
@@ -145,6 +148,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				this.detectChanges();
 				break;
 			default:
+				if ((this.model.activeCell.cellType === 'code' && !is_selected)) {
+					event.preventDefault();
+				}
 				break;
 		}
 

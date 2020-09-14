@@ -433,6 +433,10 @@ export class TextAreaHandler extends ViewPart {
 		this._textAreaInput.focusTextArea();
 	}
 
+	public unFocusTextArea(): void {
+		this._textAreaInput.unFocusTextArea();
+	}
+
 	public refreshFocusState() {
 		this._textAreaInput.refreshFocusState();
 	}

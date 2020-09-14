@@ -1299,6 +1299,13 @@ export class CodeEditorWidget extends Disposable implements editorBrowser.ICodeE
 		this._modelData.view.focus();
 	}
 
+	public unfocus(): void {
+		if (!this._modelData || !this._modelData.hasRealView) {
+			return;
+		}
+		this._modelData.view.unfocus();
+	}
+
 	public hasTextFocus(): boolean {
 		if (!this._modelData || !this._modelData.hasRealView) {
 			return false;

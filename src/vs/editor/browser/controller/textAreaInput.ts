@@ -479,6 +479,12 @@ export class TextAreaInput extends Disposable {
 		this.refreshFocusState();
 	}
 
+	public unFocusTextArea(): void {
+		// Setting this._hasFocus and writing the screen reader content
+		// will result in a focus() and setSelectionRange() in the textarea
+		this._setHasFocus(false);
+	}
+
 	public isFocused(): boolean {
 		return this._hasFocus;
 	}

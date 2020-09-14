@@ -478,6 +478,10 @@ export class View extends ViewEventHandler {
 		this._textAreaHandler.focusTextArea();
 	}
 
+	public unfocus(): void {
+		this._textAreaHandler.unFocusTextArea();
+	}
+
 	public isFocused(): boolean {
 		return this._textAreaHandler.isFocused();
 	}
