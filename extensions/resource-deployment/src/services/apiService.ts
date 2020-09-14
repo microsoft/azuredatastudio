@@ -21,7 +21,7 @@ class ApiService implements IApiService {
 
 	public async getAzurecoreApi(): Promise<azurecore.IExtension> {
 		if (!this.azurecoreApi) {
-			this.azurecoreApi = <azurecore.IExtension>(await vscode.extensions.getExtension(azurecore.extension.name)?.activate());
+			this.azurecoreApi = <azurecore.IExtension>(await vscode.extensions.getExtension(azurecore.extension.name)?.exports);
 			if (!this.azurecoreApi) {
 				throw new Error('Unable to retrieve azurecore API');
 			}
@@ -31,7 +31,7 @@ class ApiService implements IApiService {
 
 	public async getArcApi(): Promise<arc.IExtension> {
 		if (!this.arcApi) {
-			this.arcApi = <arc.IExtension>(await vscode.extensions.getExtension(arc.extension.name)?.activate());
+			this.arcApi = <arc.IExtension>(await vscode.extensions.getExtension(arc.extension.name)?.exports);
 			if (!this.arcApi) {
 				throw new Error('Unable to retrieve arc API');
 			}
