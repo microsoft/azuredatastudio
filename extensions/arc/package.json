@@ -268,6 +268,13 @@
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME"
                         },
                         {
+                          "label": "%arc.storage-class.dc.label%",
+                          "description": "%arc.sql.storage-class.dc.description%",
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_STORAGE_CLASS",
+                          "type": "kube_storage_class",
+                          "required": true
+                        },
+                        {
                           "type": "azure_locations",
                           "label": "%arc.control.plane.arc.data.controller.location%",
                           "defaultValue": "eastus",

@@ -28,7 +28,7 @@ import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
 import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
-import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 
 /**
  * Controller for managing project lifecycle
@@ -76,7 +76,6 @@ export class ProjectsController {
 				try {
 					await this.openProject(projUri, false, true);
 				} catch (e) {
-					vscode.window.showErrorMessage(e.message === constants.projectAlreadyOpened(projUri.fsPath) ? constants.circularProjectReference(newProject.projectFileName, proj.databaseName) : e.message);
 				}
 			}
 
@@ -116,8 +115,8 @@ export class ProjectsController {
 
 	public async focusProject(project?: Project): Promise<void> {
 		if (project && this.projects.includes(project)) {
-			await vscode.commands.executeCommand(constants.sqlDatabaseProjectsViewFocusCommand);
 			await this.projectTreeViewProvider.focus(project);
+			await vscode.commands.executeCommand(constants.sqlDatabaseProjectsViewFocusCommand);
 		}
 	}
 
@@ -417,7 +416,8 @@ export class ProjectsController {
 
 		if (root && fileOrFolder) {
 			// use relative path and not tree paths for files and folder
-			return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)));
+			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
+			return allFileEntries.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)));
 		}
 		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
 	}
@@ -485,9 +485,28 @@ export class ProjectsController {
 		return addDatabaseReferenceDialog;
 	}
 
-	public async addDatabaseReferenceCallback(project: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings): Promise<void> {
+	public async addDatabaseReferenceCallback(project: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings): Promise<void> {
 		try {
-			if ((<ISystemDatabaseReferenceSettings>settings).systemDb !== undefined) {
+			if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
+				// get project path and guid
+				const projectReferenceSettings = settings as IProjectReferenceSettings;
+				const referencedProject = this.projects.find(p => p.projectFileName === projectReferenceSettings.projectName);
+				const relativePath = path.relative(project.projectFolderPath, referencedProject?.projectFilePath!);
+				projectReferenceSettings.projectRelativePath = vscode.Uri.file(relativePath);
+				projectReferenceSettings.projectGuid = referencedProject?.projectGuid!;
+
+				const projectReferences = referencedProject?.databaseReferences.filter(r => r instanceof SqlProjectReferenceProjectEntry) ?? [];
+
+				// check for cirular dependency
+				for (let r of projectReferences) {
+					if ((<SqlProjectReferenceProjectEntry>r).projectName === project.projectFileName) {
+						vscode.window.showErrorMessage(constants.cantAddCircularProjectReference(referencedProject?.projectFileName!));
+						return;
+					}
+				}
+
+				await project.addProjectReference(projectReferenceSettings);
+			} else if ((<ISystemDatabaseReferenceSettings>settings).systemDb !== undefined) {
 				await project.addSystemDatabaseReference(<ISystemDatabaseReferenceSettings>settings);
 			} else {
 				await project.addDatabaseReference(<IDacpacReferenceSettings>settings);

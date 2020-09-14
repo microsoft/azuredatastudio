@@ -16,6 +16,7 @@ import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { badgeRenderer, iconRenderer } from 'sql/workbench/services/objectExplorer/browser/iconRenderer';
 import { URI } from 'vs/base/common/uri';
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
+import { withNullAsUndefined } from 'vs/base/common/types';
 
 export interface IConnectionTemplateData {
 	root: HTMLElement;
@@ -132,7 +133,7 @@ export class ServerTreeRenderer implements IRenderer {
 	private renderObjectExplorer(treeNode: TreeNode, templateData: IObjectExplorerTemplateData): void {
 		// Use an explicitly defined iconType first. If not defined, fall back to using nodeType and
 		// other compount indicators instead.
-		let iconName: string = undefined;
+		let iconName: string | undefined = undefined;
 		if (treeNode.iconType) {
 			iconName = (typeof treeNode.iconType === 'string') ? treeNode.iconType : treeNode.iconType.id;
 		} else {
@@ -147,7 +148,7 @@ export class ServerTreeRenderer implements IRenderer {
 
 		let tokens: string[] = [];
 		for (let index = 1; index < templateData.icon.classList.length; index++) {
-			tokens.push(templateData.icon.classList.item(index));
+			tokens.push(templateData.icon.classList.item(index)!);
 		}
 		templateData.icon.classList.remove(...tokens);
 		templateData.icon.classList.add('icon');
@@ -162,11 +163,11 @@ export class ServerTreeRenderer implements IRenderer {
 		templateData.root.title = treeNode.label;
 	}
 
-	private getIconPath(connection: ConnectionProfile): IconPath {
+	private getIconPath(connection: ConnectionProfile): IconPath | undefined {
 		if (!connection) { return undefined; }
 
-		if (connection['iconPath']) {
-			return connection['iconPath'];
+		if (connection.iconPath) {
+			return connection.iconPath;
 		}
 
 		let iconId = this._connectionManagementService.getConnectionIconId(connection.id);
@@ -175,8 +176,8 @@ export class ServerTreeRenderer implements IRenderer {
 		let providerProperties = this._connectionManagementService.getProviderProperties(connection.providerName);
 		if (!providerProperties) { return undefined; }
 
-		let iconPath: IconPath = undefined;
-		let pathConfig: URI | IconPath | { id: string, path: IconPath }[] = providerProperties['iconPath'];
+		let iconPath: IconPath | undefined = undefined;
+		let pathConfig: URI | IconPath | { id: string, path: IconPath }[] | undefined = providerProperties.iconPath;
 		if (Array.isArray(pathConfig)) {
 			for (const e of pathConfig) {
 				if (!e.id || e.id === iconId) {
@@ -185,18 +186,18 @@ export class ServerTreeRenderer implements IRenderer {
 					break;
 				}
 			}
-		} else if (pathConfig['light']) {
-			iconPath = pathConfig as IconPath;
-			connection['iconPath'] = iconPath;
-		} else {
+		} else if (URI.isUri(pathConfig)) {
 			let singlePath = pathConfig as URI;
 			iconPath = { light: singlePath, dark: singlePath };
-			connection['iconPath'] = iconPath;
+			connection.iconPath = iconPath;
+		} else {
+			iconPath = pathConfig as IconPath;
+			connection.iconPath = iconPath;
 		}
 		return iconPath;
 	}
 
-	private renderServerIcon(element: HTMLElement, iconPath: IconPath, isConnected: boolean): void {
+	private renderServerIcon(element: HTMLElement, iconPath: IconPath | undefined, isConnected: boolean): void {
 		if (!element) { return; }
 		if (iconPath) {
 			iconRenderer.putIcon(element, iconPath);
@@ -209,7 +210,7 @@ export class ServerTreeRenderer implements IRenderer {
 
 	private renderConnection(connection: ConnectionProfile, templateData: IConnectionTemplateData): void {
 		if (!this._isCompact) {
-			let iconPath: IconPath = this.getIconPath(connection);
+			let iconPath = this.getIconPath(connection);
 			if (this._connectionManagementService.isConnected(undefined, connection)) {
 				templateData.icon.classList.remove('disconnected');
 				templateData.icon.classList.add('connected');
@@ -252,15 +253,15 @@ export class ServerTreeRenderer implements IRenderer {
 	/**
 	 * Returns the first parent which contains the className
 	 */
-	private findParentElement(container: HTMLElement, className: string): HTMLElement {
-		let currentElement = container;
+	private findParentElement(container: HTMLElement, className: string): HTMLElement | undefined {
+		let currentElement: HTMLElement | null = container;
 		while (currentElement) {
 			if (currentElement.className.indexOf(className) > -1) {
 				break;
 			}
 			currentElement = currentElement.parentElement;
 		}
-		return currentElement;
+		return withNullAsUndefined(currentElement);
 	}
 
 	public disposeTemplate(tree: ITree, templateId: string, templateData: any): void {

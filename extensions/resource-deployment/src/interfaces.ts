@@ -141,7 +141,7 @@ export interface NotebookWizardPageInfo extends PageInfoBase {
 	description?: string;
 }
 export interface NotebookBasedDialogInfo extends DialogInfoBase {
-	notebook: string | NotebookPathInfo;
+	notebook: string | NotebookPathInfo | NotebookInfo[];
 	runNotebook?: boolean;
 	taskName?: string;
 }
@@ -322,6 +322,14 @@ export interface NotebookPathInfo {
 	win32: string;
 	darwin: string;
 	linux: string;
+}
+
+export interface NotebookInfo {
+	/**
+	 * Type of the notebook, for example: powershell, python...
+	 */
+	type: string;
+	path: string;
 }
 
 export enum OsDistribution {

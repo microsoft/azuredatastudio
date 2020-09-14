@@ -5,14 +5,15 @@
 
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
-import * as vscode from 'vscode';
-import * as loc from '../../../localizedConstants';
 import * as azurecore from 'azurecore';
-import { DashboardPage } from '../../components/dashboardPage';
-import { IconPathHelper, cssStyles, Endpoints, ResourceType } from '../../../constants';
-import { ControllerModel } from '../../../models/controllerModel';
+import * as vscode from 'vscode';
 import { getDatabaseStateDisplayText, promptForResourceDeletion } from '../../../common/utils';
+import { cssStyles, Endpoints, IconPathHelper } from '../../../constants';
+import * as loc from '../../../localizedConstants';
+import { ControllerModel } from '../../../models/controllerModel';
 import { MiaaModel } from '../../../models/miaaModel';
+import { DashboardPage } from '../../components/dashboardPage';
+import { ResourceType } from 'arc';
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
 
@@ -265,7 +266,6 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		this._instanceProperties.dataController = config?.metadata.name || this._instanceProperties.dataController;
 		this._instanceProperties.region = this._azurecoreApi.getRegionDisplayName(config?.spec.settings.azure.location) || this._instanceProperties.region;
 		this._instanceProperties.subscriptionId = config?.spec.settings.azure.subscription || this._instanceProperties.subscriptionId;
-		// this._instanceProperties.vCores = reg.vCores || '';
 		this.refreshDisplayedProperties();
 	}
 
@@ -273,6 +273,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		if (this._miaaModel.config) {
 			this._instanceProperties.status = this._miaaModel.config.status.state || '-';
 			this._instanceProperties.externalEndpoint = this._miaaModel.config.status.externalEndpoint || loc.notConfigured;
+			this._instanceProperties.vCores = this._miaaModel.config.spec.limits?.vcores?.toString() || '';
 			this._databasesMessage.value = !this._miaaModel.config.status.externalEndpoint ? loc.noExternalEndpoint : '';
 		}
 

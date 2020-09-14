@@ -33,7 +33,7 @@ export class DeployAzureSQLVMWizardModel extends Model {
 
 	public sqlConnectivityType!: string;
 	public port!: number;
-	public enableSqlAuthentication!: 'True' | 'False';
+	public enableSqlAuthentication!: string;
 	public sqlAuthenticationUsername!: string;
 	public sqlAuthenticationPassword!: string;
 	public sqlOptimizationDropdown!: string;

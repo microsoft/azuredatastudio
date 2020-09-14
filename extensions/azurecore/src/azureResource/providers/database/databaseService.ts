@@ -21,7 +21,7 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 
 		// Query servers and databases in parallel (start both promises before waiting on the 1st)
 		let serverQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, serversQuery);
-		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, 'where type == "microsoft.sql/servers/databases"');
+		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, `where type == "${azureResource.AzureResourceType.sqlDatabase}"`);
 		let servers: DbServerGraphData[] = await serverQueryPromise as DbServerGraphData[];
 		let dbByGraph: DatabaseGraphData[] = await dbQueryPromise as DatabaseGraphData[];
 
@@ -51,6 +51,7 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 						serverName: server.name,
 						serverFullName: server.properties.fullyQualifiedDomainName,
 						loginName: server.properties.administratorLogin,
+						subscriptionId: db.subscriptionId,
 						tenant: db.tenantId
 					});
 				}

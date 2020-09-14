@@ -20,20 +20,41 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
-  "extensionDependencies": [
-    "microsoft.mssql"
-  ],
+  "extensionDependencies": [],
   "contributes": {
+    "configuration": [
+      {
+        "title": "Projects",
+        "properties": {
+          "dataworkspace.projects": {
+            "type": "array",
+            "default": [],
+            "description": ""
+          }
+        }
+      }
+    ],
     "commands": [
       {
         "command": "projects.addProject",
         "title": "%add-project-command%",
         "category": "",
         "icon": "$(add)"
+      },
+      {
+        "command": "dataworkspace.refresh",
+        "title": "%refresh-workspace-command%",
+        "category": "",
+        "icon": "$(refresh)"
       }
     ],
     "menus": {
       "view/title": [
+        {
+          "command": "dataworkspace.refresh",
+          "when": "view == dataworkspace.views.main",
+          "group": "navigation"
+        },
         {
           "command": "projects.addProject",
           "when": "view == dataworkspace.views.main",
@@ -43,6 +64,10 @@
       "commandPalette": [
         {
           "command": "projects.addProject",
+          "when": "false"
+        },
+        {
+          "command": "dataworkspace.refresh",
           "when": "false"
         }
       ]

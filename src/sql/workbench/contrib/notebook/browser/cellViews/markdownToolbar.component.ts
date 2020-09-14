@@ -7,9 +7,9 @@ import * as DOM from 'vs/base/browser/dom';
 import { Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
 import { localize } from 'vs/nls';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { TransformMarkdownAction, MarkdownButtonType, TogglePreviewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
+import { TransformMarkdownAction, MarkdownButtonType, ToggleViewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 
@@ -38,8 +38,18 @@ export class MarkdownToolbarComponent {
 	public optionHeading3 = localize('optionHeading3', "Heading 3");
 	public optionParagraph = localize('optionParagraph', "Paragraph");
 
+	public richTextViewButton = localize('richTextViewButton', "Rich Text View");
+	public splitViewButton = localize('splitViewButton', "Split View");
+	public markdownViewButton = localize('markdownViewButton', "Markdown View");
+
+	private _taskbarContent: Array<ITaskbarContent>;
+	private _wysiwygTaskbarContent: Array<ITaskbarContent>;
+
 	@Input() public cellModel: ICellModel;
 	private _actionBar: Taskbar;
+	_toggleTextViewAction: ToggleViewAction;
+	_toggleSplitViewAction: ToggleViewAction;
+	_toggleMarkdownViewAction: ToggleViewAction;
 
 	constructor(
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
@@ -60,13 +70,16 @@ export class MarkdownToolbarComponent {
 		let listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'list masked-icon', this.buttonList, this.cellModel, MarkdownButtonType.UNORDERED_LIST);
 		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'ordered-list masked-icon', this.buttonOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
 		let imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'insert-image masked-icon', this.buttonImage, this.cellModel, MarkdownButtonType.IMAGE);
-		let togglePreviewAction = this._instantiationService.createInstance(TogglePreviewAction, 'notebook.togglePreview masked-icon', true, this.cellModel.showPreview);
 
 		let headingDropdown = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading', '', 'heading', this.dropdownHeading, this.cellModel, null);
 		let heading1 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading1', this.optionHeading1, 'heading 1', this.optionHeading1, this.cellModel, MarkdownButtonType.HEADING1);
 		let heading2 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading2', this.optionHeading2, 'heading 2', this.optionHeading2, this.cellModel, MarkdownButtonType.HEADING2);
 		let heading3 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading3', this.optionHeading3, 'heading 3', this.optionHeading3, this.cellModel, MarkdownButtonType.HEADING3);
 		let paragraph = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.paragraph', this.optionParagraph, 'paragraph', this.optionParagraph, this.cellModel, MarkdownButtonType.PARAGRAPH);
+
+		this._toggleTextViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleTextView', '', this.cellModel.defaultToWYSIWYG ? 'masked-icon show-text active' : 'masked-icon show-text', this.richTextViewButton, true, false);
+		this._toggleSplitViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleSplitView', '', this.cellModel.defaultToWYSIWYG ? 'masked-icon split-toggle-on' : 'masked-icon split-toggle-on active', this.splitViewButton, true, true);
+		this._toggleMarkdownViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleMarkdownView', '', 'masked-icon show-markdown', this.markdownViewButton, false, true);
 
 		let taskbar = <HTMLElement>this.mdtoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
@@ -88,7 +101,7 @@ export class MarkdownToolbarComponent {
 		dropdownMenuActionViewItem.render(buttonDropdownContainer);
 		dropdownMenuActionViewItem.setActionContext(this);
 
-		this._actionBar.setContent([
+		this._taskbarContent = [
 			{ action: boldButton },
 			{ action: italicButton },
 			{ action: underlineButton },
@@ -99,7 +112,45 @@ export class MarkdownToolbarComponent {
 			{ action: orderedListButton },
 			{ action: imageButton },
 			{ element: buttonDropdownContainer },
-			{ action: togglePreviewAction }
-		]);
+			{ action: this._toggleTextViewAction },
+			{ action: this._toggleSplitViewAction },
+			{ action: this._toggleMarkdownViewAction }
+		];
+		this._wysiwygTaskbarContent = [
+			{ action: boldButton },
+			{ action: italicButton },
+			{ action: underlineButton },
+			{ action: highlightButton },
+			{ action: codeButton },
+			{ action: listButton },
+			{ action: orderedListButton },
+			{ element: buttonDropdownContainer },
+			{ action: this._toggleTextViewAction },
+			{ action: this._toggleSplitViewAction },
+			{ action: this._toggleMarkdownViewAction }
+		];
+		// Hide link and image buttons in WYSIWYG mode
+		if (this.cellModel.showPreview && !this.cellModel.showMarkdown) {
+			this._actionBar.setContent(this._wysiwygTaskbarContent);
+		} else {
+			this._actionBar.setContent(this._taskbarContent);
+		}
+	}
+
+	public hideLinkAndImageButtons() {
+		this._actionBar.setContent(this._wysiwygTaskbarContent);
+	}
+
+	public showLinkAndImageButtons() {
+		this._actionBar.setContent(this._taskbarContent);
+	}
+
+	public removeActiveClassFromModeActions() {
+		const activeClass = ' active';
+		for (let action of [this._toggleTextViewAction, this._toggleSplitViewAction, this._toggleMarkdownViewAction]) {
+			if (action.class.includes(activeClass)) {
+				action.class = action.class.replace(activeClass, '');
+			}
+		}
 	}
 }

@@ -10,7 +10,7 @@ import { addDisposableListener } from 'vs/base/browser/dom';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { withNullAsUndefined } from 'vs/base/common/types';
 
-interface IExtendedColumn<T> extends Slick.Column<T> {
+export interface IExtendedColumn<T> extends Slick.Column<T> {
 	filterValues?: Array<string>;
 }
 
@@ -82,6 +82,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private handleHeaderCellRendered(e: Event, args: Slick.OnHeaderCellRenderedEventArgs<T>) {
 		const column = args.column;
 		if (column.id === '_detail_selector') {
+			return;
+		}
+		if ((<any>column).filterable === false) {
 			return;
 		}
 		const $el = jQuery('<div tabIndex="0"></div>')

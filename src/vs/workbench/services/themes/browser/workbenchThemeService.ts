@@ -37,12 +37,11 @@ import { isWeb } from 'vs/base/common/platform';
 
 // implementation
 
-const DEFAULT_COLOR_THEME_ID = 'vs sql-theme-carbon-themes-light_carbon-json';
+const DEFAULT_COLOR_THEME_ID = 'vs sql-theme-carbon-themes-light_carbon-json'; // {{SQL CARBON EDIT}}
 
 const PERSISTED_OS_COLOR_SCHEME = 'osColorScheme';
 
-// {{SQL CARBON EDIT}}
-const defaultThemeExtensionId = 'sql-theme-carbon';
+const defaultThemeExtensionId = 'sql-theme-carbon';// {{SQL CARBON EDIT}}
 const oldDefaultThemeExtensionId = 'vscode-theme-colorful-defaults';
 
 const DEFAULT_FILE_ICON_THEME_ID = 'vscode.vscode-theme-seti-vs-seti';

@@ -42,9 +42,9 @@ const mockAccount: AzureAccount = {
 };
 
 const mockTenantId: string = 'mock_tenant';
-
+const mockSubscriptionId = 'mock_subscription';
 const mockSubscription: azureResource.AzureResourceSubscription = {
-	id: 'mock_subscription',
+	id: mockSubscriptionId,
 	name: 'mock subscription',
 	tenant: mockTenantId
 };
@@ -74,14 +74,16 @@ const mockDatabaseServers: azureResource.AzureResourceDatabaseServer[] = [
 		id: 'mock-id-1',
 		fullName: 'mock database server full name 1',
 		loginName: 'mock login',
-		defaultDatabaseName: 'master'
+		defaultDatabaseName: 'master',
+		subscriptionId: 'mock_subscription'
 	},
 	{
 		name: 'mock database server 2',
 		id: 'mock-id-2',
 		fullName: 'mock database server full name 2',
 		loginName: 'mock login',
-		defaultDatabaseName: 'master'
+		defaultDatabaseName: 'master',
+		subscriptionId: 'mock_subscription'
 	}
 ];
 

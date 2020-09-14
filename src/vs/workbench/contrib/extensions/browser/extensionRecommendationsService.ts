@@ -117,9 +117,9 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 			this.staticRecommendations.activate(), // {{SQL CARBON EDIT}} add ours
 			this.scenarioRecommendations.activate(), // {{SQL CARBON EDIT}} add ours
 			this.lifecycleService.when(LifecyclePhase.Eventually)
-				.then(() => {
+				.then(async () => {
 					if (!this.configurationService.getValue<boolean>(ShowRecommendationsOnlyOnDemandKey)) {
-						this.activateProactiveRecommendations();
+						await this.activateProactiveRecommendations();
 					}
 				})
 		]);

@@ -118,6 +118,9 @@ declare module 'azdata-ext' {
 			uid: string // "cea737aa-3f82-4f6a-9bed-2b51c2c33dff"
 		},
 		spec: {
+			limits?: {
+				vcores?: number // 4
+			}
 			service: {
 				type: string // "NodePort"
 			}

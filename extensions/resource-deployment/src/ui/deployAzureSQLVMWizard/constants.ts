@@ -32,6 +32,7 @@ export const VmImageDropdownLabel = localize('deployAzureSQLVM.VmImageDropdownLa
 export const VmSkuDropdownLabel = localize('deployAzureSQLVM.VmSkuDropdownLabel', "Image SKU");
 export const VmVersionDropdownLabel = localize('deployAzureSQLVM.VmImageVersionDropdownLabel', "Image Version");
 export const VmSizeDropdownLabel = localize('deployAzureSQLVM.VmSizeDropdownLabel', "Size");
+export const VmSizeLearnMoreLabel = localize('deployeAzureSQLVM.VmSizeLearnMoreLabel', "Click here to learn more about pricing and supported VM sizes");
 
 // Network settings page constants
 export const NetworkSettingsPageTitle = localize('deployAzureSQLVM.NetworkSettingsPageTitle', "Networking");
@@ -42,7 +43,13 @@ export const NetworkSettingsNewSubnet = localize('deployAzureSQLVM.NetworkSettin
 export const SubnetDropdownLabel = localize('deployAzureSQLVM.SubnetDropdownLabel', "Subnet");
 export const PublicIPDropdownLabel = localize('deployAzureSQLVM.PublicIPDropdownLabel', "Public IP");
 export const NetworkSettingsNewPublicIp = localize('deployAzureSQLVM.NetworkSettingsUseExistingPublicIp', "New public ip");
-export const RDPAllowCheckboxLabel = localize('deployAzureSQLVM.VmRDPAllowCheckboxLabel', "Enable RDP(3389) inbound Port");
+export const RDPAllowCheckboxLabel = localize('deployAzureSQLVM.VmRDPAllowCheckboxLabel', "Enable Remote Desktop (RDP) inbound port (3389)");
 
 // SQL Server settings page constants
-export const SqlServerSettingsPageTitle = localize('deployAzureSQLVM', "SQL Servers settings");
+export const SqlServerSettingsPageTitle = localize('deployAzureSQLVM.SqlServerSettingsPageTitle', "SQL Servers settings");
+export const SqlConnectivityTypeDropdownLabel = localize('deployAzureSQLVM.SqlConnectivityTypeDropdownLabel', "SQL connectivity");
+export const SqlPortLabel = localize('deployAzureSQLVM.SqlPortLabel', "Port");
+export const SqlEnableSQLAuthenticationLabel = localize('deployAzureSQLVM.SqlEnableSQLAuthenticationLabel', "Enable SQL authentication");
+export const SqlAuthenticationUsernameLabel = localize('deployAzureSQLVM.SqlAuthenticationUsernameLabel', "Username");
+export const SqlAuthenticationPasswordLabel = localize('deployAzureSQLVM.SqlAuthenticationPasswordLabel', "Password");
+export const SqlAuthenticationConfirmPasswordLabel = localize('deployAzureSQLVM.SqlAuthenticationConfirmPasswordLabel', "Confirm password");
