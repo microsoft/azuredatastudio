@@ -117,8 +117,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 						index = this.cells.length;
 					}
 					this.selectCell(this.cells[--index]);
-					break;
 				}
+				break;
 			case 'Enter':
 				if (!this._model.activeCell.isEditMode) {
 					event.preventDefault();
@@ -127,6 +127,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				if (!toolbarEditCellAction.editMode) {
 					toolbarEditCellAction.editMode = !toolbarEditCellAction.editMode;
 				}
+				this.detectChanges();
 				break;
 			default:
 				break;

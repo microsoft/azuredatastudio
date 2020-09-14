@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, ViewChildren, QueryList } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, HostListener, ViewChildren, QueryList } from '@angular/core';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -30,6 +30,13 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	}
 	@Input() set activeCellId(value: string) {
 		this._activeCellId = value;
+	}
+
+	@HostListener('document:keydown.enter', ['$event'])
+	handleKeyboardEvent() {
+		this.cellModel.isEditMode = true;
+		this.cellModel.active = true;
+		this._model.updateActiveCell(this._model.activeCell);
 	}
 
 	private _model: NotebookModel;
