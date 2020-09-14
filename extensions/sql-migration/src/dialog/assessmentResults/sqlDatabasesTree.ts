@@ -3,21 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { MigrationStateModel } from '../../models/stateMachine';
 import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
 
 export class SqlDatabaseTree extends AssessmentDialogComponent {
 
-	public constructor(private _model: MigrationStateModel) {
-		super();
-	}
-
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
 		let databases = await azdata.connection.listDatabases(this._model.sourceConnection.connectionId);
-		return view.modelBuilder.divContainer().withItems([
-			this.createTableComponent(view, databases)
-		]
-		).component();
+		return this.createTableComponent(view, databases);
 	}
 
 	private createTableComponent(view: azdata.ModelView, databases: string[]): azdata.DeclarativeTableComponent {
@@ -52,7 +44,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					{
 						displayName: '',
 						valueType: azdata.DeclarativeDataType.boolean,
-						width: 5,
 						isReadOnly: false,
 						showCheckAll: true,
 						headerCssStyles: style,
@@ -61,20 +52,19 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					{
 						displayName: 'Database', // TODO localize
 						valueType: azdata.DeclarativeDataType.string,
-						width: 50,
 						isReadOnly: true,
 						headerCssStyles: style
 					},
 					{
 						displayName: '', // Incidents
 						valueType: azdata.DeclarativeDataType.string,
-						width: 5,
 						isReadOnly: true,
 						headerCssStyles: style,
 						ariaLabel: 'Issue Count' // TODO localize
 					}
 				],
-				dataValues: dataValues
+				dataValues: dataValues,
+				width: 210
 			}
 		);
 

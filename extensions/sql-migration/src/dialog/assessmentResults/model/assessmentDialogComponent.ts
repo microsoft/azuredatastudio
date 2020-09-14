@@ -4,8 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { MigrationStateModel } from '../../../models/stateMachine';
 
 export abstract class AssessmentDialogComponent {
-
+	constructor(protected _model: MigrationStateModel, protected _productType: MigrationProductType) { }
 	abstract async createComponent(view: azdata.ModelView): Promise<azdata.Component>;
 }
