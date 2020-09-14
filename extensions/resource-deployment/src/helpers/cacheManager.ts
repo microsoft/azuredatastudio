@@ -20,8 +20,8 @@ interface State<T> {
 }
 
 /**
- * An implementation of Cache Manager which ensure that only one call to populate cache miss is pending at a given time.
- * All remaining calls for retrieval are await until the one in progress finishes and then they are resolved with the value
+ * An implementation of Cache Manager which ensures that only one call to populate cache miss is pending at a given time.
+ * All remaining calls for retrieval are awaited until the one in progress finishes and then all awaited calls are resolved with the value
  * from the cache.
  */
 export class CacheManager<K, T> {
