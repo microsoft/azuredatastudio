@@ -70,7 +70,7 @@
 
 
 	"resource.type.arc.sql.display.name": "Azure SQL managed instance - Azure Arc (preview)",
-	"resource.type.arc.postgres.display.name": "PostgreSQL Hyperscale server groups - Azure Arc (Preview)",
+	"resource.type.arc.postgres.display.name": "PostgreSQL Hyperscale server groups - Azure Arc (preview)",
 	"resource.type.arc.sql.description": "Managed SQL Instance service for app developers in a customer-managed environment",
 	"resource.type.arc.postgres.description": "Deploy PostgreSQL server groups into an Azure Arc environment",
 	"resource.type.picker.display.name": "Resource Type",
