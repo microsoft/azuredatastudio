@@ -39,7 +39,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				url: ''
 			}).component();
 		assessmentLink.onDidClick(async () => {
-			let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog');
+			let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Results');
 			await dialog.openDialog();
 		});
 
@@ -51,8 +51,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this.view = view;
 		const form = view.modelBuilder.formContainer().withFormItems(
 			[
-				this.igComponent,
-				this.detailsComponent,
+				// this.igComponent,
+				// this.detailsComponent,
 				this.chooseTargetComponent,
 				assessmentFormLink
 			]

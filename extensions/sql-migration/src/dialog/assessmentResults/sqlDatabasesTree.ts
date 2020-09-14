@@ -3,23 +3,47 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
+import { MigrationStateModel } from '../../models/stateMachine';
 import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
 
 export class SqlDatabaseTree extends AssessmentDialogComponent {
-	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
 
+	public constructor(private _model: MigrationStateModel) {
+		super();
+	}
+
+	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
+		let databases = await azdata.connection.listDatabases(this._model.sourceConnection.connectionId);
 		return view.modelBuilder.divContainer().withItems([
-			this.createTableComponent(view)
+			this.createTableComponent(view, databases)
 		]
 		).component();
 	}
 
-	private createTableComponent(view: azdata.ModelView): azdata.DeclarativeTableComponent {
+	private createTableComponent(view: azdata.ModelView, databases: string[]): azdata.DeclarativeTableComponent {
 
 		const style: azdata.CssStyles = {
 			'border': 'none',
 			'text-align': 'left'
 		};
+
+		let dataValues = new Array(databases.length);
+		for (let i = 0; i < databases.length; ++i) {
+			dataValues[i] = [
+				{
+					value: false,
+					style
+				},
+				{
+					value: databases[i],
+					style
+				},
+				{
+					value: '',
+					style
+				}
+			];
+		}
 
 		const table = view.modelBuilder.declarativeTable().withProps(
 			{
@@ -50,36 +74,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 						ariaLabel: 'Issue Count' // TODO localize
 					}
 				],
-				dataValues: [
-					[
-						{
-							value: false,
-							style
-						},
-						{
-							value: 'DB1',
-							style
-						},
-						{
-							value: 1,
-							style
-						}
-					],
-					[
-						{
-							value: true,
-							style
-						},
-						{
-							value: 'DB2',
-							style
-						},
-						{
-							value: 2,
-							style
-						}
-					]
-				],
+				dataValues: dataValues
 			}
 		);
 
