@@ -1450,6 +1450,22 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 		this.setProperty('fireOnTextChange', v);
 	}
 
+	public get loading(): boolean {
+		return this.properties['loading'];
+	}
+
+	public set loading(v: boolean) {
+		this.setProperty('loading', v);
+	}
+
+	public get loadingText(): string {
+		return this.properties['loadingText'];
+	}
+
+	public set loadingText(v: string) {
+		this.setProperty('loadingText', v);
+	}
+
 	public get onValueChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
@@ -1462,13 +1478,24 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		super(proxy, handle, ModelComponentTypes.DeclarativeTable, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+
 	}
 
 	public get data(): any[][] {
 		return this.properties['data'];
 	}
+
 	public set data(v: any[][]) {
 		this.setProperty('data', v);
+	}
+
+	public get dataValues(): azdata.DeclarativeTableCellValue[][] {
+		return this.properties['dataValues'];
+	}
+
+	public set dataValues(v: azdata.DeclarativeTableCellValue[][]) {
+		this.setProperty('dataValues', v);
 	}
 
 	public get columns(): azdata.DeclarativeTableColumn[] {
@@ -1484,8 +1511,21 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		return emitter && emitter.event;
 	}
 
+	public get onRowSelected(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+
 	protected notifyPropertyChanged(): Thenable<void> {
 		return this._proxy.$setProperties(this._handle, this._id, this.getPropertiesForMainThread());
+	}
+
+	public get selectEffect(): boolean | undefined {
+		return this.properties['selectEffect'];
+	}
+
+	public set selectEffect(v: boolean | undefined) {
+		this.setProperty('selectEffect', v);
 	}
 
 	public toComponentShape(): IComponentShape {

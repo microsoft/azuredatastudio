@@ -266,7 +266,6 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		this._instanceProperties.dataController = config?.metadata.name || this._instanceProperties.dataController;
 		this._instanceProperties.region = this._azurecoreApi.getRegionDisplayName(config?.spec.settings.azure.location) || this._instanceProperties.region;
 		this._instanceProperties.subscriptionId = config?.spec.settings.azure.subscription || this._instanceProperties.subscriptionId;
-		// this._instanceProperties.vCores = reg.vCores || '';
 		this.refreshDisplayedProperties();
 	}
 
@@ -274,6 +273,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		if (this._miaaModel.config) {
 			this._instanceProperties.status = this._miaaModel.config.status.state || '-';
 			this._instanceProperties.externalEndpoint = this._miaaModel.config.status.externalEndpoint || loc.notConfigured;
+			this._instanceProperties.vCores = this._miaaModel.config.spec.limits?.vcores?.toString() || '';
 			this._databasesMessage.value = !this._miaaModel.config.status.externalEndpoint ? loc.noExternalEndpoint : '';
 		}
 

@@ -416,7 +416,7 @@ export class PublishDatabaseDialog {
 
 		table.onDataChanged(() => {
 			this.sqlCmdVars = {};
-			table.data.forEach((row) => {
+			table.data?.forEach((row) => {
 				(<Record<string, string>>this.sqlCmdVars)[row[0]] = row[1];
 			});
 
@@ -518,7 +518,7 @@ export class PublishDatabaseDialog {
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined,
+					defaultUri: vscode.Uri.file(this.project.projectFolderPath),
 					filters: {
 						[constants.publishSettingsFiles]: ['publish.xml']
 					}
@@ -533,10 +533,13 @@ export class PublishDatabaseDialog {
 				const result = await this.readPublishProfile(fileUris[0]);
 				// clear out old database dropdown values. They'll get populated later if there was a connection specified in the profile
 				(<azdata.DropDownComponent>this.targetDatabaseDropDown).values = [];
-				(<azdata.DropDownComponent>this.targetDatabaseDropDown).value = result.databaseName;
 
 				this.connectionId = result.connectionId;
 				await this.updateConnectionComponents(result.connection, <string>this.connectionId);
+
+				if (result.databaseName) {
+					(<azdata.DropDownComponent>this.targetDatabaseDropDown).value = result.databaseName;
+				}
 
 				for (let key in result.sqlCmdVariables) {
 					(<Record<string, string>>this.sqlCmdVars)[key] = result.sqlCmdVariables[key];
