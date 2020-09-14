@@ -768,11 +768,9 @@
                           "label": "%arc.postgres.server.group.volume.size.data.label%",
                           "description": "%arc.postgres.server.group.volume.size.data.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_VOLUME_SIZE_DATA",
-                          "type": "text",
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^(\\d+)?$",
-                          "textValidationDescription": "%arc.postgres.server.group.volume.size.data.validation.description%",
-                          "defaultValue": "5"
+                          "type": "number",
+                          "defaultValue": "5",
+                          "min": 0
                         },
                         {
                           "label": "%arc.storage-class.logs.label%",
@@ -785,11 +783,9 @@
                           "label": "%arc.postgres.server.group.volume.size.logs.label%",
                           "description": "%arc.postgres.server.group.volume.size.logs.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_VOLUME_SIZE_LOGS",
-                          "type": "text",
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^(\\d+)?$",
-                          "textValidationDescription": "%arc.postgres.server.group.volume.size.logs.validation.description%",
-                          "defaultValue": "5"
+                          "type": "number",
+                          "defaultValue": "5",
+                          "min": 0
                         },
                         {
                           "label": "%arc.storage-class.backups.label%",
@@ -802,11 +798,9 @@
                           "label": "%arc.postgres.server.group.volume.size.backups.label%",
                           "description": "%arc.postgres.server.group.volume.size.backups.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_VOLUME_SIZE_BACKUPS",
-                          "type": "text",
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^(\\d+)?$",
-                          "textValidationDescription": "%arc.postgres.server.group.volume.size.backups.validation.description%",
-                          "defaultValue": "5"
+                          "type": "number",
+                          "defaultValue": "5",
+                          "min": 0
                         }
                       ]
                     },
@@ -830,20 +824,14 @@
                         {
                           "label": "%arc.postgres.server.group.memory.request%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_REQUEST",
-                          "type": "text",
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^(\\d+)?$",
-                          "textValidationDescription": "%arc.postgres.server.group.memory.request.validation.description%",
-                          "defaultValue": ""
+                          "type": "number",
+                          "min": 0
                         },
                         {
                           "label": "%arc.postgres.server.group.memory.limit%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_LIMIT",
-                          "type": "text",
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^(\\d+)?$",
-                          "textValidationDescription": "%arc.postgres.server.group.memory.limit.validation.description%",
-                          "defaultValue": ""
+                          "type": "number",
+                          "min": 0
                         }
                       ]
                     }
