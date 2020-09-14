@@ -27,9 +27,9 @@ declare module 'dataworkspace' {
 	export interface IProjectProvider {
 		/**
 		 * Gets the tree data provider for the given project file
-		 * @param projectFilePath The full path of the project file
+		 * @param projectFile The Uri of the project file
 		 */
-		getProjectTreeDataProvider(projectFilePath: string): Promise<vscode.TreeDataProvider<any>>;
+		getProjectTreeDataProvider(projectFile: vscode.Uri): Promise<vscode.TreeDataProvider<any>>;
 
 		/**
 		 * Gets the supported project types
