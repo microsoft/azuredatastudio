@@ -178,7 +178,6 @@
 
 .ads-initial-setup-wizard-popup.ads-initial-setup-wizard-show {
 	display: block;
-	box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.14);
 	border-radius: 2px;
 	opacity: 1;
 }
