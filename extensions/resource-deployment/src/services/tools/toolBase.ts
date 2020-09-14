@@ -52,7 +52,7 @@ export abstract class ToolBase implements ITool {
 	protected abstract readonly allInstallationCommands: Map<OsDistribution, Command[]>;
 	protected readonly dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>();
 
-	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
+	protected abstract getVersionFromOutput(output: string): Promise<SemVer | undefined>;
 	protected readonly _onDidUpdateData = new vscode.EventEmitter<ITool>();
 	protected readonly uninstallCommand?: string;
 
@@ -250,7 +250,7 @@ export abstract class ToolBase implements ITool {
 	/**
 	 * updates the version and status for the tool.
 	 */
-	private async updateVersionAndStatus(): Promise<void> {
+	protected async updateVersionAndStatus(): Promise<void> {
 		this._statusDescription = '';
 		await this.addInstallationSearchPathsToSystemPath();
 		const commandOutput = await this.platformService.runCommand(
@@ -262,7 +262,7 @@ export abstract class ToolBase implements ITool {
 				ignoreError: true
 			},
 		);
-		this.version = this.getVersionFromOutput(commandOutput);
+		this.version = await this.getVersionFromOutput(commandOutput);
 		if (this.version) {
 			if (this.autoInstallSupported) {
 				// discover and set the installationPath
@@ -312,6 +312,6 @@ export abstract class ToolBase implements ITool {
 	private _pendingVersionAndStatusUpdate!: Promise<void>;
 	private _status: ToolStatus = ToolStatus.NotInstalled;
 	private _version?: SemVer;
-	private _statusDescription?: string;
-	private _installationPathOrAdditionalInformation?: string;
+	protected _statusDescription?: string;
+	protected _installationPathOrAdditionalInformation?: string;
 }

@@ -15,7 +15,7 @@ import * as utils from '../common/utils';
 import * as loc from '../localizedConstants';
 import * as constants from '../constants';
 
-const oldAzdataMock = <azdata.AzdataTool>{ path: '/path/to/azdata', cachedVersion: new SemVer('0.0.0') };
+const oldAzdataMock = <azdata.AzdataTool>{ path: '/path/to/azdata', semVersion: new SemVer('0.0.0') };
 const releaseJson = {
 	win32: {
 		'version': '9999.999.999',

@@ -24,9 +24,6 @@ const enum AzdataDeployOption {
  * Interface for an object to interact with the azdata tool installed on the box.
  */
 export interface IAzdataTool extends azdataExt.IAzdataApi {
-	path: string,
-	cachedVersion: SemVer
-
 	/**
 	 * Executes azdata with the specified arguments (e.g. --version) and returns the result
 	 * @param args The args to pass to azdata
@@ -39,9 +36,9 @@ export interface IAzdataTool extends azdataExt.IAzdataApi {
  * An object to interact with the azdata tool installed on the box.
  */
 export class AzdataTool implements IAzdataTool {
-	public cachedVersion: SemVer;
+	public semVersion: SemVer;
 	constructor(public path: string, version: string) {
-		this.cachedVersion = new SemVer(version);
+		this.semVersion = new SemVer(version);
 	}
 
 	public arc = {
@@ -111,7 +108,7 @@ export class AzdataTool implements IAzdataTool {
 	 */
 	public async version(): Promise<azdataExt.AzdataOutput<string>> {
 		const output = await executeAzdataCommand(`"${this.path}"`, ['--version']);
-		this.cachedVersion = new SemVer(parseVersion(output.stdout));
+		this.semVersion = new SemVer(parseVersion(output.stdout));
 		return {
 			logs: [],
 			stdout: output.stdout.split(os.EOL),
@@ -176,7 +173,7 @@ export async function findAzdata(): Promise<IAzdataTool> {
 	try {
 		const azdata = await findSpecificAzdata();
 		await vscode.commands.executeCommand('setContext', azdataFound, true); // save a context key that azdata was found so that command for installing azdata is no longer available in commandPalette and that for updating it is.
-		Logger.log(loc.foundExistingAzdata(azdata.path, azdata.cachedVersion.raw));
+		Logger.log(loc.foundExistingAzdata(azdata.path, azdata.semVersion.raw));
 		return azdata;
 	} catch (err) {
 		Logger.log(loc.couldNotFindAzdata(err));
@@ -263,11 +260,11 @@ export async function checkAndInstallAzdata(userRequested: boolean = false): Pro
 export async function checkAndUpdateAzdata(currentAzdata?: IAzdataTool, userRequested: boolean = false): Promise<boolean> {
 	if (currentAzdata !== undefined) {
 		const newVersion = await discoverLatestAvailableAzdataVersion();
-		if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
-			Logger.log(loc.foundAzdataVersionToUpdateTo(newVersion.raw, currentAzdata.cachedVersion.raw));
+		if (newVersion.compare(currentAzdata.semVersion) === 1) {
+			Logger.log(loc.foundAzdataVersionToUpdateTo(newVersion.raw, currentAzdata.semVersion.raw));
 			return await promptToUpdateAzdata(newVersion.raw, userRequested);
 		} else {
-			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.cachedVersion.raw));
+			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.semVersion.raw));
 		}
 	} else {
 		Logger.log(loc.updateCheckSkipped);

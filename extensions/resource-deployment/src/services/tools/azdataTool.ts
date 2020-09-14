@@ -8,10 +8,11 @@ import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { AzdataInstallLocationKey, DeploymentConfigurationKey } from '../../constants';
-import { Command, OsDistribution, ToolType } from '../../interfaces';
+import { Command, OsDistribution, ToolType, ToolStatus } from '../../interfaces';
 import { IPlatformService } from '../platformService';
 import { dependencyType, ToolBase } from './toolBase';
-import { SemVerProxy } from './SemVerProxy';
+import { apiService } from '../apiService';
+import * as azdataExt from 'azdata-ext';
 
 const localize = nls.loadMessageBundle();
 export const AzdataToolName = 'azdata';
@@ -56,13 +57,34 @@ export class AzdataTool extends ToolBase {
 		};
 	}
 
-	protected getVersionFromOutput(output: string): SemVer | undefined {
-		let version: SemVer | undefined = undefined;
-		if (output && output.split(EOL).length > 0) {
-			version = new SemVerProxy(output.split(EOL)[0].replace(/ /g, ''));
+	/**
+ * updates the version and status for the tool.
+ */
+	protected async updateVersionAndStatus(): Promise<void> {
+		this._statusDescription = '';
+		await this.addInstallationSearchPathsToSystemPath();
+
+		const azdataApi: azdataExt.IAzdataApi = (await apiService.getAzdataApi()).azdata;
+		const commandOutput = await azdataApi.version();
+		this.version = azdataApi.semVersion;
+		if (this.version) {
+			if (this.autoInstallSupported) {
+				// set the installationPath
+				this._installationPathOrAdditionalInformation = azdataApi.path;
+			}
+			this.setStatus(ToolStatus.Installed);
 		}
-		return version;
+		else {
+			this._installationPathOrAdditionalInformation = localize('deployCluster.GetToolVersionErrorInformation', "Error retrieving version information. See output channel '{0}' for more details", this.outputChannelName);
+			this._statusDescription = localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Invalid output received, get version command output: '{1}' ", EOL, commandOutput.stderr.join(EOL));
+			this.setStatus(ToolStatus.NotInstalled);
+		}
 	}
+
+	protected async getVersionFromOutput(output: string): Promise<SemVer | undefined> {
+		return (await apiService.getAzdataApi()).azdata.semVersion;
+	}
+
 	protected async getSearchPaths(): Promise<string[]> {
 		switch (this.osDistribution) {
 			case OsDistribution.win32:

@@ -395,8 +395,10 @@
     ]
   },
   "dependencies": {
+    "@types/semver": "^7.3.3",
     "linux-release-info": "^2.0.0",
     "promisify-child-process": "^3.1.1",
+    "semver": "^7.3.2",
     "sudo-prompt": "9.1.1",
     "vscode-nls": "^4.0.0",
     "yamljs": "^0.3.0"
@@ -407,8 +409,8 @@
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
+    "should": "^13.2.3",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.1.0",
-    "should": "^13.2.3"
+    "vscodetestcover": "^1.1.0"
   }
 }

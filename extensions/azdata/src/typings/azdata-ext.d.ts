@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 declare module 'azdata-ext' {
+	import { SemVer } from 'semver';
+
 	/**
 	 * Covers defining what the azdata extension exports to other extensions
 	 *
@@ -224,8 +226,10 @@ declare module 'azdata-ext' {
 					show(name: string): Promise<AzdataOutput<SqlMiShowResult>>
 				}
 			}
-		}
+		},
+		path: string,
 		login(endpoint: string, username: string, password: string): Promise<AzdataOutput<any>>,
+		semVersion: SemVer,
 		version(): Promise<AzdataOutput<string>>
 	}
 
