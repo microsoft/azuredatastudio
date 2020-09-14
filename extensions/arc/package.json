@@ -812,14 +812,14 @@
                           "description": "%arc.postgres.server.group.cores.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_REQUEST",
                           "type": "number",
-                          "min": 0
+                          "min": 1
                         },
                         {
                           "label": "%arc.postgres.server.group.cores.limit%",
                           "description": "%arc.postgres.server.group.cores.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_LIMIT",
                           "type": "number",
-                          "min": 0
+                          "min": 1
                         },
                         {
                           "label": "%arc.postgres.server.group.memory.request%",
