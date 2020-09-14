@@ -12,6 +12,7 @@
     "azdata": ">=1.19.0"
   },
   "activationEvents": [
+    "*",
     "onCommand:sqlmigration.start",
     "onCommand:sqlmigration.testDialog"
   ],
@@ -27,13 +28,56 @@
     "commands": [
       {
         "command": "sqlmigration.start",
-        "title": "SQL Migration Start",
-        "category": "SQL Migration"
+        "title": "Migrate",
+        "category": "SQL Migration",
+        "icon": {
+					"light": "./images/manageModels.svg",
+					"dark": "./images/manageModels.svg"
+				}
       },
       {
         "command": "sqlmigration.testDialog",
         "title": "SQL Migration test dialog",
         "category": "SQL Migration"
+      }
+    ],
+    "dashboard.tabs": [
+      {
+        "id": "migration-dashboard",
+        "description": "SQL Migration",
+        "provider": "MSSQL",
+        "title": "SQL Migration",
+        "icon": {
+          "light": "./images/migration.svg",
+          "dark": "./images/migration.svg"
+        },
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
+        "container": {
+          "grid-container": [
+            {
+              "name": "Migration Tasks",
+              "row": 0,
+              "col": 0,
+              "widget": {
+                "tasks-widget": [
+                  "sqlmigration.start"
+                ]
+              }
+            },
+            {
+              "name": "",
+              "row": 0,
+              "col": 1,
+              "rowspan": 5,
+              "colspan": 5,
+              "widget": {
+                "modelview": {
+                  "id": "migration.dashboard"
+                }
+              }
+            }
+          ]
+        }
       }
     ]
   },

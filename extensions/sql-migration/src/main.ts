@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { WizardController } from './wizard/wizardController';
 import { AssessmentResultsDialog } from './dialog/assessmentResults/assessmentResultsDialog';
+import { DashboardWidget } from './dashboard/dashboardPage';
 
 class SQLMigration {
 
@@ -20,7 +21,11 @@ class SQLMigration {
 	async registerCommands(): Promise<void> {
 		const commandDisposables: vscode.Disposable[] = [ // Array of disposables returned by registerCommand
 			vscode.commands.registerCommand('sqlmigration.start', async () => {
-				const connection = await azdata.connection.openConnectionDialog();
+				let currentConnection: any = await azdata.connection.getCurrentConnection();
+				let connection = currentConnection as azdata.connection.Connection;
+				if (!connection) {
+					connection = await azdata.connection.openConnectionDialog();
+				}
 
 				const wizardController = new WizardController(this.context);
 				await wizardController.openWizard(connection);
@@ -31,6 +36,14 @@ class SQLMigration {
 				await dialog.openDialog();
 			})
 		];
+
+		azdata.tasks.registerTask('sqlmigration.start', async () => {
+			let currentConnection: any = await azdata.connection.getCurrentConnection();
+			let connection = currentConnection as azdata.connection.Connection;
+
+			const wizardController = new WizardController(this.context);
+			await wizardController.openWizard(connection);
+		});
 
 		this.context.subscriptions.push(...commandDisposables);
 	}
@@ -44,6 +57,10 @@ let sqlMigration: SQLMigration;
 export async function activate(context: vscode.ExtensionContext) {
 	sqlMigration = new SQLMigration(context);
 	await sqlMigration.registerCommands();
+
+	let rootPath: string = context.extensionPath;
+	let widget = new DashboardWidget(rootPath);
+	widget.register();
 }
 
 export function deactivate(): void {
