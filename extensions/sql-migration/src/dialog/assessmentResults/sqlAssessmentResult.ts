@@ -15,33 +15,48 @@ export class SqlAssessmentResult extends AssessmentDialogComponent {
 		const moreInfo = this.createMoreInfoComponent(view);
 		const impactedObjects = this.createImpactedObjectsComponent(view);
 
-		return view.modelBuilder.divContainer().withItems([title, impact, recommendation, moreInfo, impactedObjects]).component();
+		return view.modelBuilder.divContainer().withItems([title, impact, recommendation, moreInfo, impactedObjects]).withProps({
+			CSSStyles: {
+				'overflow': 'auto',
+				'max-width': '650px'
+			}
+		}).component();
 	}
 
 	private createTitleComponent(view: azdata.ModelView): azdata.TextComponent {
-		const title = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: 'Azure SQL Managed Instance does not support multiple log files', // TODO: Get this string from the actual results
+		const title = view.modelBuilder.text().component();
+
+		this._model.rulePickedEvent.event((e) => {
+			title.value = e?.checkId;
 		});
 
-		return title.component();
+		return title;
 	}
 
 	private createImpactComponent(view: azdata.ModelView): azdata.TextComponent {
 		const impact = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			title: 'Impact', // TODO localize
 			value: 'SQL Server allows a database to log transactions across multiple files. This databases uses multiple log files' // TODO: Get this string from the actual results
+		}).component();
+
+		this._model.rulePickedEvent.event((e) => {
+			impact.value = e?.description;
 		});
 
-		return impact.component();
+		return impact;
 	}
 
 	private createRecommendationComponent(view: azdata.ModelView): azdata.TextComponent {
 		const recommendation = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			title: 'Recommendation', // TODO localize
 			value: 'Azure SQL Managed Instance allows a single log file per database only. Please delete all but one of the log files before migrating this database.' // TODO: Get this string from the actual results
+		}).component();
+
+		this._model.rulePickedEvent.event((e) => {
+			recommendation.value = e?.message;
 		});
 
-		return recommendation.component();
+		return recommendation;
 	}
 
 	private createMoreInfoComponent(view: azdata.ModelView): azdata.TextComponent {
@@ -54,9 +69,24 @@ export class SqlAssessmentResult extends AssessmentDialogComponent {
 					url: 'https://microsoft.com' // TODO: Get this string from the actual results
 				}
 			]
+		}).component();
+
+		this._model.rulePickedEvent.event((e) => {
+			if (e?.checkId === undefined || e?.helpLink === undefined) {
+				moreInfo.display = 'none';
+				return;
+			}
+
+			moreInfo.updateProperty('links', [
+				{
+					text: e.checkId,
+					url: e.helpLink
+				}
+			]);
+
 		});
 
-		return moreInfo.component();
+		return moreInfo;
 	}
 
 	private createImpactedObjectsComponent(view: azdata.ModelView): azdata.TableComponent {

@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as path from 'path';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
-import { Product, ProductLookupTable } from '../models/product';
+import { MigrationProductType, Product, ProductLookupTable } from '../models/product';
 import { SKU_RECOMMENDATION_PAGE_TITLE, SKU_RECOMMENDATION_CHOOSE_A_TARGET } from '../models/strings';
 import { Disposable } from 'vscode';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
@@ -32,29 +32,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this.detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
 		this.chooseTargetComponent = this.createChooseTargetComponent(view);
 
-
-		const assessmentLink = view.modelBuilder.hyperlink()
-			.withProperties<azdata.HyperlinkComponentProperties>({
-				label: 'View Assessment Results',
-				url: ''
-			}).component();
-		assessmentLink.onDidClick(async () => {
-			let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Results');
-			await dialog.openDialog();
-		});
-
-		const assessmentFormLink = {
-			title: '',
-			component: assessmentLink,
-		};
-
 		this.view = view;
 		const form = view.modelBuilder.formContainer().withFormItems(
 			[
 				// this.igComponent,
 				// this.detailsComponent,
 				this.chooseTargetComponent,
-				assessmentFormLink
 			]
 		);
 
@@ -123,7 +106,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					},
 					linkCodiconStyles: {
 						'font-size': '1em',
-						'color': 'royalblue'
+						'color': 'cornflowerblue'
+					},
+					linkStyles: {
+						'color': 'cornflowerblue'
 					}
 				},
 				{
@@ -132,7 +118,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					displayLinkCodicon: true,
 					linkCodiconStyles: {
 						'font-size': '1em',
-						'color': 'royalblue'
+						'color': 'cornflowerblue'
+					},
+					linkStyles: {
+						'color': 'cornflowerblue'
 					}
 				}
 			];
@@ -140,8 +129,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			rbg.component().cards.push({
 				id: product.name,
 				icon: imagePath,
-				descriptions
-			});
+				descriptions,
+				productType: product.type
+			} as MigrationCard);
+		});
+
+		rbg.component().onLinkClick(async (e) => {
+			let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Results', (e.card as MigrationCard).productType);
+
+			await dialog.openDialog();
 		});
 
 		this.chooseTargetComponent?.component.addItem(rbg.component());
@@ -163,4 +159,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 	}
 
+}
+
+interface MigrationCard extends azdata.RadioCard {
+	productType: MigrationProductType;
 }

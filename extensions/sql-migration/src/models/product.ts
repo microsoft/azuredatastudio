@@ -60,3 +60,16 @@ export const ProductLookupTable: { [key in MigrationProductType]: Product } = {
 	// 	name: localize('sql.migration.products.azuresql.name', 'Azure SQL'),
 	// }
 };
+
+
+export function isSameProduct(prodType: MigrationProductType, sqlAssessmentExternalProdType: string) {
+	if (sqlAssessmentExternalProdType.toLowerCase() === 'sqlazure' && prodType === 'AzureSQLVM') {
+		return true;
+	}
+
+	if (sqlAssessmentExternalProdType.toLowerCase() === 'azuremi' && prodType === 'AzureSQLMI') {
+		return true;
+	}
+
+	return false;
+}

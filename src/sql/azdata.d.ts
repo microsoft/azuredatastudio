@@ -3301,7 +3301,7 @@ declare module 'azdata' {
 		displayName: string;
 		valueType: DeclarativeDataType;
 		isReadOnly: boolean;
-		width: number | string;
+		width?: number | string;
 		categoryValues?: CategoryValue[];
 	}
 

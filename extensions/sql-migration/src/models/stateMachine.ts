@@ -44,6 +44,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _gatheringInformationError: string | undefined;
 	private _skuRecommendations: SKURecommendations | undefined;
 	private _assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined;
+	private _rulePickedEvent: vscode.EventEmitter<mssql.SqlMigrationAssessmentResultItem | undefined>;
 
 	constructor(
 		private readonly _extensionContext: vscode.ExtensionContext,
@@ -51,6 +52,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		public readonly migrationService: mssql.ISqlMigrationService
 	) {
 		this._currentState = State.INIT;
+		this._rulePickedEvent = new vscode.EventEmitter;
+	}
+
+	public get rulePickedEvent(): vscode.EventEmitter<mssql.SqlMigrationAssessmentResultItem | undefined> {
+		return this._rulePickedEvent;
 	}
 
 	public get sourceConnection(): azdata.connection.Connection {
