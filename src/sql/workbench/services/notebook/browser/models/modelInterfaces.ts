@@ -240,7 +240,7 @@ export interface INotebookModel {
 	/**
 	 * LanguageInfo saved in the notebook
 	 */
-	readonly languageInfo: nb.ILanguageInfo;
+	readonly languageInfo: nb.ILanguageInfo | undefined;
 	/**
 	 * Current default language for the notebook
 	 */

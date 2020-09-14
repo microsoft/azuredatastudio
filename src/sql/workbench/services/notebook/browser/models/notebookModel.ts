@@ -63,7 +63,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _onCellTypeChanged = new Emitter<ICellModel>();
 
 	private _cells: ICellModel[] = [];
-	private _defaultLanguageInfo: nb.ILanguageInfo = { name: '' };
+	private _defaultLanguageInfo: nb.ILanguageInfo | undefined;
 	private _tags: string[] = [];
 	private _existingMetadata: nb.INotebookMetadata = {};
 	private _language: string = '';
@@ -483,7 +483,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	deleteCell(cellModel: ICellModel): void {
-		if (this.inErrorState || this._cells.length === 0) {
+		if (this.inErrorState || !this._cells) {
 			return;
 		}
 		let index = firstIndex(this._cells, (cell) => cell.equals(cellModel));

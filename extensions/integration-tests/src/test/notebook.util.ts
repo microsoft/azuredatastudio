@@ -42,7 +42,8 @@ export const notebookContentForCellLanguageTest: azdata.nb.INotebookContents = {
 	}],
 	metadata: {
 		'kernelspec': {
-			'name': ''
+			'name': '',
+			display_name: ''
 		},
 	},
 	nbformat: 4,

@@ -180,7 +180,8 @@ describe('Jupyter Session', function (): void {
 
 		// When I call changeKernel on the wrapper
 		let kernel = await session.changeKernel({
-			name: 'python'
+			name: 'python',
+			display_name: 'Python'
 		});
 		// Then I expect it to have the ID, and only be called once
 		should(kernel.id).equal('id');
