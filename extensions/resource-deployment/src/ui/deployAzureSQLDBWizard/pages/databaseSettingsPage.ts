@@ -18,6 +18,7 @@ export class DatabaseSettingsPage extends BasePage {
 	private _firewallRuleNameTextRow!: azdata.FlexContainer;
 	private _databaseNameTextbox!: azdata.InputBoxComponent;
 	private _databaseNameTextRow!: azdata.FlexContainer;
+	private _IpInfoText!: azdata.TextComponent;
 
 	private _form!: azdata.FormContainer;
 
@@ -40,16 +41,19 @@ export class DatabaseSettingsPage extends BasePage {
 				.withFormItems(
 					[
 						{
-							component: this._startIpAddressTextRow
-						},
-						{
-							component: this._endIpAddressTextRow
+							component: this._databaseNameTextRow
 						},
 						{
 							component: this._firewallRuleNameTextRow
 						},
 						{
-							component: this._databaseNameTextRow
+							component: this._IpInfoText
+						},
+						{
+							component: this._startIpAddressTextRow
+						},
+						{
+							component: this._endIpAddressTextRow
 						}
 					],
 					{
@@ -87,11 +91,15 @@ export class DatabaseSettingsPage extends BasePage {
 
 	private createIpAddressText(view: azdata.ModelView) {
 
+		this._IpInfoText = view.modelBuilder.text()
+			.withProperties({
+				value: constants.IpAddressInfoLabel
+			}).component();
+
 		//Start IP Address Section:
 
 		this._startIpAddressTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
-			inputType: 'text',
-			value: '127.0.0.1'
+			inputType: 'text'
 		}).component();
 
 		this._startIpAddressTextbox.onTextChanged((value) => {
@@ -104,8 +112,7 @@ export class DatabaseSettingsPage extends BasePage {
 		//End IP Address Section:
 
 		this._endIpAddressTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
-			inputType: 'text',
-			value: '127.0.0.1'
+			inputType: 'text'
 		}).component();
 
 		this._endIpAddressTextbox.onTextChanged((value) => {
