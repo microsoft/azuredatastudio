@@ -445,7 +445,7 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 	}
 	if (context.fieldInfo.options.source) {
 		const optionsSource = context.fieldInfo.options.source;
-		for (const key of Object.keys(optionsSource.variableNames)) {
+		for (const key of Object.keys(optionsSource.variableNames ?? {})) {
 			context.fieldInfo.subFields!.push({
 				label: context.fieldInfo.label,
 				variableName: optionsSource.variableNames[key]
@@ -454,8 +454,15 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 				component: optionsComponent,
 				inputValueTransformerAsync: async (controllerName: string) => {
 					try {
-						return await optionsSource.getVariableValue(key, controllerName);
+						const variableValue = await optionsSource.getVariableValue(key, controllerName);
+						console.log(`TCL::: -----------------------------------`);
+						console.log(`TCL::: inputValueTransformerAsync -> variableValue`, variableValue, 'for key:', key);
+						console.log(`TCL::: -----------------------------------`);
+						return variableValue;
 					} catch (e) {
+						console.log(`TCL::: -----------`);
+						console.log(`TCL::: inputValueTransformerAsync -> error`, e);
+						console.log(`TCL::: -----------`);
 						disableControlButtons(context.container);
 						context.container.message = {
 							text: getErrorMessage(e),
@@ -1300,6 +1307,9 @@ async function getInputComponentValue(inputComponents: InputComponents, key: str
 		value = inputValueTransformer(value ?? '');
 	} else if (inputValueTransformerAsync) {
 		value = await inputValueTransformerAsync(value ?? '');
+		console.log(`TCL::: -------------------`);
+		console.log(`TCL::: value`, value, 'for key:', key);
+		console.log(`TCL::: -------------------`);
 	}
 	return value;
 }

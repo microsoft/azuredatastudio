@@ -601,7 +601,7 @@
                           "options": {
                             "source": {
                               "type": "ArcControllersOptionsSource",
-                              "VariableNames": {
+                              "variableNames": {
                                 "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
                                 "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
                                 "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
@@ -732,7 +732,7 @@
                           "options": {
                             "source": {
                               "type": "ArcControllersOptionsSource",
-                              "VariableNames": {
+                              "variableNames": {
                                 "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
                                 "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
                                 "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"

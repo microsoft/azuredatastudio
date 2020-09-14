@@ -44,8 +44,8 @@ export class CacheManager<K, T> {
 			setTimeout(async () => {
 				returnValue = await this.getCacheEntry(key, retrieveEntry);
 			}, 0);
+			await state.pendingOperation;
 			return returnValue!;
-
 		} else {
 			switch (cacheHit.status) {
 				case Status.notStarted: {
@@ -54,14 +54,17 @@ export class CacheManager<K, T> {
 					setTimeout(async () => {
 						try {
 							cacheHit.entry = await retrieveEntry(key);
-							cacheHit.status = Status.done;
-							cacheHit.pendingOperation.resolve();
 						} catch (error) {
 							cacheHit.error = error;
-							cacheHit.pendingOperation.reject(error);
+						} finally {
 							cacheHit.status = Status.done;
+							// we do not reject here even in error case because we do not want our awaits on pendingOperation to throw
+							// We track our own error state and if that is all done we throw the error saved. which results
+							// in the rejection of the promised returned by this method.
+							cacheHit.pendingOperation.resolve();
 						}
 					}, 0);
+					await cacheHit.pendingOperation;
 					return await this.getCacheEntry(key, retrieveEntry);
 				}
 
@@ -72,9 +75,11 @@ export class CacheManager<K, T> {
 
 				case Status.done: {
 					if (cacheHit.error !== undefined) {
+						await cacheHit.pendingOperation;
 						throw cacheHit.error;
 					}
 					else {
+						await cacheHit.pendingOperation;
 						return cacheHit.entry!;
 					}
 				}
