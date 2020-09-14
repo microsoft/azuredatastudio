@@ -21,7 +21,7 @@ class ApiService implements IApiService {
 
 	public async getAzurecoreApi(): Promise<azurecore.IExtension> {
 		if (!this.azurecoreApi) {
-			this.azurecoreApi = <azurecore.IExtension>(await vscode.extensions.getExtension(azurecore.extension.name)?.activate());
+			this.azurecoreApi = <azurecore.IExtension>(await vscode.extensions.getExtension(azurecore.extension.name)?.exports);
 			if (!this.azurecoreApi) {
 				throw new Error('Unable to retrieve azurecore API');
 			}
@@ -31,7 +31,7 @@ class ApiService implements IApiService {
 
 	public async getAzdataApi(): Promise<azdataExt.IExtension> {
 		if (!this.azdataApi) {
-			this.azdataApi = <azdataExt.IExtension>(await vscode.extensions.getExtension(azdataExt.extension.name)?.activate());
+			this.azdataApi = <azdataExt.IExtension>(await vscode.extensions.getExtension(azdataExt.extension.name)?.exports);
 			if (!this.azdataApi) {
 				throw new Error('Unable to retrieve azdata API');
 			}
