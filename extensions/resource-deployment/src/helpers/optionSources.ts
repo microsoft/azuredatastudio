@@ -65,45 +65,27 @@ export class ArcControllersOptionsSource extends OptionsSource {
 	async getVariableValue(variableName: string, controllerLabel: string): Promise<string> {
 		const retrieveVariable = async (key: string) => {
 			const [variableName, controllerLabel] = JSON.parse(key);
-			console.log(`TCL::: ------------------------------------------------------------------------------------------`);
-			console.log(`TCL::: ArcControllersOptionsSource -> retrieveVariable called for variable:`, variableName, ` and controller:`, controllerLabel);
-			console.log(`TCL::: ------------------------------------------------------------------------------------------`);
 			const controllers = await (await this.getArcApi()).getRegisteredDataControllers();
 			const controller = controllers!.find(ci => ci.label === controllerLabel);
 			throwUnless(controller !== undefined, loc.noControllerInfoFound(controllerLabel));
 			switch (variableName) {
 				case 'endpoint':
-					console.log(`TCL::: --------------------------------------------------------------------------------------------------`);
-					console.log(`TCL::: ArcControllersOptionsSource -> retrieveVariable returning controller.info.url`, controller.info.url);
-					console.log(`TCL::: --------------------------------------------------------------------------------------------------`);
 					return controller.info.url;
 				case 'username':
-					console.log(`TCL::: ------------------------------------------------------------------------------------------------------------`);
-					console.log(`TCL::: ArcControllersOptionsSource -> retrieveVariable returning controller.info.username`, controller.info.username);
-					console.log(`TCL::: ------------------------------------------------------------------------------------------------------------`);
 					return controller.info.username;
 				case 'password':
 					const fetchedPassword = await this.getPassword(controller);
-					console.log(`TCL::: ------------------------------------------------------------------------------------------`);
-					console.log(`TCL::: ArcControllersOptionsSource -> retrieveVariable returning fetchedPassword`, fetchedPassword);
-					console.log(`TCL::: ------------------------------------------------------------------------------------------`);
 					return fetchedPassword;
 				default:
 					throw new Error(loc.variableValueFetchForUnsupportedVariable(variableName));
 			}
 		};
 		const variableValue = await this._cacheManager.getCacheEntry(JSON.stringify([variableName, controllerLabel]), retrieveVariable);
-		console.log(`TCL::: ------------------------------------------------------------------`);
-		console.log(`TCL::: ArcControllersOptionsSource -> return variableValue`, variableValue, 'for variableName:', variableName);
-		console.log(`TCL::: ------------------------------------------------------------------`);
 		return variableValue;
 	}
 
 	private async getPassword(controller: arc.DataController): Promise<string> {
 		let password = await this._arcApi!.getControllerPassword(controller.info);
-		console.log(`TCL::: --------------------------------------------------------`);
-		console.log(`TCL::: ArcControllersOptionsSource -> getControllerPassword->password`, password);
-		console.log(`TCL::: --------------------------------------------------------`);
 		if (!password) {
 			password = await (await this.getArcApi()).reacquireControllerPassword(controller.info, password);
 		}
