@@ -445,18 +445,18 @@
           }
         ],
         "agreement": {
-          "template": "%azure-sqlvm-agreement%",
+          "template": "%azure-sqldb-agreement%",
           "links": [
             {
               "text": "%microsoft-privacy-statement%",
               "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
             },
             {
-              "text": "%azure-sqlvm-agreement-sqlvm-eula%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=2002534"
+              "text": "%azure-sqldb-agreement-sqldb-eula%",
+              "url": "https://azure.microsoft.com/support/legal/"
             },
             {
-              "text": "%azure-sqlvm-agreement-azdata-eula%",
+              "text": "%azure-sqldb-agreement-azdata-eula%",
               "url": "https://aka.ms/eula-azdata-en"
             }
           ]

@@ -65,12 +65,12 @@ export class DatabaseSettingsPage extends BasePage {
 
 	public async onEnter(): Promise<void> {
 		this.liveValidation = false;
-		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
 			}
 			this.liveValidation = true;
-			let errorMessage = this.formValidation();
+			let errorMessage = await this.formValidation();
 
 			if (errorMessage !== '') {
 				return false;
@@ -140,7 +140,7 @@ export class DatabaseSettingsPage extends BasePage {
 		});
 	}
 
-	protected formValidation(): string {
+	protected async formValidation(): Promise<string> {
 		let errorMessage = [];
 		let ipRegex = /(^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$)/;
 		let startipvalue = this._startIpAddressTextbox.value!;
@@ -156,24 +156,45 @@ export class DatabaseSettingsPage extends BasePage {
 			errorMessage.push('Max IP address is invalid');
 		}
 
-		if (firewallname.length < 2 || firewallname.length > 128) {
-			errorMessage.push('Firewall name must be between 2 and 128 characters long.');
+		if (/^\d+$/.test(firewallname)) {
+			errorMessage.push('Firewall name cannot contain only numbers.');
+		}
+		if (firewallname.length < 1 || firewallname.length > 15) {
+			errorMessage.push('Firewall name must be between 1 and 15 characters long.');
+		}
+		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(firewallname)) {
+			errorMessage.push('firewall name cannot contain special characters \/""[]:|<>+=;,?*@&, .');
 		}
 
-		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(firewallname)) {
-			errorMessage.push('Firewall name cannot contain special characters \/""[]:|<>+=;,?* .');
+		if (/^\d+$/.test(databasename)) {
+			errorMessage.push('Virtual machine name cannot contain only numbers.');
 		}
-
-		if (databasename.length < 2 || databasename.length > 128) {
-			errorMessage.push('Database name must be between 2 and 128 characters long.');
+		if (databasename.length < 1 || databasename.length > 15) {
+			errorMessage.push('Database name must be between 1 and 15 characters long.');
 		}
-
-		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/? ]+/.test(databasename)) {
-			errorMessage.push('Database name cannot contain special characters \/""[]:|<>+=;,?* or spaces.');
+		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(databasename)) {
+			errorMessage.push('Database name cannot contain special characters \/""[]:|<>+=;,?*@&, .');
+		}
+		if (await this.databaseNameExists(databasename)) {
+			errorMessage.push('Database name must be unique in the current server.');
 		}
 
 		this.wizard.showErrorMessage(errorMessage.join('\n'));
 		return errorMessage.join('\n');
+	}
+
+	protected async databaseNameExists(dbName: string): Promise<boolean> {
+		const url = `https://management.azure.com` +
+			`/subscriptions/${this.wizard.model.azureSubscription}` +
+			`/resourceGroups/${this.wizard.model.azureResouceGroup}` +
+			`/providers/Microsoft.Sql` +
+			`/servers/${this.wizard.model.azureServerName}` +
+			`/databases?api-version=2017-10-01-preview`;
+
+		let response = await this.wizard.getRequest(url, true);
+
+		let nameArray = response.data.value.map((v: any) => { return v.name; });
+		return (nameArray.includes(dbName));
 
 	}
 }

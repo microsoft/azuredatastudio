@@ -16,6 +16,7 @@ import { AzureSettingsPage } from './pages/azureSettingsPage';
 import { DatabaseSettingsPage } from './pages/databaseSettingsPage';
 import axios, { AxiosRequestConfig } from 'axios';
 import { AzureSQLDBSummaryPage } from './pages/summaryPage';
+import { EOL } from 'os';
 
 export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, WizardPageBase<DeployAzureSQLDBWizard>, DeployAzureSQLDBWizardModel> {
 
@@ -27,6 +28,15 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 		);
 	}
 
+	private cache: Map<string, any> = new Map();
+
+	protected initialize(): void {
+		this.setPages(this.getPages());
+		this.wizardObject.generateScriptButton.hidden = true;
+		this.wizardObject.doneButton.label = constants.WizardDoneButtonLabel;
+	}
+
+
 	public get notebookService(): INotebookService {
 		return this._notebookService;
 	}
@@ -35,11 +45,8 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 		return this._toolsService;
 	}
 
-	protected initialize(): void {
-		this.setPages(this.getPages());
-		this.wizardObject.generateScriptButton.hidden = true;
-		this.wizardObject.doneButton.label = constants.WizardDoneButtonLabel;
-	}
+
+
 
 	protected async onOk(): Promise<void> {
 		await this.scriptToNotebook();
@@ -67,7 +74,12 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 	}
 
 
-	public async getRequest(url: string): Promise<any> {
+	public async getRequest(url: string, useCache = false): Promise<any> {
+		if (useCache) {
+			if (this.cache.has(url)) {
+				return this.cache.get(url);
+			}
+		}
 		let token = this.model.securityToken.token;
 		const config: AxiosRequestConfig = {
 			headers: {
@@ -77,6 +89,18 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 			validateStatus: () => true // Never throw
 		};
 		const response = await axios.get(url, config);
+		if (response.status !== 200) {
+			let errorMessage: string[] = [];
+			errorMessage.push(response.status.toString());
+			errorMessage.push(response.statusText);
+			if (response.data && response.data.error) {
+				errorMessage.push(`${response.data.error.code} : ${response.data.error.message}`);
+			}
+			vscode.window.showErrorMessage(errorMessage.join(EOL));
+		}
+		if (useCache) {
+			this.cache.set(url, response);
+		}
 		return response;
 	}
 

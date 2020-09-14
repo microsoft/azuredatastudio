@@ -14,7 +14,7 @@ export abstract class BasePage extends WizardPageBase<DeployAzureSQLDBWizard> {
 		throw new Error('Method not implemented.');
 	}
 
-	protected formValidation(): string {
+	protected async formValidation(): Promise<string> {
 		return '';
 	}
 

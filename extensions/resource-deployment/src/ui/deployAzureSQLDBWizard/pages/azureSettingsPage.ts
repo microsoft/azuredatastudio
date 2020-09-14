@@ -15,7 +15,6 @@ export class AzureSettingsPage extends BasePage {
 	// <- means depends on
 	//dropdown for azure accounts
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
-	private _azureAccountsLoader!: azdata.LoadingComponent;
 	private signInButton!: azdata.ButtonComponent;
 	private refreshButton!: azdata.ButtonComponent;
 
@@ -23,19 +22,15 @@ export class AzureSettingsPage extends BasePage {
 
 	//dropdown for subscription accounts <- azure account dropdown
 	private _azureSubscriptionsDropdown!: azdata.DropDownComponent;
-	private _azureSubscriptionLoader!: azdata.LoadingComponent;
 
 	//dropdown for resource groups <- subscription dropdown //@todo alma1 9/9/2020 Used for upcoming server creation feature.
 	// private _resourceGroupDropdown!: azdata.DropDownComponent;
-	// private _resourceGroupLoader!: azdata.LoadingComponent;
 
 	//dropdown for SQL servers <- resource dropdown
 	private _serverGroupDropdown!: azdata.DropDownComponent;
-	private _serverGroupLoader!: azdata.LoadingComponent;
 
 	// //dropdown for azure regions <- subscription dropdown //@todo alma1 9/8/2020 Region dropdown used for upcoming server creation feature.
 	// private _azureRegionsDropdown!: azdata.DropDownComponent;
-	// private _azureRegionsLoader!: azdata.LoadingComponent;
 
 	private _form!: azdata.FormContainer;
 
@@ -67,13 +62,13 @@ export class AzureSettingsPage extends BasePage {
 				.withFormItems(
 					[
 						{
-							component: this.wizard.createFormRowComponent(view, constants.AzureAccountDropdownLabel, '', this._azureAccountsLoader, true)
+							component: this.wizard.createFormRowComponent(view, constants.AzureAccountDropdownLabel, '', this._azureAccountsDropdown, true)
 						},
 						{
 							component: this.buttonFlexContainer
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.AzureAccountSubscriptionDropdownLabel, '', this._azureSubscriptionLoader, true)
+							component: this.wizard.createFormRowComponent(view, constants.AzureAccountSubscriptionDropdownLabel, '', this._azureSubscriptionsDropdown, true)
 						},
 						// { //@todo alma1 9/9/2020 Used for upcoming server creation feature.
 						// 	component: this.wizard.createFormRowComponent(view, constants.AzureAccountResourceGroupDropdownLabel, '', this._resourceGroupDropdown, true)
@@ -82,7 +77,7 @@ export class AzureSettingsPage extends BasePage {
 							component: this.wizard.createFormRowComponent(view, constants.AzureAccountDatabaseServersDropdownLabel, '', this._serverGroupDropdown, true)
 						}
 						// { //@todo alma1 9/8/2020 Used for upcoming server creation feature.
-						// 	component: this.wizard.createFormRowComponent(view, constants.AzureAccountRegionDropdownLabel, '', this._azureRegionsLoader, true)
+						// 	component: this.wizard.createFormRowComponent(view, constants.AzureAccountRegionDropdownLabel, '', this._azureRegionsDropdown, true)
 						// }
 					],
 					{
@@ -96,12 +91,12 @@ export class AzureSettingsPage extends BasePage {
 	}
 
 	public async onEnter(): Promise<void> {
-		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
 			}
 			this.liveValidation = true;
-			let errorMessage = this.formValidation();
+			let errorMessage = await this.formValidation();
 
 			if (errorMessage !== '') {
 				return false;
@@ -145,11 +140,10 @@ export class AzureSettingsPage extends BasePage {
 			flexFlow: 'row'
 		}).withItems([this.signInButton, this.refreshButton], { CSSStyles: { 'margin-right': '5px', } }).component();
 
-		this._azureAccountsLoader = view.modelBuilder.loadingComponent().withItem(this._azureAccountsDropdown).component();
 	}
 
 	private async populateAzureAccountsDropdown() {
-		this._azureAccountsLoader.loading = true;
+		this._azureAccountsDropdown.loading = true;
 		let accounts = await azdata.accounts.getAllAccounts();
 
 		if (accounts.length === 0) {
@@ -172,15 +166,13 @@ export class AzureSettingsPage extends BasePage {
 		);
 
 		this.wizard.model.azureAccount = accounts[0];
-		this._azureAccountsLoader.loading = false;
+		this._azureAccountsDropdown.loading = false;
 
 		await this.populateAzureSubscriptionsDropdown();
 	}
 
 	private async createAzureSubscriptionsDropdown(view: azdata.ModelView) {
 		this._azureSubscriptionsDropdown = view.modelBuilder.dropDown().withProperties({}).component();
-
-		this._azureSubscriptionLoader = view.modelBuilder.loadingComponent().withItem(this._azureSubscriptionsDropdown).component();
 
 		this._azureSubscriptionsDropdown.onValueChanged(async (value) => {
 
@@ -202,11 +194,11 @@ export class AzureSettingsPage extends BasePage {
 	}
 
 	private async populateAzureSubscriptionsDropdown() {
-		this._azureSubscriptionLoader.loading = true;
+		this._azureSubscriptionsDropdown.loading = true;
 		let subService = await apiService.getAzurecoreApi();
 		let currentAccountDropdownValue = (this._azureAccountsDropdown.value as azdata.CategoryValue);
 		if (currentAccountDropdownValue === undefined) {
-			this._azureSubscriptionLoader.loading = false;
+			this._azureSubscriptionsDropdown.loading = false;
 			await this.populateServerGroupDropdown();
 			//@todo alma1 9/8/2020 used for upcoming server creation feature.
 			//await this.populateResourceGroupDropdown();
@@ -219,7 +211,7 @@ export class AzureSettingsPage extends BasePage {
 			this._azureSubscriptionsDropdown.updateProperties({
 				values: []
 			});
-			this._azureSubscriptionLoader.loading = false;
+			this._azureSubscriptionsDropdown.loading = false;
 			await this.populateServerGroupDropdown();
 			//@todo alma1 9/8/2020 used for upcoming server creation feature.
 			//await this.populateResourceGroupDropdown();
@@ -248,7 +240,7 @@ export class AzureSettingsPage extends BasePage {
 			this._subscriptionsMap.get((this._azureSubscriptionsDropdown.value as azdata.CategoryValue).name)?.tenant!,
 			azdata.AzureResource.ResourceManagement
 		);
-		this._azureSubscriptionLoader.loading = false;
+		this._azureSubscriptionsDropdown.loading = false;
 		await this.populateServerGroupDropdown();
 		//@todo alma1 9/8/2020 used for upcoming server creation feature.
 		//await this.populateResourceGroupDropdown();
@@ -259,7 +251,6 @@ export class AzureSettingsPage extends BasePage {
 		this._serverGroupDropdown = view.modelBuilder.dropDown().withProperties({
 			required: true,
 		}).component();
-		this._serverGroupLoader = view.modelBuilder.loadingComponent().withItem(this._serverGroupDropdown).component();
 		this._serverGroupDropdown.onValueChanged(async (value) => {
 			if (value.selected === ((this._serverGroupDropdown.value as azdata.CategoryValue).displayName)) {
 				this.wizard.model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
@@ -269,17 +260,17 @@ export class AzureSettingsPage extends BasePage {
 	}
 
 	private async populateServerGroupDropdown() {
-		this._serverGroupLoader.loading = true;
+		this._serverGroupDropdown.loading = true;
 		let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
 		if (currentSubscriptionValue === undefined || currentSubscriptionValue.displayName === '') {
 			this._serverGroupDropdown.updateProperties({
 				values: []
 			});
-			this._serverGroupLoader.loading = false;
+			this._serverGroupDropdown.loading = false;
 			return;
 		}
 		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/providers/Microsoft.Sql/servers?api-version=2019-06-01-preview`;
-		const response = await this.wizard.getRequest(url);
+		let response = await this.wizard.getRequest(url);
 		if (response.data.value.length === 0) {
 			this._serverGroupDropdown.updateProperties({
 				values: [
@@ -289,7 +280,7 @@ export class AzureSettingsPage extends BasePage {
 					}
 				],
 			});
-			this._serverGroupLoader.loading = false;
+			this._serverGroupDropdown.loading = false;
 			return;
 		} else {
 			response.data.value.sort((a: azdata.CategoryValue, b: azdata.CategoryValue) => (a!.name > b!.name) ? 1 : -1);
@@ -307,7 +298,7 @@ export class AzureSettingsPage extends BasePage {
 			this.wizard.model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
 			this.wizard.model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
 		}
-		this._serverGroupLoader.loading = false;
+		this._serverGroupDropdown.loading = false;
 		return;
 	}
 
@@ -317,7 +308,6 @@ export class AzureSettingsPage extends BasePage {
 	// 	this._resourceGroupDropdown = view.modelBuilder.dropDown().withProperties({
 	// 		required: true
 	// 	}).component();
-	// 	this._resourceGroupLoader = view.modelBuilder.loadingComponent().withItem(this._resourceGroupDropdown).component();
 	// 	this._resourceGroupDropdown.onValueChanged(async (value) => {
 	// 		this.wizard.model.azureResouceGroup = value.selected;
 	// 		this.populateServerGroupDropdown();
@@ -325,7 +315,7 @@ export class AzureSettingsPage extends BasePage {
 	// }
 
 	// private async populateResourceGroupDropdown() {
-	// 	this._resourceGroupLoader.loading = true;
+	// 	this._resourceGroupDropdown.loading = true;
 	// 	let subService = await apiService.getAzurecoreApi();
 	// 	let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
 	// 	if (currentSubscriptionValue === undefined || currentSubscriptionValue.displayName === '') {
@@ -333,14 +323,14 @@ export class AzureSettingsPage extends BasePage {
 	// 		this._resourceGroupDropdown.updateProperties({
 	// 			values: []
 	// 		});
-	// 		this._resourceGroupLoader.loading = false;
+	// 		this._resourceGroupDropdown.loading = false;
 	// 		await this.populateServerGroupDropdown();
 	// 		return;
 	// 	}
 	// 	let currentSubscription = this._subscriptionsMap.get(currentSubscriptionValue.name);
 	// 	let resourceGroups = (await subService.getResourceGroups(this.wizard.model.azureAccount, currentSubscription, true)).resourceGroups;
 	// 	if (resourceGroups === undefined || resourceGroups.length === 0) {
-	// 		this._resourceGroupLoader.loading = false;
+	// 		this._resourceGroupDropdown.loading = false;
 	// 		this._resourceGroupDropdown.updateProperties({
 	// 			values: []
 	// 		});
@@ -358,7 +348,7 @@ export class AzureSettingsPage extends BasePage {
 	// 		})
 	// 	});
 	// 	this.wizard.model.azureResouceGroup = (this._resourceGroupDropdown.value as azdata.CategoryValue).name;
-	// 	this._resourceGroupLoader.loading = false;
+	// 	this._resourceGroupDropdown.loading = false;
 	// 	await this.populateServerGroupDropdown();
 	// }
 
@@ -367,7 +357,6 @@ export class AzureSettingsPage extends BasePage {
 	// 		required: true
 	// 	}).component();
 
-	// 	this._azureRegionsLoader = view.modelBuilder.loadingComponent().withItem(this._azureRegionsDropdown).component();
 
 	// 	this._azureRegionsDropdown.onValueChanged((value) => {
 	// 		this.wizard.model.azureRegion = (this._azureRegionsDropdown.value as azdata.CategoryValue).name;
@@ -375,13 +364,19 @@ export class AzureSettingsPage extends BasePage {
 	// }
 
 	// private async populateAzureRegionsDropdown() {
-	// 	this._azureRegionsLoader.loading = true;
+	// 	this._azureRegionsDropdown.loading = true;
+
+	// let supportedRegions = 'eastus, eastus2, westus, centralus, northcentralus, southcentralus, northeurope, westeurope, eastasia, southeastasia, japaneast, japanwest, australiaeast, australiasoutheast, australiacentral, brazilsouth, southindia, centralindia, westindia, canadacentral, canadaeast, westus2, westcentralus, uksouth, ukwest, koreacentral, koreasouth, francecentral, southafricanorth, uaenorth, switzerlandnorth, germanywestcentral, norwayeast';
+	// 	let supportedRegionsArray = supportedRegions.split(', ');
 	// 	let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/locations?api-version=2020-01-01`;
-	// 	const response = await this.wizard.getRequest(url);
+	// 	const response = await this.wizard.getRequest(url, true);
+	// 	response.data.value = response.data.value.sort((a: any, b: any) => (a.displayName > b.displayName) ? 1 : -1);
 
 	// 	this.wizard.addDropdownValues(
 	// 		this._azureRegionsDropdown,
-	// 		response.data.value.map((value: any) => {
+	// 		response.data.value.filter((value: any) => {
+	// 	return supportedRegionsArray.includes(value.name);
+	// }).map((value: any) => {
 	// 			return {
 	// 				displayName: value.displayName,
 	// 				name: value.name
@@ -389,10 +384,10 @@ export class AzureSettingsPage extends BasePage {
 	// 		})
 	// 	);
 	// 	this.wizard.model.azureRegion = (this._azureRegionsDropdown.value as azdata.CategoryValue).name;
-	// 	this._azureRegionsLoader.loading = false;
+	// 	this._azureRegionsDropdown.loading = false;
 	// }
 
-	protected formValidation(): string {
+	protected async formValidation(): Promise<string> {
 		let errorMessage = [];
 		let serverName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
 		if (serverName === 'No servers found') {

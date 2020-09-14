@@ -43,11 +43,16 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 
 		let model = this.wizard.model;
 
+		const labelWidth = '150px';
+		const inputWidth = '400px';
+		const fieldHeight = '20px';
+
 		const auzreSettingSection: SectionInfo = {
 			labelPosition: LabelPosition.Left,
-			labelWidth: '150px',
-			inputWidth: '200px',
-			fieldHeight: '50px',
+			labelWidth: labelWidth,
+			inputWidth: inputWidth,
+			fieldHeight: fieldHeight,
+			spaceBetweenFields: '0',
 			title: constants.AzureSettingsSummaryPageTitle,
 			fields: [
 				{
@@ -79,9 +84,9 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 
 		const databaseSettingSection: SectionInfo = {
 			labelPosition: LabelPosition.Left,
-			labelWidth: '150px',
-			inputWidth: '200px',
-			fieldHeight: '50px',
+			labelWidth: labelWidth,
+			inputWidth: inputWidth,
+			fieldHeight: fieldHeight,
 			title: constants.DatabaseSettingsPageTitle,
 			fields: [
 				{
