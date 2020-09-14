@@ -55,7 +55,7 @@ export class CacheManager<K, T> {
 					} finally {
 						cacheHit.status = Status.done;
 						// we do not reject here even in error case because we do not want our awaits on pendingOperation to throw
-						// We track our own error state and if that is all done we throw the error saved. which results
+						// We track our own error state and when all done we throw if an error had happened. This results
 						// in the rejection of the promised returned by this method.
 						cacheHit.pendingOperation.resolve();
 					}
