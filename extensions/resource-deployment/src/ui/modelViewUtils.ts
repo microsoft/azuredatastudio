@@ -24,13 +24,11 @@ import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentB
 const localize = nls.loadMessageBundle();
 
 export type Validator = () => { valid: boolean, message: string };
-export type InputValueTransformer = (inputValue: string) => string;
-export type InputValueTransformerAsync = (inputValue: string) => Promise<string>;
+export type InputValueTransformer = (inputValue: string) => string | Promise<string>;
 export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder;
 export type InputComponentInfo = {
 	component: InputComponent;
 	inputValueTransformer?: InputValueTransformer;
-	inputValueTransformerAsync?: InputValueTransformerAsync;
 	isPassword?: boolean
 };
 
@@ -452,7 +450,7 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 			});
 			context.onNewInputComponentCreated(optionsSource.variableNames[key], {
 				component: optionsComponent,
-				inputValueTransformerAsync: async (controllerName: string) => {
+				inputValueTransformer: async (controllerName: string) => {
 					try {
 						const variableValue = await optionsSource.getVariableValue(key, controllerName);
 						return variableValue;
@@ -639,7 +637,7 @@ function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
 	const readOnlyField = processReadonlyTextField(context, false /*allowEvaluation*/);
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
 		component: readOnlyField.text!,
-		inputValueTransformerAsync: async () => {
+		inputValueTransformer: async () => {
 			readOnlyField.text!.value = await substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
 			return readOnlyField.text?.value!;
 		}
@@ -1296,11 +1294,11 @@ async function getInputComponentValue(inputComponents: InputComponents, key: str
 		throw new Error(`Unknown input type with ID ${input.id}`);
 	}
 	const inputValueTransformer = inputComponents[key].inputValueTransformer;
-	const inputValueTransformerAsync = inputComponents[key].inputValueTransformerAsync;
 	if (inputValueTransformer) {
 		value = inputValueTransformer(value ?? '');
-	} else if (inputValueTransformerAsync) {
-		value = await inputValueTransformerAsync(value ?? '');
+		if (typeof value !== 'string') {
+			value = await value;
+		}
 	}
 	return value;
 }
