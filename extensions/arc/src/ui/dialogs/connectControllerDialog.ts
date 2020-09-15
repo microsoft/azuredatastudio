@@ -72,16 +72,16 @@ abstract class ControllerDialogBase extends InitializingComponent {
 			}).component();
 	}
 
-	protected _completionPromise = new Deferred<ConnectToControllerDialogModel | undefined>();
-	protected _id!: string;
+	protected completionPromise = new Deferred<ConnectToControllerDialogModel | undefined>();
+	protected id!: string;
 
-	constructor(protected _treeDataProvider: AzureArcTreeDataProvider, title: string) {
+	constructor(protected treeDataProvider: AzureArcTreeDataProvider, title: string) {
 		super();
 		this.dialog = azdata.window.createModelViewDialog(title);
 	}
 
 	public showDialog(controllerInfo?: ControllerInfo, password?: string): azdata.window.Dialog {
-		this._id = controllerInfo?.id ?? uuid();
+		this.id = controllerInfo?.id ?? uuid();
 		this.dialog.cancelButton.onClick(() => this.handleCancel());
 		this.dialog.registerContent(async (view) => {
 			this.modelBuilder = view.modelBuilder;
@@ -108,11 +108,11 @@ abstract class ControllerDialogBase extends InitializingComponent {
 	public abstract async validate(): Promise<boolean>;
 
 	private handleCancel(): void {
-		this._completionPromise.resolve(undefined);
+		this.completionPromise.resolve(undefined);
 	}
 
 	public waitForClose(): Promise<ConnectToControllerDialogModel | undefined> {
-		return this._completionPromise.promise;
+		return this.completionPromise.promise;
 	}
 }
 
@@ -139,8 +139,8 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 			}).component();
 	}
 
-	constructor(protected _treeDataProvider: AzureArcTreeDataProvider) {
-		super(_treeDataProvider, loc.connectToController);
+	constructor(treeDataProvider: AzureArcTreeDataProvider) {
+		super(treeDataProvider, loc.connectToController);
 	}
 
 	public async validate(): Promise<boolean> {
@@ -161,14 +161,14 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 			url = `${url}:30080`;
 		}
 		const controllerInfo: ControllerInfo = {
-			id: this._id,
+			id: this.id,
 			url: url,
 			name: this.nameInputBox.value ?? '',
 			username: this.usernameInputBox.value,
 			rememberPassword: this.rememberPwCheckBox.checked ?? false,
 			resources: []
 		};
-		const controllerModel = new ControllerModel(this._treeDataProvider, controllerInfo, this.passwordInputBox.value);
+		const controllerModel = new ControllerModel(this.treeDataProvider, controllerInfo, this.passwordInputBox.value);
 		try {
 			// Validate that we can connect to the controller, this also populates the controllerRegistration from the connection response.
 			await controllerModel.refresh(false);
@@ -181,14 +181,14 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 			};
 			return false;
 		}
-		this._completionPromise.resolve({ controllerModel: controllerModel, password: this.passwordInputBox.value });
+		this.completionPromise.resolve({ controllerModel: controllerModel, password: this.passwordInputBox.value });
 		return true;
 	}
 }
 export class PasswordToControllerDialog extends ControllerDialogBase {
 
-	constructor(protected _treeDataProvider: AzureArcTreeDataProvider) {
-		super(_treeDataProvider, loc.passwordToController);
+	constructor(treeDataProvider: AzureArcTreeDataProvider) {
+		super(treeDataProvider, loc.passwordToController);
 	}
 
 	protected fieldToFocusOn = () => this.passwordInputBox;
@@ -221,15 +221,15 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 			}
 		}
 		const controllerInfo: ControllerInfo = {
-			id: this._id,
+			id: this.id,
 			url: this.urlInputBox.value!,
 			name: this.nameInputBox.value!,
 			username: this.usernameInputBox.value!,
 			rememberPassword: false,
 			resources: []
 		};
-		const controllerModel = new ControllerModel(this._treeDataProvider, controllerInfo, this.passwordInputBox.value);
-		this._completionPromise.resolve({ controllerModel: controllerModel, password: this.passwordInputBox.value });
+		const controllerModel = new ControllerModel(this.treeDataProvider, controllerInfo, this.passwordInputBox.value);
+		this.completionPromise.resolve({ controllerModel: controllerModel, password: this.passwordInputBox.value });
 		return true;
 	}
 
