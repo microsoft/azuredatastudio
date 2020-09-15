@@ -171,8 +171,8 @@ export class DashboardWidget {
 		const viewPanelStyle = {
 			'padding': '0px',
 			'padding-right': '5px',
-			'padding-top': '20px',
-			'height': '200px',
+			'padding-top': '10px',
+			'height': '193px',
 			'margin': '0px'
 		};
 
@@ -210,7 +210,7 @@ export class DashboardWidget {
 			}
 		]);
 
-		this.addShowMorePanel(view, linksContainer, moreVideosContainer, { 'padding-left': '5px' }, viewPanelStyle);
+		this.addShowMorePanel(view, linksContainer, moreVideosContainer, { 'padding-left': '0px' }, viewPanelStyle);
 		return linksContainer;
 	}
 
@@ -259,10 +259,8 @@ export class DashboardWidget {
 			CSSStyles: Object.assign({}, moreButtonStyle, {
 				'font-size': '12px',
 				'margin': '0px',
-				'color': '#006ab1',
 				'padding-right': '5px'
-			}
-			)
+			})
 		});
 		linkContainer.addItem(image, {
 			CSSStyles: {
@@ -278,7 +276,6 @@ export class DashboardWidget {
 			CSSStyles: {
 				'padding': '0px',
 				'padding-right': '5px',
-				'padding-top': '10px',
 				'height': '10px',
 				'margin': '0px'
 			}
@@ -398,12 +395,10 @@ export class DashboardWidget {
 	}
 
 	private createLink(view: azdata.ModelView, linkMetaData: IActionMetadata): azdata.Component {
-		const maxHeight = 80;
 		const maxWidth = 400;
 		const labelsContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: maxWidth,
-			height: maxHeight,
 			justifyContent: 'flex-start'
 		}).component();
 		const descriptionComponent = view.modelBuilder.text().withProperties({
@@ -441,8 +436,7 @@ export class DashboardWidget {
 			CSSStyles: {
 				'padding': '0px',
 				'padding-right': '5px',
-				'margin': '0px',
-				'color': '#006ab1'
+				'margin': '0px'
 			}
 		});
 		linkContainer.addItem(image, {
