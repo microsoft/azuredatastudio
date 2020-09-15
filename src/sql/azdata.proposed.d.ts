@@ -307,7 +307,7 @@ declare module 'azdata' {
 
 	}
 
-	export interface DeclarativeTableProperties extends ComponentProperties {
+	export interface DeclarativeTableProperties {
 		/**
 		 * dataValues will only be used if data is an empty array
 		 */
