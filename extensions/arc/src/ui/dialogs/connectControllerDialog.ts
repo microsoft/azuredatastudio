@@ -119,7 +119,9 @@ abstract class ControllerDialogBase extends InitializingComponent {
 export class ConnectToControllerDialog extends ControllerDialogBase {
 	protected rememberPwCheckBox!: azdata.CheckBoxComponent;
 
-	protected fieldToFocusOn = () => this.urlInputBox;
+	protected fieldToFocusOn() {
+		return this.urlInputBox;
+	}
 
 	protected getComponents() {
 		return [
@@ -191,12 +193,17 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 		super(treeDataProvider, loc.passwordToController);
 	}
 
-	protected fieldToFocusOn = () => this.passwordInputBox;
-	protected readonlyFields = () => [
-		this.urlInputBox,
-		this.nameInputBox,
-		this.usernameInputBox
-	];
+	protected fieldToFocusOn() {
+		return this.passwordInputBox;
+	}
+
+	protected readonlyFields() {
+		return [
+			this.urlInputBox,
+			this.nameInputBox,
+			this.usernameInputBox
+		];
+	}
 
 	public async validate(): Promise<boolean> {
 		if (!this.passwordInputBox.value) {
