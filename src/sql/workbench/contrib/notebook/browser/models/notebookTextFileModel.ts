@@ -105,6 +105,25 @@ export class NotebookTextFileModel {
 				}]);
 			});
 			return true;
+		} else if (contentChange && areRangePropertiesPopulated(cellGuidRange)) {
+			// If no modelContentChanged event, then we're replacing the entire source for that cell
+			let sourceEnd = this.getSourceEndRange(textEditorModel, contentChange.cells[0].cellGuid);
+			if (sourceEnd) {
+				// Need to subtract one because we're going from 1-based to 0-based
+				let startSpaces: string = repeat(' ', cellGuidRange.startColumn - 1);
+				let escapedQuotesAndBackslashes = contentChange.cells[0].source.join('\n').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+
+				// The text here transforms a string from 'This is a string\n this is another string' to:
+				//     This is a string
+				//     this is another string
+
+				// Note: Adding 1 to startColumn to avoid overwriting first "
+				textEditorModel.textEditorModel.applyEdits([{
+					range: new Range(this._sourceBeginRange.startLineNumber, this._sourceBeginRange.startColumn + 1, sourceEnd.endLineNumber, sourceEnd.endColumn),
+					text: escapedQuotesAndBackslashes.split(/[\r\n]+/gm).join('\\n\",'.concat(this._eol).concat(startSpaces).concat('\"'))
+				}]);
+				return true;
+			}
 		}
 		return false;
 	}
@@ -207,6 +226,24 @@ export class NotebookTextFileModel {
 		} else {
 			return;
 		}
+	}
+
+	private getSourceEndRange(textEditorModel: ITextEditorModel, cellGuid: string): IRange | undefined {
+		if (!cellGuid) {
+			return undefined;
+		}
+		let cellGuidMatches = findOrSetCellGuidMatch(textEditorModel, cellGuid);
+		if (cellGuidMatches && cellGuidMatches.length > 0) {
+			let lineForSourceEnd = cellGuidMatches[0].range.startLineNumber - 3;
+			let lastCharacterPosition = textEditorModel.textEditorModel.getLineLength(lineForSourceEnd);
+			return {
+				startColumn: lastCharacterPosition,
+				startLineNumber: lineForSourceEnd,
+				endLineNumber: lineForSourceEnd,
+				endColumn: lastCharacterPosition
+			};
+		}
+		return undefined;
 	}
 
 	// Find the beginning of a cell's outputs in the text editor model
