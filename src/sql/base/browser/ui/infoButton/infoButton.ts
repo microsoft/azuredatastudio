@@ -155,7 +155,7 @@ export class InfoButton extends sqlButton {
 		DOM.addClass(this._iconElement, this._iconClass!);
 	}
 
-	public set infoButtonOptions(options: IInfoButtonOptions) {
+	public set infoButtonOptions(options: IInfoButtonOptions | undefined) {
 		if (!options) {
 			return;
 		}
