@@ -275,7 +275,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			if (messages.length > 1) {
 				messages = messages.map(message => `•	${message}`);
 			}
-			messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed manually or eula is accepted manually to pick up the change. You may find additional details in 'Deployments and azdata' output channels"));
+			messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed manually or EULA is accepted manually to pick up the change. You may find additional details in 'Deployments' and 'azdata' output channels"));
 			this._dialogObject.message = {
 				level: azdata.window.MessageLevel.Error,
 				text: messages.join(EOL)
