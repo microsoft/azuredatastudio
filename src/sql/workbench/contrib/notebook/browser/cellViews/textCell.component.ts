@@ -107,6 +107,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		super();
 		this.setTurndownOptions();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
+		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
 				this.markdownResult.dispose();

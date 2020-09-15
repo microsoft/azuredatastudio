@@ -112,6 +112,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		super();
 		this.updateProfile();
 		this.isLoading = true;
+		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		}));
