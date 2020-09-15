@@ -401,6 +401,7 @@
           "light": "./images/azure-sql-db.svg",
           "dark": "./images/azure-sql-db.svg"
         },
+        "okButtonText": "%azure-sqldb-ok-button-text%",
         "options": [
           {
             "name": "resource-type",
@@ -423,7 +424,7 @@
         ],
         "providers": [
           {
-            "azureSQLDBWizard":{
+            "azureSQLDBWizard": {
               "notebook": "./notebooks/azuredb/create-sqldb.ipynb"
             },
             "requiredTools": [
@@ -473,7 +474,7 @@
         },
         "providers": [
           {
-            "azureSQLVMWizard":{
+            "azureSQLVMWizard": {
               "notebook": "./notebooks/azurevm/create-sqlvm.ipynb"
             },
             "requiredTools": [
