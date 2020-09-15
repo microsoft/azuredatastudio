@@ -177,8 +177,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private selectResourceType(resourceType: ResourceType): void {
 		this._selectedResourceType = resourceType;
 		//handle special case when resource type is SQL Azure Database
-		if (this._selectedResourceType.name === 'sql-azure-setup') {
-			this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonSqlDbText', "Create in Azure portal");
+		if (this._selectedResourceType.okButtonText) {
+			this._dialogObject.okButton.label = this._selectedResourceType.okButtonText;
 		}
 		else {
 			this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Select");
