@@ -608,6 +608,13 @@
                           "labelWidth": "100%"
                         },
                         {
+                          "label": "%arc.sql.instance.port%",
+                          "variableName": "AZDATA_NB_VAR_SQL_INSTANCE_PORT",
+                          "type": "number",
+                          "required": false,
+                          "labelWidth": "100%"
+                        },
+                        {
                           "label": "%arc.sql.username%",
                           "variableName": "AZDATA_NB_VAR_SQL_USERNAME",
                           "type": "text",
@@ -637,6 +644,34 @@
                           "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
                           "type": "kube_storage_class",
                           "required": true
+                        },
+                        {
+                          "label": "%arc.cores-limit.label%",
+                          "description": "%arc.sql.cores-limit.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                          "type": "number",
+                          "required": false
+                        },
+                        {
+                          "label": "%arc.cores-request.label%",
+                          "description": "%arc.sql.cores-request.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
+                          "type": "number",
+                          "required": false
+                        },
+                        {
+                          "label": "%arc.memory-limit.label%",
+                          "description": "%arc.sql.memory-limit.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
+                          "type": "number",
+                          "required": false
+                        },
+                        {
+                          "label": "%arc.memory-request.label%",
+                          "description": "%arc.sql.memory-request.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
+                          "type": "number",
+                          "required": false
                         }
                       ]
                     }
