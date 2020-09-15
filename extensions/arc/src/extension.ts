@@ -67,10 +67,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 		getControllerPassword: async (controllerInfo: arc.ControllerInfo) => {
 			return await treeDataProvider.getPassword(controllerInfo);
 		},
-		reacquireControllerPassword: async (controllerInfo: arc.ControllerInfo, password: string) => {
+		reacquireControllerPassword: async (controllerInfo: arc.ControllerInfo) => {
 			let model;
 			const dialog = new PasswordToControllerDialog(treeDataProvider);
-			dialog.showDialog(controllerInfo, password);
+			dialog.showDialog(controllerInfo);
 			model = await dialog.waitForClose();
 			if (!model) {
 				throw new UserCancelledError();

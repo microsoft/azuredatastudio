@@ -41,7 +41,6 @@ export abstract class OptionsSource implements IOptionsSource {
 }
 
 export class ArcControllersOptionsSource extends OptionsSource {
-	private _arcApi?: arc.IExtension | undefined;
 	private _cacheManager = new CacheManager<string, string>();
 	constructor() {
 		super();
@@ -78,7 +77,7 @@ export class ArcControllersOptionsSource extends OptionsSource {
 	}
 
 	private async getPassword(controller: arc.DataController): Promise<string> {
-		let password = await this._arcApi!.getControllerPassword(controller.info);
+		let password = await apiService.arcApi.getControllerPassword(controller.info);
 		if (!password) {
 			password = await apiService.arcApi.reacquireControllerPassword(controller.info, password);
 		}

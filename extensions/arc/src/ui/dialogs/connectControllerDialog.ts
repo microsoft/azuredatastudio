@@ -80,7 +80,7 @@ abstract class ControllerDialogBase extends InitializingComponent {
 		this.dialog = azdata.window.createModelViewDialog(title);
 	}
 
-	public showDialog(controllerInfo?: ControllerInfo, password?: string): azdata.window.Dialog {
+	public showDialog(controllerInfo?: ControllerInfo, password: string | undefined = undefined): azdata.window.Dialog {
 		this.id = controllerInfo?.id ?? uuid();
 		this.dialog.cancelButton.onClick(() => this.handleCancel());
 		this.dialog.registerContent(async (view) => {
@@ -240,8 +240,8 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 		return true;
 	}
 
-	public showDialog(controllerInfo?: ControllerInfo, password?: string): azdata.window.Dialog {
-		const dialog = super.showDialog(controllerInfo, password);
+	public showDialog(controllerInfo?: ControllerInfo): azdata.window.Dialog {
+		const dialog = super.showDialog(controllerInfo);
 		dialog.okButton.label = loc.ok;
 		return dialog;
 	}
