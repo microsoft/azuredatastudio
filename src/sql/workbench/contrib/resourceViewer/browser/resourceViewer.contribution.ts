@@ -41,6 +41,7 @@ Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(ResourceViewResourcesExtensionHandler, LifecyclePhase.Ready);
 
+// TODO: chgagnon disabling until the resource viewer is feature complete
 // class ResourceViewerContributor implements IWorkbenchContribution {
 // 	constructor(
 // 		@IExtensionService private readonly extensionService: IExtensionService
