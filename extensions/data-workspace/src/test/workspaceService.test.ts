@@ -212,11 +212,6 @@ suite('WorkspaceService Tests', function (): void {
 			return arg.uri.path === '/test/other';
 		})), true, 'updateWorkspaceFolder parameters does not match expectation');
 		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, true, 'the onDidWorkspaceProjectsChange event should have been fired');
-		updateConfigurationStub.resetHistory();
-		await service.removeProject(vscode.Uri.file('/test/folder/folder1/proj2.sqlproj'));
-		should.strictEqual(updateConfigurationStub.calledWith('projects', sinon.match.array.deepEquals([
-		]), vscode.ConfigurationTarget.Workspace), true, 'updateConfiguration parameters does not match expectation for remove project');
-		should.strictEqual(onWorkspaceProjectsChangedStub.calledTwice, true, 'the onDidWorkspaceProjectsChange event should have been fired after remove project');
 		onWorkspaceProjectsChangedDisposable.dispose();
 	});
 
