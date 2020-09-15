@@ -56,6 +56,5 @@
 	"sql-azure-database-server-display-name": "Database Server",
 	"azure-sqldb-agreement": "I accept {0}, {1} and {2}.",
 	"azure-sqldb-agreement-sqldb-eula": "Azure SQL DB License Terms",
-	"azure-sqldb-agreement-azdata-eula": "azdata License Terms",
-	"azure-sqldb-db-summary-page-label": "Summary"
+	"azure-sqldb-agreement-azdata-eula": "azdata License Terms"
 }
