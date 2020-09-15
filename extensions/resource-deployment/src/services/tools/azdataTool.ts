@@ -45,15 +45,17 @@ export class AzdataTool extends ToolBase {
 		return 'https://docs.microsoft.com/sql/big-data-cluster/deploy-install-azdata';
 	}
 
+	/** unused */
 	protected get versionCommand(): Command {
 		return {
-			command: 'azdata -v'
+			command: ''
 		};
 	}
 
+	/** unused */
 	protected get discoveryCommand(): Command {
 		return {
-			command: this.discoveryCommandString('azdata')
+			command: ''
 		};
 	}
 
@@ -66,11 +68,11 @@ export class AzdataTool extends ToolBase {
 
 		const azdataApi: azdataExt.IAzdataApi = (await apiService.getAzdataApi()).azdata;
 		const commandOutput = await azdataApi.version();
-		this.version = azdataApi.semVersion;
+		this.version = azdataApi.getSemVersion();
 		if (this.version) {
 			if (this.autoInstallSupported) {
 				// set the installationPath
-				this._installationPathOrAdditionalInformation = azdataApi.path;
+				this._installationPathOrAdditionalInformation = azdataApi.getPath();
 			}
 			this.setStatus(ToolStatus.Installed);
 		}
@@ -82,7 +84,8 @@ export class AzdataTool extends ToolBase {
 	}
 
 	protected async getVersionFromOutput(output: string): Promise<SemVer | undefined> {
-		return (await apiService.getAzdataApi()).azdata.semVersion;
+		return (await apiService.getAzdataApi()).azdata.getSemVersion();
+
 	}
 
 	protected async getSearchPaths(): Promise<string[]> {

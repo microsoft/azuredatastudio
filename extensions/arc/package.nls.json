@@ -108,7 +108,7 @@
 	"arc.postgres.server.group.cores.limit": "Max CPU cores (per node) to allow",
 	"arc.postgres.server.group.memory.request": "Min memory MB (per node) to reserve",
 	"arc.postgres.server.group.memory.limit": "Max memory MB (per node) to allow",
-	"arc.agreement": "I accept {0}, {1} and {2}.",
+	"arc.agreement": "I accept {0} and {1}.",
 	"arc.agreement.sql.terms.conditions":"Azure SQL managed instance - Azure Arc terms and conditions",
 	"arc.agreement.postgres.terms.conditions":"PostgreSQL server groups - Azure Arc terms and conditions",
 	"arc.deploy.action":"Deploy"

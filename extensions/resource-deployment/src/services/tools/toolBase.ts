@@ -306,7 +306,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	isSameOrNewerThan(version?: string): boolean {
-		return !version || (this._version ? SemVerCompare(this._version, version) >= 0 : false);
+		return !version || (this._version ? SemVerCompare(this._version.raw, version) >= 0 : false);
 	}
 
 	private _pendingVersionAndStatusUpdate!: Promise<void>;
