@@ -32,7 +32,6 @@ execSync(`yarn gulp vscode-win32-x64-archive`, {
 	stdio: 'inherit'
 });
 
-
 execSync(copyCmd, {
 	cwd: adsDir,
 	stdio: 'inherit'

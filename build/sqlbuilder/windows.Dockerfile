@@ -13,6 +13,14 @@ WORKDIR "C:/ads"
 
 RUN git clone https://github.com/microsoft/azuredatastudio.git
 
+WORKDIR "C:/ads/azuredatastudio"
+
+RUN yarn install
+
+RUN git clean -fxd
+
+WORKDIR "C:/ads"
+
 COPY build.js .
 
 ENTRYPOINT [ "node", "build.js" ]
