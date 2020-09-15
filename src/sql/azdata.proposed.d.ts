@@ -6,6 +6,7 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
+import { LoadingComponentProperties } from 'azdata';
 
 declare module 'azdata' {
 	/**
@@ -254,6 +255,9 @@ declare module 'azdata' {
 
 	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
 		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
+	}
+
+	export interface DropDownProperties extends LoadingComponentProperties {
 	}
 
 	export interface RadioCard {
