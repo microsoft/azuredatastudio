@@ -85,6 +85,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 				},
 				postgres: {
 					server: {
+						delete: async (name: string) => {
+							await throwIfNoAzdataOrEulaNotAccepted();
+							return localAzdata!.arc.postgres.server.delete(name);
+						},
 						list: async () => {
 							await throwIfNoAzdataOrEulaNotAccepted();
 							return localAzdata!.arc.postgres.server.list();
