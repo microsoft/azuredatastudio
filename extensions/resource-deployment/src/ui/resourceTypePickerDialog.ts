@@ -176,7 +176,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 	private selectResourceType(resourceType: ResourceType): void {
 		this._selectedResourceType = resourceType;
-		//handle special case when resource type is SQL Azure Database
+		//handle special case when resource type has different OK button.
 		if (this._selectedResourceType.okButtonText) {
 			this._dialogObject.okButton.label = this._selectedResourceType.okButtonText;
 		}
