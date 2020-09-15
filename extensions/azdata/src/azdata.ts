@@ -78,6 +78,9 @@ export class AzdataTool implements IAzdataTool {
 		},
 		postgres: {
 			server: {
+				delete: async (name: string) => {
+					return this.executeCommand<void>(['arc', 'postgres', 'server', 'delete', '-n', name]);
+				},
 				list: async () => {
 					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list']);
 				},
