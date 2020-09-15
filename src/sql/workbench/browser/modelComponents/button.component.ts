@@ -59,7 +59,6 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	ngOnInit(): void {
 		this.baseInit();
-
 	}
 
 	ngAfterViewInit(): void {
@@ -110,7 +109,6 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 	/// IComponent implementation
 
 	public setLayout(layout: any): void {
-		// TODO allow configuring the look and feel
 		this.layout();
 	}
 
@@ -119,13 +117,12 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		if (this._informationalInputContainer) {
 			let button = this._button as InfoButton;
 			button.buttonMaxHeight = this.properties.height;
-			button.textTitle = this.properties.title;
+			button.buttonMaxWidth = this.properties.width;
 			button.description = this.properties.description;
-			button.iconClass = this.properties.iconClass;
-			button.iconPath = createIconCssClass(this.properties.iconPath);
+			button.iconClass = createIconCssClass(this.properties.iconPath);
 			button.iconHeight = this.properties.iconHeight;
 			button.iconWidth = this.properties.iconWidth;
-			button.buttonMaxWidth = this.properties.width;
+			button.title = this.properties.title;
 		} else {
 			this._button.enabled = this.enabled;
 			this._button.label = this.label;
@@ -159,34 +156,18 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	protected updateIcon() {
 		if (this.iconPath) {
-			if (this.buttonType !== 'Informational') {
-				if (!this._iconClass) {
-					super.updateIcon();
-					this._button.icon = this._iconClass + ' icon';
-					// Styling for icon button
-					this._register(attachButtonStyler(this._button, this.themeService, {
-						buttonBackground: Color.transparent.toString(),
-						buttonHoverBackground: Color.transparent.toString(),
-						buttonFocusOutline: focusBorder,
-						buttonForeground: foreground
-					}));
-				} else {
-					super.updateIcon();
-				}
+			if (!this._iconClass) {
+				super.updateIcon();
+				this._button.icon = this._iconClass + ' icon';
+				// Styling for icon button
+				this._register(attachButtonStyler(this._button, this.themeService, {
+					buttonBackground: Color.transparent.toString(),
+					buttonHoverBackground: Color.transparent.toString(),
+					buttonFocusOutline: focusBorder,
+					buttonForeground: foreground
+				}));
 			} else {
-				if (!this._iconClass) {
-					super.updateIcon();
-					this._button.icon = this._iconClass + ' icon';
-					// Styling for icon button
-					this._register(attachButtonStyler(this._button, this.themeService, {
-						buttonBackground: Color.transparent.toString(),
-						buttonHoverBackground: Color.transparent.toString(),
-						buttonFocusOutline: focusBorder,
-						buttonForeground: foreground
-					}));
-				} else {
-					super.updateIcon();
-				}
+				super.updateIcon();
 			}
 		}
 	}

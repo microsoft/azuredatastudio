@@ -3,22 +3,22 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./infoButton';
 import { Button as sqlButton } from 'sql/base/browser/ui/button/button';
 import * as DOM from 'vs/base/browser/dom';
 import { IButtonOptions } from 'vs/base/browser/ui/button/button';
-import { URI } from 'vs/base/common/uri';
 
-type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
+
+// type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 
 export interface IInfoButtonOptions extends IButtonOptions {
-	description: string,
 	buttonMaxHeight: number,
+	buttonMaxWidth: number,
+	description: string,
 	iconClass: string,
 	iconHeight: number,
 	iconWidth: number,
-	iconPath: IUserFriendlyIcon,
-	textTitle: string,
-	buttonMaxWidth: number,
+	title: string,
 }
 
 export class InfoButton extends sqlButton {
@@ -30,14 +30,13 @@ export class InfoButton extends sqlButton {
 	private _pTitle: HTMLElement;
 	private _pDesc: HTMLElement;
 
-	private _description: string = '';
-	private _buttonMaxHeight: number = 0;
-	private _iconClass: string = '';
-	private _iconHeight: number = 0;
-	private _iconWidth: number = 0;
-	private _iconPath: IUserFriendlyIcon = { light: '', dark: '' };
-	private _textTitle: string = '';
-	private _buttonMaxWidth: number = 0;
+	private _buttonMaxHeight?: number;
+	private _buttonMaxWidth?: number;
+	private _description?: string;
+	private _iconClass?: string;
+	private _iconHeight?: number;
+	private _iconWidth?: number;
+	private _title?: string;
 
 	constructor(container: HTMLElement, options?: IInfoButtonOptions) {
 		super(container, options);
@@ -50,9 +49,6 @@ export class InfoButton extends sqlButton {
 			this._main = document.createElement('div');
 			DOM.addClass(this._main, 'flexContainer');
 			this._main.style.cursor = 'pointer';
-			this._main.style.backgroundColor = '#FFFFFF';
-			this._main.style.borderRadius = '4px';
-			this._main.style.boxShadow = '0px 1px 4px rgba(0, 0, 0, 0.14)';
 			this._main.style.padding = '10px';
 
 			this._iconContainer = document.createElement('div');
@@ -65,7 +61,6 @@ export class InfoButton extends sqlButton {
 			DOM.addClass(this._iconElement, 'icon');
 
 			this._textContainer = document.createElement('div');
-			this._textContainer.style.color = '#006ab1';
 			this._textContainer.style.display = 'flex';
 			this._textContainer.style.flexFlow = 'column';
 			this._textContainer.style.justifyContent = 'space-between';
@@ -92,78 +87,73 @@ export class InfoButton extends sqlButton {
 
 			this._main.appendChild(this._iconContainer);
 			this._main.appendChild(this._textContainer);
+			DOM.addClass(this.element, 'info-button');
 			this.element.appendChild(this._main);
 			this.element.style.background = 'none';
 			this.element.style.display = 'inline-block';
+			this.element.style.borderRadius = '2px';
 		}
 		this.infoButtonOptions = options;
 	}
 
-	public get textTitle(): string {
-		return this._textTitle;
+	public get title(): string {
+		return this._title!;
 	}
-	public set textTitle(value: string) {
-		this._textTitle = value;
-		this._pTitle.innerText = this.textTitle;
+	public set title(value: string) {
+		this._title! = value;
+		this._pTitle.innerText = this.title;
 	}
 
 	public get description(): string {
-		return this._description;
+		return this._description!;
 	}
 	public set description(value: string) {
-		this._description = value;
+		this._description! = value;
 		this._pDesc.innerText = this.description;
 	}
 
 	public get buttonMaxHeight(): number {
-		return this._buttonMaxHeight;
+		return this._buttonMaxHeight!;
 	}
 	public set buttonMaxHeight(value: number) {
-		this._buttonMaxHeight = value;
-		this._main.style.maxHeight = this._buttonMaxHeight.toString() + 'px';
-		this._iconContainer.style.height = (this._buttonMaxHeight - 20).toString() + 'px';
-		this._textContainer.style.height = (this._buttonMaxHeight - 20).toString() + 'px';
+		this._buttonMaxHeight! = value;
+		this._main.style.maxHeight = `${this._buttonMaxHeight!}px`;
+		this._iconContainer.style.height = `${this._buttonMaxHeight! - 20}px`;
+		this._textContainer.style.height = `${this._buttonMaxHeight! - 20}px`;
 	}
 
 	public get buttonMaxWidth(): number {
-		return this._buttonMaxWidth;
+		return this._buttonMaxWidth!;
 	}
 	public set buttonMaxWidth(value: number) {
-		this._buttonMaxWidth = value;
-		this._main.style.width = this._buttonMaxWidth.toString() + 'px';
-		this._textContainer.style.width = (this._buttonMaxWidth - this._iconWidth).toString() + 'px';
+		this._buttonMaxWidth! = value;
+		this._main.style.width = `${this._buttonMaxWidth!}px`;
+		this._textContainer.style.width = `${this._buttonMaxWidth! - this._iconWidth!}px`;
 	}
 
 	public get iconHeight(): number {
-		return this._iconHeight;
+		return this._iconHeight!;
 	}
 	public set iconHeight(value: number) {
-		this._iconHeight = value;
-		this._iconElement.style.height = this._iconHeight.toString() + 'px';
+		this._iconHeight! = value;
+		this._iconElement.style.height = `${this._iconHeight!}px`;
 	}
 
 	public get iconWidth(): number {
-		return this._iconWidth;
+		return this._iconWidth!;
 	}
 	public set iconWidth(value: number) {
-		this._iconWidth = value;
-		this._iconContainer.style.width = this._iconWidth.toString() + 'px';
-		this._iconElement.style.width = this._iconWidth.toString() + 'px';
+		this._iconWidth! = value;
+		this._iconContainer.style.width = `${this._iconWidth!}px`;
+		this._iconElement.style.width = `${this._iconWidth!}px`;
 	}
 
 	public get iconClass(): string {
-		return this._iconClass;
+		return this._iconClass!;
 	}
 	public set iconClass(value: string) {
-		this._iconClass = value;
-	}
-
-	public get iconPath(): IUserFriendlyIcon {
-		return this._iconPath;
-	}
-	public set iconPath(value: IUserFriendlyIcon) {
-		this._iconPath = value;
-		DOM.addClass(this._iconElement, this._iconPath.toString());
+		this._iconClass! = value;
+		DOM.addClass(this._iconElement, this._iconClass!);
 	}
 
 	public set infoButtonOptions(options: IInfoButtonOptions) {
@@ -176,8 +166,7 @@ export class InfoButton extends sqlButton {
 		this.iconHeight = options.iconHeight;
 		this.iconWidth = options.iconWidth;
 		this.iconClass = options.iconClass;
-		this.iconPath = options.iconPath;
-		this.textTitle = options.textTitle;
+		this.title = options.title;
 	}
 }
 

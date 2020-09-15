@@ -518,15 +518,15 @@ export class DashboardWidget {
 		const maxHeight: number = 84;
 		const maxWidth: number = 236;
 		const buttonContainer = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			buttonType: azdata.ButtonType.Informational,
 			description: taskMetaData.description,
 			height: maxHeight,
 			iconHeight: 32,
 			iconPath: taskMetaData.iconPath,
 			iconWidth: 32,
+			label: taskMetaData.title,
 			title: taskMetaData.title,
-			buttonType: azdata.ButtonType.Informational,
 			width: maxWidth,
-			label: taskMetaData.title
 		}).component();
 		buttonContainer.onDidClick(async () => {
 			if (buttonContainer.enabled && taskMetaData.command) {
@@ -536,3 +536,7 @@ export class DashboardWidget {
 		return view.modelBuilder.divContainer().withItems([buttonContainer]).component();
 	}
 }
+
+
+// Title - Primary OPAC: #323130
+// Decsr - secondary OPAC: #605E5C
