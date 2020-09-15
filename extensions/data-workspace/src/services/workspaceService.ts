@@ -15,6 +15,9 @@ const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
 
 export class WorkspaceService implements IWorkspaceService {
+	private _onDidWorkspaceProjectsChange: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
+	readonly onDidWorkspaceProjectsChange: vscode.Event<void> = this._onDidWorkspaceProjectsChange?.event;
+
 	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
 		if (vscode.workspace.workspaceFile) {
 			const currentProjects: vscode.Uri[] = await this.getProjectsInWorkspace();
@@ -37,6 +40,7 @@ export class WorkspaceService implements IWorkspaceService {
 			if (newProjectFileAdded) {
 				// Save the new set of projects to the workspace configuration.
 				await this.setWorkspaceConfigurationValue(ProjectsConfigurationName, currentProjects.map(project => this.toRelativePath(project)));
+				this._onDidWorkspaceProjectsChange.fire();
 			}
 
 			if (newWorkspaceFolders.length > 0) {
@@ -66,6 +70,18 @@ export class WorkspaceService implements IWorkspaceService {
 			await this.ensureProviderExtensionLoaded(projectType);
 		}
 		return ProjectProviderRegistry.getProviderByProjectType(projectType);
+	}
+
+	async removeProject(projectFile: vscode.Uri): Promise<void> {
+		if (vscode.workspace.workspaceFile) {
+			const currentProjects: vscode.Uri[] = await this.getProjectsInWorkspace();
+			const projectIdx = currentProjects.findIndex((p: vscode.Uri) => p.fsPath === projectFile.fsPath);
+			if (projectIdx !== -1) {
+				currentProjects.splice(projectIdx, 1);
+				await this.setWorkspaceConfigurationValue(ProjectsConfigurationName, currentProjects.map(project => this.toRelativePath(project)));
+				this._onDidWorkspaceProjectsChange.fire();
+			}
+		}
 	}
 
 	/**
