@@ -10,7 +10,6 @@ const args = process.argv.slice(2);
 const adsDir = path.join(process.cwd(), 'azuredatastudio');
 
 
-const copyCmd = `powershell.exe Copy-Item -Path "C:\\ads\\azuredatastudio\\.build" -Destination "C:\\Output" -Recurse`;
 
 execSync(`git checkout ${args[0]}`, {
 	cwd: adsDir,
@@ -32,6 +31,7 @@ execSync(`yarn gulp vscode-win32-x64-archive`, {
 	stdio: 'inherit'
 });
 
+const copyCmd = `powershell.exe Copy-Item -Path "C:\\ads\\azuredatastudio\\.build" -Destination "C:\\Output" -Recurse`;
 execSync(copyCmd, {
 	cwd: adsDir,
 	stdio: 'inherit'
