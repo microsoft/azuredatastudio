@@ -31,7 +31,7 @@ export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model
 		this.toDispose.push(this.wizardObject.onPageChanged(async (e) => {
 			let previousPage = this.pages[e.lastPage];
 			let newPage = this.pages[e.newPage];
-			previousPage.onLeave();
+			await previousPage.onLeave();
 			await newPage.onEnter();
 		}));
 

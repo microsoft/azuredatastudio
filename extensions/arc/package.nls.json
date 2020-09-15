@@ -76,6 +76,9 @@
 	"resource.type.picker.display.name": "Resource Type",
 	"sql.managed.instance.display.name": "Azure SQL managed instance - Azure Arc",
 	"postgres.server.group.display.name": "PostgreSQL server groups - Azure Arc",
+
+	"arc.controller": "Target Azure Arc Controller",
+
 	"arc.sql.new.dialog.title": "Deploy Azure SQL managed instance - Azure Arc (preview)",
 	"arc.sql.settings.section.title": "SQL Connection information",
 	"arc.azure.section.title": "Azure information",

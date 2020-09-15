@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdataExt from 'azdata-ext';
+import * as fs from 'fs';
 import * as os from 'os';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
@@ -13,7 +14,6 @@ import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
 import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataHostname, azdataInstallKey, azdataReleaseJson, azdataUpdateKey, azdataUri, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
-import * as fs from 'fs';
 
 const enum AzdataDeployOption {
 	dontPrompt = 'dontPrompt',
@@ -136,7 +136,7 @@ export class AzdataTool implements IAzdataTool {
 					// to get the correct stderr out. The actual value we get is something like
 					// ERROR: { stderr: '...' }
 					// so we also need to trim off the start that isn't a valid JSON blob
-					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'))).stderr;
+					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'), err.stderr.indexOf('}') + 1)).stderr;
 				} catch (err) {
 					// it means this was probably some other generic error (such as command not being found)
 					// check if azdata still exists if it does then rethrow the original error if not then emit a new specific error.
