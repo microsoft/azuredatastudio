@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ControllerInfo } from 'arc';
+import { ControllerInfo, ResourceInfo } from 'arc';
 import * as azdata from 'azdata';
 import { v4 as uuid } from 'uuid';
 import * as vscode from 'vscode';
@@ -26,6 +26,7 @@ export class ConnectToControllerDialog extends InitializingComponent {
 	private _completionPromise = new Deferred<ConnectToControllerDialogModel | undefined>();
 
 	private _id!: string;
+	private _resources: ResourceInfo[] = [];
 
 	constructor(private _treeDataProvider: AzureArcTreeDataProvider) {
 		super();
@@ -33,6 +34,7 @@ export class ConnectToControllerDialog extends InitializingComponent {
 
 	public showDialog(controllerInfo?: ControllerInfo, password?: string): azdata.window.Dialog {
 		this._id = controllerInfo?.id ?? uuid();
+		this._resources = controllerInfo?.resources ?? [];
 		const dialog = azdata.window.createModelViewDialog(loc.connectToController);
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
@@ -125,7 +127,7 @@ export class ConnectToControllerDialog extends InitializingComponent {
 			name: this.nameInputBox.value ?? '',
 			username: this.usernameInputBox.value,
 			rememberPassword: this.rememberPwCheckBox.checked ?? false,
-			resources: []
+			resources: this._resources
 		};
 		const controllerModel = new ControllerModel(this._treeDataProvider, controllerInfo, this.passwordInputBox.value);
 		try {

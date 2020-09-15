@@ -225,3 +225,7 @@ export function parseIpAndPort(address: string): { ip: string, port: string } {
 		port: sections[1]
 	};
 }
+
+export function createCredentialId(controllerId: string, resourceType: string, instanceName: string): string {
+	return `${controllerId}::${resourceType}::${instanceName}`;
+}
