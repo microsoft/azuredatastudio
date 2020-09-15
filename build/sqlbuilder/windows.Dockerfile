@@ -10,3 +10,9 @@ RUN npm install -g yarn
 RUN npm install -g windows-build-tools --vs2015
 
 WORKDIR "C:/ads"
+
+RUN git clone https://github.com/microsoft/azuredatastudio.git
+
+COPY build.js .
+
+ENTRYPOINT [ "node", "build.js" ]
