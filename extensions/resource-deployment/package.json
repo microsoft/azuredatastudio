@@ -391,7 +391,7 @@
             "when": "version=sql2019"
           }
         ]
-      }
+      },
       {
         "name": "sql-azure-setup",
         "displayName": "%azure-sqldb-display-name%",
