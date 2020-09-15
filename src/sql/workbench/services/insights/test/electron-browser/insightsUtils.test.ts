@@ -10,7 +10,7 @@ import { resolveQueryFilePath } from 'sql/workbench/services/insights/common/ins
 
 import * as path from 'vs/base/common/path';
 
-import { Workspace, toWorkspaceFolder, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { Workspace, toWorkspaceFolder, IWorkspaceContextService, IWorkspace } from 'vs/platform/workspace/common/workspace';
 import { ConfigurationResolverService, BaseConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
 import { TestFileService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestContextService } from 'vs/workbench/test/common/workbenchTestServices';
@@ -24,6 +24,11 @@ import { IProcessEnvironment } from 'vs/base/common/platform';
 import { NativeWorkbenchEnvironmentService } from 'vs/workbench/services/environment/electron-browser/environmentService';
 import { isEqual } from 'vs/base/common/resources';
 import { TestWorkbenchConfiguration } from 'vs/workbench/test/electron-browser/workbenchTestServices';
+import { IFormatterChangeEvent, ILabelService, ResourceLabelFormatter } from 'vs/platform/label/common/label';
+import { IWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
+import { IDisposable } from 'vs/base/common/lifecycle';
+import { Emitter, Event } from 'vs/base/common/event';
+
 
 class MockWorkbenchEnvironmentService extends NativeWorkbenchEnvironmentService {
 
@@ -40,6 +45,7 @@ suite('Insights Utils tests', function () {
 	let testRootPath: string;
 	let queryFileDir: string;
 	let queryFilePath: string;
+	let labelService: MockLabelService;
 
 	suiteSetup(async () => {
 		// Create test file - just needs to exist for verifying the path resolution worked correctly
@@ -48,6 +54,7 @@ suite('Insights Utils tests', function () {
 		await pfs.mkdirp(queryFileDir);
 		queryFilePath = path.join(queryFileDir, 'test.sql');
 		await pfs.writeFile(queryFilePath, '');
+		labelService = new MockLabelService();
 	});
 
 	test('resolveQueryFilePath resolves path correctly with fully qualified path', async () => {
@@ -57,7 +64,8 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			new TestContextService(),
-			undefined);
+			undefined,
+			labelService);
 
 		const fileService = new class extends TestFileService {
 			exists(uri: URI): Promise<boolean> {
@@ -88,7 +96,8 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			contextService,
-			undefined);
+			undefined,
+			labelService);
 
 		const fileService = new class extends TestFileService {
 			exists(uri: URI): Promise<boolean> {
@@ -119,7 +128,8 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			contextService,
-			undefined);
+			undefined,
+			labelService);
 
 		const fileService = new class extends TestFileService {
 			exists(uri: URI): Promise<boolean> {
@@ -152,7 +162,8 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			contextService,
-			undefined);
+			undefined,
+			labelService);
 
 		const fileService = new class extends TestFileService {
 			exists(uri: URI): Promise<boolean> {
@@ -185,7 +196,8 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			undefined,
-			undefined);
+			undefined,
+			labelService);
 
 		const fileService = new class extends TestFileService {
 			exists(uri: URI): Promise<boolean> {
@@ -214,7 +226,8 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			undefined,
-			undefined);
+			undefined,
+			labelService);
 
 		const fileService = new class extends TestFileService {
 			exists(uri: URI): Promise<boolean> {
@@ -239,7 +252,8 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			undefined,
-			undefined);
+			undefined,
+			labelService);
 
 		const fileService = new class extends TestFileService {
 			exists(uri: URI): Promise<boolean> {
@@ -260,3 +274,26 @@ suite('Insights Utils tests', function () {
 
 	});
 });
+
+class MockLabelService implements ILabelService {
+	_serviceBrand: undefined;
+	getUriLabel(resource: URI, options?: { relative?: boolean | undefined; noPrefix?: boolean | undefined; endWithSeparator?: boolean | undefined; }): string {
+		return path.normalize(resource.fsPath);
+	}
+	getUriBasenameLabel(resource: URI): string {
+		throw new Error('Method not implemented.');
+	}
+	getWorkspaceLabel(workspace: URI | IWorkspaceIdentifier | IWorkspace, options?: { verbose: boolean; }): string {
+		throw new Error('Method not implemented.');
+	}
+	getHostLabel(scheme: string, authority?: string): string {
+		throw new Error('Method not implemented.');
+	}
+	getSeparator(scheme: string, authority?: string): '/' | '\\' {
+		throw new Error('Method not implemented.');
+	}
+	registerFormatter(formatter: ResourceLabelFormatter): IDisposable {
+		throw new Error('Method not implemented.');
+	}
+	onDidChangeFormatters: Event<IFormatterChangeEvent> = new Emitter<IFormatterChangeEvent>().event;
+}
