@@ -13,30 +13,14 @@ export interface IApiService {
 }
 
 class ApiService implements IApiService {
-
-	private azurecoreApi: azurecore.IExtension | undefined;
-	private azdataApi: azdataExt.IExtension | undefined;
-
 	constructor() { }
 
 	public async getAzurecoreApi(): Promise<azurecore.IExtension> {
-		if (!this.azurecoreApi) {
-			this.azurecoreApi = <azurecore.IExtension>(await vscode.extensions.getExtension(azurecore.extension.name)?.exports);
-			if (!this.azurecoreApi) {
-				throw new Error('Unable to retrieve azurecore API');
-			}
-		}
-		return this.azurecoreApi;
+		return vscode.extensions.getExtension(azurecore.extension.name)?.exports;
 	}
 
 	public async getAzdataApi(): Promise<azdataExt.IExtension> {
-		if (!this.azdataApi) {
-			this.azdataApi = <azdataExt.IExtension>(await vscode.extensions.getExtension(azdataExt.extension.name)?.exports);
-			if (!this.azdataApi) {
-				throw new Error('Unable to retrieve azdata API');
-			}
-		}
-		return this.azdataApi;
+		return vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
 }
 
