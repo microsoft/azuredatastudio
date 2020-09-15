@@ -126,8 +126,16 @@ export abstract class ToolBase implements ITool {
 		return this._statusDescription;
 	}
 
+	protected setStatusDescription(value: string | undefined): void {
+		this._statusDescription = value;
+	}
+
 	public get installationPathOrAdditionalInformation(): string | undefined {
 		return this._installationPathOrAdditionalInformation;
+	}
+
+	protected setInstallationPathOrAdditionalInformation(value: string | undefined) {
+		this._installationPathOrAdditionalInformation = value;
 	}
 
 	protected get installationCommands(): Command[] | undefined {
@@ -312,6 +320,6 @@ export abstract class ToolBase implements ITool {
 	private _pendingVersionAndStatusUpdate!: Promise<void>;
 	private _status: ToolStatus = ToolStatus.NotInstalled;
 	private _version?: SemVer;
-	protected _statusDescription?: string;
-	protected _installationPathOrAdditionalInformation?: string;
+	private _statusDescription?: string;
+	private _installationPathOrAdditionalInformation?: string;
 }

@@ -62,7 +62,7 @@ export class AzdataTool extends ToolBase {
  * updates the version and status for the tool.
  */
 	protected async updateVersionAndStatus(): Promise<void> {
-		this._statusDescription = '';
+		this.setStatusDescription('');
 		await this.addInstallationSearchPathsToSystemPath();
 
 		const commandOutput = await apiService.azdataApi.azdata.version();
@@ -70,13 +70,13 @@ export class AzdataTool extends ToolBase {
 		if (this.version) {
 			if (this.autoInstallSupported) {
 				// set the installationPath
-				this._installationPathOrAdditionalInformation = apiService.azdataApi.azdata.getPath();
+				this.setInstallationPathOrAdditionalInformation(apiService.azdataApi.azdata.getPath());
 			}
 			this.setStatus(ToolStatus.Installed);
 		}
 		else {
-			this._installationPathOrAdditionalInformation = localize('deployCluster.GetToolVersionErrorInformation', "Error retrieving version information. See output channel '{0}' for more details", this.outputChannelName);
-			this._statusDescription = localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Invalid output received, get version command output: '{1}' ", EOL, commandOutput.stderr.join(EOL));
+			this.setInstallationPathOrAdditionalInformation(localize('deployCluster.GetToolVersionErrorInformation', "Error retrieving version information. See output channel '{0}' for more details", this.outputChannelName));
+			this.setStatusDescription(localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Invalid output received, get version command output: '{1}' ", EOL, commandOutput.stderr.join(EOL)));
 			this.setStatus(ToolStatus.NotInstalled);
 		}
 	}
