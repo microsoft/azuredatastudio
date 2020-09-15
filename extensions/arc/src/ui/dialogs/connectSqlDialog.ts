@@ -35,11 +35,13 @@ export class ConnectToSqlDialog extends InitializingComponent {
 
 			this.serverNameInputBox = this.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					value: connectionProfile?.serverName
+					value: connectionProfile?.serverName,
+					enabled: false
 				}).component();
 			this.usernameInputBox = this.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					value: connectionProfile?.userName
+					value: connectionProfile?.userName,
+					enabled: false
 				}).component();
 			this.passwordInputBox = this.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
