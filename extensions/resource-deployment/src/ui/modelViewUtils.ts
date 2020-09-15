@@ -1043,7 +1043,7 @@ async function handleSelectedAccountChanged(
 	}
 
 	try {
-		const response = await (await apiService.getAzurecoreApi()).getSubscriptions(selectedAccount, true);
+		const response = await apiService.azurecoreApi.getSubscriptions(selectedAccount, true);
 		if (!response) {
 			return;
 		}
@@ -1158,7 +1158,7 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 		return;
 	}
 	try {
-		const response = await (await apiService.getAzurecoreApi()).getResourceGroups(selectedAccount, selectedSubscription, true);
+		const response = await apiService.azurecoreApi.getResourceGroups(selectedAccount, selectedSubscription, true);
 		if (!response) {
 			return;
 		}
@@ -1209,8 +1209,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 		width: context.fieldInfo.labelWidth,
 		cssStyles: context.fieldInfo.labelCSSStyles
 	});
-	const azurecoreApi = await apiService.getAzurecoreApi();
-	const locationValues = context.fieldInfo.locations?.map(l => { return { name: l, displayName: azurecoreApi.getRegionDisplayName(l) }; });
+	const locationValues = context.fieldInfo.locations?.map(l => { return { name: l, displayName: apiService.azurecoreApi.getRegionDisplayName(l) }; });
 	const locationDropdown = createDropdown(context.view, {
 		defaultValue: locationValues?.find(l => l.name === context.fieldInfo.defaultValue),
 		width: context.fieldInfo.inputWidth,
@@ -1233,7 +1232,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 			label: label.value!,
 			variableName: context.fieldInfo.displayLocationVariableName
 		});
-		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, { component: locationDropdown, inputValueTransformer: (value => azurecoreApi.getRegionDisplayName(value)) });
+		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, { component: locationDropdown, inputValueTransformer: (value => apiService.azurecoreApi.getRegionDisplayName(value)) });
 	}
 	addLabelInputPairToContainer(context.view, context.components, label, locationDropdown, context.fieldInfo);
 	return locationDropdown;

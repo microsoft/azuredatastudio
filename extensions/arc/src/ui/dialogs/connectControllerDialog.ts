@@ -16,27 +16,17 @@ import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
 import { getErrorMessage } from '../../common/utils';
 
 export type ConnectToControllerDialogModel = { controllerModel: ControllerModel, password: string };
-export class ConnectToControllerDialog extends InitializingComponent {
-	private modelBuilder!: azdata.ModelBuilder;
+abstract class ControllerDialogBase extends InitializingComponent {
+	protected modelBuilder!: azdata.ModelBuilder;
 	protected dialog: azdata.window.Dialog;
 
 	protected urlInputBox!: azdata.InputBoxComponent;
 	protected nameInputBox!: azdata.InputBoxComponent;
 	protected usernameInputBox!: azdata.InputBoxComponent;
 	protected passwordInputBox!: azdata.InputBoxComponent;
-	protected rememberPwCheckBox!: azdata.CheckBoxComponent;
 
-	protected _completionPromise = new Deferred<ConnectToControllerDialogModel | undefined>();
-	protected _id!: string;
-
-
-	constructor(protected _treeDataProvider: AzureArcTreeDataProvider, title: string = loc.connectToController) {
-		super();
-		this.dialog = azdata.window.createModelViewDialog(title);
-	}
-
-	private getComponents(isPwReacquisition: boolean): (azdata.FormComponent<azdata.Component> & { layout?: azdata.FormItemLayout | undefined; })[] {
-		const components: (azdata.FormComponent<azdata.Component> & { layout?: azdata.FormItemLayout | undefined; })[] = [
+	protected getComponents(): (azdata.FormComponent<azdata.Component> & { layout?: azdata.FormItemLayout | undefined; })[] {
+		return [
 			{
 				component: this.urlInputBox,
 				title: loc.controllerUrl,
@@ -55,66 +45,56 @@ export class ConnectToControllerDialog extends InitializingComponent {
 				required: true
 			}
 		];
-		if (!isPwReacquisition) {
-			components.push({
-				component: this.rememberPwCheckBox,
-				title: ''
-			});
-		}
-		return components;
+	}
+
+	protected abstract fieldToFocusOn(): azdata.Component;
+	protected readonlyFields(): azdata.InputBoxComponent[] { return []; }
+
+	protected initializeFields(controllerInfo: ControllerInfo | undefined, password: string | undefined) {
+		this.urlInputBox = this.modelBuilder.inputBox()
+			.withProperties<azdata.InputBoxProperties>({
+				value: controllerInfo?.url,
+				// If we have a model then we're editing an existing connection so don't let them modify the URL
+				readOnly: !!controllerInfo
+			}).component();
+		this.nameInputBox = this.modelBuilder.inputBox()
+			.withProperties<azdata.InputBoxProperties>({
+				value: controllerInfo?.name
+			}).component();
+		this.usernameInputBox = this.modelBuilder.inputBox()
+			.withProperties<azdata.InputBoxProperties>({
+				value: controllerInfo?.username
+			}).component();
+		this.passwordInputBox = this.modelBuilder.inputBox()
+			.withProperties<azdata.InputBoxProperties>({
+				inputType: 'password',
+				value: password
+			}).component();
+	}
+
+	protected _completionPromise = new Deferred<ConnectToControllerDialogModel | undefined>();
+	protected _id!: string;
+
+	constructor(protected _treeDataProvider: AzureArcTreeDataProvider, title: string) {
+		super();
+		this.dialog = azdata.window.createModelViewDialog(title);
 	}
 
 	public showDialog(controllerInfo?: ControllerInfo, password?: string): azdata.window.Dialog {
-		return this._showDialog(controllerInfo, password);
-	}
-
-	protected _showDialog(controllerInfo: ControllerInfo | undefined, password: string | undefined, isPwReacquisition: boolean = false): azdata.window.Dialog {
 		this._id = controllerInfo?.id ?? uuid();
 		this.dialog.cancelButton.onClick(() => this.handleCancel());
 		this.dialog.registerContent(async (view) => {
 			this.modelBuilder = view.modelBuilder;
+			this.initializeFields(controllerInfo, password);
 
-			this.urlInputBox = this.modelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
-					value: controllerInfo?.url,
-					// If we have a model then we're editing an existing connection so don't let them modify the URL
-					readOnly: !!controllerInfo
-				}).component();
-			this.nameInputBox = this.modelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
-					value: controllerInfo?.name
-				}).component();
-			this.usernameInputBox = this.modelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
-					value: controllerInfo?.username
-				}).component();
-			this.passwordInputBox = this.modelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
-					inputType: 'password',
-					value: password
-				})
-				.component();
-			if (!isPwReacquisition) {
-				this.rememberPwCheckBox = this.modelBuilder.checkBox()
-					.withProperties<azdata.CheckBoxProperties>({
-						label: loc.rememberPassword,
-						checked: controllerInfo?.rememberPassword
-					}).component();
-			}
 			let formModel = this.modelBuilder.formContainer()
 				.withFormItems([{
-					components: this.getComponents(isPwReacquisition),
+					components: this.getComponents(),
 					title: ''
 				}]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
-			if (isPwReacquisition) {
-				this.passwordInputBox.focus();
-				this.urlInputBox.enabled = false;
-				this.nameInputBox.enabled = false;
-				this.usernameInputBox.enabled = false;
-			} else {
-				this.urlInputBox.focus();
-			}
+			await this.fieldToFocusOn().focus();
+			this.readonlyFields().forEach(f => f.readOnly = true);
 			this.initialized = true;
 		});
 
@@ -123,6 +103,44 @@ export class ConnectToControllerDialog extends InitializingComponent {
 		this.dialog.cancelButton.label = loc.cancel;
 		azdata.window.openDialog(this.dialog);
 		return this.dialog;
+	}
+
+	public abstract async validate(): Promise<boolean>;
+
+	private handleCancel(): void {
+		this._completionPromise.resolve(undefined);
+	}
+
+	public waitForClose(): Promise<ConnectToControllerDialogModel | undefined> {
+		return this._completionPromise.promise;
+	}
+}
+
+export class ConnectToControllerDialog extends ControllerDialogBase {
+	protected rememberPwCheckBox!: azdata.CheckBoxComponent;
+
+	protected fieldToFocusOn = () => this.urlInputBox;
+
+	protected getComponents() {
+		return [
+			...super.getComponents(),
+			{
+				component: this.rememberPwCheckBox,
+				title: ''
+			}];
+	}
+
+	protected initializeFields(controllerInfo: ControllerInfo | undefined, password: string | undefined) {
+		super.initializeFields(controllerInfo, password);
+		this.rememberPwCheckBox = this.modelBuilder.checkBox()
+			.withProperties<azdata.CheckBoxProperties>({
+				label: loc.rememberPassword,
+				checked: controllerInfo?.rememberPassword
+			}).component();
+	}
+
+	constructor(protected _treeDataProvider: AzureArcTreeDataProvider) {
+		super(_treeDataProvider, loc.connectToController);
 	}
 
 	public async validate(): Promise<boolean> {
@@ -166,21 +184,19 @@ export class ConnectToControllerDialog extends InitializingComponent {
 		this._completionPromise.resolve({ controllerModel: controllerModel, password: this.passwordInputBox.value });
 		return true;
 	}
-
-	private handleCancel(): void {
-		this._completionPromise.resolve(undefined);
-	}
-
-	public waitForClose(): Promise<ConnectToControllerDialogModel | undefined> {
-		return this._completionPromise.promise;
-	}
 }
+export class PasswordToControllerDialog extends ControllerDialogBase {
 
-export class PasswordToControllerDialog extends ConnectToControllerDialog {
-
-	constructor(protected _treeDataProvider: AzureArcTreeDataProvider, title: string = loc.passwordToController) {
-		super(_treeDataProvider, title);
+	constructor(protected _treeDataProvider: AzureArcTreeDataProvider) {
+		super(_treeDataProvider, loc.passwordToController);
 	}
+
+	protected fieldToFocusOn = () => this.passwordInputBox;
+	protected readonlyFields = () => [
+		this.urlInputBox,
+		this.nameInputBox,
+		this.usernameInputBox
+	];
 
 	public async validate(): Promise<boolean> {
 		if (!this.passwordInputBox.value) {
@@ -218,7 +234,7 @@ export class PasswordToControllerDialog extends ConnectToControllerDialog {
 	}
 
 	public showDialog(controllerInfo?: ControllerInfo, password?: string): azdata.window.Dialog {
-		const dialog = this._showDialog(controllerInfo, password, true /* isPwReacquisition */);
+		const dialog = super.showDialog(controllerInfo, password);
 		dialog.okButton.label = loc.ok;
 		return dialog;
 	}

@@ -47,15 +47,8 @@ export class ArcControllersOptionsSource extends OptionsSource {
 		super();
 	}
 
-	private async getArcApi(): Promise<arc.IExtension> {
-		if (this._arcApi === undefined) {
-			this._arcApi = await apiService.getArcApi();
-		}
-		return this._arcApi;
-	}
-
 	async getOptions(): Promise<string[] | CategoryValue[]> {
-		const controllers = await (await this.getArcApi()).getRegisteredDataControllers();
+		const controllers = await apiService.arcApi.getRegisteredDataControllers();
 		throwUnless(controllers !== undefined && controllers.length !== 0, loc.noControllersConnected);
 		return controllers.map(ci => {
 			return ci.label;
@@ -65,7 +58,7 @@ export class ArcControllersOptionsSource extends OptionsSource {
 	async getVariableValue(variableName: string, controllerLabel: string): Promise<string> {
 		const retrieveVariable = async (key: string) => {
 			const [variableName, controllerLabel] = JSON.parse(key);
-			const controllers = await (await this.getArcApi()).getRegisteredDataControllers();
+			const controllers = await apiService.arcApi.getRegisteredDataControllers();
 			const controller = controllers!.find(ci => ci.label === controllerLabel);
 			throwUnless(controller !== undefined, loc.noControllerInfoFound(controllerLabel));
 			switch (variableName) {
@@ -87,7 +80,7 @@ export class ArcControllersOptionsSource extends OptionsSource {
 	private async getPassword(controller: arc.DataController): Promise<string> {
 		let password = await this._arcApi!.getControllerPassword(controller.info);
 		if (!password) {
-			password = await (await this.getArcApi()).reacquireControllerPassword(controller.info, password);
+			password = await apiService.arcApi.reacquireControllerPassword(controller.info, password);
 		}
 		throwUnless(password !== undefined, loc.noPasswordFound(controller.label));
 		return password;
