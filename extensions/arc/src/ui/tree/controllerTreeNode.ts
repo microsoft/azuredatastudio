@@ -5,7 +5,7 @@
 
 import { ResourceInfo, ResourceType } from 'arc';
 import * as vscode from 'vscode';
-import { parseInstanceName, UserCancelledError } from '../../common/utils';
+import { UserCancelledError } from '../../common/utils';
 import * as loc from '../../localizedConstants';
 import { ControllerModel, Registration } from '../../models/controllerModel';
 import { MiaaModel } from '../../models/miaaModel';
@@ -83,7 +83,7 @@ export class ControllerTreeNode extends TreeNode {
 			}
 
 			const resourceInfo: ResourceInfo = {
-				name: parseInstanceName(registration.instanceName),
+				name: registration.instanceName,
 				resourceType: registration.instanceType ?? ''
 			};
 
@@ -100,7 +100,7 @@ export class ControllerTreeNode extends TreeNode {
 
 				switch (registration.instanceType) {
 					case ResourceType.postgresInstances:
-						const postgresModel = new PostgresModel(resourceInfo, registration);
+						const postgresModel = new PostgresModel(this.model, resourceInfo, registration);
 						node = new PostgresTreeNode(postgresModel, this.model, this._context);
 						break;
 					case ResourceType.sqlManagedInstances:
