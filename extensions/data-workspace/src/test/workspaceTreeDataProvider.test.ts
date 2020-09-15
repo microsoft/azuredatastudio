@@ -71,6 +71,9 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 				icon: '',
 				displayName: 'sql project'
 			}],
+			RemoveProject: (projectFile: vscode.Uri): Promise<void> => {
+				return Promise.resolve();
+			},
 			getProjectTreeDataProvider: (projectFile: vscode.Uri): Promise<vscode.TreeDataProvider<any>> => {
 				return Promise.resolve(treeDataProvider);
 			}
