@@ -1302,10 +1302,10 @@ registerAction2(class extends NotebookCellAction {
 			return;
 		}
 
-		editor.viewModel.notebookDocument.applyEdit(editor.viewModel.notebookDocument.versionId, [{ editType: CellEditType.Output, index, outputs: [] }], true, undefined, () => undefined);
+		editor.viewModel.notebookDocument.applyEdits(editor.viewModel.notebookDocument.versionId, [{ editType: CellEditType.Output, index, outputs: [] }], true, undefined, () => undefined);
 
 		if (context.cell.metadata && context.cell.metadata?.runState !== NotebookCellRunState.Running) {
-			context.notebookEditor.viewModel!.notebookDocument.applyEdit(context.notebookEditor.viewModel!.notebookDocument.versionId, [{
+			context.notebookEditor.viewModel!.notebookDocument.applyEdits(context.notebookEditor.viewModel!.notebookDocument.versionId, [{
 				editType: CellEditType.Metadata, index, metadata: {
 					...context.cell.metadata,
 					runState: NotebookCellRunState.Idle,
@@ -1393,7 +1393,7 @@ export class ChangeCellLanguageAction extends NotebookCellAction {
 				await changeCellToKind(CellKind.Code, { cell: context.cell, notebookEditor: context.notebookEditor }, selection.languageId);
 			} else {
 				const index = context.notebookEditor.viewModel!.notebookDocument.cells.indexOf(context.cell.model);
-				context.notebookEditor.viewModel!.notebookDocument.applyEdit(
+				context.notebookEditor.viewModel!.notebookDocument.applyEdits(
 					context.notebookEditor.viewModel!.notebookDocument.versionId,
 					[{ editType: CellEditType.CellLanguage, index, language: selection.languageId }],
 					true, undefined, () => undefined
@@ -1444,7 +1444,7 @@ registerAction2(class extends NotebookAction {
 			return;
 		}
 
-		editor.viewModel.notebookDocument.applyEdit(editor.viewModel.notebookDocument.versionId,
+		editor.viewModel.notebookDocument.applyEdits(editor.viewModel.notebookDocument.versionId,
 			editor.viewModel.notebookDocument.cells.map((cell, index) => ({
 				editType: CellEditType.Output, index, outputs: []
 			})), true, undefined, () => undefined);
@@ -1581,7 +1581,7 @@ abstract class ChangeNotebookCellMetadataAction extends NotebookCellAction {
 			return;
 		}
 
-		textModel.applyEdit(textModel.versionId, [{ editType: CellEditType.Metadata, index, metadata: { ...context.cell.metadata, ...this.getMetadataDelta() } }], true, undefined, () => undefined);
+		textModel.applyEdits(textModel.versionId, [{ editType: CellEditType.Metadata, index, metadata: { ...context.cell.metadata, ...this.getMetadataDelta() } }], true, undefined, () => undefined);
 	}
 
 	abstract getMetadataDelta(): NotebookCellMetadata;
