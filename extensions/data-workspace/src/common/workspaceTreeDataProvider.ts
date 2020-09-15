@@ -5,9 +5,7 @@
 
 import * as vscode from 'vscode';
 import { IWorkspaceService, WorkspaceTreeItem as WorkspaceTreeItem } from './interfaces';
-import * as nls from 'vscode-nls';
-import { EOL } from 'os';
-const localize = nls.loadMessageBundle();
+import { UnknownProjectsErrorMessage } from './constants';
 
 /**
  * Tree data provider for the workspace main view
@@ -36,11 +34,10 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 			const projects = await this._workspaceService.getProjectsInWorkspace();
 			const unknownProjects: string[] = [];
 			const treeItems: WorkspaceTreeItem[] = [];
-			let project: string;
-			for (project of projects) {
+			for (const project of projects) {
 				const projectProvider = await this._workspaceService.getProjectProvider(project);
 				if (projectProvider === undefined) {
-					unknownProjects.push(project);
+					unknownProjects.push(project.path);
 					continue;
 				}
 				const treeDataProvider = await projectProvider.getProjectTreeDataProvider(project);
@@ -58,7 +55,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 				});
 			}
 			if (unknownProjects.length > 0) {
-				vscode.window.showErrorMessage(localize('UnknownProjectsError', "No provider was found for the following projects: {0}", unknownProjects.join(EOL)));
+				vscode.window.showErrorMessage(UnknownProjectsErrorMessage(unknownProjects));
 			}
 			return treeItems;
 		}
