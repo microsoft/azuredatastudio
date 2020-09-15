@@ -586,7 +586,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
 		let result: azdata.nb.NavigationResult;
 		let notebook = this.currentBook?.getNotebook(uri.fsPath);
-		if (notebook?.contextValue !== 'pinnedNotebook') {
+		// checking viewId to verify that the book is opened in the Notebooks Viewlet
+		// which indicates if navigation buttons should be visible or hidden.
+		if (this.viewId === constants.BOOKS_VIEWID && notebook) {
 			result = {
 				hasNavigation: true,
 				previous: notebook.previousUri ?
