@@ -5,9 +5,10 @@
 
 import * as arc from 'arc';
 import * as vscode from 'vscode';
+import { UserCancelledError } from './common/utils';
 import { IconPathHelper, refreshActionId } from './constants';
 import * as loc from './localizedConstants';
-import { ConnectToControllerDialog } from './ui/dialogs/connectControllerDialog';
+import { ConnectToControllerDialog, PasswordToControllerDialog } from './ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from './ui/tree/azureArcTreeDataProvider';
 import { ControllerTreeNode } from './ui/tree/controllerTreeNode';
 import { TreeNode } from './ui/tree/treeNode';
@@ -57,11 +58,24 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 	await checkArcDeploymentExtension();
 
 	return {
-		getRegisteredDataControllers: async () => {
-			return (await treeDataProvider.getChildren())
-				.filter(node => node instanceof ControllerTreeNode)
-				.map(node => (node as ControllerTreeNode).model.info);
-
+		getRegisteredDataControllers: async () => (await treeDataProvider.getChildren())
+			.filter(node => node instanceof ControllerTreeNode)
+			.map(node => ({
+				label: (node as ControllerTreeNode).model.label,
+				info: (node as ControllerTreeNode).model.info
+			})),
+		getControllerPassword: async (controllerInfo: arc.ControllerInfo) => {
+			return await treeDataProvider.getPassword(controllerInfo);
+		},
+		reacquireControllerPassword: async (controllerInfo: arc.ControllerInfo) => {
+			let model;
+			const dialog = new PasswordToControllerDialog(treeDataProvider);
+			dialog.showDialog(controllerInfo);
+			model = await dialog.waitForClose();
+			if (!model) {
+				throw new UserCancelledError();
+			}
+			return model.password;
 		}
 	};
 }
