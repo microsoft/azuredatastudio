@@ -352,6 +352,70 @@
         }
       },
       {
+        "name": "sql-azure-setup",
+        "displayName": "%azure-sqldb-display-name%",
+        "description": "%azure-sqldb-description%",
+        "platforms": "*",
+        "icon": {
+          "light": "./images/azure-sql-db.svg",
+          "dark": "./images/azure-sql-db.svg"
+        },
+        "options": [
+          {
+            "name": "resource-type",
+            "displayName": "%resource-type-display-name%",
+            "values": [
+              {
+                "name": "single-database",
+                "displayName": "%sql-azure-single-database-display-name%"
+              },
+              {
+                "name": "elastic-pool",
+                "displayName": "%sql-azure-elastic-pool-display-name%"
+              },
+              {
+                "name": "database-server",
+                "displayName": "%sql-azure-database-server-display-name%"
+              }
+            ]
+          }
+        ],
+        "providers": [
+          {
+            "webPageUrl": "https://portal.azure.com/#create/Microsoft.Microsoft.SQLDatabase",
+            "requiredTools": [],
+            "when": "resource-type=single-database"
+          },
+          {
+            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLElasticDatabasePool",
+            "requiredTools": [],
+            "when": "resource-type=elastic-pool"
+          },
+          {
+            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLServer",
+            "requiredTools": [],
+            "when": "resource-type=database-server"
+          }
+        ],
+        "agreement": {
+          "template": "%azure-sqldb-agreement%",
+          "links": [
+            {
+              "text": "%microsoft-privacy-statement%",
+              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+            },
+            {
+              "text": "%azure-sqldb-agreement-sqldb-eula%",
+              "url": "https://azure.microsoft.com/support/legal/"
+            },
+            {
+              "text": "%azure-sqldb-agreement-azdata-eula%",
+              "url": "https://aka.ms/eula-azdata-en"
+            }
+          ]
+        }
+      },
+      {
         "name": "sql-windows-setup",
         "displayIndex": 1,
         "displayName": "%resource-type-sql-windows-setup-display-name%",
