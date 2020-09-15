@@ -217,9 +217,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if ((!cellModelSourceJoined) && !this.isEditMode) {
 				if (this.doubleClickEditEnabled) {
-					this._content = localize('doubleClickEdit', "Double-click to edit");
+					this._content = localize('doubleClickEdit', "<i>Double-click to edit</i>");
 				} else {
-					this._content = localize('addContent', "Add content here...");
+					this._content = localize('addContent', "<i>Add content here...</i>");
 				}
 			} else {
 				this._content = this.cellModel.source[0] === '' ? '<p>&nbsp;</p>' : this.cellModel.source;
@@ -280,6 +280,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (!this.isEditMode) {
 			this.cellModel.showPreview = true;
 			this.cellModel.showMarkdown = false;
+		} else {
+			this.markdownMode = this.cellModel.showMarkdown;
 		}
 		this.updatePreview();
 		this._changeRef.detectChanges();

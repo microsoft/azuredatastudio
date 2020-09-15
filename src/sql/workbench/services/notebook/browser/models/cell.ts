@@ -67,6 +67,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _showMarkdown: boolean = false;
 	private _cellSourceChanged: boolean = false;
 	private _gridDataConversionComplete: Promise<void>[] = [];
+	private _defaultToWYSIWYG: boolean;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -94,15 +95,7 @@ export class CellModel extends Disposable implements ICellModel {
 		// if the fromJson() method was already called and _cellGuid was previously set, don't generate another UUID unnecessarily
 		this._cellGuid = this._cellGuid || generateUuid();
 		this.createUri();
-		if (this._configurationService) {
-			const allowADSCommandsKey = 'notebook.allowAzureDataStudioCommands';
-			this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
-			this._register(this._configurationService.onDidChangeConfiguration(e => {
-				if (e.affectsConfiguration(allowADSCommandsKey)) {
-					this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
-				}
-			}));
-		}
+		this.populatePropertiesFromSettings();
 	}
 
 	public equals(other: ICellModel) {
@@ -166,6 +159,9 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set isEditMode(isEditMode: boolean) {
 		this._isEditMode = isEditMode;
+		if (this._isEditMode) {
+			this.showMarkdown = !this._defaultToWYSIWYG;
+		}
 		this._onCellModeChanged.fire(this._isEditMode);
 		// Note: this does not require a notebook update as it does not change overall state
 	}
@@ -325,6 +321,9 @@ export class CellModel extends Disposable implements ICellModel {
 		this._onCellMarkdownChanged.fire(this._showMarkdown);
 	}
 
+	public get defaultToWYSIWYG(): boolean {
+		return this._defaultToWYSIWYG;
+	}
 
 	public get cellSourceChanged(): boolean {
 		return this._cellSourceChanged;
@@ -851,5 +850,24 @@ export class CellModel extends Disposable implements ICellModel {
 			this._future.dispose();
 		}
 		this._future = undefined;
+	}
+
+	private populatePropertiesFromSettings() {
+		if (this._configurationService) {
+			const enableWYSIWYGByDefaultKey = 'notebook.setRichTextViewByDefault';
+			this._defaultToWYSIWYG = this._configurationService.getValue(enableWYSIWYGByDefaultKey);
+			if (!this._defaultToWYSIWYG) {
+				this.showMarkdown = true;
+			}
+			const allowADSCommandsKey = 'notebook.allowAzureDataStudioCommands';
+			this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
+			this._register(this._configurationService.onDidChangeConfiguration(e => {
+				if (e.affectsConfiguration(allowADSCommandsKey)) {
+					this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
+				} else if (e.affectsConfiguration(enableWYSIWYGByDefaultKey)) {
+					this._defaultToWYSIWYG = this._configurationService.getValue(enableWYSIWYGByDefaultKey);
+				}
+			}));
+		}
 	}
 }
