@@ -74,6 +74,7 @@ export const loading = localize('arc.loading', "Loading...");
 export const refreshToEnterCredentials = localize('arc.refreshToEnterCredentials', "Refresh node to enter credentials");
 export const connectToController = localize('arc.connectToController', "Connect to Existing Controller");
 export function connectToSql(name: string): string { return localize('arc.connectToSql', "Connect to SQL instance - Azure Arc ({0})", name); }
+export const passwordToController = localize('arc.passwordToController', "Provide Password to Controller");
 export const controllerUrl = localize('arc.controllerUrl', "Controller URL");
 export const serverEndpoint = localize('arc.serverEndpoint', "Server Endpoint");
 export const controllerName = localize('arc.controllerName', "Name");
@@ -83,6 +84,7 @@ export const password = localize('arc.password', "Password");
 export const rememberPassword = localize('arc.rememberPassword', "Remember Password");
 export const connect = localize('arc.connect', "Connect");
 export const cancel = localize('arc.cancel', "Cancel");
+export const ok = localize('arc.ok', "Ok");
 export const notConfigured = localize('arc.notConfigured', "Not Configured");
 
 // Database States - see https://docs.microsoft.com/sql/relational-databases/databases/database-states
@@ -159,3 +161,6 @@ export function invalidResourceDeletionName(name: string): string { return local
 export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for {0}", name); }
 export function passwordResetFailed(error: any): string { return localize('arc.passwordResetFailed', "Failed to reset password. {0}", getErrorMessage(error)); }
 export function errorConnectingToController(error: any): string { return localize('arc.errorConnectingToController', "Error connecting to controller. {0}", getErrorMessage(error)); }
+export function passwordAcquisitionFailed(error: any): string { return localize('arc.passwordAcquisitionFailed', "Failed to acquire password. {0}", getErrorMessage(error)); }
+export const invalidPassword = localize('arc.invalidPassword', "The password did not work, try again.");
+export function errorVerifyingPassword(error: any): string { return localize('arc.errorVerifyingPassword', "Error encountered while verifying password. {0}", getErrorMessage(error)); }

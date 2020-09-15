@@ -57,12 +57,14 @@
       {
         "command": "sqlDatabaseProjects.new",
         "title": "%sqlDatabaseProjects.new%",
-        "category": "%sqlDatabaseProjects.displayName%"
+        "category": "%sqlDatabaseProjects.displayName%",
+        "icon": "$(add)"
       },
       {
         "command": "sqlDatabaseProjects.open",
         "title": "%sqlDatabaseProjects.open%",
-        "category": "%sqlDatabaseProjects.displayName%"
+        "category": "%sqlDatabaseProjects.displayName%",
+        "icon": "$(folder-opened)"
       },
       {
         "command": "sqlDatabaseProjects.close",
@@ -245,6 +247,18 @@
           "when": "false"
         }
       ],
+      "view/title": [
+        {
+          "command": "sqlDatabaseProjects.new",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.open",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "navigation@2"
+        }
+      ],
       "view/item/context": [
         {
           "command": "sqlDatabaseProjects.build",
@@ -328,7 +342,7 @@
         },
         {
           "command": "sqlDatabaseProjects.close",
-          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
           "group": "9_dbProjectsLast@9"
         }
       ],

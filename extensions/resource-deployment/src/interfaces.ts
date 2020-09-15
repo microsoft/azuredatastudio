@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { OptionsSource, OptionsSourceType } from './helpers/optionSources';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 
@@ -18,6 +19,7 @@ export interface ResourceType {
 	providers: DeploymentProvider[];
 	agreement?: AgreementInfo;
 	displayIndex?: number;
+	okButtonText?: string;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
 }
 
@@ -171,9 +173,18 @@ export type ComponentCSSStyles = {
 	[key: string]: string;
 };
 
+export interface IOptionsSource {
+	readonly type: OptionsSourceType,
+	readonly variableNames: { [index: string]: string; },
+	getOptions(): Promise<string[] | azdata.CategoryValue[]>,
+	getVariableValue(variableName: string, input: string): Promise<string>;
+	getIsPassword(variableName: string): boolean;
+}
+
 
 export interface OptionsInfo {
-	values: string[] | azdata.CategoryValue[],
+	values?: string[] | azdata.CategoryValue[],
+	source?: OptionsSource,
 	defaultValue: string,
 	optionsType?: OptionsType
 }
