@@ -342,7 +342,7 @@
         },
         {
           "command": "sqlDatabaseProjects.close",
-          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project",
+          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
           "group": "9_dbProjectsLast@9"
         }
       ],
