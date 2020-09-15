@@ -132,25 +132,17 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 	};
 }
 
+
 export class NoAzdataEulaError extends Error {
 	constructor() {
-		super();
-		this.setMessage();
+		super(loc.eulaNotAccepted);
 	}
 
-	private setMessage(): void {
-		this.message = loc.eulaNotAccepted;
-	}
 }
 
 export class NoAzdataError extends Error {
 	constructor() {
-		super();
-		this.setMessage();
-	}
-
-	private setMessage(): void {
-		this.message = loc.noAzdata;
+		super(loc.noAzdata);
 	}
 }
 
