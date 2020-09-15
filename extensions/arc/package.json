@@ -751,7 +751,6 @@
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_EXTENSIONS",
                           "type": "text"
                         }
-
                       ]
                     },
                     {
