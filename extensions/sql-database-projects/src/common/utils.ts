@@ -146,6 +146,77 @@ export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 }
 
 /**
+ * 	Removes $() around a sqlcmd variable
+ * @param name
+ */
+export function removeSqlCmdVariableFormatting(name: string | undefined): string {
+	if (!name || name === '') {
+		return '';
+	}
+
+	if (name.length > 3) {
+		// Trim in case we get "  $(x)"
+		name = name.trim();
+		let indexStart = name.startsWith('$(') ? 2 : 0;
+		let indexEnd = name.endsWith(')') ? 1 : 0;
+		if (indexStart > 0 || indexEnd > 0) {
+			name = name.substr(indexStart, name.length - indexEnd - indexStart);
+		}
+	}
+
+	// Trim in case the customer types "  $(x   )"
+	return name.trim();
+}
+
+/**
+ * 	Format as sqlcmd variable by adding $() if necessary
+ * if the variable already starts with $(, then add )
+ * @param name
+ */
+export function formatSqlCmdVariable(name: string): string {
+	if (!name || name === '') {
+		return name;
+	}
+
+	// Trim in case we get "  $(x)"
+	name = name.trim();
+
+	if (!name.startsWith('$(') && !name.endsWith(')')) {
+		name = `$(${name})`;
+	} else if (name.startsWith('$(') && !name.endsWith(')')) {
+		// add missing end parenthesis, same behavior as SSDT
+		name = `${name})`;
+	}
+
+	return name;
+}
+
+/**
+ * Checks if it's a valid sqlcmd variable name
+ * https://docs.microsoft.com/en-us/sql/ssms/scripting/sqlcmd-use-with-scripting-variables?redirectedfrom=MSDN&view=sql-server-ver15#guidelines-for-scripting-variable-names-and-values
+ * @param name variable name to validate
+ */
+export function isValidSqlCmdVariableName(name: string | undefined): boolean {
+	// remove $() around named if it's there
+	name = removeSqlCmdVariableFormatting(name);
+
+	// can't contain whitespace
+	if (!name || name.trim() === '' || name.includes(' ')) {
+		return false;
+	}
+
+	// can't contain these characters
+	if (name.includes('$') || name.includes('@') || name.includes('#') || name.includes('"') || name.includes('\'') || name.includes('-')) {
+		return false;
+	}
+
+	// TODO: tsql parsing to check if it's a reserved keyword or invalid tsql https://github.com/microsoft/azuredatastudio/issues/12204
+	// TODO: give more detail why variable name was invalid https://github.com/microsoft/azuredatastudio/issues/12231
+
+	return true;
+}
+
+/*
  * Recursively gets all the sqlproj files at any depth in a folder
  * @param folderPath
  */
