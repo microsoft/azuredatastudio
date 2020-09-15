@@ -13,7 +13,6 @@ import { readonly } from 'vs/base/common/errors';
 import { MainThreadNotebookDocumentsAndEditorsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
 import { CellRange, ISingleNotebookEditOperation, ICellRange } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { find } from 'vs/base/common/arrays';
 import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
 
 export interface INotebookEditOperation {
@@ -96,7 +95,7 @@ export class NotebookEditorEdit {
 				value.metadata = { tags: [HideInputTag] };
 			} else if (!value.metadata.tags) {
 				value.metadata.tags = [HideInputTag];
-			} else if (!find(value.metadata.tags, x => x === HideInputTag)) {
+			} else if (!value.metadata.tags.find(x => x === HideInputTag)) {
 				value.metadata.tags.push(HideInputTag);
 			}
 		}

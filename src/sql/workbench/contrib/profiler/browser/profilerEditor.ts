@@ -33,7 +33,7 @@ import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegis
 import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/find/findController';
 import * as types from 'vs/base/common/types';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
-import { DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
+import { ColorScheme } from 'vs/platform/theme/common/theme';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IView, SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
@@ -50,7 +50,6 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { handleCopyRequest } from 'sql/workbench/contrib/profiler/browser/profilerCopyHandler';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { find } from 'vs/base/common/arrays';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
@@ -239,7 +238,7 @@ export class ProfilerEditor extends EditorPane {
 		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', "Select View"));
 		this._register(this._viewTemplateSelector.onDidSelect(e => {
 			if (this.input) {
-				this.input.setViewTemplate(find(this._viewTemplates, i => i.name === e.selected));
+				this.input.setViewTemplate(this._viewTemplates.find(i => i.name === e.selected));
 			}
 		}));
 		let viewTemplateContainer = document.createElement('div');
@@ -301,16 +300,16 @@ export class ProfilerEditor extends EditorPane {
 		profilerTableContainer.style.overflow = 'hidden';
 		profilerTableContainer.style.position = 'relative';
 		let theme = this.themeService.getColorTheme();
-		if (theme.type === DARK) {
+		if (theme.type === ColorScheme.DARK) {
 			DOM.addClass(profilerTableContainer, VS_DARK_THEME);
-		} else if (theme.type === HIGH_CONTRAST) {
+		} else if (theme.type === ColorScheme.HIGH_CONTRAST) {
 			DOM.addClass(profilerTableContainer, VS_HC_THEME);
 		}
 		this.themeService.onDidColorThemeChange(e => {
 			DOM.removeClasses(profilerTableContainer, VS_DARK_THEME, VS_HC_THEME);
-			if (e.type === DARK) {
+			if (e.type === ColorScheme.DARK) {
 				DOM.addClass(profilerTableContainer, VS_DARK_THEME);
-			} else if (e.type === HIGH_CONTRAST) {
+			} else if (e.type === ColorScheme.HIGH_CONTRAST) {
 				DOM.addClass(profilerTableContainer, VS_HC_THEME);
 			}
 		});
@@ -466,7 +465,7 @@ export class ProfilerEditor extends EditorPane {
 			if (input.viewTemplate) {
 				this._viewTemplateSelector.selectWithOptionName(input.viewTemplate.name);
 			} else {
-				input.setViewTemplate(find(this._viewTemplates, i => i.name === 'Standard View'));
+				input.setViewTemplate(this._viewTemplates.find(i => i.name === 'Standard View'));
 			}
 
 			this._actionBar.context = input;

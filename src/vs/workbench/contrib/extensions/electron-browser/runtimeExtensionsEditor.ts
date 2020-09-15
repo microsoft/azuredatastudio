@@ -17,7 +17,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IExtensionService, IExtensionsStatus, IExtensionHostProfile } from 'vs/workbench/services/extensions/common/extensions';
 import { IListVirtualDelegate, IListRenderer } from 'vs/base/browser/ui/list/list';
 import { WorkbenchList } from 'vs/platform/list/browser/listService';
-import { append, $, reset, addClass, toggleClass, Dimension, clearNode } from 'vs/base/browser/dom';
+import { append, $, reset, Dimension, clearNode } from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { RunOnceScheduler } from 'vs/base/common/async';
@@ -26,7 +26,6 @@ import { EnablementState } from 'vs/workbench/services/extensionManagement/commo
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IElectronService } from 'vs/platform/electron/electron-sandbox/electron';
 import { writeFile } from 'vs/base/node/pfs';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { memoize } from 'vs/base/common/decorators';
 import { isNonEmptyArray } from 'vs/base/common/arrays';
 import { Event } from 'vs/base/common/event';
@@ -38,9 +37,9 @@ import { randomPort } from 'vs/base/node/ports';
 import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ILabelService } from 'vs/platform/label/common/label';
-import { renderCodiconsAsElement } from 'vs/base/browser/codicons';
+import { renderCodicons } from 'vs/base/browser/codicons';
 import { ExtensionIdentifier, ExtensionType, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
+import { Schemas } from 'vs/base/common/network';
 import { SlowExtensionAction } from 'vs/workbench/contrib/extensions/electron-browser/extensionsSlowActions';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
@@ -258,7 +257,7 @@ export class RuntimeExtensionsEditor extends EditorPane {
 	}
 
 	protected createEditor(parent: HTMLElement): void {
-		addClass(parent, 'runtime-extensions-editor');
+		parent.classList.add('runtime-extensions-editor');
 
 		const TEMPLATE_ID = 'runtimeExtensionElementTemplate';
 
@@ -329,7 +328,7 @@ export class RuntimeExtensionsEditor extends EditorPane {
 
 				data.elementDisposables = dispose(data.elementDisposables);
 
-				toggleClass(data.root, 'odd', index % 2 === 1);
+				data.root.classList.toggle('odd', index % 2 === 1);
 
 				const onError = Event.once(domEvent(data.icon, 'error'));
 				onError(() => data.icon.src = element.marketplaceInfo.iconUrlFallback, null, data.elementDisposables);
@@ -409,28 +408,28 @@ export class RuntimeExtensionsEditor extends EditorPane {
 				clearNode(data.msgContainer);
 
 				if (this._extensionHostProfileService.getUnresponsiveProfile(element.description.identifier)) {
-					const el = $('span', undefined, ...renderCodiconsAsElement(` $(alert) Unresponsive`));
+					const el = $('span', undefined, ...renderCodicons(` $(alert) Unresponsive`));
 					el.title = nls.localize('unresponsive.title', "Extension has caused the extension host to freeze.");
 					data.msgContainer.appendChild(el);
 				}
 
 				if (isNonEmptyArray(element.status.runtimeErrors)) {
-					const el = $('span', undefined, ...renderCodiconsAsElement(`$(bug) ${nls.localize('errors', "{0} uncaught errors", element.status.runtimeErrors.length)}`));
+					const el = $('span', undefined, ...renderCodicons(`$(bug) ${nls.localize('errors', "{0} uncaught errors", element.status.runtimeErrors.length)}`));
 					data.msgContainer.appendChild(el);
 				}
 
 				if (element.status.messages && element.status.messages.length > 0) {
-					const el = $('span', undefined, ...renderCodiconsAsElement(`$(alert) ${element.status.messages[0].message}`));
+					const el = $('span', undefined, ...renderCodicons(`$(alert) ${element.status.messages[0].message}`));
 					data.msgContainer.appendChild(el);
 				}
 
 				if (element.description.extensionLocation.scheme !== 'file') {
-					const el = $('span', undefined, ...renderCodiconsAsElement(`$(remote) ${element.description.extensionLocation.authority}`));
+					const el = $('span', undefined, ...renderCodicons(`$(remote) ${element.description.extensionLocation.authority}`));
 					data.msgContainer.appendChild(el);
 
-					const hostLabel = this._labelService.getHostLabel(REMOTE_HOST_SCHEME, this._environmentService.configuration.remoteAuthority);
+					const hostLabel = this._labelService.getHostLabel(Schemas.vscodeRemote, this._environmentService.configuration.remoteAuthority);
 					if (hostLabel) {
-						reset(el, ...renderCodiconsAsElement(`$(remote) ${hostLabel}`));
+						reset(el, ...renderCodicons(`$(remote) ${hostLabel}`));
 					}
 				}
 
@@ -664,7 +663,7 @@ export class SaveExtensionHostProfileAction extends Action {
 	constructor(
 		id: string = SaveExtensionHostProfileAction.ID, label: string = SaveExtensionHostProfileAction.LABEL,
 		@IElectronService private readonly _electronService: IElectronService,
-		@IEnvironmentService private readonly _environmentService: IEnvironmentService,
+		@IWorkbenchEnvironmentService private readonly _environmentService: IWorkbenchEnvironmentService,
 		@IExtensionHostProfileService private readonly _extensionHostProfileService: IExtensionHostProfileService,
 	) {
 		super(id, label, undefined, false);

@@ -20,7 +20,6 @@ import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardServi
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
-import { find } from 'vs/base/common/arrays';
 import { RowDetailView, ExtendedItem } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import {
 	IAssessmentComponent,
@@ -478,13 +477,13 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			let filterValues = col.filterValues;
 			if (filterValues && filterValues.length > 0) {
 				if (item._parent) {
-					value = value && find(filterValues, x => x === item._parent[col.field]);
+					value = value && filterValues.find(x => x === item._parent[col.field]);
 				} else {
 					let colValue = item[col.field];
 					if (colValue instanceof Array) {
-						value = value && find(filterValues, x => colValue.indexOf(x) >= 0);
+						value = value && filterValues.find(x => colValue.indexOf(x) >= 0);
 					} else {
-						value = value && find(filterValues, x => x === colValue);
+						value = value && filterValues.find(x => x === colValue);
 					}
 				}
 			}

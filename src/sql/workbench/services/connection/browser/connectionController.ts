@@ -18,7 +18,6 @@ import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGr
 import { ILogService } from 'vs/platform/log/common/log';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { assign } from 'vs/base/common/objects';
-import { find } from 'vs/base/common/arrays';
 
 export class ConnectionController implements IConnectionComponentController {
 	private _advancedController: AdvancedPropertiesController;
@@ -166,7 +165,7 @@ export class ConnectionController implements IConnectionComponentController {
 		this._connectionWidget.updateServerGroup(this.getAllServerGroups(providers));
 		this._model = connectionInfo;
 		this._model.providerName = this._providerName;
-		let appNameOption = find(this._providerOptions, option => option.specialValueType === ConnectionOptionSpecialType.appName);
+		let appNameOption = this._providerOptions.find(option => option.specialValueType === ConnectionOptionSpecialType.appName);
 		if (appNameOption) {
 			let appNameKey = appNameOption.name;
 			this._model.options[appNameKey] = Constants.applicationName;

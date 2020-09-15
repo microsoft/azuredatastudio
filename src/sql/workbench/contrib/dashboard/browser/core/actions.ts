@@ -11,7 +11,6 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/platform/angularEventing/browser/angularEventingService';
 import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialog';
 import { IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
-import { find, firstIndex } from 'vs/base/common/arrays';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { ILogService } from 'vs/platform/log/common/log';
 
@@ -202,14 +201,14 @@ export class AddFeatureTabAction extends Action {
 			case AngularEventType.NEW_TABS:
 				const openedTabs = <IDashboardTab[]>event.payload.dashboardTabs;
 				openedTabs.forEach(tab => {
-					const existedTab = find(this._openedTabs, i => i === tab);
+					const existedTab = this._openedTabs.find(i => i === tab);
 					if (!existedTab) {
 						this._openedTabs.push(tab);
 					}
 				});
 				break;
 			case AngularEventType.CLOSE_TAB:
-				const index = firstIndex(this._openedTabs, i => i.id === event.payload.id);
+				const index = this._openedTabs.findIndex(i => i.id === event.payload.id);
 				this._openedTabs.splice(index, 1);
 				break;
 		}

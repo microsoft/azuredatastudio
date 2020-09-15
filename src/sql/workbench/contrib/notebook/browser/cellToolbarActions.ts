@@ -12,7 +12,6 @@ import { CellActionBase, CellContext } from 'sql/workbench/contrib/notebook/brow
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { CellTypes, CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import { firstIndex } from 'vs/base/common/arrays';
 import { getErrorMessage } from 'vs/base/common/errors';
 import Severity from 'vs/base/common/severity';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -218,7 +217,7 @@ export class AddCellFromContextAction extends CellActionBase {
 	doRun(context: CellContext): Promise<void> {
 		try {
 			let model = context.model;
-			let index = firstIndex(model.cells, (cell) => cell.id === context.cell.id);
+			let index = model.cells.findIndex((cell) => cell.id === context.cell.id);
 			if (index !== undefined && this.isAfter) {
 				index += 1;
 			}

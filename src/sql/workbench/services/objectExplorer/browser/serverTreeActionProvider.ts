@@ -24,7 +24,6 @@ import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/serverInfoContextKey';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
-import { firstIndex, find } from 'vs/base/common/arrays';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 /**
@@ -87,7 +86,7 @@ export class ServerTreeActionProvider {
 		const options = { arg: undefined, shouldForwardArgs: true };
 		const groups = menu.getActions(options);
 		let insertIndex: number | undefined = 0;
-		const queryIndex = firstIndex(groups, v => {
+		const queryIndex = groups.findIndex(v => {
 			if (v[0] === '0_query') {
 				return true;
 			} else {
@@ -193,7 +192,7 @@ export class ServerTreeActionProvider {
 
 	private isScriptableObject(context: ObjectExplorerContext): boolean {
 		if (context.treeNode) {
-			if (find(NodeType.SCRIPTABLE_OBJECTS, x => x === context?.treeNode?.nodeTypeId)) {
+			if (NodeType.SCRIPTABLE_OBJECTS.find(x => x === context?.treeNode?.nodeTypeId)) {
 				return true;
 			}
 		}

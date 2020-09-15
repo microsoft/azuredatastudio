@@ -5,7 +5,6 @@
 
 import { localize } from 'vs/nls';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { assign } from 'vs/base/common/objects';
 import { Event, Emitter } from 'vs/base/common/event';
 import { isPromiseCanceledError, getErrorMessage } from 'vs/base/common/errors';
 import { PagedModel, IPagedModel, IPager, DelayedPagedModel } from 'vs/base/common/paging';
@@ -14,7 +13,7 @@ import { IExtensionManagementServer, IExtensionManagementServerService, IExtensi
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { append, $, toggleClass, addClass } from 'vs/base/browser/dom';
+import { append, $ } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Delegate, Renderer, IExtensionsViewState } from 'vs/workbench/contrib/extensions/browser/extensionsList';
 import { IExtension, IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
@@ -31,7 +30,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { coalesce, distinct, flatten, firstIndex } from 'vs/base/common/arrays'; // {{ SQL CARBON EDIT }}
+import { coalesce, distinct, flatten } from 'vs/base/common/arrays'; // {{ SQL CARBON EDIT }}
 import { IExperimentService, IExperiment, ExperimentActionType } from 'vs/workbench/contrib/experiments/common/experimentService';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { IListContextMenuEvent } from 'vs/base/browser/ui/list/list';
@@ -121,7 +120,7 @@ export class ExtensionsListView extends ViewPane {
 	}
 
 	protected renderHeader(container: HTMLElement): void {
-		addClass(container, 'extension-view-header');
+		container.classList.add('extension-view-header');
 		super.renderHeader(container);
 
 		this.badge = new CountBadge(append(container, $('.count-badge-wrapper')));
@@ -198,10 +197,10 @@ export class ExtensionsListView extends ViewPane {
 		};
 
 		switch (parsedQuery.sortBy) {
-			case 'installs': options = assign(options, { sortBy: SortBy.InstallCount }); break;
-			case 'rating': options = assign(options, { sortBy: SortBy.WeightedRating }); break;
-			case 'name': options = assign(options, { sortBy: SortBy.Title }); break;
-			case 'publishedDate': options = assign(options, { sortBy: SortBy.PublishedDate }); break;
+			case 'installs': options.sortBy = SortBy.InstallCount; break;
+			case 'rating': options.sortBy = SortBy.WeightedRating; break;
+			case 'name': options.sortBy = SortBy.Title; break;
+			case 'publishedDate': options.sortBy = SortBy.PublishedDate; break;
 		}
 
 		const successCallback = (model: IPagedModel<IExtension>) => {
@@ -490,13 +489,15 @@ export class ExtensionsListView extends ViewPane {
 		const text = query.value;
 
 		if (/\bext:([^\s]+)\b/g.test(text)) {
-			options = assign(options, { text, source: 'file-extension-tags' });
+			options.text = text;
+			options.source = 'file-extension-tags';
 			return this.extensionsWorkbenchService.queryGallery(options, token).then(pager => this.getPagedModel(pager));
 		}
 
 		let preferredResults: string[] = [];
 		if (text) {
-			options = assign(options, { text: text.substr(0, 350), source: 'searchText' });
+			options.text = text.substr(0, 350);
+			options.source = 'searchText';
 			if (!hasUserDefinedSortOrder) {
 				const searchExperiments = await this.getSearchExperiments();
 				for (const experiment of searchExperiments) {
@@ -562,7 +563,9 @@ export class ExtensionsListView extends ViewPane {
 		const names = await this.experimentService.getCuratedExtensionsList(value);
 		if (Array.isArray(names) && names.length) {
 			options.source = `curated:${value}`;
-			const pager = await this.extensionsWorkbenchService.queryGallery(assign(options, { names, pageSize: names.length }), token);
+			options.names = names;
+			options.pageSize = names.length;
+			const pager = await this.extensionsWorkbenchService.queryGallery(options, token);
 			this.sortFirstPage(pager, names);
 			return this.getPagedModel(pager || []);
 		}
@@ -586,7 +589,10 @@ export class ExtensionsListView extends ViewPane {
 			.then(local => {
 				return this.extensionRecommendationsService.getOtherRecommendations().then((recommmended) => {
 					const installedExtensions = local.map(x => `${x.publisher}.${x.name}`);
-					options = assign(options, { text: value, source: 'searchText' });
+					options = {
+						...options,
+						text: value, source: 'searchText'
+					};
 					return this.extensionsWorkbenchService.queryGallery(options, token).then((pager) => {
 						// filter out installed extensions
 						pager.firstPage = pager.firstPage.filter((p) => {
@@ -595,8 +601,8 @@ export class ExtensionsListView extends ViewPane {
 
 						// sort the marketplace extensions
 						pager.firstPage.sort((a, b) => {
-							let isRecommendedA: boolean = firstIndex(recommmended, ext => ext.extensionId === `${a.publisher}.${a.name}`) > -1;
-							let isRecommendedB: boolean = firstIndex(recommmended, ext => ext.extensionId === `${b.publisher}.${b.name}`) > -1;
+							let isRecommendedA: boolean = recommmended.findIndex(ext => ext.extensionId === `${a.publisher}.${a.name}`) > -1;
+							let isRecommendedB: boolean = recommmended.findIndex(ext => ext.extensionId === `${b.publisher}.${b.name}`) > -1;
 
 							// sort recommeded extensions before other extensions
 							if (isRecommendedA !== isRecommendedB) {
@@ -628,7 +634,7 @@ export class ExtensionsListView extends ViewPane {
 						// filter out installed extensions and the extensions not in the recommended list
 						pager.firstPage = pager.firstPage.filter((p) => {
 							const extensionId = `${p.publisher}.${p.name}`;
-							return installedExtensions.indexOf(extensionId) === -1 && firstIndex(recommmended, ext => ext.extensionId === extensionId) !== -1;
+							return installedExtensions.indexOf(extensionId) === -1 && recommmended.findIndex(ext => ext.extensionId === extensionId) !== -1;
 						});
 						pager.total = pager.firstPage.length;
 						pager.pageSize = pager.firstPage.length;
@@ -780,8 +786,8 @@ export class ExtensionsListView extends ViewPane {
 
 			if (this.bodyTemplate && this.badge) {
 
-				toggleClass(this.bodyTemplate.extensionsList, 'hidden', count === 0);
-				toggleClass(this.bodyTemplate.messageContainer, 'hidden', count > 0);
+				this.bodyTemplate.extensionsList.classList.toggle('hidden', count === 0);
+				this.bodyTemplate.messageContainer.classList.toggle('hidden', count > 0);
 				this.badge.setCount(count);
 
 				if (count === 0 && this.isBodyVisible()) {

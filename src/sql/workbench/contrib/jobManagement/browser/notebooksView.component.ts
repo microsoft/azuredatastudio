@@ -33,7 +33,6 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { find } from 'vs/base/common/arrays';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 
@@ -319,7 +318,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 						this._table.grid.removeCellCssStyles('notebook-error-row' + i.toString());
 						let item = this.dataView.getItemByIdx(i);
 						// current filter
-						if (!!find(filterValues, x => x === item[args.column.field])) {
+						if (!!filterValues.find(x => x === item[args.column.field])) {
 							// check all previous filters
 							if (this.checkPreviousFilters(item)) {
 								if (item.lastRunOutcome === 'Failed') {
@@ -612,7 +611,9 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	private checkPreviousFilters(item): boolean {
 		for (let column in this.filterValueMap) {
 			if (column !== 'start' && this.filterValueMap[column][0].length > 0) {
-				if (!find(this.filterValueMap[column][0], x => x === item[JobManagementUtilities.convertColNameToField(column)])) {
+				let temp = this.filterValueMap[column][0] as unknown;
+				let arr = temp as [];
+				if (!arr.find(x => x === item[JobManagementUtilities.convertColNameToField(column)])) {
 					return false;
 				}
 			}
@@ -771,9 +772,9 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			let filterValues = col.filterValues;
 			if (filterValues && filterValues.length > 0) {
 				if (item._parent) {
-					value = value && find(filterValues, x => x === item._parent[col.field]);
+					value = value && filterValues.find(x => x === item._parent[col.field]);
 				} else {
-					value = value && find(filterValues, x => x === item[col.field]);
+					value = value && filterValues.find(x => x === item[col.field]);
 				}
 			}
 		}

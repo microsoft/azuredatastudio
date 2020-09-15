@@ -405,7 +405,7 @@ namespace schema {
 	};
 
 	export const submenusContribution: IJSONSchema = {
-		description: localize('vscode.extension.contributes.submenus', "(Proposed API) Contributes submenu items to the editor"),
+		description: localize('vscode.extension.contributes.submenus', "Contributes submenu items to the editor"),
 		type: 'array',
 		items: submenu
 	};
@@ -622,11 +622,6 @@ submenusExtensionPoint.setHandler(extensions => {
 				return;
 			}
 
-			if (!extension.description.enableProposedApi) {
-				collector.error(localize('submenu.proposedAPI.invalid', "Submenus are proposed API and are only available when running out of dev or with the following command line switch: --enable-proposed-api {0}", extension.description.identifier.value));
-				return;
-			}
-
 			let absoluteIcon: { dark: URI; light?: URI; } | ThemeIcon | undefined;
 			if (entry.value.icon) {
 				if (typeof entry.value.icon === 'string') {
@@ -675,7 +670,6 @@ menusExtensionPoint.setHandler(extensions => {
 			}
 
 			let menu = _apiMenusByKey.get(entry.key);
-			let isSubmenu = false;
 
 			if (!menu) {
 				const submenu = _submenus.get(entry.key);
@@ -686,7 +680,6 @@ menusExtensionPoint.setHandler(extensions => {
 						id: submenu.id,
 						description: ''
 					};
-					isSubmenu = true;
 				}
 			}
 
@@ -697,11 +690,6 @@ menusExtensionPoint.setHandler(extensions => {
 
 			if (menu.proposed && !extension.description.enableProposedApi) {
 				collector.error(localize('proposedAPI.invalid', "{0} is a proposed menu identifier and is only available when running out of dev or with the following command line switch: --enable-proposed-api {1}", entry.key, extension.description.identifier.value));
-				return;
-			}
-
-			if (isSubmenu && !extension.description.enableProposedApi) {
-				collector.error(localize('proposedAPI.invalid.submenu', "{0} is a submenu identifier and is only available when running out of dev or with the following command line switch: --enable-proposed-api {1}", entry.key, extension.description.identifier.value));
 				return;
 			}
 
@@ -725,13 +713,8 @@ menusExtensionPoint.setHandler(extensions => {
 
 					item = { command, alt, group: undefined, order: undefined, when: undefined };
 				} else {
-					if (!extension.description.enableProposedApi) {
-						collector.error(localize('proposedAPI.invalid.submenureference', "Menu item references a submenu which is only available when running out of dev or with the following command line switch: --enable-proposed-api {0}", extension.description.identifier.value));
-						continue;
-					}
-
 					if (menu.supportsSubmenus === false) {
-						collector.error(localize('proposedAPI.unsupported.submenureference', "Menu item references a submenu for a menu which doesn't have submenu support."));
+						collector.error(localize('unsupported.submenureference', "Menu item references a submenu for a menu which doesn't have submenu support."));
 						continue;
 					}
 

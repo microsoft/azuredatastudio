@@ -17,7 +17,6 @@ import * as azdata from 'azdata';
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode, ModelViewAction } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { firstIndex } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
 import { onUnexpectedError } from 'vs/base/common/errors';
 
@@ -457,7 +456,7 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 		let result: boolean = false;
 		if (componentGroup && componentGroup.components !== undefined) {
 			let firstComponent = componentGroup.components[0];
-			let index = firstIndex(this._component.itemConfigs, x => x.component.id === firstComponent.component.id);
+			let index = this._component.itemConfigs.findIndex(x => x.component.id === firstComponent.component.id);
 			if (index !== -1) {
 				result = this._component.removeItemAt(index - 1);
 			}
@@ -709,7 +708,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public removeItem(item: azdata.Component): boolean {
-		let index = firstIndex(this.itemConfigs, c => c.component.id === item.id);
+		let index = this.itemConfigs.findIndex(c => c.component.id === item.id);
 		if (index >= 0 && index < this.itemConfigs.length) {
 			return this.removeItemAt(index);
 		}

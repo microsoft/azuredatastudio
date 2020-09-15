@@ -12,7 +12,6 @@ import {
 import { FormLayout, FormItemLayout } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { find } from 'vs/base/common/arrays';
 import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
 
@@ -186,7 +185,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		let itemConfig = item.config;
 		if (itemConfig && itemConfig.actions) {
 			let resultItems = itemConfig.actions.map(x => {
-				let actionComponent = find(items, i => i.descriptor.id === x);
+				let actionComponent = items.find(i => i.descriptor.id === x);
 				return <FormItem>actionComponent;
 			});
 

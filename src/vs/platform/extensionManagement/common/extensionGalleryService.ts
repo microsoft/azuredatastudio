@@ -6,7 +6,7 @@
 import { getErrorMessage, isPromiseCanceledError, canceled } from 'vs/base/common/errors';
 import { StatisticType, IGalleryExtension, IExtensionGalleryService, IGalleryExtensionAsset, IQueryOptions, SortBy, SortOrder, IExtensionIdentifier, IReportedExtension, InstallOperation, ITranslation, IGalleryExtensionVersion, IGalleryExtensionAssets, isIExtensionIdentifier, DefaultIconPath } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionId, getGalleryExtensionTelemetryData, adoptToGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
-import { assign, getOrDefault } from 'vs/base/common/objects';
+import { getOrDefault } from 'vs/base/common/objects';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IPager } from 'vs/base/common/paging';
 import { IRequestService, asJson, asText } from 'vs/platform/request/common/request';
@@ -21,7 +21,6 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { find } from 'vs/base/common/arrays';
 import { getServiceMachineId } from 'vs/platform/serviceMachineId/common/serviceMachineId';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { joinPath } from 'vs/base/common/resources';
@@ -166,7 +165,7 @@ class Query {
 	get criteria(): ICriterium[] { return this.state.criteria ? this.state.criteria : []; }
 
 	withPage(pageNumber: number, pageSize: number = this.state.pageSize): Query {
-		return new Query(assign({}, this.state, { pageNumber, pageSize }));
+		return new Query({ ...this.state, pageNumber, pageSize });
 	}
 
 	withFilter(filterType: FilterType, ...values: string[]): Query {
@@ -175,23 +174,23 @@ class Query {
 			...values.length ? values.map(value => ({ filterType, value })) : [{ filterType }]
 		];
 
-		return new Query(assign({}, this.state, { criteria }));
+		return new Query({ ...this.state, criteria });
 	}
 
 	withSortBy(sortBy: SortBy): Query {
-		return new Query(assign({}, this.state, { sortBy }));
+		return new Query({ ...this.state, sortBy });
 	}
 
 	withSortOrder(sortOrder: SortOrder): Query {
-		return new Query(assign({}, this.state, { sortOrder }));
+		return new Query({ ...this.state, sortOrder });
 	}
 
 	withFlags(...flags: Flags[]): Query {
-		return new Query(assign({}, this.state, { flags: flags.reduce((r, f) => r | f, 0) }));
+		return new Query({ ...this.state, flags: flags.reduce<number>((r, f) => r | f, 0) });
 	}
 
 	withAssetTypes(...assetTypes: string[]): Query {
-		return new Query(assign({}, this.state, { assetTypes }));
+		return new Query({ ...this.state, assetTypes });
 	}
 
 	get raw(): any {
@@ -429,7 +428,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		}
 	}
 
-	private getCompatibleExtensionByEngine(arg1: IExtensionIdentifier | IGalleryExtension, version?: string): Promise<IGalleryExtension | null> {
+	private async getCompatibleExtensionByEngine(arg1: IExtensionIdentifier | IGalleryExtension, version?: string): Promise<IGalleryExtension | null> {
 		const extension: IGalleryExtension | null = isIExtensionIdentifier(arg1) ? null : arg1;
 		// {{SQL CARBON EDIT}}
 		// Change to original version: removed the extension version validation
@@ -451,40 +450,38 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			query = query.withFilter(FilterType.ExtensionName, id);
 		}
 
-		return this.queryGallery(query, CancellationToken.None)
-			.then(({ galleryExtensions }) => {
-				const [rawExtension] = galleryExtensions;
-				if (!rawExtension || !rawExtension.versions.length) {
-					return null;
+		const { galleryExtensions } = await this.queryGallery(query, CancellationToken.None);
+		const [rawExtension] = galleryExtensions;
+		if (!rawExtension || !rawExtension.versions.length) {
+			return null;
+		}
+
+		if (version) {
+			const versionAsset = rawExtension.versions.filter(v => v.version === version)[0];
+			if (versionAsset) {
+				const extension = toExtension(rawExtension, versionAsset, 0, query);
+				if (extension.properties.engine && isEngineValid(extension.properties.engine, this.productService.version)) {
+					return extension;
 				}
-				if (version) {
-					const versionAsset = rawExtension.versions.filter(v => v.version === version)[0];
-					if (versionAsset) {
-						const extension = toExtension(rawExtension, versionAsset, 0, query);
-						if (extension.properties.engine && isEngineValid(extension.properties.engine, this.productService.version)) {
-							return extension;
-						}
-					}
-					return null;
-				}
-				return this.getLastValidExtensionVersion(rawExtension, rawExtension.versions)
-					.then(rawVersion => {
-						if (rawVersion) {
-							return toExtension(rawExtension, rawVersion, 0, query);
-						}
-						return null;
-					});
-			});
+			}
+			return null;
+		}
+
+		const rawVersion = await this.getLastValidExtensionVersion(rawExtension, rawExtension.versions);
+		if (rawVersion) {
+			return toExtension(rawExtension, rawVersion, 0, query);
+		}
+		return null;
 	}
 
 	query(token: CancellationToken): Promise<IPager<IGalleryExtension>>;
 	query(options: IQueryOptions, token: CancellationToken): Promise<IPager<IGalleryExtension>>;
-	query(arg1: any, arg2?: any): Promise<IPager<IGalleryExtension>> {
+	async query(arg1: any, arg2?: any): Promise<IPager<IGalleryExtension>> {
 		const options: IQueryOptions = CancellationToken.isCancellationToken(arg1) ? {} : arg1;
 		const token: CancellationToken = CancellationToken.isCancellationToken(arg1) ? arg1 : arg2;
 
 		if (!this.isEnabled()) {
-			return Promise.reject(new Error('No extension gallery service configured.'));
+			throw new Error('No extension gallery service configured.');
 		}
 
 		const type = options.names ? 'ids' : (options.text ? 'text' : 'all');
@@ -549,22 +546,19 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			query = query.withSortOrder(options.sortOrder);
 		}
 
-		return this.queryGallery(query, token).then(({ galleryExtensions, total }) => {
-			const extensions = galleryExtensions.map((e, index) => toExtension(e, e.versions[0], index, query, options.source));
-			// {{SQL CARBON EDIT}}
-			const pageSize = extensions.length;
-			const getPage = (pageIndex: number, ct: CancellationToken) => {
-				if (ct.isCancellationRequested) {
-					return Promise.reject(canceled());
-				}
+		const { galleryExtensions, total } = await this.queryGallery(query, token);
+		const extensions = galleryExtensions.map((e, index) => toExtension(e, e.versions[0], index, query, options.source));
+		const getPage = async (pageIndex: number, ct: CancellationToken) => {
+			if (ct.isCancellationRequested) {
+				throw canceled();
+			}
+			const nextPageQuery = query.withPage(pageIndex + 1);
+			const { galleryExtensions } = await this.queryGallery(nextPageQuery, ct);
+			return galleryExtensions.map((e, index) => toExtension(e, e.versions[0], index, nextPageQuery, options.source));
+		};
 
-				const nextPageQuery = query.withPage(pageIndex + 1);
-				return this.queryGallery(nextPageQuery, ct)
-					.then(({ galleryExtensions }) => galleryExtensions.map((e, index) => toExtension(e, e.versions[0], index, nextPageQuery, options.source)));
-			};
-
-			return { firstPage: extensions, total, pageSize, getPage } as IPager<IGalleryExtension>;
-		});
+		// {{ SQL CARBON EDIT }}
+		return { firstPage: extensions, total, pageSize: extensions.length, getPage } as IPager<IGalleryExtension>;
 	}
 
 	// {{SQL CARBON EDIT}}
@@ -579,16 +573,16 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		if (query.criteria) {
 			const ids = query.criteria.filter(x => x.filterType === FilterType.ExtensionId).map(v => v.value ? v.value.toLocaleLowerCase() : undefined);
 			if (ids && ids.length > 0) {
-				filteredExtensions = filteredExtensions.filter(e => e.extensionId && find(ids, x => x === e.extensionId.toLocaleLowerCase()));
+				filteredExtensions = filteredExtensions.filter(e => e.extensionId && ids.find(x => x === e.extensionId.toLocaleLowerCase()));
 			}
 			const names = query.criteria.filter(x => x.filterType === FilterType.ExtensionName).map(v => v.value ? v.value.toLocaleLowerCase() : undefined);
 			if (names && names.length > 0) {
-				filteredExtensions = filteredExtensions.filter(e => e.extensionName && e.publisher.publisherName && find(names, x => x === `${e.publisher.publisherName.toLocaleLowerCase()}.${e.extensionName.toLocaleLowerCase()}`));
+				filteredExtensions = filteredExtensions.filter(e => e.extensionName && e.publisher.publisherName && names.find(x => x === `${e.publisher.publisherName.toLocaleLowerCase()}.${e.extensionName.toLocaleLowerCase()}`));
 			}
 			const categoryFilters = query.criteria.filter(x => x.filterType === FilterType.Category).map(v => v.value ? v.value.toLowerCase() : undefined);
 			if (categoryFilters && categoryFilters.length > 0) {
 				// Implement the @category: "language packs" filtering
-				if (find(categoryFilters, x => x === 'language packs')) {
+				if (categoryFilters.find(x => x === 'language packs')) {
 					filteredExtensions = filteredExtensions.filter(e => {
 						// we only have 1 version for our extensions in the gallery file, so this should always be the case
 						if (e.versions.length === 1) {
@@ -670,74 +664,72 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return a[fieldName] < b[fieldName] ? -1 : 1;
 	}
 
-	private queryGallery(query: Query, token: CancellationToken): Promise<{ galleryExtensions: IRawGalleryExtension[], total: number; }> {
+	private async queryGallery(query: Query, token: CancellationToken): Promise<{ galleryExtensions: IRawGalleryExtension[], total: number; }> {
+		if (!this.isEnabled()) {
+			throw new Error('No extension gallery service configured.');
+		}
 		// Always exclude non validated and unpublished extensions
 		query = query
 			.withFlags(query.flags, Flags.ExcludeNonValidated)
 			.withFilter(FilterType.ExcludeWithFlags, flagsToString(Flags.Unpublished));
 
-		if (!this.isEnabled()) {
-			return Promise.reject(new Error('No extension gallery service configured.'));
+		const commonHeaders = await this.commonHeadersPromise;
+		const data = JSON.stringify(query.raw);
+		const headers = {
+			...commonHeaders,
+			'Content-Type': 'application/json',
+			'Accept': 'application/json;api-version=3.0-preview.1',
+			'Accept-Encoding': 'gzip',
+			'Content-Length': String(data.length)
+		};
+
+		const context = await this.requestService.request({
+			// {{SQL CARBON EDIT}}
+			type: 'GET',
+			url: this.api('/extensionquery'),
+			data,
+			headers
+		}, token);
+
+		// {{SQL CARBON EDIT}}
+		let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
+		if (context.res.statusCode && context.res.statusCode >= 400 && context.res.statusCode < 500 || extensionPolicy === ExtensionsPolicy.allowNone) {
+			return { galleryExtensions: [], total: 0 };
 		}
-		return this.commonHeadersPromise.then(commonHeaders => {
-			const data = JSON.stringify(query.raw);
-			const headers = assign({}, commonHeaders, {
-				'Content-Type': 'application/json',
-				'Accept': 'application/json;api-version=3.0-preview.1',
-				'Accept-Encoding': 'gzip',
-				'Content-Length': data.length
-			});
 
-			return this.requestService.request({
-				// {{SQL CARBON EDIT}}
-				type: 'GET',
-				url: this.api('/extensionquery'),
-				data,
-				headers
-			}, token).then(context => {
+		const result = await asJson<IRawGalleryQueryResult>(context);
+		if (result) {
+			const r = result.results[0];
+			const galleryExtensions = r.extensions;
+			// const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0]; {{SQL CARBON EDIT}} comment out for no unused
+			// const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0; {{SQL CARBON EDIT}} comment out for no unused
 
-				// {{SQL CARBON EDIT}}
-				let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
-				if (context.res.statusCode && context.res.statusCode >= 400 && context.res.statusCode < 500 || extensionPolicy === ExtensionsPolicy.allowNone) {
-					return { galleryExtensions: [], total: 0 };
-				}
+			// {{SQL CARBON EDIT}}
+			let filteredExtensionsResult = this.createQueryResult(query, galleryExtensions);
 
-				return asJson<IRawGalleryQueryResult>(context).then(result => {
-					if (result) {
-						const r = result.results[0];
-						const galleryExtensions = r.extensions;
-						// const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0]; {{SQL CARBON EDIT}} comment out for no unused
-						// const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0; {{SQL CARBON EDIT}} comment out for no unused
-
-						// {{SQL CARBON EDIT}}
-						let filteredExtensionsResult = this.createQueryResult(query, galleryExtensions);
-
-						return { galleryExtensions: filteredExtensionsResult.galleryExtensions, total: filteredExtensionsResult.total };
-						// {{SQL CARBON EDIT}} - End
-					}
-					return { galleryExtensions: [], total: 0 };
-				});
-			});
-		});
+			return { galleryExtensions: filteredExtensionsResult.galleryExtensions, total: filteredExtensionsResult.total };
+			// {{SQL CARBON EDIT}} - End
+		}
+		return { galleryExtensions: [], total: 0 };
 	}
 
-	reportStatistic(publisher: string, name: string, version: string, type: StatisticType): Promise<void> {
+	async reportStatistic(publisher: string, name: string, version: string, type: StatisticType): Promise<void> {
 		if (!this.isEnabled()) {
-			return Promise.resolve(undefined);
+			return undefined;
 		}
 
-		return this.commonHeadersPromise.then(commonHeaders => {
-			const headers = { ...commonHeaders, Accept: '*/*;api-version=4.0-preview.1' };
-
-			return this.requestService.request({
+		const commonHeaders = await this.commonHeadersPromise;
+		const headers = { ...commonHeaders, Accept: '*/*;api-version=4.0-preview.1' };
+		try {
+			await this.requestService.request({
 				type: 'POST',
 				url: this.api(`/publishers/${publisher}/extensions/${name}/${version}/stats?statType=${type}`),
 				headers
-			}, CancellationToken.None).then(undefined, () => undefined);
-		});
+			}, CancellationToken.None);
+		} catch (error) { /* Ignore */ }
 	}
 
-	download(extension: IGalleryExtension, location: URI, operation: InstallOperation): Promise<void> {
+	async download(extension: IGalleryExtension, location: URI, operation: InstallOperation): Promise<void> {
 		this.logService.trace('ExtensionGalleryService#download', extension.identifier.id);
 		const data = getGalleryExtensionTelemetryData(extension);
 		const startTime = new Date().getTime();
@@ -749,7 +741,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				]
 			}
 		*/
-		const log = (duration: number) => this.telemetryService.publicLog('galleryService:downloadVSIX', assign(data, { duration }));
+		const log = (duration: number) => this.telemetryService.publicLog('galleryService:downloadVSIX', { ...data, duration });
 
 		// {{SQL Carbon Edit}} - Don't append install or update on to the URL
 		// const operationParam = operation === InstallOperation.Install ? 'install' : operation === InstallOperation.Update ? 'update' : '';
@@ -759,46 +751,46 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			fallbackUri: `${extension.assets.download.fallbackUri}?${operationParam}=true`
 		} : extension.assets.download;
 
-		return this.getAsset(downloadAsset)
-			.then(context => this.fileService.writeFile(location, context.stream))
-			.then(() => log(new Date().getTime() - startTime));
+		const context = await this.getAsset(downloadAsset);
+		await this.fileService.writeFile(location, context.stream);
+		log(new Date().getTime() - startTime);
 	}
 
-	getReadme(extension: IGalleryExtension, token: CancellationToken): Promise<string> {
+	async getReadme(extension: IGalleryExtension, token: CancellationToken): Promise<string> {
 		if (extension.assets.readme) {
-			return this.getAsset(extension.assets.readme, {}, token)
-				.then(context => asText(context))
-				.then(content => content || '');
+			const context = await this.getAsset(extension.assets.readme, {}, token);
+			const content = await asText(context);
+			return content || '';
 		}
-		return Promise.resolve('');
+		return '';
 	}
 
-	getManifest(extension: IGalleryExtension, token: CancellationToken): Promise<IExtensionManifest | null> {
+	async getManifest(extension: IGalleryExtension, token: CancellationToken): Promise<IExtensionManifest | null> {
 		if (extension.assets.manifest) {
-			return this.getAsset(extension.assets.manifest, {}, token)
-				.then(asText)
-				.then(text => text ? JSON.parse(text) : null);
+			const context = await this.getAsset(extension.assets.manifest, {}, token);
+			const text = await asText(context);
+			return text ? JSON.parse(text) : null;
 		}
-		return Promise.resolve(null);
+		return null;
 	}
 
-	getCoreTranslation(extension: IGalleryExtension, languageId: string): Promise<ITranslation | null> {
+	async getCoreTranslation(extension: IGalleryExtension, languageId: string): Promise<ITranslation | null> {
 		const asset = extension.assets.coreTranslations.filter(t => t[0] === languageId.toUpperCase())[0];
 		if (asset) {
-			return this.getAsset(asset[1])
-				.then(asText)
-				.then(text => text ? JSON.parse(text) : null);
+			const context = await this.getAsset(asset[1]);
+			const text = await asText(context);
+			return text ? JSON.parse(text) : null;
 		}
-		return Promise.resolve(null);
+		return null;
 	}
 
-	getChangelog(extension: IGalleryExtension, token: CancellationToken): Promise<string> {
+	async getChangelog(extension: IGalleryExtension, token: CancellationToken): Promise<string> {
 		if (extension.assets.changelog) {
-			return this.getAsset(extension.assets.changelog, {}, token)
-				.then(context => asText(context))
-				.then(content => content || '');
+			const context = await this.getAsset(extension.assets.changelog, {}, token);
+			const content = await asText(context);
+			return content || '';
 		}
-		return Promise.resolve('');
+		return '';
 	}
 
 	async getAllVersions(extension: IGalleryExtension, compatible: boolean): Promise<IGalleryExtensionVersion[]> {
@@ -833,48 +825,45 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return result;
 	}
 
-	private getAsset(asset: IGalleryExtensionAsset, options: IRequestOptions = {}, token: CancellationToken = CancellationToken.None): Promise<IRequestContext> {
-		return this.commonHeadersPromise.then(commonHeaders => {
-			const baseOptions = { type: 'GET' };
-			const headers = assign({}, commonHeaders, options.headers || {});
-			options = assign({}, options, baseOptions, { headers });
+	private async getAsset(asset: IGalleryExtensionAsset, options: IRequestOptions = {}, token: CancellationToken = CancellationToken.None): Promise<IRequestContext> {
+		const commonHeaders = await this.commonHeadersPromise;
+		const baseOptions = { type: 'GET' };
+		const headers = { ...commonHeaders, ...(options.headers || {}) };
+		options = { ...options, ...baseOptions, headers };
 
-			const url = asset.uri;
-			const fallbackUrl = asset.fallbackUri;
-			const firstOptions = assign({}, options, { url });
+		const url = asset.uri;
+		const fallbackUrl = asset.fallbackUri;
+		const firstOptions = { ...options, url };
 
-			return this.requestService.request(firstOptions, token)
-				.then(context => {
-					if (context.res.statusCode === 200) {
-						return Promise.resolve(context);
-					}
+		try {
+			const context = await this.requestService.request(firstOptions, token);
+			if (context.res.statusCode === 200) {
+				return context;
+			}
+			const message = await asText(context);
+			throw new Error(`Expected 200, got back ${context.res.statusCode} instead.\n\n${message}`);
+		} catch (err) {
+			if (isPromiseCanceledError(err)) {
+				throw err;
+			}
 
-					return asText(context)
-						.then(message => Promise.reject(new Error(`Expected 200, got back ${context.res.statusCode} instead.\n\n${message}`)));
-				})
-				.then(undefined, err => {
-					if (isPromiseCanceledError(err)) {
-						return Promise.reject(err);
-					}
+			const message = getErrorMessage(err);
+			type GalleryServiceCDNFallbackClassification = {
+				url: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+				message: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+			};
+			type GalleryServiceCDNFallbackEvent = {
+				url: string;
+				message: string;
+			};
+			this.telemetryService.publicLog2<GalleryServiceCDNFallbackEvent, GalleryServiceCDNFallbackClassification>('galleryService:cdnFallback', { url, message });
 
-					const message = getErrorMessage(err);
-					type GalleryServiceCDNFallbackClassification = {
-						url: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-						message: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-					};
-					type GalleryServiceCDNFallbackEvent = {
-						url: string;
-						message: string;
-					};
-					this.telemetryService.publicLog2<GalleryServiceCDNFallbackEvent, GalleryServiceCDNFallbackClassification>('galleryService:cdnFallback', { url, message });
-
-					const fallbackOptions = assign({}, options, { url: fallbackUrl });
-					return this.requestService.request(fallbackOptions, token);
-				});
-		});
+			const fallbackOptions = { ...options, url: fallbackUrl };
+			return this.requestService.request(fallbackOptions, token);
+		}
 	}
 
-	private getLastValidExtensionVersion(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion | null> {
+	private async getLastValidExtensionVersion(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion | null> {
 		const version = this.getLastValidExtensionVersionFromProperties(extension, versions);
 		if (version) {
 			return version;
@@ -882,7 +871,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return this.getLastValidExtensionVersionRecursively(extension, versions);
 	}
 
-	private getLastValidExtensionVersionFromProperties(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion> | null {
+	private getLastValidExtensionVersionFromProperties(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): IRawGalleryExtensionVersion | null {
 		for (const version of versions) {
 			// {{SQL CARBON EDIT}}
 			const vsCodeEngine = getEngine(version);
@@ -894,75 +883,75 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			const vsCodeEngineValid = !vsCodeEngine || (vsCodeEngine && isEngineValid(vsCodeEngine, this.productService.vscodeVersion));
 			const azDataEngineValid = !azDataEngine || (azDataEngine && isEngineValid(azDataEngine, this.productService.version));
 			if (vsCodeEngineValid && azDataEngineValid) {
-				return Promise.resolve(version);
+				return version;
 			}
 		}
 		return null;
 	}
 
-	private getEngine(version: IRawGalleryExtensionVersion): Promise<string> {
+	private async getEngine(version: IRawGalleryExtensionVersion): Promise<string> {
 		const engine = getEngine(version);
 		if (engine) {
-			return Promise.resolve(engine);
+			return engine;
 		}
 
-		const manifest = getVersionAsset(version, AssetType.Manifest);
-		if (!manifest) {
-			return Promise.reject('Manifest was not found');
+		const manifestAsset = getVersionAsset(version, AssetType.Manifest);
+		if (!manifestAsset) {
+			throw new Error('Manifest was not found');
 		}
 
 		const headers = { 'Accept-Encoding': 'gzip' };
-		return this.getAsset(manifest, { headers })
-			.then(context => asJson<IExtensionManifest>(context))
-			.then(manifest => manifest ? manifest.engines.vscode : Promise.reject<string>('Error while reading manifest'));
+		const context = await this.getAsset(manifestAsset, { headers });
+		const manifest = await asJson<IExtensionManifest>(context);
+		if (manifest) {
+			return manifest.engines.vscode;
+		}
+
+		throw new Error('Error while reading manifest');
 	}
 
-	private getLastValidExtensionVersionRecursively(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion | null> {
+	private async getLastValidExtensionVersionRecursively(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion | null> {
 		if (!versions.length) {
-			return Promise.resolve(null);
+			return null;
 		}
 
 		const version = versions[0];
-		return this.getEngine(version)
-			.then(engine => {
-				if (!isEngineValid(engine, this.productService.version)) {
-					return this.getLastValidExtensionVersionRecursively(extension, versions.slice(1));
-				}
+		const engine = await this.getEngine(version);
+		if (!isEngineValid(engine, this.productService.version)) {
+			return this.getLastValidExtensionVersionRecursively(extension, versions.slice(1));
+		}
 
-				version.properties = version.properties || [];
-				version.properties.push({ key: PropertyType.Engine, value: engine });
-				return version;
-			});
+		version.properties = version.properties || [];
+		version.properties.push({ key: PropertyType.Engine, value: engine });
+		return version;
 	}
 
-	getExtensionsReport(): Promise<IReportedExtension[]> {
+	async getExtensionsReport(): Promise<IReportedExtension[]> {
 		if (!this.isEnabled()) {
-			return Promise.reject(new Error('No extension gallery service configured.'));
+			throw new Error('No extension gallery service configured.');
 		}
 
 		if (!this.extensionsControlUrl) {
-			return Promise.resolve([]);
+			return [];
 		}
 
-		return this.requestService.request({ type: 'GET', url: this.extensionsControlUrl }, CancellationToken.None).then(context => {
-			if (context.res.statusCode !== 200) {
-				return Promise.reject(new Error('Could not get extensions report.'));
+		const context = await this.requestService.request({ type: 'GET', url: this.extensionsControlUrl }, CancellationToken.None);
+		if (context.res.statusCode !== 200) {
+			throw new Error('Could not get extensions report.');
+		}
+
+		const result = await asJson<IRawExtensionsReport>(context);
+		const map = new Map<string, IReportedExtension>();
+
+		if (result) {
+			for (const id of result.malicious) {
+				const ext = map.get(id) || { id: { id }, malicious: true, slow: false };
+				ext.malicious = true;
+				map.set(id, ext);
 			}
+		}
 
-			return asJson<IRawExtensionsReport>(context).then(result => {
-				const map = new Map<string, IReportedExtension>();
-
-				if (result) {
-					for (const id of result.malicious) {
-						const ext = map.get(id) || { id: { id }, malicious: true, slow: false };
-						ext.malicious = true;
-						map.set(id, ext);
-					}
-				}
-
-				return [...map.values()];
-			});
-		});
+		return [...map.values()];
 	}
 }
 

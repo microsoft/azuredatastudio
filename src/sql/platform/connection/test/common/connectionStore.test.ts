@@ -18,7 +18,6 @@ import { ConfigurationTarget } from 'vs/platform/configuration/common/configurat
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { InMemoryStorageService } from 'vs/platform/storage/common/storage';
-import { find } from 'vs/base/common/arrays';
 import { generateUuid } from 'vs/base/common/uuid';
 
 suite('ConnectionStore', () => {
@@ -464,7 +463,7 @@ suite('ConnectionStore', () => {
 		const connectionGroups = connectionStore.getConnectionProfileGroups();
 
 		for (const group of connectionGroups) {
-			const foundGroup = find(groups, g => g.id === group.id);
+			const foundGroup = groups.find(g => g.id === group.id);
 			assert.ok(foundGroup);
 		}
 	});
