@@ -219,14 +219,23 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 						iconHeight: iconSize,
 						iconWidth: iconSize
 					}).component();
-				const nameComponent = this.modelView.modelBuilder.hyperlink()
-					.withProperties<azdata.HyperlinkComponentProperties>({
-						label: r.instanceName || '',
-						url: ''
-					}).component();
-				nameComponent.onDidClick(async () => {
-					await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', r.instanceName);
-				});
+				let nameComponent: azdata.Component;
+				if (r.instanceType === ResourceType.postgresInstances) {
+					nameComponent = this.modelView.modelBuilder.text()
+						.withProperties<azdata.TextComponentProperties>({
+							value: r.instanceName || '',
+							CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+						}).component();
+				} else {
+					nameComponent = this.modelView.modelBuilder.hyperlink()
+						.withProperties<azdata.HyperlinkComponentProperties>({
+							label: r.instanceName || '',
+							url: ''
+						}).component();
+					(<azdata.HyperlinkComponent>nameComponent).onDidClick(async () => {
+						await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', r.instanceName);
+					});
+				}
 
 				// TODO chgagnon
 				return [imageComponent, nameComponent, resourceTypeToDisplayName(r.instanceType), '-'/* loc.numVCores(r.vCores) */];
