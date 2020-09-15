@@ -30,7 +30,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 	});
 
 	eulaAccepted = !!context.globalState.get<boolean>(constants.eulaAccepted); // fetch eula acceptance state from memento
-	eulaAccepted = false;
 	await vscode.commands.executeCommand('setContext', constants.eulaAccepted, eulaAccepted); // set a context key for current value of eulaAccepted state retrieved from memento so that command for accepting eula is available/unavailable in commandPalette appropriately.
 	Logger.log(loc.eulaAcceptedStateOnStartup(eulaAccepted));
 	if (!eulaAccepted) {
