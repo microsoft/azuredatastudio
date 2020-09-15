@@ -424,7 +424,7 @@
         ],
         "providers": [
           {
-            "webPageUrl": "https://portal.azure.com/#create/Microsoft.Microsoft.SQLDatabase",
+            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLDatabase",
             "requiredTools": [],
             "when": "resource-type=single-database"
           },
