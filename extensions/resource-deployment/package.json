@@ -360,6 +360,7 @@
           "light": "./images/azure-sql-db.svg",
           "dark": "./images/azure-sql-db.svg"
         },
+        "okButtonText": "Create in Azure portal",
         "options": [
           {
             "name": "resource-type",
