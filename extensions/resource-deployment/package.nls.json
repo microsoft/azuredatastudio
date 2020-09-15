@@ -71,13 +71,13 @@
 	"azure-sqlvm-password-confirm-label": "Confirm password",
 	"azure-sqlvm-vm-summary-page-label": "Summary",
 	"azure-sqldb-display-name": "SQL Database on Azure Server",
-	"azure-sqldb-description": "Create SQL Databases on Azure. Best for new applications or existing on-premises applications that want to use the latest stable SQL Server features and that are migrated to the cloud with minimal changes.\n(Selecting \"Database Server\" or \"Elastic Pool\" will open a creation link)",
+	"azure-sqldb-description": "Create SQL Databases on Azure. Best for new applications or existing on-premises applications.\n(Selecting \"Database Server\" or \"Elastic Pool\" will open a creation link)",
 	"resource-type-display-name": "Resource Type",
 	"sql-azure-single-database-display-name": "Single Database (script to notebook)",
 	"sql-azure-elastic-pool-display-name": "Elastic Pool (open link for creation)",
 	"sql-azure-database-server-display-name": "Database Server (open link for creation)",
 	"azure-sqldb-agreement": "I accept {0}, {1} and {2}.",
-	"azure-sqldb-agreement-sqlvm-eula": "Azure SQL DB License Terms",
+	"azure-sqldb-agreement-sqldb-eula": "Azure SQL DB License Terms",
 	"azure-sqldb-agreement-azdata-eula": "azdata License Terms",
 	"azure-sqldb-db-summary-page-label": "Summary"
 }

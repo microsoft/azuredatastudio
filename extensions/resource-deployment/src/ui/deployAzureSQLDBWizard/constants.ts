@@ -29,6 +29,7 @@ export const DatabaseSettingsPageTitle = localize('deployAzureSQLDB.DatabaseSett
 export const DatabaseSettingsPageDescription = localize('deployAzureSQLDB.DatabaseSettingsPageDescription', "   ");
 export const FirewallRuleNameLabel = localize('deployAzureSQLDB.FirewallRuleNameLabel', 'Firewall rule name');
 export const DatabaseNameLabel = localize('deployAzureSQLDB.DatabaseNameLabel', 'SQL database name');
+export const CollationNameLabel = localize('deployAzureSQLDB.CollationNameLabel', 'Collation for database, default value is \"SQL_Latin1_General_CP1_CI_AS\"');
 export const IpAddressInfoLabel = localize('deployAzureSQLDB.IpAddressInfoLabel', "Enter IP Addresses in IVP4 format.");
 export const StartIpAddressLabel = localize('deployAzureSQLDB.StartIpAddressLabel', "Min Ip Address in firewall Ip Range");
 export const EndIpAddressLabel = localize('deployAzureSQLDB.EndIpAddressLabel', "Max Ip Address in firewall Ip Range");

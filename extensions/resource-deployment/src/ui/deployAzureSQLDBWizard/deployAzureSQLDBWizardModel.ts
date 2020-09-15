@@ -21,6 +21,7 @@ export class DeployAzureSQLDBWizardModel extends Model {
 	public startIpAddress!: string;
 	public endIpAddress!: string;
 	public firewallRuleName!: string;
+	public databaseCollation!: string;
 
 
 	constructor() {
@@ -38,6 +39,7 @@ export class DeployAzureSQLDBWizardModel extends Model {
 		statements.push(`azure_sqldb_ip_start = '${this.startIpAddress}'`);
 		statements.push(`azure_sqldb_ip_end = '${this.endIpAddress}'`);
 		statements.push(`azure_sqldb_firewall_name = '${this.firewallRuleName}'`);
+		statements.push(`azure_db_collation = '${this.databaseCollation}'`);
 		//statements.push(`azure_sqldb_new_server = '${this.newServer}'`); //@todo alma1 9/8/2020 used for upcoming server creation feature.
 
 		return statements.map(line => line.concat(EOL));

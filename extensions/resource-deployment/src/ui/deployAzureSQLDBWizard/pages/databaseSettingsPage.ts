@@ -18,6 +18,8 @@ export class DatabaseSettingsPage extends BasePage {
 	private _firewallRuleNameTextRow!: azdata.FlexContainer;
 	private _databaseNameTextbox!: azdata.InputBoxComponent;
 	private _databaseNameTextRow!: azdata.FlexContainer;
+	private _collationTextbox!: azdata.InputBoxComponent;
+	private _collationTextRow!: azdata.FlexContainer;
 	private _IpInfoText!: azdata.TextComponent;
 
 	private _form!: azdata.FormContainer;
@@ -35,7 +37,8 @@ export class DatabaseSettingsPage extends BasePage {
 			await Promise.all([
 				this.createIpAddressText(view),
 				this.createFirewallNameText(view),
-				this.createDatabaseNameText(view)
+				this.createDatabaseNameText(view),
+				this.createCollationText(view)
 			]);
 			this._form = view.modelBuilder.formContainer()
 				.withFormItems(
@@ -44,16 +47,19 @@ export class DatabaseSettingsPage extends BasePage {
 							component: this._databaseNameTextRow
 						},
 						{
-							component: this._firewallRuleNameTextRow
+							component: this._collationTextRow
 						},
 						{
-							component: this._IpInfoText
+							component: this._firewallRuleNameTextRow
 						},
 						{
 							component: this._startIpAddressTextRow
 						},
 						{
 							component: this._endIpAddressTextRow
+						},
+						{
+							component: this._IpInfoText
 						}
 					],
 					{
@@ -147,6 +153,20 @@ export class DatabaseSettingsPage extends BasePage {
 		});
 	}
 
+	private createCollationText(view: azdata.ModelView) {
+		this._collationTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+			inputType: 'text',
+			value: 'SQL_Latin1_General_CP1_CI_AS'
+		}).component();
+
+		this._collationTextbox.onTextChanged((value) => {
+			this.wizard.model.databaseCollation = value;
+			this.liveFormValidation();
+		});
+
+		this._collationTextRow = this.wizard.createFormRowComponent(view, constants.CollationNameLabel, '', this._collationTextbox, true);
+	}
+
 	protected async formValidation(): Promise<string> {
 		let errorMessage = [];
 		let ipRegex = /(^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$)/;
@@ -154,6 +174,7 @@ export class DatabaseSettingsPage extends BasePage {
 		let endipvalue = this._endIpAddressTextbox.value!;
 		let firewallname = this._firewallRuleNameTextbox.value!;
 		let databasename = this._databaseNameTextbox.value!;
+		let collationname = this._collationTextbox.value!;
 
 		if (!(ipRegex.test(startipvalue))) {
 			errorMessage.push('Min IP address is invalid');
@@ -170,11 +191,11 @@ export class DatabaseSettingsPage extends BasePage {
 			errorMessage.push('Firewall name must be between 1 and 15 characters long.');
 		}
 		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(firewallname)) {
-			errorMessage.push('firewall name cannot contain special characters \/""[]:|<>+=;,?*@&, .');
+			errorMessage.push('Firewall name cannot contain special characters \/""[]:|<>+=;,?*@&, .');
 		}
 
 		if (/^\d+$/.test(databasename)) {
-			errorMessage.push('Virtual machine name cannot contain only numbers.');
+			errorMessage.push('Database name cannot contain only numbers.');
 		}
 		if (databasename.length < 1 || databasename.length > 15) {
 			errorMessage.push('Database name must be between 1 and 15 characters long.');
@@ -184,6 +205,16 @@ export class DatabaseSettingsPage extends BasePage {
 		}
 		if (await this.databaseNameExists(databasename)) {
 			errorMessage.push('Database name must be unique in the current server.');
+		}
+
+		if (/^\d+$/.test(collationname)) {
+			errorMessage.push('Collation name cannot contain only numbers.');
+		}
+		if (collationname.length < 1 || collationname.length > 15) {
+			errorMessage.push('Collation name must be between 1 and 15 characters long.');
+		}
+		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(collationname)) {
+			errorMessage.push('Collation name cannot contain special characters \/""[]:|<>+=;,?*@&, .');
 		}
 
 		this.wizard.showErrorMessage(errorMessage.join('\n'));
