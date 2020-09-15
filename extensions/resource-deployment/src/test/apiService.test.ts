@@ -10,7 +10,7 @@ import { apiService } from '../services/apiService';
 suite('API Service Tests', function (): void {
 
 	test('getAzurecoreApi returns azure api', async () => {
-		const api = await apiService.getAzurecoreApi();
+		const api = apiService.azurecoreApi;
 		assert(api !== undefined);
 	});
 });

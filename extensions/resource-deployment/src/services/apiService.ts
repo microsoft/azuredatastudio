@@ -3,25 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdataExt from 'azdata-ext';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
-import * as azdataExt from 'azdata-ext';
 
 export interface IApiService {
-	getAzurecoreApi(): Promise<azurecore.IExtension>;
-	getAzdataApi(): Promise<azdataExt.IExtension>;
+	readonly azurecoreApi: azurecore.IExtension;
+	readonly azdataApi: azdataExt.IExtension;
 }
 
 class ApiService implements IApiService {
 	constructor() { }
-
-	public async getAzurecoreApi(): Promise<azurecore.IExtension> {
-		return vscode.extensions.getExtension(azurecore.extension.name)?.exports;
-	}
-
-	public async getAzdataApi(): Promise<azdataExt.IExtension> {
-		return vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
-	}
+	public get azurecoreApi() { return vscode.extensions.getExtension(azurecore.extension.name)?.exports; }
+	public get azdataApi() { return vscode.extensions.getExtension(azdataExt.extension.name)?.exports; }
 }
 
 export const apiService: IApiService = new ApiService();

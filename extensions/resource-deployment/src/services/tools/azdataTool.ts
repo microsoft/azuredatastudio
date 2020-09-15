@@ -8,11 +8,10 @@ import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { AzdataInstallLocationKey, DeploymentConfigurationKey } from '../../constants';
-import { Command, OsDistribution, ToolType, ToolStatus } from '../../interfaces';
+import { Command, OsDistribution, ToolStatus, ToolType } from '../../interfaces';
+import { apiService } from '../apiService';
 import { IPlatformService } from '../platformService';
 import { dependencyType, ToolBase } from './toolBase';
-import { apiService } from '../apiService';
-import * as azdataExt from 'azdata-ext';
 
 const localize = nls.loadMessageBundle();
 export const AzdataToolName = 'azdata';
@@ -66,13 +65,12 @@ export class AzdataTool extends ToolBase {
 		this._statusDescription = '';
 		await this.addInstallationSearchPathsToSystemPath();
 
-		const azdataApi: azdataExt.IAzdataApi = (await apiService.getAzdataApi()).azdata;
-		const commandOutput = await azdataApi.version();
-		this.version = azdataApi.getSemVersion();
+		const commandOutput = await apiService.azdataApi.azdata.version();
+		this.version = apiService.azdataApi.azdata.getSemVersion();
 		if (this.version) {
 			if (this.autoInstallSupported) {
 				// set the installationPath
-				this._installationPathOrAdditionalInformation = azdataApi.getPath();
+				this._installationPathOrAdditionalInformation = apiService.azdataApi.azdata.getPath();
 			}
 			this.setStatus(ToolStatus.Installed);
 		}
@@ -84,7 +82,7 @@ export class AzdataTool extends ToolBase {
 	}
 
 	protected async getVersionFromOutput(output: string): Promise<SemVer | undefined> {
-		return (await apiService.getAzdataApi()).azdata.getSemVersion();
+		return apiService.azdataApi.azdata.getSemVersion();
 
 	}
 
