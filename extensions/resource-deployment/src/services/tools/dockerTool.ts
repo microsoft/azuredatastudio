@@ -36,7 +36,7 @@ export class DockerTool extends ToolBase {
 		return 'https://docs.docker.com/install';
 	}
 
-	protected async getVersionFromOutput(output: string): Promise<SemVer | undefined> {
+	protected getVersionFromOutput(output: string): SemVer | undefined {
 		let version: SemVer | undefined = undefined;
 		if (output) {
 			version = new SemVer(JSON.parse(output).Client.Version, true);

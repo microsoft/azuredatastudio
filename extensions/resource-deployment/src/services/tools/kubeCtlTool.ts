@@ -74,7 +74,7 @@ export class KubeCtlTool extends ToolBase {
 		};
 	}
 
-	protected async getVersionFromOutput(output: string): Promise<SemVer | undefined> {
+	protected getVersionFromOutput(output: string): SemVer | undefined {
 		let version: SemVer | undefined = undefined;
 		if (output) {
 			const versionJson: KubeCtlVersion = JSON.parse(output);

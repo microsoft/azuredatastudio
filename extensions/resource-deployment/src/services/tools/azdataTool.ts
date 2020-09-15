@@ -81,7 +81,7 @@ export class AzdataTool extends ToolBase {
 		}
 	}
 
-	protected async getVersionFromOutput(output: string): Promise<SemVer | undefined> {
+	protected getVersionFromOutput(output: string): SemVer | undefined {
 		return apiService.azdataApi.azdata.getSemVersion();
 
 	}
