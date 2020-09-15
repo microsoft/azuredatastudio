@@ -40,10 +40,13 @@ export class DashboardWidget {
 				const footerContainer = this.createFooter(view);
 				container.addItem(header, {
 					CSSStyles: {
-						'background-image': `url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))}), linear-gradient(0deg, #F0F0F0 0%, rgba(242,242,242,0) 100%, rgba(242,242,242,0.04) 100%)`,
+						'background-image': `
+							url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))}),
+							linear-gradient(0deg, rgba(0,0,0,0.09) 0%, rgba(0,0,0,0) 100%)
+						`,
 						'background-repeat': 'no-repeat',
-						'background-position': 'left 26px',
-						'background-size': '865px 210px',
+						'background-position': 'left 32px',
+						'background-size': '107%',
 						'border': 'none',
 						'width': `${maxWidth}px`,
 						'height': `${headerMaxHeight}px`
