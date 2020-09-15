@@ -44,14 +44,14 @@ export class AzdataTool extends ToolBase {
 		return 'https://docs.microsoft.com/sql/big-data-cluster/deploy-install-azdata';
 	}
 
-	/** unused */
+	/* unused */
 	protected get versionCommand(): Command {
 		return {
 			command: ''
 		};
 	}
 
-	/** unused */
+	/* unused */
 	protected get discoveryCommand(): Command {
 		return {
 			command: ''
@@ -59,8 +59,8 @@ export class AzdataTool extends ToolBase {
 	}
 
 	/**
- * updates the version and status for the tool.
- */
+	 * updates the version and status for the tool.
+	 */
 	protected async updateVersionAndStatus(): Promise<void> {
 		this.setStatusDescription('');
 		await this.addInstallationSearchPathsToSystemPath();

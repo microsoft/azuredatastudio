@@ -47,12 +47,16 @@ export class AzdataTool implements IAzdataTool {
 	 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
 	 * Azdata has gotten reinstalled in the background after this IAzdataApi object was constructed.
 	 */
-	public getSemVersion = () => this._semVersion;
+	public getSemVersion() {
+		return this._semVersion;
+	}
 
 	/**
 	 * gets the path where azdata tool is installed
 	 */
-	public getPath = () => this._path;
+	public getPath() {
+		return this._path;
+	}
 
 	public arc = {
 		dc: {
