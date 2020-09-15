@@ -73,8 +73,9 @@ export const indirect = localize('arc.indirect', "Indirect");
 export const loading = localize('arc.loading', "Loading...");
 export const refreshToEnterCredentials = localize('arc.refreshToEnterCredentials', "Refresh node to enter credentials");
 export const connectToController = localize('arc.connectToController', "Connect to Existing Controller");
-export const connectToSql = localize('arc.connectToSql', "Connect to MIAA Instance");
+export function connectToSql(name: string): string { return localize('arc.connectToSql', "Connect to SQL instance - Azure Arc ({0})", name); }
 export const controllerUrl = localize('arc.controllerUrl', "Controller URL");
+export const serverEndpoint = localize('arc.serverEndpoint', "Server Endpoint");
 export const controllerName = localize('arc.controllerName', "Name");
 export const defaultControllerName = localize('arc.defaultControllerName', "arc-dc");
 export const username = localize('arc.username', "Username");

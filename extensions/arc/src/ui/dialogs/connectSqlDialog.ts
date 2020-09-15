@@ -28,7 +28,7 @@ export class ConnectToSqlDialog extends InitializingComponent {
 	}
 
 	public showDialog(connectionProfile?: azdata.IConnectionProfile): azdata.window.Dialog {
-		const dialog = azdata.window.createModelViewDialog(loc.connectToSql);
+		const dialog = azdata.window.createModelViewDialog(loc.connectToSql(this._miaaModel.info.name));
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
 			this.modelBuilder = view.modelBuilder;
@@ -60,7 +60,7 @@ export class ConnectToSqlDialog extends InitializingComponent {
 					components: [
 						{
 							component: this.serverNameInputBox,
-							title: loc.controllerUrl,
+							title: loc.serverEndpoint,
 							required: true
 						}, {
 							component: this.usernameInputBox,
