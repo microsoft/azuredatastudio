@@ -4,5 +4,6 @@
 	"data-workspace-view-container-name": "Projects",
 	"main-view-name": "Projects",
 	"add-project-command": "Add Project",
-	"refresh-workspace-command": "Refresh"
+	"refresh-workspace-command": "Refresh",
+	"remove-project-command":"Remove Project"
 }
