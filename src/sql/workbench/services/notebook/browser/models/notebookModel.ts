@@ -652,9 +652,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let standardKernels = this._standardKernels.find(kernel => this._defaultKernel && kernel.displayName === this._defaultKernel.display_name);
 			let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
 			let providerFeatures = this._capabilitiesService.getCapabilities(profile.providerName);
-			if (connectionProviderIds.length > 0 && this._currentKernelAlias) {
+			if (connectionProviderIds?.length) {
 				this._currentKernelAlias = providerFeatures?.connection.notebookKernelAlias;
-				this._kernelDisplayNameToConnectionProviderIds.set(this._currentKernelAlias, [profile.providerName]);
+				// Adds Kernel Alias and Connection Provider to Map if new Notebook connection contains notebookKernelAlias
+				if (this._currentKernelAlias) {
+					this._kernelDisplayNameToConnectionProviderIds.set(this._currentKernelAlias, [profile.providerName]);
+				}
 			}
 			return this._currentKernelAlias || profile && connectionProviderIds && connectionProviderIds.find(provider => provider === profile.providerName) !== undefined;
 		}
