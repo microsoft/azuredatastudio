@@ -401,7 +401,7 @@
           "light": "./images/azure-sql-db.svg",
           "dark": "./images/azure-sql-db.svg"
         },
-        "okButtonText": "Create in Azure portal",
+        "okButtonText": "%azure-sqldb-ok-button-text%",
         "options": [
           {
             "name": "resource-type",

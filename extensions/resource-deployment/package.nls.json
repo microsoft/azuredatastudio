@@ -49,6 +49,7 @@
 	"azdata-install-location-description": "Location of the azdata package used for the install command",
 	"azure-sqldb-display-name": "Azure SQL Database",
 	"azure-sqldb-description": "Select a resource type and then you will be taken to the Azure portal to create the Azure resource.",
+	"azure-sqldb-ok-button-text": "Create in Azure portal",
 	"resource-type-display-name": "Resource Type",
 	"sql-azure-single-database-display-name": "Single Database",
 	"sql-azure-elastic-pool-display-name": "Elastic Pool",
