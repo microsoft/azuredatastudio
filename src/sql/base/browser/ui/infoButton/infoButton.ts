@@ -42,57 +42,56 @@ export class InfoButton extends sqlButton {
 		super(container, options);
 		this._container = container;
 
-		{ // Creates the elements
-			this._container.style.display = 'flex';
-			this._container.style.justifyContent = 'space-around';
+		this._container.style.display = 'flex';
+		this._container.style.justifyContent = 'space-around';
 
-			this._main = document.createElement('div');
-			DOM.addClass(this._main, 'flexContainer');
-			this._main.style.cursor = 'pointer';
-			this._main.style.padding = '10px';
+		this._main = document.createElement('div');
+		DOM.addClass(this._main, 'flexContainer');
+		this._main.style.cursor = 'pointer';
+		this._main.style.padding = '10px';
 
-			this._iconContainer = document.createElement('div');
-			this._iconContainer.style.alignItems = 'flex-start';
-			this._iconContainer.style.display = 'flex';
-			this._iconContainer.style.flexFlow = 'column';
-			this._iconContainer.style.paddingRight = '10px';
+		this._iconContainer = document.createElement('div');
+		this._iconContainer.style.alignItems = 'flex-start';
+		this._iconContainer.style.display = 'flex';
+		this._iconContainer.style.flexFlow = 'column';
+		this._iconContainer.style.paddingRight = '10px';
 
-			this._iconElement = document.createElement('div');
-			DOM.addClass(this._iconElement, 'icon');
+		this._iconElement = document.createElement('div');
+		DOM.addClass(this._iconElement, 'icon');
 
-			this._textContainer = document.createElement('div');
-			this._textContainer.style.display = 'flex';
-			this._textContainer.style.flexFlow = 'column';
-			this._textContainer.style.justifyContent = 'space-between';
-			this._textContainer.style.padding = '0 0 0 10px';
-			this._textContainer.style.margin = '0px';
+		this._textContainer = document.createElement('div');
+		this._textContainer.style.display = 'flex';
+		this._textContainer.style.flexFlow = 'column';
+		this._textContainer.style.justifyContent = 'space-between';
+		this._textContainer.style.padding = '0 0 0 10px';
+		this._textContainer.style.margin = '0px';
 
-			this._pTitle = document.createElement('p');
-			this._pTitle.setAttribute('aria-hidden', 'false');
-			this._pTitle.style.fontSize = '14px';
-			this._pTitle.style.fontWeight = 'bold';
-			this._pTitle.style.lineHeight = '20px';
-			this._pTitle.style.margin = '0px';
+		this._pTitle = document.createElement('p');
+		this._pTitle.setAttribute('aria-hidden', 'false');
+		this._pTitle.style.fontSize = '14px';
+		this._pTitle.style.fontWeight = 'bold';
+		this._pTitle.style.lineHeight = '20px';
+		this._pTitle.style.margin = '0px';
 
-			this._pDesc = document.createElement('p');
-			this._pDesc.setAttribute('aria-hidden', 'false');
-			this._pDesc.style.fontSize = '12px';
-			this._pDesc.style.lineHeight = '16px';
-			this._pDesc.style.margin = '0px';
+		this._pDesc = document.createElement('p');
+		this._pDesc.setAttribute('aria-hidden', 'false');
+		this._pDesc.style.fontSize = '12px';
+		this._pDesc.style.lineHeight = '16px';
+		this._pDesc.style.margin = '0px';
 
-			this._textContainer.appendChild(this._pTitle);
-			this._textContainer.appendChild(this._pDesc);
+		this._textContainer.appendChild(this._pTitle);
+		this._textContainer.appendChild(this._pDesc);
 
-			this._iconContainer.appendChild(this._iconElement);
+		this._iconContainer.appendChild(this._iconElement);
 
-			this._main.appendChild(this._iconContainer);
-			this._main.appendChild(this._textContainer);
-			DOM.addClass(this.element, 'info-button');
-			this.element.appendChild(this._main);
-			this.element.style.background = 'none';
-			this.element.style.display = 'inline-block';
-			this.element.style.borderRadius = '2px';
-		}
+		this._main.appendChild(this._iconContainer);
+		this._main.appendChild(this._textContainer);
+		DOM.addClass(this.element, 'info-button');
+		this.element.appendChild(this._main);
+		this.element.style.background = 'none';
+		this.element.style.display = 'inline-block';
+		this.element.style.borderRadius = '2px';
+
 		this.infoButtonOptions = options;
 	}
 
