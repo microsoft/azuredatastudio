@@ -352,6 +352,47 @@
         }
       },
       {
+        "name": "sql-windows-setup",
+        "displayIndex": 1,
+        "displayName": "%resource-type-sql-windows-setup-display-name%",
+        "description": "%resource-type-sql-windows-setup-description%",
+        "platforms": [
+          "win32"
+        ],
+        "icon": {
+          "light": "./images/sql_server_on_windows.svg",
+          "dark": "./images/sql_server_on_windows_inverse.svg"
+        },
+        "options": [
+          {
+            "name": "version",
+            "displayName": "%version-display-name%",
+            "values": [
+              {
+                "name": "sql2019",
+                "displayName": "%sql-2019-display-name%"
+              },
+              {
+                "name": "sql2017",
+                "displayName": "%sql-2017-display-name%"
+              }
+            ]
+          }
+        ],
+        "providers": [
+          {
+            "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=853016",
+            "requiredTools": [],
+            "when": "version=sql2017"
+          },
+          {
+            "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=866662",
+            "requiredTools": [],
+            "when": "version=sql2019"
+          }
+        ]
+      }
+      {
         "name": "sql-azure-setup",
         "displayName": "%azure-sqldb-display-name%",
         "description": "%azure-sqldb-description%",
@@ -415,47 +456,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "sql-windows-setup",
-        "displayIndex": 1,
-        "displayName": "%resource-type-sql-windows-setup-display-name%",
-        "description": "%resource-type-sql-windows-setup-description%",
-        "platforms": [
-          "win32"
-        ],
-        "icon": {
-          "light": "./images/sql_server_on_windows.svg",
-          "dark": "./images/sql_server_on_windows_inverse.svg"
-        },
-        "options": [
-          {
-            "name": "version",
-            "displayName": "%version-display-name%",
-            "values": [
-              {
-                "name": "sql2019",
-                "displayName": "%sql-2019-display-name%"
-              },
-              {
-                "name": "sql2017",
-                "displayName": "%sql-2017-display-name%"
-              }
-            ]
-          }
-        ],
-        "providers": [
-          {
-            "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=853016",
-            "requiredTools": [],
-            "when": "version=sql2017"
-          },
-          {
-            "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=866662",
-            "requiredTools": [],
-            "when": "version=sql2019"
-          }
-        ]
       }
     ]
   },
