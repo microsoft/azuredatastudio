@@ -299,7 +299,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 		});
 	}
 
-	public onLeave(): void {
+	public async onLeave(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
