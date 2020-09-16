@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.3.5",
+  "version": "0.4.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -575,11 +575,37 @@
                       "title": "%arc.sql.settings.section.title%",
                       "fields": [
                         {
+                          "label": "%arc.controller%",
+                          "variableName": "AZDATA_NB_VAR_ARC_CONTROLLER",
+                          "type": "options",
+                          "editable": false,
+                          "required": true,
+                          "options": {
+                            "source": {
+                              "type": "ArcControllersOptionsSource",
+                              "variableNames": {
+                                "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
+                                "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
+                                "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
+                              }
+                            },
+                            "optionsType": "dropdown"
+                          },
+                          "labelWidth": "100%"
+                        },
+                        {
                           "label": "%arc.sql.instance.name%",
                           "variableName": "AZDATA_NB_VAR_SQL_INSTANCE_NAME",
                           "type": "text",
                           "defaultValue": "sqlinstance1",
                           "required": true,
+                          "labelWidth": "100%"
+                        },
+                        {
+                          "label": "%arc.sql.instance.port%",
+                          "variableName": "AZDATA_NB_VAR_SQL_INSTANCE_PORT",
+                          "type": "number",
+                          "required": false,
                           "labelWidth": "100%"
                         },
                         {
@@ -612,6 +638,34 @@
                           "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
                           "type": "kube_storage_class",
                           "required": true
+                        },
+                        {
+                          "label": "%arc.cores-limit.label%",
+                          "description": "%arc.sql.cores-limit.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                          "type": "number",
+                          "required": false
+                        },
+                        {
+                          "label": "%arc.cores-request.label%",
+                          "description": "%arc.sql.cores-request.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
+                          "type": "number",
+                          "required": false
+                        },
+                        {
+                          "label": "%arc.memory-limit.label%",
+                          "description": "%arc.sql.memory-limit.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
+                          "type": "number",
+                          "required": false
+                        },
+                        {
+                          "label": "%arc.memory-request.label%",
+                          "description": "%arc.sql.memory-request.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
+                          "type": "number",
+                          "required": false
                         }
                       ]
                     }
@@ -670,6 +724,25 @@
                     {
                       "title": "%arc.postgres.settings.section.title%",
                       "fields": [
+                        {
+                          "label": "%arc.controller%",
+                          "variableName": "AZDATA_NB_VAR_ARC_CONTROLLER",
+                          "type": "options",
+                          "editable": false,
+                          "required": true,
+                          "options": {
+                            "source": {
+                              "type": "ArcControllersOptionsSource",
+                              "variableNames": {
+                                "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
+                                "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
+                                "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
+                              }
+                            },
+                            "optionsType": "dropdown"
+                          },
+                          "labelWidth": "100%"
+                        },
                         {
                           "label": "%arc.postgres.server.group.name%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_NAME",

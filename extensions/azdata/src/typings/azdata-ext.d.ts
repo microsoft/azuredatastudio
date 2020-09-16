@@ -155,41 +155,56 @@ declare module 'azdata-ext' {
 			resourceVersion: string, // "214944",
 			selfLink: string, // "/apis/arcdata.microsoft.com/v1alpha1/namespaces/arc/postgresql-12s/chgagnon-pg",
 			uid: string, // "26d0f5bb-0c0b-4225-a6b5-5be2bf6feac0"
-		}
-	}
-
-	export interface PostgresServerShowResult {
-		apiVersion: string, // "arcdata.microsoft.com/v1alpha1"
-		kind: string, // "postgresql-12"
-		metadata: {
-			creationTimestamp: string, // "2020-08-19T20:25:11Z"
-			generation: number, // 1
-			name: string, // "chgagnon-pg"
-			namespace: string, // "arc",
-			resourceVersion: string, // "214944",
-			selfLink: string, // "/apis/arcdata.microsoft.com/v1alpha1/namespaces/arc/postgresql-12s/chgagnon-pg",
-			uid: string, // "26d0f5bb-0c0b-4225-a6b5-5be2bf6feac0"
 		},
 		spec: {
-			backups: {
-				deltaMinutes: number, // 3,
-				fullMinutes: number, // 10,
-				tiers: [
-					{
-						retention: {
-							maximums: string[], // [ "6", "512MB" ],
-							minimums: string[], // [ "3" ]
+			engine: {
+				extensions: {
+					name: string // "citus"
+				}[],
+				settings: {
+					default: { } // { "max_connections": "101", "work_mem": "4MB" }
+				}
+			},
+			scale: {
+				shards: number // 1
+			},
+			scheduling: {
+				default: {
+					resources: {
+						requests: {
+							cpu: string, // "1.5"
+							memory: string // "256Mi"
 						},
-						storage: {
-							volumeSize: string, // "1Gi"
+						limits: {
+							cpu: string, // "1.5"
+							memory: string // "256Mi"
 						}
 					}
-				]
+				}
 			},
-			status: {
-				readyPods: string, // "1/1",
-				state: string // "Ready"
+			service: {
+				type: string, // "NodePort"
+				port: number // 5432
+			},
+			storage: {
+				data: {
+					className: string, // "local-storage"
+					size: string // "5Gi"
+				},
+				logs: {
+					className: string, // "local-storage"
+					size: string // "5Gi"
+				},
+				backups: {
+					className: string, // "local-storage"
+					size: string // "5Gi"
+				}
 			}
+		},
+		status: {
+			externalEndpoint: string, // "10.130.12.136:26630"
+			readyPods: string, // "1/1",
+			state: string // "Ready"
 		}
 	}
 
@@ -215,8 +230,23 @@ declare module 'azdata-ext' {
 			},
 			postgres: {
 				server: {
+					delete(name: string): Promise<AzdataOutput<void>>,
 					list(): Promise<AzdataOutput<PostgresServerListResult[]>>,
-					show(name: string): Promise<AzdataOutput<PostgresServerShowResult>>
+					show(name: string): Promise<AzdataOutput<PostgresServerShowResult>>,
+					edit(args: {
+						name: string,
+						adminPassword?: boolean,
+						coresLimit?: string,
+						coresRequest?: string,
+						engineSettings?: string,
+						extensions?: string,
+						memoryLimit?: string,
+						memoryRequest?: string,
+						noWait?: boolean,
+						port?: number,
+						replaceEngineSettings?: boolean,
+						workers?: number
+					}): Promise<AzdataOutput<void>>
 				}
 			},
 			sql: {

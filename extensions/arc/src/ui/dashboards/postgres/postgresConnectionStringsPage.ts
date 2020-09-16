@@ -18,7 +18,7 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
 		super(modelView);
 
-		this.disposables.push(this._postgresModel.onServiceUpdated(
+		this.disposables.push(this._postgresModel.onConfigUpdated(
 			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
 	}
 
@@ -65,7 +65,7 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 		this.loading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.keyValueContainer.container)
 			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this._postgresModel.serviceLastUpdated
+				loading: !this._postgresModel.configLastUpdated
 			}).component();
 
 		content.addItem(this.loading);
@@ -98,7 +98,7 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 	}
 
 	private getConnectionStrings(): KeyValue[] {
-		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
+		const endpoint: { ip: string, port: string } = this._postgresModel.endpoint;
 
 		return [
 			new InputKeyValue(this.modelView.modelBuilder, 'ADO.NET', `Server=${endpoint.ip};Database=postgres;Port=${endpoint.port};User Id=postgres;Password={your_password_here};Ssl Mode=Require;`),

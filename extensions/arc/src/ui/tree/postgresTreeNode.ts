@@ -16,7 +16,7 @@ import { ResourceTreeNode } from './resourceTreeNode';
 export class PostgresTreeNode extends ResourceTreeNode {
 
 	constructor(private _model: PostgresModel, private _controllerModel: ControllerModel, private _context: vscode.ExtensionContext) {
-		super(_model.name, vscode.TreeItemCollapsibleState.None, ResourceType.postgresInstances, _model);
+		super(_model.info.name, vscode.TreeItemCollapsibleState.None, ResourceType.postgresInstances, _model);
 	}
 
 	public async openDashboard(): Promise<void> {

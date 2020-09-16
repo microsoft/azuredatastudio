@@ -58,7 +58,7 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 	}
 
 	protected async onOk(): Promise<void> {
-		setModelValues(this.inputComponents, this.model);
+		await setModelValues(this.inputComponents, this.model);
 		const env: NodeJS.ProcessEnv = {};
 		this.model.setEnvironmentVariables(env, (varName) => {
 			const isPassword = !!this.inputComponents[varName]?.isPassword;
