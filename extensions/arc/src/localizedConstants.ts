@@ -72,6 +72,7 @@ export const direct = localize('arc.direct', "Direct");
 export const indirect = localize('arc.indirect', "Indirect");
 export const loading = localize('arc.loading', "Loading...");
 export const refreshToEnterCredentials = localize('arc.refreshToEnterCredentials', "Refresh node to enter credentials");
+export const noInstancesAvailable = localize('arc.noInstancesAvailable', "No instances available");
 export const connectToController = localize('arc.connectToController', "Connect to Existing Controller");
 export function connectToSql(name: string): string { return localize('arc.connectToSql', "Connect to SQL instance - Azure Arc ({0})", name); }
 export const passwordToController = localize('arc.passwordToController', "Provide Password to Controller");
