@@ -13,7 +13,7 @@ import * as uuid from 'uuid';
 import * as sinon from 'sinon';
 import { DataResourceDataProvider } from '../../browser/outputs/gridOutput.component';
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
-import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
+import { ResultSetSubset, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestFileDialogService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestContextService } from 'vs/workbench/test/common/workbenchTestServices';
@@ -23,6 +23,7 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { URI } from 'vs/base/common/uri';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { createandLoadNotebookModel } from 'sql/workbench/contrib/notebook/test/browser/cellToolbarActions.test';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 
 export class TestSerializationProvider implements azdata.SerializationProvider {
 	providerId: string;
@@ -51,20 +52,26 @@ suite('Data Resource Data Provider', function () {
 	let fileDialogService: TypeMoq.Mock<TestFileDialogService>;
 	let serializer: ResultSerializer;
 	let dataResourceDataProvider: DataResourceDataProvider;
+	let resultSetSubset: ResultSetSubset = {
+		rowCount: 2,
+		rows: [[{ displayValue: '1' }, { displayValue: '2' }], [{ displayValue: '3' }, { displayValue: '4' }]]
+	};
+	let queryRunner: TypeMoq.Mock<QueryRunner> = TypeMoq.Mock.ofType(QueryRunner);
+	queryRunner.setup(x => x.getQueryRows(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(resultSetSubset));
+	// Create test data with two rows and two columns
+	let source: IDataResource = {
+		data: [{ 0: '1', 1: '2' }, { 0: '3', 1: '4' }],
+		schema: { fields: [{ name: 'col1' }, { name: 'col2' }] }
+	};
+	let resultSet: ResultSetSummary = {
+		batchId: 0,
+		columnInfo: [{ columnName: 'col1' }, { columnName: 'col2' }],
+		complete: true,
+		id: 0,
+		rowCount: 2
+	};
 
 	suiteSetup(async () => {
-		// Create test data with two rows and two columns
-		let source: IDataResource = {
-			data: [{ 0: '1', 1: '2' }, { 0: '3', 1: '4' }],
-			schema: { fields: [{ name: 'col1' }, { name: 'col2' }] }
-		};
-		let resultSet: ResultSetSummary = {
-			batchId: 0,
-			columnInfo: [{ columnName: 'col1' }, { columnName: 'col2' }],
-			complete: true,
-			id: 0,
-			rowCount: 2
-		};
 		let cellModel = TypeMoq.Mock.ofType(CellModel);
 		let notebookModel = await createandLoadNotebookModel();
 		cellModel.setup(x => x.notebookModel).returns(() => notebookModel);
@@ -94,7 +101,7 @@ suite('Data Resource Data Provider', function () {
 		dataResourceDataProvider = new DataResourceDataProvider(
 			0, // batchId
 			0, // id
-			undefined, // QueryRunner
+			queryRunner.object,
 			source,
 			resultSet,
 			cellModel.object,
@@ -127,6 +134,11 @@ suite('Data Resource Data Provider', function () {
 
 		const withHeadersResult = await fs.readFile(withHeadersFile.fsPath);
 		assert.equal(withHeadersResult.toString(), 'col1 col2 \n1 2 \n3 4 \n', 'result data should include headers');
+	});
+
+	test('convertAllData correctly converts row data to mimetype and html', async function (): Promise<void> {
+		dataResourceDataProvider.convertAllData(resultSet);
+		// make sure cellMode.updateOutputData is called with the correct data (check dataresource and html)
 	});
 });
 
