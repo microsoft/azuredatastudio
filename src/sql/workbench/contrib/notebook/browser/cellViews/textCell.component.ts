@@ -432,13 +432,20 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private setTurndownOptions() {
-		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-' });
+		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx' });
 		this.turndownService.keep(['u', 'mark']);
 		this.turndownService.use(turndownPluginGfm.gfm);
 		this.turndownService.addRule('pre', {
 			filter: 'pre',
 			replacement: function (content, node) {
 				return '\n```\n' + node.textContent + '\n```\n';
+			}
+		});
+		this.turndownService.addRule('caption', {
+			filter: 'caption',
+			replacement: function (content, node) {
+				return `${node.outerHTML}
+				`;
 			}
 		});
 		this.turndownService.addRule('span', {

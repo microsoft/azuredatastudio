@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdataExt from 'azdata-ext';
+import * as fs from 'fs';
 import * as os from 'os';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
@@ -13,7 +14,6 @@ import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
 import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataHostname, azdataInstallKey, azdataReleaseJson, azdataUpdateKey, azdataUri, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
-import * as fs from 'fs';
 
 const enum AzdataDeployOption {
 	dontPrompt = 'dontPrompt',
@@ -78,11 +78,42 @@ export class AzdataTool implements IAzdataTool {
 		},
 		postgres: {
 			server: {
+				delete: async (name: string) => {
+					return this.executeCommand<void>(['arc', 'postgres', 'server', 'delete', '-n', name]);
+				},
 				list: async () => {
 					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list']);
 				},
 				show: async (name: string) => {
 					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name]);
+				},
+				edit: async (args: {
+					name: string,
+					adminPassword?: boolean,
+					coresLimit?: string,
+					coresRequest?: string,
+					engineSettings?: string,
+					extensions?: string,
+					memoryLimit?: string,
+					memoryRequest?: string,
+					noWait?: boolean,
+					port?: number,
+					replaceEngineSettings?: boolean,
+					workers?: number
+				}) => {
+					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', args.name];
+					if (args.adminPassword) { argsArray.push('--admin-password'); }
+					if (args.coresLimit !== undefined) { argsArray.push('--cores-limit', args.coresLimit); }
+					if (args.coresRequest !== undefined) { argsArray.push('--cores-request', args.coresRequest); }
+					if (args.engineSettings !== undefined) { argsArray.push('--engine-settings', args.engineSettings); }
+					if (args.extensions !== undefined) { argsArray.push('--extensions', args.extensions); }
+					if (args.memoryLimit !== undefined) { argsArray.push('--memory-limit', args.memoryLimit); }
+					if (args.memoryRequest !== undefined) { argsArray.push('--memory-request', args.memoryRequest); }
+					if (args.noWait) { argsArray.push('--no-wait'); }
+					if (args.port !== undefined) { argsArray.push('--port', args.port.toString()); }
+					if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
+					if (args.workers !== undefined) { argsArray.push('--workers', args.workers.toString()); }
+					return this.executeCommand<void>(argsArray);
 				}
 			}
 		},
@@ -136,7 +167,7 @@ export class AzdataTool implements IAzdataTool {
 					// to get the correct stderr out. The actual value we get is something like
 					// ERROR: { stderr: '...' }
 					// so we also need to trim off the start that isn't a valid JSON blob
-					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'))).stderr;
+					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'), err.stderr.indexOf('}') + 1)).stderr;
 				} catch (err) {
 					// it means this was probably some other generic error (such as command not being found)
 					// check if azdata still exists if it does then rethrow the original error if not then emit a new specific error.

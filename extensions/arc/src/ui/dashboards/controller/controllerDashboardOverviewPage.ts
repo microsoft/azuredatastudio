@@ -7,7 +7,7 @@ import { ResourceType } from 'arc';
 import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
-import { getConnectionModeDisplayText, getResourceTypeIcon, parseInstanceName, resourceTypeToDisplayName } from '../../../common/utils';
+import { getConnectionModeDisplayText, getResourceTypeIcon, resourceTypeToDisplayName } from '../../../common/utils';
 import { cssStyles, Endpoints, IconPathHelper, iconSize } from '../../../constants';
 import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
@@ -233,7 +233,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 							url: ''
 						}).component();
 					(<azdata.HyperlinkComponent>nameComponent).onDidClick(async () => {
-						await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', parseInstanceName(r.instanceName));
+						await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', r.instanceName);
 					});
 				}
 
