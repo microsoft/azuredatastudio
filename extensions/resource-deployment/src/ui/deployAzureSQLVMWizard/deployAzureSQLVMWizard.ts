@@ -19,6 +19,8 @@ import { NetworkSettingsPage } from './pages/networkSettingsPage';
 import { SqlServerSettingsPage } from './pages/sqlServerSettingsPage';
 import { AzureSQLVMSummaryPage } from './pages/summaryPage';
 import { EOL } from 'os';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
 export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, WizardPageBase<DeployAzureSQLVMWizard>, DeployAzureSQLVMWizardModel> {
 	private cache: Map<string, any> = new Map();
@@ -188,10 +190,10 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 		 * 2. Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.
 		 */
 
-		let errorMessage = [];
+		let errorMessages = [];
 
 		if (password.length < 12 || password.length > 123) {
-			errorMessage.push('Password must be between 12 and 123 characters long.');
+			errorMessages.push(localize('sqlVMDeploymentWizard.PasswordLengthError', "Password must be between 12 and 123 characters long."));
 		}
 
 		let charTypeCounter = 0;
@@ -213,9 +215,9 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 		}
 
 		if (charTypeCounter < 3) {
-			errorMessage.push('Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.');
+			errorMessages.push(localize('sqlVMDeploymentWizard.PasswordSpecialCharRequirementError', "Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character."));
 		}
 
-		return errorMessage;
+		return errorMessages;
 	}
 }

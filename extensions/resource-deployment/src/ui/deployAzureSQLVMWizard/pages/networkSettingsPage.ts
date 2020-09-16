@@ -7,6 +7,10 @@ import * as azdata from 'azdata';
 import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 import * as constants from '../constants';
 import { BasePage } from './basePage';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
+
+
 
 export class NetworkSettingsPage extends BasePage {
 
@@ -89,7 +93,7 @@ export class NetworkSettingsPage extends BasePage {
 				return true;
 			}
 			this.liveValidation = true;
-			let errorMessage = await this.formValidation();
+			let errorMessage = await this.validatePage();
 
 			if (errorMessage !== '') {
 				return false;
@@ -128,12 +132,12 @@ export class NetworkSettingsPage extends BasePage {
 		this._newVirtualNetworkText = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			width: constants.standardWidth,
 			required: true,
-			placeHolder: 'Enter name for new virtual network'
+			placeHolder: localize('deployAzureSQLVM.NewVnetPlaceholder', "Enter name for new virtual network")
 		}).component();
 
 		this._newVirtualNetworkText.onTextChanged((e) => {
 			this.wizard.model.virtualNetworkName = e;
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 
 		this._virtualNetworkFlexContainer = view.modelBuilder.flexContainer().withLayout({
@@ -165,7 +169,6 @@ export class NetworkSettingsPage extends BasePage {
 			this._virtualNetworkDropdown.updateProperties({
 				values: vnets
 			});
-			this._newVirtualNetworkCheckbox.checked = false;
 			this._newVirtualNetworkCheckbox.enabled = true;
 			this.toggleNewVirtualNetwork();
 		}
@@ -190,6 +193,7 @@ export class NetworkSettingsPage extends BasePage {
 			this.wizard.changeComponentDisplay(this._newsubnetText, 'block');
 			this.wizard.model.virtualNetworkName = this._newVirtualNetworkText.value!;
 			this.wizard.model.newSubnet = 'True';
+			this.wizard.model.subnetName = this._newsubnetText.value!;
 
 		} else {
 
@@ -227,12 +231,12 @@ export class NetworkSettingsPage extends BasePage {
 		this._newsubnetText = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			width: constants.standardWidth,
 			required: true,
-			placeHolder: 'Enter name for new subnet'
+			placeHolder: localize('deployAzureSQLVM.NewSubnetPlaceholder', "Enter name for new subnet")
 		}).component();
 
 		this._newsubnetText.onTextChanged((e) => {
 			this.wizard.model.subnetName = e;
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 
 		this._subnetFlexContainer = view.modelBuilder.flexContainer().withLayout({
@@ -257,12 +261,13 @@ export class NetworkSettingsPage extends BasePage {
 				values: subnets
 			});
 			this._newSubnetCheckbox.checked = true;
+			this._newSubnetCheckbox.enabled = false;
 			this.toggleNewSubnet();
 		} else {
 			this._subnetDropdown.updateProperties({
 				values: subnets
 			});
-			this._newSubnetCheckbox.checked = false;
+			this._newSubnetCheckbox.enabled = true;
 			this.toggleNewSubnet();
 		}
 
@@ -307,13 +312,13 @@ export class NetworkSettingsPage extends BasePage {
 		});
 
 		this._publicIpNetworkText = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
-			placeHolder: 'Enter name for new public IP',
+			placeHolder: localize('deployAzureSQLVM.NewPipPlaceholder', "Enter name for new public IP"),
 			width: constants.standardWidth
 		}).component();
 
 		this._publicIpNetworkText.onTextChanged((e) => {
 			this.wizard.model.publicIpName = e;
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 
 		this.wizard.changeComponentDisplay(this._publicIpNetworkText, 'none');
@@ -347,8 +352,8 @@ export class NetworkSettingsPage extends BasePage {
 			this._publicIpDropdown.updateProperties({
 				values: publicIps
 			});
-			this._newPublicIpCheckbox.checked = false;
 			this._newPublicIpCheckbox.enabled = true;
+
 			this.toggleNewPublicIp();
 		}
 		this._publicIpDropdown.loading = false;
@@ -434,40 +439,40 @@ export class NetworkSettingsPage extends BasePage {
 		return dropdownValues;
 	}
 
-	protected async formValidation(): Promise<string> {
-		let errorMessage = [];
+	protected async validatePage(): Promise<string> {
+		const errorMessages = [];
 		if (this.wizard.model.newVirtualNetwork === 'True') {
 			if (this.wizard.model.virtualNetworkName.length < 2 || this.wizard.model.virtualNetworkName.length > 64) {
-				errorMessage.push('Virtual Network name must be between 2 and 64 characters long');
+				errorMessages.push(localize('deployAzureSQLVM.VnetNameLengthError', "Virtual Network name must be between 2 and 64 characters long"));
 			}
 		} else {
 			if (this.wizard.model.virtualNetworkName === 'None') {
-				errorMessage.push('Create a new virtual network');
+				errorMessages.push(localize('deployAzureSQLVM.NewVnetError', "Create a new virtual network"));
 			}
 		}
 
 		if (this.wizard.model.newSubnet === 'True') {
 			if (this.wizard.model.subnetName.length < 1 || this.wizard.model.virtualNetworkName.length > 80) {
-				errorMessage.push('Subnet name must be between 1 and 80 characters long');
+				errorMessages.push(localize('deployAzureSQLVM.SubnetNameLengthError', "Subnet name must be between 1 and 80 characters long"));
 			}
 		} else {
 			if (this.wizard.model.subnetName === 'None') {
-				errorMessage.push('Create a new sub network');
+				errorMessages.push(localize('deployAzureSQLVM.NewSubnetError', "Create a new sub network"));
 			}
 		}
 
 		if (this.wizard.model.newPublicIp === 'True') {
 			if (this.wizard.model.publicIpName.length < 1 || this.wizard.model.publicIpName.length > 80) {
-				errorMessage.push('Public IP name must be between 1 and 80 characters long');
+				errorMessages.push(localize('deployAzureSQLVM.PipNameError', "Public IP name must be between 1 and 80 characters long"));
 			}
 		} else {
 			if (this.wizard.model.publicIpName === 'None') {
-				errorMessage.push('Create a new new public Ip');
+				errorMessages.push(localize('deployAzureSQLVM.NewPipError', "Create a new new public Ip"));
 			}
 		}
 
-		this.wizard.showErrorMessage(errorMessage.join('\n'));
-		return errorMessage.join('\n');
+		this.wizard.showErrorMessage(errorMessages.join('\n'));
+		return errorMessages.join('\n');
 
 	}
 }
