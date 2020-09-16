@@ -11,7 +11,7 @@ import { IconPathHelper, cssStyles, Endpoints } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
-import { promptAndConfirmPassword, promptForResourceDeletion } from '../../../common/utils';
+import { promptAndConfirmPassword, promptForInstanceDeletion } from '../../../common/utils';
 
 export class PostgresOverviewPage extends DashboardPage {
 
@@ -174,13 +174,13 @@ export class PostgresOverviewPage extends DashboardPage {
 			deleteButton.onDidClick(async () => {
 				deleteButton.enabled = false;
 				try {
-					if (await promptForResourceDeletion(this._postgresModel.info.name)) {
+					if (await promptForInstanceDeletion(this._postgresModel.info.name)) {
 						await this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name);
 						await this._controllerModel.refreshTreeNode();
-						vscode.window.showInformationMessage(loc.resourceDeleted(this._postgresModel.info.name));
+						vscode.window.showInformationMessage(loc.instanceDeleted(this._postgresModel.info.name));
 					}
 				} catch (error) {
-					vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._postgresModel.info.name, error));
+					vscode.window.showErrorMessage(loc.instanceDeletionFailed(this._postgresModel.info.name, error));
 				} finally {
 					deleteButton.enabled = true;
 				}
