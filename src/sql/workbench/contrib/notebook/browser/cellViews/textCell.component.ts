@@ -67,12 +67,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.enableActiveCellEditOnDoubleClick();
 	}
 
-	@HostListener('document:keydown.meta.a', ['$event'])
+	@HostListener('document:keydown', ['$event'])
 	onkeydown(e) {
 		// use preventDefault() to avoid invoking the editor's select all
 		// select the active .
-		e.preventDefault();
-		document.execCommand('selectAll');
+		if (e.ctrlKey || e.metaKey && e.key === 'a') {
+			e.preventDefault();
+			document.execCommand('selectAll');
+		}
 	}
 
 	@HostListener('document:keydown.meta.z', ['$event'])
