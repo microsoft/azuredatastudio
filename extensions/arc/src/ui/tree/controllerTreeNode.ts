@@ -13,6 +13,7 @@ import { PostgresModel } from '../../models/postgresModel';
 import { ControllerDashboard } from '../dashboards/controller/controllerDashboard';
 import { AzureArcTreeDataProvider } from './azureArcTreeDataProvider';
 import { MiaaTreeNode } from './miaaTreeNode';
+import { NoInstancesTreeNode } from './noInstancesTreeNode';
 import { PostgresTreeNode } from './postgresTreeNode';
 import { RefreshTreeNode } from './refreshTreeNode';
 import { ResourceTreeNode } from './resourceTreeNode';
@@ -55,7 +56,7 @@ export class ControllerTreeNode extends TreeNode {
 			}
 		}
 
-		return this._children;
+		return this._children.length > 0 ? this._children : [new NoInstancesTreeNode()];
 	}
 
 	public async openDashboard(): Promise<void> {
