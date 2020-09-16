@@ -59,6 +59,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 		});
 
 	return {
+		eulaAccepted: eulaAccepted,
 		azdata: {
 			arc: {
 				dc: {
@@ -134,7 +135,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 				}
 			},
 			getPath: () => {
-				throwIfNoAzdataOrEulaNotAccepted();
+				throwIfNoAzdata();
 				return localAzdata!.getPath();
 			},
 			login: async (endpoint: string, username: string, password: string) => {
@@ -142,11 +143,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 				return localAzdata!.login(endpoint, username, password);
 			},
 			getSemVersion: () => {
-				throwIfNoAzdataOrEulaNotAccepted();
+				throwIfNoAzdata();
 				return localAzdata!.getSemVersion();
 			},
 			version: async () => {
-				throwIfNoAzdataOrEulaNotAccepted();
+				throwIfNoAzdata();
 				return localAzdata!.version();
 			}
 		}
@@ -168,13 +169,17 @@ export class NoAzdataError extends Error {
 }
 
 function throwIfNoAzdataOrEulaNotAccepted(): void {
-	if (!localAzdata) {
-		Logger.log(loc.noAzdata);
-		throw new NoAzdataError();
-	}
+	throwIfNoAzdata();
 	if (!eulaAccepted) {
 		Logger.log(loc.eulaNotAccepted);
 		throw new NoAzdataEulaError();
+	}
+}
+
+function throwIfNoAzdata() {
+	if (!localAzdata) {
+		Logger.log(loc.noAzdata);
+		throw new NoAzdataError();
 	}
 }
 
