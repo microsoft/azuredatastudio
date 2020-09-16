@@ -93,7 +93,7 @@ export class ControllerModel {
 	}
 	public async refresh(showErrors: boolean = true, promptReconnect: boolean = false): Promise<void> {
 		await this.azdataLogin(promptReconnect);
-		this._registrations = [];
+		const newRegistrations: Registration[] = [];
 		await Promise.all([
 			this._azdataApi.azdata.arc.dc.config.show().then(result => {
 				this._controllerConfig = result.result;
@@ -125,7 +125,7 @@ export class ControllerModel {
 			}),
 			Promise.all([
 				this._azdataApi.azdata.arc.postgres.server.list().then(result => {
-					this._registrations.push(...result.result.map(r => {
+					newRegistrations.push(...result.result.map(r => {
 						return {
 							instanceName: r.name,
 							state: r.state,
@@ -134,7 +134,7 @@ export class ControllerModel {
 					}));
 				}),
 				this._azdataApi.azdata.arc.sql.mi.list().then(result => {
-					this._registrations.push(...result.result.map(r => {
+					newRegistrations.push(...result.result.map(r => {
 						return {
 							instanceName: r.name,
 							state: r.state,
@@ -143,6 +143,7 @@ export class ControllerModel {
 					}));
 				})
 			]).then(() => {
+				this._registrations = newRegistrations;
 				this.registrationsLastUpdated = new Date();
 				this._onRegistrationsUpdated.fire(this._registrations);
 			})
