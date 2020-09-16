@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -284,10 +284,16 @@
                           "locations": [
                             "eastus",
                             "eastus2",
+                            "australiaeast",
                             "centralus",
                             "westus2",
+                            "westeurope",
                             "southeastasia",
-                            "westeurope"
+                            "koreacentral",
+                            "northeurope",
+                            "westeurope",
+                            "uksouth",
+                            "francecentral"
                           ]
                         },
                         {
@@ -542,7 +548,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.1.0"
+                "version": "20.2.0"
               }
             ],
             "when": true
@@ -704,7 +710,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.1.0"
+                "version": "20.2.0"
               }
             ],
             "when": "resourceType=sql.managed.instance"
@@ -924,7 +930,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.1.0"
+                "version": "20.2.0"
               }
             ],
             "when": "resourceType=postgres"
