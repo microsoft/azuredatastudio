@@ -201,10 +201,10 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 					if (await promptForInstanceDeletion(this._miaaModel.info.name)) {
 						await this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name);
 						await this._controllerModel.refreshTreeNode();
-						vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.info.name));
+						vscode.window.showInformationMessage(loc.instanceDeleted(this._miaaModel.info.name));
 					}
 				} catch (error) {
-					vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.info.name, error));
+					vscode.window.showErrorMessage(loc.instanceDeletionFailed(this._miaaModel.info.name, error));
 				} finally {
 					deleteButton.enabled = true;
 				}

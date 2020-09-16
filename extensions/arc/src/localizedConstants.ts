@@ -127,7 +127,7 @@ export const lastUpdated = localize('arc.lastUpdated', "Last updated");
 export const noExternalEndpoint = localize('arc.noExternalEndpoint', "No External Endpoint has been configured so this information isn't available.");
 
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
-export function resourceDeleted(name: string): string { return localize('arc.resourceDeleted', "Resource '{0}' deleted", name); }
+export function instanceDeleted(name: string): string { return localize('arc.instanceDeleted', "Instance '{0}' deleted", name); }
 export function copiedToClipboard(name: string): string { return localize('arc.copiedToClipboard', "{0} copied to clipboard", name); }
 export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }
 export function numVCores(vCores: string | undefined): string {
@@ -148,7 +148,7 @@ export const connectionRequired = localize('arc.connectionRequired', "A connecti
 export const couldNotFindControllerRegistration = localize('arc.couldNotFindControllerRegistration', "Could not find controller registration.");
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
 export function openDashboardFailed(error: any): string { return localize('arc.openDashboardFailed', "Error opening dashboard. {0}", getErrorMessage(error)); }
-export function resourceDeletionFailed(name: string, error: any): string { return localize('arc.resourceDeletionFailed', "Failed to delete resource {0}. {1}", name, getErrorMessage(error)); }
+export function instanceDeletionFailed(name: string, error: any): string { return localize('arc.instanceDeletionFailed', "Failed to delete instance {0}. {1}", name, getErrorMessage(error)); }
 export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database {0}. {1}", name, getErrorMessage(error)); }
 export function connectToControllerFailed(url: string, error: any): string { return localize('arc.connectToControllerFailed', "Could not connect to controller {0}. {1}", url, getErrorMessage(error)); }
 export function connectToSqlFailed(serverName: string, error: any): string { return localize('arc.connectToSqlFailed', "Could not connect to MIAA Instance {0}. {1}", serverName, getErrorMessage(error)); }
