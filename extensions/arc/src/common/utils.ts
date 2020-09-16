@@ -149,7 +149,7 @@ async function promptInputBox(title: string, options: vscode.InputBoxOptions): P
 
 /**
  * Opens an input box prompting the user to enter in the name of an instance to delete
- * @param name The name of the resource to delete
+ * @param name The name of the instance to delete
  * @returns Promise resolving to true if the user confirmed the name, false if the input box was closed for any other reason
  */
 export async function promptForInstanceDeletion(name: string): Promise<boolean> {
