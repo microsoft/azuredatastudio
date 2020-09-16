@@ -159,7 +159,7 @@ export class SqlSession implements nb.ISession {
 }
 
 class SqlKernel extends Disposable implements nb.IKernel {
-	private _queryRunner: QueryRunner;
+	private _queryRunners: Map<string, QueryRunner> = new Map<string, QueryRunner>();
 	private _currentConnection: IConnectionProfile;
 	private _currentConnectionProfile: ConnectionProfile;
 	static kernelId: number = 0;
@@ -265,30 +265,33 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	public set connection(conn: IConnectionProfile) {
 		this._currentConnection = conn;
 		this._currentConnectionProfile = new ConnectionProfile(this._capabilitiesService, this._currentConnection);
-		this._queryRunner = undefined;
+		this._queryRunners.clear();
 	}
 
 	getSpec(): Thenable<nb.IKernelSpec> {
 		return Promise.resolve(notebookConstants.sqlKernelSpec);
 	}
 
-	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
+	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean, cellId?: string): nb.IFuture {
 		let canRun: boolean = true;
 		let code = this.getCodeWithoutCellMagic(content);
-		if (this._queryRunner) {
+		let queryRunner: QueryRunner | undefined = this._queryRunners.get(cellId);
+		if (queryRunner) {
 			// Cancel any existing query
-			if (this._future && !this._queryRunner.hasCompleted) {
-				this._queryRunner.cancelQuery().then(ok => undefined, error => this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error));
+			if (this._future && !queryRunner.hasCompleted) {
+				queryRunner.cancelQuery().then(ok => undefined, error => this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error));
 				// TODO when we can just show error as an output, should show an "execution canceled" error in output
 				this._future.handleDone().catch(err => onUnexpectedError(err));
 			}
-			this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
+			queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 		} else if (this._currentConnection && this._currentConnectionProfile) {
-			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionPath);
-			this.queryManagementService.registerRunner(this._queryRunner, this._connectionPath);
-			this._connectionManagementService.connect(this._currentConnectionProfile, this._connectionPath).then((result) => {
-				this.addQueryEventListeners(this._queryRunner);
-				this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
+			let queryRunnerUri = this._connectionPath + '-cell-' + cellId;
+			queryRunner = this._instantiationService.createInstance(QueryRunner, queryRunnerUri);
+			this._queryRunners.set(cellId, queryRunner);
+			this.queryManagementService.registerRunner(queryRunner, this._connectionPath + cellId);
+			this._connectionManagementService.connect(this._currentConnectionProfile, queryRunnerUri).then((result) => {
+				this.addQueryEventListeners(queryRunner);
+				queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 			}).catch(err => onUnexpectedError(err));
 		} else {
 			canRun = false;
@@ -298,7 +301,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		// TODO verify this is "canonical" behavior
 		let count = canRun ? ++this._executionCount : undefined;
 
-		this._future = new SQLFuture(this._queryRunner, count, this._configurationService, this.logService);
+		this._future = new SQLFuture(queryRunner, count, this._configurationService, this.logService);
 		if (!canRun) {
 			// Complete early
 			this._future.handleDone(new Error(localize('connectionRequired', "A connection must be chosen to run notebook cells"))).catch(err => onUnexpectedError(err));
@@ -334,8 +337,11 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	interrupt(): Thenable<void> {
 		// TODO: figure out what to do with the QueryCancelResult
-		return this._queryRunner.cancelQuery().then((cancelResult) => {
+		let cancelPromises = [];
+		this._queryRunners.forEach(queryRunner => {
+			cancelPromises.push(queryRunner.cancelQuery().then(cancelResults => { }));
 		});
+		return Promise.all(cancelPromises).then();
 	}
 
 	private addQueryEventListeners(queryRunner: QueryRunner): void {
