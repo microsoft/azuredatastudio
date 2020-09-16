@@ -456,6 +456,46 @@
             }
           ]
         }
+      },
+      {
+        "name": "azure-sql-vm",
+        "displayName": "%azure-sqlvm-display-name%",
+        "description": "%azure-sqlvm-description%",
+        "platforms": "*",
+        "icon": {
+          "light": "./images/azure-sql-vm.svg",
+          "dark": "./images/azure-sql-vm.svg"
+        },
+        "providers": [
+          {
+            "azureSQLVMWizard":{
+              "notebook": "./notebooks/azurevm/create-sqlvm.ipynb"
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli"
+              }
+            ],
+            "when": true
+          }
+        ],
+        "agreement": {
+          "template": "%azure-sqlvm-agreement%",
+          "links": [
+            {
+              "text": "%microsoft-privacy-statement%",
+              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+            },
+            {
+              "text": "%azure-sqlvm-agreement-sqlvm-eula%",
+              "url": "https://azure.microsoft.com/support/legal/"
+            },
+            {
+              "text": "%azure-sqlvm-agreement-azdata-eula%",
+              "url": "https://aka.ms/eula-azdata-en"
+            }
+          ]
+        }
       }
     ]
   },
