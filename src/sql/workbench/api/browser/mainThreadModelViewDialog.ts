@@ -16,7 +16,6 @@ import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/wo
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { assign } from 'vs/base/common/objects';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
 export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape {
@@ -68,7 +67,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	public $openDialog(handle: number, dialogName?: string): Thenable<void> {
 		let dialog = this.getDialog(handle);
-		const options = assign({}, DefaultDialogOptions);
+		const options = Object.assign({}, DefaultDialogOptions);
 		options.width = dialog.width;
 		this._dialogService.showDialog(dialog, dialogName, options);
 		return Promise.resolve();
@@ -217,7 +216,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	public $openWizard(handle: number): Thenable<void> {
 		let wizard = this.getWizard(handle);
-		const options = assign({}, DefaultWizardOptions);
+		const options = Object.assign({}, DefaultWizardOptions);
 		options.width = wizard.width;
 		this._dialogService.showWizard(wizard, options);
 		return Promise.resolve();

@@ -14,7 +14,6 @@ import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/browser/m
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ModelStore } from 'sql/workbench/browser/modelComponents/modelStore';
 import { Event, Emitter } from 'vs/base/common/event';
-import { assign } from 'vs/base/common/objects';
 import { IModelStore, IComponentDescriptor, IComponent, ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
 
 const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
@@ -134,7 +133,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	registerEvent(componentId: string) {
 		this.queueAction(componentId, (component) => {
 			this._register(component.registerEventHandler(e => {
-				let modelViewEvent: IModelViewEventArgs = assign({
+				let modelViewEvent: IModelViewEventArgs = Object.assign({
 					componentId: componentId,
 					isRootComponent: componentId === this.rootDescriptor.id
 				}, e);

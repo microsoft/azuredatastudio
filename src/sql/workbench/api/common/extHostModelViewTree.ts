@@ -14,7 +14,6 @@ import * as azdata from 'azdata';
 import * as  vsTreeExt from 'vs/workbench/api/common/extHostTreeViews';
 import { Emitter } from 'vs/base/common/event';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { assign } from 'vs/base/common/objects';
 import { ILogService } from 'vs/platform/log/common/log';
 
 export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape {
@@ -176,7 +175,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeComponentItem, parent?: vsTreeExt.TreeNode | vsTreeExt.Root): vsTreeExt.TreeNode {
 		let node = super.createTreeNode(element, extensionTreeItem, parent);
 		if (node.item) {
-			node.item = assign(node.item, { checked: extensionTreeItem.checked, enabled: extensionTreeItem.enabled });
+			node.item = Object.assign(node.item, { checked: extensionTreeItem.checked, enabled: extensionTreeItem.enabled });
 		}
 		return node;
 	}

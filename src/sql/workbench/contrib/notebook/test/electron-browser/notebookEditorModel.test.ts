@@ -35,7 +35,6 @@ import { Emitter } from 'vs/base/common/event';
 import { INotebookEditor, INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { startsWith } from 'vs/base/common/strings';
-import { assign } from 'vs/base/common/objects';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestStorageService, TestTextResourcePropertiesService } from 'vs/workbench/test/common/workbenchTestServices';
@@ -887,7 +886,7 @@ suite('Notebook Editor Model', function (): void {
 	});
 
 	async function createNewNotebookModel() {
-		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>><unknown>{
+		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>><unknown>{
 			factory: mockModelFactory.object
 		});
 		notebookModel = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService());

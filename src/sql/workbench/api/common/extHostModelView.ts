@@ -7,7 +7,7 @@
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
-import { deepClone, assign } from 'vs/base/common/objects';
+import { deepClone } from 'vs/base/common/objects';
 import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 
@@ -307,12 +307,12 @@ class ComponentBuilderImpl<T extends azdata.Component, TPropertyBag extends azda
 
 	withProperties<U>(properties: U): azdata.ComponentBuilder<T, TPropertyBag> {
 		// Keep any properties that may have been set during initial object construction
-		this._component.properties = assign({}, this._component.properties, properties);
+		this._component.properties = Object.assign({}, this._component.properties, properties);
 		return this;
 	}
 
 	withProps(properties: TPropertyBag): azdata.ComponentBuilder<T, TPropertyBag> {
-		this._component.properties = assign({}, this._component.properties, properties);
+		this._component.properties = Object.assign({}, this._component.properties, properties);
 		return this;
 	}
 
@@ -390,7 +390,7 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 			});
 		}
 
-		return new InternalItemConfig(componentWrapper, assign({}, itemLayout || {}, {
+		return new InternalItemConfig(componentWrapper, Object.assign({}, itemLayout || {}, {
 			title: formComponent.title,
 			actions: actions,
 			isFormComponent: true,
@@ -749,7 +749,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public updateProperties(properties: { [key: string]: any }): Thenable<void> {
-		this.properties = assign(this.properties, properties);
+		this.properties = Object.assign(this.properties, properties);
 		return this.notifyPropertyChanged();
 	}
 
@@ -758,7 +758,7 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void> {
-		this.properties.CSSStyles = assign(this.properties.CSSStyles || {}, cssStyles);
+		this.properties.CSSStyles = Object.assign(this.properties.CSSStyles || {}, cssStyles);
 		return this.notifyPropertyChanged();
 	}
 
@@ -1546,7 +1546,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		// and so map them into their IDs instead. We don't want to update the actual
 		// data property though since the caller would still expect that to contain
 		// the Component objects they created
-		const properties = assign({}, this.properties);
+		const properties = Object.assign({}, this.properties);
 		if (properties.data) {
 			properties.data = properties.data.map((row: any[]) => row.map(cell => {
 				if (cell instanceof ComponentWrapper) {

@@ -510,7 +510,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			return [this.propertiesWidget];
 		} else if (types.isArray(properties)) {
 			return properties.map((item) => {
-				const retVal = objects.assign({}, this.propertiesWidget);
+				const retVal = Object.assign({}, this.propertiesWidget);
 				retVal.edition = item.edition;
 				retVal.provider = item.provider;
 				retVal.widget = { 'properties-widget': { properties: item.properties } };

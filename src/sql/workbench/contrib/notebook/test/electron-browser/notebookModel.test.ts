@@ -30,7 +30,6 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { NullLogService } from 'vs/platform/log/common/log';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { assign } from 'vs/base/common/objects';
 import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
@@ -556,7 +555,7 @@ suite('notebook model', function (): void {
 		sessionReady.resolve();
 		let actualSession: IClientSession = undefined;
 
-		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
+		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
 			factory: mockModelFactory.object
 		});
 		let capabilitiesService = new TestCapabilitiesService;

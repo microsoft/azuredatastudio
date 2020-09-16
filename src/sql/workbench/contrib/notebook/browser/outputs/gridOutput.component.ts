@@ -40,7 +40,6 @@ import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
-import { assign } from 'vs/base/common/objects';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -500,7 +499,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			return result;
 		};
 
-		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
+		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>Object.assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
 			saveFormat: format,
 			columns: columns,
 			filePath: filePath.fsPath,
