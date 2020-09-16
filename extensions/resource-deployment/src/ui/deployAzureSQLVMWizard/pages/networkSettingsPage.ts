@@ -452,7 +452,7 @@ export class NetworkSettingsPage extends BasePage {
 		}
 
 		if (this.wizard.model.newSubnet === 'True') {
-			if (this.wizard.model.subnetName.length < 1 || this.wizard.model.virtualNetworkName.length > 80) {
+			if (this.wizard.model.subnetName.length < 1 || this.wizard.model.subnetName.length > 80) {
 				errorMessages.push(localize('deployAzureSQLVM.SubnetNameLengthError', "Subnet name must be between 1 and 80 characters long"));
 			}
 		} else {

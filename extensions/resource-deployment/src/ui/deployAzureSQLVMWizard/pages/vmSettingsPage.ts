@@ -207,7 +207,7 @@ export class VmSettingsPage extends BasePage {
 			`?api-version=2019-12-01`;
 
 		let response = await this.wizard.getRequest(url, true);
-
+		response.data = response.data.reverse();
 		this.wizard.addDropdownValues(
 			this._vmImageDropdown,
 			response.data.filter((value: any) => {
