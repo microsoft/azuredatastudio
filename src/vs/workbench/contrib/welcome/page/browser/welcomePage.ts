@@ -66,7 +66,8 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 		@IWorkspaceContextService contextService: IWorkspaceContextService,
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
-		@ICommandService private readonly commandService: ICommandService) {
+		@ICommandService private readonly commandService: ICommandService,
+	) {
 		const enabled = isWelcomePageEnabled(configurationService, contextService);
 		if (enabled && lifecycleService.startupKind !== StartupKind.ReloadedWindow) {
 			backupFileService.hasBackups().then(hasBackups => {
@@ -331,13 +332,13 @@ class WelcomePage extends Disposable {
 	private onReady(container: HTMLElement, recentlyOpened: Promise<IRecentlyOpened>, installedExtensions: Promise<IExtensionStatus[]>): void {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
-		const wizardEnabled = isInitialSetupWizardEnabled(this.configurationService); // {{SQL CARBON EDIT}} - is the initial setup wizard enabled boolean
 
 		if (enabled) {
 			showOnStartup.setAttribute('checked', 'checked');
 		}
 
 		// {{SQL CARBON EDIT}} - check if the initial setup wizard should be initialized
+		const wizardEnabled = isInitialSetupWizardEnabled(this.configurationService); // {{SQL CARBON EDIT}} - is the initial setup wizard enabled boolean
 		if (wizardEnabled) {
 			const context = this;
 			const initializeSetupWizard = () => {
