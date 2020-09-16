@@ -55,10 +55,11 @@ export const toolbarIcon = registerColor('notebook.toolbarIcon', { light: '#3231
 export const toolbarBottomBorder = registerColor('notebook.toolbarBottomBorder', { light: '#D4D4D4', dark: '#323130', hc: '#E86E58' }, nls.localize('notebook.toolbarBottomBorder', "Notebook: Markdown toolbar bottom border"));
 // Notebook: All cells
 export const cellBorder = registerColor('notebook.cellBorder', { light: '#0078D4', dark: '#3AA0F3', hc: '#E86E58' }, nls.localize('notebook.cellBorder', "Notebook: Active cell border"));
-export const cellBackground = registerColor('notebook.cellBackground', { light: '#F5F5F5', dark: null, hc: null }, nls.localize('notebook.cellBackground', "Notebook: Background of cell at rest"));
 export const cellSelectedBackground = registerColor('notebook.cellSelectedBackground', { light: '#F5F5F5', dark: null, hc: null }, nls.localize('notebook.cellSelectedBackground', "Notebook: Background of selected cell"));
 export const cellEditModeBackground = registerColor('notebook.cellEditModeBackground', { light: '#FFFFFF', dark: null, hc: null }, nls.localize('notebook.cellEditModeBackground', "Notebook: Background of cell in edit mode"));
 export const cellEditorLineHighlight = registerColor('notebook.cellEditorLineHighlight', { light: '#E6F2FB', dark: null, hc: null }, nls.localize('lineHighlight', 'Background color for the highlight of line at the cursor position.'));
+// Notebook: Text Cell
+export const textCellBackground = registerColor('notebook.cellBackground', { light: '#FFFFFF', dark: null, hc: null }, nls.localize('notebook.cellBackground', "Notebook: Background of cell at rest"));
 // Notebook: Markdown cell
 export const markdownEditorBackground = registerColor('notebook.markdownEditorBackground', { light: '#FFFFFF', dark: '#1B1A19', hc: '#000000' }, nls.localize('notebook.markdownEditorBackground', "Notebook: Markdown editor background"));
 export const splitBorder = registerColor('notebook.splitBorder', { light: '#E6E6E6', dark: '#323130', hc: '#872412' }, nls.localize('notebook.splitBorder', "Notebook: Border between Markdown editor and preview"));

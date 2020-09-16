@@ -35,6 +35,7 @@ import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -189,6 +190,31 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	get activeCellId(): string {
 		return this._activeCellId;
 	}
+
+	public selectCell() {
+		// Cell needs to be selected twice sometimes for edit state to be correct
+		for (let count = 0; count < 2; count++) {
+			this._model.activeCell.isEditMode = true;
+			let editorControl = this._editor.getControl() as CodeEditorWidget;
+
+			editorControl.focus();
+			this._model.updateActiveCell(this._cellModel);
+			this.detectChanges();
+		}
+	}
+
+	public selectBox() {
+		this._model.activeCell.isEditMode = false;
+		let editorControl = this._editor.getControl() as CodeEditorWidget;
+		editorControl.unfocus();
+	}
+
+	private detectChanges(): void {
+		if (!(this._changeRef['destroyed'])) {
+			this._changeRef.detectChanges();
+		}
+	}
+
 
 	private async createEditor(): Promise<void> {
 		const customInstan = this._instantiationService.createChild(new ServiceCollection([IEditorProgressService, new SimpleProgressIndicator()]));

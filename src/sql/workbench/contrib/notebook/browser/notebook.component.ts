@@ -135,8 +135,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				}
 				break;
 			case 'Enter':
+				event.preventDefault();
 				if (!this._model.activeCell.isEditMode) {
-					event.preventDefault();
 					this._model.activeCell.isEditMode = !this._model.activeCell.isEditMode;
 				}
 				if (!toolbarEditCellAction.editMode) {
@@ -261,9 +261,24 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			event.stopPropagation();
 		}
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
+			if (this.model.activeCell && this.model.activeCell.cellType === 'code') {
+				let cellEditorProvider = this.cellEditors.find(e => e.cellGuid() === this._model.activeCell.cellGuid);
+				let is_selected = false;
+				let editorControl: CodeEditorWidget;
+				if (cellEditorProvider) {
+					let editor = cellEditorProvider.getEditor() as QueryTextEditor;
+					if (editor) {
+						editorControl = editor.getControl() as CodeEditorWidget;
+						is_selected = editorControl.hasTextFocus();
+					}
+					editorControl.unfocus();
+				}
+				this.model.activeCell.active = false;
+				this.model.activeCell.isEditMode = false;
+			}
 			this.model.updateActiveCell(cell);
-			this.detectChanges();
 		}
+		this.detectChanges();
 	}
 
 	//Saves scrollTop value on scroll change
