@@ -4,9 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { EOL } from 'os';
 import * as constants from '../constants';
 import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 import { BasePage } from './basePage';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
 export class SqlServerSettingsPage extends BasePage {
 
@@ -43,29 +46,6 @@ export class SqlServerSettingsPage extends BasePage {
 				this.createSqlAuthentication(view),
 			]);
 
-
-			// this._sqlStorageOptimiazationDropdown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
-			// 	values: [{
-			// 		displayName: 'General',
-			// 		name: 'GENERAL',
-			// 	},
-			// 	{
-			// 		displayName: 'Transactional Processing',
-			// 		name: 'OLTP',
-			// 	},
-			// 	{
-			// 		displayName: 'Data Warehousing',
-			// 		name: 'DW',
-			// 	}]
-			// }).component();
-
-			// this._sqlStorageOptimiazationDropdown.onValueChanged((value) => {
-			// 	this.wizard.model.sqlOptimizationDropdown = (this._sqlStorageOptimiazationDropdown.value as azdata.CategoryValue).name;
-			// });
-
-			// this.wizard.model.sqlOptimizationDropdown = (this._sqlStorageOptimiazationDropdown.value as azdata.CategoryValue).name;
-
-
 			this._form = view.modelBuilder.formContainer()
 				.withFormItems(
 					[
@@ -87,10 +67,6 @@ export class SqlServerSettingsPage extends BasePage {
 						{
 							component: this._sqlAuthenticationPasswordConfirmationTextRow
 						}
-						// {
-						// 	component: this.wizard.createFormRowComponent(view, 'SQL Storage Optimization Type', '', this._sqlStorageOptimiazationDropdown, true)
-
-						// }
 					],
 					{
 						horizontal: false,
@@ -114,7 +90,7 @@ export class SqlServerSettingsPage extends BasePage {
 
 			this.liveValidation = true;
 
-			let showErrorMessage = await this.formValidation();
+			let showErrorMessage = await this.validatePage();
 
 			if (showErrorMessage !== '') {
 				return false;
@@ -130,25 +106,27 @@ export class SqlServerSettingsPage extends BasePage {
 	}
 
 	private createSqlConnectivityDropdown(view: azdata.ModelView) {
+
+		const privateOptionDisplayName = localize('deployAzureSQLVM.PrivateConnectivityDropdownOptionDefault', "Private (within Virtual Network)");
 		this._sqlConnectivityDropdown = view.modelBuilder.dropDown().withProperties(<azdata.DropDownProperties>
 			{
 				values: [
 					{
 						name: 'local',
-						displayName: 'Local (inside VM only)'
+						displayName: localize('deployAzureSQLVM.LocalConnectivityDropdownOption', "Local (inside VM only)")
 					},
 					{
 						name: 'private',
-						displayName: 'Private (within Virtual Network)'
+						displayName: privateOptionDisplayName
 					},
 					{
 						name: 'public',
-						displayName: 'Public (Internet)'
+						displayName: localize('deployAzureSQLVM.PublicConnectivityDropdownOption', "Public (Internet)")
 					}
 				],
 				value: {
 					name: 'private',
-					displayName: 'Private (within Virtual Network)'
+					displayName: privateOptionDisplayName
 				}
 			}).component();
 
@@ -178,7 +156,7 @@ export class SqlServerSettingsPage extends BasePage {
 
 		this._portTextBox.onTextChanged((value) => {
 			this.wizard.model.port = value;
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 
 		this._portTextRow = this.wizard.createFormRowComponent(view, constants.SqlPortLabel, '', this._portTextBox, true);
@@ -189,11 +167,11 @@ export class SqlServerSettingsPage extends BasePage {
 		this._sqlAuthenticationDropdown = view.modelBuilder.dropDown().withProperties(<azdata.DropDownComponent>{
 			values: [
 				{
-					displayName: 'Yes',
+					displayName: localize('deployAzureSQLVM.EnableSqlAuthenticationYesOption', "Yes"),
 					name: 'True'
 				},
 				{
-					displayName: 'No',
+					displayName: localize('deployAzureSQLVM.EnableSqlAuthenticationNoOption', "No"),
 					name: 'False'
 				}
 			]
@@ -230,42 +208,42 @@ export class SqlServerSettingsPage extends BasePage {
 
 		this._sqlAuthenticationTextbox.onTextChanged((value) => {
 			this.wizard.model.sqlAuthenticationUsername = value;
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 
 		this._sqlAuthenticationPasswordTextbox.onTextChanged((value) => {
 			this.wizard.model.sqlAuthenticationPassword = value;
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 
 	}
 
 
-	protected async formValidation(): Promise<string> {
+	protected async validatePage(): Promise<string> {
 
-		let showErrorMessage = [];
+		const errorMessages = [];
 
 		if ((this._sqlAuthenticationDropdown.value as azdata.CategoryValue).name === 'True') {
 			let username = this._sqlAuthenticationTextbox.value!;
 
 			if (username.length < 2 || username.length > 128) {
-				showErrorMessage.push('Username must be between 2 and 128 characters long.');
+				errorMessages.push(localize('deployAzureSQLVM.SqlUsernameLengthError', "Username must be between 2 and 128 characters long."));
 			}
 
 			if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(username)) {
-				showErrorMessage.push('Username cannot contain special characters \/""[]:|<>+=;,?* .');
+				errorMessages.push(localize('deployAzureSQLVM.SqlUsernameSpecialCharError', "Username cannot contain special characters \/\"\"[]:|<>+=;,?* ."));
 			}
 
-			showErrorMessage.push(this.wizard.validatePassword(this._sqlAuthenticationPasswordTextbox.value!));
+			errorMessages.push(this.wizard.validatePassword(this._sqlAuthenticationPasswordTextbox.value!));
 
 			if (this._sqlAuthenticationPasswordTextbox.value !== this._sqlAuthenticationPasswordConfirmationTextbox.value) {
-				showErrorMessage.push('Password and confirm password must match.');
+				errorMessages.push(localize('deployAzureSQLVM.SqlConfirmPasswordError', "Password and confirm password must match."));
 			}
 		}
 
 
-		this.wizard.showErrorMessage(showErrorMessage.join('\n'));
+		this.wizard.showErrorMessage(errorMessages.join(EOL));
 
-		return showErrorMessage.join('\n');
+		return errorMessages.join(EOL);
 	}
 }

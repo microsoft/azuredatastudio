@@ -36,7 +36,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 	constructor(wizard: DeployAzureSQLVMWizard) {
 		super(
 			constants.AzureSettingsPageTitle,
-			constants.AzureSettingsPageDescription,
+			'',
 			wizard
 		);
 		this._accountsMap = new Map();
