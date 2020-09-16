@@ -272,10 +272,11 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		return Promise.resolve(notebookConstants.sqlKernelSpec);
 	}
 
-	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean, cellId?: string): nb.IFuture {
+	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean, cellUri?: string): nb.IFuture {
 		let canRun: boolean = true;
 		let code = this.getCodeWithoutCellMagic(content);
-		let queryRunner: QueryRunner | undefined = this._queryRunners.get(cellId);
+		let queryRunnerUri = 'queryRunner-' + cellUri;
+		let queryRunner: QueryRunner | undefined = this._queryRunners.get(queryRunnerUri);
 		if (queryRunner) {
 			// Cancel any existing query
 			if (this._future && !queryRunner.hasCompleted) {
@@ -285,10 +286,9 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			}
 			queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 		} else if (this._currentConnection && this._currentConnectionProfile) {
-			let queryRunnerUri = this._connectionPath + '-cell-' + cellId;
 			queryRunner = this._instantiationService.createInstance(QueryRunner, queryRunnerUri);
-			this._queryRunners.set(cellId, queryRunner);
-			this.queryManagementService.registerRunner(queryRunner, this._connectionPath + cellId);
+			this._queryRunners.set(queryRunnerUri, queryRunner);
+			this.queryManagementService.registerRunner(queryRunner, queryRunnerUri);
 			this._connectionManagementService.connect(this._currentConnectionProfile, queryRunnerUri).then((result) => {
 				this.addQueryEventListeners(queryRunner);
 				queryRunner.runQuery(code).catch(err => onUnexpectedError(err));

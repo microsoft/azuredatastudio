@@ -4918,7 +4918,7 @@ declare module 'azdata' {
 			 *
 			 * **See also:** [[IExecuteReply]]
 			 */
-			requestExecute(content: IExecuteRequest, disposeOnDone?: boolean, cellId?: string): IFuture;
+			requestExecute(content: IExecuteRequest, disposeOnDone?: boolean, cellUri?: string): IFuture;
 
 			/**
 			 * Send a `complete_request` message.
