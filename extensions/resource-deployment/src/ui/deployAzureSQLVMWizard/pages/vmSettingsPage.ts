@@ -4,9 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { EOL } from 'os';
 import * as constants from '../constants';
 import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 import { BasePage } from './basePage';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
 export class VmSettingsPage extends BasePage {
 
@@ -42,7 +45,7 @@ export class VmSettingsPage extends BasePage {
 	constructor(wizard: DeployAzureSQLVMWizard) {
 		super(
 			constants.VmSettingsPageTitle,
-			constants.VmSettingsPageDescription,
+			'',
 			wizard
 		);
 	}
@@ -120,7 +123,7 @@ export class VmSettingsPage extends BasePage {
 				return true;
 			}
 
-			let errorMessage = await this.formValidation();
+			let errorMessage = await this.validatePage();
 
 			if (errorMessage !== '') {
 				return false;
@@ -142,7 +145,7 @@ export class VmSettingsPage extends BasePage {
 
 		this._vmNameTextBox.onTextChanged((value) => {
 			this.wizard.model.vmName = value;
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 	}
 
@@ -152,7 +155,7 @@ export class VmSettingsPage extends BasePage {
 
 		this._adminUsernameTextBox.onTextChanged((value) => {
 			this.wizard.model.vmUsername = value;
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 	}
 
@@ -163,7 +166,7 @@ export class VmSettingsPage extends BasePage {
 
 		this._adminPasswordTextBox.onTextChanged((value) => {
 			this.wizard.model.vmPassword = value;
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 	}
 
@@ -173,7 +176,7 @@ export class VmSettingsPage extends BasePage {
 		}).component();
 
 		this._adminComfirmPasswordTextBox.onTextChanged((value) => {
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 	}
 
@@ -372,9 +375,9 @@ export class VmSettingsPage extends BasePage {
 		this._vmSizeDropdown.loading = false;
 	}
 
-	protected async formValidation(): Promise<string> {
+	protected async validatePage(): Promise<string> {
 
-		let showErrorMessage = [];
+		const errorMessages = [];
 		/**
 		 * VM name rules:
 		 * 	1. 1-15 characters
@@ -384,19 +387,19 @@ export class VmSettingsPage extends BasePage {
 		 */
 		let vmname = this.wizard.model.vmName;
 		if (vmname.length < 1 && vmname.length > 15) {
-			showErrorMessage.push('Virtual machine name must be between 1 and 15 characters long.');
+			errorMessages.push(localize('deployAzureSQLVM.VnameLengthError', "Virtual machine name must be between 1 and 15 characters long."));
 		}
 		if (/^\d+$/.test(vmname)) {
-			showErrorMessage.push('Virtual machine name cannot contain only numbers.');
+			errorMessages.push(localize('deployAzureSQLVM.VNameOnlyNumericNameError', "Virtual machine name cannot contain only numbers."));
 		}
 		if (vmname.charAt(0) === '_' || vmname.slice(-1) === '.' || vmname.slice(-1) === '-') {
-			showErrorMessage.push('Virtual machine name Can\'t start with underscore. Can\'t end with period or hyphen');
+			errorMessages.push(localize('deployAzureSQLVM.VNamePrefixSuffixError', "Virtual machine name Can\'t start with underscore. Can\'t end with period or hyphen"));
 		}
 		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(vmname)) {
-			showErrorMessage.push('Virtual machine name cannot contain special characters \/""[]:|<>+=;,?*@&, .');
+			errorMessages.push(localize('deployAzureSQLVM.VNameSpecialCharError', "Virtual machine name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
 		}
 		if (await this.vmNameExists(vmname)) {
-			showErrorMessage.push('Virtual machine name must be unique in the current resource group.');
+			errorMessages.push(localize('deployAzureSQLVM.VNameExistsError', "Virtual machine name must be unique in the current resource group."));
 		}
 
 
@@ -413,32 +416,32 @@ export class VmSettingsPage extends BasePage {
 		];
 		let username = this.wizard.model.vmUsername;
 		if (username.length < 1 || username.length > 20) {
-			showErrorMessage.push('Username must be between 1 and 20 characters long.');
+			errorMessages.push(localize('deployAzureSQLVM.VMUsernameLengthError', "Username must be between 1 and 20 characters long."));
 		}
 		if (username.slice(-1) === '.') {
-			showErrorMessage.push('Username cannot end with period');
+			errorMessages.push(localize('deployAzureSQLVM.VMUsernameSuffixError', 'Username cannot end with period'));
 		}
 		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&]/g.test(username)) {
-			showErrorMessage.push('Username cannot contain special characters \/""[]:|<>+=;,?*@& .');
+			errorMessages.push(localize('deployAzureSQLVM.VMUsernameSpecialCharError', "Username cannot contain special characters \/\"\"[]:|<>+=;,?*@& ."));
 		}
 
 		if (reservedVMUsernames.includes(username)) {
-			showErrorMessage.push('Username must not include reserved words.');
+			errorMessages.push(localize('deployAzureSQLVM.VMUsernameReservedWordsError', "Username must not include reserved words."));
 		}
 
-		showErrorMessage.push(this.wizard.validatePassword(this.wizard.model.vmPassword));
+		errorMessages.push(this.wizard.validatePassword(this.wizard.model.vmPassword));
 
 		if (this.wizard.model.vmPassword !== this._adminComfirmPasswordTextBox.value) {
-			showErrorMessage.push('Password and confirm password must match.');
+			errorMessages.push(localize('deployAzureSQLVM.VMConfirmPasswordError', "Password and confirm password must match."));
 		}
 
 		if (this._vmSize.includes((this._vmSizeDropdown.value as azdata.CategoryValue).name)) {
-			showErrorMessage.push('Select a virtual machine size.');
+			errorMessages.push(localize('deployAzureSQLVM.vmDropdownSizeError', "Select a valid virtual machine size."));
 		}
 
-		this.wizard.showErrorMessage(showErrorMessage.join('\n'));
+		this.wizard.showErrorMessage(errorMessages.join(EOL));
 
-		return showErrorMessage.join('\n');
+		return errorMessages.join(EOL);
 	}
 
 	protected async vmNameExists(vmName: string): Promise<boolean> {

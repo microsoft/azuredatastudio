@@ -57,22 +57,17 @@ export class DeployAzureSQLVMWizardModel extends Model {
 		statements.push(`azure_sqlvm_image_sku = '${this.vmImageSKU}'`);
 		statements.push(`azure_sqlvm_image_version = '${this.vmImageVersion}'`);
 		statements.push(`azure_sqlvm_vmsize = '${this.vmSize}'`);
-		statements.push(`azure_sqlvm_virtnet = '${this.virtualNetworkName}'`);
 		statements.push(`azure_sqlvm_newVirtualNetwork = ${this.newVirtualNetwork}`);
+		statements.push(`azure_sqlvm_virtnet = '${this.virtualNetworkName}'`);
 		statements.push(`azure_sqlvm_newSubnet = ${this.newSubnet}`);
 		statements.push(`azure_sqlvm_subnet = '${this.subnetName}'`);
-		statements.push(`azure_sqlvm_publicip = '${this.publicIpName}'`);
 		statements.push(`azure_sqlvm_newPublicIp = ${this.newPublicIp}`);
+		statements.push(`azure_sqlvm_publicip = '${this.publicIpName}'`);
 		statements.push(`azure_sqlvm_allow_rdp = ${this.allowRDP}`);
 		statements.push(`azure_sqlvm_sqlConnectivityType = '${this.sqlConnectivityType}'`);
 		statements.push(`azure_sqlvm_port = '${this.port}'`);
 		statements.push(`azure_sqlvm_enableSqlAuthentication = ${this.enableSqlAuthentication}`);
 		statements.push(`azure_sqlvm_sqlAuthenticationUsername = '${this.sqlAuthenticationUsername}'`);
-		//statements.push(`azure_sqlvm_sqlOptimization = '${this.sqlOptimizationDropdown}'`);
-		statements.push(`if "AZDATA_NB_VAR_AZURE_SQLVM_PASSWORD" in os.environ:
-		azure_sqlvm_password = os.environ["AZDATA_NB_VAR_AZURE_SQLVM_PASSWORD"]`);
-		statements.push(`if "AZDATA_NB_VAR_AZURE_SQLVM_SQL_PASSWORD" in os.environ:
-		azure_sqlvm_sqlAuthenticationPassword = os.environ["AZDATA_NB_VAR_AZURE_SQLVM_SQL_PASSWORD"]`);
 
 		return statements.map(line => line + EOL);
 	}
