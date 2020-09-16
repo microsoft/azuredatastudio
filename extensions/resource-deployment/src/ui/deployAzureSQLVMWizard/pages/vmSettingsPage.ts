@@ -207,7 +207,6 @@ export class VmSettingsPage extends BasePage {
 			`?api-version=2019-12-01`;
 
 		let response = await this.wizard.getRequest(url, true);
-		response.data = response.data.reverse();
 
 		this.wizard.addDropdownValues(
 			this._vmImageDropdown,
@@ -341,7 +340,12 @@ export class VmSettingsPage extends BasePage {
 			}
 		});
 
-		let dropDownValues = vmResouces.map((value: any) => {
+		let dropDownValues = vmResouces.filter((value: any) => {
+			const discSize = Number(value.capabilities.filter((c: any) => { return c.name === 'MaxResourceVolumeMB'; })[0].value) / 1024;
+			if (discSize >= 40) {
+				return value;
+			}
+		}).map((value: any) => {
 			if (value.capabilities) {
 				let cores;
 				if (value.capabilities.filter((c: any) => { return c.name === 'vCPUsAvailable'; }).length !== 0) {
