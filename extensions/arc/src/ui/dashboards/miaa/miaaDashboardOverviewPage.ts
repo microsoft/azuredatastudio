@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
-import { getDatabaseStateDisplayText, promptForResourceDeletion } from '../../../common/utils';
+import { getDatabaseStateDisplayText, promptForInstanceDeletion } from '../../../common/utils';
 import { cssStyles, Endpoints, IconPathHelper } from '../../../constants';
 import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
@@ -198,7 +198,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			deleteButton.onDidClick(async () => {
 				deleteButton.enabled = false;
 				try {
-					if (await promptForResourceDeletion(this._miaaModel.info.name)) {
+					if (await promptForInstanceDeletion(this._miaaModel.info.name)) {
 						await this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name);
 						await this._controllerModel.refreshTreeNode();
 						vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.info.name));
