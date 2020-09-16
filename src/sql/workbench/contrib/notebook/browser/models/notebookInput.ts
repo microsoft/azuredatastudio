@@ -36,6 +36,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { INotification, INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
+import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -86,6 +87,12 @@ export class NotebookEditorModel extends EditorModel {
 				this._register(this.textEditorModel.onDidChangeDirty(() => {
 					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 					this.setDirty(dirty);
+				}));
+				this._register(this.textEditorModel.onDidLoad(async (e) => {
+					if (this.textEditorModel instanceof TextFileEditorModel) {
+						let model = this.getNotebookModel() as NotebookModel;
+						await model.loadContents(model.trustedMode, true);
+					}
 				}));
 			}
 		}
