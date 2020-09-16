@@ -25,6 +25,9 @@ export class DatabaseSettingsPage extends BasePage {
 	private _collationTextRow!: azdata.FlexContainer;
 	private _IpInfoText!: azdata.TextComponent;
 
+	//dropdown for available hardware configurations <- server dropdown from Azure page.
+	private _dbHardwareConfigDropdown!: azdata.DropDownComponent;
+
 	private _form!: azdata.FormContainer;
 
 	constructor(wizard: DeployAzureSQLDBWizard) {
@@ -41,7 +44,8 @@ export class DatabaseSettingsPage extends BasePage {
 				this.createIpAddressText(view),
 				this.createFirewallNameText(view),
 				this.createDatabaseNameText(view),
-				this.createCollationText(view)
+				this.createCollationText(view),
+				this.createDatabaseHardwareDropdown(view)
 			]);
 			this._form = view.modelBuilder.formContainer()
 				.withFormItems(
@@ -63,6 +67,9 @@ export class DatabaseSettingsPage extends BasePage {
 						},
 						{
 							component: this._IpInfoText
+						},
+						{
+							component: this.wizard.createFormRowComponent(view, constants.DatabaseHardwareConfigDropdownLabel, '', this._dbHardwareConfigDropdown, true)
 						}
 					],
 					{
@@ -168,6 +175,15 @@ export class DatabaseSettingsPage extends BasePage {
 		});
 
 		this._collationTextRow = this.wizard.createFormRowComponent(view, constants.CollationNameLabel, '', this._collationTextbox, true);
+	}
+
+	private async createDatabaseHardwareDropdown(view: azdata.ModelView) {
+		this._dbHardwareConfigDropdown = view.modelBuilder.dropDown().withProperties({
+			required: true,
+		}).component();
+		this._dbHardwareConfigDropdown.onValueChanged(async (value) => {
+			console.log(value);
+		});
 	}
 
 	protected async validatePage(): Promise<string> {

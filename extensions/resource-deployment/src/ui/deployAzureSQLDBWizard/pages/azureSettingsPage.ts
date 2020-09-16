@@ -29,7 +29,7 @@ export class AzureSettingsPage extends BasePage {
 	//dropdown for resource groups <- subscription dropdown //@todo alma1 9/9/2020 Used for upcoming server creation feature.
 	// private _resourceGroupDropdown!: azdata.DropDownComponent;
 
-	//dropdown for SQL servers <- resource dropdown
+	//dropdown for SQL servers <- subscription dropdown
 	private _serverGroupDropdown!: azdata.DropDownComponent;
 
 	// //dropdown for azure regions <- subscription dropdown //@todo alma1 9/8/2020 Region dropdown used for upcoming server creation feature.
@@ -258,6 +258,7 @@ export class AzureSettingsPage extends BasePage {
 			if (value.selected === ((this._serverGroupDropdown.value as azdata.CategoryValue).displayName)) {
 				this.wizard.model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
 				this.wizard.model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
+				this.wizard.model.azureRegion = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/location/'), '');
 			}
 		});
 	}
@@ -293,13 +294,15 @@ export class AzureSettingsPage extends BasePage {
 			response.data.value.map((value: any) => {
 				return {
 					displayName: value.name,
-					name: value.id,
+					// remove location from this line and others when region population is enabled again.
+					name: value.id + '/location/' + value.location,
 				};
 			})
 		);
 		if (this._serverGroupDropdown.value) {
 			this.wizard.model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
 			this.wizard.model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
+			this.wizard.model.azureRegion = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/location/'), '');
 		}
 		this._serverGroupDropdown.loading = false;
 		return;
