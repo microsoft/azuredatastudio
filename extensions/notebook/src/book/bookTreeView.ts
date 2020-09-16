@@ -16,7 +16,6 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { isNullOrUndefined } from 'util';
 import { IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
 import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
@@ -313,7 +312,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (shouldReveal || this._bookViewer?.visible) {
 			bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath) : undefined;
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
-			if (bookItem) {
+			if (bookItem?.contextValue !== 'pinnedNotebook') {
 				// Note: 3 is the maximum number of levels that the vscode APIs let you expand to
 				await this._bookViewer.reveal(bookItem, { select: true, focus: true, expand: true });
 			}
@@ -492,7 +491,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
 		let maxDepth = notebookConfig[constants.maxBookSearchDepth];
 		// Use default value if user enters an invalid value
-		if (isNullOrUndefined(maxDepth) || maxDepth < 0) {
+		if (maxDepth === null || maxDepth === undefined || maxDepth < 0) {
 			maxDepth = 10;
 		} else if (maxDepth === 0) { // No limit of search depth if user enters 0
 			maxDepth = undefined;
