@@ -11,11 +11,10 @@ export const standardWidth: string = '480px';
 // Deploy Azure SQL DB wizard constants
 export const WizardTitle = localize('deployAzureSQLDB.NewSQLDBTitle', "Deploy Azure SQL DB");
 export const WizardDoneButtonLabel = localize('deployAzureSQLDB.ScriptToNotebook', "Script to Notebook");
-export const MissingRequiredInformationErrorMessage = localize('deployCluster.MissingRequiredInfoError', "Please fill out the required fields marked with red asterisks.");
+export const MissingRequiredInformationErrorMessage = localize('deployAzureSQLDB.MissingRequiredInfoError', "Please fill out the required fields marked with red asterisks.");
 
 // Azure settings page constants
 export const AzureSettingsPageTitle = localize('deployAzureSQLDB.AzureSettingsPageTitle', "Azure SQL Database - Azure Account Settings");
-export const AzureSettingsPageDescription = localize('deployAzureSQLDB.AzureSettingsPageDescription', "   ");
 export const AzureSettingsSummaryPageTitle = localize('deployAzureSQLDB.AzureSettingsSummaryPageTitle', "Azure Account Settings");
 export const AzureAccountDropdownLabel = localize('deployAzureSQLDB.AzureAccountDropdownLabel', "Azure Account");
 export const AzureAccountSubscriptionDropdownLabel = localize('deployAzureSQLDB.AzureSubscriptionDropdownLabel', "Subscription");
@@ -26,11 +25,10 @@ export const AzureAccountResourceGroupDropdownLabel = localize('deployAzureSQLDB
 
 // Database settings page constants
 export const DatabaseSettingsPageTitle = localize('deployAzureSQLDB.DatabaseSettingsPageTitle', "Database settings");
-export const DatabaseSettingsPageDescription = localize('deployAzureSQLDB.DatabaseSettingsPageDescription', "   ");
 export const FirewallRuleNameLabel = localize('deployAzureSQLDB.FirewallRuleNameLabel', 'Firewall rule name');
 export const DatabaseNameLabel = localize('deployAzureSQLDB.DatabaseNameLabel', 'SQL database name');
 export const CollationNameLabel = localize('deployAzureSQLDB.CollationNameLabel', 'Collation for database, default value is \"SQL_Latin1_General_CP1_CI_AS\"');
-export const IpAddressInfoLabel = localize('deployAzureSQLDB.IpAddressInfoLabel', "Enter IP Addresses in IVP4 format.");
+export const IpAddressInfoLabel = localize('deployAzureSQLDB.IpAddressInfoLabel', "Enter Ip Addresses in IVP4 format.");
 export const StartIpAddressLabel = localize('deployAzureSQLDB.StartIpAddressLabel', "Min Ip Address in firewall Ip Range");
 export const EndIpAddressLabel = localize('deployAzureSQLDB.EndIpAddressLabel', "Max Ip Address in firewall Ip Range");
 export const StartIpAddressShortLabel = localize('deployAzureSQLDB.StartIpAddressShortLabel', "Min Ip Address");

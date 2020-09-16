@@ -4,12 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { EOL } from 'os';
 import * as constants from '../constants';
 import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 import { apiService } from '../../../services/apiService';
 import { azureResource } from 'azureResource';
 import * as vscode from 'vscode';
 import { BasePage } from './basePage';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
 export class AzureSettingsPage extends BasePage {
 	// <- means depends on
@@ -39,7 +42,7 @@ export class AzureSettingsPage extends BasePage {
 	constructor(wizard: DeployAzureSQLDBWizard) {
 		super(
 			constants.AzureSettingsPageTitle,
-			constants.AzureSettingsPageDescription,
+			'',
 			wizard
 		);
 		this._accountsMap = new Map();
@@ -96,7 +99,7 @@ export class AzureSettingsPage extends BasePage {
 				return true;
 			}
 			this.liveValidation = true;
-			let errorMessage = await this.formValidation();
+			let errorMessage = await this.validatePage();
 
 			if (errorMessage !== '') {
 				return false;
@@ -387,14 +390,14 @@ export class AzureSettingsPage extends BasePage {
 	// 	this._azureRegionsDropdown.loading = false;
 	// }
 
-	protected async formValidation(): Promise<string> {
-		let errorMessage = [];
+	protected async validatePage(): Promise<string> {
+		let errorMessages = [];
 		let serverName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
 		if (serverName === 'No servers found') {
-			errorMessage.push('No servers found in current subscription.\nSelect a different subscription containing at least one server');
+			errorMessages.push(localize('deployAzureSQLDB.NoServerError', "No servers found in current subscription.\nSelect a different subscription containing at least one server"));
 		}
 
-		this.wizard.showErrorMessage(errorMessage.join('\n'));
-		return errorMessage.join('\n');
+		this.wizard.showErrorMessage(errorMessages.join(EOL));
+		return errorMessages.join(EOL);
 	}
 }

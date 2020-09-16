@@ -14,13 +14,13 @@ export abstract class BasePage extends WizardPageBase<DeployAzureSQLDBWizard> {
 		throw new Error('Method not implemented.');
 	}
 
-	protected async formValidation(): Promise<string> {
+	protected async validatePage(): Promise<string> {
 		return '';
 	}
 
-	protected liveFormValidation() {
+	protected activateRealTimeFormValidation() {
 		if (this.liveValidation) {
-			this.formValidation();
+			this.validatePage();
 		}
 	}
 }

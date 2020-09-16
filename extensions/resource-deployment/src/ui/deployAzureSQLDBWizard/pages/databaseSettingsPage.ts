@@ -4,9 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { EOL } from 'os';
 import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 import * as constants from '../constants';
 import { BasePage } from './basePage';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
 export class DatabaseSettingsPage extends BasePage {
 
@@ -27,7 +30,7 @@ export class DatabaseSettingsPage extends BasePage {
 	constructor(wizard: DeployAzureSQLDBWizard) {
 		super(
 			constants.DatabaseSettingsPageTitle,
-			constants.DatabaseSettingsPageDescription,
+			'',
 			wizard
 		);
 	}
@@ -80,7 +83,7 @@ export class DatabaseSettingsPage extends BasePage {
 				return true;
 			}
 			this.liveValidation = true;
-			let errorMessage = await this.formValidation();
+			let errorMessage = await this.validatePage();
 
 			if (errorMessage !== '') {
 				return false;
@@ -110,7 +113,7 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._startIpAddressTextbox.onTextChanged((value) => {
 			this.wizard.model.startIpAddress = value;
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 
 		this._startIpAddressTextRow = this.wizard.createFormRowComponent(view, constants.StartIpAddressLabel, '', this._startIpAddressTextbox, true);
@@ -123,7 +126,7 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._endIpAddressTextbox.onTextChanged((value) => {
 			this.wizard.model.endIpAddress = value;
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 
 		this._endIpAddressTextRow = this.wizard.createFormRowComponent(view, constants.EndIpAddressLabel, '', this._endIpAddressTextbox, true);
@@ -137,7 +140,7 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._firewallRuleNameTextbox.onTextChanged((value) => {
 			this.wizard.model.firewallRuleName = value;
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 	}
 
@@ -149,7 +152,7 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._databaseNameTextbox.onTextChanged((value) => {
 			this.wizard.model.databaseName = value;
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 	}
 
@@ -161,14 +164,14 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._collationTextbox.onTextChanged((value) => {
 			this.wizard.model.databaseCollation = value;
-			this.liveFormValidation();
+			this.activateRealTimeFormValidation();
 		});
 
 		this._collationTextRow = this.wizard.createFormRowComponent(view, constants.CollationNameLabel, '', this._collationTextbox, true);
 	}
 
-	protected async formValidation(): Promise<string> {
-		let errorMessage = [];
+	protected async validatePage(): Promise<string> {
+		let errorMessages = [];
 		let ipRegex = /(^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$)/;
 		let startipvalue = this._startIpAddressTextbox.value!;
 		let endipvalue = this._endIpAddressTextbox.value!;
@@ -177,48 +180,48 @@ export class DatabaseSettingsPage extends BasePage {
 		let collationname = this._collationTextbox.value!;
 
 		if (!(ipRegex.test(startipvalue))) {
-			errorMessage.push('Min IP address is invalid');
+			errorMessages.push(localize('deployAzureSQLDB.DBMinIpInvalidError', "Min Ip address is invalid"));
 		}
 
 		if (!(ipRegex.test(endipvalue))) {
-			errorMessage.push('Max IP address is invalid');
+			errorMessages.push(localize('deployAzureSQLDB.DBMaxIpInvalidError', "Max Ip address is invalid"));
 		}
 
 		if (/^\d+$/.test(firewallname)) {
-			errorMessage.push('Firewall name cannot contain only numbers.');
+			errorMessages.push(localize('deployAzureSQLDB.DBFirewallOnlyNumericNameError', "Firewall name cannot contain only numbers."));
 		}
 		if (firewallname.length < 1 || firewallname.length > 15) {
-			errorMessage.push('Firewall name must be between 1 and 15 characters long.');
+			errorMessages.push(localize('deployAzureSQLDB.DBFirewallLengthError', "Firewall name must be between 1 and 15 characters long."));
 		}
 		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(firewallname)) {
-			errorMessage.push('Firewall name cannot contain special characters \/""[]:|<>+=;,?*@&, .');
+			errorMessages.push(localize('deployAzureSQLDB.DBFirewallSpecialCharError', "Firewall name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
 		}
 
 		if (/^\d+$/.test(databasename)) {
-			errorMessage.push('Database name cannot contain only numbers.');
+			errorMessages.push(localize('deployAzureSQLDB.DBNameOnlyNumericNameError', "Database name cannot contain only numbers."));
 		}
 		if (databasename.length < 1 || databasename.length > 15) {
-			errorMessage.push('Database name must be between 1 and 15 characters long.');
+			errorMessages.push(localize('deployAzureSQLDB.DBNameLengthError', "Database name must be between 1 and 15 characters long."));
 		}
 		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(databasename)) {
-			errorMessage.push('Database name cannot contain special characters \/""[]:|<>+=;,?*@&, .');
+			errorMessages.push(localize('deployAzureSQLDB.DBNameSpecialCharError', "Database name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
 		}
 		if (await this.databaseNameExists(databasename)) {
-			errorMessage.push('Database name must be unique in the current server.');
+			errorMessages.push(localize('deployAzureSQLDB.DBNameExistsError', "Database name must be unique in the current server."));
 		}
 
 		if (/^\d+$/.test(collationname)) {
-			errorMessage.push('Collation name cannot contain only numbers.');
+			errorMessages.push(localize('deployAzureSQLDB.DBCollationOnlyNumericNameError', "Collation name cannot contain only numbers."));
 		}
 		if (collationname.length < 1 || collationname.length > 15) {
-			errorMessage.push('Collation name must be between 1 and 15 characters long.');
+			errorMessages.push(localize('deployAzureSQLDB.DBCollationLengthError', "Collation name must be between 1 and 15 characters long."));
 		}
 		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(collationname)) {
-			errorMessage.push('Collation name cannot contain special characters \/""[]:|<>+=;,?*@&, .');
+			errorMessages.push(localize('deployAzureSQLDB.DBCollationSpecialCharError', "Collation name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
 		}
 
-		this.wizard.showErrorMessage(errorMessage.join('\n'));
-		return errorMessage.join('\n');
+		this.wizard.showErrorMessage(errorMessages.join(EOL));
+		return errorMessages.join(EOL);
 	}
 
 	protected async databaseNameExists(dbName: string): Promise<boolean> {
@@ -233,6 +236,5 @@ export class DatabaseSettingsPage extends BasePage {
 
 		let nameArray = response.data.value.map((v: any) => { return v.name; });
 		return (nameArray.includes(dbName));
-
 	}
 }
