@@ -555,6 +555,8 @@ export interface ITreeView extends IDisposable {
 
 	title: string;
 
+	root: ITreeItem;
+
 	readonly visible: boolean;
 
 	readonly onDidExpandItem: Event<ITreeItem>;

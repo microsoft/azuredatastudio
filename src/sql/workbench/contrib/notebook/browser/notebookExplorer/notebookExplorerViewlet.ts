@@ -265,13 +265,22 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 				let filesToIncludeFiltered: string = '';
 				this.views.forEach(async (v) => {
 					const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
-					let items = await treeView?.dataProvider.getChildren();
+					let items = await treeView?.root.children;
 					items?.forEach(root => {
+						let contentFolder: URI;
 						this.updateViewletsState();
-						let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
-						query.folderQueries.push(folderToSearch);
-						filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-						this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
+						let rootFolder = isString(root.tooltip) ? root.tooltip : root.tooltip.value;
+						if (root.contextValue !== 'pinnedNotebook') {
+							contentFolder = (this.fileService.exists(URI.file(path.join(rootFolder, 'content')))) ? URI.file(path.join(rootFolder, 'content')) : URI.file(rootFolder);
+							let folderToSearch: IFolderQuery = { folder: contentFolder };
+							query.folderQueries.push(folderToSearch);
+							filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
+							this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
+						} else {
+							// let folderToSearch: IFileQuery = { type: , filePattern : rootFolder };
+							// query.folderQueries.push(folderToSearch);
+							// this.searchView.startSearch(query, null, rootFolder, false, this.searchWidget);
+						}
 					});
 				});
 			}
