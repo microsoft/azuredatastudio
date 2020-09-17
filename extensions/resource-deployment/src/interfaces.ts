@@ -71,6 +71,10 @@ export interface AzureSQLVMDeploymentProvider extends DeploymentProviderBase {
 	azureSQLVMWizard: AzureSQLVMWizardInfo;
 }
 
+export interface AzureSQLDBDeploymentProvider extends DeploymentProviderBase {
+	azureSQLDBWizard: AzureSQLDBWizardInfo;
+}
+
 export function instanceOfDialogDeploymentProvider(obj: any): obj is DialogDeploymentProvider {
 	return obj && 'dialog' in obj;
 }
@@ -103,12 +107,16 @@ export function instanceOfAzureSQLVMDeploymentProvider(obj: any): obj is AzureSQ
 	return obj && 'azureSQLVMWizard' in obj;
 }
 
+export function instanceOfAzureSQLDBDeploymentProvider(obj: any): obj is AzureSQLDBDeploymentProvider {
+	return obj && 'azureSQLDBWizard' in obj;
+}
+
 export interface DeploymentProviderBase {
 	requiredTools: ToolRequirementInfo[];
 	when: string;
 }
 
-export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider | AzureSQLVMDeploymentProvider;
+export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider | AzureSQLVMDeploymentProvider | AzureSQLDBDeploymentProvider;
 
 export interface BdcWizardInfo {
 	notebook: string | NotebookPathInfo;
@@ -145,6 +153,10 @@ export interface CommandBasedDialogInfo extends DialogInfoBase {
 }
 
 export interface AzureSQLVMWizardInfo {
+	notebook: string | NotebookPathInfo;
+}
+
+export interface AzureSQLDBWizardInfo {
 	notebook: string | NotebookPathInfo;
 }
 

@@ -13,7 +13,7 @@ import * as nls from 'vscode-nls';
 import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
-import { ResourceType, ResourceTypeOption, NotebookPathInfo, DeploymentProvider, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookWizardDeploymentProvider, NotebookInfo, instanceOfAzureSQLVMDeploymentProvider } from '../interfaces';
+import { ResourceType, ResourceTypeOption, NotebookPathInfo, DeploymentProvider, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookWizardDeploymentProvider, NotebookInfo, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider } from '../interfaces';
 import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
 import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
 
@@ -21,6 +21,7 @@ import { KubeService } from './kubeService';
 import { AzdataService } from './azdataService';
 import { NotebookWizard } from '../ui/notebookWizard/notebookWizard';
 import { DeployAzureSQLVMWizard } from '../ui/deployAzureSQLVMWizard/deployAzureSQLVMWizard';
+import { DeployAzureSQLDBWizard } from '../ui/deployAzureSQLDBWizard/deployAzureSQLDBWizard';
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
@@ -77,6 +78,9 @@ export class ResourceTypeService implements IResourceTypeService {
 			}
 			else if ('azureSQLVMWizard' in provider) {
 				this.updateNotebookPath(provider.azureSQLVMWizard, extensionPath);
+			}
+			else if ('azureSQLDBWizard' in provider) {
+				this.updateNotebookPath(provider.azureSQLDBWizard, extensionPath);
 			}
 		});
 	}
@@ -187,7 +191,8 @@ export class ResourceTypeService implements IResourceTypeService {
 					&& !instanceOfDownloadDeploymentProvider(provider)
 					&& !instanceOfWebPageDeploymentProvider(provider)
 					&& !instanceOfCommandDeploymentProvider(provider)
-					&& !instanceOfAzureSQLVMDeploymentProvider(provider)) {
+					&& !instanceOfAzureSQLVMDeploymentProvider(provider)
+					&& !instanceOfAzureSQLDBDeploymentProvider(provider)) {
 					errorMessages.push(`No deployment method defined for the provider, ${providerPositionInfo}`);
 				}
 
@@ -282,6 +287,9 @@ export class ResourceTypeService implements IResourceTypeService {
 			vscode.commands.executeCommand(provider.command);
 		} else if (instanceOfAzureSQLVMDeploymentProvider(provider)) {
 			const wizard = new DeployAzureSQLVMWizard(provider.azureSQLVMWizard, this.notebookService, this.toolsService);
+			wizard.open();
+		} else if (instanceOfAzureSQLDBDeploymentProvider(provider)) {
+			const wizard = new DeployAzureSQLDBWizard(provider.azureSQLDBWizard, this.notebookService, this.toolsService);
 			wizard.open();
 		}
 	}
