@@ -12,6 +12,7 @@ import { Command, OsDistribution, ToolStatus, ToolType } from '../../interfaces'
 import { apiService } from '../apiService';
 import { IPlatformService } from '../platformService';
 import { dependencyType, ToolBase } from './toolBase';
+import * as loc from '../../localizedConstants';
 
 const localize = nls.loadMessageBundle();
 export const AzdataToolName = 'azdata';
@@ -42,6 +43,15 @@ export class AzdataTool extends ToolBase {
 
 	get homePage(): string {
 		return 'https://docs.microsoft.com/sql/big-data-cluster/deploy-install-azdata';
+	}
+
+	public validateEula(): boolean {
+		if (apiService.azdataApi.isEulaAccepted()) {
+			return true;
+		} else {
+			this.setStatusDescription(loc.azdataEulaNotAccepted);
+			return false;
+		}
 	}
 
 	/* unused */
