@@ -71,7 +71,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	onkeydown(e) {
 		// use preventDefault() to avoid invoking the editor's select all
 		// select the active .
-		if (e.ctrlKey || e.metaKey && e.key === 'a') {
+		if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 			e.preventDefault();
 			document.execCommand('selectAll');
 		}
