@@ -108,7 +108,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	order: 1,
 	command: {
 		id: commands.OE_SCRIPT_AS_SELECT_COMMAND_ID,
-		title: localize('scriptKustoSelect', 'Take 10')
+		title: localize('scriptKustoSelect', "Take 10")
 	},
 	when: ContextKeyExpr.and(
 		ConnectionContextKey.Provider.isEqualTo('KUSTO'),
