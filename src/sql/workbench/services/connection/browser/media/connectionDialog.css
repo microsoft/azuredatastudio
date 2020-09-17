@@ -168,6 +168,7 @@
 	display: none !important;
 }
 
-.connection-dialog .tabbedPanel .tabList {
-	padding-left: 5px;
+.connection-dialog .tabbedPanel .tabList,
+.connection-dialog .tabbedPanel .tabBody {
+	padding-left: 10px;
 }
