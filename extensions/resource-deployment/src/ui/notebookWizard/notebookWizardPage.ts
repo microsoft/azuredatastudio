@@ -57,7 +57,7 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 		});
 	}
 
-	public onLeave(): void {
+	public async onLeave(): Promise<void> {
 		// The following callback registration clears previous navigation validators.
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
@@ -66,7 +66,7 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 
 	public async onEnter(): Promise<void> {
 		if (this.pageInfo.isSummaryPage) {
-			setModelValues(this.wizard.inputComponents, this.wizard.model);
+			await setModelValues(this.wizard.inputComponents, this.wizard.model);
 		}
 
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {

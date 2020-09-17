@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdataExt from 'azdata-ext';
+import * as fs from 'fs';
 import * as os from 'os';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
@@ -13,7 +14,6 @@ import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
 import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataHostname, azdataInstallKey, azdataReleaseJson, azdataUpdateKey, azdataUri, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
-import * as fs from 'fs';
 
 const enum AzdataDeployOption {
 	dontPrompt = 'dontPrompt',
@@ -24,9 +24,6 @@ const enum AzdataDeployOption {
  * Interface for an object to interact with the azdata tool installed on the box.
  */
 export interface IAzdataTool extends azdataExt.IAzdataApi {
-	path: string,
-	cachedVersion: SemVer
-
 	/**
 	 * Executes azdata with the specified arguments (e.g. --version) and returns the result
 	 * @param args The args to pass to azdata
@@ -39,9 +36,26 @@ export interface IAzdataTool extends azdataExt.IAzdataApi {
  * An object to interact with the azdata tool installed on the box.
  */
 export class AzdataTool implements IAzdataTool {
-	public cachedVersion: SemVer;
-	constructor(public path: string, version: string) {
-		this.cachedVersion = new SemVer(version);
+
+	private _semVersion: SemVer;
+	constructor(private _path: string, version: string) {
+		this._semVersion = new SemVer(version);
+	}
+
+	/**
+	 * The semVersion corresponding to this installation of azdata. version() method should have been run
+	 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
+	 * Azdata has gotten reinstalled in the background after this IAzdataApi object was constructed.
+	 */
+	public getSemVersion() {
+		return this._semVersion;
+	}
+
+	/**
+	 * gets the path where azdata tool is installed
+	 */
+	public getPath() {
+		return this._path;
 	}
 
 	public arc = {
@@ -110,8 +124,8 @@ export class AzdataTool implements IAzdataTool {
 	 * It also updates the cachedVersion property based on the return value from the tool.
 	 */
 	public async version(): Promise<azdataExt.AzdataOutput<string>> {
-		const output = await executeAzdataCommand(`"${this.path}"`, ['--version']);
-		this.cachedVersion = new SemVer(parseVersion(output.stdout));
+		const output = await executeAzdataCommand(`"${this._path}"`, ['--version']);
+		this._semVersion = new SemVer(parseVersion(output.stdout));
 		return {
 			logs: [],
 			stdout: output.stdout.split(os.EOL),
@@ -122,7 +136,7 @@ export class AzdataTool implements IAzdataTool {
 
 	public async executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>> {
 		try {
-			const output = JSON.parse((await executeAzdataCommand(`"${this.path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
+			const output = JSON.parse((await executeAzdataCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
 			return {
 				logs: <string[]>output.log,
 				stdout: <string[]>output.stdout,
@@ -136,12 +150,12 @@ export class AzdataTool implements IAzdataTool {
 					// to get the correct stderr out. The actual value we get is something like
 					// ERROR: { stderr: '...' }
 					// so we also need to trim off the start that isn't a valid JSON blob
-					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'))).stderr;
+					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'), err.stderr.indexOf('}') + 1)).stderr;
 				} catch (err) {
 					// it means this was probably some other generic error (such as command not being found)
 					// check if azdata still exists if it does then rethrow the original error if not then emit a new specific error.
 					try {
-						await fs.promises.access(this.path);
+						await fs.promises.access(this._path);
 						//this.path exists
 						throw err; // rethrow the error
 					} catch (e) {
@@ -176,7 +190,7 @@ export async function findAzdata(): Promise<IAzdataTool> {
 	try {
 		const azdata = await findSpecificAzdata();
 		await vscode.commands.executeCommand('setContext', azdataFound, true); // save a context key that azdata was found so that command for installing azdata is no longer available in commandPalette and that for updating it is.
-		Logger.log(loc.foundExistingAzdata(azdata.path, azdata.cachedVersion.raw));
+		Logger.log(loc.foundExistingAzdata(azdata.getPath(), azdata.getSemVersion().raw));
 		return azdata;
 	} catch (err) {
 		Logger.log(loc.couldNotFindAzdata(err));
@@ -262,12 +276,12 @@ export async function checkAndInstallAzdata(userRequested: boolean = false): Pro
  */
 export async function checkAndUpdateAzdata(currentAzdata?: IAzdataTool, userRequested: boolean = false): Promise<boolean> {
 	if (currentAzdata !== undefined) {
-		const newVersion = await discoverLatestAvailableAzdataVersion();
-		if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
-			Logger.log(loc.foundAzdataVersionToUpdateTo(newVersion.raw, currentAzdata.cachedVersion.raw));
-			return await promptToUpdateAzdata(newVersion.raw, userRequested);
+		const newSemVersion = await discoverLatestAvailableAzdataVersion();
+		if (newSemVersion.compare(currentAzdata.getSemVersion()) === 1) {
+			Logger.log(loc.foundAzdataVersionToUpdateTo(newSemVersion.raw, currentAzdata.getSemVersion().raw));
+			return await promptToUpdateAzdata(newSemVersion.raw, userRequested);
 		} else {
-			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.cachedVersion.raw));
+			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.getSemVersion().raw));
 		}
 	} else {
 		Logger.log(loc.updateCheckSkipped);

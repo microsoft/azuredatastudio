@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 declare module 'azdata-ext' {
+	import { SemVer } from 'semver';
+
 	/**
 	 * Covers defining what the azdata extension exports to other extensions
 	 *
@@ -80,7 +82,7 @@ declare module 'azdata-ext' {
 					location: string, // "eastus2euap",
 					resourceGroup: string, // "my-rg",
 					subscription: string, // "a5082b29-8c6e-4bc5-8ddd-8ef39dfebc39"
-				  },
+				},
 				controller: {
 					'enableBilling': string, // "True"
 					'logs.rotation.days': string, // "7"
@@ -224,12 +226,20 @@ declare module 'azdata-ext' {
 					show(name: string): Promise<AzdataOutput<SqlMiShowResult>>
 				}
 			}
-		}
+		},
+		getPath(): string,
 		login(endpoint: string, username: string, password: string): Promise<AzdataOutput<any>>,
+		/**
+		 * The semVersion corresponding to this installation of azdata. version() method should have been run
+		 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
+		 * Azdata has gotten reinstalled in the background after this IAzdataApi object was constructed.
+		 */
+		getSemVersion(): SemVer,
 		version(): Promise<AzdataOutput<string>>
 	}
 
 	export interface IExtension {
 		azdata: IAzdataApi;
+		isEulaAccepted(): boolean;
 	}
 }

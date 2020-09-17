@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { OptionsSourceType } from './helpers/optionSources';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 
@@ -171,9 +172,18 @@ export type ComponentCSSStyles = {
 	[key: string]: string;
 };
 
+export interface IOptionsSource {
+	readonly type: OptionsSourceType,
+	readonly variableNames: { [index: string]: string; },
+	getOptions(): Promise<string[] | azdata.CategoryValue[]>,
+	getVariableValue(variableName: string, input: string): Promise<string>;
+	getIsPassword(variableName: string): boolean;
+}
+
 
 export interface OptionsInfo {
-	values: string[] | azdata.CategoryValue[],
+	values?: string[] | azdata.CategoryValue[],
+	source?: IOptionsSource,
 	defaultValue: string,
 	optionsType?: OptionsType
 }
@@ -363,6 +373,7 @@ export interface ITool {
 	finishInitialization(): Promise<void>;
 	install(): Promise<void>;
 	isSameOrNewerThan(version: string): boolean;
+	validateEula(): boolean;
 }
 
 export const enum BdcDeploymentType {
