@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import { SemVer } from 'semver';
 import * as should from 'should';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
@@ -12,10 +11,10 @@ import * as azdata from '../azdata';
 import * as childProcess from '../common/childProcess';
 import { HttpClient } from '../common/httpClient';
 import * as utils from '../common/utils';
-import * as loc from '../localizedConstants';
 import * as constants from '../constants';
+import * as loc from '../localizedConstants';
 
-const oldAzdataMock = <azdata.AzdataTool>{ path: '/path/to/azdata', cachedVersion: new SemVer('0.0.0') };
+const oldAzdataMock = new azdata.AzdataTool('/path/to/azdata', '0.0.0');
 const releaseJson = {
 	win32: {
 		'version': '9999.999.999',
