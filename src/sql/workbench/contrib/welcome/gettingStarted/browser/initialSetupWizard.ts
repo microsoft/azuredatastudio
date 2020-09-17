@@ -34,7 +34,7 @@ interface InitialSetupWizardData {
 	subHeader: string;
 	body: string;
 	docs?: string;
-	step: string;
+	// step: string;
 	elmClass: string;
 	id: string;
 	btnId: string;
@@ -54,31 +54,34 @@ const initialSetupWizardData: InitialSetupWizardData[] = [
 		subHeader: localize('initialSetupWizard.subheaderPreviewFeatures', "Opt in to use preview features"),
 		body: localize('initialSetupWizard.previewFeaturesBody', "Azure Data Studio releases continuously. To access new features and user experiences as soon as they’re released, we recommend that you opt in. "),
 		docs: 'https://aka.ms/ads-preview-features',
-		step: localize('initialSetupWizard.one', "1"),
+		// step: localize('initialSetupWizard.one', "1"),
 		elmClass: 'ads-initial-setup-wizard-preview-features',
 		id: 'ads-initial-setup-wizard-preview-features',
 		btnId: 'ads-initial-setup-wizard-preview-features-btn',
-		btnText: localize('initialSetupWizard.next', "Next"),
+		btnText: localize('initialSetupWizard.done', "Done"),
 		popupImage: './../../gettingStarted/media/enablePreviewFeatures.svg',
 		interaction: 'checkbox',
 		interactionLabel: 'Opt in (recommended)',
 		name: 'previewFeatures'
-	},
-	{
-		key: 'azure_account',
-		order: '2',
-		header: localize('initialSetupWizard.setupHeader', "Azure Data Studio Setup"),
-		subHeader: localize('initialSetupWizard.subheaderAzureAccount', "Sign into your Azure Account (optional)"),
-		body: localize('initialSetupWizard.azureAccountBody', "Azure Data Studio is a multi-database tool with built-in support for both on-premises and cloud data platforms. You can optionally add an Azure account to seamlessly browse, connect to, and query your Azure SQL resources in Azure Data Studio. Feel free to complete this step later. "),
-		step: localize('initialSetupWizard.two', "2"),
-		elmClass: 'ads-initial-setup-wizard-azure-account',
-		id: 'ads-initial-setup-wizard-azure-account',
-		btnId: 'ads-initial-setup-wizard-done-btn',
-		btnText: localize('initialSetupWizard.done', "Done"),
-		popupImage: './../../gettingStarted/media/addAzureAccount.svg',
-		interaction: 'button',
-		interactionLabel: 'Add account',
 	}
+	/**
+	 * This is for later use after the login into azure account feature has been added
+	 */
+	// {
+	// 	key: 'azure_account',
+	// 	order: '2',
+	// 	header: localize('initialSetupWizard.setupHeader', "Azure Data Studio Setup"),
+	// 	subHeader: localize('initialSetupWizard.subheaderAzureAccount', "Sign into your Azure Account (optional)"),
+	// 	body: localize('initialSetupWizard.azureAccountBody', "Azure Data Studio is a multi-database tool with built-in support for both on-premises and cloud data platforms. You can optionally add an Azure account to seamlessly browse, connect to, and query your Azure SQL resources in Azure Data Studio. Feel free to complete this step later. "),
+	// 	step: localize('initialSetupWizard.two', "2"),
+	// 	elmClass: 'ads-initial-setup-wizard-azure-account',
+	// 	id: 'ads-initial-setup-wizard-azure-account',
+	// 	btnId: 'ads-initial-setup-wizard-done-btn',
+	// 	btnText: localize('initialSetupWizard.done', "Done"),
+	// 	popupImage: './../../gettingStarted/media/addAzureAccount.svg',
+	// 	interaction: 'button',
+	// 	interactionLabel: 'Add account',
+	// }
 ];
 
 const IS_OVERLAY_VISIBLE = new RawContextKey<boolean>('interfaceOverviewVisible', false);
@@ -159,7 +162,7 @@ export class GettingStartedSetupWizard implements IWorkbenchContribution {
 			}
 		});
 
-		initialSetupWizardData.forEach(({ order, header, subHeader, body, docs, step, elmClass, id, btnText, popupImage, interaction, interactionLabel, name }, i): void => {
+		initialSetupWizardData.forEach(({ order, header, subHeader, body, docs, elmClass, id, btnText, popupImage, interaction, interactionLabel, name }, i): void => {
 			const flexClasses: string[] = ['flex', 'column'];
 			const gif: string = require.toUrl(popupImage);
 
@@ -194,9 +197,9 @@ export class GettingStartedSetupWizard implements IWorkbenchContribution {
 			const hrTag: HTMLHRElement = document.createElement('hr');
 			hrTag.classList.add('ads-initial-setup-wizard-hr');
 
-			const stepText: HTMLParagraphElement = document.createElement('p');
-			stepText.classList.add('ads-initial-setup-wizard-step');
-			stepText.innerText = `${step} of ${initialSetupWizardData.length}`;
+			// const stepText: HTMLParagraphElement = document.createElement('p');
+			// stepText.classList.add('ads-initial-setup-wizard-step');
+			// stepText.innerText = `${step} of ${initialSetupWizardData.length}`;
 
 
 			const contentContainer: HTMLDivElement = document.createElement('div');
@@ -212,7 +215,7 @@ export class GettingStartedSetupWizard implements IWorkbenchContribution {
 
 			flexContainer.appendChild(img);
 			flexContainer.appendChild(contentContainer);
-			navContainer.appendChild(stepText);
+			// navContainer.appendChild(stepText);
 			textContainer.appendChild(headerTag);
 			textContainer.appendChild(subHeaderTag);
 			textContainer.appendChild(bodyTag);
