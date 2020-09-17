@@ -18,7 +18,7 @@ export abstract class BasePage extends WizardPageBase<DeployAzureSQLDBWizard> {
 		return '';
 	}
 
-	protected activateRealTimeFormValidation() {
+	protected activateRealTimeFormValidation(): void {
 		if (this.liveValidation) {
 			this.validatePage();
 		}

@@ -92,7 +92,7 @@ export class DatabaseSettingsPage extends BasePage {
 		});
 	}
 
-	public onLeave(): void {
+	public async onLeave(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});

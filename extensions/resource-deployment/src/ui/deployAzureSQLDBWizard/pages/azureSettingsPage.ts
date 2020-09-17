@@ -118,7 +118,7 @@ export class AzureSettingsPage extends BasePage {
 		});
 	}
 
-	public onLeave(): void {
+	public async onLeave(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
@@ -208,7 +208,7 @@ export class AzureSettingsPage extends BasePage {
 
 	private async populateAzureSubscriptionsDropdown() {
 		this._azureSubscriptionsDropdown.loading = true;
-		let subService = await apiService.getAzurecoreApi();
+		let subService = await apiService.azurecoreApi;
 		let currentAccountDropdownValue = (this._azureAccountsDropdown.value as azdata.CategoryValue);
 		if (currentAccountDropdownValue === undefined) {
 			this._azureSubscriptionsDropdown.loading = false;
@@ -231,11 +231,11 @@ export class AzureSettingsPage extends BasePage {
 			//await this.populateAzureRegionsDropdown();
 			return;
 		}
-		subscriptions.sort((a, b) => a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()));
+		subscriptions.sort((a: any, b: any) => a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()));
 
 		this.wizard.addDropdownValues(
 			this._azureSubscriptionsDropdown,
-			subscriptions.map((subscription): azdata.CategoryValue => {
+			subscriptions.map((subscription: any): azdata.CategoryValue => {
 				let subscriptionCategoryValue = {
 					displayName: subscription.name + ' - ' + subscription.id,
 					name: subscription.id
@@ -336,7 +336,7 @@ export class AzureSettingsPage extends BasePage {
 
 	// private async populateResourceGroupDropdown() {
 	// 	this._resourceGroupDropdown.loading = true;
-	// 	let subService = await apiService.getAzurecoreApi();
+	// 	let subService = await apiService.azurecoreApi;
 	// 	let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
 	// 	if (currentSubscriptionValue === undefined || currentSubscriptionValue.displayName === '') {
 
@@ -358,9 +358,9 @@ export class AzureSettingsPage extends BasePage {
 	// 		return;
 	// 	}
 
-	// 	resourceGroups.sort((a, b) => a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()));
+	// 	resourceGroups.sort((a: any, b: any) => a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()));
 	// 	this._resourceGroupDropdown.updateProperties({
-	// 		values: resourceGroups.map((resourceGroup) => {
+	// 		values: resourceGroups.map((resourceGroup: any) => {
 	// 			return {
 	// 				displayName: resourceGroup.name,
 	// 				name: resourceGroup.name
@@ -456,7 +456,7 @@ export class AzureSettingsPage extends BasePage {
 			this._dbSupportedServersDropdown.loading = false;
 			return;
 		} else {
-			response.data.supportedServerVersions.sort((a: azdata.CategoryValue, b: azdata.CategoryValue) => (a!.name > b!.name) ? 1 : -1);
+			response.data.supportedServerVersions.sort((a: any, b: any) => (a!.name > b!.name) ? 1 : -1);
 		}
 		this.wizard.addDropdownValues(
 			this._dbSupportedServersDropdown,
