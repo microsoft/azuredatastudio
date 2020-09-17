@@ -482,7 +482,7 @@ export class Project {
 				parent.removeChild(nodes[i]);
 
 				// delete ItemGroup if this was the only entry
-				if (nodes.length === 0) {
+				if (parent.childNodes.length === 0) {
 					parent.parentNode.removeChild(parent);
 				}
 
