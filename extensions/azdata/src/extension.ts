@@ -153,32 +153,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 	};
 }
 
-
-export class NoAzdataEulaError extends Error {
-	constructor() {
-		super(loc.eulaNotAccepted);
-	}
-
-}
-
-export class NoAzdataError extends Error {
-	constructor() {
-		super(loc.noAzdata);
-	}
-}
-
 function throwIfNoAzdataOrEulaNotAccepted(): void {
 	throwIfNoAzdata();
 	if (!eulaAccepted) {
 		Logger.log(loc.eulaNotAccepted);
-		throw new NoAzdataEulaError();
+		throw new Error(loc.eulaNotAccepted);
 	}
 }
 
 function throwIfNoAzdata() {
 	if (!localAzdata) {
 		Logger.log(loc.noAzdata);
-		throw new NoAzdataError();
+		throw new Error(loc.noAzdata);
 	}
 }
 
