@@ -76,6 +76,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			document.execCommand('selectAll');
 		}
 		if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+			e.preventDefault();
 			document.execCommand('undo');
 		}
 	}
