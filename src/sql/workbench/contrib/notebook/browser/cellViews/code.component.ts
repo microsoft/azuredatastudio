@@ -192,21 +192,32 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public selectCell() {
-		// Cell needs to be selected twice sometimes for edit state to be correct
+		// When navigating to a code-cell while Editing a text-cell, state of the code cell is changed to non-edit mode
+		// To fix this we must select cell twice
+		// Once to go into selected mode, and once to go into edit-mode
+		// We cannot do this from notebook.component as we can't differentiate between a toolbar click and a cell click
 		for (let count = 0; count < 2; count++) {
-			this._model.activeCell.isEditMode = true;
-			let editorControl = this._editor.getControl() as CodeEditorWidget;
+			if (this._model.activeCell) {
+				this._model.activeCell.isEditMode = true;
+				let editorControl = this._editor.getControl() as CodeEditorWidget;
 
-			editorControl.focus();
-			this._model.updateActiveCell(this._cellModel);
+				editorControl.focus();
+				this._model.updateActiveCell(this._cellModel);
+			}
 			this.detectChanges();
 		}
 	}
 
 	public selectBox() {
+		if (this._model.activeCell) {
+			this._model.activeCell.isEditMode = false;
+			let editorControl = this._editor.getControl() as CodeEditorWidget;
+			editorControl.unfocus();
+		}
+		this._model.updateActiveCell(this._cellModel);
+
 		this._model.activeCell.isEditMode = false;
-		let editorControl = this._editor.getControl() as CodeEditorWidget;
-		editorControl.unfocus();
+		this.detectChanges();
 	}
 
 	private detectChanges(): void {

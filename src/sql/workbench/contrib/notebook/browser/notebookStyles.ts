@@ -8,7 +8,7 @@ import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/
 import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
-import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, cellEditorLineHighlight, cellSelectedBackground, cellEditModeBackground, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder, notebookToolbarSelectBackground, splitBorder, textCellBackground } from 'sql/platform/theme/common/colorRegistry'; import { IDisposable } from 'vs/base/common/lifecycle';
+import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, cellEditorLineHighlight, cellSelectedBackground, cellEditModeBackground, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder, notebookToolbarSelectBackground, splitBorder, textCellBackground, codeCellBackground } from 'sql/platform/theme/common/colorRegistry'; import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import { getZoomLevel } from 'vs/base/browser/browser';
@@ -217,15 +217,16 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		// Cell background when at rest, selected and in edit mode
 		// Rest
 		const textCellBackgroundColor = theme.getColor(textCellBackground);
+		const codeCellBackgroundColor = theme.getColor(codeCellBackground);
 		if (textCellBackgroundColor) {
-			collector.addRule(`.notebook-cell code-cell-component > div { background-color: ${textCellBackgroundColor}; }`);
-			// collector.addRule(`.notebook-cell text-cell-component .notebook-text { background-color: ${cellBackgroundColor}; }`);
+			collector.addRule(`.notebook-cell code-cell-component > div { background-color: ${codeCellBackgroundColor}; }`);
+			collector.addRule(`.notebook-cell text-cell-component .notebook-text { background-color: ${textCellBackgroundColor}; }`);
 		}
 		// Selected
 		const cellSelectedBackgroundColor = theme.getColor(cellSelectedBackground);
 		if (cellSelectedBackgroundColor) {
 			collector.addRule(`.notebook-cell.active code-cell-component > div { background-color: ${cellSelectedBackgroundColor}; }`);
-			// collector.addRule(`.notebook-cell.active text-cell-component .notebook-text { background-color: ${cellSelectedBackgroundColor}; }`);
+			collector.addRule(`.notebook-cell.active text-cell-component .notebook-text { background-color: transparent; }`);
 		}
 		// Edit-mode
 		const cellEditModeBackgroundColor = theme.getColor(cellEditModeBackground);
@@ -250,7 +251,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		}
 		const codeEditorToolbarBorderColor = theme.getColor(codeEditorToolbarBorder);
 		if (codeEditorToolbarBorderColor) {
-			collector.addRule(`.notebook-cell.active code-cell-component code-component .toolbar { border-right-color: ${codeEditorToolbarBorderColor}!important;}`);
+			collector.addRule(`.notebook-cell.active code-cell-component code-component .toolbar { border-right-color: transparent !important;}`);
 		}
 	});
 }
