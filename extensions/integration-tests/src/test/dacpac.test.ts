@@ -69,7 +69,7 @@ suite('Dacpac integration test suite', () => {
 	});
 
 	const bacpac1: string = path.join(__dirname, '..', '..', 'testData', 'Database1.bacpac');
-	test('Import and export bacpac', async function () {
+	test('Import and export bacpac @UNSTABLE@', async function () {
 		const server = await getStandaloneServer();
 		await utils.connectToServer(server);
 
