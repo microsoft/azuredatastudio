@@ -13,6 +13,6 @@ import { TreeNode } from './treeNode';
 export class NoInstancesTreeNode extends TreeNode {
 
 	constructor() {
-		super(loc.noInstancesAvailable, vscode.TreeItemCollapsibleState.None, 'noInstances');
+		super(loc.noInstancesAvailable, vscode.TreeItemCollapsibleState.None, '');
 	}
 }
