@@ -35,8 +35,11 @@ export class AzureSettingsPage extends BasePage {
 	// //dropdown for azure regions <- subscription dropdown //@todo alma1 9/8/2020 Region dropdown used for upcoming server creation feature.
 	// private _azureRegionsDropdown!: azdata.DropDownComponent;
 
-	//dropdown for available hardware configurations <- server dropdown from Azure page.
+	//dropdown for Supported Server Versions <- server dropdown.
 	private _dbSupportedServersDropdown!: azdata.DropDownComponent;
+
+	//dropdown for Supported Managed Instance Editions <- server dropdown.
+	private _dbSupportedEditionsDropdown!: azdata.DropDownComponent;
 
 	private _form!: azdata.FormContainer;
 
