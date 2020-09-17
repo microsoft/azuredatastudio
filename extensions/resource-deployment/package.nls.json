@@ -46,5 +46,8 @@
 	"bdc-agreement-azdata-eula": "azdata License Terms",
 	"bdc-agreement-bdc-eula": "SQL Server License Terms",
 	"deployment.configuration.title": "Deployment configuration",
-	"azdata-install-location-description": "Location of the azdata package used for the install command"
+	"azdata-install-location-description": "Location of the azdata package used for the install command",
+	"azure-sql-displayName":"Azure SQL",
+	"azure-sql-description":"Create a SQL Database, SQL Virtual Machine, or SQL Managed Instance by going to the Azure portal",
+	"azure-sql-ok-button-text": "Create in Azure portal"
 }
