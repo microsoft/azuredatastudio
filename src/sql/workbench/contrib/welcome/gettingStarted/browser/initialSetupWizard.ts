@@ -34,6 +34,9 @@ interface InitialSetupWizardData {
 	subHeader: string;
 	body: string;
 	docs?: string;
+	/**
+	 * This is for later use after the login into azure account feature has been added
+	*/
 	// step: string;
 	elmClass: string;
 	id: string;
@@ -54,6 +57,9 @@ const initialSetupWizardData: InitialSetupWizardData[] = [
 		subHeader: localize('initialSetupWizard.subheaderPreviewFeatures', "Opt in to use preview features"),
 		body: localize('initialSetupWizard.previewFeaturesBody', "Azure Data Studio releases continuously. To access new features and user experiences as soon as they’re released, we recommend that you opt in. "),
 		docs: 'https://aka.ms/ads-preview-features',
+		/**
+		 * This is for later use after the login into azure account feature has been added
+		 */
 		// step: localize('initialSetupWizard.one', "1"),
 		elmClass: 'ads-initial-setup-wizard-preview-features',
 		id: 'ads-initial-setup-wizard-preview-features',
@@ -197,6 +203,10 @@ export class GettingStartedSetupWizard implements IWorkbenchContribution {
 			const hrTag: HTMLHRElement = document.createElement('hr');
 			hrTag.classList.add('ads-initial-setup-wizard-hr');
 
+			/**
+				 * This is for later use after the login into azure account feature has been added
+				 */
+
 			// const stepText: HTMLParagraphElement = document.createElement('p');
 			// stepText.classList.add('ads-initial-setup-wizard-step');
 			// stepText.innerText = `${step} of ${initialSetupWizardData.length}`;
@@ -215,6 +225,10 @@ export class GettingStartedSetupWizard implements IWorkbenchContribution {
 
 			flexContainer.appendChild(img);
 			flexContainer.appendChild(contentContainer);
+			/**
+				 * This is for later use after the login into azure account feature has been added
+				 */
+
 			// navContainer.appendChild(stepText);
 			textContainer.appendChild(headerTag);
 			textContainer.appendChild(subHeaderTag);
