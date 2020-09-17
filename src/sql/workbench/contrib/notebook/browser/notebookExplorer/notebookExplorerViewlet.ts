@@ -302,7 +302,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 				let allViews = containerModel.allViewDescriptors;
 				allViews.forEach(v => {
 					let view = this.getView(v.id);
-					if (view !== this.searchView) {
+					if (view && view !== this.searchView) {
 						view.setExpanded(false);
 					}
 				});
