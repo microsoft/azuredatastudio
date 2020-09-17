@@ -547,20 +547,7 @@
             ],
             "when": true
           }
-        ],
-        "agreement": {
-          "template": "%arc.control.plane.arc.data.controller.agreement%",
-          "links": [
-            {
-              "text": "%microsoft.agreement.privacy.statement%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
-            },
-            {
-              "text": "%arc.agreement.azdata.eula%",
-              "url": "https://aka.ms/eula-azdata-en"
-            }
-          ]
-        }
+        ]
       },
       {
         "name": "arc.sql",
@@ -571,18 +558,6 @@
           "light": "./images/miaa.svg",
           "dark": "./images/miaa.svg"
         },
-        "options": [
-          {
-            "name": "resourceType",
-            "displayName": "%resource.type.picker.display.name%",
-            "values": [
-              {
-                "name": "sql.managed.instance",
-                "displayName": "%sql.managed.instance.display.name%"
-              }
-            ]
-          }
-        ],
         "providers": [
           {
             "dialog": {
@@ -672,7 +647,7 @@
                 "version": "20.1.0"
               }
             ],
-            "when": "resourceType=sql.managed.instance"
+            "when": "true"
           }
         ],
         "agreement": {
@@ -685,10 +660,6 @@
             {
               "text": "%arc.agreement.sql.terms.conditions%",
               "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
-            },
-            {
-              "text": "%arc.agreement.azdata.eula%",
-              "url": "https://aka.ms/eula-azdata-en"
             }
           ]
         }
@@ -702,18 +673,6 @@
           "light": "./images/postgres.svg",
           "dark": "./images/postgres.svg"
         },
-        "options": [
-          {
-            "name": "resourceType",
-            "displayName": "%resource.type.picker.display.name%",
-            "values": [
-              {
-                "name": "postgres",
-                "displayName": "%postgres.server.group.display.name%"
-              }
-            ]
-          }
-        ],
         "providers": [
           {
             "dialog": {
@@ -848,7 +807,7 @@
                 "version": "20.1.0"
               }
             ],
-            "when": "resourceType=postgres"
+            "when": "true"
           }
         ],
         "agreement": {
@@ -861,10 +820,6 @@
             {
               "text": "%arc.agreement.postgres.terms.conditions%",
               "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
-            },
-            {
-              "text": "%arc.agreement.azdata.eula%",
-              "url": "https://aka.ms/eula-azdata-en"
             }
           ]
         }

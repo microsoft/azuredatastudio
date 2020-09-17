@@ -373,6 +373,7 @@ export interface ITool {
 	finishInitialization(): Promise<void>;
 	install(): Promise<void>;
 	isSameOrNewerThan(version: string): boolean;
+	validateEula(): boolean;
 }
 
 export const enum BdcDeploymentType {

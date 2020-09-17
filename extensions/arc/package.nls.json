@@ -65,7 +65,6 @@
 	"arc.control.plane.summary.location": "Location",
 	"arc.control.plane.arc.data.controller.agreement": "I accept {0} and {1}.",
 	"microsoft.agreement.privacy.statement":"Microsoft Privacy Statement",
-	"arc.agreement.azdata.eula":"azdata license terms",
 	"deploy.arc.control.plane.action":"Script to notebook",
 
 
@@ -73,11 +72,8 @@
 	"resource.type.arc.postgres.display.name": "PostgreSQL server groups - Azure Arc (preview)",
 	"resource.type.arc.sql.description": "Managed SQL Instance service for app developers in a customer-managed environment",
 	"resource.type.arc.postgres.description": "Deploy PostgreSQL server groups into an Azure Arc environment",
-	"resource.type.picker.display.name": "Resource Type",
-	"sql.managed.instance.display.name": "Azure SQL managed instance - Azure Arc",
-	"postgres.server.group.display.name": "PostgreSQL server groups - Azure Arc",
-
 	"arc.controller": "Target Azure Arc Controller",
+
 
 	"arc.sql.new.dialog.title": "Deploy Azure SQL managed instance - Azure Arc (preview)",
 	"arc.sql.settings.section.title": "SQL Connection information",
@@ -111,7 +107,7 @@
 	"arc.postgres.server.group.cores.limit": "Max CPU cores (per node) to allow",
 	"arc.postgres.server.group.memory.request": "Min memory MB (per node) to reserve",
 	"arc.postgres.server.group.memory.limit": "Max memory MB (per node) to allow",
-	"arc.agreement": "I accept {0}, {1} and {2}.",
+	"arc.agreement": "I accept {0} and {1}.",
 	"arc.agreement.sql.terms.conditions":"Azure SQL managed instance - Azure Arc terms and conditions",
 	"arc.agreement.postgres.terms.conditions":"PostgreSQL server groups - Azure Arc terms and conditions",
 	"arc.deploy.action":"Deploy"
