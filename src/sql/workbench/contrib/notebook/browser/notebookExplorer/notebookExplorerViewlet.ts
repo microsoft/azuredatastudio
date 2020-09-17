@@ -266,12 +266,12 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 				this.views.forEach(async (v) => {
 					const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
 					let items = await treeView?.root.children;
-					items?.forEach(root => {
+					items?.forEach(async root => {
 						let contentFolder: URI;
 						this.updateViewletsState();
 						let rootFolder = isString(root.tooltip) ? root.tooltip : root.tooltip.value;
 						if (root.contextValue !== 'pinnedNotebook') {
-							contentFolder = (this.fileService.exists(URI.file(path.join(rootFolder, 'content')))) ? URI.file(path.join(rootFolder, 'content')) : URI.file(rootFolder);
+							contentFolder = (await this.fileService.exists(URI.file(path.join(rootFolder, 'content')))) ? URI.file(path.join(rootFolder, 'content')) : URI.file(rootFolder);
 							let folderToSearch: IFolderQuery = { folder: contentFolder };
 							query.folderQueries.push(folderToSearch);
 							filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
