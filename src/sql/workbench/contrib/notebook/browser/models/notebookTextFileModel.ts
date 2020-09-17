@@ -233,15 +233,36 @@ export class NotebookTextFileModel {
 			return undefined;
 		}
 		let cellGuidMatches = findOrSetCellGuidMatch(textEditorModel, cellGuid);
-		if (cellGuidMatches && cellGuidMatches.length > 0) {
-			let lineForSourceEnd = cellGuidMatches[0].range.startLineNumber - 3;
-			let lastCharacterPosition = textEditorModel.textEditorModel.getLineLength(lineForSourceEnd);
-			return {
-				startColumn: lastCharacterPosition,
-				startLineNumber: lineForSourceEnd,
-				endLineNumber: lineForSourceEnd,
-				endColumn: lastCharacterPosition
-			};
+		if (cellGuidMatches?.length > 0) {
+			if (!this._sourceBeginRange) {
+				this.updateSourceBeginRange(textEditorModel, cellGuid);
+			}
+			// Source begin range tracks where the first " in exists.
+			// The line before that will always include '"source": ['
+			let sourceBeforeLineNumber = this._sourceBeginRange?.startLineNumber - 1;
+			if (sourceBeforeLineNumber) {
+				// The 2nd to last column (ie before newline) is guaranteed to be [
+				let sourceBeforeColumn = textEditorModel.textEditorModel.getLineMaxColumn(sourceBeforeLineNumber);
+				if (sourceBeforeColumn) {
+					// Match the end of the source array
+					let sourceEnd = textEditorModel.textEditorModel.matchBracket({ column: sourceBeforeColumn - 1, lineNumber: sourceBeforeLineNumber });
+					if (sourceEnd?.length === 2) {
+						// Last quote in the source array will end the line before the source array
+						// e.g.
+						// "source": [
+						//	   "SELECT 12" <-- Looking for this " position
+						// ],
+						let lineForSourceEnd = sourceEnd[1].endLineNumber - 1;
+						let lastCharacterPosition = textEditorModel.textEditorModel.getLineLength(lineForSourceEnd);
+						return {
+							startColumn: lastCharacterPosition,
+							startLineNumber: lineForSourceEnd,
+							endLineNumber: lineForSourceEnd,
+							endColumn: lastCharacterPosition
+						};
+					}
+				}
+			}
 		}
 		return undefined;
 	}
