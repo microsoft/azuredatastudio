@@ -6,6 +6,7 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolStatus } from '../interfaces';
+import { select } from '../localizedConstants';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { getErrorMessage } from '../utils';
@@ -183,12 +184,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private selectResourceType(resourceType: ResourceType): void {
 		this._selectedResourceType = resourceType;
 		//handle special case when resource type has different OK button.
-		if (this._selectedResourceType.okButtonText) {
-			this._dialogObject.okButton.label = this._selectedResourceType.okButtonText;
-		}
-		else {
-			this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Select");
-		}
+		this._dialogObject.okButton.label = this._selectedResourceType.okButtonText || select;
 
 		this._agreementCheckboxChecked = false;
 		this._agreementContainer.clearItems();
