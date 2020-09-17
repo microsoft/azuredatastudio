@@ -263,13 +263,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
 			if (this.model.activeCell && this.model.activeCell.cellType === 'code') {
 				let cellEditorProvider = this.cellEditors.find(e => e.cellGuid() === this._model.activeCell.cellGuid);
-				let is_selected = false;
 				let editorControl: CodeEditorWidget;
 				if (cellEditorProvider) {
 					let editor = cellEditorProvider.getEditor() as QueryTextEditor;
 					if (editor) {
 						editorControl = editor.getControl() as CodeEditorWidget;
-						is_selected = editorControl.hasTextFocus();
 					}
 					editorControl.unfocus();
 				}
