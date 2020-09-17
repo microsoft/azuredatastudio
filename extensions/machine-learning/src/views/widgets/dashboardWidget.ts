@@ -533,7 +533,3 @@ export class DashboardWidget {
 		return view.modelBuilder.divContainer().withItems([buttonContainer]).component();
 	}
 }
-
-
-// Title - Primary OPAC: #323130
-// Decsr - secondary OPAC: #605E5C

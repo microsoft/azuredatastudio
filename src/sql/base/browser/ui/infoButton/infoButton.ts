@@ -8,9 +8,6 @@ import { Button as sqlButton } from 'sql/base/browser/ui/button/button';
 import * as DOM from 'vs/base/browser/dom';
 import { IButtonOptions } from 'vs/base/browser/ui/button/button';
 
-
-// type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
-
 export interface IInfoButtonOptions extends IButtonOptions {
 	buttonMaxHeight: number,
 	buttonMaxWidth: number,
@@ -42,42 +39,29 @@ export class InfoButton extends sqlButton {
 		super(container, options);
 		this._container = container;
 
-		this._container.style.display = 'flex';
-		this._container.style.justifyContent = 'space-around';
+		DOM.addClass(this._container, 'info-button-container');
 
 		this._main = document.createElement('div');
 		DOM.addClass(this._main, 'flexContainer');
-		this._main.style.cursor = 'pointer';
-		this._main.style.padding = '10px';
+		DOM.addClass(this._main, 'info-main');
 
 		this._iconContainer = document.createElement('div');
+		DOM.addClass(this._iconContainer, 'info-icon');
 		this._iconContainer.style.alignItems = 'flex-start';
-		this._iconContainer.style.display = 'flex';
-		this._iconContainer.style.flexFlow = 'column';
-		this._iconContainer.style.paddingRight = '10px';
 
 		this._iconElement = document.createElement('div');
 		DOM.addClass(this._iconElement, 'icon');
 
 		this._textContainer = document.createElement('div');
-		this._textContainer.style.display = 'flex';
-		this._textContainer.style.flexFlow = 'column';
-		this._textContainer.style.justifyContent = 'space-between';
-		this._textContainer.style.padding = '0 0 0 10px';
-		this._textContainer.style.margin = '0px';
+		DOM.addClass(this._textContainer, 'info-text');
 
 		this._pTitle = document.createElement('p');
+		DOM.addClass(this._pTitle, 'info-title');
 		this._pTitle.setAttribute('aria-hidden', 'false');
-		this._pTitle.style.fontSize = '14px';
-		this._pTitle.style.fontWeight = 'bold';
-		this._pTitle.style.lineHeight = '20px';
-		this._pTitle.style.margin = '0px';
 
 		this._pDesc = document.createElement('p');
+		DOM.addClass(this._pTitle, 'info-desc');
 		this._pDesc.setAttribute('aria-hidden', 'false');
-		this._pDesc.style.fontSize = '12px';
-		this._pDesc.style.lineHeight = '16px';
-		this._pDesc.style.margin = '0px';
 
 		this._textContainer.appendChild(this._pTitle);
 		this._textContainer.appendChild(this._pDesc);
@@ -86,11 +70,10 @@ export class InfoButton extends sqlButton {
 
 		this._main.appendChild(this._iconContainer);
 		this._main.appendChild(this._textContainer);
+
 		DOM.addClass(this.element, 'info-button');
 		this.element.appendChild(this._main);
 		this.element.style.background = 'none';
-		this.element.style.display = 'inline-block';
-		this.element.style.borderRadius = '2px';
 
 		this.infoButtonOptions = options;
 	}
