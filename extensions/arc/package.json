@@ -165,28 +165,6 @@
                           "configFileVariableName": "AZDATA_NB_VAR_ARC_CONFIG_FILE"
                         }
                       ]
-                    },
-                    {
-                      "title": "%arc.control.plane.container.registry.title%",
-                      "fields": [
-                        {
-                          "label": "%arc.control.plane.container.registry.name%",
-                          "variableName": "AZDATA_NB_VAR_ARC_DOCKER_USERNAME",
-                          "type": "text",
-                          "required": true,
-                          "defaultValue": "22cda7bb-2eb1-419e-a742-8710c313fe79",
-                          "enabled": true
-                        },
-                        {
-                          "label": "%arc.control.plane.container.registry.password%",
-                          "variableName": "AZDATA_NB_VAR_ARC_DOCKER_PASSWORD",
-                          "type": "password",
-                          "userName": "docker",
-                          "confirmationRequired": false,
-                          "defaultValue": "",
-                          "required": true
-                        }
-                      ]
                     }
                   ]
                 },
