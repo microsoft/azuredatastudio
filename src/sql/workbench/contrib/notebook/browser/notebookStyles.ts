@@ -173,11 +173,14 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			collector.addRule(`.notebookEditor .notebook-cell.active { border-color: ${cellBorderColor};}`);
 			collector.addRule(`.notebookEditor .notebook-cell.active cell-toolbar-component { border-color: ${cellBorderColor};}`);
 			collector.addRule(`.notebookEditor .notebook-cell.active cell-toolbar-component .codicon:before { background-color: ${cellBorderColor};}`);
+			collector.addRule(`.notebookEditor .notebook-cell.active .actionbar { border-color: ${cellBorderColor};}`);
+			collector.addRule(`.notebookEditor .notebook-cell.active .actionbar .codicon:before { background-color: ${cellBorderColor};}`);
 		}
 		// Cell toolbar background
 		const notebookToolbarSelectBackgroundColor = theme.getColor(notebookToolbarSelectBackground);
 		if (notebookToolbarSelectBackgroundColor) {
 			collector.addRule(`.notebookEditor .notebook-cell.active cell-toolbar-component { background-color: ${notebookToolbarSelectBackgroundColor};}`);
+			collector.addRule(`.notebookEditor .notebook-cell.active .actionbar { background-color: ${notebookToolbarSelectBackgroundColor};}`);
 		}
 
 		// Markdown editor toolbar

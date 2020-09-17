@@ -130,7 +130,6 @@ export class NotebookEditorEdit {
 
 export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposable {
 	private _disposed: boolean = false;
-	private _viewMode: string = '';
 
 	constructor(
 		private _proxy: MainThreadNotebookDocumentsAndEditorsShape,
@@ -139,14 +138,6 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 		private _viewColumn: vscode.ViewColumn
 	) {
 
-	}
-
-	get viewMode(): string {
-		return this._viewMode;
-	}
-
-	set viewMode(mode: string) {
-		this._viewMode = mode;
 	}
 
 	dispose() {

@@ -22,6 +22,11 @@ import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/no
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 
+export enum ViewMode {
+	Notebook,
+	Views,
+}
+
 export interface ICellRange {
 	readonly start: number;
 	readonly end: number;
@@ -322,6 +327,11 @@ export interface INotebookModel {
 	 */
 	providerId: string;
 
+	/**
+	 * View mode for this model. It determines what editor mode
+	 * will be displayed.
+	 */
+	viewMode: ViewMode;
 
 	/**
 	 * Add custom metadata values to the notebook

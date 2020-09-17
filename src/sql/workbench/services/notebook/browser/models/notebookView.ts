@@ -7,6 +7,13 @@ import { INotebookModel, ICellModel } from 'sql/workbench/services/notebook/brow
 import { generateUuid } from 'vs/base/common/uuid';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 
+export type CellChangeEventType = 'hide' | 'active';
+
+export type CellChangeEvent = {
+	cell: ICellModel,
+	event: CellChangeEventType;
+};
+
 /*
  * Represents the metadata that will be stored for the
  * view at the notebook level.
@@ -23,6 +30,7 @@ export interface INotebookView {
 
 	initialize();
 	hideCell(cell: ICellModel);
+	save();
 }
 
 /*
@@ -56,6 +64,7 @@ export class NotebookExtension {
 		const meta = {};
 		meta[this.extensionName] = metadata;
 		notebook.setMetaValue(this.extensionsNamespace, meta);
+		notebook.serializationStateChanged(NotebookChangeType.CellsModified);
 	}
 
 	public getCellMetadata(cell: ICellModel): INotebookViewCellMetadata {
@@ -87,6 +96,16 @@ export class NotebookViewExtension extends NotebookExtension {
 		if (!this._extensionMeta) {
 			this.initializeNotebook();
 			this.initializeCells();
+			this.commit();
+		} else {
+			this._extensionMeta.views = this._extensionMeta.views.map((view) => (
+				new NotebookView(
+					view.guid,
+					view.name,
+					this._notebook,
+					this
+				)
+			));
 		}
 	}
 
@@ -94,7 +113,7 @@ export class NotebookViewExtension extends NotebookExtension {
 		this.setNotebookMetadata(this._notebook, this._extensionMeta);
 	}
 
-	public getActiveView() {
+	public getActiveView(): INotebookView {
 		return this.getViews().find(view => view.guid === this._extensionMeta.activeView);
 	}
 
@@ -156,7 +175,7 @@ export class NotebookViewExtension extends NotebookExtension {
 
 
 
-class NotebookView implements NotebookView {
+class NotebookView implements INotebookView {
 	readonly guid: string;
 
 	constructor(
@@ -204,6 +223,10 @@ class NotebookView implements NotebookView {
 
 	public hideCell(cell: ICellModel) {
 		this._notebookViewExtension.updateCell(cell, this, { hidden: true });
+	}
+
+	public save() {
+		this._notebookViewExtension.commit();
 	}
 
 	public toJSON() {

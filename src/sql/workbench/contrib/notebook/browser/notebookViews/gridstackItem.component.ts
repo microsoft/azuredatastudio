@@ -6,22 +6,13 @@
 import { Component, OnInit, Input, ViewChild, TemplateRef, ElementRef, Inject, Output, EventEmitter } from '@angular/core';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { ToggleMoreWidgetAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
-
-/*
-import '.gridstack/dist/gridstack';
-import 'gridstack/dist/jquery';
-import 'gridstack/dist/jquery-ui';
-import 'gridstack/dist/gridstack.jQueryUI';
-
-import 'vs/css!./gridstack';
-*/
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Action, IAction } from 'vs/base/common/actions';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { HideCellAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/actions';
-import { NotebookViewExtension, INotebookViewCellMetadata, INotebookView } from 'sql/workbench/services/notebook/browser/models/notebookView';
+import { NotebookViewExtension, INotebookViewCellMetadata, INotebookView, CellChangeEventType } from 'sql/workbench/services/notebook/browser/models/notebookView';
 
 
 //declare var $: any; // JQuery
@@ -42,6 +33,7 @@ export class GridStackItemComponent implements OnInit {
 	@Output() onChange: EventEmitter<any> = new EventEmitter();
 
 	@ViewChild('templateRef') templateRef: TemplateRef<any>;
+	@ViewChild('item', { read: ElementRef }) private _item: ElementRef;
 	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
 
 	constructor(
@@ -49,6 +41,7 @@ export class GridStackItemComponent implements OnInit {
 	) { }
 
 	ngOnInit() {
+		this.initActionBar();
 	}
 
 	ngOnChanges() {
@@ -66,31 +59,42 @@ export class GridStackItemComponent implements OnInit {
 	}
 
 	ngAfterViewInit() {
+		this.initActionBar();
+	}
+
+	initActionBar() {
 		// top action bar
 		this._actions = new Array<Action>();
-		this._actions.push(new HideCellAction(this.hide, this));
-		if (this.showActionBar && this._actionbarRef) {
+		//this._actions.push(new HideCellAction(this.hide, this));
+		if (this._actionbarRef) {
+			let hideButton = new HideCellAction(this.hide, this);
 			this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
 			this._actionbar.context = { target: this._actionbarRef.nativeElement };
 			this._actionbar.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions as Array<IAction>, new CellContext(this.model, this.cell)), { icon: true, label: false });
+			this._actionbar.push(hideButton, { icon: true });
 		}
 	}
 
-	changed() {
-		this.onChange.emit([this.cell]);
+	get elementRef(): ElementRef {
+		return this._item;
+	}
+
+	changed(event: CellChangeEventType) {
+		this.onChange.emit({ cell: this.cell, event: event });
+	}
+
+	public selectCell(cell: ICellModel, event?: Event) {
+		if (event) {
+			event.stopPropagation();
+		}
+		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
+			this.model.updateActiveCell(cell);
+			this.changed('active');
+		}
 	}
 
 	public hide(): void {
-		this.changed();
-		/*
-		const context: GridStackItemComponent = this;
-		const currentView = this.extension.getActiveView();
-		if(currentView) {
-			currentView.hideCell(context.cell);
-			this.changed();
-		}
-		return;
-		*/
+		this.changed('hide');
 	}
 
 	public get width(): number {
@@ -117,7 +121,7 @@ export class GridStackItemComponent implements OnInit {
 		return !this._metadata?.views?.find(v => v.guid === this._activeView.guid).hidden;
 	}
 
-	private get showActionBar(): boolean {
-		return true;
+	public get showActionBar(): boolean {
+		return this.cell.active;
 	}
 }

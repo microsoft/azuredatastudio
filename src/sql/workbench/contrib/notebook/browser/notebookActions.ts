@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 
-import { Action } from 'vs/base/common/actions';
+import { Action, IAction } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
@@ -17,11 +17,11 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { CellType } from 'sql/workbench/services/notebook/common/contracts';
+import { CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IFindNotebookController } from 'sql/workbench/contrib/notebook/browser/find/notebookFindWidget';
-import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { find, firstIndex } from 'vs/base/common/arrays';
@@ -29,6 +29,10 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
+import { NotebookViewExtension, INotebookView } from 'sql/workbench/services/notebook/browser/models/notebookView';
+import { Emitter, Event } from 'vs/base/common/event';
+import { IActionProvider } from 'vs/base/browser/ui/dropdown/dropdown';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -167,49 +171,83 @@ export abstract class ToggleableAction extends Action {
 	}
 }
 
-export class DashboardViewAction extends ToggleableAction {
-	// Constants
-	private static readonly baseClass = 'notebook-button';
-	private static readonly notActiveCssClass = 'icon-dashboard-view';
-	private static readonly activeCssClass = 'icon-dashboard-view';
-	private static readonly maskedIconClass = 'masked-pseudo masked-icon';
-
-	private static readonly dashboardViewLabel = localize('dashboardViewLabel', "Dashboard View");
-	private static readonly notDashboardViewLabel = localize('notDashboardViewLabel', "Activate Dashboard View");
+export class NotebookViewsOptions implements IActionProvider {
+	private _options: Action[];
+	private model: NotebookModel;
+	private views: NotebookViewExtension;
+	private readonly _optionsUpdated = new Emitter<boolean>();
 
 	constructor(
-		id: string, toggleTooltip: boolean,
-		@INotebookService private _notebookService: INotebookService
-	) {
-		super(id, {
-			baseClass: DashboardViewAction.baseClass,
-			toggleOnLabel: DashboardViewAction.dashboardViewLabel,
-			toggleOnClass: toggleTooltip === true ? DashboardViewAction.notActiveCssClass : DashboardViewAction.activeCssClass,
-			toggleOffLabel: DashboardViewAction.notDashboardViewLabel,
-			toggleOffClass: toggleTooltip === true ? DashboardViewAction.activeCssClass : DashboardViewAction.notActiveCssClass,
-			maskedIconClass: DashboardViewAction.maskedIconClass,
-			shouldToggleTooltip: toggleTooltip,
-			isOn: false
-		});
+		container: HTMLElement,
+		contextViewProvider: IContextViewProvider,
+		modelReady: Promise<INotebookModel>,
+		@INotebookService private _notebookService: INotebookService,
+		@IInstantiationService private instantiationService: IInstantiationService) {
+
+		if (modelReady) {
+			modelReady
+				.then((model) => this.updateModel(model))
+				.catch((err) => {
+					// No-op for now
+				});
+		}
+
+		//this.onDidSelect(e => this.optionSelected(e.selected));
+	}
+	getActions(): IAction[] {
+		return this._options;
 	}
 
-	public get mode(): boolean {
-		return this.state.isOn;
+	updateModel(model: INotebookModel): void {
+		this.model = model as NotebookModel;
+		this.views = new NotebookViewExtension(this.model);
+		let view = this.views.getActiveView();
+		this.updateView(view);
 	}
-	public set mode(value: boolean) {
-		this.toggle(value);
+
+	public get options(): Action[] {
+		return this._options;
+	}
+
+	// Update SelectBox values
+	public updateView(view: INotebookView) {
+		//let views: string[] = [...new Set(this.views.getViews().map(view => view.name))];
+		this._options = [...new Set(this.views.getViews().map(view =>
+			new DashboardViewAction(view.guid, view.name, 'button', this._notebookService)
+		))];
+
+		const backToNotebookButton = this.instantiationService.createInstance(NotebookViewAction, 'notebookView.backToNotebook', localize('notebookViewLabel', 'Editor'), 'notebook-button');
+		const newViewButton = this.instantiationService.createInstance(CreateNotebookView, 'notebookView.newView', localize('newViewLabel', 'Create New View'), 'notebook-button');
+
+		this._options.unshift(backToNotebookButton);
+		this._options.push(newViewButton);
+
+		this._optionsUpdated.fire(true);
+	}
+
+	public get onUpdated(): Event<boolean> {
+		return this._optionsUpdated.event;
+	}
+
+	public optionSelected(displayName: string): void {
+		const view = this.views.getViews().find(view => view.name === displayName);
+		this.views.setActiveView(view);
+	}
+}
+
+export class DashboardViewAction extends Action {
+	constructor(
+		id: string, label: string, cssClass: string,
+		@INotebookService private _notebookService: INotebookService
+	) {
+		super(id, label, cssClass);
 	}
 
 	public run(context: URI): Promise<void> {
-		let self = this;
 		return new Promise<void>((resolve, reject) => {
 			try {
-				if (!self.mode) {
-					//console.log(self.viewMode.toString());
-					//context.viewModel.viewMode = NotebookViewMode.DashboardView;
-					const editor = this._notebookService.findNotebookEditor(context);
-					editor.viewMode = 'dashboard';
-				}
+				const editor = this._notebookService.findNotebookEditor(context);
+				editor.model.viewMode = ViewMode.Views;
 				resolve();
 			} catch (e) {
 				reject(e);
@@ -218,52 +256,47 @@ export class DashboardViewAction extends ToggleableAction {
 	}
 }
 
-export class NotebookViewAction extends ToggleableAction {
-	// Constants
-	private static readonly baseClass = 'notebook-button';
-	private static readonly notActiveCssClass = 'icon-notebook-view';
-	private static readonly activeCssClass = 'icon-notebook-view';
-	private static readonly maskedIconClass = 'masked-icon';
-
-	private static readonly notebookViewLabel = localize('notebookViewLabel', 'Notebook View');
-	private static readonly notNotebookViewLabel = localize('notNotebookViewLabel', 'Activate Notebook View');
-
+export class NotebookViewAction extends Action {
 	constructor(
-		id: string, toggleTooltip: boolean,
+		id: string, label: string, cssClass: string,
 		@INotebookService private _notebookService: INotebookService
 	) {
-		super(id, {
-			baseClass: NotebookViewAction.baseClass,
-			toggleOnLabel: NotebookViewAction.notebookViewLabel,
-			toggleOnClass: toggleTooltip === true ? NotebookViewAction.notActiveCssClass : NotebookViewAction.activeCssClass,
-			toggleOffLabel: NotebookViewAction.notNotebookViewLabel,
-			toggleOffClass: toggleTooltip === true ? NotebookViewAction.activeCssClass : NotebookViewAction.notActiveCssClass,
-			maskedIconClass: NotebookViewAction.maskedIconClass,
-			shouldToggleTooltip: toggleTooltip,
-			isOn: false,
-		});
+		super(id, label, cssClass);
 	}
-
-	public get mode(): boolean {
-		return this.state.isOn;
-	}
-	public set mode(value: boolean) {
-		this.toggle(value);
-	}
-
 	public run(context: URI): Promise<boolean> {
-		let self = this;
 		return new Promise<boolean>((resolve, reject) => {
 			try {
-				if (!self.mode) {
-					const editor = this._notebookService.findNotebookEditor(context);
-					editor.viewMode = 'notebook';
-				}
+				const editor = this._notebookService.findNotebookEditor(context);
+				editor.model.viewMode = ViewMode.Notebook;
 				resolve(true);
 			} catch (e) {
 				reject(e);
 			}
 		});
+	}
+}
+
+export class CreateNotebookView extends Action {
+	constructor(
+		id: string, label: string, cssClass: string,
+		@INotebookService private _notebookService: INotebookService
+	) {
+		super(id, label, cssClass);
+	}
+	public async run(context: URI): Promise<boolean> {
+		if (context) {
+			const editor = this._notebookService.findNotebookEditor(context);
+			const extension = new NotebookViewExtension(editor.model);
+
+			const newView = extension.createNewView('Untitled View');
+			extension.setActiveView(newView);
+
+			editor.model.viewMode = ViewMode.Views;
+			editor.model.serializationStateChanged(NotebookChangeType.MetadataChanged);
+			return true;
+		}
+
+		return false;
 	}
 }
 

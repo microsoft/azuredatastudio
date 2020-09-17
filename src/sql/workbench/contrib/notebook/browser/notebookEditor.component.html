@@ -4,11 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-
-<gridstack #gridstack [cells]="cells" [model]="model"></gridstack>
-<div class="insert-cell-selector" style="position: absolute; min-width: 400px; height: 100%; background: white; top: 0; right: 0; z-index: 10;">
-	<div class="cell-list">
-		<div style="max-width: 300px;"><img style="max-width: 100%;" src="{{ image }}"/></div>
-	</div>
-</div>
-
+<!-- Notebook View -->
+<notebook-component *ngIf="notebookMode()" [_model]="model"></notebook-component>
+<!-- Dashboard View-->
+<notebook-view-component *ngIf="notebookViewsMode()" [activeView]="activeView" [model]="model"></notebook-view-component>

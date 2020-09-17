@@ -1,23 +1,19 @@
 <ng-template #templateRef>
 <div
 	*ngIf="display"
-	class="grid-stack-item"
+	class="notebook-cell grid-stack-item"
 	attr.data-cell-id="{{cell.cellGuid}}"
 	attr.data-gs-width="{{width}}"
 	attr.data-gs-height="{{height}}"
 	attr.data-gs-x="{{x}}"
 	attr.data-gs-y="{{y}}"
+	(click)="selectCell(cell, $event)"
+	[class.active]="cell.active"
 >
-	<div class="grid-stack-item-content">
+	<div #actionbar [style.display]="showActionBar ? 'block' : 'none'" class="actionbar"></div>
+	<div #item class="grid-stack-item-content">
 		<div class="grid-stack-content-wrapper">
-			<div class="grid-stack-content-header">
-				<div class="grid-stack-item-title">
-					This is a title
-				</div>
-				<span *ngIf="showActionBar" #actionbar class="actionbar"></span>
-			</div>
 			<div class="grid-stack-content-wrapper-inner">
-				<cell-toolbar-component *ngIf="cell.active" [cellModel]="cell" [model]="model"></cell-toolbar-component>
 				<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
 				</code-cell-component>
 				<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">

@@ -4381,8 +4381,6 @@ declare module 'azdata' {
 			 */
 			viewColumn?: vscode.ViewColumn;
 
-			viewMode: string;
-
 			/**
 			 * Perform an edit on the document associated with this notebook editor.
 			 *

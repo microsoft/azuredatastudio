@@ -36,6 +36,8 @@ import { NotebookViewComponent } from 'sql/workbench/contrib/notebook/browser/no
 import { DashboardViewComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/dashboardView.component';
 import { GridStackComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/gridstack.component';
 import { GridStackItemComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/gridstackItem.component';
+import { NotebookEditorComponent } from 'sql/workbench/contrib/notebook/browser/notebookEditor.component';
+import { ViewCellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewCellToolbar.component';
 
 const outputComponentRegistry = Registry.as<ICellComponenetRegistry>(OutputComponentExtensions.CellComponentContributions);
 
@@ -53,9 +55,11 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			CodeComponent,
 			CodeCellComponent,
 			CellToolbarComponent,
+			ViewCellToolbarComponent,
 			MarkdownToolbarComponent,
 			PlaceholderCellComponent,
 			NotebookComponent,
+			NotebookEditorComponent,
 			NotebookViewComponent,
 			DashboardViewComponent,
 			GridStackComponent,
@@ -69,7 +73,7 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			...outputComponents
 		],
 		entryComponents: [
-			NotebookComponent,
+			NotebookEditorComponent,
 			...outputComponents
 		],
 		imports: [
@@ -94,7 +98,7 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 		}
 
 		ngDoBootstrap(appRef: ApplicationRef) {
-			const factoryWrapper: any = this._resolver.resolveComponentFactory(NotebookComponent);
+			const factoryWrapper: any = this._resolver.resolveComponentFactory(NotebookEditorComponent);
 			factoryWrapper.factory.selector = this.selector;
 			appRef.bootstrap(factoryWrapper);
 		}

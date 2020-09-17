@@ -4,13 +4,38 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Action } from 'vs/base/common/actions';
-import * as nls from 'vs/nls';
+
+import { OptionsModal } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { NotebookViewExtension } from 'sql/workbench/services/notebook/browser/models/notebookView';
+
+export class ViewSettings extends Action {
+	private static readonly ID = 'viewSettings';
+	private static readonly LABEL = undefined;
+	private static readonly ICON = 'notebook-button settings masked-icon';
+
+	constructor(
+		private _context: NotebookViewExtension,
+		@IInstantiationService private _instantiationService: IInstantiationService,
+	) {
+		super(ViewSettings.ID, ViewSettings.LABEL, ViewSettings.ICON);
+	}
+
+	run(): Promise<boolean> {
+		try {
+			const optionsModal = this._instantiationService.createInstance(OptionsModal);
+			optionsModal.open(this._context);
+			return Promise.resolve(true);
+		} catch (e) {
+			return Promise.resolve(false);
+		}
+	}
+}
 
 export class HideCellAction extends Action {
-
 	private static readonly ID = 'hideCell';
-	private static readonly LABEL = nls.localize('hideCell', "Hide Cell");
-	private static readonly ICON = 'hide';
+	private static readonly LABEL = undefined;//nls.localize('hideCell', "Hide Cell");
+	private static readonly ICON = 'notebook-button delete masked-icon';
 
 	constructor(
 		private hideFn: () => void,

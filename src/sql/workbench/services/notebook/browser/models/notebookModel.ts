@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
@@ -51,6 +51,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelsChangedEmitter = new Emitter<nb.IKernelSpec>();
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
+	private _viewModeChangedEmitter = new Emitter<ViewMode>();
 	private _layoutChanged = new Emitter<void>();
 	private _inErrorState: boolean = false;
 	private _activeClientSession: IClientSession;
@@ -60,6 +61,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _trustedMode: boolean;
 	private _onActiveCellChanged = new Emitter<ICellModel>();
 
+	private _viewMode: ViewMode = ViewMode.Notebook;
 	private _cells: ICellModel[];
 	private _defaultLanguageInfo: nb.ILanguageInfo;
 	private _tags: string[];
@@ -244,6 +246,19 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		});
 	}
 
+	public get viewModeChanged(): Event<ViewMode> {
+		return this._viewModeChangedEmitter.event;
+	}
+
+	public get viewMode() {
+		return this._viewMode;
+	}
+
+	public set viewMode(mode: ViewMode) {
+		this._viewMode = mode;
+		this._viewModeChangedEmitter.fire(mode);
+	}
+
 	/**
 	 * Add custom metadata values to the notebook
 	 */
@@ -251,7 +266,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._existingMetadata[key] = value;
 		let changeInfo: NotebookContentChange = {
 			changeType: NotebookChangeType.MetadataChanged,
-			isDirty: true
+			isDirty: true,
+			cells: [],
 		};
 		this._contentChangedEmitter.fire(changeInfo);
 	}

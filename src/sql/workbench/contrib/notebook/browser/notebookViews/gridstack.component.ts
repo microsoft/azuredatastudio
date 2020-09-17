@@ -3,18 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, OnInit, ViewChildren, QueryList, Input } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, Input, Inject, forwardRef, ChangeDetectorRef } from '@angular/core';
 import { GridStackItemComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/gridstackItem.component';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 
+/*
 import 'vs/css!./gridstack';
-
-import './gridstack/dist/gridstack';
-import './gridstack/dist/jquery';
-import './gridstack/dist/jquery-ui';
-import './gridstack/dist/gridstack.jQueryUI';
+import 'gridstack/dist/gridstack';
+import 'gridstack/dist/jquery';
+import 'gridstack/dist/jquery-ui';
+import 'gridstack/dist/gridstack.jQueryUI';
+*/
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { NotebookViewExtension, INotebookViewCell } from 'sql/workbench/services/notebook/browser/models/notebookView';
+import { NotebookViewExtension, INotebookViewCell, CellChangeEvent } from 'sql/workbench/services/notebook/browser/models/notebookView';
 
 
 //declare var $: any; // JQuery
@@ -26,15 +27,21 @@ import { NotebookViewExtension, INotebookViewCell } from 'sql/workbench/services
 export class GridStackComponent implements OnInit {
 	@Input() cells: ICellModel[];
 	@Input() model: NotebookModel;
-	@ViewChildren(GridStackItemComponent) private items: QueryList<GridStackItemComponent>;
+	@ViewChildren(GridStackItemComponent) private _items: QueryList<GridStackItemComponent>;
 
 	protected _grid: any;
 	protected _extension: NotebookViewExtension;
 
-	constructor() { }
+	constructor(
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
+	) { }
 
 	public get extension(): NotebookViewExtension {
 		return this._extension;
+	}
+
+	public get hiddenItems(): GridStackItemComponent[] {
+		return this._items.filter(item => item.display);
 	}
 
 	ngOnInit() {
@@ -45,9 +52,9 @@ export class GridStackComponent implements OnInit {
 		let activeView = this._extension.getActiveView() ?? views[0];
 
 		if (!activeView) {
-			activeView = this._extension.createNewView('Test View');
-			this._extension.setActiveView(activeView);
-			this._extension.commit();
+			//activeView = this._extension.createNewView('Test View');
+			//this._extension.setActiveView(activeView);
+			//this._extension.commit();
 		}
 
 		setTimeout(() => {
@@ -55,20 +62,27 @@ export class GridStackComponent implements OnInit {
 				alwaysShowResizeHandle: true,
 				verticalMargin: 5
 			});
-			self._grid.on('added', function (e, items) { self.persist('added', items, self._grid, self.items); });
-			self._grid.on('removed', function (e, items) { self.persist('removed', items, self._grid, self.items); });
-			self._grid.on('change', function (e, items) { self.persist('change', items, self._grid, self.items); });
+			self._grid.on('added', function (e, items) { self.persist('added', items, self._grid, self._items); });
+			self._grid.on('removed', function (e, items) { self.persist('removed', items, self._grid, self._items); });
+			self._grid.on('change', function (e, items) { self.persist('change', items, self._grid, self._items); });
 		}, 100);
 	}
 
-	onCellChanged(cell: ICellModel) {
+	private detectChanges(): void {
+		if (!(this._changeRef['destroyed'])) {
+			this._changeRef.detectChanges();
+		}
+	}
+
+	onCellChanged(e: CellChangeEvent) {
 		const currentView = this.extension.getActiveView();
 		if (this._grid && currentView) {
-			const results = this._grid.$el.find(`[data-cell-id='${cell.cellGuid}']`);
-			if (results.length === 1) {
+			const results = this._grid.$el.find(`[data-cell-id='${e.cell.cellGuid}']`);
+			if (results.length === 1 && e.event === 'hide') {
 				this._grid.removeWidget(results[0]);
-				currentView.hideCell(cell);
+				currentView.hideCell(e.cell);
 			}
+			this.detectChanges();
 		}
 	}
 
