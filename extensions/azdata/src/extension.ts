@@ -12,7 +12,6 @@ import * as loc from './localizedConstants';
 
 let localAzdata: IAzdataTool | undefined = undefined;
 let eulaAccepted: boolean = false;
-let callCount = 0;
 export async function activate(context: vscode.ExtensionContext): Promise<azdataExt.IExtension> {
 	vscode.commands.registerCommand('azdata.acceptEula', async () => {
 		eulaAccepted = await promptForEula(context.globalState, true /* userRequested */);
