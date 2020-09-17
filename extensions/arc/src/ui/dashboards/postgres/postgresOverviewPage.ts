@@ -240,22 +240,18 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	private getProperties(): azdata.PropertiesContainerItem[] {
-		/*
-		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
-		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
+		const endpoint = this._postgresModel.endpoint;
 
 		return [
-			{ displayName: loc.name, value: this._postgresModel.name },
-			{ displayName: loc.coordinatorEndpoint, value: `postgresql://postgres@${endpoint.ip}:${endpoint.port}` },
-			{ displayName: loc.status, value: this._postgresModel.service?.status?.state ?? '' },
+			{ displayName: loc.name, value: this._postgresModel.info.name },
+			{ displayName: loc.coordinatorEndpoint, value: endpoint ? `postgresql://postgres@${endpoint.ip}:${endpoint.port}` : '-' },
+			{ displayName: loc.status, value: this._postgresModel.config?.status.state || '-' },
 			{ displayName: loc.postgresAdminUsername, value: 'postgres' },
-			{ displayName: loc.dataController, value: this._controllerModel?.namespace ?? '' },
-			{ displayName: loc.nodeConfiguration, value: this._postgresModel.configuration },
-			{ displayName: loc.subscriptionId, value: registration?.subscriptionId ?? '' },
-			{ displayName: loc.postgresVersion, value: this._postgresModel.service?.spec?.engine?.version?.toString() ?? '' }
+			{ displayName: loc.dataController, value: this._controllerModel?.namespace || '-' },
+			{ displayName: loc.nodeConfiguration, value: '-' }, // TODO
+			{ displayName: loc.subscriptionId, value: this._controllerModel.controllerConfig?.spec.settings.azure.subscription ?? '' },
+			{ displayName: loc.postgresVersion, value: this._postgresModel.engineVersion ?? '-' }
 		];
-		*/
-		return [];
 	}
 
 	private getKibanaLink(): string {
