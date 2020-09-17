@@ -408,7 +408,7 @@ export class CellModel extends Disposable implements ICellModel {
 						const future = kernel.requestExecute({
 							code: content,
 							stop_on_error: true
-						}, false);
+						}, false, this._cellUri.toString());
 						this.setFuture(future as FutureInternal);
 						this.fireExecutionStateChanged();
 						// For now, await future completion. Later we should just track and handle cancellation based on model notifications

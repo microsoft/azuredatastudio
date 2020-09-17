@@ -23,7 +23,6 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { URI } from 'vs/base/common/uri';
-import { getUriPrefix, uriPrefixes } from 'sql/platform/connection/common/utils';
 import { firstIndex } from 'vs/base/common/arrays';
 import { startsWith } from 'vs/base/common/strings';
 import { onUnexpectedError } from 'vs/base/common/errors';
@@ -159,7 +158,7 @@ export class SqlSession implements nb.ISession {
 }
 
 class SqlKernel extends Disposable implements nb.IKernel {
-	private _queryRunner: QueryRunner;
+	private _queryRunners: Map<string, QueryRunner> = new Map<string, QueryRunner>();
 	private _currentConnection: IConnectionProfile;
 	private _currentConnectionProfile: ConnectionProfile;
 	static kernelId: number = 0;
@@ -168,7 +167,6 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _future: SQLFuture;
 	private _executionCount: number = 0;
 	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
-	private _connectionPath: string;
 
 	constructor(private _path: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -182,36 +180,12 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	) {
 		super();
 		this.initMagics();
-		this.setConnectionPath();
 	}
 
 	private initMagics(): void {
 		for (let magic of languageMagics) {
 			let scriptMagic = new ExternalScriptMagic(magic.language);
 			this._magicToExecutorMap.set(magic.magic, scriptMagic);
-		}
-	}
-
-	private setConnectionPath(): void {
-		if (this._path) {
-			let prefix = getUriPrefix(this._path);
-			if (!prefix || prefix === uriPrefixes.connection) {
-				this._connectionPath = uriPrefixes.notebook.concat(this._path);
-			} else if (prefix !== uriPrefixes.notebook) {
-				try {
-					let uri = URI.parse(this._path);
-					if (uri && uri.scheme) {
-						this._connectionPath = uri.toString().replace(uri.scheme, uriPrefixes.notebook);
-					}
-				} catch {
-					// Ignore exceptions from URI parsing
-				} finally {
-					// If _connectionPath hasn't been set yet, set _connectionPath to _path as a last resort
-					if (!this._connectionPath) {
-						this._connectionPath = this._path;
-					}
-				}
-			}
 		}
 	}
 
@@ -265,30 +239,33 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	public set connection(conn: IConnectionProfile) {
 		this._currentConnection = conn;
 		this._currentConnectionProfile = new ConnectionProfile(this._capabilitiesService, this._currentConnection);
-		this._queryRunner = undefined;
+		this._queryRunners.clear();
 	}
 
 	getSpec(): Thenable<nb.IKernelSpec> {
 		return Promise.resolve(notebookConstants.sqlKernelSpec);
 	}
 
-	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
+	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean, cellUri?: string): nb.IFuture {
 		let canRun: boolean = true;
 		let code = this.getCodeWithoutCellMagic(content);
-		if (this._queryRunner) {
+		let queryRunnerUri = 'queryRunner-' + cellUri;
+		let queryRunner: QueryRunner | undefined = this._queryRunners.get(queryRunnerUri);
+		if (queryRunner) {
 			// Cancel any existing query
-			if (this._future && !this._queryRunner.hasCompleted) {
-				this._queryRunner.cancelQuery().then(ok => undefined, error => this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error));
+			if (this._future && !queryRunner.hasCompleted) {
+				queryRunner.cancelQuery().then(ok => undefined, error => this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error));
 				// TODO when we can just show error as an output, should show an "execution canceled" error in output
 				this._future.handleDone().catch(err => onUnexpectedError(err));
 			}
-			this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
+			queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 		} else if (this._currentConnection && this._currentConnectionProfile) {
-			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionPath);
-			this.queryManagementService.registerRunner(this._queryRunner, this._connectionPath);
-			this._connectionManagementService.connect(this._currentConnectionProfile, this._connectionPath).then((result) => {
-				this.addQueryEventListeners(this._queryRunner);
-				this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
+			queryRunner = this._instantiationService.createInstance(QueryRunner, queryRunnerUri);
+			this._queryRunners.set(queryRunnerUri, queryRunner);
+			this.queryManagementService.registerRunner(queryRunner, queryRunnerUri);
+			this._connectionManagementService.connect(this._currentConnectionProfile, queryRunnerUri).then((result) => {
+				this.addQueryEventListeners(queryRunner);
+				queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 			}).catch(err => onUnexpectedError(err));
 		} else {
 			canRun = false;
@@ -298,7 +275,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		// TODO verify this is "canonical" behavior
 		let count = canRun ? ++this._executionCount : undefined;
 
-		this._future = new SQLFuture(this._queryRunner, count, this._configurationService, this.logService);
+		this._future = new SQLFuture(queryRunner, count, this._configurationService, this.logService);
 		if (!canRun) {
 			// Complete early
 			this._future.handleDone(new Error(localize('connectionRequired', "A connection must be chosen to run notebook cells"))).catch(err => onUnexpectedError(err));
@@ -334,8 +311,8 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	interrupt(): Thenable<void> {
 		// TODO: figure out what to do with the QueryCancelResult
-		return this._queryRunner.cancelQuery().then((cancelResult) => {
-		});
+		let runners = [...this._queryRunners.values()];
+		return Promise.all(runners.map(queryRunner => queryRunner.cancelQuery())).then();
 	}
 
 	private addQueryEventListeners(queryRunner: QueryRunner): void {
@@ -372,15 +349,16 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	public async disconnect(): Promise<void> {
-		if (this._connectionPath) {
-			if (this._connectionManagementService.isConnected(this._connectionPath)) {
+		this._queryRunners.forEach(async (queryRunner: QueryRunner, uri: string) => {
+			if (this._connectionManagementService.isConnected(uri)) {
 				try {
-					await this._connectionManagementService.disconnect(this._connectionPath);
+					await this._connectionManagementService.disconnect(uri);
 				} catch (err) {
 					this.logService.error(err);
 				}
+
 			}
-		}
+		});
 		return;
 	}
 }

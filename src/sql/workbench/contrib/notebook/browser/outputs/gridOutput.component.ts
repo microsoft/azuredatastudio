@@ -41,6 +41,7 @@ import { IQueryManagementService } from 'sql/workbench/services/query/common/que
 import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
 import { assign } from 'vs/base/common/objects';
+import { escape } from 'sql/base/common/strings';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -372,7 +373,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	public async convertAllData(result: ResultSetSummary): Promise<void> {
-		// Querying 50 rows at a time. Querying large amount of rows will be slow and
+		// Querying 100 rows at a time. Querying large amount of rows will be slow and
 		// affect table rendering since each time the user scrolls, getRowData is called.
 		let numRows = 100;
 		for (let i = 0; i < result.rowCount; i += 100) {
