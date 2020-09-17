@@ -75,11 +75,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			e.preventDefault();
 			document.execCommand('selectAll');
 		}
-	}
-
-	@HostListener('document:keydown.meta.z', ['$event'])
-	onUndo(e) {
-		document.execCommand('undo');
+		if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+			document.execCommand('undo');
+		}
 	}
 
 	private _content: string | string[];
