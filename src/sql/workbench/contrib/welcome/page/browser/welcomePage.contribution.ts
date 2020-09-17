@@ -37,6 +37,31 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 		}
 	});
 
+Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
+	.registerConfiguration({
+		...workbenchConfigurationNodeBase,
+		'properties': {
+			'workbench.initialSetup': {
+				'type': 'boolean',
+				'default': true,
+				'description': localize('workbench.initialSetup', "Controls whether or not the intial setup wizard is shown.")
+			},
+		}
+	});
+
+Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
+	.registerConfiguration({
+		...workbenchConfigurationNodeBase,
+		'properties': {
+			'workbench.guidedTour': {
+				'type': 'boolean',
+				'default': true,
+				'description': localize('workbench.guidedTour', "Controls whether or not to show the guided tour")
+			},
+		}
+	});
+
+
 class WelcomeContributions {
 	constructor(
 		@IConfigurationService configurationService: IConfigurationService,

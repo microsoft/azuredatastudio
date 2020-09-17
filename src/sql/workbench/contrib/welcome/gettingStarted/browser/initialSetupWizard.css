@@ -223,15 +223,6 @@
 	margin: 10px 0;
 }
 
-.activitybar
-	> .content
-	:not(.monaco-menu)
-	> .monaco-action-bar
-	.action-label.codicon.subject-element-focused {
-	z-index: 1 !important;
-	pointer-events: none !important;
-}
-
 /* The switch - the box around the slider */
 .ads-initial-setup-wizard-switch {
 	position: relative;

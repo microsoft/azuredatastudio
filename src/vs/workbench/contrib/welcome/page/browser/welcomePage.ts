@@ -133,6 +133,7 @@ function isWelcomePageEnabled(configurationService: IConfigurationService, conte
 			return welcomeEnabled.value;
 		}
 	}
+	// {{SQL CARBON EDIT}} - remove welcomePageWithTour
 	return startupEditor.value === 'welcomePage' || startupEditor.value === 'readme' || startupEditor.value === 'welcomePageInEmptyWorkbench' && contextService.getWorkbenchState() === WorkbenchState.EMPTY;
 }
 
