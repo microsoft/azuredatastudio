@@ -279,7 +279,7 @@ export class AzureSettingsPage extends BasePage {
 			this._serverGroupDropdown.updateProperties({
 				values: [
 					{
-						displayName: 'No servers found',
+						displayName: localize('deployAzureSQLDB.NoServerLabel', "No servers found"),
 						name: ''
 					}
 				],

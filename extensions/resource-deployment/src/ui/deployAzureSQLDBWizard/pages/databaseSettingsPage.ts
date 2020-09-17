@@ -45,7 +45,8 @@ export class DatabaseSettingsPage extends BasePage {
 				this.createFirewallNameText(view),
 				this.createDatabaseNameText(view),
 				this.createCollationText(view),
-				this.createDatabaseHardwareDropdown(view)
+				this.createDatabaseHardwareDropdown(view),
+				this.populateDatabaseHardwareDropdown()
 			]);
 			this._form = view.modelBuilder.formContainer()
 				.withFormItems(
@@ -184,6 +185,42 @@ export class DatabaseSettingsPage extends BasePage {
 		this._dbHardwareConfigDropdown.onValueChanged(async (value) => {
 			console.log(value);
 		});
+	}
+
+	private async populateDatabaseHardwareDropdown() {
+		this._dbHardwareConfigDropdown.loading = true;
+		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/providers/Microsoft.Sql/locations/${this.wizard.model.azureRegion}/capabilities?api-version=2017-10-01-preview`;
+		let response = await this.wizard.getRequest(url);
+		if (response.data.value.length === 0) {
+			this._dbHardwareConfigDropdown.updateProperties({
+				values: [
+					{
+						displayName: localize('deployAzureSQLDB.NoHardwareConfigLabel', "No database hardware configuration found"),
+						name: ''
+					}
+				],
+			});
+			this._dbHardwareConfigDropdown.loading = false;
+			return;
+		}
+		console.log('supported server versions include ' + response.data.value.supportedServerVersions);
+		// this.wizard.addDropdownValues(
+		// 	this._dbHardwareConfigDropdown,
+		// 	response.data.value.map((value: any) => {
+		// 		return {
+		// 			displayName: value.name,
+		// 			// remove location from this line and others when region population is enabled again.
+		// 			name: value.id + '/location/' + value.location,
+		// 		};
+		// 	})
+		// );
+		// if (this._serverGroupDropdown.value) {
+		// 	this.wizard.model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
+		// 	this.wizard.model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
+		// 	this.wizard.model.azureRegion = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/location/'), '');
+		// }
+		this._dbHardwareConfigDropdown.loading = false;
+		return;
 	}
 
 	protected async validatePage(): Promise<string> {
