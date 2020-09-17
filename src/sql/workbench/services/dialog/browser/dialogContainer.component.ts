@@ -48,7 +48,7 @@ export class DialogContainer implements AfterViewInit {
 	public _dialogPane: DialogPane;
 
 	public modelViewId: string;
-	@ViewChild(ModelViewContent) private _modelViewContent: ModelViewContent;
+	@ViewChild(ModelViewContent) private _modelViewContent?: ModelViewContent;
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -63,6 +63,9 @@ export class DialogContainer implements AfterViewInit {
 	}
 
 	ngAfterViewInit(): void {
+		if (!this._modelViewContent) {
+			return;
+		}
 		this._modelViewContent.onEvent(event => {
 			if (event.isRootComponent && event.eventType === ComponentEventType.validityChanged) {
 				this._params.validityChangedCallback(event.args);
@@ -74,6 +77,9 @@ export class DialogContainer implements AfterViewInit {
 	}
 
 	public layout(): void {
+		if (!this._modelViewContent) {
+			return;
+		}
 		this._modelViewContent.layout();
 		this._changeRef.detectChanges();
 	}

@@ -30,7 +30,7 @@ import { startsWith } from 'vs/base/common/strings';
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
 import { PropertiesContainerModule } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.module';
 
-export const DialogModule = (params, selector: string, instantiationService: IInstantiationService): any => {
+export const DialogModule = (params: any, selector: string, instantiationService: IInstantiationService): any => {
 
 	/* Model-backed components */
 	let extensionComponents = Registry.as<IComponentRegistry>(Extensions.ComponentContribution).getAllCtors();

@@ -65,8 +65,8 @@ class MessagesView extends Disposable implements IPanelView {
 class ResultsView extends Disposable implements IPanelView {
 	private gridPanel: GridPanel;
 	private container = document.createElement('div');
-	private _state: GridPanelState;
-	private _runner: QueryRunner;
+	private _state?: GridPanelState;
+	private _runner?: QueryRunner;
 
 	constructor(private instantiationService: IInstantiationService) {
 		super();
@@ -102,7 +102,7 @@ class ResultsView extends Disposable implements IPanelView {
 	}
 
 	onShow(): void {
-		if (this._state) {
+		if (this._state && this._runner) {
 			this.state = this._state;
 			this.queryRunner = this._runner;
 		}
@@ -163,7 +163,7 @@ class MessagesTab implements IPanelTab {
 
 export class QueryResultsView extends Disposable {
 	private _panelView: TabbedPanel;
-	private _input: QueryResultsInput;
+	private _input?: QueryResultsInput;
 	private resultsTab: ResultsTab;
 	private messagesTab: MessagesTab;
 	private chartTab: ChartTab;
@@ -191,7 +191,7 @@ export class QueryResultsView extends Disposable {
 		this._panelView.pushTab(this.resultsTab);
 		this._panelView.pushTab(this.messagesTab);
 		this._register(this._panelView.onTabChange(e => {
-			if (this.input) {
+			if (this.input && this.input.state) {
 				this.input.state.activeTab = e;
 			}
 		}));
@@ -209,6 +209,9 @@ export class QueryResultsView extends Disposable {
 	}
 
 	private setQueryRunner(runner: QueryRunner) {
+		if (!this.input) {
+			return;
+		}
 		const activeTab = this._input.state.activeTab;
 		if (this.hasResults(runner)) {
 			this.showResults();
@@ -334,7 +337,7 @@ export class QueryResultsView extends Disposable {
 		this.dynamicModelViewTabs.forEach(t => t.clear());
 	}
 
-	public get input(): QueryResultsInput {
+	public get input(): QueryResultsInput | undefined {
 		return this._input;
 	}
 
@@ -343,6 +346,9 @@ export class QueryResultsView extends Disposable {
 	}
 
 	public chartData(dataId: { resultId: number, batchId: number }): void {
+		if (!this.input || !this.input.state) {
+			return;
+		}
 		this.input.state.visibleTabs.add(this.chartTab.identifier);
 		if (!this._panelView.contains(this.chartTab)) {
 			this._panelView.pushTab(this.chartTab);
@@ -372,6 +378,9 @@ export class QueryResultsView extends Disposable {
 	}
 
 	public showPlan(xml: string) {
+		if (!this.input || !this.input.state) {
+			return;
+		}
 		this.input.state.visibleTabs.add(this.qpTab.identifier);
 		if (!this._panelView.contains(this.qpTab)) {
 			this._panelView.pushTab(this.qpTab);
@@ -413,10 +422,12 @@ export class QueryResultsView extends Disposable {
 	}
 
 	public registerQueryModelViewTab(title: string, componentId: string): void {
+		if (!this.input || !this.input.state) {
+			return;
+		}
 		let tab = this._register(new QueryModelViewTab(title, this.instantiationService));
 		tab.view.componentId = componentId;
 		this.dynamicModelViewTabs.push(tab);
-
 		this.input.state.visibleTabs.add('querymodelview;' + title + ';' + componentId);
 		if (!this._panelView.contains(tab)) {
 			this._panelView.pushTab(tab, undefined, true);

@@ -12,8 +12,8 @@ import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 
 export class WizardNavigationParams implements IBootstrapParams {
-	wizard: Wizard;
-	navigationHandler: (index: number) => void;
+	wizard!: Wizard;
+	navigationHandler?: (index: number) => void;
 }
 
 @Component({
@@ -39,7 +39,7 @@ export class WizardNavigation implements AfterViewInit {
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
 
-	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
+	@ViewChild('container', { read: ElementRef }) private _container?: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IBootstrapParams) private _params: WizardNavigationParams,
@@ -57,10 +57,16 @@ export class WizardNavigation implements AfterViewInit {
 	}
 
 	hasBottomConnector(index: number): boolean {
+		if (!this._params.wizard.pages) {
+			return false;
+		}
 		return index + 1 !== this._params.wizard.pages.length;
 	}
 
 	isActive(index: number): boolean {
+		if (!this._params.wizard.currentPage) {
+			return false;
+		}
 		return index <= this._params.wizard.currentPage;
 	}
 
@@ -70,18 +76,23 @@ export class WizardNavigation implements AfterViewInit {
 
 	navigate(index: number): void {
 		if (this.isActive(index)) {
-			this._params.navigationHandler(index);
+			this._params.navigationHandler!(index);
 		}
 	}
 
 	private style(): void {
 		let theme = this._themeService.getColorTheme();
 		let navigationBackgroundColor = theme.getColor(SIDE_BAR_BACKGROUND);
+		if (!navigationBackgroundColor) {
+			return;
+		}
 		if (theme.type === 'light') {
 			navigationBackgroundColor = navigationBackgroundColor.lighten(0.03);
 		} else if (theme.type === 'dark') {
 			navigationBackgroundColor = navigationBackgroundColor.darken(0.03);
 		}
-		(this._container.nativeElement as HTMLElement).style.backgroundColor = navigationBackgroundColor.toString();
+		if (this._container) {
+			(this._container.nativeElement as HTMLElement).style.backgroundColor = navigationBackgroundColor.toString();
+		}
 	}
 }

@@ -63,7 +63,7 @@
 		"./sql/workbench/contrib/assessment/**/*.ts", // 62 errors
 		"./sql/workbench/contrib/assessment/test/**/*.ts",
 		"./sql/workbench/contrib/charts/test/**/*.ts",
-		"./sql/workbench/contrib/commandLine/**/*.ts", // 292 errors
+		//"./sql/workbench/contrib/commandLine/**/*.ts", // 292 errors
 		"./sql/workbench/contrib/commandLine/test/**/*.ts",
 		"./sql/workbench/contrib/connection/**/*.ts", // 174 errors
 		"./sql/workbench/contrib/dashboard/**/*.ts", // 1015 errors
