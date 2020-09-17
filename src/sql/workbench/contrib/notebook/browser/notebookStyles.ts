@@ -7,8 +7,8 @@ import 'vs/css!./notebook';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground } from 'vs/platform/theme/common/colorRegistry';
-import { editorCodeCellLineHighlight, editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
-import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, cellEditorLineHighlight, cellSelectedBackground, cellEditModeBackground, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder, notebookToolbarSelectBackground, splitBorder, textCellBackground, codeCellBackground } from 'sql/platform/theme/common/colorRegistry'; import { IDisposable } from 'vs/base/common/lifecycle';
+import { editorCodeCellLineHighlight, editorCodeCellUnselectedLineHighlight, editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
+import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, cellEditorLineHighlight, cellSelectedBackground, cellEditModeBackground, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder, notebookToolbarSelectBackground, splitBorder, textCellBackground, codeCellBackground, notebookEditorBackground } from 'sql/platform/theme/common/colorRegistry'; import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import { getZoomLevel } from 'vs/base/browser/browser';
@@ -35,15 +35,23 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 
 		const inactiveBorder = theme.getColor(SIDE_BAR_BACKGROUND);
 		const notebookLineHighlight = theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
+
+		let background = theme.getColor(notebookEditorBackground);
+		if (background) {
+			collector.addRule(`.scrollable { background-color: ${background};}`);
+		}
+
 		// Code editor style overrides - only applied if user chooses this as preferred option
 		if (overrideEditorThemeSetting) {
-
 			let lineHighlight = theme.getColor(editorLineHighlight);
 			let codeCellLineHighlight = theme.getColor(editorCodeCellLineHighlight);
+			let codeCellUnselectedLineHighlight = theme.getColor(editorCodeCellUnselectedLineHighlight);
+
 			if (!lineHighlight || lineHighlight.isTransparent()) {
 				// Use notebook color override
 				lineHighlight = notebookLineHighlight;
 				if (lineHighlight) {
+					collector.addRule(`.notebook-cell.active code-cell-component code-component .monaco-editor .view-overlays .current-line { background-color: ${codeCellUnselectedLineHighlight}; border: 0px; opacity: 10%}`);
 					collector.addRule(`.notebook-cell.active.edit-mode code-cell-component code-component .monaco-editor .view-overlays .current-line { background-color: ${codeCellLineHighlight}; border: 0px; opacity: 10%}`);
 					collector.addRule(`code-component .monaco-editor .view-overlays .current-line { background-color: ${lineHighlight}; border: 0px; }`);
 				}
@@ -219,10 +227,12 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		// Cell background when at rest, selected and in edit mode
 		// Rest
 		const textCellBackgroundColor = theme.getColor(textCellBackground);
-		const codeCellBackgroundColor = theme.getColor(codeCellBackground);
 		if (textCellBackgroundColor) {
-			collector.addRule(`.notebook-cell code-cell-component > div { background-color: ${codeCellBackgroundColor}; }`);
 			collector.addRule(`.notebook-cell text-cell-component .notebook-text { background-color: ${textCellBackgroundColor}; }`);
+		}
+		const codeCellBackgroundColor = theme.getColor(codeCellBackground);
+		if (codeCellBackgroundColor) {
+			collector.addRule(`.notebook-cell code-cell-component > div { background-color: ${codeCellBackgroundColor}; }`);
 		}
 		// Selected
 		const cellSelectedBackgroundColor = theme.getColor(cellSelectedBackground);
