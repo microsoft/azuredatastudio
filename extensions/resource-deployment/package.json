@@ -424,8 +424,14 @@
         ],
         "providers": [
           {
-            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLDatabase",
-            "requiredTools": [],
+            "azureSQLDBWizard":{
+              "notebook": "./notebooks/azuredb/create-sqldb.ipynb"
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli"
+              }
+            ],
             "when": "resource-type=single-database"
           },
           {
