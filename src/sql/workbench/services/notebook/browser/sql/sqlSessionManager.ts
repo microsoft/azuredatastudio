@@ -349,18 +349,16 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	public async disconnect(): Promise<void> {
-		if (this._queryRunners.size > 0) {
-			this._queryRunners.forEach(async (queryRunner: QueryRunner, uri: string) => {
-				if (this._connectionManagementService.isConnected(uri)) {
-					try {
-						await this._connectionManagementService.disconnect(uri);
-					} catch (err) {
-						this.logService.error(err);
-					}
-
+		this._queryRunners.forEach(async (queryRunner: QueryRunner, uri: string) => {
+			if (this._connectionManagementService.isConnected(uri)) {
+				try {
+					await this._connectionManagementService.disconnect(uri);
+				} catch (err) {
+					this.logService.error(err);
 				}
-			});
-		}
+
+			}
+		});
 		return;
 	}
 }
