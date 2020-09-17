@@ -167,3 +167,7 @@
 	/* Hide twisties */
 	display: none !important;
 }
+
+.connection-dialog .tabbedPanel .tabList {
+	padding-left: 5px;
+}
