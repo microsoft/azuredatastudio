@@ -391,6 +391,25 @@
             "when": "version=sql2019"
           }
         ]
+      },
+      {
+        "name": "azure-sql",
+        "displayIndex": 4,
+        "displayName": "%azure-sql-displayName%",
+        "description": "%azure-sql-description%",
+        "platforms": "*",
+        "okButtonText": "%azure-sql-ok-button-text%",
+        "icon": {
+          "light": "./images/azure-sql.svg",
+          "dark": "./images/azure-sql.svg"
+        },
+        "options": [],
+        "providers": [
+          {
+            "webPageUrl": "https://portal.azure.com/#create/Microsoft.AzureSQL",
+            "requiredTools": []
+          }
+        ]
       }
     ]
   },
