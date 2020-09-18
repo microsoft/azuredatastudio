@@ -98,7 +98,10 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 	}
 
 	private getConnectionStrings(): KeyValue[] {
-		const endpoint: { ip: string, port: string } = this._postgresModel.endpoint;
+		const endpoint = this._postgresModel.endpoint;
+		if (!endpoint) {
+			return [];
+		}
 
 		return [
 			new InputKeyValue(this.modelView.modelBuilder, 'ADO.NET', `Server=${endpoint.ip};Database=postgres;Port=${endpoint.port};User Id=postgres;Password={your_password_here};Ssl Mode=Require;`),
