@@ -271,6 +271,5 @@ declare module 'azdata-ext' {
 	export interface IExtension {
 		azdata: IAzdataApi;
 		isEulaAccepted(): boolean;
-		unAcceptEula(): Promise<void>;
 	}
 }

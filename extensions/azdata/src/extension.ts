@@ -59,10 +59,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 
 	return {
 		isEulaAccepted: () => !!context.globalState.get<boolean>(constants.eulaAccepted),
-		unAcceptEula: async () => {
-			await context.globalState.update(constants.eulaAccepted, false); // save a memento that eula was unAccepted
-			await vscode.commands.executeCommand('setContext', constants.eulaAccepted, false); // save a context key that eula was unAccepted so that command for accepting eula is available in commandPalette.
-		},
 		azdata: {
 			arc: {
 				dc: {
