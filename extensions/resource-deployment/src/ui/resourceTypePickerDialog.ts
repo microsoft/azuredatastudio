@@ -107,6 +107,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 				iconPosition: 'left'
 			}).component();
 			this._toDispose.push(this._cardGroup.onSelectionChanged(({ cardId }) => {
+				this._recheckEulaButton.hidden = true;
+				this._dialogObject.okButton.enabled = true;
 				const resourceType = resourceTypes.find(rt => { return rt.name === cardId; });
 				if (resourceType) {
 					this.selectResourceType(resourceType);
