@@ -65,6 +65,10 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				// Override values only for the children of code-component so regular editors aren't affected
 				collector.addRule(`code-component .monaco-editor .view-overlays .current-line { border: 0px; }`);
 			}
+			if (theme.type === 'hc') {
+				// We need to remove the border around text in a code cell when it is not in focus in high contrast theme
+				collector.addRule(`.monaco-editor .view-overlays:not(.focused) .current-line { border-color: transparent; }`);
+			}
 		} else {
 			let lineHighlight = theme.getColor(cellEditorLineHighlight);
 			if (lineHighlight) {
