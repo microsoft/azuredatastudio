@@ -107,7 +107,7 @@
 	"arc.postgres.settings.resource.title": "PostgreSQL server group resource settings",
 	"arc.postgres.settings.storage.title": "PostgreSQL server group storage settings",
 	"arc.postgres.server.group.name": "Server group name",
-	"arc.postgres.server.group.name.validation.description": "Server group name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 10 characters or fewer in length.",
+	"arc.postgres.server.group.name.validation.description": "Server group name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 12 characters or fewer in length.",
 	"arc.postgres.server.group.workers": "Number of workers",
 	"arc.postgres.server.group.port": "Port",
 	"arc.postgres.server.group.engine.version": "Engine Version",

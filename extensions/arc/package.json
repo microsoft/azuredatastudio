@@ -724,7 +724,7 @@
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_NAME",
                           "type": "text",
                           "textValidationRequired": true,
-                          "textValidationRegex": "^[a-z]([-a-z0-9]{0,8}[a-z0-9])?$",
+                          "textValidationRegex": "^[a-z]([-a-z0-9]{0,10}[a-z0-9])?$",
                           "textValidationDescription": "%arc.postgres.server.group.name.validation.description%",
                           "required": true
                         },
