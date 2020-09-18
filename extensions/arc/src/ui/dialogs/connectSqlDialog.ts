@@ -40,8 +40,7 @@ export class ConnectToSqlDialog extends InitializingComponent {
 				}).component();
 			this.usernameInputBox = this.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					value: connectionProfile?.userName,
-					enabled: false
+					value: connectionProfile?.userName
 				}).component();
 			this.passwordInputBox = this.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
