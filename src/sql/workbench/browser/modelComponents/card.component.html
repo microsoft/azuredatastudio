@@ -15,12 +15,12 @@
 					<div [class]="iconClass" [style.width]="iconWidth" [style.height]="iconHeight"></div>
 				</div>
 				<h4 class="card-label">{{label}}</h4>
-				<div *ngIf="descriptions.length > 0" class="model-card-description-container">
+				<div *ngIf="descriptions.length > 0" class="model-card-description-container-legacy">
 					<div *ngFor="let desc of descriptions">
 						<div *ngIf="desc.label; else separator" [style.font-weight]="desc.fontWeight"
-							class="model-card-list-item-description">
+							class="model-card-list-item-description-legacy">
 							<span>{{desc.label}}</span><span
-								class="model-card-list-item-description-value">{{desc.value}}</span>
+								class="model-card-list-item-description-value-legacy">{{desc.value}}</span>
 						</div>
 						<ng-template #separator>
 							<div style="height: 12px"></div>
@@ -35,7 +35,7 @@
 				<h4 class="card-label">{{label}}</h4>
 				<p class="card-value">{{value}}</p>
 				<span *ngIf="actions">
-					<table class="model-table">
+					<table class="model-table-legacy">
 						<tr *ngFor="let action of actions">
 							<td class="table-row">{{action.label}}</td>
 							<td *ngIf="action.actionTitle" class="table-row">
