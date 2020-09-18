@@ -19,9 +19,6 @@
 	"arc.control.plane.cluster.environment.title": "What is your target existing Kubernetes cluster environment?",
 	"arc.control.plane.select.cluster.title": "Select from existing Kubernetes clusters",
 	"arc.control.plane.kube.cluster.context": "Cluster context",
-	"arc.control.plane.container.registry.title": "Container registry details",
-	"arc.control.plane.container.registry.name": "Container registry login",
-	"arc.control.plane.container.registry.password": "Container registry password",
 	"arc.control.plane.cluster.config.profile.title": "Choose the config profile",
 	"arc.control.plane.cluster.config.profile": "Config profile",
 	"arc.control.plane.data.controller.create.title": "Provide details to create Azure Arc data controller",
@@ -55,7 +52,6 @@
 	"arc.control.plane.summary.cluster.context": "Cluster context",
 	"arc.control.plane.summary.profile": "Config profile",
 	"arc.control.plane.summary.username": "Username",
-	"arc.control.plane.summary.docker.username": "Docker username",
 	"arc.control.plane.summary.azure": "Azure",
 	"arc.control.plane.summary.subscription": "Subscription",
 	"arc.control.plane.summary.resource.group": "Resource group",
@@ -65,7 +61,6 @@
 	"arc.control.plane.summary.location": "Location",
 	"arc.control.plane.arc.data.controller.agreement": "I accept {0} and {1}.",
 	"microsoft.agreement.privacy.statement":"Microsoft Privacy Statement",
-	"arc.agreement.azdata.eula":"azdata license terms",
 	"deploy.arc.control.plane.action":"Script to notebook",
 
 
@@ -73,17 +68,13 @@
 	"resource.type.arc.postgres.display.name": "PostgreSQL Hyperscale server groups - Azure Arc (preview)",
 	"resource.type.arc.sql.description": "Managed SQL Instance service for app developers in a customer-managed environment",
 	"resource.type.arc.postgres.description": "Deploy PostgreSQL server groups into an Azure Arc environment",
-	"resource.type.picker.display.name": "Resource Type",
-	"sql.managed.instance.display.name": "Azure SQL managed instance - Azure Arc",
-	"postgres.server.group.display.name": "PostgreSQL server groups - Azure Arc",
-
 	"arc.controller": "Target Azure Arc Controller",
+
 
 	"arc.sql.new.dialog.title": "Deploy Azure SQL managed instance - Azure Arc (preview)",
 	"arc.sql.settings.section.title": "SQL Connection information",
 	"arc.azure.section.title": "Azure information",
 	"arc.sql.instance.name": "Instance name (lower case letters and digits only)",
-	"arc.sql.instance.port": "Port",
 	"arc.sql.username": "Username",
 	"arc.storage-class.dc.label": "Storage Class",
 	"arc.sql.storage-class.dc.description": "The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.",
@@ -131,7 +122,7 @@
 	"arc.postgres.server.group.cores.description": "Fractional cores are supported",
 	"arc.postgres.server.group.memory.request": "Min memory MB (per node) to reserve",
 	"arc.postgres.server.group.memory.limit": "Max memory MB (per node) to allow",
-	"arc.agreement": "I accept {0}, {1} and {2}.",
+	"arc.agreement": "I accept {0} and {1}.",
 	"arc.agreement.sql.terms.conditions":"Azure SQL managed instance - Azure Arc terms and conditions",
 	"arc.agreement.postgres.terms.conditions":"PostgreSQL server groups - Azure Arc terms and conditions",
 	"arc.deploy.action":"Deploy"
