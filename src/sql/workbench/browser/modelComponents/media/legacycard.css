@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.model-card {
+.model-card-legacy {
 	position: relative;
 	display: inline-block;
 	height: 90%;
@@ -16,7 +16,7 @@
 	border-color: rgb(214, 214, 214);
 }
 
-.model-card .card-content {
+.model-card-legacy .card-content {
 	position: relative;
 	display: inline-block;
 	height: auto;
@@ -26,7 +26,7 @@
 	min-width: 30px;
 }
 
-.model-card .card-vertical-button {
+.model-card-legacy .card-vertical-button {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -38,17 +38,17 @@
 	min-width: 130px;
 }
 
-.model-card .card-label {
+.model-card-legacy .card-label {
 	font-size: 12px;
 	font-weight: bold;
 }
 
-.model-card .card-value {
+.model-card-legacy .card-value {
 	font-size: 12px;
 	line-height: 18px;
 }
 
-.model-card .iconContainer {
+.model-card-legacy .iconContainer {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -60,7 +60,7 @@
 	border-color: rgb(214, 214, 214);
 }
 
-.model-card .cardIcon {
+.model-card-legacy .cardIcon {
 	display: inline-block;
 	flex-grow: 1;
 	width: 100%;
@@ -72,7 +72,7 @@
 	background-size: contain;
 }
 
-.model-card .card-status {
+.model-card-legacy .card-status {
 	position: absolute;
 	top: 7px;
 	left: 5px;
@@ -81,7 +81,7 @@
 	height: 22px;
 }
 
-.model-card .status-content {
+.model-card-legacy .status-content {
 	position: absolute;
 	top: 0px;
 	right: 0px;
@@ -91,7 +91,7 @@
 	text-align: center;
 }
 
-.model-card-list-item .selection-indicator-container, .model-card .selection-indicator-container {
+.model-card-list-item-legacy .selection-indicator-container, .model-card-legacy .selection-indicator-container {
 	position: absolute;
 	top: 5px;
 	right: 5px;
@@ -105,7 +105,7 @@
 	border-style: solid;
 }
 
-.model-card-list-item .selection-indicator-container, .model-card .selection-indicator-container {
+.model-card-list-item-legacy .selection-indicator-container, .model-card-legacy .selection-indicator-container {
 	position: absolute;
 	overflow: hidden;
 	width: 16px;
@@ -117,17 +117,17 @@
 	border-style: solid;
 }
 
-.model-card-list-item .selection-indicator-container {
+.model-card-list-item-legacy .selection-indicator-container {
 	top: 10px;
 	right: 10px;
 }
 
-.model-card .selection-indicator-container {
+.model-card-legacy .selection-indicator-container {
 	top: 5px;
 	right: 5px;
 }
 
-.model-card-list-item .selection-indicator, .model-card .selection-indicator {
+.model-card-list-item-legacy .selection-indicator, .model-card-legacy .selection-indicator {
 	margin: 4px;
 	width: 8px;
 	height: 8px;
@@ -135,26 +135,26 @@
 	background-color: rgb(0, 120, 215);
 }
 
-.model-card .model-table {
+.model-card-legacy .model-table-legacy {
 	border-spacing: 5px;
 }
 
-.model-table .table-row {
+.model-table-legacy .table-row {
 	width: auto;
 	clear: both;
 }
 
-.model-table .table-cell {
+.model-table-legacy .table-cell {
 	vertical-align: top;
 	padding: 7px;
 }
 
-.model-table a {
+.model-table-legacy a {
 	cursor: pointer;
 	text-decoration: underline
 }
 
-.model-card-list-item {
+.model-card-list-item-legacy {
 	display: inline-block;
 	height: 100%;
 	width: 100%;
@@ -165,14 +165,14 @@
 	vertical-align: top;
 }
 
-.model-card-list-item .list-item-content {
+.model-card-list-item-legacy .list-item-content {
 	height: auto;
 	padding: 5px 26px 5px 5px;
 	min-height: 30px;
 	min-width: 300px;
 }
 
-.model-card-list-item .list-item-icon {
+.model-card-list-item-legacy .list-item-icon {
 	background-position: 2px 2px;
 	padding-left: 22px;
 	font-size: 15px;
@@ -180,40 +180,21 @@
 	background-size: 16px 16px;
 }
 
-.model-card-list-item .list-item-description {
+.model-card-list-item-legacy .list-item-description {
 	padding-left: 22px;
 }
 
-.model-card-description-container {
+.model-card-description-container-legacy {
 	border-top-width: 1px;
 	border-top-style: solid;
 	border-color: rgb(214, 214, 214);
 	padding: 5px;
 }
 
-.model-card-list-item-description {
+.model-card-list-item-description-legacy {
 	text-align: left;
 }
 
-.model-card-list-item-description-value {
+.model-card-list-item-description-value-legacy {
 	float: right;
-}
-
-.card-group {
-	display: flex;
-	flex-flow: row;
-}
-
-.model-card-description-table {
-	margin-bottom: 10px;
-}
-
-.model-card-description-label-column {
-	text-align: left;
-	width: 100%;
-}
-
-.model-card-description-value-column {
-	text-align: right;
-	white-space: nowrap;
 }

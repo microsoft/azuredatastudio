@@ -117,7 +117,7 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 	}
 
 	public getClass(): string {
-		let cardClass = this.isListItemCard ? 'model-card-list-item' : 'model-card';
+		let cardClass = this.isListItemCard ? 'model-card-list-item-legacy' : 'model-card-legacy';
 		return (this.selectable && this.selected || this._hasFocus) ? `${cardClass} selected` :
 			`${cardClass} unselected`;
 	}
