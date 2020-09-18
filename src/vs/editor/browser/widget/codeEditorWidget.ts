@@ -1299,6 +1299,7 @@ export class CodeEditorWidget extends Disposable implements editorBrowser.ICodeE
 		this._modelData.view.focus();
 	}
 
+	// {{SQL CARBON EDIT}}
 	public unfocus(): void {
 		if (!this._modelData || !this._modelData.hasRealView) {
 			return;

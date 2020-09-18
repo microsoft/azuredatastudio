@@ -478,6 +478,7 @@ export class View extends ViewEventHandler {
 		this._textAreaHandler.focusTextArea();
 	}
 
+	// {{SQL CARBON EDIT}}
 	public unfocus(): void {
 		this._textAreaHandler.unFocusTextArea();
 	}
