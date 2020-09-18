@@ -383,6 +383,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			let rows = await this._queryRunner.getQueryRows(i, numRows, this._batchId, this._id);
 			this.convertData(rows);
 		}
+		this.cellModel.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 	}
 
 	private convertData(rows: ResultSetSubset): void {
