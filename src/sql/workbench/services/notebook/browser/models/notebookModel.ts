@@ -658,8 +658,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let providerFeatures = this._capabilitiesService.getCapabilities(profile.providerName);
 			if (connectionProviderIds?.length) {
 				this._currentKernelAlias = providerFeatures?.connection.notebookKernelAlias;
-				// Adds Kernel Alias and Connection Provider to Map if new Notebook connection contains notebookKernelAlias
-				if (this._currentKernelAlias) {
+				// Reset the connection when switching from Kusto to Spark
+				if (this._selectedKernelDisplayName !== this._currentKernelAlias && this._selectedKernelDisplayName) {
+					this._currentKernelAlias = undefined;
+				} else {
+					// Adds Kernel Alias and Connection Provider to Map if new Notebook connection contains notebookKernelAlias
 					this._kernelDisplayNameToConnectionProviderIds.set(this._currentKernelAlias, [profile.providerName]);
 				}
 			}
