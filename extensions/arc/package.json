@@ -578,7 +578,10 @@
                           "type": "text",
                           "defaultValue": "sqlinstance1",
                           "required": true,
-                          "labelWidth": "100%"
+                          "labelWidth": "100%",
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
+                          "textValidationDescription": "%arc.sql.invalidinstancename%"
                         },
                         {
                           "label": "%arc.sql.username%",
@@ -722,7 +725,7 @@
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_NAME",
                           "type": "text",
                           "textValidationRequired": true,
-                          "textValidationRegex": "^[a-z]([-a-z0-9]{0,8}[a-z0-9])?$",
+                          "textValidationRegex": "^[a-z]([-a-z0-9]{0,10}[a-z0-9])?$",
                           "textValidationDescription": "%arc.postgres.server.group.name.validation.description%",
                           "required": true
                         },
