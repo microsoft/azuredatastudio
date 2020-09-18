@@ -12,7 +12,7 @@ import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
-import { Project, EntryType, TargetPlatform, SystemDatabase, DacpacReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
+import { Project, EntryType, TargetPlatform, SystemDatabase, DacpacReferenceProjectEntry, SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
 import { exists, convertSlashesForSqlProj } from '../common/utils';
 import { Uri, window } from 'vscode';
 
@@ -47,7 +47,7 @@ describe('Project: sqlproj content operations', function (): void {
 		// should only have one database reference even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
 		should(project.databaseReferences.length).equal(1);
 		should(project.databaseReferences[0].databaseName).containEql(constants.master);
-		should(project.databaseReferences[0] instanceof DacpacReferenceProjectEntry).equal(true);
+		should(project.databaseReferences[0] instanceof SystemDatabaseReferenceProjectEntry).equal(true);
 
 		// Pre-post deployment scripts
 		should(project.preDeployScripts.length).equal(1);
@@ -67,7 +67,7 @@ describe('Project: sqlproj content operations', function (): void {
 		// should only have two database references even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
 		should(project.databaseReferences.length).equal(2);
 		should(project.databaseReferences[0].databaseName).containEql(constants.master);
-		should(project.databaseReferences[0] instanceof DacpacReferenceProjectEntry).equal(true);
+		should(project.databaseReferences[0] instanceof SystemDatabaseReferenceProjectEntry).equal(true);
 		should(project.databaseReferences[1].databaseName).containEql('TestProjectName');
 		should(project.databaseReferences[1] instanceof SqlProjectReferenceProjectEntry).equal(true);
 	});

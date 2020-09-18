@@ -913,7 +913,7 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 	}
 }
 
-class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
+export class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
 	constructor(uri: Uri, public ssdtUri: Uri, public databaseVariableLiteralValue: string, public suppressMissingDependenciesErrors: boolean) {
 		super(uri, '', EntryType.DatabaseReference);
 	}
