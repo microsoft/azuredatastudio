@@ -447,8 +447,16 @@ export async function promptForEula(memento: vscode.Memento, userRequested: bool
  * Downloads the Windows installer and runs it
  */
 async function downloadAndInstallAzdataWin32(): Promise<void> {
+	const fileContents = await HttpClient.getTextContent(`${azdataHostname}/${azdataReleaseJson}`);
+	let azdataReleaseInfo;
+	try {
+		azdataReleaseInfo = JSON.parse(fileContents);
+	} catch (e) {
+		throw Error(`failed to parse the JSON of contents at: ${azdataHostname}/${azdataReleaseJson}, text being parsed: '${fileContents}', error:${getErrorMessage(e)}`);
+	}
+	const downLoadLink = azdataReleaseInfo[process.platform]['link'] || `${azdataHostname}/${azdataUri}`;
 	const downloadFolder = os.tmpdir();
-	const downloadedFile = await HttpClient.downloadFile(`${azdataHostname}/${azdataUri}`, downloadFolder);
+	const downloadedFile = await HttpClient.downloadFile(downLoadLink, downloadFolder);
 	await executeCommand('msiexec', ['/qn', '/i', downloadedFile]);
 }
 

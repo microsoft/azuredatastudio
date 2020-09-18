@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as path from 'path';
 import * as should from 'should';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
@@ -11,7 +10,6 @@ import * as azdata from '../azdata';
 import * as childProcess from '../common/childProcess';
 import { HttpClient } from '../common/httpClient';
 import * as utils from '../common/utils';
-import * as constants from '../constants';
 import * as loc from '../localizedConstants';
 
 const oldAzdataMock = new azdata.AzdataTool('/path/to/azdata', '0.0.0');
@@ -231,7 +229,6 @@ async function testWin32SuccessfulUpdate() {
 		should(command).be.equal('msiexec');
 		should(args[0]).be.equal('/qn');
 		should(args[1]).be.equal('/i');
-		should(path.basename(args[2])).be.equal(constants.azdataUri);
 		return { stdout: '0.0.0', stderr: '' };
 	});
 	await azdata.checkAndUpdateAzdata(oldAzdataMock);
@@ -249,7 +246,6 @@ async function testWin32SuccessfulInstall() {
 			should(command).be.equal('msiexec');
 			should(args[0]).be.equal('/qn');
 			should(args[1]).be.equal('/i');
-			should(path.basename(args[2])).be.equal(constants.azdataUri);
 			return { stdout: '0.0.0', stderr: '' };
 		});
 	await azdata.checkAndInstallAzdata();
