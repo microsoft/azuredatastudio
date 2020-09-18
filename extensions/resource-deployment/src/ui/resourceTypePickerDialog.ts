@@ -40,6 +40,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._selectedResourceType = defaultResourceType;
 		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', "Install tools"));
 		this._recheckEulaButton = azdata.window.createButton(localize('deploymentDialog.RecheckEulaButton', "Validate EULA"));
+		this._recheckEulaButton.hidden = true;
 		this._toDispose.push(this._installToolButton.onClick(() => {
 			this.installTools().catch(error => console.log(error));
 		}));
@@ -103,6 +104,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 				iconPosition: 'left'
 			}).component();
 			this._toDispose.push(this._cardGroup.onSelectionChanged(({ cardId }) => {
+				this._recheckEulaButton.hidden = true;
+				this._dialogObject.okButton.enabled = true;
 				const resourceType = resourceTypes.find(rt => { return rt.name === cardId; });
 				if (resourceType) {
 					this.selectResourceType(resourceType);
