@@ -102,9 +102,7 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 
 			// Add table name to the models imported.
 			// Since Table name is picked last as per new flow this hasn't been set yet.
-			if (this.modelsViewData && this.modelsViewData.length > 0) {
-				this.modelsViewData?.map(x => x.targetImportTable = this.importTable);
-			}
+			this.modelsViewData?.forEach(x => x.targetImportTable = this.importTable);
 
 			if (!this.validateImportTableName()) {
 				this._labelComponent.value = constants.selectModelsTableMessage;
