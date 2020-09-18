@@ -106,9 +106,9 @@ export class ControllerTreeNode extends TreeNode {
 						break;
 					case ResourceType.sqlManagedInstances:
 						// Fill in the username too if we already have it
-						(resourceInfo as MiaaResourceInfo).username = (this.model.info.resources.find(info =>
+						(resourceInfo as MiaaResourceInfo).userName = (this.model.info.resources.find(info =>
 							info.name === resourceInfo.name &&
-							info.resourceType === resourceInfo.resourceType) as MiaaResourceInfo)?.username;
+							info.resourceType === resourceInfo.resourceType) as MiaaResourceInfo)?.userName;
 						const miaaModel = new MiaaModel(this.model, resourceInfo, registration, this._treeDataProvider);
 						node = new MiaaTreeNode(miaaModel, this.model);
 						break;

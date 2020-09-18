@@ -165,7 +165,7 @@ export class MiaaModel extends ResourceModel {
 			authenticationType: 'SqlLogin',
 			providerName: 'MSSQL',
 			connectionName: '',
-			userName: this._miaaInfo.username || '',
+			userName: this._miaaInfo.userName || '',
 			password: '',
 			savePassword: true,
 			groupFullName: undefined,
@@ -217,7 +217,7 @@ export class MiaaModel extends ResourceModel {
 	private async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
 		this._connectionProfile = connectionProfile;
 		this.info.connectionId = connectionProfile.id;
-		this._miaaInfo.username = connectionProfile.userName;
+		this._miaaInfo.userName = connectionProfile.userName;
 		await this._treeDataProvider.saveControllers();
 	}
 }

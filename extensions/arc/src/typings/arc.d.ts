@@ -20,7 +20,7 @@ declare module 'arc' {
 	}
 
 	export type MiaaResourceInfo = ResourceInfo & {
-		username?: string
+		userName?: string
 	};
 
 	export type ResourceInfo = {
