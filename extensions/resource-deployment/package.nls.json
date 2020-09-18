@@ -43,7 +43,6 @@
 	"resource-type-sql-windows-setup-description": "Run SQL Server on Windows, select a version to get started.",
 	"bdc-agreement": "I accept {0}, {1} and {2}.",
 	"microsoft-privacy-statement": "Microsoft Privacy Statement",
-	"bdc-agreement-azdata-eula": "azdata License Terms",
 	"bdc-agreement-bdc-eula": "SQL Server License Terms",
 	"deployment.configuration.title": "Deployment configuration",
 	"azdata-install-location-description": "Location of the azdata package used for the install command",

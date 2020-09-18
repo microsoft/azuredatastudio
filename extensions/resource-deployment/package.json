@@ -343,10 +343,6 @@
             {
               "text": "%bdc-agreement-bdc-eula%",
               "url": "https://go.microsoft.com/fwlink/?LinkId=2002534"
-            },
-            {
-              "text": "%bdc-agreement-azdata-eula%",
-              "url": "https://aka.ms/eula-azdata-en"
             }
           ]
         }
