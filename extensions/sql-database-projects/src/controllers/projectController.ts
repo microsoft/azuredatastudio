@@ -17,7 +17,7 @@ import * as azdata from 'azdata';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
+import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry, IDatabaseReferenceProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
@@ -29,6 +29,7 @@ import { BuildHelper } from '../tools/buildHelper';
 import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 
 /**
  * Controller for managing project lifecycle
@@ -394,7 +395,14 @@ export class ProjectsController {
 
 		let success = false;
 
-		if (context instanceof FileNode || FolderNode) {
+		if (context instanceof DatabaseReferenceTreeItem) {
+			const databaseReference = this.getDatabaseReference(project, context);
+
+			if (databaseReference) {
+				await project.deleteDatabaseReference(databaseReference);
+				success = true;
+			}
+		} else if (context instanceof FileNode || FolderNode) {
 			const fileEntry = this.getFileProjectEntry(project, context);
 
 			if (fileEntry) {
@@ -420,6 +428,17 @@ export class ProjectsController {
 			return allFileEntries.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)));
 		}
 		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
+	}
+
+	private getDatabaseReference(project: Project, context: BaseProjectTreeItem): IDatabaseReferenceProjectEntry | undefined {
+		const root = context.root as ProjectRootTreeItem;
+		const databaseReference = context as DatabaseReferenceTreeItem;
+
+		if (root && databaseReference) {
+			return project.databaseReferences.find(r => r.databaseName === databaseReference.treeItem.label);
+		}
+
+		return undefined;
 	}
 
 	/**
