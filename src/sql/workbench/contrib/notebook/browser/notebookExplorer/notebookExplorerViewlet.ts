@@ -39,6 +39,7 @@ import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/noteb
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import { isString } from 'vs/base/common/types';
+import * as glob from 'vs/base/common/glob';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
 
@@ -270,17 +271,21 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 						let contentFolder: URI;
 						this.updateViewletsState();
 						let rootFolder = isString(root.tooltip) ? root.tooltip : root.tooltip.value;
+						let folderToSearch: IFolderQuery;
 						if (root.contextValue !== 'pinnedNotebook') {
 							contentFolder = (await this.fileService.exists(URI.file(path.join(rootFolder, 'content')))) ? URI.file(path.join(rootFolder, 'content')) : URI.file(rootFolder);
-							let folderToSearch: IFolderQuery = { folder: contentFolder };
+							folderToSearch = { folder: contentFolder };
 							query.folderQueries.push(folderToSearch);
 							filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-							this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
 						} else {
-							// let folderToSearch: IFileQuery = { type: , filePattern : rootFolder };
-							// query.folderQueries.push(folderToSearch);
-							// this.searchView.startSearch(query, null, rootFolder, false, this.searchWidget);
+							let pattern = query.contentPattern.pattern;
+							let when = { when: rootFolder };
+							let expression: glob.IExpression = {};
+							expression[pattern] = when;
+							query.folderQueries.push({ folder: URI.file(path.dirname(rootFolder)), includePattern: expression });
+							filesToIncludeFiltered = rootFolder;
 						}
+						this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
 					});
 				});
 			}
@@ -357,8 +362,6 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			return undefined;
 		});
 	}
-
-
 
 	async refreshTree(event?: IChangeEvent): Promise<void> {
 		await this.searchView.refreshTree(event);
