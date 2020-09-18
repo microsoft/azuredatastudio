@@ -96,7 +96,7 @@
       "view/item/context": [
         {
           "command": "arc.openDashboard",
-          "when": "view == azureArc && viewItem && viewItem != postgresInstances)",
+          "when": "view == azureArc && viewItem",
           "group": "navigation@1"
         },
         {
