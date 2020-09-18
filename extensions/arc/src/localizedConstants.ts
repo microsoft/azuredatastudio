@@ -13,7 +13,7 @@ export function miaaDashboard(name: string): string { return localize('arc.miaaD
 export function postgresDashboard(name: string): string { return localize('arc.postgresDashboard', "Postgres Dashboard (Preview) - {0}", name); }
 
 export const dataControllersType = localize('arc.dataControllersType', "Azure Arc Data Controller");
-export const pgSqlType = localize('arc.pgSqlType', "PostgreSQL Server group - Azure Arc");
+export const pgSqlType = localize('arc.pgSqlType', "PostgreSQL Hyperscale - Azure Arc");
 export const miaaType = localize('arc.miaaType', "SQL instance - Azure Arc");
 
 export const overview = localize('arc.overview', "Overview");
