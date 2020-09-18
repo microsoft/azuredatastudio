@@ -267,14 +267,14 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 					const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
 					let root = treeView?.root;
 					let items = await treeView?.dataProvider.getChildren(root);
-					items?.forEach(root => {
+					items?.forEach(async root => {
 						let contentFolder: URI;
 						this.updateViewletsState();
 						let rootFolder = isString(root.tooltip) ? root.tooltip : root.tooltip.value;
 						let folderToSearch: IFolderQuery;
 						if (root.contextValue !== 'pinnedNotebook') {
 							contentFolder = URI.file(rootFolder);
-							root.children?.map((child) => {
+							(await treeView?.dataProvider.getChildren(root)).map((child) => {
 								if (child.tooltip.toString().includes('/content/')) {
 									contentFolder = URI.file(path.join(rootFolder, 'content'));
 									return;
