@@ -260,18 +260,18 @@
                           "locationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION",
                           "displayLocationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_DISPLAY_LOCATION",
                           "locations": [
-                            "eastus",
-                            "eastus2",
                             "australiaeast",
                             "centralus",
-                            "westus2",
-                            "westeurope",
-                            "southeastasia",
+                            "eastus",
+                            "eastus2",
+                            "francecentral",
+                            "japaneast",
                             "koreacentral",
                             "northeurope",
-                            "westeurope",
+                            "southeastasia",
                             "uksouth",
-                            "francecentral"
+                            "westeurope",
+                            "westus2"
                           ]
                         },
                         {
@@ -465,12 +465,6 @@
                           "type": "readonly_text",
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_ADMIN_USERNAME)"
-                        },
-                        {
-                          "label": "%arc.control.plane.summary.docker.username%",
-                          "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DOCKER_USERNAME)"
                         }
                       ]
                     },
