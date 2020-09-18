@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 export interface ITask<T> {
@@ -11,7 +11,7 @@ export class Delayer<T> {
 
 	public defaultDelay: number;
 	private timeout: any; // Timer
-	private completionPromise: Promise<T> | null;
+	private completionPromise: Promise<T | null> | null;
 	private onSuccess: ((value: T | PromiseLike<T> | undefined) => void) | null;
 	private task: ITask<T> | null;
 
@@ -23,7 +23,7 @@ export class Delayer<T> {
 		this.task = null;
 	}
 
-	public trigger(task: ITask<T>, delay: number = this.defaultDelay): Promise<T> {
+	public trigger(task: ITask<T>, delay: number = this.defaultDelay): Promise<T | null> {
 		this.task = task;
 		if (delay >= 0) {
 			this.cancelTimeout();
@@ -35,7 +35,7 @@ export class Delayer<T> {
 			}).then(() => {
 				this.completionPromise = null;
 				this.onSuccess = null;
-				let result = this.task!();
+				const result = this.task && this.task();
 				this.task = null;
 				return result;
 			});
@@ -44,30 +44,13 @@ export class Delayer<T> {
 		if (delay >= 0 || this.timeout === null) {
 			this.timeout = setTimeout(() => {
 				this.timeout = null;
-				this.onSuccess!(undefined);
+				if (this.onSuccess) {
+					this.onSuccess(undefined);
+				}
 			}, delay >= 0 ? delay : this.defaultDelay);
 		}
 
 		return this.completionPromise;
-	}
-
-	public forceDelivery(): Promise<T> | null {
-		if (!this.completionPromise) {
-			return null;
-		}
-		this.cancelTimeout();
-		let result = this.completionPromise;
-		this.onSuccess!(undefined);
-		return result;
-	}
-
-	public isTriggered(): boolean {
-		return this.timeout !== null;
-	}
-
-	public cancel(): void {
-		this.cancelTimeout();
-		this.completionPromise = null;
 	}
 
 	private cancelTimeout(): void {
