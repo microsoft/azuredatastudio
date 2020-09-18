@@ -6,6 +6,7 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolStatus } from '../interfaces';
+import { apiService } from '../services/apiService';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { getErrorMessage } from '../utils';
@@ -37,8 +38,12 @@ export class ResourceTypePickerDialog extends DialogBase {
 		private _resourceTypeNameFilters?: string[]) {
 		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = defaultResourceType;
+		const unAcceptEulaButton = azdata.window.createButton('UnAccept Eula');
+		unAcceptEulaButton.enabled = true;
+		this._toDispose.push(unAcceptEulaButton.onClick(async () => apiService.azdataApi.unAcceptEula()));
 		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', "Install tools"));
 		this._recheckEulaButton = azdata.window.createButton(localize('deploymentDialog.RecheckEulaButton', "Validate EULA"));
+		this._recheckEulaButton.hidden = true;
 		this._toDispose.push(this._installToolButton.onClick(() => {
 			this.installTools().catch(error => console.log(error));
 		}));
@@ -46,7 +51,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._dialogObject.message = { text: '' }; // clear any previous message.
 			this._dialogObject.okButton.enabled = this.validateToolsEula(); // re-enable the okButton if validation succeeds.
 		}));
-		this._dialogObject.customButtons = [this._installToolButton, this._recheckEulaButton];
+		this._dialogObject.customButtons = [this._installToolButton, this._recheckEulaButton, unAcceptEulaButton];
 		this._installToolButton.hidden = true;
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Select");
 		this._dialogObject.okButton.enabled = false; // this is enabled after all tools are discovered.
