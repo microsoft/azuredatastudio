@@ -14,7 +14,7 @@ export const subscription = localize('azure.account.subscription', "Subscription
 export const resourceGroup = localize('azure.account.resourceGroup', "Resource Group");
 export const location = localize('azure.account.location', "Azure Location");
 export const browse = localize('filePicker.browse', "Browse");
-export const select = localize('filePicker.select', "Select");
+export const select = localize('button.label', "Select");
 export const kubeConfigFilePath = localize('kubeConfigClusterPicker.kubeConfigFilePath', "Kube config file path");
 export const clusterContextNotFound = localize('kubeConfigClusterPicker.clusterContextNotFound', "No cluster context information found");
 export const signIn = localize('azure.signin', "Sign in…");
@@ -34,4 +34,6 @@ export const optionsNotDefined = (fieldType: FieldType) => localize('optionsNotD
 export const optionsNotObjectOrArray = localize('optionsNotObjectOrArray', "FieldInfo.options must be an object if it is not an array");
 export const optionsTypeNotFound = localize('optionsTypeNotFound', "When FieldInfo.options is an object it must have 'optionsType' property");
 export const optionsTypeRadioOrDropdown = localize('optionsTypeRadioOrDropdown', "When optionsType is not {0} then it must be {1}", OptionsType.Radio, OptionsType.Dropdown);
-export const azdataEulaNotAccepted = localize('azdataEulaNotAccepted', "Deployment cannot continue. Azure Data CLI license terms have not been accepted. Execute the command: [Azure Data CLI: Accept EULA] to accept EULA to enable the features that requires Azure Data CLI.");
+export const azdataEulaNotAccepted = localize('azdataEulaNotAccepted', "Deployment cannot continue. Azure Data CLI license terms have not yet been accepted. Please accept the EULA to enable the features that requires Azure Data CLI.");
+export const azdataEulaDeclined = localize('azdataEulaDeclined', "Deployment cannot continue. Azure Data CLI license terms were declined.You can either Accept Eula to continue or Cancel this operation");
+export const acceptEulaAndSelect = localize('deploymentDialog.RecheckEulaButton', "Accept EULA & Select");

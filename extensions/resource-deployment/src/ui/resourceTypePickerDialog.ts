@@ -11,6 +11,7 @@ import { IToolsService } from '../services/toolsService';
 import { getErrorMessage } from '../utils';
 import { DialogBase } from './dialogBase';
 import { createFlexContainer } from './modelViewUtils';
+import * as loc from './../localizedConstants';
 
 const localize = nls.loadMessageBundle();
 
@@ -26,9 +27,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _agreementContainer!: azdata.DivContainer;
 	private _agreementCheckboxChecked: boolean = false;
 	private _installToolButton: azdata.window.Button;
-	private _recheckEulaButton: azdata.window.Button;
 	private _installationInProgress: boolean = false;
 	private _tools: ITool[] = [];
+	private _eulaValidationSucceeded: boolean = false;
 
 	constructor(
 		private toolsService: IToolsService,
@@ -38,32 +39,30 @@ export class ResourceTypePickerDialog extends DialogBase {
 		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = defaultResourceType;
 		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', "Install tools"));
-		this._recheckEulaButton = azdata.window.createButton(localize('deploymentDialog.RecheckEulaButton', "Validate EULA"));
-		this._recheckEulaButton.hidden = true;
 		this._toDispose.push(this._installToolButton.onClick(() => {
 			this.installTools().catch(error => console.log(error));
 		}));
-		this._toDispose.push(this._recheckEulaButton.onClick(() => {
-			this._dialogObject.message = { text: '' }; // clear any previous message.
-			this._dialogObject.okButton.enabled = this.validateToolsEula(); // re-enable the okButton if validation succeeds.
-		}));
-		this._dialogObject.customButtons = [this._installToolButton, this._recheckEulaButton];
+		this._dialogObject.customButtons = [this._installToolButton];
 		this._installToolButton.hidden = true;
-		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Select");
+		this._dialogObject.okButton.label = loc.select;
 		this._dialogObject.okButton.enabled = false; // this is enabled after all tools are discovered.
 	}
 
 	initialize() {
 		let tab = azdata.window.createTab('');
-		this._dialogObject.registerCloseValidator(() => {
+		this._dialogObject.registerCloseValidator(async () => {
 			const isValid = this._selectedResourceType && (this._selectedResourceType.agreement === undefined || this._agreementCheckboxChecked);
 			if (!isValid) {
 				this._dialogObject.message = {
 					text: localize('deploymentDialog.AcceptAgreements', "You must agree to the license agreements in order to proceed."),
 					level: azdata.window.MessageLevel.Error
 				};
+				return false;
 			}
-			return isValid;
+			if (!this._eulaValidationSucceeded && !(await this.acquireEulaAndProceed())) {
+				return false; // we return false so that the workflow does not proceed and user gets to either click acceptEulaAndSelect again or cancel
+			}
+			return true;
 		});
 		tab.registerContent((view: azdata.ModelView) => {
 			const tableWidth = 1126;
@@ -103,8 +102,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 				iconPosition: 'left'
 			}).component();
 			this._toDispose.push(this._cardGroup.onSelectionChanged(({ cardId }) => {
-				this._recheckEulaButton.hidden = true;
-				this._dialogObject.okButton.enabled = true;
+				this._dialogObject.message = { text: '' };
+				this._dialogObject.okButton.label = loc.select;
 				const resourceType = resourceTypes.find(rt => { return rt.name === cardId; });
 				if (resourceType) {
 					this.selectResourceType(resourceType);
@@ -114,7 +113,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._agreementContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolNameColumnHeader', "Tool"),
-				width: 80
+				width: 105
 			};
 			const descriptionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDescriptionColumnHeader', "Description"),
@@ -130,7 +129,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			};
 			const minVersionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolMinimumVersionColumnHeader', "Required Version"),
-				width: 95
+				width: 105
 			};
 			const installedPathColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDiscoveredPathColumnHeader', "Discovered Path or Additional Information"),
@@ -287,7 +286,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', toolRequirement.version || '', tool.installationPathOrAdditionalInformation || ''];
 		});
 		this._installToolButton.hidden = erroredOrFailedTool || minVersionCheckFailed || (toolsToAutoInstall.length === 0);
-		this._dialogObject.okButton.enabled = !erroredOrFailedTool && messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0) && this.validateToolsEula();
+		this._dialogObject.okButton.enabled = !erroredOrFailedTool && messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0);
 		if (messages.length !== 0) {
 			if (messages.length > 1) {
 				messages = messages.map(message => `•	${message}`);
@@ -319,22 +318,40 @@ export class ResourceTypePickerDialog extends DialogBase {
 				text: infoText.join(EOL)
 			};
 		}
+		if (!this.validateToolsEula()) {
+			this._dialogObject.okButton.label = loc.acceptEulaAndSelect;
+		}
 		this._toolsLoadingComponent.loading = false;
 	}
 
 	private validateToolsEula(): boolean {
-		const validationSucceeded = this._tools.every(tool => {
-			const eulaValidated = tool.validateEula();
+		this._eulaValidationSucceeded = this._tools.every(tool => {
+			const eulaValidated = tool.isEulaAccepted();
 			if (!eulaValidated) {
 				this._dialogObject.message = {
 					level: azdata.window.MessageLevel.Error,
-					text: tool.statusDescription!
+					text: [tool.statusDescription!, this._dialogObject.message.text].join(EOL)
 				};
 			}
 			return eulaValidated;
 		});
-		this._recheckEulaButton.hidden = validationSucceeded;
-		return validationSucceeded;
+		return this._eulaValidationSucceeded;
+	}
+
+	private async acquireEulaAndProceed(): Promise<boolean> {
+		this._dialogObject.message = { text: '' };
+		let eulaAccepted = true;
+		for (const tool of this._tools) {
+			eulaAccepted = tool.isEulaAccepted() || await tool.promptForEula();
+			if (!eulaAccepted) {
+				this._dialogObject.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: [tool.statusDescription!, this._dialogObject.message.text].join(EOL)
+				};
+				break;
+			}
+		}
+		return eulaAccepted;
 	}
 
 	private get toolRequirements() {
