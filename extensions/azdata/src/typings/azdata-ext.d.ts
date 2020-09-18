@@ -162,7 +162,7 @@ declare module 'azdata-ext' {
 					name: string // "citus"
 				}[],
 				settings: {
-					default: {} // { "max_connections": "101", "work_mem": "4MB" }
+					default: { [key: string]: string } // { "max_connections": "101", "work_mem": "4MB" }
 				}
 			},
 			scale: {

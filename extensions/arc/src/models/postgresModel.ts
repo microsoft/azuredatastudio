@@ -50,10 +50,10 @@ export class PostgresModel extends ResourceModel {
 			return undefined;
 		}
 
-		const cpuLimit = this._config.spec.scheduling?.default?.resources?.limits?.['cpu'];
-		const ramLimit = this._config.spec.scheduling?.default?.resources?.limits?.['memory'];
-		const cpuRequest = this._config.spec.scheduling?.default?.resources?.requests?.['cpu'];
-		const ramRequest = this._config.spec.scheduling?.default?.resources?.requests?.['memory'];
+		const cpuLimit = this._config.spec.scheduling?.default?.resources?.limits?.cpu;
+		const ramLimit = this._config.spec.scheduling?.default?.resources?.limits?.memory;
+		const cpuRequest = this._config.spec.scheduling?.default?.resources?.requests?.cpu;
+		const ramRequest = this._config.spec.scheduling?.default?.resources?.requests?.memory;
 		const storage = this._config.spec.storage?.data?.size;
 		const nodes = (this._config.spec.scale?.shards ?? 0) + 1; // An extra node for the coordinator
 
