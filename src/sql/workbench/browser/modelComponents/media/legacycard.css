@@ -1,0 +1,219 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.model-card {
+	position: relative;
+	display: inline-block;
+	height: 90%;
+	width: auto;
+	margin: 15px;
+	border-width: 1px;
+	border-style: solid;
+	text-align: left;
+	vertical-align: top;
+	border-color: rgb(214, 214, 214);
+}
+
+.model-card .card-content {
+	position: relative;
+	display: inline-block;
+	height: auto;
+	width: auto;
+	padding: 10px 45px 20px 45px;
+	min-height: 30px;
+	min-width: 30px;
+}
+
+.model-card .card-vertical-button {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	height: auto;
+	width: auto;
+	padding: 5px 5px 5px 5px;
+	min-height: 130px;
+	min-width: 130px;
+}
+
+.model-card .card-label {
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.model-card .card-value {
+	font-size: 12px;
+	line-height: 18px;
+}
+
+.model-card .iconContainer {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 1;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	padding: 10px 0px 10px 0px;
+	border-color: rgb(214, 214, 214);
+}
+
+.model-card .cardIcon {
+	display: inline-block;
+	flex-grow: 1;
+	width: 100%;
+	height: 100%;
+	max-width: 50px;
+	max-height: 50px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+
+.model-card .card-status {
+	position: absolute;
+	top: 7px;
+	left: 5px;
+	overflow: hidden;
+	width: 22px;
+	height: 22px;
+}
+
+.model-card .status-content {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	min-width: 16px;
+	height: 16px;
+	border-radius: 8px;
+	text-align: center;
+}
+
+.model-card-list-item .selection-indicator-container, .model-card .selection-indicator-container {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	overflow: hidden;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background-color: white;
+	border-width: 1px;
+	border-color: rgb(0, 120, 215);
+	border-style: solid;
+}
+
+.model-card-list-item .selection-indicator-container, .model-card .selection-indicator-container {
+	position: absolute;
+	overflow: hidden;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background-color: white;
+	border-width: 1px;
+	border-color: rgb(214, 214, 214);
+	border-style: solid;
+}
+
+.model-card-list-item .selection-indicator-container {
+	top: 10px;
+	right: 10px;
+}
+
+.model-card .selection-indicator-container {
+	top: 5px;
+	right: 5px;
+}
+
+.model-card-list-item .selection-indicator, .model-card .selection-indicator {
+	margin: 4px;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background-color: rgb(0, 120, 215);
+}
+
+.model-card .model-table {
+	border-spacing: 5px;
+}
+
+.model-table .table-row {
+	width: auto;
+	clear: both;
+}
+
+.model-table .table-cell {
+	vertical-align: top;
+	padding: 7px;
+}
+
+.model-table a {
+	cursor: pointer;
+	text-decoration: underline
+}
+
+.model-card-list-item {
+	display: inline-block;
+	height: 100%;
+	width: 100%;
+	margin: 5px 0px 5px 0px;
+	border-width: 1px;
+	border-style: solid;
+	text-align: left;
+	vertical-align: top;
+}
+
+.model-card-list-item .list-item-content {
+	height: auto;
+	padding: 5px 26px 5px 5px;
+	min-height: 30px;
+	min-width: 300px;
+}
+
+.model-card-list-item .list-item-icon {
+	background-position: 2px 2px;
+	padding-left: 22px;
+	font-size: 15px;
+	background-repeat: no-repeat;
+	background-size: 16px 16px;
+}
+
+.model-card-list-item .list-item-description {
+	padding-left: 22px;
+}
+
+.model-card-description-container {
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-color: rgb(214, 214, 214);
+	padding: 5px;
+}
+
+.model-card-list-item-description {
+	text-align: left;
+}
+
+.model-card-list-item-description-value {
+	float: right;
+}
+
+.card-group {
+	display: flex;
+	flex-flow: row;
+}
+
+.model-card-description-table {
+	margin-bottom: 10px;
+}
+
+.model-card-description-label-column {
+	text-align: left;
+	width: 100%;
+}
+
+.model-card-description-value-column {
+	text-align: right;
+	white-space: nowrap;
+}
