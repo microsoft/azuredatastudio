@@ -482,7 +482,9 @@ export class Project {
 				parent.removeChild(nodes[i]);
 
 				// delete ItemGroup if this was the only entry
-				if (parent.childNodes.length === 0) {
+				// only want element nodes, not text nodes
+				const otherChildren = Array.from(parent.childNodes).filter((c: any) => c.childNodes);
+				if (otherChildren.length === 0) {
 					parent.parentNode.removeChild(parent);
 				}
 
