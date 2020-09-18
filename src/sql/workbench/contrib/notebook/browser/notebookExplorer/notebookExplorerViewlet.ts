@@ -39,7 +39,6 @@ import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/noteb
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import { isString } from 'vs/base/common/types';
-import * as glob from 'vs/base/common/glob';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
 
@@ -262,30 +261,29 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		}
 
 		this.validateQuery(query).then(() => {
+			let filesToIncludeFiltered: string = '';
 			if (this.views.length > 1) {
-				let filesToIncludeFiltered: string = '';
 				this.views.forEach(async (v) => {
 					const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
 					let items = await treeView?.root.children;
-					items?.forEach(async root => {
+					items?.forEach(root => {
 						let contentFolder: URI;
 						this.updateViewletsState();
 						let rootFolder = isString(root.tooltip) ? root.tooltip : root.tooltip.value;
 						let folderToSearch: IFolderQuery;
 						if (root.contextValue !== 'pinnedNotebook') {
-							contentFolder = (await this.fileService.exists(URI.file(path.join(rootFolder, 'content')))) ? URI.file(path.join(rootFolder, 'content')) : URI.file(rootFolder);
+							contentFolder = URI.file(rootFolder);
+							root.children.map((child) => {
+								if (child.tooltip.toString().includes('/content/')) {
+									contentFolder = URI.file(path.join(rootFolder, 'content'));
+									return;
+								}
+							});
 							folderToSearch = { folder: contentFolder };
 							query.folderQueries.push(folderToSearch);
 							filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-						} else {
-							let pattern = query.contentPattern.pattern;
-							let when = { when: rootFolder };
-							let expression: glob.IExpression = {};
-							expression[pattern] = when;
-							query.folderQueries.push({ folder: URI.file(path.dirname(rootFolder)), includePattern: expression });
-							filesToIncludeFiltered = rootFolder;
+							this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
 						}
-						this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
 					});
 				});
 			}
