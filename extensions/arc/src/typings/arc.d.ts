@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 declare module 'arc' {
-	import * as vscode from 'vscode';
 
 	/**
 	 * Covers defining what the arc extension exports to other extensions
@@ -19,6 +18,10 @@ declare module 'arc' {
 		postgresInstances = 'postgresInstances',
 		sqlManagedInstances = 'sqlManagedInstances'
 	}
+
+	export type MiaaResourceInfo = ResourceInfo & {
+		userName?: string
+	};
 
 	export type ResourceInfo = {
 		name: string,

@@ -76,6 +76,7 @@
 	"arc.azure.section.title": "Azure information",
 	"arc.sql.instance.name": "Instance name (lower case letters and digits only)",
 	"arc.sql.username": "Username",
+	"arc.sql.invalidusername": "sa username is disabled, please choose another username",
 	"arc.storage-class.dc.label": "Storage Class",
 	"arc.sql.storage-class.dc.description": "The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.",
 	"arc.storage-class.data.label": "Storage Class (Data)",
