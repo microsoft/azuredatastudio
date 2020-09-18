@@ -12,7 +12,7 @@
 	"command.editConnection.title": "Edit Connection",
 	"arc.openDashboard": "Manage",
 
-	"resource.type.azure.arc.display.name": "Azure Arc data controller",
+	"resource.type.azure.arc.display.name": "Azure Arc data controller (preview)",
 	"resource.type.azure.arc.description": "Creates an Azure Arc data controller",
 
 	"arc.control.plane.new.wizard.title": "Create Azure Arc data controller",
