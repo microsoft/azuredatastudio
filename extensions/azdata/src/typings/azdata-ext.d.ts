@@ -162,7 +162,7 @@ declare module 'azdata-ext' {
 					name: string // "citus"
 				}[],
 				settings: {
-					default: { } // { "max_connections": "101", "work_mem": "4MB" }
+					default: {} // { "max_connections": "101", "work_mem": "4MB" }
 				}
 			},
 			scale: {
@@ -233,20 +233,22 @@ declare module 'azdata-ext' {
 					delete(name: string): Promise<AzdataOutput<void>>,
 					list(): Promise<AzdataOutput<PostgresServerListResult[]>>,
 					show(name: string): Promise<AzdataOutput<PostgresServerShowResult>>,
-					edit(args: {
+					edit(
 						name: string,
-						adminPassword?: boolean,
-						coresLimit?: string,
-						coresRequest?: string,
-						engineSettings?: string,
-						extensions?: string,
-						memoryLimit?: string,
-						memoryRequest?: string,
-						noWait?: boolean,
-						port?: number,
-						replaceEngineSettings?: boolean,
-						workers?: number
-					}): Promise<AzdataOutput<void>>
+						args: {
+							adminPassword?: boolean,
+							coresLimit?: string,
+							coresRequest?: string,
+							engineSettings?: string,
+							extensions?: string,
+							memoryLimit?: string,
+							memoryRequest?: string,
+							noWait?: boolean,
+							port?: number,
+							replaceEngineSettings?: boolean,
+							workers?: number
+						},
+						additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<void>>
 				}
 			},
 			sql: {

@@ -6,6 +6,7 @@
 import { ResourceInfo } from 'arc';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
+import * as loc from '../localizedConstants';
 import { ControllerModel, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
 import { parseIpAndPort } from '../common/utils';
@@ -41,6 +42,38 @@ export class PostgresModel extends ResourceModel {
 		return this._config?.status.externalEndpoint
 			? parseIpAndPort(this._config.status.externalEndpoint)
 			: undefined;
+	}
+
+	/** Returns the scale configuration of Postgres e.g. '3 nodes, 1.5 vCores, 1GiB RAM, 2GiB storage per node' */
+	public get scaleConfiguration(): string | undefined {
+		if (!this._config) {
+			return undefined;
+		}
+
+		const cpuLimit = this._config.spec.scheduling?.default?.resources?.limits?.['cpu'];
+		const ramLimit = this._config.spec.scheduling?.default?.resources?.limits?.['memory'];
+		const cpuRequest = this._config.spec.scheduling?.default?.resources?.requests?.['cpu'];
+		const ramRequest = this._config.spec.scheduling?.default?.resources?.requests?.['memory'];
+		const storage = this._config.spec.storage?.data?.size;
+		const nodes = (this._config.spec.scale?.shards ?? 0) + 1; // An extra node for the coordinator
+
+		let configuration: string[] = [];
+		configuration.push(`${nodes} ${nodes > 1 ? loc.nodes : loc.node}`);
+
+		// Prefer limits if they're provided, otherwise use requests if they're provided
+		if (cpuLimit || cpuRequest) {
+			configuration.push(`${cpuLimit ?? cpuRequest!} ${loc.vCores}`);
+		}
+
+		if (ramLimit || ramRequest) {
+			configuration.push(`${ramLimit ?? ramRequest!} ${loc.ram}`);
+		}
+
+		if (storage) {
+			configuration.push(`${storage} ${loc.storagePerNode}`);
+		}
+
+		return configuration.join(', ');
 	}
 
 	/** Refreshes the model */
