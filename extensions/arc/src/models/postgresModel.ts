@@ -37,14 +37,14 @@ export class PostgresModel extends ResourceModel {
 			: undefined;
 	}
 
-	/** Returns the IP address and port of the server */
+	/** Returns the IP address and port of Postgres */
 	public get endpoint(): { ip: string, port: string } | undefined {
 		return this._config?.status.externalEndpoint
 			? parseIpAndPort(this._config.status.externalEndpoint)
 			: undefined;
 	}
 
-	/** Returns the scale configuration of Postgres e.g. '3 nodes, 1.5 vCores, 1GiB RAM, 2GiB storage per node' */
+	/** Returns the scale configuration of Postgres e.g. '3 nodes, 1.5 vCores, 1Gi RAM, 2Gi storage per node' */
 	public get scaleConfiguration(): string | undefined {
 		if (!this._config) {
 			return undefined;
