@@ -46,13 +46,16 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			let lineHighlight = theme.getColor(editorLineHighlight);
 			let codeCellLineHighlight = theme.getColor(editorCodeCellLineHighlight);
 			let codeCellUnselectedLineHighlight = theme.getColor(editorCodeCellUnselectedLineHighlight);
-
+			if (codeCellUnselectedLineHighlight) {
+				collector.addRule(`.notebook-cell.active code-cell-component code-component .monaco-editor .view-overlays .current-line { background-color: ${codeCellUnselectedLineHighlight}; border: 0px; opacity: 10%}`);
+			}
+			if (codeCellLineHighlight) {
+				collector.addRule(`.notebook-cell.active.edit-mode code-cell-component code-component .monaco-editor .view-overlays .current-line { background-color: ${codeCellLineHighlight}; border: 0px; opacity: 10%}`);
+			}
 			if (!lineHighlight || lineHighlight.isTransparent()) {
 				// Use notebook color override
 				lineHighlight = notebookLineHighlight;
 				if (lineHighlight) {
-					collector.addRule(`.notebook-cell.active code-cell-component code-component .monaco-editor .view-overlays .current-line { background-color: ${codeCellUnselectedLineHighlight}; border: 0px; opacity: 10%}`);
-					collector.addRule(`.notebook-cell.active.edit-mode code-cell-component code-component .monaco-editor .view-overlays .current-line { background-color: ${codeCellLineHighlight}; border: 0px; opacity: 10%}`);
 					collector.addRule(`code-component .monaco-editor .view-overlays .current-line { background-color: ${lineHighlight}; border: 0px; }`);
 				}
 			} // else do nothing as current theme's line highlight will work
@@ -263,7 +266,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		}
 		const codeEditorToolbarBorderColor = theme.getColor(codeEditorToolbarBorder);
 		if (codeEditorToolbarBorderColor) {
-			collector.addRule(`.notebook-cell.active code-cell-component code-component .toolbar { border-right-color: transparent !important;}`);
+			collector.addRule(`.notebook-cell.active code-cell-component code-component .toolbar { border-right-color: ${codeEditorToolbarBorderColor} !important;}`);
 		}
 	});
 }

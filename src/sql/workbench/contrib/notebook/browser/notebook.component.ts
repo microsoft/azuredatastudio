@@ -256,11 +256,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
+	// When selecting a code cell after being in another code cell that was in edit mode we must unfocus the old editor
+	// This is because the new code cell editor gets focused otherwise
 	public selectCell(cell: ICellModel, event?: Event) {
 		if (event) {
 			event.stopPropagation();
 		}
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
+			// Begin unfocus
 			if (this.model.activeCell && this.model.activeCell.cellType === 'code') {
 				let cellEditorProvider = this.cellEditors.find(e => e.cellGuid() === this._model.activeCell.cellGuid);
 				let editorControl: CodeEditorWidget;
@@ -274,6 +277,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				this.model.activeCell.active = false;
 				this.model.activeCell.isEditMode = false;
 			}
+			// end unfocus
 			this.model.updateActiveCell(cell);
 		}
 		this.detectChanges();

@@ -208,6 +208,8 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
+	// When selecting a code cell after being in another code cell that was in edit mode we must unfocus the old editor
+	// This is because the new code cell editor gets focused otherwise
 	public selectBox() {
 		if (this._model.activeCell) {
 			this._model.activeCell.isEditMode = false;
@@ -215,7 +217,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			editorControl.unfocus();
 		}
 		this._model.updateActiveCell(this._cellModel);
-
 		this._model.activeCell.isEditMode = false;
 		this.detectChanges();
 	}

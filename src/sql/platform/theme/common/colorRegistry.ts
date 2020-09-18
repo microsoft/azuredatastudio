@@ -56,7 +56,7 @@ export const toolbarIcon = registerColor('notebook.toolbarIcon', { light: '#3231
 export const toolbarBottomBorder = registerColor('notebook.toolbarBottomBorder', { light: '#D4D4D4', dark: '#323130', hc: '#E86E58' }, nls.localize('notebook.toolbarBottomBorder', "Notebook: Markdown toolbar bottom border"));
 // Notebook: All cells
 export const cellBorder = registerColor('notebook.cellBorder', { light: '#0078D4', dark: '#3AA0F3', hc: '#E86E58' }, nls.localize('notebook.cellBorder', "Notebook: Active cell border"));
-export const cellSelectedBackground = registerColor('notebook.cellSelectedBackground', { light: '#F5F5F5', dark: null, hc: null }, nls.localize('notebook.cellSelectedBackground', "Notebook: Background of selected cell"));
+export const cellSelectedBackground = registerColor('notebook.cellSelectedBackground', { light: '#F5F5F5', dark: null, hc: null }, nls.localize('notebook.cellSelectedBackground', "Notebook: Background of selected cell not in edit mode"));
 export const cellEditModeBackground = registerColor('notebook.cellEditModeBackground', { light: Color.transparent, dark: Color.transparent, hc: null }, nls.localize('notebook.cellEditModeBackground', "Notebook: Background of cell in edit mode"));
 export const cellEditorLineHighlight = registerColor('notebook.cellEditorLineHighlight', { light: '#999999', dark: null, hc: null }, nls.localize('lineHighlight', 'Background color for the highlight of line at the cursor position.'));
 // Notebook: Text Cell
@@ -70,5 +70,4 @@ export const codeEditorBackground = registerColor('notebook.codeEditorBackground
 export const codeEditorLineNumber = registerColor('notebook.codeEditorLineNumber', { light: '#A19F9D', dark: '#A19F9D', hc: '#FFFFFF' }, nls.localize('notebook.codeEditorLineNumber', "Notebook: Code editor line numbers"));
 export const codeEditorToolbarIcon = registerColor('notebook.codeEditorToolbarIcon', { light: '#999999', dark: '#A19F9D', hc: '#FFFFFF' }, nls.localize('notebook.codeEditorToolbarIcon', "Notebook: Code editor toolbar icons"));
 export const codeEditorToolbarBackground = registerColor('notebook.codeEditorToolbarBackground', { light: '#F5F5F5', dark: '#333333', hc: '#000000' }, nls.localize('notebook.codeEditorToolbarBackground', "Notebook: Code editor toolbar background"));
-export const codeEditorToolbarBorder = registerColor('notebook.codeEditorToolbarBorder', { light: '#C8C6C4', dark: '#333333', hc: '#000000' }, nls.localize('notebook.codeEditorToolbarBorder', "Notebook: Code editor toolbar right border"));
-export const codeEditorLineHighlight = registerColor('notebook.cellEditorLineHighlight', { light: '#999999', dark: null, hc: null }, nls.localize('lineHighlight', 'Background color for the highlight of line at the cursor position.'));
+export const codeEditorToolbarBorder = registerColor('notebook.codeEditorToolbarBorder', { light: Color.transparent, dark: Color.transparent, hc: Color.transparent }, nls.localize('notebook.codeEditorToolbarBorder', "Notebook: Code editor toolbar right border"));
