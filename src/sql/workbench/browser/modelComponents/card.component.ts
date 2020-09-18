@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./media/card';
+import 'vs/css!./media/legacycard';
 
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy, ViewChild
@@ -117,7 +117,7 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 	}
 
 	public getClass(): string {
-		let cardClass = this.isListItemCard ? 'model-card-list-item' : 'model-card';
+		let cardClass = this.isListItemCard ? 'model-card-list-item-legacy' : 'model-card-legacy';
 		return (this.selectable && this.selected || this._hasFocus) ? `${cardClass} selected` :
 			`${cardClass} unselected`;
 	}
