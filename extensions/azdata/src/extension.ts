@@ -97,22 +97,24 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 							throwIfNoAzdataOrEulaNotAccepted();
 							return localAzdata!.arc.postgres.server.show(name);
 						},
-						edit: async (args: {
+						edit: async (
 							name: string,
-							adminPassword?: boolean,
-							coresLimit?: string,
-							coresRequest?: string,
-							engineSettings?: string,
-							extensions?: string,
-							memoryLimit?: string,
-							memoryRequest?: string,
-							noWait?: boolean,
-							port?: number,
-							replaceEngineSettings?: boolean,
-							workers?: number
-						}) => {
+							args: {
+								adminPassword?: boolean,
+								coresLimit?: string,
+								coresRequest?: string,
+								engineSettings?: string,
+								extensions?: string,
+								memoryLimit?: string,
+								memoryRequest?: string,
+								noWait?: boolean,
+								port?: number,
+								replaceEngineSettings?: boolean,
+								workers?: number
+							},
+							additionalEnvVars?: { [key: string]: string }) => {
 							await throwIfNoAzdataOrEulaNotAccepted();
-							return localAzdata!.arc.postgres.server.edit(args);
+							return localAzdata!.arc.postgres.server.edit(name, args, additionalEnvVars);
 						}
 					}
 				},
