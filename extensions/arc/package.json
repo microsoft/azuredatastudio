@@ -589,8 +589,10 @@
                           "label": "%arc.sql.username%",
                           "variableName": "AZDATA_NB_VAR_SQL_USERNAME",
                           "type": "text",
-                          "defaultValue": "sa",
-                          "enabled": false
+                          "required": true,
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^(?!sa$)",
+                          "textValidationDescription": "%arc.sql.invalidusername%"
                         },
                         {
                           "label": "%arc.password%",
