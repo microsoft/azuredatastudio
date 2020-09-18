@@ -96,7 +96,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
 		const toolbarEditCellAction = toolbarComponent.getEditCellAction();
 		let cellEditorProvider = this.cellEditors.find(e => e.cellGuid() === this._model.activeCell.cellGuid);
-		let isSelected = false;
+		let isSelected: boolean = false;
 		let editorControl: CodeEditorWidget;
 		if (cellEditorProvider) {
 			let editor = cellEditorProvider.getEditor() as QueryTextEditor;
@@ -119,14 +119,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				break;
 			case 'ArrowDown':
 			case 'ArrowRight':
-				if ((this.model.activeCell.cellType === 'code' && !is_selected) || (this.model.activeCell.cellType !== 'code' && !this._model.activeCell.isEditMode)) {
+				if ((this.model.activeCell.cellType === 'code' && !isSelected) || (this.model.activeCell.cellType !== 'code' && !this._model.activeCell.isEditMode)) {
 					let nextIndex = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
 					this.selectCell(this.cells[nextIndex]);
 				}
 				break;
 			case 'ArrowUp':
 			case 'ArrowLeft':
-				if ((this.model.activeCell.cellType === 'code' && !is_selected) || (this.model.activeCell.cellType !== 'code' && !this._model.activeCell.isEditMode)) {
+				if ((this.model.activeCell.cellType === 'code' && !isSelected) || (this.model.activeCell.cellType !== 'code' && !this._model.activeCell.isEditMode)) {
 					let index = this.findCellIndex(this.model.activeCell);
 					if (index === 0) {
 						index = this.cells.length;
@@ -148,12 +148,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				this.detectChanges();
 				break;
 			default:
-				if ((this.model.activeCell.cellType === 'code' && !is_selected)) {
+				if ((this.model.activeCell.cellType === 'code' && !isSelected)) {
 					event.preventDefault();
 				}
 				break;
 		}
-
 	}
 
 	constructor(
