@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ResourceInfo, ResourceType } from 'arc';
+import { MiaaResourceInfo, ResourceInfo, ResourceType } from 'arc';
 import * as vscode from 'vscode';
 import { UserCancelledError } from '../../common/utils';
 import * as loc from '../../localizedConstants';
@@ -13,6 +13,7 @@ import { PostgresModel } from '../../models/postgresModel';
 import { ControllerDashboard } from '../dashboards/controller/controllerDashboard';
 import { AzureArcTreeDataProvider } from './azureArcTreeDataProvider';
 import { MiaaTreeNode } from './miaaTreeNode';
+import { NoInstancesTreeNode } from './noInstancesTreeNode';
 import { PostgresTreeNode } from './postgresTreeNode';
 import { RefreshTreeNode } from './refreshTreeNode';
 import { ResourceTreeNode } from './resourceTreeNode';
@@ -55,7 +56,7 @@ export class ControllerTreeNode extends TreeNode {
 			}
 		}
 
-		return this._children;
+		return this._children.length > 0 ? this._children : [new NoInstancesTreeNode()];
 	}
 
 	public async openDashboard(): Promise<void> {
@@ -104,6 +105,10 @@ export class ControllerTreeNode extends TreeNode {
 						node = new PostgresTreeNode(postgresModel, this.model, this._context);
 						break;
 					case ResourceType.sqlManagedInstances:
+						// Fill in the username too if we already have it
+						(resourceInfo as MiaaResourceInfo).userName = (this.model.info.resources.find(info =>
+							info.name === resourceInfo.name &&
+							info.resourceType === resourceInfo.resourceType) as MiaaResourceInfo)?.userName;
 						const miaaModel = new MiaaModel(this.model, resourceInfo, registration, this._treeDataProvider);
 						node = new MiaaTreeNode(miaaModel, this.model);
 						break;

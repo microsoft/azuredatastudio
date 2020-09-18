@@ -40,6 +40,7 @@ export class ProjectsController {
 	private buildHelper: BuildHelper;
 
 	projects: Project[] = [];
+	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
 	constructor(projTreeViewProvider: SqlDatabaseProjectTreeViewProvider) {
 		this.projectTreeViewProvider = projTreeViewProvider;
@@ -167,6 +168,12 @@ export class ProjectsController {
 	public closeProject(treeNode: BaseProjectTreeItem) {
 		const project = this.getProjectFromContext(treeNode);
 		this.projects = this.projects.filter((e) => { return e !== project; });
+
+		if (this.projFileWatchers.has(project.projectFilePath)) {
+			this.projFileWatchers.get(project.projectFilePath)!.dispose();
+			this.projFileWatchers.delete(project.projectFilePath);
+		}
+
 		this.refreshProjectsTree();
 	}
 
@@ -461,12 +468,22 @@ export class ProjectsController {
 		try {
 			await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(project.projectFilePath));
 			const projFileWatcher: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher(project.projectFilePath);
+			this.projFileWatchers.set(project.projectFilePath, projFileWatcher);
 
 			projFileWatcher.onDidChange(async (projectFileUri: vscode.Uri) => {
 				const result = await vscode.window.showInformationMessage(constants.reloadProject, constants.yesString, constants.noString);
 
 				if (result === constants.yesString) {
 					this.reloadProject(projectFileUri);
+				}
+			});
+
+			// stop watching for changes to the sqlproj after it's closed
+			const closeSqlproj = vscode.workspace.onDidCloseTextDocument((d) => {
+				if (this.projFileWatchers.has(d.uri.fsPath)) {
+					this.projFileWatchers.get(d.uri.fsPath)!.dispose();
+					this.projFileWatchers.delete(d.uri.fsPath);
+					closeSqlproj.dispose();
 				}
 			});
 		} catch (err) {

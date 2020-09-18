@@ -27,10 +27,11 @@ export const unknownFieldTypeError = (type: FieldType) => localize('UnknownField
 export const variableValueFetchForUnsupportedVariable = (variableName: string) => localize('getVariableValue.unknownVariableName', "Attempt to get variable value for unknown variable:{0}", variableName);
 export const isPasswordFetchForUnsupportedVariable = (variableName: string) => localize('getIsPassword.unknownVariableName', "Attempt to get isPassword for unknown variable:{0}", variableName);
 export const noControllersConnected = localize('noControllersConnected', "No Azure ARC controllers are currently connected. Please run the command: 'Connect to Existing Azure Arc Controller' and then try again");
-export const noOptionsSourceDefined = (optionsSourceType: OptionsSourceType) => localize('noOptionsSourceDefined', "No OptionsSource defined for type: {0}", optionsSourceType);
+export const noOptionsSourceDefined = (optionsSourceType: string) => localize('noOptionsSourceDefined', "No OptionsSource defined for type: {0}", optionsSourceType);
 export const noControllerInfoFound = (name: string) => localize('noControllerInfoFound', "controllerInfo could not be found with name: {0}", name);
 export const noPasswordFound = (controllerName: string) => localize('noPasswordFound', "Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.", controllerName);
 export const optionsNotDefined = (fieldType: FieldType) => localize('optionsNotDefined', "FieldInfo.options was not defined for field type: {0}", fieldType);
 export const optionsNotObjectOrArray = localize('optionsNotObjectOrArray', "FieldInfo.options must be an object if it is not an array");
 export const optionsTypeNotFound = localize('optionsTypeNotFound', "When FieldInfo.options is an object it must have 'optionsType' property");
 export const optionsTypeRadioOrDropdown = localize('optionsTypeRadioOrDropdown', "When optionsType is not {0} then it must be {1}", OptionsType.Radio, OptionsType.Dropdown);
+export const azdataEulaNotAccepted = localize('azdataEulaNotAccepted', "Deployment cannot continue. Azure Data CLI license terms have not been accepted. Execute the command: [Azure Data CLI: Accept EULA] to accept EULA to enable the features that requires Azure Data CLI.");

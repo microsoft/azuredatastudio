@@ -456,24 +456,66 @@
             }
           ]
         }
+      },
+      {
+        "name": "azure-sql-vm",
+        "displayName": "%azure-sqlvm-display-name%",
+        "description": "%azure-sqlvm-description%",
+        "platforms": "*",
+        "icon": {
+          "light": "./images/azure-sql-vm.svg",
+          "dark": "./images/azure-sql-vm.svg"
+        },
+        "providers": [
+          {
+            "azureSQLVMWizard":{
+              "notebook": "./notebooks/azurevm/create-sqlvm.ipynb"
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli"
+              }
+            ],
+            "when": true
+          }
+        ],
+        "agreement": {
+          "template": "%azure-sqlvm-agreement%",
+          "links": [
+            {
+              "text": "%microsoft-privacy-statement%",
+              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+            },
+            {
+              "text": "%azure-sqlvm-agreement-sqlvm-eula%",
+              "url": "https://azure.microsoft.com/support/legal/"
+            },
+            {
+              "text": "%azure-sqlvm-agreement-azdata-eula%",
+              "url": "https://aka.ms/eula-azdata-en"
+            }
+          ]
+        }
       }
     ]
   },
   "dependencies": {
     "linux-release-info": "^2.0.0",
     "promisify-child-process": "^3.1.1",
+    "semver": "^7.3.2",
     "sudo-prompt": "9.1.1",
     "vscode-nls": "^4.0.0",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
+    "@types/semver": "^7.3.1",
     "@types/yamljs": "0.2.30",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
+    "should": "^13.2.3",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.1.0",
-    "should": "^13.2.3"
+    "vscodetestcover": "^1.1.0"
   }
 }

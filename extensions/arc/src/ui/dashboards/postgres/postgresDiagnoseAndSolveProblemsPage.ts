@@ -52,7 +52,7 @@ export class PostgresDiagnoseAndSolveProblemsPage extends DashboardPage {
 			troubleshootButton.onDidClick(() => {
 				process.env['POSTGRES_SERVER_NAMESPACE'] = this._postgresModel.config?.metadata.namespace;
 				process.env['POSTGRES_SERVER_NAME'] = this._postgresModel.info.name;
-				// TODO set env POSTGRES_SERVER_VERSION
+				process.env['POSTGRES_SERVER_VERSION'] = this._postgresModel.engineVersion;
 				vscode.commands.executeCommand('bookTreeView.openBook', this._context.asAbsolutePath('notebooks/arcDataServices'), true, 'postgres/tsg100-troubleshoot-postgres');
 			}));
 

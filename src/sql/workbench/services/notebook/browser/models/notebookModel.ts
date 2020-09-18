@@ -322,7 +322,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return !ids ? [] : ids;
 	}
 
-	public async loadContents(isTrusted: boolean = false): Promise<void> {
+	public async loadContents(isTrusted = false, forceLayoutChange = false): Promise<void> {
 		try {
 			this._trustedMode = isTrusted;
 
@@ -368,6 +368,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// Trust notebook by default if there are no code cells
 			if (this._cells.length === 0 || this._cells.every(cell => cell.cellType === CellTypes.Markdown)) {
 				this.trustedMode = true;
+			}
+			if (forceLayoutChange) {
+				this._layoutChanged.fire();
 			}
 		} catch (error) {
 			this._inErrorState = true;
@@ -655,8 +658,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let providerFeatures = this._capabilitiesService.getCapabilities(profile.providerName);
 			if (connectionProviderIds?.length) {
 				this._currentKernelAlias = providerFeatures?.connection.notebookKernelAlias;
-				// Adds Kernel Alias and Connection Provider to Map if new Notebook connection contains notebookKernelAlias
-				if (this._currentKernelAlias) {
+				// Switching from Kusto to another kernel should set the currentKernelAlias to undefined
+				if (this._selectedKernelDisplayName !== this._currentKernelAlias && this._selectedKernelDisplayName) {
+					this._currentKernelAlias = undefined;
+				} else {
+					// Adds Kernel Alias and Connection Provider to Map if new Notebook connection contains notebookKernelAlias
 					this._kernelDisplayNameToConnectionProviderIds.set(this._currentKernelAlias, [profile.providerName]);
 				}
 			}

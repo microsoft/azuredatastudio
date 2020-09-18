@@ -11,14 +11,11 @@ import { apiService } from '../services/apiService';
 import { throwUnless } from '../utils';
 import { CacheManager } from './cacheManager';
 
+export enum OptionsSourceType {
+	ArcControllersOptionsSource = 'ArcControllersOptionsSource'
+}
 
-export type OptionsSourceType = 'ArcControllersOptionsSource';
-
-const OptionsSources = new Map<OptionsSourceType, new () => OptionsSource>();
 export abstract class OptionsSource implements IOptionsSource {
-
-	private _variableNames!: { [index: string]: string; };
-	private _type!: OptionsSourceType;
 
 	get type(): OptionsSourceType { return this._type; }
 	get variableNames(): { [index: string]: string; } { return this._variableNames; }
@@ -27,24 +24,12 @@ export abstract class OptionsSource implements IOptionsSource {
 	abstract async getVariableValue(variableName: string, input: string): Promise<string>;
 	abstract getIsPassword(variableName: string): boolean;
 
-	protected constructor() {
-	}
-
-	static construct(optionsSourceType: OptionsSourceType, variableNames: { [index: string]: string }): OptionsSource {
-		const sourceConstructor = OptionsSources.get(optionsSourceType);
-		throwUnless(sourceConstructor !== undefined, loc.noOptionsSourceDefined(optionsSourceType));
-		const obj = new sourceConstructor();
-		obj._type = optionsSourceType;
-		obj._variableNames = variableNames;
-		return obj;
+	constructor(private _variableNames: { [index: string]: string }, private _type: OptionsSourceType) {
 	}
 }
 
 export class ArcControllersOptionsSource extends OptionsSource {
 	private _cacheManager = new CacheManager<string, string>();
-	constructor() {
-		super();
-	}
 
 	async getOptions(): Promise<string[] | CategoryValue[]> {
 		const controllers = await apiService.arcApi.getRegisteredDataControllers();
@@ -97,4 +82,3 @@ export class ArcControllersOptionsSource extends OptionsSource {
 		}
 	}
 }
-OptionsSources.set(<OptionsSourceType>ArcControllersOptionsSource.name, ArcControllersOptionsSource);
