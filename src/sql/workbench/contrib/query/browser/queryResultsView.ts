@@ -209,10 +209,10 @@ export class QueryResultsView extends Disposable {
 	}
 
 	private setQueryRunner(runner: QueryRunner) {
-		if (!this.input) {
+		if (!this.input || !this.input.state || !this.input.state.visibleTabs) {
 			return;
 		}
-		const activeTab = this._input.state.activeTab;
+		const activeTab = this.input.state.activeTab;
 		if (this.hasResults(runner)) {
 			this.showResults();
 		} else {
@@ -230,8 +230,10 @@ export class QueryResultsView extends Disposable {
 			this.hideChart();
 			this.hidePlan();
 			this.hideDynamicViewModelTabs();
-			this.input.state.visibleTabs.clear();
-			this.input.state.activeTab = this.resultsTab.identifier;
+			if (this.input && this.input.state) {
+				this.input.state.visibleTabs.clear();
+				this.input.state.activeTab = this.resultsTab.identifier;
+			}
 		}));
 		this.runnerDisposables.add(runner.onQueryEnd(() => {
 			if (runner.messages.some(v => v.isError)) {
@@ -294,7 +296,7 @@ export class QueryResultsView extends Disposable {
 		}
 	}
 
-	public set input(input: QueryResultsInput) {
+	public set input(input: QueryResultsInput | undefined) {
 		this._input = input;
 		this.runnerDisposables.dispose();
 		this.runnerDisposables = new DisposableStore();
@@ -302,21 +304,30 @@ export class QueryResultsView extends Disposable {
 		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
 		this.dynamicModelViewTabs.forEach(t => t.clear());
 
+		if (!this.input || !this.input.state) {
+			return;
+		}
+
 		this.resultsTab.view.state = this.input.state.gridPanelState;
 		this.qpTab.view.setState(this.input.state.queryPlanState);
 		this.topOperationsTab.view.setState(this.input.state.topOperationsState);
 		this.chartTab.view.state = this.input.state.chartState;
 		this.dynamicModelViewTabs.forEach((dynamicTab: QueryModelViewTab) => {
-			dynamicTab.captureState(this.input.state.dynamicModelViewTabsState);
+			if (this.input && this.input.state) {
+				dynamicTab.captureState(this.input.state.dynamicModelViewTabsState);
+			}
 		});
 
-		let info = this.queryModelService._getQueryInfo(input.uri) || this.queryModelService._getQueryInfo(URI.parse(input.uri).toString(true));
-		if (info) {
+		let info = this.queryModelService._getQueryInfo(this.input.uri) || this.queryModelService._getQueryInfo(URI.parse(this.input.uri).toString(true));
+		if (info && info.queryRunner) {
 			this.setQueryRunner(info.queryRunner);
 		} else {
 			let disposable = this.queryModelService.onRunQueryStart(c => {
-				if (URI.parse(c).toString() === URI.parse(input.uri).toString()) {
+				if (input && URI.parse(c).toString() === URI.parse(input.uri).toString()) {
 					let info = this.queryModelService._getQueryInfo(c);
+					if (!info || !info.queryRunner) {
+						return;
+					}
 					this.setQueryRunner(info.queryRunner);
 					disposable.dispose();
 				}

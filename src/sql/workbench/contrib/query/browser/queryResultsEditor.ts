@@ -76,8 +76,8 @@ export class QueryResultsEditor extends EditorPane {
 	public static ID: string = 'workbench.editor.queryResultsEditor';
 	protected _rawOptions: BareResultsGridInfo;
 
-	private resultsView: QueryResultsView;
-	private styleSheet = DOM.createStyleSheet();
+	private resultsView?: QueryResultsView;
+	private styleSheet?= DOM.createStyleSheet();
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -110,10 +110,15 @@ export class QueryResultsEditor extends EditorPane {
 		}
 		let content = `.grid-panel .monaco-table .slick-cell { padding: ${cssRuleText} }`;
 		content += `.grid-panel .monaco-table, .message-tree { ${getBareResultsGridInfoStyles(this._rawOptions)} }`;
-		this.styleSheet.innerHTML = content;
+		if (this.styleSheet) {
+			this.styleSheet.innerHTML = content;
+		}
 	}
 
 	createEditor(parent: HTMLElement): void {
+		if (!this.styleSheet) {
+			return;
+		}
 		this.styleSheet.remove();
 		parent.appendChild(this.styleSheet);
 		if (!this.resultsView) {
@@ -122,35 +127,55 @@ export class QueryResultsEditor extends EditorPane {
 	}
 
 	dispose() {
+		if (!this.styleSheet) {
+			return;
+		}
 		this.styleSheet.remove();
 		this.styleSheet = undefined;
 		super.dispose();
 	}
 
 	layout(dimension: DOM.Dimension): void {
+		if (!this.resultsView) {
+			return;
+		}
 		this.resultsView.layout(dimension);
 	}
 
-	setInput(input: QueryResultsInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+	setInput(input: QueryResultsInput, options: EditorOptions, context: IEditorOpenContext): Promise<any> {
 		super.setInput(input, options, context, CancellationToken.None);
-		this.resultsView.input = input;
-		return Promise.resolve<void>(null);
+		if (this.resultsView) {
+			this.resultsView.input = input;
+		}
+		return Promise.resolve(null);
 	}
 
 	clearInput() {
+		if (!this.resultsView) {
+			return;
+		}
 		this.resultsView.clearInput();
 		super.clearInput();
 	}
 
 	public chart(dataId: { batchId: number, resultId: number }) {
+		if (!this.resultsView) {
+			return;
+		}
 		this.resultsView.chartData(dataId);
 	}
 
 	public showQueryPlan(xml: string) {
+		if (!this.resultsView) {
+			return;
+		}
 		this.resultsView.showPlan(xml);
 	}
 
 	public registerQueryModelViewTab(title: string, componentId: string): void {
+		if (!this.resultsView) {
+			return;
+		}
 		this.resultsView.registerQueryModelViewTab(title, componentId);
 	}
 }
