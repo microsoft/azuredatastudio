@@ -344,6 +344,7 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
 		? [loc.yes, loc.no]
 		: [loc.yes, loc.askLater, loc.doNotAskAgain];
 	if (config === AzdataDeployOption.prompt) {
+		Logger.log(loc.promptForAzdataInstallLog);
 		response = await vscode.window.showErrorMessage(loc.promptForAzdataInstall, ...responses);
 		Logger.log(loc.userResponseToInstallPrompt(response));
 	}
@@ -387,6 +388,7 @@ async function promptToUpdateAzdata(newVersion: string, userRequested: boolean =
 		? [loc.yes, loc.no]
 		: [loc.yes, loc.askLater, loc.doNotAskAgain];
 	if (config === AzdataDeployOption.prompt) {
+		Logger.log(loc.promptForAzdataUpdateLog(newVersion));
 		response = await vscode.window.showInformationMessage(loc.promptForAzdataUpdate(newVersion), ...responses);
 		Logger.log(loc.userResponseToUpdatePrompt(response));
 	}
