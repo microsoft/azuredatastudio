@@ -53,10 +53,8 @@ suite('Data Resource Data Provider', function () {
 	let notificationService: TestNotificationService;
 	let serializationService: SerializationService;
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
-	let resultSetSubset: ResultSetSubset = {
-		rowCount: 2,
-		rows: [[{ displayValue: '1' }, { displayValue: '2' }], [{ displayValue: '3' }, { displayValue: '4' }]]
-	};
+	let cellModel = TypeMoq.Mock.ofType(CellModel);
+
 	// Create test data with two rows and two columns
 	let source: IDataResource = {
 		data: [{ 0: '1', 1: '2' }, { 0: '3', 1: '4' }],
@@ -69,7 +67,6 @@ suite('Data Resource Data Provider', function () {
 		id: 0,
 		rowCount: 2
 	};
-	let cellModel = TypeMoq.Mock.ofType(CellModel);
 
 	suiteSetup(async () => {
 		let notebookModel = await createandLoadNotebookModel();
@@ -103,7 +100,7 @@ suite('Data Resource Data Provider', function () {
 		let dataResourceDataProvider = new DataResourceDataProvider(
 			0, // batchId
 			0, // id
-			undefined, // queryRunner
+			undefined, // QueryRunner
 			source,
 			resultSet,
 			cellModel.object,
@@ -136,6 +133,10 @@ suite('Data Resource Data Provider', function () {
 	});
 
 	test('convertAllData correctly converts row data to mimetype and html', async function (): Promise<void> {
+		let resultSetSubset: ResultSetSubset = {
+			rowCount: 2,
+			rows: [[{ displayValue: '1' }, { displayValue: '2' }], [{ displayValue: '3' }, { displayValue: '4' }]]
+		};
 		let queryRunner: TypeMoq.Mock<QueryRunner> = TypeMoq.Mock.ofType(QueryRunner);
 		queryRunner.setup(x => x.getQueryRows(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(resultSetSubset));
 		let dataResourceDataProvider = new DataResourceDataProvider(
@@ -165,4 +166,3 @@ suite('Data Resource Data Provider', function () {
 		sinon.assert.calledWithExactly(spy, 0, 0, expectedData);
 	});
 });
-
