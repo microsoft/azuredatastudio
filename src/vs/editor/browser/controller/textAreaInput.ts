@@ -480,7 +480,7 @@ export class TextAreaInput extends Disposable {
 	}
 
 	// {{SQL CARBON EDIT}}
-	public unFocusTextArea(): void {
+	public unfocusTextArea(): void {
 		// Setting this._hasFocus and writing the screen reader content
 		// will result in a unfocus() in the text area
 		this._setHasFocus(false);

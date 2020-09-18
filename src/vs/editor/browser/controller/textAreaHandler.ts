@@ -434,8 +434,8 @@ export class TextAreaHandler extends ViewPart {
 	}
 
 	// {{SQL CARBON EDIT}}
-	public unFocusTextArea(): void {
-		this._textAreaInput.unFocusTextArea();
+	public unfocusTextArea(): void {
+		this._textAreaInput.unfocusTextArea();
 	}
 
 	public refreshFocusState() {
