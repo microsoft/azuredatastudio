@@ -77,6 +77,7 @@
 	"arc.sql.instance.name": "Instance name (lower case letters and digits only)",
 	"arc.sql.username": "Username",
 	"arc.sql.invalidusername": "sa username is disabled, please choose another username",
+	"arc.sql.invalidinstancename": "Instance name must be under 14 characters in length, only contain lowercase alphanumeric characters or - and start/end with an alphanumeric character",
 	"arc.storage-class.dc.label": "Storage Class",
 	"arc.sql.storage-class.dc.description": "The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.",
 	"arc.storage-class.data.label": "Storage Class (Data)",
