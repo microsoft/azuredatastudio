@@ -457,7 +457,9 @@ export class AttachToDropdown extends SelectBox {
 		try {
 			// Get all providers to show all available connections in connection dialog
 			let providers = this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name);
-			// Spark Kernels should only have MSSQL connections in connection dialog
+			// Spark kernels are unable to get providers from above, therefore ensure that we get the
+			// correct providers for the selected kernel and load the proper connections for the connection dialog
+			// Example Scenario: Spark Kernels should only have MSSQL connections in connection dialog
 			if (!this.model.kernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.clientSession.kernel.name !== 'SQL') {
 				providers = providers.concat(this.model.getApplicableConnectionProviderIds(this.model.selectedKernelDisplayName));
 			} else {
