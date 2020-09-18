@@ -66,6 +66,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onConnect = new Emitter<IConnectionParams>();
 	private _onDisconnect = new Emitter<IConnectionParams>();
 	private _onConnectRequestSent = new Emitter<void>();
+	private _onIconProviderRegistered = new Emitter<void>();
 	private _onConnectionChanged = new Emitter<IConnectionParams>();
 	private _onLanguageFlavorChanged = new Emitter<azdata.DidChangeLanguageFlavorParams>();
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._notificationService);
@@ -181,6 +182,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._onConnectRequestSent.event;
 	}
 
+	public get onIconProviderRegistered(): Event<void> {
+		return this._onIconProviderRegistered.event;
+	}
+
 	public get onLanguageFlavorChanged(): Event<azdata.DidChangeLanguageFlavorParams> {
 		return this._onLanguageFlavorChanged.event;
 	}
@@ -205,6 +210,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public registerIconProvider(providerId: string, iconProvider: azdata.IconProvider): void {
+		this._onIconProviderRegistered.fire();
 		this._iconProviders.set(providerId, iconProvider);
 	}
 
@@ -594,6 +600,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (!connectionId || !this._mementoObj || !this._mementoObj.CONNECTION_ICON_ID) {
 			return undefined;
 		}
+
 		return this._mementoObj.CONNECTION_ICON_ID[connectionId];
 	}
 

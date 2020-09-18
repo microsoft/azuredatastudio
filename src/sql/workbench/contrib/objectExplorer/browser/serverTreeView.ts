@@ -90,6 +90,12 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				}
 			}
 		});
+
+		this._connectionManagementService.onIconProviderRegistered(async () => {
+			await this.refreshTree();
+			this._treeSelectionHandler.onTreeActionStateChange(false);
+		});
+
 		this.registerCommands();
 	}
 

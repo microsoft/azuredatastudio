@@ -259,7 +259,6 @@ function getIconPath(connection: ConnectionProfile, connectionManagementService:
 	}
 
 	let iconId = connectionManagementService.getConnectionIconId(connection.id);
-	if (!iconId) { return undefined; }
 
 	let providerProperties = connectionManagementService.getProviderProperties(connection.providerName);
 	if (!providerProperties) { return undefined; }
@@ -268,7 +267,7 @@ function getIconPath(connection: ConnectionProfile, connectionManagementService:
 	let pathConfig: URI | IconPath | { id: string, path: IconPath }[] | undefined = providerProperties['iconPath'];
 	if (Array.isArray(pathConfig)) {
 		for (const e of pathConfig) {
-			if (!e.id || e.id === iconId) {
+			if (!e.id || e.id === iconId || iconId === undefined) {
 				iconPath = e.path;
 				connection['iconPath'] = iconPath;
 				break;

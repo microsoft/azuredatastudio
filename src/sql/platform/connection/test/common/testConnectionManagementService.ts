@@ -16,6 +16,7 @@ import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/c
 // Test stubs for commonly used objects
 
 export class TestConnectionManagementService implements IConnectionManagementService {
+	onIconProviderRegistered: Event<void>;
 	disconnect(connection: IConnectionProfile): Promise<void>;
 	disconnect(ownerUri: string): Promise<void>;
 	disconnect(ownerUri: any) {
