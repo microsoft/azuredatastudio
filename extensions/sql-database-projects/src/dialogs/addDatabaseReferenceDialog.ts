@@ -257,6 +257,10 @@ export class AddDatabaseReferenceDialog {
 			ariaLabel: constants.databaseProject
 		}).component();
 
+		this.projectDropdown.onValueChanged(() => {
+			this.setDefaultDatabaseValues();
+		});
+
 		// get projects in workspace
 		const workspaceFolders = vscode.workspace.workspaceFolders;
 		if (workspaceFolders?.length) {
