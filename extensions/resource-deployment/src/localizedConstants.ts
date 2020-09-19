@@ -26,7 +26,7 @@ export const unexpectedOptionsSourceType = (type: OptionsSourceType) => localize
 export const unknownFieldTypeError = (type: FieldType) => localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", type);
 export const variableValueFetchForUnsupportedVariable = (variableName: string) => localize('getVariableValue.unknownVariableName', "Attempt to get variable value for unknown variable:{0}", variableName);
 export const isPasswordFetchForUnsupportedVariable = (variableName: string) => localize('getIsPassword.unknownVariableName', "Attempt to get isPassword for unknown variable:{0}", variableName);
-export const noControllersConnected = localize('noControllersConnected', "No Azure ARC controllers are currently connected. Please run the command: 'Connect to Existing Azure Arc Controller' and then try again");
+export const noControllersConnected = localize('noControllersConnected', "No Azure Arc controllers are currently connected. Please run the command: 'Connect to Existing Azure Arc Controller' and then try again");
 export const noOptionsSourceDefined = (optionsSourceType: string) => localize('noOptionsSourceDefined', "No OptionsSource defined for type: {0}", optionsSourceType);
 export const noControllerInfoFound = (name: string) => localize('noControllerInfoFound', "controllerInfo could not be found with name: {0}", name);
 export const noPasswordFound = (controllerName: string) => localize('noPasswordFound', "Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.", controllerName);
