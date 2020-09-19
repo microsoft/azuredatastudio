@@ -30,7 +30,7 @@ import { NotebookSearchWidget, INotebookExplorerSearchOptions } from 'sql/workbe
 import * as Constants from 'sql/workbench/contrib/notebook/common/constants';
 import { IChangeEvent } from 'vs/workbench/contrib/search/common/searchModel';
 import { Delayer } from 'vs/base/common/async';
-import { ITextQuery, IPatternInfo, IFolderQuery } from 'vs/workbench/services/search/common/search';
+import { ITextQuery, IPatternInfo } from 'vs/workbench/services/search/common/search';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { QueryBuilder, ITextQueryBuilderOptions } from 'vs/workbench/contrib/search/common/queryBuilder';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -262,20 +262,26 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		}
 
 		this.validateQuery(query).then(() => {
-			let filesToIncludeFiltered: string = '';
 			if (this.views.length > 1) {
+				let filesToIncludeFiltered: string = '';
 				this.views.forEach(async (v) => {
 					if (v instanceof TreeViewPane) {
 						const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
 						if (treeView.dataProvider) {
-							let root = treeView?.root;
-							let items = await treeView?.dataProvider.getChildren(root);
+							let items = await treeView?.dataProvider.getChildren(treeView?.root);
 							items?.forEach(root => {
-								this.updateViewletsState();
-								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
-								query.folderQueries.push(folderToSearch);
-								filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-								this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
+								if (root.contextValue !== 'pinnedNotebook') {
+									this.updateViewletsState();
+									let rootFolder = URI.file(isString(root.tooltip) ? root.tooltip : root.tooltip.value);
+									let folderToSearch = { folder: rootFolder };
+									query.includePattern = {
+										'**/*.ipynb': true,
+										'**/*.md': true
+									};
+									query.folderQueries.push(folderToSearch);
+									filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
+									this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
+								}
 							});
 						}
 					}
