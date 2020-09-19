@@ -39,6 +39,7 @@ import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/noteb
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import { isString } from 'vs/base/common/types';
+import { TreeViewPane } from 'vs/workbench/browser/parts/views/treeView';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
 
@@ -125,7 +126,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		@IMenuService private menuService: IMenuService,
 		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
-		@IFileService private readonly fileService: IFileService,
+		@IFileService private readonly fileService: IFileService
 	) {
 		super(VIEWLET_ID, { mergeViewWithContainerWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService, viewDescriptorService);
 		this.inputBoxFocused = Constants.InputBoxFocusedKey.bindTo(this.contextKeyService);
@@ -264,28 +265,20 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			let filesToIncludeFiltered: string = '';
 			if (this.views.length > 1) {
 				this.views.forEach(async (v) => {
-					const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
-					let root = treeView?.root;
-					let items = await treeView?.dataProvider.getChildren(root);
-					items?.forEach(async root => {
-						let contentFolder: URI;
-						this.updateViewletsState();
-						let rootFolder = isString(root.tooltip) ? root.tooltip : root.tooltip.value;
-						let folderToSearch: IFolderQuery;
-						if (root.contextValue !== 'pinnedNotebook') {
-							contentFolder = URI.file(rootFolder);
-							(await treeView?.dataProvider.getChildren(root)).map((child) => {
-								if (child.tooltip.toString().includes('/content/')) {
-									contentFolder = URI.file(path.join(rootFolder, 'content'));
-									return;
-								}
+					if (v instanceof TreeViewPane) {
+						const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
+						if (treeView.dataProvider) {
+							let root = treeView?.root;
+							let items = await treeView?.dataProvider.getChildren(root);
+							items?.forEach(root => {
+								this.updateViewletsState();
+								let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
+								query.folderQueries.push(folderToSearch);
+								filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
+								this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
 							});
-							folderToSearch = { folder: contentFolder };
-							query.folderQueries.push(folderToSearch);
-							filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-							this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
 						}
-					});
+					}
 				});
 			}
 
