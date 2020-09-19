@@ -182,7 +182,16 @@ export class PostgresOverviewPage extends DashboardPage {
 				deleteButton.enabled = false;
 				try {
 					if (await promptForInstanceDeletion(this._postgresModel.info.name)) {
-						await this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name);
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.deletingInstance(this._postgresModel.info.name),
+								cancellable: false
+							},
+							(_progress, _token) => {
+								return this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name);
+							}
+						);
 						await this._controllerModel.refreshTreeNode();
 						vscode.window.showInformationMessage(loc.instanceDeleted(this._postgresModel.info.name));
 					}
