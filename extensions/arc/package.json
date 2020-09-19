@@ -637,7 +637,7 @@
                           "description": "%arc.sql.memory-limit.description%",
                           "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
                           "type": "number",
-                          "min": 1,
+                          "min": 2,
                           "required": false
                         },
                         {
@@ -645,7 +645,7 @@
                           "description": "%arc.sql.memory-request.description%",
                           "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
                           "type": "number",
-                          "min": 1,
+                          "min": 2,
                           "required": false
                         }
                       ]
