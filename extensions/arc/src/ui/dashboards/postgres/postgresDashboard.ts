@@ -10,7 +10,6 @@ import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
 import { PostgresOverviewPage } from './postgresOverviewPage';
 import { PostgresConnectionStringsPage } from './postgresConnectionStringsPage';
-import { PostgresPropertiesPage } from './postgresPropertiesPage';
 import { Dashboard } from '../../components/dashboard';
 import { PostgresDiagnoseAndSolveProblemsPage } from './postgresDiagnoseAndSolveProblemsPage';
 import { PostgresSupportRequestPage } from './postgresSupportRequestPage';
@@ -31,7 +30,8 @@ export class PostgresDashboard extends Dashboard {
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
 		const overviewPage = new PostgresOverviewPage(modelView, this._controllerModel, this._postgresModel);
 		const connectionStringsPage = new PostgresConnectionStringsPage(modelView, this._postgresModel);
-		const propertiesPage = new PostgresPropertiesPage(modelView, this._controllerModel, this._postgresModel);
+		// TODO: Removed properties page while investigating bug where refreshed values don't appear in UI
+		// const propertiesPage = new PostgresPropertiesPage(modelView, this._controllerModel, this._postgresModel);
 		const diagnoseAndSolveProblemsPage = new PostgresDiagnoseAndSolveProblemsPage(modelView, this._context, this._postgresModel);
 		const supportRequestPage = new PostgresSupportRequestPage(modelView);
 
@@ -40,8 +40,7 @@ export class PostgresDashboard extends Dashboard {
 			{
 				title: loc.settings,
 				tabs: [
-					connectionStringsPage.tab,
-					propertiesPage.tab
+					connectionStringsPage.tab
 				]
 			},
 			{
