@@ -8,7 +8,7 @@ import * as path from 'path';
 import { WorkspaceTreeDataProvider } from './common/workspaceTreeDataProvider';
 import { WorkspaceService } from './services/workspaceService';
 import { AllProjectTypes, SelectProjectFileActionName } from './common/constants';
-import { WorkspaceTreeItem } from './common/interfaces';
+import { WorkspaceTreeItem } from 'dataworkspace';
 
 export function activate(context: vscode.ExtensionContext): void {
 	const workspaceService = new WorkspaceService();
