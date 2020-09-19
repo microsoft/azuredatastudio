@@ -14,7 +14,7 @@ export function postgresDashboard(name: string): string { return localize('arc.p
 
 export const dataControllersType = localize('arc.dataControllersType', "Azure Arc Data Controller");
 export const pgSqlType = localize('arc.pgSqlType', "PostgreSQL Hyperscale - Azure Arc");
-export const miaaType = localize('arc.miaaType', "SQL instance - Azure Arc");
+export const miaaType = localize('arc.miaaType', "SQL managed instance - Azure Arc");
 
 export const overview = localize('arc.overview', "Overview");
 export const connectionStrings = localize('arc.connectionStrings', "Connection Strings");
@@ -74,7 +74,7 @@ export const loading = localize('arc.loading', "Loading...");
 export const refreshToEnterCredentials = localize('arc.refreshToEnterCredentials', "Refresh node to enter credentials");
 export const noInstancesAvailable = localize('arc.noInstancesAvailable', "No instances available");
 export const connectToController = localize('arc.connectToController', "Connect to Existing Controller");
-export function connectToSql(name: string): string { return localize('arc.connectToSql', "Connect to SQL instance - Azure Arc ({0})", name); }
+export function connectToSql(name: string): string { return localize('arc.connectToSql', "Connect to SQL managed instance - Azure Arc ({0})", name); }
 export const passwordToController = localize('arc.passwordToController', "Provide Password to Controller");
 export const controllerUrl = localize('arc.controllerUrl', "Controller URL");
 export const serverEndpoint = localize('arc.serverEndpoint', "Server Endpoint");
@@ -152,7 +152,7 @@ export function openDashboardFailed(error: any): string { return localize('arc.o
 export function instanceDeletionFailed(name: string, error: any): string { return localize('arc.instanceDeletionFailed', "Failed to delete instance {0}. {1}", name, getErrorMessage(error)); }
 export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database {0}. {1}", name, getErrorMessage(error)); }
 export function connectToControllerFailed(url: string, error: any): string { return localize('arc.connectToControllerFailed', "Could not connect to controller {0}. {1}", url, getErrorMessage(error)); }
-export function connectToSqlFailed(serverName: string, error: any): string { return localize('arc.connectToSqlFailed', "Could not connect to SQL instance - Azure Arc Instance {0}. {1}", serverName, getErrorMessage(error)); }
+export function connectToSqlFailed(serverName: string, error: any): string { return localize('arc.connectToSqlFailed', "Could not connect to SQL managed instance - Azure Arc Instance {0}. {1}", serverName, getErrorMessage(error)); }
 export function fetchConfigFailed(name: string, error: any): string { return localize('arc.fetchConfigFailed', "An unexpected error occurred retrieving the config for '{0}'. {1}", name, getErrorMessage(error)); }
 export function fetchEndpointsFailed(name: string, error: any): string { return localize('arc.fetchEndpointsFailed', "An unexpected error occurred retrieving the endpoints for '{0}'. {1}", name, getErrorMessage(error)); }
 export function fetchRegistrationsFailed(name: string, error: any): string { return localize('arc.fetchRegistrationsFailed', "An unexpected error occurred retrieving the registrations for '{0}'. {1}", name, getErrorMessage(error)); }
