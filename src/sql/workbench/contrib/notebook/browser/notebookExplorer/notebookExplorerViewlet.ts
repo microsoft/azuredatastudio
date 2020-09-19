@@ -274,10 +274,6 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 									this.updateViewletsState();
 									let rootFolder = URI.file(isString(root.tooltip) ? root.tooltip : root.tooltip.value);
 									let folderToSearch = { folder: rootFolder };
-									query.includePattern = {
-										'**/*.ipynb': true,
-										'**/*.md': true
-									};
 									query.folderQueries.push(folderToSearch);
 									filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
 									this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
