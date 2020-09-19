@@ -129,28 +129,31 @@ export class NotebookTextFileModel {
 	}
 
 	public transformAndApplyEditForOutputUpdate(contentChange: NotebookContentChange, textEditorModel: ITextEditorModel): boolean {
+		this.transformAndApplyEditForClearOutput(contentChange, textEditorModel);
 		if (Array.isArray(contentChange.cells[0].outputs) && contentChange.cells[0].outputs.length > 0) {
-			let newOutput = JSON.stringify(contentChange.cells[0].outputs[contentChange.cells[0].outputs.length - 1], undefined, '    ');
-			if (contentChange.cells[0].outputs.length > 1) {
-				newOutput = ', '.concat(newOutput);
-			} else {
-				newOutput = '\n'.concat(newOutput).concat('\n');
-			}
+			for (let i = 0; i < contentChange.cells[0].outputs.length; i++) {
+				let newOutput = JSON.stringify(contentChange.cells[0].outputs[i], undefined, '    ');
+				if (i > 0) {
+					newOutput = ', '.concat(newOutput);
+				} else {
+					newOutput = '\n'.concat(newOutput).concat('\n');
+				}
 
-			// Execution count will always be after the end of the outputs in JSON. This is a sanity mechanism.
-			let executionCountMatch = this.getExecutionCountRange(textEditorModel, contentChange.cells[0].cellGuid);
-			if (!executionCountMatch || !executionCountMatch.range) {
-				return false;
-			}
+				// Execution count will always be after the end of the outputs in JSON. This is a sanity mechanism.
+				let executionCountMatch = this.getExecutionCountRange(textEditorModel, contentChange.cells[0].cellGuid);
+				if (!executionCountMatch || !executionCountMatch.range) {
+					return false;
+				}
 
-			let endOutputsRange = this.getEndOfOutputs(textEditorModel, contentChange.cells[0].cellGuid);
-			if (endOutputsRange && endOutputsRange.startLineNumber < executionCountMatch.range.startLineNumber) {
-				textEditorModel.textEditorModel.applyEdits([{
-					range: new Range(endOutputsRange.startLineNumber, endOutputsRange.startColumn, endOutputsRange.startLineNumber, endOutputsRange.startColumn),
-					text: newOutput
-				}]);
-				return true;
+				let endOutputsRange = this.getEndOfOutputs(textEditorModel, contentChange.cells[0].cellGuid);
+				if (endOutputsRange && endOutputsRange.startLineNumber < executionCountMatch.range.startLineNumber) {
+					textEditorModel.textEditorModel.applyEdits([{
+						range: new Range(endOutputsRange.startLineNumber, endOutputsRange.startColumn, endOutputsRange.startLineNumber, endOutputsRange.startColumn),
+						text: newOutput
+					}]);
+				}
 			}
+			return true;
 		}
 		return false;
 	}
