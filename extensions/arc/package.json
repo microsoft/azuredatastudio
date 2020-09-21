@@ -274,21 +274,6 @@
                             "westeurope",
                             "westus2"
                           ]
-                        },
-                        {
-                          "type": "options",
-                          "label": "%arc.data.controller.arc.data.controller.connectivity.mode%",
-                          "options": {
-                            "values": [
-                              "Indirect",
-                              "Direct"
-                            ],
-                            "defaultValue": "Indirect",
-                            "optionsType": "radio"
-                          },
-                          "enabled": false,
-                          "required": true,
-                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE"
                         }
                       ]
                     },
@@ -483,12 +468,6 @@
                           "type": "readonly_text",
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME)"
-                        },
-                        {
-                          "label": "%arc.data.controller.summary.data.controller.connectivity.mode%",
-                          "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE)"
                         },
                         {
                           "label": "%arc.data.controller.summary.subscription%",
