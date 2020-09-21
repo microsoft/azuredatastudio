@@ -270,7 +270,7 @@ export class AzureSettingsPage extends BasePage {
 		}).component();
 		this._serverGroupDropdown.onValueChanged(async (value) => {
 			if (value.selected === ((this._serverGroupDropdown.value as azdata.CategoryValue).displayName)) {
-				this.wizard.model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
+				this.wizard.model.azureServerName = value.selected;
 				this.wizard.model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
 				this.wizard.model.azureRegion = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/location/'), '');
 				this.populateSupportedServersDropdown();
@@ -492,7 +492,7 @@ export class AzureSettingsPage extends BasePage {
 			required: true,
 		}).component();
 		this._dbSupportedEditionsDropdown.onValueChanged(async (value) => {
-			console.log(value);
+			this.wizard.model.databaseEdition = value.selected;
 		});
 	}
 
@@ -545,11 +545,9 @@ export class AzureSettingsPage extends BasePage {
 				};
 			})
 		);
-		// if (this._serverGroupDropdown.value) {
-		// 	this.wizard.model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
-		// 	this.wizard.model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
-		// 	this.wizard.model.azureRegion = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/location/'), '');
-		// }
+		if (this._dbSupportedEditionsDropdown.value) {
+			this.wizard.model.databaseEdition = (this._dbSupportedEditionsDropdown.value as azdata.CategoryValue).displayName;
+		}
 		this._dbSupportedEditionsDropdown.loading = false;
 		return;
 	}
