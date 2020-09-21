@@ -21,8 +21,8 @@
     * Azure SQL Database Edge
     * (Edge will require Azure SQL Edge Deployment Extension)
 * Added SQL Database Projects extension - The SQL Database Projects extension brings project-based database development to Azure Data Studio. In this preview release, SQL projects can be created and published from Azure Data Studio.
-* Added Kusto (KQL) extension - Brings native Kusto experiences in Azure Data Studio for data exploration and data analytics against massive amount of real-time streaming data stored in Azure Data Explorer. This preview release supports connecting and browsing Azure Data Explorer clusters, writing KQL queries as well as authoring notebooks with Kusto kernel. |
-| SQL Server Import extension GA | Announcing the GA of the SQL Server Import extension, features no longer in preview. This extension facilitates importing csv/txt files. Learn more about the extension in [this article](sql-server-import-extension.md).
+* Added Kusto (KQL) extension - Brings native Kusto experiences in Azure Data Studio for data exploration and data analytics against massive amount of real-time streaming data stored in Azure Data Explorer. This preview release supports connecting and browsing Azure Data Explorer clusters, writing KQL queries as well as authoring notebooks with Kusto kernel.
+* SQL Server Import extension GA - Announcing the GA of the SQL Server Import extension, features no longer in preview. This extension facilitates importing csv/txt files. Learn more about the extension in [this article](sql-server-import-extension.md).
 * Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue+milestone%3A%22September+2020+Release%22+is%3Aclosed).
 
 ## Version 1.21.0
