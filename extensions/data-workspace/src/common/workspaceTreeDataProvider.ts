@@ -4,8 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { IWorkspaceService, WorkspaceTreeItem as WorkspaceTreeItem } from './interfaces';
+import { IWorkspaceService } from './interfaces';
 import { UnknownProjectsErrorMessage } from './constants';
+import { WorkspaceTreeItem } from 'dataworkspace';
 
 /**
  * Tree data provider for the workspace main view

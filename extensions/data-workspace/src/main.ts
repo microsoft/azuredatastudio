@@ -7,8 +7,8 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { WorkspaceTreeDataProvider } from './common/workspaceTreeDataProvider';
 import { WorkspaceService } from './services/workspaceService';
-import { SelectProjectFileActionName } from './common/constants';
-import { WorkspaceTreeItem } from './common/interfaces';
+import { AllProjectTypes, SelectProjectFileActionName } from './common/constants';
+import { WorkspaceTreeItem } from 'dataworkspace';
 
 export function activate(context: vscode.ExtensionContext): void {
 	const workspaceService = new WorkspaceService();
@@ -18,10 +18,11 @@ export function activate(context: vscode.ExtensionContext): void {
 		// To Sakshi - You can replace the implementation with your complete dialog implementation
 		// but all the code here should be reusable by you
 		if (vscode.workspace.workspaceFile) {
-			const filter: { [name: string]: string[] } = {};
+			const filters: { [name: string]: string[] } = {};
 			const projectTypes = await workspaceService.getAllProjectTypes();
+			filters[AllProjectTypes] = projectTypes.map(type => type.projectFileExtension);
 			projectTypes.forEach(type => {
-				filter[type.displayName] = projectTypes.map(projectType => projectType.projectFileExtension);
+				filters[type.displayName] = [type.projectFileExtension];
 			});
 			let fileUris = await vscode.window.showOpenDialog({
 				canSelectFiles: true,
@@ -29,7 +30,7 @@ export function activate(context: vscode.ExtensionContext): void {
 				canSelectMany: false,
 				defaultUri: vscode.Uri.file(path.dirname(vscode.workspace.workspaceFile.path)),
 				openLabel: SelectProjectFileActionName,
-				filters: filter
+				filters: filters
 			});
 			if (!fileUris || fileUris.length === 0) {
 				return;
