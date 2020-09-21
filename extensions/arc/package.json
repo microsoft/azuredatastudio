@@ -470,7 +470,7 @@
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME)"
                         },
                         {
-                          "label": "%arc.control.plane.summary.subscription%",
+                          "label": "%arc.data.controller.summary.subscription%",
                           "type": "readonly_text",
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_DISPLAY_SUBSCRIPTION)",
