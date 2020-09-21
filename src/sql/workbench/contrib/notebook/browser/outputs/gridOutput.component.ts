@@ -295,6 +295,11 @@ class DataResourceTable extends GridTableBase<any> {
 	public convertData(set: ResultSetSummary): Promise<void> {
 		return this._gridDataProvider.convertAllData(set);
 	}
+
+	public updateResult(resultSet: ResultSetSummary): void {
+		super.updateResult(resultSet);
+		this._gridDataProvider.updateResultSet(resultSet);
+	}
 }
 
 export class DataResourceDataProvider implements IGridDataProvider {
@@ -372,6 +377,10 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		});
 	}
 
+	public updateResultSet(resultSet: ResultSetSummary): void {
+		this._resultSet = resultSet;
+	}
+
 	public async convertAllData(result: ResultSetSummary): Promise<void> {
 		// Querying 100 rows at a time. Querying large amount of rows will be slow and
 		// affect table rendering since each time the user scrolls, getRowData is called.
@@ -383,6 +392,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			let rows = await this._queryRunner.getQueryRows(i, numRows, this._batchId, this._id);
 			this.convertData(rows);
 		}
+		this.cellModel.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 	}
 
 	private convertData(rows: ResultSetSubset): void {

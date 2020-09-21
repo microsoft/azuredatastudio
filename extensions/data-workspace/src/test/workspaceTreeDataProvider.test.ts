@@ -9,8 +9,7 @@ import * as vscode from 'vscode';
 import * as should from 'should';
 import { WorkspaceTreeDataProvider } from '../common/workspaceTreeDataProvider';
 import { WorkspaceService } from '../services/workspaceService';
-import { WorkspaceTreeItem } from '../common/interfaces';
-import { IProjectProvider } from 'dataworkspace';
+import { IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import { MockTreeDataProvider } from './projectProviderRegistry.test';
 
 suite('workspaceTreeDataProvider Tests', function (): void {

@@ -109,7 +109,7 @@ export const sameDatabase = localize('sameDatabase', "Same database");
 export const differentDbSameServer = localize('differentDbSameServer', "Different database, same server");
 export const differentDbDifferentServer = localize('differentDbDifferentServer', "Different database, different server");
 export const systemDbLocationDropdownValues = [differentDbSameServer];
-export const locationDropdownValues = [sameDatabase, differentDbSameServer, differentDbDifferentServer];
+export const locationDropdownValues = [differentDbSameServer, differentDbDifferentServer];
 export const databaseName = localize('databaseName', "Database name");
 export const databaseVariable = localize('databaseVariable', "Database variable");
 export const serverName = localize('serverName', "Server name");
@@ -120,7 +120,7 @@ export const enterSystemDbName = localize('enterSystemDbName', "Enter a database
 export const databaseNameRequiredVariableOptional = localize('databaseNameRequiredVariableOptional', "A database name is required. The database variable is optional.");
 export const databaseNameServerNameVariableRequired = localize('databaseNameServerNameVariableRequired', "A database name, server name, and server variable are required. The database variable is optional");
 export const otherServer = 'OtherServer';
-export const otherSeverVariable = '$(OtherServer)';
+export const otherSeverVariable = 'OtherServer';
 export const databaseProject = localize('databaseProject', "Database project");
 
 // Error messages
