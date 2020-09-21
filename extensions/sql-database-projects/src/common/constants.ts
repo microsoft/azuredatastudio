@@ -120,7 +120,7 @@ export const enterSystemDbName = localize('enterSystemDbName', "Enter a database
 export const databaseNameRequiredVariableOptional = localize('databaseNameRequiredVariableOptional', "A database name is required. The database variable is optional.");
 export const databaseNameServerNameVariableRequired = localize('databaseNameServerNameVariableRequired', "A database name, server name, and server variable are required. The database variable is optional");
 export const otherServer = 'OtherServer';
-export const otherSeverVariable = '$(OtherServer)';
+export const otherSeverVariable = 'OtherServer';
 export const databaseProject = localize('databaseProject', "Database project");
 
 // Error messages
