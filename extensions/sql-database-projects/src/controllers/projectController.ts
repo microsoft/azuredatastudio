@@ -30,6 +30,7 @@ import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
+import { WorkspaceTreeItem } from 'dataworkspace';
 
 /**
  * Controller for managing project lifecycle
@@ -189,7 +190,7 @@ export class ProjectsController {
 	 * @returns path of the built dacpac
 	 */
 	public async buildProject(project: Project): Promise<string>;
-	public async buildProject(context: Project | BaseProjectTreeItem): Promise<string | undefined> {
+	public async buildProject(context: Project | BaseProjectTreeItem | WorkspaceTreeItem): Promise<string | undefined> {
 		const project: Project = this.getProjectFromContext(context);
 
 		// Check mssql extension for project dlls (tracking issue #10273)
@@ -583,7 +584,11 @@ export class ProjectsController {
 		}
 	}
 
-	private getProjectFromContext(context: Project | BaseProjectTreeItem) {
+	private getProjectFromContext(context: Project | BaseProjectTreeItem | WorkspaceTreeItem) {
+		if ('element' in context) {
+			return context.element.project;
+		}
+
 		if (context instanceof Project) {
 			return context;
 		}
