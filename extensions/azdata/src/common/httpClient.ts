@@ -61,7 +61,7 @@ export namespace HttpClient {
 					if (targetFolder !== undefined) {
 						const filename = path.basename(response.request.path);
 						const targetPath = path.join(targetFolder, filename);
-						Logger.log(loc.downloadingTo(filename, targetPath));
+						Logger.log(loc.downloadingTo(filename, downloadUrl, targetPath));
 						// Wait to create the WriteStream until here so we can use the actual
 						// filename based off of the URI.
 						downloadRequest.pipe(fs.createWriteStream(targetPath))
