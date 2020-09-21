@@ -12,8 +12,9 @@ import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
-import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataHostname, azdataInstallKey, azdataReleaseJson, azdataUpdateKey, azdataUri, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
+import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
+import { getPlatformDownloadLink, getPlatformReleaseVersion } from './azdataReleaseInfo';
 
 const enum AzdataDeployOption {
 	dontPrompt = 'dontPrompt',
@@ -449,8 +450,9 @@ export async function promptForEula(memento: vscode.Memento, userRequested: bool
  * Downloads the Windows installer and runs it
  */
 async function downloadAndInstallAzdataWin32(): Promise<void> {
+	const downLoadLink = await getPlatformDownloadLink();
 	const downloadFolder = os.tmpdir();
-	const downloadedFile = await HttpClient.downloadFile(`${azdataHostname}/${azdataUri}`, downloadFolder);
+	const downloadedFile = await HttpClient.downloadFile(downLoadLink, downloadFolder);
 	await executeCommand('msiexec', ['/qn', '/i', downloadedFile]);
 }
 
@@ -524,25 +526,8 @@ export async function discoverLatestAvailableAzdataVersion(): Promise<SemVer> {
 		// However, doing discovery that way required apt update to be performed which requires sudo privileges. At least currently this code path
 		// gets invoked on extension start up and prompt user for sudo privileges is annoying at best. So for now basing linux discovery also on a releaseJson file.
 		default:
-			return await discoverLatestAzdataVersionFromJson();
+			return await getPlatformReleaseVersion();
 	}
-}
-
-/**
- * Gets the latest azdata version from a json document published by azdata release
- */
-async function discoverLatestAzdataVersionFromJson(): Promise<SemVer> {
-	// get version information for current platform from http://aka.ms/azdata/release.json
-	const fileContents = await HttpClient.getTextContent(`${azdataHostname}/${azdataReleaseJson}`);
-	let azdataReleaseInfo;
-	try {
-		azdataReleaseInfo = JSON.parse(fileContents);
-	} catch (e) {
-		throw Error(`failed to parse the JSON of contents at: ${azdataHostname}/${azdataReleaseJson}, text being parsed: '${fileContents}', error:${getErrorMessage(e)}`);
-	}
-	const version = azdataReleaseInfo[process.platform]['version'];
-	Logger.log(loc.latestAzdataVersionAvailable(version));
-	return new SemVer(version);
 }
 
 /**
