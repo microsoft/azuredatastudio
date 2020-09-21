@@ -240,7 +240,7 @@
                           "type": "text",
                           "label": "%arc.data.controller.arc.data.controller.name%",
                           "textValidationRequired": true,
-                          "textValidationRegex": "^[a-z0-9]([.-a-z0-9]{0,251}[a-z0-9])?$",
+                          "textValidationRegex": "^[a-z0-9]([-.a-z0-9]{0,251}[a-z0-9])?$",
                           "textValidationDescription": "%arc.data.controller.arc.data.controller.name.validation.description%",
                           "defaultValue": "arc-dc",
                           "required": true,
