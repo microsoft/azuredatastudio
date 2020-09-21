@@ -6,6 +6,7 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolStatus } from '../interfaces';
+import { select } from '../localizedConstants';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { getErrorMessage } from '../utils';
@@ -176,13 +177,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 	private selectResourceType(resourceType: ResourceType): void {
 		this._selectedResourceType = resourceType;
-		//handle special case when resource type has different OK button.
-		if (this._selectedResourceType.okButtonText) {
-			this._dialogObject.okButton.label = this._selectedResourceType.okButtonText;
-		}
-		else {
-			this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Select");
-		}
 
 		this._agreementCheckboxChecked = false;
 		this._agreementContainer.clearItems();
@@ -206,13 +200,26 @@ export class ResourceTypePickerDialog extends DialogBase {
 					ariaLabel: option.displayName
 				}).component();
 
+				this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateOkButtonText(); }));
 				this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
 				this._optionDropDownMap.set(option.name, optionSelectBox);
 				const row = this._view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 				this._optionsContainer.addItem(row);
 			});
 		}
+		this.updateOkButtonText();
 		this.updateToolsDisplayTable();
+	}
+
+	private updateOkButtonText(): void {
+		//handle special case when resource type has different OK button.
+		let text = this.getCurrentOkText();
+		if (text) {
+			this._dialogObject.okButton.label = text;
+		}
+		else {
+			this._dialogObject.okButton.label = select;
+		}
 	}
 
 	private updateToolsDisplayTable(): void {
@@ -353,6 +360,17 @@ export class ResourceTypePickerDialog extends DialogBase {
 		});
 
 		return this._selectedResourceType.getProvider(options)!;
+	}
+
+	private getCurrentOkText(): string {
+		const options: { option: string, value: string }[] = [];
+
+		this._optionDropDownMap.forEach((selectBox, option) => {
+			let selectedValue: azdata.CategoryValue = selectBox.value as azdata.CategoryValue;
+			options.push({ option: option, value: selectedValue.name });
+		});
+
+		return this._selectedResourceType.getOkButtonText(options)!;
 	}
 
 	protected async onComplete(): Promise<void> {

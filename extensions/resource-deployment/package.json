@@ -401,7 +401,20 @@
           "light": "./images/azure-sql-db.svg",
           "dark": "./images/azure-sql-db.svg"
         },
-        "okButtonText": "%azure-sqldb-ok-button-text%",
+        "okButtonText": [
+          {
+            "value": "%azure-sqldb-notebook-ok-button-text%",
+            "when": "resource-type=single-database"
+          },
+          {
+            "value": "%azure-sqldb-portal-ok-button-text%",
+            "when": "resource-type=elastic-pool"
+          },
+          {
+            "value": "%azure-sqldb-portal-ok-button-text%",
+            "when": "resource-type=database-server"
+          }
+        ],
         "options": [
           {
             "name": "resource-type",
