@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -621,6 +621,7 @@
                           "description": "%arc.sql.cores-limit.description%",
                           "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
                           "type": "number",
+                          "min": 1,
                           "required": false
                         },
                         {
@@ -628,6 +629,7 @@
                           "description": "%arc.sql.cores-request.description%",
                           "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
                           "type": "number",
+                          "min": 1,
                           "required": false
                         },
                         {
@@ -635,6 +637,7 @@
                           "description": "%arc.sql.memory-limit.description%",
                           "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
                           "type": "number",
+                          "min": 2,
                           "required": false
                         },
                         {
@@ -642,6 +645,7 @@
                           "description": "%arc.sql.memory-request.description%",
                           "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
                           "type": "number",
+                          "min": 2,
                           "required": false
                         }
                       ]
@@ -739,11 +743,12 @@
                           "required": true
                         },
                         {
-                          "label": "%arc.postgres.server.group.workers%",
+                          "label": "%arc.postgres.server.group.workers.label%",
+                          "description": "%arc.postgres.server.group.workers.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS",
                           "type": "number",
-                          "defaultValue": "1",
-                          "min": 1
+                          "defaultValue": "0",
+                          "min": 0
                         },
                         {
                           "label": "%arc.postgres.server.group.port%",
