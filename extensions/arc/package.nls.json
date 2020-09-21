@@ -14,7 +14,6 @@
 
 	"resource.type.azure.arc.display.name": "Azure Arc data controller (preview)",
 	"resource.type.azure.arc.description": "Creates an Azure Arc data controller",
-
 	"arc.data.controller.new.wizard.title": "Create Azure Arc data controller",
 	"arc.data.controller.cluster.environment.title": "What is your target existing Kubernetes cluster environment?",
 	"arc.data.controller.select.cluster.title": "Select from existing Kubernetes clusters",
@@ -26,7 +25,6 @@
 	"arc.data.controller.project.details.description": "Select the subscription to manage deployed resources and costs. Use resource groups like folders to organize and manage all your resources.",
 	"arc.data.controller.data.controller.details.title": "Data controller details",
 	"arc.data.controller.data.controller.details.description": "Provide an Azure region and a name for your Azure Arc data controller. This name will be used to identify your Arc location for remote management and monitoring.",
-	"arc.data.controller.arc.data.controller.connectivity.mode": "Data controller connectivity mode",
 	"arc.data.controller.arc.data.controller.namespace": "Data controller namespace",
 	"arc.data.controller.arc.data.controller.namespace.validation.description": "Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.",
 	"arc.data.controller.arc.data.controller.name": "Data controller name",
@@ -55,7 +53,6 @@
 	"arc.data.controller.summary.azure": "Azure",
 	"arc.data.controller.summary.subscription": "Subscription",
 	"arc.data.controller.summary.resource.group": "Resource group",
-	"arc.data.controller.summary.data.controller.connectivity.mode": "Data controller connectivity mode",
 	"arc.data.controller.summary.data.controller.name": "Data controller name",
 	"arc.data.controller.summary.data.controller.namespace": "Data controller namespace",
 	"arc.data.controller.summary.location": "Location",
