@@ -11,4 +11,5 @@ export const ExtensionActivationErrorMessage = (extensionId: string, err: any): 
 export const UnknownProjectsErrorMessage = (projectFiles: string[]): string => { return localize('UnknownProjectsError', "No provider was found for the following projects: {0}", projectFiles.join(EOL)); };
 
 export const SelectProjectFileActionName = localize('SelectProjectFileActionName', "Select");
+export const AllProjectTypes = localize('AllProjectTypes', "All Project Types");
 
