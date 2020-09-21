@@ -376,7 +376,7 @@ export class ProjectsController {
 		}
 	}
 
-	public async exclude(context: FileNode | FolderNode): Promise<void> {
+	public async exclude(context: BaseProjectTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
 
 		const fileEntry = this.getFileProjectEntry(project, context);
@@ -390,11 +390,10 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
-	public async delete(context: WorkspaceTreeItem): Promise<void> {
+	public async delete(context: BaseProjectTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
-		const node = context.element;
 
-		const confirmationPrompt = node instanceof FolderNode ? constants.deleteConfirmationContents(node.friendlyName) : constants.deleteConfirmation(node.friendlyName);
+		const confirmationPrompt = context instanceof FolderNode ? constants.deleteConfirmationContents(context.friendlyName) : constants.deleteConfirmation(context.friendlyName);
 		const response = await vscode.window.showWarningMessage(confirmationPrompt, { modal: true }, constants.yesString);
 
 		if (response !== constants.yesString) {
@@ -403,8 +402,8 @@ export class ProjectsController {
 
 		let success = false;
 
-		if (node instanceof FileNode || FolderNode) {
-			const fileEntry = this.getFileProjectEntry(project, context.element);
+		if (context instanceof BaseProjectTreeItem) {
+			const fileEntry = this.getFileProjectEntry(project, context);
 
 			if (fileEntry) {
 				await project.deleteFileFolder(fileEntry);
@@ -415,11 +414,11 @@ export class ProjectsController {
 		if (success) {
 			this.refreshProjectsTree();
 		} else {
-			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.uri.path));
+			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, context.uri.path));
 		}
 	}
 
-	private getFileProjectEntry(project: Project, context: FileNode | FolderNode): FileProjectEntry | undefined {
+	private getFileProjectEntry(project: Project, context: BaseProjectTreeItem): FileProjectEntry | undefined {
 		const root = context.root as ProjectRootTreeItem;
 		const fileOrFolder = context as FileNode ? context as FileNode : context as FolderNode;
 
