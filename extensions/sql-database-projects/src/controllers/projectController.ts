@@ -390,10 +390,11 @@ export class ProjectsController {
 		this.refreshProjectsTree();
 	}
 
-	public async delete(context: BaseProjectTreeItem): Promise<void> {
+	public async delete(context: WorkspaceTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
+		const node = context.element;
 
-		const confirmationPrompt = context instanceof FolderNode ? constants.deleteConfirmationContents(context.friendlyName) : constants.deleteConfirmation(context.friendlyName);
+		const confirmationPrompt = node instanceof FolderNode ? constants.deleteConfirmationContents(node.friendlyName) : constants.deleteConfirmation(node.friendlyName);
 		const response = await vscode.window.showWarningMessage(confirmationPrompt, { modal: true }, constants.yesString);
 
 		if (response !== constants.yesString) {
@@ -402,8 +403,8 @@ export class ProjectsController {
 
 		let success = false;
 
-		if (context instanceof FileNode || FolderNode) {
-			const fileEntry = this.getFileProjectEntry(project, context);
+		if (node instanceof FileNode || FolderNode) {
+			const fileEntry = this.getFileProjectEntry(project, context.element);
 
 			if (fileEntry) {
 				await project.deleteFileFolder(fileEntry);
@@ -414,11 +415,11 @@ export class ProjectsController {
 		if (success) {
 			this.refreshProjectsTree();
 		} else {
-			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, context.uri.path));
+			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.uri.path));
 		}
 	}
 
-	private getFileProjectEntry(project: Project, context: BaseProjectTreeItem): FileProjectEntry | undefined {
+	private getFileProjectEntry(project: Project, context: FileNode | FolderNode): FileProjectEntry | undefined {
 		const root = context.root as ProjectRootTreeItem;
 		const fileOrFolder = context as FileNode ? context as FileNode : context as FolderNode;
 
@@ -427,7 +428,7 @@ export class ProjectsController {
 			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
 			return allFileEntries.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)));
 		}
-		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
+		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.uri, context.uri)));
 	}
 
 	/**
@@ -567,7 +568,7 @@ export class ProjectsController {
 
 	private getProjectFromContext(context: Project | BaseProjectTreeItem | WorkspaceTreeItem) {
 		if ('element' in context) {
-			return context.element.project;
+			return context.element.root.project;
 		}
 
 		if (context instanceof Project) {
