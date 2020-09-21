@@ -13,7 +13,7 @@ export class Log {
 	}
 
 	log(msg: string): void {
-		this._output.appendLine(msg);
+		this._output.appendLine(`[${new Date().toISOString()}] ${msg}`);
 	}
 
 	show(): void {
