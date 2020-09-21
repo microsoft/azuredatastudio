@@ -257,6 +257,17 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				}
 			}));
 
+		const troubleshootButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.troubleshoot,
+			iconPath: IconPathHelper.wrench
+		}).component();
+
+		this.disposables.push(
+			troubleshootButton.onDidClick(async () => {
+				await vscode.env.openExternal(vscode.Uri.parse(miaaTroubleshootDocsUrl));
+			})
+		);
+
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
 				{ component: deleteButton },

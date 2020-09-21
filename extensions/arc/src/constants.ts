@@ -9,7 +9,8 @@ export const refreshActionId = 'arc.refresh';
 
 export const credentialNamespace = 'arcCredentials';
 
-export const troubleshootDocsUrl = 'https://aka.ms/arc-data-tsg';
+export const controllerTroubleshootDocsUrl = 'https://aka.ms/arc-data-tsg';
+export const miaaTroubleshootDocsUrl = 'https://aka.ms/miaa-tsg';
 
 export interface IconPath {
 	dark: string;

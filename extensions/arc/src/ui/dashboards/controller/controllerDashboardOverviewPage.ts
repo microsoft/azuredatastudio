@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import { getConnectionModeDisplayText, getResourceTypeIcon, resourceTypeToDisplayName } from '../../../common/utils';
-import { cssStyles, Endpoints, IconPathHelper, iconSize, troubleshootDocsUrl } from '../../../constants';
+import { cssStyles, Endpoints, IconPathHelper, controllerTroubleshootDocsUrl, iconSize } from '../../../constants';
 import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
 import { DashboardPage } from '../../components/dashboardPage';
@@ -192,7 +192,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 		this.disposables.push(
 			troubleshootButton.onDidClick(async () => {
-				await vscode.env.openExternal(vscode.Uri.parse(troubleshootDocsUrl));
+				await vscode.env.openExternal(vscode.Uri.parse(controllerTroubleshootDocsUrl));
 			})
 		);
 
