@@ -318,7 +318,6 @@ export class Project {
 
 	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<void> {
 		await this.removeFromProjFile(entry);
-
 		this.databaseReferences = this.databaseReferences.filter(x => x !== entry);
 	}
 
@@ -534,7 +533,6 @@ export class Project {
 	private removeDatabaseReferenceFromProjFile(databaseReferenceEntry: IDatabaseReferenceProjectEntry): void {
 		const elementTag = databaseReferenceEntry instanceof SqlProjectReferenceProjectEntry ? constants.ProjectReference : constants.ArtifactReference;
 		const artifactReferenceNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(elementTag);
-
 		const deleted = this.removeNode(databaseReferenceEntry.pathForSqlProj(), artifactReferenceNodes);
 
 		// also delete SSDT reference if it's a system db reference
@@ -927,10 +925,6 @@ export class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implem
 
 	public pathForSqlProj(): string {
 		// need to remove the leading slash for system database path for build to work on Windows
-		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
-	}
-
-	public systemdbPathForSqlProj(): string {
 		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
 	}
 
