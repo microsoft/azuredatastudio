@@ -280,13 +280,11 @@
                           "label": "%arc.control.plane.arc.data.controller.connectivity.mode%",
                           "options": {
                             "values": [
-                              "Indirect",
-                              "Direct"
+                              "Indirect"
                             ],
                             "defaultValue": "Indirect",
                             "optionsType": "radio"
                           },
-                          "enabled": false,
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE"
                         }
