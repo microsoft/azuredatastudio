@@ -8,7 +8,7 @@ import * as azdataExt from 'azdata-ext';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import { getDatabaseStateDisplayText, promptForInstanceDeletion } from '../../../common/utils';
-import { cssStyles, Endpoints, IconPathHelper } from '../../../constants';
+import { cssStyles, Endpoints, IconPathHelper, miaaTroubleshootDocsUrl } from '../../../constants';
 import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
 import { MiaaModel } from '../../../models/miaaModel';
@@ -256,6 +256,17 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}
 			}));
+
+		const troubleshootButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.troubleshoot,
+			iconPath: IconPathHelper.wrench
+		}).component();
+
+		this.disposables.push(
+			troubleshootButton.onDidClick(async () => {
+				await vscode.env.openExternal(vscode.Uri.parse(miaaTroubleshootDocsUrl));
+			})
+		);
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
