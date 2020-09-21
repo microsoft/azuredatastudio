@@ -13,7 +13,6 @@ import * as newProjectTool from '../tools/newProjectTool';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { getErrorMessage, getSqlProjectFilesInFolder } from '../common/utils';
 import { ProjectsController } from './projectController';
-import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { NetCoreTool } from '../tools/netcoreTool';
 import { Project } from '../models/project';
 import { IconPathHelper } from '../common/iconHelper';

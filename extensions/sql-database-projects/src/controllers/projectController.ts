@@ -402,7 +402,7 @@ export class ProjectsController {
 
 		let success = false;
 
-		if (context instanceof BaseProjectTreeItem) {
+		if (context instanceof FileNode || FolderNode) {
 			const fileEntry = this.getFileProjectEntry(project, context);
 
 			if (fileEntry) {
@@ -427,7 +427,7 @@ export class ProjectsController {
 			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
 			return allFileEntries.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)));
 		}
-		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.uri, context.uri)));
+		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
 	}
 
 	/**
@@ -567,7 +567,7 @@ export class ProjectsController {
 
 	private getProjectFromContext(context: Project | BaseProjectTreeItem | WorkspaceTreeItem) {
 		if ('element' in context) {
-			return context.element.root.project;
+			return context.element.project;
 		}
 
 		if (context instanceof Project) {
