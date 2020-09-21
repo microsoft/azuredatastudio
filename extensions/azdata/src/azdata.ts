@@ -292,7 +292,6 @@ export async function updateAzdata(): Promise<void> {
  */
 export async function checkAndInstallAzdata(userRequested: boolean = false): Promise<IAzdataTool | undefined> {
 	try {
-		throw new Error('could not find azdata');
 		return await findAzdata(); // find currently installed Azdata
 	} catch (err) {
 		// Calls will be made to handle azdata not being installed if user declines to install on the prompt
