@@ -100,7 +100,7 @@ describe('azdata', function () {
 			sinon.stub(vscode.window, 'showInformationMessage').returns(Promise.resolve(<any>loc.yes));
 		});
 
-		it('successful update', async function (): Promise<void> {
+		it.skip('successful update', async function (): Promise<void> {
 			switch (process.platform) {
 				case 'win32':
 					await testWin32SuccessfulUpdate();
@@ -116,7 +116,7 @@ describe('azdata', function () {
 		});
 
 
-		it('unsuccessful update', async function (): Promise<void> {
+		it.skip('unsuccessful update', async function (): Promise<void> {
 			switch (process.platform) {
 				case 'win32':
 					await testWin32UnsuccessfulUpdate();
