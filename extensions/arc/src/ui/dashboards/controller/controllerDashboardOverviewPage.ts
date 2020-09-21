@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import { getConnectionModeDisplayText, getResourceTypeIcon, resourceTypeToDisplayName } from '../../../common/utils';
-import { cssStyles, Endpoints, IconPathHelper, iconSize } from '../../../constants';
+import { cssStyles, Endpoints, IconPathHelper, iconSize, troubleshootDocsUrl } from '../../../constants';
 import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
 import { DashboardPage } from '../../components/dashboardPage';
@@ -178,18 +178,30 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			this._openInAzurePortalButton.onDidClick(async () => {
 				const config = this._controllerModel.controllerConfig;
 				if (config) {
-					vscode.env.openExternal(vscode.Uri.parse(
+					await vscode.env.openExternal(vscode.Uri.parse(
 						`https://portal.azure.com/#resource/subscriptions/${config.spec.settings.azure.subscription}/resourceGroups/${config.spec.settings.azure.resourceGroup}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${config.metadata.name}`));
 				} else {
 					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}
 			}));
 
+		const troubleshootButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.troubleshoot,
+			iconPath: IconPathHelper.wrench
+		}).component();
+
+		this.disposables.push(
+			troubleshootButton.onDidClick(async () => {
+				await vscode.env.openExternal(vscode.Uri.parse(troubleshootDocsUrl));
+			})
+		);
+
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
 				{ component: newInstance },
 				{ component: refreshButton, toolbarSeparatorAfter: true },
-				{ component: this._openInAzurePortalButton }
+				{ component: this._openInAzurePortalButton, toolbarSeparatorAfter: true },
+				{ component: troubleshootButton }
 			]
 		).component();
 	}
