@@ -69,7 +69,8 @@ export enum PythonPkgType {
 
 export enum NavigationProviders {
 	NotebooksNavigator = 'BookNavigator.Notebooks',
-	ProvidedBooksNavigator = 'BookNavigator.ProvidedBooks'
+	ProvidedBooksNavigator = 'BookNavigator.ProvidedBooks',
+	PinnedNotebooksNavigator = 'BookNavigator.PinnedNotebooks'
 }
 
 export const unsavedBooksContextKey = 'unsavedBooks';

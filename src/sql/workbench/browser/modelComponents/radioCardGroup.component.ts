@@ -119,6 +119,18 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 		return this.getProperties().selectedCardId ?? undefined;
 	}
 
+	public get iconPosition(): string {
+		return this.getProperties().iconPosition ?? 'top';
+	}
+
+	public isIconPositionTop(): boolean {
+		return this.iconPosition === 'top';
+	}
+
+	public isIconPositionLeft(): boolean {
+		return this.iconPosition === 'left';
+	}
+
 	public get orientation(): string {
 		const x = this.getProperties().orientation ?? 'horizontal';
 		return x;

@@ -22,6 +22,7 @@ const buildFiles: string[] = [
 	'Microsoft.SqlServer.TransactSql.ScriptDom.dll',
 	'Microsoft.SqlServer.Types.dll',
 	'System.ComponentModel.Composition.dll',
+	'System.IO.Packaging.dll',
 	'Microsoft.Data.Tools.Schema.SqlTasks.targets'
 ];
 

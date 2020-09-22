@@ -65,7 +65,7 @@ export async function executeCommand(command: string, args: string[], additional
 				Logger.log(loc.stdoutOutput(stdout));
 			}
 			if (stderr) {
-				Logger.log(loc.stdoutOutput(stderr));
+				Logger.log(loc.stderrOutput(stderr));
 			}
 			if (code) {
 				const err = new ExitCodeError(code, stderr);
@@ -94,7 +94,7 @@ export async function executeSudoCommand(command: string): Promise<ProcessOutput
 				Logger.log(loc.stdoutOutput(stdout));
 			}
 			if (stderr) {
-				Logger.log(loc.stdoutOutput(stderr));
+				Logger.log(loc.stderrOutput(stderr));
 			}
 			if (error) {
 				Logger.log(loc.unexpectedCommandError(error.message));

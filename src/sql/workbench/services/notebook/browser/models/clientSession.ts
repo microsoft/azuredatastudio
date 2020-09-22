@@ -48,6 +48,7 @@ export class ClientSession implements IClientSession {
 	private isServerStarted: boolean = false;
 	private notebookManager: INotebookManager;
 	private _kernelConfigActions: ((kernelName: string) => Promise<any>)[] = [];
+	private _connectionId: string = '';
 
 	constructor(private options: IClientSessionOptions) {
 		this._notebookUri = options.notebookUri;
@@ -290,8 +291,9 @@ export class ClientSession implements IClientSession {
 			// TODO is there any case where skipping causes errors? So far it seems like it gets called twice
 			return;
 		}
-		if (connection.id !== '-1' && this._session) {
+		if (connection.id !== '-1' && this._session && connection.id !== this._connectionId) {
 			await this._session.configureConnection(connection);
+			this._connectionId = connection.id;
 		}
 	}
 

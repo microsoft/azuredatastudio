@@ -346,6 +346,7 @@ class TestDeclarativeTableComponent extends TestComponentBase implements azdata.
 		super();
 	}
 	onDataChanged: vscode.Event<any> = this.onClick.event;
+	onRowSelected: vscode.Event<any> = this.onClick.event;
 	data: any[][];
 	columns: azdata.DeclarativeTableColumn[];
 }

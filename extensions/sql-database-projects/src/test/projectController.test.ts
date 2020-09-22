@@ -518,7 +518,7 @@ describe('ProjectsController', function (): void {
 			let opened = false;
 
 			let addDbReferenceDialog = TypeMoq.Mock.ofType(AddDatabaseReferenceDialog);
-			addDbReferenceDialog.setup(x => x.openDialog()).returns(() => { opened = true; return Promise.resolve(undefined) });
+			addDbReferenceDialog.setup(x => x.openDialog()).returns(() => { opened = true; return Promise.resolve(undefined); });
 
 			let projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
@@ -530,7 +530,6 @@ describe('ProjectsController', function (): void {
 
 		it('Callbacks are hooked up and called from Add database reference dialog', async function (): Promise<void> {
 			const projPath = path.dirname(await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline));
-			await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, projPath);
 			const proj = new Project(projPath);
 
 			const addDbRefHoller = 'hello from callback for addDatabaseReference()';
@@ -557,6 +556,36 @@ describe('ProjectsController', function (): void {
 
 			should(holler).equal(addDbRefHoller, 'executionCallback() is supposed to have been setup and called for add database reference scenario');
 		});
+
+		it('Should not allow adding circular project references', async function (): Promise<void> {
+			const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
+
+			const projPath1 = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+			const projPath2 = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+
+			const project1 = await projController.openProject(vscode.Uri.file(projPath1));
+			const project2 = await projController.openProject(vscode.Uri.file(projPath2));
+
+			// add project reference from project1 to project2
+			await projController.addDatabaseReferenceCallback(project1, {
+				projectGuid: '',
+				projectName: 'TestProject',
+				projectRelativePath: undefined,
+				suppressMissingDependenciesErrors: false
+			});
+			should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
+
+			// try to add circular reference
+			await projController.addDatabaseReferenceCallback(project2, {
+				projectGuid: '',
+				projectName: 'TestProjectName',
+				projectRelativePath: undefined,
+				suppressMissingDependenciesErrors: false
+			});
+			should(showErrorMessageSpy.called).be.true('showErrorMessage should have been called');
+		});
+
 	});
 });
 

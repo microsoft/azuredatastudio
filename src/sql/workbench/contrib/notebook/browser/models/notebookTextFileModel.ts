@@ -105,33 +105,55 @@ export class NotebookTextFileModel {
 				}]);
 			});
 			return true;
+		} else if (contentChange && areRangePropertiesPopulated(cellGuidRange)) {
+			// If no modelContentChanged event, then we're replacing the entire source for that cell
+			let sourceEnd = this.getSourceEndRange(textEditorModel, contentChange.cells[0].cellGuid);
+			if (sourceEnd) {
+				// Need to subtract one because we're going from 1-based to 0-based
+				let startSpaces: string = repeat(' ', cellGuidRange.startColumn - 1);
+				let escapedQuotesAndBackslashes = contentChange.cells[0].source.join('\n').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+
+				// The text here transforms a string from 'This is a string\n this is another string' to:
+				//     This is a string
+				//     this is another string
+
+				// Note: Adding 1 to startColumn to avoid overwriting first "
+				textEditorModel.textEditorModel.applyEdits([{
+					range: new Range(this._sourceBeginRange.startLineNumber, this._sourceBeginRange.startColumn + 1, sourceEnd.endLineNumber, sourceEnd.endColumn),
+					text: escapedQuotesAndBackslashes.split(/[\r\n]+/gm).join('\\n\",'.concat(this._eol).concat(startSpaces).concat('\"'))
+				}]);
+				return true;
+			}
 		}
 		return false;
 	}
 
 	public transformAndApplyEditForOutputUpdate(contentChange: NotebookContentChange, textEditorModel: ITextEditorModel): boolean {
+		this.transformAndApplyEditForClearOutput(contentChange, textEditorModel);
 		if (Array.isArray(contentChange.cells[0].outputs) && contentChange.cells[0].outputs.length > 0) {
-			let newOutput = JSON.stringify(contentChange.cells[0].outputs[contentChange.cells[0].outputs.length - 1], undefined, '    ');
-			if (contentChange.cells[0].outputs.length > 1) {
-				newOutput = ', '.concat(newOutput);
-			} else {
-				newOutput = '\n'.concat(newOutput).concat('\n');
-			}
+			for (let i = 0; i < contentChange.cells[0].outputs.length; i++) {
+				let newOutput = JSON.stringify(contentChange.cells[0].outputs[i], undefined, '    ');
+				if (i > 0) {
+					newOutput = ', '.concat(newOutput);
+				} else {
+					newOutput = '\n'.concat(newOutput).concat('\n');
+				}
 
-			// Execution count will always be after the end of the outputs in JSON. This is a sanity mechanism.
-			let executionCountMatch = this.getExecutionCountRange(textEditorModel, contentChange.cells[0].cellGuid);
-			if (!executionCountMatch || !executionCountMatch.range) {
-				return false;
-			}
+				// Execution count will always be after the end of the outputs in JSON. This is a sanity mechanism.
+				let executionCountMatch = this.getExecutionCountRange(textEditorModel, contentChange.cells[0].cellGuid);
+				if (!executionCountMatch || !executionCountMatch.range) {
+					return false;
+				}
 
-			let endOutputsRange = this.getEndOfOutputs(textEditorModel, contentChange.cells[0].cellGuid);
-			if (endOutputsRange && endOutputsRange.startLineNumber < executionCountMatch.range.startLineNumber) {
-				textEditorModel.textEditorModel.applyEdits([{
-					range: new Range(endOutputsRange.startLineNumber, endOutputsRange.startColumn, endOutputsRange.startLineNumber, endOutputsRange.startColumn),
-					text: newOutput
-				}]);
-				return true;
+				let endOutputsRange = this.getEndOfOutputs(textEditorModel, contentChange.cells[0].cellGuid);
+				if (endOutputsRange && endOutputsRange.startLineNumber < executionCountMatch.range.startLineNumber) {
+					textEditorModel.textEditorModel.applyEdits([{
+						range: new Range(endOutputsRange.startLineNumber, endOutputsRange.startColumn, endOutputsRange.startLineNumber, endOutputsRange.startColumn),
+						text: newOutput
+					}]);
+				}
 			}
+			return true;
 		}
 		return false;
 	}
@@ -207,6 +229,45 @@ export class NotebookTextFileModel {
 		} else {
 			return;
 		}
+	}
+
+	private getSourceEndRange(textEditorModel: ITextEditorModel, cellGuid: string): IRange | undefined {
+		if (!cellGuid) {
+			return undefined;
+		}
+		let cellGuidMatches = findOrSetCellGuidMatch(textEditorModel, cellGuid);
+		if (cellGuidMatches?.length > 0) {
+			if (!this._sourceBeginRange) {
+				this.updateSourceBeginRange(textEditorModel, cellGuid);
+			}
+			// Source begin range tracks where the first " in exists.
+			// The line before that will always include '"source": ['
+			let sourceBeforeLineNumber = this._sourceBeginRange?.startLineNumber - 1;
+			if (sourceBeforeLineNumber) {
+				// The 2nd to last column (ie before newline) is guaranteed to be [
+				let sourceBeforeColumn = textEditorModel.textEditorModel.getLineMaxColumn(sourceBeforeLineNumber);
+				if (sourceBeforeColumn) {
+					// Match the end of the source array
+					let sourceEnd = textEditorModel.textEditorModel.matchBracket({ column: sourceBeforeColumn - 1, lineNumber: sourceBeforeLineNumber });
+					if (sourceEnd?.length === 2) {
+						// Last quote in the source array will end the line before the source array
+						// e.g.
+						// "source": [
+						//	   "SELECT 12" <-- Looking for this " position
+						// ],
+						let lineForSourceEnd = sourceEnd[1].endLineNumber - 1;
+						let lastCharacterPosition = textEditorModel.textEditorModel.getLineLength(lineForSourceEnd);
+						return {
+							startColumn: lastCharacterPosition,
+							startLineNumber: lineForSourceEnd,
+							endLineNumber: lineForSourceEnd,
+							endColumn: lastCharacterPosition
+						};
+					}
+				}
+			}
+		}
+		return undefined;
 	}
 
 	// Find the beginning of a cell's outputs in the text editor model
