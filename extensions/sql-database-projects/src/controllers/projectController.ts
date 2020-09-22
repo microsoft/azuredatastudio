@@ -376,7 +376,7 @@ export class ProjectsController {
 		}
 	}
 
-	public async exclude(context: FileNode | FolderNode): Promise<void> {
+	public async exclude(context: BaseProjectTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
 
 		const fileEntry = this.getFileProjectEntry(project, context);
