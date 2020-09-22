@@ -5050,7 +5050,7 @@ declare module 'azdata' {
 		/// -------- JSON objects, and objects primarily intended not to have methods -----------
 		export interface IAllKernels {
 			kernels: IKernelSpec[];
-			defaultKernel?: string;
+			defaultKernel: string;
 		}
 		export interface IKernelSpec {
 			name: string;
@@ -5167,7 +5167,7 @@ declare module 'azdata' {
 		 */
 		export interface IExecuteReply {
 			status: 'ok' | 'error' | 'abort';
-			execution_count: number | null;
+			execution_count: number | null | undefined;
 		}
 
 		/**

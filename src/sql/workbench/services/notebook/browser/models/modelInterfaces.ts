@@ -222,7 +222,7 @@ export interface INotebookModel {
 	/**
 	 * Cell List for this model
 	 */
-	readonly cells: ReadonlyArray<ICellModel>;
+	readonly cells: ReadonlyArray<ICellModel> | undefined;
 
 	/**
 	 * The active cell for this model. May be undefined

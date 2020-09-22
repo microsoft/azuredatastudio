@@ -178,16 +178,16 @@ export class SqlSession implements nb.ISession {
 }
 
 class SqlKernel extends Disposable implements nb.IKernel {
-	private _queryRunner: QueryRunner | undefined = undefined;
-	private _currentConnection: IConnectionProfile | undefined = undefined;
-	private _currentConnectionProfile: ConnectionProfile | undefined = undefined;
+	private _queryRunner: QueryRunner | undefined;
+	private _currentConnection: IConnectionProfile | undefined;
+	private _currentConnectionProfile: ConnectionProfile | undefined;
 	static kernelId: number = 0;
 
-	private _id: string | undefined = undefined;
-	private _future: SQLFuture | undefined = undefined;
+	private _id: string | undefined;
+	private _future: SQLFuture | undefined;
 	private _executionCount: number = 0;
 	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
-	private _connectionPath: string | undefined = undefined;
+	private _connectionPath: string | undefined;
 
 	constructor(private _path: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -403,9 +403,9 @@ class SqlKernel extends Disposable implements nb.IKernel {
 }
 
 export class SQLFuture extends Disposable implements FutureInternal {
-	private _msg: nb.IMessage | undefined = undefined;
-	private ioHandler: nb.MessageHandler<nb.IIOPubMessage> | undefined = undefined;
-	private doneHandler: nb.MessageHandler<nb.IShellMessage> | undefined = undefined;
+	private _msg: nb.IMessage | undefined;
+	private ioHandler: nb.MessageHandler<nb.IIOPubMessage> | undefined;
+	private doneHandler: nb.MessageHandler<nb.IShellMessage> | undefined;
 	private doneDeferred = new Deferred<nb.IShellMessage>();
 	private configuredMaxRows: number = MAX_ROWS;
 	private _outputAddedPromises: Promise<void>[] = [];
@@ -414,7 +414,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private _stopOnError: boolean = true;
 	constructor(
 		private _queryRunner: QueryRunner | undefined,
-		private _executionCount: number = 0,
+		private _executionCount: number | undefined,
 		configurationService: IConfigurationService,
 		private readonly logService: ILogService
 	) {
@@ -597,7 +597,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		columns.forEach(column => {
 			columnsResources.push({ name: escape(column.columnName) });
 		});
-		let columnsFields: IDataResourceFields = { fields: undefined };
+		let columnsFields: IDataResourceFields = { fields: [] };
 		columnsFields.fields = columnsResources;
 		return {
 			schema: columnsFields,
@@ -691,7 +691,7 @@ export interface IDataResource {
 }
 
 export interface IDataResourceFields {
-	fields?: IDataResourceSchema[];
+	fields: IDataResourceSchema[];
 }
 
 export interface IDataResourceSchema {

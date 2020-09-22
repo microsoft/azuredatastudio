@@ -30,14 +30,14 @@ export class ClientSession implements IClientSession {
 	private _unhandledMessageEmitter = new Emitter<nb.IMessage>();
 	private _propertyChangedEmitter = new Emitter<'path' | 'name' | 'type'>();
 	private _notebookUri: URI;
-	private _type: string | undefined = undefined;
-	private _name: string | undefined = undefined;
+	private _type: string | undefined;
+	private _name: string | undefined;
 	private _isReady: boolean;
 	private _ready: Deferred<void>;
 	private _kernelChangeCompleted: Deferred<void>;
-	private _kernelDisplayName: string | undefined = undefined;
+	private _kernelDisplayName: string | undefined;
 	private _errorMessage: string | undefined;
-	private _cachedKernelSpec: nb.IKernelSpec | undefined = undefined;
+	private _cachedKernelSpec: nb.IKernelSpec | undefined;
 	private _kernelChangeHandlers: KernelChangeHandler[] = [];
 	private _defaultKernel: nb.IKernelSpec;
 
