@@ -374,7 +374,7 @@
                                   "label": "{0}",
                                   "type": "readonly_text",
                                   "enabled": true,
-                                  "labelWidth": "67px",
+                                  "labelWidth": "69px",
                                   "links": [
                                     {
                                       "text": "%arc.data.controller.summary.arc.terms.of.use%",
@@ -394,7 +394,7 @@
                                   "label": "{0}",
                                   "type": "readonly_text",
                                   "enabled": true,
-                                  "labelWidth": "102px",
+                                  "labelWidth": "100px",
                                   "links": [
                                     {
                                       "text": "%arc.data.controller.summary.arc.terms.privacy.policy%",
