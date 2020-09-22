@@ -21,8 +21,6 @@ import { IconPathHelper } from '../common/iconHelper';
 import { IProjectProvider } from 'dataworkspace';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
 
-const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
-
 /**
  * The main controller class that initializes the extension
  */
@@ -80,15 +78,6 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
-
-		// init view
-		const treeView = vscode.window.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, {
-			treeDataProvider: this.dbProjectTreeViewProvider,
-			showCollapseAll: true
-		});
-		this.dbProjectTreeViewProvider.setTreeView(treeView);
-
-		this.extensionContext.subscriptions.push(treeView);
 
 		await templates.loadTemplates(path.join(this.context.extensionPath, 'resources', 'templates'));
 
