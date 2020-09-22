@@ -140,7 +140,6 @@ export class DashboardWidget {
 		const videosContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			width: maxWidth,
-			height: '300px',
 		}).component();
 
 		links.forEach(link => {
@@ -169,10 +168,7 @@ export class DashboardWidget {
 			}
 		}).component();
 		const viewPanelStyle = {
-			'padding': '0px',
-			'padding-right': '5px',
-			'padding-top': '10px',
-			'height': '193px',
+			'padding': '10px 5px 10px 0',
 			'margin': '0px'
 		};
 
@@ -210,15 +206,15 @@ export class DashboardWidget {
 			}
 		]);
 
-		this.addShowMorePanel(view, linksContainer, moreVideosContainer, { 'padding-left': '0px' }, viewPanelStyle);
+		this.addShowMorePanel(view, linksContainer, moreVideosContainer, { 'padding-top': '10px' }, viewPanelStyle);
 		return linksContainer;
 	}
 
 	private addShowMorePanel(view: azdata.ModelView, parentPanel: azdata.FlexContainer, morePanel: azdata.Component, moreButtonStyle: { [key: string]: string }, morePanelStyle: { [key: string]: string }): azdata.Component {
-		const maxWidth = 100;
+		// const maxWidth = 100;
 		const linkContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
-			width: maxWidth + 10,
+			width: 'auto',
 			justifyContent: 'flex-start'
 		}).component();
 		const showMoreComponent = view.modelBuilder.hyperlink().withProperties({
@@ -259,26 +255,18 @@ export class DashboardWidget {
 			CSSStyles: Object.assign({}, moreButtonStyle, {
 				'font-size': '12px',
 				'margin': '0px',
-				'padding-right': '5px'
 			})
 		});
 		linkContainer.addItem(image, {
 			CSSStyles: {
-				'padding': '0px',
-				'padding-right': '5px',
-				'padding-top': '5px',
-				'height': '10px',
+				'padding-left': '5px',
+				'padding-top': '15px',
 				'margin': '0px'
 			}
 		});
 
 		parentPanel.addItem(linkContainer, {
-			CSSStyles: {
-				'padding': '0px',
-				'padding-right': '5px',
-				'height': '10px',
-				'margin': '0px'
-			}
+			CSSStyles: {}
 		});
 
 		return showMoreComponent;
@@ -289,7 +277,6 @@ export class DashboardWidget {
 		const videosContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: maxWidth,
-			height: maxWidth,
 			justifyContent: 'flex-start'
 		}).component();
 		const video1Container = view.modelBuilder.divContainer().withProperties({
@@ -302,7 +289,7 @@ export class DashboardWidget {
 			width: maxWidth,
 			height: '50px',
 			CSSStyles: {
-				'font-size': '12px',
+				'font-size': '13px',
 				'margin': '0px'
 			}
 		}).component();
@@ -317,7 +304,7 @@ export class DashboardWidget {
 				'background-repeat': 'no-repeat',
 				'background-position': 'top',
 				'width': `${maxWidth}px`,
-				'height': '110px',
+				'height': '104px',
 				'background-size': `${maxWidth}px 120px`
 			}
 		});
@@ -387,9 +374,11 @@ export class DashboardWidget {
 		linksContainer.addItems(links.map(l => this.createLink(view, l)), {
 			CSSStyles: styles
 		});
-		moreLinksContainer.addItems(moreLinks.map(l => this.createLink(view, l)));
+		moreLinksContainer.addItems(moreLinks.map(l => this.createLink(view, l)), {
+			CSSStyles: styles
+		});
 
-		this.addShowMorePanel(view, linksContainer, moreLinksContainer, { 'padding-left': '10px' }, styles);
+		this.addShowMorePanel(view, linksContainer, moreLinksContainer, { 'padding-left': '10px', 'padding-top': '10px' }, {});
 
 		return linksContainer;
 	}
@@ -406,6 +395,7 @@ export class DashboardWidget {
 			width: maxWidth,
 			CSSStyles: {
 				'font-size': '12px',
+				'line-height': '16px',
 				'margin': '0px'
 			}
 		}).component();
@@ -434,25 +424,20 @@ export class DashboardWidget {
 		}).component();
 		linkContainer.addItem(linkComponent, {
 			CSSStyles: {
-				'padding': '0px',
-				'padding-right': '5px',
-				'margin': '0px'
+				'font-size': '14px',
+				'line-height': '18px',
+				'padding': '0 5px 0 0',
 			}
 		});
 		linkContainer.addItem(image, {
 			CSSStyles: {
-				'padding': '0px',
-				'padding-right': '5px',
-				'padding-top': '5px',
+				'padding': '5px 5px 0 0',
 				'height': '10px',
-				'margin': '0px'
 			}
 		});
 		labelsContainer.addItems([linkContainer, descriptionComponent], {
 			CSSStyles: {
-				'padding': '0px',
-				'padding-top': '5px',
-				'margin': '0px'
+				'padding': '5px 0 0 0',
 			}
 		});
 

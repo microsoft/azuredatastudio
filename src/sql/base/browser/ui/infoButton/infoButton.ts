@@ -60,7 +60,7 @@ export class InfoButton extends sqlButton {
 		this._pTitle.setAttribute('aria-hidden', 'false');
 
 		this._pDesc = document.createElement('p');
-		DOM.addClass(this._pTitle, 'info-desc');
+		DOM.addClass(this._pDesc, 'info-desc');
 		this._pDesc.setAttribute('aria-hidden', 'false');
 
 		this._textContainer.appendChild(this._pTitle);
