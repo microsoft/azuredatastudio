@@ -904,11 +904,11 @@ export class EditDataGridPanel extends GridParentComponent {
 				let currentRow = self.dataSet.dataRows.at(activeRow);
 				let colIndex = self.getColumnIndex(this._args.column.name);
 				let dataLength: number = self.dataSet.dataRows.getLength();
-
+				let safeState = escape(state);
 				// If this is not the "new row" at the very bottom
 				if (activeRow !== dataLength) {
-					currentRow[colIndex] = state;
-					this._textEditor.applyValue(item, state);
+					currentRow[colIndex] = safeState;
+					this._textEditor.applyValue(item, safeState);
 				}
 			}
 
