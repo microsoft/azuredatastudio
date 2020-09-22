@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
-import { KeyValueContainer, KeyValue } from '../../components/keyValueContainer';
+import { KeyValueContainer, KeyValue, InputKeyValue, TextKeyValue } from '../../components/keyValueContainer';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
@@ -91,24 +91,20 @@ export class PostgresPropertiesPage extends DashboardPage {
 	}
 
 	private getProperties(): KeyValue[] {
-		/*
-		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
-		const connectionString = `postgresql://postgres@${endpoint.ip}:${endpoint.port}`;
-		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
+		const endpoint = this._postgresModel.endpoint;
+		const status = this._postgresModel.config?.status;
 
 		return [
-			new InputKeyValue(this.modelView.modelBuilder, loc.coordinatorEndpoint, connectionString),
+			new InputKeyValue(this.modelView.modelBuilder, loc.coordinatorEndpoint, endpoint ? `postgresql://postgres@${endpoint.ip}:${endpoint.port}` : ''),
 			new InputKeyValue(this.modelView.modelBuilder, loc.postgresAdminUsername, 'postgres'),
-			new TextKeyValue(this.modelView.modelBuilder, loc.status, this._postgresModel.service?.status?.state ?? 'Unknown'),
+			new TextKeyValue(this.modelView.modelBuilder, loc.status, status ? `${status.state} (${status.readyPods} ${loc.podsReady})` : loc.unknown),
 			// TODO: Make this a LinkKeyValue that opens the controller dashboard
-			new TextKeyValue(this.modelView.modelBuilder, loc.dataController, this._controllerModel.namespace ?? ''),
-			new TextKeyValue(this.modelView.modelBuilder, loc.nodeConfiguration, this._postgresModel.configuration),
-			new TextKeyValue(this.modelView.modelBuilder, loc.postgresVersion, this._postgresModel.service?.spec?.engine?.version?.toString() ?? ''),
-			new TextKeyValue(this.modelView.modelBuilder, loc.resourceGroup, registration?.resourceGroupName ?? ''),
-			new TextKeyValue(this.modelView.modelBuilder, loc.subscriptionId, registration?.subscriptionId ?? '')
+			new TextKeyValue(this.modelView.modelBuilder, loc.dataController, this._controllerModel.controllerConfig?.metadata.namespace ?? ''),
+			new TextKeyValue(this.modelView.modelBuilder, loc.nodeConfiguration, this._postgresModel.scaleConfiguration ?? ''),
+			new TextKeyValue(this.modelView.modelBuilder, loc.postgresVersion, this._postgresModel.engineVersion ?? ''),
+			new TextKeyValue(this.modelView.modelBuilder, loc.resourceGroup, this._controllerModel.controllerConfig?.spec.settings.azure.resourceGroup ?? ''),
+			new TextKeyValue(this.modelView.modelBuilder, loc.subscriptionId, this._controllerModel.controllerConfig?.spec.settings.azure.subscription ?? '')
 		];
-		*/
-		return [];
 	}
 
 	private handleRegistrationsUpdated() {

@@ -6,14 +6,16 @@
 import * as azdataExt from 'azdata-ext';
 import * as fs from 'fs';
 import * as os from 'os';
+import * as path from 'path';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
 import { getErrorMessage, searchForCmd } from './common/utils';
-import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataHostname, azdataInstallKey, azdataReleaseJson, azdataUpdateKey, azdataUri, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
+import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
+import { getPlatformDownloadLink, getPlatformReleaseVersion } from './azdataReleaseInfo';
 
 const enum AzdataDeployOption {
 	dontPrompt = 'dontPrompt',
@@ -101,21 +103,23 @@ export class AzdataTool implements IAzdataTool {
 				show: async (name: string) => {
 					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name]);
 				},
-				edit: async (args: {
+				edit: async (
 					name: string,
-					adminPassword?: boolean,
-					coresLimit?: string,
-					coresRequest?: string,
-					engineSettings?: string,
-					extensions?: string,
-					memoryLimit?: string,
-					memoryRequest?: string,
-					noWait?: boolean,
-					port?: number,
-					replaceEngineSettings?: boolean,
-					workers?: number
-				}) => {
-					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', args.name];
+					args: {
+						adminPassword?: boolean,
+						coresLimit?: string,
+						coresRequest?: string,
+						engineSettings?: string,
+						extensions?: string,
+						memoryLimit?: string,
+						memoryRequest?: string,
+						noWait?: boolean,
+						port?: number,
+						replaceEngineSettings?: boolean,
+						workers?: number
+					},
+					additionalEnvVars?: { [key: string]: string }) => {
+					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', name];
 					if (args.adminPassword) { argsArray.push('--admin-password'); }
 					if (args.coresLimit !== undefined) { argsArray.push('--cores-limit', args.coresLimit); }
 					if (args.coresRequest !== undefined) { argsArray.push('--cores-request', args.coresRequest); }
@@ -127,7 +131,7 @@ export class AzdataTool implements IAzdataTool {
 					if (args.port !== undefined) { argsArray.push('--port', args.port.toString()); }
 					if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
 					if (args.workers !== undefined) { argsArray.push('--workers', args.workers.toString()); }
-					return this.executeCommand<void>(argsArray);
+					return this.executeCommand<void>(argsArray, additionalEnvVars);
 				}
 			}
 		},
@@ -182,18 +186,18 @@ export class AzdataTool implements IAzdataTool {
 					// ERROR: { stderr: '...' }
 					// so we also need to trim off the start that isn't a valid JSON blob
 					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'), err.stderr.indexOf('}') + 1)).stderr;
-				} catch (err) {
+				} catch {
 					// it means this was probably some other generic error (such as command not being found)
 					// check if azdata still exists if it does then rethrow the original error if not then emit a new specific error.
 					try {
 						await fs.promises.access(this._path);
 						//this.path exists
-						throw err; // rethrow the error
 					} catch (e) {
 						// this.path does not exist
 						await vscode.commands.executeCommand('setContext', azdataFound, false);
 						throw (loc.noAzdata);
 					}
+					throw err; // rethrow the original error
 				}
 
 			}
@@ -342,6 +346,7 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
 		? [loc.yes, loc.no]
 		: [loc.yes, loc.askLater, loc.doNotAskAgain];
 	if (config === AzdataDeployOption.prompt) {
+		Logger.log(loc.promptForAzdataInstallLog);
 		response = await vscode.window.showErrorMessage(loc.promptForAzdataInstall, ...responses);
 		Logger.log(loc.userResponseToInstallPrompt(response));
 	}
@@ -385,6 +390,7 @@ async function promptToUpdateAzdata(newVersion: string, userRequested: boolean =
 		? [loc.yes, loc.no]
 		: [loc.yes, loc.askLater, loc.doNotAskAgain];
 	if (config === AzdataDeployOption.prompt) {
+		Logger.log(loc.promptForAzdataUpdateLog(newVersion));
 		response = await vscode.window.showInformationMessage(loc.promptForAzdataUpdate(newVersion), ...responses);
 		Logger.log(loc.userResponseToUpdatePrompt(response));
 	}
@@ -445,9 +451,16 @@ export async function promptForEula(memento: vscode.Memento, userRequested: bool
  * Downloads the Windows installer and runs it
  */
 async function downloadAndInstallAzdataWin32(): Promise<void> {
+	const downLoadLink = await getPlatformDownloadLink();
 	const downloadFolder = os.tmpdir();
-	const downloadedFile = await HttpClient.downloadFile(`${azdataHostname}/${azdataUri}`, downloadFolder);
-	await executeCommand('msiexec', ['/qn', '/i', downloadedFile]);
+	const downloadLogs = path.join(downloadFolder, 'ads_azdata_install_logs.log');
+	const downloadedFile = await HttpClient.downloadFile(downLoadLink, downloadFolder);
+
+	try {
+		await executeSudoCommand(`msiexec /qn /i "${downloadedFile}" /lvx "${downloadLogs}"`);
+	} catch (err) {
+		throw new Error(`${err.message}. See logs at ${downloadLogs} for more details.`);
+	}
 }
 
 /**
@@ -520,25 +533,8 @@ export async function discoverLatestAvailableAzdataVersion(): Promise<SemVer> {
 		// However, doing discovery that way required apt update to be performed which requires sudo privileges. At least currently this code path
 		// gets invoked on extension start up and prompt user for sudo privileges is annoying at best. So for now basing linux discovery also on a releaseJson file.
 		default:
-			return await discoverLatestAzdataVersionFromJson();
+			return await getPlatformReleaseVersion();
 	}
-}
-
-/**
- * Gets the latest azdata version from a json document published by azdata release
- */
-async function discoverLatestAzdataVersionFromJson(): Promise<SemVer> {
-	// get version information for current platform from http://aka.ms/azdata/release.json
-	const fileContents = await HttpClient.getTextContent(`${azdataHostname}/${azdataReleaseJson}`);
-	let azdataReleaseInfo;
-	try {
-		azdataReleaseInfo = JSON.parse(fileContents);
-	} catch (e) {
-		throw Error(`failed to parse the JSON of contents at: ${azdataHostname}/${azdataReleaseJson}, text being parsed: '${fileContents}', error:${getErrorMessage(e)}`);
-	}
-	const version = azdataReleaseInfo[process.platform]['version'];
-	Logger.log(loc.latestAzdataVersionAvailable(version));
-	return new SemVer(version);
 }
 
 /**

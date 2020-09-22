@@ -461,36 +461,38 @@ export class Project {
 		const preDeployNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.PreDeploy);
 		const postDeployNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.PostDeploy);
 		const noneNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.None);
+		const nodes = [fileNodes, preDeployNodes, postDeployNodes, noneNodes];
 
-		for (let i = 0; i < fileNodes.length; i++) {
-			if (fileNodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(path)) {
-				fileNodes[i].parentNode.removeChild(fileNodes[i]);
-				return;
-			}
-		}
+		let deleted = false;
+		for (let i = 0; i < nodes.length; i++) {
+			deleted = this.removeNode(path, nodes[i]);
 
-		for (let i = 0; i < preDeployNodes.length; i++) {
-			if (preDeployNodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(path)) {
-				preDeployNodes[i].parentNode.removeChild(preDeployNodes[i]);
-				return;
-			}
-		}
-
-		for (let i = 0; i < postDeployNodes.length; i++) {
-			if (postDeployNodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(path)) {
-				postDeployNodes[i].parentNode.removeChild(postDeployNodes[i]);
-				return;
-			}
-		}
-
-		for (let i = 0; i < noneNodes.length; i++) {
-			if (noneNodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(path)) {
-				noneNodes[i].parentNode.removeChild(noneNodes[i]);
+			if (deleted) {
 				return;
 			}
 		}
 
 		throw new Error(constants.unableToFindObject(path, constants.fileObject));
+	}
+
+	private removeNode(includeString: string, nodes: any): boolean {
+		for (let i = 0; i < nodes.length; i++) {
+			const parent = nodes[i].parentNode;
+			if (nodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(includeString)) {
+				parent.removeChild(nodes[i]);
+
+				// delete ItemGroup if this was the only entry
+				// only want element nodes, not text nodes
+				const otherChildren = Array.from(parent.childNodes).filter((c: any) => c.childNodes);
+				if (otherChildren.length === 0) {
+					parent.parentNode.removeChild(parent);
+				}
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private addFolderToProjFile(path: string): void {
@@ -502,24 +504,19 @@ export class Project {
 
 	private removeFolderFromProjFile(path: string): void {
 		const folderNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Folder);
+		const deleted = this.removeNode(path, folderNodes);
 
-		for (let i = 0; i < folderNodes.length; i++) {
-			if (folderNodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(path)) {
-				folderNodes[i].parentNode.removeChild(folderNodes[i]);
-				return;
-			}
+		if (!deleted) {
+			throw new Error(constants.unableToFindObject(path, constants.folderObject));
 		}
-
-		throw new Error(constants.unableToFindObject(path, constants.folderObject));
 	}
 
 	private removeSqlCmdVariableFromProjFile(variableName: string): void {
 		const sqlCmdVariableNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable);
+		const deleted = this.removeNode(variableName, sqlCmdVariableNodes);
 
-		for (let i = 0; i < sqlCmdVariableNodes.length; i++) {
-			if (sqlCmdVariableNodes[i].getAttribute(constants.Include) === variableName) {
-				sqlCmdVariableNodes[i].parentNode.removeChild(sqlCmdVariableNodes[i]);
-			}
+		if (!deleted) {
+			throw new Error(constants.unableToFindSqlCmdVariable(variableName));
 		}
 	}
 

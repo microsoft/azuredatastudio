@@ -5,14 +5,12 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as dataworkspace from 'dataworkspace';
 import { WorkspaceTreeDataProvider } from './common/workspaceTreeDataProvider';
 import { WorkspaceService } from './services/workspaceService';
-import { DataWorkspaceExtension } from './dataWorkspaceExtension';
-import { SelectProjectFileActionName } from './common/constants';
-import { WorkspaceTreeItem } from './common/interfaces';
+import { AllProjectTypes, SelectProjectFileActionName } from './common/constants';
+import { WorkspaceTreeItem } from 'dataworkspace';
 
-export async function activate(context: vscode.ExtensionContext): Promise<dataworkspace.IExtension> {
+export function activate(context: vscode.ExtensionContext): void {
 	const workspaceService = new WorkspaceService();
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
@@ -20,10 +18,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<datawo
 		// To Sakshi - You can replace the implementation with your complete dialog implementation
 		// but all the code here should be reusable by you
 		if (vscode.workspace.workspaceFile) {
-			const filter: { [name: string]: string[] } = {};
+			const filters: { [name: string]: string[] } = {};
 			const projectTypes = await workspaceService.getAllProjectTypes();
+			filters[AllProjectTypes] = projectTypes.map(type => type.projectFileExtension);
 			projectTypes.forEach(type => {
-				filter[type.displayName] = projectTypes.map(projectType => projectType.projectFileExtension);
+				filters[type.displayName] = [type.projectFileExtension];
 			});
 			let fileUris = await vscode.window.showOpenDialog({
 				canSelectFiles: true,
@@ -31,7 +30,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<datawo
 				canSelectMany: false,
 				defaultUri: vscode.Uri.file(path.dirname(vscode.workspace.workspaceFile.path)),
 				openLabel: SelectProjectFileActionName,
-				filters: filter
+				filters: filters
 			});
 			if (!fileUris || fileUris.length === 0) {
 				return;
@@ -47,8 +46,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<datawo
 	context.subscriptions.push(vscode.commands.registerCommand('projects.removeProject', async (treeItem: WorkspaceTreeItem) => {
 		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
 	}));
-
-	return new DataWorkspaceExtension();
 }
 
 export function deactivate(): void {

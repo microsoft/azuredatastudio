@@ -12,6 +12,7 @@ import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
 import { promptAndConfirmPassword, promptForInstanceDeletion } from '../../../common/utils';
+import { ResourceType } from 'arc';
 
 export class PostgresOverviewPage extends DashboardPage {
 
@@ -154,7 +155,13 @@ export class PostgresOverviewPage extends DashboardPage {
 				try {
 					const password = await promptAndConfirmPassword(input => !input ? loc.enterANonEmptyPassword : '');
 					if (password) {
-						// TODO: azdata arc postgres server edit --admin-password
+						await this._azdataApi.azdata.arc.postgres.server.edit(
+							this._postgresModel.info.name,
+							{
+								adminPassword: true,
+								noWait: true
+							},
+							{ 'AZDATA_PASSWORD': password });
 						vscode.window.showInformationMessage(loc.passwordReset);
 					}
 				} catch (error) {
@@ -175,7 +182,16 @@ export class PostgresOverviewPage extends DashboardPage {
 				deleteButton.enabled = false;
 				try {
 					if (await promptForInstanceDeletion(this._postgresModel.info.name)) {
-						await this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name);
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.deletingInstance(this._postgresModel.info.name),
+								cancellable: false
+							},
+							(_progress, _token) => {
+								return this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name);
+							}
+						);
 						await this._controllerModel.refreshTreeNode();
 						vscode.window.showInformationMessage(loc.instanceDeleted(this._postgresModel.info.name));
 					}
@@ -220,15 +236,13 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		this.disposables.push(
 			openInAzurePortalButton.onDidClick(async () => {
-				/*
-				const r = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
-				if (!r) {
-					vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this._postgresModel.fullName));
-				} else {
+				const azure = this._controllerModel.controllerConfig?.spec.settings.azure;
+				if (azure) {
 					vscode.env.openExternal(vscode.Uri.parse(
-						`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${r.instanceName}`));
+						`https://portal.azure.com/#resource/subscriptions/${azure.subscription}/resourceGroups/${azure.resourceGroup}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${this._postgresModel.info.name}`));
+				} else {
+					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}
-				*/
 			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
@@ -240,22 +254,21 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	private getProperties(): azdata.PropertiesContainerItem[] {
-		/*
-		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
-		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
+		const status = this._postgresModel.config?.status;
+		const azure = this._controllerModel.controllerConfig?.spec.settings.azure;
 
 		return [
-			{ displayName: loc.name, value: this._postgresModel.name },
-			{ displayName: loc.coordinatorEndpoint, value: `postgresql://postgres@${endpoint.ip}:${endpoint.port}` },
-			{ displayName: loc.status, value: this._postgresModel.service?.status?.state ?? '' },
+			{ displayName: loc.resourceGroup, value: azure?.resourceGroup || '-' },
+			{ displayName: loc.dataController, value: this._controllerModel.controllerConfig?.metadata.name || '-' },
+			{ displayName: loc.region, value: azure?.location || '-' },
+			{ displayName: loc.namespace, value: this._postgresModel.config?.metadata.namespace || '-' },
+			{ displayName: loc.subscriptionId, value: azure?.subscription || '-' },
+			{ displayName: loc.externalEndpoint, value: this._postgresModel.config?.status.externalEndpoint || '-' },
+			{ displayName: loc.status, value: status ? `${status.state} (${status.readyPods} ${loc.podsReady})` : '-' },
 			{ displayName: loc.postgresAdminUsername, value: 'postgres' },
-			{ displayName: loc.dataController, value: this._controllerModel?.namespace ?? '' },
-			{ displayName: loc.nodeConfiguration, value: this._postgresModel.configuration },
-			{ displayName: loc.subscriptionId, value: registration?.subscriptionId ?? '' },
-			{ displayName: loc.postgresVersion, value: this._postgresModel.service?.spec?.engine?.version?.toString() ?? '' }
+			{ displayName: loc.postgresVersion, value: this._postgresModel.engineVersion ?? '-' },
+			{ displayName: loc.nodeConfiguration, value: this._postgresModel.scaleConfiguration || '-' }
 		];
-		*/
-		return [];
 	}
 
 	private getKibanaLink(): string {
