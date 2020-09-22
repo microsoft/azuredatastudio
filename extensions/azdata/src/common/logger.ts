@@ -4,12 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as loc from '../localizedConstants';
 
 export class Log {
 	private _output: vscode.OutputChannel;
 
 	constructor() {
-		this._output = vscode.window.createOutputChannel('azdata');
+		this._output = vscode.window.createOutputChannel(loc.azdata);
 	}
 
 	log(msg: string): void {
