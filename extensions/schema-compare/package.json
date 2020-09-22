@@ -2,7 +2,7 @@
   "name": "schema-compare",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
