@@ -59,7 +59,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 
 	return {
 		isEulaAccepted: () => !!context.globalState.get<boolean>(constants.eulaAccepted),
-		promptForEula: (): Promise<boolean> => promptForEula(context.globalState, true),
+		promptForEula: (onError: boolean = true): Promise<boolean> => promptForEula(context.globalState, true /* userRequested */, onError),
 		azdata: {
 			arc: {
 				dc: {

@@ -273,6 +273,6 @@ declare module 'azdata-ext' {
 	export interface IExtension {
 		azdata: IAzdataApi;
 		isEulaAccepted(): boolean;
-		promptForEula(): Promise<boolean>
+		promptForEula(onError: boolean): Promise<boolean>
 	}
 }
