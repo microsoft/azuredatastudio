@@ -8,7 +8,7 @@ Connect and query Azure Data Explorer (Kusto) clusters and databases with Azure 
 - Create a notebook with Kusto.
 - View query results and save to CSV, JSON, XML, Excel, or as a chart.
 
-For more information, see the [Kusto (KQL) extension for Azure Data Studio](https://go.microsoft.com/fwlink/?linkid=2143832).
+For more information, visit the [Kusto (KQL) extension for Azure Data Studio](https://go.microsoft.com/fwlink/?linkid=2143832) documentation.
 
 ## Connect to an Azure Data Explorer cluster
 
