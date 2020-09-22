@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { escape } from 'sql/base/common/strings';
+
 /**
  * Definition for column with icon on the left of text.
  */
@@ -37,7 +39,7 @@ export class TextWithIconColumn<T extends Slick.SlickData> {
 	}
 	private formatter(row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string {
 		const iconColumn = columnDef as TextWithIconColumnDefinition<T>;
-		return `<div class="icon codicon slick-icon-cell-content ${iconColumn.iconCssClassField ? dataContext[iconColumn.iconCssClassField] : ''}">${value}</div>`;
+		return `<div class="icon codicon slick-icon-cell-content ${iconColumn.iconCssClassField ? dataContext[iconColumn.iconCssClassField] : ''}">${escape(value)}</div>`;
 	}
 
 	public get definition(): TextWithIconColumnDefinition<T> {
