@@ -231,7 +231,7 @@ export class EditDataGridPanel extends GridParentComponent {
 						// skip the first column since its a number column
 						for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
 							dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
-								displayValue: r.cells[i - 1].displayValue,
+								displayValue: escape(r.cells[i - 1].displayValue),
 								ariaLabel: escape(r.cells[i - 1].displayValue),
 								isNull: r.cells[i - 1].isNull
 							};
@@ -1088,7 +1088,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			cellClasses += ' missing-value';
 		}
 		else if (Services.DBCellValue.isDBCellValue(value)) {
-			valueToDisplay = (value.displayValue + '');
+			valueToDisplay = value.displayValue + '';
 			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 		}
 		else if (typeof value === 'string' || (value && value.text)) {
