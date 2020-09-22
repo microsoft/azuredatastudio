@@ -188,7 +188,8 @@
                               "azure-arc-azure-openshift",
                               "azure-arc-eks",
                               "azure-arc-kubeadm",
-                              "azure-arc-openshift"
+                              "azure-arc-openshift",
+                              "azure-arc-aks-hci"
                             ],
                             "defaultValue": "azure-arc-aks-default-storage",
                             "optionsType": "radio"
