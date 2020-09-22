@@ -11,7 +11,7 @@ import * as path from 'path';
 import * as newProjectTool from '../tools/newProjectTool';
 
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { getErrorMessage, getSqlProjectFilesInFolder } from '../common/utils';
+import { getErrorMessage } from '../common/utils';
 import { ProjectsController } from './projectController';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { NetCoreTool } from '../tools/netcoreTool';
@@ -86,27 +86,6 @@ export default class MainController implements vscode.Disposable {
 
 		// set the user settings around saving new projects to default value
 		await newProjectTool.initializeSaveLocationSetting();
-
-		// load any sql projects that are open in workspace folder
-		await this.loadProjectsInWorkspace();
-	}
-
-	public async loadProjectsInWorkspace(): Promise<void> {
-		const workspaceFolders = vscode.workspace.workspaceFolders;
-		if (workspaceFolders?.length) {
-			await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
-				await this.loadProjectsInFolder(workspaceFolder.uri.fsPath);
-			}));
-		}
-	}
-
-	public async loadProjectsInFolder(folderPath: string): Promise<void> {
-		const results = await getSqlProjectFilesInFolder(folderPath);
-
-		for (let f in results) {
-			// open the project, but don't switch focus to the file explorer viewlet
-			await this.projectsController.openProject(vscode.Uri.file(results[f]), false);
-		}
 	}
 
 	/**
