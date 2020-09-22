@@ -555,6 +555,8 @@ export interface ITreeView extends IDisposable {
 
 	title: string;
 
+	root: ITreeItem; // {{SQL CARBON EDIT}}
+
 	readonly visible: boolean;
 
 	readonly onDidExpandItem: Event<ITreeItem>;

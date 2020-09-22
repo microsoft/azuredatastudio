@@ -6,6 +6,7 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
+import { LoadingComponentProperties } from 'azdata';
 
 declare module 'azdata' {
 	/**
@@ -43,6 +44,12 @@ declare module 'azdata' {
 
 		export interface IKernelChangedArgs {
 			nbKernelAlias?: string
+		}
+
+		export interface IExecuteResult {
+			data: any;
+			batchId?: number;
+			id?: number;
 		}
 	}
 
@@ -197,15 +204,24 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableColumn {
-		headerCssStyles?: { [key: string]: string };
-		rowCssStyles?: { [key: string]: string };
+		headerCssStyles?: CssStyles;
+		rowCssStyles?: CssStyles;
 		ariaLabel?: string;
 		showCheckAll?: boolean;
 		isChecked?: boolean;
 	}
 
+
 	export enum DeclarativeDataType {
 		component = 'component'
+	}
+
+	export type DeclarativeTableRowSelectedEvent = {
+		row: number
+	};
+
+	export interface DeclarativeTableComponent extends Component, DeclarativeTableProperties {
+		onRowSelected: vscode.Event<DeclarativeTableRowSelectedEvent>;
 	}
 
 	/*
@@ -241,6 +257,9 @@ declare module 'azdata' {
 		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
 	}
 
+	export interface DropDownProperties extends LoadingComponentProperties {
+	}
+
 	export interface RadioCard {
 		id: string;
 		descriptions: RadioCardDescription[];
@@ -265,7 +284,8 @@ declare module 'azdata' {
 		iconWidth?: string;
 		iconHeight?: string;
 		selectedCardId?: string;
-		orientation?: Orientation // Defaults to horizontal
+		orientation?: Orientation; // Defaults to horizontal
+		iconPosition?: 'top' | 'left'; // Defaults to top
 	}
 
 	export type RadioCardSelectionChangedEvent = { cardId: string; card: RadioCard };
@@ -287,7 +307,22 @@ declare module 'azdata' {
 
 	}
 
-	export interface DeclarativeTableProperties extends ComponentProperties {
+	export interface DeclarativeTableProperties {
+		/**
+		 * dataValues will only be used if data is an empty array
+		 */
+		dataValues?: DeclarativeTableCellValue[][];
+
+		/**
+		 * Should the table react to user selections
+		 */
+		selectEffect?: boolean; // Defaults to false
+	}
+
+	export interface DeclarativeTableCellValue {
+		value: string | number | boolean;
+		ariaLabel?: string;
+		style?: CssStyles
 	}
 
 	export interface ComponentProperties {

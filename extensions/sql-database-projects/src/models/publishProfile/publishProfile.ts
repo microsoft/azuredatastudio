@@ -58,7 +58,7 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 
 	if (xmlDoc.documentElement.getElementsByTagName(constants.targetConnectionString).length > 0) {
 		const targetConnectionString = xmlDoc.documentElement.getElementsByTagName(constants.TargetConnectionString)[0].textContent;
-		const dataSource = new SqlConnectionDataSource('temp', targetConnectionString);
+		const dataSource = new SqlConnectionDataSource('', targetConnectionString);
 		let server: string = '';
 		let username: string = '';
 		const connectionProfile = dataSource.getConnectionProfile();
@@ -74,7 +74,7 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 				const connection = await azdata.connection.openConnectionDialog(undefined, connectionProfile);
 				connId = connection.connectionId;
 				server = connection.options['server'];
-				username = connection.options['username'];
+				username = connection.options['user'];
 			}
 
 			targetConnection = `${server} (${username})`;

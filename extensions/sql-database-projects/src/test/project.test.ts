@@ -12,7 +12,7 @@ import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
-import { Project, EntryType, TargetPlatform, SystemDatabase, DatabaseReferenceLocation, DacpacReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
+import { Project, EntryType, TargetPlatform, SystemDatabase, DacpacReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
 import { exists, convertSlashesForSqlProj } from '../common/utils';
 import { Uri, window } from 'vscode';
 
@@ -217,7 +217,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 		// add database reference in the same database
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
-		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test1.dacpac'), databaseLocation: DatabaseReferenceLocation.sameDatabase, suppressMissingDependenciesErrors: true });
+		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test1.dacpac'), suppressMissingDependenciesErrors: true });
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test1');
 		should(project.databaseReferences[0].databaseName).equal('test1', 'The database reference should be test1');
 		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(true, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be true');
@@ -234,7 +234,6 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		await project.addDatabaseReference({
 			dacpacFileLocation: Uri.file('test2.dacpac'),
-			databaseLocation: DatabaseReferenceLocation.differentDatabaseSameServer,
 			databaseName: 'test2DbName',
 			databaseVariable: 'test2Db',
 			suppressMissingDependenciesErrors: false
@@ -257,7 +256,6 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		await project.addDatabaseReference({
 			dacpacFileLocation: Uri.file('test3.dacpac'),
-			databaseLocation: DatabaseReferenceLocation.differentDatabaseDifferentServer,
 			databaseName: 'test3DbName',
 			databaseVariable: 'test3Db',
 			serverName: 'otherServerName',
@@ -267,11 +265,92 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test3');
 		should(project.databaseReferences[0].databaseName).equal('test3', 'The database reference should be test3');
 		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
-		// make sure reference to test2.dacpac and SQLCMD variables were added
+		// make sure reference to test3.dacpac and SQLCMD variables were added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql('test3.dacpac');
 		should(projFileText).containEql('<DatabaseSqlCmdVariable>test3Db</DatabaseSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="test3Db">');
+		should(projFileText).containEql('<ServerSqlCmdVariable>otherServer</ServerSqlCmdVariable>');
+		should(projFileText).containEql('<SqlCmdVariable Include="otherServer">');
+	});
+
+	it('Should add a project reference to the same database correctly', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		// add database reference to a different database on a different server
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+		should(Object.keys(project.sqlCmdVariables).length).equal(0, `There should be no sqlcmd variables to start with. Actual: ${Object.keys(project.sqlCmdVariables).length}`);
+		await project.addProjectReference({
+			projectName: 'project1',
+			projectGuid: '',
+			projectRelativePath: Uri.file(path.join('..','project1', 'project1.sqlproj')),
+			suppressMissingDependenciesErrors: false
+		});
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
+		should(project.databaseReferences[0].databaseName).equal('project1', 'The database reference should be project1');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
+		should(Object.keys(project.sqlCmdVariables).length).equal(0, `There should be no sqlcmd variables added. Actual: ${Object.keys(project.sqlCmdVariables).length}`);
+
+		// make sure reference to project1 and SQLCMD variables were added
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).containEql('project1');
+	});
+
+	it('Should add a project reference to a different database in the same server correctly', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		// add database reference to a different database on a different server
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+		should(Object.keys(project.sqlCmdVariables).length).equal(0, 'There should be no sqlcmd variables to start with');
+		await project.addProjectReference({
+			projectName: 'project1',
+			projectGuid: '',
+			projectRelativePath: Uri.file(path.join('..','project1', 'project1.sqlproj')),
+			databaseName: 'testdbName',
+			databaseVariable: 'testdb',
+			suppressMissingDependenciesErrors: false
+		});
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
+		should(project.databaseReferences[0].databaseName).equal('project1', 'The database reference should be project1');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
+		should(Object.keys(project.sqlCmdVariables).length).equal(1, `There should be one new sqlcmd variable added. Actual: ${Object.keys(project.sqlCmdVariables).length}`);
+
+		// make sure reference to project1 and SQLCMD variables were added
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).containEql('project1');
+		should(projFileText).containEql('<DatabaseSqlCmdVariable>testdb</DatabaseSqlCmdVariable>');
+		should(projFileText).containEql('<SqlCmdVariable Include="testdb">');
+	});
+
+	it('Should add a project reference to a different database in a different server correctly', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		// add database reference to a different database on a different server
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+		should(Object.keys(project.sqlCmdVariables).length).equal(0, 'There should be no sqlcmd variables to start with');
+		await project.addProjectReference({
+			projectName: 'project1',
+			projectGuid: '',
+			projectRelativePath: Uri.file(path.join('..','project1', 'project1.sqlproj')),
+			databaseName: 'testdbName',
+			databaseVariable: 'testdb',
+			serverName: 'otherServerName',
+			serverVariable: 'otherServer',
+			suppressMissingDependenciesErrors: false
+		});
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
+		should(project.databaseReferences[0].databaseName).equal('project1', 'The database reference should be project1');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
+		should(Object.keys(project.sqlCmdVariables).length).equal(2, `There should be two new sqlcmd variables added. Actual: ${Object.keys(project.sqlCmdVariables).length}`);
+
+		// make sure reference to project1 and SQLCMD variables were added
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).containEql('project1');
+		should(projFileText).containEql('<DatabaseSqlCmdVariable>testdb</DatabaseSqlCmdVariable>');
+		should(projFileText).containEql('<SqlCmdVariable Include="testdb">');
 		should(projFileText).containEql('<ServerSqlCmdVariable>otherServer</ServerSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="otherServer">');
 	});
@@ -289,12 +368,12 @@ describe('Project: sqlproj content operations', function (): void {
 		await testUtils.shouldThrowSpecificError(async () => await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false }), constants.databaseReferenceAlreadyExists);
 		should(project.databaseReferences.length).equal(1, 'There should only be one database reference after trying to add a reference to master again');
 
-		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), databaseLocation: DatabaseReferenceLocation.sameDatabase, suppressMissingDependenciesErrors: false });
+		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), suppressMissingDependenciesErrors: false });
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to test.dacpac');
 		should(project.databaseReferences[1].databaseName).equal('test', 'project.databaseReferences[1].databaseName should be test');
 
 		// try to add reference to test.dacpac again
-		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), databaseLocation: DatabaseReferenceLocation.sameDatabase, suppressMissingDependenciesErrors: false }), constants.databaseReferenceAlreadyExists);
+		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), suppressMissingDependenciesErrors: false }), constants.databaseReferenceAlreadyExists);
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after trying to add a reference to test.dacpac again');
 	});
 

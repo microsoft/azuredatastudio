@@ -6,7 +6,7 @@
 import { ControllerInfo, ResourceType } from 'arc';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
-import { parseInstanceName, UserCancelledError } from '../common/utils';
+import { UserCancelledError } from '../common/utils';
 import * as loc from '../localizedConstants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
@@ -20,7 +20,6 @@ export type Registration = {
 export class ControllerModel {
 	private readonly _azdataApi: azdataExt.IExtension;
 	private _endpoints: azdataExt.DcEndpointListResult[] = [];
-	private _namespace: string = '';
 	private _registrations: Registration[] = [];
 	private _controllerConfig: azdataExt.DcConfigShowResult | undefined = undefined;
 
@@ -93,7 +92,7 @@ export class ControllerModel {
 	}
 	public async refresh(showErrors: boolean = true, promptReconnect: boolean = false): Promise<void> {
 		await this.azdataLogin(promptReconnect);
-		this._registrations = [];
+		const newRegistrations: Registration[] = [];
 		await Promise.all([
 			this._azdataApi.azdata.arc.dc.config.show().then(result => {
 				this._controllerConfig = result.result;
@@ -125,7 +124,7 @@ export class ControllerModel {
 			}),
 			Promise.all([
 				this._azdataApi.azdata.arc.postgres.server.list().then(result => {
-					this._registrations.push(...result.result.map(r => {
+					newRegistrations.push(...result.result.map(r => {
 						return {
 							instanceName: r.name,
 							state: r.state,
@@ -134,7 +133,7 @@ export class ControllerModel {
 					}));
 				}),
 				this._azdataApi.azdata.arc.sql.mi.list().then(result => {
-					this._registrations.push(...result.result.map(r => {
+					newRegistrations.push(...result.result.map(r => {
 						return {
 							instanceName: r.name,
 							state: r.state,
@@ -143,6 +142,7 @@ export class ControllerModel {
 					}));
 				})
 			]).then(() => {
+				this._registrations = newRegistrations;
 				this.registrationsLastUpdated = new Date();
 				this._onRegistrationsUpdated.fire(this._registrations);
 			})
@@ -157,10 +157,6 @@ export class ControllerModel {
 		return this._endpoints.find(e => e.name === name);
 	}
 
-	public get namespace(): string {
-		return this._namespace;
-	}
-
 	public get registrations(): Registration[] {
 		return this._registrations;
 	}
@@ -171,17 +167,8 @@ export class ControllerModel {
 
 	public getRegistration(type: ResourceType, name: string): Registration | undefined {
 		return this._registrations.find(r => {
-			return r.instanceType === type && parseInstanceName(r.instanceName) === name;
+			return r.instanceType === type && r.instanceName === name;
 		});
-	}
-
-	public async deleteRegistration(_type: ResourceType, _name: string) {
-		/* TODO chgagnon
-		if (r && !r.isDeleted && r.customObjectName) {
-			const r = this.getRegistration(type, name);
-			await this._registrationRouter.apiV1RegistrationNsNameIsDeletedDelete(this._namespace, r.customObjectName, true);
-		}
-		*/
 	}
 
 	/**

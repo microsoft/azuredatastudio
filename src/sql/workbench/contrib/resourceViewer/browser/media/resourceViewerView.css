@@ -7,3 +7,10 @@
 	height: 100%;
 	width: 100%;
 }
+
+.resource-viewer .actions-container .action-item .action-label {
+	padding-left: 20px;
+	padding-right: 5px;
+	background-size: 16px;
+	background-position: left;
+}

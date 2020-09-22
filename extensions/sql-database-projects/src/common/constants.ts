@@ -22,6 +22,9 @@ export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
+// Project Provider
+export const projectTypeDisplayName = localize('projectTypeDisplayName', 'Database Project');
+
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';
@@ -96,6 +99,7 @@ export const defaultUser = localize('default', "default");
 export const addDatabaseReferenceDialogName = localize('addDatabaseReferencedialogName', "Add database reference");
 export const addDatabaseReferenceOkButtonText = localize('addDatabaseReferenceOkButtonText', "Add reference");
 export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Type");
+export const projectRadioButtonTitle = localize('projectRadioButtonTitle', "Database project in folder");
 export const systemDatabaseRadioButtonTitle = localize('systemDatabaseRadioButtonTitle', "System database");
 export const dacpacText = localize('dacpacText', "Data-tier application (.dacpac)");
 export const dacpacPlaceholder = localize('dacpacPlaceholder', "Select .dacpac");
@@ -105,7 +109,7 @@ export const sameDatabase = localize('sameDatabase', "Same database");
 export const differentDbSameServer = localize('differentDbSameServer', "Different database, same server");
 export const differentDbDifferentServer = localize('differentDbDifferentServer', "Different database, different server");
 export const systemDbLocationDropdownValues = [differentDbSameServer];
-export const locationDropdownValues = [sameDatabase, differentDbSameServer, differentDbDifferentServer];
+export const locationDropdownValues = [differentDbSameServer, differentDbDifferentServer];
 export const databaseName = localize('databaseName', "Database name");
 export const databaseVariable = localize('databaseVariable', "Database variable");
 export const serverName = localize('serverName', "Server name");
@@ -115,6 +119,9 @@ export const exampleUsage = localize('exampleUsage', "Example Usage");
 export const enterSystemDbName = localize('enterSystemDbName', "Enter a database name for this system database");
 export const databaseNameRequiredVariableOptional = localize('databaseNameRequiredVariableOptional', "A database name is required. The database variable is optional.");
 export const databaseNameServerNameVariableRequired = localize('databaseNameServerNameVariableRequired', "A database name, server name, and server variable are required. The database variable is optional");
+export const otherServer = 'OtherServer';
+export const otherSeverVariable = 'OtherServer';
+export const databaseProject = localize('databaseProject', "Database project");
 
 // Error messages
 
@@ -161,6 +168,9 @@ export function unexpectedProjectContext(uri: string) { return localize('unexpec
 export function unableToPerformAction(action: string, uri: string) { return localize('unableToPerformAction', "Unable to locate '{0}' target: '{1}'", action, uri); }
 export function unableToFindObject(path: string, objType: string) { return localize('unableToFindFile', "Unable to find {1} with path '{0}'", path, objType); }
 export function deployScriptExists(scriptType: string) { return localize('deployScriptExists', "A {0} script already exists. The new script will not be included in build.", scriptType); }
+export function notValidVariableName(name: string) { return localize('notValidVariableName', "The variable name '{0}' is not valid.", name); }
+export function cantAddCircularProjectReference(project: string) { return localize('cantAddCircularProjectReference', "A reference to project '{0} cannot be added. Adding this project as a reference would cause a circular dependency", project); }
+export function unableToFindSqlCmdVariable(variableName: string) { return localize('unableToFindSqlCmdVariable', "Unable to find SQLCMD variable '{0}'", variableName); }
 
 // Action types
 export const deleteAction = localize('deleteAction', 'Delete');
@@ -214,6 +224,8 @@ export const PostDeploy = 'PostDeploy';
 export const None = 'None';
 export const True = 'True';
 export const False = 'False';
+export const Private = 'Private';
+export const ProjectGuid = 'ProjectGuid';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
@@ -272,5 +284,5 @@ export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
 
 // SQL queries
 export const sameDatabaseExampleUsage = 'SELECT * FROM [Schema1].[Table1]';
-export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]"`; }
+export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]`; }
 export function differentDbDifferentServerExampleUsage(server: string, db: string) { return `SELECT * FROM [${server}].[${db}].[Schema1].[Table1]`; }

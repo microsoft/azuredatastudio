@@ -2,16 +2,17 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as arc from 'arc';
+
 import * as vscode from 'vscode';
+import * as loc from '../../localizedConstants';
+import { TreeNode } from './treeNode';
 
-export class ArcService {
-	private _arcApi: arc.IExtension;
+/**
+ * A placeholder TreeNode to display when there aren't any child instances available
+ */
+export class NoInstancesTreeNode extends TreeNode {
+
 	constructor() {
-		this._arcApi = vscode.extensions.getExtension(arc.extension.name)?.exports;
-	}
-
-	public async getRegisteredDataControllers(): Promise<arc.ControllerInfo[]> {
-		return await this._arcApi.getRegisteredDataControllers();
+		super(loc.noInstancesAvailable, vscode.TreeItemCollapsibleState.None, '');
 	}
 }

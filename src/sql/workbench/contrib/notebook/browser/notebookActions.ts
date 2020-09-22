@@ -455,10 +455,22 @@ export class AttachToDropdown extends SelectBox {
 	 **/
 	public async openConnectionDialog(useProfile: boolean = false): Promise<boolean> {
 		try {
+			// Get all providers to show all available connections in connection dialog
+			let providers = this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name);
+			// Spark kernels are unable to get providers from above, therefore ensure that we get the
+			// correct providers for the selected kernel and load the proper connections for the connection dialog
+			// Example Scenario: Spark Kernels should only have MSSQL connections in connection dialog
+			if (!this.model.kernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.clientSession.kernel.name !== 'SQL') {
+				providers = providers.concat(this.model.getApplicableConnectionProviderIds(this.model.selectedKernelDisplayName));
+			} else {
+				for (let alias of this.model.kernelAliases) {
+					providers = providers.concat(this.model.getApplicableConnectionProviderIds(alias));
+				}
+			}
 			let connection = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
 				{
 					connectionType: ConnectionType.temporary,
-					providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name)
+					providers: providers
 				},
 				useProfile ? this.model.connectionProfile : undefined);
 
@@ -500,7 +512,7 @@ export class AttachToDropdown extends SelectBox {
 			//Changes kernel based on connection attached to
 			if (this.model.kernelAliases.includes(connectionProfile.serverCapabilities.notebookKernelAlias)) {
 				this.model.changeKernel(connectionProfile.serverCapabilities.notebookKernelAlias);
-			} else {
+			} else if (this.model.clientSession.kernel.name === 'SQL') {
 				this.model.changeKernel('SQL');
 			}
 			return true;

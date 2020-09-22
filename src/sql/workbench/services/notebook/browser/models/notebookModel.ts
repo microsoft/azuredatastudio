@@ -272,6 +272,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	/**
+	 * Indicates all result grid output has been converted to mimeType and html.
+	 */
+	public get gridDataConversionComplete(): Promise<any> {
+		let promises = [];
+		for (let cell of this._cells) {
+			promises.push(cell.gridDataConversionComplete);
+		}
+		return Promise.all(promises);
+	}
+
+	/**
 	 * Notifies when the client session is ready for use
 	 */
 	public get onClientSessionReady(): Event<IClientSession> {
@@ -311,7 +322,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return !ids ? [] : ids;
 	}
 
-	public async loadContents(isTrusted: boolean = false): Promise<void> {
+	public async loadContents(isTrusted = false, forceLayoutChange = false): Promise<void> {
 		try {
 			this._trustedMode = isTrusted;
 
@@ -357,6 +368,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// Trust notebook by default if there are no code cells
 			if (this._cells.length === 0 || this._cells.every(cell => cell.cellType === CellTypes.Markdown)) {
 				this.trustedMode = true;
+			}
+			if (forceLayoutChange) {
+				this._layoutChanged.fire();
 			}
 		} catch (error) {
 			this._inErrorState = true;
@@ -593,8 +607,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let providers = this._capabilitiesService.providers;
 			for (const server in providers) {
 				let alias = providers[server].connection.notebookKernelAlias;
+				// Add Notebook Kernel Alias to kernelAliases
 				if (alias && this._kernelAliases.indexOf(alias) === -1) {
 					this._kernelAliases.push(providers[server].connection.notebookKernelAlias);
+					this._kernelDisplayNameToConnectionProviderIds.set(alias, [providers[server].connection.providerId]);
 				}
 			}
 		}
@@ -640,9 +656,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let standardKernels = find(this._standardKernels, kernel => this._defaultKernel && kernel.displayName === this._defaultKernel.display_name);
 			let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
 			let providerFeatures = this._capabilitiesService.getCapabilities(profile.providerName);
-			if (connectionProviderIds.length > 0) {
+			if (connectionProviderIds?.length) {
 				this._currentKernelAlias = providerFeatures?.connection.notebookKernelAlias;
-				this._kernelDisplayNameToConnectionProviderIds.set(this._currentKernelAlias, [profile.providerName]);
+				// Switching from Kusto to another kernel should set the currentKernelAlias to undefined
+				if (this._selectedKernelDisplayName !== this._currentKernelAlias && this._selectedKernelDisplayName) {
+					this._currentKernelAlias = undefined;
+				} else {
+					// Adds Kernel Alias and Connection Provider to Map if new Notebook connection contains notebookKernelAlias
+					this._kernelDisplayNameToConnectionProviderIds.set(this._currentKernelAlias, [profile.providerName]);
+				}
 			}
 			return this._currentKernelAlias || profile && connectionProviderIds && find(connectionProviderIds, provider => provider === profile.providerName) !== undefined;
 		}
