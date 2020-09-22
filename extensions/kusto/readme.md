@@ -28,7 +28,7 @@ Select on **Create notebook** to create a new notebook in Azure Data Studio.
 
 ![Kusto notebook in Azure Data Studio](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/kusto/resources/images/kusto-readme-notebook.gif)
 
-For more information, see [how to create a notebook with the Kusto extension](https://go.microsoft.com/fwlink/?linkid=2143934).
+For more information, see [Create a notebook with the Kusto extension](https://go.microsoft.com/fwlink/?linkid=2143934).
 
 ## Contributing to the Extension
 
