@@ -7,6 +7,7 @@ import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { checkAndInstallAzdata, checkAndUpdateAzdata, findAzdata, IAzdataTool, promptForEula } from './azdata';
 import Logger from './common/logger';
+import { NoAzdataError } from './common/utils';
 import * as constants from './constants';
 import * as loc from './localizedConstants';
 
@@ -167,7 +168,7 @@ function throwIfNoAzdataOrEulaNotAccepted(): void {
 function throwIfNoAzdata() {
 	if (!localAzdata) {
 		Logger.log(loc.noAzdata);
-		throw new Error(loc.noAzdata);
+		throw new NoAzdataError();
 	}
 }
 
