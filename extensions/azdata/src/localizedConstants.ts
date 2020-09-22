@@ -8,6 +8,7 @@ import { getErrorMessage } from './common/utils';
 import { azdataConfigSection, azdataInstallKey, azdataUpdateKey } from './constants';
 const localize = nls.loadMessageBundle();
 
+export const azdata = localize('azdata.azdata', "Azure Data CLI");
 export const searchingForAzdata = localize('azdata.searchingForAzdata', "Searching for existing Azure Data CLI installation...");
 export const foundExistingAzdata = (path: string, version: string): string => localize('azdata.foundExistingAzdata', "Found existing Azure Data CLI installation of version (v{0}) at path:{1}", version, path);
 
