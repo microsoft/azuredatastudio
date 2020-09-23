@@ -26,8 +26,9 @@ export class CustomDialogService {
 		dialogModal.open();
 	}
 
-	public showWizard(wizard: Wizard, options?: IModalOptions): void {
-		let wizardModal = this._instantiationService.createInstance(WizardModal, wizard, 'WizardPage', options || DefaultWizardOptions);
+	public showWizard(wizard: Wizard, wizardName?: string, options?: IModalOptions): void {
+		wizardName = wizardName || 'WizardPage';
+		let wizardModal = this._instantiationService.createInstance(WizardModal, wizard, wizardName, options || DefaultWizardOptions);
 		this._wizardModals.set(wizard, wizardModal);
 		wizardModal.render();
 		wizardModal.open();

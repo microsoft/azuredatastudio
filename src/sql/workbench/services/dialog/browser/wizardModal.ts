@@ -264,14 +264,14 @@ export class WizardModal extends Modal {
 			}
 			this._onDone.fire();
 			this.dispose();
-			this.hide();
+			this.hide('done');
 		}
 	}
 
 	public cancel(): void {
 		this._onCancel.fire();
 		this.dispose();
-		this.hide();
+		this.hide('cancel');
 	}
 
 	private async validateNavigation(newPage: number): Promise<boolean> {
@@ -286,14 +286,6 @@ export class WizardModal extends Modal {
 		button.element.classList.remove('validating');
 		this.updateButtonElement(button, newPage === undefined ? this._wizard.doneButton : this._wizard.nextButton, true);
 		return navigationValid;
-	}
-
-	protected hide(): void {
-		super.hide();
-	}
-
-	protected show(): void {
-		super.show();
 	}
 
 	/**

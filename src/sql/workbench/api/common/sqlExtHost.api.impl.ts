@@ -437,8 +437,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				createWizardPage(title: string): azdata.window.WizardPage {
 					return extHostModelViewDialog.createWizardPage(title, extension);
 				},
-				createWizard(title: string, width?: azdata.window.DialogWidth): azdata.window.Wizard {
-					return extHostModelViewDialog.createWizard(title, width);
+				createWizard(title: string, name?: string, width?: azdata.window.DialogWidth): azdata.window.Wizard {
+					return extHostModelViewDialog.createWizard(title, name, width);
 				},
 				createModelViewDashboard(title: string, options?: azdata.ModelViewDashboardOptions): azdata.window.ModelViewDashboard {
 					return extHostModelViewDialog.createModelViewDashboard(title, options, extension);
