@@ -11,9 +11,8 @@ import { AllProjectTypes, SelectProjectFileActionName } from './common/constants
 import { WorkspaceTreeItem, IExtension } from 'dataworkspace';
 import { DataWorkspaceExtension } from './common/dataWorkspaceExtension';
 
-let workspaceService: WorkspaceService;
 export function activate(context: vscode.ExtensionContext): Promise<IExtension> {
-	workspaceService = new WorkspaceService();
+	const workspaceService = new WorkspaceService();
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.addProject', async () => {
