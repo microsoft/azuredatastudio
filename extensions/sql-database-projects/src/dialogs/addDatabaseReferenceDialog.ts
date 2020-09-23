@@ -263,7 +263,7 @@ export class AddDatabaseReferenceDialog {
 		});
 
 		// get projects in workspace and filter to only sql projects
-		let projectFiles: vscode.Uri[] = (vscode.extensions.getExtension(dataworkspace.extension.name)?.exports.allProjectsInWorkspace).filter((p: vscode.Uri) => path.parse(p.fsPath).ext === constants.sqlprojExtension);
+		let projectFiles: vscode.Uri[] = (vscode.extensions.getExtension(dataworkspace.extension.name)?.exports.getProjectsInWorkspace()).filter((p: vscode.Uri) => path.parse(p.fsPath).ext === constants.sqlprojExtension);
 
 		// filter out current project
 		projectFiles = projectFiles.filter(p => p.fsPath !== this.project.projectFilePath);

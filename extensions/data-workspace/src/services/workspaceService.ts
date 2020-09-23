@@ -145,8 +145,4 @@ export class WorkspaceService implements IWorkspaceService {
 		const fullPath = path.join(path.dirname(vscode.workspace.workspaceFile!.path!), relativePath);
 		return vscode.Uri.file(fullPath);
 	}
-
-	get allProjectsInWorkspace(): vscode.Uri[] {
-		return this.getProjectsInWorkspace();
-	}
 }
