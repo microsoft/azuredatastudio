@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as should from 'should';
-import { searchForCmd as searchForExe } from '../../common/utils';
+import { searchForExe as searchForExe } from '../../common/utils';
 
 describe('utils', function () {
 	describe('searchForExe', function (): void {

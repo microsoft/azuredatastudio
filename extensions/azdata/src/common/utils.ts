@@ -20,9 +20,9 @@ export class NoAzdataError extends Error implements azdataExt.ErrorWithLink {
  * Searches for the first instance of the specified executable in the PATH environment variable
  * @param exe The executable to search for
  */
-export function searchForCmd(exe: string): Promise<string> {
+export function searchForExe(exe: string): Promise<string> {
 	// Note : This is separated out to allow for easy test stubbing
-	return new Promise<string>((resolve, reject) => which(exe, (err, path) => err ? reject(err) : resolve(path)));
+	return which(exe);
 }
 
 /**

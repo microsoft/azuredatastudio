@@ -35,7 +35,7 @@ describe('azdata', function () {
 	describe('findAzdata', function () {
 		it('successful', async function (): Promise<void> {
 			// Mock searchForCmd to return a path to azdata.cmd
-			sinon.stub(utils, 'searchForCmd').returns(Promise.resolve('/path/to/azdata'));
+			sinon.stub(utils, 'searchForExe').returns(Promise.resolve('/path/to/azdata'));
 			// Mock call to --version to simulate azdata being installed
 			sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: '1.0.0', stderr: '' }));
 			await should(azdata.findAzdata()).not.be.rejected();
@@ -43,7 +43,7 @@ describe('azdata', function () {
 		it('unsuccessful', async function (): Promise<void> {
 			if (process.platform === 'win32') {
 				// Mock searchForCmd to return a failure to find azdata.cmd
-				sinon.stub(utils, 'searchForCmd').returns(Promise.reject(new Error('Could not find azdata')));
+				sinon.stub(utils, 'searchForExe').returns(Promise.reject(new Error('Could not find azdata')));
 			} else {
 				// Mock call to executeCommand to simulate azdata --version returning error
 				sinon.stub(childProcess, 'executeCommand').returns(Promise.reject({ stdout: '', stderr: 'command not found: azdata' }));
@@ -55,7 +55,7 @@ describe('azdata', function () {
 	describe('installAzdata', function (): void {
 		beforeEach(function (): void {
 			sinon.stub(vscode.window, 'showErrorMessage').returns(Promise.resolve(<any>loc.yes));
-			sinon.stub(utils, 'searchForCmd').returns(Promise.resolve('/path/to/azdata'));
+			sinon.stub(utils, 'searchForExe').returns(Promise.resolve('/path/to/azdata'));
 			sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: '', stderr: '' }));
 		});
 

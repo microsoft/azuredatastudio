@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
-import { getErrorMessage, NoAzdataError, searchForCmd } from './common/utils';
+import { getErrorMessage, NoAzdataError, searchForExe } from './common/utils';
 import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
 import { getPlatformDownloadLink, getPlatformReleaseVersion } from './azdataReleaseInfo';
@@ -224,8 +224,8 @@ export async function findAzdata(): Promise<IAzdataTool> {
 	Logger.log(loc.searchingForAzdata);
 	try {
 		const azdata = await findSpecificAzdata();
-		await vscode.commands.executeCommand('setContext', azdataFound, true); // save a context key that azdata was found so that command for installing azdata is no longer available in commandPalette and that for updating it is.
 		Logger.log(loc.foundExistingAzdata(azdata.getPath(), azdata.getSemVersion().raw));
+		await vscode.commands.executeCommand('setContext', azdataFound, true); // save a context key that azdata was found so that command for installing azdata is no longer available in commandPalette and that for updating it is.
 		return azdata;
 	} catch (err) {
 		Logger.log(loc.couldNotFindAzdata(err));
@@ -502,7 +502,7 @@ async function installAzdataLinux(): Promise<void> {
 /**
  */
 async function findSpecificAzdata(): Promise<IAzdataTool> {
-	const path = await ((process.platform === 'win32') ? searchForCmd('azdata.cmd') : searchForCmd('azdata'));
+	const path = await ((process.platform === 'win32') ? searchForExe('azdata.cmd') : searchForExe('azdata'));
 	const versionOutput = await executeAzdataCommand(`"${path}"`, ['--version']);
 	return new AzdataTool(path, parseVersion(versionOutput.stdout));
 }
