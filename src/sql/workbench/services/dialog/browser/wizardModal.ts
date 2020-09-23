@@ -46,7 +46,6 @@ export class WizardModal extends Modal {
 
 	constructor(
 		private _wizard: Wizard,
-		name: string,
 		options: IModalOptions,
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
@@ -57,7 +56,7 @@ export class WizardModal extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(_wizard.title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
+		super(_wizard.title, _wizard.name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
 		this._useDefaultMessageBoxLocation = false;
 	}
 

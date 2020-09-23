@@ -168,7 +168,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		if (!wizard) {
 			wizard = new Wizard(
 				details.title,
-				details.name,
+				details.name || 'WizardPage',
 				this.getButton(details.doneButton),
 				this.getButton(details.cancelButton),
 				this.getButton(details.nextButton),
@@ -222,7 +222,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		let wizard = this.getWizard(handle);
 		const options = assign({}, DefaultWizardOptions);
 		options.width = wizard.width;
-		this._dialogService.showWizard(wizard, wizard.name, options);
+		this._dialogService.showWizard(wizard, options);
 		return Promise.resolve();
 	}
 
