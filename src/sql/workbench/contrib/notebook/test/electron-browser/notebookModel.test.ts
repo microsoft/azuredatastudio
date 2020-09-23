@@ -84,7 +84,7 @@ let clientSessionOptions: IClientSessionOptions;
 let sessionReady: Deferred<void>;
 let mockModelFactory: TypeMoq.Mock<ModelFactory>;
 let notificationService: TypeMoq.Mock<INotificationService>;
-let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
+let capabilitiesService: ICapabilitiesService;
 let instantiationService: IInstantiationService;
 
 suite('notebook model', function (): void {
@@ -99,7 +99,7 @@ suite('notebook model', function (): void {
 		notebookManagers[0].sessionManager = mockSessionManager.object;
 		sessionReady = new Deferred<void>();
 		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
-		capabilitiesService = TypeMoq.Mock.ofType(TestCapabilitiesService);
+		capabilitiesService = new TestCapabilitiesService();
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
 		queryConnectionService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
@@ -117,7 +117,7 @@ suite('notebook model', function (): void {
 			cellMagicMapper: undefined,
 			defaultKernel: undefined,
 			layoutChanged: undefined,
-			capabilitiesService: capabilitiesService.object
+			capabilitiesService: capabilitiesService
 		};
 		clientSessionOptions = {
 			notebookManager: defaultModelOptions.notebookManagers[0],
@@ -486,16 +486,16 @@ suite('notebook model', function (): void {
 		assert(output.metadata['custom-object']['prop2'] === 'value2', 'Custom metadata for object was not preserved');
 	});
 
-	test('Should get Kusto connection and set kernelAlias', async function () {
+	test('1234abc Should get Fake connection and set kernelAlias', async function () {
 		let model = await loadModelAndStartClientSession();
 
 		// Ensure notebook prefix is present in the connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
-		await changeContextWithConnectionProfile(model);
+		await changeContextWithFakeConnectionProfile(model);
 
 		//Check to see if Kusto is added to kernelAliases
 		assert(!isUndefinedOrNull(model.kernelAliases));
-		let expectedAlias = ['Kusto'];
+		let expectedAlias = ['Fake'];
 		let kernelAliases = model.kernelAliases;
 
 		assert.equal(kernelAliases.length, 1);
@@ -511,12 +511,12 @@ suite('notebook model', function (): void {
 		queryConnectionService.verify((c) => c.disconnect(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
-	test.skip('Should change kernel to Kusto when connecting to Kusto connection', async function () {
+	test('1234abc Should change kernel to Kusto when connecting to Kusto connection', async function () {
 		let model = await loadModelAndStartClientSession();
 
 		// Ensure notebook prefix is present in the connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
-		await changeContextWithConnectionProfile(model);
+		await changeContextWithFakeConnectionProfile(model);
 
 		// // After client session is started, ensure context isn't null/undefined
 		assert(!isUndefinedOrNull(model.context), 'context should exist after call to change context');
@@ -525,8 +525,8 @@ suite('notebook model', function (): void {
 
 		//Change to kusto kernel
 		//TODO issue with Test not setting serverCapabilities of context
-		await model.changeKernel(model.kernelAliases[0]);
-		let notebookKernelAlias = capabilitiesService.instance.providers.KUSTO.connection.notebookKernelAlias;
+		model.changeKernel(model.kernelAliases[0]);
+		let notebookKernelAlias = capabilitiesService.providers.Fake.connection.notebookKernelAlias;
 		assert.equal(model.selectedKernelDisplayName, model.kernelAliases[0]);
 		assert.equal(model.currentKernelAlias, notebookKernelAlias);
 		sinon.assert.called(doChangeKernelStub);
@@ -559,7 +559,6 @@ suite('notebook model', function (): void {
 		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
 			factory: mockModelFactory.object
 		});
-		let capabilitiesService = new TestCapabilitiesService;
 		let model = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService(), capabilitiesService);
 		model.onClientSessionReady((session) => actualSession = session);
 		await model.requestModelLoad();
@@ -578,7 +577,7 @@ suite('notebook model', function (): void {
 	}
 
 	async function changeContextWithConnectionProfile(model: NotebookModel) {
-		let connection = new ConnectionProfile(capabilitiesService.object, {
+		let connection = new ConnectionProfile(capabilitiesService, {
 			connectionName: 'newName',
 			savePassword: false,
 			groupFullName: 'testGroup',
@@ -589,12 +588,32 @@ suite('notebook model', function (): void {
 			userName: 'testUsername',
 			groupId: undefined,
 			providerName: mssqlProviderName,
-			options: { serverCapabilities: capabilitiesService.instance.providers.KUSTO.connection },
+			options: {},
 			saveProfile: true,
 			id: 'testID'
 		});
 
 		await model.changeContext(connection.connectionName, connection);
+	}
+
+	async function changeContextWithFakeConnectionProfile(model: NotebookModel) {
+		let fakeConnection = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'newName',
+			savePassword: false,
+			groupFullName: 'testGroup',
+			serverName: 'testServerName',
+			databaseName: 'testDatabaseName',
+			authenticationType: 'integrated',
+			password: 'test',
+			userName: 'testUsername',
+			groupId: undefined,
+			providerName: 'FAKE',
+			options: {},
+			saveProfile: true,
+			id: 'testID'
+		});
+
+		await model.changeContext(fakeConnection.connectionName, fakeConnection);
 	}
 });
 

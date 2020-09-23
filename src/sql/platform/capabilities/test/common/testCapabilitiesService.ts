@@ -16,7 +16,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 export class TestCapabilitiesService implements ICapabilitiesService {
 
 	private pgsqlProviderName = 'PGSQL';
-	private kustoProviderName = 'KUSTO';
+	private fakeProviderName = 'FAKE';
 	public _serviceBrand: undefined;
 
 	public capabilities: { [id: string]: ProviderFeatures } = {};
@@ -107,15 +107,15 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 			displayName: 'PostgreSQL',
 			connectionOptions: connectionProvider,
 		};
-		let kustoCapabilities = {
-			providerId: this.kustoProviderName,
-			displayName: 'Kusto',
+		let fakeCapabilities = {
+			providerId: this.fakeProviderName,
+			displayName: 'fakeName',
 			connectionOptions: connectionProvider,
-			notebookKernelAlias: 'Kusto'
+			notebookKernelAlias: 'fakeAlias'
 		};
 		this.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };
 		this.capabilities[this.pgsqlProviderName] = { connection: pgSQLCapabilities };
-		this.capabilities[this.kustoProviderName] = { connection: kustoCapabilities };
+		this.capabilities[this.fakeProviderName] = { connection: fakeCapabilities };
 	}
 
 	registerConnectionProvider(id: string, properties: ConnectionProviderProperties): IDisposable {
