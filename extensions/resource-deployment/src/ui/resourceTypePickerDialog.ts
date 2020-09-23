@@ -10,9 +10,9 @@ import { select } from '../localizedConstants';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { getErrorMessage } from '../utils';
+import * as loc from './../localizedConstants';
 import { DialogBase } from './dialogBase';
 import { createFlexContainer } from './modelViewUtils';
-import * as loc from './../localizedConstants';
 
 const localize = nls.loadMessageBundle();
 
@@ -314,13 +314,13 @@ export class ResourceTypePickerDialog extends DialogBase {
 				text: infoText.join(EOL)
 			};
 		}
-		if (!this.validateToolsEula()) {
+		if (!this.areToolsEulaAccepted()) {
 			this._dialogObject.okButton.label = loc.acceptEulaAndSelect;
 		}
 		this._toolsLoadingComponent.loading = false;
 	}
 
-	private validateToolsEula(): boolean {
+	private areToolsEulaAccepted(): boolean {
 		this._eulaValidationSucceeded = this._tools.every(tool => {
 			const eulaValidated = tool.isEulaAccepted();
 			if (!eulaValidated) {
