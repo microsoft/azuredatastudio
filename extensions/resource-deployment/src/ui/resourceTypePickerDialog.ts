@@ -321,16 +321,17 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private areToolsEulaAccepted(): boolean {
-		this._eulaValidationSucceeded = this._tools.every(tool => {
-			const eulaValidated = tool.isEulaAccepted();
-			if (!eulaValidated) {
+		// we run 'map' on each tool before doing 'every' so that we collect eula messages for all tools (instead of bailing out after 1st failure)
+		this._eulaValidationSucceeded = this._tools.map(tool => {
+			const eulaAccepted = tool.isEulaAccepted();
+			if (!eulaAccepted) {
 				this._dialogObject.message = {
 					level: azdata.window.MessageLevel.Error,
 					text: [tool.statusDescription!, this._dialogObject.message.text].join(EOL)
 				};
 			}
-			return eulaValidated;
-		});
+			return eulaAccepted;
+		}).every(isEulaAccepted => isEulaAccepted);
 		return this._eulaValidationSucceeded;
 	}
 
