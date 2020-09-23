@@ -657,7 +657,9 @@ export class ProjectsController {
 			let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
 			await project.addToProject(fileFolderList); // Add generated file structure to the project
-			await this.openProject(vscode.Uri.file(newProjFilePath));
+
+			vscode.commands.executeCommand(constants.addProjectCommand, vscode.Uri.file(newProjFilePath));
+			vscode.commands.executeCommand(constants.projectsViewFocusCommand);
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));

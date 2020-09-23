@@ -29,6 +29,8 @@ export const projectTypeDisplayName = localize('projectTypeDisplayName', 'Databa
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';
 export const vscodeOpenCommand = 'vscode.open';
+export const addProjectCommand = 'projects.addProject';
+export const projectsViewFocusCommand = 'dataworkspace.views.main.focus';
 
 // UI Strings
 
