@@ -228,3 +228,26 @@ export async function getSqlProjectFilesInFolder(folderPath: string): Promise<st
 
 	return results;
 }
+
+/**
+ * Gets the Uris of all the SQL projects in the workspace
+ */
+export function getSqlProjectsInWorkspace(): vscode.Uri[] {
+	return vscode.workspace.workspaceFile ? getWorkspaceProjects().map(project => toUri(project)).filter(p => path.parse(p.fsPath).ext === constants.sqlprojExtension) : [];
+}
+
+/**
+ * Gets all the files in dataworkspace.projects
+ */
+function getWorkspaceProjects(): string[] {
+	return (<string[]>vscode.workspace.getConfiguration(constants.WorkspaceConfigurationName).get(constants.ProjectsConfigurationName));
+}
+
+/**
+	 * Gets the Uri of the given relative path
+	 * @param relativePath the relative path
+	 */
+function toUri(relativePath: string): vscode.Uri {
+	const fullPath = path.join(path.dirname(vscode.workspace.workspaceFile!.path!), relativePath);
+	return vscode.Uri.file(fullPath);
+}

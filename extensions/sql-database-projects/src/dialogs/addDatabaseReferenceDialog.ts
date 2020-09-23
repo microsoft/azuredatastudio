@@ -262,25 +262,11 @@ export class AddDatabaseReferenceDialog {
 		});
 
 		// get projects in workspace
-		const workspaceFolders = vscode.workspace.workspaceFolders;
-		if (workspaceFolders?.length) {
-			let projectFiles = await utils.getSqlProjectFilesInFolder(workspaceFolders[0].uri.fsPath);
+		let projectFiles = await utils.getSqlProjectsInWorkspace();
 
-			// check if current project is in same open folder (should only be able to add a reference to another project in
-			// the folder if the current project is also in the folder)
-			if (projectFiles.find(p => p === utils.getPlatformSafeFileEntryPath(this.project.projectFilePath))) {
-				// filter out current project
-				projectFiles = projectFiles.filter(p => p !== utils.getPlatformSafeFileEntryPath(this.project.projectFilePath));
-
-				projectFiles.forEach(p => {
-					projectFiles[projectFiles.indexOf(p)] = path.parse(p).name;
-				});
-
-				this.projectDropdown.values = projectFiles;
-			} else {
-				this.projectDropdown.values = [];
-			}
-		}
+		// filter out current project
+		projectFiles = projectFiles.filter(p => p.fsPath !== this.project.projectFilePath);
+		this.projectDropdown.values = projectFiles.map(p => path.parse(p.fsPath).name);
 
 		return {
 			component: this.projectDropdown,
