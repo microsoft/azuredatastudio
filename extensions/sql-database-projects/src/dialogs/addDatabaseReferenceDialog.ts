@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
@@ -261,8 +262,8 @@ export class AddDatabaseReferenceDialog {
 			this.setDefaultDatabaseValues();
 		});
 
-		// get projects in workspace
-		let projectFiles = await utils.getSqlProjectsInWorkspace();
+		// get projects in workspace and filter to only sql projects
+		let projectFiles: vscode.Uri[] = (vscode.extensions.getExtension(dataworkspace.extension.name)?.exports.allProjectsInWorkspace).filter((p: vscode.Uri) => path.parse(p.fsPath).ext === constants.sqlprojExtension);
 
 		// filter out current project
 		projectFiles = projectFiles.filter(p => p.fsPath !== this.project.projectFilePath);

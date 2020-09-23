@@ -45,7 +45,7 @@ export interface IWorkspaceService {
 	/**
 	 * Gets the project files in current workspace
 	 */
-	getProjectsInWorkspace(): Promise<vscode.Uri[]>;
+	getProjectsInWorkspace(): vscode.Uri[];
 
 	/**
 	 * Gets the project provider by project file
