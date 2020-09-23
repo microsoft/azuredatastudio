@@ -48,11 +48,7 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
 	}));
 
-	const getProjectsInWorkspace = (): vscode.Uri[] => {
-		return workspaceService.getProjectsInWorkspace();
-	};
-
-	const dataWorkspaceExtension = new DataWorkspaceExtension(getProjectsInWorkspace);
+	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	return Promise.resolve(dataWorkspaceExtension);
 }
 

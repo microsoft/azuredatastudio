@@ -5,8 +5,13 @@
 
 import * as vscode from 'vscode';
 import { IExtension } from 'dataworkspace';
+import { WorkspaceService } from '../services/workspaceService';
 
 export class DataWorkspaceExtension implements IExtension {
-	constructor(public getProjectsInWorkspace: () => vscode.Uri[]) {
+	constructor(private workspaceService: WorkspaceService) {
+	}
+
+	getProjectsInWorkspace(): vscode.Uri[] {
+		return this.workspaceService.getProjectsInWorkspace();
 	}
 }
