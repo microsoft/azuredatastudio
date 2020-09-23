@@ -513,7 +513,13 @@ declare module 'azdata' {
 			selectTab(id: string): void;
 		}
 
-		export function createModelViewDashboard(title: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
+		/**
+		 * 
+		 * @param title The title displayed in the editor tab for the dashboard
+		 * @param name The name used to identify this dashboard in telemetry
+		 * @param options Options to configure the dashboard
+		 */
+		export function createModelViewDashboard(title: string, name?: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
 
 		export interface Dialog {
 			/**
