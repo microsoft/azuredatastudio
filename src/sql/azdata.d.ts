@@ -5054,8 +5054,8 @@ declare module 'azdata' {
 
 		/// -------- JSON objects, and objects primarily intended not to have methods -----------
 		export interface IAllKernels {
-			kernels: IKernelSpec[];
 			defaultKernel: string;
+			kernels: IKernelSpec[];
 		}
 		export interface IKernelSpec {
 			name: string;

@@ -30,13 +30,13 @@ export class ClientSession implements IClientSession {
 	private _unhandledMessageEmitter = new Emitter<nb.IMessage>();
 	private _propertyChangedEmitter = new Emitter<'path' | 'name' | 'type'>();
 	private _notebookUri: URI;
-	private _type: string | undefined;
-	private _name: string | undefined;
+	private _type: string = '';
+	private _name: string = '';
 	private _isReady: boolean;
 	private _ready: Deferred<void>;
 	private _kernelChangeCompleted: Deferred<void>;
-	private _kernelDisplayName: string | undefined;
-	private _errorMessage: string | undefined;
+	private _kernelDisplayName: string = '';
+	private _errorMessage: string = '';
 	private _cachedKernelSpec: nb.IKernelSpec | undefined;
 	private _kernelChangeHandlers: KernelChangeHandler[] = [];
 	private _defaultKernel: nb.IKernelSpec;
@@ -179,10 +179,10 @@ export class ClientSession implements IClientSession {
 	public get notebookUri(): URI {
 		return this._notebookUri;
 	}
-	public get name(): string | undefined {
+	public get name(): string {
 		return this._name;
 	}
-	public get type(): string | undefined {
+	public get type(): string {
 		return this._type;
 	}
 	public get status(): nb.KernelStatus {
@@ -200,10 +200,10 @@ export class ClientSession implements IClientSession {
 	public get kernelChangeCompleted(): Promise<void> {
 		return this._kernelChangeCompleted.promise;
 	}
-	public get kernelDisplayName(): string | undefined {
+	public get kernelDisplayName(): string {
 		return this._kernelDisplayName;
 	}
-	public get errorMessage(): string | undefined {
+	public get errorMessage(): string {
 		return this._errorMessage;
 	}
 	public get isInErrorState(): boolean {

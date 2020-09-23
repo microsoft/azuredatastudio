@@ -92,12 +92,12 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * The current name associated with the client session.
 	 */
-	readonly name: string | undefined;
+	readonly name: string;
 
 	/**
 	 * The type of the client session.
 	 */
-	readonly type: string | undefined;
+	readonly type: string;
 
 	/**
 	 * The current status of the client session.
@@ -116,7 +116,7 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * The error information, if this session is in an error state
 	 */
-	readonly errorMessage: string | undefined;
+	readonly errorMessage: string;
 
 	/**
 	 * A promise that is fulfilled when the session is ready.
@@ -131,7 +131,7 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * The display name of the kernel.
 	 */
-	readonly kernelDisplayName: string | undefined;
+	readonly kernelDisplayName: string;
 
 	readonly cachedKernelSpec: nb.IKernelSpec | undefined;
 

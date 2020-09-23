@@ -49,7 +49,7 @@ suite('Client Session', function (): void {
 		assert(!session.isReady);
 		assert.equal(session.status, 'starting');
 		assert(!session.isInErrorState);
-		assert(isUndefinedOrNull(session.errorMessage));
+		assert.equal(session.errorMessage, '');
 	});
 
 	test('Should call on serverManager startup if set', async function (): Promise<void> {
