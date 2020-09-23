@@ -118,7 +118,6 @@ export class ProjectsController {
 	public async focusProject(project?: Project): Promise<void> {
 		if (project && this.projects.includes(project)) {
 			await this.projectTreeViewProvider.focus(project);
-			await vscode.commands.executeCommand(constants.sqlDatabaseProjectsViewFocusCommand);
 		}
 	}
 

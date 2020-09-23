@@ -11,15 +11,13 @@ import * as path from 'path';
 import * as newProjectTool from '../tools/newProjectTool';
 
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { getErrorMessage, getSqlProjectFilesInFolder } from '../common/utils';
+import { getErrorMessage } from '../common/utils';
 import { ProjectsController } from './projectController';
 import { NetCoreTool } from '../tools/netcoreTool';
 import { Project } from '../models/project';
 import { IconPathHelper } from '../common/iconHelper';
 import { IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
-
-const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
 
 /**
  * The main controller class that initializes the extension
@@ -79,15 +77,6 @@ export default class MainController implements vscode.Disposable {
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
 
-		// init view
-		const treeView = vscode.window.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, {
-			treeDataProvider: this.dbProjectTreeViewProvider,
-			showCollapseAll: true
-		});
-		this.dbProjectTreeViewProvider.setTreeView(treeView);
-
-		this.extensionContext.subscriptions.push(treeView);
-
 		await templates.loadTemplates(path.join(this.context.extensionPath, 'resources', 'templates'));
 
 		// ensure .net core is installed
@@ -95,27 +84,6 @@ export default class MainController implements vscode.Disposable {
 
 		// set the user settings around saving new projects to default value
 		await newProjectTool.initializeSaveLocationSetting();
-
-		// load any sql projects that are open in workspace folder
-		await this.loadProjectsInWorkspace();
-	}
-
-	public async loadProjectsInWorkspace(): Promise<void> {
-		const workspaceFolders = vscode.workspace.workspaceFolders;
-		if (workspaceFolders?.length) {
-			await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
-				await this.loadProjectsInFolder(workspaceFolder.uri.fsPath);
-			}));
-		}
-	}
-
-	public async loadProjectsInFolder(folderPath: string): Promise<void> {
-		const results = await getSqlProjectFilesInFolder(folderPath);
-
-		for (let f in results) {
-			// open the project, but don't switch focus to the file explorer viewlet
-			await this.projectsController.openProject(vscode.Uri.file(results[f]), false);
-		}
 	}
 
 	/**
