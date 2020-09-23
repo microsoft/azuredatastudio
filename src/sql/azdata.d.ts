@@ -4645,10 +4645,18 @@ declare module 'azdata' {
 		}
 
 		export interface INotebookMetadata {
-			kernelspec?: IKernelSpec;
+			kernelspec?: IKernelInfo | IKernelSpec;
 			language_info?: ILanguageInfo;
 			tags?: string[];
-			azdata_notebook_guid?: string;
+		}
+
+		/**
+		* @deprecated Use IKernelSpec instead
+		*/
+		export interface IKernelInfo {
+			name: string;
+			language?: string;
+			display_name?: string;
 		}
 
 		export interface ILanguageInfo {
@@ -5059,8 +5067,8 @@ declare module 'azdata' {
 		}
 		export interface IKernelSpec {
 			name: string;
-			display_name: string;
 			language?: string;
+			display_name?: string;
 		}
 
 		export interface MessageHandler<T extends IMessage> {
