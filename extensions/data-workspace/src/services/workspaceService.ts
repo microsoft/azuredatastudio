@@ -59,7 +59,7 @@ export class WorkspaceService implements IWorkspaceService {
 		return projectTypes;
 	}
 
-	public getProjectsInWorkspace(): vscode.Uri[] {
+	getProjectsInWorkspace(): vscode.Uri[] {
 		return vscode.workspace.workspaceFile ? this.getWorkspaceConfigurationValue<string[]>(ProjectsConfigurationName).map(project => this.toUri(project)) : [];
 	}
 
