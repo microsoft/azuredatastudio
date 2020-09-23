@@ -70,24 +70,19 @@ export class AccountFeature implements StaticFeature {
 			window.showErrorMessage(unauthorizedMessage);
 			return undefined;
 		}
-		try {
-			const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.Sql);
+		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.Sql);
 
-			if (!securityToken?.token) {
-				window.showErrorMessage(unauthorizedMessage);
-				return undefined;
-			}
-
-			let params: contracts.RequestSecurityTokenResponse = {
-				accountKey: JSON.stringify(account.key),
-				token: securityToken.token
-			};
-
-			return params;
-		} catch (ex) {
-			console.log(ex);
+		if (!securityToken?.token) {
+			window.showErrorMessage(unauthorizedMessage);
 			return undefined;
 		}
+
+		let params: contracts.RequestSecurityTokenResponse = {
+			accountKey: JSON.stringify(account.key),
+			token: securityToken.token
+		};
+
+		return params;
 	}
 
 	static AccountQuickPickItem = class implements QuickPickItem {
