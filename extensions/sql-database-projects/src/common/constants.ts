@@ -28,7 +28,6 @@ export const projectTypeDisplayName = localize('projectTypeDisplayName', 'Databa
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';
-export const sqlDatabaseProjectsViewFocusCommand = 'sqlDatabaseProjectsView.focus';
 export const vscodeOpenCommand = 'vscode.open';
 
 // UI Strings
