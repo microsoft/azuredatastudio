@@ -44,7 +44,7 @@ export class ClientSession implements IClientSession {
 	//#endregion
 
 	private _serverLoadFinished: Promise<void> = Promise.resolve();
-	private _session: nb.ISession | undefined = undefined;
+	private _session: nb.ISession | undefined;
 	private isServerStarted: boolean = false;
 	private notebookManager: INotebookManager;
 	private _kernelConfigActions: ((kernelName: string) => Promise<any>)[] = [];

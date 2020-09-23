@@ -86,7 +86,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _currentKernelAlias: string | undefined;
 	private _selectedKernelDisplayName: string | undefined;
 
-	public requestConnectionHandler: (() => Promise<boolean>) | undefined = undefined;
+	public requestConnectionHandler: (() => Promise<boolean>) | undefined;
 
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
@@ -202,7 +202,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get specs(): nb.IAllKernels | undefined {
 		let specs: nb.IAllKernels = {
-			defaultKernel: undefined,
+			defaultKernel: '',
 			kernels: []
 		};
 		this.notebookManagers.forEach(manager => {
@@ -326,7 +326,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		try {
 			this._trustedMode = isTrusted;
 
-			let contents: nb.INotebookContents | undefined = undefined;
+			let contents: nb.INotebookContents | undefined;
 
 			if (this._notebookOptions && this._notebookOptions.contentManager) {
 				contents = await this._notebookOptions.contentManager.loadContent();
@@ -335,9 +335,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = [];
 			if (contents) {
-				if (contents.metadata && contents.metadata.language_info) {
-					this._defaultLanguageInfo = contents.metadata.language_info;
-				}
+				this._defaultLanguageInfo = contents.metadata?.language_info;
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
 				if (contents.metadata) {
 					//Telemetry of loading notebook
@@ -402,9 +400,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return firstIndex(this._cells, (cell) => cell.equals(cellModel));
 	}
 
-	public addCell(cellType: CellType, index?: number): ICellModel | null {
+	public addCell(cellType: CellType, index?: number): ICellModel | undefined {
 		if (this.inErrorState) {
-			return null;
+			return undefined;
 		}
 		let cell = this.createCell(cellType);
 
@@ -465,7 +463,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._activeCell.active = false;
 		}
 		this._activeCell = cell;
-		if (this._activeCell && cell) {
+		if (this._activeCell) {
 			this._activeCell.active = true;
 		}
 		this._onActiveCellChanged.fire(cell);
@@ -618,10 +616,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		if (this._savedKernelInfo) {
 			this.sanitizeSavedKernelInfo();
-			let provider;
-			if (this._savedKernelInfo.display_name) {
-				provider = this._kernelDisplayNameToNotebookProviderIds.get(this._savedKernelInfo.display_name);
-			}
+			let provider = this._kernelDisplayNameToNotebookProviderIds.get(this._savedKernelInfo.display_name);
 			if (provider && provider !== this._providerId) {
 				this._providerId = provider;
 			} else if (!provider) {
@@ -634,10 +629,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			this._defaultKernel = this._savedKernelInfo;
 		} else if (this._defaultKernel) {
-			let providerId;
-			if (this._defaultKernel.display_name) {
-				providerId = this._kernelDisplayNameToNotebookProviderIds.get(this._defaultKernel.display_name);
-			}
+			let providerId = this._kernelDisplayNameToNotebookProviderIds.get(this._defaultKernel.display_name);
 			if (providerId) {
 				if (this._providerId !== providerId) {
 					this._providerId = providerId;
@@ -699,7 +691,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._tags;
 	}
 
-	public get languageInfo(): nb.ILanguageInfo {
+	public get languageInfo(): nb.ILanguageInfo | undefined {
 		return this._defaultLanguageInfo;
 	}
 
@@ -853,7 +845,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				newConnection = this._activeConnection;
 			}
 
-			if (newConnection && this._activeClientSession) {
+			if (newConnection) {
 				if (newConnection.serverCapabilities?.notebookKernelAlias) {
 					this._currentKernelAlias = newConnection.serverCapabilities.notebookKernelAlias;
 					let sqlConnectionProvider = this._kernelDisplayNameToConnectionProviderIds.get('SQL');
