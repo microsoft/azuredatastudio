@@ -83,7 +83,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	public $setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void> {
 		let dialog = this._dialogs.get(handle);
 		if (!dialog) {
-			dialog = new Dialog(details.title);
+			dialog = new Dialog(details.title, details.width);
 			let okButton = this.getButton(details.okButton);
 			let cancelButton = this.getButton(details.cancelButton);
 			dialog.okButton = okButton;
@@ -91,10 +91,11 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			dialog.onValidityChanged(valid => this._proxy.$onPanelValidityChanged(handle, valid));
 			dialog.registerCloseValidator(() => this.validateDialogClose(handle));
 			this._dialogs.set(handle, dialog);
+		} else {
+			dialog.title = details.title;
+			dialog.width = details.width;
 		}
 
-		dialog.title = details.title;
-		dialog.width = details.width;
 		if (details.content && typeof details.content !== 'string') {
 			dialog.content = details.content.map(tabHandle => this.getTab(tabHandle));
 		} else {
