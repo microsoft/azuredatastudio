@@ -3030,67 +3030,6 @@
 					"flags": ""
 				},
 				{
-					"extensionId": "63",
-					"extensionName": "arcdeployment",
-					"displayName": "Azure Arc deployment (deprecated)",
-					"shortDescription": "Provides a notebook-based experience to deploy resources on Azure Arc",
-					"publisher": {
-						"displayName": "Microsoft",
-						"publisherId": "Microsoft",
-						"publisherName": "Microsoft"
-					},
-					"versions": [
-						{
-							"version": "0.3.2",
-							"lastUpdated": "6/29/2020",
-							"assetUri": "",
-							"fallbackAssetUri": "fallbackAssetUri",
-							"files": [
-								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arcdeployment/arcdeployment-0.3.2.vsix"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arcdeployment/content/extension.png"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arcdeployment/content/0.3.2/README.md"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arcdeployment/content/0.3.2/package.json"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arcdeployment/content/0.3.2/LICENSE.txt"
-								}
-							],
-							"properties": [
-								{
-									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-									"value": ""
-								},
-								{
-									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.19.0"
-								},
-								{
-									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.33.1"
-								},
-								{
-									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://azure.microsoft.com/services/azure-arc/hybrid-data-services"
-								}
-							]
-						}
-					],
-					"statistics": [],
-					"flags": "preview"
-				},
-				{
 					"extensionId": "64",
 					"extensionName": "qpi",
 					"displayName": "Query Performance Insight",
@@ -3834,7 +3773,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 65
+							"count": 64
 						}
 					]
 				}
