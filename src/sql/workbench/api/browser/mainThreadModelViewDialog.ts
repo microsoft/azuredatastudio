@@ -165,13 +165,13 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	public $setWizardDetails(handle: number, details: IModelViewWizardDetails): Thenable<void> {
 		let wizard = this._wizards.get(handle);
 		if (!wizard) {
-			wizard = new Wizard(details.title);
+			wizard = new Wizard(details.title,
+				this.getButton(details.doneButton),
+				this.getButton(details.cancelButton),
+				this.getButton(details.nextButton),
+				this.getButton(details.backButton),
+				this.getButton(details.generateScriptButton));
 			wizard.width = details.width;
-			wizard.backButton = this.getButton(details.backButton);
-			wizard.cancelButton = this.getButton(details.cancelButton);
-			wizard.generateScriptButton = this.getButton(details.generateScriptButton);
-			wizard.doneButton = this.getButton(details.doneButton);
-			wizard.nextButton = this.getButton(details.nextButton);
 			wizard.onPageChanged(info => this._proxy.$onWizardPageChanged(handle, info));
 			wizard.onPageAdded(() => this.handleWizardPageAddedOrRemoved(handle));
 			wizard.onPageRemoved(() => this.handleWizardPageAddedOrRemoved(handle));
