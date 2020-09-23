@@ -278,6 +278,5 @@ declare module 'azdata-ext' {
 		azdata: IAzdataApi;
 		isEulaAccepted(): boolean;
 		promptForEula(onError?: boolean): Promise<boolean>
-		unAcceptEula(): Promise<void>;
 	}
 }
