@@ -165,10 +165,12 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "sqlDatabaseProjects.new"
+          "command": "sqlDatabaseProjects.new",
+          "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.open"
+          "command": "sqlDatabaseProjects.open",
+          "when": "false"
         },
         {
           "command": "sqlDatabaseProjects.close",
