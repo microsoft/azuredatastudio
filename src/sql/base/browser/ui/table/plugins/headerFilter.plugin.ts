@@ -337,90 +337,71 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	}
 
 	private getFilterValues(dataView: Slick.DataProvider<T>, column: Slick.Column<T>): Array<any> {
-		const seen: Array<string> = [];
-		for (let i = 0; i < dataView.getLength(); i++) {
-			const value = dataView.getItem(i)[column.field!];
+		const seen: Set<string> = new Set();
+		dataView.getItems().forEach(items => {
+			const value = items[column.field!];
 			if (value instanceof Array) {
-				for (let item = 0; item < value.length; item++) {
-					if (!seen.some(x => x === value[item])) {
-						seen.push(value[item]);
-					}
-				}
+				value.forEach(v => seen.add(v));
 			} else {
-				if (!seen.some(x => x === value)) {
-					seen.push(value);
-				}
+				seen.add(value);
 			}
-		}
-		return seen;
+		});
+
+		return Array.from(seen);
 	}
 
 	private getFilterValuesByInput($input: JQuery<HTMLElement>): Array<string> {
 		const column = $input.data('column'),
 			filter = $input.val() as string,
 			dataView = this.grid.getData() as Slick.DataProvider<T>,
-			seen: Array<any> = [];
+			seen: Set<any> = new Set();
 
-		for (let i = 0; i < dataView.getLength(); i++) {
-			const value = dataView.getItem(i)[column.field];
+		dataView.getItems().forEach(item => {
+			const value = item[column.field];
 			if (value instanceof Array) {
 				if (filter.length > 0) {
 					const itemValue = !value ? [] : value;
 					const lowercaseFilter = filter.toString().toLowerCase();
-					const lowercaseVals = itemValue.map(v => v.toLowerCase());
-					for (let valIdx = 0; valIdx < value.length; valIdx++) {
-						if (!seen.some(x => x === value[valIdx]) && lowercaseVals[valIdx].indexOf(lowercaseFilter) > -1) {
-							seen.push(value[valIdx]);
+					itemValue.map(v => v.toLowerCase()).forEach((lowerVal, index) => {
+						if (lowerVal.indexOf(lowercaseFilter) > -1) {
+							seen.add(value[index]);
 						}
-					}
+					});
+				} else {
+					value.forEach(v => seen.add(v));
 				}
-				else {
-					for (let item = 0; item < value.length; item++) {
-						if (!seen.some(x => x === value[item])) {
-							seen.push(value[item]);
-						}
-					}
-				}
-
 			} else {
 				if (filter.length > 0) {
 					const itemValue = !value ? '' : value;
 					const lowercaseFilter = filter.toString().toLowerCase();
 					const lowercaseVal = itemValue.toString().toLowerCase();
 
-					if (!seen.some(x => x === value) && lowercaseVal.indexOf(lowercaseFilter) > -1) {
-						seen.push(value);
+					if (lowercaseVal.indexOf(lowercaseFilter) > -1) {
+						seen.add(value);
 					}
-				}
-				else {
-					if (!seen.some(x => x === value)) {
-						seen.push(value);
-					}
+
+				} else {
+					seen.add(value);
 				}
 			}
-		}
+		});
 
-		return seen.sort((v) => { return v; });
+		return Array.from(seen).sort((v) => { return v; });
 	}
 
 	private getAllFilterValues(data: Array<Slick.SlickData>, column: Slick.Column<T>) {
-		const seen: Array<any> = [];
-		for (let i = 0; i < data.length; i++) {
-			const value = data[i][column.field!];
-			if (value instanceof Array) {
-				for (let item = 0; item < value.length; item++) {
-					if (!seen.some(x => x === value[item])) {
-						seen.push(value[item]);
-					}
-				}
-			} else {
-				if (!seen.some(x => x === value)) {
-					seen.push(value);
-				}
-			}
-		}
+		const seen: Set<any> = new Set();
 
-		return seen.sort((v) => { return v; });
+		data.forEach(items => {
+			const value = items[column.field!];
+			if (value instanceof Array) {
+				value.forEach(v => seen.add(v));
+			} else {
+				seen.add(value);
+			}
+		});
+
+		return Array.from(seen).sort((v) => { return v; });
 	}
 
 	private handleMenuItemClick(e: JQuery.Event<HTMLElement, null>, command: string, columnDef: Slick.Column<T>) {

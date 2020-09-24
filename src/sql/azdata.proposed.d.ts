@@ -693,13 +693,13 @@ declare module 'azdata' {
 		field?: string
 	}
 
-	export interface TableComponentProperties extends ComponentProperties {
+	export interface TableComponentProperties {
 		headerFilter?: boolean,
 		rowDetails?: RowDetailsOptions,
 		dataObjects?: any[]
 	}
 
-	export interface TableComponent extends Component, TableComponentProperties {
+	export interface TableComponent {
 		appendData(data: any[]);
 	}
 }
