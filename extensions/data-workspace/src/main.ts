@@ -8,9 +8,10 @@ import * as path from 'path';
 import { WorkspaceTreeDataProvider } from './common/workspaceTreeDataProvider';
 import { WorkspaceService } from './services/workspaceService';
 import { AllProjectTypes, SelectProjectFileActionName } from './common/constants';
-import { WorkspaceTreeItem } from 'dataworkspace';
+import { WorkspaceTreeItem, IExtension } from 'dataworkspace';
+import { DataWorkspaceExtension } from './common/dataWorkspaceExtension';
 
-export function activate(context: vscode.ExtensionContext): void {
+export function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const workspaceService = new WorkspaceService();
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
@@ -50,6 +51,9 @@ export function activate(context: vscode.ExtensionContext): void {
 	context.subscriptions.push(vscode.commands.registerCommand('projects.removeProject', async (treeItem: WorkspaceTreeItem) => {
 		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
 	}));
+
+	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
+	return Promise.resolve(dataWorkspaceExtension);
 }
 
 export function deactivate(): void {
