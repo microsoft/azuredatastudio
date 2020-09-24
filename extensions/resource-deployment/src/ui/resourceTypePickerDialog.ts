@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolStatus } from '../interfaces';
+import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolRequirementInfo, ToolStatus } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { getErrorMessage } from '../utils';
@@ -241,7 +241,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
 			this._tools = [];
 		} else {
-			this._tools = this.toolRequirements.map(toolReq => this.toolsService.getToolByName(toolReq.name)!);
+			this._tools = this.toolRequirements.map((toolReq: ToolRequirementInfo) => this.toolsService.getToolByName(toolReq.name)!);
 			this._toolsLoadingComponent.loading = true;
 			this._dialogObject.okButton.enabled = false;
 			let toolsLoadingErrors: string[] = [];
@@ -264,7 +264,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		const toolsToAutoInstall: ITool[] = [];
 		let messages: string[] = toolsLoadingErrors!;
 		let erroredOrFailedTool: boolean = false;
-		this._toolsTable.data = this.toolRequirements.map(toolRequirement => {
+		this._toolsTable.data = this.toolRequirements.map((toolRequirement: ToolRequirementInfo) => {
 			const tool = this.toolsService.getToolByName(toolRequirement.name)!;
 			// subscribe to onUpdateData event of the tool.
 			this._toDispose.push(tool.onDidUpdateData((t: ITool) => {
@@ -381,7 +381,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 	protected async onComplete(): Promise<void> {
 		this.toolsService.toolsForCurrentProvider = this._tools;
-		this.resourceTypeService.startDeployment(this.getCurrentProvider());
+		this.resourceTypeService.startDeployment(this.getCurrentProvider(), this._selectedResourceType);
 	}
 
 	protected updateToolsDisplayTableData(tool: ITool) {

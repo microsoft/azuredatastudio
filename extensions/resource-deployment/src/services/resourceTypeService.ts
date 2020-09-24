@@ -13,7 +13,7 @@ import * as nls from 'vscode-nls';
 import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
-import { ResourceType, ResourceTypeOption, NotebookPathInfo, DeploymentProvider, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookWizardDeploymentProvider, NotebookInfo, instanceOfAzureSQLVMDeploymentProvider } from '../interfaces';
+import { ResourceType, ResourceTypeOption, NotebookPathInfo, DeploymentProvider, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookWizardDeploymentProvider, NotebookInfo, instanceOfAzureSQLVMDeploymentProvider, instanceOfEulaWizardDeploymentProvider, ToolRequirementInfo } from '../interfaces';
 import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
 import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
 
@@ -21,12 +21,13 @@ import { KubeService } from './kubeService';
 import { AzdataService } from './azdataService';
 import { NotebookWizard } from '../ui/notebookWizard/notebookWizard';
 import { DeployAzureSQLVMWizard } from '../ui/deployAzureSQLVMWizard/deployAzureSQLVMWizard';
+import { EulaWizard } from '../ui/eulaWizard/eulaWizard';
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
-	startDeployment(provider: DeploymentProvider): void;
+	startDeployment(provider: DeploymentProvider, resourceType: ResourceType): void;
 }
 
 export class ResourceTypeService implements IResourceTypeService {
@@ -187,12 +188,13 @@ export class ResourceTypeService implements IResourceTypeService {
 					&& !instanceOfDownloadDeploymentProvider(provider)
 					&& !instanceOfWebPageDeploymentProvider(provider)
 					&& !instanceOfCommandDeploymentProvider(provider)
-					&& !instanceOfAzureSQLVMDeploymentProvider(provider)) {
+					&& !instanceOfAzureSQLVMDeploymentProvider(provider)
+					&& !instanceOfEulaWizardDeploymentProvider(provider)) {
 					errorMessages.push(`No deployment method defined for the provider, ${providerPositionInfo}`);
 				}
 
 				if (provider.requiredTools && provider.requiredTools.length > 0) {
-					provider.requiredTools.forEach(tool => {
+					provider.requiredTools.forEach((tool: ToolRequirementInfo) => {
 						if (!this.toolsService.getToolByName(tool.name)) {
 							errorMessages.push(`The tool is not supported: ${tool.name}, ${providerPositionInfo} `);
 						}
@@ -245,7 +247,7 @@ export class ResourceTypeService implements IResourceTypeService {
 		return undefined;
 	}
 
-	public startDeployment(provider: DeploymentProvider): void {
+	public startDeployment(provider: DeploymentProvider, resourceType?: ResourceType): void {
 		const self = this;
 		if (instanceOfWizardDeploymentProvider(provider)) {
 			const wizard = new DeployClusterWizard(provider.bdcWizard, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService);
@@ -282,6 +284,9 @@ export class ResourceTypeService implements IResourceTypeService {
 			vscode.commands.executeCommand(provider.command);
 		} else if (instanceOfAzureSQLVMDeploymentProvider(provider)) {
 			const wizard = new DeployAzureSQLVMWizard(provider.azureSQLVMWizard, this.notebookService, this.toolsService);
+			wizard.open();
+		} else if (instanceOfEulaWizardDeploymentProvider(provider)) {
+			const wizard = new EulaWizard(resourceType, provider, this.notebookService, this.platformService, this.toolsService);
 			wizard.open();
 		}
 	}

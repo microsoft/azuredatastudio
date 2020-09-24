@@ -71,6 +71,10 @@ export interface AzureSQLVMDeploymentProvider extends DeploymentProviderBase {
 	azureSQLVMWizard: AzureSQLVMWizardInfo;
 }
 
+export interface EulaWizardDeploymentProvider extends DeploymentProviderBase {
+	eulaWizard: NotebookWizardInfo;
+}
+
 export function instanceOfDialogDeploymentProvider(obj: any): obj is DialogDeploymentProvider {
 	return obj && 'dialog' in obj;
 }
@@ -103,12 +107,16 @@ export function instanceOfAzureSQLVMDeploymentProvider(obj: any): obj is AzureSQ
 	return obj && 'azureSQLVMWizard' in obj;
 }
 
+export function instanceOfEulaWizardDeploymentProvider(obj: any): obj is EulaWizardDeploymentProvider {
+	return obj && 'eulaWizard' in obj;
+}
+
 export interface DeploymentProviderBase {
 	requiredTools: ToolRequirementInfo[];
 	when: string;
 }
 
-export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider | AzureSQLVMDeploymentProvider;
+export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider | AzureSQLVMDeploymentProvider | EulaWizardDeploymentProvider;
 
 export interface BdcWizardInfo {
 	notebook: string | NotebookPathInfo;

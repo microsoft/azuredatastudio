@@ -1,0 +1,153 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
+import { INotebookService, Notebook } from '../../services/notebookService';
+import { IToolsService } from '../../services/toolsService';
+import { Model } from '../model';
+import { InputComponents, setModelValues } from '../modelViewUtils';
+import { WizardBase } from '../wizardBase';
+import { DeploymentProvider, DeploymentType, EulaWizardDeploymentProvider, instanceOfEulaWizardDeploymentProvider, NotebookWizardInfo, ResourceType } from '../../interfaces';
+import { IPlatformService } from '../../services/platformService';
+import { NotebookWizardAutoSummaryPage } from './eulaWizardAutoSummaryPage';
+import { EulaWizardPage } from './eulaWizardPage';
+import { EulaInformation, EulaSettingsPage } from './eulaSettingsPage';
+//import { EulaSettingsPage } from './eulaSettingsPage';
+
+const localize = nls.loadMessageBundle();
+
+export class EulaWizard extends WizardBase<EulaWizard, EulaWizardPage, Model> {
+
+	private _inputComponents: InputComponents = {};
+
+	public get notebookService(): INotebookService {
+		return this._notebookService;
+	}
+
+	public get platformService(): IPlatformService {
+		return this._platformService;
+	}
+
+	public get wizardInfo(): NotebookWizardInfo {
+		return this._provider.eulaWizard;
+	}
+
+	public get provider(): EulaWizardDeploymentProvider {
+		return this._provider;
+	}
+
+	public get inputComponents(): InputComponents {
+		return this._inputComponents;
+	}
+
+	constructor(private _resourceType: ResourceType | undefined, private _provider: EulaWizardDeploymentProvider, private _notebookService: INotebookService, private _platformService: IPlatformService, toolsService: IToolsService, private _settingsPreset?: EulaInformation) {
+		super(_provider.eulaWizard.title, new Model(), toolsService);
+		if (this._provider.eulaWizard.codeCellInsertionPosition === undefined) {
+			this._provider.eulaWizard.codeCellInsertionPosition = 0;
+		}
+		this.wizardObject.doneButton.label = _provider.eulaWizard.actionText || this.wizardObject.doneButton.label;
+	}
+
+	public get deploymentType(): DeploymentType | undefined {
+		return this._provider.eulaWizard.type;
+	}
+
+	public get resourceType(): ResourceType {
+		return this._resourceType!;
+	}
+
+	protected initialize(): void {
+		this.setPages(this.getPages());
+		this.wizardObject.generateScriptButton.hidden = true;
+		this.wizardInfo.actionText = this.wizardInfo.actionText || localize('eulaWizard.ScriptToNotebook', "Script to Notebook");
+		this.wizardObject.doneButton.label = this.wizardInfo.actionText;
+	}
+
+	protected onCancel(): void {
+	}
+
+	protected async onOk(): Promise<void> {
+		await setModelValues(this.inputComponents, this.model);
+		const env: NodeJS.ProcessEnv = {};
+		this.model.setEnvironmentVariables(env, (varName) => {
+			const isPassword = !!this.inputComponents[varName]?.isPassword;
+			return isPassword;
+		});
+		const notebook: Notebook = await this.notebookService.getNotebook(this.wizardInfo.notebook);
+		// generate python code statements for all variables captured by the wizard
+		const statements = this.model.getCodeCellContentForNotebook(
+			this.toolsService.toolsForCurrentProvider,
+			(varName) => {
+				const isPassword = !!this.inputComponents[varName]?.isPassword;
+				return !isPassword;
+			}
+		);
+		// insert generated code statements into the notebook.
+		notebook.cells.splice(
+			this.wizardInfo.codeCellInsertionPosition ?? 0,
+			0,
+			{
+				cell_type: 'code',
+				source: statements,
+				metadata: {},
+				outputs: [],
+				execution_count: 0
+			}
+		);
+		try {
+			if (this.wizardInfo.runNotebook) {
+				this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName, notebook, 'deploy', this.platformService, env);
+			} else {
+				Object.assign(process.env, env);
+				const notebookPath = this.notebookService.getNotebookPath(this.wizardInfo.notebook);
+				await this.notebookService.launchNotebookWithContent(notebookPath, JSON.stringify(notebook, undefined, 4));
+			}
+		} catch (error) {
+			vscode.window.showErrorMessage(error);
+		}
+	}
+
+	private getPages(): EulaWizardPage[] {
+		const pages: EulaWizardPage[] = [];
+
+		if (this._settingsPreset) {
+			pages.push(new EulaSettingsPage(this, this._settingsPreset));
+		} else {
+			pages.push(new EulaSettingsPage(this));
+		}
+
+
+		if (instanceOfEulaWizardDeploymentProvider(this.provider)) {
+			for (let pageIndex: number = 0; pageIndex < this.wizardInfo.pages.length; pageIndex++) {
+				if (this.wizardInfo.pages[pageIndex].isSummaryPage && this.wizardInfo.isSummaryPageAutoGenerated) {
+					// If we are auto-generating the summary page
+					pages.push(new NotebookWizardAutoSummaryPage(this, pageIndex));
+				} else {
+					pages.push(new EulaWizardPage(this, pageIndex));
+				}
+			}
+		}
+
+
+		return pages;
+	}
+
+	public async changeProvider(provider: DeploymentProvider, settingsPresets: EulaInformation): Promise<void> {
+
+		if (instanceOfEulaWizardDeploymentProvider(provider)) {
+			let wizard = new EulaWizard(
+				this._resourceType,
+				provider,
+				this.notebookService,
+				this.platformService,
+				this.toolsService,
+				settingsPresets
+			);
+
+			await wizard.open();
+			await this.wizardObject.close();
+		}
+	}
+}
