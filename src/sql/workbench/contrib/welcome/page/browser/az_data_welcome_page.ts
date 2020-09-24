@@ -6,6 +6,8 @@
 import { escape } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
 
+const previewImgDescription = escape(localize('welcomePage.previewBody', "This feature page is in preview. Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."));
+
 export default () => `
 <div class="welcomePageContainer">
 	<div class="welcomePage">
@@ -13,21 +15,7 @@ export default () => `
 			<div class="gradient">
 				<div class="ads-homepage-section tool-tip">
 					<div class="tool-tip-container" id="tool-tip-container-wide">
-						<a role="button" class="ads-welcome-page-link" aria-describedby="tooltip-text-wide" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
-						<span role="tooltip" id="tooltip-text-wide" class="tool-tip-text" aria-hidden="true">
-							<h3 tabindex="0" class="preview-tooltip-header">${escape(localize('welcomePage.previewHeader', "This page is in preview"))}</h3>
-							<p tabindex="0" class="preview-tooltip-body">${escape(localize('welcomePage.previewBody', "Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."))}</p>
-						</span>
-					</div>
-					<div class="tool-tip-container" id="tool-tip-container-narrow">
-						<a role="button" class="ads-welcome-page-link" aria-haspopup="true" class="preview-link" tabindex="0" id="preview-link-narrow" name="previewNarrow"><p>Preview</p><i class="icon-info themed-icon"></i></a>
-					</div>
-				</div>
-				<div id="preview-modal" class="modal" aria-modal="true" aria-hidden="true">
-					<div class="modal-content">
-						<span class="close-icon">x</span>
-						<h3 tabindex="0" class="preview-modal-header">${escape(localize('welcomePage.previewHeader', "This page is in preview"))}</h3>
-						<p tabindex="0" class="preview-modal-body">${escape(localize('welcomePage.previewBody', "Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."))}</p>
+						<a role="img" tabindex=0 class="ads-welcome-page-link" aria-label="${previewImgDescription}" title="${previewImgDescription}" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
 					</div>
 				</div>
 				<div class="ads-homepage-section section header hero">

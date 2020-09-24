@@ -50,7 +50,6 @@ import { GuidedTour } from 'sql/workbench/contrib/welcome/page/browser/gettingSt
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
@@ -330,8 +329,6 @@ class WelcomePage extends Disposable {
 		}));
 		this.createButtons();
 		this.createDropDown();
-		this.createWidePreviewToolTip();
-		this.createPreviewModal();
 	}
 
 	private createButtons(): void {
@@ -455,60 +452,6 @@ class WelcomePage extends Disposable {
 		}, 3000);
 	}
 
-	private createWidePreviewToolTip(): void {
-		const container = document.querySelector('.ads-homepage .tool-tip');
-		const previewLink = container.querySelector('#tool-tip-container-wide') as HTMLElement;
-		const tooltip = container.querySelector('#tooltip-text-wide') as HTMLElement;
-		const previewModalBody = container.querySelector('.preview-tooltip-body') as HTMLElement;
-		const previewModalHeader = container.querySelector('.preview-tooltip-header') as HTMLElement;
-		addStandardDisposableListener(previewLink, 'mouseover', () => {
-			tooltip.setAttribute('aria-hidden', 'true');
-			tooltip.classList.toggle('show');
-		});
-		addStandardDisposableListener(previewLink, 'mouseout', () => {
-			tooltip.setAttribute('aria-hidden', 'false');
-			tooltip.classList.remove('show');
-		});
-		addStandardDisposableListener(previewLink, 'keydown', event => {
-			if (event.equals(KeyCode.Escape)) {
-				if (tooltip.classList.contains('show')) {
-					tooltip.setAttribute('aria-hidden', 'true');
-					tooltip.classList.remove('show');
-				}
-			}
-			else if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
-				tooltip.setAttribute('aria-hidden', 'false');
-				tooltip.classList.toggle('show');
-				previewModalHeader.focus();
-			}
-		});
-		addStandardDisposableListener(tooltip, 'keydown', event => {
-			if (event.equals(KeyCode.Escape)) {
-				if (tooltip.classList.contains('show')) {
-					tooltip.setAttribute('aria-hidden', 'true');
-					tooltip.classList.remove('show');
-				}
-			}
-			else if (event.equals(KeyCode.Tab)) {
-				EventHelper.stop(event);
-				if (event.target === previewModalBody) {
-					previewModalHeader.focus();
-				} else {
-					previewModalBody.focus();
-				}
-			}
-		});
-
-		window.addEventListener('click', (event) => {
-			const target = event.target as HTMLTextAreaElement;
-			if (!target.matches('.tooltip')) {
-				if (tooltip.classList.contains('show')) {
-					tooltip.classList.remove('show');
-				}
-			}
-		});
-	}
-
 	private createDropDown(): void {
 		const container = document.querySelector('.ads-homepage .hero');
 		const dropdownBtn = container.querySelector('#dropdown-btn') as HTMLElement;
@@ -572,66 +515,6 @@ class WelcomePage extends Disposable {
 				} else {
 					const moveNext = <HTMLElement>container.querySelector('.move:focus').parentElement.nextElementSibling.children[0] as HTMLElement;
 					moveNext.focus();
-				}
-			}
-		});
-	}
-
-	private createPreviewModal(): void {
-		const container = document.querySelector('.ads-homepage');
-		const modal = container.querySelector('#preview-modal') as HTMLElement;
-		const btn = container.querySelector('#tool-tip-container-narrow') as HTMLElement;
-		const span = container.querySelector('.close-icon') as HTMLElement;
-		const previewModalHeader = container.querySelector('.preview-modal-header') as HTMLElement;
-		btn.addEventListener('click', function () {
-			modal.classList.toggle('show');
-		});
-
-		span.addEventListener('click', function () {
-			modal.classList.remove('show');
-		});
-		window.addEventListener('click', (e: MouseEvent) => {
-			if (e.target === modal && modal.classList.contains('show')) {
-				modal.classList.remove('show');
-			}
-		});
-		btn.addEventListener('keydown', (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
-			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
-				modal.classList.toggle('show');
-				modal.setAttribute('aria-hidden', 'false');
-				previewModalHeader.focus();
-			}
-			if (event.equals(KeyCode.Escape)) {
-				if (modal.classList.contains('show')) {
-					modal.setAttribute('aria-hidden', 'true');
-					modal.classList.remove('show');
-				}
-			}
-		});
-
-		window.addEventListener('keydown', (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
-			const target = e.target as HTMLTextAreaElement;
-			if (!target.matches('.modal') && event.equals(KeyCode.Escape)) {
-				if (modal.classList.contains('show')) {
-					modal.setAttribute('aria-hidden', 'true');
-					modal.classList.remove('show');
-				}
-			}
-		});
-		modal.addEventListener('keydown', function (e: KeyboardEvent) {
-			const previewModalBody = container.querySelector('.preview-modal-body') as HTMLElement;
-			const previewModalHeader = container.querySelector('.preview-modal-header') as HTMLElement;
-			let event = new StandardKeyboardEvent(e);
-
-			if (event.equals(KeyCode.Tab)) {
-				e.preventDefault();
-				if (e.target === previewModalBody) {
-					previewModalHeader.focus();
-
-				} else {
-					previewModalBody.focus();
 				}
 			}
 		});
