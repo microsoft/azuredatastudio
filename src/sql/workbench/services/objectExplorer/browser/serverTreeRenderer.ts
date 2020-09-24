@@ -171,8 +171,6 @@ export class ServerTreeRenderer implements IRenderer {
 		}
 
 		let iconId = this._connectionManagementService.getConnectionIconId(connection.id);
-		if (!iconId) { return undefined; }
-
 		let providerProperties = this._connectionManagementService.getProviderProperties(connection.providerName);
 		if (!providerProperties) { return undefined; }
 
@@ -180,7 +178,7 @@ export class ServerTreeRenderer implements IRenderer {
 		let pathConfig: URI | IconPath | { id: string, path: IconPath }[] | undefined = providerProperties.iconPath;
 		if (Array.isArray(pathConfig)) {
 			for (const e of pathConfig) {
-				if (!e.id || e.id === iconId) {
+				if (!e.id || e.id === iconId || iconId === undefined) {
 					iconPath = e.path;
 					connection['iconPath'] = iconPath;
 					break;
@@ -209,18 +207,20 @@ export class ServerTreeRenderer implements IRenderer {
 	}
 
 	private renderConnection(connection: ConnectionProfile, templateData: IConnectionTemplateData): void {
+
+		let isConnected = this._connectionManagementService.isConnected(undefined, connection);
 		if (!this._isCompact) {
-			let iconPath = this.getIconPath(connection);
-			if (this._connectionManagementService.isConnected(undefined, connection)) {
+			if (isConnected) {
 				templateData.icon.classList.remove('disconnected');
 				templateData.icon.classList.add('connected');
-				this.renderServerIcon(templateData.icon, iconPath, true);
 			} else {
 				templateData.icon.classList.remove('connected');
 				templateData.icon.classList.add('disconnected');
-				this.renderServerIcon(templateData.icon, iconPath, false);
 			}
 		}
+
+		let iconPath = this.getIconPath(connection);
+		this.renderServerIcon(templateData.icon, iconPath, isConnected);
 
 		let label = connection.title;
 		if (!connection.isConnectionOptionsValid) {
