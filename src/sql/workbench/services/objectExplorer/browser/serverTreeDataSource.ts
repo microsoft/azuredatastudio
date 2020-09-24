@@ -29,8 +29,8 @@ export class ServerTreeDataSource implements IDataSource {
 	 * Returns the unique identifier of the given element.
 	 * No more than one element may use a given identifier.
 	 */
-	public getId(tree: ITree, element: any): string {
-		return element.id;
+	public getId(tree: ITree, element?: any): string {
+		return element?.id || '';
 	}
 
 	/**
