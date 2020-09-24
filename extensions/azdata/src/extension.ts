@@ -7,6 +7,7 @@ import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { checkAndInstallAzdata, checkAndUpdateAzdata, findAzdata, IAzdataTool, promptForEula } from './azdata';
 import Logger from './common/logger';
+import { NoAzdataError } from './common/utils';
 import * as constants from './constants';
 import * as loc from './localizedConstants';
 
@@ -31,21 +32,21 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 	eulaAccepted = !!context.globalState.get<boolean>(constants.eulaAccepted); // fetch eula acceptance state from memento
 	await vscode.commands.executeCommand('setContext', constants.eulaAccepted, eulaAccepted); // set a context key for current value of eulaAccepted state retrieved from memento so that command for accepting eula is available/unavailable in commandPalette appropriately.
 	Logger.log(loc.eulaAcceptedStateOnStartup(eulaAccepted));
-	if (!eulaAccepted) {
-		// Don't block on this since we want extension to finish activating without requiring user actions.
-		// If EULA has not been accepted then we will check again while executing azdata commands.
-		promptForEula(context.globalState)
-			.then(async (userResponse: boolean) => {
-				eulaAccepted = userResponse;
-			})
-			.catch((err) => console.log(err));
-	}
 
 	// Don't block on this since we want the extension to finish activating without needing user input
 	checkAndInstallAzdata() // install if not installed and user wants it.
 		.then(async azdataTool => {
 			localAzdata = azdataTool;
 			if (localAzdata !== undefined) {
+				if (!eulaAccepted) {
+					// Don't block on this since we want extension to finish activating without requiring user actions.
+					// If EULA has not been accepted then we will check again while executing azdata commands.
+					promptForEula(context.globalState)
+						.then(async (userResponse: boolean) => {
+							eulaAccepted = userResponse;
+						})
+						.catch((err) => console.log(err));
+				}
 				try {
 					//update if available and user wants it.
 					if (await checkAndUpdateAzdata(localAzdata)) { // if an update was performed
@@ -59,6 +60,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 
 	return {
 		isEulaAccepted: () => !!context.globalState.get<boolean>(constants.eulaAccepted),
+		promptForEula: (onError: boolean = true): Promise<boolean> => promptForEula(context.globalState, true /* userRequested */, onError),
 		azdata: {
 			arc: {
 				dc: {
@@ -166,7 +168,7 @@ function throwIfNoAzdataOrEulaNotAccepted(): void {
 function throwIfNoAzdata() {
 	if (!localAzdata) {
 		Logger.log(loc.noAzdata);
-		throw new Error(loc.noAzdata);
+		throw new NoAzdataError();
 	}
 }
 

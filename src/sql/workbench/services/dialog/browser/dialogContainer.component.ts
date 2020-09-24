@@ -48,7 +48,7 @@ export class DialogContainer implements AfterViewInit {
 	public _dialogPane: DialogPane;
 
 	public modelViewId: string;
-	@ViewChild(ModelViewContent) private _modelViewContent: ModelViewContent;
+	@ViewChild(ModelViewContent) private _modelViewContent!: ModelViewContent;
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,

@@ -513,7 +513,13 @@ declare module 'azdata' {
 			selectTab(id: string): void;
 		}
 
-		export function createModelViewDashboard(title: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
+		/**
+		 *
+		 * @param title The title displayed in the editor tab for the dashboard
+		 * @param name The name used to identify this dashboard in telemetry
+		 * @param options Options to configure the dashboard
+		 */
+		export function createModelViewDashboard(title: string, name?: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
 
 		export interface Dialog {
 			/**
@@ -523,6 +529,10 @@ declare module 'azdata' {
 		}
 
 		export interface Wizard {
+			/**
+			 * The name used to identify the wizard in telemetry
+			 */
+			name?: string;
 			/**
 			 * Width of the wizard
 			 */
@@ -542,9 +552,20 @@ declare module 'azdata' {
 		/**
 		 * Create a wizard with the given title and width
 		 * @param title The title of the wizard
+		 * @param name The name used to identify the wizard in telemetry
 		 * @param width The width of the wizard, default value is 'narrow'
 		 */
-		export function createWizard(title: string, width?: DialogWidth): Wizard;
+		export function createWizard(title: string, name?: string, width?: DialogWidth): Wizard;
+	}
+
+	export namespace workspace {
+		/**
+		 * Create a new ModelView editor
+		 * @param title The title shown in the editor tab
+		 * @param options Options to configure the editor
+		 * @param name The name used to identify the editor in telemetry
+		 */
+		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions, name?: string,): ModelViewEditor;
 	}
 
 	export interface DashboardTab extends Tab {

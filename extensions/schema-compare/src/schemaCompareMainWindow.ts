@@ -75,7 +75,7 @@ export class SchemaCompareMainWindow {
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Change] = loc.changeAction;
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Add] = loc.addAction;
 
-		this.editor = azdata.workspace.createModelViewEditor(loc.SchemaCompareLabel, { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName });
+		this.editor = azdata.workspace.createModelViewEditor(loc.SchemaCompareLabel, { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName }, 'SchemaCompareEditor');
 	}
 
 	// schema compare can get started with three contexts for the source:

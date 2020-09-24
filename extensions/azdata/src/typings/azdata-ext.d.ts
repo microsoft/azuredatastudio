@@ -16,6 +16,10 @@ declare module 'azdata-ext' {
 		name = 'Microsoft.azdata'
 	}
 
+	export interface ErrorWithLink extends Error {
+		messageWithLink: string;
+	}
+
 	export interface DcEndpointListResult {
 		description: string, // "Management Proxy"
 		endpoint: string, // "https://10.91.86.39:30777"
@@ -272,6 +276,19 @@ declare module 'azdata-ext' {
 
 	export interface IExtension {
 		azdata: IAzdataApi;
+
+		/**
+		 * returns true if AZDATA CLI EULA has been previously accepted by the user.
+		 */
 		isEulaAccepted(): boolean;
+
+		/**
+		 * Prompts user to accept EULA. Stores and returns the user response to EULA prompt.
+		 * @param requireUserAction - if the prompt is required to be acted upon by the user. This is typically 'true' when this method is called to address an Error when the EULA needs to be accepted to proceed.
+		 *
+		 * pre-requisite, the calling code has to ensure that the EULA has not yet been previously accepted by the user. The code can use @see isEulaAccepted() call to ascertain this.
+		 * returns true if the user accepted the EULA.
+		 */
+		promptForEula(requireUserAction?: boolean): Promise<boolean>
 	}
 }

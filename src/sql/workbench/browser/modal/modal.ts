@@ -392,12 +392,15 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Hides the modal and removes key listeners
 	 */
-	protected hide() {
+	protected hide(reason?: string) {
 		this._modalShowingContext.get()!.pop();
 		this._bodyContainer!.remove();
 		this.disposableStore.clear();
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogClosed)
-			.withAdditionalProperties({ name: this._name })
+			.withAdditionalProperties({
+				name: this._name,
+				reason: reason
+			})
 			.send();
 		this.restoreKeyboardFocus();
 	}

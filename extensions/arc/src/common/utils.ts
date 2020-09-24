@@ -189,8 +189,12 @@ export async function promptAndConfirmPassword(validate: (input: string) => stri
 /**
  * Gets the message to display for a given error object that may be a variety of types.
  * @param error The error object
+ * @param useMessageWithLink Whether to use the messageWithLink - if available
  */
-export function getErrorMessage(error: any): string {
+export function getErrorMessage(error: any, useMessageWithLink: boolean = false): string {
+	if (useMessageWithLink && error.messageWithLink) {
+		return error.messageWithLink;
+	}
 	return error.message ?? error;
 }
 

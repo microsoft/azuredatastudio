@@ -257,6 +257,10 @@ export class AddDatabaseReferenceDialog {
 			ariaLabel: constants.databaseProject
 		}).component();
 
+		this.projectDropdown.onValueChanged(() => {
+			this.setDefaultDatabaseValues();
+		});
+
 		// get projects in workspace
 		const workspaceFolders = vscode.workspace.workspaceFolders;
 		if (workspaceFolders?.length) {
@@ -429,7 +433,7 @@ export class AddDatabaseReferenceDialog {
 		switch (this.currentReferenceType) {
 			case ReferenceType.project: {
 				this.databaseNameTextbox!.value = <string>this.projectDropdown?.value;
-				this.databaseVariableTextbox!.value = `$(${this.projectDropdown?.value})`;
+				this.databaseVariableTextbox!.value = `${this.projectDropdown?.value}`;
 				break;
 			}
 			case ReferenceType.systemDb: {
@@ -439,7 +443,7 @@ export class AddDatabaseReferenceDialog {
 			case ReferenceType.dacpac: {
 				const dacpacName = this.dacpacTextbox!.value ? path.parse(this.dacpacTextbox!.value!).name : '';
 				this.databaseNameTextbox!.value = dacpacName;
-				this.databaseVariableTextbox!.value = dacpacName ? `$(${dacpacName})` : '';
+				this.databaseVariableTextbox!.value = dacpacName ? `${dacpacName}` : '';
 				break;
 			}
 		}
