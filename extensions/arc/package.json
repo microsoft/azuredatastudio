@@ -606,14 +606,6 @@
                           "required": true
                         },
                         {
-                          "label": "%arc.cores-limit.label%",
-                          "description": "%arc.sql.cores-limit.description%",
-                          "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
-                          "type": "number",
-                          "min": 1,
-                          "required": false
-                        },
-                        {
                           "label": "%arc.cores-request.label%",
                           "description": "%arc.sql.cores-request.description%",
                           "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
@@ -622,17 +614,25 @@
                           "required": false
                         },
                         {
-                          "label": "%arc.memory-limit.label%",
-                          "description": "%arc.sql.memory-limit.description%",
-                          "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
+                          "label": "%arc.cores-limit.label%",
+                          "description": "%arc.sql.cores-limit.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
                           "type": "number",
-                          "min": 2,
+                          "min": 1,
                           "required": false
                         },
                         {
                           "label": "%arc.memory-request.label%",
                           "description": "%arc.sql.memory-request.description%",
                           "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
+                          "type": "number",
+                          "min": 2,
+                          "required": false
+                        },
+                        {
+                          "label": "%arc.memory-limit.label%",
+                          "description": "%arc.sql.memory-limit.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
                           "type": "number",
                           "min": 2,
                           "required": false
