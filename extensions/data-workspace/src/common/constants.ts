@@ -13,3 +13,4 @@ export const UnknownProjectsErrorMessage = (projectFiles: string[]): string => {
 export const SelectProjectFileActionName = localize('SelectProjectFileActionName', "Select");
 export const AllProjectTypes = localize('AllProjectTypes', "All Project Types");
 
+export const projectsViewFocusCommand = 'dataworkspace.views.main.focus';

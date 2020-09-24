@@ -14,6 +14,7 @@ import * as templates from '../templates/templates';
 import * as newProjectTool from '../tools/newProjectTool';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as dataworkspace from 'dataworkspace';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
@@ -29,7 +30,6 @@ import { BuildHelper } from '../tools/buildHelper';
 import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
-import { WorkspaceTreeItem } from 'dataworkspace';
 
 /**
  * Controller for managing project lifecycle
@@ -176,7 +176,7 @@ export class ProjectsController {
 	 * @returns path of the built dacpac
 	 */
 	public async buildProject(project: Project): Promise<string>;
-	public async buildProject(context: Project | BaseProjectTreeItem | WorkspaceTreeItem): Promise<string | undefined> {
+	public async buildProject(context: Project | BaseProjectTreeItem | dataworkspace.WorkspaceTreeItem): Promise<string | undefined> {
 		const project: Project = this.getProjectFromContext(context);
 
 		// Check mssql extension for project dlls (tracking issue #10273)
@@ -552,7 +552,7 @@ export class ProjectsController {
 		}
 	}
 
-	private getProjectFromContext(context: Project | BaseProjectTreeItem | WorkspaceTreeItem) {
+	private getProjectFromContext(context: Project | BaseProjectTreeItem | dataworkspace.WorkspaceTreeItem) {
 		if ('element' in context) {
 			return context.element.project;
 		}
@@ -646,8 +646,10 @@ export class ProjectsController {
 
 			await project.addToProject(fileFolderList); // Add generated file structure to the project
 
-			vscode.commands.executeCommand(constants.addProjectCommand, vscode.Uri.file(newProjFilePath));
-			vscode.commands.executeCommand(constants.projectsViewFocusCommand);
+			// add project to workspace
+			const dataWorkspaceExtension = (<dataworkspace.IExtension>vscode.extensions.getExtension(dataworkspace.extension.name)?.exports);
+			dataWorkspaceExtension.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
+			dataWorkspaceExtension.focus();
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
