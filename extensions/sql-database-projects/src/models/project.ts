@@ -136,7 +136,11 @@ export class Project {
 
 				const path = utils.convertSlashesForSqlProj(this.getSystemDacpacUri(`${name}.dacpac`).fsPath);
 				if (path.includes(filepath)) {
-					this.databaseReferences.push(new SystemDatabaseReferenceProjectEntry(Uri.file(filepath), this.getSystemDacpacSsdtUri(`${name}.dacpac`), name, suppressMissingDependencies));
+					this.databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
+						Uri.file(filepath),
+						this.getSystemDacpacSsdtUri(`${name}.dacpac`),
+						name,
+						suppressMissingDependencies));
 				} else {
 					this.databaseReferences.push(new DacpacReferenceProjectEntry({
 						dacpacFileLocation: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),

@@ -394,7 +394,15 @@ export class ProjectsController {
 	public async delete(context: BaseProjectTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
 
-		const confirmationPrompt = context instanceof FolderNode ? constants.deleteConfirmationContents(context.friendlyName) : constants.deleteConfirmation(context.friendlyName);
+		let confirmationPrompt;
+		if (context instanceof DatabaseReferenceTreeItem) {
+			confirmationPrompt = constants.deleteReferenceConfirmation(context.friendlyName);
+		} else if (context instanceof FolderNode) {
+			confirmationPrompt = constants.deleteConfirmationContents(context.friendlyName);
+		} else {
+			confirmationPrompt = constants.deleteConfirmation(context.friendlyName);
+		}
+
 		const response = await vscode.window.showWarningMessage(confirmationPrompt, { modal: true }, constants.yesString);
 
 		if (response !== constants.yesString) {

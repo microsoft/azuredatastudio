@@ -260,9 +260,10 @@ describe('ProjectsController', function (): void {
 				const projTreeRoot = new ProjectRootTreeItem(proj);
 				should(proj.databaseReferences.length).equal(3, 'Should start with 3 database references');
 
-				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === constants.databaseReferencesNodeName)?.children.find(x => x.friendlyName === 'master')!);   // system db reference
-				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === constants.databaseReferencesNodeName)?.children.find(x => x.friendlyName === 'test2')!);    // dacpac reference
-				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === constants.databaseReferencesNodeName)?.children.find(x => x.friendlyName === 'project1')!); // project reference
+				const databaseReferenceNodeChildren = projTreeRoot.children.find(x => x.friendlyName === constants.databaseReferencesNodeName)?.children;
+				await projController.delete(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'master')!);   // system db reference
+				await projController.delete(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'test2')!);    // dacpac reference
+				await projController.delete(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'project1')!); // project reference
 
 				// confirm result
 				should(proj.databaseReferences.length).equal(0, 'All database references should have been deleted');
