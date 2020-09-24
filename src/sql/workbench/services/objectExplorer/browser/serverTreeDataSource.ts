@@ -30,6 +30,11 @@ export class ServerTreeDataSource implements IDataSource {
 	 * No more than one element may use a given identifier.
 	 */
 	public getId(tree: ITree, element?: any): string {
+		// Note there really shouldn't be any undefined elements in the tree, but the original implementation
+		// didn't do that correctly and since this is going to replaced by the async tree at some point just
+		// making it so we handle the undefined case here.
+		// This should be safe to do since the undefined element is only used when we want to clear the tree
+		// so it'll be the only "element" in the tree and thus there shouldn't be any duplicate ids
 		return element?.id || '';
 	}
 
