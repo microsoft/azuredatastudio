@@ -5,7 +5,7 @@
 
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities } from 'vscode-languageclient';
-import { Disposable, window, QuickPickOptions, QuickPickItem } from 'vscode';
+import { Disposable, window } from 'vscode';
 import { Telemetry } from './telemetry';
 import * as contracts from './contracts';
 import * as azdata from 'azdata';
@@ -77,20 +77,6 @@ export class AccountFeature implements StaticFeature {
 
 		return params;
 	}
-
-	static AccountQuickPickItem = class implements QuickPickItem {
-		account: azdata.Account;
-		label: string;
-		description?: string;
-		detail?: string;
-		picked?: boolean;
-		alwaysShow?: boolean;
-
-		constructor(account: azdata.Account) {
-			this.account = account;
-			this.label = account.displayInfo.displayName;
-		}
-	};
 }
 
 export class SerializationFeature extends SqlOpsFeature<undefined> {
