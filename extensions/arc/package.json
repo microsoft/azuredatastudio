@@ -530,7 +530,7 @@
               "generateSummaryPage": false,
               "pages": [
                 {
-                  "title": "",
+                  "title": "%arc.sql.wizard.page1.title%",
                   "labelWidth": "175px",
                   "inputWidth": "280px",
                   "sections": [
@@ -691,8 +691,8 @@
               "generateSummaryPage": false,
               "pages": [
                 {
-                  "title": "",
-                  "labelWidth": "175px",
+                  "title": "%arc.postgres.wizard.page1.title%",
+                  "labelWidth": "205px",
                   "inputWidth": "280px",
                   "sections": [
                     {
