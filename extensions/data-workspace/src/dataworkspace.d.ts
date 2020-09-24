@@ -27,7 +27,7 @@ declare module 'dataworkspace' {
 		/**
 		 * Change focus to Projects view
 		 */
-		focus(): void;
+		showProjectsView(): void;
 	}
 
 	/**

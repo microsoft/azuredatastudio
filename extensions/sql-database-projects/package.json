@@ -304,24 +304,14 @@
       "objectExplorer/item/context": [
         {
           "command": "sqlDatabaseProjects.createProjectFromDatabase",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
-          "group": "export"
-        },
-        {
-          "command": "sqlDatabaseProjects.createProjectFromDatabase",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
+          "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == MSSQL && mssql:engineedition != 11",
           "group": "export"
         }
       ],
       "dataExplorer/context": [
         {
           "command": "sqlDatabaseProjects.createProjectFromDatabase",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
-          "group": "export"
-        },
-        {
-          "command": "sqlDatabaseProjects.createProjectFromDatabase",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
+          "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == MSSQL && mssql:engineedition != 11",
           "group": "export"
         }
       ],

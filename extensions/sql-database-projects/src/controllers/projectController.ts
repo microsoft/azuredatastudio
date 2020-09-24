@@ -649,7 +649,7 @@ export class ProjectsController {
 			// add project to workspace
 			const dataWorkspaceExtension = (<dataworkspace.IExtension>vscode.extensions.getExtension(dataworkspace.extension.name)?.exports);
 			dataWorkspaceExtension.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
-			dataWorkspaceExtension.focus();
+			dataWorkspaceExtension.showProjectsView();
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));

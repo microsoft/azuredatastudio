@@ -20,7 +20,7 @@ export class DataWorkspaceExtension implements IExtension {
 		return this.workspaceService.addProjectsToWorkspace(projectFiles);
 	}
 
-	focus(): void {
+	showProjectsView(): void {
 		vscode.commands.executeCommand(constants.projectsViewFocusCommand);
 	}
 }
