@@ -46,7 +46,6 @@ export class WizardModal extends Modal {
 
 	constructor(
 		private _wizard: Wizard,
-		name: string,
 		options: IModalOptions,
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
@@ -57,7 +56,7 @@ export class WizardModal extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(_wizard.title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
+		super(_wizard.title, _wizard.name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
 		this._useDefaultMessageBoxLocation = false;
 	}
 
@@ -264,14 +263,14 @@ export class WizardModal extends Modal {
 			}
 			this._onDone.fire();
 			this.dispose();
-			this.hide();
+			this.hide('done');
 		}
 	}
 
 	public cancel(): void {
 		this._onCancel.fire();
 		this.dispose();
-		this.hide();
+		this.hide('cancel');
 	}
 
 	private async validateNavigation(newPage: number): Promise<boolean> {
@@ -286,14 +285,6 @@ export class WizardModal extends Modal {
 		button.element.classList.remove('validating');
 		this.updateButtonElement(button, newPage === undefined ? this._wizard.doneButton : this._wizard.nextButton, true);
 		return navigationValid;
-	}
-
-	protected hide(): void {
-		super.hide();
-	}
-
-	protected show(): void {
-		super.show();
 	}
 
 	/**

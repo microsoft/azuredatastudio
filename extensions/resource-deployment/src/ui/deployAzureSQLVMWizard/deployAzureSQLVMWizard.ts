@@ -28,6 +28,7 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 	constructor(private wizardInfo: AzureSQLVMWizardInfo, private _notebookService: INotebookService, private _toolsService: IToolsService) {
 		super(
 			constants.WizardTitle,
+			'DeployAzureSqlVMWizard',
 			new DeployAzureSQLVMWizardModel(),
 			_toolsService
 		);
