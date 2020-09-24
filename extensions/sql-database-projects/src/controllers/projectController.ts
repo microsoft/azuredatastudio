@@ -626,10 +626,10 @@ export class ProjectsController {
 	}
 
 	/**
-	 * Imports a new SQL database project from the existing database,
+	 * Creates a new SQL database project from the existing database,
 	 * prompting the user for a name, file path location and extract target
 	 */
-	public async importNewDatabaseProject(context: azdata.IConnectionProfile | any): Promise<void> {
+	public async createProjectFromDatabase(context: azdata.IConnectionProfile | any): Promise<void> {
 
 		// TODO: Refactor code
 		try {
@@ -653,7 +653,7 @@ export class ProjectsController {
 			}
 
 			const project = await Project.openProject(newProjFilePath);
-			await this.importApiCall(model); // Call ExtractAPI in DacFx Service
+			await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
 			let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
 			await project.addToProject(fileFolderList); // Add generated file structure to the project
@@ -796,13 +796,13 @@ export class ProjectsController {
 		return projUri;
 	}
 
-	public async importApiCall(model: ImportDataModel): Promise<void> {
+	public async createProjectFromDatabaseApiCall(model: ImportDataModel): Promise<void> {
 		let ext = vscode.extensions.getExtension(mssql.extension.name)!;
 
 		const service = (await ext.activate() as mssql.IExtension).dacFx;
 		const ownerUri = await azdata.connection.getUriForConnection(model.serverId);
 
-		await service.importDatabaseProject(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, azdata.TaskExecutionMode.execute);
+		await service.createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, azdata.TaskExecutionMode.execute);
 
 		// TODO: Check for success; throw error
 	}

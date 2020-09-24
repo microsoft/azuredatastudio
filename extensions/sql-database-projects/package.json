@@ -15,7 +15,7 @@
   "activationEvents": [
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
-    "onCommand:sqlDatabaseProjects.importDatabase",
+    "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
     "workspaceContains:**/*.sqlproj",
     "onView:dataworkspace.views.main"
   ],
@@ -141,8 +141,8 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.importDatabase",
-        "title": "%sqlDatabaseProjects.importDatabase%",
+        "command": "sqlDatabaseProjects.createProjectFromDatabase",
+        "title": "%sqlDatabaseProjects.createProjectFromDatabase%",
         "category": "%sqlDatabaseProjects.displayName%",
         "icon": "images/databaseProjectToolbar.svg"
       },
@@ -229,7 +229,7 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.importDatabase"
+          "command": "sqlDatabaseProjects.createProjectFromDatabase"
         },
         {
           "command": "sqlDatabaseProjects.addDatabaseReference",
@@ -332,31 +332,31 @@
       ],
       "objectExplorer/item/context": [
         {
-          "command": "sqlDatabaseProjects.importDatabase",
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
           "group": "export"
         },
         {
-          "command": "sqlDatabaseProjects.importDatabase",
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
           "group": "export"
         }
       ],
       "dataExplorer/context": [
         {
-          "command": "sqlDatabaseProjects.importDatabase",
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
           "group": "export"
         },
         {
-          "command": "sqlDatabaseProjects.importDatabase",
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
           "group": "export"
         }
       ],
       "dashboard/toolbar": [
         {
-          "command": "sqlDatabaseProjects.importDatabase",
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
           "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
         }
       ]
