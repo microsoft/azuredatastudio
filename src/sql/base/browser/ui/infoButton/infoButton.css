@@ -68,5 +68,6 @@
 	box-shadow: 0px 3px 8px rgba(255, 255, 255, 0.13);
 }
 .hc-black .info-button[tabindex="0"]:hover {
+	border-style: dashed !important;
 	border-color: rgb(243, 133, 24) !important;
 }

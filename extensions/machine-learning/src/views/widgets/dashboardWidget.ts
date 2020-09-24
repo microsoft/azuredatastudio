@@ -211,7 +211,6 @@ export class DashboardWidget {
 	}
 
 	private addShowMorePanel(view: azdata.ModelView, parentPanel: azdata.FlexContainer, morePanel: azdata.Component, moreButtonStyle: { [key: string]: string }, morePanelStyle: { [key: string]: string }): azdata.Component {
-		// const maxWidth = 100;
 		const linkContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			width: 'auto',

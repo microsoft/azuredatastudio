@@ -58,7 +58,7 @@ panel {
 	max-width: 100px;
 }
 
-.tabbedPanel.vertical >.title .tabList .tab .tabLabel {
+.tabbedPanel.vertical > .title .tabList .tab .tabLabel {
 	font-size: 13px;
 	padding-bottom: 0px;
 	max-width: 200px;
@@ -68,6 +68,20 @@ panel {
 	font-size: 13px;
 	padding-bottom: 4px;
 	font-weight: 600;
+}
+
+.tabbedPanel .tabList .tab-header:hover:not(.active) {
+	background-color: #dcdcdc;
+	outline: none;
+}
+.vs-dark .tabbedPanel .tabList .tab-header:hover:not(.active) {
+	background-color: #2a2d2e;
+	outline: none;
+}
+.hc-black .tabbedPanel .tabList .tab-header:hover:not(.active) {
+	background-color: initial;
+	outline: 1px dashed #f38518;
+	outline-offset: -3px;
 }
 
 .tabbedPanel.horizontal > .title .tabList .tab .tabLabel,
