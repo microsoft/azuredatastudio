@@ -21,8 +21,8 @@ export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model
 		return this._model;
 	}
 
-	constructor(private title: string, private _model: M, public toolsService: IToolsService) {
-		this.wizardObject = azdata.window.createWizard(title);
+	constructor(private title: string, name: string, private _model: M, public toolsService: IToolsService) {
+		this.wizardObject = azdata.window.createWizard(title, name);
 	}
 
 	public async open(): Promise<void> {

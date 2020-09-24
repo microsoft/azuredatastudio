@@ -382,7 +382,7 @@ class WizardImpl implements azdata.window.Wizard {
 	private _operationHandler: BackgroundOperationHandler;
 	private _width: DialogWidth;
 
-	constructor(public title: string, private _extHostModelViewDialog: ExtHostModelViewDialog, extHostTaskManagement: ExtHostBackgroundTaskManagementShape) {
+	constructor(public title: string, public name: string, private _extHostModelViewDialog: ExtHostModelViewDialog, extHostTaskManagement: ExtHostBackgroundTaskManagementShape) {
 		this.doneButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
 		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL);
 		this.generateScriptButton = this._extHostModelViewDialog.createButton(GENERATE_SCRIPT_LABEL);
@@ -761,8 +761,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return page;
 	}
 
-	public createWizard(title: string, width: azdata.window.DialogWidth = 'wide'): azdata.window.Wizard {
-		let wizard = new WizardImpl(title, this, this._extHostTaskManagement);
+	public createWizard(title: string, name: string = 'ModelViewWizard', width: azdata.window.DialogWidth = 'wide'): azdata.window.Wizard {
+		let wizard = new WizardImpl(title, name, this, this._extHostTaskManagement);
 		wizard.width = width;
 		this.getHandle(wizard);
 		return wizard;
@@ -795,6 +795,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		}
 		return this._proxy.$setWizardDetails(handle, {
 			title: wizard.title,
+			name: wizard.name,
 			width: wizard.width,
 			pages: wizard.pages.map(page => this.getHandle(page)),
 			currentPage: wizard.currentPage,

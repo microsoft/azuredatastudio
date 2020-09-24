@@ -201,7 +201,7 @@ export class Wizard {
 	public displayPageTitles: boolean;
 	public width: DialogWidth;
 
-	constructor(public title: string) { }
+	constructor(public title: string, public readonly name: string) { }
 
 	public get currentPage(): number {
 		return this._currentPage;
