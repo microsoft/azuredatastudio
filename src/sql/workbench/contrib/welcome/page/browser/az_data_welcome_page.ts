@@ -94,8 +94,8 @@ export default () => `
 				<div class="resources-container">
 					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
 					<div class="tabs">
-					<!-- Checkbox is not accessible to user yet, this feature is still in development -->
-					<input tabindex="-1" class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
+					<!-- Radio button is not accessible to user yet, this feature is still in development -->
+					<input tabindex="-1" aria-hidden="true" class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
 					<span id="historyLabel" class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</span>
 						<div class="panel">
 							<div class="recent history">
