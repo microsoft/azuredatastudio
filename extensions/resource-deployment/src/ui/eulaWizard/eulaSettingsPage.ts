@@ -252,6 +252,10 @@ export class EulaSettingsPage extends EulaWizardPage {
 		}
 		const containerLabel = this._view.modelBuilder.text().withProps({
 			value: containerLabelTest,
+			CSSStyles: {
+				'font-weight': '300',
+				'font-size': '14px'
+			}
 		}).component();
 
 		container.insertItem(containerLabel, 0);
