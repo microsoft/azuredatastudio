@@ -164,18 +164,6 @@ export class ProjectsController {
 		return newProjFilePath;
 	}
 
-	public closeProject(treeNode: BaseProjectTreeItem) {
-		const project = this.getProjectFromContext(treeNode);
-		this.projects = this.projects.filter((e) => { return e !== project; });
-
-		if (this.projFileWatchers.has(project.projectFilePath)) {
-			this.projFileWatchers.get(project.projectFilePath)!.dispose();
-			this.projFileWatchers.delete(project.projectFilePath);
-		}
-
-		this.refreshProjectsTree();
-	}
-
 	/**
 	 * Builds a project, producing a dacpac
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project

@@ -54,23 +54,6 @@
     ],
     "commands": [
       {
-        "command": "sqlDatabaseProjects.new",
-        "title": "%sqlDatabaseProjects.new%",
-        "category": "%sqlDatabaseProjects.displayName%",
-        "icon": "$(add)"
-      },
-      {
-        "command": "sqlDatabaseProjects.open",
-        "title": "%sqlDatabaseProjects.open%",
-        "category": "%sqlDatabaseProjects.displayName%",
-        "icon": "$(folder-opened)"
-      },
-      {
-        "command": "sqlDatabaseProjects.close",
-        "title": "%sqlDatabaseProjects.close%",
-        "category": "%sqlDatabaseProjects.displayName%"
-      },
-      {
         "command": "sqlDatabaseProjects.newScript",
         "title": "%sqlDatabaseProjects.newScript%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -164,18 +147,6 @@
     ],
     "menus": {
       "commandPalette": [
-        {
-          "command": "sqlDatabaseProjects.new",
-          "when": "false"
-        },
-        {
-          "command": "sqlDatabaseProjects.open",
-          "when": "false"
-        },
-        {
-          "command": "sqlDatabaseProjects.close",
-          "when": "false"
-        },
         {
           "command": "sqlDatabaseProjects.newScript",
           "when": "false"

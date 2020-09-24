@@ -50,9 +50,6 @@ export default class MainController implements vscode.Disposable {
 
 	private async initializeDatabaseProjects(): Promise<void> {
 		// init commands
-		vscode.commands.registerCommand('sqlDatabaseProjects.new', async () => { await this.createNewProject(); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.open', async () => { await this.openProjectFromFile(); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.close', (node: WorkspaceTreeItem) => { this.projectsController.closeProject(node.element); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.properties', async (node: WorkspaceTreeItem) => { await vscode.window.showErrorMessage(`Properties not yet implemented: ${node.element.uri.path}`); }); // TODO
 
 		vscode.commands.registerCommand('sqlDatabaseProjects.build', async (node: WorkspaceTreeItem) => { await this.projectsController.buildProject(node.element); });
