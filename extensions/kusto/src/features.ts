@@ -42,30 +42,23 @@ export class AccountFeature implements StaticFeature {
 
 	protected async getToken(request: contracts.RequestSecurityTokenParams): Promise<contracts.RequestSecurityTokenResponse | undefined> {
 		const accountList = await azdata.accounts.getAllAccounts();
-		let account: azdata.Account;
+		let account: azdata.Account | undefined;
 
 		if (accountList.length < 1) {
 			// TODO: Prompt user to add account
-			window.showErrorMessage(localize('mssql.missingLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query."));
+			window.showErrorMessage(localize('kusto.missingLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query."));
 			return undefined;
-		} else if (accountList.length > 1) {
-			let options: QuickPickOptions = {
-				ignoreFocusOut: true,
-				placeHolder: localize('mssql.chooseLinkedAzureAccount', "Please select a linked Azure account:")
-			};
-			let items = accountList.map(a => new AccountFeature.AccountQuickPickItem(a));
-			let selectedItem = await window.showQuickPick(items, options);
-			if (!selectedItem) { // The user canceled the selection.
-				window.showErrorMessage(localize('mssql.canceledLinkedAzureAccountSelection', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted."));
-				return undefined;
-			}
-			account = selectedItem.account;
 		} else {
-			account = accountList[0];
+			account = accountList.find(a => a.key.accountId === request.accountId);
+		}
+
+		if (!account) {
+			window.showErrorMessage(localize('kusto.accountDoesNotExist', "Account does not exist."));
+			return undefined;
 		}
 
 		const tenant = account.properties.tenants.find((t: { [key: string]: string }) => request.authority.includes(t.id));
-		const unauthorizedMessage = localize('mssql.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId);
+		const unauthorizedMessage = localize('kusto.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId);
 		if (!tenant) {
 			window.showErrorMessage(unauthorizedMessage);
 			return undefined;

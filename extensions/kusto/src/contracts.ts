@@ -34,6 +34,7 @@ export interface RequestSecurityTokenParams {
 	authority: string;
 	provider: string;
 	resource: string;
+	accountId: string;
 }
 
 export interface RequestSecurityTokenResponse {
