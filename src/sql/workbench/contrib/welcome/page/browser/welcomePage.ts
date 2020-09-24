@@ -413,6 +413,8 @@ class WelcomePage extends Disposable {
 		startTourBtn.label = localize('welcomePage.startTour', "Start Tour");
 		const removeTourBtn = document.createElement('a');
 		removeTourBtn.setAttribute('role', 'button');
+		removeTourBtn.tabIndex = 0;
+		removeTourBtn.title = localize('closeTourBar', "Close quick tour bar");
 		const removeBtnClasses = ['btn-remove-tour', 'codicon', 'codicon-close'];
 		const flexClassesLeft = ['flex', 'flex-a-center'];
 		const flexClassesRight = ['flex', 'flex-a-start'];
