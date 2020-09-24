@@ -13,7 +13,21 @@ declare module 'dataworkspace' {
 	 * dataworkspace extension
 	 */
 	export interface IExtension {
+		/**
+		 * Returns all the projects in the workspace
+		 */
 		getProjectsInWorkspace(): vscode.Uri[];
+
+		/**
+		 * Add projects to the workspace
+		 * @param projectFiles Uris of project files to add
+		 */
+		addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void>
+
+		/**
+		 * Change focus to Projects view
+		 */
+		showProjectsView(): void;
 	}
 
 	/**

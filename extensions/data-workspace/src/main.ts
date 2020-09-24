@@ -15,28 +15,32 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 	const workspaceService = new WorkspaceService();
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
-	context.subscriptions.push(vscode.commands.registerCommand('projects.addProject', async () => {
+	context.subscriptions.push(vscode.commands.registerCommand('projects.addProject', async (uri: vscode.Uri) => {
 		// To Sakshi - You can replace the implementation with your complete dialog implementation
 		// but all the code here should be reusable by you
 		if (vscode.workspace.workspaceFile) {
-			const filters: { [name: string]: string[] } = {};
-			const projectTypes = await workspaceService.getAllProjectTypes();
-			filters[AllProjectTypes] = projectTypes.map(type => type.projectFileExtension);
-			projectTypes.forEach(type => {
-				filters[type.displayName] = [type.projectFileExtension];
-			});
-			let fileUris = await vscode.window.showOpenDialog({
-				canSelectFiles: true,
-				canSelectFolders: false,
-				canSelectMany: false,
-				defaultUri: vscode.Uri.file(path.dirname(vscode.workspace.workspaceFile.path)),
-				openLabel: SelectProjectFileActionName,
-				filters: filters
-			});
-			if (!fileUris || fileUris.length === 0) {
-				return;
+			if (uri) {
+				await workspaceService.addProjectsToWorkspace([uri]);
+			} else {
+				const filters: { [name: string]: string[] } = {};
+				const projectTypes = await workspaceService.getAllProjectTypes();
+				filters[AllProjectTypes] = projectTypes.map(type => type.projectFileExtension);
+				projectTypes.forEach(type => {
+					filters[type.displayName] = [type.projectFileExtension];
+				});
+				let fileUris = await vscode.window.showOpenDialog({
+					canSelectFiles: true,
+					canSelectFolders: false,
+					canSelectMany: false,
+					defaultUri: vscode.Uri.file(path.dirname(vscode.workspace.workspaceFile.path)),
+					openLabel: SelectProjectFileActionName,
+					filters: filters
+				});
+				if (!fileUris || fileUris.length === 0) {
+					return;
+				}
+				await workspaceService.addProjectsToWorkspace(fileUris);
 			}
-			await workspaceService.addProjectsToWorkspace(fileUris);
 		}
 	}));
 

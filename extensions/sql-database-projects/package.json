@@ -15,7 +15,7 @@
   "activationEvents": [
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
-    "onCommand:sqlDatabaseProjects.importDatabase",
+    "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
     "workspaceContains:**/*.sqlproj",
     "onView:dataworkspace.views.main"
   ],
@@ -53,23 +53,6 @@
       }
     ],
     "commands": [
-      {
-        "command": "sqlDatabaseProjects.new",
-        "title": "%sqlDatabaseProjects.new%",
-        "category": "%sqlDatabaseProjects.displayName%",
-        "icon": "$(add)"
-      },
-      {
-        "command": "sqlDatabaseProjects.open",
-        "title": "%sqlDatabaseProjects.open%",
-        "category": "%sqlDatabaseProjects.displayName%",
-        "icon": "$(folder-opened)"
-      },
-      {
-        "command": "sqlDatabaseProjects.close",
-        "title": "%sqlDatabaseProjects.close%",
-        "category": "%sqlDatabaseProjects.displayName%"
-      },
       {
         "command": "sqlDatabaseProjects.newScript",
         "title": "%sqlDatabaseProjects.newScript%",
@@ -141,8 +124,8 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.importDatabase",
-        "title": "%sqlDatabaseProjects.importDatabase%",
+        "command": "sqlDatabaseProjects.createProjectFromDatabase",
+        "title": "%sqlDatabaseProjects.createProjectFromDatabase%",
         "category": "%sqlDatabaseProjects.displayName%",
         "icon": "images/databaseProjectToolbar.svg"
       },
@@ -164,16 +147,6 @@
     ],
     "menus": {
       "commandPalette": [
-        {
-          "command": "sqlDatabaseProjects.new"
-        },
-        {
-          "command": "sqlDatabaseProjects.open"
-        },
-        {
-          "command": "sqlDatabaseProjects.close",
-          "when": "false"
-        },
         {
           "command": "sqlDatabaseProjects.newScript",
           "when": "false"
@@ -227,7 +200,7 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.importDatabase"
+          "command": "sqlDatabaseProjects.createProjectFromDatabase"
         },
         {
           "command": "sqlDatabaseProjects.addDatabaseReference",
@@ -330,31 +303,21 @@
       ],
       "objectExplorer/item/context": [
         {
-          "command": "sqlDatabaseProjects.importDatabase",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
-          "group": "export"
-        },
-        {
-          "command": "sqlDatabaseProjects.importDatabase",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
+          "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == MSSQL && mssql:engineedition != 11",
           "group": "export"
         }
       ],
       "dataExplorer/context": [
         {
-          "command": "sqlDatabaseProjects.importDatabase",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
-          "group": "export"
-        },
-        {
-          "command": "sqlDatabaseProjects.importDatabase",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
+          "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == MSSQL && mssql:engineedition != 11",
           "group": "export"
         }
       ],
       "dashboard/toolbar": [
         {
-          "command": "sqlDatabaseProjects.importDatabase",
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
           "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
         }
       ]

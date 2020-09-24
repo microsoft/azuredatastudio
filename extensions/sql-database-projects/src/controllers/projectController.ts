@@ -14,6 +14,7 @@ import * as templates from '../templates/templates';
 import * as newProjectTool from '../tools/newProjectTool';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as dataworkspace from 'dataworkspace';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
@@ -29,7 +30,6 @@ import { BuildHelper } from '../tools/buildHelper';
 import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
-import { WorkspaceTreeItem } from 'dataworkspace';
 
 /**
  * Controller for managing project lifecycle
@@ -164,18 +164,6 @@ export class ProjectsController {
 		return newProjFilePath;
 	}
 
-	public closeProject(treeNode: BaseProjectTreeItem) {
-		const project = this.getProjectFromContext(treeNode);
-		this.projects = this.projects.filter((e) => { return e !== project; });
-
-		if (this.projFileWatchers.has(project.projectFilePath)) {
-			this.projFileWatchers.get(project.projectFilePath)!.dispose();
-			this.projFileWatchers.delete(project.projectFilePath);
-		}
-
-		this.refreshProjectsTree();
-	}
-
 	/**
 	 * Builds a project, producing a dacpac
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
@@ -188,7 +176,7 @@ export class ProjectsController {
 	 * @returns path of the built dacpac
 	 */
 	public async buildProject(project: Project): Promise<string>;
-	public async buildProject(context: Project | BaseProjectTreeItem | WorkspaceTreeItem): Promise<string | undefined> {
+	public async buildProject(context: Project | BaseProjectTreeItem | dataworkspace.WorkspaceTreeItem): Promise<string | undefined> {
 		const project: Project = this.getProjectFromContext(context);
 
 		// Check mssql extension for project dlls (tracking issue #10273)
@@ -564,7 +552,7 @@ export class ProjectsController {
 		}
 	}
 
-	private getProjectFromContext(context: Project | BaseProjectTreeItem | WorkspaceTreeItem) {
+	private getProjectFromContext(context: Project | BaseProjectTreeItem | dataworkspace.WorkspaceTreeItem) {
 		if ('element' in context) {
 			return context.element.project;
 		}
@@ -626,10 +614,10 @@ export class ProjectsController {
 	}
 
 	/**
-	 * Imports a new SQL database project from the existing database,
+	 * Creates a new SQL database project from the existing database,
 	 * prompting the user for a name, file path location and extract target
 	 */
-	public async importNewDatabaseProject(context: azdata.IConnectionProfile | any): Promise<void> {
+	public async createProjectFromDatabase(context: azdata.IConnectionProfile | any): Promise<void> {
 
 		// TODO: Refactor code
 		try {
@@ -653,11 +641,15 @@ export class ProjectsController {
 			}
 
 			const project = await Project.openProject(newProjFilePath);
-			await this.importApiCall(model); // Call ExtractAPI in DacFx Service
+			await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
 			let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
 			await project.addToProject(fileFolderList); // Add generated file structure to the project
-			await this.openProject(vscode.Uri.file(newProjFilePath));
+
+			// add project to workspace
+			const dataWorkspaceExtension = (<dataworkspace.IExtension>vscode.extensions.getExtension(dataworkspace.extension.name)?.exports);
+			dataWorkspaceExtension.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
+			dataWorkspaceExtension.showProjectsView();
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
@@ -794,13 +786,13 @@ export class ProjectsController {
 		return projUri;
 	}
 
-	public async importApiCall(model: ImportDataModel): Promise<void> {
+	public async createProjectFromDatabaseApiCall(model: ImportDataModel): Promise<void> {
 		let ext = vscode.extensions.getExtension(mssql.extension.name)!;
 
 		const service = (await ext.activate() as mssql.IExtension).dacFx;
 		const ownerUri = await azdata.connection.getUriForConnection(model.serverId);
 
-		await service.importDatabaseProject(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, azdata.TaskExecutionMode.execute);
+		await service.createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, azdata.TaskExecutionMode.execute);
 
 		// TODO: Check for success; throw error
 	}

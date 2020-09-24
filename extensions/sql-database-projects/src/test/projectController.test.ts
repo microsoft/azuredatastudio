@@ -419,7 +419,7 @@ describe('ProjectsController', function (): void {
 				const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
 				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-				await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
+				await projController.createProjectFromDatabase({ connectionProfile: mockConnectionProfile });
 				should(spy.calledOnce).be.true('showErrorMessage should have been called');
 				should(spy.calledWith(constants.projectNameRequired)).be.true(`showErrorMessage not called with expected message '${constants.projectNameRequired}' Actual '${spy.getCall(0).args[0]}'`);
 				sinon.restore();
@@ -433,7 +433,7 @@ describe('ProjectsController', function (): void {
 			const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
 			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-			await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
+			await projController.createProjectFromDatabase({ connectionProfile: mockConnectionProfile });
 			should(spy.calledOnce).be.true('showErrorMessage should have been called');
 			should(spy.calledWith(constants.extractTargetRequired)).be.true(`showErrorMessage not called with expected message '${constants.extractTargetRequired}' Actual '${spy.getCall(0).args[0]}'`);
 		});
@@ -445,7 +445,7 @@ describe('ProjectsController', function (): void {
 			const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
 			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-			await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
+			await projController.createProjectFromDatabase({ connectionProfile: mockConnectionProfile });
 			should(spy.calledOnce).be.true('showErrorMessage should have been called');
 			should(spy.calledWith(constants.projectLocationRequired)).be.true(`showErrorMessage not called with expected message '${constants.projectLocationRequired}' Actual '${spy.getCall(0).args[0]}'`);
 		});
@@ -457,7 +457,7 @@ describe('ProjectsController', function (): void {
 			const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
 			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-			await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
+			await projController.createProjectFromDatabase({ connectionProfile: mockConnectionProfile });
 			should(spy.calledOnce).be.true('showErrorMessage should have been called');
 			should(spy.calledWith(constants.projectLocationRequired)).be.true(`showErrorMessage not called with expected message '${constants.projectLocationRequired}' Actual '${spy.getCall(0).args[0]}'`);
 		});
@@ -475,9 +475,9 @@ describe('ProjectsController', function (): void {
 			let projController = TypeMoq.Mock.ofType(ProjectsController, undefined, undefined, new SqlDatabaseProjectTreeViewProvider());
 			projController.callBase = true;
 
-			projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { importPath = model.filePath; });
+			projController.setup(x => x.createProjectFromDatabaseApiCall(TypeMoq.It.isAny())).returns(async (model) => { importPath = model.filePath; });
 
-			await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
+			await projController.object.createProjectFromDatabase({ connectionProfile: mockConnectionProfile });
 			should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName, projectName + '.sql')).fsPath, `model.filePath should be set to a specific file for ExtractTarget === file, but was ${importPath}`);
 
 			// reset for counter-test
@@ -485,7 +485,7 @@ describe('ProjectsController', function (): void {
 			folderPath = await testUtils.generateTestFolderPath();
 			showQuickPickStub.resolves({ label: constants.schemaObjectType });
 
-			await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
+			await projController.object.createProjectFromDatabase({ connectionProfile: mockConnectionProfile });
 			should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName)).fsPath, `model.filePath should be set to a folder for ExtractTarget !== file, but was ${importPath}`);
 		});
 
