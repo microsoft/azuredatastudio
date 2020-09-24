@@ -288,7 +288,7 @@ export namespace RenderMimeRegistry {
 		/**
 		 * An optional LaTeX typesetter.
 		 */
-		latexTypesetter?: IRenderMime.ILatexTypesetter;
+		latexTypesetter?: IRenderMime.ILatexTypesetter | null;
 	}
 
 	/**

@@ -77,7 +77,9 @@ export function renderDataResource(
 		tableContainer.style.height = rowsHeight >= 500 ? '500px' : rowsHeight.toString() + 'px';
 	}
 
-	attachTableStyler(detailTable, options.themeService);
+	if (options.themeService) {
+		attachTableStyler(detailTable, options.themeService);
+	}
 	host.appendChild(tableContainer);
 	detailTable.resizeCanvas();
 
@@ -92,11 +94,14 @@ export function transformData(rows: any[], columns: Slick.Column<any>[]): { [key
 		Object.keys(row).forEach((val, index) => {
 			let displayValue = String(values(row)[index]);
 			// Since the columns[0] represents the row number, start at 1
-			dataWithSchema[columns[index + 1].field] = {
-				displayValue: displayValue,
-				ariaLabel: escape(displayValue),
-				isNull: false
-			};
+			let key = columns[index + 1].field;
+			if (key) {
+				dataWithSchema[key] = {
+					displayValue: displayValue,
+					ariaLabel: escape(displayValue),
+					isNull: false
+				};
+			}
 		});
 		return dataWithSchema;
 	});

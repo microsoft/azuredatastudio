@@ -11,7 +11,7 @@ export function tryMatchCellMagic(input: string): string {
 	let magicRegex = /^%%(\w+)/g;
 	let match = magicRegex.exec(firstLine);
 	let magicName = match && match[1];
-	return magicName;
+	return magicName ? magicName : '';
 }
 
 /**

@@ -41,7 +41,7 @@ export class MimeModel implements IRenderMime.IMimeModel {
 		return this._metadata;
 	}
 
-	get themeService(): IThemeService {
+	get themeService(): IThemeService | undefined {
 		return this._themeService;
 	}
 
@@ -55,13 +55,15 @@ export class MimeModel implements IRenderMime.IMimeModel {
 	setData(options: IRenderMime.ISetDataOptions): void {
 		this._data = options.data || this._data;
 		this._metadata = options.metadata || this._metadata;
-		this._callback(options);
+		if (this._callback) {
+			this._callback(options);
+		}
 	}
 
-	private _callback: (options: IRenderMime.ISetDataOptions) => void;
+	private _callback: ((options: IRenderMime.ISetDataOptions) => void) | undefined;
 	private _data: ReadonlyJSONObject;
 	private _metadata: ReadonlyJSONObject;
-	private _themeService: IThemeService;
+	private _themeService: IThemeService | undefined;
 }
 
 /**

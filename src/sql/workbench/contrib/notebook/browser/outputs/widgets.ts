@@ -13,7 +13,7 @@ import type { IRenderMime } from 'sql/workbench/services/notebook/browser/output
  * A common base class for mime renderers.
  */
 export abstract class RenderedCommon implements IRenderMime.IRenderer {
-	private _node: HTMLElement;
+	private _node: HTMLElement | undefined;
 	private cachedClasses: string[] = [];
 	/**
 	 * Construct a new rendered common widget.
@@ -28,15 +28,17 @@ export abstract class RenderedCommon implements IRenderMime.IRenderer {
 		this.latexTypesetter = options.latexTypesetter;
 	}
 
-	public get node(): HTMLElement {
+	public get node(): HTMLElement | undefined {
 		return this._node;
 	}
 
-	public set node(value: HTMLElement) {
-		this._node = value;
-		value.dataset['mimeType'] = this.mimeType;
-		this._node.classList.add(...this.cachedClasses);
-		this.cachedClasses = [];
+	public set node(value: HTMLElement | undefined) {
+		if (value) {
+			this._node = value;
+			value.dataset['mimeType'] = this.mimeType;
+			this._node.classList.add(...this.cachedClasses);
+			this.cachedClasses = [];
+		}
 	}
 
 	toggleClass(className: string, enabled: boolean): void {
@@ -76,17 +78,17 @@ export abstract class RenderedCommon implements IRenderMime.IRenderer {
 	/**
 	 * The resolver object.
 	 */
-	readonly resolver: IRenderMime.IResolver | null;
+	readonly resolver: IRenderMime.IResolver | undefined;
 
 	/**
 	 * The link handler.
 	 */
-	readonly linkHandler: IRenderMime.ILinkHandler | null;
+	readonly linkHandler: IRenderMime.ILinkHandler | undefined;
 
 	/**
 	 * The latexTypesetter.
 	 */
-	readonly latexTypesetter: IRenderMime.ILatexTypesetter;
+	readonly latexTypesetter: IRenderMime.ILatexTypesetter | undefined;
 
 	/**
 	 * Render a mime model.
@@ -152,16 +154,19 @@ export class RenderedHTML extends RenderedHTMLCommon {
 	 * @returns A promise which resolves when rendering is complete.
 	 */
 	render(model: IRenderMime.IMimeModel): Promise<void> {
-		return renderers.renderHTML({
-			host: this.node,
-			source: String(model.data[this.mimeType]),
-			trusted: model.trusted,
-			resolver: this.resolver,
-			sanitizer: this.sanitizer,
-			linkHandler: this.linkHandler,
-			shouldTypeset: true, //this.isAttached,
-			latexTypesetter: this.latexTypesetter
-		});
+		if (this.node) {
+			return renderers.renderHTML({
+				host: this.node,
+				source: String(model.data[this.mimeType]),
+				trusted: model.trusted,
+				resolver: this.resolver,
+				sanitizer: this.sanitizer,
+				linkHandler: this.linkHandler,
+				shouldTypeset: true, //this.isAttached,
+				latexTypesetter: this.latexTypesetter
+			});
+		}
+		return Promise.resolve();
 	}
 
 	// /**
@@ -237,15 +242,18 @@ export class RenderedImage extends RenderedCommon {
 	 */
 	render(model: IRenderMime.IMimeModel): Promise<void> {
 		let metadata = model.metadata[this.mimeType] as ReadonlyJSONObject;
-		return renderers.renderImage({
-			host: this.node,
-			mimeType: this.mimeType,
-			source: String(model.data[this.mimeType]),
-			width: metadata && (metadata.width as number | undefined),
-			height: metadata && (metadata.height as number | undefined),
-			needsBackground: model.metadata['needs_background'] as string | undefined,
-			unconfined: metadata && (metadata.unconfined as boolean | undefined)
-		});
+		if (this.node) {
+			return renderers.renderImage({
+				host: this.node,
+				mimeType: this.mimeType,
+				source: String(model.data[this.mimeType]),
+				width: metadata && (metadata.width as number | undefined),
+				height: metadata && (metadata.height as number | undefined),
+				needsBackground: model.metadata['needs_background'] as string | undefined,
+				unconfined: metadata && (metadata.unconfined as boolean | undefined)
+			});
+		}
+		return Promise.resolve();
 	}
 }
 
@@ -272,12 +280,15 @@ export class RenderedSVG extends RenderedCommon {
 	 */
 	render(model: IRenderMime.IMimeModel): Promise<void> {
 		let metadata = model.metadata[this.mimeType] as ReadonlyJSONObject;
-		return renderers.renderSVG({
-			host: this.node,
-			source: String(model.data[this.mimeType]),
-			trusted: model.trusted,
-			unconfined: metadata && (metadata.unconfined as boolean | undefined)
-		});
+		if (this.node) {
+			return renderers.renderSVG({
+				host: this.node,
+				source: String(model.data[this.mimeType]),
+				trusted: model.trusted,
+				unconfined: metadata && (metadata.unconfined as boolean | undefined)
+			});
+		}
+		return Promise.resolve();
 	}
 
 	// /**
@@ -312,10 +323,13 @@ export class RenderedText extends RenderedCommon {
 	 * @returns A promise which resolves when rendering is complete.
 	 */
 	render(model: IRenderMime.IMimeModel): Promise<void> {
-		return renderers.renderText({
-			host: this.node,
-			source: String(model.data[this.mimeType])
-		});
+		if (this.node) {
+			return renderers.renderText({
+				host: this.node,
+				source: String(model.data[this.mimeType])
+			});
+		}
+		return Promise.resolve();
 	}
 }
 
@@ -341,10 +355,13 @@ export class RenderedJavaScript extends RenderedCommon {
 	 * @returns A promise which resolves when rendering is complete.
 	 */
 	render(model: IRenderMime.IMimeModel): Promise<void> {
-		return renderers.renderText({
-			host: this.node,
-			source: 'JavaScript output is disabled in Notebooks'
-		});
+		if (this.node) {
+			return renderers.renderText({
+				host: this.node,
+				source: 'JavaScript output is disabled in Notebooks'
+			});
+		}
+		return Promise.resolve();
 	}
 }
 
@@ -370,11 +387,14 @@ export class RenderedDataResource extends RenderedCommon {
 	 * @returns A promise which resolves when rendering is complete.
 	 */
 	render(model: IRenderMime.IMimeModel): Promise<void> {
-		return tableRenderers.renderDataResource({
-			host: this.node,
-			source: JSON.stringify(model.data[this.mimeType]),
-			themeService: model.themeService
-		});
+		if (this.node) {
+			return tableRenderers.renderDataResource({
+				host: this.node,
+				source: JSON.stringify(model.data[this.mimeType]),
+				themeService: model.themeService
+			});
+		}
+		return Promise.resolve();
 	}
 }
 

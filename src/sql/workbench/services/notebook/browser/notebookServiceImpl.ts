@@ -55,7 +55,7 @@ interface TrustedNotebookMetadata {
 }
 interface TrustedNotebookCache {
 	// URI goes to cached
-	[uri: string]: TrustedNotebookMetadata;
+	[uri: string]: TrustedNotebookMetadata | undefined;
 }
 
 export interface TrustedNotebooksMemento {
@@ -76,10 +76,10 @@ export class ProviderDescriptor {
 		return this._instanceReady.promise;
 	}
 
-	public get instance(): INotebookProvider {
+	public get instance(): INotebookProvider | undefined {
 		return this._instance;
 	}
-	public set instance(value: INotebookProvider) {
+	public set instance(value: INotebookProvider | undefined) {
 		this._instance = value;
 		this._instanceReady.resolve(value);
 	}
@@ -94,7 +94,7 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	private _providersMemento: Memento;
 	private _trustedNotebooksMemento: Memento;
-	private _mimeRegistry: RenderMimeRegistry;
+	private _mimeRegistry: RenderMimeRegistry | undefined;
 	private _providers: Map<string, ProviderDescriptor> = new Map();
 	private _navigationProviders: Map<string, INavigationProvider> = new Map();
 	private _managersMap: Map<string, INotebookManager[]> = new Map();
@@ -223,7 +223,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		this._navigationProviders.set(provider.providerId, provider);
 	}
 
-	getNavigationProvider(): INavigationProvider {
+	getNavigationProvider(): INavigationProvider | undefined {
 		let provider;
 		if (this._navigationProviders.size > 0) {
 			const providerName = this.contextKeyService.getContextKeyValue(unsavedBooksContextKey) ? NavigationProviders.ProvidedBooksNavigator : NavigationProviders.NotebooksNavigator;
@@ -255,10 +255,10 @@ export class NotebookService extends Disposable implements INotebookService {
 	// kernels to the dropdown
 	private addStandardKernels(provider: NotebookProviderRegistration) {
 		let providerUpperCase = provider.provider.toUpperCase();
-		let standardKernels = this._providerToStandardKernels.get(providerUpperCase);
-		if (!standardKernels) {
-			standardKernels = [];
-		}
+		let standardKernels: nb.IStandardKernel[] = [];
+		this._providerToStandardKernels.get(providerUpperCase)?.forEach(kernel => {
+			provider.standardKernels.push(kernel);
+		});
 		if (Array.isArray(provider.standardKernels)) {
 			provider.standardKernels.forEach(kernel => {
 				standardKernels.push(kernel);
@@ -268,7 +268,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 		// Filter out unusable kernels when running on a SAW
 		if (this.productService.quality === 'saw') {
-			standardKernels = standardKernels.filter(kernel => !kernel.blockedOnSAW);
+			standardKernels = standardKernels.filter(kernel => !kernel?.blockedOnSAW);
 		}
 		this._providerToStandardKernels.set(providerUpperCase, standardKernels);
 	}
@@ -277,14 +277,14 @@ export class NotebookService extends Disposable implements INotebookService {
 		return Array.from(this._fileToProviders.keys());
 	}
 
-	getProvidersForFileType(fileType: string): string[] {
+	getProvidersForFileType(fileType: string): string[] | undefined {
 		fileType = fileType.toUpperCase();
 		let providers = this._fileToProviders.get(fileType);
 
 		return providers ? providers.map(provider => provider.provider) : undefined;
 	}
 
-	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] {
+	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] | undefined {
 		return this._providerToStandardKernels.get(provider.toUpperCase());
 	}
 
@@ -304,7 +304,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			throw new Error(NotebookUriNotDefined);
 		}
 		let uriString = uri.toString();
-		let managers: INotebookManager[] = this._managersMap.get(uriString);
+		let managers: INotebookManager[] | undefined = this._managersMap.get(uriString);
 		// If manager already exists for a given notebook, return it
 		if (managers) {
 			let index = managers.findIndex(m => m.providerId === providerId);
@@ -365,7 +365,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	listNotebookEditors(): INotebookEditor[] {
-		let editors = [];
+		let editors: INotebookEditor[] = [];
 		this._editors.forEach(e => editors.push(e));
 		return editors;
 	}
@@ -385,7 +385,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			this._managersMap.delete(uriString);
 			managers.forEach(m => {
 				let provider = this._providers.get(m.providerId);
-				provider.instance.handleNotebookClosed(notebookUri);
+				provider?.instance?.handleNotebookClosed(notebookUri);
 			});
 		}
 	}
@@ -398,7 +398,7 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	private async getProviderInstance(providerId: string, timeout?: number): Promise<INotebookProvider> {
 		let providerDescriptor = this._providers.get(providerId);
-		let instance: INotebookProvider;
+		let instance: INotebookProvider | undefined;
 
 		// Try get from actual provider, waiting on its registration
 		if (providerDescriptor) {
@@ -477,7 +477,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		notebookRegistry.registerNotebookProvider({
 			provider: sqlProvider.providerId,
 			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
-			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }
+			standardKernels: [{ name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }]
 		});
 	}
 
@@ -600,7 +600,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				//Remove the trusted entry from the cache
 				for (let i = 0; i < items.length; i++) {
 					if (trustedCache[items[i].toString()]) {
-						trustedCache[items[i].toString()] = null;
+						trustedCache[items[i].toString()] = undefined;
 					}
 				}
 				this._trustedNotebooksMemento.saveMemento();

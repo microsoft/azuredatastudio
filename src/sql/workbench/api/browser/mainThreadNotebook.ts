@@ -160,7 +160,7 @@ class ContentManagerWrapper implements azdata.nb.ContentManager {
 
 	constructor(private handle: number, private _proxy: Proxies) {
 	}
-	getNotebookContents(notebookUri: URI): Thenable<azdata.nb.INotebookContents> {
+	getNotebookContents(notebookUri: URI): Thenable<azdata.nb.INotebookContents | undefined> {
 		return this._proxy.ext.$getNotebookContents(this.handle, notebookUri);
 	}
 

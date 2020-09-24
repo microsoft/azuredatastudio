@@ -41,7 +41,7 @@ export namespace IRenderMime {
 		/**
 		 * Theme service used to react to theme change events
 		 */
-		readonly themeService: IThemeService;
+		readonly themeService: IThemeService | undefined;
 	}
 
 	/**
@@ -79,7 +79,7 @@ export namespace IRenderMime {
 		/**
 		 * Node to be updated by the renderer
 		 */
-		node: HTMLElement;
+		node: HTMLElement | undefined;
 	}
 
 	/**
@@ -133,17 +133,17 @@ export namespace IRenderMime {
 		/**
 		 * An optional url resolver.
 		 */
-		resolver?: IResolver | null;
+		resolver?: IResolver;
 
 		/**
 		 * An optional link handler.
 		 */
-		linkHandler?: ILinkHandler | null;
+		linkHandler?: ILinkHandler;
 
 		/**
 		 * The LaTeX typesetter.
 		 */
-		latexTypesetter?: ILatexTypesetter | null;
+		latexTypesetter?: ILatexTypesetter;
 	}
 
 	/**

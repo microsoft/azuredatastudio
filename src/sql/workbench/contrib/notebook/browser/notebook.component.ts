@@ -223,7 +223,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	// Add cell based on cell type
-	public addCell(cellType: CellType, index?: number, event?: Event) {
+	public addCell(cellType: CellType, index?: number, event?: Event): void {
 		if (event) {
 			event.stopPropagation();
 		}

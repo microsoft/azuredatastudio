@@ -47,7 +47,7 @@ export class LocalContentManager implements nb.ContentManager {
 
 	}
 
-	public async getNotebookContents(notebookUri: URI): Promise<nb.INotebookContents> {
+	public async getNotebookContents(notebookUri: URI): Promise<nb.INotebookContents | undefined> {
 		if (!notebookUri) {
 			return undefined;
 		}

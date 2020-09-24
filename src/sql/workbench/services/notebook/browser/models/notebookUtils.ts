@@ -21,7 +21,7 @@ export function isStream(output: nb.ICellOutput): output is nb.IStreamResult {
 
 export function getProvidersForFileName(fileName: string, notebookService: INotebookService): string[] {
 	let fileExt = path.extname(fileName);
-	let providers: string[];
+	let providers: string[] | undefined;
 	// First try to get provider for actual file type
 	if (fileExt && startsWith(fileExt, '.')) {
 		fileExt = fileExt.slice(1, fileExt.length);
@@ -43,7 +43,7 @@ export function getStandardKernelsForProvider(providerId: string, notebookServic
 		return [];
 	}
 	let standardKernels = notebookService.getStandardKernelsForProvider(providerId);
-	standardKernels.forEach(kernel => {
+	standardKernels?.forEach(kernel => {
 		assign(<IStandardKernelWithProvider>kernel, {
 			name: kernel.name,
 			connectionProviderIds: kernel.connectionProviderIds,
@@ -62,9 +62,9 @@ export interface IStandardKernelWithProvider {
 
 export interface IEndpoint {
 	serviceName: string;
-	description: string;
-	endpoint: string;
-	protocol: string;
+	description?: string;
+	endpoint?: string;
+	protocol?: string;
 }
 
 export async function asyncForEach(array: any[], callback: Function): Promise<any> {
@@ -106,7 +106,7 @@ export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
 	}
 	return {
 		host: authority,
-		port: undefined
+		port: ''
 	};
 }
 
@@ -130,11 +130,4 @@ export interface RawEndpoint {
 	protocol?: string;
 	ipAddress?: string;
 	port?: number;
-}
-
-export interface IEndpoint {
-	serviceName: string;
-	description: string;
-	endpoint: string;
-	protocol: string;
 }

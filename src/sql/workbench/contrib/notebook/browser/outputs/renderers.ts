@@ -62,7 +62,9 @@ export function renderHTML(options: renderHTML.IOptions): Promise<void> {
 			runButton.onclick = event => {
 				host.innerHTML = originalSource;
 				Private.evalInnerHTMLScriptTags(host);
-				host.removeChild(host.firstChild);
+				if (host.firstChild) {
+					host.removeChild(host.firstChild);
+				}
 			};
 			container.appendChild(warning);
 			container.appendChild(runButton);
@@ -120,12 +122,12 @@ export namespace renderHTML {
 		/**
 		 * An optional url resolver.
 		 */
-		resolver: IRenderMime.IResolver | null;
+		resolver: IRenderMime.IResolver | undefined;
 
 		/**
 		 * An optional link handler.
 		 */
-		linkHandler: IRenderMime.ILinkHandler | null;
+		linkHandler: IRenderMime.ILinkHandler | undefined;
 
 		/**
 		 * Whether the node should be typeset.
@@ -135,7 +137,7 @@ export namespace renderHTML {
 		/**
 		 * The LaTeX typesetter for the application.
 		 */
-		latexTypesetter: IRenderMime.ILatexTypesetter | null;
+		latexTypesetter: IRenderMime.ILatexTypesetter | undefined;
 	}
 }
 
@@ -443,26 +445,28 @@ namespace Private {
 		// Loop over each script node.
 		for (let i = 0; i < scripts.length; i++) {
 			let script = scripts.item(i);
-			// Skip any scripts which no longer have a parent.
-			if (!script.parentNode) {
-				continue;
+			if (script) {
+				// Skip any scripts which no longer have a parent.
+				if (!script.parentNode) {
+					continue;
+				}
+
+				// Create a new script node which will be clone.
+				let clone = document.createElement('script');
+
+				// Copy the attributes into the clone.
+				let attrs = script.attributes;
+				for (let i = 0, n = attrs.length; i < n; ++i) {
+					let { name, value } = attrs[i];
+					clone.setAttribute(name, value);
+				}
+
+				// Copy the text content into the clone.
+				clone.textContent = script.textContent;
+
+				// Replace the old script in the parent.
+				script.parentNode.replaceChild(clone, script);
 			}
-
-			// Create a new script node which will be clone.
-			let clone = document.createElement('script');
-
-			// Copy the attributes into the clone.
-			let attrs = script.attributes;
-			for (let i = 0, n = attrs.length; i < n; ++i) {
-				let { name, value } = attrs[i];
-				clone.setAttribute(name, value);
-			}
-
-			// Copy the text content into the clone.
-			clone.textContent = script.textContent;
-
-			// Replace the old script in the parent.
-			script.parentNode.replaceChild(clone, script);
 		}
 	}
 
@@ -508,7 +512,7 @@ namespace Private {
 	export function handleUrls(
 		node: HTMLElement,
 		resolver: IRenderMime.IResolver,
-		linkHandler: IRenderMime.ILinkHandler | null
+		linkHandler?: IRenderMime.ILinkHandler
 	): Promise<void> {
 		// Set up an array to collect promises.
 		let promises: Promise<void>[] = [];
@@ -596,7 +600,7 @@ namespace Private {
 	function handleAnchor(
 		anchor: HTMLAnchorElement,
 		resolver: IRenderMime.IResolver,
-		linkHandler: IRenderMime.ILinkHandler | null
+		linkHandler?: IRenderMime.ILinkHandler
 	): Promise<void> {
 		// Get the link path without the location prepended.
 		// (e.g. "./foo.md#Header 1" vs "http://localhost:8888/foo.md#Header 1")
@@ -639,7 +643,7 @@ namespace Private {
 			});
 	}
 
-	function isPathLocal(path: string, resolver: IRenderMime.IResolver): boolean {
+	function isPathLocal(path: string, resolver?: IRenderMime.IResolver): boolean {
 		let isLocal: boolean;
 		if (path && path.length > 0) {
 			isLocal = resolver && resolver.isLocal

@@ -4616,7 +4616,7 @@ declare module 'azdata' {
 			/* Reads contents from a Uri representing a local or remote notebook and returns a
 			 * JSON object containing the cells and metadata about the notebook
 			 */
-			getNotebookContents(notebookUri: vscode.Uri): Thenable<INotebookContents>;
+			getNotebookContents(notebookUri: vscode.Uri): Thenable<INotebookContents | undefined>;
 
 			/**
 			 * Save a file.
@@ -4639,9 +4639,9 @@ declare module 'azdata' {
 		 */
 		export interface INotebookContents {
 			readonly cells: ICellContents[];
-			readonly metadata: INotebookMetadata;
 			readonly nbformat: number;
 			readonly nbformat_minor: number;
+			readonly metadata?: INotebookMetadata;
 		}
 
 		export interface INotebookMetadata {

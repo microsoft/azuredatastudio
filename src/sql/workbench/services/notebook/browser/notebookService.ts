@@ -66,13 +66,13 @@ export interface INotebookService {
 
 	registerNavigationProvider(provider: INavigationProvider): void;
 
-	getNavigationProvider(notebookUri: URI): INavigationProvider;
+	getNavigationProvider(notebookUri: URI): INavigationProvider | undefined;
 
 	getSupportedFileExtensions(): string[];
 
-	getProvidersForFileType(fileType: string): string[];
+	getProvidersForFileType(fileType: string): string[] | undefined;
 
-	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[];
+	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[] | undefined;
 
 	/**
 	 * Initializes and returns a Notebook manager that can handle all important calls to open, display, and
@@ -141,7 +141,7 @@ export interface INotebookManager {
 	providerId: string;
 	readonly contentManager: azdata.nb.ContentManager;
 	readonly sessionManager: azdata.nb.SessionManager;
-	readonly serverManager: azdata.nb.ServerManager;
+	readonly serverManager?: azdata.nb.ServerManager;
 }
 
 export interface IProviderInfo {
@@ -193,7 +193,7 @@ export class NotebookRange extends Range {
 
 	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number, markdownEditMode?: boolean) {
 		super(startLineNumber, startColumn, endLineNumber, endColumn);
-		this.updateActiveCell(cell);
+		this.cell = cell;
 		this.isMarkdownSourceCell = markdownEditMode ? markdownEditMode : false;
 	}
 }
@@ -216,7 +216,7 @@ export interface INotebookEditor {
 	getSections(): INotebookSection[];
 	navigateToSection(sectionId: string): void;
 	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void;
-	addCell(cellType: CellType, index?: number, event?: UIEvent);
+	addCell(cellType: CellType, index?: number, event?: UIEvent): void;
 }
 
 export interface INavigationProvider {

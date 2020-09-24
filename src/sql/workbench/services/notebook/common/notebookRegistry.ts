@@ -18,7 +18,7 @@ export const Extensions = {
 export interface NotebookProviderRegistration {
 	provider: string;
 	fileExtensions: string | string[];
-	standardKernels: azdata.nb.IStandardKernel | azdata.nb.IStandardKernel[];
+	standardKernels: azdata.nb.IStandardKernel[];
 }
 
 let notebookProviderType: IJSONSchema = {

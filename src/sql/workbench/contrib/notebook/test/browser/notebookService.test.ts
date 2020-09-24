@@ -185,11 +185,11 @@ suite.skip('NotebookService:', function (): void {
 
 		const otherProviderRegistration: NotebookProviderRegistration = {
 			fileExtensions: 'ipynb',
-			standardKernels: {
+			standardKernels: [{
 				name: 'kernel1',
 				connectionProviderIds: [],
 				displayName: 'Kernel 1'
-			},
+			}],
 			provider: 'otherProvider'
 		};
 
