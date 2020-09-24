@@ -514,7 +514,7 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * 
+		 *
 		 * @param title The title displayed in the editor tab for the dashboard
 		 * @param name The name used to identify this dashboard in telemetry
 		 * @param options Options to configure the dashboard
@@ -551,6 +551,16 @@ declare module 'azdata' {
 		 * @param width The width of the wizard, default value is 'narrow'
 		 */
 		export function createWizard(title: string, width?: DialogWidth): Wizard;
+	}
+
+	export namespace workspace {
+		/**
+		 * Create a new ModelView editor
+		 * @param title The title shown in the editor tab
+		 * @param options Options to configure the editor
+		 * @param name The name used to identify the editor in telemetry
+		 */
+		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions, name?: string,): ModelViewEditor;
 	}
 
 	export interface DashboardTab extends Tab {

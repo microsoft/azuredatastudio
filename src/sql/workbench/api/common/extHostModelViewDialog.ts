@@ -650,12 +650,14 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	}
 
 	public createModelViewEditor(title: string, extension: IExtensionDescription, name?: string, options?: azdata.ModelViewEditorOptions): azdata.workspace.ModelViewEditor {
+		name = name ?? 'ModelViewEditor';
 		let editor = new ModelViewEditorImpl(this, this._extHostModelView, extension, this._proxy, title, name, options);
 		editor.handle = this.getHandle(editor);
 		return editor;
 	}
 
 	public createModelViewDashboard(title: string, name: string | undefined, options: azdata.ModelViewDashboardOptions | undefined, extension: IExtensionDescription): azdata.window.ModelViewDashboard {
+		name = name ?? 'ModelViewDashboard';
 		const editor = this.createModelViewEditor(title, extension, name, { supportsSave: false }) as ModelViewEditorImpl;
 		return new ModelViewDashboardImpl(editor, options);
 	}

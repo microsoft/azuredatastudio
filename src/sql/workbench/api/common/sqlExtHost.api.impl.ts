@@ -458,8 +458,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			const workspace: typeof azdata.workspace = {
 				onDidOpenDashboard: extHostDashboard.onDidOpenDashboard,
 				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard,
-				createModelViewEditor(title: string, options?: azdata.ModelViewEditorOptions): azdata.workspace.ModelViewEditor {
-					return extHostModelViewDialog.createModelViewEditor(title, extension, options);
+				createModelViewEditor(title: string, options?: azdata.ModelViewEditorOptions, name?: string): azdata.workspace.ModelViewEditor {
+					return extHostModelViewDialog.createModelViewEditor(title, extension, name, options);
 				}
 			};
 
