@@ -66,7 +66,7 @@ export class ConfigurePythonWizard {
 		} else {
 			wizardTitle = localize('configurePython.wizardNameWithoutKernel', "Configure Python to run kernels");
 		}
-		this._wizard = azdata.window.createWizard(wizardTitle, 600);
+		this._wizard = azdata.window.createWizard(wizardTitle, 'ConfigurePythonWizard', 600);
 		let page0 = azdata.window.createWizardPage(localize('configurePython.page0Name', "Configure Python Runtime"));
 		let page1 = azdata.window.createWizardPage(localize('configurePython.page1Name', "Install Dependencies"));
 

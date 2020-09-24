@@ -58,7 +58,9 @@ export abstract class ToolBase implements ITool {
 
 	protected abstract readonly versionCommand: Command;
 
-	public validateEula(): boolean { return true; }
+	public isEulaAccepted(): boolean { return true; }
+
+	public promptForEula(): Promise<boolean> { return Promise.resolve(true); }
 
 	public get dependencyMessages(): string[] {
 		return (this.dependenciesByOsType.get(this.osDistribution) || []).map((msgType: dependencyType) => messageByDependencyType.get(msgType)!);
