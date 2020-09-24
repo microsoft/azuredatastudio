@@ -30,7 +30,6 @@ export class ServerTreeDataSource implements IDataSource {
 	 * No more than one element may use a given identifier.
 	 */
 	public getId(tree: ITree, element: any): string {
-		//
 		return element.id;
 	}
 
