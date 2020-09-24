@@ -13,12 +13,7 @@ declare module 'dataworkspace' {
 	 * dataworkspace extension
 	 */
 	export interface IExtension {
-		/**
-		 * register a project provider
-		 * @param provider new project provider
-		 * @requires a disposable object, upon disposal, the provider will be unregistered.
-		 */
-		registerProjectProvider(provider: IProjectProvider): vscode.Disposable;
+		getProjectsInWorkspace(): vscode.Uri[];
 	}
 
 	/**

@@ -20,7 +20,7 @@ export class WorkspaceService implements IWorkspaceService {
 
 	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
 		if (vscode.workspace.workspaceFile) {
-			const currentProjects: vscode.Uri[] = await this.getProjectsInWorkspace();
+			const currentProjects: vscode.Uri[] = this.getProjectsInWorkspace();
 			const newWorkspaceFolders: string[] = [];
 			let newProjectFileAdded = false;
 			for (const projectFile of projectFiles) {
@@ -59,7 +59,7 @@ export class WorkspaceService implements IWorkspaceService {
 		return projectTypes;
 	}
 
-	async getProjectsInWorkspace(): Promise<vscode.Uri[]> {
+	getProjectsInWorkspace(): vscode.Uri[] {
 		return vscode.workspace.workspaceFile ? this.getWorkspaceConfigurationValue<string[]>(ProjectsConfigurationName).map(project => this.toUri(project)) : [];
 	}
 
@@ -74,7 +74,7 @@ export class WorkspaceService implements IWorkspaceService {
 
 	async removeProject(projectFile: vscode.Uri): Promise<void> {
 		if (vscode.workspace.workspaceFile) {
-			const currentProjects: vscode.Uri[] = await this.getProjectsInWorkspace();
+			const currentProjects: vscode.Uri[] = this.getProjectsInWorkspace();
 			const projectIdx = currentProjects.findIndex((p: vscode.Uri) => p.fsPath === projectFile.fsPath);
 			if (projectIdx !== -1) {
 				currentProjects.splice(projectIdx, 1);
