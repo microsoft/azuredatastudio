@@ -6,9 +6,9 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { WizardPageBase } from './wizardPageBase';
-import { Model } from './model';
 import { IToolsService } from '../services/toolsService';
+import { Model } from './model';
+import { WizardPageBase } from './wizardPageBase';
 const localize = nls.loadMessageBundle();
 
 export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model> {
@@ -54,8 +54,11 @@ export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model
 	protected abstract async onOk(): Promise<void>;
 	protected abstract onCancel(): void;
 
-	public addButton(button: azdata.window.Button) {
+	public addButton(button: azdata.window.Button, onClick?: () => void | Promise<void>) {
 		this.customButtons.push(button);
+		if (onClick) {
+			this.registerDisposable(button.onClick(onClick));
+		}
 	}
 
 	protected setPages(pages: P[]) {

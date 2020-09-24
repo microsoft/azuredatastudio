@@ -2,8 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
+import * as loc from '../../localizedConstants';
 import { INotebookService, Notebook } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
 import { Model } from '../model';
@@ -13,8 +14,6 @@ import { DeploymentType, NotebookWizardInfo } from './../../interfaces';
 import { IPlatformService } from './../../services/platformService';
 import { NotebookWizardAutoSummaryPage } from './notebookWizardAutoSummaryPage';
 import { NotebookWizardPage } from './notebookWizardPage';
-
-const localize = nls.loadMessageBundle();
 
 export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPage, Model> {
 	private _inputComponents: InputComponents = {};
@@ -41,6 +40,12 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 			this._wizardInfo.codeCellInsertionPosition = 0;
 		}
 		this.wizardObject.doneButton.label = _wizardInfo.actionText || this.wizardObject.doneButton.label;
+		if (this.wizardInfo.runNotebook === 'userChooses') {
+			this.addButton(azdata.window.createButton(
+				this.wizardInfo.scriptToNotebookActionText || loc.scriptToNotebook),
+				() => this.onScriptToNotebook()
+			);
+		}
 	}
 
 	public get deploymentType(): DeploymentType | undefined {
@@ -50,14 +55,26 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 	protected initialize(): void {
 		this.setPages(this.getPages());
 		this.wizardObject.generateScriptButton.hidden = true;
-		this.wizardInfo.actionText = this.wizardInfo.actionText || localize('notebookWizard.ScriptToNotebook', "Script to Notebook");
+		this.wizardInfo.actionText = this.wizardInfo.actionText || ((this.wizardInfo.runNotebook === false) ? loc.scriptToNotebook : loc.deployNotebook);
 		this.wizardObject.doneButton.label = this.wizardInfo.actionText;
 	}
 
 	protected onCancel(): void {
 	}
 
+	protected async onScriptToNotebook(): Promise<void> {
+		this.wizardInfo.runNotebook = false;
+		return this.finishWizard();
+	}
+
 	protected async onOk(): Promise<void> {
+		if (this.wizardInfo.runNotebook === 'userChooses') {
+			this.wizardInfo.runNotebook = true;
+		}
+		await this.finishWizard();
+	}
+
+	private async finishWizard() {
 		await setModelValues(this.inputComponents, this.model);
 		const env: NodeJS.ProcessEnv = {};
 		this.model.setEnvironmentVariables(env, (varName) => {
@@ -87,7 +104,7 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 		);
 		try {
 			if (this.wizardInfo.runNotebook) {
-				this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName, notebook, 'deploy', this.platformService, env);
+				this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName || this.wizardInfo.title, notebook, 'deploy', this.platformService, env);
 			} else {
 				Object.assign(process.env, env);
 				const notebookPath = this.notebookService.getNotebookPath(this.wizardInfo.notebook);
