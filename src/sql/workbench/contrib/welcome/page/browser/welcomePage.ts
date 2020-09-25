@@ -595,6 +595,7 @@ class WelcomePage extends Disposable {
 				const descriptionContainerElm = document.createElement('div');
 				const imgContainerElm = document.createElement('div');
 				const iconElm = document.createElement('img');
+				iconElm.setAttribute('aria-label', extension.name);
 				const pElm = document.createElement('p');
 				const bodyElm = document.createElement('p');
 				outerAnchorContainerElm.classList.add('extension');
@@ -676,6 +677,7 @@ class WelcomePage extends Disposable {
 				const outerContainerElem = document.createElement('div');
 				const flexContainerElem = document.createElement('div');
 				const iconContainerElem = document.createElement('img');
+				iconContainerElem.setAttribute('aria-label', j.name);
 				const descriptionContainerElem = document.createElement('div');
 				const pElem = document.createElement('p');
 				const anchorElem = document.createElement('a');
