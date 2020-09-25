@@ -309,7 +309,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._standardKernels;
 	}
 
-	public set standardKernels(kernels) {
+	public set standardKernels(kernels: notebookUtils.IStandardKernelWithProvider[]) {
 		this._standardKernels = kernels;
 		this.setKernelDisplayNameMapsWithStandardKernels();
 	}
@@ -548,7 +548,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public async startSession(manager: INotebookManager, displayName?: string, setErrorStateOnFail?: boolean, kernelAlias?: string): Promise<void> {
-		if (displayName && this._standardKernels.length > 0) {
+		if (displayName) {
 			let standardKernel = find(this._standardKernels, kernel => kernel.displayName === displayName);
 			if (standardKernel) {
 				this._defaultKernel = { name: standardKernel.name, display_name: standardKernel.displayName };
@@ -643,7 +643,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._defaultKernel = notebookConstants.sqlKernelSpec;
 			this._providerId = SQL_NOTEBOOK_PROVIDER;
 		}
-		if (!this._defaultLanguageInfo || !this._defaultLanguageInfo.name) {
+		if (!this._defaultLanguageInfo?.name) {
 			// update default language
 			this._defaultLanguageInfo = {
 				name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
@@ -653,27 +653,24 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private isValidConnection(profile: IConnectionProfile | connection.Connection) {
-		if (this._standardKernels.length > 0) {
-			let standardKernels = find(this._standardKernels, kernel => this._defaultKernel && kernel.displayName === this._defaultKernel.display_name);
-			let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
-			let providerFeatures = this._capabilitiesService.getCapabilities(profile.providerName);
-			if (connectionProviderIds?.length) {
-				this._currentKernelAlias = providerFeatures?.connection.notebookKernelAlias;
-				// Switching from Kusto to another kernel should set the currentKernelAlias to undefined
-				if (this._selectedKernelDisplayName !== this._currentKernelAlias && this._selectedKernelDisplayName) {
-					this._currentKernelAlias = undefined;
-				} else {
-					// Adds Kernel Alias and Connection Provider to Map if new Notebook connection contains notebookKernelAlias
-					this._kernelDisplayNameToConnectionProviderIds.set(this._currentKernelAlias, [profile.providerName]);
-				}
+		let standardKernels = find(this._standardKernels, kernel => this._defaultKernel && kernel.displayName === this._defaultKernel.display_name);
+		let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
+		let providerFeatures = this._capabilitiesService?.getCapabilities(profile.providerName);
+		if (connectionProviderIds?.length) {
+			this._currentKernelAlias = providerFeatures?.connection.notebookKernelAlias;
+			// Switching from Kusto to another kernel should set the currentKernelAlias to undefined
+			if (this._selectedKernelDisplayName !== this._currentKernelAlias && this._selectedKernelDisplayName) {
+				this._currentKernelAlias = undefined;
+			} else {
+				// Adds Kernel Alias and Connection Provider to Map if new Notebook connection contains notebookKernelAlias
+				this._kernelDisplayNameToConnectionProviderIds.set(this._currentKernelAlias, [profile.providerName]);
 			}
-			return this._currentKernelAlias || profile && connectionProviderIds && find(connectionProviderIds, provider => provider === profile.providerName) !== undefined;
 		}
-		return false;
+		return this._currentKernelAlias || profile && connectionProviderIds && find(connectionProviderIds, provider => provider === profile.providerName) !== undefined;
 	}
 
 	public getStandardKernelFromName(name: string): notebookUtils.IStandardKernelWithProvider | undefined {
-		if (name && this._standardKernels.length > 0) {
+		if (name) {
 			let kernel = find(this._standardKernels, kernel => kernel.name.toLowerCase() === name.toLowerCase());
 			return kernel;
 		}
@@ -681,7 +678,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public getStandardKernelFromDisplayName(displayName: string): notebookUtils.IStandardKernelWithProvider | undefined {
-		if (displayName && this._standardKernels.length > 0) {
+		if (displayName) {
 			let kernel = find(this._standardKernels, kernel => kernel.displayName.toLowerCase() === displayName.toLowerCase());
 			return kernel;
 		}
@@ -910,19 +907,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return kernel;
 	}
 
-	private sanitizeSavedKernelInfo() {
+	private sanitizeSavedKernelInfo(): void {
 		if (this._savedKernelInfo) {
 			let displayName = this._savedKernelInfo.display_name;
 
 			if (this._savedKernelInfo.display_name !== displayName) {
 				this._savedKernelInfo.display_name = displayName;
 			}
-			if (this._standardKernels.length > 0) {
-				let standardKernel = find(this._standardKernels, kernel => kernel.displayName === displayName || startsWith(displayName, kernel.displayName));
-				if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
-					this._savedKernelInfo.name = standardKernel.name;
-					this._savedKernelInfo.display_name = standardKernel.displayName;
-				}
+			let standardKernel = find(this._standardKernels, kernel => kernel.displayName === displayName || startsWith(displayName, kernel.displayName));
+			if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
+				this._savedKernelInfo.name = standardKernel.name;
+				this._savedKernelInfo.display_name = standardKernel.displayName;
 			}
 		}
 	}
@@ -1111,16 +1106,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 * provider and notebook provider ids from a kernel display name
 	 */
 	private setKernelDisplayNameMapsWithStandardKernels(): void {
-		if (this._standardKernels.length > 0) {
-			this._standardKernels.forEach(kernel => {
-				let displayName = kernel.displayName;
-				if (!displayName) {
-					displayName = kernel.name;
-				}
-				this._kernelDisplayNameToConnectionProviderIds.set(displayName, kernel.connectionProviderIds);
-				this._kernelDisplayNameToNotebookProviderIds.set(displayName, kernel.notebookProvider);
-			});
-		}
+		this._standardKernels.forEach(kernel => {
+			let displayName = kernel.displayName;
+			if (!displayName) {
+				displayName = kernel.name;
+			}
+			this._kernelDisplayNameToConnectionProviderIds.set(displayName, kernel.connectionProviderIds);
+			this._kernelDisplayNameToNotebookProviderIds.set(displayName, kernel.notebookProvider);
+		});
 	}
 
 	/**
