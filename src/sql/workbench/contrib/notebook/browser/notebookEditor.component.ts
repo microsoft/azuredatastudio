@@ -13,12 +13,13 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IModelFactory, ViewMode, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { IModelFactory, ViewMode, NotebookContentChange, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { NotebookViewExtension, INotebookView } from 'sql/workbench/services/notebook/browser/models/notebookView';
+import { Deferred } from 'sql/base/common/promise';
 
 export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 
@@ -30,6 +31,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 	private _model: NotebookModel;
 	private profile: IConnectionProfile;
 	private notebookManagers: INotebookManager[] = [];
+	private _modelReadyDeferred = new Deferred<NotebookModel>();
 
 	constructor(
 		@Inject(ILogService) private readonly logService: ILogService,
@@ -56,6 +58,8 @@ export class NotebookEditorComponent extends AngularDisposable {
 
 	private async doLoad(): Promise<void> {
 		await this.createModelAndLoadContents();
+		this._modelReadyDeferred.resolve(this._model);
+		this.setNotebookManager();
 	}
 
 	private async createModelAndLoadContents(): Promise<void> {
@@ -81,6 +85,14 @@ export class NotebookEditorComponent extends AngularDisposable {
 		this.detectChanges();
 	}
 
+	private async setNotebookManager(): Promise<void> {
+		let providerInfo = await this._notebookParams.providerInfo;
+		for (let providerId of providerInfo.providers) {
+			let notebookManager = await this.notebookService.getOrCreateNotebookManager(providerId, this._notebookParams.notebookUri);
+			this.notebookManagers.push(notebookManager);
+		}
+	}
+
 	private get modelFactory(): IModelFactory {
 		if (!this._notebookParams.modelFactory) {
 			this._notebookParams.modelFactory = new ModelFactory(this.instantiationService);
@@ -90,6 +102,10 @@ export class NotebookEditorComponent extends AngularDisposable {
 
 	public get model() {
 		return this._model;
+	}
+
+	public get modelReady(): Promise<INotebookModel> {
+		return this._modelReadyDeferred.promise;
 	}
 
 	private handleContentChanged(change: NotebookContentChange) {
