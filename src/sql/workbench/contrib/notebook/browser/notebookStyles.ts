@@ -162,9 +162,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		if (dropdownArrowColor) {
 			collector.addRule(`.monaco-workbench .notebookEditor .select-container:after { color: ${dropdownArrowColor};}`);
 		}
-		// Empty string hides the dropdownArrow from the accessibility tree (arrow does not need to be focusable)
-		let content: string = '\"\\eab4\" / \"\"';
-		collector.addRule(`.monaco-workbench .notebookEditor .select-container:after { content: ${content};}`);
 		const buttonMenuArrowColor = theme.getColor(buttonMenuArrow);
 		if (buttonMenuArrowColor) {
 			collector.addRule(`.notebookEditor .notebook-button.masked-pseudo-after:after { background-color: ${buttonMenuArrowColor};}`);
