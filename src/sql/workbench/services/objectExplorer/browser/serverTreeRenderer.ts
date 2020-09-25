@@ -178,7 +178,7 @@ export class ServerTreeRenderer implements IRenderer {
 		let pathConfig: URI | IconPath | { id: string, path: IconPath, default?: boolean }[] | undefined = providerProperties.iconPath;
 		if (Array.isArray(pathConfig)) {
 			for (const e of pathConfig) {
-				if (!e.id || e.id === iconId || e.default) {
+				if (!e.id || e.id === iconId || (!iconId && e.default)) {
 					iconPath = e.path;
 					connection['iconPath'] = iconPath;
 					break;
