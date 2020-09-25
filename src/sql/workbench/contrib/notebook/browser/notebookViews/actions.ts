@@ -8,8 +8,11 @@ import { Action } from 'vs/base/common/actions';
 import { OptionsModal } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { NotebookViewExtension } from 'sql/workbench/services/notebook/browser/models/notebookView';
+import { localize } from 'vs/nls';
+import { InsertCellsModal } from 'sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal';
+import { ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 
-export class ViewSettings extends Action {
+export class ViewSettingsAction extends Action {
 	private static readonly ID = 'viewSettings';
 	private static readonly LABEL = undefined;
 	private static readonly ICON = 'notebook-button settings masked-icon';
@@ -18,13 +21,39 @@ export class ViewSettings extends Action {
 		private _context: NotebookViewExtension,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 	) {
-		super(ViewSettings.ID, ViewSettings.LABEL, ViewSettings.ICON);
+		super(ViewSettingsAction.ID, ViewSettingsAction.LABEL, ViewSettingsAction.ICON);
 	}
 
 	run(): Promise<boolean> {
 		try {
 			const optionsModal = this._instantiationService.createInstance(OptionsModal);
 			optionsModal.open(this._context);
+			return Promise.resolve(true);
+		} catch (e) {
+			return Promise.resolve(false);
+		}
+	}
+}
+
+export class InsertCellAction extends Action {
+	private static readonly ID = 'viewSettings';
+	private static readonly LABEL = localize('insertCells', "Insert Cells");
+	private static readonly ICON = 'notebook-button masked-pseudo add-new';
+
+	constructor(
+		private _context: NotebookViewExtension,
+		private _containerRef: ViewContainerRef,
+		private _componentFactoryResolver: ComponentFactoryResolver,
+		@IInstantiationService private _instantiationService: IInstantiationService,
+	) {
+		super(InsertCellAction.ID, InsertCellAction.LABEL, InsertCellAction.ICON);
+	}
+
+	run(): Promise<boolean> {
+		try {
+			const optionsModal = this._instantiationService.createInstance(InsertCellsModal, this._context, this._containerRef, this._componentFactoryResolver);
+			optionsModal.render();
+			optionsModal.open();
 			return Promise.resolve(true);
 		} catch (e) {
 			return Promise.resolve(false);

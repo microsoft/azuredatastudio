@@ -718,7 +718,8 @@
 					"plotly.js-dist-min",
 					"angular2-grid",
 					"html-query-plan",
-					"html2canvas"
+					"html2canvas",
+					"lodash"
                 ]
             },
             {

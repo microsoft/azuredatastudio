@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 //import 'vs/css!./placeholder';
 
-import { Component, Input, ViewChildren, QueryList, ChangeDetectorRef, forwardRef, Inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, ViewChildren, QueryList, ChangeDetectorRef, forwardRef, Inject, ViewChild, ElementRef, ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 import { ICellModel, INotebookModel, ISingleNotebookEditOperation } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
@@ -28,10 +28,10 @@ import * as DOM from 'vs/base/browser/dom';
 import { Deferred } from 'sql/base/common/promise';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ViewSettings } from 'sql/workbench/contrib/notebook/browser/notebookViews/actions';
+import { InsertCellAction, ViewSettingsAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-//import * as _ from 'lodash';
 import { CellType } from 'sql/workbench/services/notebook/common/contracts';
+import * as _ from 'lodash';
 
 export const PLACEHOLDER_SELECTOR: string = 'notebook-view-component';
 
@@ -65,7 +65,9 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(INotebookService) private notebookService: INotebookService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
-		@Inject(IEditorService) private editorService: IEditorService,
+		@Inject(IEditorService) private _editorService: IEditorService,
+		@Inject(ViewContainerRef) private _containerRef: ViewContainerRef,
+		@Inject(ComponentFactoryResolver) private _componentFactoryResolver: ComponentFactoryResolver,
 	) {
 		super();
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
@@ -76,11 +78,9 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	ngDoCheck() {
 		// check for object mutation
 		if (this._extension) {
-			/*
 			if (!_.isEqual(this._prevModel, this.model)) {
 				this._changeRef.detectChanges();
 			}
-			*/
 		}
 	}
 
@@ -96,11 +96,11 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		return this.notebookParams.input.isDirty();
 	}
 	isActive(): boolean {
-		return this.editorService.activeEditor ? this.editorService.activeEditor.matches(this.notebookParams.input) : false;
+		return this._editorService.activeEditor ? this._editorService.activeEditor.matches(this.notebookParams.input) : false;
 	}
 	isVisible(): boolean {
 		let notebookEditor = this.notebookParams.input;
-		return this.editorService.visibleEditors.some(e => e.matches(notebookEditor));
+		return this._editorService.visibleEditors.some(e => e.matches(notebookEditor));
 	}
 	executeEdits(edits: ISingleNotebookEditOperation[]): boolean {
 		throw new Error('Method not implemented.');
@@ -193,14 +193,14 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		titleElement.style.marginRight = '25px';
 		titleElement.style.minHeight = '25px';
 
-		let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.InsertCell', localize('insertCells', "Insert Cells"), 'notebook-button masked-pseudo add-new');
+		let addCellsAction = this.instantiationService.createInstance(InsertCellAction, this.extension, this._containerRef, this._componentFactoryResolver);
 
 		this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'notebook-button masked-pseudo start-outline');
 
 		let spacerElement = document.createElement('li');
 		spacerElement.style.marginLeft = 'auto';
 
-		let viewOptions = this.instantiationService.createInstance(ViewSettings, this.extension);
+		let viewOptions = this.instantiationService.createInstance(ViewSettingsAction, this.extension);
 
 		let viewsContainer = document.createElement('li');
 		let viewsActionsProvider = new NotebookViewsDropdownSelectionProvider(viewsContainer, this.contextViewService, this.modelReady, this.notebookService, this.instantiationService);
@@ -227,7 +227,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		this._actionBar.setContent([
 			{ element: titleElement },
 			{ element: Taskbar.createTaskbarSeparator() },
-			{ action: addCellsButton },
+			{ action: addCellsAction },
 			{ action: this._runAllCellsAction },
 			{ element: spacerElement },
 			{ element: viewsDropdownContainer },
