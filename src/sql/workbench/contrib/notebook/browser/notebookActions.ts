@@ -385,6 +385,7 @@ export class CollapseCellsAction extends ToggleableAction {
 			shouldToggleTooltip: toggleTooltip,
 			isOn: false
 		});
+		this.expanded = true;
 	}
 
 	public get isCollapsed(): boolean {
@@ -392,6 +393,7 @@ export class CollapseCellsAction extends ToggleableAction {
 	}
 	private setCollapsed(value: boolean) {
 		this.toggle(value);
+		this.expanded = !value;
 	}
 
 	public async run(context: URI): Promise<boolean> {
@@ -407,6 +409,7 @@ export class CollapseCellsAction extends ToggleableAction {
 const showAllKernelsConfigName = 'notebook.showAllKernels';
 const workbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
 export const noKernelName = localize('noKernel', "No Kernel");
+
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
@@ -433,16 +436,21 @@ export class KernelsDropdown extends SelectBox {
 	updateModel(model: INotebookModel): void {
 		this.model = model as NotebookModel;
 		this._register(this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
-			this.updateKernel(changedArgs.newValue);
+			this.updateKernel(changedArgs.newValue, changedArgs.nbKernelAlias);
 		}));
 		let kernel = this.model.clientSession && this.model.clientSession.kernel;
 		this.updateKernel(kernel);
 	}
 
 	// Update SelectBox values
-	public updateKernel(kernel: azdata.nb.IKernel) {
+	public updateKernel(kernel: azdata.nb.IKernel, nbKernelAlias?: string) {
 		let kernels: string[] = this._showAllKernels ? [...new Set(this.model.specs.kernels.map(a => a.display_name).concat(this.model.standardKernelsDisplayName()))]
 			: this.model.standardKernelsDisplayName();
+		if (this.model.kernelAliases?.length) {
+			for (let x in this.model.kernelAliases) {
+				kernels.splice(1, 0, this.model.kernelAliases[x]);
+			}
+		}
 		if (kernel && kernel.isReady) {
 			let standardKernel = this.model.getStandardKernelFromName(kernel.name);
 			if (kernels) {
@@ -452,6 +460,9 @@ export class KernelsDropdown extends SelectBox {
 				} else {
 					let kernelSpec = this.model.specs.kernels.find(k => k.name === kernel.name);
 					index = firstIndex(kernels, k => k === kernelSpec?.display_name);
+				}
+				if (nbKernelAlias) {
+					index = kernels.indexOf(nbKernelAlias);
 				}
 				// This is an error case that should never happen
 				// Just in case, setting index to 0
@@ -531,7 +542,12 @@ export class AttachToDropdown extends SelectBox {
 			let currentKernelName = this.model.clientSession.kernel.name.toLowerCase();
 			let currentKernelSpec = find(this.model.specs.kernels, kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
 			if (currentKernelSpec) {
-				kernelDisplayName = currentKernelSpec.display_name;
+				//KernelDisplayName should be Kusto when connecting to Kusto connection
+				if ((this.model.context?.serverCapabilities.notebookKernelAlias && this.model.currentKernelAlias === this.model.context?.serverCapabilities.notebookKernelAlias) || (this.model.kernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.selectedKernelDisplayName)) {
+					kernelDisplayName = this.model.context?.serverCapabilities.notebookKernelAlias || this.model.selectedKernelDisplayName;
+				} else {
+					kernelDisplayName = currentKernelSpec.display_name;
+				}
 			}
 		}
 		return kernelDisplayName;
@@ -542,14 +558,17 @@ export class AttachToDropdown extends SelectBox {
 		let connProviderIds = this.model.getApplicableConnectionProviderIds(currentKernel);
 		if ((connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
 			this.setOptions([msgLocalHost]);
-		}
-		else {
-			let connections: string[] = model.context && model.context.title ? [model.context.title] : [msgSelectConnection];
+		} else {
+			let connections: string[] = model.context && model.context.title && (connProviderIds.includes(this.model.context.providerName)) ? [model.context.title] : [msgSelectConnection];
 			if (!find(connections, x => x === msgChangeConnection)) {
 				connections.push(msgChangeConnection);
 			}
 			this.setOptions(connections, 0);
 			this.enable();
+
+			if (this.model.kernelAliases.includes(currentKernel) && this.model.selectedKernelDisplayName !== currentKernel) {
+				this.model.changeKernel(currentKernel);
+			}
 		}
 	}
 
@@ -569,10 +588,22 @@ export class AttachToDropdown extends SelectBox {
 	 **/
 	public async openConnectionDialog(useProfile: boolean = false): Promise<boolean> {
 		try {
+			// Get all providers to show all available connections in connection dialog
+			let providers = this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name);
+			// Spark kernels are unable to get providers from above, therefore ensure that we get the
+			// correct providers for the selected kernel and load the proper connections for the connection dialog
+			// Example Scenario: Spark Kernels should only have MSSQL connections in connection dialog
+			if (!this.model.kernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.clientSession.kernel.name !== 'SQL') {
+				providers = providers.concat(this.model.getApplicableConnectionProviderIds(this.model.selectedKernelDisplayName));
+			} else {
+				for (let alias of this.model.kernelAliases) {
+					providers = providers.concat(this.model.getApplicableConnectionProviderIds(alias));
+				}
+			}
 			let connection = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
 				{
 					connectionType: ConnectionType.temporary,
-					providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name)
+					providers: providers
 				},
 				useProfile ? this.model.connectionProfile : undefined);
 
@@ -610,6 +641,13 @@ export class AttachToDropdown extends SelectBox {
 			this.model.addAttachToConnectionsToBeDisposed(connectionUri);
 			// Call doChangeContext to set the newly chosen connection in the model
 			this.doChangeContext(connectionProfile);
+
+			//Changes kernel based on connection attached to
+			if (this.model.kernelAliases.includes(connectionProfile.serverCapabilities.notebookKernelAlias)) {
+				this.model.changeKernel(connectionProfile.serverCapabilities.notebookKernelAlias);
+			} else if (this.model.clientSession.kernel.name === 'SQL') {
+				this.model.changeKernel('SQL');
+			}
 			return true;
 		}
 		catch (error) {

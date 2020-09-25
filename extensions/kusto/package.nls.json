@@ -1,0 +1,52 @@
+{
+	"notebook.command.new": "New Notebook",
+	"notebook.command.open": "Open Notebook",
+
+	"cloud.databaseProperties.name": "Database Name",
+	"cloud.databaseProperties.size": "Size (MB)",
+
+	"cloud.serverProperties.summary": "Status",
+	"cloud.serverProperties.machinesTotal": "Total Machines in the cluster",
+	"cloud.serverProperties.diskCacheCapacity": "% of Cluster data capacity used",
+
+	"databasesListProperties.name": "Name",
+	"databasesListProperties.size": "Size (MB)",
+
+	"objectsListProperties.name": "Name",
+	"objectsListProperties.metadataTypeName": "Type",
+
+	"kusto.configuration.title": "KUSTO configuration",
+	"kusto.query.displayBitAsNumber": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'",
+	"kusto.format.alignColumnDefinitionsInColumns": "Should column definitions be aligned?",
+	"kusto.format.datatypeCasing": "Should data types be formatted as UPPERCASE, lowercase, or none (not formatted)",
+	"kusto.format.keywordCasing": "Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)",
+	"kusto.logDebugInfo": "[Optional] Log debug output to the console (View -> Output) and then select appropriate output channel from the dropdown",
+	"kusto.tracingLevel": "[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information",
+
+	"kusto.provider.displayName": "Azure Data Explorer (Kusto)",
+	"kusto.connectionOptions.connectionName.displayName": "Name (optional)",
+	"kusto.connectionOptions.connectionName.description": "Custom name of the connection",
+	"kusto.connectionOptions.serverName.displayName": "Cluster",
+	"kusto.connectionOptions.serverName.description": "Kusto cluster name",
+	"kusto.connectionOptions.databaseName.displayName": "Database",
+	"kusto.connectionOptions.databaseName.description": "The name of the initial catalog or database in the data source",
+	"kusto.connectionOptions.authType.displayName": "Authentication type",
+	"kusto.connectionOptions.authType.description": "Specifies the method of authenticating with Kusto Server",
+	"kusto.connectionOptions.authType.categoryValues.azureMFA": "Azure Active Directory - Universal with MFA support",
+	"kusto.connectionOptions.userName.displayName": "User name",
+	"kusto.connectionOptions.userName.description": "Indicates the user ID to be used when connecting to the data source",
+	"kusto.connectionOptions.password.displayName": "Password",
+	"kusto.connectionOptions.password.description": "Indicates the password to be used when connecting to the data source",
+	"kusto.connectionOptions.connectTimeout.displayName": "Connect timeout",
+	"kusto.connectionOptions.connectTimeout.description": "The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error",
+	"kusto.connectionOptions.connectRetryCount.displayName": "Connect retry count",
+	"kusto.connectionOptions.connectRetryCount.description": "Number of attempts to restore connection",
+	"kusto.connectionOptions.connectRetryInterval.displayName": "Connect retry interval",
+	"kusto.connectionOptions.connectRetryInterval.description": "Delay between attempts to restore connection",
+	"kusto.connectionOptions.applicationName.displayName": "Application name",
+	"kusto.connectionOptions.applicationName.description": "The name of the application",
+	"kusto.connectionOptions.workstationId.displayName": "Workstation Id",
+	"kusto.connectionOptions.workstationId.description": "The name of the workstation connecting to Kusto Server",
+	"kusto.connectionOptions.failoverPartner.displayName": "Failover partner",
+	"kusto.connectionOptions.failoverPartner.description": "The name or network address of the instance of Kusto Server that acts as a failover partner"
+}

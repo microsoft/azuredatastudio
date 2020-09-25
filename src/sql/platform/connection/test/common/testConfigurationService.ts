@@ -33,14 +33,16 @@ export class TestConfigurationService implements IConfigurationService {
 		let _target: 'user' | 'workspace' = (target as ConfigurationTarget) === ConfigurationTarget.USER ? 'user' : 'workspace';
 		let keyArray = key.split('.');
 		let targetObject = this.configuration[_target];
-		for (let i = 0; i < keyArray.length; i++) {
-			if (i === keyArray.length - 1) {
-				targetObject[keyArray[i]] = value;
-			} else {
-				if (!targetObject[keyArray[i]]) {
-					targetObject[keyArray[i]] = {};
+		if (targetObject) {
+			for (let i = 0; i < keyArray.length; i++) {
+				if (i === keyArray.length - 1) {
+					targetObject![keyArray[i]] = value;
+				} else {
+					if (!targetObject![keyArray[i]]) {
+						targetObject![keyArray[i]] = {};
+					}
+					targetObject = targetObject![keyArray[i]];
 				}
-				targetObject = targetObject[keyArray[i]];
 			}
 		}
 		return Promise.resolve(void 0);

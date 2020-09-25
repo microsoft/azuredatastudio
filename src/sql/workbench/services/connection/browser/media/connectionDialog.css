@@ -26,7 +26,6 @@
 	flex: 1 1;
 	min-height: 120px;
 	overflow: hidden;
-	margin: 0px 11px;
 }
 
 .connection-dialog .tab-container {
@@ -60,7 +59,6 @@
 }
 
 .connection-provider-info {
-	overflow-y: hidden;
 	margin: 15px;
 }
 
@@ -163,4 +161,14 @@
 .connection-input .monaco-inputbox .monaco-action-bar .action-item .codicon {
 	width: 8px;
 	height: 8px;
+}
+
+.connection-dialog .explorer-servers .connection-profile .monaco-tl-twistie {
+	/* Hide twisties */
+	display: none !important;
+}
+
+.connection-dialog .tabbedPanel .tabList,
+.connection-dialog .tabbedPanel .tabBody {
+	padding-left: 10px;
 }

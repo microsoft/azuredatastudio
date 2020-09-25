@@ -35,7 +35,9 @@ export interface FlavorProperties {
 	databaseProperties: Array<Property>;
 	serverProperties: Array<Property>;
 	databasesListProperties?: Array<ObjectListViewProperty>;
+	databaseListHintText?: string;
 	objectsListProperties?: Array<ObjectListViewProperty>;
+	objectListHintText?: string;
 }
 
 export interface ConditionProperties {
@@ -296,7 +298,7 @@ ExtensionsRegistry.registerExtensionPoint<ProviderProperties | ProviderPropertie
 
 	for (let extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray<ProviderProperties>(value)) {
+		if (Array.isArray(value)) {
 			for (let command of value) {
 				handleCommand(command, extension);
 			}

@@ -6,8 +6,12 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { IJupyterBookSection, IJupyterBookToc } from '../contracts/content';
+import { JupyterBookSection, IJupyterBookToc, IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
 import * as loc from '../common/localizedConstants';
+import { isBookItemPinned } from '../common/utils';
+import { BookVersion } from './bookModel';
+
+const content = 'content';
 
 export enum BookTreeItemType {
 	Book = 'Book',
@@ -25,13 +29,15 @@ export interface BookTreeItemFormat {
 	type: BookTreeItemType;
 	treeItemCollapsibleState: number;
 	isUntitled: boolean;
+	version?: string;
 }
 
 export class BookTreeItem extends vscode.TreeItem {
-	private _sections: IJupyterBookSection[];
+	private _sections: JupyterBookSection[];
 	private _uri: string | undefined;
 	private _previousUri: string;
 	private _nextUri: string;
+	public readonly version: string;
 	public command: vscode.Command;
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
@@ -40,6 +46,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
 			this._sections = book.page;
+			this.version = book.version;
 			if (book.isUntitled) {
 				this.contextValue = 'providedBook';
 			} else {
@@ -52,13 +59,22 @@ export class BookTreeItem extends vscode.TreeItem {
 				if (book.isUntitled) {
 					this.contextValue = 'unsavedNotebook';
 				} else {
-					this.contextValue = 'savedNotebook';
+					this.contextValue = isBookItemPinned(book.contentPath) ? 'pinnedNotebook' : 'savedNotebook';
 				}
+			} else {
+				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? 'pinnedNotebook' : 'savedNotebook') : 'section';
 			}
 			this.setPageVariables();
 			this.setCommand();
 		}
 		this.iconPath = icons;
+
+		if (this.book.type === BookTreeItemType.ExternalLink) {
+			this.tooltip = `${this._uri}`;
+		}
+		else {
+			this.tooltip = this.book.type === BookTreeItemType.Book ? (this.book.version === BookVersion.v1 ? path.join(this.book.root, content) : this.book.root) : this.book.contentPath;
+		}
 	}
 
 	private setPageVariables() {
@@ -68,7 +84,7 @@ export class BookTreeItem extends vscode.TreeItem {
 				vscode.TreeItemCollapsibleState.Collapsed :
 				vscode.TreeItemCollapsibleState.None;
 		this._sections = this.book.page.sections || this.book.page.subsections;
-		this._uri = this.book.page.url;
+		this._uri = this.book.version === BookVersion.v1 ? this.book.page.url : this.book.page.file;
 
 		if (this.book.tableOfContents.sections) {
 			let index = (this.book.tableOfContents.sections.indexOf(this.book.page));
@@ -91,14 +107,18 @@ export class BookTreeItem extends vscode.TreeItem {
 	private setPreviousUri(index: number): void {
 		let i = --index;
 		while (i > -1) {
-			if (this.book.tableOfContents.sections[i].url) {
+			let pathToNotebook: string;
+			if (this.book.version === BookVersion.v2 && (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file) {
 				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				let pathToNotebook = path.posix.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
-				// eslint-disable-next-line no-sync
-				if (fs.existsSync(pathToNotebook)) {
-					this._previousUri = pathToNotebook;
-					return;
-				}
+				pathToNotebook = path.posix.join(this.book.root, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
+			} else if ((this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url) {
+				pathToNotebook = path.posix.join(this.book.root, content, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
+			}
+
+			// eslint-disable-next-line no-sync
+			if (fs.existsSync(pathToNotebook)) {
+				this._previousUri = pathToNotebook;
+				return;
 			}
 			i--;
 		}
@@ -107,14 +127,18 @@ export class BookTreeItem extends vscode.TreeItem {
 	private setNextUri(index: number): void {
 		let i = ++index;
 		while (i < this.book.tableOfContents.sections.length) {
-			if (this.book.tableOfContents.sections[i].url) {
+			let pathToNotebook: string;
+			if (this.book.version === BookVersion.v2 && (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file) {
 				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				let pathToNotebook = path.posix.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
-				// eslint-disable-next-line no-sync
-				if (fs.existsSync(pathToNotebook)) {
-					this._nextUri = pathToNotebook;
-					return;
-				}
+				pathToNotebook = path.posix.join(this.book.root, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
+			} else if ((this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url) {
+				pathToNotebook = path.posix.join(this.book.root, content, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
+			}
+
+			// eslint-disable-next-line no-sync
+			if (fs.existsSync(pathToNotebook)) {
+				this._nextUri = pathToNotebook;
+				return;
 			}
 			i++;
 		}
@@ -148,27 +172,20 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this._nextUri;
 	}
 
-	get tooltip(): string {
-		if (this.book.type === BookTreeItemType.ExternalLink) {
-			return `${this._uri}`;
-		}
-		else {
-			return this.book.type === BookTreeItemType.Book ? this.book.root : this.book.contentPath;
-		}
-	}
+	public readonly tooltip: string;
 
 	/**
 	 * Helper method to find a child section with a specified URL
 	 * @param url The url of the section we're searching for
 	 */
-	public findChildSection(url?: string): IJupyterBookSection | undefined {
+	public findChildSection(url?: string): JupyterBookSection | undefined {
 		if (!url) {
 			return undefined;
 		}
-		return this.findChildSectionRecur(this, url);
+		return this.findChildSectionRecur(this as JupyterBookSection, url);
 	}
 
-	private findChildSectionRecur(section: IJupyterBookSection, url: string): IJupyterBookSection | undefined {
+	private findChildSectionRecur(section: JupyterBookSection, url: string): JupyterBookSection | undefined {
 		if (section.url && section.url === url) {
 			return section;
 		} else if (section.sections) {

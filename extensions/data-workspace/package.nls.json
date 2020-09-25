@@ -1,0 +1,10 @@
+{
+	"extension-displayName": "Data workspace",
+	"extension-description": "Data workspace",
+	"data-workspace-view-container-name": "Projects",
+	"main-view-name": "Projects",
+	"add-project-command": "Add Project",
+	"refresh-workspace-command": "Refresh",
+	"remove-project-command": "Remove Project",
+	"projects-view-no-workspace-content": "To use projects, open a workspace and add projects to it, or use the 'Add Project' feature and we will create a workspace for you.\n[Open Workspace](command:workbench.action.openWorkspace)\n[Add Project](command:projects.addProject)"
+}

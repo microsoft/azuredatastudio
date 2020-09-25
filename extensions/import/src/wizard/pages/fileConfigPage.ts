@@ -18,7 +18,6 @@ export class FileConfigPage extends ImportPage {
 	private _schemaDropdown: azdata.DropDownComponent;
 	private _form: azdata.FormContainer;
 
-	private _databaseLoader: azdata.LoadingComponent;
 	private _schemaLoader: azdata.LoadingComponent;
 
 	public get serverDropdown(): azdata.DropDownComponent {
@@ -77,14 +76,6 @@ export class FileConfigPage extends ImportPage {
 		this._form = form;
 	}
 
-	public get databaseLoader(): azdata.LoadingComponent {
-		return this._databaseLoader;
-	}
-
-	public set databaseLoader(databaseLoader: azdata.LoadingComponent) {
-		this._databaseLoader = databaseLoader;
-	}
-
 	public get schemaLoader(): azdata.LoadingComponent {
 		return this._schemaLoader;
 	}
@@ -118,6 +109,7 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
+		this.serverDropdown.focus();
 		let r1 = await this.populateServerDropdown();
 		let r2 = await this.populateDatabaseDropdown();
 		let r3 = await this.populateSchemaDropdown();
@@ -138,7 +130,7 @@ export class FileConfigPage extends ImportPage {
 
 	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
-			if (this.schemaLoader.loading || this.databaseLoader.loading) {
+			if (this.schemaLoader.loading || this.databaseDropdown.loading) {
 				return false;
 			}
 			return true;
@@ -194,22 +186,20 @@ export class FileConfigPage extends ImportPage {
 			this.populateSchemaDropdown();
 		});
 
-		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
-
 		return {
-			component: this.databaseLoader,
+			component: this.databaseDropdown,
 			title: constants.databaseDropdownTitleText
 		};
 	}
 
 	private async populateDatabaseDropdown(): Promise<boolean> {
-		this.databaseLoader.loading = true;
+		this.databaseDropdown.loading = true;
 		this.databaseDropdown.updateProperties({ values: [] });
 		this.schemaDropdown.updateProperties({ values: [] });
 
 		if (!this.model.server) {
 			//TODO handle error case
-			this.databaseLoader.loading = false;
+			this.databaseDropdown.loading = false;
 			return false;
 		}
 
@@ -232,7 +222,7 @@ export class FileConfigPage extends ImportPage {
 		});
 
 		this.databaseDropdown.value = { displayName: this.model.database, name: this.model.database };
-		this.databaseLoader.loading = false;
+		this.databaseDropdown.loading = false;
 
 		return true;
 	}

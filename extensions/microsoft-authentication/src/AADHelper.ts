@@ -5,6 +5,7 @@
 
 import * as randomBytes from 'randombytes';
 import * as querystring from 'querystring';
+import { Buffer } from 'buffer';
 import * as vscode from 'vscode';
 import { createServer, startServer } from './authServer';
 
@@ -73,7 +74,7 @@ function parseQuery(uri: vscode.Uri) {
 	}, {});
 }
 
-export const onDidChangeSessions = new vscode.EventEmitter<vscode.AuthenticationSessionsChangeEvent>();
+export const onDidChangeSessions = new vscode.EventEmitter<vscode.AuthenticationProviderAuthenticationSessionsChangeEvent>();
 
 export const REFRESH_NETWORK_FAILURE = 'Network failure';
 
@@ -339,7 +340,7 @@ export class AzureActiveDirectoryService {
 	}
 
 	private getCallbackEnvironment(callbackUri: vscode.Uri): string {
-		if (callbackUri.authority.endsWith('.workspaces.github.com')) {
+		if (callbackUri.authority.endsWith('.workspaces.github.com') || callbackUri.authority.endsWith('.github.dev')) {
 			return `${callbackUri.authority},`;
 		}
 
@@ -471,7 +472,10 @@ export class AzureActiveDirectoryService {
 				redirect_uri: redirectUrl
 			});
 
-			const result = await fetch(`${loginEndpointUrl}${tenant}/oauth2/v2.0/token`, {
+			const proxyEndpoints: { [providerId: string]: string } | undefined = await vscode.commands.executeCommand('workbench.getCodeExchangeProxyEndpoints');
+			const endpoint = proxyEndpoints && proxyEndpoints['microsoft'] || `${loginEndpointUrl}${tenant}/oauth2/v2.0/token`;
+
+			const result = await fetch(endpoint, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
@@ -525,7 +529,7 @@ export class AzureActiveDirectoryService {
 			}
 		} catch (e) {
 			Logger.error('Refreshing token failed');
-			throw e;
+			throw new Error(REFRESH_NETWORK_FAILURE);
 		}
 	}
 

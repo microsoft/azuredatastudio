@@ -13,7 +13,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { Dimension, clearNode } from 'vs/base/browser/dom';
 import { deepClone } from 'vs/base/common/objects';
 import { IInsightOptions, ChartType, DataDirection, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
-import { find } from 'vs/base/common/arrays';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
 const defaultOptions: IInsightOptions = {
@@ -22,15 +21,15 @@ const defaultOptions: IInsightOptions = {
 };
 
 export class Insight {
-	private _insight: IInsight;
+	private _insight?: IInsight;
 
-	public get insight(): IInsight {
+	public get insight(): IInsight | undefined {
 		return this._insight;
 	}
 
-	private _options: IInsightOptions;
-	private _data: IInsightData;
-	private dim: Dimension;
+	private _options?: IInsightOptions;
+	private _data?: IInsightData;
+	private dim?: Dimension;
 
 	constructor(
 		private container: HTMLElement, options: IInsightOptions = defaultOptions,
@@ -42,14 +41,16 @@ export class Insight {
 
 	public layout(dim: Dimension) {
 		this.dim = dim;
-		this.insight.layout(dim);
+		if (this.insight) {
+			this.insight.layout(dim);
+		}
 	}
 
-	public set options(val: IInsightOptions) {
+	public set options(val: IInsightOptions | undefined) {
 		this._options = deepClone(val);
-		if (this.insight) {
+		if (this.insight && this.options) {
 			// check to see if we need to change the insight type
-			if (!find(this.insight.types, x => x === this.options.type)) {
+			if (!this.insight.types.find(x => x === this.options!.type)) {
 				this.buildInsight();
 			} else {
 				this.insight.options = this.options;
@@ -57,7 +58,7 @@ export class Insight {
 		}
 	}
 
-	public get options(): IInsightOptions {
+	public get options(): IInsightOptions | undefined {
 		return this._options;
 	}
 
@@ -75,28 +76,33 @@ export class Insight {
 
 		clearNode(this.container);
 
-		let ctor = this.findctor(this.options.type);
+		if (this.options) {
 
-		if (ctor) {
-			this._insight = this._instantiationService.createInstance(ctor, this.container, this.options);
-			this.insight.layout(this.dim);
-			if (this._data) {
-				this.insight.data = this._data;
+			const ctor = this.findctor(this.options.type);
+
+			if (ctor) {
+				this._insight = this._instantiationService.createInstance(ctor, this.container, this.options);
+				if (this.dim) {
+					this.insight!.layout(this.dim);
+				}
+				if (this._data) {
+					this.insight!.data = this._data;
+				}
 			}
 		}
 	}
 	public get isCopyable(): boolean {
-		return !!find(Graph.types, x => x === this.options.type as ChartType);
+		return !!this.options && !!Graph.types.find(x => x === this.options!.type as ChartType);
 	}
 
-	private findctor(type: ChartType | InsightType): IInsightCtor {
-		if (find(Graph.types, x => x === type as ChartType)) {
+	private findctor(type: ChartType | InsightType): IInsightCtor | undefined {
+		if (Graph.types.find(x => x === type as ChartType)) {
 			return Graph as IInsightCtor;
-		} else if (find(ImageInsight.types, x => x === type as InsightType)) {
+		} else if (ImageInsight.types.find(x => x === type as InsightType)) {
 			return ImageInsight as IInsightCtor;
-		} else if (find(TableInsight.types, x => x === type as InsightType)) {
+		} else if (TableInsight.types.find(x => x === type as InsightType)) {
 			return TableInsight as IInsightCtor;
-		} else if (find(CountInsight.types, x => x === type as InsightType)) {
+		} else if (CountInsight.types.find(x => x === type as InsightType)) {
 			return CountInsight as IInsightCtor;
 		}
 		return undefined;

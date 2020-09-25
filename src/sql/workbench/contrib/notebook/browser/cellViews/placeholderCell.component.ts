@@ -70,6 +70,7 @@ export class PlaceholderCellComponent extends CellView implements OnInit, OnChan
 
 	public addCell(cellType: string, event?: Event): void {
 		if (event) {
+			event.preventDefault();
 			event.stopPropagation();
 		}
 		let type: CellType = <CellType>cellType;

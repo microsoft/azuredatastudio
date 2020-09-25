@@ -5,7 +5,7 @@
 
 import { nb, IConnectionProfile } from 'azdata';
 import * as vsEvent from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, ISingleNotebookEditOperation, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, ISingleNotebookEditOperation, MoveDirection, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -42,6 +42,9 @@ export class NotebookModelStub implements INotebookModel {
 		throw new Error('method not implemented.');
 	}
 	get sessionLoadFinished(): Promise<void> {
+		throw new Error('method not implemented.');
+	}
+	get gridDataConversionComplete(): Promise<any[]> {
 		throw new Error('method not implemented.');
 	}
 	get notebookManagers(): INotebookManager[] {
@@ -107,6 +110,9 @@ export class NotebookModelStub implements INotebookModel {
 	addCell(cellType: CellType, index?: number): void {
 		throw new Error('Method not implemented.');
 	}
+	moveCell(cellModel: ICellModel, direction: MoveDirection): void {
+		throw new Error('Method not implemented.');
+	}
 	deleteCell(cellModel: ICellModel): void {
 		throw new Error('Method not implemented.');
 	}
@@ -130,6 +136,9 @@ export class NotebookModelStub implements INotebookModel {
 	}
 	get onActiveCellChanged(): vsEvent.Event<ICellModel> {
 		throw new Error('Method not implemented.');
+	}
+	get onCellTypeChanged(): vsEvent.Event<ICellModel> {
+		throw new Error('method not implemented.');
 	}
 	updateActiveCell(cell: ICellModel) {
 		throw new Error('Method not implemented.');

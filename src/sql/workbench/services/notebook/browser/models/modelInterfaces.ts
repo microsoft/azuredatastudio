@@ -243,6 +243,10 @@ export interface INotebookModel {
 	 */
 	readonly sessionLoadFinished: Promise<void>;
 	/**
+	 * Promise indicating when output grid data is converted to mimeType and html.
+	 */
+	gridDataConversionComplete: Promise<any>;
+	/**
 	 * LanguageInfo saved in the notebook
 	 */
 	readonly languageInfo: nb.ILanguageInfo;
@@ -318,6 +322,11 @@ export interface INotebookModel {
 	readonly onActiveCellChanged: Event<ICellModel>;
 
 	/**
+	 * Event fired on cell type change
+	 */
+	readonly onCellTypeChanged: Event<ICellModel>;
+
+	/**
 	 * The trusted mode of the Notebook
 	 */
 	trustedMode: boolean;
@@ -363,6 +372,12 @@ export interface INotebookModel {
 	 * Adds a cell to the index of the model
 	 */
 	addCell(cellType: CellType, index?: number): void;
+
+	/**
+	 * Moves a cell up/down
+	 */
+	moveCell(cellModel: ICellModel, direction: MoveDirection): void;
+
 
 	/**
 	 * Deletes a cell
@@ -445,6 +460,11 @@ export enum CellExecutionState {
 	Error = 3
 }
 
+export enum MoveDirection {
+	Up,
+	Down
+}
+
 export interface IOutputChangedEvent {
 	outputs: ReadonlyArray<nb.ICellOutput>;
 	shouldScroll: boolean;
@@ -484,8 +504,15 @@ export interface ICellModel {
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
 	showPreview: boolean;
-	readonly onCellPreviewChanged: Event<boolean>;
+	showMarkdown: boolean;
+	defaultToWYSIWYG: boolean;
+	readonly onCellPreviewModeChanged: Event<boolean>;
+	readonly onCellMarkdownModeChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;
+	cellSourceChanged: boolean;
+	gridDataConversionComplete: Promise<void>;
+	addGridDataConversionPromise(complete: Promise<void>): void;
+	updateOutputData(batchId: number, id: number, data: any): void;
 }
 
 export interface IModelFactory {

@@ -9,7 +9,7 @@ export abstract class Dashboard {
 
 	private dashboard!: azdata.window.ModelViewDashboard;
 
-	constructor(protected title: string) { }
+	constructor(protected title: string, protected readonly name: string) { }
 
 	public async showDashboard(): Promise<void> {
 		this.dashboard = this.createDashboard();
@@ -17,7 +17,7 @@ export abstract class Dashboard {
 	}
 
 	protected createDashboard(): azdata.window.ModelViewDashboard {
-		const dashboard = azdata.window.createModelViewDashboard(this.title);
+		const dashboard = azdata.window.createModelViewDashboard(this.title, this.name);
 		dashboard.registerTabs(async modelView => {
 			return await this.registerTabs(modelView);
 		});

@@ -33,11 +33,8 @@ class EventItem {
 	constructor(
 		private _name: string,
 		private _parent: SessionItem,
-		private _columns?: Array<ColumnItem>,
+		private _columns: Array<ColumnItem> = new Array<ColumnItem>(),
 	) {
-		if (!_columns) {
-			this._columns = new Array<ColumnItem>();
-		}
 	}
 
 	public hasChildren(): boolean {
@@ -74,7 +71,7 @@ class EventItem {
 }
 
 class ColumnItem {
-	public selected: boolean;
+	public selected?: boolean;
 	public readonly indeterminate = false;
 	constructor(
 		private _name: string,
@@ -131,19 +128,15 @@ class SessionItem {
 	constructor(
 		private _name: string,
 		private _sort: 'event' | 'column',
-		private _events?: Array<EventItem>
+		private _events: Array<EventItem> = new Array<EventItem>()
 	) {
-		if (!_events) {
-			this._events = new Array<EventItem>();
-		} else {
-			_events.forEach(e => {
-				e.getChildren().forEach(c => {
-					if (!this._sortedColumnItems.some(i => i.id === c.id)) {
-						this._sortedColumnItems.push(new ColumnSortedColumnItem(c.id, this));
-					}
-				});
+		this._events.forEach(e => {
+			e.getChildren().forEach(c => {
+				if (!this._sortedColumnItems.some(i => i.id === c.id)) {
+					this._sortedColumnItems.push(new ColumnSortedColumnItem(c.id, this));
+				}
 			});
-		}
+		});
 	}
 
 	public get id(): string {
@@ -152,9 +145,9 @@ class SessionItem {
 
 	public hasChildren(): boolean {
 		if (this._sort === 'event') {
-			return this._events && this._events.length > 0;
+			return !!this._events && this._events.length > 0;
 		} else {
-			return this._events && this._events.some(i => i.hasChildren());
+			return !!this._events && this._events.some(i => i.hasChildren());
 		}
 	}
 
@@ -202,10 +195,8 @@ class TreeRenderer implements IRenderer {
 			return 'event';
 		} else if (element instanceof ColumnItem) {
 			return 'column';
-		} else if (element instanceof ColumnSortedColumnItem) {
-			return 'columnSorted';
 		} else {
-			return undefined;
+			return 'columnSorted';
 		}
 	}
 
@@ -253,12 +244,8 @@ class TreeDataSource implements IDataSource {
 			return element.parent.id + element.id;
 		} else if (element instanceof ColumnItem) {
 			return element.parent.parent.id + element.parent.id + element.id;
-		} else if (element instanceof SessionItem) {
-			return element.id;
-		} else if (element instanceof ColumnSortedColumnItem) {
-			return element.id;
 		} else {
-			return undefined;
+			return element.id;
 		}
 	}
 
@@ -268,7 +255,7 @@ class TreeDataSource implements IDataSource {
 		} else if (element instanceof EventItem) {
 			return element.hasChildren();
 		} else {
-			return undefined;
+			return false;
 		}
 	}
 
@@ -278,7 +265,7 @@ class TreeDataSource implements IDataSource {
 		} else if (element instanceof SessionItem) {
 			return Promise.resolve(element.getChildren());
 		} else {
-			return Promise.resolve(null);
+			return Promise.resolve([]);
 		}
 	}
 
@@ -301,14 +288,14 @@ class TreeDataSource implements IDataSource {
 
 export class ProfilerColumnEditorDialog extends Modal {
 
-	private _selectBox: SelectBox;
+	private _selectBox?: SelectBox;
 	private readonly _options = [
 		{ text: nls.localize('eventSort', "Sort by event") },
 		{ text: nls.localize('nameColumn', "Sort by column") }
 	];
-	private _tree: Tree;
-	private _element: SessionItem;
-	private _treeContainer: HTMLElement;
+	private _tree?: Tree;
+	private _element?: SessionItem;
+	private _treeContainer?: HTMLElement;
 
 	constructor(
 		@ILayoutService layoutService: ILayoutService,
@@ -335,22 +322,22 @@ export class ProfilerColumnEditorDialog extends Modal {
 		this._selectBox = new SelectBox(this._options, 0, this._contextViewService);
 		this._selectBox.render(body);
 		this._register(this._selectBox.onDidSelect(e => {
-			this._element.changeSort(e.index === 0 ? 'event' : 'column');
-			this._tree.refresh(this._element, true);
+			this._element!.changeSort(e.index === 0 ? 'event' : 'column');
+			this._tree!.refresh(this._element!, true);
 		}));
 		this._treeContainer = DOM.append(body, DOM.$('.profiler-column-tree'));
 		const renderer = new TreeRenderer();
 		this._tree = new Tree(this._treeContainer, { dataSource: new TreeDataSource(), renderer });
-		this._register(renderer.onSelectedChange(e => this._tree.refresh(e, true)));
+		this._register(renderer.onSelectedChange(e => this._tree!.refresh(e, true)));
 		this._register(attachListStyler(this._tree, this._themeService));
 	}
 
-	public open(input: ProfilerInput): void {
+	public open(_input?: ProfilerInput): void {
 		super.show();
 		this._updateList();
 	}
 
-	protected onAccept(e: StandardKeyboardEvent): void {
+	protected onAccept(e?: StandardKeyboardEvent): void {
 		this._updateInput();
 		super.onAccept(e);
 	}
@@ -408,7 +395,9 @@ export class ProfilerColumnEditorDialog extends Modal {
 	}
 
 	protected layout(height?: number): void {
-		this._tree.layout(DOM.getContentHeight(this._treeContainer));
+		if (this._tree) {
+			this._tree.layout(DOM.getContentHeight(this._treeContainer!));
+		}
 	}
 
 }

@@ -31,8 +31,7 @@ export enum Operation {
 	deploy,
 	extract,
 	import,
-	export,
-	generateDeployScript
+	export
 }
 
 export enum DeployOperationPath {
@@ -117,10 +116,7 @@ export class DataTierApplicationWizard {
 
 		this.model.serverId = this.connection.connectionId;
 		this.setPages();
-
-		this.wizard.generateScriptButton.hidden = true;
-		this.wizard.generateScriptButton.onClick(async () => await this.generateDeployScript());
-		this.wizard.doneButton.onClick(async () => await this.executeOperation());
+		this.configureButtons();
 
 		this.wizard.open();
 		return true;
@@ -206,6 +202,12 @@ export class DataTierApplicationWizard {
 		this.wizard.pages = [selectOperationWizardPage, deployConfigWizardPage, deployPlanWizardPage, summaryWizardPage];
 	}
 
+	public configureButtons(): void {
+		this.wizard.generateScriptButton.hidden = true;
+		this.wizard.generateScriptButton.onClick(async () => await this.generateDeployScript());
+		this.wizard.doneButton.onClick(async () => await this.executeOperation());
+	}
+
 	public registerNavigationValidator(validator: (pageChangeInfo: azdata.window.WizardPageChangeInfo) => boolean) {
 		this.wizard.registerNavigationValidator(validator);
 	}
@@ -232,14 +234,9 @@ export class DataTierApplicationWizard {
 				this.selectedOperation = Operation.export;
 				break;
 			}
-			case Operation.generateDeployScript: {
-				this.wizard.doneButton.label = loc.generateScript;
-				this.selectedOperation = Operation.generateDeployScript;
-				break;
-			}
 		}
 
-		if (operation !== Operation.deploy && operation !== Operation.generateDeployScript) {
+		if (operation !== Operation.deploy) {
 			this.model.upgradeExisting = false;
 		}
 	}
@@ -257,9 +254,6 @@ export class DataTierApplicationWizard {
 			}
 			case Operation.export: {
 				return await this.export();
-			}
-			case Operation.generateDeployScript: {
-				return await this.generateDeployScript();
 			}
 		}
 	}
@@ -328,7 +322,7 @@ export class DataTierApplicationWizard {
 			}
 		} else if (this.isSummaryPage(idx)) {
 			page = this.pages.get(PageName.summary);
-		} else if ((this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.deployPlan) {
+		} else if ((this.selectedOperation === Operation.deploy) && idx === DeployOperationPath.deployPlan) {
 			page = this.pages.get(PageName.deployPlan);
 		}
 
@@ -340,7 +334,7 @@ export class DataTierApplicationWizard {
 			|| this.selectedOperation === Operation.export && idx === ExportOperationPath.summary
 			|| this.selectedOperation === Operation.extract && idx === ExtractOperationPath.summary
 			|| this.selectedOperation === Operation.deploy && !this.model.upgradeExisting && idx === DeployNewOperationPath.summary
-			|| (this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.summary;
+			|| (this.selectedOperation === Operation.deploy) && idx === DeployOperationPath.summary;
 	}
 
 	public async generateDeployPlan(): Promise<string> {

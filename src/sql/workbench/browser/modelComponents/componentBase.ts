@@ -28,7 +28,7 @@ export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }
 }
 
-export abstract class ComponentBase extends Disposable implements IComponent, OnDestroy, OnInit {
+export abstract class ComponentBase<TPropertyBag extends azdata.ComponentProperties> extends Disposable implements IComponent, OnDestroy, OnInit {
 	protected properties: { [key: string]: any; } = {};
 	private _valid: boolean = true;
 	protected _validations: (() => boolean | Thenable<boolean>)[] = [];
@@ -109,17 +109,17 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		}
 	}
 
-	protected getProperties<TPropertyBag>(): TPropertyBag {
+	protected getProperties(): TPropertyBag {
 		return this.properties as TPropertyBag;
 	}
 
-	protected getPropertyOrDefault<TPropertyBag, TValue>(propertyGetter: (TPropertyBag) => TValue, defaultVal: TValue) {
-		let property = propertyGetter(this.getProperties<TPropertyBag>());
+	protected getPropertyOrDefault<TValue>(propertyGetter: (property: TPropertyBag) => TValue, defaultVal: TValue) {
+		let property = propertyGetter(this.getProperties());
 		return types.isUndefinedOrNull(property) ? defaultVal : property;
 	}
 
-	protected setPropertyFromUI<TPropertyBag, TValue>(propertySetter: (TPropertyBag, TValue) => void, value: TValue) {
-		propertySetter(this.getProperties<TPropertyBag>(), value);
+	protected setPropertyFromUI<TValue>(propertySetter: (TPropertyBag, TValue) => void, value: TValue) {
+		propertySetter(this.getProperties(), value);
 		this.fireEvent({
 			eventType: ComponentEventType.PropertiesChanged,
 			args: this.getProperties()
@@ -144,75 +144,75 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	}
 
 	public get height(): number | string {
-		return this.getPropertyOrDefault<azdata.ComponentProperties, number | string>((props) => props.height, undefined);
+		return this.getPropertyOrDefault<number | string>((props) => props.height, undefined);
 	}
 
 	public set height(newValue: number | string) {
-		this.setPropertyFromUI<azdata.ComponentProperties, number | string>((props, value) => props.height = value, newValue);
+		this.setPropertyFromUI<number | string>((props, value) => props.height = value, newValue);
 	}
 
 	public get width(): number | string {
-		return this.getPropertyOrDefault<azdata.ComponentProperties, number | string>((props) => props.width, undefined);
+		return this.getPropertyOrDefault<number | string>((props) => props.width, undefined);
 	}
 
 	public set width(newValue: number | string) {
-		this.setPropertyFromUI<azdata.ComponentProperties, number | string>((props, value) => props.width = value, newValue);
+		this.setPropertyFromUI<number | string>((props, value) => props.width = value, newValue);
 	}
 
 	public get position(): string {
-		return this.getPropertyOrDefault<azdata.ComponentProperties, string>((props) => props.position, '');
+		return this.getPropertyOrDefault<string>((props) => props.position, '');
 	}
 
 	public set position(newValue: string) {
-		this.setPropertyFromUI<azdata.ComponentProperties, string>((properties, position) => { properties.position = position; }, newValue);
+		this.setPropertyFromUI<string>((properties, position) => { properties.position = position; }, newValue);
 	}
 
 	public get display(): azdata.DisplayType {
-		return this.getPropertyOrDefault<azdata.ComponentProperties, azdata.DisplayType>((props) => props.display, undefined);
+		return this.getPropertyOrDefault<azdata.DisplayType>((props) => props.display, undefined);
 	}
 
 	public set display(newValue: azdata.DisplayType) {
-		this.setPropertyFromUI<azdata.ComponentProperties, string>((properties, display) => { properties.display = display; }, newValue);
+		this.setPropertyFromUI<string>((properties, display) => { properties.display = display; }, newValue);
 	}
 
 	public get ariaLabel(): string {
-		return this.getPropertyOrDefault<azdata.ComponentProperties, string>((props) => props.ariaLabel, '');
+		return this.getPropertyOrDefault<string>((props) => props.ariaLabel, '');
 	}
 
 	public set ariaLabel(newValue: string) {
-		this.setPropertyFromUI<azdata.ComponentProperties, string>((props, value) => props.ariaLabel = value, newValue);
+		this.setPropertyFromUI<string>((props, value) => props.ariaLabel = value, newValue);
 	}
 
 	public get ariaRole(): string {
-		return this.getPropertyOrDefault<azdata.ComponentProperties, string>((props) => props.ariaRole, '');
+		return this.getPropertyOrDefault<string>((props) => props.ariaRole, '');
 	}
 
 	public set ariaRole(newValue: string) {
-		this.setPropertyFromUI<azdata.ComponentProperties, string>((props, value) => props.ariaRole = value, newValue);
+		this.setPropertyFromUI<string>((props, value) => props.ariaRole = value, newValue);
 	}
 
 	public get ariaSelected(): boolean {
-		return this.getPropertyOrDefault<azdata.ComponentProperties, boolean>((props) => props.ariaSelected, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.ariaSelected, false);
 	}
 
 	public set ariaSelected(newValue: boolean) {
-		this.setPropertyFromUI<azdata.ComponentProperties, boolean>((props, value) => props.ariaSelected = value, newValue);
+		this.setPropertyFromUI<boolean>((props, value) => props.ariaSelected = value, newValue);
 	}
 
 	public get ariaHidden(): boolean {
-		return this.getPropertyOrDefault<azdata.ComponentProperties, boolean>((props) => props.ariaHidden, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.ariaHidden, false);
 	}
 
 	public set ariaHidden(newValue: boolean) {
-		this.setPropertyFromUI<azdata.ComponentProperties, boolean>((props, value) => props.ariaHidden = value, newValue);
+		this.setPropertyFromUI<boolean>((props, value) => props.ariaHidden = value, newValue);
 	}
 
 	public get CSSStyles(): { [key: string]: string } {
-		return this.getPropertyOrDefault<azdata.ComponentProperties, { [key: string]: string }>((props) => props.CSSStyles, {});
+		return this.getPropertyOrDefault<{ [key: string]: string }>((props) => props.CSSStyles, {});
 	}
 
 	public set CSSStyles(newValue: { [key: string]: string }) {
-		this.setPropertyFromUI<azdata.ComponentProperties, { [key: string]: string }>((properties, CSSStyles) => { properties.CSSStyles = CSSStyles; }, newValue);
+		this.setPropertyFromUI<{ [key: string]: string }>((properties, CSSStyles) => { properties.CSSStyles = CSSStyles; }, newValue);
 	}
 
 	protected getWidth(): string {
@@ -275,7 +275,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	}
 }
 
-export abstract class ContainerBase<T> extends ComponentBase {
+export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProperties = azdata.ComponentProperties> extends ComponentBase<TPropertyBag> {
 	protected items: ItemDescriptor<T>[];
 
 	@ViewChildren(ModelComponentWrapper) protected _componentWrappers: QueryList<ModelComponentWrapper>;
@@ -370,6 +370,17 @@ export abstract class ContainerBase<T> extends ComponentBase {
 			throw new Error(`Unable to set item layout - unknown item ${componentDescriptor.id}`);
 		}
 		return;
+	}
+
+	public mergeCss(...styles: azdata.CssStyles[]): azdata.CssStyles {
+		const x = styles.reduce((previous, current) => {
+			if (current) {
+				return Object.assign(previous, current);
+			}
+			return previous;
+		}, {});
+
+		return x;
 	}
 
 	protected onItemsUpdated(): void {

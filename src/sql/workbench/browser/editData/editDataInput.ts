@@ -50,7 +50,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		super();
 		this._hasBootstrapped = false;
 		this._updateTaskbar = new Emitter<EditDataInput>();
-		this._showResultsEditor = new Emitter<EditDataInput>();
+		this._showResultsEditor = new Emitter<EditDataInput | undefined>();
 		this._editorInitializing = new Emitter<boolean>();
 		this._setup = false;
 		this._stopButtonEnabled = false;
@@ -85,8 +85,10 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 			this._register(
 				this._queryModelService.onEditSessionReady((result) => {
-					if (self.uri === result.ownerUri) {
-						self.initEditEnd(result);
+					if (this.uri === result.ownerUri) {
+						this._results.editDataGridPanel!.onRefreshComplete.then(() => {
+							this.initEditEnd(result);
+						});
 					}
 				})
 			);
@@ -216,7 +218,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	}
 
 	public resolve(refresh?: boolean): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> { return this._sql.resolve(); }
-	public getEncoding(): string { return this._sql.getEncoding(); }
+	public getEncoding(): string | undefined { return this._sql.getEncoding(); }
 	public getName(): string { return this._sql.getName(); }
 	public get hasAssociatedFilePath(): boolean { return this._sql.model.hasAssociatedFilePath; }
 

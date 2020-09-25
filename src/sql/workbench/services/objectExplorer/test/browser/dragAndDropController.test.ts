@@ -103,7 +103,7 @@ suite('SQL Drag And Drop Controller tests', () => {
 		assert.equal(treeNodeArray[0].label, labelTreeNode);
 
 		let labelUndefined = serverTreeDragAndDrop.getDragLabel(testTree, null);
-		assert.equal(undefined, labelUndefined);
+		assert.equal('', labelUndefined);
 
 	});
 

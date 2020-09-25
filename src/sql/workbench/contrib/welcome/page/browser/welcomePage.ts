@@ -45,12 +45,11 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { joinPath } from 'vs/base/common/resources';
-import { addStandardDisposableListener, EventHelper } from 'vs/base/browser/dom';
+import { addStandardDisposableListener, EventHelper, clearNode } from 'vs/base/browser/dom';
 import { GuidedTour } from 'sql/workbench/contrib/welcome/page/browser/gettingStartedTour';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
@@ -308,19 +307,13 @@ class WelcomePage extends Disposable {
 				recent.classList.add('emptyRecent');
 				return;
 			}
-			const ul = container.querySelector('.recent ul');
+			const ul = container.querySelector('.recent ul') as HTMLElement;
 			if (!ul) {
 				return;
 			}
 			const workspacesToShow = workspaces.slice(0, 5);
-			const updateEntries = async () => {
-				while (ul.firstChild) {
-					ul.removeChild(ul.firstChild);
-				}
-				await this.mapListEntries(workspacesToShow, fileService, container);
-			};
-			await updateEntries();
-			this._register(this.labelService.onDidChangeFormatters(updateEntries));
+			clearNode(ul);
+			await this.mapListEntries(workspacesToShow, fileService, container, ul);
 		}).then(undefined, onUnexpectedError);
 		this.addExtensionList(container, '.extension-list');
 		this.addExtensionPack(container, '.extensionPack');
@@ -336,8 +329,6 @@ class WelcomePage extends Disposable {
 		}));
 		this.createButtons();
 		this.createDropDown();
-		this.createWidePreviewToolTip();
-		this.createPreviewModal();
 	}
 
 	private createButtons(): void {
@@ -367,20 +358,21 @@ class WelcomePage extends Disposable {
 			<li role="none"><a role="menuitem" tabIndex="-1" class="move" href="command:azdata.resource.deploy">${(localize('welcomePage.deployServer', "Deploy a Server"))}</a></li>
 			<li role="none" id="dropdown-mac-only"><a role="menuitem" tabIndex="-1" class="move mac-only" href="command:workbench.action.files.openLocalFileFolder">${openFileCopy}</a></li>
 			<li role="none" id="dropdown-windows-linux-only"><a role="menuitem" tabIndex="-1" class="move windows-only linux-only" href="command:workbench.action.files.openFile">${openFileCopy}</a></li`;
+
 		const getDropdownBtn = container.querySelector('#dropdown-btn-container .monaco-button') as HTMLElement;
 		getDropdownBtn.id = 'dropdown-btn';
-		getDropdownBtn.setAttribute('role', 'navigation');
+		getDropdownBtn.setAttribute('role', 'button');
 		getDropdownBtn.setAttribute('aria-haspopup', 'true');
 		getDropdownBtn.setAttribute('aria-controls', 'dropdown');
 		nav.setAttribute('role', 'navigation');
 		nav.classList.add('dropdown-nav');
 		dropdownUl.classList.add('dropdown');
-		getDropdownBtn.id = 'dropdown-btn';
+		getDropdownBtn.setAttribute('aria-expanded', 'false');
 		getDropdownBtn.appendChild(i);
 		nav.appendChild(dropdownUl);
 		dropdownButtonContainer.appendChild(nav);
 		const fileBtnWindowsClasses = ['windows-only', 'linux-only', 'btn-secondary'];
-		const fileBtnMacClasses = ['mac-only'];
+		const fileBtnMacClasses = ['mac-only', 'btn-secondary'];
 
 		const fileBtnContainer = container.querySelector('#open-file-btn-container') as HTMLElement;
 		const openFileText = openFileCopy;
@@ -418,6 +410,8 @@ class WelcomePage extends Disposable {
 		startTourBtn.label = localize('welcomePage.startTour', "Start Tour");
 		const removeTourBtn = document.createElement('a');
 		removeTourBtn.setAttribute('role', 'button');
+		removeTourBtn.tabIndex = 0;
+		removeTourBtn.title = localize('closeTourBar', "Close quick tour bar");
 		const removeBtnClasses = ['btn-remove-tour', 'codicon', 'codicon-close'];
 		const flexClassesLeft = ['flex', 'flex-a-center'];
 		const flexClassesRight = ['flex', 'flex-a-start'];
@@ -458,60 +452,6 @@ class WelcomePage extends Disposable {
 			guidedTourNotificationContainer.classList.add('show');
 
 		}, 3000);
-	}
-
-	private createWidePreviewToolTip(): void {
-		const container = document.querySelector('.ads-homepage .tool-tip');
-		const previewLink = container.querySelector('#tool-tip-container-wide') as HTMLElement;
-		const tooltip = container.querySelector('#tooltip-text-wide') as HTMLElement;
-		const previewModalBody = container.querySelector('.preview-tooltip-body') as HTMLElement;
-		const previewModalHeader = container.querySelector('.preview-tooltip-header') as HTMLElement;
-		addStandardDisposableListener(previewLink, 'mouseover', () => {
-			tooltip.setAttribute('aria-hidden', 'true');
-			tooltip.classList.toggle('show');
-		});
-		addStandardDisposableListener(previewLink, 'mouseout', () => {
-			tooltip.setAttribute('aria-hidden', 'false');
-			tooltip.classList.remove('show');
-		});
-		addStandardDisposableListener(previewLink, 'keydown', event => {
-			if (event.equals(KeyCode.Escape)) {
-				if (tooltip.classList.contains('show')) {
-					tooltip.setAttribute('aria-hidden', 'true');
-					tooltip.classList.remove('show');
-				}
-			}
-			else if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
-				tooltip.setAttribute('aria-hidden', 'false');
-				tooltip.classList.toggle('show');
-				previewModalHeader.focus();
-			}
-		});
-		addStandardDisposableListener(tooltip, 'keydown', event => {
-			if (event.equals(KeyCode.Escape)) {
-				if (tooltip.classList.contains('show')) {
-					tooltip.setAttribute('aria-hidden', 'true');
-					tooltip.classList.remove('show');
-				}
-			}
-			else if (event.equals(KeyCode.Tab)) {
-				EventHelper.stop(event);
-				if (event.target === previewModalBody) {
-					previewModalHeader.focus();
-				} else {
-					previewModalBody.focus();
-				}
-			}
-		});
-
-		window.addEventListener('click', (event) => {
-			const target = event.target as HTMLTextAreaElement;
-			if (!target.matches('.tooltip')) {
-				if (tooltip.classList.contains('show')) {
-					tooltip.classList.remove('show');
-				}
-			}
-		});
 	}
 
 	private createDropDown(): void {
@@ -582,66 +522,6 @@ class WelcomePage extends Disposable {
 		});
 	}
 
-	private createPreviewModal(): void {
-		const container = document.querySelector('.ads-homepage');
-		const modal = container.querySelector('#preview-modal') as HTMLElement;
-		const btn = container.querySelector('#tool-tip-container-narrow') as HTMLElement;
-		const span = container.querySelector('.close-icon') as HTMLElement;
-		const previewModalHeader = container.querySelector('.preview-modal-header') as HTMLElement;
-		btn.addEventListener('click', function () {
-			modal.classList.toggle('show');
-		});
-
-		span.addEventListener('click', function () {
-			modal.classList.remove('show');
-		});
-		window.addEventListener('click', (e: MouseEvent) => {
-			if (e.target === modal && modal.classList.contains('show')) {
-				modal.classList.remove('show');
-			}
-		});
-		btn.addEventListener('keydown', (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
-			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
-				modal.classList.toggle('show');
-				modal.setAttribute('aria-hidden', 'false');
-				previewModalHeader.focus();
-			}
-			if (event.equals(KeyCode.Escape)) {
-				if (modal.classList.contains('show')) {
-					modal.setAttribute('aria-hidden', 'true');
-					modal.classList.remove('show');
-				}
-			}
-		});
-
-		window.addEventListener('keydown', (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
-			const target = e.target as HTMLTextAreaElement;
-			if (!target.matches('.modal') && event.equals(KeyCode.Escape)) {
-				if (modal.classList.contains('show')) {
-					modal.setAttribute('aria-hidden', 'true');
-					modal.classList.remove('show');
-				}
-			}
-		});
-		modal.addEventListener('keydown', function (e: KeyboardEvent) {
-			const previewModalBody = container.querySelector('.preview-modal-body') as HTMLElement;
-			const previewModalHeader = container.querySelector('.preview-modal-header') as HTMLElement;
-			let event = new StandardKeyboardEvent(e);
-
-			if (event.equals(KeyCode.Tab)) {
-				e.preventDefault();
-				if (e.target === previewModalBody) {
-					previewModalHeader.focus();
-
-				} else {
-					previewModalBody.focus();
-				}
-			}
-		});
-	}
-
 	private async createListEntries(container: HTMLElement, fileService: IFileService, fullPath: URI, windowOpenable: IWindowOpenable, relativePath: string): Promise<HTMLElement[]> {
 		let result: HTMLElement[] = [];
 		const value = await fileService.resolve(fullPath);
@@ -685,7 +565,7 @@ class WelcomePage extends Disposable {
 		return result;
 	}
 
-	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService: IFileService, container: HTMLElement): Promise<HTMLElement[]> {
+	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService: IFileService, container: HTMLElement, ul: HTMLElement): Promise<HTMLElement[]> {
 		const result: HTMLElement[] = [];
 		for (let i = 0; i < recents.length; i++) {
 			const recent = recents[i];
@@ -705,7 +585,6 @@ class WelcomePage extends Disposable {
 		}
 		return result;
 	}
-
 	private addExtensionList(container: HTMLElement, listSelector: string): void {
 		const list = container.querySelector(listSelector);
 		if (list) {
@@ -716,6 +595,7 @@ class WelcomePage extends Disposable {
 				const descriptionContainerElm = document.createElement('div');
 				const imgContainerElm = document.createElement('div');
 				const iconElm = document.createElement('img');
+				iconElm.setAttribute('aria-label', extension.name);
 				const pElm = document.createElement('p');
 				const bodyElm = document.createElement('p');
 				outerAnchorContainerElm.classList.add('extension');
@@ -797,6 +677,7 @@ class WelcomePage extends Disposable {
 				const outerContainerElem = document.createElement('div');
 				const flexContainerElem = document.createElement('div');
 				const iconContainerElem = document.createElement('img');
+				iconContainerElem.setAttribute('aria-label', j.name);
 				const descriptionContainerElem = document.createElement('div');
 				const pElem = document.createElement('p');
 				const anchorElem = document.createElement('a');

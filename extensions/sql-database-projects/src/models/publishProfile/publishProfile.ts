@@ -17,7 +17,7 @@ import { SqlConnectionDataSource } from '../dataSources/sqlConnectionStringSourc
 export interface PublishProfile {
 	databaseName: string;
 	connectionId: string;
-	connectionString: string;
+	connection: string;
 	sqlCmdVariables: Record<string, string>;
 	options?: mssql.DeploymentOptions;
 }
@@ -41,60 +41,51 @@ export async function load(profileUri: Uri, dacfxService: mssql.IDacFxService): 
 	const optionsResult = await dacfxService.getOptionsFromProfile(profileUri.fsPath);
 
 	// get all SQLCMD variables to include from the profile
-	const sqlCmdVariables = readSqlCmdVariables(profileXmlDoc);
+	const sqlCmdVariables = utils.readSqlCmdVariables(profileXmlDoc);
 
 	return {
 		databaseName: targetDbName,
 		connectionId: connectionInfo.connectionId,
-		connectionString: connectionInfo.connectionString,
+		connection: connectionInfo.connection,
 		sqlCmdVariables: sqlCmdVariables,
 		options: optionsResult.deploymentOptions
 	};
 }
 
-/**
- * Read SQLCMD variables from xmlDoc and return them
- * @param xmlDoc xml doc to read SQLCMD variables from. Format must be the same that sqlproj and publish profiles use
- */
-export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
-	let sqlCmdVariables: Record<string, string> = {};
-	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)?.length; i++) {
-		const sqlCmdVar = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
-		const varName = sqlCmdVar.getAttribute(constants.Include);
-
-		const varValue = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
-		sqlCmdVariables[varName] = varValue;
-	}
-
-	return sqlCmdVariables;
-}
-
-async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string, connectionString: string }> {
-	let targetConnectionString: string = '';
+async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string, connection: string }> {
+	let targetConnection: string = '';
 	let connId: string = '';
 
-	if (xmlDoc.documentElement.getElementsByTagName('TargetConnectionString').length > 0) {
-		targetConnectionString = xmlDoc.documentElement.getElementsByTagName('TargetConnectionString')[0].textContent;
-		const dataSource = new SqlConnectionDataSource('temp', targetConnectionString);
+	if (xmlDoc.documentElement.getElementsByTagName(constants.targetConnectionString).length > 0) {
+		const targetConnectionString = xmlDoc.documentElement.getElementsByTagName(constants.TargetConnectionString)[0].textContent;
+		const dataSource = new SqlConnectionDataSource('', targetConnectionString);
+		let server: string = '';
+		let username: string = '';
 		const connectionProfile = dataSource.getConnectionProfile();
 
 		try {
 			if (dataSource.integratedSecurity) {
-				connId = (await azdata.connection.connect(connectionProfile, false, false)).connectionId;
+				const connection = await azdata.connection.connect(connectionProfile, false, false);
+				connId = connection.connectionId;
+				server = dataSource.server;
+				username = constants.defaultUser;
 			}
 			else {
-				connId = (await azdata.connection.openConnectionDialog(undefined, connectionProfile)).connectionId;
+				const connection = await azdata.connection.openConnectionDialog(undefined, connectionProfile);
+				connId = connection.connectionId;
+				server = connection.options['server'];
+				username = connection.options['user'];
 			}
+
+			targetConnection = `${server} (${username})`;
 		} catch (err) {
 			throw new Error(constants.unableToCreatePublishConnection(utils.getErrorMessage(err)));
 		}
 	}
 
-	// mask password in connection string
-	targetConnectionString = await azdata.connection.getConnectionString(connId, false);
 
 	return {
 		connectionId: connId,
-		connectionString: targetConnectionString
+		connection: targetConnection
 	};
 }

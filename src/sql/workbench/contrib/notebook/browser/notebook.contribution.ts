@@ -28,7 +28,7 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspaces/common/workspaceEditing';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { NodeContextKey } from 'sql/workbench/browser/parts/views/nodeContext';
+import { NodeContextKey } from 'sql/workbench/contrib/views/browser/nodeContext';
 import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
@@ -210,19 +210,26 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'default': false,
 			'description': localize('notebook.showAllKernels', "(Preview) show all kernels for the current notebook provider.")
-		}
-	}
-});
-
-configurationRegistry.registerConfiguration({
-	'id': 'notebook',
-	'title': 'Notebook',
-	'type': 'object',
-	'properties': {
+		},
+		'notebook.showNotebookConvertActions': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.showNotebookConvertActions', "(Preview) Show buttons for converting a Notebook to and from SQL.")
+		},
 		'notebook.allowAzureDataStudioCommands': {
 			'type': 'boolean',
 			'default': false,
 			'description': localize('notebook.allowADSCommands', "Allow notebooks to run Azure Data Studio commands.")
+		},
+		'notebook.enableDoubleClickEdit': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('notebook.enableDoubleClickEdit', "Enable double click to edit for text cells in notebooks")
+		},
+		'notebook.setRichTextViewByDefault': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('notebook.setRichTextViewByDefault', "Set Rich Text View mode by default for text cells")
 		}
 	}
 });

@@ -2,7 +2,7 @@
   "name": "asde-deployment",
   "displayName": "%extension-displayName%",
   "description": "%extension-description%",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -21,7 +21,6 @@
     "resourceDeploymentTypes": [
       {
         "name": "sql-edge",
-        "enabled": false,
         "displayName": "%resource-type-sql-edge-display-name%",
         "description": "%resource-type-sql-edge-description%",
         "platforms": "*",
@@ -383,7 +382,8 @@
             },
             "requiredTools": [
               {
-                "name": "azure-cli"
+                "name": "azure-cli",
+                "version": "2.9.1"
               }
             ],
             "when": "type=azure-create-new"
@@ -469,7 +469,8 @@
             },
             "requiredTools": [
               {
-                "name": "azure-cli"
+                "name": "azure-cli",
+                "version": "2.9.1"
               }
             ],
             "when": "type=azure-single-device"
@@ -558,7 +559,8 @@
             },
             "requiredTools": [
               {
-                "name": "azure-cli"
+                "name": "azure-cli",
+                "version": "2.9.1"
               }
             ],
             "when": "type=azure-multi-device"

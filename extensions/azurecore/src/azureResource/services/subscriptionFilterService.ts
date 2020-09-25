@@ -5,7 +5,7 @@
 
 import { Account } from 'azdata';
 
-import { azureResource } from '../azure-resource';
+import { azureResource } from 'azureResource';
 import { IAzureResourceSubscriptionFilterService, IAzureResourceCacheService } from '../interfaces';
 
 interface AzureResourceSelectedSubscriptionsCache {

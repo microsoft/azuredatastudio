@@ -42,10 +42,6 @@
 	padding-bottom: 0px;
 }
 
-.modal .firewall-rule-dialog .azure-account-section {
-	height: 92px;
-}
-
 /* Firewall rule description section */
 .modal .firewall-rule-dialog a:link {
 	text-decoration: underline;

@@ -10,6 +10,7 @@ import 'mocha';
 import * as TypeMoq from 'typemoq';
 import { PackageManager } from '../../packageManagement/packageManager';
 import { createContext, TestContext } from './utils';
+import * as constants from '../../common/constants';
 
 describe('Package Manager', () => {
 	it('Should initialize SQL package manager successfully', async function (): Promise<void> {
@@ -36,7 +37,7 @@ describe('Package Manager', () => {
 		testContext.apiWrapper.setup(x => x.executeCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {return Promise.resolve();});
 		testContext.serverConfigManager.setup(x => x.isPythonInstalled(connection)).returns(() => {return Promise.resolve(false);});
 		testContext.serverConfigManager.setup(x => x.isRInstalled(connection)).returns(() => {return Promise.resolve(true);});
-		testContext.serverConfigManager.setup(x => x.isPythonInstalled(connection)).returns(() => {return Promise.resolve(true);});
+		//testContext.serverConfigManager.setup(x => x.isPythonInstalled(connection)).returns(() => {return Promise.resolve(true);});
 		testContext.serverConfigManager.setup(x => x.enableExternalScriptConfig(connection)).returns(() => {return Promise.resolve(true);});
 		let packageManager = createPackageManager(testContext);
 		await packageManager.managePackages();
@@ -51,7 +52,7 @@ describe('Package Manager', () => {
 		testContext.apiWrapper.setup(x => x.showInfoMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny()));
 		testContext.serverConfigManager.setup(x => x.isPythonInstalled(connection)).returns(() => {return Promise.resolve(false);});
 		testContext.serverConfigManager.setup(x => x.isRInstalled(connection)).returns(() => {return Promise.resolve(false);});
-		testContext.serverConfigManager.setup(x => x.isPythonInstalled(connection)).returns(() => {return Promise.resolve(true);});
+		//testContext.serverConfigManager.setup(x => x.isPythonInstalled(connection)).returns(() => {return Promise.resolve(true);});
 		testContext.serverConfigManager.setup(x => x.enableExternalScriptConfig(connection)).returns(() => {return Promise.resolve(true);});
 		let packageManager = createPackageManager(testContext);
 		await packageManager.managePackages();
@@ -71,18 +72,16 @@ describe('Package Manager', () => {
 		testContext.apiWrapper.verify(x => x.showInfoMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
-	it('installDependencies Should download sqlmlutils if does not exist', async function (): Promise<void> {
+	it('installDependencies Should download R sqlmlutils if does not exist', async function (): Promise<void> {
 		let testContext = createContext();
-
-		let installedPackages = `[
-			{"name":"pymssql","version":"2.1.4"},
-			{"name":"sqlmlutils","version":"1.1.1"}
-		]`;
 		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
 			operationInfo.operation(testContext.op);
 		});
 
-		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {return Promise.resolve(installedPackages);});
+		testContext.apiWrapper.setup(x => x.showQuickPick(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			label: 'Yes'
+		}));
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined)).returns(() => {return Promise.reject('');});
 
 		let packageManager = createPackageManager(testContext);
 		await packageManager.installDependencies();
@@ -112,6 +111,56 @@ describe('Package Manager', () => {
 		await packageManager.installDependencies();
 		should.equal(testContext.getOpStatus(), azdata.TaskStatus.Succeeded);
 		should.equal(packagesInstalled, false);
+	});
+
+	it('installDependencies Should fail if odbc not installed', async function (): Promise<void> {
+		let testContext = createContext();
+		let installedPackages = `[
+			{"name":"pymssql","version":"2.1.4"},
+			{"name":"sqlmlutils","version":"1.1.1"}
+		]`;
+		let connection  = new azdata.connection.ConnectionProfile();
+		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
+		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
+		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
+			operationInfo.operation(testContext.op);
+		});
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns(() => Promise.resolve(''));
+		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			return Promise.resolve(installedPackages);
+		});
+
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.reject('error'));
+
+		let packageManager = createPackageManager(testContext);
+		await should(packageManager.installDependencies()).be.rejected();
+	});
+
+	it('installDependencies should open link for odbc document if user selects the link', async function (): Promise<void> {
+		let testContext = createContext();
+		let connection  = new azdata.connection.ConnectionProfile();
+		let credentials = { [azdata.ConnectionOptionSpecialType.password]: 'password' };
+		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
+		testContext.apiWrapper.setup(x => x.getCredentials(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(credentials); });
+		let installedPackages = `[
+			{"name":"pymssql","version":"2.1.4"},
+			{"name":"sqlmlutils","version":"1.1.1"}
+		]`;
+		testContext.apiWrapper.setup(x => x.startBackgroundOperation(TypeMoq.It.isAny())).returns((operationInfo: azdata.BackgroundOperationInfo) => {
+			operationInfo.operation(testContext.op);
+		});
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns(() => Promise.resolve(constants.learnMoreTitle));
+		testContext.apiWrapper.setup(x => x.openExternal(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
+		testContext.processService.setup(x => x.executeBufferedCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			return Promise.resolve(installedPackages);
+		});
+
+		testContext.processService.setup(x => x.execScripts(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.reject('error'));
+
+		let packageManager = createPackageManager(testContext);
+		await should(packageManager.installDependencies()).be.rejected();
+		testContext.apiWrapper.verify(x => x.openExternal(TypeMoq.It.isAny()), TypeMoq.Times.atMostOnce());
 	});
 
 	it('installDependencies Should install packages that are not already installed', async function (): Promise<void> {
