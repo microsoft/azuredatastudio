@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - release/extensions
+  pull_request:
+    branches:
+      - release/extensions
+
+jobs:
+  validate-galleries:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.2.0
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    # TODO: cache node modules
+    - run: node scripts/validateGalleries.js
+      name: Validate Extension Galleries
