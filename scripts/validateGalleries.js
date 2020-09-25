@@ -17,6 +17,9 @@ const fs = require('fs');
  *
  * Note that while most checks are falsy checks some specifically check for undefined when an empty string or 0 is
  * an expected value.
+ *
+ * You can run this manually from the command line with :
+ *      node scripts/validateGalleries.js
  */
 
 /**
