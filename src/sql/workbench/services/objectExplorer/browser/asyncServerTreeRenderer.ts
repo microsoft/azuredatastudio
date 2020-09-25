@@ -264,10 +264,10 @@ function getIconPath(connection: ConnectionProfile, connectionManagementService:
 	if (!providerProperties) { return undefined; }
 
 	let iconPath: IconPath | undefined = undefined;
-	let pathConfig: URI | IconPath | { id: string, path: IconPath }[] | undefined = providerProperties['iconPath'];
+	let pathConfig: URI | IconPath | { id: string, path: IconPath, default?: boolean }[] | undefined = providerProperties['iconPath'];
 	if (Array.isArray(pathConfig)) {
 		for (const e of pathConfig) {
-			if (!e.id || e.id === iconId || iconId === undefined) {
+			if (!e.id || e.id === iconId || e.default) {
 				iconPath = e.path;
 				connection['iconPath'] = iconPath;
 				break;

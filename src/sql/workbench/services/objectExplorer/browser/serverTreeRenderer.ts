@@ -175,7 +175,7 @@ export class ServerTreeRenderer implements IRenderer {
 		if (!providerProperties) { return undefined; }
 
 		let iconPath: IconPath | undefined = undefined;
-		let pathConfig: URI | IconPath | { id: string, path: IconPath, default: boolean }[] | undefined = providerProperties.iconPath;
+		let pathConfig: URI | IconPath | { id: string, path: IconPath, default?: boolean }[] | undefined = providerProperties.iconPath;
 		if (Array.isArray(pathConfig)) {
 			for (const e of pathConfig) {
 				if (!e.id || e.id === iconId || e.default) {
