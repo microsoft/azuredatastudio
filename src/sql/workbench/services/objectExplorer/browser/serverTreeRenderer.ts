@@ -122,6 +122,10 @@ export class ServerTreeRenderer implements IRenderer {
 	 */
 	public renderElement(tree: ITree, element: any, templateId: string, templateData: any): void {
 		if (templateId === ServerTreeRenderer.CONNECTION_TEMPLATE_ID) {
+			// if (templateData.icon) {
+			// 	templateData.icon.id = '';
+			// }
+			// }
 			this.renderConnection(element, templateData);
 		} else if (templateId === ServerTreeRenderer.CONNECTION_GROUP_TEMPLATE_ID) {
 			this.renderConnectionProfileGroup(element, templateData);
@@ -175,10 +179,10 @@ export class ServerTreeRenderer implements IRenderer {
 		if (!providerProperties) { return undefined; }
 
 		let iconPath: IconPath | undefined = undefined;
-		let pathConfig: URI | IconPath | { id: string, path: IconPath }[] | undefined = providerProperties.iconPath;
+		let pathConfig: URI | IconPath | { id: string, path: IconPath, default: boolean }[] | undefined = providerProperties.iconPath;
 		if (Array.isArray(pathConfig)) {
 			for (const e of pathConfig) {
-				if (!e.id || e.id === iconId || iconId === undefined) {
+				if (!e.id || e.id === iconId || e.default) {
 					iconPath = e.path;
 					connection['iconPath'] = iconPath;
 					break;
