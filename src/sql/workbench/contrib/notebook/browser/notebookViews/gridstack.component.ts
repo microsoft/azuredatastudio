@@ -16,8 +16,6 @@ import 'gridstack/dist/gridstack.jQueryUI';
 */
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { NotebookViewExtension, INotebookViewCell, CellChangeEvent } from 'sql/workbench/services/notebook/browser/models/notebookView';
-
-
 //declare var $: any; // JQuery
 
 @Component({
@@ -27,6 +25,7 @@ import { NotebookViewExtension, INotebookViewCell, CellChangeEvent } from 'sql/w
 export class GridStackComponent implements OnInit {
 	@Input() cells: ICellModel[];
 	@Input() model: NotebookModel;
+
 	@ViewChildren(GridStackItemComponent) private _items: QueryList<GridStackItemComponent>;
 
 	protected _grid: any;
@@ -41,7 +40,7 @@ export class GridStackComponent implements OnInit {
 	}
 
 	public get hiddenItems(): GridStackItemComponent[] {
-		return this._items.filter(item => item.display);
+		return this._items.filter(item => !item.display);
 	}
 
 	ngOnInit() {
@@ -62,6 +61,7 @@ export class GridStackComponent implements OnInit {
 				alwaysShowResizeHandle: true,
 				verticalMargin: 5
 			});
+
 			self._grid.on('added', function (e, items) { self.persist('added', items, self._grid, self._items); });
 			self._grid.on('removed', function (e, items) { self.persist('removed', items, self._grid, self._items); });
 			self._grid.on('change', function (e, items) { self.persist('change', items, self._grid, self._items); });
