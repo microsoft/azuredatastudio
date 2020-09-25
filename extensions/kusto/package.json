@@ -223,7 +223,8 @@
           "path": {
             "light": "resources/light/azureDE.svg",
             "dark": "resources/dark/azureDE_inverse.svg"
-          }
+          },
+          "default": true
         },
         {
           "id": "kusto:cluster",
