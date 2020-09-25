@@ -11,6 +11,8 @@ import { EulaWizardPage } from './eulaWizardPage';
 import { createFlexContainer } from '../modelViewUtils';
 import { getErrorMessage } from '../../utils';
 import { EOL } from 'os';
+import * as loc from '../../localizedConstants';
+
 
 const localize = nls.loadMessageBundle();
 
@@ -40,6 +42,8 @@ export class EulaSettingsPage extends EulaWizardPage {
 	private _optionsContainer!: azdata.FlexContainer;
 	private _optionsDropdown: azdata.DropDownComponent[] = [];
 
+
+	private _eulaValidationSucceeded: boolean = false;
 
 
 	private form: any;
@@ -140,8 +144,8 @@ export class EulaSettingsPage extends EulaWizardPage {
 				return false;
 			}
 
-			if (!this.validateToolsEula()) {
-				return false;
+			if (!this._eulaValidationSucceeded && !(await this.acquireEulaAndProceed())) {
+				return false; // we return false so that the workflow does not proceed and user gets to either click acceptEulaAndSelect again or cancel
 			}
 
 			return true;
@@ -394,19 +398,35 @@ export class EulaSettingsPage extends EulaWizardPage {
 		}
 	}
 
-	private validateToolsEula(): boolean {
-		const validationSucceeded = this._tools.every(tool => {
-			const eulaValidated = tool.validateEula();
-			if (!eulaValidated) {
+	private areToolsEulaAccepted(): boolean {
+		// we run 'map' on each tool before doing 'every' so that we collect eula messages for all tools (instead of bailing out after 1st failure)
+		this._eulaValidationSucceeded = this._tools.map(tool => {
+			const eulaAccepted = tool.isEulaAccepted();
+			if (!eulaAccepted) {
 				this.wizard.wizardObject.message = {
 					level: azdata.window.MessageLevel.Error,
-					text: tool.statusDescription!
+					text: [tool.statusDescription!, this.wizard.wizardObject.message.text].join(EOL)
 				};
 			}
-			return eulaValidated;
-		});
-		this._recheckEulaButton.display = (validationSucceeded) ? 'none' : 'inline';
-		return validationSucceeded;
+			return eulaAccepted;
+		}).every(isEulaAccepted => isEulaAccepted);
+		return this._eulaValidationSucceeded;
+	}
+
+	private async acquireEulaAndProceed(): Promise<boolean> {
+		this.wizard.wizardObject.message = { text: '' };
+		let eulaAccepted = true;
+		for (const tool of this._tools) {
+			eulaAccepted = tool.isEulaAccepted() || await tool.promptForEula();
+			if (!eulaAccepted) {
+				this.wizard.wizardObject.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: [tool.statusDescription!, this.wizard.wizardObject.message.text].join(EOL)
+				};
+				break;
+			}
+		}
+		return eulaAccepted;
 	}
 
 	private updateToolsDisplayTable(): void {
@@ -479,7 +499,7 @@ export class EulaSettingsPage extends EulaWizardPage {
 		});
 		this._installToolButton.display = (erroredOrFailedTool || minVersionCheckFailed || (toolsToAutoInstall.length === 0)) ? 'none' : 'inline';
 
-		this.wizard.wizardObject.nextButton.enabled = !erroredOrFailedTool && messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0) && this.validateToolsEula();
+		this.wizard.wizardObject.nextButton.enabled = !erroredOrFailedTool && messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0);
 		if (messages.length !== 0) {
 			if (messages.length > 1) {
 				messages = messages.map(message => `•	${message}`);
@@ -510,6 +530,9 @@ export class EulaSettingsPage extends EulaWizardPage {
 				level: azdata.window.MessageLevel.Warning,
 				text: infoText.join(EOL)
 			};
+		}
+		if (!this.areToolsEulaAccepted()) {
+			this.wizard.wizardObject.doneButton.label = loc.acceptEulaAndSelect;
 		}
 		this._toolsLoadingComponent.loading = false;
 	}

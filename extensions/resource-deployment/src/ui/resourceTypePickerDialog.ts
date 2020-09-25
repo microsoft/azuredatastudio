@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolStatus } from '../interfaces';
+import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolRequirementInfo, ToolStatus } from '../interfaces';
 import { select } from '../localizedConstants';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';

@@ -43,7 +43,7 @@ export class EulaWizard extends WizardBase<EulaWizard, EulaWizardPage, Model> {
 	}
 
 	constructor(private _resourceType: ResourceType | undefined, private _provider: EulaWizardDeploymentProvider, private _notebookService: INotebookService, private _platformService: IPlatformService, toolsService: IToolsService, private _settingsPreset?: EulaInformation) {
-		super(_provider.eulaWizard.title, new Model(), toolsService);
+		super(_provider.eulaWizard.title, '', new Model(), toolsService);
 		if (this._provider.eulaWizard.codeCellInsertionPosition === undefined) {
 			this._provider.eulaWizard.codeCellInsertionPosition = 0;
 		}
