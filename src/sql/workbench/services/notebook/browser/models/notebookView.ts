@@ -25,12 +25,16 @@ export interface INotebookViewMetadata {
 }
 
 export interface INotebookView {
+	cells: Readonly<ICellModel[]>;
+	hiddenCells: Readonly<ICellModel[]>;
 	readonly guid: string;
 	name: string;
 
-	initialize();
-	hideCell(cell: ICellModel);
-	save();
+	initialize(): void;
+	hideCell(cell: ICellModel): void;
+	getCell(guid: string): Readonly<ICellModel>;
+	insertCellAt(cell: ICellModel, x: number, y: number, height?: number, width?: number): void;
+	save(): void;
 }
 
 /*
@@ -109,6 +113,10 @@ export class NotebookViewExtension extends NotebookExtension {
 		}
 	}
 
+	public get notebook(): INotebookModel {
+		return this._notebook;
+	}
+
 	public commit() {
 		this.setNotebookMetadata(this._notebook, this._extensionMeta);
 	}
@@ -174,7 +182,6 @@ export class NotebookViewExtension extends NotebookExtension {
 }
 
 
-
 class NotebookView implements INotebookView {
 	readonly guid: string;
 
@@ -215,6 +222,22 @@ class NotebookView implements INotebookView {
 	public getCellMetadata(cell: ICellModel): INotebookViewCell {
 		const meta = this._notebookViewExtension.getCellMetadata(cell);
 		return meta.views.find(view => view.guid === this.guid);
+	}
+
+	public get cells(): Readonly<ICellModel[]> {
+		return this._notebook.cells;
+	}
+
+	public getCell(guid: string): Readonly<ICellModel> {
+		return this._notebook.cells.find(cell => cell.cellGuid === guid);
+	}
+
+	public get hiddenCells(): Readonly<ICellModel[]> {
+		return this.cells.filter(cell => {
+			const meta = this._notebookViewExtension.getCellMetadata(cell);
+			const cellData = meta.views.find(view => view.guid === this.guid);
+			return cellData.hidden;
+		});
 	}
 
 	public insertCellAt(cell: ICellModel, x: number, y: number, height: number = 4, width: number = 12) {
