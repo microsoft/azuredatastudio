@@ -326,7 +326,7 @@
         },
         {
           "command": "sqlDatabaseProjects.delete",
-          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.folder || viewItem == databaseProject.itemType.file",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.folder || viewItem == databaseProject.itemType.file || viewItem == databaseProject.itemType.reference",
           "group": "9_dbProjectsLast@2"
         },
         {
