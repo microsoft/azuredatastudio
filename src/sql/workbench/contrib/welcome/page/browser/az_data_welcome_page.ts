@@ -159,7 +159,7 @@ export default () => `
 					<div
 						class="ads-grid tile no-hover extension-pack">
 						<div class="extension-pack-description">
-							<div class="extension-pack-header"></div>
+							<h3 class="extension-pack-header"></h3>
 							<p class="extension-pack-body"></p>
 						</div>
 						<div class="extension-pack-extensions flex flex-d-column flex-j-evenly flex-a-start">
