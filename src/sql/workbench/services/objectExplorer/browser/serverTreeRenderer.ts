@@ -122,10 +122,6 @@ export class ServerTreeRenderer implements IRenderer {
 	 */
 	public renderElement(tree: ITree, element: any, templateId: string, templateData: any): void {
 		if (templateId === ServerTreeRenderer.CONNECTION_TEMPLATE_ID) {
-			// if (templateData.icon) {
-			// 	templateData.icon.id = '';
-			// }
-			// }
 			this.renderConnection(element, templateData);
 		} else if (templateId === ServerTreeRenderer.CONNECTION_GROUP_TEMPLATE_ID) {
 			this.renderConnectionProfileGroup(element, templateData);
@@ -201,9 +197,7 @@ export class ServerTreeRenderer implements IRenderer {
 
 	private renderServerIcon(element: HTMLElement, iconPath: IconPath | undefined, isConnected: boolean): void {
 		if (!element) { return; }
-		if (iconPath) {
-			iconRenderer.putIcon(element, iconPath);
-		}
+		iconRenderer.putIcon(element, iconPath);
 		let badgeToRemove: string = isConnected ? badgeRenderer.serverDisconnected : badgeRenderer.serverConnected;
 		let badgeToAdd: string = isConnected ? badgeRenderer.serverConnected : badgeRenderer.serverDisconnected;
 		badgeRenderer.removeBadge(element, badgeToRemove);
