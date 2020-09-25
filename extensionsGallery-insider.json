@@ -3484,26 +3484,26 @@
 					},
 					"versions": [
 						{
-							"version": "1.0.0",
-							"lastUpdated": "8/31/2020",
+							"version": "1.0.1",
+							"lastUpdated": "9/25/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/Jim-BITracks/eltsnap-simpleDataFlow/releases/tag/v1.0.0"
+									"source": "https://github.com/Jim-BITracks/eltsnap-simpleDataFlow/releases/tag/v1.0.1"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Jim-BITracks/eltsnap-simpleDataFlow/v1.0.0/images/bitracks.png"
+									"source": "https://raw.githubusercontent.com/Jim-BITracks/eltsnap-simpleDataFlow/v1.0.1/images/bitracks.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Jim-BITracks/eltsnap-simpleDataFlow/v1.0.0/README.md"
+									"source": "https://raw.githubusercontent.com/Jim-BITracks/eltsnap-simpleDataFlow/v1.0.1/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Jim-BITracks/eltsnap-simpleDataFlow/v1.0.0/package.json"
+									"source": "https://raw.githubusercontent.com/Jim-BITracks/eltsnap-simpleDataFlow/v1.0.1/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
