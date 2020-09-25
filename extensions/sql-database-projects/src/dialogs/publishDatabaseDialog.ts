@@ -183,7 +183,7 @@ export class PublishDatabaseDialog {
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars,
-			deploymentOptions: this.deploymentOptions
+			deploymentOptions: await this.getDeploymentOptions()
 		};
 
 		azdata.window.closeDialog(this.dialog);
@@ -198,7 +198,7 @@ export class PublishDatabaseDialog {
 			databaseName: this.getTargetDatabaseName(),
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars,
-			deploymentOptions: this.deploymentOptions
+			deploymentOptions: await this.getDeploymentOptions()
 		};
 
 		azdata.window.closeDialog(this.dialog);
@@ -208,6 +208,21 @@ export class PublishDatabaseDialog {
 		}
 
 		this.dispose();
+	}
+
+	private async getDeploymentOptions(): Promise<DeploymentOptions> {
+		// eventually, database options will be configurable in this dialog
+		// but for now,  just send the default DacFx deployment options if no options were loaded from a publish profile
+		if (!this.deploymentOptions) {
+			this.deploymentOptions = await utils.GetDefaultDeploymentOptions();
+
+			// this option needs to be true for same database references validation to work
+			if (this.project.databaseReferences.length > 0) {
+				this.deploymentOptions.includeCompositeObjects = true;
+			}
+		}
+
+		return this.deploymentOptions;
 	}
 
 	private getSqlCmdVariablesForPublish(): Record<string, string> {
