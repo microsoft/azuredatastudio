@@ -151,4 +151,3 @@ export class InfoButton extends sqlButton {
 		this.title = options.title;
 	}
 }
-

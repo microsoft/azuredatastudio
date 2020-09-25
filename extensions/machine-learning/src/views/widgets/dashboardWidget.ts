@@ -453,12 +453,6 @@ export class DashboardWidget {
 			height: '84px',
 			width: '100%',
 		}).component();
-		tasksContainer.updateCssStyles(
-			{
-				'justify-content': 'space-around',
-				'margin-top': '87px'
-			}
-		);
 		const predictionMetadata: IActionMetadata = {
 			title: constants.makePredictionTitle,
 			description: constants.makePredictionDesc,
@@ -469,7 +463,7 @@ export class DashboardWidget {
 			link: 'https://go.microsoft.com/fwlink/?linkid=2129795',
 			command: constants.mlsPredictModelCommand
 		};
-		const predictionButton = await this.createTaskButton(view, predictionMetadata);
+		const predictionButton = this.createTaskButton(view, predictionMetadata);
 		const importMetadata: IActionMetadata = {
 			title: constants.importModelTitle,
 			description: constants.importModelDesc,
@@ -480,7 +474,7 @@ export class DashboardWidget {
 			link: 'https://go.microsoft.com/fwlink/?linkid=2129796',
 			command: constants.mlManageModelsCommand
 		};
-		const importModelsButton = await this.createTaskButton(view, importMetadata);
+		const importModelsButton = this.createTaskButton(view, importMetadata);
 		const notebookMetadata: IActionMetadata = {
 			title: constants.createNotebookTitle,
 			description: constants.createNotebookDesc,
@@ -501,7 +495,7 @@ export class DashboardWidget {
 		return tasksContainer;
 	}
 
-	private async createTaskButton(view: azdata.ModelView, taskMetaData: IActionMetadata): Promise<azdata.Component> {
+	private createTaskButton(view: azdata.ModelView, taskMetaData: IActionMetadata): azdata.Component {
 		const maxHeight: number = 84;
 		const maxWidth: number = 236;
 		const buttonContainer = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({

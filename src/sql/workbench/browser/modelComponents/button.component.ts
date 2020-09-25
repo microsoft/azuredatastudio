@@ -29,7 +29,7 @@ import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUt
 	<ng-container *ngIf="!this.buttonType === 'Informational'"; else elseBlock>
 		<label for={{this.label}}>
 			<div #input style="width: 100%">
-				<input #fileInput *ngIf="this.buttonType === 'File'" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
+			<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
 			</div>
 		</label>
 	</ng-container>
@@ -157,34 +157,18 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	protected updateIcon() {
 		if (this.iconPath) {
-			if (this.buttonType !== 'Informational') {
-				if (!this._iconClass) {
-					super.updateIcon();
-					this._button.icon = this._iconClass + ' icon';
-					// Styling for icon button
-					this._register(attachButtonStyler(this._button, this.themeService, {
-						buttonBackground: Color.transparent.toString(),
-						buttonHoverBackground: Color.transparent.toString(),
-						buttonFocusOutline: focusBorder,
-						buttonForeground: foreground
-					}));
-				} else {
-					super.updateIcon();
-				}
+			if (!this._iconClass) {
+				super.updateIcon();
+				this._button.icon = this._iconClass + ' icon';
+				// Styling for icon button
+				this._register(attachButtonStyler(this._button, this.themeService, {
+					buttonBackground: Color.transparent.toString(),
+					buttonHoverBackground: Color.transparent.toString(),
+					buttonFocusOutline: focusBorder,
+					buttonForeground: foreground
+				}));
 			} else {
-				if (!this._iconClass) {
-					super.updateIcon();
-					this._button.icon = this._iconClass + ' icon';
-					// Styling for icon button
-					this._register(attachButtonStyler(this._button, this.themeService, {
-						buttonBackground: Color.transparent.toString(),
-						buttonHoverBackground: Color.transparent.toString(),
-						buttonFocusOutline: focusBorder,
-						buttonForeground: foreground
-					}));
-				} else {
-					super.updateIcon();
-				}
+				super.updateIcon();
 			}
 		}
 	}
