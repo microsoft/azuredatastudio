@@ -516,6 +516,23 @@ export class ProjectsController {
 	}
 
 	/**
+	 * Changes the project's DSP to the selected target platform
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async changeTargetPlatform(context: Project | BaseProjectTreeItem): Promise<void> {
+		const selectedTargetPlatform = (await vscode.window.showQuickPick((Array.from(constants.targetPlatforms.keys())).map(version => { return { label: version }; }),
+			{
+				canPickMany: false,
+				placeHolder: constants.selectTargetPlatform
+			}))?.label;
+
+		if (selectedTargetPlatform) {
+			const project = this.getProjectFromContext(context);
+			await project.changeTargetPlatform(constants.targetPlatforms.get(selectedTargetPlatform)!);
+		}
+	}
+
+	/**
 	 * Adds a database reference to the project
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
@@ -592,7 +609,7 @@ export class ProjectsController {
 		}
 	}
 
-	private getProjectFromContext(context: Project | BaseProjectTreeItem | WorkspaceTreeItem) {
+	private getProjectFromContext(context: Project | BaseProjectTreeItem | WorkspaceTreeItem): Project {
 		if ('element' in context) {
 			return context.element.project;
 		}

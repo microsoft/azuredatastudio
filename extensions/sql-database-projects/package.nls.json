@@ -27,6 +27,7 @@
 	"sqlDatabaseProjects.addDatabaseReference": "Add Database Reference",
 	"sqlDatabaseProjects.openContainingFolder": "Open Containing Folder",
 	"sqlDatabaseProjects.editProjectFile": "Edit .sqlproj File",
+	"sqlDatabaseProjects.changeTargetPlatform": "Change Target Platform",
 
 	"sqlDatabaseProjects.Settings": "Database Projects",
 	"sqlDatabaseProjects.netCoreInstallLocation": "Full path to .Net Core SDK on the machine.",
