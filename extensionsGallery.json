@@ -1568,14 +1568,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.4.1",
-							"lastUpdated": "03/08/2020",
+							"version": "0.4.2",
+							"lastUpdated": "09/25/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/managed-instance-dashboard/managed-instance-dashboard-0.4.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/managed-instance-dashboard/managed-instance-dashboard-0.4.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
