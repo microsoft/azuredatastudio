@@ -353,10 +353,12 @@ class WelcomePage extends Disposable {
 	}
 
 	private createButtons(welcomePageContainer: HTMLElement): void {
-		const container = welcomePageContainer.querySelector('.ads-homepage .hero');
+		const container = welcomePageContainer.querySelector('#welcome-page-button-container');
 
 		// New button, contains a down arrow, invoking the button will open a context menu.
-		const newButtonContainer = welcomePageContainer.querySelector('#dropdown-btn-container') as HTMLElement;
+		const newButtonContainer = document.createElement('div');
+		newButtonContainer.classList.add('btn', 'btn-primary');
+		container.appendChild(newButtonContainer);
 		const newButton = this._register(new Button(newButtonContainer));
 		newButton.label = localize('welcomePage.new', "New");
 		const newButtonHtmlElement = newButton.element;
@@ -375,22 +377,33 @@ class WelcomePage extends Disposable {
 		});
 
 		// Secondary buttons
-		const secondaryButtons = [
+		// We are handling macOS specially here because the same dialog is being used to select both file and folder on macOS.
+		const macSecondaryButtons = [
 			{
-				command: 'workbench.action.files.openFile',
-				title: localize('welcomePage.openFile', "Open file"),
-				containerId: 'open-file-btn-container'
-			},
-			{
-				command: 'workbench.action.files.openFolder',
-				title: localize('welcomePage.openFolder', "Open folder"),
-				containerId: 'open-folder-btn-container'
+				command: 'workbench.action.files.openLocalFileFolder',
+				title: localize('welcomePage.open', "Open…")
 			}
 		];
 
+		const nonMacSecondaryButtons = [
+			{
+				command: 'workbench.action.files.openFile',
+				title: localize('welcomePage.openFile', "Open file…")
+			},
+			{
+				command: 'workbench.action.files.openFolder',
+				title: localize('welcomePage.openFolder', "Open folder…")
+			}
+		];
+
+		const secondaryButtons = document.body.classList.contains('mac') ? macSecondaryButtons : nonMacSecondaryButtons;
+
 		secondaryButtons.forEach(item => {
-			const btnContainer = container.querySelector(`#${item.containerId}`) as HTMLElement;
-			let secondaryButton = this._register(new Button(btnContainer));
+
+			const btnContainer = document.createElement('div');
+			btnContainer.classList.add('btn', 'btn-secondary');
+			container.appendChild(btnContainer);
+			const secondaryButton = this._register(new Button(btnContainer));
 			secondaryButton.label = item.title;
 			secondaryButton.element.classList.add('btn-secondary');
 			secondaryButton.onDidClick(async () => {

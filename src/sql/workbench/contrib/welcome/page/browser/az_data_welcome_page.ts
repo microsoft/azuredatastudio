@@ -27,13 +27,7 @@ export default () => `
 									<div class="caption-container">
 										<span class="icon xs"></span><h1 class="caption"></h1>
 									</div>
-									<div class="flex btn-container">
-										<div id="dropdown-btn-container" class="btn btn-primary dropdown">
-										</div>
-										<div id="open-file-btn-container" class="btn btn-secondary">
-										</div>
-										<div id="open-folder-btn-container" class="btn btn-secondary">
-										</div>
+									<div id="welcome-page-button-container" class="flex btn-container">
 									</div>
 								</div>
 							</div>
