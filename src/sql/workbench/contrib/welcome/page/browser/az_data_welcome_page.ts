@@ -32,6 +32,8 @@ export default () => `
 										</div>
 										<div id="open-file-btn-container" class="btn btn-secondary">
 										</div>
+										<div id="open-folder-btn-container" class="btn btn-secondary">
+										</div>
 									</div>
 								</div>
 							</div>
