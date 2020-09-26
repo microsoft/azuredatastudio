@@ -691,24 +691,6 @@ declare module 'azdata' {
 		 */
 		delete?: boolean;
 	}
-
-	export interface ButtonProperties {
-		/**
-		* Specifies whether to use expanded layout or not.
-		*/
-		buttonType?: ButtonType;
-		/**
-		* Description text to display inside button element.
-		*/
-		description?: string;
-	}
-
-	export enum ButtonType {
-		File = 'File',
-		Normal = 'Normal',
-		Informational = 'Informational'
-	}
-
 	export interface DiffEditorComponent {
 		/**
 		 * Title of editor
