@@ -154,7 +154,7 @@
 
 .ads-homepage.XS .btn {
 	margin: 0 8px 0 0;
-	width: 77px;
+	min-width: 77px;
 	line-height: 18px
 }
 
