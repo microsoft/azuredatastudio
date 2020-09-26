@@ -113,7 +113,7 @@
                           "label": "%docker-repository-field%",
                           "variableName": "AZDATA_NB_VAR_DOCKER_REPOSITORY",
                           "type": "text",
-                          "defaultValue": "azure-sql-edge-developer",
+                          "defaultValue": "azure-sql-edge",
                           "required": true
                         },
                         {
@@ -234,7 +234,7 @@
                           "label": "%docker-repository-field%",
                           "variableName": "AZDATA_NB_VAR_DOCKER_REPOSITORY",
                           "type": "text",
-                          "defaultValue": "azure-sql-edge-developer",
+                          "defaultValue": "azure-sql-edge",
                           "required": true
                         },
                         {
