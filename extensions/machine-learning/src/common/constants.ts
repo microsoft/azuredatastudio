@@ -224,7 +224,7 @@ export function invalidImportTableSchemaError(databaseName: string | undefined, 
 export const loadModelParameterFailedError = localize('models.loadModelParameterFailedError', "Failed to load model parameters'");
 export const unsupportedModelParameterType = localize('models.unsupportedModelParameterType', "unsupported");
 export const dashboardTitle = localize('dashboardTitle', "Machine Learning");
-export const dashboardDesc = localize('dashboardDesc', "Machine Learning for SQL databases");
+export const dashboardDesc = localize('dashboardDesc', "Machine Learning for SQL Databases");
 export const dashboardLinksTitle = localize('dashboardLinksTitle', "Useful links");
 export const dashboardVideoLinksTitle = localize('dashboardVideoLinksTitle', "Video tutorials");
 export const showMoreTitle = localize('showMoreTitle', "Show more");
