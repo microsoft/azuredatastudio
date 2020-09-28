@@ -96,6 +96,7 @@ const indentationFilter = [
 	'!**/*.dockerfile',
 	'!extensions/markdown-language-features/media/*.js',
 	// {{SQL CARBON EDIT}}
+	'!**/*.gif',
 	'!build/actions/**/*.js',
 	'!**/*.{xlf,docx,sql,vsix,bacpac,ipynb,jpg}',
 	'!extensions/mssql/sqltoolsservice/**',
@@ -138,6 +139,7 @@ const copyrightFilter = [
 	'!resources/linux/snap/snapcraft.yaml',
 	'!resources/linux/snap/electron-launch',
 	'!resources/win32/bin/code.js',
+	'!resources/web/code-web.js',
 	'!resources/completions/**',
 	'!extensions/markdown-language-features/media/highlight.css',
 	'!extensions/html-language-features/server/src/modes/typescript/*',
@@ -145,6 +147,7 @@ const copyrightFilter = [
 	'!src/vs/editor/test/node/classification/typescript-test.ts',
 	'!scripts/code-web.js',
 	'!resources/serverless/code-web.js',
+	'!src/vs/editor/test/node/classification/typescript-test.ts',
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
 	'!extensions/mssql/src/hdfs/webhdfs.ts',
@@ -168,6 +171,7 @@ const copyrightFilter = [
 	'!extensions/markdown-language-features/media/tomorrow.css',
 	'!src/sql/workbench/browser/modelComponents/media/highlight.css',
 	'!src/sql/workbench/contrib/notebook/electron-browser/cellViews/media/highlight.css',
+	'!src/sql/workbench/contrib/notebook/browser/turndownPluginGfm.ts',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/notebook/src/prompts/**',

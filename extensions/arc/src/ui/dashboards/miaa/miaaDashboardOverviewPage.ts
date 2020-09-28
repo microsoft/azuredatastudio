@@ -5,14 +5,15 @@
 
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
-import * as vscode from 'vscode';
-import * as loc from '../../../localizedConstants';
 import * as azurecore from 'azurecore';
-import { DashboardPage } from '../../components/dashboardPage';
-import { IconPathHelper, cssStyles, Endpoints, ResourceType } from '../../../constants';
+import * as vscode from 'vscode';
+import { getDatabaseStateDisplayText, promptForInstanceDeletion } from '../../../common/utils';
+import { cssStyles, Endpoints, IconPathHelper, miaaTroubleshootDocsUrl } from '../../../constants';
+import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
-import { getDatabaseStateDisplayText, promptForResourceDeletion } from '../../../common/utils';
 import { MiaaModel } from '../../../models/miaaModel';
+import { DashboardPage } from '../../components/dashboardPage';
+import { ResourceType } from 'arc';
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
 
@@ -197,13 +198,22 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			deleteButton.onDidClick(async () => {
 				deleteButton.enabled = false;
 				try {
-					if (await promptForResourceDeletion(this._miaaModel.info.name)) {
-						await this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name);
+					if (await promptForInstanceDeletion(this._miaaModel.info.name)) {
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.deletingInstance(this._miaaModel.info.name),
+								cancellable: false
+							},
+							(_progress, _token) => {
+								return this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name);
+							}
+						);
 						await this._controllerModel.refreshTreeNode();
-						vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.info.name));
+						vscode.window.showInformationMessage(loc.instanceDeleted(this._miaaModel.info.name));
 					}
 				} catch (error) {
-					vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.info.name, error));
+					vscode.window.showErrorMessage(loc.instanceDeletionFailed(this._miaaModel.info.name, error));
 				} finally {
 					deleteButton.enabled = true;
 				}
@@ -247,6 +257,17 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				}
 			}));
 
+		const troubleshootButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.troubleshoot,
+			iconPath: IconPathHelper.wrench
+		}).component();
+
+		this.disposables.push(
+			troubleshootButton.onDidClick(async () => {
+				await vscode.env.openExternal(vscode.Uri.parse(miaaTroubleshootDocsUrl));
+			})
+		);
+
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
 				{ component: deleteButton },
@@ -265,7 +286,6 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		this._instanceProperties.dataController = config?.metadata.name || this._instanceProperties.dataController;
 		this._instanceProperties.region = this._azurecoreApi.getRegionDisplayName(config?.spec.settings.azure.location) || this._instanceProperties.region;
 		this._instanceProperties.subscriptionId = config?.spec.settings.azure.subscription || this._instanceProperties.subscriptionId;
-		// this._instanceProperties.vCores = reg.vCores || '';
 		this.refreshDisplayedProperties();
 	}
 
@@ -273,6 +293,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		if (this._miaaModel.config) {
 			this._instanceProperties.status = this._miaaModel.config.status.state || '-';
 			this._instanceProperties.externalEndpoint = this._miaaModel.config.status.externalEndpoint || loc.notConfigured;
+			this._instanceProperties.vCores = this._miaaModel.config.spec.limits?.vcores?.toString() || '';
 			this._databasesMessage.value = !this._miaaModel.config.status.externalEndpoint ? loc.noExternalEndpoint : '';
 		}
 

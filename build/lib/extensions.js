@@ -224,7 +224,8 @@ const externalExtensions = [
     'machine-learning',
     'sql-assessment',
     'asde-deployment',
-    'sql-migration'
+    'sql-migration',
+    'data-workspace'
 ];
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [
@@ -255,7 +256,6 @@ function packageLocalExtensionsStream(forWeb) {
         const extensionName = path.basename(extensionPath);
         return { name: extensionName, path: extensionPath, manifestPath: absoluteManifestPath };
     })
-        .filter(({ name }) => (name === 'vscode-web-playground' ? forWeb : true)) // package vscode-web-playground only for web
         .filter(({ name }) => excludedExtensions.indexOf(name) === -1)
         .filter(({ name }) => builtInExtensions.every(b => b.name !== name))
         .filter(({ name }) => externalExtensions.indexOf(name) === -1) // {{SQL CARBON EDIT}} Remove external Extensions with separate package

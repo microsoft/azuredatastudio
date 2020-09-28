@@ -19,6 +19,13 @@
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
   "contributes": {
+    "resourceViewResources": [
+      {
+        "id": "azure-resources",
+        "name": "Azure",
+        "icon": "./resources/azure.svg"
+      }
+    ],
     "configuration": [
       {
         "type": "object",
@@ -179,14 +186,14 @@
         {
           "id": "azureResourceExplorer_dialog",
           "name": "%azure.resource.explorer.title%",
-          "when": "config.workbench.enablePreviewFeatures"
+          "when": "config.connection.dialog.browse"
         }
       ],
       "dataExplorer": [
         {
           "id": "azureResourceExplorer",
           "name": "%azure.resource.explorer.title%",
-          "when": "!config.workbench.enablePreviewFeatures"
+          "when": "!config.connection.dialog.browse"
         }
       ]
     },

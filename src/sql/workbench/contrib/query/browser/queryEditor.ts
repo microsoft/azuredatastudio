@@ -7,8 +7,8 @@ import 'vs/css!./media/queryEditor';
 
 import * as DOM from 'vs/base/browser/dom';
 import * as path from 'vs/base/common/path';
-import { EditorOptions, IEditorControl, IEditorMemento } from 'vs/workbench/common/editor';
-import { BaseEditor, EditorMemento } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorOptions, IEditorControl, IEditorMemento, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { EditorPane, EditorMemento } from 'vs/workbench/browser/parts/editor/editorPane';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -38,6 +38,7 @@ import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as actions from 'sql/workbench/contrib/query/browser/queryActions';
 import { IRange } from 'vs/editor/common/core/range';
+import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -49,7 +50,7 @@ interface IQueryEditorViewState {
  * Editor that hosts 2 sub-editors: A TextResourceEditor for SQL file editing, and a QueryResultsEditor
  * for viewing and editing query results. This editor is based off SideBySideEditor.
  */
-export class QueryEditor extends BaseEditor {
+export class QueryEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.queryEditor';
 
@@ -267,6 +268,10 @@ export class QueryEditor extends BaseEditor {
 
 		// TODO: Make it more generic, some way for extensions to register the commands it supports
 		if ((!fileExtension && connectionProfile?.providerName === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
+			if (this.input instanceof UntitledQueryEditorInput) {		// Sets proper language mode for untitled query editor based on the connection selected by user.
+				this.input.setMode('kusto');
+			}
+
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },
@@ -315,7 +320,7 @@ export class QueryEditor extends BaseEditor {
 		this.taskbar.setContent(content);
 	}
 
-	public async setInput(newInput: QueryEditorInput, options: EditorOptions, token: CancellationToken): Promise<void> {
+	public async setInput(newInput: QueryEditorInput, options: EditorOptions, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		const oldInput = this.input;
 
 		if (newInput.matches(oldInput)) {
@@ -345,9 +350,9 @@ export class QueryEditor extends BaseEditor {
 		}
 
 		await Promise.all([
-			super.setInput(newInput, options, token),
-			this.currentTextEditor.setInput(newInput.text, options, token),
-			this.resultsEditor.setInput(newInput.results, options)
+			super.setInput(newInput, options, context, token),
+			this.currentTextEditor.setInput(newInput.text, options, context, token),
+			this.resultsEditor.setInput(newInput.results, options, context)
 		]);
 
 		this.inputDisposables.clear();

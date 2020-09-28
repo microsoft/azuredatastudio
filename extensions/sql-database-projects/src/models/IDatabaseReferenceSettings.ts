@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DatabaseReferenceLocation, SystemDatabase } from './project';
+import { SystemDatabase } from './project';
 import { Uri } from 'vscode';
 
 export interface IDatabaseReferenceSettings {
-	databaseName: string;
+	databaseName?: string;
+	suppressMissingDependenciesErrors: boolean;
 }
 
 export interface ISystemDatabaseReferenceSettings extends IDatabaseReferenceSettings {
@@ -15,8 +16,16 @@ export interface ISystemDatabaseReferenceSettings extends IDatabaseReferenceSett
 }
 
 export interface IDacpacReferenceSettings extends IDatabaseReferenceSettings {
-	databaseLocation: DatabaseReferenceLocation;
 	dacpacFileLocation: Uri;
+	databaseVariable?: string;
+	serverName?: string;
+	serverVariable?: string;
+}
+
+export interface IProjectReferenceSettings extends IDatabaseReferenceSettings {
+	projectRelativePath: Uri | undefined;
+	projectName: string;
+	projectGuid: string;
 	databaseVariable?: string;
 	serverName?: string;
 	serverVariable?: string;

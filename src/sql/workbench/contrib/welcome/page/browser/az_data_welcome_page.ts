@@ -6,6 +6,8 @@
 import { escape } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
 
+const previewImgDescription = escape(localize('welcomePage.previewBody', "This feature page is in preview. Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."));
+
 export default () => `
 <div class="welcomePageContainer">
 	<div class="welcomePage">
@@ -13,21 +15,7 @@ export default () => `
 			<div class="gradient">
 				<div class="ads-homepage-section tool-tip">
 					<div class="tool-tip-container" id="tool-tip-container-wide">
-						<a role="button" class="ads-welcome-page-link" aria-describedby="tooltip-text-wide" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
-						<span role="tooltip" id="tooltip-text-wide" class="tool-tip-text" aria-hidden="true">
-							<h3 tabindex="0" class="preview-tooltip-header">${escape(localize('welcomePage.previewHeader', "This page is in preview"))}</h3>
-							<p tabindex="0" class="preview-tooltip-body">${escape(localize('welcomePage.previewBody', "Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."))}</p>
-						</span>
-					</div>
-					<div class="tool-tip-container" id="tool-tip-container-narrow">
-						<a role="button" class="ads-welcome-page-link" aria-haspopup="true" class="preview-link" tabindex="0" id="preview-link-narrow" name="previewNarrow"><p>Preview</p><i class="icon-info themed-icon"></i></a>
-					</div>
-				</div>
-				<div id="preview-modal" class="modal" aria-modal="true" aria-hidden="true">
-					<div class="modal-content">
-						<span class="close-icon">x</span>
-						<h3 tabindex="0" class="preview-modal-header">${escape(localize('welcomePage.previewHeader', "This page is in preview"))}</h3>
-						<p tabindex="0" class="preview-modal-body">${escape(localize('welcomePage.previewBody', "Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development."))}</p>
+						<a role="img" tabindex=0 class="ads-welcome-page-link" aria-label="${previewImgDescription}" title="${previewImgDescription}" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
 					</div>
 				</div>
 				<div class="ads-homepage-section section header hero">
@@ -39,11 +27,7 @@ export default () => `
 									<div class="caption-container">
 										<span class="icon xs"></span><h1 class="caption"></h1>
 									</div>
-									<div class="flex btn-container">
-										<div id="dropdown-btn-container" class="btn btn-primary dropdown">
-										</div>
-										<div id="open-file-btn-container" class="btn btn-secondary">
-										</div>
+									<div id="welcome-page-button-container" class="flex btn-container">
 									</div>
 								</div>
 							</div>
@@ -94,9 +78,9 @@ export default () => `
 				<div class="resources-container">
 					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
 					<div class="tabs">
-					<!-- Checkbox is not accessible to user yet, this feature is still in development -->
-					<input tabindex="-1" class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
-					<span id="historyLabel" class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</span>
+					<!-- Radio button is not accessible to user yet, this feature is still in development -->
+					<input tabindex="-1" aria-hidden="true" class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
+					<span id="historyLabel" class="label" for="tab-1" tabIndex="0" role="tab">${escape(localize('welcomePage.history', "History"))}</span>
 						<div class="panel">
 							<div class="recent history">
 								<div class="flex list-header-container">
@@ -165,13 +149,13 @@ export default () => `
 			<div class="ads-homepage-section content extensions">
 				<div class="flex flex-j-between">
 					<h2>Extend your data studio</h2>
-					<a role="button" class="link-show-all flex" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
+					<a role="button" class="link-show-all flex ads-welcome-page-link" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
 				</div>
 				<div class="row ads-grid grip-gap-50">
 					<div
 						class="ads-grid tile no-hover extension-pack">
 						<div class="extension-pack-description">
-							<div class="extension-pack-header"></div>
+							<h3 class="extension-pack-header"></h3>
 							<p class="extension-pack-body"></p>
 						</div>
 						<div class="extension-pack-extensions flex flex-d-column flex-j-evenly flex-a-start">

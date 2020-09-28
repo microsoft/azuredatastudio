@@ -683,6 +683,20 @@
                 ]
             },
             {
+                "target": "**/{vs,sql}/workbench/contrib/notebook/common/**",
+                "restrictions": [
+                    "vs/nls",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/**/{common,worker}/**",
+                    "**/{vs,sql}/platform/**/common/**",
+                    "**/{vs,sql}/editor/**",
+                    "**/{vs,sql}/workbench/common/**",
+                    "**/{vs,sql}/workbench/api/common/**",
+                    "**/{vs,sql}/workbench/services/**/common/**",
+                    "**/{vs,sql}/workbench/contrib/**/common/**"
+                ]
+            },
+            {
                 "target": "**/{vs,sql}/workbench/contrib/**/common/**",
                 "restrictions": [
                     "vs/nls",
@@ -717,7 +731,9 @@
 					"chart.js",
 					"plotly.js-dist-min",
 					"angular2-grid",
-					"html-query-plan"
+					"html-query-plan",
+					"turndown",
+					"mark.js"
                 ]
             },
             {

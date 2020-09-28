@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 declare module 'azdata-ext' {
+	import { SemVer } from 'semver';
+
 	/**
 	 * Covers defining what the azdata extension exports to other extensions
 	 *
@@ -12,6 +14,10 @@ declare module 'azdata-ext' {
 	 */
 	export const enum extension {
 		name = 'Microsoft.azdata'
+	}
+
+	export interface ErrorWithLink extends Error {
+		messageWithLink: string;
 	}
 
 	export interface DcEndpointListResult {
@@ -80,7 +86,7 @@ declare module 'azdata-ext' {
 					location: string, // "eastus2euap",
 					resourceGroup: string, // "my-rg",
 					subscription: string, // "a5082b29-8c6e-4bc5-8ddd-8ef39dfebc39"
-				  },
+				},
 				controller: {
 					'enableBilling': string, // "True"
 					'logs.rotation.days': string, // "7"
@@ -118,6 +124,9 @@ declare module 'azdata-ext' {
 			uid: string // "cea737aa-3f82-4f6a-9bed-2b51c2c33dff"
 		},
 		spec: {
+			limits?: {
+				vcores?: number // 4
+			}
 			service: {
 				type: string // "NodePort"
 			}
@@ -150,41 +159,56 @@ declare module 'azdata-ext' {
 			resourceVersion: string, // "214944",
 			selfLink: string, // "/apis/arcdata.microsoft.com/v1alpha1/namespaces/arc/postgresql-12s/chgagnon-pg",
 			uid: string, // "26d0f5bb-0c0b-4225-a6b5-5be2bf6feac0"
-		}
-	}
-
-	export interface PostgresServerShowResult {
-		apiVersion: string, // "arcdata.microsoft.com/v1alpha1"
-		kind: string, // "postgresql-12"
-		metadata: {
-			creationTimestamp: string, // "2020-08-19T20:25:11Z"
-			generation: number, // 1
-			name: string, // "chgagnon-pg"
-			namespace: string, // "arc",
-			resourceVersion: string, // "214944",
-			selfLink: string, // "/apis/arcdata.microsoft.com/v1alpha1/namespaces/arc/postgresql-12s/chgagnon-pg",
-			uid: string, // "26d0f5bb-0c0b-4225-a6b5-5be2bf6feac0"
 		},
 		spec: {
-			backups: {
-				deltaMinutes: number, // 3,
-				fullMinutes: number, // 10,
-				tiers: [
-					{
-						retention: {
-							maximums: string[], // [ "6", "512MB" ],
-							minimums: string[], // [ "3" ]
+			engine: {
+				extensions: {
+					name: string // "citus"
+				}[],
+				settings: {
+					default: { [key: string]: string } // { "max_connections": "101", "work_mem": "4MB" }
+				}
+			},
+			scale: {
+				shards: number // 1
+			},
+			scheduling: {
+				default: {
+					resources: {
+						requests: {
+							cpu: string, // "1.5"
+							memory: string // "256Mi"
 						},
-						storage: {
-							volumeSize: string, // "1Gi"
+						limits: {
+							cpu: string, // "1.5"
+							memory: string // "256Mi"
 						}
 					}
-				]
+				}
 			},
-			status: {
-				readyPods: string, // "1/1",
-				state: string // "Ready"
+			service: {
+				type: string, // "NodePort"
+				port: number // 5432
+			},
+			storage: {
+				data: {
+					className: string, // "local-storage"
+					size: string // "5Gi"
+				},
+				logs: {
+					className: string, // "local-storage"
+					size: string // "5Gi"
+				},
+				backups: {
+					className: string, // "local-storage"
+					size: string // "5Gi"
+				}
 			}
+		},
+		status: {
+			externalEndpoint: string, // "10.130.12.136:26630"
+			readyPods: string, // "1/1",
+			state: string // "Ready"
 		}
 	}
 
@@ -210,8 +234,25 @@ declare module 'azdata-ext' {
 			},
 			postgres: {
 				server: {
+					delete(name: string): Promise<AzdataOutput<void>>,
 					list(): Promise<AzdataOutput<PostgresServerListResult[]>>,
-					show(name: string): Promise<AzdataOutput<PostgresServerShowResult>>
+					show(name: string): Promise<AzdataOutput<PostgresServerShowResult>>,
+					edit(
+						name: string,
+						args: {
+							adminPassword?: boolean,
+							coresLimit?: string,
+							coresRequest?: string,
+							engineSettings?: string,
+							extensions?: string,
+							memoryLimit?: string,
+							memoryRequest?: string,
+							noWait?: boolean,
+							port?: number,
+							replaceEngineSettings?: boolean,
+							workers?: number
+						},
+						additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<void>>
 				}
 			},
 			sql: {
@@ -221,12 +262,33 @@ declare module 'azdata-ext' {
 					show(name: string): Promise<AzdataOutput<SqlMiShowResult>>
 				}
 			}
-		}
+		},
+		getPath(): string,
 		login(endpoint: string, username: string, password: string): Promise<AzdataOutput<any>>,
+		/**
+		 * The semVersion corresponding to this installation of azdata. version() method should have been run
+		 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
+		 * Azdata has gotten reinstalled in the background after this IAzdataApi object was constructed.
+		 */
+		getSemVersion(): SemVer,
 		version(): Promise<AzdataOutput<string>>
 	}
 
 	export interface IExtension {
 		azdata: IAzdataApi;
+
+		/**
+		 * returns true if AZDATA CLI EULA has been previously accepted by the user.
+		 */
+		isEulaAccepted(): boolean;
+
+		/**
+		 * Prompts user to accept EULA. Stores and returns the user response to EULA prompt.
+		 * @param requireUserAction - if the prompt is required to be acted upon by the user. This is typically 'true' when this method is called to address an Error when the EULA needs to be accepted to proceed.
+		 *
+		 * pre-requisite, the calling code has to ensure that the EULA has not yet been previously accepted by the user. The code can use @see isEulaAccepted() call to ascertain this.
+		 * returns true if the user accepted the EULA.
+		 */
+		promptForEula(requireUserAction?: boolean): Promise<boolean>
 	}
 }

@@ -2,14 +2,14 @@
   "name": "azdata",
   "displayName": "%azdata.displayName%",
   "description": "%azdata.description%",
-  "version": "0.1.1",
+  "version": "0.3.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.20.0"
+    "azdata": ">=1.22.0"
   },
   "activationEvents": [
     "*"
@@ -20,16 +20,90 @@
   },
   "main": "./out/extension",
   "contributes": {
-    "configuration":  {
-      "type": "object",
-      "title": "%azdata.config.title%",
-      "properties": {
-        "azdata.logDebugInfo": {
-          "type": "boolean",
-          "default": false,
-          "description": "%azdata.config.debug%"
+    "configuration": [
+      {
+        "type": "object",
+        "title": "%azdata.config.title%",
+        "properties": {
+          "azdata.logDebugInfo": {
+            "type": "boolean",
+            "default": false,
+            "description": "%azdata.config.debug%"
+          },
+          "azdata.acceptEula": {
+            "type": "string",
+            "default": "prompt",
+            "enum": [
+              "dontPrompt",
+              "prompt"
+            ],
+            "enumDescriptions": [
+              "%azdata.acceptEula.dontPrompt.description%",
+              "%azdata.acceptEula.prompt.description%"
+            ],
+            "description": "%azdata.acceptEula.description%"
+          },
+          "azdata.install": {
+            "type": "string",
+            "default": "prompt",
+            "enum": [
+              "dontPrompt",
+              "prompt"
+            ],
+            "enumDescriptions": [
+              "%azdata.install.dontPrompt.description%",
+              "%azdata.install.prompt.description%"
+            ],
+            "description": "%azdata.install.description%"
+          },
+          "azdata.update": {
+            "type": "string",
+            "default": "prompt",
+            "enum": [
+              "dontPrompt",
+              "prompt"
+            ],
+            "enumDescriptions": [
+              "%azdata.update.dontPrompt.description%",
+              "%azdata.update.prompt.description%"
+            ],
+            "description": "%azdata.update.description%"
+          }
         }
       }
+    ],
+    "commands": [
+      {
+        "command": "azdata.acceptEula",
+        "title": "%azdata.acceptEula.command.name%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "azdata.install",
+        "title": "%azdata.install.command.name%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "azdata.update",
+        "title": "%azdata.update.command.name%",
+        "category": "%command.category%"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "azdata.acceptEula",
+          "when": "!azdata.eulaAccepted"
+        },
+        {
+          "command": "azdata.install",
+          "when": "!azdata.found"
+        },
+        {
+          "command": "azdata.update",
+          "when": "azdata.found"
+        }
+      ]
     }
   },
   "dependencies": {

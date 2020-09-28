@@ -22,6 +22,9 @@ export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
+// Project Provider
+export const projectTypeDisplayName = localize('projectTypeDisplayName', 'Database Project');
+
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';
@@ -61,10 +64,11 @@ export const newDefaultProjectSaveLocation = localize('newDefaultProjectSaveLoca
 export const invalidDefaultProjectSaveLocation = localize('invalidDefaultProjectSaveLocation', "Default location to save new database projects is invalid. Would you like to update it?");
 export const openWorkspaceSettings = localize('openWorkspaceSettings', "Yes, open Settings");
 export const doNotPromptAgain = localize('doNotPromptAgain', "Don't ask again");
+export const reloadProject = localize('reloadProject', "Would you like to reload your database project?");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
-
+export function deleteReferenceConfirmation(toDelete: string) { return localize('deleteReferenceConfirmation', "Are you sure you want to delete the reference to {0}?", toDelete); }
 
 // Publish dialog strings
 
@@ -95,6 +99,7 @@ export const defaultUser = localize('default', "default");
 export const addDatabaseReferenceDialogName = localize('addDatabaseReferencedialogName', "Add database reference");
 export const addDatabaseReferenceOkButtonText = localize('addDatabaseReferenceOkButtonText', "Add reference");
 export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Type");
+export const projectRadioButtonTitle = localize('projectRadioButtonTitle', "Database project in folder");
 export const systemDatabaseRadioButtonTitle = localize('systemDatabaseRadioButtonTitle', "System database");
 export const dacpacText = localize('dacpacText', "Data-tier application (.dacpac)");
 export const dacpacPlaceholder = localize('dacpacPlaceholder', "Select .dacpac");
@@ -104,11 +109,19 @@ export const sameDatabase = localize('sameDatabase', "Same database");
 export const differentDbSameServer = localize('differentDbSameServer', "Different database, same server");
 export const differentDbDifferentServer = localize('differentDbDifferentServer', "Different database, different server");
 export const systemDbLocationDropdownValues = [differentDbSameServer];
-export const locationDropdownValues = [sameDatabase, differentDbSameServer, differentDbDifferentServer];
+export const locationDropdownValues = [differentDbSameServer, differentDbDifferentServer];
 export const databaseName = localize('databaseName', "Database name");
 export const databaseVariable = localize('databaseVariable', "Database variable");
 export const serverName = localize('serverName', "Server name");
 export const serverVariable = localize('serverVariable', "Server variable");
+export const suppressMissingDependenciesErrors = localize('suppressMissingDependenciesErrors', "Suppress errors caused by unresolved references in the referenced project");
+export const exampleUsage = localize('exampleUsage', "Example Usage");
+export const enterSystemDbName = localize('enterSystemDbName', "Enter a database name for this system database");
+export const databaseNameRequiredVariableOptional = localize('databaseNameRequiredVariableOptional', "A database name is required. The database variable is optional.");
+export const databaseNameServerNameVariableRequired = localize('databaseNameServerNameVariableRequired', "A database name, server name, and server variable are required. The database variable is optional");
+export const otherServer = 'OtherServer';
+export const otherSeverVariable = 'OtherServer';
+export const databaseProject = localize('databaseProject', "Database project");
 
 // Error messages
 
@@ -139,6 +152,7 @@ export const databaseReferenceAlreadyExists = localize('databaseReferenceAlready
 export const ousiderFolderPath = localize('outsideFolderPath', "Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.");
 export const parentTreeItemUnknown = localize('parentTreeItemUnknown', "Cannot access parent of provided tree item");
 export const prePostDeployCount = localize('prePostDeployCount', "To successfully build, update the project to have one pre-deployment script and/or one post-deployment script");
+export const invalidProjectReload = localize('invalidProjectReload', "Cannot access provided database project. Only valid, open database projects can be reloaded.");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
@@ -154,6 +168,9 @@ export function unexpectedProjectContext(uri: string) { return localize('unexpec
 export function unableToPerformAction(action: string, uri: string) { return localize('unableToPerformAction', "Unable to locate '{0}' target: '{1}'", action, uri); }
 export function unableToFindObject(path: string, objType: string) { return localize('unableToFindFile', "Unable to find {1} with path '{0}'", path, objType); }
 export function deployScriptExists(scriptType: string) { return localize('deployScriptExists', "A {0} script already exists. The new script will not be included in build.", scriptType); }
+export function notValidVariableName(name: string) { return localize('notValidVariableName', "The variable name '{0}' is not valid.", name); }
+export function cantAddCircularProjectReference(project: string) { return localize('cantAddCircularProjectReference', "A reference to project '{0} cannot be added. Adding this project as a reference would cause a circular dependency", project); }
+export function unableToFindSqlCmdVariable(variableName: string) { return localize('unableToFindSqlCmdVariable', "Unable to find SQLCMD variable '{0}'", variableName); }
 
 // Action types
 export const deleteAction = localize('deleteAction', 'Delete');
@@ -195,6 +212,8 @@ export const Value = 'Value';
 export const ArtifactReference = 'ArtifactReference';
 export const SuppressMissingDependenciesErrors = 'SuppressMissingDependenciesErrors';
 export const DatabaseVariableLiteralValue = 'DatabaseVariableLiteralValue';
+export const DatabaseSqlCmdVariable = 'DatabaseSqlCmdVariable';
+export const ServerSqlCmdVariable = 'ServerSqlCmdVariable';
 export const DSP = 'DSP';
 export const Properties = 'Properties';
 export const RelativeOuterPath = '..';
@@ -203,6 +222,10 @@ export const TargetConnectionString = 'TargetConnectionString';
 export const PreDeploy = 'PreDeploy';
 export const PostDeploy = 'PostDeploy';
 export const None = 'None';
+export const True = 'True';
+export const False = 'False';
+export const Private = 'Private';
+export const ProjectGuid = 'ProjectGuid';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
@@ -258,3 +281,8 @@ export enum DatabaseProjectItemType {
 
 // System dbs
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
+
+// SQL queries
+export const sameDatabaseExampleUsage = 'SELECT * FROM [Schema1].[Table1]';
+export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]`; }
+export function differentDbDifferentServerExampleUsage(server: string, db: string) { return `SELECT * FROM [${server}].[${db}].[Schema1].[Table1]`; }

@@ -36,7 +36,7 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 	}
 
 	constructor(private _wizardInfo: NotebookWizardInfo, private _notebookService: INotebookService, private _platformService: IPlatformService, toolsService: IToolsService) {
-		super(_wizardInfo.title, new Model(), toolsService);
+		super(_wizardInfo.title, _wizardInfo.name || '', new Model(), toolsService);
 		if (this._wizardInfo.codeCellInsertionPosition === undefined) {
 			this._wizardInfo.codeCellInsertionPosition = 0;
 		}
@@ -58,7 +58,7 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 	}
 
 	protected async onOk(): Promise<void> {
-		setModelValues(this.inputComponents, this.model);
+		await setModelValues(this.inputComponents, this.model);
 		const env: NodeJS.ProcessEnv = {};
 		this.model.setEnvironmentVariables(env, (varName) => {
 			const isPassword = !!this.inputComponents[varName]?.isPassword;

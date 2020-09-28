@@ -23,6 +23,9 @@ export interface IMimeComponent {
 	mimeType: string;
 	cellModel?: ICellModel;
 	cellOutput?: nb.ICellOutput;
+	batchId?: number;
+	id?: number;
+	queryRunnerUri?: string;
 	layout(): void;
 }
 

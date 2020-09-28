@@ -7,6 +7,11 @@ import * as vscode from 'vscode';
 
 export const refreshActionId = 'arc.refresh';
 
+export const credentialNamespace = 'arcCredentials';
+
+export const controllerTroubleshootDocsUrl = 'https://aka.ms/arc-data-tsg';
+export const miaaTroubleshootDocsUrl = 'https://aka.ms/miaa-tsg';
+
 export interface IconPath {
 	dark: string;
 	light: string;
@@ -118,11 +123,6 @@ export class IconPathHelper {
 	}
 }
 
-export const enum ResourceType {
-	dataControllers = 'dataControllers',
-	postgresInstances = 'postgresInstances',
-	sqlManagedInstances = 'sqlManagedInstances'
-}
 
 export const enum Endpoints {
 	mgmtproxy = 'mgmtproxy',

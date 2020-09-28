@@ -509,6 +509,16 @@ export abstract class ExtHostDataProtocolShape {
 	 * Generate an assessment script based on recent results
 	 */
 	$generateAssessmentScript(handle: number, items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> { throw ni(); }
+
+	/**
+	 * Gets the list of items for a data grid
+	 */
+	$getDataGridItems(handle: number): Thenable<azdata.DataGridItem[]> { throw ni(); }
+
+	/**
+	 * Gets the list of columns for a data grid
+	 */
+	$getDataGridColumns(handle: number): Thenable<azdata.DataGridColumn[]> { throw ni(); }
 }
 
 /**
@@ -573,6 +583,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerAgentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
 	$registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
+	$registerDataGridProvider(providerId: string, handle: number): void;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
@@ -793,7 +804,7 @@ export interface ExtHostModelViewDialogShape {
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
-	$openEditor(handle: number, modelViewId: string, title: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
+	$openEditor(handle: number, modelViewId: string, title: string, name?: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
 	$openDialog(handle: number, dialogName?: string): Thenable<void>;
 	$closeDialog(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
@@ -809,7 +820,7 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$setDirty(handle: number, isDirty: boolean): void;
 }
 export interface ExtHostQueryEditorShape {
-	$onQueryEvent(handle: number, fileUri: string, event: IQueryEvent): void;
+	$onQueryEvent(providerId: string, handle: number, fileUri: string, event: IQueryEvent): void;
 }
 
 export interface MainThreadQueryEditorShape extends IDisposable {
@@ -818,7 +829,7 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 	$runQuery(fileUri: string, runCurrentQuery?: boolean): void;
 	$createQueryTab(fileUri: string, title: string, content: string): void;
 	$setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
-	$registerQueryInfoListener(handle: number, providerId: string): void;
+	$registerQueryInfoListener(handle: number): void;
 }
 
 export interface ExtHostNotebookShape {

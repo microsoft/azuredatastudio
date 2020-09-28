@@ -8,6 +8,8 @@ import * as azdata from 'azdata';
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import type { IDisposable } from 'vs/base/common/lifecycle';
+import { URI } from 'vs/base/common/uri';
+import { IconPath } from 'sql/platform/connection/common/connectionProfile';
 
 export const SERVICE_ID = 'capabilitiesService';
 export const HOST_NAME = 'azdata';
@@ -20,6 +22,7 @@ export const clientCapabilities = {
 
 export interface ConnectionProviderProperties {
 	providerId: string;
+	iconPath?: URI | IconPath | { id: string, path: IconPath, default?: boolean }[]
 	displayName: string;
 	notebookKernelAlias?: string;
 	azureResource?: string;
