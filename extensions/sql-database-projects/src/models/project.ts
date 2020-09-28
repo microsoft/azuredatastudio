@@ -134,11 +134,20 @@ export class Project {
 				const suppressMissingDependenciesErrorNode = references[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
 				const suppressMissingDependencies = suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === true ?? false;
 
-				this.databaseReferences.push(new DacpacReferenceProjectEntry({
-					dacpacFileLocation: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
-					databaseName: name,
-					suppressMissingDependenciesErrors: suppressMissingDependencies
-				}));
+				const path = utils.convertSlashesForSqlProj(this.getSystemDacpacUri(`${name}.dacpac`).fsPath);
+				if (path.includes(filepath)) {
+					this.databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
+						Uri.file(filepath),
+						this.getSystemDacpacSsdtUri(`${name}.dacpac`),
+						name,
+						suppressMissingDependencies));
+				} else {
+					this.databaseReferences.push(new DacpacReferenceProjectEntry({
+						dacpacFileLocation: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
+						databaseName: name,
+						suppressMissingDependenciesErrors: suppressMissingDependencies
+					}));
+				}
 			}
 		}
 
@@ -309,6 +318,11 @@ export class Project {
 		}
 
 		await this.exclude(entry);
+	}
+
+	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<void> {
+		await this.removeFromProjFile(entry);
+		this.databaseReferences = this.databaseReferences.filter(x => x !== entry);
 	}
 
 	/**
@@ -517,6 +531,22 @@ export class Project {
 
 		if (!deleted) {
 			throw new Error(constants.unableToFindSqlCmdVariable(variableName));
+		}
+	}
+
+	private removeDatabaseReferenceFromProjFile(databaseReferenceEntry: IDatabaseReferenceProjectEntry): void {
+		const elementTag = databaseReferenceEntry instanceof SqlProjectReferenceProjectEntry ? constants.ProjectReference : constants.ArtifactReference;
+		const artifactReferenceNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(elementTag);
+		const deleted = this.removeNode(databaseReferenceEntry.pathForSqlProj(), artifactReferenceNodes);
+
+		// also delete SSDT reference if it's a system db reference
+		if (databaseReferenceEntry instanceof SystemDatabaseReferenceProjectEntry) {
+			const ssdtPath = databaseReferenceEntry.ssdtPathForSqlProj();
+			this.removeNode(ssdtPath, artifactReferenceNodes);
+		}
+
+		if (!deleted) {
+			throw new Error(constants.unableToFindSqlCmdVariable(databaseReferenceEntry.databaseName));
 		}
 	}
 
@@ -776,6 +806,7 @@ export class Project {
 					this.removeFolderFromProjFile((<FileProjectEntry>entry).relativePath);
 					break;
 				case EntryType.DatabaseReference:
+					this.removeDatabaseReferenceFromProjFile(<IDatabaseReferenceProjectEntry>entry);
 					break;
 				case EntryType.SqlCmdVariable:
 					this.removeSqlCmdVariableFromProjFile((<SqlCmdVariableProjectEntry>entry).variableName);
@@ -884,7 +915,7 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 	}
 }
 
-class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
+export class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
 	constructor(uri: Uri, public ssdtUri: Uri, public databaseVariableLiteralValue: string, public suppressMissingDependenciesErrors: boolean) {
 		super(uri, '', EntryType.DatabaseReference);
 	}

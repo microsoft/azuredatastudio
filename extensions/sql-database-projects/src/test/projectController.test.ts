@@ -236,6 +236,39 @@ describe('ProjectsController', function (): void {
 				should(await exists(noneEntry.fsUri.fsPath)).equal(false, 'none entry pre-deployment script is supposed to be deleted');
 			});
 
+			it('Should delete database references', async function (): Promise<void> {
+				// setup - openProject baseline has a system db reference to master
+				const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
+
+				// add dacpac reference
+				proj.addDatabaseReference({
+					dacpacFileLocation: vscode.Uri.file('test2.dacpac'),
+					databaseName: 'test2DbName',
+					databaseVariable: 'test2Db',
+					suppressMissingDependenciesErrors: false
+				});
+				// add project reference
+				proj.addProjectReference({
+					projectName: 'project1',
+					projectGuid: '',
+					projectRelativePath: vscode.Uri.file(path.join('..','project1', 'project1.sqlproj')),
+					suppressMissingDependenciesErrors: false
+				});
+
+				const projTreeRoot = new ProjectRootTreeItem(proj);
+				should(proj.databaseReferences.length).equal(3, 'Should start with 3 database references');
+
+				const databaseReferenceNodeChildren = projTreeRoot.children.find(x => x.friendlyName === constants.databaseReferencesNodeName)?.children;
+				await projController.delete(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'master')!);   // system db reference
+				await projController.delete(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'test2')!);    // dacpac reference
+				await projController.delete(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'project1')!); // project reference
+
+				// confirm result
+				should(proj.databaseReferences.length).equal(0, 'All database references should have been deleted');
+			});
+
 			it('Should exclude nested ProjectEntry from node', async function (): Promise<void> {
 				let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
 				const setupResult = await setupDeleteExcludeTest(proj);
