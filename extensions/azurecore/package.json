@@ -19,6 +19,13 @@
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
   "contributes": {
+    "resourceViewResources": [
+      {
+        "id": "azure-resources",
+        "name": "Azure",
+        "icon": "./resources/azure.svg"
+      }
+    ],
     "configuration": [
       {
         "type": "object",
@@ -28,6 +35,11 @@
             "type": "array",
             "default": null,
             "description": "%azure.resource.config.filter.description%"
+          },
+          "azure.tenant.config.filter": {
+            "type":"array",
+            "default": [],
+            "description": "%azure.tenant.config.filter.description%"
           }
         }
       },
@@ -92,6 +104,11 @@
             "default": true,
             "description": "%config.noSystemKeychain%",
             "when": "isLinux || isWeb"
+          },
+          "azure.piiLogging": {
+            "type": "boolean",
+            "default": false,
+            "description": "%config.piiLogging%"
           }
         }
       }
@@ -165,10 +182,18 @@
       }
     ],
     "dataExplorer": {
-      "azureResource": [
+      "dialog/connection": [
+        {
+          "id": "azureResourceExplorer_dialog",
+          "name": "%azure.resource.explorer.title%",
+          "when": "config.connection.dialog.browse"
+        }
+      ],
+      "dataExplorer": [
         {
           "id": "azureResourceExplorer",
-          "name": "%azure.resource.explorer.title%"
+          "name": "%azure.resource.explorer.title%",
+          "when": "!config.connection.dialog.browse"
         }
       ]
     },
@@ -244,6 +269,11 @@
           "group": "inline"
         },
         {
+          "command": "azure.resource.connectsqlserver",
+          "when": "viewItem == azure.resource.itemType.azureDataExplorer",
+          "group": "inline"
+        },
+        {
           "command": "azure.resource.startterminal",
           "when": "viewItem == azure.resource.itemType.account",
           "group": "azurecore"
@@ -266,12 +296,14 @@
     "@types/node": "^12.11.7",
     "@types/qs": "^6.9.1",
     "@types/request": "^2.48.1",
+    "@types/sinon": "^9.0.4",
     "@types/ws": "^6.0.4",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
+    "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.0.9"
+    "vscodetestcover": "^1.1.0"
   }
 }

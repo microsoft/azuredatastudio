@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import { DataSource } from './dataSources';
 import * as constants from '../../common/constants';
 
@@ -34,7 +35,21 @@ export class SqlConnectionDataSource extends DataSource {
 	}
 
 	public get integratedSecurity(): boolean {
-		return this.getSetting(constants.integratedSecuritySetting).toLowerCase() === 'true';
+		return this.getSetting(constants.integratedSecuritySetting)?.toLowerCase() === 'true';
+	}
+
+	public get azureMFA(): boolean {
+		return this.getSetting(constants.authenticationSetting)?.toLowerCase().includes(constants.activeDirectoryInteractive);
+	}
+
+	public get authType(): string {
+		if (this.azureMFA) {
+			return constants.azureMfaAuth;
+		} else if (this.integratedSecurity) {
+			return constants.integratedAuth;
+		} else {
+			return constants.sqlAuth;
+		}
 	}
 
 	public get username(): string {
@@ -69,6 +84,24 @@ export class SqlConnectionDataSource extends DataSource {
 
 	public static fromJson(json: DataSourceJson): SqlConnectionDataSource {
 		return new SqlConnectionDataSource(json.name, (json.data as unknown as SqlConnectionDataSourceJson).connectionString);
+	}
+
+	public getConnectionProfile(): azdata.IConnectionProfile {
+		const connProfile: azdata.IConnectionProfile = {
+			serverName: this.server,
+			databaseName: this.database,
+			connectionName: this.name,
+			userName: this.username,
+			password: this.password,
+			authenticationType: this.authType,
+			savePassword: false,
+			providerName: 'MSSQL',
+			saveProfile: true,
+			id: this.name + '-dataSource',
+			options: []
+		};
+
+		return connProfile;
 	}
 }
 

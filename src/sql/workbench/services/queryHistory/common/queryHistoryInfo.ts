@@ -19,7 +19,7 @@ export class QueryHistoryInfo {
 
 	public database: string;
 
-	public status: QueryStatus;
+	public status?: QueryStatus;
 
 	public readonly id = generateUuid();
 
@@ -28,7 +28,7 @@ export class QueryHistoryInfo {
 		public connectionProfile: IConnectionProfile,
 		public startTime: Date,
 		status?: QueryStatus) {
-		this.database = connectionProfile ? connectionProfile.databaseName : '';
+		this.database = connectionProfile?.databaseName ?? '';
 		this.status = status;
 	}
 }

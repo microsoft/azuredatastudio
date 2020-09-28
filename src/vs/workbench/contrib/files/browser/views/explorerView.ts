@@ -66,7 +66,7 @@ function hasExpandedRootChild(tree: WorkbenchCompressibleAsyncDataTree<ExplorerI
 	for (const folder of treeInput) {
 		if (tree.hasNode(folder) && !tree.isCollapsed(folder)) {
 			for (const [, child] of folder.children.entries()) {
-				if (tree.hasNode(child) && !tree.isCollapsed(child)) {
+				if (tree.hasNode(child) && tree.isCollapsible(child) && !tree.isCollapsed(child)) {
 					return true;
 				}
 			}
@@ -486,7 +486,7 @@ export class ExplorerView extends ViewPane {
 		this.rootContext.set(!stat || (stat && stat.isRoot));
 
 		if (resource) {
-			const overrides = resource ? this.editorService.getEditorOverrides(resource, undefined, undefined, undefined) : [];
+			const overrides = resource ? this.editorService.getEditorOverrides(resource, undefined, undefined) : [];
 			this.availableEditorIdsContext.set(overrides.map(([, entry]) => entry.id).join(','));
 		} else {
 			this.availableEditorIdsContext.reset();

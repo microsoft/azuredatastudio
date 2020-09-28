@@ -26,6 +26,10 @@ const ConnectionProviderContrib: IJSONSchema = {
 			type: 'string',
 			description: localize('schema.displayName', "Display Name for the provider")
 		},
+		notebookKernelAlias: {
+			type: 'string',
+			description: localize('schema.notebookKernelAlias', "Notebook Kernel Alias for the provider")
+		},
 		iconPath: {
 			description: localize('schema.iconPath', "Icon path for the server type"),
 			oneOf: [
@@ -195,7 +199,7 @@ function resolveIconPath(extension: IExtensionPointUser<any>): void {
 
 	let baseDir = extension.description.extensionLocation.fsPath;
 	let properties: ConnectionProviderProperties = extension.value;
-	if (Array.isArray<ConnectionProviderProperties>(properties)) {
+	if (Array.isArray(properties)) {
 		for (let p of properties) {
 			toAbsolutePath(p['iconPath']);
 		}

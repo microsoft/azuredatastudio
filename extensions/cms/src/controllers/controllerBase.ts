@@ -6,15 +6,10 @@
 import * as vscode from 'vscode';
 
 import { AppContext } from '../appContext';
-import { ApiWrapper } from '../apiWrapper';
 
 export default abstract class ControllerBase implements vscode.Disposable {
 
 	public constructor(protected appContext: AppContext) {
-	}
-
-	protected get apiWrapper(): ApiWrapper {
-		return this.appContext.apiWrapper;
 	}
 
 	public get extensionContext(): vscode.ExtensionContext {

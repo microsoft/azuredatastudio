@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as vscode from 'vscode';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as nls from 'vscode-nls';
@@ -12,15 +13,10 @@ import * as request from 'request';
 import * as zip from 'adm-zip';
 import * as tar from 'tar';
 
-import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
-import { OutputChannel, ConfigurationTarget, window } from 'vscode';
 import { Deferred } from '../common/promise';
 import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
-import { IPrompter, IQuestion, confirm } from '../prompts/question';
-import CodeAdapter from '../prompts/adapter';
-import { ConfigurePythonDialog } from '../dialog/configurePython/configurePythonDialog';
 
 const localize = nls.loadMessageBundle();
 const msgInstallPkgProgress = localize('msgInstallPkgProgress', "Notebook dependencies installation is in progress");
@@ -42,7 +38,7 @@ function msgPackageRetrievalFailed(errorMessage: string): string { return locali
 export interface PythonInstallSettings {
 	installPath: string;
 	existingPython: boolean;
-	specificPackages?: PythonPkgDetails[];
+	packages: PythonPkgDetails[];
 }
 export interface IJupyterServerInstallation {
 	installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
@@ -59,13 +55,12 @@ export interface IJupyterServerInstallation {
 	uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void>;
 	pythonExecutable: string;
 	pythonInstallationPath: string;
-	installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: OutputChannel): Promise<void>;
+	installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel): Promise<void>;
 }
 export class JupyterServerInstallation implements IJupyterServerInstallation {
-	public apiWrapper: ApiWrapper;
 	public extensionPath: string;
 	public pythonBinPath: string;
-	public outputChannel: OutputChannel;
+	public outputChannel: vscode.OutputChannel;
 	public pythonEnvVarPath: string;
 	public execOptions: ExecOptions;
 
@@ -79,55 +74,28 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
-	private _prompter: IPrompter;
-
-	private readonly _commonPackages: PythonPkgDetails[] = [
-		{
-			name: 'jupyter',
-			version: '1.0.0'
-		}, {
-			name: 'pandas',
-			version: '0.24.2'
-		}, {
-			name: 'sparkmagic',
-			version: '0.12.9'
-		}
-	];
-
-	private readonly _commonPipPackages: PythonPkgDetails[] = [
-		{
-			name: 'prose-codeaccelerator',
-			version: '1.3.0'
-		}, {
-			name: 'powershell-kernel',
-			version: '0.1.3'
-		}
-	];
-
-	private readonly _expectedPythonPackages = this._commonPackages.concat(this._commonPipPackages);
-	private readonly _expectedCondaPipPackages = this._commonPipPackages;
-	private readonly _expectedCondaPackages: PythonPkgDetails[];
-
 	private _kernelSetupCache: Map<string, boolean>;
 	private readonly _requiredKernelPackages: Map<string, PythonPkgDetails[]>;
 	private readonly _requiredPackagesSet: Set<string>;
 
-	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
+	private readonly _runningOnSAW: boolean;
+
+	constructor(extensionPath: string, outputChannel: vscode.OutputChannel) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
-		this.apiWrapper = apiWrapper;
-		this._pythonInstallationPath = pythonInstallationPath || JupyterServerInstallation.getPythonInstallPath(this.apiWrapper);
+
+		this._runningOnSAW = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
+		vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, 'notebook:runningOnSAW', this._runningOnSAW);
+
+		if (this._runningOnSAW) {
+			this._pythonInstallationPath = `${vscode.env.appRoot}\\ads-python`;
+			this._usingExistingPython = true;
+		} else {
+			this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath();
+			this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting();
+		}
 		this._usingConda = false;
 		this._installInProgress = false;
-		this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
-
-		this._prompter = new CodeAdapter();
-
-		if (process.platform !== constants.winPlatform) {
-			this._expectedCondaPackages = this._commonPackages.concat([{ name: 'pykerberos', version: '1.2.1' }]);
-		} else {
-			this._expectedCondaPackages = this._commonPackages;
-		}
 
 		this._kernelSetupCache = new Map<string, boolean>();
 		this._requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
@@ -169,8 +137,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		});
 	}
 
-	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
-		window.showInformationMessage(msgInstallPkgStart);
+	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, packages: PythonPkgDetails[]): Promise<void> {
+		vscode.window.showInformationMessage(msgInstallPkgStart);
 
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(msgInstallPkgProgress);
@@ -181,7 +149,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			if (!pythonExists || forceInstall) {
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
 			}
-			await this.upgradePythonPackages(false, forceInstall, specificPackages);
+			await this.upgradePythonPackages(forceInstall, packages);
 		} catch (err) {
 			this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
 			throw err;
@@ -189,10 +157,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		this.outputChannel.appendLine(msgInstallPkgFinish);
 		backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
-		window.showInformationMessage(msgInstallPkgFinish);
+		vscode.window.showInformationMessage(msgInstallPkgFinish);
 	}
 
-	public installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: OutputChannel): Promise<void> {
+	public installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel): Promise<void> {
 		if (usingExistingPython) {
 			return Promise.resolve();
 		}
@@ -206,11 +174,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let extension = process.platform === constants.winPlatform ? 'zip' : 'tar.gz';
 		packageName = `python-${pythonVersion}-${platformId}-${bundleVersion}.${extension}`;
 
-		switch (utils.getOSPlatform()) {
-			case utils.Platform.Windows:
+		switch (process.platform) {
+			case constants.winPlatform:
 				pythonDownloadUrl = constants.pythonWindowsInstallUrl;
 				break;
-			case utils.Platform.Mac:
+			case constants.macPlatform:
 				pythonDownloadUrl = constants.pythonMacInstallUrl;
 				break;
 			default:
@@ -273,7 +241,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 								return reject(err);
 							}
 						}
-						if (utils.getOSPlatform() === utils.Platform.Windows) {
+						if (process.platform === constants.winPlatform) {
 							try {
 								let zippedFile = new zip(pythonPackagePathLocal);
 								zippedFile.extractAllTo(installPath);
@@ -353,7 +321,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			}
 		}
 
-		if (await utils.exists(this._pythonExecutable)) {
+		// Skip adding user package directory on SAWs, since packages will already be included with ADS
+		if (!this._runningOnSAW && await utils.exists(this._pythonExecutable)) {
 			let pythonUserDir = await this.getPythonUserDir(this._pythonExecutable);
 			if (pythonUserDir) {
 				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
@@ -400,7 +369,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		if (!installSettings) {
 			installSettings = {
 				installPath: this._pythonInstallationPath,
-				existingPython: this._usingExistingPython
+				existingPython: this._usingExistingPython,
+				packages: this.getRequiredPackagesForKernel(constants.python3DisplayName)
 			};
 		}
 
@@ -416,7 +386,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		if (this._installInProgress) {
-			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
+			vscode.window.showInformationMessage(msgWaitingForInstall);
 			return this._installCompletion.promise;
 		}
 
@@ -427,16 +397,16 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._usingExistingPython = installSettings.existingPython;
 		await this.configurePackagePaths();
 
-		this.apiWrapper.startBackgroundOperation({
+		azdata.tasks.startBackgroundOperation({
 			displayName: msgTaskName,
 			description: msgTaskName,
 			isCancelable: false,
 			operation: op => {
-				this.installDependencies(op, forceInstall, installSettings.specificPackages)
+				this.installDependencies(op, forceInstall, installSettings.packages)
 					.then(async () => {
-						let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
-						await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
-						await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, ConfigurationTarget.Global);
+						let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
+						await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, vscode.ConfigurationTarget.Global);
+						await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, vscode.ConfigurationTarget.Global);
 						await this.configurePackagePaths();
 
 						this._installCompletion.resolve();
@@ -457,58 +427,23 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	 * Opens a dialog for configuring the installation path for the Notebook Python dependencies.
 	 */
 	public async promptForPythonInstall(kernelDisplayName: string): Promise<void> {
+		if (this._runningOnSAW) {
+			return Promise.resolve();
+		}
 		if (this._installInProgress) {
-			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
+			vscode.window.showInformationMessage(msgWaitingForInstall);
 			return this._installCompletion.promise;
 		}
 
-		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled(this.apiWrapper);
+		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled();
 		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
 		if (!isPythonInstalled || !areRequiredPackagesInstalled) {
-			if (this.previewFeaturesEnabled) {
-				let pythonWizard = new ConfigurePythonWizard(this.apiWrapper, this);
-				await pythonWizard.start(kernelDisplayName, true);
-				return pythonWizard.setupComplete.then(() => {
-					this._kernelSetupCache.set(kernelDisplayName, true);
-				});
-			} else {
-				let pythonDialog = new ConfigurePythonDialog(this.apiWrapper, this);
-				return pythonDialog.showDialog(true);
-			}
-		}
-	}
-
-	/**
-	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
-	 */
-	public async promptForPackageUpgrade(kernelName: string): Promise<void> {
-		if (this._installInProgress) {
-			this.apiWrapper.showInfoMessage(msgWaitingForInstall);
-			return this._installCompletion.promise;
-		}
-
-		let requiredPackages: PythonPkgDetails[];
-		if (this.previewFeaturesEnabled) {
-			if (this._kernelSetupCache.get(kernelName)) {
-				return;
-			}
-			requiredPackages = this.getRequiredPackagesForKernel(kernelName);
-		}
-
-		this._installInProgress = true;
-		this._installCompletion = new Deferred<void>();
-		this.upgradePythonPackages(true, false, requiredPackages)
-			.then(() => {
-				this._installCompletion.resolve();
-				this._installInProgress = false;
-				this._kernelSetupCache.set(kernelName, true);
-			})
-			.catch(err => {
-				let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
-				this._installCompletion.reject(errorMsg);
-				this._installInProgress = false;
+			let pythonWizard = new ConfigurePythonWizard(this);
+			await pythonWizard.start(kernelDisplayName, true);
+			return pythonWizard.setupComplete.then(() => {
+				this._kernelSetupCache.set(kernelDisplayName, true);
 			});
-		return this._installCompletion.promise;
+		}
 	}
 
 	private async areRequiredPackagesInstalled(kernelDisplayName: string): Promise<boolean> {
@@ -532,115 +467,28 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return true;
 	}
 
-	private async upgradePythonPackages(promptForUpgrade: boolean, forceInstall: boolean, specificPackages?: PythonPkgDetails[]): Promise<void> {
-		let expectedCondaPackages: PythonPkgDetails[];
-		let expectedPipPackages: PythonPkgDetails[];
-		if (specificPackages) {
-			// Always install generic packages with pip, since conda may not have them.
-			expectedCondaPackages = [];
-			expectedPipPackages = specificPackages;
-		} else if (this._usingConda) {
-			expectedCondaPackages = this._expectedCondaPackages;
-			expectedPipPackages = this._expectedCondaPipPackages;
-		} else {
-			expectedCondaPackages = [];
-			expectedPipPackages = this._expectedPythonPackages;
-		}
-
-		let condaPackagesToInstall: PythonPkgDetails[];
-		let pipPackagesToInstall: PythonPkgDetails[];
+	private async upgradePythonPackages(forceInstall: boolean, packages: PythonPkgDetails[]): Promise<void> {
+		let packagesToInstall: PythonPkgDetails[];
 		if (forceInstall) {
-			condaPackagesToInstall = expectedCondaPackages;
-			pipPackagesToInstall = expectedPipPackages;
+			packagesToInstall = packages;
 		} else {
-			condaPackagesToInstall = [];
-			pipPackagesToInstall = [];
+			packagesToInstall = [];
 
-			// Conda packages
-			if (this._usingConda) {
-				let installedCondaPackages = await this.getInstalledCondaPackages();
-				let condaVersionMap = new Map<string, string>();
-				installedCondaPackages.forEach(pkg => condaVersionMap.set(pkg.name, pkg.version));
-
-				expectedCondaPackages.forEach(expectedPkg => {
-					let installedPkgVersion = condaVersionMap.get(expectedPkg.name);
-					if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
-						condaPackagesToInstall.push(expectedPkg);
-					}
-				});
-			}
-
-			// Pip packages
 			let installedPipPackages = await this.getInstalledPipPackages();
 			let pipVersionMap = new Map<string, string>();
 			installedPipPackages.forEach(pkg => pipVersionMap.set(pkg.name, pkg.version));
 
-			expectedPipPackages.forEach(expectedPkg => {
-				let installedPkgVersion = pipVersionMap.get(expectedPkg.name);
-				if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
-					pipPackagesToInstall.push(expectedPkg);
+			packages.forEach(pkg => {
+				let installedPkgVersion = pipVersionMap.get(pkg.name);
+				if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, pkg.version) < 0) {
+					packagesToInstall.push(pkg);
 				}
 			});
 		}
 
-		if (condaPackagesToInstall.length > 0 || pipPackagesToInstall.length > 0) {
-			let doUpgrade: boolean;
-			if (promptForUpgrade) {
-				doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
-					type: confirm,
-					message: localize('confirmPackageUpgrade', "Some required python packages need to be installed. Would you like to install them now?"),
-					default: true
-				}, this.apiWrapper);
-				if (!doUpgrade) {
-					throw new Error(localize('configurePython.packageInstallDeclined', "Package installation was declined."));
-				}
-			} else {
-				doUpgrade = true;
-			}
-
-			if (doUpgrade) {
-				let installPromise = new Promise(async (resolve, reject) => {
-					try {
-						if (this._usingConda) {
-							await this.installCondaPackages(condaPackagesToInstall, true);
-						}
-						await this.installPipPackages(pipPackagesToInstall, true);
-						resolve();
-					} catch (err) {
-						reject(err);
-					}
-				});
-
-				if (promptForUpgrade) {
-					let packagesStr = condaPackagesToInstall.concat(pipPackagesToInstall).map(pkg => {
-						return `${pkg.name}>=${pkg.version}`;
-					}).join(' ');
-					let taskName = localize('upgradePackages.pipInstall',
-						"Installing {0}",
-						packagesStr);
-
-					let backgroundTaskComplete = new Deferred<void>();
-					this.apiWrapper.startBackgroundOperation({
-						displayName: taskName,
-						description: taskName,
-						isCancelable: false,
-						operation: async op => {
-							try {
-								await installPromise;
-								op.updateStatus(azdata.TaskStatus.Succeeded);
-								backgroundTaskComplete.resolve();
-							} catch (err) {
-								let errorMsg = utils.getErrorMessage(err);
-								op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-								backgroundTaskComplete.reject(errorMsg);
-							}
-						}
-					});
-					await backgroundTaskComplete.promise;
-				} else {
-					await installPromise;
-				}
-			}
+		if (packagesToInstall.length > 0) {
+			// Always install generic packages with pip, since conda may not have them (like powershell-kernel).
+			await this.installPipPackages(packagesToInstall, true);
 		}
 	}
 
@@ -650,17 +498,20 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				if (!fs.existsSync(pythonExePath)) {
 					return [];
 				}
-			} else if (!JupyterServerInstallation.isPythonInstalled(this.apiWrapper)) {
+			} else if (!JupyterServerInstallation.isPythonInstalled()) {
 				return [];
 			}
 
 			let cmd = `"${pythonExePath ?? this.pythonExecutable}" -m pip list --format=json`;
 			let packagesInfo = await this.executeBufferedCommand(cmd);
-			let packagesResult: PythonPkgDetails[] = [];
+			let packages: PythonPkgDetails[] = [];
 			if (packagesInfo) {
-				packagesResult = <PythonPkgDetails[]>JSON.parse(packagesInfo);
+				let parsedResult = <PythonPkgDetails[]>JSON.parse(packagesInfo);
+				if (parsedResult) {
+					packages = parsedResult;
+				}
 			}
-			return packagesResult;
+			return packages;
 		}
 		catch (err) {
 			this.outputChannel.appendLine(msgPackageRetrievalFailed(utils.getErrorMessage(err)));
@@ -702,15 +553,14 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			let cmd = `"${condaExe}" list --json`;
 			let packagesInfo = await this.executeBufferedCommand(cmd);
 
+			let packages: PythonPkgDetails[] = [];
 			if (packagesInfo) {
-				let packagesResult = JSON.parse(packagesInfo);
-				if (Array.isArray(packagesResult)) {
-					return packagesResult
-						.filter(pkg => pkg && pkg.channel && pkg.channel !== 'pypi')
-						.map(pkg => <PythonPkgDetails>{ name: pkg.name, version: pkg.version });
+				let parsedResult = <PythonPkgDetails[]>JSON.parse(packagesInfo);
+				if (parsedResult) {
+					packages = parsedResult.filter(pkg => pkg && pkg.channel && pkg.channel !== 'pypi');
 				}
 			}
-			return [];
+			return packages;
 		}
 		catch (err) {
 			this.outputChannel.appendLine(msgPackageRetrievalFailed(utils.getErrorMessage(err)));
@@ -773,10 +623,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	private isCondaInstalled(): boolean {
-		if (!this._usingExistingPython) {
-			return false;
-		}
-
 		let condaExePath = this.getCondaExePath();
 		// eslint-disable-next-line no-sync
 		return fs.existsSync(condaExePath);
@@ -784,16 +630,15 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	/**
 	 * Checks if a python executable exists at the "notebook.pythonPath" defined in the user's settings.
-	 * @param apiWrapper An ApiWrapper to use when retrieving user settings info.
 	 */
-	public static isPythonInstalled(apiWrapper: ApiWrapper): boolean {
+	public static isPythonInstalled(): boolean {
 		// Don't use _pythonExecutable here, since it could be populated with a default value
-		let pathSetting = JupyterServerInstallation.getPythonPathSetting(apiWrapper);
+		let pathSetting = JupyterServerInstallation.getPythonPathSetting();
 		if (!pathSetting) {
 			return false;
 		}
 
-		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting(apiWrapper);
+		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting();
 		let pythonExe = JupyterServerInstallation.getPythonExePath(pathSetting, useExistingInstall);
 		// eslint-disable-next-line no-sync
 		return fs.existsSync(pythonExe);
@@ -802,53 +647,32 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	/**
 	 * Returns the Python installation path defined in "notebook.pythonPath" in the user's settings.
 	 * Returns a default path if the setting is not defined.
-	 * @param apiWrapper An ApiWrapper to use when retrieving user settings info.
 	 */
-	public static getPythonInstallPath(apiWrapper: ApiWrapper): string {
-		let userPath = JupyterServerInstallation.getPythonPathSetting(apiWrapper);
+	public static getPythonInstallPath(): string {
+		let userPath = JupyterServerInstallation.getPythonPathSetting();
 		return userPath ? userPath : JupyterServerInstallation.DefaultPythonLocation;
 	}
 
-	public static getExistingPythonSetting(apiWrapper: ApiWrapper): boolean {
+	public static getExistingPythonSetting(): boolean {
 		let useExistingPython = false;
-		if (apiWrapper) {
-			let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
-			if (notebookConfig) {
-				useExistingPython = !!notebookConfig[constants.existingPythonConfigKey];
-			}
+		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
+		if (notebookConfig) {
+			useExistingPython = !!notebookConfig[constants.existingPythonConfigKey];
 		}
 		return useExistingPython;
 	}
 
-	public static getPythonPathSetting(apiWrapper: ApiWrapper): string {
+	public static getPythonPathSetting(): string {
 		let path = undefined;
-		if (apiWrapper) {
-			let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
-			if (notebookConfig) {
-				let configPythonPath = notebookConfig[constants.pythonPathConfigKey];
-				// eslint-disable-next-line no-sync
-				if (configPythonPath && fs.existsSync(configPythonPath)) {
-					path = configPythonPath;
-				}
+		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
+		if (notebookConfig) {
+			let configPythonPath = notebookConfig[constants.pythonPathConfigKey];
+			// eslint-disable-next-line no-sync
+			if (configPythonPath && fs.existsSync(configPythonPath)) {
+				path = configPythonPath;
 			}
 		}
 		return path;
-	}
-
-	/**
-	 * Returns the folder containing the python executable under the path defined in
-	 * "notebook.pythonPath" in the user's settings.
-	 * @param apiWrapper An ApiWrapper to use when retrieving user settings info.
-	 */
-	public static getPythonBinPath(apiWrapper: ApiWrapper): string {
-		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
-
-		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting(apiWrapper);
-
-		return path.join(
-			JupyterServerInstallation.getPythonInstallPath(apiWrapper),
-			useExistingInstall ? '' : constants.pythonBundleVersion,
-			pythonBinPathSuffix);
 	}
 
 	public static getPythonExePath(pythonInstallPath: string, useExistingInstall: boolean): string {
@@ -885,15 +709,12 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public getRequiredPackagesForKernel(kernelName: string): PythonPkgDetails[] {
 		return this._requiredKernelPackages.get(kernelName) ?? [];
 	}
-
-	public get previewFeaturesEnabled(): boolean {
-		return this.apiWrapper.getConfiguration('workbench').get('enablePreviewFeatures');
-	}
 }
 
 export interface PythonPkgDetails {
 	name: string;
 	version: string;
+	channel?: string;
 }
 
 export interface PipPackageOverview {

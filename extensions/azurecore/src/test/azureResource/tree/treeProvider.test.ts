@@ -7,11 +7,11 @@ import * as vscode from 'vscode';
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
+import * as sinon from 'sinon';
 import 'mocha';
 import { AppContext } from '../../../appContext';
-import { ApiWrapper } from '../../../apiWrapper';
 
-import { IAzureResourceCacheService, IAzureResourceAccountService } from '../../../azureResource/interfaces';
+import { IAzureResourceCacheService } from '../../../azureResource/interfaces';
 import { AzureResourceTreeProvider } from '../../../azureResource/tree/treeProvider';
 import { AzureResourceAccountTreeNode } from '../../../azureResource/tree/accountTreeNode';
 import { AzureResourceAccountNotSignedInTreeNode } from '../../../azureResource/tree/accountNotSignedInTreeNode';
@@ -22,9 +22,7 @@ import { generateGuid } from '../../../azureResource/utils';
 let mockAppContext: AppContext;
 
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
-let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockCacheService: TypeMoq.IMock<IAzureResourceCacheService>;
-let mockAccountService: TypeMoq.IMock<IAzureResourceAccountService>;
 
 // Mock test data
 const mockAccount1: azdata.Account = {
@@ -60,27 +58,28 @@ const mockAccounts = [mockAccount1, mockAccount2];
 describe('AzureResourceTreeProvider.getChildren', function (): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockCacheService = TypeMoq.Mock.ofType<IAzureResourceCacheService>();
-		mockAccountService = TypeMoq.Mock.ofType<IAzureResourceAccountService>();
 
-		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
+		mockAppContext = new AppContext(mockExtensionContext.object);
 
 		mockAppContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, mockCacheService.object);
-		mockAppContext.registerService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService, mockAccountService.object);
 
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 	});
 
+	afterEach(function(): void {
+		sinon.restore();
+	});
+
 	it('Should load accounts.', async function (): Promise<void> {
-		mockAccountService.setup((o) => o.getAccounts()).returns(() => Promise.resolve(mockAccounts));
+		const getAllAccountsStub = sinon.stub(azdata.accounts, 'getAllAccounts').returns(Promise.resolve(mockAccounts));
 
 		const treeProvider = new AzureResourceTreeProvider(mockAppContext);
 
 		await treeProvider.getChildren(undefined); // Load account promise
 		const children = await treeProvider.getChildren(undefined); // Actual accounts
 
-		mockAccountService.verify((o) => o.getAccounts(), TypeMoq.Times.once());
+		should(getAllAccountsStub.calledOnce).be.true('getAllAccounts should have been called exactly once');
 		should(children).Array();
 		should(children.length).equal(mockAccounts.length);
 
@@ -94,7 +93,7 @@ describe('AzureResourceTreeProvider.getChildren', function (): void {
 	});
 
 	it('Should handle when there is no accounts.', async function (): Promise<void> {
-		mockAccountService.setup((o) => o.getAccounts()).returns(() => Promise.resolve(undefined));
+		sinon.stub(azdata.accounts, 'getAllAccounts').returns(Promise.resolve(undefined));
 
 		const treeProvider = new AzureResourceTreeProvider(mockAppContext);
 		treeProvider.isSystemInitialized = true;

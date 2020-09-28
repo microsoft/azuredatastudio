@@ -8,7 +8,7 @@ import * as TypeMoq from 'typemoq';
 import 'mocha';
 import { fail } from 'assert';
 
-import { azureResource } from '../../azureResource/azure-resource';
+import { azureResource } from 'azureResource';
 import { AzureResourceService } from '../../azureResource/resourceService';
 import { AzureAccount } from '../../account-provider/interfaces';
 import settings from '../../account-provider/providerSettings';
@@ -33,12 +33,14 @@ const mockAccount: AzureAccount = {
 	isStale: false
 };
 
-const mockSubscription: azureResource.AzureResourceSubscription = {
-	id: 'mock_subscription',
-	name: 'mock subscription'
-};
-
 const mockTenantId: string = 'mock_tenant';
+const mockSubscriptionId ='mock_subscription';
+
+const mockSubscription: azureResource.AzureResourceSubscription = {
+	id: mockSubscriptionId,
+	name: 'mock subscription',
+	tenant: mockTenantId
+};
 
 let mockResourceTreeDataProvider1: TypeMoq.IMock<azureResource.IAzureResourceTreeDataProvider>;
 let mockResourceProvider1: TypeMoq.IMock<azureResource.IAzureResourceProvider>;

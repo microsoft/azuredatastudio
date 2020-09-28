@@ -54,3 +54,4 @@ export function sparkJobSubmissionSparkHistoryLinkMessage(sparkHistoryLink: stri
 export function sparkJobSubmissionGetApplicationIdFailed(err: string): string { return localize('sparkJobSubmission.GetApplicationIdFailed', "Get Application Id Failed. {0}", err); }
 export function sparkJobSubmissionLocalFileNotExisted(path: string): string { return localize('sparkJobSubmission.LocalFileNotExisted', "Local file {0} does not existed. ", path); }
 export const sparkJobSubmissionNoSqlBigDataClusterFound = localize('sparkJobSubmission.NoSqlBigDataClusterFound', "No SQL Server Big Data Cluster found.");
+export function sparkConnectionRequired(name: string): string { return localize('sparkConnectionRequired', "Please connect to the Spark cluster before View {0} History.", name); }

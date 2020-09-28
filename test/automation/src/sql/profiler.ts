@@ -5,24 +5,26 @@
 
 import { Code } from '../code';
 import { QuickAccess } from '../quickaccess';
-import { waitForNewDialog, clickDialogButton } from './sqlutils';
+import { Dialog } from './dialog';
 
 const NEW_SESSION_DIALOG_TITLE: string = 'Start New Profiler Session';
 
-export class Profiler {
+export class Profiler extends Dialog {
 
-	constructor(private code: Code, private quickopen: QuickAccess) { }
+	constructor(code: Code, private quickopen: QuickAccess) {
+		super(NEW_SESSION_DIALOG_TITLE, code);
+	}
 
 	async launchProfiler(): Promise<void> {
 		await this.quickopen.runCommand('Profiler: Launch Profiler');
 	}
 
 	async waitForNewSessionDialog() {
-		await waitForNewDialog(this.code, NEW_SESSION_DIALOG_TITLE);
+		await this.waitForNewDialog();
 	}
 
 	async waitForNewSessionDialogAndStart() {
 		await this.waitForNewSessionDialog();
-		await clickDialogButton(this.code, 'Start');
+		await this.clickDialogButton('Start');
 	}
 }

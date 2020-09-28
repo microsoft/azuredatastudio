@@ -33,6 +33,7 @@ import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransf
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionApiFactory as vsIApiFactory, createApiFactoryAndRegisterActors as vsApiFactory } from 'vs/workbench/api/common/extHost.api.impl';
+import { IExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
 
 export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;
@@ -71,13 +72,14 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const rpcProtocol = accessor.get(IExtHostRpcService);
 	const extHostLogService = accessor.get(ILogService);
 	const logService = accessor.get(ILogService);
+	const commands = accessor.get(IExtHostCommands);
 
 	// Addressable instances
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
 	const extHostConnectionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(rpcProtocol));
 	const extHostCredentialManagement = rpcProtocol.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(rpcProtocol));
 	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol, uriTransformer));
-	const extHostObjectExplorer = rpcProtocol.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(rpcProtocol));
+	const extHostObjectExplorer = rpcProtocol.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(rpcProtocol, commands));
 	const extHostResourceProvider = rpcProtocol.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(rpcProtocol));
 	const extHostModalDialogs = rpcProtocol.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(rpcProtocol));
 	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, extHostLogService));
@@ -159,6 +161,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				},
 				getSecurityToken(account: azdata.Account, resource?: azdata.AzureResource): Thenable<{}> {
 					return extHostAccountManagement.$getSecurityToken(account, resource);
+				},
+				getAccountSecurityToken(account: azdata.Account, tenant: string, resource?: azdata.AzureResource): Thenable<{ token: string }> {
+					return extHostAccountManagement.$getAccountSecurityToken(account, tenant, resource);
 				},
 				onDidChangeAccounts(listener: (e: azdata.DidChangeAccountsParams) => void, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostAccountManagement.onDidChangeAccounts(listener, thisArgs, disposables);
@@ -368,6 +373,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				return extHostDataProvider.$registerSqlAssessmentServiceProvider(provider);
 			};
 
+			let registerDataGridProvider = (provider: azdata.DataGridProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerDataGridProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
@@ -387,6 +396,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerCapabilitiesServiceProvider,
 				registerSerializationProvider,
 				registerSqlAssessmentServicesProvider,
+				registerDataGridProvider,
 				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -427,11 +437,11 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				createWizardPage(title: string): azdata.window.WizardPage {
 					return extHostModelViewDialog.createWizardPage(title, extension);
 				},
-				createWizard(title: string, width?: azdata.window.DialogWidth): azdata.window.Wizard {
-					return extHostModelViewDialog.createWizard(title, width);
+				createWizard(title: string, name?: string, width?: azdata.window.DialogWidth): azdata.window.Wizard {
+					return extHostModelViewDialog.createWizard(title, name, width);
 				},
-				createModelViewDashboard(title: string, options?: azdata.ModelViewDashboardOptions): azdata.window.ModelViewDashboard {
-					return extHostModelViewDialog.createModelViewDashboard(title, options, extension);
+				createModelViewDashboard(title: string, name?: string, options?: azdata.ModelViewDashboardOptions): azdata.window.ModelViewDashboard {
+					return extHostModelViewDialog.createModelViewDashboard(title, name, options, extension);
 				},
 				MessageLevel: sqlExtHostTypes.MessageLevel
 			};
@@ -448,8 +458,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			const workspace: typeof azdata.workspace = {
 				onDidOpenDashboard: extHostDashboard.onDidOpenDashboard,
 				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard,
-				createModelViewEditor(title: string, options?: azdata.ModelViewEditorOptions): azdata.workspace.ModelViewEditor {
-					return extHostModelViewDialog.createModelViewEditor(title, extension, options);
+				createModelViewEditor(title: string, options?: azdata.ModelViewEditorOptions, name?: string): azdata.workspace.ModelViewEditor {
+					return extHostModelViewDialog.createModelViewEditor(title, extension, name, options);
 				}
 			};
 
@@ -476,7 +486,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				},
 
 				registerQueryEventListener(listener: azdata.queryeditor.QueryEventListener): void {
-					extHostQueryEditor.$registerQueryInfoListener(mssqlProviderName, listener);
+					extHostQueryEditor.$registerQueryInfoListener(listener);
 				},
 
 				getQueryDocument(fileUri: string): Thenable<azdata.queryeditor.QueryDocument> {

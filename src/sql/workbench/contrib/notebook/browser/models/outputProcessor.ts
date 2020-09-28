@@ -41,10 +41,10 @@ export function getData(output: nb.ICellOutput): JSONObject {
 	} else if (nbformat.isError(output)) {
 		let traceback = output.traceback ? output.traceback.join('\n') : undefined;
 		bundle['application/vnd.jupyter.stderr'] = undefined;
-		if (traceback && traceback !== '') {
+		if (traceback) {
 			bundle['application/vnd.jupyter.stderr'] = traceback;
 		} else if (output.evalue) {
-			bundle['application/vnd.jupyter.stderr'] = output.ename && output.ename !== '' ? `${output.ename}: ${output.evalue}` : `${output.evalue}`;
+			bundle['application/vnd.jupyter.stderr'] = output.ename ? `${output.ename}: ${output.evalue}` : `${output.evalue}`;
 		}
 	}
 	return convertBundle(bundle);
@@ -78,7 +78,7 @@ export function getBundleOptions(options: IOutputModelOptions): MimeModel.IOptio
  */
 export function extract(value: JSONObject, key: string): {} {
 	let item = value[key];
-	if (isPrimitive(item)) {
+	if (item === undefined || item === null || isPrimitive(item)) {
 		return item;
 	}
 	return JSON.parse(JSON.stringify(item));

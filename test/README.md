@@ -25,7 +25,26 @@ Code coverage is enabled by default. Reports can be found in the coverage folder
 
 These are the group of tests that have dependencies on outside resources such as SQL instances. See the [README](../extensions/integration-tests/readme.md) for more information.
 
-Code coverage for this is also enabled by default (confined to the extensions), follow the instructions for running the tests in the above readme. 
+Code coverage for this is also enabled by default (confined to the extensions), follow the instructions for running the tests in the above readme.
+
+### Stubbing vscode/azdata/library APIs
+
+Sometimes it may be necessary to stub out certain vscode/azdata APIs or functionality from external libraries to modify the normal behavior. A few examples of when this may be necessary :
+
+* Mocking out dialogs such as the `Open File` dialog in tests that don't have UI interaction (such as Unit tests)
+* Mocking out network calls such as from the `request` library
+
+Note that you should try to avoid using this unless absolutely necessary. For example - instead of stubbing out a call to `vscode.window.showTextDocument` it's better to call the actual VS Code API and have it open the document instead. Just make sure that everything is cleaned up after each test run so that following tests aren't affected by stale state!
+
+We utilize the `Sinon` framework to accomplish handling these kinds of scenarios. See https://sinonjs.org/releases/latest/stubs/ for a general overview of the use of stubs in this manner.
+
+https://mherman.org/blog/stubbing-http-requests-with-sinon/ has an excellent tutorial on stubbing out API calls for the request framework.
+
+The same principle can be applied to the vscode/azdata APIs. The object in this case is the imported vscode/azdata module, here is an example of stubbing out the `vscode.window.showOpenDialog` function.
+
+`sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file('C:\test\path.txt')]));`
+
+**IMPORTANT** When using Sinon make sure to call `sinon.restore()` after every test run (using `afterEach` typically) to ensure that the stub doesn't affect other tests.
 
 ## Code Coverage
 

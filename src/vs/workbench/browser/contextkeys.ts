@@ -21,8 +21,6 @@ import { PanelPositionContext } from 'vs/workbench/common/panel';
 import { getRemoteName } from 'vs/platform/remote/common/remoteHosts';
 import { IWorkingCopyService } from 'vs/workbench/services/workingCopy/common/workingCopyService';
 
-export const Deprecated_RemoteAuthorityContext = new RawContextKey<string>('remoteAuthority', '');
-
 export const RemoteNameContext = new RawContextKey<string>('remoteName', '');
 export const RemoteConnectionState = new RawContextKey<'' | 'initializing' | 'disconnected' | 'connected'>('remoteConnectionState', '');
 
@@ -210,7 +208,7 @@ export class WorkbenchContextKeysHandler extends Disposable {
 			this.activeEditorContext.set(activeEditorPane.getId());
 			this.activeEditorIsReadonly.set(activeEditorPane.input.isReadonly());
 
-			const editors = activeEditorPane.input.resource ? this.editorService.getEditorOverrides(activeEditorPane.input.resource, undefined, activeGroup, undefined) : [];
+			const editors = activeEditorPane.input.resource ? this.editorService.getEditorOverrides(activeEditorPane.input.resource, undefined, activeGroup) : [];
 			this.activeEditorAvailableEditorIds.set(editors.map(([_, entry]) => entry.id).join(','));
 		} else {
 			this.activeEditorContext.reset();

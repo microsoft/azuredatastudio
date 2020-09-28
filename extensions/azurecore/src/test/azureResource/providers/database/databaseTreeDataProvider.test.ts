@@ -7,10 +7,10 @@ import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as sinon from 'sinon';
 import 'mocha';
 
-import { azureResource } from '../../../../azureResource/azure-resource';
-import { ApiWrapper } from '../../../../apiWrapper';
+import { azureResource } from 'azureResource';
 import { AzureResourceDatabaseTreeDataProvider } from '../../../../azureResource/providers/database/databaseTreeDataProvider';
 import { AzureResourceItemType } from '../../../../azureResource/constants';
 import { IAzureResourceService } from '../../../../azureResource/interfaces';
@@ -19,7 +19,6 @@ import settings from '../../../../account-provider/providerSettings';
 
 // Mock services
 let mockDatabaseService: TypeMoq.IMock<IAzureResourceService<azureResource.AzureResourceDatabase>>;
-let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 
 // Mock test data
@@ -42,12 +41,15 @@ const mockAccount: AzureAccount = {
 	isStale: false
 };
 
+const mockTenantId: string = 'mock_tenant';
+const mockSubscriptionId = 'mock_subscription';
+
 const mockSubscription: azureResource.AzureResourceSubscription = {
-	id: 'mock_subscription',
-	name: 'mock subscription'
+	id: mockSubscriptionId,
+	name: 'mock subscription',
+	tenant: mockTenantId
 };
 
-const mockTenantId: string = 'mock_tenant';
 
 const mockResourceRootNode: azureResource.IAzureResourceNode = {
 	account: mockAccount,
@@ -62,8 +64,7 @@ const mockResourceRootNode: azureResource.IAzureResourceNode = {
 	}
 };
 
-const mockTokens: { [key: string]: any } = {};
-mockTokens[mockTenantId] = {
+const mockToken = {
 	token: 'mock_token',
 	tokenType: 'Bearer'
 };
@@ -74,26 +75,27 @@ const mockDatabases: azureResource.AzureResourceDatabase[] = [
 		id: 'mock-id-1',
 		serverName: 'mock database server 1',
 		serverFullName: 'mock database server full name 1',
-		loginName: 'mock login'
+		loginName: 'mock login',
+		subscriptionId: 'mock_subscription'
 	},
 	{
 		name: 'mock database 2',
 		id: 'mock-id-2',
 		serverName: 'mock database server 2',
 		serverFullName: 'mock database server full name 2',
-		loginName: 'mock login'
+		loginName: 'mock login',
+		subscriptionId: 'mock_subscription'
 	}
 ];
 
 describe('AzureResourceDatabaseTreeDataProvider.info', function (): void {
 	beforeEach(() => {
 		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceService<azureResource.AzureResourceDatabase>>();
-		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 	});
 
 	it('Should be correct when created.', async function (): Promise<void> {
-		const treeDataProvider = new AzureResourceDatabaseTreeDataProvider(mockDatabaseService.object, mockApiWrapper.object, mockExtensionContext.object);
+		const treeDataProvider = new AzureResourceDatabaseTreeDataProvider(mockDatabaseService.object, mockExtensionContext.object);
 
 		const treeItem = await treeDataProvider.getTreeItem(mockResourceRootNode);
 		should(treeItem.id).equal(mockResourceRootNode.treeItem.id);
@@ -106,16 +108,19 @@ describe('AzureResourceDatabaseTreeDataProvider.info', function (): void {
 describe('AzureResourceDatabaseTreeDataProvider.getChildren', function (): void {
 	beforeEach(() => {
 		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceService<azureResource.AzureResourceDatabase>>();
-		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 
-		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, azdata.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
-		mockDatabaseService.setup((o) => o.getResources(mockSubscription, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabases));
+		sinon.stub(azdata.accounts, 'getAccountSecurityToken').returns(Promise.resolve(mockToken));
+		mockDatabaseService.setup((o) => o.getResources([mockSubscription], TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabases));
 		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});
 
+	afterEach(function (): void {
+		sinon.restore();
+	});
+
 	it('Should return container node when element is undefined.', async function (): Promise<void> {
-		const treeDataProvider = new AzureResourceDatabaseTreeDataProvider(mockDatabaseService.object, mockApiWrapper.object, mockExtensionContext.object);
+		const treeDataProvider = new AzureResourceDatabaseTreeDataProvider(mockDatabaseService.object, mockExtensionContext.object);
 
 		const children = await treeDataProvider.getChildren();
 
@@ -133,7 +138,7 @@ describe('AzureResourceDatabaseTreeDataProvider.getChildren', function (): void 
 	});
 
 	it('Should return resource nodes when it is container node.', async function (): Promise<void> {
-		const treeDataProvider = new AzureResourceDatabaseTreeDataProvider(mockDatabaseService.object, mockApiWrapper.object, mockExtensionContext.object);
+		const treeDataProvider = new AzureResourceDatabaseTreeDataProvider(mockDatabaseService.object, mockExtensionContext.object);
 
 		const children = await treeDataProvider.getChildren(mockResourceRootNode);
 

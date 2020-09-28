@@ -47,12 +47,12 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 			let dialog = new SparkJobSubmissionDialog(sqlClusterConnection, this.appContext, this.outputChannel);
 			await dialog.openDialog();
 		} catch (error) {
-			this.appContext.apiWrapper.showErrorMessage(getErrorMessage(error));
+			vscode.window.showErrorMessage(getErrorMessage(error));
 		}
 	}
 
 	private async selectConnection(): Promise<SqlClusterConnection> {
-		let connectionList: azdata.connection.Connection[] = await this.apiWrapper.getActiveConnections();
+		let connectionList: azdata.connection.Connection[] = await azdata.connection.getActiveConnections();
 		let connectionMap: Map<string, azdata.connection.Connection> = new Map();
 		let selectedHost: string = undefined;
 		let showConnectionDialog = false;
@@ -129,11 +129,11 @@ export class OpenSparkJobSubmissionDialogFromFileCommand extends Command {
 			if (node && node.hdfsPath) {
 				path = node.hdfsPath;
 			} else {
-				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
+				vscode.window.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 				return;
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('sparkJobSubmission.GetFilePathFromSelectedNodeFailed', "Error Get File Path: {0}", err));
+			vscode.window.showErrorMessage(localize('sparkJobSubmission.GetFilePathFromSelectedNodeFailed', "Error Get File Path: {0}", err));
 			return;
 		}
 
@@ -148,7 +148,7 @@ export class OpenSparkJobSubmissionDialogFromFileCommand extends Command {
 			let dialog = new SparkJobSubmissionDialog(sqlClusterConnection, this.appContext, this.outputChannel);
 			await dialog.openDialog(path);
 		} catch (error) {
-			this.appContext.apiWrapper.showErrorMessage(getErrorMessage(error));
+			vscode.window.showErrorMessage(getErrorMessage(error));
 		}
 	}
 }
@@ -166,7 +166,7 @@ export class OpenSparkJobSubmissionDialogTask {
 			let dialog = new SparkJobSubmissionDialog(sqlClusterConnection, this.appContext, this.outputChannel);
 			await dialog.openDialog();
 		} catch (error) {
-			this.appContext.apiWrapper.showErrorMessage(getErrorMessage(error));
+			vscode.window.showErrorMessage(getErrorMessage(error));
 		}
 	}
 }

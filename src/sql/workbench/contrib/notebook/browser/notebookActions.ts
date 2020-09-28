@@ -25,13 +25,13 @@ import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/m
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { find, firstIndex } from 'vs/base/common/arrays';
-import { INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
-import { NotebookComponent } from 'sql/workbench/contrib/notebook/browser/notebook.component';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
+import { URI } from 'vs/base/common/uri';
 
 const msgLoading = localize('loading', "Loading kernels...");
-const msgChanging = localize('changing', "Changing kernel...");
+export const msgChanging = localize('changing', "Changing kernel...");
 const attachToLabel: string = localize('AttachTo', "Attach to ");
 const kernelLabel: string = localize('Kernel', "Kernel ");
 const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
@@ -46,11 +46,12 @@ export class AddCellAction extends Action {
 	public cellType: CellType;
 
 	constructor(
-		id: string, label: string, cssClass: string
+		id: string, label: string, cssClass: string,
+		@INotebookService private _notebookService: INotebookService
 	) {
 		super(id, label, cssClass);
 	}
-	public async run(context: INotebookEditor | CellContext): Promise<void> {
+	public async run(context: URI | CellContext): Promise<void> {
 		let index = 0;
 		if (context instanceof CellContext) {
 			if (context?.model?.cells) {
@@ -64,14 +65,9 @@ export class AddCellAction extends Action {
 			}
 		} else {
 			//Add Cell after current selected cell.
-			if (context?.cells) {
-				let notebookcomponent = context as NotebookComponent;
-				let id = notebookcomponent.activeCellId;
-				if (id) {
-					index = context.cells.findIndex(cell => cell.id === id) + 1;
-				}
-			}
-			context.addCell(this.cellType, index);
+			const editor = this._notebookService.findNotebookEditor(context);
+			const index = editor.cells?.findIndex(cell => cell.active) ?? 0;
+			editor.addCell(this.cellType, index);
 		}
 	}
 }
@@ -110,7 +106,8 @@ export class ClearAllOutputsAction extends TooltipFromLabelAction {
 	private static readonly iconClass = 'icon-clear-results';
 	private static readonly maskedIconClass = 'masked-icon';
 
-	constructor(id: string, toggleTooltip: boolean) {
+	constructor(id: string, toggleTooltip: boolean,
+		@INotebookService private _notebookService: INotebookService) {
 		super(id, {
 			label: ClearAllOutputsAction.label,
 			baseClass: ClearAllOutputsAction.baseClass,
@@ -120,8 +117,9 @@ export class ClearAllOutputsAction extends TooltipFromLabelAction {
 		});
 	}
 
-	public run(context: INotebookEditor): Promise<boolean> {
-		return context.clearAllOutputs();
+	public run(context: URI): Promise<boolean> {
+		const editor = this._notebookService.findNotebookEditor(context);
+		return editor.clearAllOutputs();
 	}
 }
 
@@ -181,7 +179,8 @@ export class TrustedAction extends ToggleableAction {
 	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(
-		id: string, toggleTooltip: boolean
+		id: string, toggleTooltip: boolean,
+		@INotebookService private _notebookService: INotebookService
 	) {
 		super(id, {
 			baseClass: TrustedAction.baseClass,
@@ -202,17 +201,11 @@ export class TrustedAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public run(context: INotebookEditor): Promise<boolean> {
-		let self = this;
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				self.trusted = !self.trusted;
-				context.model.trustedMode = self.trusted;
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	public async run(context: URI): Promise<boolean> {
+		const editor = this._notebookService.findNotebookEditor(context);
+		this.trusted = !this.trusted;
+		editor.model.trustedMode = this.trusted;
+		return true;
 	}
 }
 
@@ -220,13 +213,15 @@ export class TrustedAction extends ToggleableAction {
 export class RunAllCellsAction extends Action {
 	constructor(
 		id: string, label: string, cssClass: string,
-		@INotificationService private notificationService: INotificationService
+		@INotificationService private notificationService: INotificationService,
+		@INotebookService private _notebookService: INotebookService
 	) {
 		super(id, label, cssClass);
 	}
-	public async run(context: INotebookEditor): Promise<boolean> {
+	public async run(context: URI): Promise<boolean> {
 		try {
-			await context.runAllCells();
+			const editor = this._notebookService.findNotebookEditor(context);
+			await editor.runAllCells();
 			return true;
 		} catch (e) {
 			this.notificationService.error(getErrorMessage(e));
@@ -245,7 +240,8 @@ export class CollapseCellsAction extends ToggleableAction {
 	private static readonly expandCssClass = 'icon-show-cells';
 	private static readonly maskedIconClass = 'masked-icon';
 
-	constructor(id: string, toggleTooltip: boolean) {
+	constructor(id: string, toggleTooltip: boolean,
+		@INotebookService private _notebookService: INotebookService) {
 		super(id, {
 			baseClass: CollapseCellsAction.baseClass,
 			toggleOnLabel: CollapseCellsAction.expandCells,
@@ -256,6 +252,7 @@ export class CollapseCellsAction extends ToggleableAction {
 			shouldToggleTooltip: toggleTooltip,
 			isOn: false
 		});
+		this.expanded = true;
 	}
 
 	public get isCollapsed(): boolean {
@@ -263,26 +260,23 @@ export class CollapseCellsAction extends ToggleableAction {
 	}
 	private setCollapsed(value: boolean) {
 		this.toggle(value);
+		this.expanded = !value;
 	}
 
-	public run(context: INotebookEditor): Promise<boolean> {
-		let self = this;
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				self.setCollapsed(!self.isCollapsed);
-				context.cells.forEach(cell => {
-					cell.isCollapsed = self.isCollapsed;
-				});
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
+	public async run(context: URI): Promise<boolean> {
+		const editor = this._notebookService.findNotebookEditor(context);
+		this.setCollapsed(!this.isCollapsed);
+		editor.cells.forEach(cell => {
+			cell.isCollapsed = this.isCollapsed;
 		});
+		return true;
 	}
 }
 
-const ShowAllKernelsConfigName = 'notebook.showAllKernels';
-const WorkbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
+const showAllKernelsConfigName = 'notebook.showAllKernels';
+const workbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
+export const noKernelName = localize('noKernel', "No Kernel");
+
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
@@ -300,7 +294,7 @@ export class KernelsDropdown extends SelectBox {
 		this.onDidSelect(e => this.doChangeKernel(e.selected));
 		this.getAllKernelConfigValue();
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration(ShowAllKernelsConfigName) || e.affectsConfiguration(WorkbenchPreviewConfigName)) {
+			if (e.affectsConfiguration(showAllKernelsConfigName) || e.affectsConfiguration(workbenchPreviewConfigName)) {
 				this.getAllKernelConfigValue();
 			}
 		}));
@@ -309,16 +303,21 @@ export class KernelsDropdown extends SelectBox {
 	updateModel(model: INotebookModel): void {
 		this.model = model as NotebookModel;
 		this._register(this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
-			this.updateKernel(changedArgs.newValue);
+			this.updateKernel(changedArgs.newValue, changedArgs.nbKernelAlias);
 		}));
 		let kernel = this.model.clientSession && this.model.clientSession.kernel;
 		this.updateKernel(kernel);
 	}
 
 	// Update SelectBox values
-	public updateKernel(kernel: azdata.nb.IKernel) {
+	public updateKernel(kernel: azdata.nb.IKernel, nbKernelAlias?: string) {
 		let kernels: string[] = this._showAllKernels ? [...new Set(this.model.specs.kernels.map(a => a.display_name).concat(this.model.standardKernelsDisplayName()))]
 			: this.model.standardKernelsDisplayName();
+		if (this.model.kernelAliases?.length) {
+			for (let x in this.model.kernelAliases) {
+				kernels.splice(1, 0, this.model.kernelAliases[x]);
+			}
+		}
 		if (kernel && kernel.isReady) {
 			let standardKernel = this.model.getStandardKernelFromName(kernel.name);
 			if (kernels) {
@@ -327,7 +326,10 @@ export class KernelsDropdown extends SelectBox {
 					index = firstIndex(kernels, kernel => kernel === standardKernel.displayName);
 				} else {
 					let kernelSpec = this.model.specs.kernels.find(k => k.name === kernel.name);
-					index = firstIndex(kernels, k => k === kernelSpec.display_name);
+					index = firstIndex(kernels, k => k === kernelSpec?.display_name);
+				}
+				if (nbKernelAlias) {
+					index = kernels.indexOf(nbKernelAlias);
 				}
 				// This is an error case that should never happen
 				// Just in case, setting index to 0
@@ -337,7 +339,6 @@ export class KernelsDropdown extends SelectBox {
 				this.setOptions(kernels, index);
 			}
 		} else if (this.model.clientSession.isInErrorState) {
-			let noKernelName = localize('noKernel', "No Kernel");
 			kernels.unshift(noKernelName);
 			this.setOptions(kernels, 0);
 		}
@@ -349,7 +350,7 @@ export class KernelsDropdown extends SelectBox {
 	}
 
 	private getAllKernelConfigValue(): void {
-		this._showAllKernels = !!this._configurationService.getValue(ShowAllKernelsConfigName) && !!this._configurationService.getValue(WorkbenchPreviewConfigName);
+		this._showAllKernels = !!this._configurationService.getValue(showAllKernelsConfigName) && !!this._configurationService.getValue(workbenchPreviewConfigName);
 	}
 }
 
@@ -408,7 +409,12 @@ export class AttachToDropdown extends SelectBox {
 			let currentKernelName = this.model.clientSession.kernel.name.toLowerCase();
 			let currentKernelSpec = find(this.model.specs.kernels, kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
 			if (currentKernelSpec) {
-				kernelDisplayName = currentKernelSpec.display_name;
+				//KernelDisplayName should be Kusto when connecting to Kusto connection
+				if ((this.model.context?.serverCapabilities.notebookKernelAlias && this.model.currentKernelAlias === this.model.context?.serverCapabilities.notebookKernelAlias) || (this.model.kernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.selectedKernelDisplayName)) {
+					kernelDisplayName = this.model.context?.serverCapabilities.notebookKernelAlias || this.model.selectedKernelDisplayName;
+				} else {
+					kernelDisplayName = currentKernelSpec.display_name;
+				}
 			}
 		}
 		return kernelDisplayName;
@@ -419,14 +425,17 @@ export class AttachToDropdown extends SelectBox {
 		let connProviderIds = this.model.getApplicableConnectionProviderIds(currentKernel);
 		if ((connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
 			this.setOptions([msgLocalHost]);
-		}
-		else {
-			let connections: string[] = model.context && model.context.title ? [model.context.title] : [msgSelectConnection];
+		} else {
+			let connections: string[] = model.context && model.context.title && (connProviderIds.includes(this.model.context.providerName)) ? [model.context.title] : [msgSelectConnection];
 			if (!find(connections, x => x === msgChangeConnection)) {
 				connections.push(msgChangeConnection);
 			}
 			this.setOptions(connections, 0);
 			this.enable();
+
+			if (this.model.kernelAliases.includes(currentKernel) && this.model.selectedKernelDisplayName !== currentKernel) {
+				this.model.changeKernel(currentKernel);
+			}
 		}
 	}
 
@@ -446,10 +455,22 @@ export class AttachToDropdown extends SelectBox {
 	 **/
 	public async openConnectionDialog(useProfile: boolean = false): Promise<boolean> {
 		try {
+			// Get all providers to show all available connections in connection dialog
+			let providers = this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name);
+			// Spark kernels are unable to get providers from above, therefore ensure that we get the
+			// correct providers for the selected kernel and load the proper connections for the connection dialog
+			// Example Scenario: Spark Kernels should only have MSSQL connections in connection dialog
+			if (!this.model.kernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.clientSession.kernel.name !== 'SQL') {
+				providers = providers.concat(this.model.getApplicableConnectionProviderIds(this.model.selectedKernelDisplayName));
+			} else {
+				for (let alias of this.model.kernelAliases) {
+					providers = providers.concat(this.model.getApplicableConnectionProviderIds(alias));
+				}
+			}
 			let connection = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
 				{
 					connectionType: ConnectionType.temporary,
-					providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name)
+					providers: providers
 				},
 				useProfile ? this.model.connectionProfile : undefined);
 
@@ -487,6 +508,13 @@ export class AttachToDropdown extends SelectBox {
 			this.model.addAttachToConnectionsToBeDisposed(connectionUri);
 			// Call doChangeContext to set the newly chosen connection in the model
 			this.doChangeContext(connectionProfile);
+
+			//Changes kernel based on connection attached to
+			if (this.model.kernelAliases.includes(connectionProfile.serverCapabilities.notebookKernelAlias)) {
+				this.model.changeKernel(connectionProfile.serverCapabilities.notebookKernelAlias);
+			} else if (this.model.clientSession.kernel.name === 'SQL') {
+				this.model.changeKernel('SQL');
+			}
 			return true;
 		}
 		catch (error) {

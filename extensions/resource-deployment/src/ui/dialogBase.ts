@@ -27,12 +27,12 @@ export abstract class DialogBase {
 		this.dispose();
 	}
 
-	private onOkButtonClicked(): void {
-		this.onComplete();
+	private async onOkButtonClicked(): Promise<void> {
+		await this.onComplete();
 		this.dispose();
 	}
 
-	protected onComplete(): void {
+	protected async onComplete(): Promise<void> {
 	}
 
 	protected dispose(): void {

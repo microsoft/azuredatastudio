@@ -86,12 +86,17 @@ export interface IDataLinkClickEvent {
 }
 
 export interface Webview extends IDisposable {
+
+	readonly id: string;
+
 	html: string;
 	contentOptions: WebviewContentOptions;
 	localResourcesRoot: URI[];
 	extension: WebviewExtensionDescription | undefined;
 	initialScrollProgress: number;
 	state: string | undefined;
+
+	readonly isFocused: boolean;
 
 	readonly onDidFocus: Event<void>;
 	readonly onDidBlur: Event<void>;
@@ -113,6 +118,11 @@ export interface Webview extends IDisposable {
 	runFindAction(previous: boolean): void;
 
 	selectAll(): void;
+	copy(): void;
+	paste(): void;
+	cut(): void;
+	undo(): void;
+	redo(): void;
 
 	windowDidDragStart(): void;
 	windowDidDragEnd(): void;
@@ -142,4 +152,4 @@ export interface WebviewOverlay extends Webview {
 	layoutWebviewOverElement(element: HTMLElement, dimension?: Dimension): void;
 }
 
-export const webviewDeveloperCategory = nls.localize({ key: 'developer', comment: ['A developer on Code itself or someone diagnosing issues in Code'] }, "Developer");
+export const webviewDeveloperCategory = { value: nls.localize({ key: 'developer', comment: ['A developer on Code itself or someone diagnosing issues in Code'] }, "Developer"), original: 'Developer' };

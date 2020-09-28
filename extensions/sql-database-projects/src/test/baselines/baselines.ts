@@ -8,35 +8,39 @@ import { promises as fs } from 'fs';
 
 // Project baselines
 export let newProjectFileBaseline: string;
+export let newProjectFileWithScriptBaseline: string;
 export let openProjectFileBaseline: string;
 export let openDataSourcesBaseline: string;
 export let SSDTProjectFileBaseline: string;
-export let SSDTProjectAfterUpdateBaselineWindows: string;
 export let SSDTProjectAfterUpdateBaseline: string;
-export let SSDTUpdatedProjectBaselineWindows: string;
 export let SSDTUpdatedProjectBaseline: string;
-export let SSDTUpdatedProjectAfterSystemDbUpdateBaselineWindows: string;
 export let SSDTUpdatedProjectAfterSystemDbUpdateBaseline: string;
 export let SSDTProjectBaselineWithCleanTarget: string;
 export let SSDTProjectBaselineWithCleanTargetAfterUpdate: string;
-export let publishProfileBaseline: string;
+export let publishProfileIntegratedSecurityBaseline: string;
+export let publishProfileSqlLoginBaseline: string;
+export let openProjectWithProjectReferencesBaseline: string;
+export let openSqlProjectWithPrePostDeploymentError: string;
+export let openSqlProjectWithAdditionalSqlCmdVariablesBaseline: string;
 
 const baselineFolderPath = __dirname;
 
 export async function loadBaselines() {
 	newProjectFileBaseline = await loadBaseline(baselineFolderPath, 'newSqlProjectBaseline.xml');
+	newProjectFileWithScriptBaseline = await loadBaseline(baselineFolderPath, 'newSqlProjectWithScriptBaseline.xml');
 	openProjectFileBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectBaseline.xml');
 	openDataSourcesBaseline = await loadBaseline(baselineFolderPath, 'openDataSourcesBaseline.json');
 	SSDTProjectFileBaseline = await loadBaseline(baselineFolderPath, 'SSDTProjectBaseline.xml');
-	SSDTProjectAfterUpdateBaselineWindows = await loadBaseline(baselineFolderPath, 'SSDTProjectAfterUpdateBaselineWindows.xml');
 	SSDTProjectAfterUpdateBaseline = await loadBaseline(baselineFolderPath, 'SSDTProjectAfterUpdateBaseline.xml');
-	SSDTUpdatedProjectBaselineWindows = await loadBaseline(baselineFolderPath, 'SSDTUpdatedProjectBaselineWindows.xml');
 	SSDTUpdatedProjectBaseline = await loadBaseline(baselineFolderPath, 'SSDTUpdatedProjectBaseline.xml');
-	SSDTUpdatedProjectAfterSystemDbUpdateBaselineWindows = await loadBaseline(baselineFolderPath, 'SSDTUpdatedProjectAfterSystemDbUpdateBaselineWindows.xml');
 	SSDTUpdatedProjectAfterSystemDbUpdateBaseline = await loadBaseline(baselineFolderPath, 'SSDTUpdatedProjectAfterSystemDbUpdateBaseline.xml');
 	SSDTProjectBaselineWithCleanTarget = await loadBaseline(baselineFolderPath, 'SSDTProjectBaselineWithCleanTarget.xml');
 	SSDTProjectBaselineWithCleanTargetAfterUpdate = await loadBaseline(baselineFolderPath, 'SSDTProjectBaselineWithCleanTargetAfterUpdate.xml');
-	publishProfileBaseline = await loadBaseline(baselineFolderPath, 'publishProfileBaseline.publish.xml');
+	publishProfileIntegratedSecurityBaseline = await loadBaseline(baselineFolderPath, 'publishProfileIntegratedSecurityBaseline.publish.xml');
+	publishProfileSqlLoginBaseline = await loadBaseline(baselineFolderPath, 'publishProfileSqlLoginBaseline.publish.xml');
+	openProjectWithProjectReferencesBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectWithProjectReferenceBaseline.xml');
+	openSqlProjectWithPrePostDeploymentError = await loadBaseline(baselineFolderPath, 'openSqlProjectWithPrePostDeploymentError.xml');
+	openSqlProjectWithAdditionalSqlCmdVariablesBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectWithAdditionalSqlCmdVariablesBaseline.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {

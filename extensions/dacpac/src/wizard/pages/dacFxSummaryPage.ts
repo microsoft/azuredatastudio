@@ -10,22 +10,13 @@ import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWiza
 import { BasePage } from '../api/basePage';
 
 export class DacFxSummaryPage extends BasePage {
-
-	protected readonly wizardPage: azdata.window.WizardPage;
-	protected readonly instance: DataTierApplicationWizard;
-	protected readonly model: DacFxDataModel;
-	protected readonly view: azdata.ModelView;
-
 	private form: azdata.FormContainer;
 	private table: azdata.TableComponent;
 	private loader: azdata.LoadingComponent;
+	public data: string[][];
 
 	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
-		super();
-		this.instance = instance;
-		this.wizardPage = wizardPage;
-		this.model = model;
-		this.view = view;
+		super(instance, wizardPage, model, view);
 	}
 
 	async start(): Promise<boolean> {
@@ -46,7 +37,7 @@ export class DacFxSummaryPage extends BasePage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		this.populateTable();
+		await this.populateTable();
 		this.loader.loading = false;
 		if (this.model.upgradeExisting && this.instance.selectedOperation === Operation.deploy) {
 			this.instance.wizard.generateScriptButton.hidden = false;
@@ -71,8 +62,7 @@ export class DacFxSummaryPage extends BasePage {
 		});
 	}
 
-	private populateTable() {
-		let data = [];
+	private async populateTable(): Promise<void> {
 		let targetServer = loc.targetServer;
 		let targetDatabase = loc.targetDatabase;
 		let sourceServer = loc.sourceServer;
@@ -81,14 +71,14 @@ export class DacFxSummaryPage extends BasePage {
 
 		switch (this.instance.selectedOperation) {
 			case Operation.deploy: {
-				data = [
+				this.data = [
 					[targetServer, this.model.serverName],
 					[fileLocation, this.model.filePath],
 					[targetDatabase, this.model.database]];
 				break;
 			}
 			case Operation.extract: {
-				data = [
+				this.data = [
 					[sourceServer, this.model.serverName],
 					[sourceDatabase, this.model.database],
 					[loc.version, this.model.version],
@@ -96,30 +86,23 @@ export class DacFxSummaryPage extends BasePage {
 				break;
 			}
 			case Operation.import: {
-				data = [
+				this.data = [
 					[targetServer, this.model.serverName],
 					[fileLocation, this.model.filePath],
 					[targetDatabase, this.model.database]];
 				break;
 			}
 			case Operation.export: {
-				data = [
+				this.data = [
 					[sourceServer, this.model.serverName],
 					[sourceDatabase, this.model.database],
 					[fileLocation, this.model.filePath]];
 				break;
 			}
-			case Operation.generateDeployScript: {
-				data = [
-					[targetServer, this.model.serverName],
-					[fileLocation, this.model.filePath],
-					[targetDatabase, this.model.database]];
-				break;
-			}
 		}
 
-		this.table.updateProperties({
-			data: data,
+		await this.table.updateProperties({
+			data: this.data,
 			columns: [
 				{
 					value: loc.setting,

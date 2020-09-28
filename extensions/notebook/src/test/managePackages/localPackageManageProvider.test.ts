@@ -12,11 +12,11 @@ import { JupyterServerInstallation, PythonPkgDetails, IJupyterServerInstallation
 import { LocalCondaPackageManageProvider } from '../../jupyter/localCondaPackageManageProvider';
 import * as constants from '../../common/constants';
 import { LocalPipPackageManageProvider } from '../../jupyter/localPipPackageManageProvider';
-import { IPiPyClient, PiPyClient } from '../../jupyter/pipyClient';
+import { IPyPiClient, PyPiClient } from '../../jupyter/pypiClient';
 
 interface TestContext {
 	serverInstallation: IJupyterServerInstallation;
-	piPyClient: IPiPyClient;
+	piPyClient: IPyPiClient;
 }
 
 describe('Manage Package Providers', () => {
@@ -183,6 +183,24 @@ describe('Manage Package Providers', () => {
 		});
 	});
 
+	it('Fetch pypi package test', async function (): Promise<void> {
+		let pypiClient = new PyPiClient();
+
+		// Fetch a package required by notebooks
+		let pkgName = 'jupyter';
+		let packageJsonResult = await pypiClient.fetchPypiPackage(pkgName);
+		should(packageJsonResult).not.be.undefined();
+
+		let packageInfo = JSON.parse(packageJsonResult);
+		should(packageInfo).not.be.undefined();
+		should(packageInfo.info).not.be.undefined();
+		should(packageInfo.info.name).not.be.undefined();
+		should(packageInfo.info.name.toString().toLowerCase()).equal(pkgName);
+
+		// Try to fetch an empty string to ensure retrieval fails
+		await should(pypiClient.fetchPypiPackage('')).be.rejected();
+	});
+
 	function createContext(): TestContext {
 		return {
 			serverInstallation: {
@@ -221,8 +239,8 @@ describe('Manage Package Providers', () => {
 		return mockInstance;
 	}
 
-	function createPipyClient(testContext: TestContext): TypeMoq.IMock<IPiPyClient> {
-		let mockInstance = TypeMoq.Mock.ofType(PiPyClient);
+	function createPipyClient(testContext: TestContext): TypeMoq.IMock<IPyPiClient> {
+		let mockInstance = TypeMoq.Mock.ofType(PyPiClient);
 		mockInstance.setup(x => x.fetchPypiPackage(TypeMoq.It.isAny())).returns((packageName) =>
 			testContext.piPyClient.fetchPypiPackage(packageName));
 		return mockInstance;

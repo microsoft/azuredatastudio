@@ -6,8 +6,8 @@
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
-CommandsRegistry.registerCommand('workbench.actions.modal.linkedAccount', accessor => {
+CommandsRegistry.registerCommand('workbench.actions.modal.linkedAccount', async accessor => {
 	const accountManagementService = accessor.get(IAccountManagementService);
-	accountManagementService.openAccountListDialog();
+	await accountManagementService.openAccountListDialog();
 });
 

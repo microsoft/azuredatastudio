@@ -6,18 +6,14 @@
 import * as azdata from 'azdata';
 import * as msRest from '@azure/ms-rest-js';
 
-import { azureResource } from '../azure-resource';
-import { ApiWrapper } from '../../apiWrapper';
+import { azureResource } from 'azureResource';
 import { IAzureResourceService } from '../interfaces';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 
 export abstract class ResourceTreeDataProviderBase<T extends azureResource.AzureResource> implements azureResource.IAzureResourceTreeDataProvider {
 
-	public constructor(
-		protected _resourceService: IAzureResourceService<T>,
-		protected _apiWrapper: ApiWrapper
-	) {
+	public constructor(protected _resourceService: IAzureResourceService<T>) {
 	}
 
 	public getTreeItem(element: azureResource.IAzureResourceNode): azdata.TreeItem | Thenable<azdata.TreeItem> {
@@ -45,10 +41,10 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 	}
 
 	private async getResources(element: azureResource.IAzureResourceNode): Promise<T[]> {
-		const tokens = await this._apiWrapper.getSecurityToken(element.account, azdata.AzureResource.ResourceManagement);
-		const credential = new msRest.TokenCredentials(tokens[element.tenantId].token, tokens[element.tenantId].tokenType);
+		const response = await azdata.accounts.getAccountSecurityToken(element.account, element.tenantId, azdata.AzureResource.ResourceManagement);
+		const credential = new msRest.TokenCredentials(response.token, response.tokenType);
 
-		const resources: T[] = await this._resourceService.getResources(element.subscription, credential, element.account) || <T[]>[];
+		const resources: T[] = await this._resourceService.getResources([element.subscription], credential, element.account) || <T[]>[];
 		return resources;
 	}
 
@@ -58,6 +54,7 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 }
 
 export interface GraphData {
+	subscriptionId: string,
 	tenantId: string;
 	id: string;
 	name: string;
@@ -67,12 +64,12 @@ export interface GraphData {
 }
 
 
-export async function queryGraphResources<T extends GraphData>(resourceClient: ResourceGraphClient, subId: string, resourceQuery: string): Promise<T[]> {
+export async function queryGraphResources<T extends GraphData>(resourceClient: ResourceGraphClient, subscriptions: azureResource.AzureResourceSubscription[], resourceQuery: string): Promise<T[]> {
 	const allResources: T[] = [];
 	let totalProcessed = 0;
 	let doQuery = async (skipToken?: string) => {
 		const response = await resourceClient.resources({
-			subscriptions: [subId],
+			subscriptions: subscriptions.map(subscription => subscription.id),
 			query: resourceQuery,
 			options: {
 				resultFormat: 'objectArray',
@@ -122,10 +119,10 @@ export abstract class ResourceServiceBase<T extends GraphData, U extends azureRe
 	 */
 	protected abstract get query(): string;
 
-	public async getResources(subscription: azureResource.AzureResourceSubscription, credential: msRest.ServiceClientCredentials, account: azdata.Account): Promise<U[]> {
+	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: azdata.Account): Promise<U[]> {
 		const convertedResources: U[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
-		let graphResources = await queryGraphResources<T>(resourceClient, subscription.id, this.query);
+		let graphResources = await queryGraphResources<T>(resourceClient, subscriptions, this.query);
 		let ids = new Set<string>();
 		graphResources.forEach((res) => {
 			if (!ids.has(res.id)) {

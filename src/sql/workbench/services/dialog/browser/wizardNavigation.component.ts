@@ -12,8 +12,8 @@ import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 
 export class WizardNavigationParams implements IBootstrapParams {
-	wizard: Wizard;
-	navigationHandler: (index: number) => void;
+	wizard!: Wizard;
+	navigationHandler!: (index: number) => void;
 }
 
 @Component({
@@ -39,7 +39,7 @@ export class WizardNavigation implements AfterViewInit {
 	private _onResize = new Emitter<void>();
 	public readonly onResize: Event<void> = this._onResize.event;
 
-	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
+	@ViewChild('container', { read: ElementRef }) private _container!: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IBootstrapParams) private _params: WizardNavigationParams,
@@ -77,6 +77,9 @@ export class WizardNavigation implements AfterViewInit {
 	private style(): void {
 		let theme = this._themeService.getColorTheme();
 		let navigationBackgroundColor = theme.getColor(SIDE_BAR_BACKGROUND);
+		if (!navigationBackgroundColor) {
+			return;
+		}
 		if (theme.type === 'light') {
 			navigationBackgroundColor = navigationBackgroundColor.lighten(0.03);
 		} else if (theme.type === 'dark') {

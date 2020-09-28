@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { AppContext } from '../appContext';
 import { getErrorMessage } from '../utils';
 import * as SqlClusterLookUp from '../sqlClusterLookUp';
+import * as loc from '../localizedConstants';
 
 export class OpenSparkYarnHistoryTask {
 	constructor(private appContext: AppContext) {
@@ -18,7 +19,7 @@ export class OpenSparkYarnHistoryTask {
 			let sqlClusterConnection = SqlClusterLookUp.findSqlClusterConnection(sqlConnProfile, this.appContext);
 			if (!sqlClusterConnection) {
 				let name = isSpark ? 'Spark' : 'Yarn';
-				this.appContext.apiWrapper.showErrorMessage(`Please connect to the Spark cluster before View ${name} History.`);
+				vscode.window.showErrorMessage(loc.sparkConnectionRequired(name));
 				return;
 			}
 			if (isSpark) {
@@ -28,7 +29,7 @@ export class OpenSparkYarnHistoryTask {
 				vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(this.generateYarnHistoryUrl(sqlClusterConnection.host, sqlClusterConnection.port)));
 			}
 		} catch (error) {
-			this.appContext.apiWrapper.showErrorMessage(getErrorMessage(error));
+			vscode.window.showErrorMessage(getErrorMessage(error));
 		}
 	}
 

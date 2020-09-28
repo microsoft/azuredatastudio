@@ -29,14 +29,13 @@ export class ServerTreeDataSource implements IDataSource {
 	 * Returns the unique identifier of the given element.
 	 * No more than one element may use a given identifier.
 	 */
-	public getId(tree: ITree, element: any): string {
-		if (element instanceof ConnectionProfile
-			|| element instanceof ConnectionProfileGroup
-			|| element instanceof TreeNode) {
-			return element.id;
-		} else {
-			return undefined;
-		}
+	public getId(tree: ITree, element?: any): string {
+		// Note there really shouldn't be any undefined elements in the tree, but the original implementation
+		// didn't do that correctly and since this is going to replaced by the async tree at some point just
+		// making it so we handle the undefined case here.
+		// This should be safe to do since the undefined element is only used when we want to clear the tree
+		// so it'll be the only "element" in the tree and thus there shouldn't be any duplicate ids
+		return element?.id || '';
 	}
 
 	/**
@@ -58,7 +57,7 @@ export class ServerTreeDataSource implements IDataSource {
 	 */
 	public async getChildren(tree: ITree, element: any): Promise<(ConnectionProfile | ConnectionProfileGroup | TreeNode)[]> {
 		if (element instanceof ConnectionProfile) {
-			return TreeUpdateUtils.getObjectExplorerNode(<ConnectionProfile>element, this._connectionManagementService, this._objectExplorerService);
+			return TreeUpdateUtils.getConnectionNodeChildren(<ConnectionProfile>element, this._objectExplorerService);
 		} else if (element instanceof ConnectionProfileGroup) {
 			return (element as ConnectionProfileGroup).getChildren();
 		} else if (element instanceof TreeNode) {
@@ -67,7 +66,7 @@ export class ServerTreeDataSource implements IDataSource {
 				return node.children;
 			} else {
 				try {
-					return this._objectExplorerService.resolveTreeNodeChildren(node.getSession(), node);
+					return this._objectExplorerService.resolveTreeNodeChildren(node.getSession()!, node);
 				} catch (expandError) {
 					await node.setExpandedState(TreeItemCollapsibleState.Collapsed);
 					node.errorStateMessage = expandError;

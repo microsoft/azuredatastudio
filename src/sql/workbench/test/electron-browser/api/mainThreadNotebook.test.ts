@@ -15,10 +15,11 @@ import { NotebookService } from 'sql/workbench/services/notebook/browser/noteboo
 import { INotebookProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
-import { TestLifecycleService, TestEnvironmentService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestLifecycleService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { ExtHostNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 suite('MainThreadNotebook Tests', () => {
 
@@ -34,8 +35,20 @@ suite('MainThreadNotebook Tests', () => {
 			getProxy: proxyType => mockProxy.object
 		};
 		const instantiationService = new TestInstantiationService();
-		mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, instantiationService, new MockContextKeyService(),
-			undefined, undefined, undefined, undefined, undefined, undefined, TestEnvironmentService);
+		instantiationService.stub(IProductService, { quality: 'stable' });
+		let notebookService = new NotebookService(
+			new TestLifecycleService(),
+			undefined,
+			undefined,
+			undefined,
+			instantiationService,
+			undefined,
+			undefined,
+			undefined,
+			new MockContextKeyService(),
+			instantiationService.get(IProductService)
+		);
+		mockNotebookService = TypeMoq.Mock.ofInstance(notebookService);
 		notebookUri = URI.parse('file:/user/default/my.ipynb');
 		mainThreadNotebook = new MainThreadNotebook(extContext, mockNotebookService.object, instantiationService);
 	});

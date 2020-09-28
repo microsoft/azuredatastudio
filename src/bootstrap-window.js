@@ -21,10 +21,10 @@
 		globalThis.MonacoBootstrapWindow = factory();
 	}
 }(this, function () {
-	const path = require.__$__nodeRequire('path');
-	const webFrame = require.__$__nodeRequire('electron').webFrame;
-	const ipc = require.__$__nodeRequire('electron').ipcRenderer;
-	const bootstrap = globalThis.MonacoBootstrap;
+	const preloadGlobals = globals();
+	const sandbox = preloadGlobals.context.sandbox;
+	const webFrame = preloadGlobals.webFrame;
+	const safeProcess = sandbox ? preloadGlobals.process : process;
 
 	/**
 	 * @param {string[]} modulePaths
@@ -52,29 +52,33 @@
 		}
 
 		// Error handler
-		process.on('uncaughtException', function (error) {
+		safeProcess.on('uncaughtException', function (error) {
 			onUnexpectedError(error, enableDeveloperTools);
 		});
 
 		// Developer tools
-		const enableDeveloperTools = (process.env['VSCODE_DEV'] || !!configuration.extensionDevelopmentPath) && !configuration.extensionTestsPath;
+		const enableDeveloperTools = (safeProcess.env['VSCODE_DEV'] || !!configuration.extensionDevelopmentPath) && !configuration.extensionTestsPath;
 		let developerToolsUnbind;
 		if (enableDeveloperTools || (options && options.forceEnableDeveloperKeybindings)) {
 			developerToolsUnbind = registerDeveloperKeybindings(options && options.disallowReloadKeybinding);
 		}
 
-		// Correctly inherit the parent's environment
-		Object.assign(process.env, configuration.userEnv);
+		// Correctly inherit the parent's environment (TODO@sandbox non-sandboxed only)
+		if (!sandbox) {
+			Object.assign(safeProcess.env, configuration.userEnv);
+		}
 
-		// Enable ASAR support
-		bootstrap.enableASARSupport(path.join(configuration.appRoot, 'node_modules'));
+		// Enable ASAR support (TODO@sandbox non-sandboxed only)
+		if (!sandbox) {
+			globalThis.MonacoBootstrap.enableASARSupport(configuration.appRoot);
+		}
 
 		if (options && typeof options.canModifyDOM === 'function') {
 			options.canModifyDOM(configuration);
 		}
 
-		// Get the nls configuration into the process.env as early as possible.
-		const nlsConfig = bootstrap.setupNLS();
+		// Get the nls configuration into the process.env as early as possible  (TODO@sandbox non-sandboxed only)
+		const nlsConfig = sandbox ? { availableLanguages: {} } : globalThis.MonacoBootstrap.setupNLS();
 
 		let locale = nlsConfig.availableLanguages['*'] || 'en';
 		if (locale === 'zh-tw') {
@@ -85,38 +89,23 @@
 
 		window.document.documentElement.setAttribute('lang', locale);
 
-		// do not advertise AMD to avoid confusing UMD modules loaded with nodejs
-		window['define'] = undefined;
+		// do not advertise AMD to avoid confusing UMD modules loaded with nodejs (TODO@sandbox non-sandboxed only)
+		if (!sandbox) {
+			window['define'] = undefined;
+		}
 
-		// replace the patched electron fs with the original node fs for all AMD code
-		require.define('fs', ['original-fs'], function (originalFS) { return originalFS; });
+		// replace the patched electron fs with the original node fs for all AMD code (TODO@sandbox non-sandboxed only)
+		if (!sandbox) {
+			require.define('fs', ['original-fs'], function (originalFS) { return originalFS; });
+		}
 
 		window['MonacoEnvironment'] = {};
 
 		const loaderConfig = {
-			baseUrl: `${bootstrap.uriFromPath(configuration.appRoot)}/out`,
+			baseUrl: `${uriFromPath(configuration.appRoot)}/out`,
 			'vs/nls': nlsConfig,
-			nodeModules: [/*BUILD->INSERT_NODE_MODULES*/]
+			amdModulesPattern: /^(vs|sql)\//, // {{SQL CARBON EDIT}} include sql in regex
 		};
-
-		loaderConfig.nodeModules = loaderConfig.nodeModules.concat([
-			'@angular/common',
-			'@angular/core',
-			'@angular/forms',
-			'@angular/platform-browser',
-			'@angular/platform-browser-dynamic',
-			'@angular/router',
-			'rxjs/Observable',
-			'rxjs/add/observable/fromPromise',
-			'rxjs/Subject',
-			'rxjs/Observer',
-			'slickgrid/lib/jquery.event.drag-2.3.0',
-			'slickgrid/lib/jquery-ui-1.9.2',
-			'slickgrid/slick.core',
-			'slickgrid/slick.grid',
-			'slickgrid/slick.editors',
-			'slickgrid/slick.dataview'
-		]);
 
 		// cached data config
 		if (configuration.nodeCachedDataDir) {
@@ -178,6 +167,8 @@
 	 * @returns {() => void}
 	 */
 	function registerDeveloperKeybindings(disallowReloadKeybinding) {
+		const ipcRenderer = preloadGlobals.ipcRenderer;
+
 		const extractKey = function (e) {
 			return [
 				e.ctrlKey ? 'ctrl-' : '',
@@ -189,16 +180,16 @@
 		};
 
 		// Devtools & reload support
-		const TOGGLE_DEV_TOOLS_KB = (process.platform === 'darwin' ? 'meta-alt-73' : 'ctrl-shift-73'); // mac: Cmd-Alt-I, rest: Ctrl-Shift-I
+		const TOGGLE_DEV_TOOLS_KB = (safeProcess.platform === 'darwin' ? 'meta-alt-73' : 'ctrl-shift-73'); // mac: Cmd-Alt-I, rest: Ctrl-Shift-I
 		const TOGGLE_DEV_TOOLS_KB_ALT = '123'; // F12
-		const RELOAD_KB = (process.platform === 'darwin' ? 'meta-82' : 'ctrl-82'); // mac: Cmd-R, rest: Ctrl-R
+		const RELOAD_KB = (safeProcess.platform === 'darwin' ? 'meta-82' : 'ctrl-82'); // mac: Cmd-R, rest: Ctrl-R
 
 		let listener = function (e) {
 			const key = extractKey(e);
 			if (key === TOGGLE_DEV_TOOLS_KB || key === TOGGLE_DEV_TOOLS_KB_ALT) {
-				ipc.send('vscode:toggleDevTools');
+				ipcRenderer.send('vscode:toggleDevTools');
 			} else if (key === RELOAD_KB && !disallowReloadKeybinding) {
-				ipc.send('vscode:reloadWindow');
+				ipcRenderer.send('vscode:reloadWindow');
 			}
 		};
 
@@ -218,7 +209,8 @@
 	 */
 	function onUnexpectedError(error, enableDeveloperTools) {
 		if (enableDeveloperTools) {
-			ipc.send('vscode:openDevTools');
+			const ipcRenderer = preloadGlobals.ipcRenderer;
+			ipcRenderer.send('vscode:openDevTools');
 		}
 
 		console.error(`[uncaught exception]: ${error}`);
@@ -228,7 +220,41 @@
 		}
 	}
 
+	/**
+	 * @return {typeof import('./vs/base/parts/sandbox/electron-sandbox/globals')}
+	 */
+	function globals() {
+		// @ts-ignore (defined in globals.js)
+		return window.vscode;
+	}
+
+	/**
+	 * TODO@sandbox this should not use the file:// protocol at all
+	 * and be consolidated with the fileUriFromPath() method in
+	 * bootstrap.js.
+	 *
+	 * @param {string} path
+	 * @returns {string}
+	 */
+	function uriFromPath(path) {
+		let pathName = path.replace(/\\/g, '/');
+		if (pathName.length > 0 && pathName.charAt(0) !== '/') {
+			pathName = `/${pathName}`;
+		}
+
+		/** @type {string} */
+		let uri;
+		if (safeProcess.platform === 'win32' && pathName.startsWith('//')) { // specially handle Windows UNC paths
+			uri = encodeURI(`file:${pathName}`);
+		} else {
+			uri = encodeURI(`file://${pathName}`);
+		}
+
+		return uri.replace(/#/g, '%23');
+	}
+
 	return {
-		load
+		load,
+		globals
 	};
 }));

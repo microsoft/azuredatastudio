@@ -26,6 +26,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { find } from 'vs/base/common/arrays';
 import { IRange, Range } from 'vs/editor/common/core/range';
 import { BatchSummary, IQueryMessage, ResultSetSummary, QueryExecuteSubsetParams, CompleteBatchSummary, IResultMessage, ResultSetSubset, BatchStartSummary } from './query';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -137,7 +138,9 @@ export default class QueryRunner extends Disposable {
 	 */
 	public runQuery(input: IRange | undefined, runOptions?: ExecutionPlanOptions): Promise<void>;
 	public runQuery(input: string | IRange | undefined, runOptions?: ExecutionPlanOptions): Promise<void> {
-		if (types.isString(input) || types.isUndefined(input)) {
+		if (types.isString(input)) {
+			return this.doRunQuery(input, false, runOptions);
+		} else if (types.isUndefined(input)) {
 			return this.doRunQuery(input, false, runOptions);
 		} else {
 			return this.doRunQuery(input, false, runOptions);
@@ -156,8 +159,9 @@ export default class QueryRunner extends Disposable {
 	 * Implementation that runs the query with the provided query
 	 * @param input Query string to execute
 	 */
-	private doRunQuery(input: string, runCurrentStatement: boolean, runOptions?: ExecutionPlanOptions): Promise<void>;
-	private doRunQuery(input: IRange | undefined, runCurrentStatement: boolean, runOptions?: ExecutionPlanOptions): Promise<void>;
+	private doRunQuery(input: string, runCurrentStatement: false, runOptions?: ExecutionPlanOptions): Promise<void>;
+	private doRunQuery(input: IRange | undefined, runCurrentStatement: false, runOptions?: ExecutionPlanOptions): Promise<void>;
+	private doRunQuery(input: IRange, runCurrentStatement: true, runOptions?: ExecutionPlanOptions): Promise<void>;
 	private doRunQuery(input: string | IRange | undefined, runCurrentStatement: boolean, runOptions?: ExecutionPlanOptions): Promise<void> {
 		if (this.isExecuting) {
 			return Promise.resolve();
@@ -180,7 +184,7 @@ export default class QueryRunner extends Disposable {
 
 			// Send the request to execute the query
 			return runCurrentStatement
-				? this.queryManagementService.runQueryStatement(this.uri, input.startLineNumber, input.startColumn).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e))
+				? this.queryManagementService.runQueryStatement(this.uri, input!.startLineNumber, input!.startColumn).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e))
 				: this.queryManagementService.runQuery(this.uri, input, runOptions).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
 		} else {
 			// Update internal state to show that we're executing the query
@@ -231,7 +235,9 @@ export default class QueryRunner extends Disposable {
 
 		this._batchSets.map(batch => {
 			if (batch.range) {
-				batch.range = new Range(batch.range.startLineNumber + this._resultLineOffset, batch.range.startColumn + this._resultColumnOffset, batch.range.endLineNumber + this._resultLineOffset, batch.range.endColumn + this._resultColumnOffset);
+				const columnOffset = (this._resultColumnOffset ?? 0);
+				const lineOffest = (this._resultLineOffset ?? 0);
+				batch.range = new Range(batch.range.startLineNumber + lineOffest, batch.range.startColumn + columnOffset, batch.range.endLineNumber + lineOffest, batch.range.endColumn + columnOffset);
 			}
 		});
 
@@ -255,7 +261,9 @@ export default class QueryRunner extends Disposable {
 	public handleBatchStart(batch: BatchStartSummary): void {
 		// Recalculate the start and end lines, relative to the result line offset
 		if (batch.range) {
-			batch.range = new Range(batch.range.startLineNumber + this._resultLineOffset, batch.range.startColumn + this._resultColumnOffset, batch.range.endLineNumber + this._resultLineOffset, batch.range.endColumn + this._resultColumnOffset);
+			const columnOffset = (this._resultColumnOffset ?? 0);
+			const lineOffest = (this._resultLineOffset ?? 0);
+			batch.range = new Range(batch.range.startLineNumber + lineOffest, batch.range.startColumn + columnOffset, batch.range.endLineNumber + lineOffest, batch.range.endColumn + columnOffset);
 		}
 
 		// Store the batch
@@ -304,6 +312,7 @@ export default class QueryRunner extends Disposable {
 					batchSet = <BatchSummary>{
 						id: 0,
 						range: undefined,
+						executionStart: Date.now().toString(),
 						hasError: false,
 						resultSetSummaries: []
 					};
@@ -442,7 +451,7 @@ export default class QueryRunner extends Disposable {
 
 	private sendBatchTimeMessage(batchId: number, executionTime: string): void {
 		// get config copyRemoveNewLine option from vscode config
-		let showBatchTime = this.configurationService.getValue<boolean>('sql.showBatchTime');
+		let showBatchTime = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').messages.showBatchTime;
 		if (showBatchTime) {
 			let message: IQueryMessage = {
 				batchId: batchId,
@@ -538,13 +547,13 @@ export function shouldIncludeHeaders(includeHeaders: boolean, configurationServi
 		return includeHeaders;
 	}
 	// else get config option from vscode config
-	includeHeaders = configurationService.getValue<boolean>('sql.copyIncludeHeaders');
+	includeHeaders = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.copyIncludeHeaders;
 	return !!includeHeaders;
 }
 
 export function shouldRemoveNewLines(configurationService: IConfigurationService): boolean {
 	// get config copyRemoveNewLine option from vscode config
-	let removeNewLines = configurationService.getValue<boolean>('sql.copyRemoveNewLine');
+	let removeNewLines = configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.copyRemoveNewLine;
 	return !!removeNewLines;
 }
 

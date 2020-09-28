@@ -9,40 +9,32 @@
 'use strict';
 
 const perf = (function () {
-	let sharedObj;
-	if (typeof global === 'object') {
-		// nodejs
-		sharedObj = global;
-	} else if (typeof self === 'object') {
-		// browser
-		sharedObj = self;
-	} else {
-		sharedObj = {};
-	}
-	// @ts-ignore
-	sharedObj._performanceEntries = sharedObj._performanceEntries || [];
+	globalThis.MonacoPerformanceMarks = globalThis.MonacoPerformanceMarks || [];
 	return {
 		/**
 		 * @param {string} name
 		 */
 		mark(name) {
-			sharedObj._performanceEntries.push(name, Date.now());
+			globalThis.MonacoPerformanceMarks.push(name, Date.now());
 		}
 	};
 })();
 
 perf.mark('renderer/started');
 
-// Setup shell environment
-process['lazyEnv'] = getLazyEnv();
-
 /**
- * @type {{ load: (modules: string[], resultCallback: (result, configuration: object) => any, options: object) => unknown }}
+ * @type {{
+ *   load: (modules: string[], resultCallback: (result, configuration: object) => any, options: object) => unknown,
+ *   globals: () => typeof import('../../../base/parts/sandbox/electron-sandbox/globals')
+ * }}
  */
 const bootstrapWindow = (() => {
 	// @ts-ignore (defined in bootstrap-window.js)
 	return window.MonacoBootstrapWindow;
 })();
+
+// Load environment in parallel to workbench loading to avoid waterfall
+const whenEnvResolved = bootstrapWindow.globals().process.whenEnvResolved;
 
 // Load workbench main JS, CSS and NLS all in parallel. This is an
 // optimization to prevent a waterfall of loading to happen, because
@@ -54,16 +46,19 @@ bootstrapWindow.load([
 	'vs/nls!vs/workbench/workbench.desktop.main',
 	'vs/css!vs/workbench/workbench.desktop.main'
 ],
-	function (workbench, configuration) {
+	async function (workbench, configuration) {
+
+		// Mark start of workbench
 		perf.mark('didLoadWorkbenchMain');
 		performance.mark('workbench-start');
 
-		return process['lazyEnv'].then(function () {
-			perf.mark('main/startup');
+		// Wait for process environment being fully resolved
+		await whenEnvResolved;
 
-			// @ts-ignore
-			return require('vs/workbench/electron-browser/desktop.main').main(configuration);
-		});
+		perf.mark('main/startup');
+
+		// @ts-ignore
+		return require('vs/workbench/electron-browser/desktop.main').main(configuration);
 	},
 	{
 		removeDeveloperKeybindingsAfterLoad: true,
@@ -83,7 +78,7 @@ bootstrapWindow.load([
  * @param {{
  *	partsSplashPath?: string,
  *	highContrast?: boolean,
- *	defaultThemeType?: string,
+ *	autoDetectHighContrast?: boolean,
  *	extensionDevelopmentPath?: string[],
  *	folderUri?: object,
  *	workspace?: object
@@ -102,7 +97,8 @@ function showPartsSplash(configuration) {
 	}
 
 	// high contrast mode has been turned on from the outside, e.g. OS -> ignore stored colors and layouts
-	if (data && configuration.highContrast && data.baseTheme !== 'hc-black') {
+	const isHighContrast = configuration.highContrast && configuration.autoDetectHighContrast;
+	if (data && isHighContrast && data.baseTheme !== 'hc-black') {
 		data = undefined;
 	}
 
@@ -117,14 +113,10 @@ function showPartsSplash(configuration) {
 		baseTheme = data.baseTheme;
 		shellBackground = data.colorInfo.editorBackground;
 		shellForeground = data.colorInfo.foreground;
-	} else if (configuration.highContrast || configuration.defaultThemeType === 'hc') {
+	} else if (isHighContrast) {
 		baseTheme = 'hc-black';
 		shellBackground = '#000000';
 		shellForeground = '#FFFFFF';
-	} else if (configuration.defaultThemeType === 'vs') {
-		baseTheme = 'vs';
-		shellBackground = '#FFFFFF';
-		shellForeground = '#000000';
 	} else {
 		baseTheme = 'vs-dark';
 		shellBackground = '#1E1E1E';
@@ -177,28 +169,4 @@ function showPartsSplash(configuration) {
 	}
 
 	perf.mark('didShowPartsSplash');
-}
-
-/**
- * @returns {Promise<void>}
- */
-function getLazyEnv() {
-
-	const ipc = require.__$__nodeRequire('electron').ipcRenderer;
-
-	return new Promise(function (resolve) {
-		const handle = setTimeout(function () {
-			resolve();
-			console.warn('renderer did not receive lazyEnv in time');
-		}, 10000);
-
-		ipc.once('vscode:acceptShellEnv', function (event, shellEnv) {
-			clearTimeout(handle);
-			Object.assign(process.env, shellEnv);
-			// @ts-ignore
-			resolve(process.env);
-		});
-
-		ipc.send('vscode:fetchShellEnv');
-	});
 }

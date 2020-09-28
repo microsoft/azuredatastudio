@@ -13,6 +13,7 @@ export const managePackagesCommand = 'jupyter.cmd.managePackages';
 export const pythonLanguageName = 'Python';
 export const rLanguageName = 'R';
 export const rLPackagedFolderName = 'r_packages';
+export const supportedODBCDriver = 'ODBC Driver 17 for SQL Server';
 
 export const mlEnableMlsCommand = 'ml.command.enableMls';
 export const mlDisableMlsCommand = 'ml.command.disableMls';
@@ -48,13 +49,14 @@ export const adsPythonBundleVersion = '0.0.1';
 export const msgYes = localize('msgYes', "Yes");
 export const msgNo = localize('msgNo', "No");
 export const managePackageCommandError = localize('mls.managePackages.error', "Package management is not supported for the server. Make sure you have Python or R installed.");
+export const verifyOdbcDriverError = localize('mls.verifyOdbcDriverError.error', "'{0}' is required  for package management. Please make sure it is installed and set up correctly.", supportedODBCDriver);
 export function taskFailedError(taskName: string, err: string): string { return localize('mls.taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
 export function cannotFindPython(path: string): string { return localize('mls.cannotFindPython.error', "Cannot find Python executable '{0}'. Please make sure Python is installed and configured correctly", path); }
 export function cannotFindR(path: string): string { return localize('mls.cannotFindR.error', "Cannot find R executable '{0}'. Please make sure R is installed and configured correctly", path); }
 export const installPackageMngDependenciesMsgTaskName = localize('mls.installPackageMngDependencies.msgTaskName', "Verifying package management dependencies");
 export const installModelMngDependenciesMsgTaskName = localize('mls.installModelMngDependencies.msgTaskName', "Verifying model management dependencies");
 export const noResultError = localize('mls.noResultError', "No Result returned");
-export const requiredPackagesNotInstalled = localize('mls.requiredPackagesNotInstalled', "The required dependencies are not installed");
+export const requiredPackagesNotInstalled = localize('mls.requiredPackagesNotInstalled', "The required packages are not installed");
 export const confirmEnableExternalScripts = localize('mls.confirmEnableExternalScripts', "External script is required for package management. Are you sure you want to enable that.");
 export const enableExternalScriptsError = localize('mls.enableExternalScriptsError', "Failed to enable External script.");
 export const externalScriptsIsRequiredError = localize('mls.externalScriptsIsRequiredError', "External script configuration is required for this action.");
@@ -62,6 +64,10 @@ export const confirmInstallPythonPackages = localize('mls.confirmInstallPythonPa
 export function confirmInstallPythonPackagesDetails(packages: string): string {
 	return localize('mls.installDependencies.confirmInstallPythonPackages'
 		, "The following Python packages are required to install: {0}", packages);
+}
+export function confirmInstallRPackagesDetails(packages: string): string {
+	return localize('mls.installDependencies.confirmInstallRPackages'
+		, "The following R packages are required to install: {0}", packages);
 }
 export function confirmDeleteModel(modelName: string): string {
 	return localize('models.confirmDeleteModel'
@@ -205,6 +211,7 @@ export const invalidModelParametersError = localize('models.invalidModelParamete
 export const invalidModelToSelectError = localize('models.invalidModelToSelectError', "Please select a valid model");
 export const invalidModelImportTargetError = localize('models.invalidModelImportTargetError', "Please select a valid table");
 export const columnDataTypeMismatchWarning = localize('models.columnDataTypeMismatchWarning', "The data type of the source table column does not match the required input field’s type.");
+export const outputColumnDataTypeNotSupportedWarning = localize('models.outputColumnDataTypeNotSupportedWarning', "The data type of output column does not match the output field’s type.");
 export const modelNameRequiredError = localize('models.modelNameRequiredError', "Model name is required.");
 export const updateModelFailedError = localize('models.updateModelFailedError', "Failed to update the model");
 export const modelSchemaIsAcceptedMessage = localize('models.modelSchemaIsAcceptedMessage', "Table meets requirements!");

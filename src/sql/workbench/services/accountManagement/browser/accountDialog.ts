@@ -18,7 +18,6 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { values } from 'vs/base/common/map';
 
 import * as azdata from 'azdata';
 
@@ -44,6 +43,8 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import { Iterable } from 'vs/base/common/iterator';
+import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
 
@@ -56,11 +57,13 @@ export const ACCOUNT_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewC
 	name: localize('accountExplorer.name', "Accounts"),
 	ctorDescriptor: new SyncDescriptor(AccountPaneContainer),
 	storageId: `${VIEWLET_ID}.state`
-}, ViewContainerLocation.Sidebar);
+}, ViewContainerLocation.Dialog);
 
 class AccountPanel extends ViewPane {
-	public index: number;
-	private accountList: List<azdata.Account>;
+	public index?: number;
+	private accountList?: List<azdata.Account>;
+	private tenantList?: List<Tenant>;
+
 
 	constructor(
 		private options: IViewPaneOptions,
@@ -79,29 +82,35 @@ class AccountPanel extends ViewPane {
 
 	protected renderBody(container: HTMLElement): void {
 		this.accountList = new List<azdata.Account>('AccountList', container, new AccountListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(AccountListRenderer)]);
+		this.tenantList = new List<Tenant>('TenantList', container, new TenantListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(TenantListRenderer)]);
 		this._register(attachListStyler(this.accountList, this.themeService));
+		this._register(attachListStyler(this.tenantList, this.themeService));
 	}
 
 	protected layoutBody(size: number): void {
-		if (this.accountList) {
-			this.accountList.layout(size);
-		}
+		this.accountList?.layout(size);
+		this.tenantList?.layout(size);
 	}
 
 	public get length(): number {
-		return this.accountList.length;
+		return this.accountList!.length;
 	}
 
 	public focus() {
-		this.accountList.domFocus();
+		this.accountList!.domFocus();
 	}
 
 	public updateAccounts(accounts: azdata.Account[]) {
-		this.accountList.splice(0, this.accountList.length, accounts);
+		this.accountList!.splice(0, this.accountList!.length, accounts);
 	}
 
 	public setSelection(indexes: number[]) {
-		this.accountList.setSelection(indexes);
+		this.accountList!.setSelection(indexes);
+		this.updateTenants(this.accountList!.getSelectedElements()[0]);
+	}
+
+	private updateTenants(account: azdata.Account) {
+		this.tenantList!.splice(0, this.tenantList!.length, account.properties?.tenants ?? []);
 	}
 
 	public getActions(): IAction[] {
@@ -125,12 +134,12 @@ export class AccountDialog extends Modal {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _providerViewsMap = new Map<string, IProviderViewUiComponent>();
 
-	private _closeButton: Button;
-	private _addAccountButton: Button;
-	private _splitView: SplitView;
-	private _container: HTMLElement;
-	private _splitViewContainer: HTMLElement;
-	private _noaccountViewContainer: HTMLElement;
+	private _closeButton?: Button;
+	private _addAccountButton?: Button;
+	private _splitView?: SplitView;
+	private _container?: HTMLElement;
+	private _splitViewContainer?: HTMLElement;
+	private _noaccountViewContainer?: HTMLElement;
 
 	// EVENTING ////////////////////////////////////////////////////////////
 	private _onAddAccountErrorEmitter: Emitter<string>;
@@ -190,8 +199,8 @@ export class AccountDialog extends Modal {
 	}
 
 	// MODAL OVERRIDE METHODS //////////////////////////////////////////////
-	protected layout(height?: number): void {
-		this._splitView.layout(DOM.getContentHeight(this._container));
+	protected layout(_height?: number): void {
+		this._splitView!.layout(DOM.getContentHeight(this._container!));
 	}
 
 	public render() {
@@ -219,9 +228,9 @@ export class AccountDialog extends Modal {
 		this._addAccountButton.label = localize('accountDialog.addConnection', "Add an account");
 
 		this._register(this._addAccountButton.onDidClick(async () => {
-			const vals = values(this._providerViewsMap);
+			const vals = Iterable.consume(this._providerViewsMap.values())[0];
 
-			let pickedValue: string;
+			let pickedValue: string | undefined;
 			if (vals.length === 0) {
 				this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
 				return;
@@ -253,8 +262,8 @@ export class AccountDialog extends Modal {
 
 	private registerListeners(): void {
 		// Theme styler
-		this._register(attachButtonStyler(this._closeButton, this._themeService));
-		this._register(attachButtonStyler(this._addAccountButton, this._themeService));
+		this._register(attachButtonStyler(this._closeButton!, this._themeService));
+		this._register(attachButtonStyler(this._addAccountButton!, this._themeService));
 	}
 
 	/* Overwrite escape key behavior */
@@ -283,16 +292,16 @@ export class AccountDialog extends Modal {
 	}
 
 	private showNoAccountContainer() {
-		this._splitViewContainer.hidden = true;
-		this._noaccountViewContainer.hidden = false;
-		this._addAccountButton.focus();
+		this._splitViewContainer!.hidden = true;
+		this._noaccountViewContainer!.hidden = false;
+		this._addAccountButton!.focus();
 	}
 
 	private showSplitView() {
-		this._splitViewContainer.hidden = false;
-		this._noaccountViewContainer.hidden = true;
-		if (values(this._providerViewsMap).length > 0) {
-			const firstView = values(this._providerViewsMap)[0];
+		this._splitViewContainer!.hidden = false;
+		this._noaccountViewContainer!.hidden = true;
+		if (Iterable.consume(this._providerViewsMap.values()).length > 0) {
+			const firstView = this._providerViewsMap.values().next().value;
 			if (firstView instanceof AccountPanel) {
 				firstView.setSelection([0]);
 				firstView.focus();
@@ -301,7 +310,7 @@ export class AccountDialog extends Modal {
 	}
 
 	private isEmptyLinkedAccount(): boolean {
-		for (const provider of values(this._providerViewsMap)) {
+		for (const provider of this._providerViewsMap.values()) {
 			const listView = provider.view;
 			if (listView && listView.length > 0) {
 				return false;
@@ -312,7 +321,7 @@ export class AccountDialog extends Modal {
 
 	public dispose(): void {
 		super.dispose();
-		for (const provider of values(this._providerViewsMap)) {
+		for (const provider of this._providerViewsMap.values()) {
 			if (provider.addAccountAction) {
 				provider.addAccountAction.dispose();
 			}
@@ -364,19 +373,19 @@ export class AccountDialog extends Modal {
 
 		attachPanelStyler(providerView, this._themeService);
 
-		const insertIndex = this._splitView.length;
+		const insertIndex = this._splitView!.length;
 		providerView.render();
 
 		// Append the list view to the split view
-		this._splitView.addView(providerView, Sizing.Distribute, insertIndex);
+		this._splitView!.addView(providerView, Sizing.Distribute, insertIndex);
 		providerView.index = insertIndex;
 
-		this._splitView.layout(DOM.getContentHeight(this._container));
+		this._splitView!.layout(DOM.getContentHeight(this._container!));
 
 		// Set the initial items of the list
 		providerView.updateAccounts(newProvider.initialAccounts);
 
-		if (newProvider.initialAccounts.length > 0 && this._splitViewContainer.hidden) {
+		if (newProvider.initialAccounts.length > 0 && this._splitViewContainer!.hidden) {
 			this.showSplitView();
 		}
 
@@ -394,8 +403,8 @@ export class AccountDialog extends Modal {
 		}
 
 		// Remove the list view from the split view
-		this._splitView.removeView(providerView.view.index);
-		this._splitView.layout(DOM.getContentHeight(this._container));
+		this._splitView!.removeView(providerView.view.index!);
+		this._splitView!.layout(DOM.getContentHeight(this._container!));
 
 		// Remove the list view from our internal map
 		this._providerViewsMap.delete(removedProvider.id);
@@ -409,11 +418,11 @@ export class AccountDialog extends Modal {
 		}
 		providerMapping.view.updateAccounts(args.accountList);
 
-		if (args.accountList.length > 0 && this._splitViewContainer.hidden) {
+		if (args.accountList.length > 0 && this._splitViewContainer!.hidden) {
 			this.showSplitView();
 		}
 
-		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer.hidden) {
+		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer!.hidden) {
 			this.showNoAccountContainer();
 		}
 

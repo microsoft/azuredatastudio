@@ -81,7 +81,7 @@ suite('Schema compare integration test suite', () => {
 		assert(openScmpResult.sourceEndpointInfo.packageFilePath === source.packageFilePath, `Expected: source packageFilePath to be ${source.packageFilePath}, Actual: ${openScmpResult.sourceEndpointInfo.packageFilePath}`);
 		assert(openScmpResult.targetEndpointInfo.packageFilePath === target.packageFilePath, `Expected: target packageFilePath to be ${target.packageFilePath}, Actual: ${openScmpResult.targetEndpointInfo.packageFilePath}`);
 	});
-	test('Schema compare database to database comparison, script generation, and scmp', async function () {
+	test('Schema compare database to database comparison, script generation, and scmp @UNSTABLE@', async function () {
 		let server = await getStandaloneServer();
 		await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
 
@@ -156,8 +156,8 @@ suite('Schema compare integration test suite', () => {
 			await fs.promises.unlink(filepath);
 		}
 		finally {
-			await utils.deleteDB(server, sourceDB, ownerUri);
-			await utils.deleteDB(server, targetDB, ownerUri);
+			await utils.tryDeleteDB(server, sourceDB, ownerUri);
+			await utils.tryDeleteDB(server, targetDB, ownerUri);
 		}
 	});
 	test('Schema compare dacpac to database comparison, script generation, and scmp', async function () {
@@ -224,10 +224,10 @@ suite('Schema compare integration test suite', () => {
 			assert(openScmpResult.targetEndpointInfo.databaseName === target.databaseName, `Expected: target database to be ${target.databaseName}, Actual: ${openScmpResult.targetEndpointInfo.databaseName}`);
 		}
 		finally {
-			await utils.deleteDB(server, targetDB, ownerUri);
+			await utils.tryDeleteDB(server, targetDB, ownerUri);
 		}
 	});
-	test('Schema compare dacpac to dacpac comparison with include exclude', async function () {
+	test('Schema compare dacpac to dacpac comparison with include exclude @UNSTABLE@', async function () {
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 		const operationId = 'testOperationId_' + new Date().getTime().toString();
 

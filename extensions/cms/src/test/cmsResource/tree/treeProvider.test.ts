@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import { AppContext } from '../../../appContext';
-import { ApiWrapper } from '../../../apiWrapper';
 import { CmsResourceTreeProvider } from '../../../cmsResource/tree/treeProvider';
 import { CmsResourceMessageTreeNode } from '../../../cmsResource/messageTreeNode';
 import { CmsResourceEmptyTreeNode } from '../../../cmsResource/tree/cmsResourceEmptyTreeNode';
@@ -19,15 +18,12 @@ import { sleep } from '../../utils';
 let mockAppContext: AppContext;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 let mockCmsUtils: TypeMoq.IMock<CmsUtils>;
-let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
-
 
 describe('CmsResourceTreeProvider.getChildren', function (): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockCmsUtils = TypeMoq.Mock.ofType<CmsUtils>();
-		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object, mockCmsUtils.object);
+		mockAppContext = new AppContext(mockExtensionContext.object, mockCmsUtils.object);
 	});
 
 	it('Should be loading while waiting for saved servers to load', async function (): Promise<void> {

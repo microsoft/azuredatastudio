@@ -5,22 +5,20 @@
 
 
 import { ExtensionContext } from 'vscode';
-import { ApiWrapper } from '../../../apiWrapper';
 
-import { azureResource } from '../../azure-resource';
+import { azureResource } from 'azureResource';
 import { AzureResourceDatabaseTreeDataProvider } from './databaseTreeDataProvider';
 import { IAzureResourceService } from '../../interfaces';
 
 export class AzureResourceDatabaseProvider implements azureResource.IAzureResourceProvider {
 	public constructor(
 		private _databaseService: IAzureResourceService<azureResource.AzureResourceDatabase>,
-		private _apiWrapper: ApiWrapper,
 		private _extensionContext: ExtensionContext
 	) {
 	}
 
 	public getTreeDataProvider(): azureResource.IAzureResourceTreeDataProvider {
-		return new AzureResourceDatabaseTreeDataProvider(this._databaseService, this._apiWrapper, this._extensionContext);
+		return new AzureResourceDatabaseTreeDataProvider(this._databaseService, this._extensionContext);
 	}
 
 	public get providerId(): string {

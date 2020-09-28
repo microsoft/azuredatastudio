@@ -43,6 +43,8 @@ export interface IExtension {
 	readonly dacFx: IDacFxService;
 
 	readonly sqlAssessment: ISqlAssessmentService;
+
+	readonly sqlMigration: ISqlMigrationService;
 }
 
 /**
@@ -333,9 +335,10 @@ export interface IDacFxService {
 	importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<DacFxResult>;
 	extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<DacFxResult>;
 	importDatabaseProject(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Thenable<DacFxResult>;
-	deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>): Thenable<DacFxResult>;
-	generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>): Thenable<DacFxResult>;
+	deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
+	generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
 	generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
+	getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 }
 
 export interface DacFxResult extends azdata.ResultStatus {
@@ -344,6 +347,10 @@ export interface DacFxResult extends azdata.ResultStatus {
 
 export interface GenerateDeployPlanResult extends DacFxResult {
 	report: string;
+}
+
+export interface DacFxOptionsResult extends azdata.ResultStatus {
+	deploymentOptions: DeploymentOptions;
 }
 
 export interface ExportParams {
@@ -489,4 +496,44 @@ export interface ISqlAssessmentService {
 	assessmentInvoke(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
 	getAssessmentItems(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
 	generateAssessmentScript(items: azdata.SqlAssessmentResultItem[], targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<azdata.ResultStatus>;
+}
+
+
+/**
+ * Sql Migration
+ */
+
+// SqlMigration interfaces  -----------------------------------------------------------------------
+
+export interface SqlMigrationImpactedObjectInfo {
+	name: string;
+	impactDetail: string;
+	objectType: string;
+}
+
+export interface SqlMigrationAssessmentResultItem {
+	rulesetVersion: string;
+	rulesetName: string;
+	targetType: azdata.sqlAssessment.SqlAssessmentTargetType;
+	targetName: string;
+	checkId: string;
+	tags: string[];
+	displayName: string;
+	description: string;
+	helpLink: string;
+	level: string;
+	timestamp: string;
+	kind: azdata.sqlAssessment.SqlAssessmentResultItemKind;
+	message: string;
+	appliesToMigrationTargetPlatform: string;
+	issueCategory: string;
+	impactedObjects: SqlMigrationImpactedObjectInfo[];
+}
+
+export interface SqlMigrationAssessmentResult extends azdata.ResultStatus {
+	items: SqlMigrationAssessmentResultItem[];
+}
+
+export interface ISqlMigrationService {
+	getAssessments(ownerUri: string): Promise<SqlMigrationAssessmentResult | undefined>;
 }

@@ -27,6 +27,8 @@ import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
+import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
+import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -40,15 +42,19 @@ export enum ColumnSizingMode {
 		<div #table style="height:100%;" [style.font-size]="fontSize" [style.width]="width"></div>
 	`
 })
-export default class TableComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class TableComponent extends ComponentBase<azdata.TableComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _table: Table<Slick.SlickData>;
 	private _tableData: TableDataView<Slick.SlickData>;
 	private _tableColumns;
 	private _checkboxColumns: CheckboxSelectColumn<{}>[] = [];
+	private _buttonsColumns: ButtonColumn<{}>[] = [];
+	private _pluginsRegisterStatus: boolean[] = [];
 	private _onCheckBoxChanged = new Emitter<ICheckboxCellActionEventArgs>();
+	private _onButtonClicked = new Emitter<ButtonClickEventArgs<{}>>();
 	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
+	public readonly onButtonClicked: vsEvent<ButtonClickEventArgs<{}>> = this._onButtonClicked.event;
 
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -71,6 +77,9 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			(<any[]>columns).map(col => {
 				if (col.type && col.type === 1) {
 					this.createCheckBoxPlugin(col, index);
+				}
+				else if (col.type && col.type === 2) {
+					this.createButtonPlugin(col);
 				}
 				else if (col.value) {
 					mycolumns.push(<Slick.Column<any>>{
@@ -238,7 +247,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.setSelectedRows(this.selectedRows);
 		}
 
-		Object.keys(this._checkboxColumns).forEach(col => this.registerCheckboxPlugin(this._checkboxColumns[col]));
+		Object.keys(this._checkboxColumns).forEach(col => this.registerPlugins(col, this._checkboxColumns[col]));
+		Object.keys(this._buttonsColumns).forEach(col => this.registerPlugins(col, this._buttonsColumns[col]));
 
 		if (this.ariaRowCount === -1) {
 			this._table.removeAriaRowCount();
@@ -309,11 +319,41 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		}
 	}
 
-	private registerCheckboxPlugin(checkboxSelectColumn: CheckboxSelectColumn<{}>): void {
-		this._tableColumns.splice(checkboxSelectColumn.index, 0, checkboxSelectColumn.getColumnDefinition());
-		this._table.registerPlugin(checkboxSelectColumn);
+	private createButtonPlugin(col: any) {
+		let name = col.value;
+		if (!this._buttonsColumns[col.value]) {
+			this._buttonsColumns[col.value] = new ButtonColumn({
+				title: col.title,
+				iconCssClass: 'modelview-table-button-icon  ' + (col.options ? createIconCssClass(col.options.icon) : '')
+			});
+
+			this._register(this._buttonsColumns[col.value].onClick((state) => {
+				this.fireEvent({
+					eventType: ComponentEventType.onCellAction,
+					args: {
+						row: state.row,
+						column: state.column,
+						name: name
+					}
+				});
+			}));
+		}
+	}
+
+	private registerPlugins(col: string, plugin: CheckboxSelectColumn<{}> | ButtonColumn<{}>): void {
+
+		const index = 'index' in plugin ? plugin.index : this.columns?.findIndex(x => x === col || ('value' in x && x['value'] === col));
+		if (index >= 0) {
+			this._tableColumns.splice(index, 0, plugin.definition);
+			if (!(col in this._pluginsRegisterStatus) || !this._pluginsRegisterStatus[col]) {
+				this._table.registerPlugin(plugin);
+				this._pluginsRegisterStatus[col] = true;
+			}
+		}
+
 		this._table.columns = this._tableColumns;
 		this._table.autosizeColumns();
+
 	}
 
 	public focus(): void {
@@ -328,62 +368,62 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	// CSS-bound properties
 
 	public get data(): any[][] {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, any[]>((props) => props.data, []);
+		return this.getPropertyOrDefault<any[]>((props) => props.data, []);
 	}
 
 	public set data(newValue: any[][]) {
-		this.setPropertyFromUI<azdata.TableComponentProperties, any[][]>((props, value) => props.data = value, newValue);
+		this.setPropertyFromUI<any[][]>((props, value) => props.data = value, newValue);
 	}
 
-	public get columns(): string[] {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, string[]>((props) => props.columns, []);
+	public get columns(): string[] | azdata.TableColumn[] {
+		return this.getPropertyOrDefault<string[] | azdata.TableColumn[]>((props) => props.columns, []);
 	}
 
 	public get fontSize(): number | string {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, number | string>((props) => props.fontSize, '');
+		return this.getPropertyOrDefault<number | string>((props) => props.fontSize, '');
 	}
 
-	public set columns(newValue: string[]) {
-		this.setPropertyFromUI<azdata.TableComponentProperties, string[]>((props, value) => props.columns = value, newValue);
+	public set columns(newValue: string[] | azdata.TableColumn[]) {
+		this.setPropertyFromUI<string[] | azdata.TableColumn[]>((props, value) => props.columns = value, newValue);
 	}
 
 	public get selectedRows(): number[] {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, number[]>((props) => props.selectedRows, []);
+		return this.getPropertyOrDefault<number[]>((props) => props.selectedRows, []);
 	}
 
 	public set selectedRows(newValue: number[]) {
-		this.setPropertyFromUI<azdata.TableComponentProperties, number[]>((props, value) => props.selectedRows = value, newValue);
+		this.setPropertyFromUI<number[]>((props, value) => props.selectedRows = value, newValue);
 	}
 
 	public get forceFitColumns() {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, ColumnSizingMode>((props) => props.forceFitColumns, ColumnSizingMode.ForceFit);
+		return this.getPropertyOrDefault<ColumnSizingMode>((props) => props.forceFitColumns, ColumnSizingMode.ForceFit);
 	}
 
 	public get title() {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, string>((props) => props.title, '');
+		return this.getPropertyOrDefault<string>((props) => props.title, '');
 	}
 
 	public get ariaRowCount(): number {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaRowCount, -1);
+		return this.getPropertyOrDefault<number>((props) => props.ariaRowCount, -1);
 	}
 
 	public get ariaColumnCount(): number {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaColumnCount, -1);
+		return this.getPropertyOrDefault<number>((props) => props.ariaColumnCount, -1);
 	}
 
 	public set moveFocusOutWithTab(newValue: boolean) {
-		this.setPropertyFromUI<azdata.TableComponentProperties, boolean>((props, value) => props.moveFocusOutWithTab = value, newValue);
+		this.setPropertyFromUI<boolean>((props, value) => props.moveFocusOutWithTab = value, newValue);
 	}
 
 	public get moveFocusOutWithTab(): boolean {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, boolean>((props) => props.moveFocusOutWithTab, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.moveFocusOutWithTab, false);
 	}
 
 	public get updateCells(): azdata.TableCell[] {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, azdata.TableCell[]>((props) => props.updateCells, undefined);
+		return this.getPropertyOrDefault<azdata.TableCell[]>((props) => props.updateCells, undefined);
 	}
 
 	public set updateCells(newValue: azdata.TableCell[]) {
-		this.setPropertyFromUI<azdata.TableComponentProperties, azdata.TableCell[]>((properties, value) => { properties.updateCells = value; }, newValue);
+		this.setPropertyFromUI<azdata.TableCell[]>((properties, value) => { properties.updateCells = value; }, newValue);
 	}
 }

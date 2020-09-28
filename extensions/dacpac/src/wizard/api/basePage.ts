@@ -6,13 +6,23 @@
 import * as azdata from 'azdata';
 import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from './models';
+import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
+
+const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
 
 export abstract class BasePage {
-
+	protected readonly instance: DataTierApplicationWizard;
 	protected readonly wizardPage: azdata.window.WizardPage;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: azdata.ModelView;
 	public databaseValues: string[];
+
+	protected constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
+		this.instance = instance;
+		this.wizardPage = wizardPage;
+		this.model = model;
+		this.view = view;
+	}
 
 	/**
 	 * This method constructs all the elements of the page.
@@ -114,14 +124,17 @@ export abstract class BasePage {
 	protected async getDatabaseValues(): Promise<string[]> {
 		let idx = -1;
 		let count = -1;
-		this.databaseValues = (await azdata.connection.listDatabases(this.model.server.connectionId)).map(db => {
-			count++;
-			if (this.model.database && db === this.model.database) {
-				idx = count;
-			}
+		this.databaseValues = (await azdata.connection.listDatabases(this.model.server.connectionId))
+			// filter out system dbs
+			.filter(db => systemDbs.find(systemdb => db === systemdb) === undefined)
+			.map(db => {
+				count++;
+				if (this.model.database && db === this.model.database) {
+					idx = count;
+				}
 
-			return db;
-		});
+				return db;
+			});
 
 		if (idx >= 0) {
 			let tmp = this.databaseValues[0];

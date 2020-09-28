@@ -7,8 +7,8 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
+import * as sinon from 'sinon';
 
-import { ApiWrapper } from '../../common/apiWrapper';
 import { AppContext } from '../../common/appContext';
 import { JupyterController } from '../../jupyter/jupyterController';
 import { LocalPipPackageManageProvider } from '../../jupyter/localPipPackageManageProvider';
@@ -16,22 +16,22 @@ import { MockExtensionContext } from '../common/stubs';
 import { NotebookUtils } from '../../common/notebookUtils';
 
 describe('Jupyter Controller', function () {
-	let mockExtensionContext: vscode.ExtensionContext;
-	let appContext: AppContext;
+	let mockExtensionContext: vscode.ExtensionContext = new MockExtensionContext();
+	let appContext = new AppContext(mockExtensionContext);
 	let controller: JupyterController;
-	let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
-	let connection: azdata.connection.ConnectionProfile;
-
-	this.beforeAll(() => {
-		mockExtensionContext = new MockExtensionContext();
-		connection  = new azdata.connection.ConnectionProfile();
-	});
+	let connection: azdata.connection.ConnectionProfile = new azdata.connection.ConnectionProfile();
+	let showErrorMessageSpy: sinon.SinonSpy;
 
 	this.beforeEach(() => {
-		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
-		mockApiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
-		appContext = new AppContext(mockExtensionContext, mockApiWrapper.object);
+		showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
+		sinon.stub(azdata.connection, 'getCurrentConnection').returns(Promise.resolve(connection));
+		sinon.stub(azdata.tasks, 'registerTask');
+		sinon.stub(vscode.commands, 'registerCommand');
 		controller = new JupyterController(appContext);
+	});
+
+	this.afterEach(function (): void {
+		sinon.restore();
 	});
 
 	it('should activate new JupyterController successfully', async () => {
@@ -65,13 +65,13 @@ describe('Jupyter Controller', function () {
 
 	it('should show error message for doManagePackages before activation', async () => {
 		await controller.doManagePackages();
-		mockApiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		should(showErrorMessageSpy.calledOnce).be.true('showErrorMessage should be called');
 	});
 
 	it('should not show error message for doManagePackages after activation', async () => {
 		await controller.activate();
 		await controller.doManagePackages();
-		mockApiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.never());
+		should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not be called');
 	});
 
 	it('Returns expected values from notebook provider', async () =>  {
@@ -85,7 +85,7 @@ describe('Jupyter Controller', function () {
 
 	it('Returns notebook manager for real notebook editor', async () =>  {
 		await controller.activate();
-		let notebookUtils = new NotebookUtils(mockApiWrapper.object);
+		let notebookUtils = new NotebookUtils();
 		const notebookEditor = await notebookUtils.newNotebook(undefined);
 		let notebookManager = await controller.notebookProvider.getNotebookManager(notebookEditor.document.uri);
 		should(controller.notebookProvider.notebookManagerCount).equal(1);

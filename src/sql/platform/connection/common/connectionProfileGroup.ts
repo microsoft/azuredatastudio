@@ -9,12 +9,16 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { assign } from 'vs/base/common/objects';
 import { find } from 'vs/base/common/arrays';
 
-export interface IConnectionProfileGroup {
-	id: string;
+export interface INewConnectionProfileGroup {
+	id?: string;
 	parentId?: string;
 	name: string;
 	color?: string;
 	description?: string;
+}
+
+export interface IConnectionProfileGroup extends INewConnectionProfileGroup {
+	id?: string;
 }
 
 export class ConnectionProfileGroup extends Disposable implements IConnectionProfileGroup {
@@ -23,10 +27,11 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	private _childConnections: ConnectionProfile[] = [];
 	public parentId?: string;
 	private _isRenamed = false;
+	public readonly isRoot: boolean = false;
 	public constructor(
 		public name: string,
-		public parent: ConnectionProfileGroup | undefined,
-		public id: string,
+		public parent?: ConnectionProfileGroup,
+		public id?: string,
 		public color?: string,
 		public description?: string
 	) {
@@ -34,6 +39,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		this.parentId = parent ? parent.id : undefined;
 		if (this.name === ConnectionProfileGroup.RootGroupName) {
 			this.name = '';
+			this.isRoot = true;
 		}
 	}
 

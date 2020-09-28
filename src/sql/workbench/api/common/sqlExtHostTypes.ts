@@ -280,6 +280,7 @@ export interface IModelViewWizardPageDetails {
 
 export interface IModelViewWizardDetails {
 	title: string;
+	name?: string;
 	pages: number[];
 	currentPage: number;
 	doneButton: number;
@@ -354,7 +355,8 @@ export enum DataProviderType {
 	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 	SerializationProvider = 'SerializationProvider',
 	IconProvider = 'IconProvider',
-	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider'
+	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
+	DataGridProvider = 'DataGridProvider'
 }
 
 export enum DeclarativeDataType {
@@ -373,7 +375,7 @@ export enum CardType {
 
 export enum Orientation {
 	Horizontal = 'horizontal',
-	Vertical = 'vertial'
+	Vertical = 'vertical'
 }
 
 /**
@@ -406,7 +408,8 @@ export enum AzureResource {
 	OssRdbms = 2,
 	AzureKeyVault = 3,
 	Graph = 4,
-	MicrosoftResourceManagement = 5
+	MicrosoftResourceManagement = 5,
+	AzureDevOps = 6
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {

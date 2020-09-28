@@ -6,7 +6,7 @@
 import 'mocha';
 import * as azdata from 'azdata';
 import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from './testConfig';
-import { connectToServer, createDB, deleteDB, DefaultConnectTimeoutInMs, asyncTimeout } from './utils';
+import { connectToServer, createDB, DefaultConnectTimeoutInMs, asyncTimeout, tryDeleteDB } from './utils';
 import * as assert from 'assert';
 
 suite('Object Explorer integration suite', () => {
@@ -44,15 +44,15 @@ suite('Object Explorer integration suite', () => {
 		const expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler'];
 		await verifyContextMenu(server, expectedActions);
 	});
-	test('Standalone database context menu test', async function () {
+	test('Standalone database context menu test @UNSTABLE@', async function () {
 		const server = await getStandaloneServer();
 		let expectedActions: string[] = [];
 		// Generate Scripts and Properties come from the admin-tool-ext-win extension which is for Windows only, so the item won't show up on non-Win32 platforms
 		if (process.platform === 'win32') {
-			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Refresh', 'Backup', 'Restore', 'Data-tier Application wizard', 'Import New Database Project', 'Schema Compare', 'Import wizard', 'Generate Scripts...', 'Properties'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Refresh', 'Backup', 'Restore', 'Create Project From Database', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard', 'Generate Scripts...', 'Properties'];
 		}
 		else {
-			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Refresh', 'Backup', 'Restore', 'Data-tier Application wizard', 'Import New Database Project', 'Schema Compare', 'Import wizard'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Refresh', 'Backup', 'Restore', 'Create Project From Database', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
 		}
 		await verifyDBContextMenu(server, DefaultConnectTimeoutInMs, expectedActions);
 	});
@@ -129,7 +129,7 @@ async function verifyDBContextMenu(server: TestServerProfile, timeoutinMS: numbe
 		return assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 	}
 	finally {
-		await deleteDB(server, dbName, ownerUri);
+		await tryDeleteDB(server, dbName, ownerUri);
 	}
 }
 

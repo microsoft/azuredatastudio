@@ -18,7 +18,7 @@ describe.skip('Data Sources: DataSource operations', function (): void {
 		const dataSourcePath = await testUtils.createTestDataSources(baselines.openDataSourcesBaseline);
 		const dataSourceList = await dataSources.load(dataSourcePath);
 
-		should(dataSourceList.length).equal(2);
+		should(dataSourceList.length).equal(3);
 
 		should(dataSourceList[0].name).equal('Test Data Source 1');
 		should(dataSourceList[0].type).equal(sql.SqlConnectionDataSource.type);
@@ -26,5 +26,9 @@ describe.skip('Data Sources: DataSource operations', function (): void {
 
 		should(dataSourceList[1].name).equal('My Other Data Source');
 		should((dataSourceList[1] as sql.SqlConnectionDataSource).integratedSecurity).equal(false);
+
+		should(dataSourceList[2].name).equal('AAD Interactive Data Source');
+		should((dataSourceList[2] as sql.SqlConnectionDataSource).integratedSecurity).equal(false);
+		should((dataSourceList[2] as sql.SqlConnectionDataSource).azureMFA).equal(true);
 	});
 });

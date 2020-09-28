@@ -34,10 +34,6 @@ class DeployPlanResult {
 }
 
 export class DeployPlanPage extends DacFxConfigPage {
-	protected readonly wizardPage: azdata.window.WizardPage;
-	protected readonly instance: DataTierApplicationWizard;
-	protected readonly model: DacFxDataModel;
-	protected readonly view: azdata.ModelView;
 	private formBuilder: azdata.FormBuilder;
 	private form: azdata.FormContainer;
 	private table: azdata.TableComponent;

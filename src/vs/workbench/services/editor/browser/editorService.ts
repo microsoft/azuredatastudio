@@ -490,10 +490,10 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		return toDisposable(() => remove());
 	}
 
-	getEditorOverrides(resource: URI, options: IEditorOptions | undefined, group: IEditorGroup | undefined, id: string | undefined): [IOpenEditorOverrideHandler, IOpenEditorOverrideEntry][] {
+	getEditorOverrides(resource: URI, options: IEditorOptions | undefined, group: IEditorGroup | undefined): [IOpenEditorOverrideHandler, IOpenEditorOverrideEntry][] {
 		const overrides = [];
 		for (const handler of this.openEditorHandlers) {
-			const handlers = handler.getEditorOverrides ? handler.getEditorOverrides(resource, options, group, id).map(val => [handler, val] as [IOpenEditorOverrideHandler, IOpenEditorOverrideEntry]) : [];
+			const handlers = handler.getEditorOverrides ? handler.getEditorOverrides(resource, options, group).map(val => [handler, val] as [IOpenEditorOverrideHandler, IOpenEditorOverrideEntry]) : [];
 			overrides.push(...handlers);
 		}
 
@@ -747,9 +747,9 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 	//#region replaceEditors()
 
-	replaceEditors(editors: IResourceEditorReplacement[], group: IEditorGroup | GroupIdentifier): Promise<void>;
-	replaceEditors(editors: IEditorReplacement[], group: IEditorGroup | GroupIdentifier): Promise<void>;
-	replaceEditors(editors: Array<IEditorReplacement | IResourceEditorReplacement>, group: IEditorGroup | GroupIdentifier): Promise<void> {
+	async replaceEditors(editors: IResourceEditorReplacement[], group: IEditorGroup | GroupIdentifier): Promise<void>;
+	async replaceEditors(editors: IEditorReplacement[], group: IEditorGroup | GroupIdentifier): Promise<void>;
+	async replaceEditors(editors: Array<IEditorReplacement | IResourceEditorReplacement>, group: IEditorGroup | GroupIdentifier): Promise<void> {
 		const typedEditors: IEditorReplacement[] = [];
 
 		editors.forEach(replaceEditorArg => {
@@ -776,8 +776,6 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		if (targetGroup) {
 			return targetGroup.replaceEditors(typedEditors);
 		}
-
-		return Promise.resolve();
 	}
 
 	//#endregion
@@ -874,16 +872,21 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			// Derive the label from the path if not provided explicitly
 			const label = resourceEditorInput.label || basename(resourceEditorInput.resource);
 
+			// We keep track of the preferred resource this input is to be created
+			// with but it may be different from the canonical resource (see below)
+			const preferredResource = resourceEditorInput.resource;
+
 			// From this moment on, only operate on the canonical resource
 			// to ensure we reduce the chance of opening the same resource
 			// with different resource forms (e.g. path casing on Windows)
-			const canonicalResource = this.asCanonicalEditorResource(resourceEditorInput.resource);
+			const canonicalResource = this.asCanonicalEditorResource(preferredResource);
+
 
 			return this.createOrGetCached(canonicalResource, () => {
 
 				// File
-				if (resourceEditorInput.forceFile /* fix for https://github.com/Microsoft/vscode/issues/48275 */ || this.fileService.canHandleResource(canonicalResource)) {
-					return this.fileEditorInputFactory.createFileEditorInput(canonicalResource, resourceEditorInput.resource, resourceEditorInput.encoding, resourceEditorInput.mode, this.instantiationService);
+				if (resourceEditorInput.forceFile || this.fileService.canHandleResource(canonicalResource)) {
+					return this.fileEditorInputFactory.createFileEditorInput(canonicalResource, preferredResource, resourceEditorInput.encoding, resourceEditorInput.mode, this.instantiationService);
 				}
 
 				// Resource
@@ -897,7 +900,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 				// Files
 				else if (!(cachedInput instanceof ResourceEditorInput)) {
-					cachedInput.setLabel(resourceEditorInput.resource);
+					cachedInput.setPreferredResource(preferredResource);
 
 					if (resourceEditorInput.encoding) {
 						cachedInput.setPreferredEncoding(resourceEditorInput.encoding);
@@ -1347,7 +1350,7 @@ export class DelegatingEditorService implements IEditorService {
 	isOpen(editor: IEditorInput | IResourceEditorInput): boolean { return this.editorService.isOpen(editor as IResourceEditorInput /* TS fail */); }
 
 	overrideOpenEditor(handler: IOpenEditorOverrideHandler): IDisposable { return this.editorService.overrideOpenEditor(handler); }
-	getEditorOverrides(resource: URI, options: IEditorOptions | undefined, group: IEditorGroup | undefined, id: string | undefined) { return this.editorService.getEditorOverrides(resource, options, group, id); }
+	getEditorOverrides(resource: URI, options: IEditorOptions | undefined, group: IEditorGroup | undefined) { return this.editorService.getEditorOverrides(resource, options, group); }
 
 	invokeWithinEditorContext<T>(fn: (accessor: ServicesAccessor) => T): T { return this.editorService.invokeWithinEditorContext(fn); }
 

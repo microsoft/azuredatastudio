@@ -64,12 +64,12 @@ suite('Dacpac integration test suite', () => {
 
 			assert(extractResult.success === true && extractResult.errorMessage === '', `Extract dacpac should succeed. Expected: there should be no error. Actual Error message: "${extractResult.errorMessage}"`);
 		} finally {
-			await utils.deleteDB(server, databaseName, ownerUri);
+			await utils.tryDeleteDB(server, databaseName, ownerUri);
 		}
 	});
 
 	const bacpac1: string = path.join(__dirname, '..', '..', 'testData', 'Database1.bacpac');
-	test('Import and export bacpac', async function () {
+	test('Import and export bacpac @UNSTABLE@', async function () {
 		const server = await getStandaloneServer();
 		await utils.connectToServer(server);
 
@@ -109,7 +109,7 @@ suite('Dacpac integration test suite', () => {
 			await utils.assertFileGenerationResult(packageFilePath, retryCount);
 			assert(exportResult.success === true && exportResult.errorMessage === '', `Expected: Export bacpac should succeed and there should be no error. Actual Error message: "${exportResult.errorMessage}"`);
 		} finally {
-			await utils.deleteDB(server, databaseName, ownerUri);
+			await utils.tryDeleteDB(server, databaseName, ownerUri);
 		}
 	});
 });

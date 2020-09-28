@@ -4,16 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ExtensionNodeType, TreeItem, Account } from 'azdata';
-import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
+import { TreeItemCollapsibleState, ExtensionContext, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { AzureResourceItemType } from '../../constants';
-import { ApiWrapper } from '../../../apiWrapper';
 import { generateGuid } from '../../utils';
 import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
-import { azureResource } from '../../azure-resource';
+import { azureResource } from 'azureResource';
 
 export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.sqlInstanceContainer';
@@ -21,10 +20,9 @@ export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<az
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
-		apiWrapper: ApiWrapper,
 		private _extensionContext: ExtensionContext
 	) {
-		super(databaseServerService, apiWrapper);
+		super(databaseServerService);
 	}
 
 
@@ -36,7 +34,7 @@ export class SqlInstanceTreeDataProvider extends ResourceTreeDataProviderBase<az
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_instance_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_instance.svg')
 			},
-			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			collapsibleState: workspace.getConfiguration('connection').get<boolean>('dialog.browse') ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServer,
 			payload: {
 				id: generateGuid(),

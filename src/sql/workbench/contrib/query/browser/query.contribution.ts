@@ -341,7 +341,7 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'default': 'utf-8'
 		},
 		'queryEditor.results.saveAsXml.formatted': {
-			'type': 'string',
+			'type': 'boolean',
 			'description': localize('queryEditor.results.saveAsXml.formatted', "When true, XML output will be formatted when saving results as XML"),
 			'default': true
 		},
@@ -364,6 +364,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'type': 'boolean',
 			'description': localize('queryEditor.results.copyRemoveNewLine', "Configuration options for copying multi-line results from the Results View"),
 			'default': true
+		},
+		'queryEditor.results.optimizedTable': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.optimizedTable', "(Experimental) Use a optimized table in the results out. Some functionality might be missing and in the works."),
+			'default': false
 		},
 		'queryEditor.messages.showBatchTime': {
 			'type': 'boolean',
@@ -414,7 +419,8 @@ const initialShortcuts = [
 ];
 
 const shortCutConfiguration: IConfigurationNode = {
-	...queryEditorConfigurationBaseNode
+	...queryEditorConfigurationBaseNode,
+	properties: {}
 };
 
 for (let i = 0; i < 9; i++) {
@@ -432,7 +438,7 @@ for (let i = 0; i < 9; i++) {
 			accessor.get(IInstantiationService).createInstance(RunQueryShortcutAction).run(queryIndex);
 		}
 	});
-	shortCutConfiguration[settingKey] = {
+	shortCutConfiguration.properties[settingKey] = {
 		'type': 'string',
 		'default': defaultVal,
 		'description': localize('queryShortcutDescription',

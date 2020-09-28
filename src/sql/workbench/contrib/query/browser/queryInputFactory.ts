@@ -22,12 +22,14 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories);
 
 export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 	static readonly isDefault = true;
-	static readonly languages = ['sql'];
+	static readonly languages = ['sql', 'kusto'];	//TODO Add language id here for new languages supported in query editor. Make it easier to contribute new extension's languageID
+
 
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
@@ -42,7 +44,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
 			const content = (await activeEditor.resolve()).textEditorModel.getValue();
-			queryEditorInput = await this.queryEditorService.newSqlEditor({ open: false, initalContent: content }) as UntitledQueryEditorInput;
+			queryEditorInput = await this.queryEditorService.newSqlEditor({ resource: this.editorService.isOpen(activeEditor) ? activeEditor.resource : undefined, open: false, initalContent: content }) as UntitledQueryEditorInput;
 		} else {
 			return undefined;
 		}
@@ -130,7 +132,7 @@ export class UntitledQueryEditorInputFactory implements IEditorInputFactory {
 	serialize(editorInput: UntitledQueryEditorInput): string {
 		const factory = editorInputFactoryRegistry.getEditorInputFactory(UntitledTextEditorInput.ID);
 		// only serialize non-dirty files if the user has that setting
-		if (factory && (editorInput.isDirty() || this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles'))) {
+		if (factory && (editorInput.isDirty() || this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').promptToSaveGeneratedFiles)) {
 			return factory.serialize(editorInput.text); // serialize based on the underlying input
 		}
 		return undefined;

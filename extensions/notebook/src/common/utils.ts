@@ -9,7 +9,7 @@ import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
-import { notebookLanguages } from './constants';
+import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey } from './constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -119,19 +119,6 @@ export interface IEndpoint {
 	description: string;
 	endpoint: string;
 	protocol: string;
-}
-
-export function getOSPlatform(): Platform {
-	switch (process.platform) {
-		case 'win32':
-			return Platform.Windows;
-		case 'darwin':
-			return Platform.Mac;
-		case 'linux':
-			return Platform.Linux;
-		default:
-			return Platform.Others;
-	}
 }
 
 export function getOSPlatformId(): string {
@@ -269,6 +256,25 @@ export function debounce(delay: number): Function {
 	});
 }
 
+export function generateGuid(): string {
+	let hexValues: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
+	let oct: string = '';
+	let tmp: number;
+	for (let a: number = 0; a < 4; a++) {
+		tmp = (4294967296 * Math.random()) | 0;
+		oct += hexValues[tmp & 0xF] +
+			hexValues[tmp >> 4 & 0xF] +
+			hexValues[tmp >> 8 & 0xF] +
+			hexValues[tmp >> 12 & 0xF] +
+			hexValues[tmp >> 16 & 0xF] +
+			hexValues[tmp >> 20 & 0xF] +
+			hexValues[tmp >> 24 & 0xF] +
+			hexValues[tmp >> 28 & 0xF];
+	}
+	let clockSequenceHi: string = hexValues[8 + (Math.random() * 4) | 0];
+	return oct.substr(0, 8) + '-' + oct.substr(9, 4) + '-4' + oct.substr(13, 3) + '-' + clockSequenceHi + oct.substr(16, 3) + '-' + oct.substr(19, 12);
+}
+
 // PRIVATE HELPERS /////////////////////////////////////////////////////////
 function outputDataChunk(data: string | Buffer, outputChannel: vscode.OutputChannel, header: string): void {
 	data.toString().split(/\r?\n/)
@@ -316,4 +322,19 @@ export async function getRandomToken(size: number = 24): Promise<string> {
 			resolve(token);
 		});
 	});
+}
+
+export function isBookItemPinned(notebookPath: string): boolean {
+	let pinnedNotebooks: string[] = getPinnedNotebooks();
+	if (pinnedNotebooks?.indexOf(notebookPath) > -1) {
+		return true;
+	}
+	return false;
+}
+
+export function getPinnedNotebooks(): string[] {
+	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
+	let pinnedNotebooks: string[] = config.get(pinnedBooksConfigKey) ?? [];
+
+	return pinnedNotebooks;
 }

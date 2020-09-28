@@ -35,7 +35,10 @@ function buildDriver(browser: playwright.Browser, page: playwright.Page): IDrive
 		getWindowIds: () => {
 			return Promise.resolve([1]);
 		},
-		capturePage: () => Promise.resolve(''),
+		capturePage: async () => {
+			const buffer = await page.screenshot();
+			return buffer.toString('base64');
+		},
 		reloadWindow: (windowId) => Promise.resolve(),
 		exitApplication: () => browser.close(),
 		dispatchKeybinding: async (windowId, keybinding) => {
@@ -143,7 +146,7 @@ function waitForEndpoint(): Promise<string> {
 export function connect(browserType: 'chromium' | 'webkit' | 'firefox' = 'chromium'): Promise<{ client: IDisposable, driver: IDriver }> {
 	return new Promise(async (c) => {
 		const browser = await playwright[browserType].launch({ headless: false });
-		const context = await browser.newContext();
+		const context = await browser.newContext({ permissions: ['clipboard-read'] }); // {{SQL CARBON EDIT}} avoid permissison request
 		const page = await context.newPage();
 		await page.setViewportSize({ width, height });
 		const payloadParam = `[["enableProposedApi",""]]`;

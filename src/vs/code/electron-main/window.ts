@@ -8,14 +8,14 @@ import * as objects from 'vs/base/common/objects';
 import * as nls from 'vs/nls';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { screen, BrowserWindow, systemPreferences, app, TouchBar, nativeImage, Rectangle, Display, TouchBarSegmentedControl, NativeImage, BrowserWindowConstructorOptions, SegmentedControlSegment, nativeTheme, Event } from 'electron';
+import { screen, BrowserWindow, systemPreferences, app, TouchBar, nativeImage, Rectangle, Display, TouchBarSegmentedControl, NativeImage, BrowserWindowConstructorOptions, SegmentedControlSegment, nativeTheme, Event, Details } from 'electron';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { INativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { parseArgs, OPTIONS, ParsedArgs } from 'vs/platform/environment/node/argv';
 import product from 'vs/platform/product/common/product';
-import { IWindowSettings, MenuBarVisibility, getTitleBarStyle, getMenuBarVisibility } from 'vs/platform/windows/common/windows';
+import { IWindowSettings, MenuBarVisibility, getTitleBarStyle, getMenuBarVisibility, zoomLevelToZoomFactor } from 'vs/platform/windows/common/windows';
 import { Disposable, toDisposable } from 'vs/base/common/lifecycle';
 import { isLinux, isMacintosh, isWindows } from 'vs/base/common/platform';
 import { ICodeWindow, IWindowState, WindowMode } from 'vs/platform/windows/electron-main/windows';
@@ -153,6 +153,8 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 			// in case we are maximized or fullscreen, only show later after the call to maximize/fullscreen (see below)
 			const isFullscreenOrMaximized = (this.windowState.mode === WindowMode.Maximized || this.windowState.mode === WindowMode.Fullscreen);
 
+			const windowConfig = this.configurationService.getValue<IWindowSettings>('window');
+
 			const options: BrowserWindowConstructorOptions = {
 				width: this.windowState.width,
 				height: this.windowState.height,
@@ -165,11 +167,23 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 				title: product.nameLong,
 				webPreferences: {
 					preload: URI.parse(this.doGetPreloadUrl()).fsPath,
-					nodeIntegration: true,
-					webviewTag: true,
 					enableWebSQL: false,
 					enableRemoteModule: false,
-					nativeWindowOpen: true
+					nativeWindowOpen: true,
+					webviewTag: true,
+					zoomFactor: zoomLevelToZoomFactor(windowConfig?.zoomLevel),
+					...this.environmentService.sandbox ?
+
+						// Sandbox
+						{
+							sandbox: true,
+							contextIsolation: true
+						} :
+
+						// No Sandbox
+						{
+							nodeIntegration: true
+						}
 				}
 			};
 
@@ -181,8 +195,6 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 			} else if (isWindows && !this.environmentService.isBuilt) {
 				options.icon = path.join(this.environmentService.appRoot, 'resources/win32/code_150x150.png');
 			}
-
-			const windowConfig = this.configurationService.getValue<IWindowSettings>('window');
 
 			if (isMacintosh && !this.useNativeFullScreen()) {
 				options.fullscreenable = false; // enables simple fullscreen mode
@@ -213,6 +225,11 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 			// Create the browser window.
 			this._win = new BrowserWindow(options);
 			this._id = this._win.id;
+
+			// Open devtools if instructed from command line args
+			if (this.environmentService.args['open-devtools'] === true) {
+				this._win.webContents.openDevTools();
+			}
 
 			if (isMacintosh && useCustomTitleStyle) {
 				this._win.setSheetOffset(22); // offset dialogs by the height of the custom title bar if we have any
@@ -319,7 +336,18 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 		return !!this.documentEdited;
 	}
 
-	focus(): void {
+	focus(options?: { force: boolean }): void {
+		// macOS: Electron >6.x changed its behaviour to not
+		// bring the application to the foreground when a window
+		// is focused programmatically. Only via `app.focus` and
+		// the option `steal: true` can you get the previous
+		// behaviour back. The only reason to use this option is
+		// when a window is getting focused while the application
+		// is not in the foreground.
+		if (isMacintosh && options?.force) {
+			app.focus({ steal: true });
+		}
+
 		if (!this._win) {
 			return;
 		}
@@ -386,7 +414,7 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 	private registerListeners(): void {
 
 		// Crashes & Unrsponsive
-		this._win.webContents.on('crashed', () => this.onWindowError(WindowError.CRASHED));
+		this._win.webContents.on('render-process-gone', (event, details) => this.onWindowError(WindowError.CRASHED, details));
 		this._win.on('unresponsive', () => this.onWindowError(WindowError.UNRESPONSIVE));
 
 		// Window close
@@ -518,8 +546,10 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 			this.marketplaceHeadersPromise.then(headers => cb({ cancel: false, requestHeaders: Object.assign(details.requestHeaders, headers) })));
 	}
 
-	private onWindowError(error: WindowError): void {
-		this.logService.error(error === WindowError.CRASHED ? '[VS Code]: renderer process crashed!' : '[VS Code]: detected unresponsive');
+	private onWindowError(error: WindowError.UNRESPONSIVE): void;
+	private onWindowError(error: WindowError.CRASHED, details: Details): void;
+	private onWindowError(error: WindowError, details?: Details): void {
+		this.logService.error(error === WindowError.CRASHED ? `[VS Code]: renderer process crashed (detail: ${details?.reason})` : '[VS Code]: detected unresponsive');
 
 		// If we run extension tests from CLI, showing a dialog is not
 		// very helpful in this case. Rather, we bring down the test run
@@ -573,11 +603,18 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 
 		// Crashed
 		else {
+			let message: string;
+			if (details && details.reason !== 'crashed') {
+				message = nls.localize('appCrashedDetails', "The window has crashed (reason: '{0}')", details?.reason);
+			} else {
+				message = nls.localize('appCrashed', "The window has crashed", details?.reason);
+			}
+
 			this.dialogMainService.showMessageBox({
 				title: product.nameLong,
 				type: 'warning',
 				buttons: [mnemonicButtonLabel(nls.localize({ key: 'reopen', comment: ['&& denotes a mnemonic'] }, "&&Reopen")), mnemonicButtonLabel(nls.localize({ key: 'close', comment: ['&& denotes a mnemonic'] }, "&&Close"))],
-				message: nls.localize('appCrashed', "The window has crashed"),
+				message,
 				detail: nls.localize('appCrashedDetail', "We are sorry for the inconvenience! You can reopen the window to continue where you left off."),
 				noLink: true
 			}, this._win).then(result => {
@@ -693,7 +730,7 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 			this.showTimeoutHandle = setTimeout(() => {
 				if (this._win && !this._win.isVisible() && !this._win.isMinimized()) {
 					this._win.show();
-					this._win.focus();
+					this.focus({ force: true });
 					this._win.webContents.openDevTools();
 				}
 			}, 10000);
@@ -748,11 +785,8 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 		windowConfiguration.fullscreen = this.isFullScreen;
 
 		// Set Accessibility Config
-		let autoDetectHighContrast = true;
-		if (windowConfig?.autoDetectHighContrast === false) {
-			autoDetectHighContrast = false;
-		}
-		windowConfiguration.highContrast = isWindows && autoDetectHighContrast && nativeTheme.shouldUseInvertedColorScheme;
+		windowConfiguration.highContrast = nativeTheme.shouldUseInvertedColorScheme || nativeTheme.shouldUseHighContrastColors;
+		windowConfiguration.autoDetectHighContrast = windowConfig?.autoDetectHighContrast ?? true;
 		windowConfiguration.accessibilitySupport = app.accessibilitySupportEnabled;
 
 		// Title style related
@@ -793,7 +827,14 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 	}
 
 	private doGetUrl(config: object): string {
-		return `${require.toUrl('vs/code/electron-browser/workbench/workbench.html')}?config=${encodeURIComponent(JSON.stringify(config))}`;
+		let workbench: string;
+		if (this.environmentService.sandbox) {
+			workbench = 'vs/code/electron-sandbox/workbench/workbench.html';
+		} else {
+			workbench = 'vs/code/electron-browser/workbench/workbench.html';
+		}
+
+		return `${require.toUrl(workbench)}?config=${encodeURIComponent(JSON.stringify(config))}`;
 	}
 
 	private doGetPreloadUrl(): string {

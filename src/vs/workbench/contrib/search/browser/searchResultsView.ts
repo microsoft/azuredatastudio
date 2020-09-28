@@ -31,14 +31,14 @@ import { fillResourceDataTransfers } from 'vs/workbench/browser/dnd';
 import { ElementsDragAndDropData } from 'vs/base/browser/ui/list/listView';
 import { URI } from 'vs/base/common/uri';
 
-interface IFolderMatchTemplate {
+export interface IFolderMatchTemplate {	// {{SQL CARBON EDIT}}
 	label: IResourceLabel;
 	badge: CountBadge;
 	actions: ActionBar;
 	disposables: IDisposable[];
 }
 
-interface IFileMatchTemplate {
+export interface IFileMatchTemplate {	// {{SQL CARBON EDIT}}
 	el: HTMLElement;
 	label: IResourceLabel;
 	badge: CountBadge;
@@ -46,7 +46,7 @@ interface IFileMatchTemplate {
 	disposables: IDisposable[];
 }
 
-interface IMatchTemplate {
+export interface IMatchTemplate {	// {{SQL CARBON EDIT}}
 	parent: HTMLElement;
 	before: HTMLElement;
 	match: HTMLElement;

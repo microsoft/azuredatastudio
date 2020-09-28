@@ -22,12 +22,12 @@ export interface Tenant {
 	/**
 	 * Identifier of the user in the tenant
 	 */
-	userId: string;
+	userId?: string;
 
 	/**
 	 * The category the user has set their tenant to (e.g. Home Tenant)
 	 */
-	tenantCategory: string;
+	tenantCategory?: string;
 }
 
 /**
@@ -65,11 +65,6 @@ interface Settings {
 	clientId?: string;
 
 	/**
-	 * Identifier of the resource to request when signing in
-	 */
-	signInResourceId?: string;
-
-	/**
 	 * Information that describes the Microsoft resource management resource
 	 */
 	microsoftResource?: Resource
@@ -98,6 +93,11 @@ interface Settings {
 	 * Information that describes the Azure Key Vault resource
 	 */
 	azureKeyVaultResource?: Resource;
+
+	/**
+	 * Information that describes the Azure Dev Ops resource
+	 */
+	azureDevOpsResource?: Resource;
 
 	/**
 	 * A list of tenant IDs to authenticate against. If defined, then these IDs will be used
@@ -172,10 +172,6 @@ interface AzureAccountProperties {
 	 */
 	tenants: Tenant[];
 
-	/**
-	 * A list of subscriptions the user belongs to
-	 */
-	subscriptions?: Subscription[];
 }
 
 export interface Subscription {
@@ -225,7 +221,7 @@ export interface AzureAccountSecurityToken {
  */
 export type AzureAccountSecurityTokenCollection = { [tenantId: string]: AzureAccountSecurityToken };
 
-export interface Deferred<T> {
+export interface Deferred<T, E extends Error = Error> {
 	resolve: (result: T | Promise<T>) => void;
-	reject: (reason: any) => void;
+	reject: (reason: E) => void;
 }

@@ -45,10 +45,43 @@ export class ModifyColumnsPage extends ImportPage {
 		{ name: 'varchar(50)', displayName: 'varchar(50)' },
 		{ name: 'varchar(MAX)', displayName: 'varchar(MAX)' }
 	];
-	private table: azdata.DeclarativeTableComponent;
-	private loading: azdata.LoadingComponent;
-	private text: azdata.TextComponent;
-	private form: azdata.FormContainer;
+
+	private _table: azdata.DeclarativeTableComponent;
+	private _loading: azdata.LoadingComponent;
+	private _text: azdata.TextComponent;
+	private _form: azdata.FormContainer;
+
+	public get table(): azdata.DeclarativeTableComponent {
+		return this._table;
+	}
+
+	public set table(table: azdata.DeclarativeTableComponent) {
+		this._table = table;
+	}
+
+	public get loading(): azdata.LoadingComponent {
+		return this._loading;
+	}
+
+	public set loading(loading: azdata.LoadingComponent) {
+		this._loading = loading;
+	}
+
+	public get text(): azdata.TextComponent {
+		return this._text;
+	}
+
+	public set text(text: azdata.TextComponent) {
+		this._text = text;
+	}
+
+	public get form(): azdata.FormContainer {
+		return this._form;
+	}
+
+	public set form(form: azdata.FormContainer) {
+		this._form = form;
+	}
 
 	private static convertMetadata(column: ColumnMetadata): any[] {
 		return [column.columnName, column.dataType, false, column.nullable];

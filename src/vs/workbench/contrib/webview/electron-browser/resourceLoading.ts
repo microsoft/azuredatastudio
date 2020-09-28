@@ -4,17 +4,23 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { equals } from 'vs/base/common/arrays';
+import { streamToBuffer } from 'vs/base/common/buffer';
 import { Disposable, toDisposable } from 'vs/base/common/lifecycle';
-import { URI } from 'vs/base/common/uri';
+import { Schemas } from 'vs/base/common/network';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { createChannelSender } from 'vs/base/parts/ipc/common/ipc';
+import { ipcRenderer } from 'vs/base/parts/sandbox/electron-sandbox/globals';
 import * as modes from 'vs/editor/common/modes';
+import { IElectronService } from 'vs/platform/electron/electron-sandbox/electron';
+import { IFileService } from 'vs/platform/files/common/files';
 import { IMainProcessService } from 'vs/platform/ipc/electron-sandbox/mainProcessService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRemoteAuthorityResolverService } from 'vs/platform/remote/common/remoteAuthorityResolver';
+import { IRequestService } from 'vs/platform/request/common/request';
+import { loadLocalResource, WebviewResourceResponse } from 'vs/platform/webview/common/resourceLoader';
 import { IWebviewManagerService } from 'vs/platform/webview/common/webviewManagerService';
 import { WebviewContentOptions, WebviewExtensionDescription } from 'vs/workbench/contrib/webview/browser/webview';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { Schemas } from 'vs/base/common/network';
 
 /**
  * Try to rewrite `vscode-resource:` urls in html
@@ -52,11 +58,13 @@ export class WebviewResourceRequestManager extends Disposable {
 		private readonly id: string,
 		private readonly extension: WebviewExtensionDescription | undefined,
 		initialContentOptions: WebviewContentOptions,
-		getWebContentsId: Promise<number | undefined>,
 		@ILogService private readonly _logService: ILogService,
 		@IRemoteAuthorityResolverService remoteAuthorityResolverService: IRemoteAuthorityResolverService,
 		@IWorkbenchEnvironmentService environmentService: IWorkbenchEnvironmentService,
 		@IMainProcessService mainProcessService: IMainProcessService,
+		@IElectronService electronService: IElectronService,
+		@IFileService fileService: IFileService,
+		@IRequestService requestService: IRequestService,
 	) {
 		super();
 
@@ -70,16 +78,13 @@ export class WebviewResourceRequestManager extends Disposable {
 		const remoteAuthority = environmentService.configuration.remoteAuthority;
 		const remoteConnectionData = remoteAuthority ? remoteAuthorityResolverService.getConnectionData(remoteAuthority) : null;
 
-		this._ready = getWebContentsId.then(async (webContentsId) => {
-			this._logService.debug(`WebviewResourceRequestManager(${this.id}): did-start-loading`);
-
-			await this._webviewManagerService.registerWebview(this.id, webContentsId, {
-				extensionLocation: this.extension?.location.toJSON(),
-				localResourceRoots: this._localResourceRoots.map(x => x.toJSON()),
-				remoteConnectionData: remoteConnectionData,
-				portMappings: this._portMappings,
-			});
-
+		this._logService.debug(`WebviewResourceRequestManager(${this.id}): did-start-loading`);
+		this._ready = this._webviewManagerService.registerWebview(this.id, electronService.windowId, {
+			extensionLocation: this.extension?.location.toJSON(),
+			localResourceRoots: this._localResourceRoots.map(x => x.toJSON()),
+			remoteConnectionData: remoteConnectionData,
+			portMappings: this._portMappings,
+		}).then(() => {
 			this._logService.debug(`WebviewResourceRequestManager(${this.id}): did register`);
 		});
 
@@ -93,6 +98,30 @@ export class WebviewResourceRequestManager extends Disposable {
 		}
 
 		this._register(toDisposable(() => this._webviewManagerService.unregisterWebview(this.id)));
+
+		const loadResourceChannel = `vscode:loadWebviewResource-${id}`;
+		const loadResourceListener = async (_event: any, requestId: number, resource: UriComponents) => {
+			try {
+				const response = await loadLocalResource(URI.revive(resource), {
+					extensionLocation: this.extension?.location,
+					roots: this._localResourceRoots,
+					remoteConnectionData: remoteConnectionData,
+				}, {
+					readFileStream: (resource) => fileService.readFileStream(resource).then(x => x.value),
+				}, requestService);
+
+				if (response.type === WebviewResourceResponse.Type.Success) {
+					const buffer = await streamToBuffer(response.stream);
+					return this._webviewManagerService.didLoadResource(requestId, buffer);
+				}
+			} catch {
+				// Noop
+			}
+			this._webviewManagerService.didLoadResource(requestId, undefined);
+		};
+
+		ipcRenderer.on(loadResourceChannel, loadResourceListener);
+		this._register(toDisposable(() => ipcRenderer.removeListener(loadResourceChannel, loadResourceListener)));
 	}
 
 	public update(options: WebviewContentOptions) {

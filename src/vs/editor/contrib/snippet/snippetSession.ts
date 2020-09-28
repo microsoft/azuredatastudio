@@ -23,6 +23,7 @@ import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { EditorOption } from 'vs/editor/common/config/editorOptions';
+import { OvertypingCapturer } from 'vs/editor/contrib/suggest/suggestOvertypingCapturer';
 
 registerThemingParticipant((theme, collector) => {
 
@@ -174,9 +175,9 @@ export class OneSnippet {
 			}
 
 			return selections;
-		})!;
+		});
 
-		return !couldSkipThisPlaceholder ? newSelections : this.move(fwd);
+		return !couldSkipThisPlaceholder ? newSelections ?? [] : this.move(fwd);
 	}
 
 	private _hasPlaceholderBeenCollapsed(placeholder: Placeholder): boolean {
@@ -319,13 +320,15 @@ export interface ISnippetSessionInsertOptions {
 	overwriteAfter: number;
 	adjustWhitespace: boolean;
 	clipboardText: string | undefined;
+	overtypingCapturer: OvertypingCapturer | undefined;
 }
 
 const _defaultOptions: ISnippetSessionInsertOptions = {
 	overwriteBefore: 0,
 	overwriteAfter: 0,
 	adjustWhitespace: true,
-	clipboardText: undefined
+	clipboardText: undefined,
+	overtypingCapturer: undefined
 };
 
 export class SnippetSession {
@@ -382,7 +385,7 @@ export class SnippetSession {
 		return selection;
 	}
 
-	static createEditsAndSnippets(editor: IActiveCodeEditor, template: string, overwriteBefore: number, overwriteAfter: number, enforceFinalTabstop: boolean, adjustWhitespace: boolean, clipboardText: string | undefined): { edits: IIdentifiedSingleEditOperation[], snippets: OneSnippet[] } {
+	static createEditsAndSnippets(editor: IActiveCodeEditor, template: string, overwriteBefore: number, overwriteAfter: number, enforceFinalTabstop: boolean, adjustWhitespace: boolean, clipboardText: string | undefined, overtypingCapturer: OvertypingCapturer | undefined): { edits: IIdentifiedSingleEditOperation[], snippets: OneSnippet[] } {
 		const edits: IIdentifiedSingleEditOperation[] = [];
 		const snippets: OneSnippet[] = [];
 
@@ -449,8 +452,8 @@ export class SnippetSession {
 			snippet.resolveVariables(new CompositeSnippetVariableResolver([
 				modelBasedVariableResolver,
 				new ClipboardBasedVariableResolver(readClipboardText, idx, indexedSelections.length, editor.getOption(EditorOption.multiCursorPaste) === 'spread'),
-				new SelectionBasedVariableResolver(model, selection),
-				new CommentBasedVariableResolver(model),
+				new SelectionBasedVariableResolver(model, selection, idx, overtypingCapturer),
+				new CommentBasedVariableResolver(model, selection),
 				new TimeBasedVariableResolver,
 				new WorkspaceBasedVariableResolver(workspaceService),
 				new RandomBasedVariableResolver,
@@ -496,18 +499,16 @@ export class SnippetSession {
 		}
 
 		// make insert edit and start with first selections
-		const { edits, snippets } = SnippetSession.createEditsAndSnippets(this._editor, this._template, this._options.overwriteBefore, this._options.overwriteAfter, false, this._options.adjustWhitespace, this._options.clipboardText);
+		const { edits, snippets } = SnippetSession.createEditsAndSnippets(this._editor, this._template, this._options.overwriteBefore, this._options.overwriteAfter, false, this._options.adjustWhitespace, this._options.clipboardText, this._options.overtypingCapturer);
 		this._snippets = snippets;
 
 		this._editor.executeEdits('snippet', edits, undoEdits => {
 			if (this._snippets[0].hasPlaceholder) {
 				return this._move(true);
 			} else {
-				return (
-					undoEdits
-						.filter(edit => !!edit.identifier) // only use our undo edits
-						.map(edit => Selection.fromPositions(edit.range.getEndPosition()))
-				);
+				return undoEdits
+					.filter(edit => !!edit.identifier) // only use our undo edits
+					.map(edit => Selection.fromPositions(edit.range.getEndPosition()));
 			}
 		});
 		this._editor.revealRange(this._editor.getSelections()[0]);
@@ -518,7 +519,7 @@ export class SnippetSession {
 			return;
 		}
 		this._templateMerges.push([this._snippets[0]._nestingLevel, this._snippets[0]._placeholderGroupsIdx, template]);
-		const { edits, snippets } = SnippetSession.createEditsAndSnippets(this._editor, template, options.overwriteBefore, options.overwriteAfter, true, options.adjustWhitespace, options.clipboardText);
+		const { edits, snippets } = SnippetSession.createEditsAndSnippets(this._editor, template, options.overwriteBefore, options.overwriteAfter, true, options.adjustWhitespace, options.clipboardText, options.overtypingCapturer);
 
 		this._editor.executeEdits('snippet', edits, undoEdits => {
 			for (const snippet of this._snippets) {

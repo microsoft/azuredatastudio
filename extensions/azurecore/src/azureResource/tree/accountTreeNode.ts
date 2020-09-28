@@ -3,15 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TreeItem, TreeItemCollapsibleState } from 'vscode';
-import { Account, NodeInfo, AzureResource } from 'azdata';
+import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import { TokenCredentials } from '@azure/ms-rest-js';
 
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { AppContext } from '../../appContext';
-import { azureResource } from '../azure-resource';
+import { azureResource } from 'azureResource';
 import { TreeNode } from '../treeNode';
 import { AzureResourceCredentialError } from '../errors';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
@@ -20,11 +20,12 @@ import { AzureResourceSubscriptionTreeNode } from './subscriptionTreeNode';
 import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
-import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureResourceTenantService } from '../../azureResource/interfaces';
+import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../../azureResource/interfaces';
+import { AzureAccount } from '../../account-provider/interfaces';
 
 export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
-		public readonly account: Account,
+		public readonly account: AzureAccount,
 		appContext: AppContext,
 		treeChangeHandler: IAzureResourceTreeChangeHandler
 	) {
@@ -32,7 +33,6 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 
 		this._subscriptionService = this.appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
 		this._subscriptionFilterService = this.appContext.getService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService);
-		this._tenantService = this.appContext.getService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService);
 
 		this._id = `account_${this.account.key.accountId}`;
 		this.setCacheKey(`${this._id}.subscriptions`);
@@ -42,15 +42,13 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	public async getChildren(): Promise<TreeNode[]> {
 		try {
 			let subscriptions: azureResource.AzureResourceSubscription[] = [];
-			const tokens = await this.appContext.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
 
 			if (this._isClearingCache) {
 				try {
 					for (const tenant of this.account.properties.tenants) {
-						const token = tokens[tenant.id].token;
-						const tokenType = tokens[tenant.id].tokenType;
+						const token = await azdata.accounts.getAccountSecurityToken(this.account, tenant.id, azdata.AzureResource.ResourceManagement);
 
-						subscriptions.push(...(await this._subscriptionService.getSubscriptions(this.account, new TokenCredentials(token, tokenType)) || <azureResource.AzureResourceSubscription[]>[]));
+						subscriptions.push(...(await this._subscriptionService.getSubscriptions(this.account, new TokenCredentials(token.token, token.tokenType), tenant.id) || <azureResource.AzureResourceSubscription[]>[]));
 					}
 				} catch (error) {
 					throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
@@ -80,8 +78,8 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 				return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.noSubscriptionsLabel, this)];
 			} else {
 				// Filter out everything that we can't authenticate to.
-				subscriptions = subscriptions.filter(s => {
-					const token = tokens[s.id];
+				subscriptions = subscriptions.filter(async s => {
+					const token = await azdata.accounts.getAccountSecurityToken(this.account, s.tenant, azdata.AzureResource.ResourceManagement);
 					if (!token) {
 						console.info(`Account does not have permissions to view subscription ${JSON.stringify(s)}.`);
 						return false;
@@ -90,16 +88,13 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 				});
 
 				let subTreeNodes = await Promise.all(subscriptions.map(async (subscription) => {
-					const token = tokens[subscription.id];
-					const tenantId = await this._tenantService.getTenantId(subscription, this.account, new TokenCredentials(token.token, token.tokenType));
-
-					return new AzureResourceSubscriptionTreeNode(this.account, subscription, tenantId, this.appContext, this.treeChangeHandler, this);
+					return new AzureResourceSubscriptionTreeNode(this.account, subscription, subscription.tenant, this.appContext, this.treeChangeHandler, this);
 				}));
 				return subTreeNodes.sort((a, b) => a.subscription.name.localeCompare(b.subscription.name));
 			}
 		} catch (error) {
 			if (error instanceof AzureResourceCredentialError) {
-				this.appContext.apiWrapper.executeCommand('azure.resource.signin');
+				vscode.commands.executeCommand('azure.resource.signin');
 			}
 			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
 		}
@@ -109,8 +104,8 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 		return this.getCache<azureResource.AzureResourceSubscription[]>();
 	}
 
-	public getTreeItem(): TreeItem | Promise<TreeItem> {
-		const item = new TreeItem(this._label, TreeItemCollapsibleState.Collapsed);
+	public getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
+		const item = new vscode.TreeItem(this._label, vscode.TreeItemCollapsibleState.Collapsed);
 		item.id = this._id;
 		item.contextValue = AzureResourceItemType.account;
 		item.iconPath = {
@@ -120,7 +115,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 		return item;
 	}
 
-	public getNodeInfo(): NodeInfo {
+	public getNodeInfo(): azdata.NodeInfo {
 		return {
 			label: this._label,
 			isLeaf: false,
@@ -155,7 +150,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	}
 
 	private generateLabel(): string {
-		let label = `${this.account.displayInfo.displayName} (${this.account.key.accountId})`;
+		let label = this.account.displayInfo.displayName;
 
 		if (this._totalSubscriptionCount !== 0) {
 			label += ` (${this._selectedSubscriptionCount} / ${this._totalSubscriptionCount} subscriptions)`;
@@ -166,7 +161,6 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 
 	private _subscriptionService: IAzureResourceSubscriptionService = undefined;
 	private _subscriptionFilterService: IAzureResourceSubscriptionFilterService = undefined;
-	private _tenantService: IAzureResourceTenantService = undefined;
 
 	private _id: string = undefined;
 	private _label: string = undefined;

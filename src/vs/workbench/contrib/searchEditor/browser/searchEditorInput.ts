@@ -110,9 +110,9 @@ export class SearchEditorInput extends EditorInput {
 
 		const input = this;
 		const workingCopyAdapter = new class implements IWorkingCopy {
-			readonly resource = input.backingUri ?? input.modelUri;
+			readonly resource = input.modelUri;
 			get name() { return input.getName(); }
-			readonly capabilities = input.isUntitled() ? WorkingCopyCapabilities.Untitled : 0;
+			readonly capabilities = input.isUntitled() ? WorkingCopyCapabilities.Untitled : WorkingCopyCapabilities.None;
 			readonly onDidChangeDirty = input.onDidChangeDirty;
 			readonly onDidChangeContent = input.onDidChangeContent;
 			isDirty(): boolean { return input.isDirty(); }
@@ -305,10 +305,10 @@ export const getOrMakeSearchEditorInput = (
 	const priorConfig: SearchConfiguration = reuseOldSettings ? new Memento(SearchEditorInput.ID, storageService).getMemento(StorageScope.WORKSPACE).searchConfig : {};
 	const defaultConfig = defaultSearchConfig();
 
-	let config = { ...defaultConfig, ...priorConfig, ...existingData.config };
+	const config = { ...defaultConfig, ...priorConfig, ...existingData.config };
 
 	if (defaultNumberOfContextLines !== null && defaultNumberOfContextLines !== undefined) {
-		config.contextLines = defaultNumberOfContextLines;
+		config.contextLines = existingData.config.contextLines ?? defaultNumberOfContextLines;
 	}
 
 	if (existingData.text) {

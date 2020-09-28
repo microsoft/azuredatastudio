@@ -8,8 +8,8 @@ import 'vs/css!./media/icons';
 
 import { ActionBar } from './actionbar';
 
-import { IActionRunner, IAction } from 'vs/base/common/actions';
-import { ActionsOrientation, IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IActionRunner, IAction, IActionViewItem } from 'vs/base/common/actions';
+import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IToolBarOptions } from 'vs/base/browser/ui/toolbar/toolbar';
 import { OverflowActionBar } from 'sql/base/browser/ui/taskbar/overflowActionbar';
 

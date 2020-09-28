@@ -164,8 +164,8 @@ export type TreeItemHandle = string;
 // {{SQL CARBON EDIT}}
 export class TreeViewDataProvider implements ITreeViewDataProvider {
 
-	private readonly itemsMap: Map<TreeItemHandle, ITreeItem> = new Map<TreeItemHandle, ITreeItem>();
-	private hasResolve: Promise<boolean>;
+	protected readonly itemsMap: Map<TreeItemHandle, ITreeItem> = new Map<TreeItemHandle, ITreeItem>(); // {{SQL CARBON EDIT}} For use by Component Tree View
+	protected hasResolve: Promise<boolean>; // {{SQL CARBON EDIT}} For use by Component Tree View
 
 	// {{SQL CARBON EDIT}}
 	constructor(protected readonly treeViewId: string,
@@ -219,16 +219,23 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 		return this.itemsMap.size === 0;
 	}
 
-	private async postGetChildren(elements: ITreeItem[]): Promise<ResolvableTreeItem[]> {
-		const result: ResolvableTreeItem[] = [];
+	protected async postGetChildren(elements: ITreeItem[]): Promise<ITreeItem[]> { // {{SQL CARBON EDIT}} For use by Component Tree View
+		const result: ITreeItem[] = []; //{{SQL CARBON EDIT}}
 		const hasResolve = await this.hasResolve;
 		if (elements) {
 			for (const element of elements) {
-				const resolvable = new ResolvableTreeItem(element, hasResolve ? () => {
-					return this._proxy.$resolve(this.treeViewId, element.handle);
-				} : undefined);
-				this.itemsMap.set(element.handle, resolvable);
-				result.push(resolvable);
+				// {{SQL CARBON EDIT}} We rely on custom properties on the tree items in a number of places so creating a new item here was
+				// {{SQL CARBON EDIT}} clearing those. Revert to old behavior if the provider doesn't support a resolve (our normal case)
+				if (hasResolve) {
+					const resolvable = new ResolvableTreeItem(element, hasResolve ? () => {
+						return this._proxy.$resolve(this.treeViewId, element.handle);
+					} : undefined);
+					this.itemsMap.set(element.handle, resolvable);
+					result.push(resolvable);
+				} else {
+					this.itemsMap.set(element.handle, element);
+					result.push(element);
+				}
 			}
 		}
 		return result;

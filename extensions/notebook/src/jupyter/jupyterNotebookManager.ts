@@ -8,14 +8,13 @@ import * as vscode from 'vscode';
 import { ServerConnection, SessionManager } from '@jupyterlab/services';
 
 import { JupyterSessionManager } from './jupyterSessionManager';
-import { ApiWrapper } from '../common/apiWrapper';
 import { LocalJupyterServerManager } from './jupyterServerManager';
 
 export class JupyterNotebookManager implements nb.NotebookManager, vscode.Disposable {
 	protected _serverSettings: ServerConnection.ISettings;
 	private _sessionManager: JupyterSessionManager;
 
-	constructor(private _serverManager: LocalJupyterServerManager, sessionManager?: JupyterSessionManager, private apiWrapper: ApiWrapper = new ApiWrapper()) {
+	constructor(private _serverManager: LocalJupyterServerManager, sessionManager?: JupyterSessionManager) {
 		let pythonEnvVarPath = this._serverManager && this._serverManager.jupyterServerInstallation && this._serverManager.jupyterServerInstallation.pythonEnvVarPath;
 		this._sessionManager = sessionManager || new JupyterSessionManager(pythonEnvVarPath);
 		this._serverManager.onServerStarted(() => {
@@ -49,7 +48,7 @@ export class JupyterNotebookManager implements nb.NotebookManager, vscode.Dispos
 			this._sessionManager.shutdownAll().then(() => this._sessionManager.dispose());
 		}
 		if (this._serverManager) {
-			this._serverManager.stopServer().then(success => undefined, error => this.apiWrapper.showErrorMessage(error));
+			this._serverManager.stopServer().then(success => undefined, error => vscode.window.showErrorMessage(error));
 		}
 	}
 }

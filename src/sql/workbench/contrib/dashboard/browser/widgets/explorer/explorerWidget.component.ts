@@ -19,7 +19,6 @@ import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { IInputOptions, InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Delayer } from 'vs/base/common/async';
-import { assign } from 'vs/base/common/objects';
 import { isStringArray } from 'vs/base/common/types';
 import 'vs/css!./media/explorerWidget';
 import * as nls from 'vs/nls';
@@ -30,6 +29,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { getFlavor } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 
 @Component({
 	selector: 'explorer-widget',
@@ -67,8 +67,10 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 
 	ngOnInit() {
 		this._inited = true;
-
-		const placeholderLabel = this._config.context === 'database' ? nls.localize('seachObjects', "Search by name of type (t:, v:, f:, or sp:)") : nls.localize('searchDatabases', "Search databases");
+		const flavor = getFlavor(this._bootstrap.connectionManagementService.connectionInfo.serverInfo, this.logService, this._bootstrap.connectionManagementService.connectionInfo.providerId);
+		const placeholderLabel = this._config.context === 'database' ?
+			flavor && flavor.objectListHintText ? flavor.objectListHintText : nls.localize('seachObjects', "Search by name of type (t:, v:, f:, or sp:)")
+			: flavor && flavor.databaseListHintText ? flavor.databaseListHintText : nls.localize('searchDatabases', "Search databases");
 
 		const inputOptions: IInputOptions = {
 			placeholder: placeholderLabel,
@@ -101,7 +103,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			this._register(subscriptionToDisposable(this._bootstrap.metadataService.metadata.subscribe(
 				data => {
 					if (data) {
-						const objectData = ObjectMetadataWrapper.createFromObjectMetadata(data.objectMetadata);
+						const objectData = data.objectMetadata.map(o => new ObjectMetadataWrapper(o));
 						objectData.sort(ObjectMetadataWrapper.sort);
 						this.updateTable(objectData);
 					}
@@ -152,7 +154,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 
 		const currentProfile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
 		this.updateTable(data.map(d => {
-			const item = assign({}, d.options);
+			const item = Object.assign({}, d.options);
 			const profile = new ConnectionProfile(this.capabilitiesService, currentProfile);
 			profile.databaseName = d.options[NameProperty];
 			item[ConnectionProfilePropertyName] = profile;

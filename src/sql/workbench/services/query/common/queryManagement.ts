@@ -10,7 +10,6 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as azdata from 'azdata';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { Event, Emitter } from 'vs/base/common/event';
-import { keys } from 'vs/base/common/map';
 import { assign } from 'vs/base/common/objects';
 import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import EditQueryRunner from 'sql/workbench/services/editData/common/editQueryRunner';
@@ -40,9 +39,10 @@ export interface IQueryManagementService {
 	isProviderRegistered(providerId: string): boolean;
 	getRegisteredProviders(): string[];
 	registerRunner(runner: QueryRunner, uri: string): void;
+	getRunner(uri: string): QueryRunner | undefined;
 
 	cancelQuery(ownerUri: string): Promise<QueryCancelResult>;
-	runQuery(ownerUri: string, range: IRange, runOptions?: ExecutionPlanOptions): Promise<void>;
+	runQuery(ownerUri: string, range?: IRange, runOptions?: ExecutionPlanOptions): Promise<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Promise<void>;
 	runQueryString(ownerUri: string, queryString: string): Promise<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
@@ -80,7 +80,7 @@ export interface IQueryManagementService {
  */
 export interface IQueryRequestHandler {
 	cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult>;
-	runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: ExecutionPlanOptions): Promise<void>;
+	runQuery(ownerUri: string, selection?: azdata.ISelectionData, runOptions?: ExecutionPlanOptions): Promise<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Promise<void>;
 	runQueryString(ownerUri: string, queryString: string): Promise<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
@@ -139,6 +139,10 @@ export class QueryManagementService implements IQueryManagementService {
 		}
 	}
 
+	public getRunner(uri: string): QueryRunner | undefined {
+		return this._queryRunners.get(uri);
+	}
+
 	// Handles logic to run the given handlerCallback at the appropriate time. If the given runner is
 	// undefined, the handlerCallback is put on the _handlerCallbackQueue to be run once the runner is set
 	// public for testing only
@@ -175,7 +179,7 @@ export class QueryManagementService implements IQueryManagementService {
 	}
 
 	public getRegisteredProviders(): string[] {
-		return Array.from(keys(this._requestHandlers));
+		return Array.from(this._requestHandlers.keys());
 	}
 
 	private addTelemetry(eventName: string, ownerUri: string, runOptions?: ExecutionPlanOptions): void {

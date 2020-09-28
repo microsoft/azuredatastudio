@@ -8,11 +8,10 @@ import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
 import 'mocha';
 
-import { azureResource } from '../../azureResource/azure-resource';
+import { azureResource } from 'azureResource';
 import { AzureResourceService } from '../../azureResource/resourceService';
 import { AzureResourceResourceTreeNode } from '../../azureResource/resourceTreeNode';
 import { AppContext } from '../../appContext';
-import { ApiWrapper } from '../../apiWrapper';
 import { AzureResourceServiceNames } from '../../azureResource/constants';
 import settings from '../../account-provider/providerSettings';
 import { AzureAccount } from '../../account-provider/interfaces';
@@ -37,12 +36,15 @@ const mockAccount: AzureAccount = {
 	isStale: false
 };
 
+const mockTenantId: string = 'mock_tenant';
+const mockSubscriptionId = 'mock_subscription';
+
 const mockSubscription: azureResource.AzureResourceSubscription = {
-	id: 'mock_subscription',
-	name: 'mock subscription'
+	id: mockSubscriptionId,
+	name: 'mock subscription',
+	tenant: mockTenantId
 };
 
-const mockTenantId: string = 'mock_tenant';
 
 const mockResourceProviderId: string = 'mock_resource_provider';
 
@@ -106,7 +108,7 @@ describe('AzureResourceResourceTreeNode.info', function (): void {
 		resourceService.registerResourceProvider(mockResourceProvider.object);
 		resourceService.areResourceProvidersLoaded = true;
 
-		appContext = new AppContext(undefined, new ApiWrapper());
+		appContext = new AppContext(undefined);
 		appContext.registerService(AzureResourceServiceNames.resourceService, resourceService);
 	});
 
@@ -146,7 +148,7 @@ describe('AzureResourceResourceTreeNode.getChildren', function (): void {
 		resourceService.registerResourceProvider(mockResourceProvider.object);
 		resourceService.areResourceProvidersLoaded = true;
 
-		appContext = new AppContext(undefined, new ApiWrapper());
+		appContext = new AppContext(undefined);
 		appContext.registerService(AzureResourceServiceNames.resourceService, resourceService);
 	});
 

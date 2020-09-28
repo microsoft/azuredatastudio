@@ -89,10 +89,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return Promise.all(promises).then(() => resultAccounts);
 	}
 
-	public $getSecurityToken(account: azdata.Account, resource?: azdata.AzureResource): Thenable<{}> {
-		if (resource === undefined) {
-			resource = AzureResource.ResourceManagement;
-		}
+	public $getSecurityToken(account: azdata.Account, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<{}> {
 		return this.$getAllAccounts().then(() => {
 			for (const handle in this._accounts) {
 				const providerHandle = parseInt(handle);
@@ -104,6 +101,20 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 			throw new Error(`Account ${account.key.accountId} not found.`);
 		});
 	}
+
+	public $getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<{ token: string }> {
+		return this.$getAllAccounts().then(() => {
+			for (const handle in this._accounts) {
+				const providerHandle = parseInt(handle);
+				if (firstIndex(this._accounts[handle], (acct) => acct.key.accountId === account.key.accountId) !== -1) {
+					return this._withProvider(providerHandle, (provider: azdata.AccountProvider) => provider.getAccountSecurityToken(account, tenant, resource));
+				}
+			}
+
+			throw new Error(`Account ${account.key.accountId} not found.`);
+		});
+	}
+
 
 	public get onDidChangeAccounts(): Event<azdata.DidChangeAccountsParams> {
 		return this._onDidChangeAccounts.event;

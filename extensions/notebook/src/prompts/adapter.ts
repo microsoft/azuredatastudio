@@ -4,14 +4,14 @@
 import PromptFactory from './factory';
 import EscapeException from './escapeException';
 import { IQuestion, IPrompter } from './question';
-import { ApiWrapper } from '../common/apiWrapper';
+import * as vscode from 'vscode';
 
 // Supports simple pattern for prompting for user input and acting on this
 export default class CodeAdapter implements IPrompter {
 
-	public promptSingle<T>(question: IQuestion, apiWrapper?: ApiWrapper): Promise<T> {
+	public promptSingle<T>(question: IQuestion): Promise<T> {
 		let questions: IQuestion[] = [question];
-		return this.prompt(questions, apiWrapper).then((answers: { [key: string]: T }) => {
+		return this.prompt(questions).then((answers: { [key: string]: T }) => {
 			if (answers) {
 				let response: T = answers[question.name];
 				return response || undefined;
@@ -20,7 +20,7 @@ export default class CodeAdapter implements IPrompter {
 		});
 	}
 
-	public prompt<T>(questions: IQuestion[], apiWrapper = new ApiWrapper()): Promise<{ [key: string]: T }> {
+	public prompt<T>(questions: IQuestion[]): Promise<{ [key: string]: T }> {
 		let answers: { [key: string]: T } = {};
 
 		// Collapse multiple questions into a set of prompt steps
@@ -36,7 +36,7 @@ export default class CodeAdapter implements IPrompter {
 				// }
 
 				if (!question.shouldPrompt || question.shouldPrompt(answers) === true) {
-					return prompt.render(apiWrapper).then((result: any) => {
+					return prompt.render().then((result: any) => {
 						answers[question.name] = result;
 
 						if (question.onAnswered) {
@@ -54,7 +54,7 @@ export default class CodeAdapter implements IPrompter {
 				return undefined;
 			}
 
-			apiWrapper.showErrorMessage(err.message);
+			vscode.window.showErrorMessage(err.message);
 		});
 	}
 }

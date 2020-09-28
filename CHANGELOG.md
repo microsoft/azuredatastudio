@@ -1,5 +1,60 @@
 # Change Log
 
+## Version 1.22.0
+* Release date: September 22, 2020
+* Release status: General Availability
+* New Notebook Features
+    * Supports brand new text cell editing experience based on rich text formatting and seamless conversion to markdown, also known as WYSIWYG toolbar (What You See Is What You Get)
+    * Supports Kusto kernel
+    * Supports pinning of notebooks
+    * Added support for new version of Jupyter Books
+    * Improved Jupyter Shortcuts
+    * Introduced perf loading improvements
+* Added Azure Arc extension - Users can try out Azure Arc public preview through Azure Data Studio. This includes:
+    * Deploy data controller
+    * Deploy Postgres
+    * Deploy Managed Instance for Azure Arc
+    * Connect to data controller
+    * Access data service dashboards
+    * Azure Arc Jupyter Book
+* Added new deployment options
+    * Azure SQL Database Edge
+    * (Edge will require Azure SQL Edge Deployment Extension)
+* Added SQL Database Projects extension - The SQL Database Projects extension brings project-based database development to Azure Data Studio. In this preview release, SQL projects can be created and published from Azure Data Studio.
+* Added Kusto (KQL) extension - Brings native Kusto experiences in Azure Data Studio for data exploration and data analytics against massive amount of real-time streaming data stored in Azure Data Explorer. This preview release supports connecting and browsing Azure Data Explorer clusters, writing KQL queries as well as authoring notebooks with Kusto kernel.
+* SQL Server Import extension GA - Announcing the GA of the SQL Server Import extension, features no longer in preview. This extension facilitates importing csv/txt files. Learn more about the extension in [this article](sql-server-import-extension.md).
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue+milestone%3A%22September+2020+Release%22+is%3Aclosed).
+
+## Version 1.21.0
+* Release date: August 12, 2020
+* Release status: General Availability
+* New Notebook Features
+   * Move cell locations changd
+   * Added action to convert cells to Text Cell or Code cell
+* Jupyter Books picker to open Jupyter Books directly from Github
+* Search bar added to Notebooks Viewlet for searching through Jupyter Books
+* Address issues in [August 2020 Milestone](https://github.com/microsoft/azuredatastudio/milestone/59?closed=1)
+
+## Version 1.20.1
+* Release date: July 17, 2020
+* Release status: General Availability
+* Fix bug #11372 Object Explorer drag-and-drop table incorrectly wraps table names [#11372](https://github.com/microsoft/azuredatastudio/issues/11372)
+* Fix bug #11356 Dark theme is now the default theme [#11356](https://github.com/microsoft/azuredatastudio/issues/11356)
+* Known Issues:
+    * Some users have reported connection errors from the new Microsoft.Data.SqlClient v2.0.0 included in this release. Users have found [following these instructions](https://github.com/microsoft/azuredatastudio/issues/11367#issuecomment-659614111) to successfully connect. This issue was caused by a client driver update which fixed an issue where TLS encryption wasn't enforced correctly. See https://github.com/dotnet/SqlClient/blob/master/release-notes/2.0/2.0.0.md#breaking-changes-1 and https://docs.microsoft.com/en-us/sql/relational-databases/native-client/features/using-encryption-without-validation for more information.
+
+## Version 1.20.0
+* Release date: July 15, 2020
+* Release status: General Availability
+* Feature Tour
+* New Notebook Features
+    * Header support in Markdown Toolbar
+    * Side-by-side Markdown preview in Text Cells
+* Drag and drop columns and tables into Query Editor
+* Azure Account icon added to Activity Bar
+* Address issues in [July 2020 Milestone](https://github.com/microsoft/azuredatastudio/milestone/57?closed=1)
+* Bug fixes
+
 ## Version 1.19.0
 * Release date: June 15, 2020
 * Release status: General Availability

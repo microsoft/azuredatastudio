@@ -12,7 +12,7 @@ import * as loc from '../../../localizedConstants';
 export class ControllerDashboard extends Dashboard {
 
 	constructor(private _controllerModel: ControllerModel) {
-		super(loc.arcControllerDashboard);
+		super(loc.arcControllerDashboard(_controllerModel.info.name), 'ArcDataControllerDashboard');
 	}
 
 	public async showDashboard(): Promise<void> {

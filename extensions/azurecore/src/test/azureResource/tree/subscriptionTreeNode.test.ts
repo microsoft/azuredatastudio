@@ -9,9 +9,8 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import 'mocha';
 import { AppContext } from '../../../appContext';
-import { ApiWrapper } from '../../../apiWrapper';
 
-import { azureResource } from '../../../azureResource/azure-resource';
+import { azureResource } from 'azureResource';
 import { IAzureResourceTreeChangeHandler } from '../../../azureResource/tree/treeChangeHandler';
 import { AzureResourceSubscriptionTreeNode } from '../../../azureResource/tree/subscriptionTreeNode';
 import { AzureResourceItemType, AzureResourceServiceNames } from '../../../azureResource/constants';
@@ -24,7 +23,6 @@ import { generateGuid } from '../../../azureResource/utils';
 let appContext: AppContext;
 
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
-let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockCacheService: TypeMoq.IMock<IAzureResourceCacheService>;
 
 let mockTreeChangeHandler: TypeMoq.IMock<IAzureResourceTreeChangeHandler>;
@@ -45,12 +43,14 @@ const mockAccount: azdata.Account = {
 	isStale: false
 };
 
-const mockSubscription: azureResource.AzureResourceSubscription = {
-	id: 'mock_subscription',
-	name: 'mock subscription'
-};
-
 const mockTenantId: string = 'mock_tenant';
+const mockSubscriptionId: string = 'mock_subscription';
+
+const mockSubscription: azureResource.AzureResourceSubscription = {
+	id: mockSubscriptionId,
+	name: 'mock subscription',
+	tenant: mockTenantId
+};
 
 let mockResourceTreeDataProvider1: TypeMoq.IMock<azureResource.IAzureResourceTreeDataProvider>;
 let mockResourceProvider1: TypeMoq.IMock<azureResource.IAzureResourceProvider>;
@@ -63,7 +63,6 @@ const resourceService: AzureResourceService = new AzureResourceService();
 describe('AzureResourceSubscriptionTreeNode.info', function(): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockCacheService = TypeMoq.Mock.ofType<IAzureResourceCacheService>();
 
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
@@ -89,7 +88,7 @@ describe('AzureResourceSubscriptionTreeNode.info', function(): void {
 		resourceService.registerResourceProvider(mockResourceProvider2.object);
 		resourceService.areResourceProvidersLoaded = true;
 
-		appContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
+		appContext = new AppContext(mockExtensionContext.object);
 		appContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, mockCacheService.object);
 		appContext.registerService(AzureResourceServiceNames.resourceService, resourceService);
 
@@ -116,7 +115,6 @@ describe('AzureResourceSubscriptionTreeNode.info', function(): void {
 describe('AzureResourceSubscriptionTreeNode.getChildren', function(): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockCacheService = TypeMoq.Mock.ofType<IAzureResourceCacheService>();
 
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
@@ -142,7 +140,7 @@ describe('AzureResourceSubscriptionTreeNode.getChildren', function(): void {
 		resourceService.registerResourceProvider(mockResourceProvider2.object);
 		resourceService.areResourceProvidersLoaded = true;
 
-		appContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
+		appContext = new AppContext(mockExtensionContext.object);
 		appContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, mockCacheService.object);
 		appContext.registerService(AzureResourceServiceNames.resourceService, resourceService);
 

@@ -5,17 +5,17 @@
 
 import * as vscode from 'vscode';
 import MainController from './controllers/mainController';
-import { ApiWrapper } from './common/apiWrapper';
+import { IProjectProvider } from 'dataworkspace';
 
 let controllers: MainController[] = [];
 
-export async function activate(context: vscode.ExtensionContext): Promise<void> {
+export function activate(context: vscode.ExtensionContext): Promise<IProjectProvider> {
 	// Start the main controller
-	const mainController = new MainController(context, new ApiWrapper());
+	const mainController = new MainController(context);
 	controllers.push(mainController);
 	context.subscriptions.push(mainController);
 
-	await mainController.activate();
+	return mainController.activate();
 }
 
 export function deactivate(): void {

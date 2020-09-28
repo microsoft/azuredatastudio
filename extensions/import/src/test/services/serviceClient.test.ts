@@ -16,4 +16,3 @@ describe('Service utitlities test', function () {
 		should(ensure({ 'testkey': 'testval' }, 'testkey')).equal('testval');
 	});
 });
-

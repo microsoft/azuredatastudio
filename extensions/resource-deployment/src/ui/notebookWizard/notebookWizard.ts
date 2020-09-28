@@ -35,8 +35,8 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 		return this._inputComponents;
 	}
 
-	constructor(private _wizardInfo: NotebookWizardInfo, private _notebookService: INotebookService, private _platformService: IPlatformService, private _toolsService: IToolsService) {
-		super(_wizardInfo.title, new Model());
+	constructor(private _wizardInfo: NotebookWizardInfo, private _notebookService: INotebookService, private _platformService: IPlatformService, toolsService: IToolsService) {
+		super(_wizardInfo.title, _wizardInfo.name || '', new Model(), toolsService);
 		if (this._wizardInfo.codeCellInsertionPosition === undefined) {
 			this._wizardInfo.codeCellInsertionPosition = 0;
 		}
@@ -58,7 +58,7 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 	}
 
 	protected async onOk(): Promise<void> {
-		setModelValues(this.inputComponents, this.model);
+		await setModelValues(this.inputComponents, this.model);
 		const env: NodeJS.ProcessEnv = {};
 		this.model.setEnvironmentVariables(env, (varName) => {
 			const isPassword = !!this.inputComponents[varName]?.isPassword;
@@ -67,7 +67,7 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 		const notebook: Notebook = await this.notebookService.getNotebook(this.wizardInfo.notebook);
 		// generate python code statements for all variables captured by the wizard
 		const statements = this.model.getCodeCellContentForNotebook(
-			this._toolsService.toolsForCurrentProvider,
+			this.toolsService.toolsForCurrentProvider,
 			(varName) => {
 				const isPassword = !!this.inputComponents[varName]?.isPassword;
 				return !isPassword;

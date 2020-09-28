@@ -28,7 +28,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { TextFileEditorModelManager } from 'vs/workbench/services/textfile/common/textFileEditorModelManager';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { TestEnvironmentService, TestLifecycleService, TestTextFileService, workbenchInstantiationService, TestTextFileEditorModelManager } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestLifecycleService, TestTextFileService, workbenchInstantiationService, TestTextFileEditorModelManager } from 'vs/workbench/test/browser/workbenchTestServices';
 import { Range } from 'vs/editor/common/core/range';
 import { nb } from 'azdata';
 import { Emitter } from 'vs/base/common/event';
@@ -40,6 +40,7 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestStorageService, TestTextResourcePropertiesService } from 'vs/workbench/test/common/workbenchTestServices';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 
 class ServiceAccessor {
@@ -74,6 +75,7 @@ suite('Notebook Editor Model', function (): void {
 	memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
 	let testinstantiationService = new TestInstantiationService();
 	testinstantiationService.stub(IStorageService, new TestStorageService());
+	testinstantiationService.stub(IProductService, { quality: 'stable' });
 	const queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
 		undefined, // connection store
 		undefined, // connection status manager
@@ -107,9 +109,19 @@ suite('Notebook Editor Model', function (): void {
 		}, undefined, undefined);
 	});
 
-	let mockNotebookService: TypeMoq.Mock<NotebookService>;
-	mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, instantiationService, new MockContextKeyService(),
-		undefined, undefined, undefined, undefined, undefined, undefined, TestEnvironmentService);
+	let notebookService = new NotebookService(
+		new TestLifecycleService(),
+		undefined,
+		undefined,
+		undefined,
+		instantiationService,
+		undefined,
+		undefined,
+		undefined,
+		new MockContextKeyService(),
+		testinstantiationService.get(IProductService)
+	);
+	let mockNotebookService = TypeMoq.Mock.ofInstance(notebookService);
 
 	mockNotebookService.setup(s => s.findNotebookEditor(TypeMoq.It.isAny())).returns(() => {
 		return {
@@ -388,6 +400,87 @@ suite('Notebook Editor Model', function (): void {
 		assert(!notebookEditorModel.lastEditFullReplacement);
 	});
 
+	test('should not replace entire text model but replace entire source when no modelContentChangedEvent passed in', async function (): Promise<void> {
+		await createNewNotebookModel();
+		let notebookEditorModel = await createTextEditorModel(this);
+		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
+
+		let newCell = notebookModel.addCell(CellTypes.Code);
+
+		let contentChange: NotebookContentChange = {
+			changeType: NotebookChangeType.CellsModified,
+			cells: [newCell],
+			cellIndex: 0
+		};
+		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		assert(notebookEditorModel.lastEditFullReplacement);
+
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
+
+		newCell.source = 'This is a test';
+
+		contentChange = {
+			changeType: NotebookChangeType.CellSourceUpdated,
+			cells: [newCell],
+			cellIndex: 0,
+			modelContentChangedEvent: undefined
+		};
+
+		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
+
+		assert(!notebookEditorModel.lastEditFullReplacement, 'should not do a full replacement for a source update');
+
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "This is a test"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10), '            ],');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": null');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(26), '        }');
+
+	});
+
+	test('should not replace entire text model but replace entire source when no modelContentChangedEvent passed in multiline change', async function (): Promise<void> {
+		await createNewNotebookModel();
+		let notebookEditorModel = await createTextEditorModel(this);
+		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
+
+		let newCell = notebookModel.addCell(CellTypes.Code);
+
+		let contentChange: NotebookContentChange = {
+			changeType: NotebookChangeType.CellsModified,
+			cells: [newCell],
+			cellIndex: 0
+		};
+		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		assert(notebookEditorModel.lastEditFullReplacement);
+
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
+
+		newCell.source = 'This is a test' + os.EOL + 'Line 2 test' + os.EOL + 'Line 3 test';
+
+		contentChange = {
+			changeType: NotebookChangeType.CellSourceUpdated,
+			cells: [newCell],
+			cellIndex: 0,
+			modelContentChangedEvent: undefined
+		};
+
+		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
+
+		assert(!notebookEditorModel.lastEditFullReplacement, 'should not do a full replacement for a source update');
+
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "This is a test\\n",');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10), '                "Line 2 test\\n",');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(11), '                "Line 3 test"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '            ],');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(16), '            "outputs": [');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(27), '            "execution_count": null');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(28), '        }');
+	});
+
 	test('should not replace entire text model for single line source change then delete', async function (): Promise<void> {
 		await createNewNotebookModel();
 		let notebookEditorModel = await createTextEditorModel(this);
@@ -600,9 +693,9 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(23), '                }, {');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(23), '}, {');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(31), '}');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(32), '            ],');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(32), '],');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(33), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(34), '        }');
 
@@ -641,7 +734,7 @@ suite('Notebook Editor Model', function (): void {
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(26), '    "text": "[0em"');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(27), '}');
-		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(28), '            ],');
+		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(28), '],');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(29), '            "execution_count": null');
 		assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(30), '        }');
 

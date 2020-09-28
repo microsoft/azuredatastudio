@@ -6,6 +6,7 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectableInput } from 'sql/platform/connection/common/connectionManagement';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { URI } from 'vs/base/common/uri';
 
 export interface IQueryEditorOptions extends IEditorOptions {
 
@@ -27,14 +28,18 @@ export interface INewSqlEditorOptions {
 	 * defaults to true
 	 */
 	open?: boolean;
+	/**
+	 * use an existing resource, if this matches a resource already open that resource will be opened instead
+	 */
+	resource?: URI
 }
 
 export interface IQueryEditorService {
 
 	_serviceBrand: undefined;
 
-	// Creates new untitled document for SQL queries and opens it in a new editor tab
-	newSqlEditor(options?: INewSqlEditorOptions): Promise<IConnectableInput>;
+	// Creates new untitled document for SQL/KUSTO queries and opens it in a new editor tab
+	newSqlEditor(options?: INewSqlEditorOptions, connectionProviderName?: string): Promise<IConnectableInput>;
 
 	// Creates new edit data session
 	newEditDataEditor(schemaName: string, tableName: string, queryString: string): Promise<IConnectableInput>;

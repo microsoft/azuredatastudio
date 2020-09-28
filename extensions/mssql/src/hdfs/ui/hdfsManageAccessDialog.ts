@@ -4,16 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { HdfsModel } from '../hdfsModel';
 import { IFileSource } from '../../objectExplorerNodeProvider/fileSources';
 import { PermissionStatus, AclEntry, AclType, getImageForType, AclEntryScope, AclEntryPermission, PermissionType } from '../../hdfs/aclEntry';
 import { cssStyles } from './uiConstants';
 import * as loc from '../../localizedConstants';
 import { HdfsError } from '../webhdfs';
-import { ApiWrapper } from '../../apiWrapper';
 import { IconPathHelper } from '../../iconHelper';
 import { HdfsFileType } from '../fileStatus';
-import { EventEmitter } from 'vscode';
 
 const permissionsTypeIconColumnWidth = 35;
 const permissionsDeleteColumnWidth = 50;
@@ -50,16 +49,16 @@ export class ManageAccessDialog {
 	private posixPermissionCheckboxesMapping: PermissionCheckboxesMapping[] = [];
 	private namedSectionInheritCheckboxes: azdata.CheckBoxComponent[] = [];
 	private addUserOrGroupSelectedType: AclType;
-	private onViewInitializedEvent: EventEmitter<void> = new EventEmitter();
+	private onViewInitializedEvent: vscode.EventEmitter<void> = new vscode.EventEmitter();
 
-	constructor(private hdfsPath: string, private fileSource: IFileSource, private readonly apiWrapper: ApiWrapper) {
+	constructor(private hdfsPath: string, private fileSource: IFileSource) {
 		this.hdfsModel = new HdfsModel(this.fileSource, this.hdfsPath);
 		this.hdfsModel.onPermissionStatusUpdated(permissionStatus => this.handlePermissionStatusUpdated(permissionStatus));
 	}
 
 	public openDialog(): void {
 		if (!this.dialog) {
-			this.dialog = this.apiWrapper.createDialog(loc.manageAccessTitle, 'HdfsManageAccess', true);
+			this.dialog = azdata.window.createModelViewDialog(loc.manageAccessTitle, 'HdfsManageAccess', true);
 			this.dialog.okButton.label = loc.applyText;
 
 			this.applyRecursivelyButton = azdata.window.createButton(loc.applyRecursivelyText);
@@ -68,7 +67,7 @@ export class ManageAccessDialog {
 					azdata.window.closeDialog(this.dialog);
 					await this.hdfsModel.apply(true);
 				} catch (err) {
-					this.apiWrapper.showErrorMessage(loc.errorApplyingAclChanges(err instanceof HdfsError ? err.message : err));
+					vscode.window.showErrorMessage(loc.errorApplyingAclChanges(err instanceof HdfsError ? err.message : err));
 				}
 			});
 			this.dialog.customButtons = [this.applyRecursivelyButton];
@@ -77,7 +76,7 @@ export class ManageAccessDialog {
 					await this.hdfsModel.apply();
 					return true;
 				} catch (err) {
-					this.apiWrapper.showErrorMessage(loc.errorApplyingAclChanges(err instanceof HdfsError ? err.message : err));
+					vscode.window.showErrorMessage(loc.errorApplyingAclChanges(err instanceof HdfsError ? err.message : err));
 				}
 				return false;
 			});

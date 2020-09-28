@@ -15,9 +15,6 @@
 
 .scm-view .count {
 	display: flex;
-}
-
-.scm-view .count {
 	margin-left: 6px;
 }
 
@@ -33,40 +30,61 @@
 	flex-flow: nowrap;
 }
 
+.scm-view.hide-provider-counts .scm-provider > .count,
+.scm-view.auto-provider-counts .scm-provider > .count[data-count="0"] {
+	display: none;
+}
+
 .scm-view .scm-provider > .label {
-	display: flex;
-	flex-shrink: 1;
+	flex: 1;
 	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.scm-view .scm-provider > .label > .name {
+	font-weight: bold;
+}
+
+.scm-view .scm-provider > .label > .description {
+	opacity: 0.7;
+	margin-left: 0.5em;
+	font-size: 0.9em;
 }
 
 .scm-view .scm-provider > .actions {
-	flex: 1;
-	padding-left: 10px;
 	overflow: hidden;
 	justify-content: flex-end;
 }
 
-.scm-view .scm-provider > .actions .monaco-action-bar .action-item {
-	margin-left: 4px;
-	text-overflow: ellipsis;
+/**
+ * The following rules are very specific because of inline drop down menus
+ * https://github.com/microsoft/vscode/issues/101410
+ */
+.scm-view .scm-provider > .actions > .monaco-toolbar > .monaco-action-bar > .actions-container > .action-item {
+	padding-left: 4px;
 	display: flex;
 	align-items: center;
-	min-width: 14px;
+	min-width: 16px;
 }
 
-.scm-view .scm-provider > .actions .monaco-action-bar .action-label {
-	text-overflow: ellipsis;
+.scm-view .scm-provider > .actions > .monaco-toolbar > .monaco-action-bar > .actions-container  > .action-item > .action-label,
+.scm-view .scm-provider > .actions > .monaco-toolbar > .monaco-action-bar > .actions-container  > .action-item > .monaco-dropdown > .dropdown-label > .action-label {
+	display: flex;
+	align-items: center;
 	overflow: hidden;
-	min-width: 14px; /* for flex */
+	min-width: 16px; /* for flex */
 	height: 100%;
+	margin: 0;
+	background-repeat: no-repeat;
+	background-position: center;
 }
 
-.scm-view .scm-provider > .actions .monaco-action-bar .action-label .codicon {
-	vertical-align: sub;
-	display: inline-flex;
+.scm-view .scm-provider > .actions > .monaco-toolbar > .monaco-action-bar > .actions-container  > .action-item > .action-label > .codicon {
+	font-size: 12px;
+	margin-right: 2px;
 }
 
-.scm-view .scm-provider > .actions .monaco-action-bar .action-item:last-of-type {
+.scm-view .scm-provider > .actions > .monaco-toolbar > .monaco-action-bar > .actions-container > .action-item:last-of-type {
 	padding-right: 0;
 }
 
@@ -213,4 +231,15 @@
 .scm-view .scm-editor-container .monaco-editor,
 .scm-view .scm-editor-container .mtk1 {
 	color: inherit;
+}
+
+/* Repositories */
+
+.scm-repositories-view .scm-provider {
+	margin: 0 12px 0 20px;
+	overflow: hidden;
+}
+
+.scm-repositories-view .scm-provider > .label > .name {
+	font-weight: normal;
 }

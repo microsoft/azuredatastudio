@@ -1,7 +1,7 @@
 resources:
   containers:
   - container: linux-x64
-    image: sqltoolscontainers.azurecr.io/linux-build-agent:1
+    image: sqltoolscontainers.azurecr.io/linux-build-agent:2
     endpoint: ContainerRegistry
 
 jobs:
@@ -45,6 +45,8 @@ jobs:
   - Compile
   steps:
   - template: linux/sql-product-build-linux.yml
+    parameters:
+      extensionsToUnitTest: ["admin-tool-ext-win", "agent", "azdata", "azurecore", "cms", "dacpac", "import", "schema-compare", "notebook", "resource-deployment", "machine-learning", "sql-database-projects", "data-workspace"]
   timeoutInMinutes: 70
 
 - job: LinuxWeb
@@ -106,10 +108,3 @@ jobs:
 
 trigger: none
 pr: none
-
-schedules:
-- cron: "0 5 * * Mon-Fri"
-  displayName: Mon-Fri at 5AM UTC
-  branches:
-    include:
-    - main

@@ -58,6 +58,11 @@ echo *** starting arc tests ***
 echo **************************
 call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\arc --extensionTestsPath=%~dp0\..\extensions\arc\out\test --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
 
+echo *****************************
+echo *** starting azdata tests ***
+echo *****************************
+call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\azdata --extensionTestsPath=%~dp0\..\extensions\azdata\out\test --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR% --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
+
 echo ********************************
 echo *** starting azurecore tests ***
 echo ********************************

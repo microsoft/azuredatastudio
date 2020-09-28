@@ -128,6 +128,7 @@ export class DeployClusterWizardModel extends Model {
 				organizationalUnit: this.getStringValue(VariableNames.OrganizationalUnitDistinguishedName_VariableName)!,
 				domainControllerFQDNs: this.getStringValue(VariableNames.DomainControllerFQDNs_VariableName)!,
 				domainDNSName: this.getStringValue(VariableNames.DomainDNSName_VariableName)!,
+				realm: this.getStringValue(VariableNames.Realm_VariableName),
 				dnsIPAddresses: this.getStringValue(VariableNames.DomainDNSIPAddresses_VariableName)!,
 				clusterAdmins: this.getStringValue(VariableNames.ClusterAdmins_VariableName)!,
 				clusterUsers: this.getStringValue(VariableNames.ClusterUsers_VariableName)!,

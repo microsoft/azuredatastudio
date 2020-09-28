@@ -75,7 +75,7 @@ export class SchemaCompareMainWindow {
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Change] = loc.changeAction;
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Add] = loc.addAction;
 
-		this.editor = azdata.workspace.createModelViewEditor(loc.SchemaCompareLabel, { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName });
+		this.editor = azdata.workspace.createModelViewEditor(loc.SchemaCompareLabel, { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName }, 'SchemaCompareEditor');
 	}
 
 	// schema compare can get started with three contexts for the source:
@@ -725,7 +725,7 @@ export class SchemaCompareMainWindow {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOptionsOpened');
 			// create fresh every time
 			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions, this);
-			await this.schemaCompareOptionDialog.openDialog();
+			this.schemaCompareOptionDialog.openDialog();
 		});
 	}
 

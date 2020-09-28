@@ -12,6 +12,8 @@ const os = require('os');
 const extensionList = [
 	'admin-tool-ext-win',
 	'agent',
+	'arc',
+	'azdata',
 	'azurecore',
 	'cms',
 	'dacpac',
@@ -20,8 +22,10 @@ const extensionList = [
 	//'mssql',
 	'notebook',
 	'resource-deployment',
-	'machine-learning-services',
-	'sql-database-projects'];
+	'machine-learning',
+	'sql-database-projects',
+	'data-workspace'
+];
 
 let argv = require('yargs')
 	.command('$0 [extensions...]')
@@ -63,11 +67,12 @@ for (const ext of argv.extensions) {
 	console.log(`*** starting ${ext} tests ***`);
 	console.log('*'.repeat(ext.length + 23));
 
-	const command = `${process.env.INTEGRATION_TEST_ELECTRON_PATH} --extensionDevelopmentPath=${path.join(__dirname, '..', 'extensions', ext)} --extensionTestsPath=${path.join(__dirname, '..', 'extensions', ext, 'out', 'test')} --user-data-dir=${VSCODEUSERDATADIR} --extensions-dir=${VSCODEEXTENSIONSDIR} --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu`;
-	console.log(execSync(command, {stdio: 'inherit'}));
+	const command = `${process.env.INTEGRATION_TEST_ELECTRON_PATH} --no-sandbox --extensionDevelopmentPath=${path.join(__dirname, '..', 'extensions', ext)} --extensionTestsPath=${path.join(__dirname, '..', 'extensions', ext, 'out', 'test')} --user-data-dir=${VSCODEUSERDATADIR} --extensions-dir=${VSCODEEXTENSIONSDIR} --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu`;
+	console.log(`Command used: ${command}`);
+	console.log(execSync(command, { stdio: 'inherit' }));
 }
 
 // clean up
 
-fs.remove(VSCODEUSERDATADIR, { recursive: true });
-fs.remove(VSCODEEXTENSIONSDIR, { recursive: true });
+fs.remove(VSCODEUSERDATADIR, { recursive: true }).catch(console.error);
+fs.remove(VSCODEEXTENSIONSDIR, { recursive: true }).catch(console.error);

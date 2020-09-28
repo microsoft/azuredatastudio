@@ -26,13 +26,13 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IFileService, FILES_ASSOCIATIONS_CONFIG } from 'vs/platform/files/common/files';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IModeService, ILanguageSelection } from 'vs/editor/common/services/modeService';
-import { IModelService } from 'vs/editor/common/services/modelService';
 import { Range } from 'vs/editor/common/core/range';
 import { Selection } from 'vs/editor/common/core/selection';
 import { TabFocus } from 'vs/editor/common/config/commonEditorConfig';
 import { ICommandService, CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { ITextFileService, SUPPORTED_ENCODINGS } from 'vs/workbench/services/textfile/common/textfiles';
+import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+import { SUPPORTED_ENCODINGS } from 'vs/workbench/services/textfile/common/encoding';
 import { ICursorPositionChangedEvent } from 'vs/editor/common/controller/cursorEvents';
 import { ConfigurationChangedEvent, IEditorOptions, EditorOption } from 'vs/editor/common/config/editorOptions';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
@@ -42,7 +42,7 @@ import { ICodeEditor, getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import { Schemas } from 'vs/base/common/network';
 import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
 import { IQuickInputService, IQuickPickItem, QuickPickInput } from 'vs/platform/quickinput/common/quickInput';
-import { getIconClasses } from 'vs/editor/common/services/getIconClasses';
+import { getIconClassesForModeId } from 'vs/editor/common/services/getIconClasses';
 import { timeout } from 'vs/base/common/async';
 import { INotificationHandle, INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Event } from 'vs/base/common/event';
@@ -299,7 +299,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 	private readonly screenRedearModeElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
 	private readonly indentationElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
 	private readonly selectionElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
-	private readonly encodingElement = Object.keys(SUPPORTED_ENCODINGS).length > 1 ? this._register(new MutableDisposable<IStatusbarEntryAccessor>()) : undefined;
+	private readonly encodingElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
 	private readonly eolElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
 	private readonly modeElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
 	private readonly metadataElement = this._register(new MutableDisposable<IStatusbarEntryAccessor>());
@@ -486,10 +486,6 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 	}
 
 	private updateEncodingElement(text: string | undefined): void {
-		if (!this.encodingElement) {
-			return; // return early if encoding should not show (e.g. in Web we only support utf8)
-		}
-
 		if (!text) {
 			this.encodingElement.clear();
 			return;
@@ -1048,7 +1044,6 @@ export class ChangeModeAction extends Action {
 		actionId: string,
 		actionLabel: string,
 		@IModeService private readonly modeService: IModeService,
-		@IModelService private readonly modelService: IModelService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
@@ -1075,26 +1070,27 @@ export class ChangeModeAction extends Action {
 		}
 
 		// Compute mode
+		let currentLanguageId: string | undefined;
 		let currentModeId: string | undefined;
-		let modeId: string | undefined;
 		if (textModel) {
-			modeId = textModel.getLanguageIdentifier().language;
-			currentModeId = withNullAsUndefined(this.modeService.getLanguageName(modeId));
+			currentModeId = textModel.getLanguageIdentifier().language;
+			currentLanguageId = withNullAsUndefined(this.modeService.getLanguageName(currentModeId));
 		}
 
 		// All languages are valid picks
 		const languages = this.modeService.getRegisteredLanguageNames();
 		const picks: QuickPickInput[] = languages.sort().map((lang, index) => {
+			const modeId = this.modeService.getModeIdForLanguageName(lang.toLowerCase()) || 'unknown';
 			let description: string;
-			if (currentModeId === lang) {
-				description = nls.localize('languageDescription', "({0}) - Configured Language", this.modeService.getModeIdForLanguageName(lang.toLowerCase()));
+			if (currentLanguageId === lang) {
+				description = nls.localize('languageDescription', "({0}) - Configured Language", modeId);
 			} else {
-				description = nls.localize('languageDescriptionConfigured', "({0})", this.modeService.getModeIdForLanguageName(lang.toLowerCase()));
+				description = nls.localize('languageDescriptionConfigured', "({0})", modeId);
 			}
 
 			return {
 				label: lang,
-				iconClasses: getIconClasses(this.modelService, this.modeService, this.getFakeResource(lang)),
+				iconClasses: getIconClassesForModeId(modeId),
 				description
 			};
 		});
@@ -1115,7 +1111,7 @@ export class ChangeModeAction extends Action {
 				picks.unshift(galleryAction);
 			}
 
-			configureModeSettings = { label: nls.localize('configureModeSettings', "Configure '{0}' language based settings...", currentModeId) };
+			configureModeSettings = { label: nls.localize('configureModeSettings', "Configure '{0}' language based settings...", currentLanguageId) };
 			picks.unshift(configureModeSettings);
 			configureModeAssociations = { label: nls.localize('configureAssociationsExt', "Configure File Association for '{0}'...", ext) };
 			picks.unshift(configureModeAssociations);
@@ -1150,7 +1146,7 @@ export class ChangeModeAction extends Action {
 
 		// User decided to configure settings for current language
 		if (pick === configureModeSettings) {
-			this.preferencesService.openGlobalSettings(true, { editSetting: `[${withUndefinedAsNull(modeId)}]` });
+			this.preferencesService.openGlobalSettings(true, { editSetting: `[${withUndefinedAsNull(currentModeId)}]` });
 			return;
 		}
 
@@ -1188,12 +1184,12 @@ export class ChangeModeAction extends Action {
 
 		const languages = this.modeService.getRegisteredLanguageNames();
 		const picks: IQuickPickItem[] = languages.sort().map((lang, index) => {
-			const id = withNullAsUndefined(this.modeService.getModeIdForLanguageName(lang.toLowerCase()));
+			const id = withNullAsUndefined(this.modeService.getModeIdForLanguageName(lang.toLowerCase())) || 'unknown';
 
 			return {
 				id,
 				label: lang,
-				iconClasses: getIconClasses(this.modelService, this.modeService, this.getFakeResource(lang)),
+				iconClasses: getIconClassesForModeId(id),
 				description: (id === currentAssociation) ? nls.localize('currentAssociation', "Current Association") : undefined
 			};
 		});
@@ -1223,22 +1219,6 @@ export class ChangeModeAction extends Action {
 				this.configurationService.updateValue(FILES_ASSOCIATIONS_CONFIG, currentAssociations, target);
 			}
 		}, 50 /* quick input is sensitive to being opened so soon after another */);
-	}
-
-	private getFakeResource(lang: string): URI | undefined {
-		let fakeResource: URI | undefined;
-
-		const extensions = this.modeService.getExtensions(lang);
-		if (extensions?.length) {
-			fakeResource = URI.file(extensions[0]);
-		} else {
-			const filenames = this.modeService.getFilenames(lang);
-			if (filenames?.length) {
-				fakeResource = URI.file(filenames[0]);
-			}
-		}
-
-		return fakeResource;
 	}
 }
 

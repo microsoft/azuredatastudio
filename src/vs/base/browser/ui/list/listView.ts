@@ -121,7 +121,7 @@ export class ExternalElementsDragAndDropData<T> implements IDragAndDropData {
 	}
 }
 
-export class DesktopDragAndDropData implements IDragAndDropData {
+export class NativeDragAndDropData implements IDragAndDropData {
 
 	readonly types: any[];
 	readonly files: any[];
@@ -411,7 +411,6 @@ export class ListView<T> implements ISpliceable<T>, IDisposable {
 		if (this.supportDynamicHeights) {
 			this._rerender(this.lastRenderTop, this.lastRenderHeight);
 		}
-		return;
 	}
 
 	splice(start: number, deleteCount: number, elements: T[] = []): T[] {
@@ -603,6 +602,10 @@ export class ListView<T> implements ISpliceable<T>, IDisposable {
 		return this.items[index].element;
 	}
 
+	indexOf(element: T): number {
+		return this.items.findIndex(item => item.element === element);
+	}
+
 	domElement(index: number): HTMLElement | null {
 		const row = this.items[index].row;
 		return row && row.domNode;
@@ -790,8 +793,8 @@ export class ListView<T> implements ISpliceable<T>, IDisposable {
 		item.dragStartDisposable.dispose();
 
 		const renderer = this.renderers.get(item.templateId);
-		if (renderer && renderer.disposeElement) {
-			renderer.disposeElement(item.element, index, item.row!.templateData, item.size);
+		if (item.row && renderer && renderer.disposeElement) {
+			renderer.disposeElement(item.element, index, item.row.templateData, item.size);
 		}
 
 		this.cache.release(item.row!);
@@ -973,7 +976,7 @@ export class ListView<T> implements ISpliceable<T>, IDisposable {
 					return false;
 				}
 
-				this.currentDragData = new DesktopDragAndDropData();
+				this.currentDragData = new NativeDragAndDropData();
 			}
 		}
 

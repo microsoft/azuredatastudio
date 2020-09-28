@@ -68,7 +68,9 @@ export class SelectBox extends vsSelectBox {
 		let optionItems: SelectOptionItemSQL[] = SelectBox.createOptions(options);
 		super(optionItems, 0, contextViewProvider, undefined, selectBoxOptions);
 
+		this._optionsDictionary = new Map<string, number>();
 		this.populateOptionsDictionary(optionItems);
+		this._dialogOptions = optionItems;
 		const option = this._optionsDictionary.get(selectedOption);
 		if (option) {
 			super.select(option);
@@ -126,8 +128,8 @@ export class SelectBox extends vsSelectBox {
 
 	private static createOptions(options: SelectOptionItemSQL[] | string[] | ISelectOptionItem[]): SelectOptionItemSQL[] {
 		let selectOptions: SelectOptionItemSQL[];
-		if (Array.isArray<string>(options) && typeof (options[0]) === 'string') {
-			selectOptions = options.map(o => {
+		if (Array.isArray(options) && typeof (options[0]) === 'string') {
+			selectOptions = (options as string[]).map(o => {
 				return { text: o, value: o } as SelectOptionItemSQL;
 			});
 		} else { // Handle both SelectOptionItemSql and ISelectOptionItem
@@ -144,7 +146,7 @@ export class SelectBox extends vsSelectBox {
 	}
 
 	public populateOptionsDictionary(options: SelectOptionItemSQL[]) {
-		this._optionsDictionary = new Map<string, number>();
+		this._optionsDictionary.clear();
 		for (let i = 0; i < options.length; i++) {
 			this._optionsDictionary.set(options[i].value, i);
 		}
@@ -170,8 +172,11 @@ export class SelectBox extends vsSelectBox {
 		this.applyStyles();
 	}
 
-	public selectWithOptionName(optionName: string): void {
-		const option = this._optionsDictionary.get(optionName);
+	public selectWithOptionName(optionName?: string): void {
+		let option: number | undefined;
+		if (optionName) {
+			option = this._optionsDictionary.get(optionName);
+		}
 		if (option) {
 			this.select(option);
 		} else {
@@ -195,6 +200,10 @@ export class SelectBox extends vsSelectBox {
 
 	public get value(): string {
 		return this._selectedOption;
+	}
+
+	public get label(): string | undefined {
+		return this._dialogOptions?.find(s => s.value === this._selectedOption)?.text;
 	}
 
 	public get values(): string[] {
@@ -327,6 +336,7 @@ export class SelectBox extends vsSelectBox {
 		if (selectOptions && selectOptions.labelText && selectOptions.labelText !== undefined) {
 			let outerContainer = document.createElement('div');
 			let selectContainer = document.createElement('div');
+			selectContainer.setAttribute('role', 'presentation');
 
 			outerContainer.className = selectOptions.labelOnTop ? 'labelOnTopContainer' : 'labelOnLeftContainer';
 

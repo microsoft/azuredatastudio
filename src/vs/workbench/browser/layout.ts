@@ -1065,9 +1065,9 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 				return !this.state.activityBar.hidden;
 			case Parts.EDITOR_PART:
 				return !this.state.editor.hidden;
+			default:
+				return true; // any other part cannot be hidden
 		}
-
-		return true; // any other part cannot be hidden
 	}
 
 	focus(): void {
@@ -1543,6 +1543,11 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 	setPanelHidden(hidden: boolean, skipLayout?: boolean): void {
 		this.state.panel.hidden = hidden;
 
+		// Return if not initialized fully #105480
+		if (!this.workbenchGrid) {
+			return;
+		}
+
 		// Adjust CSS
 		if (hidden) {
 			addClass(this.container, Classes.PANEL_HIDDEN);
@@ -1615,6 +1620,10 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		return this.state.windowBorder;
 	}
 
+	getWindowBorderWidth(): number {
+		return this.state.windowBorder ? 2 : 0;
+	}
+
 	getWindowBorderRadius(): string | undefined {
 		return this.state.windowBorder && isMacintosh ? '5px' : undefined;
 	}
@@ -1636,7 +1645,7 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 			this.state.menuBar.visibility = visibility;
 
 			// Layout
-			if (!skipLayout) {
+			if (!skipLayout && this.workbenchGrid) {
 				this.workbenchGrid.setViewVisible(this.titleBarPartView, this.isVisible(Parts.TITLEBAR_PART));
 			}
 		}
@@ -1761,11 +1770,10 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		const workbenchDimensions = this.getClientArea();
 		const width = this.storageService.getNumber(Storage.GRID_WIDTH, StorageScope.GLOBAL, workbenchDimensions.width);
 		const height = this.storageService.getNumber(Storage.GRID_HEIGHT, StorageScope.GLOBAL, workbenchDimensions.height);
-		// At some point, we will not fall back to old keys from legacy layout, but for now, let's migrate the keys
-		const sideBarSize = this.storageService.getNumber(Storage.SIDEBAR_SIZE, StorageScope.GLOBAL, this.storageService.getNumber('workbench.sidebar.width', StorageScope.GLOBAL, Math.min(workbenchDimensions.width / 4, 300)));
+		const sideBarSize = this.storageService.getNumber(Storage.SIDEBAR_SIZE, StorageScope.GLOBAL, Math.min(workbenchDimensions.width / 4, 300));
 		const panelDimension = positionFromString(this.storageService.get(Storage.PANEL_DIMENSION, StorageScope.GLOBAL, 'bottom'));
 		const fallbackPanelSize = this.state.panel.position === Position.BOTTOM ? workbenchDimensions.height / 3 : workbenchDimensions.width / 4;
-		const panelSize = panelDimension === this.state.panel.position ? this.storageService.getNumber(Storage.PANEL_SIZE, StorageScope.GLOBAL, this.storageService.getNumber(this.state.panel.position === Position.BOTTOM ? 'workbench.panel.height' : 'workbench.panel.width', StorageScope.GLOBAL, fallbackPanelSize)) : fallbackPanelSize;
+		const panelSize = panelDimension === this.state.panel.position ? this.storageService.getNumber(Storage.PANEL_SIZE, StorageScope.GLOBAL, fallbackPanelSize) : fallbackPanelSize;
 
 		const titleBarHeight = this.titleBarPartView.minimumHeight;
 		const statusBarHeight = this.statusBarPartView.minimumHeight;

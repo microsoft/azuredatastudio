@@ -75,8 +75,12 @@ export class MainThreadAccountManagement extends Disposable implements MainThrea
 			clear(accountKey: azdata.AccountKey): Thenable<void> {
 				return self._proxy.$clear(handle, accountKey);
 			},
+
 			getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
 				return self._proxy.$getSecurityToken(account, resource);
+			},
+			getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<{ token: string }> {
+				return self._proxy.$getAccountSecurityToken(account, tenant, resource);
 			},
 			initialize(restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
 				return self._proxy.$initialize(handle, restoredAccounts);

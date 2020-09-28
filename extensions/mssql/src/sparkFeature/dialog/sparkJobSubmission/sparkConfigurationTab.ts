@@ -11,8 +11,6 @@ import * as utils from '../../../utils';
 import * as LocalizedConstants from '../../../localizedConstants';
 import * as constants from '../../../constants';
 
-import { AppContext } from '../../../appContext';
-import { ApiWrapper } from '../../../apiWrapper';
 import { SparkJobSubmissionModel } from './sparkJobSubmissionModel';
 import { SparkFileSource } from './sparkJobSubmissionService';
 
@@ -33,13 +31,9 @@ export class SparkConfigurationTab {
 	private _mainClassInputBox: azdata.InputBoxComponent;
 	private _argumentsInputBox: azdata.InputBoxComponent;
 
-	private get apiWrapper(): ApiWrapper {
-		return this.appContext.apiWrapper;
-	}
-
 	// If path is specified, means the default source setting for this tab is HDFS file, otherwise, it would be local file.
-	constructor(private _dataModel: SparkJobSubmissionModel, private appContext: AppContext, private _path?: string) {
-		this._tab = this.apiWrapper.createTab(localize('sparkJobSubmission.GeneralTabName', "GENERAL"));
+	constructor(private _dataModel: SparkJobSubmissionModel, private _path?: string) {
+		this._tab = azdata.window.createTab(localize('sparkJobSubmission.GeneralTabName', "GENERAL"));
 
 		this._tab.registerContent(async (modelView) => {
 			let builder = modelView.modelBuilder;
@@ -263,14 +257,14 @@ export class SparkConfigurationTab {
 				filters: filter
 			};
 
-			let fileUris: vscode.Uri[] = await this.apiWrapper.showOpenDialog(options);
+			let fileUris: vscode.Uri[] = await vscode.window.showOpenDialog(options);
 			if (fileUris && fileUris[0]) {
 				return fileUris[0].fsPath;
 			}
 
 			return undefined;
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('sparkJobSubmission.SelectFileError', "Error in locating the file due to Error: {0}", utils.getErrorMessage(err)));
+			vscode.window.showErrorMessage(localize('sparkJobSubmission.SelectFileError', "Error in locating the file due to Error: {0}", utils.getErrorMessage(err)));
 			return undefined;
 		}
 	}

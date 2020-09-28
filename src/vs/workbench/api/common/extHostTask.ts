@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { URI, UriComponents } from 'vs/base/common/uri';
-import * as Objects from 'vs/base/common/objects';
 import { asPromise } from 'vs/base/common/async';
 import { Event, Emitter } from 'vs/base/common/event';
 
@@ -27,6 +26,7 @@ import * as Platform from 'vs/base/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IExtHostApiDeprecationService } from 'vs/workbench/api/common/extHostApiDeprecationService';
 import { USER_TASKS_GROUP_KEY } from 'vs/workbench/contrib/tasks/common/taskService';
+import { NotSupportedError } from 'vs/base/common/errors';
 
 export interface IExtHostTask extends ExtHostTaskShape {
 
@@ -192,12 +192,16 @@ export namespace CustomExecutionDTO {
 
 
 export namespace TaskHandleDTO {
-	export function from(value: types.Task): tasks.TaskHandleDTO {
+	export function from(value: types.Task, workspaceService?: IExtHostWorkspace): tasks.TaskHandleDTO {
 		let folder: UriComponents | string;
 		if (value.scope !== undefined && typeof value.scope !== 'number') {
 			folder = value.scope.uri;
 		} else if (value.scope !== undefined && typeof value.scope === 'number') {
-			folder = USER_TASKS_GROUP_KEY;
+			if ((value.scope === types.TaskScope.Workspace) && workspaceService && workspaceService.workspaceFile) {
+				folder = workspaceService.workspaceFile;
+			} else {
+				folder = USER_TASKS_GROUP_KEY;
+			}
 		}
 		return {
 			id: value._id!,
@@ -265,8 +269,8 @@ export namespace TaskDTO {
 			presentationOptions: TaskPresentationOptionsDTO.from(value.presentationOptions),
 			problemMatchers: value.problemMatchers,
 			hasDefinedMatchers: (value as types.Task).hasDefinedMatchers,
-			runOptions: (<vscode.Task>value).runOptions ? (<vscode.Task>value).runOptions : { reevaluateOnRerun: true },
-			detail: (<vscode.Task2>value).detail
+			runOptions: value.runOptions ? value.runOptions : { reevaluateOnRerun: true },
+			detail: value.detail
 		};
 		return result;
 	}
@@ -325,7 +329,7 @@ export namespace TaskFilterDTO {
 		if (!value) {
 			return undefined;
 		}
-		return Objects.assign(Object.create(null), value);
+		return Object.assign(Object.create(null), value);
 	}
 }
 
@@ -371,7 +375,7 @@ export interface HandlerData {
 	extension: IExtensionDescription;
 }
 
-export abstract class ExtHostTaskBase implements ExtHostTaskShape {
+export abstract class ExtHostTaskBase implements ExtHostTaskShape, IExtHostTask {
 	readonly _serviceBrand: undefined;
 
 	protected readonly _proxy: MainThreadTaskShape;
@@ -419,6 +423,7 @@ export abstract class ExtHostTaskBase implements ExtHostTaskShape {
 		this._activeCustomExecutions2 = new Map<string, types.CustomExecution>();
 		this._logService = logService;
 		this._deprecationService = deprecationService;
+		this._proxy.$registerSupportedExecutions(true);
 	}
 
 	public registerTaskProvider(extension: IExtensionDescription, type: string, provider: vscode.TaskProvider): vscode.Disposable {
@@ -470,11 +475,7 @@ export abstract class ExtHostTaskBase implements ExtHostTaskShape {
 		return this._onDidExecuteTask.event;
 	}
 
-	protected async resolveDefinition(uri: number | UriComponents | undefined, definition: vscode.TaskDefinition | undefined): Promise<vscode.TaskDefinition | undefined> {
-		return definition;
-	}
-
-	public async $onDidStartTask(execution: tasks.TaskExecutionDTO, terminalId: number): Promise<void> {
+	public async $onDidStartTask(execution: tasks.TaskExecutionDTO, terminalId: number, resolvedDefinition: tasks.TaskDefinitionDTO): Promise<void> {
 		const customExecution: types.CustomExecution | undefined = this._providedCustomExecutions2.get(execution.id);
 		if (customExecution) {
 			if (this._activeCustomExecutions2.get(execution.id) !== undefined) {
@@ -483,7 +484,7 @@ export abstract class ExtHostTaskBase implements ExtHostTaskShape {
 
 			// Clone the custom execution to keep the original untouched. This is important for multiple runs of the same task.
 			this._activeCustomExecutions2.set(execution.id, customExecution);
-			this._terminalService.attachPtyToTerminal(terminalId, await customExecution.callback(await this.resolveDefinition(execution.task?.source.scope, execution.task?.definition)));
+			this._terminalService.attachPtyToTerminal(terminalId, await customExecution.callback(resolvedDefinition));
 		}
 		this._lastStartedTask = execution.id;
 
@@ -679,7 +680,9 @@ export abstract class ExtHostTaskBase implements ExtHostTaskShape {
 		}
 	}
 
-	public abstract async $jsonTasksSupported(): Promise<boolean>;
+	public abstract $jsonTasksSupported(): Promise<boolean>;
+
+	public abstract $findExecutable(command: string, cwd?: string | undefined, paths?: string[] | undefined): Promise<string | undefined>;
 }
 
 export class WorkerExtHostTask extends ExtHostTaskBase {
@@ -694,13 +697,11 @@ export class WorkerExtHostTask extends ExtHostTaskBase {
 		@IExtHostApiDeprecationService deprecationService: IExtHostApiDeprecationService
 	) {
 		super(extHostRpc, initData, workspaceService, editorService, configurationService, extHostTerminalService, logService, deprecationService);
-		if (initData.remote.isRemote && initData.remote.authority) {
-			this.registerTaskSystem(Schemas.vscodeRemote, {
-				scheme: Schemas.vscodeRemote,
-				authority: initData.remote.authority,
-				platform: Platform.PlatformToString(Platform.Platform.Web)
-			});
-		}
+		this.registerTaskSystem(Schemas.vscodeRemote, {
+			scheme: Schemas.vscodeRemote,
+			authority: '',
+			platform: Platform.PlatformToString(Platform.Platform.Web)
+		});
 	}
 
 	public async executeTask(extension: IExtensionDescription, task: vscode.Task): Promise<vscode.TaskExecution> {
@@ -715,7 +716,7 @@ export class WorkerExtHostTask extends ExtHostTaskBase {
 		if (CustomExecutionDTO.is(dto.execution)) {
 			await this.addCustomExecution(dto, task, false);
 		} else {
-			throw new Error('Not implemented');
+			throw new NotSupportedError();
 		}
 
 		// Always get the task execution first to prevent timing issues when retrieving it later
@@ -774,6 +775,10 @@ export class WorkerExtHostTask extends ExtHostTaskBase {
 
 	public async $jsonTasksSupported(): Promise<boolean> {
 		return false;
+	}
+
+	public async $findExecutable(command: string, cwd?: string | undefined, paths?: string[] | undefined): Promise<string | undefined> {
+		return undefined;
 	}
 }
 

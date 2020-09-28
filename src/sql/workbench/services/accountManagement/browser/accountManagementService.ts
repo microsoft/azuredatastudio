@@ -35,9 +35,9 @@ export class AccountManagementService implements IAccountManagementService {
 	public _providers: { [id: string]: AccountProviderWithMetadata } = {};
 	public _serviceBrand: undefined;
 	private _accountStore: AccountStore;
-	private _accountDialogController: AccountDialogController;
-	private _autoOAuthDialogController: AutoOAuthDialogController;
-	private _mementoContext: Memento;
+	private _accountDialogController?: AccountDialogController;
+	private _autoOAuthDialogController?: AutoOAuthDialogController;
+	private _mementoContext?: Memento;
 
 	// EVENT EMITTERS //////////////////////////////////////////////////////
 	private _addAccountProviderEmitter: Emitter<AccountProviderAddedEventParams>;
@@ -57,7 +57,7 @@ export class AccountManagementService implements IAccountManagementService {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IOpenerService private _openerService: IOpenerService,
 		@ILogService private readonly _logService: ILogService,
-		@INotificationService private readonly _notificationService,
+		@INotificationService private readonly _notificationService: INotificationService
 	) {
 		// Create the account store
 		if (!this._mementoObj) {
@@ -88,7 +88,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * account's properties have been updated (usually when the account goes stale).
 	 * @param updatedAccount Account with the updated properties
 	 */
-	public accountUpdated(updatedAccount: azdata.Account): Thenable<void> {
+	public accountUpdated(updatedAccount: azdata.Account): Promise<void> {
 		let self = this;
 
 		// 1) Update the account in the store
@@ -119,7 +119,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @param providerId ID of the provider to ask to prompt for an account
 	 * @return Promise to return an account
 	 */
-	public addAccount(providerId: string): Thenable<void> {
+	public addAccount(providerId: string): Promise<void> {
 		const closeAction: Action = new Action('closeAddingAccount', localize('accountManagementService.close', "Close"), undefined, true);
 
 		const loginNotification: INotification = {
@@ -166,7 +166,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @param account account to refresh
 	 * @return Promise to return an account
 	 */
-	public refreshAccount(account: azdata.Account): Thenable<azdata.Account> {
+	public refreshAccount(account: azdata.Account): Promise<azdata.Account> {
 		let self = this;
 
 		return this.doWithProvider(account.key.providerId, async (provider) => {
@@ -181,20 +181,20 @@ export class AccountManagementService implements IAccountManagementService {
 			let result = await self._accountStore.addOrUpdate(account);
 			if (result.accountAdded) {
 				// Add the account to the list
-				provider.accounts.push(result.changedAccount);
+				provider.accounts.push(result.changedAccount!);
 			}
 			if (result.accountModified) {
 				// Find the updated account and splice the updated on in
 				let indexToRemove: number = firstIndex(provider.accounts, account => {
-					return account.key.accountId === result.changedAccount.key.accountId;
+					return account.key.accountId === result.changedAccount!.key.accountId;
 				});
 				if (indexToRemove >= 0) {
-					provider.accounts.splice(indexToRemove, 1, result.changedAccount);
+					provider.accounts.splice(indexToRemove, 1, result.changedAccount!);
 				}
 			}
 
 			self.fireAccountListUpdate(provider, result.accountAdded);
-			return result.changedAccount;
+			return result.changedAccount!;
 		});
 	}
 
@@ -202,7 +202,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * Retrieves metadata of all providers that have been registered
 	 * @returns Registered account providers
 	 */
-	public getAccountProviderMetadata(): Thenable<azdata.AccountProviderMetadata[]> {
+	public getAccountProviderMetadata(): Promise<azdata.AccountProviderMetadata[]> {
 		return Promise.resolve(values(this._providers).map(provider => provider.metadata));
 	}
 
@@ -211,7 +211,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @param providerId ID of the provider the returned accounts belong to
 	 * @returns Promise to return a list of accounts
 	 */
-	public getAccountsForProvider(providerId: string): Thenable<azdata.Account[]> {
+	public getAccountsForProvider(providerId: string): Promise<azdata.Account[]> {
 		let self = this;
 
 		// 1) Get the accounts from the store
@@ -228,7 +228,7 @@ export class AccountManagementService implements IAccountManagementService {
 	/**
 	 * Retrieves all the accounts registered with ADS.
 	 */
-	public getAccounts(): Thenable<azdata.Account[]> {
+	public getAccounts(): Promise<azdata.Account[]> {
 		return this._accountStore.getAllAccounts();
 	}
 
@@ -238,9 +238,22 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @param resource The resource to get the security token for
 	 * @return Promise to return the security token
 	 */
-	public getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<{}> {
+	public getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<{} | undefined> {
 		return this.doWithProvider(account.key.providerId, provider => {
-			return provider.provider.getSecurityToken(account, resource);
+			return Promise.resolve(provider.provider.getSecurityToken(account, resource));
+		});
+	}
+
+	/**
+	 * Generates a security token by asking the account's provider
+	 * @param account Account to generate security token for
+	 * @param tenant Tenant to generate security token for
+	 * @param resource The resource to get the security token for
+	 * @return Promise to return the security token
+	 */
+	public getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<{ token: string } | undefined> {
+		return this.doWithProvider(account.key.providerId, provider => {
+			return Promise.resolve(provider.provider.getAccountSecurityToken(account, tenant, resource));
 		});
 	}
 
@@ -250,7 +263,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @returns Promise with result of account removal, true if account was
 	 *                           removed, false otherwise.
 	 */
-	public removeAccount(accountKey: azdata.AccountKey): Thenable<boolean> {
+	public removeAccount(accountKey: azdata.AccountKey): Promise<boolean> {
 
 		// Step 1) Remove the account
 		// Step 2) Clear the sensitive data from the provider (regardless of whether the account was removed)
@@ -285,10 +298,14 @@ export class AccountManagementService implements IAccountManagementService {
 
 		let finalResult = true;
 		for (const account of accounts) {
-			const removeResult = await this.removeAccount(account.key);
-			if (removeResult === false) {
-				this._logService.info('Error when removing %s.', account.key);
-				finalResult = false;
+			try {
+				const removeResult = await this.removeAccount(account.key);
+				if (removeResult === false) {
+					this._logService.info('Error when removing %s.', account.key);
+					finalResult = false;
+				}
+			} catch (ex) {
+				this._logService.error('Error when removing an account %s. Exception: %s', account.key, JSON.stringify(ex));
 			}
 		}
 		return finalResult;
@@ -297,9 +314,9 @@ export class AccountManagementService implements IAccountManagementService {
 	// UI METHODS //////////////////////////////////////////////////////////
 	/**
 	 * Opens the account list dialog
-	 * @return Promise that finishes when the account list dialog opens
+	 * @return Promise that finishes when the account list dialog closes
 	 */
-	public openAccountListDialog(): Thenable<void> {
+	public openAccountListDialog(): Promise<void> {
 		let self = this;
 
 		return new Promise((resolve, reject) => {
@@ -308,9 +325,8 @@ export class AccountManagementService implements IAccountManagementService {
 				if (!self._accountDialogController) {
 					self._accountDialogController = self._instantiationService.createInstance(AccountDialogController);
 				}
-
 				self._accountDialogController.openAccountDialog();
-				resolve();
+				self._accountDialogController.accountDialog!.onCloseEvent(resolve);
 			} catch (e) {
 				reject(e);
 			}
@@ -321,7 +337,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * Begin auto OAuth device code open add account dialog
 	 * @return Promise that finishes when the account list dialog opens
 	 */
-	public beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
+	public beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Promise<void> {
 		let self = this;
 
 		return this.doWithProvider(providerId, provider => {
@@ -340,9 +356,9 @@ export class AccountManagementService implements IAccountManagementService {
 	 * Called from the UI when a user cancels the auto OAuth dialog
 	 */
 	public cancelAutoOAuthDeviceCode(providerId: string): void {
-		this.doWithProvider(providerId, provider => provider.provider.autoOAuthCancelled())
+		void this.doWithProvider(providerId, provider => Promise.resolve(provider.provider.autoOAuthCancelled()))
 			.then(	// Swallow errors
-				null,
+				undefined,
 				err => { this._logService.warn(`Error when cancelling auto OAuth: ${err}`); }
 			)
 			.then(() => this.autoOAuthDialogController.closeAutoOAuthDialog());
@@ -356,50 +372,44 @@ export class AccountManagementService implements IAccountManagementService {
 		this._openerService.open(URI.parse(uri)).catch(err => onUnexpectedError(err));
 	}
 
-	// SERVICE MANAGEMENT METHODS //////////////////////////////////////////
-	/**
-	 * Called by main thread to register an account provider from extension
-	 * @param providerMetadata Metadata of the provider that is being registered
-	 * @param provider References to the methods of the provider
-	 */
-	public registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Thenable<void> {
-		let self = this;
-
-		// Store the account provider
+	private async _registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Promise<void> {
 		this._providers[providerMetadata.id] = {
 			metadata: providerMetadata,
 			provider: provider,
 			accounts: []
 		};
 
-		// Initialize the provider:
-		// 1) Get all the accounts that were stored
-		// 2) Give those accounts to the provider for rehydration
-		// 3) Add the accounts to our local store of accounts
-		// 4) Write the accounts back to the store
-		// 5) Fire the event to let folks know we have another account provider now
-		return this._accountStore.getAccountsByProvider(providerMetadata.id)
-			.then((accounts: azdata.Account[]) => {
-				return provider.initialize(accounts);
-			})
-			.then((accounts: azdata.Account[]) => {
-				self._providers[providerMetadata.id].accounts = accounts;
-				let writePromises = accounts.map(account => {
-					return self._accountStore.addOrUpdate(account);
-				});
-				return Promise.all(writePromises);
-			})
-			.then(() => {
-				let provider = self._providers[providerMetadata.id];
-				self._addAccountProviderEmitter.fire({
-					addedProvider: provider.metadata,
-					initialAccounts: provider.accounts.slice(0)		// Slice here to make sure no one can modify our cache
-				});
-				// Notify listeners that the account has been updated
-				self.fireAccountListUpdate(provider, false);
-			});
+		const accounts = await this._accountStore.getAccountsByProvider(providerMetadata.id);
+		const updatedAccounts = await provider.initialize(accounts);
 
-		// TODO: Add stale event handling to the providers
+		// Don't add the accounts that are about to get deleted to the cache.
+		this._providers[providerMetadata.id].accounts = updatedAccounts.filter(s => s.delete === false);
+
+		const writePromises = updatedAccounts.map(async (account) => {
+			if (account.delete === true) {
+				return this._accountStore.remove(account.key);
+			}
+			return this._accountStore.addOrUpdate(account);
+		});
+		await Promise.all(writePromises);
+
+		const p = this._providers[providerMetadata.id];
+		this._addAccountProviderEmitter.fire({
+			addedProvider: p.metadata,
+			initialAccounts: p.accounts.slice(0)		// Slice here to make sure no one can modify our cache
+		});
+		// Notify listeners that the account has been updated
+		this.fireAccountListUpdate(p, false);
+	}
+
+	// SERVICE MANAGEMENT METHODS //////////////////////////////////////////
+	/**
+	 * Called by main thread to register an account provider from extension
+	 * @param providerMetadata Metadata of the provider that is being registered
+	 * @param provider References to the methods of the provider
+	 */
+	public registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Promise<void> {
+		return this._registerProvider(providerMetadata, provider);
 	}
 
 	/**
@@ -422,7 +432,7 @@ export class AccountManagementService implements IAccountManagementService {
 	// TODO: Support for orphaned accounts (accounts with no provider)
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
-	private doWithProvider<T>(providerId: string, op: (provider: AccountProviderWithMetadata) => Thenable<T>): Thenable<T> {
+	private doWithProvider<T>(providerId: string, op: (provider: AccountProviderWithMetadata) => Promise<T>): Promise<T> {
 		let provider = this._providers[providerId];
 		if (!provider) {
 			// If the provider doesn't already exist wait until it gets registered

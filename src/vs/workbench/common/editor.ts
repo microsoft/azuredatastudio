@@ -167,7 +167,7 @@ export interface IFileEditorInputFactory {
 	/**
 	 * Creates new new editor input capable of showing files.
 	 */
-	createFileEditorInput(resource: URI, label: URI | undefined, encoding: string | undefined, mode: string | undefined, instantiationService: IInstantiationService): IFileEditorInput;
+	createFileEditorInput(resource: URI, preferredResource: URI | undefined, encoding: string | undefined, mode: string | undefined, instantiationService: IInstantiationService): IFileEditorInput;
 
 	/**
 	 * Check if the provided object is a file editor input.
@@ -649,20 +649,25 @@ export interface IModeSupport {
 export interface IFileEditorInput extends IEditorInput, IEncodingSupport, IModeSupport {
 
 	/**
-	 * Gets the resource this file input is about.
+	 * Gets the resource this file input is about. This will always be the
+	 * canonical form of the resource, so it may differ from the original
+	 * resource that was provided to create the input. Use `preferredResource`
+	 * for the form as it was created.
 	 */
 	readonly resource: URI;
 
 	/**
-	 * Gets the label of the editor. In most cases this will
-	 * be identical to the resource.
+	 * Gets the preferred resource of the editor. In most cases this will
+	 * be identical to the resource. But in some cases the preferredResource
+	 * may differ in path casing to the actual resource because we keep
+	 * canonical forms of resources in-memory.
 	 */
-	readonly label: URI;
+	readonly preferredResource: URI;
 
 	/**
-	 * Sets the preferred label to use for this file input.
+	 * Sets the preferred resource to use for this file input.
 	 */
-	setLabel(label: URI): void;
+	setPreferredResource(preferredResource: URI): void;
 
 	/**
 	 * Sets the preferred encoding to use for this file input.
@@ -814,6 +819,8 @@ export class EditorModel extends Disposable implements IEditorModel {
 	private readonly _onDispose = this._register(new Emitter<void>());
 	readonly onDispose = this._onDispose.event;
 
+	private disposed = false;
+
 	/**
 	 * Causes this model to load returning a promise when loading is completed.
 	 */
@@ -829,9 +836,17 @@ export class EditorModel extends Disposable implements IEditorModel {
 	}
 
 	/**
+	 * Find out if this model has been disposed.
+	 */
+	isDisposed(): boolean {
+		return this.disposed;
+	}
+
+	/**
 	 * Subclasses should implement to free resources that have been claimed through loading.
 	 */
 	dispose(): void {
+		this.disposed = true;
 		this._onDispose.fire();
 
 		super.dispose();
@@ -1130,6 +1145,22 @@ export class TextEditorOptions extends EditorOptions implements ITextEditorOptio
 
 		return gotApplied;
 	}
+}
+
+/**
+ * Context passed into `EditorPane#setInput` to give additional
+ * context information around why the editor was opened.
+ */
+export interface IEditorOpenContext {
+
+	/**
+	 * An indicator if the editor input is new for the group the editor is in.
+	 * An editor is new for a group if it was not part of the group before and
+	 * otherwise was already opened in the group and just became the active editor.
+	 *
+	 * This hint can e.g. be used to decide wether to restore view state or not.
+	 */
+	newInGroup?: boolean;
 }
 
 export interface IEditorIdentifier {

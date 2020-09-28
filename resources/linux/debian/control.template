@@ -11,4 +11,4 @@ Provides: @@NAME@@
 Conflicts: @@NAME@@
 Replaces: @@NAME@@
 Description: Azure Data Studio
- Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB, and SQL DW from Linux. See https://docs.microsoft.com/en-us/sql/sql-operations-studio/what-is for documentation.
+ Azure Data Studio is a cross-platform database tool for data professionals using the Microsoft family of on-premises and cloud data platforms on Windows, MacOS, and Linux. See https://docs.microsoft.com/en-us/sql/sql-operations-studio/what-is for documentation.

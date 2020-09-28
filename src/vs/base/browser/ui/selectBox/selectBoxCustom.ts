@@ -717,6 +717,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 
 
 			container.innerHTML = this.options[longest].text + (!!this.options[longest].decoratorRight ? (this.options[longest].decoratorRight + ' ') : '');
+
 			elementWidth = dom.getTotalWidth(container);
 		}
 

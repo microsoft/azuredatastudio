@@ -8,7 +8,6 @@ import * as should from 'should';
 import * as vscode from 'vscode';
 import 'mocha';
 import { AppContext } from '../../../appContext';
-import { ApiWrapper } from '../../../apiWrapper';
 import { CmsResourceItemType } from '../../../cmsResource/constants';
 import { ServerGroupTreeNode } from '../../../cmsResource/tree/serverGroupTreeNode';
 import { ICmsResourceTreeChangeHandler } from '../../../cmsResource/tree/treeChangeHandler';
@@ -19,7 +18,6 @@ import { CmsUtils } from '../../../cmsUtils';
 let mockAppContext: AppContext;
 
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
-let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockCmsUtils: TypeMoq.IMock<CmsUtils>;
 let mockTreeChangeHandler: TypeMoq.IMock<ICmsResourceTreeChangeHandler>;
 
@@ -29,9 +27,8 @@ let mockResourceProvider1: TypeMoq.IMock<cmsResource.ICmsResourceProvider>;
 describe('ServerGroupTreeNode.info', function(): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockCmsUtils = TypeMoq.Mock.ofType<CmsUtils>();
-		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object, mockCmsUtils.object);
+		mockAppContext = new AppContext(mockExtensionContext.object, mockCmsUtils.object);
 		mockTreeChangeHandler = TypeMoq.Mock.ofType<ICmsResourceTreeChangeHandler>();
 		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<cmsResource.ICmsResourceTreeDataProvider>();
 		mockResourceTreeDataProvider1.setup((o) => o.getChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<cmsResource.ICmsResourceNode>().object]));

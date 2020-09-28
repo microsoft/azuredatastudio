@@ -22,6 +22,7 @@ const buildFiles: string[] = [
 	'Microsoft.SqlServer.TransactSql.ScriptDom.dll',
 	'Microsoft.SqlServer.Types.dll',
 	'System.ComponentModel.Composition.dll',
+	'System.IO.Packaging.dll',
 	'Microsoft.Data.Tools.Schema.SqlTasks.targets'
 ];
 
@@ -84,8 +85,8 @@ export class BuildHelper {
 	}
 
 	public constructBuildArguments(projectPath: string, buildDirPath: string): string {
-		projectPath = utils.getSafePath(projectPath);
-		buildDirPath = utils.getSafePath(buildDirPath);
+		projectPath = utils.getQuotedPath(projectPath);
+		buildDirPath = utils.getQuotedPath(buildDirPath);
 		return ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath}`;
 	}
 }

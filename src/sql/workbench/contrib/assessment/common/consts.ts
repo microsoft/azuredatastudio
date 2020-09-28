@@ -10,7 +10,8 @@ export enum AssessmentTargetType {
 
 export enum AssessmentType {
 	AvailableRules = 1,
-	InvokeAssessment = 2
+	InvokeAssessment = 2,
+	ReportGeneration = 3
 }
 
 export const TARGET_ICON_CLASS: { [targetType: number]: string } = {

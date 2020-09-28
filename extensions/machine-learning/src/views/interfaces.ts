@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { azureResource } from '../typings/azure-resource';
+import { azureResource } from 'azureResource';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { WorkspaceModel } from '../modelManagement/interfaces';
 

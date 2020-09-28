@@ -13,7 +13,6 @@ import * as utils from '../../common/utils';
 import { promises as fs } from 'fs';
 import { Deferred } from '../../common/promise';
 import { PythonPathInfo, PythonPathLookup } from '../pythonPathLookup';
-import { ApiWrapper } from '../../common/apiWrapper';
 
 const localize = nls.loadMessageBundle();
 
@@ -37,7 +36,7 @@ export class ConfigurePythonWizard {
 	private _setupComplete: Deferred<void>;
 	private pythonPathsPromise: Promise<PythonPathInfo[]>;
 
-	constructor(private apiWrapper: ApiWrapper, private jupyterInstallation: JupyterServerInstallation) {
+	constructor(private jupyterInstallation: JupyterServerInstallation) {
 		this._setupComplete = new Deferred<void>();
 		this.pythonPathsPromise = (new PythonPathLookup()).getSuggestions();
 	}
@@ -55,8 +54,8 @@ export class ConfigurePythonWizard {
 			kernelName: kernelName,
 			pythonPathsPromise: this.pythonPathsPromise,
 			installation: this.jupyterInstallation,
-			pythonLocation: JupyterServerInstallation.getPythonPathSetting(this.apiWrapper),
-			useExistingPython: JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper)
+			pythonLocation: JupyterServerInstallation.getPythonPathSetting(),
+			useExistingPython: JupyterServerInstallation.getExistingPythonSetting()
 		};
 
 		let pages: Map<number, BasePage> = new Map<number, BasePage>();
@@ -67,19 +66,19 @@ export class ConfigurePythonWizard {
 		} else {
 			wizardTitle = localize('configurePython.wizardNameWithoutKernel', "Configure Python to run kernels");
 		}
-		this._wizard = azdata.window.createWizard(wizardTitle, 600);
+		this._wizard = azdata.window.createWizard(wizardTitle, 'ConfigurePythonWizard', 600);
 		let page0 = azdata.window.createWizardPage(localize('configurePython.page0Name', "Configure Python Runtime"));
 		let page1 = azdata.window.createWizardPage(localize('configurePython.page1Name', "Install Dependencies"));
 
 		page0.registerContent(async (view) => {
-			let configurePathPage = new ConfigurePathPage(this.apiWrapper, this, page0, this.model, view);
+			let configurePathPage = new ConfigurePathPage(this, page0, this.model, view);
 			pages.set(0, configurePathPage);
 			await configurePathPage.initialize();
 			await configurePathPage.onPageEnter();
 		});
 
 		page1.registerContent(async (view) => {
-			let pickPackagesPage = new PickPackagesPage(this.apiWrapper, this, page1, this.model, view);
+			let pickPackagesPage = new PickPackagesPage(this, page1, this.model, view);
 			pages.set(1, pickPackagesPage);
 			await pickPackagesPage.initialize();
 		});
@@ -123,7 +122,7 @@ export class ConfigurePythonWizard {
 
 		this._wizard.generateScriptButton.hidden = true;
 		this._wizard.pages = [page0, page1];
-		this._wizard.open();
+		await this._wizard.open();
 	}
 
 	public async close(): Promise<void> {
@@ -167,7 +166,7 @@ export class ConfigurePythonWizard {
 		let installSettings: PythonInstallSettings = {
 			installPath: pythonLocation,
 			existingPython: useExistingPython,
-			specificPackages: this.model.packagesToInstall
+			packages: this.model.packagesToInstall
 		};
 		this.jupyterInstallation.startInstallProcess(false, installSettings)
 			.then(() => {

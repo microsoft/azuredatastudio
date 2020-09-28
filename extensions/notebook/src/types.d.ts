@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AppContext } from './common/appContext';
+
 /**
  * The API provided by this extension.
  *
@@ -12,6 +14,7 @@ export interface IExtensionApi {
 	getJupyterController(): IJupyterController;
 	registerPackageManager(providerId: string, packageManagerProvider: IPackageManageProvider): void;
 	getPackageManagers(): Map<string, IPackageManageProvider>;
+	getAppContext(): AppContext;
 }
 
 /**
@@ -134,6 +137,11 @@ export interface IPackageManageProvider {
 	 * Returns location title
 	 */
 	getLocations(): Promise<IPackageLocation[]>;
+
+	/**
+	 * Get the current location
+	 */
+	getCurrentLocation(): Promise<string | undefined>;
 
 	/**
 	 * Returns Package Overview

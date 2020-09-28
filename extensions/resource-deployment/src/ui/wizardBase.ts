@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { WizardPageBase } from './wizardPageBase';
 import { Model } from './model';
+import { IToolsService } from '../services/toolsService';
 const localize = nls.loadMessageBundle();
 
 export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model> {
@@ -20,8 +21,8 @@ export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model
 		return this._model;
 	}
 
-	constructor(private title: string, private _model: M) {
-		this.wizardObject = azdata.window.createWizard(title);
+	constructor(private title: string, name: string, private _model: M, public toolsService: IToolsService) {
+		this.wizardObject = azdata.window.createWizard(title, name);
 	}
 
 	public async open(): Promise<void> {
@@ -30,7 +31,7 @@ export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model
 		this.toDispose.push(this.wizardObject.onPageChanged(async (e) => {
 			let previousPage = this.pages[e.lastPage];
 			let newPage = this.pages[e.newPage];
-			previousPage.onLeave();
+			await previousPage.onLeave();
 			await newPage.onEnter();
 		}));
 

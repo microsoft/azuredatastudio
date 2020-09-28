@@ -5,7 +5,9 @@
 
 import * as vscode from 'vscode';
 import * as os from 'os';
-import * as constants from '../common/constants';
+import * as constants from './constants';
+import * as path from 'path';
+import * as glob from 'fast-glob';
 import { promises as fs } from 'fs';
 
 /**
@@ -19,7 +21,8 @@ export function getErrorMessage(error: any): string {
 
 /**
  * removes any leading portion shared between the two URIs from outerUri.
- * e.g. [@param innerUri: 'this\is'; @param outerUri: '\this\is\my\path'] => 'my\path'
+ * e.g. [@param innerUri: 'this\is'; @param outerUri: '\this\is\my\path'] => 'my\path' OR
+ * e.g. [@param innerUri: 'this\was'; @param outerUri: '\this\is\my\path'] => '..\is\my\path'
  * @param innerUri the URI that will be cut away from the outer URI
  * @param outerUri the URI that will have any shared beginning portion removed
  */
@@ -27,9 +30,20 @@ export function trimUri(innerUri: vscode.Uri, outerUri: vscode.Uri): string {
 	let innerParts = innerUri.path.split('/');
 	let outerParts = outerUri.path.split('/');
 
+	if (path.isAbsolute(outerUri.path)
+		&& innerParts.length > 0 && outerParts.length > 0
+		&& innerParts[0].toLowerCase() !== outerParts[0].toLowerCase()) {
+		throw new Error(constants.ousiderFolderPath);
+	}
+
 	while (innerParts.length > 0 && outerParts.length > 0 && innerParts[0].toLocaleLowerCase() === outerParts[0].toLocaleLowerCase()) {
 		innerParts = innerParts.slice(1);
 		outerParts = outerParts.slice(1);
+	}
+
+	while (innerParts.length > 1) {
+		outerParts.unshift(constants.RelativeOuterPath);
+		innerParts = innerParts.slice(1);
 	}
 
 	return outerParts.join('/');
@@ -68,24 +82,24 @@ export async function exists(path: string): Promise<boolean> {
  * get quoted path to be used in any commandline argument
  * @param filePath
  */
-export function getSafePath(filePath: string): string {
+export function getQuotedPath(filePath: string): string {
 	return (os.platform() === 'win32') ?
-		getSafeWindowsPath(filePath) :
-		getSafeNonWindowsPath(filePath);
+		getQuotedWindowsPath(filePath) :
+		getQuotedNonWindowsPath(filePath);
 }
 
 /**
- * ensure that path with spaces are handles correctly
+ * ensure that path with spaces are handles correctly (return quoted path)
  */
-export function getSafeWindowsPath(filePath: string): string {
+function getQuotedWindowsPath(filePath: string): string {
 	filePath = filePath.split('\\').join('\\\\').split('"').join('');
 	return '"' + filePath + '"';
 }
 
 /**
- * ensure that path with spaces are handles correctly
+ * ensure that path with spaces are handles correctly (return quoted path)
  */
-export function getSafeNonWindowsPath(filePath: string): string {
+function getQuotedNonWindowsPath(filePath: string): string {
 	filePath = filePath.split('\\').join('/').split('"').join('');
 	return '"' + filePath + '"';
 }
@@ -101,18 +115,116 @@ export function getPlatformSafeFileEntryPath(filePath: string): string {
 }
 
 /**
+ * Standardizes slashes to be "\\" for consistency between platforms and compatibility with SSDT
+ */
+export function convertSlashesForSqlProj(filePath: string): string {
+	const parts = filePath.split('/');
+	return parts.join('\\');
+}
+
+/**
  * Read SQLCMD variables from xmlDoc and return them
  * @param xmlDoc xml doc to read SQLCMD variables from. Format must be the same that sqlproj and publish profiles use
  */
 export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
 	let sqlCmdVariables: Record<string, string> = {};
-	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable).length; i++) {
+	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)?.length; i++) {
 		const sqlCmdVar = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
 		const varName = sqlCmdVar.getAttribute(constants.Include);
 
-		const varValue = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
-		sqlCmdVariables[varName] = varValue;
+		if (sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0] !== undefined) {
+			// project file path
+			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
+		}
+		else {
+			// profile path
+			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.Value)[0].childNodes[0].nodeValue;
+		}
 	}
 
 	return sqlCmdVariables;
+}
+
+/**
+ * 	Removes $() around a sqlcmd variable
+ * @param name
+ */
+export function removeSqlCmdVariableFormatting(name: string | undefined): string {
+	if (!name || name === '') {
+		return '';
+	}
+
+	if (name.length > 3) {
+		// Trim in case we get "  $(x)"
+		name = name.trim();
+		let indexStart = name.startsWith('$(') ? 2 : 0;
+		let indexEnd = name.endsWith(')') ? 1 : 0;
+		if (indexStart > 0 || indexEnd > 0) {
+			name = name.substr(indexStart, name.length - indexEnd - indexStart);
+		}
+	}
+
+	// Trim in case the customer types "  $(x   )"
+	return name.trim();
+}
+
+/**
+ * 	Format as sqlcmd variable by adding $() if necessary
+ * if the variable already starts with $(, then add )
+ * @param name
+ */
+export function formatSqlCmdVariable(name: string): string {
+	if (!name || name === '') {
+		return name;
+	}
+
+	// Trim in case we get "  $(x)"
+	name = name.trim();
+
+	if (!name.startsWith('$(') && !name.endsWith(')')) {
+		name = `$(${name})`;
+	} else if (name.startsWith('$(') && !name.endsWith(')')) {
+		// add missing end parenthesis, same behavior as SSDT
+		name = `${name})`;
+	}
+
+	return name;
+}
+
+/**
+ * Checks if it's a valid sqlcmd variable name
+ * https://docs.microsoft.com/en-us/sql/ssms/scripting/sqlcmd-use-with-scripting-variables?redirectedfrom=MSDN&view=sql-server-ver15#guidelines-for-scripting-variable-names-and-values
+ * @param name variable name to validate
+ */
+export function isValidSqlCmdVariableName(name: string | undefined): boolean {
+	// remove $() around named if it's there
+	name = removeSqlCmdVariableFormatting(name);
+
+	// can't contain whitespace
+	if (!name || name.trim() === '' || name.includes(' ')) {
+		return false;
+	}
+
+	// can't contain these characters
+	if (name.includes('$') || name.includes('@') || name.includes('#') || name.includes('"') || name.includes('\'') || name.includes('-')) {
+		return false;
+	}
+
+	// TODO: tsql parsing to check if it's a reserved keyword or invalid tsql https://github.com/microsoft/azuredatastudio/issues/12204
+	// TODO: give more detail why variable name was invalid https://github.com/microsoft/azuredatastudio/issues/12231
+
+	return true;
+}
+
+/*
+ * Recursively gets all the sqlproj files at any depth in a folder
+ * @param folderPath
+ */
+export async function getSqlProjectFilesInFolder(folderPath: string): Promise<string[]> {
+	// path needs to use forward slashes for glob to work
+	const escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
+	const sqlprojFilter = path.posix.join(escapedPath, '**', '*.sqlproj');
+	const results = await glob(sqlprojFilter);
+
+	return results;
 }

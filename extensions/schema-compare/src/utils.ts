@@ -9,6 +9,7 @@ import * as mssql from '../../mssql';
 import * as os from 'os';
 import * as loc from './localizedConstants';
 import { ApiWrapper } from './common/apiWrapper';
+import { promises as fs } from 'fs';
 
 export interface IPackageInfo {
 	name: string;
@@ -84,7 +85,7 @@ function connectionInfoToConnectionProfile(details: azdata.ConnectionInfo): azda
 	};
 }
 
-export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompareEndpointInfo, caller: string, apiWrapper: ApiWrapper): Promise<string> {
+export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompareEndpointInfo, caller: string, apiWrapper: ApiWrapper): Promise<string | undefined> {
 	let ownerUri = undefined;
 
 	if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Database && endpoint.connectionDetails) {
@@ -131,4 +132,13 @@ export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompa
  */
 export function getRootPath(): string {
 	return vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : os.homedir();
+}
+
+export async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
 }

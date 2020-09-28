@@ -4,22 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ExtensionContext } from 'vscode';
-import { ApiWrapper } from '../../../apiWrapper';
 
-import { azureResource } from '../../azure-resource';
+import { azureResource } from 'azureResource';
 import { IAzureResourceService } from '../../interfaces';
 import { PostgresServerArcTreeDataProvider as PostgresServerArcTreeDataProvider } from './postgresServerTreeDataProvider';
 
 export class PostgresServerArcProvider implements azureResource.IAzureResourceProvider {
 	public constructor(
 		private _databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
-		private _apiWrapper: ApiWrapper,
 		private _extensionContext: ExtensionContext
 	) {
 	}
 
 	public getTreeDataProvider(): azureResource.IAzureResourceTreeDataProvider {
-		return new PostgresServerArcTreeDataProvider(this._databaseServerService, this._apiWrapper, this._extensionContext);
+		return new PostgresServerArcTreeDataProvider(this._databaseServerService, this._extensionContext);
 	}
 
 	public get providerId(): string {

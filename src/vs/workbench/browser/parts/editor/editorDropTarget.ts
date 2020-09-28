@@ -13,7 +13,7 @@ import { IThemeService, Themable } from 'vs/platform/theme/common/themeService';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IEditorIdentifier, EditorInput, EditorOptions } from 'vs/workbench/common/editor';
 import { isMacintosh, isWeb } from 'vs/base/common/platform';
-import { GroupDirection, MergeGroupMode } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { GroupDirection, MergeGroupMode, OpenEditorContext } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { RunOnceScheduler } from 'vs/base/common/async';
@@ -29,6 +29,7 @@ import { localize } from 'vs/nls';
 // {{SQL CARBON EDIT}}
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { SnippetController2 } from 'vs/editor/contrib/snippet/snippetController2';
+import { supportsNodeNameDrop } from 'sql/workbench/services/objectExplorer/browser/dragAndDropController';
 
 interface IDropOperation {
 	splitDirection?: GroupDirection;
@@ -281,13 +282,13 @@ class DropOverlay extends Themable {
 						pinned: true,										// always pin dropped editor
 						sticky: sourceGroup.isSticky(draggedEditor.editor)	// preserve sticky state
 					}));
-					targetGroup.openEditor(draggedEditor.editor, options);
+					const copyEditor = this.isCopyOperation(event, draggedEditor);
+					targetGroup.openEditor(draggedEditor.editor, options, copyEditor ? OpenEditorContext.COPY_EDITOR : OpenEditorContext.MOVE_EDITOR);
 
 					// Ensure target has focus
 					targetGroup.focus();
 
 					// Close in source group unless we copy
-					const copyEditor = this.isCopyOperation(event, draggedEditor);
 					if (!copyEditor) {
 						sourceGroup.closeEditor(draggedEditor.editor);
 					}
@@ -359,8 +360,9 @@ class DropOverlay extends Themable {
 
 			// {{SQL CARBON EDIT}}
 			const editor = this.editorService.activeTextEditorControl as ICodeEditor;
-			if (untitledOrFileResources[0].resource.scheme === 'Column' || untitledOrFileResources[0].resource.scheme === 'Table') {
-				SnippetController2.get(editor).insert(`[${untitledOrFileResources[0].resource.query}]`);
+			if (supportsNodeNameDrop(untitledOrFileResources[0].resource.scheme) || untitledOrFileResources[0].resource.scheme === 'Folder') {
+				SnippetController2.get(editor).insert(untitledOrFileResources[0].resource.query);
+				editor.focus();
 				return;
 			}
 

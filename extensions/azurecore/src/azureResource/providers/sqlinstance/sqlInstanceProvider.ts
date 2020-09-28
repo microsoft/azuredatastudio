@@ -4,22 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ExtensionContext } from 'vscode';
-import { ApiWrapper } from '../../../apiWrapper';
 
-import { azureResource } from '../../azure-resource';
+import { azureResource } from 'azureResource';
 import { IAzureResourceService } from '../../interfaces';
 import { SqlInstanceTreeDataProvider as SqlInstanceTreeDataProvider } from './sqlInstanceTreeDataProvider';
 
 export class SqlInstanceProvider implements azureResource.IAzureResourceProvider {
 	public constructor(
 		private _service: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
-		private _apiWrapper: ApiWrapper,
 		private _extensionContext: ExtensionContext
 	) {
 	}
 
 	public getTreeDataProvider(): azureResource.IAzureResourceTreeDataProvider {
-		return new SqlInstanceTreeDataProvider(this._service, this._apiWrapper, this._extensionContext);
+		return new SqlInstanceTreeDataProvider(this._service, this._extensionContext);
 	}
 
 	public get providerId(): string {

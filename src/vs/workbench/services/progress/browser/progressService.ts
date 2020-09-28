@@ -61,6 +61,10 @@ export class ProgressService extends Disposable implements IProgressService {
 				return this.withViewProgress(location, task, { ...options, location });
 			}
 
+			if (this.viewDescriptorService.getViewLocationById(location) === ViewContainerLocation.Dialog) { // {{SQL CARBON EDIT}} bypass progress for dialog @todo
+				return task({ report: () => { return; } });
+			}
+
 			throw new Error(`Bad progress location: ${location}`);
 		}
 
@@ -505,7 +509,9 @@ export class ProgressService extends Disposable implements IProgressService {
 			'workbench.action.quit',
 			'workbench.action.reloadWindow',
 			'copy',
-			'cut'
+			'cut',
+			'editor.action.clipboardCopyAction',
+			'editor.action.clipboardCutAction'
 		];
 
 		let dialog: Dialog;
@@ -525,7 +531,7 @@ export class ProgressService extends Disposable implements IProgressService {
 					keyEventProcessor: (event: StandardKeyboardEvent) => {
 						const resolved = this.keybindingService.softDispatch(event, this.layoutService.container);
 						if (resolved?.commandId) {
-							if (allowableCommands.indexOf(resolved.commandId) === -1) {
+							if (!allowableCommands.includes(resolved.commandId)) {
 								EventHelper.stop(event, true);
 							}
 						}

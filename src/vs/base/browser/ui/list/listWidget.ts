@@ -854,6 +854,7 @@ export interface IListOptions<T> {
 	readonly horizontalScrolling?: boolean;
 	readonly additionalScrollHeight?: number;
 	readonly transformOptimization?: boolean;
+	readonly smoothScrolling?: boolean;
 }
 
 export interface IListStyles {
@@ -1320,6 +1321,10 @@ export class List<T> implements ISpliceable<T>, IThemable, IDisposable {
 
 	element(index: number): T {
 		return this.view.element(index);
+	}
+
+	indexOf(element: T): number {
+		return this.view.indexOf(element);
 	}
 
 	get length(): number {

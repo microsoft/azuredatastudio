@@ -233,7 +233,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		});
 	}
 
-	public onLeave() {
+	public async onLeave(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});

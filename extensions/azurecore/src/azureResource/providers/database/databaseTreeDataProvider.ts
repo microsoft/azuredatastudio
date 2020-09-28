@@ -4,13 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TreeItem, ExtensionNodeType, Account } from 'azdata';
-import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { azureResource } from '../../azure-resource';
+import { azureResource } from 'azureResource';
 import { AzureResourceItemType } from '../../../azureResource/constants';
-import { ApiWrapper } from '../../../apiWrapper';
 import { generateGuid } from '../../utils';
 import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
@@ -22,10 +21,9 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 
 	public constructor(
 		databaseService: IAzureResourceService<azureResource.AzureResourceDatabase>,
-		apiWrapper: ApiWrapper,
-		private _extensionContext: ExtensionContext
+		private _extensionContext: vscode.ExtensionContext
 	) {
-		super(databaseService, apiWrapper);
+		super(databaseService);
 	}
 	protected getTreeItemForResource(database: azureResource.AzureResourceDatabase, account: Account): TreeItem {
 		return {
@@ -35,7 +33,7 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_database_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_database.svg')
 			},
-			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			collapsibleState: vscode.workspace.getConfiguration('connection').get<boolean>('dialog.browse') ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.database,
 			payload: {
 				id: generateGuid(),
@@ -73,7 +71,7 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
 					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
 				},
-				collapsibleState: TreeItemCollapsibleState.Collapsed,
+				collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 				contextValue: AzureResourceItemType.databaseContainer
 			}
 		};

@@ -2,7 +2,7 @@
   "name": "asde-deployment",
   "displayName": "%extension-displayName%",
   "description": "%extension-description%",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -21,7 +21,6 @@
     "resourceDeploymentTypes": [
       {
         "name": "sql-edge",
-        "enabled": false,
         "displayName": "%resource-type-sql-edge-display-name%",
         "description": "%resource-type-sql-edge-description%",
         "platforms": "*",
@@ -41,6 +40,18 @@
               {
                 "name": "remote",
                 "displayName": "%sql-edge-remote-display-name%"
+              },
+              {
+                "name": "azure-create-new",
+                "displayName": "%sql-edge-azure-display-name%"
+              },
+              {
+                "name": "azure-single-device",
+                "displayName": "%sql-edge-azure-single-device-display-name%"
+              },
+              {
+                "name": "azure-multi-device",
+                "displayName": "%sql-edge-azure-multi-device-display-name%"
               }
             ]
           }
@@ -48,7 +59,7 @@
         "providers": [
           {
             "dialog": {
-              "notebook": "%sql-edge-local-notebook%",
+              "notebook": "./notebooks/edge/deploy-sql-edge-local.ipynb",
               "title": "%sql-edge-local-title%",
               "name": "sql-edge-local-dialog",
               "tabs": [
@@ -141,7 +152,7 @@
           },
           {
             "dialog": {
-              "notebook": "%sql-edge-remote-notebook%",
+              "notebook": "./notebooks/edge/deploy-sql-edge-remote.ipynb",
               "title": "%sql-edge-remote-title%",
               "name": "sql-edge-remote-dialog",
               "tabs": [
@@ -255,6 +266,304 @@
             },
             "requiredTools": [],
             "when": "type=remote"
+          },
+          {
+            "dialog": {
+              "notebook": "./notebooks/edge/deploy-sql-edge-azure.ipynb",
+              "title": "%sql-edge-azure-title%",
+              "name": "sql-edge-azure-dialog",
+              "tabs": [
+                {
+                  "title": "",
+                  "sections": [
+                    {
+                      "title": "%azure-info-section-title%",
+                      "collapsible": true,
+                      "fields": [
+                        {
+                          "subscriptionVariableName": "AZDATA_NB_VAR_ASDE_SUBSCRIPTIONID",
+                          "resourceGroupVariableName": "AZDATA_NB_VAR_ASDE_RESOURCEGROUP",
+                          "type": "azure_account",
+                          "required": true,
+                          "allowNewResourceGroup": true,
+                          "newResourceGroupFlagVariableName": "AZDATA_NB_VAR_ASDE_NEW_RESOURCEGROUP",
+                          "newResourceGroupNameVariableName": "AZDATA_NB_VAR_ASDE_NEW_RESOURCEGROUP_NAME"
+                        },
+                        {
+                          "type": "azure_locations",
+                          "label": "%azure_location%",
+                          "defaultValue": "westus",
+                          "required": true,
+                          "locationVariableName": "AZDATA_NB_VAR_ASDE_AZURE_LOCATION",
+                          "displayLocationVariableName": "AZDATA_NB_VAR_ASDE_AZURE_LOCATION_TEXT",
+                          "locations": [
+                            "australiaeast",
+                            "australiasoutheast",
+                            "brazilsouth",
+                            "canadacentral",
+                            "canadaeast",
+                            "centralindia",
+                            "centralus",
+                            "eastasia",
+                            "eastus",
+                            "eastus2",
+                            "francecentral",
+                            "japaneast",
+                            "japanwest",
+                            "koreacentral",
+                            "koreasouth",
+                            "northcentralus",
+                            "northeurope",
+                            "southcentralus",
+                            "southindia",
+                            "southeastasia",
+                            "uksouth",
+                            "ukwest",
+                            "westcentralus",
+                            "westeurope",
+                            "westus",
+                            "westus2"
+                          ]
+                        },
+                        {
+                          "label": "%vm_admin%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_VM_ADMIN",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "label": "%vm_password%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_VM_PASSWORD",
+                          "type": "password",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%vm_password_confirm%",
+                          "required": true
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%sqlserver-info-section-title%",
+                      "collapsible": true,
+                      "fields": [
+                        {
+                          "label": "%docker-sql-password-field%",
+                          "variableName": "AZDATA_NB_VAR_SA_PASSWORD",
+                          "type": "sql_password",
+                          "userName": "sa",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%docker-confirm-sql-password-field%",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-sql-port-field%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_SQL_PORT",
+                          "type": "number",
+                          "defaultValue": 31433,
+                          "required": true
+                        },
+                        {
+                          "label": "%dacpac_path%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_DACPAC_PATH",
+                          "type": "file_picker",
+                          "required": false,
+                          "filter": {
+                            "displayName": "%dacpac-zip-files%",
+                            "fileTypes": [
+                              "zip"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli",
+                "version": "2.9.1"
+              }
+            ],
+            "when": "type=azure-create-new"
+          },
+          {
+            "dialog": {
+              "notebook": "./notebooks/edge/deploy-sql-edge-single-device.ipynb",
+              "title": "%sql-edge-azure-single-device-title%",
+              "name": "sql-edge-azure-single-device-dialog",
+              "tabs": [
+                {
+                  "title": "",
+                  "sections": [
+                    {
+                      "title": "%azure-info-section-title%",
+                      "collapsible": true,
+                      "fields": [
+                        {
+                          "type": "azure_account",
+                          "subscriptionVariableName": "AZDATA_NB_VAR_ASDE_SUBSCRIPTIONID",
+                          "resourceGroupVariableName": "AZDATA_NB_VAR_ASDE_RESOURCEGROUP",
+                          "required": true
+                        },
+                        {
+                          "label": "%iot-hub-name%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_HUBNAME",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "label": "%device-id%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_DEVICE_ID",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "label": "%device-ip-address%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_DEVICE_IP_ADDRESS",
+                          "type": "text",
+                          "description": "%device-ip-address-description%",
+                          "required": false
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%sqlserver-info-section-title%",
+                      "collapsible": true,
+                      "fields": [
+                        {
+                          "label": "%docker-sql-password-field%",
+                          "variableName": "AZDATA_NB_VAR_SA_PASSWORD",
+                          "type": "sql_password",
+                          "userName": "sa",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%docker-confirm-sql-password-field%",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-sql-port-field%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_SQL_PORT",
+                          "type": "number",
+                          "defaultValue": 31433,
+                          "required": true
+                        },
+                        {
+                          "label": "%dacpac_path%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_DACPAC_PATH",
+                          "type": "file_picker",
+                          "required": false,
+                          "filter": {
+                            "displayName": "%dacpac-zip-files%",
+                            "fileTypes": [
+                              "zip"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli",
+                "version": "2.9.1"
+              }
+            ],
+            "when": "type=azure-single-device"
+          },
+          {
+            "dialog": {
+              "notebook": "./notebooks/edge/deploy-sql-edge-multi-device.ipynb",
+              "title": "%sql-edge-azure-multi-device-title%",
+              "name": "sql-edge-azure-multi-device-dialog",
+              "tabs": [
+                {
+                  "title": "",
+                  "sections": [
+                    {
+                      "title": "%azure-info-section-title%",
+                      "collapsible": true,
+                      "fields": [
+                        {
+                          "type": "azure_account",
+                          "subscriptionVariableName": "AZDATA_NB_VAR_ASDE_SUBSCRIPTIONID",
+                          "resourceGroupVariableName": "AZDATA_NB_VAR_ASDE_RESOURCEGROUP",
+                          "required": true
+                        },
+                        {
+                          "label": "%iot-hub-name%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_HUBNAME",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "label": "%device-target-condition%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_TARGET_CONDITION",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "type": "readonly_text",
+                          "label": "{0}",
+                          "links": [
+                            {
+                              "text": "%device-target-condition-learn-more%",
+                              "url": "https://docs.microsoft.com/azure/iot-edge/module-deployment-monitoring#target-condition"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%sqlserver-info-section-title%",
+                      "collapsible": true,
+                      "fields": [
+                        {
+                          "label": "%docker-sql-password-field%",
+                          "variableName": "AZDATA_NB_VAR_SA_PASSWORD",
+                          "type": "sql_password",
+                          "userName": "sa",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%docker-confirm-sql-password-field%",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-sql-port-field%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_SQL_PORT",
+                          "type": "number",
+                          "defaultValue": 31433,
+                          "required": true
+                        },
+                        {
+                          "label": "%dacpac_path%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_DACPAC_PATH",
+                          "type": "file_picker",
+                          "required": false,
+                          "filter": {
+                            "displayName": "%dacpac-zip-files%",
+                            "fileTypes": [
+                              "zip"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli",
+                "version": "2.9.1"
+              }
+            ],
+            "when": "type=azure-multi-device"
           }
         ],
         "agreement": {
@@ -266,7 +575,7 @@
             },
             {
               "text": "%edge-eula%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=746388"
+              "url": "https://go.microsoft.com/fwlink/?linkid=2128283"
             }
           ]
         }

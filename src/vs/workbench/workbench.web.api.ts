@@ -8,7 +8,6 @@ import { main } from 'vs/workbench/browser/web.main';
 import { UriComponents, URI } from 'vs/base/common/uri';
 import { IFileSystemProvider, FileSystemProviderCapabilities, IFileChange, FileChangeType } from 'vs/platform/files/common/files';
 import { IWebSocketFactory, IWebSocket } from 'vs/platform/remote/browser/browserSocketFactory';
-import { ICredentialsProvider } from 'vs/workbench/services/credentials/browser/credentialsService';
 import { IExtensionManifest } from 'vs/platform/extensions/common/extensions';
 import { IURLCallbackProvider } from 'vs/workbench/services/url/browser/urlService';
 import { LogLevel } from 'vs/platform/log/common/log';
@@ -18,6 +17,8 @@ import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { IWorkspaceProvider, IWorkspace } from 'vs/workbench/services/host/browser/browserHostService';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IProductConfiguration } from 'vs/platform/product/common/productService';
+import { mark } from 'vs/base/common/performance';
+import { ICredentialsProvider } from 'vs/platform/credentials/common/credentials';
 
 interface IResourceUriProvider {
 	(uri: URI): URI;
@@ -29,7 +30,7 @@ interface IStaticExtension {
 	isBuiltin?: boolean;
 }
 
-interface ICommontTelemetryPropertiesResolver {
+interface ICommonTelemetryPropertiesResolver {
 	(): { [key: string]: any };
 }
 
@@ -38,10 +39,12 @@ interface IExternalUriResolver {
 }
 
 interface ITunnelProvider {
+
 	/**
 	 * Support for creating tunnels.
 	 */
 	tunnelFactory?: ITunnelFactory;
+
 	/**
 	 * Support for filtering candidate ports
 	 */
@@ -107,11 +110,6 @@ interface IHomeIndicator {
 	href: string;
 
 	/**
-	 * @deprecated use `href` instead.
-	 */
-	command?: string;
-
-	/**
 	 * The icon name for the home indicator. This needs to be one of the existing
 	 * icons from our Codicon icon set. For example `sync`.
 	 */
@@ -121,6 +119,45 @@ interface IHomeIndicator {
 	 * A tooltip that will appear while hovering over the home indicator.
 	 */
 	title: string;
+}
+
+interface IWindowIndicator {
+
+	/**
+	 * Triggering this event will cause the window indicator to update.
+	 */
+	onDidChange: Event<void>;
+
+	/**
+	 * Label of the window indicator may include octicons
+	 * e.g. `$(remote) label`
+	 */
+	label: string;
+
+	/**
+	 * Tooltip of the window indicator should not include
+	 * octicons and be descriptive.
+	 */
+	tooltip: string;
+
+	/**
+	 * If provided, overrides the default command that
+	 * is executed when clicking on the window indicator.
+	 */
+	command?: string;
+}
+
+interface IInitialColorTheme {
+
+	/**
+	 * Initial color theme type.
+	 */
+	themeType: 'light' | 'dark' | 'hc';
+
+	/**
+	 * A list of workbench colors to apply initially.
+	 */
+	colors?: { [colorId: string]: string };
 }
 
 interface IDefaultSideBarLayout {
@@ -174,12 +211,21 @@ interface IDefaultEditor {
 }
 
 interface IDefaultLayout {
-	/** @deprecated Use views instead */
+	/** @deprecated Use views instead (TODO@eamodio remove eventually) */
 	readonly sidebar?: IDefaultSideBarLayout;
-	/** @deprecated Use views instead */
+	/** @deprecated Use views instead (TODO@eamodio remove eventually) */
 	readonly panel?: IDefaultPanelLayout;
 	readonly views?: IDefaultView[];
 	readonly editors?: IDefaultEditor[];
+}
+
+interface IProductQualityChangeHandler {
+
+	/**
+	 * Handler is being called when the user wants to switch between
+	 * `insider` or `stable` product qualities.
+	 */
+	(newQuality: 'insider' | 'stable'): void;
 }
 
 interface IWorkbenchConstructionOptions {
@@ -196,6 +242,13 @@ interface IWorkbenchConstructionOptions {
 	 * The connection token to send to the server.
 	 */
 	readonly connectionToken?: string;
+
+	/**
+	 * Session id of the current authenticated user
+	 *
+	 * @deprecated Instead pass current authenticated user info through [credentialsProvider](#credentialsProvider)
+	 */
+	readonly authenticationSessionId?: string;
 
 	/**
 	 * An endpoint to serve iframe content ("webview") from. This is required
@@ -224,6 +277,11 @@ interface IWorkbenchConstructionOptions {
 	 */
 	readonly tunnelProvider?: ITunnelProvider;
 
+	/**
+	 * Endpoints to be used for proxying authentication code exchange calls in the browser.
+	 */
+	readonly codeExchangeProxyEndpoints?: { [providerId: string]: string }
+
 	//#endregion
 
 
@@ -241,12 +299,9 @@ interface IWorkbenchConstructionOptions {
 	userDataProvider?: IFileSystemProvider;
 
 	/**
-	 * Session id of the current authenticated user
-	 */
-	readonly authenticationSessionId?: string;
-
-	/**
-	 * Enables user data sync by default and syncs into the current authenticated user account using the provided [authenticationSessionId}(#authenticationSessionId).
+	 * Enables Settings Sync by default.
+	 *
+	 * Syncs with the current authenticated user account (provided in [credentialsProvider](#credentialsProvider)) by default.
 	 */
 	readonly enableSyncByDefault?: boolean;
 
@@ -261,9 +316,24 @@ interface IWorkbenchConstructionOptions {
 	readonly staticExtensions?: ReadonlyArray<IStaticExtension>;
 
 	/**
+	 * [TEMPORARY]: This will be removed soon.
 	 * Service end-point hosting builtin extensions
 	 */
 	readonly builtinExtensionsServiceUrl?: string;
+
+	/**
+	 * [TEMPORARY]: This will be removed soon.
+	 * Enable inlined extensions.
+	 * Defaults to false on serverful and true on serverless.
+	 */
+	readonly _enableBuiltinExtensions?: boolean;
+
+	/**
+	 * [TEMPORARY]: This will be removed soon.
+	 * Enable `<iframe>` wrapping.
+	 * Defaults to false.
+	 */
+	readonly _wrapWebWorkerExtHostInIframe?: boolean;
 
 	/**
 	 * Support for URL callbacks.
@@ -271,14 +341,9 @@ interface IWorkbenchConstructionOptions {
 	readonly urlCallbackProvider?: IURLCallbackProvider;
 
 	/**
-	 * Support for update reporting.
-	 */
-	readonly updateProvider?: IUpdateProvider;
-
-	/**
 	 * Support adding additional properties to telemetry.
 	 */
-	readonly resolveCommonTelemetryProperties?: ICommontTelemetryPropertiesResolver;
+	readonly resolveCommonTelemetryProperties?: ICommonTelemetryPropertiesResolver;
 
 	/**
 	 * A set of optional commands that should be registered with the commands
@@ -292,6 +357,26 @@ interface IWorkbenchConstructionOptions {
 	 * Optional default layout to apply on first time the workspace is opened.
 	 */
 	readonly defaultLayout?: IDefaultLayout;
+
+	/**
+	 * Optional configuration default overrides contributed to the workbench.
+	 */
+	readonly configurationDefaults?: Record<string, any>;
+
+	//#endregion
+
+
+	//#region Update/Quality related
+
+	/**
+	 * Support for update reporting
+	 */
+	readonly updateProvider?: IUpdateProvider;
+
+	/**
+	 * Support for product quality switching
+	 */
+	readonly productQualityChangeHandler?: IProductQualityChangeHandler;
 
 	//#endregion
 
@@ -307,6 +392,20 @@ interface IWorkbenchConstructionOptions {
 	 * Optional override for the product configuration properties.
 	 */
 	readonly productConfiguration?: Partial<IProductConfiguration>;
+
+	/**
+	 * Optional override for properties of the window indicator in the status bar.
+	 */
+	readonly windowIndicator?: IWindowIndicator;
+
+	/**
+	 * Specifies the default theme type (LIGHT, DARK..) and allows to provide initial colors that are shown
+	 * until the color theme that is specified in the settings (`editor.colorTheme`) is loaded and applied.
+	 * Once there are persisted colors from a last run these will be used.
+	 *
+	 * The idea is that the colors match the main colors from the theme defined in the `configurationDefaults`.
+	 */
+	readonly initialColorTheme?: IInitialColorTheme;
 
 	//#endregion
 
@@ -342,6 +441,10 @@ let created = false;
 let workbenchPromiseResolve: Function;
 const workbenchPromise = new Promise<IWorkbench>(resolve => workbenchPromiseResolve = resolve);
 async function create(domElement: HTMLElement, options: IWorkbenchConstructionOptions): Promise<void> {
+
+	// Mark start of workbench
+	mark('didLoadWorkbenchMain');
+	performance.mark('workbench-start');
 
 	// Assert that the workbench is not created more than once. We currently
 	// do not support this and require a full context switch to clean-up.
@@ -431,12 +534,13 @@ export {
 	// LogLevel
 	LogLevel,
 
-	// Updates
+	// Updates/Quality
 	IUpdateProvider,
 	IUpdate,
+	IProductQualityChangeHandler,
 
 	// Telemetry
-	ICommontTelemetryPropertiesResolver,
+	ICommonTelemetryPropertiesResolver,
 
 	// External Uris
 	IExternalUriResolver,
@@ -457,6 +561,8 @@ export {
 	// Branding
 	IHomeIndicator,
 	IProductConfiguration,
+	IWindowIndicator,
+	IInitialColorTheme,
 
 	// Default layout
 	IDefaultView,

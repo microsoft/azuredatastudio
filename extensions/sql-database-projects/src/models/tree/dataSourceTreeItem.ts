@@ -10,6 +10,7 @@ import * as constants from '../../common/constants';
 import { ProjectRootTreeItem } from './projectTreeItem';
 import { DataSource } from '../dataSources/dataSources';
 import { SqlConnectionDataSource } from '../dataSources/sqlConnectionStringSource';
+import { IconPathHelper } from '../../common/iconHelper';
 
 /**
  * Folder for containing DataSource nodes in the tree
@@ -34,9 +35,11 @@ export class DataSourcesTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const dataSource = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
-		dataSource.contextValue = constants.DatabaseProjectItemType.dataSourceRoot;
-		return dataSource;
+		const dataSources = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
+		dataSources.contextValue = constants.DatabaseProjectItemType.dataSourceRoot;
+		dataSources.iconPath = IconPathHelper.dataSourceGroup;
+
+		return dataSources;
 	}
 }
 
@@ -46,16 +49,14 @@ abstract class DataSourceTreeItem extends BaseProjectTreeItem { }
  * Tree item representing a SQL connection string data source
  */
 export class SqlConnectionDataSourceTreeItem extends DataSourceTreeItem {
-	private dataSource: SqlConnectionDataSource;
-
-	constructor(dataSource: SqlConnectionDataSource, dataSourcesNode: DataSourcesTreeItem) {
+	constructor(private dataSource: SqlConnectionDataSource, dataSourcesNode: DataSourcesTreeItem) {
 		super(vscode.Uri.file(path.join(dataSourcesNode.uri.path, dataSource.name)), dataSourcesNode);
-		this.dataSource = dataSource;
 	}
 
 	public get treeItem(): vscode.TreeItem {
 		let item = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
 		item.label = `${this.dataSource.name} (${this.dataSource.typeFriendlyName})`;
+		item.iconPath = IconPathHelper.dataSourceSql;
 
 		return item;
 	}

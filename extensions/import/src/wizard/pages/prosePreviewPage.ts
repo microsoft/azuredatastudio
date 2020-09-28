@@ -9,12 +9,60 @@ import * as constants from '../../common/constants';
 
 export class ProsePreviewPage extends ImportPage {
 
-	private table: azdata.TableComponent;
-	private loading: azdata.LoadingComponent;
-	private form: azdata.FormContainer;
-	private refresh: azdata.ButtonComponent;
-	private resultTextComponent: azdata.TextComponent;
-	private isSuccess: boolean;
+	private _table: azdata.TableComponent;
+	private _loading: azdata.LoadingComponent;
+	private _form: azdata.FormContainer;
+	private _refresh: azdata.ButtonComponent;
+	private _resultTextComponent: azdata.TextComponent;
+	private _isSuccess: boolean;
+
+	public get table(): azdata.TableComponent {
+		return this._table;
+	}
+
+	public set table(table: azdata.TableComponent) {
+		this._table = table;
+	}
+
+	public get loading(): azdata.LoadingComponent {
+		return this._loading;
+	}
+
+	public set loading(loading: azdata.LoadingComponent) {
+		this._loading = loading;
+	}
+
+	public get form(): azdata.FormContainer {
+		return this._form;
+	}
+
+	public set form(form: azdata.FormContainer) {
+		this._form = form;
+	}
+
+	public get refresh(): azdata.ButtonComponent {
+		return this._refresh;
+	}
+
+	public set refresh(refresh: azdata.ButtonComponent) {
+		this._refresh = refresh;
+	}
+
+	public get resultTextComponent(): azdata.TextComponent {
+		return this._resultTextComponent;
+	}
+
+	public set resultTextComponent(resultTextComponent: azdata.TextComponent) {
+		this._resultTextComponent = resultTextComponent;
+	}
+
+	public get isSuccess(): boolean {
+		return this._isSuccess;
+	}
+
+	public set isSuccess(isSuccess: boolean) {
+		this._isSuccess = isSuccess;
+	}
 
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({

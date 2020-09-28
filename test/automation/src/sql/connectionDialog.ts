@@ -4,16 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Code } from '../code';
-import { waitForNewDialog } from './sqlutils';
+import { Dialog } from './dialog';
 
 const CONNECTION_DIALOG_TITLE = 'Connection';
 
-export class ConnectionDialog {
+export class ConnectionDialog extends Dialog {
 
-	constructor(private code: Code) { }
+	constructor(code: Code) {
+		super(CONNECTION_DIALOG_TITLE, code);
+	}
 
 	async waitForConnectionDialog(): Promise<void> {
-		await waitForNewDialog(this.code, CONNECTION_DIALOG_TITLE);
+		await this.waitForNewDialog();
 	}
 
 	private static readonly PROVIDER_SELECTOR = '.modal .modal-body select[aria-label="Connection type"]';
@@ -26,11 +28,10 @@ export class ConnectionDialog {
 		await this.code.waitForSetValue(ConnectionDialog.TARGET_SELECTOR.replace('${TARGET}', '' + target), value);
 	}
 
-	private static readonly CONNECT_BUTTON_SELECTOR = '.modal .modal-footer a[aria-label="Connect"]';
+	private static readonly CONNECT_BUTTON_SELECTOR = '.modal .modal-footer a[aria-label="Connect"]:not(.disabled)';
 	async connect(): Promise<void> {
 		await this.code.waitAndClick(ConnectionDialog.CONNECT_BUTTON_SELECTOR);
 
-		const selector = `.editor-instance .monaco-editor textarea`;
-		return this.code.waitForActiveElement(selector);
+		return this.waitForDialogGone();
 	}
 }

@@ -30,5 +30,3 @@ export * from './driver';
 export * from './sql/connectionDialog';
 export * from './sql/profiler';
 export * from './sql/queryEditors';
-export * from './sql/sqlutils';
-export * from './sql/testConfig';

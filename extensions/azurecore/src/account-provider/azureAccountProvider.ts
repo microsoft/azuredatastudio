@@ -10,11 +10,13 @@ import * as nls from 'vscode-nls';
 import {
 	AzureAccountProviderMetadata,
 	AzureAuthType,
-	Deferred
+	Deferred,
+	AzureAccount
 } from './interfaces';
 
 import { SimpleTokenCache } from './simpleTokenCache';
-import { AzureAuth, TokenResponse } from './auths/azureAuth';
+import { Logger } from '../utils/Logger';
+import { MultiTenantTokenResponse, Token, AzureAuth } from './auths/azureAuth';
 import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
 import { AzureDeviceCode } from './auths/azureDeviceCode';
 
@@ -23,7 +25,7 @@ const localize = nls.loadMessageBundle();
 export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disposable {
 	private static readonly CONFIGURATION_SECTION = 'accounts.azure.auth';
 	private readonly authMappings = new Map<AzureAuthType, AzureAuth>();
-	private initComplete: Deferred<void>;
+	private initComplete: Deferred<void, Error>;
 	private initCompletePromise: Promise<void> = new Promise<void>((resolve, reject) => this.initComplete = { resolve, reject });
 
 	constructor(
@@ -100,14 +102,29 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	}
 
 
-	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<TokenResponse | undefined> {
+	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<MultiTenantTokenResponse | undefined> {
 		return this._getSecurityToken(account, resource);
 	}
 
-	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<TokenResponse | undefined> {
+	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Thenable<Token | undefined> {
+		return this._getAccountSecurityToken(account, tenant, resource);
+	}
+
+	private async _getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<Token | undefined> {
 		await this.initCompletePromise;
 		const azureAuth = this.getAuthMethod(undefined);
-		return azureAuth?.getSecurityToken(account, resource);
+		return azureAuth?.getAccountSecurityToken(account, tenant, resource);
+	}
+
+	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<MultiTenantTokenResponse | undefined> {
+		vscode.window.showInformationMessage(localize('azure.deprecatedGetSecurityToken', "A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead."));
+		const azureAccount = account as AzureAccount;
+		const response: MultiTenantTokenResponse = {};
+		for (const tenant of azureAccount.properties.tenants) {
+			response[tenant.id] = await this._getAccountSecurityToken(account, tenant.id, resource);
+		}
+
+		return response;
 	}
 
 	prompt(): Thenable<azdata.Account | azdata.PromptFailedResult> {
@@ -127,13 +144,13 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		}
 
 		if (this.authMappings.size === 0) {
-			console.log('No auth method was enabled.');
+			Logger.log('No auth method was enabled.');
 			vscode.window.showErrorMessage(noAuthAvailable);
 			return { canceled: true };
 		}
 
 		if (this.authMappings.size === 1) {
-			return this.getAuthMethod(undefined).login();
+			return this.getAuthMethod(undefined).startLogin();
 		}
 
 		const options: Option[] = [];
@@ -144,12 +161,12 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const pick = await vscode.window.showQuickPick(options, { canPickMany: false });
 
 		if (!pick) {
-			console.log('No auth method was selected.');
+			Logger.log('No auth method was selected.');
 			vscode.window.showErrorMessage(noAuthSelected);
 			return { canceled: true };
 		}
 
-		return pick.azureAuth.login();
+		return pick.azureAuth.startLogin();
 	}
 
 	refresh(account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {

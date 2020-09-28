@@ -18,6 +18,7 @@ import { ExecutionPlanOptions } from 'azdata';
 import { startsWith } from 'vs/base/common/strings';
 import { IRange } from 'vs/editor/common/core/range';
 import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 const MAX_SIZE = 13;
 
@@ -119,7 +120,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public get state(): QueryEditorState { return this._state; }
 
 	constructor(
-		private _description: string,
+		private _description: string | undefined,
 		protected _text: AbstractTextResourceEditorInput,
 		protected _results: QueryResultsInput,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
@@ -156,7 +157,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		}));
 
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectedKeys.indexOf('sql.showConnectionInfoInTitle') > -1) {
+			if (e.affectedKeys.indexOf('queryEditor') > -1) {
 				this._onDidChangeLabel.fire();
 			}
 		}));
@@ -172,7 +173,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public get text(): AbstractTextResourceEditorInput { return this._text; }
 	public get results(): QueryResultsInput { return this._results; }
 	// Description is shown beside the tab name in the combobox of open editors
-	public getDescription(): string { return this._description; }
+	public getDescription(): string | undefined { return this._description; }
 	public supportsSplitEditor(): boolean { return false; }
 	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
 		return this._text.revert(group, options);
@@ -196,7 +197,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public get resource(): URI { return this._text.resource; }
 
 	public getName(longForm?: boolean): string {
-		if (this.configurationService.getValue('sql.showConnectionInfoInTitle')) {
+		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').showConnectionInfoInTitle) {
 			let profile = this.connectionManagementService.getConnectionProfile(this.uri);
 			let title = '';
 			if (this._description && this._description !== '') {

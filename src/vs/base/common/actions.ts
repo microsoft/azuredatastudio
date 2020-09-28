@@ -29,6 +29,7 @@ export interface IAction extends IDisposable {
 	class: string | undefined;
 	enabled: boolean;
 	checked: boolean;
+	expanded: boolean | undefined; // {{SQL CARBON EDIT}}
 	run(event?: any): Promise<any>;
 }
 
@@ -39,12 +40,16 @@ export interface IActionRunner extends IDisposable {
 }
 
 export interface IActionViewItem extends IDisposable {
-	readonly actionRunner: IActionRunner;
+	actionRunner: IActionRunner;
 	setActionContext(context: any): void;
 	render(element: any /* HTMLElement */): void;
 	isEnabled(): boolean;
-	focus(): void;
+	focus(fromRight?: boolean): void; // TODO@isidorn what is this?
 	blur(): void;
+}
+
+export interface IActionViewItemProvider {
+	(action: IAction): IActionViewItem | undefined;
 }
 
 export interface IActionChangeEvent {
@@ -53,6 +58,7 @@ export interface IActionChangeEvent {
 	readonly class?: string;
 	readonly enabled?: boolean;
 	readonly checked?: boolean;
+	readonly expanded?: boolean; // {{SQL CARBON EDIT}}
 }
 
 export class Action extends Disposable implements IAction {
@@ -66,6 +72,7 @@ export class Action extends Disposable implements IAction {
 	protected _cssClass: string | undefined;
 	protected _enabled: boolean = true;
 	protected _checked: boolean = false;
+	protected _expanded: boolean = false; // {{SQL CARBON EDIT}}
 	protected readonly _actionCallback?: (event?: any) => Promise<any>;
 
 	constructor(id: string, label: string = '', cssClass: string = '', enabled: boolean = true, actionCallback?: (event?: any) => Promise<any>) {
@@ -156,6 +163,22 @@ export class Action extends Disposable implements IAction {
 		}
 	}
 
+	// {{SQL CARBON EDIT}}
+	get expanded(): boolean {
+		return this._expanded;
+	}
+
+	set expanded(value: boolean) {
+		this._setExpanded(value);
+	}
+
+	protected _setExpanded(value: boolean): void {
+		if (this._expanded !== value) {
+			this._expanded = value;
+			this._onDidChange.fire({ expanded: value });
+		}
+	}
+
 	run(event?: any, _data?: ITelemetryData): Promise<any> {
 		if (this._actionCallback) {
 			return this._actionCallback(event);
@@ -216,5 +239,29 @@ export class RadioGroup extends Disposable {
 				}
 			}));
 		}
+	}
+}
+
+export class Separator extends Action {
+
+	static readonly ID = 'vs.actions.separator';
+
+	constructor(label?: string) {
+		super(Separator.ID, label, label ? 'separator text' : 'separator');
+		this.checked = false;
+		this.enabled = false;
+	}
+}
+
+export type SubmenuActions = IAction[] | (() => IAction[]);
+
+export class SubmenuAction extends Action {
+
+	get actions(): IAction[] {
+		return Array.isArray(this._actions) ? this._actions : this._actions();
+	}
+
+	constructor(id: string, label: string, private _actions: SubmenuActions, cssClass?: string) {
+		super(id, label, cssClass, true);
 	}
 }

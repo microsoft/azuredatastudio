@@ -13,6 +13,7 @@ import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { AuthenticationMode } from '../deployClusterWizardModel';
+import * as localizedConstants from '../../../localizedConstants';
 const localize = nls.loadMessageBundle();
 
 const ConfirmPasswordName = 'ConfirmPassword';
@@ -150,6 +151,12 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					variableName: VariableNames.DomainDNSName_VariableName
 				}, {
 					type: FieldType.Text,
+					label: localizedConstants.realm,
+					required: false,
+					variableName: VariableNames.Realm_VariableName,
+					description: localize('deployCluster.RealmDescription', "If not provided, the domain DNS name will be used as the default value.")
+				}, {
+					type: FieldType.Text,
 					label: localize('deployCluster.ClusterAdmins', "Cluster admin group"),
 					required: true,
 					variableName: VariableNames.ClusterAdmins_VariableName,
@@ -215,7 +222,8 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
-				}
+				},
+				toolsService: this.wizard.toolsService
 			});
 			const activeDirectorySettingsGroup = await createSection({
 				view: view,
@@ -230,7 +238,8 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
-				}
+				},
+				toolsService: this.wizard.toolsService
 			});
 			const dockerSettingsGroup = await createSection({
 				view: view,
@@ -245,7 +254,8 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
-				}
+				},
+				toolsService: this.wizard.toolsService
 			});
 			const basicSettingsFormItem = { title: '', component: basicSettingsGroup };
 			const dockerSettingsFormItem = { title: '', component: dockerSettingsGroup };
@@ -279,8 +289,8 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		});
 	}
 
-	public onLeave() {
-		setModelValues(this.inputComponents, this.wizard.model);
+	public async onLeave(): Promise<void> {
+		await setModelValues(this.inputComponents, this.wizard.model);
 		Object.assign(this.wizard.inputComponents, this.inputComponents);
 		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			const variableDNSPrefixMapping: { [s: string]: string } = {};

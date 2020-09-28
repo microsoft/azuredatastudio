@@ -21,7 +21,9 @@ import { values } from 'vs/base/common/collections';
 import { startsWith } from 'vs/base/common/strings';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IAction } from 'vs/base/common/actions';
+import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/browser/serverTreeActionProvider';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -32,44 +34,44 @@ export interface NodeExpandInfoWithProviderId extends azdata.ObjectExplorerExpan
 }
 
 export interface IServerTreeView {
-	readonly tree: ITree;
+	readonly tree: ITree | AsyncServerTree;
 	readonly onSelectionOrFocusChange: Event<void>;
 	isObjectExplorerConnectionUri(uri: string): boolean;
 	deleteObjectExplorerNodeAndRefreshTree(profile: ConnectionProfile): Promise<void>;
-	getSelection(): Array<ConnectionProfile | TreeNode>;
+	getSelection(): Array<ServerTreeElement>;
 	isFocused(): boolean;
 	refreshElement(node: TreeNode): Promise<void>;
-	readonly treeActionProvider: { getActions: (tree: ITree, node: TreeNode | ConnectionProfile) => IAction[] }
-	isExpanded(node: TreeNode | ConnectionProfile): boolean;
-	reveal(node: TreeNode | ConnectionProfile): Promise<void>;
-	setExpandedState(node: TreeNode | ConnectionProfile, state: TreeItemCollapsibleState): Promise<void>;
-	setSelected(node: TreeNode | ConnectionProfile, selected: boolean, clearOtherSelections: boolean): Promise<void>;
+	readonly treeActionProvider: ServerTreeActionProvider;
+	isExpanded(node?: ServerTreeElement): boolean;
+	reveal(node: ServerTreeElement): Promise<void>;
+	setExpandedState(node: ServerTreeElement, state?: TreeItemCollapsibleState): Promise<void>;
+	setSelected(node: ServerTreeElement, selected?: boolean, clearOtherSelections?: boolean): Promise<void>;
 	refreshTree(): Promise<void>;
 	readonly activeConnectionsFilterAction: IAction;
 	renderBody(container: HTMLElement): Promise<void>;
-	layout(size: number);
+	layout(size: number): void;
 }
 
 export interface IObjectExplorerService {
 	_serviceBrand: undefined;
 
-	createNewSession(providerId: string, connection: ConnectionProfile): Thenable<azdata.ObjectExplorerSessionResponse>;
+	createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse>;
 
-	closeSession(providerId: string, session: azdata.ObjectExplorerSession): Thenable<azdata.ObjectExplorerCloseSessionResponse>;
+	closeSession(providerId: string, session: azdata.ObjectExplorerSession): Promise<azdata.ObjectExplorerCloseSessionResponse | undefined>;
 
-	expandNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo>;
+	expandNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo>;
 
-	refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo>;
+	refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo | undefined>;
 
-	resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
+	resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]>;
 
-	refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
+	refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]>;
 
-	onSessionCreated(handle: number, sessionResponse: azdata.ObjectExplorerSession);
+	onSessionCreated(handle: number, sessionResponse: azdata.ObjectExplorerSession): void;
 
-	onSessionDisconnected(handle: number, sessionResponse: azdata.ObjectExplorerSession);
+	onSessionDisconnected(handle: number, sessionResponse: azdata.ObjectExplorerSession): void;
 
-	onNodeExpanded(sessionResponse: NodeExpandInfoWithProviderId);
+	onNodeExpanded(sessionResponse: NodeExpandInfoWithProviderId): void;
 
 	/**
 	 * Register a ObjectExplorer provider
@@ -78,7 +80,7 @@ export interface IObjectExplorerService {
 
 	registerNodeProvider(expander: azdata.ObjectExplorerNodeProvider): void;
 
-	getObjectExplorerNode(connection: IConnectionProfile): TreeNode;
+	getObjectExplorerNode(connection: IConnectionProfile): TreeNode | undefined;
 
 	updateObjectExplorerNodes(connectionProfile: IConnectionProfile): Promise<void>;
 
@@ -88,30 +90,30 @@ export interface IObjectExplorerService {
 
 	registerServerTreeView(view: IServerTreeView): void;
 
-	getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string };
+	getSelectedProfileAndDatabase(): { profile?: ConnectionProfile, databaseName?: string } | undefined;
 
 	isFocused(): boolean;
 
 	onSelectionOrFocusChange: Event<void>;
 
-	getServerTreeView(): IServerTreeView;
+	getServerTreeView(): IServerTreeView | undefined;
 
-	findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Thenable<azdata.NodeInfo[]>;
+	findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Promise<azdata.NodeInfo[]>;
 
 	getActiveConnectionNodes(): TreeNode[];
 
-	getTreeNode(connectionId: string, nodePath: string): Thenable<TreeNode>;
+	getTreeNode(connectionId?: string, nodePath?: string): Promise<TreeNode | undefined>;
 
-	refreshNodeInView(connectionId: string, nodePath: string): Thenable<TreeNode>;
+	refreshNodeInView(connectionId: string, nodePath: string): Promise<TreeNode | undefined>;
 
 	/**
 	 * For Testing purpose only. Get the context menu actions for an object explorer node.
 	*/
-	getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
+	getNodeActions(connectionId: string, nodePath: string): Promise<string[]>;
 
 	getSessionConnectionProfile(sessionId: string): azdata.IConnectionProfile;
 
-	getSession(sessionId: string): azdata.ObjectExplorerSession;
+	getSession(sessionId: string): azdata.ObjectExplorerSession | undefined;
 
 	providerRegistered(providerId: string): boolean;
 }
@@ -128,7 +130,7 @@ interface NodeStatus {
 
 export interface ObjectExplorerNodeEventArgs {
 	connection: IConnectionProfile;
-	errorMessage: string;
+	errorMessage?: string;
 }
 
 export interface NodeInfoWithConnection {
@@ -159,7 +161,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private _onUpdateObjectExplorerNodes: Emitter<ObjectExplorerNodeEventArgs>;
 
-	private _serverTreeView: IServerTreeView;
+	private _serverTreeView?: IServerTreeView;
 
 	private _onSelectionOrFocusChange: Emitter<void>;
 
@@ -177,7 +179,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._onSelectionOrFocusChange = new Emitter<void>();
 	}
 
-	public getSession(sessionId: string): azdata.ObjectExplorerSession {
+	public getSession(sessionId: string): azdata.ObjectExplorerSession | undefined {
 		let session = this._sessions[sessionId];
 		if (!session) {
 			return undefined;
@@ -201,24 +203,24 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._onSelectionOrFocusChange.event;
 	}
 
-	public updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> {
-		return this._connectionManagementService.addSavedPassword(connection).then(withPassword => {
-			let connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
-			return this.updateNewObjectExplorerNode(connectionProfile);
-		});
+	public async updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> {
+		const withPassword = await this._connectionManagementService.addSavedPassword(connection);
+		const connectionProfile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, withPassword);
+		return this.updateNewObjectExplorerNode(connectionProfile);
 	}
 
-	public deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void> {
-		let self = this;
-		let connectionUri = connection.id;
+	public async deleteObjectExplorerNode(connection: IConnectionProfile): Promise<void> {
+		let connectionUri = connection.id!;
 		let nodeTree = this._activeObjectExplorerNodes[connectionUri];
 		if (nodeTree) {
-			return self.closeSession(connection.providerName, nodeTree.getSession()).then(() => {
-				delete self._activeObjectExplorerNodes[connectionUri];
-				delete self._sessions[nodeTree.getSession().sessionId];
-			});
+			const session = nodeTree?.getSession();
+			if (!session) {
+				return;
+			}
+			await this.closeSession(connection.providerName, session);
+			delete this._activeObjectExplorerNodes[connectionUri];
+			delete this._sessions[session.sessionId!];
 		}
-		return Promise.resolve();
 	}
 
 	/**
@@ -230,10 +232,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			this.logService.error(expandResponse.errorMessage);
 		}
 
-		let sessionStatus = this._sessions[expandResponse.sessionId];
+		let sessionStatus = this._sessions[expandResponse.sessionId!];
 		let foundSession = false;
 		if (sessionStatus) {
-			let nodeStatus = this._sessions[expandResponse.sessionId].nodes[expandResponse.nodePath];
+			let nodeStatus = this._sessions[expandResponse.sessionId!].nodes[expandResponse.nodePath];
 			foundSession = !!nodeStatus;
 			if (foundSession && nodeStatus.expandEmitter) {
 				nodeStatus.expandEmitter.fire(expandResponse);
@@ -257,32 +259,32 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private async handleSessionCreated(session: azdata.ObjectExplorerSession): Promise<void> {
-		let connection: ConnectionProfile = undefined;
-		let errorMessage: string = undefined;
-		if (this._sessions[session.sessionId]) {
-			connection = this._sessions[session.sessionId].connection;
+		let connection: ConnectionProfile | undefined = undefined;
+		let errorMessage: string | undefined = undefined;
+		if (this._sessions[session.sessionId!]) {
+			connection = this._sessions[session.sessionId!].connection;
 
 			try {
 				if (session.success && session.rootNode) {
-					let server = this.toTreeNode(session.rootNode, null);
+					let server = this.toTreeNode(session.rootNode, undefined);
 					server.connection = connection;
 					server.session = session;
-					this._activeObjectExplorerNodes[connection.id] = server;
+					this._activeObjectExplorerNodes[connection!.id] = server;
 				}
 				else {
 					errorMessage = session && session.errorMessage ? session.errorMessage : errSessionCreateFailed;
 					this.logService.error(errorMessage);
 				}
 				// Send on session created about the session to all node providers so they can prepare for node expansion
-				let nodeProviders = this._nodeProviders[connection.providerName];
+				let nodeProviders = this._nodeProviders[connection!.providerName];
 				if (nodeProviders) {
-					let promises: Thenable<boolean>[] = nodeProviders.map(p => p.handleSessionOpen(session));
+					const promises = nodeProviders.map(p => p.handleSessionOpen(session));
 					await Promise.all(promises);
 				}
 			} catch (error) {
 				this.logService.warn(`cannot handle the session ${session.sessionId} in all nodeProviders`);
 			} finally {
-				this.sendUpdateNodeEvent(connection, errorMessage);
+				this.sendUpdateNodeEvent(connection!, errorMessage);
 			}
 		}
 		else {
@@ -293,13 +295,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	/**
 	 * Gets called when session is disconnected
 	 */
-	public onSessionDisconnected(handle: number, session: azdata.ObjectExplorerSession) {
-		if (this._sessions[session.sessionId]) {
-			let connection: ConnectionProfile = this._sessions[session.sessionId].connection;
+	public onSessionDisconnected(handle: number, session: azdata.ObjectExplorerSession): void {
+		if (this._sessions[session.sessionId!]) {
+			let connection: ConnectionProfile = this._sessions[session.sessionId!].connection;
 			if (connection && this._connectionManagementService.isProfileConnected(connection)) {
 				let uri: string = Utils.generateUri(connection);
-				if (this._serverTreeView.isObjectExplorerConnectionUri(uri)) {
-					this._serverTreeView.deleteObjectExplorerNodeAndRefreshTree(connection).then(() => {
+				if (this._serverTreeView?.isObjectExplorerConnectionUri(uri)) {
+					this._serverTreeView?.deleteObjectExplorerNodeAndRefreshTree(connection).then(() => {
 						this.sendUpdateNodeEvent(connection, session.errorMessage);
 						connection.isDisconnecting = true;
 						this._connectionManagementService.disconnect(connection).then(() => {
@@ -313,7 +315,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 	}
 
-	private sendUpdateNodeEvent(connection: ConnectionProfile, errorMessage: string = undefined) {
+	private sendUpdateNodeEvent(connection: ConnectionProfile, errorMessage?: string) {
 		let eventArgs: ObjectExplorerNodeEventArgs = {
 			connection: <IConnectionProfile>connection,
 			errorMessage: errorMessage
@@ -321,69 +323,52 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._onUpdateObjectExplorerNodes.fire(eventArgs);
 	}
 
-	private updateNewObjectExplorerNode(connection: ConnectionProfile): Promise<void> {
-		let self = this;
-		return new Promise<void>((resolve, reject) => {
-			if (self._activeObjectExplorerNodes[connection.id]) {
-				this.sendUpdateNodeEvent(connection);
-				resolve();
-			} else {
-				// Create session will send the event or reject the promise
-				this.createNewSession(connection.providerName, connection).then(response => {
-					resolve();
-				}, error => {
-					this.sendUpdateNodeEvent(connection, error);
-					reject(error);
-				});
+	private async updateNewObjectExplorerNode(connection: ConnectionProfile): Promise<void> {
+		if (this._activeObjectExplorerNodes[connection.id]) {
+			this.sendUpdateNodeEvent(connection);
+		} else {
+			try {
+				await this.createNewSession(connection.providerName, connection);
+			} catch (err) {
+				this.sendUpdateNodeEvent(connection, err);
+				throw err;
 			}
-		});
+		}
 	}
 
-	public getObjectExplorerNode(connection: IConnectionProfile): TreeNode {
-		return this._activeObjectExplorerNodes[connection.id];
+	public getObjectExplorerNode(connection: IConnectionProfile): TreeNode | undefined {
+		return this._activeObjectExplorerNodes[connection.id!];
 	}
 
 	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse> {
-		let self = this;
-		return new Promise<azdata.ObjectExplorerSessionResponse>((resolve, reject) => {
-			let provider = this._providers[providerId];
-			if (provider) {
-				provider.createNewSession(connection.toConnectionInfo()).then(result => {
-					self._sessions[result.sessionId] = {
-						connection: connection,
-						nodes: {}
-					};
-					resolve(result);
-				}, error => {
-					reject(error);
-				});
-			} else {
-				reject(`Provider doesn't exist. id: ${providerId}`);
-			}
-		});
+		const provider = this._providers[providerId];
+		if (provider) {
+			const result = await provider.createNewSession(connection.toConnectionInfo());
+			this._sessions[result.sessionId] = {
+				connection: connection,
+				nodes: {}
+			};
+			return result;
+		} else {
+			throw new Error(`Provider doesn't exist. id: ${providerId}`);
+		}
 	}
 
-	public expandNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo> {
-		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
-			let provider = this._providers[providerId];
-			if (provider) {
-				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ObjectExplorerExpand)
-					.withAdditionalProperties({
-						refresh: false,
-						provider: providerId
-					}).send();
-				this.expandOrRefreshNode(providerId, session, nodePath).then(result => {
-					resolve(result);
-				}, error => {
-					reject(error);
-				});
-			} else {
-				reject(`Provider doesn't exist. id: ${providerId}`);
-			}
-		});
+	public async expandNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo> {
+		const provider = this._providers[providerId];
+		if (provider) {
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ObjectExplorerExpand)
+				.withAdditionalProperties({
+					refresh: false,
+					provider: providerId
+				}).send();
+			return await this.expandOrRefreshNode(providerId, session, nodePath);
+		} else {
+			throw new Error(`Provider doesn't exist. id: ${providerId}`);
+		}
 	}
 
-	private callExpandOrRefreshFromProvider(provider: azdata.ObjectExplorerProviderBase, nodeInfo: azdata.ExpandNodeInfo, refresh: boolean = false) {
+	private async callExpandOrRefreshFromProvider(provider: azdata.ObjectExplorerProviderBase, nodeInfo: azdata.ExpandNodeInfo, refresh: boolean = false): Promise<boolean> {
 		if (refresh) {
 			return provider.refreshNode(nodeInfo);
 		} else {
@@ -395,13 +380,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		providerId: string,
 		session: azdata.ObjectExplorerSession,
 		nodePath: string,
-		refresh: boolean = false): Thenable<azdata.ObjectExplorerExpandInfo> {
+		refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo> {
 		let self = this;
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
-			if (session.sessionId in self._sessions && self._sessions[session.sessionId]) {
+			if (session.sessionId! in self._sessions && self._sessions[session.sessionId!]) {
 				let newRequest = false;
-				if (!self._sessions[session.sessionId].nodes[nodePath]) {
-					self._sessions[session.sessionId].nodes[nodePath] = {
+				if (!self._sessions[session.sessionId!].nodes[nodePath]) {
+					self._sessions[session.sessionId!].nodes[nodePath] = {
 						expandEmitter: new Emitter<NodeExpandInfoWithProviderId>()
 					};
 					newRequest = true;
@@ -413,11 +398,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 					let nodeProviders = this._nodeProviders[providerId];
 					if (nodeProviders) {
-						nodeProviders = nodeProviders.sort((a, b) => a.group.toLowerCase().localeCompare(b.group.toLowerCase()));
+						nodeProviders = nodeProviders.sort((a, b) => a.group!.toLowerCase().localeCompare(b.group!.toLowerCase()));
 						allProviders.push(...nodeProviders);
 					}
 
-					self._sessions[session.sessionId].nodes[nodePath].expandEmitter.event((expandResult) => {
+					self._sessions[session.sessionId!].nodes[nodePath].expandEmitter.event((expandResult: NodeExpandInfoWithProviderId) => {
 						if (expandResult && expandResult.providerId) {
 							resultMap.set(expandResult.providerId, expandResult);
 						} else {
@@ -430,14 +415,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 							// Have to delete it after get all reponses otherwise couldn't find session for not the first response
 							if (newRequest) {
-								delete self._sessions[session.sessionId].nodes[nodePath];
+								delete self._sessions[session.sessionId!].nodes[nodePath];
 							}
 						}
 					});
 					if (newRequest) {
 						allProviders.forEach(provider => {
 							self.callExpandOrRefreshFromProvider(provider, {
-								sessionId: session.sessionId,
+								sessionId: session.sessionId!,
 								nodePath: nodePath
 							}, refresh).then(isExpanding => {
 								if (!isExpanding) {
@@ -462,8 +447,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	private mergeResults(allProviders: azdata.ObjectExplorerProviderBase[], resultMap: Map<string, azdata.ObjectExplorerExpandInfo>, nodePath: string): azdata.ObjectExplorerExpandInfo {
-		let finalResult: azdata.ObjectExplorerExpandInfo;
+	private mergeResults(allProviders: azdata.ObjectExplorerProviderBase[], resultMap: Map<string, azdata.ObjectExplorerExpandInfo>, nodePath: string): azdata.ObjectExplorerExpandInfo | undefined {
+		let finalResult: azdata.ObjectExplorerExpandInfo | undefined = undefined;
 		let allNodes: azdata.NodeInfo[] = [];
 		let errorNode: azdata.NodeInfo = {
 			nodePath: nodePath,
@@ -473,7 +458,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			isLeaf: true,
 			nodeSubType: '',
 			nodeStatus: '',
-			metadata: null
+			metadata: undefined
 		};
 		let errorMessages: string[] = [];
 		for (let provider of allProviders) {
@@ -506,7 +491,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return finalResult;
 	}
 
-	public refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo> {
+	public refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo | undefined> {
 		let provider = this._providers[providerId];
 		if (provider) {
 			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ObjectExplorerExpand)
@@ -519,11 +504,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return Promise.resolve(undefined);
 	}
 
-	public closeSession(providerId: string, session: azdata.ObjectExplorerSession): Promise<azdata.ObjectExplorerCloseSessionResponse> {
+	public closeSession(providerId: string, session: azdata.ObjectExplorerSession): Promise<azdata.ObjectExplorerCloseSessionResponse | undefined> {
 		// Complete any requests that are still open for the session
-		let sessionStatus = this._sessions[session.sessionId];
+		let sessionStatus = this._sessions[session.sessionId!];
 		if (sessionStatus && sessionStatus.nodes) {
-			entries(sessionStatus.nodes).forEach(([nodePath, nodeStatus]: [string, NodeStatus]) => {
+			entries(sessionStatus.nodes).forEach((entry) => {
+				const nodePath: string = entry[0];
+				const nodeStatus: NodeStatus = entry[1] as NodeStatus;
+
 				if (nodeStatus.expandEmitter) {
 					nodeStatus.expandEmitter.fire({
 						sessionId: session.sessionId,
@@ -573,11 +561,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this.expandOrRefreshTreeNode(session, parentTree, needsRefresh);
 	}
 
-	public refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
+	public refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> {
 		return this.expandOrRefreshTreeNode(session, parentTree, true);
 	}
 
-	private callExpandOrRefreshFromService(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string, refresh: boolean = false): Thenable<azdata.ObjectExplorerExpandInfo> {
+	private callExpandOrRefreshFromService(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string, refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo | undefined> {
 		if (refresh) {
 			return this.refreshNode(providerId, session, nodePath);
 		} else {
@@ -585,29 +573,27 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 	}
 
-	private expandOrRefreshTreeNode(
+	private async expandOrRefreshTreeNode(
 		session: azdata.ObjectExplorerSession,
 		parentTree: TreeNode,
 		refresh: boolean = false): Promise<TreeNode[]> {
-		return new Promise<TreeNode[]>((resolve, reject) => {
-			this.callExpandOrRefreshFromService(parentTree.getConnectionProfile().providerName, session, parentTree.nodePath, refresh).then(expandResult => {
-				let children: TreeNode[] = [];
-				if (expandResult && expandResult.nodes) {
-					children = expandResult.nodes.map(node => {
-						return this.toTreeNode(node, parentTree);
-					});
-					parentTree.children = children.filter(c => c !== undefined);
-					resolve(children);
-				} else {
-					reject(expandResult && expandResult.errorMessage ? expandResult.errorMessage : 'Failed to expand node');
-				}
-			}, error => {
-				reject(error);
+		const providerName = parentTree.getConnectionProfile()?.providerName;
+		if (!providerName) {
+			throw new Error('Failed to expand node - no provider name');
+		}
+		const expandResult = await this.callExpandOrRefreshFromService(providerName, session, parentTree.nodePath, refresh);
+		if (expandResult && expandResult.nodes) {
+			const children = expandResult.nodes.map(node => {
+				return this.toTreeNode(node, parentTree);
 			});
-		});
+			parentTree.children = children.filter(c => c !== undefined);
+			return children;
+		} else {
+			throw new Error(expandResult?.errorMessage ? expandResult.errorMessage : 'Failed to expand node');
+		}
 	}
 
-	private toTreeNode(nodeInfo: azdata.NodeInfo, parent: TreeNode): TreeNode {
+	private toTreeNode(nodeInfo: azdata.NodeInfo, parent?: TreeNode): TreeNode {
 		// Show the status for database nodes with a status field
 		let isLeaf: boolean = nodeInfo.isLeaf;
 		if (nodeInfo.nodeType === NodeType.Database) {
@@ -623,11 +609,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
-			nodeInfo.nodeSubType, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, {
-			getChildren: treeNode => this.getChildren(treeNode),
+			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, {
+			getChildren: (treeNode?: TreeNode) => this.getChildren(treeNode),
 			isExpanded: treeNode => this.isExpanded(treeNode),
 			setNodeExpandedState: async (treeNode, expandedState) => await this.setNodeExpandedState(treeNode, expandedState),
-			setNodeSelected: (treeNode, selected, clearOtherSelections: boolean = undefined) => this.setNodeSelected(treeNode, selected, clearOtherSelections)
+			setNodeSelected: (treeNode, selected, clearOtherSelections?: boolean) => this.setNodeSelected(treeNode, selected, clearOtherSelections)
 		});
 		node.childProvider = nodeInfo.childProvider;
 		node.payload = nodeInfo.payload;
@@ -646,7 +632,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 * Returns the connection profile corresponding to the current Object Explorer selection,
 	 * or undefined if there are multiple selections or no such connection
 	 */
-	public getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string } {
+	public getSelectedProfileAndDatabase(): { profile?: ConnectionProfile, databaseName?: string } | undefined {
 		if (!this._serverTreeView) {
 			return undefined;
 		}
@@ -672,29 +658,28 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 * Returns a boolean indicating whether the Object Explorer tree has focus
 	*/
 	public isFocused(): boolean {
-		return this._serverTreeView.isFocused();
+		return this._serverTreeView?.isFocused() ?? false;
 	}
 
 	public getServerTreeView() {
 		return this._serverTreeView;
 	}
 
-	public findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Thenable<azdata.NodeInfo[]> {
+	public async findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[] = []): Promise<azdata.NodeInfo[]> {
 		let rootNode = this._activeObjectExplorerNodes[connectionId];
 		if (!rootNode) {
-			return Promise.resolve([]);
+			return [];
 		}
-		let sessionId = rootNode.session.sessionId;
-		return this._providers[this._sessions[sessionId].connection.providerName].findNodes({
+		let sessionId = rootNode?.session?.sessionId ?? '';
+		const response = await this._providers[this._sessions[sessionId].connection.providerName].findNodes({
 			type: type,
 			name: name,
 			schema: schema,
 			database: database,
 			parentObjectNames: parentObjectNames,
 			sessionId: sessionId
-		}).then(response => {
-			return response.nodes;
 		});
+		return response.nodes;
 	}
 
 	public getActiveConnectionNodes(): TreeNode[] {
@@ -704,23 +689,37 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	/**
 	* For Testing purpose only. Get the context menu actions for an object explorer node
 	*/
-	public getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
-		return this.getTreeNode(connectionId, nodePath).then(node => {
-			let actions = this._serverTreeView.treeActionProvider.getActions(this._serverTreeView.tree, this.getTreeItem(node));
-			return actions.filter(action => action.label).map(action => action.label);
-		});
+	public async getNodeActions(connectionId: string, nodePath: string): Promise<string[]> {
+		const node = await this.getTreeNode(connectionId, nodePath);
+		if (!node || !this._serverTreeView?.tree) {
+			return [];
+		}
+		let treeItem = this.getTreeItem(node);
+		if (!treeItem) {
+			return [];
+		}
+		const actions = this._serverTreeView?.treeActionProvider.getActions(this._serverTreeView!.tree, treeItem);
+		return actions?.filter(action => action.label).map(action => action.label) ?? [];
 	}
 
-	public async refreshNodeInView(connectionId: string, nodePath: string): Promise<TreeNode> {
+	public async refreshNodeInView(connectionId: string, nodePath: string): Promise<TreeNode | undefined> {
 		// Get the tree node and call refresh from the provider
 		let treeNode = await this.getTreeNode(connectionId, nodePath);
-		await this.refreshTreeNode(treeNode.getSession(), treeNode);
-
+		if (!treeNode) {
+			return undefined;
+		}
+		const session = treeNode.getSession();
+		if (session) {
+			await this.refreshTreeNode(session, treeNode);
+		}
 		// Get the new tree node, refresh it in the view, and expand it if needed
 		treeNode = await this.getTreeNode(connectionId, nodePath);
-		await this._serverTreeView.refreshElement(treeNode);
-		if (treeNode.children.length > 0) {
-			await treeNode.setExpandedState(TreeItemCollapsibleState.Expanded);
+		if (!treeNode) {
+			return undefined;
+		}
+		await this._serverTreeView?.refreshElement(treeNode);
+		if (treeNode?.children?.length ?? -1 > 0) {
+			await treeNode?.setExpandedState(TreeItemCollapsibleState.Expanded);
 		}
 		return treeNode;
 	}
@@ -729,31 +728,37 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._sessions[sessionId].connection.toIConnectionProfile();
 	}
 
-	private async setNodeExpandedState(treeNode: TreeNode, expandedState: TreeItemCollapsibleState): Promise<void> {
+	private async setNodeExpandedState(treeNode?: TreeNode, expandedState?: TreeItemCollapsibleState): Promise<void> {
 		treeNode = await this.getUpdatedTreeNode(treeNode);
 		if (!treeNode) {
-			return Promise.resolve();
+			return;
 		}
 		let expandNode = this.getTreeItem(treeNode);
-		if (expandedState === TreeItemCollapsibleState.Expanded) {
-			await this._serverTreeView.reveal(expandNode);
+		if (!expandNode) {
+			return;
 		}
-		return this._serverTreeView.setExpandedState(expandNode, expandedState);
+		if (expandedState === TreeItemCollapsibleState.Expanded) {
+			await this._serverTreeView?.reveal(expandNode);
+		}
+		return this._serverTreeView?.setExpandedState(expandNode, expandedState);
 	}
 
-	private async setNodeSelected(treeNode: TreeNode, selected: boolean, clearOtherSelections: boolean = undefined): Promise<void> {
+	private async setNodeSelected(treeNode?: TreeNode, selected?: boolean, clearOtherSelections?: boolean): Promise<void> {
 		treeNode = await this.getUpdatedTreeNode(treeNode);
 		if (!treeNode) {
 			return Promise.resolve();
 		}
 		let selectNode = this.getTreeItem(treeNode);
-		if (selected) {
-			await this._serverTreeView.reveal(selectNode);
+		if (!selectNode) {
+			return;
 		}
-		return this._serverTreeView.setSelected(selectNode, selected, clearOtherSelections);
+		if (selected) {
+			await this._serverTreeView?.reveal(selectNode);
+		}
+		return this._serverTreeView?.setSelected(selectNode, selected, clearOtherSelections);
 	}
 
-	private async getChildren(treeNode: TreeNode): Promise<TreeNode[]> {
+	private async getChildren(treeNode?: TreeNode): Promise<TreeNode[]> {
 		treeNode = await this.getUpdatedTreeNode(treeNode);
 		if (!treeNode) {
 			return Promise.resolve([]);
@@ -762,19 +767,25 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			return [];
 		}
 		if (!treeNode.children) {
-			await this.resolveTreeNodeChildren(treeNode.getSession(), treeNode);
+			const session = treeNode.getSession();
+			if (session) {
+				await this.resolveTreeNodeChildren(session, treeNode);
+			}
 		}
-		return treeNode.children;
+		return treeNode.children ?? [];
 	}
 
-	private async isExpanded(treeNode: TreeNode): Promise<boolean> {
+	private async isExpanded(treeNode?: TreeNode): Promise<boolean> {
+		if (!treeNode) {
+			return false;
+		}
 		treeNode = await this.getUpdatedTreeNode(treeNode);
 		if (!treeNode) {
 			return false;
 		}
 		do {
 			let expandNode = this.getTreeItem(treeNode);
-			if (!this._serverTreeView.isExpanded(expandNode)) {
+			if (!this._serverTreeView?.isExpanded(expandNode)) {
 				return false;
 			}
 			treeNode = treeNode.parent;
@@ -783,25 +794,31 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return true;
 	}
 
-	private getTreeItem(treeNode: TreeNode): TreeNode | ConnectionProfile {
-		let rootNode = this._activeObjectExplorerNodes[treeNode.getConnectionProfile().id];
+	private getTreeItem(treeNode: TreeNode): TreeNode | ConnectionProfile | undefined {
+		const idx = treeNode?.getConnectionProfile()?.id;
+		if (!idx) {
+			return undefined;
+		}
+		let rootNode = this._activeObjectExplorerNodes[idx];
 		if (treeNode === rootNode) {
 			return treeNode.connection;
 		}
 		return treeNode;
 	}
 
-	private getUpdatedTreeNode(treeNode: TreeNode): Promise<TreeNode> {
-		return this.getTreeNode(treeNode.getConnectionProfile().id, treeNode.nodePath).then(treeNode => {
-			if (!treeNode) {
-				// throw new Error(nls.localize('treeNodeNoLongerExists', "The given tree node no longer exists"));
-				return undefined;
-			}
-			return treeNode;
-		});
+	private async getUpdatedTreeNode(treeNode?: TreeNode): Promise<TreeNode | undefined> {
+		const newTreeNode = await this.getTreeNode(treeNode?.getConnectionProfile()?.id, treeNode?.nodePath);
+		if (!newTreeNode) {
+			// throw new Error(nls.localize('treeNodeNoLongerExists', "The given tree node no longer exists"));
+			return undefined;
+		}
+		return newTreeNode;
 	}
 
-	public async getTreeNode(connectionId: string, nodePath: string): Promise<TreeNode> {
+	public async getTreeNode(connectionId?: string, nodePath?: string): Promise<TreeNode | undefined> {
+		if (!connectionId) {
+			return undefined;
+		}
 		let parentNode = this._activeObjectExplorerNodes[connectionId];
 		if (!parentNode) {
 			return undefined;
@@ -813,7 +830,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		while (currentNode.nodePath !== nodePath) {
 			let nextNode = undefined;
 			if (!currentNode.isAlwaysLeaf && !currentNode.children) {
-				await this.resolveTreeNodeChildren(currentNode.getSession(), currentNode);
+				const session = currentNode?.getSession();
+				if (session) {
+					await this.resolveTreeNodeChildren(session, currentNode);
+				}
 			}
 			if (currentNode.children) {
 				// Look at the next node in the path, which is the child object with the longest path where the desired path starts with the child path

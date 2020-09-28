@@ -5,9 +5,9 @@
 
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
-import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookParams } from 'sql/workbench/services/notebook/browser/notebookService';
 import * as dom from 'vs/base/browser/dom';
-import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
@@ -18,20 +18,18 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 // Leave both undefined when you want the underlying object(s) to have an undefined editor.
 export class NotebookEditorStub extends stubs.NotebookEditorStub {
 	cellEditors: CellEditorProviderStub[];
-	private _model: INotebookModel | undefined;
+	model: INotebookModel | undefined;
+	cells?: ICellModel[] = [];
 
-	get model(): INotebookModel | undefined {
-		return this._model;
-	}
+	public readonly id = this.notebookParams?.notebookUri?.toString();
 
-	get modelReady(): Promise<INotebookModel> {
-		return Promise.resolve(this._model);
-	}
+	public readonly modelReady: Promise<INotebookModel> = Promise.resolve(this.model);
 
 	// Normally one needs to provide either the editor or the instantiationService as the constructor parameter
-	constructor({ cellGuid, instantiationService, editor, model }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; model?: INotebookModel } = {}) {
+	constructor({ cellGuid, instantiationService, editor, model, notebookParams }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; model?: INotebookModel, notebookParams?: INotebookParams } = {}) {
 		super();
-		this._model = model;
+		this.model = model;
+		this.notebookParams = notebookParams;
 		this.cellEditors = [new CellEditorProviderStub({ cellGuid: cellGuid, instantiationService: instantiationService, editor: editor })];
 	}
 }
@@ -53,8 +51,7 @@ class CellEditorProviderStub extends stubs.CellEditorProviderStub {
 				new TestTextResourceConfigurationService(),
 				new TestThemeService(),
 				new TestEditorGroupsService(),
-				new TestEditorService(),
-				new TestConfigurationService()
+				new TestEditorService()
 			);
 		}
 		if (this._editor) {

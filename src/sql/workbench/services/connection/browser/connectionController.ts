@@ -147,9 +147,6 @@ export class ConnectionController implements IConnectionComponentController {
 	private getAllServerGroups(providers?: string[]): IConnectionProfileGroup[] {
 		let connectionGroupRoot = this._connectionManagementService.getConnectionGroups(providers);
 		let allGroups: IConnectionProfileGroup[] = [];
-		if (connectionGroupRoot && connectionGroupRoot.length > 0) {
-			this.flattenGroups(connectionGroupRoot[0], allGroups);
-		}
 		let defaultGroupId: string;
 		if (connectionGroupRoot && connectionGroupRoot.length > 0 && ConnectionProfileGroup.isRoot(connectionGroupRoot[0].name)) {
 			defaultGroupId = connectionGroupRoot[0].id;
@@ -158,6 +155,9 @@ export class ConnectionController implements IConnectionComponentController {
 		}
 		allGroups.push(assign({}, this._connectionWidget.DefaultServerGroup, { id: defaultGroupId }));
 		allGroups.push(this._connectionWidget.NoneServerGroup);
+		if (connectionGroupRoot && connectionGroupRoot.length > 0) {
+			this.flattenGroups(connectionGroupRoot[0], allGroups);
+		}
 		connectionGroupRoot.forEach(cpg => cpg.dispose());
 		return allGroups;
 	}

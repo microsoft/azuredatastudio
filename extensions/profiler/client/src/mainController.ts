@@ -5,19 +5,16 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { ApiWrapper } from './apiWrapper';
 import { CreateSessionDialog } from './dialogs/profilerCreateSessionDialog';
 
 /**
  * The main controller class that initializes the extension
  */
 export class MainController {
-	protected _apiWrapper: ApiWrapper;
 	protected _context: vscode.ExtensionContext;
 
 	// PUBLIC METHODS
-	public constructor(context: vscode.ExtensionContext, apiWrapper?: ApiWrapper) {
-		this._apiWrapper = apiWrapper || new ApiWrapper();
+	public constructor(context: vscode.ExtensionContext) {
 		this._context = context;
 	}
 

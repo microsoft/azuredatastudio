@@ -8,10 +8,11 @@ import * as path from 'path';
 import { DataSourcesTreeItem } from './dataSourceTreeItem';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import * as fileTree from './fileFolderTreeItem';
-import { Project, ProjectEntry, EntryType } from '../project';
+import { Project, EntryType, FileProjectEntry } from '../project';
 import * as utils from '../../common/utils';
 import { DatabaseReferencesTreeItem } from './databaseReferencesTreeItem';
-import { DatabaseProjectItemType } from '../../common/constants';
+import { DatabaseProjectItemType, RelativeOuterPath } from '../../common/constants';
+import { IconPathHelper } from '../../common/iconHelper';
 
 /**
  * TreeNode root that represents an entire project
@@ -21,11 +22,13 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	databaseReferencesNode: DatabaseReferencesTreeItem;
 	fileChildren: { [childName: string]: (fileTree.FolderNode | fileTree.FileNode) } = {};
 	project: Project;
+	fileSystemUri: vscode.Uri;
 
 	constructor(project: Project) {
 		super(vscode.Uri.parse(path.basename(project.projectFilePath)), undefined);
 
 		this.project = project;
+		this.fileSystemUri = vscode.Uri.file(project.projectFilePath);
 		this.dataSourceNode = new DataSourcesTreeItem(this);
 		this.databaseReferencesNode = new DatabaseReferencesTreeItem(this);
 
@@ -34,7 +37,8 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 	public get children(): BaseProjectTreeItem[] {
 		const output: BaseProjectTreeItem[] = [];
-		output.push(this.dataSourceNode);
+		// [8/31/2020] Hiding Data source for Preview since we do not have a way to add or update those.
+		// output.push(this.dataSourceNode);
 		output.push(this.databaseReferencesNode);
 
 		return output.concat(Object.values(this.fileChildren).sort(fileTree.sortFileFolderNodes));
@@ -43,6 +47,8 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	public get treeItem(): vscode.TreeItem {
 		const projectItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
 		projectItem.contextValue = DatabaseProjectItemType.project;
+		projectItem.iconPath = IconPathHelper.databaseProject;
+
 		return projectItem;
 	}
 
@@ -50,7 +56,16 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	 * Processes the list of files in a project file to constructs the tree
 	 */
 	private construct() {
-		for (const entry of this.project.files) {
+		let treeItemList = this.project.files
+			.concat(this.project.preDeployScripts)
+			.concat(this.project.postDeployScripts)
+			.concat(this.project.noneDeployScripts);
+
+		for (const entry of treeItemList) {
+			if (entry.type !== EntryType.File && entry.relativePath.startsWith(RelativeOuterPath)) {
+				continue;
+			}
+
 			const parentNode = this.getEntryParentNode(entry);
 
 			if (Object.keys(parentNode.fileChildren).includes(path.basename(entry.fsUri.path))) {
@@ -77,11 +92,15 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	/**
 	 * Gets the immediate parent tree node for an entry in a project file
 	 */
-	private getEntryParentNode(entry: ProjectEntry): fileTree.FolderNode | ProjectRootTreeItem {
+	private getEntryParentNode(entry: FileProjectEntry): fileTree.FolderNode | ProjectRootTreeItem {
 		const relativePathParts = utils.trimChars(utils.trimUri(vscode.Uri.file(this.project.projectFilePath), entry.fsUri), '/').split('/').slice(0, -1); // remove the last part because we only care about the parent
 
 		if (relativePathParts.length === 0) {
 			return this; // if nothing left after trimming the entry itself, must been root
+		}
+
+		if (relativePathParts[0] === RelativeOuterPath) {
+			return this;
 		}
 
 		let current: fileTree.FolderNode | ProjectRootTreeItem = this;

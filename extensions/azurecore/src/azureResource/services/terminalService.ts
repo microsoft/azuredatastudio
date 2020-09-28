@@ -2,14 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as WS from 'ws';
 
 import { IAzureTerminalService } from '../interfaces';
-import { AzureAccount, AzureAccountSecurityToken, Tenant } from '../../account-provider/interfaces';
+import { AzureAccount, Tenant } from '../../account-provider/interfaces';
 
 const localize = nls.loadMessageBundle();
 
@@ -48,13 +48,13 @@ export class AzureTerminalService implements IAzureTerminalService {
 
 	}
 
-	public async getOrCreateCloudConsole(account: AzureAccount, tenant: Tenant, tokens: { [key: string]: AzureAccountSecurityToken }): Promise<void> {
-		const token = tokens[tenant.id].token;
+	public async getOrCreateCloudConsole(account: AzureAccount, tenant: Tenant): Promise<void> {
+		const token = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.MicrosoftResourceManagement);
 		const settings: AxiosRequestConfig = {
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${token}`
+				'Authorization': `Bearer ${token.token}`
 			},
 			validateStatus: () => true
 		};
@@ -93,7 +93,7 @@ export class AzureTerminalService implements IAzureTerminalService {
 		}
 		const consoleUri = provisionResult.data.properties.uri;
 
-		return this.createTerminal(consoleUri, token, account.displayInfo.displayName, preferredShell);
+		return this.createTerminal(consoleUri, token.token, account.displayInfo.displayName, preferredShell);
 	}
 
 
