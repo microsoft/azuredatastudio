@@ -520,15 +520,16 @@ export class ProjectsController {
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
 	public async changeTargetPlatform(context: Project | BaseProjectTreeItem): Promise<void> {
-		const selectedTargetPlatform = (await vscode.window.showQuickPick((Array.from(constants.targetPlatforms.keys())).map(version => { return { label: version }; }),
+		const project = this.getProjectFromContext(context);
+		const selectedTargetPlatform = (await vscode.window.showQuickPick((Array.from(constants.targetPlatformToVersion.keys())).map(version => { return { label: version }; }),
 			{
 				canPickMany: false,
-				placeHolder: constants.selectTargetPlatform
+				placeHolder: constants.selectTargetPlatform(constants.getTargetPlatformFromVersion(project.getProjectTargetVersion()))
 			}))?.label;
 
 		if (selectedTargetPlatform) {
-			const project = this.getProjectFromContext(context);
-			await project.changeTargetPlatform(constants.targetPlatforms.get(selectedTargetPlatform)!);
+			await project.changeTargetPlatform(constants.targetPlatformToVersion.get(selectedTargetPlatform)!);
+			vscode.window.showInformationMessage(constants.currentTargetPlatform(project.projectFileName, constants.getTargetPlatformFromVersion(project.getProjectTargetVersion())));
 		}
 	}
 

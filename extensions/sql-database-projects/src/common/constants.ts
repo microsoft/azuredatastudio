@@ -65,11 +65,12 @@ export const invalidDefaultProjectSaveLocation = localize('invalidDefaultProject
 export const openWorkspaceSettings = localize('openWorkspaceSettings', "Yes, open Settings");
 export const doNotPromptAgain = localize('doNotPromptAgain', "Don't ask again");
 export const reloadProject = localize('reloadProject', "Would you like to reload your database project?");
-export const selectTargetPlatform = localize('selectTargetPlatform', "Select project target platform");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
 export function deleteReferenceConfirmation(toDelete: string) { return localize('deleteReferenceConfirmation', "Are you sure you want to delete the reference to {0}?", toDelete); }
+export function selectTargetPlatform(currentTargetPlatform: string) { return localize('selectTargetPlatform', "Current target platform: {0}. Select new target platform", currentTargetPlatform); }
+export function currentTargetPlatform(projectName: string, currentTargetPlatform: string) { return localize('currentTargetPlatform', "Target platform of the project {0} is now {1}", projectName, currentTargetPlatform); }
 
 // Publish dialog strings
 
@@ -298,7 +299,7 @@ export const sqlServer2017 = 'SQL Server 2017';
 export const sqlServer2019 = 'SQL Server 2019';
 export const sqlAzure = 'Microsoft Azure SQL Database';
 
-export const targetPlatforms: Map<string, string> = new Map<string, string>([
+export const targetPlatformToVersion: Map<string, string> = new Map<string, string>([
 	[sqlServer2005, '90'],
 	[sqlServer2008, '100'],
 	[sqlServer2012, '110'],
@@ -308,3 +309,7 @@ export const targetPlatforms: Map<string, string> = new Map<string, string>([
 	[sqlServer2019, '150'],
 	[sqlAzure, 'AzureV12']
 ]);
+
+export function getTargetPlatformFromVersion(version: string): string {
+	return [...targetPlatformToVersion].find(([value]) => value === version)![0];
+}

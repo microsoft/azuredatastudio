@@ -330,7 +330,7 @@ export class Project {
 	 * @param newTargetPlatform compat level of project
 	 */
 	public async changeTargetPlatform(compatLevel: string): Promise<void> {
-		if (this.getProjectTargetPlatform() !== compatLevel) {
+		if (this.getProjectTargetVersion() !== compatLevel) {
 			const newDSP = `${constants.MicrosoftDatatoolsSchemaSqlSql}${compatLevel}${constants.databaseSchemaProvider}`;
 			this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].data = newDSP;
 			this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue = newDSP;
@@ -381,16 +381,16 @@ export class Project {
 	}
 
 	public getSystemDacpacUri(dacpac: string): Uri {
-		let version = this.getProjectTargetPlatform();
+		let version = this.getProjectTargetVersion();
 		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, dacpac));
 	}
 
 	public getSystemDacpacSsdtUri(dacpac: string): Uri {
-		let version = this.getProjectTargetPlatform();
+		let version = this.getProjectTargetVersion();
 		return Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', version, 'SqlSchemas', dacpac));
 	}
 
-	public getProjectTargetPlatform(): string {
+	public getProjectTargetVersion(): string {
 		// check for invalid DSP
 		if (this.projFileXmlDoc.getElementsByTagName(constants.DSP).length !== 1 || this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes.length !== 1) {
 			throw new Error(constants.invalidDataSchemaProvider);
@@ -405,7 +405,7 @@ export class Project {
 		version = version.substring(0, version.length - constants.databaseSchemaProvider.length);
 
 		// make sure version is valid
-		if (!Array.from(constants.targetPlatforms.values()).includes(version)) {
+		if (!Array.from(constants.targetPlatformToVersion.values()).includes(version)) {
 			throw new Error(constants.invalidDataSchemaProvider);
 		}
 
