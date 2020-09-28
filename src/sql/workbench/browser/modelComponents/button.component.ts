@@ -17,30 +17,38 @@ import { SIDE_BAR_BACKGROUND, SIDE_BAR_TITLE_FOREGROUND } from 'vs/workbench/com
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { focusBorder, foreground } from 'vs/platform/theme/common/colorRegistry';
 import { Button } from 'sql/base/browser/ui/button/button';
+import { InfoButton } from 'sql/base/browser/ui/infoButton/infoButton';
 import { Color } from 'vs/base/common/color';
 import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 
 @Component({
 	selector: 'modelview-button',
 	template: `
-	<div>
+	<ng-container *ngIf="!this.buttonType === 'Informational'"; else elseBlock>
 		<label for={{this.label}}>
 			<div #input style="width: 100%">
-				<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
+			<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
 			</div>
 		</label>
-	</div>
+	</ng-container>
+	<ng-container #elseBlock>
+		<div #informationalInput style="width: 100%;"></div>
+	</ng-container>
 	`
 })
+
 export default class ButtonComponent extends ComponentWithIconBase<azdata.ButtonProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
-	private _button: Button;
+	private _button: Button | InfoButton;
 	public fileType: string = '.sql';
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
+	@ViewChild('informationalInput', { read: ElementRef }) private _informationalInputContainer: ElementRef;
 	@ViewChild('fileInput', { read: ElementRef }) private _fileInputContainer: ElementRef;
+
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
@@ -51,43 +59,48 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	ngOnInit(): void {
 		this.baseInit();
+
 	}
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
 			this._button = new Button(this._inputContainer.nativeElement);
-
-			this._register(this._button);
-			this._register(attachButtonStyler(this._button, this.themeService, {
-				buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_TITLE_FOREGROUND
-			}));
-			this._register(this._button.onDidClick(e => {
-				if (this._fileInputContainer) {
-					const self = this;
-					this._fileInputContainer.nativeElement.onchange = () => {
-						let file = self._fileInputContainer.nativeElement.files[0];
-						let reader = new FileReader();
-						reader.onload = (e) => {
-							let text = (<FileReader>e.target).result;
-							self.fileContent = text.toString();
-							self.fireEvent({
-								eventType: ComponentEventType.onDidClick,
-								args: {
-									filePath: file.path,
-									fileContent: self.fileContent
-								}
-							});
-						};
-						reader.readAsText(file);
-					};
-				} else {
-					this.fireEvent({
-						eventType: ComponentEventType.onDidClick,
-						args: e
-					});
-				}
-			}));
 		}
+
+		if (this._informationalInputContainer) {
+			this._button = new InfoButton(this._informationalInputContainer.nativeElement);
+		}
+
+		this._register(this._button);
+		this._register(attachButtonStyler(this._button, this.themeService, {
+			buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_TITLE_FOREGROUND
+		}));
+		this._register(this._button.onDidClick(e => {
+			if (this._fileInputContainer) {
+				const self = this;
+				this._fileInputContainer.nativeElement.onchange = () => {
+					let file = self._fileInputContainer.nativeElement.files[0];
+					let reader = new FileReader();
+					reader.onload = (e) => {
+						let text = (e.target as FileReader).result;
+						self.fileContent = text.toString();
+						self.fireEvent({
+							eventType: ComponentEventType.onDidClick,
+							args: {
+								filePath: file.path,
+								fileContent: self.fileContent
+							}
+						});
+					};
+					reader.readAsText(file);
+				};
+			} else {
+				this.fireEvent({
+					eventType: ComponentEventType.onDidClick,
+					args: e
+				});
+			}
+		}));
 	}
 
 	ngOnDestroy(): void {
@@ -97,31 +110,43 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 	/// IComponent implementation
 
 	public setLayout(layout: any): void {
-		// TODO allow configuring the look and feel
 		this.layout();
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._button.enabled = this.enabled;
-		this._button.label = this.label;
-		if (this.properties.fileType) {
-			this.fileType = properties.fileType;
-		}
-		this._button.title = this.title;
+		if (this._informationalInputContainer) {
+			let button = this._button as InfoButton;
+			button.buttonMaxHeight = this.properties.height;
+			button.buttonMaxWidth = this.properties.width;
+			button.description = this.properties.description;
+			button.iconClass = createIconCssClass(this.properties.iconPath);
+			button.iconHeight = this.properties.iconHeight;
+			button.iconWidth = this.properties.iconWidth;
+			button.title = this.properties.title;
+		} else {
+			this._button.enabled = this.enabled;
+			this._button.label = this.label;
 
-		// Button's ariaLabel gets set to the label by default.
-		// We only want to override that if buttonComponent's ariaLabel is set explicitly.
-		if (this.ariaLabel) {
-			this._button.ariaLabel = this.ariaLabel;
+			if (this.properties.fileType) {
+				this.fileType = properties.fileType;
+			}
+			this._button.title = this.title;
+
+			// Button's ariaLabel gets set to the label by default.
+			// We only want to override that if buttonComponent's ariaLabel is set explicitly.
+			if (this.ariaLabel) {
+				this._button.ariaLabel = this.ariaLabel;
+			}
+
+			if (this.width) {
+				this._button.setWidth(convertSize(this.width.toString()));
+			}
+			if (this.height) {
+				this._button.setHeight(convertSize(this.height.toString()));
+			}
 		}
 
-		if (this.width) {
-			this._button.setWidth(convertSize(this.width.toString()));
-		}
-		if (this.height) {
-			this._button.setHeight(convertSize(this.height.toString()));
-		}
 		this.updateIcon();
 		this._changeRef.detectChanges();
 	}
@@ -156,6 +181,18 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	private set label(newValue: string) {
 		this.setPropertyFromUI<string>(this.setValueProperties, newValue);
+	}
+
+	public get buttonType(): azdata.ButtonType {
+		if (this.isFile === true) {
+			return 'File' as azdata.ButtonType;
+		} else {
+			return this.getPropertyOrDefault((props) => props.buttonType, 'Normal' as azdata.ButtonType);
+		}
+	}
+
+	public get description(): string {
+		return this.getPropertyOrDefault((props) => props.description, '');
 	}
 
 	public get isFile(): boolean {

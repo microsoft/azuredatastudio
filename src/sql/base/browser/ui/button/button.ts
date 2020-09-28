@@ -12,7 +12,7 @@ export interface IButtonStyles extends vsIButtonStyles {
 }
 
 export class Button extends vsButton {
-	private buttonFocusOutline?: Color;
+	protected buttonFocusOutline?: Color;
 
 	constructor(container: HTMLElement, options?: IButtonOptions) {
 		super(container, options);
