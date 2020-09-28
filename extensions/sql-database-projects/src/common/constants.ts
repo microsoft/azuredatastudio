@@ -311,5 +311,5 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 ]);
 
 export function getTargetPlatformFromVersion(version: string): string {
-	return [...targetPlatformToVersion].find(([value]) => value === version)![0];
+	return Array.from(targetPlatformToVersion.keys()).filter(k => targetPlatformToVersion.get(k) === version)[0];
 }
