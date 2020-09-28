@@ -5180,7 +5180,7 @@ declare module 'azdata' {
 		 */
 		export interface IExecuteReply {
 			status: 'ok' | 'error' | 'abort';
-			execution_count: number | null | undefined;
+			execution_count: number | undefined;
 		}
 
 		/**

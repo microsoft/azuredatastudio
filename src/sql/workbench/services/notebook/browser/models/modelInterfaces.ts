@@ -460,7 +460,7 @@ export interface ICellModel {
 	active: boolean;
 	hover: boolean;
 	executionCount: number | undefined;
-	readonly future: FutureInternal;
+	readonly future: FutureInternal | undefined;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
 	renderedOutputTextContent?: string[];
 	readonly onOutputsChanged: Event<IOutputChangedEvent>;
@@ -479,7 +479,7 @@ export interface ICellModel {
 	isCollapsed: boolean;
 	readonly onCollapseStateChanged: Event<boolean>;
 	readonly onCellModeChanged: Event<boolean>;
-	modelContentChangedEvent: IModelContentChangedEvent;
+	modelContentChangedEvent: IModelContentChangedEvent | undefined;
 	isEditMode: boolean;
 	showPreview: boolean;
 	showMarkdown: boolean;

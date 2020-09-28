@@ -100,10 +100,10 @@ suite('notebookUtils', function (): void {
 		assert.strictEqual(result, undefined);
 
 		result = tryMatchCellMagic('    ');
-		assert.strictEqual(result, null);
+		assert.strictEqual(result, '');
 
 		result = tryMatchCellMagic('text');
-		assert.strictEqual(result, null);
+		assert.strictEqual(result, '');
 
 		result = tryMatchCellMagic('%%sql');
 		assert.strictEqual(result, 'sql');
@@ -115,10 +115,10 @@ suite('notebookUtils', function (): void {
 		assert.strictEqual(result, 'sql');
 
 		result = tryMatchCellMagic('%%');
-		assert.strictEqual(result, null);
+		assert.strictEqual(result, '');
 
 		result = tryMatchCellMagic('%% sql');
-		assert.strictEqual(result, null);
+		assert.strictEqual(result, '');
 	});
 
 	test('extractCellMagicCommandPlusArgs Test', async function (): Promise<void> {
@@ -239,15 +239,15 @@ suite('notebookUtils', function (): void {
 
 		result = getHostAndPortFromEndpoint('tcp://localhost');
 		assert.strictEqual(result.host, 'localhost');
-		assert.strictEqual(result.port, undefined);
+		assert.strictEqual(result.port, '');
 
 		result = getHostAndPortFromEndpoint('localhost');
 		assert.strictEqual(result.host, '');
-		assert.strictEqual(result.port, undefined);
+		assert.strictEqual(result.port, '');
 
 		result = getHostAndPortFromEndpoint('localhost:1433');
 		assert.strictEqual(result.host, '');
-		assert.strictEqual(result.port, undefined);
+		assert.strictEqual(result.port, '');
 	});
 
 	test('rewriteUrlUsingRegex Test', async function (): Promise<void> {

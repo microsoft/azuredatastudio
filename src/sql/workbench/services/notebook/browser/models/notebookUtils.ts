@@ -75,7 +75,7 @@ export async function asyncForEach(array: any[], callback: Function): Promise<an
 	}
 }
 
-export function getClusterEndpoints(serverInfo: ServerInfo): IEndpoint[] | undefined {
+export function getClusterEndpoints(serverInfo: ServerInfo): IEndpoint[] {
 	let endpoints: RawEndpoint[] = serverInfo.options[clusterEndpointsProperty];
 	if (!endpoints || endpoints.length === 0) { return []; }
 

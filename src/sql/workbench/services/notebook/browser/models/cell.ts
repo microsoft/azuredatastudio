@@ -36,11 +36,11 @@ const ads_execute_command = 'ads_execute_command';
 export class CellModel extends Disposable implements ICellModel {
 	public id: string;
 
-	private _cellType: nb.CellType;
-	private _source: string | string[];
-	private _language: string;
-	private _cellGuid: string;
-	private _future: FutureInternal;
+	private _cellType: nb.CellType = CellTypes.Code;
+	private _source: string | string[] = '';
+	private _language: string | undefined;
+	private _cellGuid: string = '';
+	private _future: FutureInternal | undefined;
 	private _outputs: nb.ICellOutput[] = [];
 	private _renderedOutputTextContent: string[] = [];
 	private _isEditMode: boolean;
@@ -48,19 +48,19 @@ export class CellModel extends Disposable implements ICellModel {
 	private _onCellModeChanged = new Emitter<boolean>();
 	private _onExecutionStateChanged = new Emitter<CellExecutionState>();
 	private _isTrusted: boolean;
-	private _active: boolean;
-	private _hover: boolean;
+	private _active: boolean = false;
+	private _hover: boolean = false;
 	private _executionCount: number | undefined;
-	private _cellUri: URI;
-	private _connectionManagementService: IConnectionManagementService;
-	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
+	private _cellUri!: URI;
+	private _connectionManagementService: IConnectionManagementService | undefined;
+	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage> | undefined;
 	private _onCellLoaded = new Emitter<string>();
-	private _loaded: boolean;
+	private _loaded: boolean = false;
 	private _stdInVisible: boolean;
-	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; };
-	private _isCollapsed: boolean;
+	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; } = {};
+	private _isCollapsed: boolean = false;
 	private _onCollapseStateChanged = new Emitter<boolean>();
-	private _modelContentChangedEvent: IModelContentChangedEvent;
+	private _modelContentChangedEvent: IModelContentChangedEvent | undefined;
 	private _onCellPreviewChanged = new Emitter<boolean>();
 	private _onCellMarkdownChanged = new Emitter<boolean>();
 	private _isCommandExecutionSettingEnabled: boolean = false;
@@ -68,7 +68,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _showMarkdown: boolean = false;
 	private _cellSourceChanged: boolean = false;
 	private _gridDataConversionComplete: Promise<void>[] = [];
-	private _defaultToWYSIWYG: boolean;
+	private _defaultToWYSIWYG: boolean = true;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -81,9 +81,6 @@ export class CellModel extends Disposable implements ICellModel {
 		if (cellData) {
 			// Read in contents if available
 			this.fromJSON(cellData);
-		} else {
-			this._cellType = CellTypes.Code;
-			this._source = '';
 		}
 
 		this._isEditMode = this._cellType !== CellTypes.Markdown;
@@ -94,7 +91,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._isTrusted = false;
 		}
 		// if the fromJson() method was already called and _cellGuid was previously set, don't generate another UUID unnecessarily
-		this._cellGuid = this._cellGuid || generateUuid();
+		this._cellGuid = this._cellGuid ? this._cellGuid : generateUuid();
 		this.createUri();
 		this.populatePropertiesFromSettings();
 	}
@@ -119,7 +116,7 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._isEditMode;
 	}
 
-	public get future(): FutureInternal {
+	public get future(): FutureInternal | undefined {
 		return this._future;
 	}
 
@@ -148,7 +145,7 @@ export class CellModel extends Disposable implements ICellModel {
 			}
 		} else {
 			if (tagIndex > -1) {
-				this._metadata.tags.splice(tagIndex, 1);
+				this._metadata.tags?.splice(tagIndex, 1);
 			}
 		}
 
@@ -247,11 +244,11 @@ export class CellModel extends Disposable implements ICellModel {
 		this._modelContentChangedEvent = undefined;
 	}
 
-	public get modelContentChangedEvent(): IModelContentChangedEvent {
+	public get modelContentChangedEvent(): IModelContentChangedEvent | undefined {
 		return this._modelContentChangedEvent;
 	}
 
-	public set modelContentChangedEvent(e: IModelContentChangedEvent) {
+	public set modelContentChangedEvent(e: IModelContentChangedEvent | undefined) {
 		this._modelContentChangedEvent = e;
 	}
 
@@ -359,7 +356,7 @@ export class CellModel extends Disposable implements ICellModel {
 		return CellExecutionState.Hidden;
 	}
 
-	public async runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean> {
+	public async runCell(notificationService: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean> {
 		try {
 			// Clear grid data conversion promises from previous execution results
 			this._gridDataConversionComplete = [];
@@ -423,7 +420,7 @@ export class CellModel extends Disposable implements ICellModel {
 					} else {
 						let result = extractCellMagicCommandPlusArgs(this._source[0], ads_execute_command);
 						// Similar to the markdown renderer, we should not allow downloadResource here
-						if (result?.commandId !== '_workbench.downloadResource') {
+						if (result && result.commandId !== '_workbench.downloadResource') {
 							try {
 								// Need to reset outputs here (kernels do this on their own)
 								this._outputs = [];
@@ -433,7 +430,7 @@ export class CellModel extends Disposable implements ICellModel {
 								await commandExecuted;
 								// For save files, if we output a message after saving the file, the file becomes dirty again.
 								// Special casing this to avoid this particular issue.
-								if (result?.commandId !== 'workbench.action.files.saveFiles') {
+								if (result.commandId !== 'workbench.action.files.saveFiles') {
 									this.handleIOPub(this.toIOPubMessage(false));
 								}
 							} catch (error) {
@@ -462,7 +459,7 @@ export class CellModel extends Disposable implements ICellModel {
 		return true;
 	}
 
-	private async getOrStartKernel(notificationService: INotificationService): Promise<nb.IKernel> {
+	private async getOrStartKernel(notificationService: INotificationService): Promise<nb.IKernel | undefined> {
 		let model = this._options.notebook;
 		if (model) {
 			await model.sessionLoadFinished;
@@ -577,14 +574,14 @@ export class CellModel extends Disposable implements ICellModel {
 		// TODO #931 we should process this. There can be a payload attached which should be added to outputs.
 		// In all other cases, it is a no-op
 
-		if (!this._future.inProgress) {
+		if (!this._future?.inProgress) {
 			this.disposeFuture();
 		}
 	}
 
 	private handleIOPub(msg: nb.IIOPubMessage): void {
-		let msgType = msg.header.msg_type;
-		let output: nb.ICellOutput;
+		let msgType = msg.header?.msg_type;
+		let output: nb.ICellOutput | undefined;
 		switch (msgType) {
 			case 'execute_result':
 			case 'display_data':
@@ -656,7 +653,7 @@ export class CellModel extends Disposable implements ICellModel {
 					let model = this._options.notebook as NotebookModel;
 					if (model.context) {
 						let gatewayEndpointInfo = this.getGatewayEndpoint(model.context);
-						if (gatewayEndpointInfo) {
+						if (gatewayEndpointInfo?.endpoint) {
 							let hostAndIp = notebookUtils.getHostAndPortFromEndpoint(gatewayEndpointInfo.endpoint);
 							let host = hostAndIp.host ? hostAndIp.host : model.context.serverName;
 							let port = hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
@@ -709,10 +706,10 @@ export class CellModel extends Disposable implements ICellModel {
 			source: this._source,
 			metadata: metadata
 		};
-		cellJson.metadata.azdata_cell_guid = this._cellGuid;
+		cellJson.metadata!.azdata_cell_guid = this._cellGuid;
 		if (this._cellType === CellTypes.Code) {
-			cellJson.metadata.language = this._language;
-			cellJson.metadata.tags = metadata.tags;
+			cellJson.metadata!.language = this._language;
+			cellJson.metadata!.tags = metadata.tags;
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount ? this.executionCount : null;
 		}
@@ -777,7 +774,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 	// Get Knox endpoint from IConnectionProfile
 	// TODO: this will be refactored out into the notebooks extension as a contribution point
-	private getGatewayEndpoint(activeConnection: IConnectionProfile): notebookUtils.IEndpoint {
+	private getGatewayEndpoint(activeConnection: IConnectionProfile): notebookUtils.IEndpoint | undefined {
 		let endpoint;
 		if (this._connectionManagementService && activeConnection && activeConnection.providerName.toLowerCase() === notebookConstants.SQL_CONNECTION_PROVIDER.toLowerCase()) {
 			let serverInfo: ServerInfo = this._connectionManagementService.getServerInfo(activeConnection.id);
@@ -862,9 +859,9 @@ export class CellModel extends Disposable implements ICellModel {
 			this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
 			this._register(this._configurationService.onDidChangeConfiguration(e => {
 				if (e.affectsConfiguration(allowADSCommandsKey)) {
-					this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
+					this._isCommandExecutionSettingEnabled = this._configurationService!.getValue(allowADSCommandsKey);
 				} else if (e.affectsConfiguration(enableWYSIWYGByDefaultKey)) {
-					this._defaultToWYSIWYG = this._configurationService.getValue(enableWYSIWYGByDefaultKey);
+					this._defaultToWYSIWYG = this._configurationService!.getValue(enableWYSIWYGByDefaultKey);
 				}
 			}));
 		}
