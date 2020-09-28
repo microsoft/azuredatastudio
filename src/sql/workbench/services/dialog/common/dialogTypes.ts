@@ -26,7 +26,7 @@ export class ModelViewPane {
 }
 
 export class DialogTab extends ModelViewPane {
-	public content: string;
+	public content: string = '';
 
 	constructor(public title: string, content?: string) {
 		super();
@@ -36,37 +36,38 @@ export class DialogTab extends ModelViewPane {
 	}
 }
 
+export type CloseValidator = () => boolean | Thenable<boolean>;
+
 export class Dialog extends ModelViewPane {
 	private static readonly DONE_BUTTON_LABEL = localize('dialogModalDoneButtonLabel', "Done");
 	private static readonly CANCEL_BUTTON_LABEL = localize('dialogModalCancelButtonLabel', "Cancel");
 
-	public content: string | DialogTab[];
-	public width: DialogWidth;
+	public content: string | DialogTab[] = '';
 	public okButton: DialogButton = new DialogButton(Dialog.DONE_BUTTON_LABEL, true);
 	public cancelButton: DialogButton = new DialogButton(Dialog.CANCEL_BUTTON_LABEL, true);
-	public customButtons: DialogButton[];
-	private _onMessageChange = new Emitter<DialogMessage>();
+	public customButtons: DialogButton[] = [];
+	private _onMessageChange = new Emitter<DialogMessage | undefined>();
 	public readonly onMessageChange = this._onMessageChange.event;
-	private _message: DialogMessage;
-	private _closeValidator: () => boolean | Thenable<boolean>;
+	private _message: DialogMessage | undefined;
+	private _closeValidator: CloseValidator | undefined;
 
-	constructor(public title: string, content?: string | DialogTab[]) {
+	constructor(public title: string, public width: DialogWidth, content?: string | DialogTab[]) {
 		super();
 		if (content) {
 			this.content = content;
 		}
 	}
 
-	public get message(): DialogMessage {
+	public get message(): DialogMessage | undefined {
 		return this._message;
 	}
 
-	public set message(value: DialogMessage) {
+	public set message(value: DialogMessage | undefined) {
 		this._message = value;
 		this._onMessageChange.fire(this._message);
 	}
 
-	public registerCloseValidator(validator: () => boolean | Thenable<boolean>): void {
+	public registerCloseValidator(validator: CloseValidator): void {
 		this._closeValidator = validator;
 	}
 
@@ -83,7 +84,7 @@ export class DialogButton implements azdata.window.Button {
 	private _label: string;
 	private _enabled: boolean;
 	private _hidden: boolean;
-	private _focused: boolean;
+	private _focused: boolean | undefined;
 	private _position?: azdata.window.DialogButtonPosition;
 	private _onClick: Emitter<void> = new Emitter<void>();
 	public readonly onClick: Event<void> = this._onClick.event;
@@ -123,11 +124,11 @@ export class DialogButton implements azdata.window.Button {
 		this._onUpdate.fire();
 	}
 
-	public get focused(): boolean {
+	public get focused(): boolean | undefined {
 		return this._focused;
 	}
 
-	public set focused(focused: boolean) {
+	public set focused(focused: boolean | undefined) {
 		this._focused = focused;
 		this._onUpdate.fire();
 	}
@@ -150,9 +151,9 @@ export class DialogButton implements azdata.window.Button {
 }
 
 export class WizardPage extends DialogTab {
-	public customButtons: DialogButton[];
-	private _enabled: boolean;
-	private _description: string;
+	public customButtons: DialogButton[] = [];
+	private _enabled: boolean = false;
+	private _description: string | undefined;
 	private _onUpdate: Emitter<void> = new Emitter<void>();
 	public readonly onUpdate: Event<void> = this._onUpdate.event;
 
@@ -169,39 +170,42 @@ export class WizardPage extends DialogTab {
 		this._onUpdate.fire();
 	}
 
-	public get description(): string {
+	public get description(): string | undefined {
 		return this._description;
 	}
 
-	public set description(description: string) {
+	public set description(description: string | undefined) {
 		this._description = description;
 		this._onUpdate.fire();
 	}
 }
 
+export type NavigationValidator = (pageChangeInfo: azdata.window.WizardPageChangeInfo) => boolean | Thenable<boolean>;
+
 export class Wizard {
-	public pages: WizardPage[];
-	public nextButton: DialogButton;
-	public backButton: DialogButton;
-	public generateScriptButton: DialogButton;
-	public doneButton: DialogButton;
-	public cancelButton: DialogButton;
-	public customButtons: DialogButton[];
-	private _currentPage: number;
+	public pages: WizardPage[] = [];
+	public customButtons: DialogButton[] = [];
+	private _currentPage: number = -1;
 	private _pageChangedEmitter = new Emitter<azdata.window.WizardPageChangeInfo>();
 	public readonly onPageChanged = this._pageChangedEmitter.event;
 	private _pageAddedEmitter = new Emitter<WizardPage>();
 	public readonly onPageAdded = this._pageAddedEmitter.event;
 	private _pageRemovedEmitter = new Emitter<WizardPage>();
 	public readonly onPageRemoved = this._pageRemovedEmitter.event;
-	private _navigationValidator: (pageChangeInfo: azdata.window.WizardPageChangeInfo) => boolean | Thenable<boolean>;
-	private _onMessageChange = new Emitter<DialogMessage>();
+	private _navigationValidator: NavigationValidator | undefined;
+	private _onMessageChange = new Emitter<DialogMessage | undefined>();
 	public readonly onMessageChange = this._onMessageChange.event;
-	private _message: DialogMessage;
-	public displayPageTitles: boolean;
-	public width: DialogWidth;
+	private _message: DialogMessage | undefined;
+	public displayPageTitles: boolean = false;
+	public width: DialogWidth | undefined;
 
-	constructor(public title: string) { }
+	constructor(public title: string,
+		public readonly name: string,
+		public doneButton: DialogButton,
+		public cancelButton: DialogButton,
+		public nextButton: DialogButton,
+		public backButton: DialogButton,
+		public generateScriptButton: DialogButton) { }
 
 	public get currentPage(): number {
 		return this._currentPage;
@@ -253,7 +257,7 @@ export class Wizard {
 		this._pageRemovedEmitter.fire(removedPage);
 	}
 
-	public registerNavigationValidator(validator: (pageChangeInfo: azdata.window.WizardPageChangeInfo) => boolean | Thenable<boolean>): void {
+	public registerNavigationValidator(validator: NavigationValidator): void {
 		this._navigationValidator = validator;
 	}
 
@@ -268,11 +272,11 @@ export class Wizard {
 		}
 	}
 
-	public get message(): DialogMessage {
+	public get message(): DialogMessage | undefined {
 		return this._message;
 	}
 
-	public set message(value: DialogMessage) {
+	public set message(value: DialogMessage | undefined) {
 		this._message = value;
 		this._onMessageChange.fire(this._message);
 	}

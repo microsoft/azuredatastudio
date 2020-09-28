@@ -804,7 +804,7 @@ export interface ExtHostModelViewDialogShape {
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
-	$openEditor(handle: number, modelViewId: string, title: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
+	$openEditor(handle: number, modelViewId: string, title: string, name?: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
 	$openDialog(handle: number, dialogName?: string): Thenable<void>;
 	$closeDialog(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;

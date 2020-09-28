@@ -45,13 +45,21 @@ export class AzdataTool extends ToolBase {
 		return 'https://docs.microsoft.com/sql/big-data-cluster/deploy-install-azdata';
 	}
 
-	public validateEula(): boolean {
+	public isEulaAccepted(): boolean {
 		if (apiService.azdataApi.isEulaAccepted()) {
 			return true;
 		} else {
 			this.setStatusDescription(loc.azdataEulaNotAccepted);
 			return false;
 		}
+	}
+
+	public async promptForEula(): Promise<boolean> {
+		const eulaAccepted = await apiService.azdataApi.promptForEula();
+		if (!eulaAccepted) {
+			this.setStatusDescription(loc.azdataEulaDeclined);
+		}
+		return eulaAccepted;
 	}
 
 	/* unused */

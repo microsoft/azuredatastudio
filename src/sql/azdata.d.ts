@@ -2485,7 +2485,9 @@ declare module 'azdata' {
 		export const onDidChangeToDashboard: vscode.Event<DashboardDocument>;
 
 		/**
-		 * Create a new model view editor
+		 * Create a new ModelView editor
+		 * @param title The title shown in the editor tab
+		 * @param options Options to configure the editor
 		 */
 		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions): ModelViewEditor;
 
