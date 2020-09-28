@@ -25,7 +25,7 @@ const releaseJson = {
 		'version': '9999.999.999'
 	}
 };
-
+let executeSudoCommandStub: sinon.SinonStub;
 
 describe('azdata', function () {
 	afterEach(function (): void {
@@ -53,13 +53,14 @@ describe('azdata', function () {
 	});
 
 	describe('installAzdata', function (): void {
+
 		beforeEach(function (): void {
 			sinon.stub(vscode.window, 'showErrorMessage').returns(Promise.resolve(<any>loc.yes));
 			sinon.stub(utils, 'searchForCmd').returns(Promise.resolve('/path/to/azdata'));
-			sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: '', stderr: '' }));
+			executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: '', stderr: '' }));
 		});
 
-		it.skip('successful install', async function (): Promise<void> {
+		it('successful install', async function (): Promise<void> {
 			switch (process.platform) {
 				case 'win32':
 					await testWin32SuccessfulInstall();
@@ -238,20 +239,20 @@ async function testWin32SuccessfulUpdate() {
 }
 
 async function testWin32SuccessfulInstall() {
+	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand')
 		.onFirstCall()
-		.callsFake(async (_command: string, _args: string[]) => {
-			return Promise.reject(new Error('not Found'));
-		})
-		.callsFake(async (command: string, args: string[]) => {
-			should(command).be.equal('msiexec');
-			should(args[0]).be.equal('/qn');
-			should(args[1]).be.equal('/i');
-			return { stdout: '0.0.0', stderr: '' };
+		.rejects(new Error('not Found')) // First call mock the tool not being found
+		.resolves({ stdout: '1.0.0', stderr: '' });
+	executeSudoCommandStub
+		.callsFake(async (command: string) => {
+			should(command).startWith('msiexec');
+			return { stdout: '', stderr: '' };
 		});
 	await azdata.checkAndInstallAzdata();
 	should(executeCommandStub.calledTwice).be.true(`executeCommand should have been called twice. Actual ${executeCommandStub.getCalls().length}`);
+	should(executeSudoCommandStub.calledOnce).be.true(`executeSudoCommand should have been called once. Actual ${executeSudoCommandStub.getCalls().length}`);
 }
 
 async function testDarwinSuccessfulInstall() {
