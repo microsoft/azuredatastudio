@@ -17,6 +17,7 @@ import { TreeNode } from './treeNodes';
 import * as utils from '../utils';
 import { IFileNode } from './types';
 import { MountStatus } from '../hdfs/mount';
+import { SqlClusterSession } from './objectExplorerNodeProvider';
 
 export interface ITreeChangeHandler {
 	notifyNodeChanged(node: TreeNode): void;
@@ -29,7 +30,7 @@ export class TreeDataContext {
 }
 
 export abstract class HdfsFileSourceNode extends TreeNode {
-	constructor(protected context: TreeDataContext, protected _path: string, public readonly fileSource: IFileSource, protected mountStatus?: MountStatus) {
+	constructor(protected context: TreeDataContext, protected _path: string, public readonly fileSource: IFileSource | undefined, protected mountStatus?: MountStatus) {
 		super();
 	}
 
@@ -60,17 +61,11 @@ export abstract class HdfsFileSourceNode extends TreeNode {
 }
 
 export class FolderNode extends HdfsFileSourceNode {
-	private children: TreeNode[];
+	private children: TreeNode[] = [];
 	protected _nodeType: string;
-	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, nodeType?: string, mountStatus?: MountStatus) {
+	constructor(context: TreeDataContext, path: string, fileSource: IFileSource | undefined, nodeType?: string, mountStatus?: MountStatus) {
 		super(context, path, fileSource, mountStatus);
 		this._nodeType = nodeType ? nodeType : Constants.MssqlClusterItems.Folder;
-	}
-
-	private ensureChildrenExist(): void {
-		if (!this.children) {
-			this.children = [];
-		}
 	}
 
 	public onChildRemoved(): void {
@@ -79,7 +74,6 @@ export class FolderNode extends HdfsFileSourceNode {
 
 	async getChildren(refreshChildren: boolean): Promise<TreeNode[]> {
 		if (refreshChildren || !this.children) {
-			this.ensureChildrenExist();
 			try {
 				let files: IFile[] = await this.fileSource.enumerateFiles(this._path);
 				if (files) {
@@ -186,8 +180,8 @@ export class FolderNode extends HdfsFileSourceNode {
 
 export class ConnectionNode extends FolderNode {
 
-	constructor(context: TreeDataContext, private displayName: string, fileSource: IFileSource) {
-		super(context, '/', fileSource, Constants.MssqlClusterItems.Connection);
+	constructor(context: TreeDataContext, private displayName: string, private clusterSession: SqlClusterSession) {
+		super(context, '/', undefined, Constants.MssqlClusterItems.Connection);
 	}
 
 	getDisplayName(): string {
@@ -202,6 +196,15 @@ export class ConnectionNode extends FolderNode {
 		let item = await super.getTreeItem();
 		item.contextValue = this._nodeType;
 		return item;
+	}
+
+	async getChildren(refreshChildren: boolean): Promise<TreeNode[]> {
+		// The node is initially created without a filesource and then one is created only once the children items
+		// are requested using the connection info for the controller
+		if (!this.fileSource) {
+			await this.updateFileSource(await this.clusterSession.getSqlClusterConnection());
+		}
+		return super.getChildren(refreshChildren);
 	}
 
 	getNodeInfo(): azdata.NodeInfo {

@@ -13,7 +13,7 @@ type TreeNodePredicate = (node: TreeNode) => boolean;
 
 export abstract class TreeNode implements ITreeNode {
 	private _parent: TreeNode = undefined;
-	protected fileSource: IFileSource;
+	protected fileSource: IFileSource | undefined;
 	private _errorStatusCode: number;
 
 	public get parent(): TreeNode {

@@ -10,7 +10,7 @@ import { TokenRouterApi } from './clusterApiGenerated2';
 import * as nls from 'vscode-nls';
 import { ConnectControllerDialog, ConnectControllerModel } from '../dialog/connectControllerDialog';
 import { getIgnoreSslVerificationConfigSetting } from '../utils';
-import { IClusterController, AuthType } from 'bdc';
+import { IClusterController, AuthType, IEndPointsResponse, IHttpResponse } from 'bdc';
 
 const localize = nls.loadMessageBundle();
 
@@ -174,24 +174,17 @@ export class ClusterController implements IClusterController {
 	}
 
 	public async getKnoxUsername(sqlLogin: string): Promise<string> {
-		try {
-			// This all is necessary because prior to CU5 BDC deployments all had the same default username for
-			// accessing the Knox gateway. But in the allowRunAsRoot setting was added and defaulted to false - so
-			// if that exists and is false then we use the username instead.
-			// Note that the SQL username may not necessarily be correct here either - but currently this is what
-			// we're requiring to run Notebooks in a BDC
-			const config = await this.getClusterConfig();
-			return config.spec?.spec?.security?.allowRunAsRoot === false ? sqlLogin : DEFAULT_KNOX_USERNAME;
-		} catch (err) {
-			console.log(`Unexpected error fetching cluster config for getKnoxUsername ${err}`);
-			// Optimistically fall back to SQL login since root shouldn't be typically used going forward
-			return sqlLogin;
-		}
-
+		// This all is necessary because prior to CU5 BDC deployments all had the same default username for
+		// accessing the Knox gateway. But in the allowRunAsRoot setting was added and defaulted to false - so
+		// if that exists and is false then we use the username instead.
+		// Note that the SQL username may not necessarily be correct here either - but currently this is what
+		// we're requiring to run Notebooks in a BDC
+		const config = await this.getClusterConfig();
+		return config.spec?.spec?.security?.allowRunAsRoot === false ? sqlLogin : DEFAULT_KNOX_USERNAME;
 	}
 
 	public async getClusterConfig(promptConnect: boolean = false): Promise<any> {
-		return await this.withConnectRetry<IEndPointsResponse>(
+		return await this.withConnectRetry<any>(
 			this.getClusterConfigImpl,
 			promptConnect,
 			localize('bdc.error.getClusterConfig', "Error retrieving cluster config from {0}", this._url));
@@ -387,11 +380,6 @@ export interface IClusterRequest {
 	method?: string;
 }
 
-export interface IEndPointsResponse {
-	response: IHttpResponse;
-	endPoints: EndpointModel[];
-}
-
 export interface IBdcStatusResponse {
 	response: IHttpResponse;
 	bdcStatus: BdcStatusModel;
@@ -417,13 +405,6 @@ export interface MountResponse {
 export interface MountStatusResponse {
 	response: IHttpResponse;
 	mount: MountInfo[];
-}
-
-export interface IHttpResponse {
-	method?: string;
-	url?: string;
-	statusCode?: number;
-	statusMessage?: string;
 }
 
 export class ControllerError extends Error {

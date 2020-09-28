@@ -11,12 +11,17 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { AppContext } from './appContext';
 import { SqlClusterConnection } from './objectExplorerNodeProvider/connection';
 import { ICommandObjectExplorerContext } from './objectExplorerNodeProvider/command';
-import { IEndpoint, getClusterEndpoints, getHostAndPortFromEndpoint } from './utils';
+import { getClusterEndpoints, getHostAndPortFromEndpoint } from './utils';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import CodeAdapter from './prompts/adapter';
+import { IQuestion, QuestionTypes } from './prompts/question';
+import * as nls from 'vscode-nls';
+import { AuthType } from './util/auth';
+const localize = nls.loadMessageBundle();
 
-export function findSqlClusterConnection(
+export async function findSqlClusterConnection(
 	obj: ICommandObjectExplorerContext | azdata.IConnectionProfile,
-	appContext: AppContext): SqlClusterConnection {
+	appContext: AppContext): Promise<SqlClusterConnection> {
 
 	if (!obj || !appContext) { return undefined; }
 
@@ -30,12 +35,12 @@ export function findSqlClusterConnection(
 
 	let sqlClusterConnection: SqlClusterConnection = undefined;
 	if (sqlConnProfile) {
-		sqlClusterConnection = findSqlClusterConnectionBySqlConnProfile(sqlConnProfile, appContext);
+		sqlClusterConnection = await findSqlClusterConnectionBySqlConnProfile(sqlConnProfile, appContext);
 	}
 	return sqlClusterConnection;
 }
 
-function findSqlClusterConnectionBySqlConnProfile(sqlConnProfile: azdata.IConnectionProfile, appContext: AppContext): SqlClusterConnection {
+async function findSqlClusterConnectionBySqlConnProfile(sqlConnProfile: azdata.IConnectionProfile, appContext: AppContext): Promise<SqlClusterConnection> {
 	if (!sqlConnProfile || !appContext) { return undefined; }
 
 	let sqlOeNodeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
@@ -44,10 +49,10 @@ function findSqlClusterConnectionBySqlConnProfile(sqlConnProfile: azdata.IConnec
 	let sqlClusterSession = sqlOeNodeProvider.findSqlClusterSessionBySqlConnProfile(sqlConnProfile);
 	if (!sqlClusterSession) { return undefined; }
 
-	return sqlClusterSession.sqlClusterConnection;
+	return sqlClusterSession.getSqlClusterConnection();
 }
 
-export async function getSqlClusterConnection(
+export async function getSqlClusterConnectionParams(
 	obj: azdata.IConnectionProfile | azdata.connection.Connection | ICommandObjectExplorerContext): Promise<ConnectionParam> {
 
 	if (!obj) { return undefined; }
@@ -75,11 +80,8 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 	let serverInfo = await azdata.connection.getServerInfo(connectionId);
 	if (!serverInfo || !serverInfo.options) { return undefined; }
 
-	let endpoints: IEndpoint[] = getClusterEndpoints(serverInfo);
+	let endpoints: bdc.IEndpointModel[] = getClusterEndpoints(serverInfo);
 	if (!endpoints || endpoints.length === 0) { return undefined; }
-
-	let index = endpoints.findIndex(ep => ep.serviceName.toLowerCase() === constants.hadoopEndpointNameGateway.toLowerCase());
-	if (index < 0) { return undefined; }
 
 	let credentials = await azdata.connection.getCredentials(connectionId);
 	if (!credentials) { return undefined; }
@@ -90,29 +92,86 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 		options: {}
 	};
 
-	let hostAndIp = getHostAndPortFromEndpoint(endpoints[index].endpoint);
-	clusterConnInfo.options[constants.hostPropName] = hostAndIp.host;
-	// TODO should we default the port? Or just ignore later?
-	clusterConnInfo.options[constants.knoxPortPropName] = hostAndIp.port || constants.defaultKnoxPort;
+	let clusterController: bdc.IClusterController | undefined = undefined;
 	let authType = clusterConnInfo.options[constants.authenticationTypePropName] = sqlConnInfo.options[constants.authenticationTypePropName];
+	const controllerEndpoint = endpoints.find(ep => ep.name.toLowerCase() === 'controller');
 	if (authType && authType.toLowerCase() !== constants.integratedAuth) {
 		clusterConnInfo.options[constants.userPropName] = sqlConnInfo.options[constants.userPropName]; //should be the same user as sql master
 		clusterConnInfo.options[constants.passwordPropName] = credentials.password;
 		try {
-			const bdcApi = <bdc.IExtension>await vscode.extensions.getExtension(bdc.constants.extensionName).activate();
-			const controllerEndpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === 'controller');
-			const controller = bdcApi.getClusterController(controllerEndpoint.endpoint, 'basic', sqlConnInfo.options[constants.userPropName], credentials.password);
-			clusterConnInfo.options[constants.userPropName] = await controller.getKnoxUsername(sqlConnInfo.options[constants.userPropName]);
+			clusterController = await getClusterController(controllerEndpoint.endpoint, clusterConnInfo);
+
+			clusterConnInfo.options[constants.userPropName] = await clusterController.getKnoxUsername(clusterConnInfo.options[constants.userPropName]);
 		} catch (err) {
 			console.log(`Unexpected error getting Knox username for SQL Cluster connection: ${err}`);
 		}
+	} else {
+		clusterController = await getClusterController(controllerEndpoint.endpoint, clusterConnInfo);
 	}
+
+	let hadoopEndpointIndex = endpoints.findIndex(ep => ep.name.toLowerCase() === constants.hadoopEndpointNameGateway.toLowerCase());
+	if (hadoopEndpointIndex < 0) {
+		endpoints = (await clusterController.getEndPoints()).endPoints;
+		hadoopEndpointIndex = endpoints.findIndex(ep => ep.name.toLowerCase() === constants.hadoopEndpointNameGateway.toLowerCase());
+	}
+	const hostAndIp = getHostAndPortFromEndpoint(endpoints[hadoopEndpointIndex].endpoint);
+	clusterConnInfo.options[constants.hostPropName] = hostAndIp.host;
+	// TODO should we default the port? Or just ignore later?
+	clusterConnInfo.options[constants.knoxPortPropName] = hostAndIp.port || constants.defaultKnoxPort;
 	clusterConnInfo = connToConnectionParam(clusterConnInfo);
 
 	return clusterConnInfo;
 }
 
+async function getClusterController(controllerEndpoint: string, connInfo: ConnectionParam): Promise<bdc.IClusterController | undefined> {
+	const bdcApi = <bdc.IExtension>await vscode.extensions.getExtension(bdc.constants.extensionName).activate();
+	let authType: bdc.AuthType = connInfo.options[constants.authenticationTypePropName] === AuthType.Integrated ? 'integrated' : 'basic';
+	const controller = bdcApi.getClusterController(
+		controllerEndpoint,
+		authType,
+		connInfo.options[constants.userPropName],
+		connInfo.options[constants.passwordPropName]);
+	try {
+		await controller.getClusterConfig();
+		return controller;
+	} catch (err) {
+		// Initial username/password failed so prompt user for username password until either user
+		// cancels out or we successfully connect
+		console.log(`Error connecting to cluster controller ${err}`);
+		let errorMessage = '';
+		while (true) {
+			const prompter = new CodeAdapter();
+			let username = await prompter.promptSingle<string>(<IQuestion>{
+				type: QuestionTypes.input,
+				name: 'inputPrompt',
+				message: localize('promptBDCUsername', "{0}Please provide the username to connect to the BDC Controller:", errorMessage),
+				default: connInfo.options[constants.userPropName]
+			});
+			const password = await prompter.promptSingle<string>(<IQuestion>{
+				type: QuestionTypes.password,
+				name: 'passwordPrompt',
+				message: localize('promptBDCPassword', "Please provide the password to connect to the BDC Controller"),
+				default: ''
+			});
+			if (!username || !password) {
+				console.log(`User cancelled out of username/password prompt for BDC Controller`);
+				break;
+			}
+			const controller = bdcApi.getClusterController(controllerEndpoint, authType, username, password);
+			try {
+				await controller.getClusterConfig();
+				// Update our connection with the new info
+				connInfo.options[constants.userPropName] = username;
+				connInfo.options[constants.passwordPropName] = password;
+				return controller;
+			} catch (err) {
+				errorMessage = localize('bdcConnectError', "Error: {0}. ", err.message ?? err);
+			}
+		}
+		throw new Error(localize('usernameAndPasswordRequired', "Username and password are required to connect to the BDC Controller"));
+	}
 
+}
 function connProfileToConnectionParam(connectionProfile: azdata.IConnectionProfile): ConnectionParam {
 	let result = Object.assign(connectionProfile, { connectionId: connectionProfile.id });
 	return <ConnectionParam>result;
