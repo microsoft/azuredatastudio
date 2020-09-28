@@ -264,21 +264,40 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		this.validateQuery(query).then(() => {
 			if (this.views.length > 1) {
 				let filesToIncludeFiltered: string = '';
+				query.extraFileResources = [];
 				this.views.forEach(async (v) => {
 					if (v instanceof TreeViewPane) {
 						const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
 						if (treeView.dataProvider) {
 							let items = await treeView?.dataProvider.getChildren(treeView?.root);
 							items?.forEach(root => {
+								this.updateViewletsState();
 								if (root.contextValue !== 'pinnedNotebook') {
-									this.updateViewletsState();
 									let rootFolder = URI.file(isString(root.tooltip) ? root.tooltip : root.tooltip.value);
 									let folderToSearch = { folder: rootFolder };
+									query.folderQueries.map((folder, index) => {
+										if (folder.includePattern && path.relative(folder.folder.fsPath, folderToSearch.folder.fsPath) === '..') {
+											// check if a subdirectory it's already in the query folders.
+											query.folderQueries.splice(index, 1);
+										}
+									});
 									query.folderQueries.push(folderToSearch);
 									filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-									this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
+								} else {
+									let pattern = {};
+									let rootFolder = isString(root.tooltip) ? root.tooltip : root.tooltip.value;
+									let baseName = path.join('**', path.basename(rootFolder));
+									let contentFolder = URI.file(path.dirname(rootFolder));
+									pattern[baseName] = true;
+									let folderToSearch = { folder: contentFolder, includePattern: pattern };
+									query.folderQueries.push(folderToSearch);
+									filesToIncludeFiltered = filesToIncludeFiltered + rootFolder + ',';
 								}
 							});
+
+							if (query.folderQueries.length > 0) {
+								this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
+							}
 						}
 					}
 				});
