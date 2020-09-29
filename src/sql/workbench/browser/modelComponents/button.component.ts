@@ -67,14 +67,13 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		this.baseDestroy();
 	}
 
-	/// IComponent implementation
-
 	public setLayout(layout: any): void {
 		this.layout();
 	}
 
 	private initButton(): void {
 		this._currentButtonType = this.buttonType;
+
 		if (this._inputContainer) {
 			this._button = new Button(this._inputContainer.nativeElement);
 		}
