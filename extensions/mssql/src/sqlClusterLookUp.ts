@@ -138,7 +138,7 @@ async function getClusterController(controllerEndpoint: string, connInfo: Connec
 	} catch (err) {
 		// Initial username/password failed so prompt user for username password until either user
 		// cancels out or we successfully connect
-		console.log(`Error connecting to cluster controller ${err}`);
+		console.log(`Error connecting to cluster controller: ${err}`);
 		let errorMessage = '';
 		while (true) {
 			const prompter = new CodeAdapter();
