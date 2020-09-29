@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Action } from 'vs/base/common/actions';
-
 import { OptionsModal } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { NotebookViewExtension } from 'sql/workbench/services/notebook/browser/models/notebookView';
+import { INotebookView, NotebookViewExtension } from 'sql/workbench/services/notebook/browser/models/notebookView';
 import { localize } from 'vs/nls';
 import { InsertCellsModal } from 'sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal';
 import { ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
+//import { window } from 'vscode';
 
 export class ViewSettingsAction extends Action {
 	private static readonly ID = 'viewSettings';
@@ -28,6 +28,31 @@ export class ViewSettingsAction extends Action {
 		try {
 			const optionsModal = this._instantiationService.createInstance(OptionsModal);
 			optionsModal.open(this._context);
+			return Promise.resolve(true);
+		} catch (e) {
+			return Promise.resolve(false);
+		}
+	}
+}
+
+export class DeleteViewAction extends Action {
+	private static readonly ID = 'viewSettings';
+	private static readonly LABEL = undefined;
+	private static readonly ICON = 'notebook-button delete masked-icon';
+
+	constructor(
+		private _activeView: INotebookView
+	) {
+		super(DeleteViewAction.ID, DeleteViewAction.LABEL, DeleteViewAction.ICON);
+	}
+
+	run(): Promise<boolean> {
+		try {
+			if (this._activeView) {
+				this._activeView.delete();
+			} else {
+				//window.showErrorMessage(localize('viewsUnableToRemove', "Unable to remove view");)
+			}
 			return Promise.resolve(true);
 		} catch (e) {
 			return Promise.resolve(false);
@@ -63,7 +88,7 @@ export class InsertCellAction extends Action {
 
 export class HideCellAction extends Action {
 	private static readonly ID = 'hideCell';
-	private static readonly LABEL = undefined;//nls.localize('hideCell', "Hide Cell");
+	private static readonly LABEL = undefined;
 	private static readonly ICON = 'notebook-button delete masked-icon';
 
 	constructor(

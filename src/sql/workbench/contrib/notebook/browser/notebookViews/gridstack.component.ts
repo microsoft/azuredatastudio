@@ -7,13 +7,12 @@ import { Component, OnInit, ViewChildren, QueryList, Input, Inject, forwardRef, 
 import { GridStackItemComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/gridstackItem.component';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 
-/*
 import 'vs/css!./gridstack';
 import 'gridstack/dist/gridstack';
 import 'gridstack/dist/jquery';
 import 'gridstack/dist/jquery-ui';
 import 'gridstack/dist/gridstack.jQueryUI';
-*/
+
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { NotebookViewExtension, INotebookViewCell, CellChangeEvent } from 'sql/workbench/services/notebook/browser/models/notebookView';
 //declare var $: any; // JQuery
@@ -25,19 +24,15 @@ import { NotebookViewExtension, INotebookViewCell, CellChangeEvent } from 'sql/w
 export class GridStackComponent implements OnInit {
 	@Input() cells: ICellModel[];
 	@Input() model: NotebookModel;
+	@Input() extension: NotebookViewExtension;
 
 	@ViewChildren(GridStackItemComponent) private _items: QueryList<GridStackItemComponent>;
 
 	protected _grid: any;
-	protected _extension: NotebookViewExtension;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 	) { }
-
-	public get extension(): NotebookViewExtension {
-		return this._extension;
-	}
 
 	public get hiddenItems(): GridStackItemComponent[] {
 		return this._items.filter(item => !item.display);
@@ -46,9 +41,9 @@ export class GridStackComponent implements OnInit {
 	ngOnInit() {
 		const self = this;
 
-		this._extension = new NotebookViewExtension(this.model);
-		const views = this._extension.getViews();
-		let activeView = this._extension.getActiveView() ?? views[0];
+		this.extension = new NotebookViewExtension(this.model);
+		const views = this.extension.getViews();
+		let activeView = this.extension.getActiveView() ?? views[0];
 
 		if (!activeView) {
 			//activeView = this._extension.createNewView('Test View');
@@ -92,7 +87,7 @@ export class GridStackComponent implements OnInit {
 			const cellId = changedItem.el.getAttribute('data-cell-id');
 			const item = items.toArray().find(item => item.cell.cellGuid === cellId);
 
-			const activeView = this._extension.getActiveView();
+			const activeView = this.extension.getActiveView();
 			if (activeView) {
 				const update: INotebookViewCell = {
 					guid: activeView.guid,
@@ -108,7 +103,7 @@ export class GridStackComponent implements OnInit {
 					update.hidden = true;
 				}
 
-				this._extension.updateCell(item.cell, activeView, update);
+				this.extension.updateCell(item.cell, activeView, update);
 			}
 		});
 

@@ -28,7 +28,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { Deferred } from 'sql/base/common/promise';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { InsertCellAction, ViewSettingsAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/actions';
+import { DeleteViewAction, InsertCellAction, ViewSettingsAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { CellType } from 'sql/workbench/services/notebook/common/contracts';
 import * as _ from 'lodash';
@@ -43,6 +43,7 @@ export const PLACEHOLDER_SELECTOR: string = 'notebook-view-component';
 export class NotebookViewComponent extends AngularDisposable implements INotebookEditor {
 	@Input() model: NotebookModel;
 	@Input() activeView: INotebookView;
+	@Input() extension: NotebookViewExtension;
 
 	@ViewChild('viewsToolbar', { read: ElementRef }) private viewsToolbar: ElementRef;
 	@ViewChildren(CodeCellComponent) private codeCells: QueryList<CodeCellComponent>;
@@ -50,10 +51,9 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 
 	protected _actionBar: Taskbar;
 	public previewFeaturesEnabled: boolean = false;
-	protected _extension: NotebookViewExtension;
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _runAllCellsAction: RunAllCellsAction;
-	private _prevModel: NotebookModel;
+	//private _prevModel: NotebookModel;
 
 	constructor(
 		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
@@ -73,15 +73,6 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		}));
-	}
-
-	ngDoCheck() {
-		// check for object mutation
-		if (this._extension) {
-			if (!_.isEqual(this._prevModel, this.model)) {
-				this._changeRef.detectChanges();
-			}
-		}
 	}
 
 	public get notebookParams(): INotebookParams {
@@ -131,7 +122,6 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	}
 
 	ngOnInit() {
-		this.initExtension();
 		this.initViewsToolbar();
 		this._modelReadyDeferred.resolve(this.model);
 		this.notebookService.addNotebookEditor(this);
@@ -145,17 +135,9 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	}
 
 	ngOnChanges() {
-		this._prevModel = this.model;
+		//this._prevModel = this.model;
 
 		this.initViewsToolbar();
-	}
-
-	initExtension() {
-		this._extension = new NotebookViewExtension(this.model);
-	}
-
-	public get extension(): NotebookViewExtension {
-		return this._extension;
 	}
 
 	public get cells(): ICellModel[] {
@@ -204,7 +186,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 
 		let viewsContainer = document.createElement('li');
 		let viewsActionsProvider = new NotebookViewsDropdownSelectionProvider(viewsContainer, this.contextViewService, this.modelReady, this.notebookService, this.instantiationService);
-		let viewsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.OpenViews', localize('views', "Views"), 'notebook-button masked-pseudo code');
+		let viewsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.OpenViews', undefined, 'notebook-button masked-pseudo code');
 		let viewsDropdownContainer = DOM.$('li.action-item');
 		viewsDropdownContainer.setAttribute('role', 'presentation');
 		let viewsDropdownMenuActionViewItem = new DropdownMenuActionViewItem(
@@ -215,14 +197,13 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 			this._actionBar.actionRunner,
 			undefined,
 			'codicon notebook-button masked-pseudo masked-pseudo-after icon-dashboard-view dropdown-arrow',
-			'',
+			this.activeView?.name,
 			() => AnchorAlignment.RIGHT
 		);
 		viewsDropdownMenuActionViewItem.render(viewsDropdownContainer);
 		viewsDropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
-		viewsActionsProvider.onUpdated(() => {
-			viewsDropdownMenuActionViewItem.render(viewsDropdownContainer);
-		});
+
+		let deleteView = this.instantiationService.createInstance(DeleteViewAction, this.activeView);
 
 		this._actionBar.setContent([
 			{ element: titleElement },
@@ -231,7 +212,8 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 			{ action: this._runAllCellsAction },
 			{ element: spacerElement },
 			{ element: viewsDropdownContainer },
-			{ action: viewOptions }
+			{ action: viewOptions },
+			{ action: deleteView }
 		]);
 	}
 

@@ -53,7 +53,6 @@ import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellVi
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -255,7 +254,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private async doLoad(): Promise<void> {
 		try {
 			await this.createModelAndLoadContents();
-			this._modelReadyDeferred.resolve(this._model);
 			this.notebookService.addNotebookEditor(this);
 			await this.setNotebookManager();
 			await this.loadModel();
@@ -312,7 +310,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private async createModelAndLoadContents(): Promise<void> {
-		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
+		//let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		this._register(this._model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
 		this._register(this._model.contentChanged((change) => this.handleContentChanged(change)));
 		this._register(this._model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider)));
@@ -343,7 +341,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		*/
 		this._register(this._model.onCellTypeChanged(() => this.detectChanges()));
 		this._register(this._model.layoutChanged(() => this.detectChanges()));
-		await this._model.loadContents(trusted);
+		//await this._model.loadContents(trusted);
+		this._modelReadyDeferred.resolve(this._model);
 		this.setLoading(false);
 		this.updateToolbarComponents();
 		this.detectChanges();
@@ -484,14 +483,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				this._actionBar.actionRunner,
 				undefined,
 				'codicon notebook-button masked-pseudo masked-pseudo-after icon-dashboard-view dropdown-arrow',
-				'',
-				() => AnchorAlignment.RIGHT
+				localize('editor', "Editor"),
+				undefined
 			);
 			viewsDropdownMenuActionViewItem.render(viewsDropdownContainer);
 			viewsDropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
-			viewsActionsProvider.onUpdated(() => {
-				viewsDropdownMenuActionViewItem.render(viewsDropdownContainer);
-			});
+
 
 			this._actionBar.setContent([
 				{ element: buttonDropdownContainer },

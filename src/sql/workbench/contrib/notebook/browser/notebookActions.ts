@@ -29,7 +29,7 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
-import { NotebookViewExtension, INotebookView } from 'sql/workbench/services/notebook/browser/models/notebookView';
+import { NotebookViewExtension } from 'sql/workbench/services/notebook/browser/models/notebookView';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IActionProvider } from 'vs/base/browser/ui/dropdown/dropdown';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -201,8 +201,7 @@ export class NotebookViewsOptions implements IActionProvider {
 	updateModel(model: INotebookModel): void {
 		this.model = model as NotebookModel;
 		this.views = new NotebookViewExtension(this.model);
-		let view = this.views.getActiveView();
-		this.updateView(view);
+		this.updateView();
 	}
 
 	public get options(): Action[] {
@@ -210,8 +209,7 @@ export class NotebookViewsOptions implements IActionProvider {
 	}
 
 	// Update SelectBox values
-	public updateView(view: INotebookView) {
-		//let views: string[] = [...new Set(this.views.getViews().map(view => view.name))];
+	public updateView() {
 		this._options = [...new Set(this.views.getViews().map(view =>
 			new DashboardViewAction(view.guid, view.name, 'button', this._notebookService)
 		))];

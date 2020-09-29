@@ -18,7 +18,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { NotebookViewExtension, INotebookView } from 'sql/workbench/services/notebook/browser/models/notebookView';
+import { INotebookView, NotebookViewExtension } from 'sql/workbench/services/notebook/browser/models/notebookView';
 import { Deferred } from 'sql/base/common/promise';
 
 export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
@@ -28,10 +28,14 @@ export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 	templateUrl: decodeURI(require.toUrl('./notebookEditor.component.html'))
 })
 export class NotebookEditorComponent extends AngularDisposable {
-	private _model: NotebookModel;
 	private profile: IConnectionProfile;
 	private notebookManagers: INotebookManager[] = [];
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
+
+	public model: NotebookModel;
+	public extension: NotebookViewExtension;
+	public activeView: INotebookView;
+	public viewMode: ViewMode;
 
 	constructor(
 		@Inject(ILogService) private readonly logService: ILogService,
@@ -58,7 +62,8 @@ export class NotebookEditorComponent extends AngularDisposable {
 
 	private async doLoad(): Promise<void> {
 		await this.createModelAndLoadContents();
-		this._modelReadyDeferred.resolve(this._model);
+		this._modelReadyDeferred.resolve(this.model);
+		this.setActiveView();
 		this.setNotebookManager();
 	}
 
@@ -76,12 +81,22 @@ export class NotebookEditorComponent extends AngularDisposable {
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService,
 			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
-		}, this.profile, this.logService, this.notificationService, this.adstelemetryService);
+		}, this.profile, this.logService, this.notificationService, this.adstelemetryService, this.capabilitiesService);
 
+		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 
-		this._model = this._register(model);
-		this._model.viewModeChanged((mode) => this.onViewModeChanged());
-		this._register(this._model.contentChanged((change) => this.handleContentChanged(change)));
+		this.model = this._register(model);
+		await this.model.loadContents(trusted);
+
+		this.extension = new NotebookViewExtension(this.model);
+		this.viewMode = this.model.viewMode || ViewMode.Notebook;
+
+		this._register(this.extension.onViewDeleted((view) => this.handleViewDeleted(view)));
+		this._register(model.viewModeChanged((mode) => this.onViewModeChanged()));
+		this._register(model.contentChanged((change) => this.handleContentChanged(change)));
+		this._register(model.onCellTypeChanged(() => this.detectChanges()));
+		this._register(model.layoutChanged(() => this.detectChanges()));
+
 		this.detectChanges();
 	}
 
@@ -100,8 +115,8 @@ export class NotebookEditorComponent extends AngularDisposable {
 		return this._notebookParams.modelFactory;
 	}
 
-	public get model() {
-		return this._model;
+	isDirty(): boolean {
+		return this._notebookParams.input.isDirty();
 	}
 
 	public get modelReady(): Promise<INotebookModel> {
@@ -109,34 +124,28 @@ export class NotebookEditorComponent extends AngularDisposable {
 	}
 
 	private handleContentChanged(change: NotebookContentChange) {
+		this.setActiveView();
+
 		// Note: for now we just need to set dirty state and refresh the UI.
 		this.detectChanges();
 	}
 
-	public onViewModeChanged() {
+	private handleViewDeleted(view: INotebookView) {
+		this.viewMode = ViewMode.Notebook;
 		this.detectChanges();
 	}
 
-	public notebookMode(): boolean {
-		return this._model.viewMode === ViewMode.Notebook || this._model.viewMode === undefined;
+	public onViewModeChanged(): void {
+		this.viewMode = this.model?.viewMode;
+		this.setActiveView();
+		this.detectChanges();
 	}
 
-	public notebookViewsMode(): boolean {
-		return this._model.viewMode === ViewMode.Views;
-	}
+	public setActiveView() {
+		const views = this.extension.getViews();
+		let activeView = this.extension.getActiveView() ?? views[0];
 
-	public get activeView(): INotebookView {
-		const extension = new NotebookViewExtension(this.model);
-		const views = extension.getViews();
-		let activeView = extension.getActiveView() ?? views[0];
-
-		if (!activeView) {
-			activeView = extension.createNewView('New View');
-			extension.setActiveView(activeView);
-			extension.commit();
-		}
-
-		return activeView;
+		this.activeView = activeView;
 
 	}
 }

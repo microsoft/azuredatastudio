@@ -6,6 +6,7 @@
 import { INotebookModel, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { generateUuid } from 'vs/base/common/uuid';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { Emitter, Event } from 'vs/base/common/event';
 
 export type CellChangeEventType = 'hide' | 'active';
 
@@ -25,6 +26,7 @@ export interface INotebookViewMetadata {
 }
 
 export interface INotebookView {
+	readonly onDeleted: Event<INotebookView>;
 	cells: Readonly<ICellModel[]>;
 	hiddenCells: Readonly<ICellModel[]>;
 	readonly guid: string;
@@ -35,6 +37,7 @@ export interface INotebookView {
 	getCell(guid: string): Readonly<ICellModel>;
 	insertCellAt(cell: ICellModel, x: number, y: number, height?: number, width?: number): void;
 	save(): void;
+	delete(): void;
 }
 
 /*
@@ -68,7 +71,7 @@ export class NotebookExtension {
 		const meta = {};
 		meta[this.extensionName] = metadata;
 		notebook.setMetaValue(this.extensionsNamespace, meta);
-		notebook.serializationStateChanged(NotebookChangeType.CellsModified);
+		notebook.serializationStateChanged(NotebookChangeType.MetadataChanged);
 	}
 
 	public getCellMetadata(cell: ICellModel): INotebookViewCellMetadata {
@@ -80,7 +83,7 @@ export class NotebookExtension {
 		const meta = {};
 		meta[this.extensionName] = metadata;
 		cell.metadata[this.extensionsNamespace] = meta;
-		cell.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
+		cell.sendChangeToNotebook(NotebookChangeType.CellsModified);
 	}
 }
 
@@ -88,6 +91,9 @@ export class NotebookViewExtension extends NotebookExtension {
 	readonly extension = 'azuredatastudio';
 	readonly version = 1;
 	protected _extensionMeta: INotebookViewMetadata;
+
+	private readonly _onViewDeleted = new Emitter<INotebookView>();
+	public readonly onViewDeleted = this._onViewDeleted.event;
 
 	constructor(protected _notebook: INotebookModel) {
 		super();
@@ -144,7 +150,30 @@ export class NotebookViewExtension extends NotebookExtension {
 	}
 
 	public removeView(guid: string) {
-		this._extensionMeta.views.splice(this._extensionMeta.views.findIndex(view => view.guid === guid), 1);
+		let viewToRemove = this._extensionMeta.views.findIndex(view => view.guid === guid);
+		if (viewToRemove !== -1) { // findIndex returns -1 when no element is found
+			let removedView = this._extensionMeta.views.splice(viewToRemove, 1);
+
+			if (removedView.length) {
+				this._onViewDeleted.fire(removedView[0]);
+
+				this._notebook?.cells.forEach((cell) => {
+					let meta = this.getCellMetadata(cell);
+
+					meta.views.splice(viewToRemove, 1);
+
+					this.setCellMetadata(cell, meta);
+				});
+			}
+
+			this.setNotebookMetadata(this.notebook, this._extensionMeta);
+		}
+
+		if (guid === this._extensionMeta.activeView) {
+			this._extensionMeta.activeView = undefined;
+		}
+
+		this.commit();
 	}
 
 	public getViews(): INotebookView[] {
@@ -162,12 +191,15 @@ export class NotebookViewExtension extends NotebookExtension {
 	protected initializeCells() {
 		const cells = this._notebook.cells;
 		cells.forEach((cell) => {
-			const meta: INotebookViewCellMetadata = {
-				views: []
-			};
-			this.setCellMetadata(cell, meta);
-			this._notebook.onCellChange(cell, NotebookChangeType.CellMetadataUpdated);
+			this.initializeCell(cell);
 		});
+	}
+
+	public initializeCell(cell: ICellModel) {
+		const meta: INotebookViewCellMetadata = {
+			views: []
+		};
+		this.setCellMetadata(cell, meta);
 	}
 
 	public updateCell(cell: ICellModel, currentView: INotebookView, cellData: INotebookViewCell, override: boolean = false) {
@@ -183,7 +215,10 @@ export class NotebookViewExtension extends NotebookExtension {
 
 
 class NotebookView implements INotebookView {
-	readonly guid: string;
+	public readonly guid: string;
+
+	private readonly _onDeleted = new Emitter<INotebookView>();
+	public readonly onDeleted = this._onDeleted.event;
 
 	constructor(
 		guid: string,
@@ -205,17 +240,22 @@ class NotebookView implements INotebookView {
 	public initialize() {
 		const cells = this._notebook.cells;
 		cells.forEach((cell) => {
-			const meta = this._notebookViewExtension.getCellMetadata(cell);
-			if (meta) {
-				meta.views.push({
-					guid: this.guid,
-					hidden: false,
-					x: 0,
-					y: 0,
-					width: 0,
-					height: 0
-				});
+			let meta = this._notebookViewExtension.getCellMetadata(cell);
+
+			if (!meta) {
+				this._notebookViewExtension.initializeCell(cell);
+				meta = this._notebookViewExtension.getCellMetadata(cell);
 			}
+
+			meta.views.push({
+				guid: this.guid,
+				hidden: false,
+				x: 0,
+				y: 0,
+				width: 0,
+				height: 0
+			});
+
 		});
 	}
 
@@ -250,6 +290,11 @@ class NotebookView implements INotebookView {
 
 	public save() {
 		this._notebookViewExtension.commit();
+	}
+
+	public delete() {
+		this._notebookViewExtension.removeView(this.guid);
+		this._onDeleted.fire(this);
 	}
 
 	public toJSON() {
