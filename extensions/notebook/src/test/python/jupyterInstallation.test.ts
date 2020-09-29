@@ -10,8 +10,8 @@ import * as TypeMoq from 'typemoq';
 import * as uuid from 'uuid';
 import * as fs from 'fs-extra';
 import * as utils from '../../common/utils';
-import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
-import { powershellDisplayName, pysparkDisplayName, python3DisplayName, sparkRDisplayName, sparkScalaDisplayName } from '../../common/constants';
+import { JupyterServerInstallation, PythonInstallSettings, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
+import { powershellDisplayName, pysparkDisplayName, python3DisplayName, sparkRDisplayName, sparkScalaDisplayName, winPlatform } from '../../common/constants';
 
 describe('Jupyter Server Installation', function () {
 	let outputChannelStub: TypeMoq.IMock<vscode.OutputChannel>;
@@ -251,5 +251,42 @@ describe('Jupyter Server Installation', function () {
 
 		packages = installation.getRequiredPackagesForKernel(sparkRDisplayName);
 		should(packages).be.deepEqual(expectedPackages);
+	});
+
+	it('Install python test', async function() {
+		// Should reject overwriting an existing python install if running on Windows and python is currently running.
+		if (process.platform === winPlatform) {
+			sinon.stub(utils, 'executeBufferedCommand').resolves('python.exe');
+
+			let installSettings: PythonInstallSettings = {
+				installPath: `${process.env['USERPROFILE']}\\ads-python`,
+				existingPython: false,
+				packages: []
+			};
+			await should(installation.startInstallProcess(false, installSettings)).be.rejected();
+
+			sinon.restore();
+		}
+
+		// Install required packages to existing python instance
+		let installSettings: PythonInstallSettings = {
+			installPath: `${process.env['USERPROFILE']}\\ads-python`,
+			existingPython: true,
+			packages: installation.getRequiredPackagesForKernel(python3DisplayName)
+		};
+		sinon.stub(utils, 'exists')
+			.onFirstCall().resolves(true)
+			.onSecondCall().resolves(true);
+		sinon.stub(utils, 'executeBufferedCommand').onFirstCall().resolves(`${installSettings.installPath}\\site-packages`);
+		sinon.stub(fs, 'existsSync').onFirstCall().returns(false);
+		sinon.stub(installation, 'getInstalledPipPackages').resolves([]);
+		let pipInstallStub = sinon.stub(installation, 'installPipPackages').resolves();
+
+		await should(installation.startInstallProcess(false, installSettings)).be.resolved();
+
+		should(pipInstallStub.callCount).be.equal(1);
+
+		let packagesToInstall = pipInstallStub.firstCall.args[0] as PythonPkgDetails[];
+		should(packagesToInstall).be.deepEqual(installation.getRequiredPackagesForKernel(python3DisplayName));
 	});
 });
