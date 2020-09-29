@@ -248,6 +248,7 @@ declare module 'azdata' {
 
 	export interface ModelBuilder {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent, RadioCardGroupComponentProperties>;
+		listView(): ComponentBuilder<ListViewComponent, ListViewComponentProperties>;
 		tabbedPanel(): TabbedPanelComponentBuilder;
 		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
 		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
@@ -299,6 +300,29 @@ declare module 'azdata' {
 
 		onLinkClick: vscode.Event<RadioCardLinkClickEvent>;
 
+	}
+
+	export interface ListViewComponentProperties extends ComponentProperties {
+		title?: ListViewTitle;
+		options: ListViewOption[];
+		selectedOptionId?: string;
+	}
+
+	export interface ListViewTitle {
+		text?: string;
+		style?: CssStyles;
+	}
+
+	export interface ListViewOption {
+		label: string;
+		id: string;
+		styles?: CssStyles
+	}
+
+	export type ListViewClickEvent = { option: ListViewOption };
+
+	export interface ListViewComponent extends Component, ListViewComponentProperties {
+		onDidClick: vscode.Event<ListViewClickEvent>;
 	}
 
 	export interface SeparatorComponent extends Component {

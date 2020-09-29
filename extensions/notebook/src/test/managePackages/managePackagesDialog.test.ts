@@ -265,6 +265,7 @@ describe('Manage Package Dialog', () => {
 			validate: undefined!,
 			initializeModel: () => { return Promise.resolve(); },
 			modelBuilder: {
+				listView: undefined!,
 				radioCardGroup: undefined!,
 				navContainer: undefined!,
 				divContainer: undefined!,

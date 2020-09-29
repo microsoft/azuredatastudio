@@ -1,0 +1,62 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.listview-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	max-width: 150px;
+	min-width: 120px;
+	font-size: 100%;
+	font-weight: inherit;
+	overflow: auto;
+	padding: 0 0 0 0;
+	font-size: 12px;
+}
+
+.listview-title {
+	margin: 0 5px 5px 0;
+	font-weight: bold;
+	line-height: 16px;
+	padding: 5px 0px 5px 5px;
+}
+
+.listview-li {
+	position: relative;
+	display: block;
+	padding: 0;
+	list-style-type: none;
+	display: inline-block;
+	overflow: hidden;
+	width: 100%;
+	margin: 0;
+	border: #000;
+	border-width: 2px;
+}
+
+.listview-li:hover {
+	background-color: #f3f2f1;
+}
+
+.vs-dark .listview-li:hover {
+	background-color: rgba(128, 128, 128, .3);
+}
+
+.vs .li-active {
+	background-color: #edebe9;
+}
+
+.vs-dark .li-active {
+	background-color: rgba(128, 128, 128, .5);
+}
+
+.listview-option {
+	line-height: 16px;
+	width: 95%;
+	padding: 5px 0px 5px 5px;
+}
+
+
+

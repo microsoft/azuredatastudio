@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
@@ -18,11 +19,15 @@ const localize = nls.loadMessageBundle();
 
 export class ResourceTypePickerDialog extends DialogBase {
 	private toolRefreshTimestamp: number = 0;
+	private _resourceTypes!: ResourceType[];
 	private _selectedResourceType: ResourceType;
 	private _view!: azdata.ModelView;
 	private _optionsContainer!: azdata.FlexContainer;
 	private _toolsTable!: azdata.TableComponent;
+	private _resourceTagsListView!: azdata.ListViewComponent;
+	private _resourceSearchBox!: azdata.InputBoxComponent;
 	private _cardGroup!: azdata.RadioCardGroupComponent;
+	private _resourceContainer!: azdata.FlexContainer;
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 	private _toolsLoadingComponent!: azdata.LoadingComponent;
 	private _agreementContainer!: azdata.DivContainer;
@@ -31,6 +36,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _installationInProgress: boolean = false;
 	private _tools: ITool[] = [];
 	private _eulaValidationSucceeded: boolean = false;
+	// array to store listners that are specific to the selected resource. To be cleared after change in selected resource.
+	private _resourceListeners: vscode.Disposable[] = [];
 
 	constructor(
 		private toolsService: IToolsService,
@@ -66,16 +73,16 @@ export class ResourceTypePickerDialog extends DialogBase {
 			return true;
 		});
 		tab.registerContent((view: azdata.ModelView) => {
-			const tableWidth = 1126;
+			const tableWidth = 1000;
 			this._view = view;
-			const resourceTypes = this.resourceTypeService
+			this._resourceTypes = this.resourceTypeService
 				.getResourceTypes()
 				.filter(rt => !this._resourceTypeNameFilters || this._resourceTypeNameFilters.find(rtn => rt.name === rtn))
 				.sort((a: ResourceType, b: ResourceType) => {
 					return (a.displayIndex || Number.MAX_VALUE) - (b.displayIndex || Number.MAX_VALUE);
 				});
 			this._cardGroup = view.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
-				cards: resourceTypes.map((resourceType) => {
+				cards: this._resourceTypes.map((resourceType) => {
 					return <azdata.RadioCard>{
 						id: resourceType.name,
 						label: resourceType.displayName,
@@ -99,13 +106,13 @@ export class ResourceTypePickerDialog extends DialogBase {
 				cardWidth: '300px',
 				cardHeight: '150px',
 				ariaLabel: localize('deploymentDialog.deploymentOptions', "Deployment options"),
-				width: '1100px',
+				width: '1000px',
 				iconPosition: 'left'
 			}).component();
 			this._toDispose.push(this._cardGroup.onSelectionChanged(({ cardId }) => {
 				this._dialogObject.message = { text: '' };
 				this._dialogObject.okButton.label = loc.select;
-				const resourceType = resourceTypes.find(rt => { return rt.name === cardId; });
+				const resourceType = this._resourceTypes.find(rt => { return rt.name === cardId; });
 				if (resourceType) {
 					this.selectResourceType(resourceType);
 				}
@@ -150,10 +157,36 @@ export class ResourceTypePickerDialog extends DialogBase {
 				loadingText: localize('deploymentDialog.loadingRequiredTools', "Loading required tools information"),
 				showText: true
 			}).component();
+
+			const resourceComponents: azdata.Component[] = [];
+			if (this.getAllResourceTags(this._resourceTypes).length !== 0) {
+				this._resourceTagsListView = this.createResouceButtonsContainer();
+				resourceComponents.push(this._resourceTagsListView);
+			}
+			this._resourceSearchBox = view.modelBuilder.inputBox().withProperties({
+				placeHolder: localize('deploymentDialog.resourceSearchPlaceholder', "Filter resources..."),
+				CSSStyles: {
+				}
+			}).component();
+			this._toDispose.push(this._resourceSearchBox.onTextChanged((value: string) => {
+				this.filterResources();
+			}));
+			const searchContainer = view.modelBuilder.divContainer().withItems([this._resourceSearchBox]).withProps({
+				CSSStyles: {
+					'margin-left': '15px',
+					'width': '400px'
+				},
+			}).component();
+			const cardsContainer = this._view.modelBuilder.flexContainer().withLayout({
+				flexFlow: 'column'
+			}).withItems([searchContainer, this._cardGroup]).component();
+			resourceComponents.push(cardsContainer);
+			this._resourceContainer = this._view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).withItems(resourceComponents).component();
+
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
-						component: this._cardGroup,
+						component: this._resourceContainer,
 						title: ''
 					}, {
 						component: this._agreementContainer,
@@ -175,6 +208,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			const form = formBuilder.withLayout({ width: '100%' }).component();
 
 			return view.initializeModel(form).then(() => {
+				this.selectResourceType(this._resourceTypes[0]);
 				if (this._selectedResourceType) {
 					this._cardGroup.selectedCardId = this._selectedResourceType.name;
 				}
@@ -183,7 +217,111 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._dialogObject.content = [tab];
 	}
 
+	private createResouceButtonsContainer(): azdata.ListViewComponent {
+		const tags = this.getAllResourceTags(this._resourceTypes);
+		if (!tags.includes('All')) {
+			tags.splice(0, 0, 'All');
+		}
+		const items: azdata.ListViewOption[] = [];
+		tags.forEach((t: string) => {
+			items.push({
+				label: t,
+				id: t
+			});
+		});
+		const listView = this._view.modelBuilder.listView().withProps({
+			title: {
+				text: 'Categories',
+			},
+			CSSStyles: {
+				'width': '140px'
+			},
+			options: items,
+			selectedOptionId: items[0].id
+		}).component();
+		this._toDispose.push(listView.onDidClick((e) => {
+			this.filterResources();
+		}));
+
+		return listView;
+	}
+
+	private filterResources(): void {
+
+		let search = this._resourceSearchBox.value;
+		if (search) {
+			search = search.toLowerCase();
+		} else {
+			search = '';
+		}
+		const tag = this._resourceTagsListView.selectedOptionId!;
+
+		let filteredResourceTypes: ResourceType[] = [];
+
+		if (tag !== 'All') {
+			this._resourceTypes.forEach(element => {
+				if (element.tags?.includes(tag)) {
+					filteredResourceTypes.push(element);
+				}
+			});
+		} else {
+			filteredResourceTypes = this._resourceTypes;
+		}
+
+		let filteredResourceTypesonSearch: ResourceType[] = [];
+		filteredResourceTypes.forEach(element => {
+			if (element.displayName.toLowerCase().includes(search!)) {
+				filteredResourceTypesonSearch.push(element);
+			}
+		});
+		filteredResourceTypes.forEach(element => {
+			if (!element.displayName.toLowerCase().includes(search!) && element.description.toLowerCase().includes(search!)) {
+				filteredResourceTypesonSearch.push(element);
+			}
+		});
+
+		const cards = filteredResourceTypesonSearch.map((resourceType) => {
+			return <azdata.RadioCard>{
+				id: resourceType.name,
+				label: resourceType.displayName,
+				icon: resourceType.icon,
+				descriptions: [
+					{
+						textValue: resourceType.displayName,
+						textStyles: {
+							'font-size': '14px',
+							'font-weight': 'bold'
+						}
+					},
+					{
+						textValue: resourceType.description,
+					}
+				]
+			};
+		});
+
+		if (filteredResourceTypesonSearch.length > 0) {
+			this._cardGroup.updateProperties({
+				selectedCardId: cards[0].id,
+				cards: cards
+			});
+
+			this.selectResourceType(filteredResourceTypesonSearch[0]);
+		}
+		else {
+			this._cardGroup.updateProperties({
+				selectedCardId: '',
+				cards: []
+			});
+			this._agreementCheckboxChecked = false;
+			this._agreementContainer.clearItems();
+			this._optionsContainer.clearItems();
+			this.updateToolsDisplayTable();
+		}
+	}
+
 	private selectResourceType(resourceType: ResourceType): void {
+		this._resourceListeners.forEach(disposable => disposable.dispose());
 		this._selectedResourceType = resourceType;
 		//handle special case when resource type has different OK button.
 		this._dialogObject.okButton.label = this._selectedResourceType.okButtonText || select;
@@ -210,7 +348,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 					ariaLabel: option.displayName
 				}).component();
 
-				this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
+				this._resourceListeners.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
 				this._optionDropDownMap.set(option.name, optionSelectBox);
 				const row = this._view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 				this._optionsContainer.addItem(row);
@@ -262,7 +400,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._toolsTable.data = this.toolRequirements.map(toolRequirement => {
 			const tool = this.toolsService.getToolByName(toolRequirement.name)!;
 			// subscribe to onUpdateData event of the tool.
-			this._toDispose.push(tool.onDidUpdateData((t: ITool) => {
+			this._resourceListeners.push(tool.onDidUpdateData((t: ITool) => {
 				this.updateToolsDisplayTableData(t);
 			}));
 
@@ -361,7 +499,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			required: true
 		}).component();
 		checkbox.checked = false;
-		this._toDispose.push(checkbox.onChanged(() => {
+		this._resourceListeners.push(checkbox.onChanged(() => {
 			this._agreementCheckboxChecked = !!checkbox.checked;
 		}));
 		const text = this._view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -476,4 +614,18 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._installationInProgress = false;
 		}
 	}
+
+	private getAllResourceTags(resourceTypes: ResourceType[]): string[] {
+		const tagSet: Set<string> = new Set<string>();
+		resourceTypes.forEach((resouceType) => {
+			if (resouceType.tags) {
+				resouceType.tags.forEach(tag => {
+					tagSet.add(tag);
+				});
+			}
+		});
+
+		return Array.from(tagSet);
+	}
+
 }

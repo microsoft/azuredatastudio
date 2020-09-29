@@ -250,6 +250,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	listView(): azdata.ComponentBuilder<azdata.ListViewComponent, azdata.ListViewComponentProperties> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.ListViewComponent, azdata.ListViewComponentProperties> = this.getComponentBuilder(new ListViewComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	tabbedPanel(): azdata.TabbedPanelComponentBuilder {
 		let id = this.getNextComponentId();
 		let builder = new TabbedPanelComponentBuilder(new TabbedPanelComponentWrapper(this._proxy, this._handle, id));
@@ -1815,6 +1822,43 @@ class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.
 	}
 
 	public get onLinkClick(): vscode.Event<azdata.RadioCardLinkClickEvent> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+}
+
+class ListViewComponentWrapper extends ComponentWrapper implements azdata.ListViewComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.ListView, id);
+		this.properties = {};
+
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<azdata.ListViewClickEvent>());
+	}
+
+	public get title(): azdata.ListViewTitle {
+		return this.properties['title'];
+	}
+
+	public set title(v: azdata.ListViewTitle) {
+		this.setProperty('title', v);
+	}
+
+	public get options(): azdata.ListViewOption[] {
+		return this.properties['options'];
+	}
+	public set options(v: azdata.ListViewOption[]) {
+		this.setProperty('options', v);
+	}
+
+	public get selectedOptionId(): string | undefined {
+		return this.properties['selectedOptionId'];
+	}
+
+	public set selectedOptionId(v: string | undefined) {
+		this.setProperty('selectedOptionId', v);
+	}
+
+	public get onDidClick(): vscode.Event<azdata.ListViewClickEvent> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}

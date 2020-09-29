@@ -74,6 +74,7 @@
           "light": "./images/sql_server_container.svg",
           "dark": "./images/sql_server_container_inverse.svg"
         },
+        "tags": ["On-premises", "SQL Server"],
         "options": [
           {
             "name": "version",
@@ -205,6 +206,7 @@
           "light": "./images/sql_bdc.svg",
           "dark": "./images/sql_bdc_inverse.svg"
         },
+        "tags": ["On-premises", "SQL Server"],
         "options": [
           {
             "name": "version",
@@ -363,6 +365,7 @@
           "light": "./images/sql_server_on_windows.svg",
           "dark": "./images/sql_server_on_windows_inverse.svg"
         },
+        "tags": ["On-premises", "SQL Server"],
         "options": [
           {
             "name": "version",
@@ -401,6 +404,7 @@
           "light": "./images/azure-sql-db.svg",
           "dark": "./images/azure-sql-db.svg"
         },
+        "tags": ["SQL Server", "Cloud"],
         "okButtonText": "%azure-sqldb-ok-button-text%",
         "options": [
           {
@@ -466,6 +470,7 @@
           "light": "./images/azure-sql-vm.svg",
           "dark": "./images/azure-sql-vm.svg"
         },
+        "tags": ["SQL Server", "Cloud"],
         "providers": [
           {
             "azureSQLVMWizard":{

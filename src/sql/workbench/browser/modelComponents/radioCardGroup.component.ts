@@ -147,7 +147,7 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 		super.setProperties(properties);
 		// This is the entry point for the extension to set the selectedCardId
 		if (this.selectedCardId) {
-			this.selectCard(this.selectedCardId);
+			this._changeRef.detectChanges();
 		}
 	}
 

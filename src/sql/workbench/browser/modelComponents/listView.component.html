@@ -1,0 +1,12 @@
+<div role="listbox" class="listview-container" [ngStyle]="styles" [style.width]="width" [style.height]="height">
+	<div *ngIf="title" class="listview-title">{{title.text}}</div>
+	<ng-container *ngFor="let option of options">
+		<li #optionDiv role="option " [ngClass]="{ 'listview-li': true,  'li-active':isOptionSelected(option.id)}"
+			[tabIndex]="0" (click)="selectOption(option.id)" (focus)="onOptionFocus(option.id)"
+			(blur)="onOptionBlur(option.id)" (keydown)="onKeyDown($event, option.id)"
+			[attr.aria-selected]="isOptionSelected(option.id)">
+			<div class="listview-option" [ngStyle]="option.style ">
+				{{option.label}}</div>
+		</li>
+	</ng-container>
+</div>
