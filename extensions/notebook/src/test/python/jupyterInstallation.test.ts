@@ -29,6 +29,11 @@ describe('Jupyter Server Installation', function () {
 		sinon.restore();
 	});
 
+	it('Getters and setters', async function() {
+		let pythonPath = installation.pythonInstallationPath;
+		should(pythonPath).be.equal(JupyterServerInstallation.getPythonInstallPath());
+	});
+
 	it('Get pip packages', async function() {
 		// Should return nothing if passed an invalid python path
 		let fakePath = uuid.v4();
