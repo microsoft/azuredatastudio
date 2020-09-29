@@ -136,9 +136,8 @@ describe('azdata', function () {
 		});
 
 		describe('discoverLatestAvailableAzdataVersion', function (): void {
-			this.timeout(20000);
-			it(`finds latest available version of azdata successfully`, async function (): Promise<void> {
-				// if the latest version is not discovered then the following call throws failing the test
+			it('finds latest available version of azdata successfully', async function (): Promise<void> {
+				sinon.stub(HttpClient, 'getTextContent').resolves(JSON.stringify(releaseJson));
 				await azdata.discoverLatestAvailableAzdataVersion();
 			});
 		});
