@@ -114,16 +114,16 @@ export interface BdcWizardInfo {
 	notebook: string | NotebookPathInfo;
 	type: BdcDeploymentType;
 }
-
 /**
- *	if true - the python notebook is run as a background task at the end of the wizard. @see actionText is used to configure the label of the done button.
- *	if false - the notebook is opened up in a new editor. @see actionText is used to configure the label of the done button.
- *  	if 'userChooses' - an additional button @see loc.scriptToNotebook is shown to the user at the end of the wizard.
- * 		The default done button allows the user to execute the notebook as background task. @see actionText is used to configure the label of the done button.
- *  		and scriptToNotebook button opens up the notebook in a new editor window. @see scriptToNotebookActionText is used to configure the label of the done button.
- *  Remarks: For all cases, all input values are transferred into a cell of the notebook as python variables except password variables which are set as environment variables into the jupyter kernel process that is used to execute the notebook.
+ * An object that configures Script and Done buttons of the wizard.
  */
-type RunNotebookType = false | true | 'userChooses';
+export interface WizardButton {
+	/**
+	 *
+	 */
+	visible: boolean,
+	label?: string
+}
 
 /**
  * 	This object defines the shape, form and behavior of a Notebook Wizard.
@@ -133,14 +133,6 @@ export interface NotebookWizardInfo extends WizardInfoBase {
 	 *	path to the template python notebook that is modified with variables collected in the wizard. A copy of this modified notebook is executed at the end of the wizard either from commonadline of from notebook editor in ADS.
 	*/
 	notebook: string | NotebookPathInfo;
-	/**
-	 * 	specifies the behavior at the end of the wizard. @see RunNotebookType for details.
-	 */
-	runNotebook?: RunNotebookType;
-	/**
-	 * 	The label of additional scriptToNotebook button used when runNotebook is set to @see userChooses.
-	 */
-	scriptToNotebookActionText?: string;
 	/**
 	 * 	0 based position number where the variables values are inserted into the notebook as python statements.
 	 */
@@ -158,9 +150,13 @@ export interface WizardInfoBase extends FieldInfoBase {
 	taskName?: string;
 	type?: DeploymentType;
 	/**
-	 * 	The done button label to end the wizard.
+	 * 	done button attributes.
 	 */
-	actionText?: string;
+	doneButton?: WizardButton;
+	/**
+	 * script button attributes.
+	 */
+	scriptButton?: WizardButton;
 	/**
 	 * 	title displayed on every page of the wizard
 	 */

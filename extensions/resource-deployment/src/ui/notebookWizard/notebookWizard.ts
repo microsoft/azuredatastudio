@@ -38,8 +38,8 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 		if (this._wizardInfo.codeCellInsertionPosition === undefined) {
 			this._wizardInfo.codeCellInsertionPosition = 0;
 		}
-		this.wizardObject.doneButton.label = _wizardInfo.actionText || loc.deployNotebook;
-		this.wizardObject.generateScriptButton.label = _wizardInfo.scriptToNotebookActionText || loc.scriptToNotebook;
+		this.wizardObject.doneButton.label = _wizardInfo.doneButton?.label || loc.deployNotebook;
+		this.wizardObject.generateScriptButton.label = _wizardInfo.scriptButton?.label || loc.scriptToNotebook;
 	}
 
 	public get deploymentType(): DeploymentType | undefined {
