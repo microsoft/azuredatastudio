@@ -34,7 +34,7 @@ export interface NotebookExecutionResult {
 
 export interface INotebookService {
 	openNotebook(notebook: string | NotebookPathInfo): Promise<azdata.nb.NotebookEditor>;
-	openNotebookWithEdits(notebook: string | NotebookPathInfo, cellStatements: string[], insertionPosition?: number): Promise<void>;
+	openNotebookWithEdits(notebook: string | NotebookPathInfo, cellStatements: string[], insertionPosition?: number): Promise<azdata.nb.NotebookEditor>;
 	openNotebookWithContent(title: string, content: string): Promise<azdata.nb.NotebookEditor>;
 	getNotebook(notebook: string | NotebookPathInfo): Promise<Notebook>;
 	getNotebookPath(notebook: string | NotebookPathInfo): string;
@@ -47,7 +47,7 @@ export class NotebookService implements INotebookService {
 	constructor(private platformService: IPlatformService, private extensionPath: string) { }
 
 	/**
-	 * Launch notebook with file path
+	 * Open notebook with file path
 	 * @param notebook the path of the notebook
 	 */
 	async openNotebook(notebook: string | NotebookPathInfo): Promise<azdata.nb.NotebookEditor> {
@@ -57,13 +57,13 @@ export class NotebookService implements INotebookService {
 
 	/**
 	 * Inserts cell code given by {@param cellStatements} in an existing notebook given by {@param notebook} file path at the location
-	 * {@param insertionPosition} and then launches the edited notebook.
+	 * {@param insertionPosition} and then opens the edited notebook.
 	 *
-	 * @param notebook - the path to notebook that needs to be launched
+	 * @param notebook - the path to notebook that needs to be opened
 	 * @param cellStatements - array of statements to be inserted in a cell
 	 * @param insertionPosition - the position at which cells are inserted. Default is a new cell at the beginning of the notebook.
 	 */
-	async openNotebookWithEdits(notebook: string, cellStatements: string[], insertionPosition: number = 0): Promise<void> {
+	async openNotebookWithEdits(notebook: string, cellStatements: string[], insertionPosition: number = 0): Promise<azdata.nb.NotebookEditor> {
 		const openedNotebook = await this.openNotebook(notebook);
 		await openedNotebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
 			editBuilder.insertCell({
@@ -71,10 +71,11 @@ export class NotebookService implements INotebookService {
 				source: cellStatements
 			}, insertionPosition);
 		});
+		return openedNotebook;
 	}
 
 	/**
-	 * Launch notebook with file path
+	 * Open notebook with file path
 	 * @param title the title of the notebook
 	 * @param content the notebook content
 	 */
@@ -152,9 +153,9 @@ export class NotebookService implements INotebookService {
 							try {
 								await this.openNotebookWithContent(`${tempNotebookPrefix}-${getDateTimeString()}`, result.outputNotebook);
 							} catch (error) {
-								const launchNotebookError = localize('resourceDeployment.FailedToOpenNotebook', "An error occurred launching the output notebook. {1}{2}.", EOL, getErrorMessage(error));
-								platformService.logToOutputChannel(launchNotebookError);
-								vscode.window.showErrorMessage(launchNotebookError);
+								const openNotebookError = localize('resourceDeployment.FailedToOpenNotebook', "An error occurred opening the output notebook. {1}{2}.", EOL, getErrorMessage(error));
+								platformService.logToOutputChannel(openNotebookError);
+								vscode.window.showErrorMessage(openNotebookError);
 							}
 						}
 					} else {

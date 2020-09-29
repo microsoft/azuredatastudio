@@ -81,7 +81,7 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 
 	public async onEnter(pageInfo: WizardPageInfo): Promise<void> {
 		if (pageInfo.isLastPage) {
-			// on the last page either one or both of done button and generateScript button are visisble depending on configuration of 'runNotebook' in wizard info
+			// on the last page either one or both of done button and generateScript button are visible depending on configuration of 'runNotebook' in wizard info
 			this.wizard.wizardObject.doneButton.hidden = !this.isDoneButtonVisible;
 			this.wizard.wizardObject.generateScriptButton.hidden = !this.isGenerateScriptButtonVisible;
 		} else {
