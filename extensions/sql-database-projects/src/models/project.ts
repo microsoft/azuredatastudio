@@ -559,7 +559,11 @@ export class Project {
 
 	private removeSqlCmdVariableFromProjFile(variableName: string): void {
 		const sqlCmdVariableNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable);
-		this.removeNode(variableName, sqlCmdVariableNodes);
+		const deleted = this.removeNode(variableName, sqlCmdVariableNodes);
+
+		if (!deleted) {
+			throw new Error(constants.unableToFindSqlCmdVariable(variableName));
+		}
 	}
 
 	private removeDatabaseReferenceFromProjFile(databaseReferenceEntry: IDatabaseReferenceProjectEntry): void {
@@ -675,7 +679,9 @@ export class Project {
 
 	public addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): void {
 		// Remove any entries with the same variable name. It'll be replaced with a new one
-		this.removeFromProjFile(entry);
+		if (Object.keys(this.sqlCmdVariables).includes(entry.variableName)) {
+			this.removeFromProjFile(entry);
+		}
 
 		const sqlCmdVariableNode = this.projFileXmlDoc.createElement(constants.SqlCmdVariable);
 		sqlCmdVariableNode.setAttribute(constants.Include, entry.variableName);
