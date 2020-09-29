@@ -559,11 +559,7 @@ export class Project {
 
 	private removeSqlCmdVariableFromProjFile(variableName: string): void {
 		const sqlCmdVariableNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable);
-		const deleted = this.removeNode(variableName, sqlCmdVariableNodes);
-
-		if (!deleted) {
-			throw new Error(constants.unableToFindSqlCmdVariable(variableName));
-		}
+		this.removeNode(variableName, sqlCmdVariableNodes);
 	}
 
 	private removeDatabaseReferenceFromProjFile(databaseReferenceEntry: IDatabaseReferenceProjectEntry): void {
