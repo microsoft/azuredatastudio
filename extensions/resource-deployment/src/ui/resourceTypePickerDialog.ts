@@ -38,6 +38,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _eulaValidationSucceeded: boolean = false;
 	// array to store listners that are specific to the selected resource. To be cleared after change in selected resource.
 	private _resourceListeners: vscode.Disposable[] = [];
+	private _cardsCache: Map<string, azdata.RadioCard> = new Map();
 
 	constructor(
 		private toolsService: IToolsService,
@@ -83,23 +84,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				});
 			this._cardGroup = view.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
 				cards: this._resourceTypes.map((resourceType) => {
-					return <azdata.RadioCard>{
-						id: resourceType.name,
-						label: resourceType.displayName,
-						icon: resourceType.icon,
-						descriptions: [
-							{
-								textValue: resourceType.displayName,
-								textStyles: {
-									'font-size': '14px',
-									'font-weight': 'bold'
-								}
-							},
-							{
-								textValue: resourceType.description,
-							}
-						]
-					};
+					return this.createOrGetCard(resourceType);
 				}),
 				iconHeight: '35px',
 				iconWidth: '35px',
@@ -164,9 +149,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				resourceComponents.push(this._resourceTagsListView);
 			}
 			this._resourceSearchBox = view.modelBuilder.inputBox().withProperties({
-				placeHolder: localize('deploymentDialog.resourceSearchPlaceholder', "Filter resources..."),
-				CSSStyles: {
-				}
+				placeHolder: localize('deploymentDialog.resourceSearchPlaceholder', "Filter resources...")
 			}).component();
 			this._toDispose.push(this._resourceSearchBox.onTextChanged((value: string) => {
 				this.filterResources();
@@ -174,7 +157,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			const searchContainer = view.modelBuilder.divContainer().withItems([this._resourceSearchBox]).withProps({
 				CSSStyles: {
 					'margin-left': '15px',
-					'width': '400px'
+					'width': '300px'
 				},
 			}).component();
 			const cardsContainer = this._view.modelBuilder.flexContainer().withLayout({
@@ -218,20 +201,21 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private createResouceButtonsContainer(): azdata.ListViewComponent {
+
 		const tags = this.getAllResourceTags(this._resourceTypes);
 		if (!tags.includes('All')) {
 			tags.splice(0, 0, 'All');
 		}
 		const items: azdata.ListViewOption[] = [];
-		tags.forEach((t: string) => {
+		tags.forEach((t: string, idx: number) => {
 			items.push({
-				label: t,
+				label: localize('deploymentDialog.tag' + idx, '{0}', t),
 				id: t
 			});
 		});
 		const listView = this._view.modelBuilder.listView().withProps({
 			title: {
-				text: 'Categories',
+				text: localize('deploymentDialog.tagsListViewTitle', 'Categories')
 			},
 			CSSStyles: {
 				'width': '140px'
@@ -248,12 +232,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 	private filterResources(): void {
 
-		let search = this._resourceSearchBox.value;
-		if (search) {
-			search = search.toLowerCase();
-		} else {
-			search = '';
-		}
+		const search = this._resourceSearchBox.value?.toLowerCase() ?? '';
+
 		const tag = this._resourceTagsListView.selectedOptionId!;
 
 		let filteredResourceTypes: ResourceType[] = [];
@@ -281,23 +261,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		});
 
 		const cards = filteredResourceTypesonSearch.map((resourceType) => {
-			return <azdata.RadioCard>{
-				id: resourceType.name,
-				label: resourceType.displayName,
-				icon: resourceType.icon,
-				descriptions: [
-					{
-						textValue: resourceType.displayName,
-						textStyles: {
-							'font-size': '14px',
-							'font-weight': 'bold'
-						}
-					},
-					{
-						textValue: resourceType.description,
-					}
-				]
-			};
+			return this.createOrGetCard(resourceType);
 		});
 
 		if (filteredResourceTypesonSearch.length > 0) {
@@ -616,16 +580,49 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private getAllResourceTags(resourceTypes: ResourceType[]): string[] {
+		const supportedTags = ['All', 'On-premises', 'SQL Server', 'Hybrid', 'PostgreSQL', 'Cloud'];
 		const tagSet: Set<string> = new Set<string>();
 		resourceTypes.forEach((resouceType) => {
 			if (resouceType.tags) {
 				resouceType.tags.forEach(tag => {
-					tagSet.add(tag);
+					if (supportedTags.includes(tag)) {
+						tagSet.add(tag);
+					}
+					else {
+						console.error(`The extension has contributed a tag that is not supported yet. Use only ${supportedTags.toString()} tags for now.`);
+					}
 				});
 			}
 		});
 
 		return Array.from(tagSet);
+	}
+
+	private createOrGetCard(resourceType: ResourceType): azdata.RadioCard {
+		if (this._cardsCache.has(resourceType.name)) {
+			return this._cardsCache.get(resourceType.name)!;
+		}
+
+		const newCard = <azdata.RadioCard>{
+			id: resourceType.name,
+			label: resourceType.displayName,
+			icon: resourceType.icon,
+			descriptions: [
+				{
+					textValue: resourceType.displayName,
+					textStyles: {
+						'font-size': '14px',
+						'font-weight': 'bold'
+					}
+				},
+				{
+					textValue: resourceType.description,
+				}
+			]
+		};
+
+		this._cardsCache.set(resourceType.name, newCard);
+		return newCard;
 	}
 
 }

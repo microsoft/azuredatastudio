@@ -44,11 +44,11 @@
 	background-color: rgba(128, 128, 128, .3);
 }
 
-.vs .li-active {
+.vs .listview-li-active {
 	background-color: #edebe9;
 }
 
-.vs-dark .li-active {
+.vs-dark .listview-li-active {
 	background-color: rgba(128, 128, 128, .5);
 }
 
