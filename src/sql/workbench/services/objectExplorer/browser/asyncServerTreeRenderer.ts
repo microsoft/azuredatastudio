@@ -99,7 +99,6 @@ class ConnectionProfileTemplate extends Disposable {
 
 	set(element: ConnectionProfile) {
 		if (!this._isCompact) {
-			let iconPath: IconPath | undefined = getIconPath(element, this._connectionManagementService);
 			if (this._connectionManagementService.isConnected(undefined, element)) {
 				this._connectionStatusBadge.classList.remove('disconnected');
 				this._connectionStatusBadge.classList.add('connected');
@@ -107,8 +106,10 @@ class ConnectionProfileTemplate extends Disposable {
 				this._connectionStatusBadge.classList.remove('connected');
 				this._connectionStatusBadge.classList.add('disconnected');
 			}
-			renderServerIcon(this._icon, iconPath);
 		}
+
+		let iconPath: IconPath | undefined = getIconPath(element, this._connectionManagementService);
+		renderServerIcon(this._icon, iconPath);
 
 		let label = element.title;
 		if (!element.isConnectionOptionsValid) {
@@ -259,16 +260,14 @@ function getIconPath(connection: ConnectionProfile, connectionManagementService:
 	}
 
 	let iconId = connectionManagementService.getConnectionIconId(connection.id);
-	if (!iconId) { return undefined; }
-
 	let providerProperties = connectionManagementService.getProviderProperties(connection.providerName);
 	if (!providerProperties) { return undefined; }
 
 	let iconPath: IconPath | undefined = undefined;
-	let pathConfig: URI | IconPath | { id: string, path: IconPath }[] | undefined = providerProperties['iconPath'];
+	let pathConfig: URI | IconPath | { id: string, path: IconPath, default?: boolean }[] | undefined = providerProperties['iconPath'];
 	if (Array.isArray(pathConfig)) {
 		for (const e of pathConfig) {
-			if (!e.id || e.id === iconId) {
+			if (!e.id || e.id === iconId || (!iconId && e.default)) {
 				iconPath = e.path;
 				connection['iconPath'] = iconPath;
 				break;

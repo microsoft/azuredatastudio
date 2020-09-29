@@ -134,11 +134,20 @@ export class Project {
 				const suppressMissingDependenciesErrorNode = references[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
 				const suppressMissingDependencies = suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === true ?? false;
 
-				this.databaseReferences.push(new DacpacReferenceProjectEntry({
-					dacpacFileLocation: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
-					databaseName: name,
-					suppressMissingDependenciesErrors: suppressMissingDependencies
-				}));
+				const path = utils.convertSlashesForSqlProj(this.getSystemDacpacUri(`${name}.dacpac`).fsPath);
+				if (path.includes(filepath)) {
+					this.databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
+						Uri.file(filepath),
+						this.getSystemDacpacSsdtUri(`${name}.dacpac`),
+						name,
+						suppressMissingDependencies));
+				} else {
+					this.databaseReferences.push(new DacpacReferenceProjectEntry({
+						dacpacFileLocation: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
+						databaseName: name,
+						suppressMissingDependenciesErrors: suppressMissingDependencies
+					}));
+				}
 			}
 		}
 
@@ -311,14 +320,39 @@ export class Project {
 		await this.exclude(entry);
 	}
 
+	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<void> {
+		await this.removeFromProjFile(entry);
+		this.databaseReferences = this.databaseReferences.filter(x => x !== entry);
+	}
+
 	/**
-	 * Set the compat level of the project
-	 * Just used in tests right now, but can be used later if this functionality is added to the UI
-	 * @param compatLevel compat level of project
+	 * Set the target platform of the project
+	 * @param newTargetPlatform compat level of project
 	 */
-	public changeDSP(compatLevel: string): void {
-		const newDSP = `${constants.MicrosoftDatatoolsSchemaSqlSql}${compatLevel}${constants.databaseSchemaProvider}`;
-		this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue = newDSP;
+	public async changeTargetPlatform(compatLevel: string): Promise<void> {
+		if (this.getProjectTargetVersion() !== compatLevel) {
+			const newDSP = `${constants.MicrosoftDatatoolsSchemaSqlSql}${compatLevel}${constants.databaseSchemaProvider}`;
+			this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].data = newDSP;
+			this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue = newDSP;
+
+			// update any system db references
+			const systemDbReferences = this.databaseReferences.filter(r => r instanceof SystemDatabaseReferenceProjectEntry) as SystemDatabaseReferenceProjectEntry[];
+			if (systemDbReferences.length > 0) {
+				systemDbReferences.forEach((r) => {
+					// remove old entry in sqlproj
+					this.removeDatabaseReferenceFromProjFile(r);
+
+					// update uris to point to the correct dacpacs for the target platform
+					r.fsUri = this.getSystemDacpacUri(`${r.databaseName}.dacpac`);
+					r.ssdtUri = this.getSystemDacpacSsdtUri(`${r.databaseName}.dacpac`);
+
+					// add updated system db reference to sqlproj
+					this.addDatabaseReferenceToProjFile(r);
+				});
+			}
+
+			await this.serializeToProjFile(this.projFileXmlDoc);
+		}
 	}
 
 	/**
@@ -337,26 +371,32 @@ export class Project {
 		}
 
 		const systemDatabaseReferenceProjectEntry = new SystemDatabaseReferenceProjectEntry(uri, ssdtUri, <string>settings.databaseName, settings.suppressMissingDependenciesErrors);
+
+		// check if reference to this database already exists
+		if (this.databaseReferenceExists(systemDatabaseReferenceProjectEntry)) {
+			throw new Error(constants.databaseReferenceAlreadyExists);
+		}
+
 		await this.addToProjFile(systemDatabaseReferenceProjectEntry);
 	}
 
 	public getSystemDacpacUri(dacpac: string): Uri {
-		let version = this.getProjectTargetPlatform();
+		let version = this.getProjectTargetVersion();
 		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, dacpac));
 	}
 
 	public getSystemDacpacSsdtUri(dacpac: string): Uri {
-		let version = this.getProjectTargetPlatform();
+		let version = this.getProjectTargetVersion();
 		return Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', version, 'SqlSchemas', dacpac));
 	}
 
-	public getProjectTargetPlatform(): string {
+	public getProjectTargetVersion(): string {
 		// check for invalid DSP
 		if (this.projFileXmlDoc.getElementsByTagName(constants.DSP).length !== 1 || this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes.length !== 1) {
 			throw new Error(constants.invalidDataSchemaProvider);
 		}
 
-		let dsp: string = this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue;
+		let dsp: string = this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].data;
 
 		// get version from dsp, which is a string like Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider
 		// remove part before the number
@@ -365,7 +405,7 @@ export class Project {
 		version = version.substring(0, version.length - constants.databaseSchemaProvider.length);
 
 		// make sure version is valid
-		if (!Object.values(TargetPlatform).includes(version)) {
+		if (!Array.from(constants.targetPlatformToVersion.values()).includes(version)) {
 			throw new Error(constants.invalidDataSchemaProvider);
 		}
 
@@ -379,6 +419,12 @@ export class Project {
 	 */
 	public async addDatabaseReference(settings: IDacpacReferenceSettings): Promise<void> {
 		const databaseReferenceEntry = new DacpacReferenceProjectEntry(settings);
+
+		// check if reference to this database already exists
+		if (this.databaseReferenceExists(databaseReferenceEntry)) {
+			throw new Error(constants.databaseReferenceAlreadyExists);
+		}
+
 		await this.addToProjFile(databaseReferenceEntry);
 	}
 
@@ -520,6 +566,22 @@ export class Project {
 		}
 	}
 
+	private removeDatabaseReferenceFromProjFile(databaseReferenceEntry: IDatabaseReferenceProjectEntry): void {
+		const elementTag = databaseReferenceEntry instanceof SqlProjectReferenceProjectEntry ? constants.ProjectReference : constants.ArtifactReference;
+		const artifactReferenceNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(elementTag);
+		const deleted = this.removeNode(databaseReferenceEntry.pathForSqlProj(), artifactReferenceNodes);
+
+		// also delete SSDT reference if it's a system db reference
+		if (databaseReferenceEntry instanceof SystemDatabaseReferenceProjectEntry) {
+			const ssdtPath = databaseReferenceEntry.ssdtPathForSqlProj();
+			this.removeNode(ssdtPath, artifactReferenceNodes);
+		}
+
+		if (!deleted) {
+			throw new Error(constants.unableToFindDatabaseReference(databaseReferenceEntry.databaseName));
+		}
+	}
+
 	private addSystemDatabaseReferenceToProjFile(entry: SystemDatabaseReferenceProjectEntry): void {
 		const systemDbReferenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 
@@ -528,7 +590,6 @@ export class Project {
 		systemDbReferenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
 		this.addDatabaseReferenceChildren(systemDbReferenceNode, entry);
 		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(systemDbReferenceNode);
-		this.databaseReferences.push(entry);
 
 		// add a reference to the system dacpac in SSDT if it's a system db
 		const ssdtReferenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
@@ -539,11 +600,6 @@ export class Project {
 	}
 
 	private addDatabaseReferenceToProjFile(entry: IDatabaseReferenceProjectEntry): void {
-		// check if reference to this database already exists
-		if (this.databaseReferenceExists(entry)) {
-			throw new Error(constants.databaseReferenceAlreadyExists);
-		}
-
 		if (entry instanceof SystemDatabaseReferenceProjectEntry) {
 			this.addSystemDatabaseReferenceToProjFile(<SystemDatabaseReferenceProjectEntry>entry);
 		} else if (entry instanceof SqlProjectReferenceProjectEntry) {
@@ -552,12 +608,14 @@ export class Project {
 			this.addProjectReferenceChildren(referenceNode, <SqlProjectReferenceProjectEntry>entry);
 			this.addDatabaseReferenceChildren(referenceNode, entry);
 			this.findOrCreateItemGroup(constants.ProjectReference).appendChild(referenceNode);
-			this.databaseReferences.push(entry);
 		} else {
 			const referenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 			referenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
 			this.addDatabaseReferenceChildren(referenceNode, entry);
 			this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(referenceNode);
+		}
+
+		if (!this.databaseReferenceExists(entry)) {
 			this.databaseReferences.push(entry);
 		}
 	}
@@ -776,6 +834,7 @@ export class Project {
 					this.removeFolderFromProjFile((<FileProjectEntry>entry).relativePath);
 					break;
 				case EntryType.DatabaseReference:
+					this.removeDatabaseReferenceFromProjFile(<IDatabaseReferenceProjectEntry>entry);
 					break;
 				case EntryType.SqlCmdVariable:
 					this.removeSqlCmdVariableFromProjFile((<SqlCmdVariableProjectEntry>entry).variableName);
@@ -884,7 +943,7 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 	}
 }
 
-class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
+export class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
 	constructor(uri: Uri, public ssdtUri: Uri, public databaseVariableLiteralValue: string, public suppressMissingDependenciesErrors: boolean) {
 		super(uri, '', EntryType.DatabaseReference);
 	}
@@ -954,17 +1013,6 @@ export enum DatabaseReferenceLocation {
 	sameDatabase,
 	differentDatabaseSameServer,
 	differentDatabaseDifferentServer
-}
-
-export enum TargetPlatform {
-	Sql90 = '90',
-	Sql100 = '100',
-	Sql110 = '110',
-	Sql120 = '120',
-	Sql130 = '130',
-	Sql140 = '140',
-	Sql150 = '150',
-	SqlAzureV12 = 'AzureV12'
 }
 
 export enum SystemDatabase {
