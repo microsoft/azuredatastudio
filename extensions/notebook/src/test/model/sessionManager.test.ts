@@ -27,6 +27,12 @@ export class TestClusterController implements bdc.IClusterController {
 	getKnoxUsername(clusterUsername: string): Promise<string> {
 		return Promise.resolve('knoxUsername');
 	}
+	getEndPoints(promptConnect?: boolean): Promise<bdc.IEndPointsResponse> {
+		return Promise.resolve( {
+			response: undefined,
+			endPoints: []
+		});
+	}
 }
 
 describe('Jupyter Session Manager', function (): void {
