@@ -75,7 +75,7 @@ export class NotebookService implements INotebookService {
 	}
 
 	/**
-	 * Open notebook with file path
+	 * Open notebook with given contents
 	 * @param title the title of the notebook
 	 * @param content the notebook content
 	 */
