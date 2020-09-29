@@ -25,8 +25,7 @@ export abstract class WizardPageBase<T> {
 		return this._wizard;
 	}
 
-	public async onEnter(_pageInfo?: WizardPageInfo): Promise<void> {
-	}
+	public async onEnter(_pageInfo?: WizardPageInfo): Promise<void> { }
 
 	public async onLeave(_pageInfo?: WizardPageInfo): Promise<void> { }
 

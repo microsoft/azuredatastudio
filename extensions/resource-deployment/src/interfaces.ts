@@ -116,15 +116,12 @@ export interface BdcWizardInfo {
 }
 
 /**
- *	if true - the python notebook is run as a background task at the end of the wizard, all input values are set as
- *		environment variables prior to notebook execution. @see actionText is used to configure the label of the done button.
- *	if false - the notebook is opened up in a new editor, all input values are transferred into a cell of the notebook as
- * 		python variables. Except password variables which are set as environment variables into the jupyter kernel process that
- * 		is used to execute the notebook. @see actionText is used to configure the label of the done button.
+ *	if true - the python notebook is run as a background task at the end of the wizard. @see actionText is used to configure the label of the done button.
+ *	if false - the notebook is opened up in a new editor. @see actionText is used to configure the label of the done button.
  *  if 'userChooses' - an additional button @see loc.scriptToNotebook is shown to the user at the end of the wizard.
  * 		The default done button allows the user to execute the notebook as background task. @see actionText is used to configure the label of the done button, otherwise the behavior is same as when runNotebook was set to true.
  *  		and scriptToNotebook button opens up the notebook in a new editor window. @see scriptToNotebookActionText is used to configure the label of the done button, otherwise the behavior is same asa when runNotebook was set to false.
- *
+ *  Remarks: For all cases, all input values are transferred into a cell of the notebook as python variables except password variables which are set as environment variables into the jupyter kernel process that is used to execute the notebook.
  */
 type RunNotebookType = false | true | 'userChooses';
 
