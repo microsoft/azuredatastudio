@@ -13,8 +13,9 @@ type TreeNodePredicate = (node: TreeNode) => boolean;
 
 export abstract class TreeNode implements ITreeNode {
 	private _parent: TreeNode = undefined;
-	protected fileSource: IFileSource;
 	private _errorStatusCode: number;
+
+	constructor(private _fileSource: IFileSource | undefined) { }
 
 	public get parent(): TreeNode {
 		return this._parent;
@@ -77,8 +78,13 @@ export abstract class TreeNode implements ITreeNode {
 	}
 
 	public async updateFileSource(connection: SqlClusterConnection): Promise<void> {
-		this.fileSource = await connection.createHdfsFileSource();
+		this._fileSource = await connection.createHdfsFileSource();
 	}
+
+	public async getFileSource(): Promise<IFileSource | undefined> {
+		return this._fileSource;
+	}
+
 	/**
 	 * The value to use for this node in the node path
 	 */

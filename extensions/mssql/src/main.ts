@@ -221,7 +221,7 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 
 async function handleOpenClusterDashboardTask(profile: azdata.IConnectionProfile, appContext: AppContext): Promise<void> {
 	const serverInfo = await azdata.connection.getServerInfo(profile.id);
-	const controller = Utils.getClusterEndpoints(serverInfo).find(e => e.serviceName === Endpoint.controller);
+	const controller = Utils.getClusterEndpoints(serverInfo).find(e => e.name === Endpoint.controller);
 	if (!controller) {
 		vscode.window.showErrorMessage(localize('noController', "Could not find the controller endpoint for this instance"));
 		return;
