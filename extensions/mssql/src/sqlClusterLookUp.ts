@@ -53,7 +53,8 @@ async function findSqlClusterConnectionBySqlConnProfile(sqlConnProfile: azdata.I
 }
 
 export async function getSqlClusterConnectionParams(
-	obj: azdata.IConnectionProfile | azdata.connection.Connection | ICommandObjectExplorerContext): Promise<ConnectionParam> {
+	obj: azdata.IConnectionProfile | azdata.connection.Connection | ICommandObjectExplorerContext,
+	appContext: AppContext): Promise<ConnectionParam> {
 
 	if (!obj) { return undefined; }
 
@@ -62,16 +63,16 @@ export async function getSqlClusterConnectionParams(
 		if (obj.providerName === constants.mssqlClusterProviderName) {
 			sqlClusterConnInfo = 'id' in obj ? connProfileToConnectionParam(obj) : connToConnectionParam(obj);
 		} else {
-			sqlClusterConnInfo = await createSqlClusterConnInfo(obj);
+			sqlClusterConnInfo = await createSqlClusterConnInfo(obj, appContext);
 		}
 	} else {
-		sqlClusterConnInfo = await createSqlClusterConnInfo(obj.explorerContext.connectionProfile);
+		sqlClusterConnInfo = await createSqlClusterConnInfo(obj.explorerContext.connectionProfile, appContext);
 	}
 
 	return sqlClusterConnInfo;
 }
 
-async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile | azdata.connection.Connection): Promise<ConnectionParam> {
+async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile | azdata.connection.Connection, appContext: AppContext): Promise<ConnectionParam> {
 	if (!sqlConnInfo) { return undefined; }
 
 	let connectionId: string = 'id' in sqlConnInfo ? sqlConnInfo.id : sqlConnInfo.connectionId;
@@ -96,11 +97,17 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 	let authType = clusterConnInfo.options[constants.authenticationTypePropName] = sqlConnInfo.options[constants.authenticationTypePropName];
 	const controllerEndpoint = endpoints.find(ep => ep.name.toLowerCase() === 'controller');
 	if (authType && authType.toLowerCase() !== constants.integratedAuth) {
-		clusterConnInfo.options[constants.userPropName] = sqlConnInfo.options[constants.userPropName]; //should be the same user as sql master
-		clusterConnInfo.options[constants.passwordPropName] = credentials.password;
+		const usernameKey = `bdc.username::${connectionId}`;
+		const savedUsername = appContext.extensionContext.globalState.get(usernameKey);
+		const credentialProvider = await azdata.credentials.getProvider('mssql.bdc.password');
+		const savedPassword = (await credentialProvider.readCredential(connectionId)).password;
+		clusterConnInfo.options[constants.userPropName] = savedUsername ?? sqlConnInfo.options[constants.userPropName]; //should be the same user as sql master
+		clusterConnInfo.options[constants.passwordPropName] = savedPassword ?? credentials.password;
 		try {
 			clusterController = await getClusterController(controllerEndpoint.endpoint, clusterConnInfo);
-
+			// We've successfully connected so now store the username/password for future connections
+			appContext.extensionContext.globalState.update(usernameKey, clusterConnInfo.options[constants.userPropName]);
+			credentialProvider.saveCredential(connectionId, clusterConnInfo.options[constants.passwordPropName]);
 			clusterConnInfo.options[constants.userPropName] = await clusterController.getKnoxUsername(clusterConnInfo.options[constants.userPropName]);
 		} catch (err) {
 			console.log(`Unexpected error getting Knox username for SQL Cluster connection: ${err}`);

@@ -255,7 +255,7 @@ export class SqlClusterSession {
 
 	public async getSqlClusterConnection(): Promise<SqlClusterConnection> {
 		if (!this._sqlClusterConnection) {
-			const sqlClusterConnectionParams = await getSqlClusterConnectionParams(this._sqlConnectionProfile);
+			const sqlClusterConnectionParams = await getSqlClusterConnectionParams(this._sqlConnectionProfile, this._appContext);
 			this._sqlClusterConnection = new SqlClusterConnection(sqlClusterConnectionParams);
 		}
 		return this._sqlClusterConnection;
