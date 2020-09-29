@@ -143,7 +143,9 @@ declare module 'azdata-ext' {
 		},
 		status: {
 			readyReplicas: string, // "1/1"
-			state: string, // "Ready"
+			state: string, // "Ready",
+			logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
+			metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
 			externalEndpoint?: string // "10.91.86.39:32718"
 		}
 	}
@@ -208,7 +210,9 @@ declare module 'azdata-ext' {
 		status: {
 			externalEndpoint: string, // "10.130.12.136:26630"
 			readyPods: string, // "1/1",
-			state: string // "Ready"
+			state: string, // "Ready"
+			logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:pg1'))
+			metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=pg1
 		}
 	}
 

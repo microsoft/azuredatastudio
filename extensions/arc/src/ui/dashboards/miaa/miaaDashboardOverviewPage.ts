@@ -352,19 +352,13 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	private refreshDashboardLinks(): void {
-		const kibanaEndpoint = this._controllerModel.getEndpoint(Endpoints.logsui);
-		if (kibanaEndpoint && this._miaaModel.config) {
-			const kibanaQuery = `kubernetes_namespace:"${this._miaaModel.config.metadata.namespace}" and custom_resource_name :"${this._miaaModel.config.metadata.name}"`;
-			const kibanaUrl = `${kibanaEndpoint.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
+		if (this._miaaModel.config) {
+			const kibanaUrl = this._miaaModel.config.status.logSearchDashboard ?? '';
 			this._kibanaLink.label = kibanaUrl;
 			this._kibanaLink.url = kibanaUrl;
 			this._kibanaLoading!.loading = false;
-		}
 
-		const grafanaEndpoint = this._controllerModel.getEndpoint(Endpoints.metricsui);
-		if (grafanaEndpoint && this._miaaModel.config) {
-			const grafanaQuery = `var-hostname=${this._miaaModel.info.name}-0`;
-			const grafanaUrl = grafanaEndpoint ? `${grafanaEndpoint.endpoint}/d/40q72HnGk/sql-managed-instance-metrics?${grafanaQuery}` : '';
+			const grafanaUrl = this._miaaModel.config.status.metricsDashboard ?? '';
 			this._grafanaLink.label = grafanaUrl;
 			this._grafanaLink.url = grafanaUrl;
 			this._grafanaLoading!.loading = false;

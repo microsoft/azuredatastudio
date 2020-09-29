@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles, Endpoints } from '../../../constants';
+import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
@@ -16,13 +16,13 @@ import { ResourceType } from 'arc';
 
 export class PostgresOverviewPage extends DashboardPage {
 
-	private propertiesLoading?: azdata.LoadingComponent;
-	private kibanaLoading?: azdata.LoadingComponent;
-	private grafanaLoading?: azdata.LoadingComponent;
+	private propertiesLoading!: azdata.LoadingComponent;
+	private kibanaLoading!: azdata.LoadingComponent;
+	private grafanaLoading!: azdata.LoadingComponent;
 
-	private properties?: azdata.PropertiesContainerComponent;
-	private kibanaLink?: azdata.HyperlinkComponent;
-	private grafanaLink?: azdata.HyperlinkComponent;
+	private properties!: azdata.PropertiesContainerComponent;
+	private kibanaLink!: azdata.HyperlinkComponent;
+	private grafanaLink!: azdata.HyperlinkComponent;
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
@@ -31,7 +31,6 @@ export class PostgresOverviewPage extends DashboardPage {
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
 		this.disposables.push(
-			this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated())),
 			this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleRegistrationsUpdated())),
 			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleConfigUpdated())));
 	}
@@ -74,29 +73,19 @@ export class PostgresOverviewPage extends DashboardPage {
 			CSSStyles: titleCSS
 		}).component());
 
-		this.kibanaLink = this.modelView.modelBuilder.hyperlink()
-			.withProperties<azdata.HyperlinkComponentProperties>({
-				label: this.getKibanaLink(),
-				url: this.getKibanaLink()
-			}).component();
+		this.kibanaLink = this.modelView.modelBuilder.hyperlink().component();
 
-		this.grafanaLink = this.modelView.modelBuilder.hyperlink()
-			.withProperties<azdata.HyperlinkComponentProperties>({
-				label: this.getGrafanaLink(),
-				url: this.getGrafanaLink()
-			}).component();
+		this.grafanaLink = this.modelView.modelBuilder.hyperlink().component();
 
 		this.kibanaLoading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.kibanaLink)
-			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this._controllerModel.endpointsLastUpdated
-			}).component();
+			.component();
 
 		this.grafanaLoading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.grafanaLink)
-			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this._controllerModel.endpointsLastUpdated
-			}).component();
+			.component();
+
+		this.refreshDashboardLinks();
 
 		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
@@ -271,27 +260,18 @@ export class PostgresOverviewPage extends DashboardPage {
 		];
 	}
 
-	private getKibanaLink(): string {
-		const namespace = this._postgresModel.config?.metadata.namespace;
-		const kibanaQuery = `kubernetes_namespace:"${namespace}" and custom_resource_name:"${this._postgresModel.info.name}"`;
-		return `${this._controllerModel.getEndpoint(Endpoints.logsui)?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
+	private refreshDashboardLinks(): void {
+		if (this._postgresModel.config) {
+			const kibanaUrl = this._postgresModel.config.status.logSearchDashboard ?? '';
+			this.kibanaLink.label = kibanaUrl;
+			this.kibanaLink.url = kibanaUrl;
+			this.kibanaLoading.loading = false;
 
-	}
-
-	private getGrafanaLink(): string {
-		const namespace = this._postgresModel.config?.metadata.namespace;
-		const grafanaQuery = `var-Namespace=${namespace}&var-Name=${this._postgresModel.info.name}`;
-		return `${this._controllerModel.getEndpoint(Endpoints.metricsui)?.endpoint}/d/postgres-metrics?${grafanaQuery}`;
-	}
-
-	private handleEndpointsUpdated() {
-		this.kibanaLink!.label = this.getKibanaLink();
-		this.kibanaLink!.url = this.getKibanaLink();
-		this.kibanaLoading!.loading = false;
-
-		this.grafanaLink!.label = this.getGrafanaLink();
-		this.grafanaLink!.url = this.getGrafanaLink();
-		this.grafanaLoading!.loading = false;
+			const grafanaUrl = this._postgresModel.config.status.metricsDashboard ?? '';
+			this.grafanaLink.label = grafanaUrl;
+			this.grafanaLink.url = grafanaUrl;
+			this.grafanaLoading.loading = false;
+		}
 	}
 
 	private handleRegistrationsUpdated() {
@@ -302,5 +282,6 @@ export class PostgresOverviewPage extends DashboardPage {
 	private handleConfigUpdated() {
 		this.properties!.propertyItems = this.getProperties();
 		this.propertiesLoading!.loading = false;
+		this.refreshDashboardLinks();
 	}
 }
