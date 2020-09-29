@@ -3,14 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
-
 import { SubFieldInfo, FieldType, FontWeight, LabelPosition, SectionInfo } from '../../interfaces';
+import * as loc from '../../localizedConstants';
 import { createSection, DefaultInputWidth, DefaultLabelWidth, DefaultFieldAlignItems, DefaultFieldWidth, DefaultFieldHeight } from '../modelViewUtils';
 import { EulaWizard } from './eulaWizard';
 import { EulaWizardPage } from './eulaWizardPage';
-
-const localize = nls.loadMessageBundle();
 
 export class NotebookWizardAutoSummaryPage extends EulaWizardPage {
 	private formItems: azdata.FormComponent[] = [];
@@ -20,7 +17,7 @@ export class NotebookWizardAutoSummaryPage extends EulaWizardPage {
 	constructor(wizard: EulaWizard, _pageIndex: number) {
 		super(wizard,
 			_pageIndex,
-			wizard.wizardInfo.pages[_pageIndex].title || localize('notebookWizard.autoSummaryPageTitle', "Review your configuration"),
+			wizard.wizardInfo.pages[_pageIndex].title || loc.autoSummaryPageTitle,
 			wizard.wizardInfo.pages[_pageIndex].description || ''
 		);
 	}

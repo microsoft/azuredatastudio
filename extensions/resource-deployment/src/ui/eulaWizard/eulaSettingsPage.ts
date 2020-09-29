@@ -13,21 +13,12 @@ import { getErrorMessage } from '../../utils';
 import { EOL } from 'os';
 import * as loc from '../../localizedConstants';
 
-
 const localize = nls.loadMessageBundle();
-
 export class EulaSettingsPage extends EulaWizardPage {
 	private _resourceType: ResourceType;
 	private _view!: azdata.ModelView;
-
-
-
 	private _agreementContainer!: azdata.DivContainer;
 	private _agreementCheckboxChecked: boolean = false;
-
-
-
-
 	private toolRefreshTimestamp: number = 0;
 	private _toolsTable!: azdata.TableComponent;
 	private _toolsLoadingComponent!: azdata.LoadingComponent;
@@ -35,75 +26,52 @@ export class EulaSettingsPage extends EulaWizardPage {
 	private _recheckEulaButton!: azdata.ButtonComponent;
 	private _installationInProgress: boolean = false;
 	private _tools: ITool[] = [];
-
-
-
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 	private _optionsContainer!: azdata.FlexContainer;
 	private _optionsDropdown: azdata.DropDownComponent[] = [];
-
-
 	private _eulaValidationSucceeded: boolean = false;
-
-
 	private form: any;
 
-
 	constructor(wizard: EulaWizard, private _presets?: EulaInformation) {
-		super(wizard, 0, localize('eulaSettingsPage.title', 'Deployment pre-requisites'), '');
+		super(wizard, 0, loc.eulaSettingsPageTitle, '');
 		this._resourceType = wizard.resourceType;
 	}
-
-
-
 
 	public initialize(): void {
 		this.pageObject.registerContent((view: azdata.ModelView) => {
 			this._view = view;
 
-
 			this.wizard.wizardObject.nextButton.enabled = false; // this is enabled after all tools are discovered.
 
-
 			this._agreementContainer = view.modelBuilder.divContainer().component();
-
 			if (this._resourceType.agreement) {
 				this._agreementCheckboxChecked = false;
 				this._agreementContainer.addItem(this.createAgreementCheckbox(this._resourceType.agreement));
 			}
 
 			this._installToolButton = view.modelBuilder.button().withProps({
-				label: localize('eulaSettingsPage.InstallToolButtonLabel', "Install tools"),
+				label: loc.installToolsButtonLabel,
 				CSSStyles: {
 					display: 'none'
 				}
 			}).component();
-
 			this._installToolButton.onDidClick((e: any) => {
 				this.installTools().catch((error: any) => console.log(error));
 			});
 
-
 			this._recheckEulaButton = view.modelBuilder.button().withProps({
-				label: localize('eulaSettingsPage.ValidateEULALabel', "Validate EULA"),
+				label: loc.validateEulaButtonLabel,
 				CSSStyles: {
 					display: 'none'
 				}
 			}).component();
-
 			this._recheckEulaButton.display = 'none';
-
 			this._recheckEulaButton.onDidClick((e: any) => {
 				this.wizard.wizardObject.message = { text: '' }; // clear any previous message.
 			});
 
-
 			const toolsTableContainer = this.createToolsTable();
-
-
 			this._optionsContainer = this.createOptionsDropdown();
-
-
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
@@ -133,28 +101,20 @@ export class EulaSettingsPage extends EulaWizardPage {
 
 	public async onEnter(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
-
 			const isAgreementChecked = (this._resourceType.agreement === undefined || this._agreementCheckboxChecked);
-
 			if (!isAgreementChecked) {
 				this.wizard.wizardObject.message = {
-					text: localize('eulaSettingsPage.AgreementNotCheckedError', "You must agree to the license agreeements in order to proceed."),
+					text: loc.eulaSettingsAgreementNotCheckedError,
 					level: azdata.window.MessageLevel.Error
 				};
 				return false;
 			}
-
 			if (!this._eulaValidationSucceeded && !(await this.acquireEulaAndProceed())) {
 				return false; // we return false so that the workflow does not proceed and user gets to either click acceptEulaAndSelect again or cancel
 			}
-
 			return true;
 		});
-
-
-
 		this.updateToolsDisplayTable();
-
 	}
 
 	public async onLeave(): Promise<void> {
@@ -165,7 +125,7 @@ export class EulaSettingsPage extends EulaWizardPage {
 
 	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
 		const title = this._view.modelBuilder.text().withProps({
-			value: localize('eulaSettingsPage.AgreementCheckboxLabel', "Accept terms of use"),
+			value: loc.eulaSettingsagreementCheckboxLabel,
 			CSSStyles: {
 				'font-weight': '300',
 				'font-size': '14px'
@@ -199,20 +159,15 @@ export class EulaSettingsPage extends EulaWizardPage {
 
 
 	private createOptionsDropdown(): azdata.FlexContainer {
-
 		const container = this._view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-
 		const labels: string[] = [];
-
 		if (this._resourceType.options) {
 			this._resourceType.options.forEach((option, i) => {
 				const optionLabel = this._view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 					value: option.displayName
 				}).component();
 				optionLabel.width = '150px';
-
 				labels.push(option.displayName);
-
 				let selectedValue = option.values[0];
 				if (this._presets) {
 					selectedValue = this._presets.dropdownValues![i];
@@ -226,22 +181,16 @@ export class EulaSettingsPage extends EulaWizardPage {
 				}).component();
 
 				this._optionsDropdown.push(optionSelectBox);
-
 				optionSelectBox.onValueChanged(async () => {
-
 					let presetFields = new EulaInformation();
 					presetFields.dropdownValues = [];
-
 					this._optionsDropdown.forEach(element => {
 						presetFields?.dropdownValues?.push(element.value as azdata.CategoryValue);
 					});
-
 					this.wizard.changeProvider(this.getCurrentProvider(), presetFields);
 				});
 
 				this._optionDropDownMap.set(option.name, optionSelectBox);
-
-
 
 				const row = this._view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 				container.addItem(row);
@@ -271,34 +220,34 @@ export class EulaSettingsPage extends EulaWizardPage {
 		const tableWidth = 1126;
 
 		const toolColumn: azdata.TableColumn = {
-			value: localize('eulaSettingsPage.toolNameColumnHeader', "Tool"),
+			value: loc.toolNameColumnHeader,
 			width: 80
 		};
 		const descriptionColumn: azdata.TableColumn = {
-			value: localize('eulaSettingsPage.toolDescriptionColumnHeader', "Description"),
+			value: loc.toolDescriptionColumnHeader,
 			width: 270
 		};
 		const installStatusColumn: azdata.TableColumn = {
-			value: localize('eulaSettingsPage.toolStatusColumnHeader', "Status"),
+			value: loc.toolStatusColumnHeader,
 			width: 70
 		};
 		const versionColumn: azdata.TableColumn = {
-			value: localize('eulaSettingsPage.toolVersionColumnHeader', "Version"),
+			value: loc.toolVersionColumnHeader,
 			width: 75
 		};
 		const minVersionColumn: azdata.TableColumn = {
-			value: localize('eulaSettingsPage.toolMinimumVersionColumnHeader', "Required Version"),
+			value: loc.toolMinimumVersionColumnHeader,
 			width: 95
 		};
 		const installedPathColumn: azdata.TableColumn = {
-			value: localize('eulaSettingsPage.toolDiscoveredPathColumnHeader', "Discovered Path or Additional Information"),
+			value: loc.toolDiscoveredPathColumnHeader,
 			width: 580
 		};
 		this._toolsTable = this._view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 			data: [],
 			columns: [toolColumn, descriptionColumn, installStatusColumn, versionColumn, minVersionColumn, installedPathColumn],
 			width: tableWidth,
-			ariaLabel: localize('eulaSettingsPage.RequiredToolsTitle', "Required tools")
+			ariaLabel: loc.RequiredToolsTitle
 		}).component();
 
 
@@ -306,14 +255,14 @@ export class EulaSettingsPage extends EulaWizardPage {
 		toolsTableWrapper.addItem(this._toolsTable, { CSSStyles: { 'border-left': '1px solid silver', 'border-top': '1px solid silver' } });
 
 		this._toolsLoadingComponent = this._view.modelBuilder.loadingComponent().withItem(toolsTableWrapper).withProperties<azdata.LoadingComponentProperties>({
-			loadingCompletedText: localize('eulaSettingsPage.loadingRequiredToolsCompleted', "Loading required tools information completed"),
-			loadingText: localize('eulaSettingsPage.loadingRequiredTools', "Loading required tools information"),
+			loadingCompletedText: loc.loadingRequiredToolsCompleted,
+			loadingText: loc.loadingRequiredTools,
 			showText: true,
 			loading: false
 		}).component();
 
 		const toolsTableTitle = this._view.modelBuilder.text().withProps({
-			value: localize('eulaSettingsPage.RequiredToolsTitle', "Required tools"),
+			value: loc.RequiredToolsTitle,
 			CSSStyles: {
 				'font-weight': '300',
 				'font-size': '14px'
@@ -321,7 +270,6 @@ export class EulaSettingsPage extends EulaWizardPage {
 		}).component();
 
 		return createFlexContainer(this._view, [toolsTableTitle, this._toolsLoadingComponent], false);
-
 	}
 
 
@@ -374,7 +322,7 @@ export class EulaSettingsPage extends EulaWizardPage {
 			if (toolsNotInstalled.length === 0) {
 				this.wizard.wizardObject.message = {
 					level: azdata.window.MessageLevel.Information,
-					text: localize('eulaSettingsPage.InstalledTools', "All required tools are installed now.")
+					text: loc.installedTools
 				};
 				this.wizard.wizardObject.nextButton.enabled = true;
 			} else {
@@ -443,7 +391,7 @@ export class EulaSettingsPage extends EulaWizardPage {
 		if (this.toolRequirements.length === 0) {
 			this._toolsLoadingComponent.loading = false;
 			this.wizard.wizardObject.nextButton.enabled = true;
-			this._toolsTable.data = [[localize('eulaSettingsPage.NoRequiredTool', "No tools required"), '']];
+			this._toolsTable.data = [[loc.noRequiredTool, '']];
 			this._tools = [];
 		} else {
 			this._tools = this.toolRequirements.map((toolReq: ToolRequirementInfo) => this.wizard.toolsService.getToolByName(toolReq.name)!);
@@ -549,7 +497,6 @@ export class EulaSettingsPage extends EulaWizardPage {
 		this.setUiControlsEnabled(tool.status !== ToolStatus.Installing); // if installing then disable ui controls else enable them
 	}
 
-
 	/**
  *
  * @param enable - if true the UiControls are set to be enabled, if not they are set to be disabled.
@@ -560,16 +507,12 @@ export class EulaSettingsPage extends EulaWizardPage {
 		// select and install tools buttons are controlled separately
 	}
 
-
 	public setPresets(_preset: EulaInformation) {
 		this._optionsDropdown.forEach((element, i) => {
 			element.value = _preset.dropdownValues![i] as azdata.CategoryValue;
 		});
 	}
-
-
 }
-
 
 export class EulaInformation {
 	dropdownValues?: ResourceTypeOptionValue[];

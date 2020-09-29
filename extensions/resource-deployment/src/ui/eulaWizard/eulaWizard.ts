@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import { INotebookService, Notebook } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
 import { Model } from '../model';
@@ -14,12 +13,9 @@ import { IPlatformService } from '../../services/platformService';
 import { NotebookWizardAutoSummaryPage } from './eulaWizardAutoSummaryPage';
 import { EulaWizardPage } from './eulaWizardPage';
 import { EulaInformation, EulaSettingsPage } from './eulaSettingsPage';
-//import { EulaSettingsPage } from './eulaSettingsPage';
-
-const localize = nls.loadMessageBundle();
+import * as loc from '../../localizedConstants';
 
 export class EulaWizard extends WizardBase<EulaWizard, EulaWizardPage, Model> {
-
 	private _inputComponents: InputComponents = {};
 
 	public get notebookService(): INotebookService {
@@ -61,7 +57,7 @@ export class EulaWizard extends WizardBase<EulaWizard, EulaWizardPage, Model> {
 	protected initialize(): void {
 		this.setPages(this.getPages());
 		this.wizardObject.generateScriptButton.hidden = true;
-		this.wizardInfo.actionText = this.wizardInfo.actionText || localize('eulaWizard.ScriptToNotebook', "Script to Notebook");
+		this.wizardInfo.actionText = this.wizardInfo.actionText || loc.scriptToNotebookButtonLabel;
 		this.wizardObject.doneButton.label = this.wizardInfo.actionText;
 	}
 
