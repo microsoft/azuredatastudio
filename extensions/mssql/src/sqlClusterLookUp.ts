@@ -101,7 +101,9 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 		const savedUsername = appContext.extensionContext.globalState.get(usernameKey);
 		const credentialProvider = await azdata.credentials.getProvider('mssql.bdc.password');
 		const savedPassword = (await credentialProvider.readCredential(connectionId)).password;
-		clusterConnInfo.options[constants.userPropName] = savedUsername ?? sqlConnInfo.options[constants.userPropName]; //should be the same user as sql master
+		// If we don't have a previously saved username/password then use the SQL connection credentials as a best guess,
+		// if those don't work then we'll prompt the user for the info
+		clusterConnInfo.options[constants.userPropName] = savedUsername ?? sqlConnInfo.options[constants.userPropName];
 		clusterConnInfo.options[constants.passwordPropName] = savedPassword ?? credentials.password;
 		try {
 			clusterController = await getClusterController(controllerEndpoint.endpoint, clusterConnInfo);
