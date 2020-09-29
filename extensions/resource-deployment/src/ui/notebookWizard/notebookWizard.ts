@@ -54,28 +54,31 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 	}
 
 	protected async onGenerateScript(): Promise<void> {
-		const { notebook, env } = await this.prepareNotebookAndEnvironment();
 		try {
-			Object.assign(process.env, env);
-			const notebookPath = this.notebookService.getNotebookPath(this.wizardInfo.notebook);
-			await this.notebookService.launchNotebookWithContent(notebookPath, JSON.stringify(notebook, undefined, 4));
+			const notebook = await this.prepareNotebookAndEnvironment();
+			await this.openNotebook(notebook);
+		} catch (error) {
+			vscode.window.showErrorMessage(error);
+		}
+	}
+	protected async onOk(): Promise<void> {
+		try {
+			const notebook = await this.prepareNotebookAndEnvironment();
+			const openedNotebook = await this.openNotebook(notebook);
+			openedNotebook.runAllCells();
 		} catch (error) {
 			vscode.window.showErrorMessage(error);
 		}
 	}
 
-	protected async onOk(): Promise<void> {
-		const { notebook, env } = await this.prepareNotebookAndEnvironment();
-		try {
-			this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName || this.wizardInfo.title, notebook, 'deploy', this.platformService, env);
-		} catch (error) {
-			vscode.window.showErrorMessage(error);
-		}
+	private async openNotebook(notebook: Notebook) {
+		const notebookPath = this.notebookService.getNotebookPath(this.wizardInfo.notebook);
+		return await this.notebookService.openNotebookWithContent(notebookPath, JSON.stringify(notebook, undefined, 4));
 	}
 
 	private async prepareNotebookAndEnvironment() {
 		await setModelValues(this.inputComponents, this.model);
-		const env: NodeJS.ProcessEnv = {};
+		const env: NodeJS.ProcessEnv = process.env;
 		this.model.setEnvironmentVariables(env, (varName) => {
 			const isPassword = !!this.inputComponents[varName]?.isPassword;
 			return isPassword;
@@ -101,7 +104,7 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 				execution_count: 0
 			}
 		);
-		return { notebook, env };
+		return notebook;
 	}
 
 	private getPages(): NotebookWizardPage[] {
