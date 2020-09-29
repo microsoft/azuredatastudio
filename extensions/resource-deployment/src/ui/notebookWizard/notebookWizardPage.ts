@@ -37,14 +37,14 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 	 * If the return value is true then done button should be visible to the user
 	 */
 	private get isDoneButtonVisible(): boolean {
-		return this.wizard.wizardInfo.doneButton?.visible ?? false;
+		return !!this.wizard.wizardInfo.doneAction;
 	}
 
 	/**
 	 * If the return value is true then generateScript button should be visible to the user
 	 */
 	private get isGenerateScriptButtonVisible(): boolean {
-		return this.wizard.wizardInfo.scriptButton?.visible ?? false;
+		return !!this.wizard.wizardInfo.scriptAction;
 	}
 
 	public initialize(): void {

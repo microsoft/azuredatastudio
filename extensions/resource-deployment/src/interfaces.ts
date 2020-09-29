@@ -117,11 +117,7 @@ export interface BdcWizardInfo {
 /**
  * An object that configures Script and Done buttons of the wizard.
  */
-export interface WizardButton {
-	/**
-	 *
-	 */
-	visible: boolean,
+export interface WizardAction {
 	label?: string
 }
 
@@ -152,11 +148,11 @@ export interface WizardInfoBase extends FieldInfoBase {
 	/**
 	 * 	done button attributes.
 	 */
-	doneButton?: WizardButton;
+	doneAction: WizardAction;
 	/**
 	 * script button attributes.
 	 */
-	scriptButton?: WizardButton;
+	scriptAction?: WizardAction;
 	/**
 	 * 	title displayed on every page of the wizard
 	 */
