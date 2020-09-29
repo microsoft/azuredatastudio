@@ -3603,8 +3603,8 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.0",
-							"lastUpdated": "9/1/2020",
+							"version": "0.1.1",
+							"lastUpdated": "9/28/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
