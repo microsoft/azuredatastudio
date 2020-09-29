@@ -84,29 +84,6 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	/**
-	 * Prompts the user to select a .sqlproj file to open
-	 * TODO: define behavior once projects are automatically opened from workspace
-	 */
-	public async openProjectFromFile(): Promise<void> {
-		try {
-			let filter: { [key: string]: string[] } = {};
-
-			filter[constants.sqlDatabaseProject] = ['sqlproj'];
-
-			let files: vscode.Uri[] | undefined = await vscode.window.showOpenDialog({ filters: filter });
-
-			if (files) {
-				for (const file of files) {
-					await this.projectsController.openProject(file);
-				}
-			}
-		}
-		catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
-		}
-	}
-
-	/**
 	 * Creates a new SQL database project from a template, prompting the user for a name and location
 	 */
 	public async createNewProject(): Promise<Project | undefined> {

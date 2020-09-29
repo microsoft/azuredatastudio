@@ -88,6 +88,8 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.postDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PostDeployment1.sql')).not.equal(undefined, 'File Script.PostDeployment1.sql not read');
 		should(project.preDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment2.sql')).not.equal(undefined, 'File Script.PostDeployment2.sql not read');
 		should(project.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Tables\\Script.PostDeployment1.sql')).not.equal(undefined, 'File Tables\\Script.PostDeployment1.sql not read');
+
+		sinon.restore();
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {
@@ -461,43 +463,31 @@ describe('Project: round trip updates', function (): void {
 	});
 
 	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
-		await testUpdateInRoundTrip(baselines.SSDTProjectFileBaseline, baselines.SSDTProjectAfterUpdateBaseline, true, true);
+		await testUpdateInRoundTrip(baselines.SSDTProjectFileBaseline, baselines.SSDTProjectAfterUpdateBaseline);
 	});
 
 	it('Should update SSDT project with new system database references', async function (): Promise<void> {
-		await testUpdateInRoundTrip(baselines.SSDTUpdatedProjectBaseline, baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline, false, true);
+		await testUpdateInRoundTrip(baselines.SSDTUpdatedProjectBaseline, baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline);
 	});
 
 	it('Should update SSDT project to work in ADS handling pre-exsiting targets', async function (): Promise<void> {
-		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithCleanTarget, baselines.SSDTProjectBaselineWithCleanTargetAfterUpdate, true, false);
+		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithCleanTarget, baselines.SSDTProjectBaselineWithCleanTargetAfterUpdate);
 	});
 });
 
-async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: string, testTargets: boolean, testReferences: boolean): Promise<void> {
+async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: string): Promise<void> {
+	sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
+
 	projFilePath = await testUtils.createTestSqlProjFile(fileBeforeupdate);
-	const project = await Project.openProject(projFilePath);
+	const project = await Project.openProject(projFilePath); // project gets updated if needed in openProject()
 
-	if (testTargets) {
-		await testUpdateTargetsImportsRoundTrip(project);
-	}
-
-	if (testReferences) {
-		await testAddReferencesInRoundTrip(project);
-	}
+	should(await exists(projFilePath + '_backup')).equal(true, 'Backup file should have been generated before the project was updated');
+	should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
 
 	let projFileText = (await fs.readFile(projFilePath)).toString();
 	should(projFileText).equal(fileAfterUpdate.trim());
+
+	sinon.restore();
 }
 
-async function testUpdateTargetsImportsRoundTrip(project: Project): Promise<void> {
-	should(project.importedTargets.length).equal(2);
-	await project.updateProjectForRoundTrip();
-	should(await exists(projFilePath + '_backup')).equal(true);	// backup file should be generated before the project is updated
-	should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
-}
 
-async function testAddReferencesInRoundTrip(project: Project): Promise<void> {
-	// updating system db refs is separate from updating for roundtrip because new db refs could be added even after project is updated for roundtrip
-	should(project.containsSSDTOnlySystemDatabaseReferences()).equal(true);
-	await project.updateSystemDatabaseReferencesInProjFile();
-}
