@@ -52,7 +52,8 @@ export abstract class HdfsFileSourceNode extends TreeNode {
 	}
 
 	public async delete(recursive: boolean = false): Promise<void> {
-		await (await this.getFileSource()).delete(this.hdfsPath, recursive);
+		const fileSource = await this.getFileSource();
+		await fileSource.delete(this.hdfsPath, recursive);
 		// Notify parent should be updated. If at top, will return undefined which will refresh whole tree
 		(<HdfsFileSourceNode>this.parent).onChildRemoved();
 		this.context.changeHandler.notifyNodeChanged(this.parent);
@@ -201,11 +202,6 @@ export class ConnectionNode extends FolderNode {
 		return item;
 	}
 
-	async getChildren(refreshChildren: boolean): Promise<TreeNode[]> {
-		await this.getFileSource();
-		return super.getChildren(refreshChildren);
-	}
-
 	public async getFileSource(): Promise<IFileSource | undefined> {
 		// The node is initially created without a filesource and then one is created only once an action is
 		// taken that requires a connection
@@ -276,12 +272,14 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 	}
 
 	public async getFileContentsAsString(maxBytes?: number): Promise<string> {
-		let contents: Buffer = await (await this.getFileSource()).readFile(this.hdfsPath, maxBytes);
+		const fileSource = await this.getFileSource();
+		let contents: Buffer = await fileSource.readFile(this.hdfsPath, maxBytes);
 		return contents ? contents.toString('utf8') : '';
 	}
 
 	public async getFileLinesAsString(maxLines: number): Promise<string> {
-		let contents: Buffer = await (await this.getFileSource()).readFileLines(this.hdfsPath, maxLines);
+		const fileSource = await this.getFileSource();
+		let contents: Buffer = await fileSource.readFileLines(this.hdfsPath, maxLines);
 		return contents ? contents.toString('utf8') : '';
 	}
 
