@@ -241,13 +241,11 @@ async function testWin32SuccessfulInstall() {
 		.rejects(new Error('not Found')) // First call mock the tool not being found
 		.resolves({ stdout: '1.0.0', stderr: '' });
 	executeSudoCommandStub
-		.callsFake(async (command: string) => {
-			should(command).startWith('msiexec');
-			return { stdout: '', stderr: '' };
-		});
+		.returns({ stdout: '', stderr: '' });
 	await azdata.checkAndInstallAzdata();
 	should(executeCommandStub.calledTwice).be.true(`executeCommand should have been called twice. Actual ${executeCommandStub.getCalls().length}`);
 	should(executeSudoCommandStub.calledOnce).be.true(`executeSudoCommand should have been called once. Actual ${executeSudoCommandStub.getCalls().length}`);
+	should(executeSudoCommandStub.getCall(0).args[0]).startWith('msiexec /qn /i');
 }
 
 async function testDarwinSuccessfulInstall() {
