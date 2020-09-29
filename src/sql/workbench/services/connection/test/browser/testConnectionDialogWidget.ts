@@ -14,6 +14,8 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class TestConnectionDialogWidget extends ConnectionDialogWidget {
 	constructor(
@@ -22,17 +24,19 @@ export class TestConnectionDialogWidget extends ConnectionDialogWidget {
 		providerNameToDisplayNameMap: { [providerDisplayName: string]: string },
 		@IInstantiationService _instantiationService: IInstantiationService,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService,
+		@IContextMenuService _contextMenuService: IContextMenuService,
+		@IContextViewService _contextViewService: IContextViewService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IContextMenuService _contextMenuService: IContextMenuService,
-		@IContextViewService _contextViewService: IContextViewService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
-		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
+		@IConfigurationService configurationService: IConfigurationService
 	) {
-		super(providerDisplayNameOptions, selectedProviderType, providerNameToDisplayNameMap, _instantiationService, _connectionManagementService, themeService, layoutService, telemetryService, contextKeyService, _contextMenuService, _contextViewService, clipboardService, logService, textResourcePropertiesService);
+		super(providerDisplayNameOptions, selectedProviderType, providerNameToDisplayNameMap, _instantiationService, _connectionManagementService, _contextMenuService, _contextViewService, viewDescriptorService, themeService, layoutService, telemetryService, contextKeyService, clipboardService, logService, textResourcePropertiesService, configurationService);
 	}
 	public renderBody(container: HTMLElement) {
 		super.renderBody(container);

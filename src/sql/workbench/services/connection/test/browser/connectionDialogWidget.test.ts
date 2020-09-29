@@ -8,7 +8,7 @@ import * as assert from 'assert';
 import * as DOM from 'vs/base/browser/dom';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { TestStorageService, TestTextResourcePropertiesService } from 'vs/workbench/test/common/workbenchTestServices';
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { NullLogService } from 'vs/platform/log/common/log';
@@ -17,17 +17,38 @@ import { TestConnectionDialogWidget } from 'sql/workbench/services/connection/te
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { entries } from 'sql/base/common/collections';
-import { TestLayoutService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestLayoutService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { createConnectionProfile } from 'sql/workbench/services/connection/test/browser/connectionManagementService.test';
-
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { ViewDescriptorService } from 'vs/workbench/services/views/browser/viewDescriptorService';
+import { ViewContainer, Extensions, IViewsRegistry, IViewContainersRegistry, ITreeViewDescriptor, ViewContainerLocation, IViewDescriptorService } from 'vs/workbench/common/views';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import { TestTreeView } from 'sql/workbench/services/connection/test/browser/testTreeView';
 suite('ConnectionDialogWidget tests', () => {
+	const testTreeViewId = 'testTreeView';
+	const ViewsRegistry = Registry.as<IViewsRegistry>(Extensions.ViewsRegistry);
+
 	let connectionDialogWidget: TestConnectionDialogWidget;
 	let mockConnectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
 	let cmInstantiationService: TestInstantiationService;
 	let element: HTMLElement;
+	let container: ViewContainer;
+
 	setup(() => {
+		const viewInstantiationService: TestInstantiationService = <TestInstantiationService>workbenchInstantiationService();
+		const viewDescriptorService = viewInstantiationService.createInstance(ViewDescriptorService);
+		container = Registry.as<IViewContainersRegistry>(Extensions.ViewContainersRegistry).registerViewContainer({ id: 'testContainer', name: 'test', ctorDescriptor: new SyncDescriptor(<any>{}) }, ViewContainerLocation.Sidebar);
+		viewInstantiationService.stub(IViewDescriptorService, viewDescriptorService);
+		const viewDescriptor: ITreeViewDescriptor = {
+			id: testTreeViewId,
+			ctorDescriptor: null!,
+			name: 'Test View 1',
+			treeView: viewInstantiationService.createInstance(TestTreeView, 'testTree', 'Test Title'),
+		};
+		ViewsRegistry.registerViews([viewDescriptor], container);
 		cmInstantiationService = new TestInstantiationService();
 		cmInstantiationService.stub(IStorageService, new TestStorageService());
 		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
@@ -41,10 +62,14 @@ suite('ConnectionDialogWidget tests', () => {
 			new TestCapabilitiesService());
 		let providerDisplayNames = ['Mock SQL Server'];
 		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
-		connectionDialogWidget = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, cmInstantiationService, mockConnectionManagementService.object, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, undefined, undefined, new NullLogService(), undefined);
+		connectionDialogWidget = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, cmInstantiationService, mockConnectionManagementService.object, undefined, undefined, viewDescriptorService, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, new NullLogService(), new TestTextResourcePropertiesService(new TestConfigurationService()), new TestConfigurationService());
 		element = DOM.createStyleSheet();
 		connectionDialogWidget.render();
 		connectionDialogWidget.renderBody(element);
+	});
+
+	teardown(() => {
+		ViewsRegistry.deregisterViews(ViewsRegistry.getViews(container), container);
 	});
 
 	test('renderBody should have attached a connection dialog body onto element', () => {

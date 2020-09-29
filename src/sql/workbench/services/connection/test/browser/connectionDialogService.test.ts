@@ -16,14 +16,14 @@ import { NullLogService, ILogService } from 'vs/platform/log/common/log';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { TestStorageService, TestTextResourcePropertiesService } from 'vs/workbench/test/common/workbenchTestServices';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { createConnectionProfile } from 'sql/workbench/services/connection/test/browser/connectionManagementService.test';
 import { getUniqueConnectionProvidersByNameMap } from 'sql/workbench/services/connection/test/browser/connectionDialogWidget.test';
 import { TestConnectionDialogWidget } from 'sql/workbench/services/connection/test/browser/testConnectionDialogWidget';
 import { ConnectionDialogService } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
-import { TestLayoutService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestLayoutService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { ServiceOptionType, ConnectionOptionSpecialType, IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -45,7 +45,15 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { Deferred } from 'sql/base/common/promise';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { localize } from 'vs/nls';
+import { ViewDescriptorService } from 'vs/workbench/services/views/browser/viewDescriptorService';
+import { ViewContainer, Extensions, IViewsRegistry, IViewContainersRegistry, ITreeViewDescriptor, ViewContainerLocation, IViewDescriptorService } from 'vs/workbench/common/views';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import { TestTreeView } from 'sql/workbench/services/connection/test/browser/testTreeView';
+
 suite('ConnectionDialogService tests', () => {
+	const testTreeViewId = 'testTreeView';
+	const ViewsRegistry = Registry.as<IViewsRegistry>(Extensions.ViewsRegistry);
 
 	let connectionDialogService: ConnectionDialogService;
 	let mockConnectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
@@ -55,14 +63,28 @@ suite('ConnectionDialogService tests', () => {
 	let connectionProfile: ConnectionProfile;
 	let mockWidget: TypeMoq.Mock<ConnectionWidget>;
 	let testInstantiationService: TestInstantiationService;
+	let container: ViewContainer;
 
 	setup(() => {
+		const viewInstantiationService: TestInstantiationService = <TestInstantiationService>workbenchInstantiationService();
+		const viewDescriptorService = viewInstantiationService.createInstance(ViewDescriptorService);
+		container = Registry.as<IViewContainersRegistry>(Extensions.ViewContainersRegistry).registerViewContainer({ id: 'testContainer', name: 'test', ctorDescriptor: new SyncDescriptor(<any>{}) }, ViewContainerLocation.Sidebar);
+		viewInstantiationService.stub(IViewDescriptorService, viewDescriptorService);
+		const viewDescriptor: ITreeViewDescriptor = {
+			id: testTreeViewId,
+			ctorDescriptor: null!,
+			name: 'Test View 1',
+			treeView: viewInstantiationService.createInstance(TestTreeView, 'testTree', 'Test Title'),
+		};
+		ViewsRegistry.registerViews([viewDescriptor], container);
+
 		mockInstantationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Strict);
 		testInstantiationService = new TestInstantiationService();
 		testInstantiationService.stub(IStorageService, new TestStorageService());
 		testInstantiationService.stub(ILogService, new NullLogService());
 		testInstantiationService.stub(IConfigurationService, new TestConfigurationService());
 		testInstantiationService.stub(IInstantiationService, mockInstantationService.object);
+		testInstantiationService.stub(IViewDescriptorService, viewDescriptorService);
 		let errorMessageService = getMockErrorMessageService();
 		let capabilitiesService = new TestCapabilitiesService();
 		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
@@ -90,7 +112,7 @@ suite('ConnectionDialogService tests', () => {
 		mockConnectionManagementService.setup(x => x.getConnectionGroups(TypeMoq.It.isAny())).returns(() => {
 			return [new ConnectionProfileGroup('test_group', undefined, 'test_group')];
 		});
-		testConnectionDialog = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, testInstantiationService, mockConnectionManagementService.object, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, undefined, undefined, new NullLogService(), undefined);
+		testConnectionDialog = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, testInstantiationService, mockConnectionManagementService.object, undefined, undefined, viewDescriptorService, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, new NullLogService(), new TestTextResourcePropertiesService(new TestConfigurationService), new TestConfigurationService());
 		testConnectionDialog.render();
 		testConnectionDialog.renderBody(DOM.createStyleSheet());
 		(connectionDialogService as any)._connectionDialog = testConnectionDialog;
@@ -191,6 +213,10 @@ suite('ConnectionDialogService tests', () => {
 		mockInstantationService.setup(x => x.createInstance(TypeMoq.It.isValue(RecentConnectionsDragAndDrop))).returns(() => {
 			return testInstantiationService.createInstance(RecentConnectionsDragAndDrop);
 		});
+	});
+
+	teardown(() => {
+		ViewsRegistry.deregisterViews(ViewsRegistry.getViews(container), container);
 	});
 
 	function getMockErrorMessageService(): TypeMoq.Mock<TestErrorMessageService> {
