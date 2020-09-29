@@ -275,11 +275,9 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 								if (root.contextValue !== 'pinnedNotebook') {
 									let rootFolder = URI.file(isString(root.tooltip) ? root.tooltip : root.tooltip.value);
 									let folderToSearch = { folder: rootFolder };
-									query.folderQueries.map((folder, index) => {
-										if (folder.includePattern && path.relative(folder.folder.fsPath, folderToSearch.folder.fsPath) === '..') {
-											// check if a subdirectory it's already in the query folders.
-											query.folderQueries.splice(index, 1);
-										}
+									query.folderQueries = query.folderQueries.filter((folder) => {
+										//verify if pinned notebook is not opened in Books Viewlet
+										return !!folder.includePattern && path.relative(folder.folder.fsPath, folderToSearch.folder.fsPath) !== '..';
 									});
 									query.folderQueries.push(folderToSearch);
 									filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
