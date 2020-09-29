@@ -4902,8 +4902,6 @@ declare module 'azdata' {
 			 *
 			 * @param disposeOnDone - Whether to dispose of the future when done.
 			 *
-			 * @param cellId - Cell id (used by queryRunner)
-			 *
 			 * @returns A kernel future.
 			 *
 			 * #### Notes
@@ -4918,7 +4916,7 @@ declare module 'azdata' {
 			 *
 			 * **See also:** [[IExecuteReply]]
 			 */
-			requestExecute(content: IExecuteRequest, disposeOnDone?: boolean, cellUri?: string): IFuture;
+			requestExecute(content: IExecuteRequest, disposeOnDone?: boolean): IFuture;
 
 			/**
 			 * Send a `complete_request` message.
