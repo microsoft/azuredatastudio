@@ -277,7 +277,7 @@ class SqlClusterRootNode extends TreeNode {
 		private _treeDataContext: TreeDataContext,
 		private _nodePathValue: string
 	) {
-		super();
+		super(undefined);
 	}
 
 	public get session(): SqlClusterSession {

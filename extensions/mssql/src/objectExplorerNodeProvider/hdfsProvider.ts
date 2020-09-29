@@ -30,8 +30,8 @@ export class TreeDataContext {
 }
 
 export abstract class HdfsFileSourceNode extends TreeNode {
-	constructor(protected context: TreeDataContext, protected _path: string, public readonly fileSource: IFileSource | undefined, protected mountStatus?: MountStatus) {
-		super();
+	constructor(protected context: TreeDataContext, protected _path: string, fileSource: IFileSource | undefined, protected mountStatus?: MountStatus) {
+		super(fileSource);
 	}
 
 	public get hdfsPath(): string {
@@ -52,7 +52,7 @@ export abstract class HdfsFileSourceNode extends TreeNode {
 	}
 
 	public async delete(recursive: boolean = false): Promise<void> {
-		await this.fileSource.delete(this.hdfsPath, recursive);
+		await (await this.getFileSource()).delete(this.hdfsPath, recursive);
 		// Notify parent should be updated. If at top, will return undefined which will refresh whole tree
 		(<HdfsFileSourceNode>this.parent).onChildRemoved();
 		this.context.changeHandler.notifyNodeChanged(this.parent);
@@ -75,13 +75,14 @@ export class FolderNode extends HdfsFileSourceNode {
 	async getChildren(refreshChildren: boolean): Promise<TreeNode[]> {
 		if (refreshChildren || !this.children) {
 			try {
-				let files: IFile[] = await this.fileSource.enumerateFiles(this._path);
+				const fileSource = await this.getFileSource();
+				let files: IFile[] = await fileSource.enumerateFiles(this._path);
 				if (files) {
 					// Note: for now, assuming HDFS-provided sorting is sufficient
 					this.children = files.map((file) => {
 						let node: TreeNode = file.fileType === FileType.File ?
-							new FileNode(this.context, file.path, this.fileSource, this.getChildMountStatus(file)) :
-							new FolderNode(this.context, file.path, this.fileSource, Constants.MssqlClusterItems.Folder, this.getChildMountStatus(file));
+							new FileNode(this.context, file.path, fileSource, this.getChildMountStatus(file)) :
+							new FolderNode(this.context, file.path, fileSource, Constants.MssqlClusterItems.Folder, this.getChildMountStatus(file));
 						node.parent = this;
 						return node;
 					});
@@ -147,8 +148,9 @@ export class FolderNode extends HdfsFileSourceNode {
 	}
 
 	private async writeFileAsync(localFile: IFile): Promise<FileNode> {
-		await this.fileSource.writeFile(localFile, this._path);
-		let fileNode = new FileNode(this.context, File.createPath(this._path, File.getBasename(localFile)), this.fileSource);
+		const fileSource = await this.getFileSource();
+		await fileSource.writeFile(localFile, this._path);
+		let fileNode = new FileNode(this.context, File.createPath(this._path, File.getBasename(localFile)), fileSource);
 		return fileNode;
 	}
 
@@ -157,8 +159,9 @@ export class FolderNode extends HdfsFileSourceNode {
 	}
 
 	private async mkdirAsync(name: string): Promise<FolderNode> {
-		await this.fileSource.mkdir(name, this._path);
-		let subDir = new FolderNode(this.context, File.createPath(this._path, name), this.fileSource);
+		const fileSource = await this.getFileSource();
+		await fileSource.mkdir(name, this._path);
+		let subDir = new FolderNode(this.context, File.createPath(this._path, name), fileSource);
 		return subDir;
 	}
 
@@ -199,12 +202,18 @@ export class ConnectionNode extends FolderNode {
 	}
 
 	async getChildren(refreshChildren: boolean): Promise<TreeNode[]> {
-		// The node is initially created without a filesource and then one is created only once the children items
-		// are requested using the connection info for the controller
-		if (!this.fileSource) {
+		await this.getFileSource();
+		return super.getChildren(refreshChildren);
+	}
+
+	public async getFileSource(): Promise<IFileSource | undefined> {
+		// The node is initially created without a filesource and then one is created only once an action is
+		// taken that requires a connection
+		const fileSource = await super.getFileSource();
+		if (!fileSource) {
 			await this.updateFileSource(await this.clusterSession.getSqlClusterConnection());
 		}
-		return super.getChildren(refreshChildren);
+		return super.getFileSource();
 	}
 
 	getNodeInfo(): azdata.NodeInfo {
@@ -267,18 +276,19 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 	}
 
 	public async getFileContentsAsString(maxBytes?: number): Promise<string> {
-		let contents: Buffer = await this.fileSource.readFile(this.hdfsPath, maxBytes);
+		let contents: Buffer = await (await this.getFileSource()).readFile(this.hdfsPath, maxBytes);
 		return contents ? contents.toString('utf8') : '';
 	}
 
 	public async getFileLinesAsString(maxLines: number): Promise<string> {
-		let contents: Buffer = await this.fileSource.readFileLines(this.hdfsPath, maxLines);
+		let contents: Buffer = await (await this.getFileSource()).readFileLines(this.hdfsPath, maxLines);
 		return contents ? contents.toString('utf8') : '';
 	}
 
-	public writeFileContentsToDisk(localPath: string, cancelToken?: vscode.CancellationTokenSource): Promise<vscode.Uri> {
+	public async writeFileContentsToDisk(localPath: string, cancelToken?: vscode.CancellationTokenSource): Promise<vscode.Uri> {
+		const fileSource = await this.getFileSource();
 		return new Promise((resolve, reject) => {
-			let readStream: fs.ReadStream = this.fileSource.createReadStream(this.hdfsPath);
+			let readStream: fs.ReadStream = fileSource.createReadStream(this.hdfsPath);
 			readStream.on('error', (err) => {
 				reject(err);
 			});
@@ -323,7 +333,7 @@ class ErrorNode extends TreeNode {
 
 	private _nodePathValue: string;
 	constructor(private message: string) {
-		super();
+		super(undefined);
 	}
 
 	public static create(message: string, parent: TreeNode, errorCode?: number): ErrorNode {

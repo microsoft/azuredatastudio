@@ -104,6 +104,7 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 			clusterConnInfo.options[constants.userPropName] = await clusterController.getKnoxUsername(clusterConnInfo.options[constants.userPropName]);
 		} catch (err) {
 			console.log(`Unexpected error getting Knox username for SQL Cluster connection: ${err}`);
+			throw err;
 		}
 	} else {
 		clusterController = await getClusterController(controllerEndpoint.endpoint, clusterConnInfo);
@@ -147,14 +148,18 @@ async function getClusterController(controllerEndpoint: string, connInfo: Connec
 				message: localize('promptBDCUsername', "{0}Please provide the username to connect to the BDC Controller:", errorMessage),
 				default: connInfo.options[constants.userPropName]
 			});
+			if (!username) {
+				console.log(`User cancelled out of username prompt for BDC Controller`);
+				break;
+			}
 			const password = await prompter.promptSingle<string>(<IQuestion>{
 				type: QuestionTypes.password,
 				name: 'passwordPrompt',
 				message: localize('promptBDCPassword', "Please provide the password to connect to the BDC Controller"),
 				default: ''
 			});
-			if (!username || !password) {
-				console.log(`User cancelled out of username/password prompt for BDC Controller`);
+			if (!password) {
+				console.log(`User cancelled out of password prompt for BDC Controller`);
 				break;
 			}
 			const controller = bdcApi.getClusterController(controllerEndpoint, authType, username, password);
@@ -168,7 +173,7 @@ async function getClusterController(controllerEndpoint: string, connInfo: Connec
 				errorMessage = localize('bdcConnectError', "Error: {0}. ", err.message ?? err);
 			}
 		}
-		throw new Error(localize('usernameAndPasswordRequired', "Username and password are required to connect to the BDC Controller"));
+		throw new Error(localize('usernameAndPasswordRequired', "Username and password are required"));
 	}
 
 }
