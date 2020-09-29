@@ -19,7 +19,7 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { createContext, TestContext, mockDacFxResult } from './testContext';
-import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry } from '../models/project';
+import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry, SystemDatabaseReferenceProjectEntry } from '../models/project';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { exists } from '../common/utils';
@@ -253,7 +253,7 @@ describe('ProjectsController', function (): void {
 				proj.addProjectReference({
 					projectName: 'project1',
 					projectGuid: '',
-					projectRelativePath: vscode.Uri.file(path.join('..','project1', 'project1.sqlproj')),
+					projectRelativePath: vscode.Uri.file(path.join('..', 'project1', 'project1.sqlproj')),
 					suppressMissingDependenciesErrors: false
 				});
 
@@ -334,6 +334,24 @@ describe('ProjectsController', function (): void {
 				should(project.postDeployScripts.length).equal(0, 'There should be no post deploy scripts');
 				await projController.addItemPrompt(project, '', templates.postDeployScript);
 				should(project.postDeployScripts.length).equal(1, 'Post deploy script should be successfully added');
+			});
+
+			it('Should change target platform', async function (): Promise<void> {
+				sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.sqlAzure });
+
+				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+				const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
+				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(constants.sqlServer2019));
+				should(project.databaseReferences.length).equal(1, 'Project should have one database reference to master');
+				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlServer2019));
+				should((<SystemDatabaseReferenceProjectEntry>project.databaseReferences[0]).ssdtUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlServer2019));
+
+				await projController.changeTargetPlatform(project);
+				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(constants.sqlAzure));
+				// verify system db reference got updated too
+				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlAzure));
+				should((<SystemDatabaseReferenceProjectEntry>project.databaseReferences[0]).ssdtUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlAzure));
 			});
 		});
 
