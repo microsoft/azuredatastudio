@@ -146,7 +146,7 @@ describe('azdata', function () {
 });
 
 async function testLinuxUnsuccessfulUpdate() {
-	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').rejects();
+	executeSudoCommandStub.rejects();
 	const updateDone = await azdata.checkAndUpdateAzdata(oldAzdataMock);
 	should(updateDone).be.false();
 	should(executeSudoCommandStub.calledOnce).be.true();
@@ -194,7 +194,7 @@ async function testWin32UnsuccessfulUpdate() {
 async function testLinuxSuccessfulUpdate() {
 	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: '0.0.0', stderr: '' }));
-	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: '0.0.0', stderr: '' }));
+	executeSudoCommandStub.resolves({ stdout: '0.0.0', stderr: '' });
 	await azdata.checkAndUpdateAzdata(oldAzdataMock);
 	should(executeSudoCommandStub.callCount).be.equal(6);
 	should(executeCommandStub.calledOnce).be.true();
@@ -268,7 +268,7 @@ async function testLinuxSuccessfulInstall() {
 		.onFirstCall()
 		.rejects(new Error('not Found'))
 		.resolves({ stdout: '0.0.0', stderr: '' });
-	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand')
+	executeSudoCommandStub
 		.resolves({ stdout: 'success', stderr: '' });
 	await azdata.checkAndInstallAzdata();
 	should(executeSudoCommandStub.callCount).be.equal(6);
@@ -276,7 +276,7 @@ async function testLinuxSuccessfulInstall() {
 }
 
 async function testLinuxUnsuccessfulInstall() {
-	const executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').rejects();
+	executeSudoCommandStub.rejects();
 	const downloadPromise = azdata.installAzdata();
 	await should(downloadPromise).be.rejected();
 	should(executeSudoCommandStub.calledOnce).be.true();
