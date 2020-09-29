@@ -26,16 +26,19 @@ import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUt
 @Component({
 	selector: 'modelview-button',
 	template: `
-	<ng-container *ngIf="!this.buttonType === 'Informational'"; else elseBlock>
+	<div *ngIf="this.buttonType !== 'Informational'; then thenBlock else elseBlock"></div>
+	<ng-template #thenBlock>
+		<span>Expecting Normal|File: {{this.buttonType}}</span>
 		<label for={{this.label}}>
 			<div #input style="width: 100%">
-			<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
+				<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
 			</div>
 		</label>
-	</ng-container>
-	<ng-container #elseBlock>
-		<div #informationalInput style="width: 100%;"></div>
-	</ng-container>
+	</ng-template>
+	<ng-template #elseBlock>
+		<span>Expecting Informational: {{this.buttonType}}</span>
+		<div #infoButton style="width: 100%;"></div>
+	</ng-template>
 	`
 })
 
@@ -46,8 +49,8 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 	public fileType: string = '.sql';
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
-	@ViewChild('informationalInput', { read: ElementRef }) private _informationalInputContainer: ElementRef;
 	@ViewChild('fileInput', { read: ElementRef }) private _fileInputContainer: ElementRef;
+	@ViewChild('infoButton', { read: ElementRef }) private _infoButtonContainer: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -59,7 +62,6 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	ngOnInit(): void {
 		this.baseInit();
-
 	}
 
 	ngAfterViewInit(): void {
@@ -67,8 +69,8 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 			this._button = new Button(this._inputContainer.nativeElement);
 		}
 
-		if (this._informationalInputContainer) {
-			this._button = new InfoButton(this._informationalInputContainer.nativeElement);
+		if (this._infoButtonContainer) {
+			this._button = new InfoButton(this._infoButtonContainer.nativeElement);
 		}
 
 		this._register(this._button);
@@ -115,7 +117,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		if (this._informationalInputContainer) {
+		if (this._infoButtonContainer) {
 			let button = this._button as InfoButton;
 			button.buttonMaxHeight = this.properties.height;
 			button.buttonMaxWidth = this.properties.width;
