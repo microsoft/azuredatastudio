@@ -33,7 +33,7 @@ export class TestConnectionProvider implements azdata.ConnectionProvider {
 		return Promise.resolve('');
 	}
 
-	buildConnectionInfo(connectionString: string): Thenable<azdata.ConnectionInfo> {
+	buildConnectionInfo(connectionString: string): Thenable<azdata.ConnectionInfo | undefined> {
 		return Promise.resolve(undefined);
 	}
 
