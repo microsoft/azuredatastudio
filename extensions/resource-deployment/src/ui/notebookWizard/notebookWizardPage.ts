@@ -9,6 +9,7 @@ import * as nls from 'vscode-nls';
 import { NotebookWizardPageInfo } from '../../interfaces';
 import { initializeWizardPage, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
 import { WizardPageBase } from '../wizardPageBase';
+import { WizardPageInfo } from '../wizardPageInfo';
 import { NotebookWizard } from './notebookWizard';
 
 const localize = nls.loadMessageBundle();
@@ -30,6 +31,22 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 			wizard.wizardInfo.pages[_pageIndex].description || description || '',
 			wizard
 		);
+	}
+
+	/**
+	 * If the return value is true then done button should be visible to the user
+	 */
+	private get isDoneButtonVisible(): boolean {
+		// done button is visible when runNotebook is 'true' or when it is 'userChooses'
+		return this.wizard.wizardInfo.runNotebook === true || this.wizard.wizardInfo.runNotebook === 'userChooses';
+	}
+
+	/**
+	 * If the return value is true then generateScript button should be visible to the user
+	 */
+	private get isGenerateScriptButtonVisible(): boolean {
+		// generateScript button is visible when runNotebook is 'false' or when it is 'userChooses'
+		return this.wizard.wizardInfo.runNotebook === false || this.wizard.wizardInfo.runNotebook === 'userChooses';
 	}
 
 	public initialize(): void {
@@ -64,7 +81,18 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 		});
 	}
 
-	public async onEnter(): Promise<void> {
+	public async onEnter(pageInfo: WizardPageInfo): Promise<void> {
+		if (pageInfo.isLastPage) {
+			//on last page doneButton is visible
+			this.wizard.wizardObject.doneButton.hidden = !this.isDoneButtonVisible;
+			// on last page generateScriptButton is visible when runNotebook is 'userChooses'
+			this.wizard.wizardObject.generateScriptButton.hidden = !this.isGenerateScriptButtonVisible;
+		} else {
+			//on any page but the last page doneButton and generateScriptButton are hidden
+			this.wizard.wizardObject.doneButton.hidden = true;
+			this.wizard.wizardObject.generateScriptButton.hidden = true;
+		}
+
 		if (this.pageInfo.isSummaryPage) {
 			await setModelValues(this.wizard.inputComponents, this.wizard.model);
 		}
