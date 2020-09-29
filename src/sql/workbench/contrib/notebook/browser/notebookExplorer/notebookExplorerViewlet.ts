@@ -264,7 +264,6 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		this.validateQuery(query).then(() => {
 			if (this.views.length > 1) {
 				let filesToIncludeFiltered: string = '';
-				query.extraFileResources = [];
 				this.views.forEach(async (v) => {
 					if (v instanceof TreeViewPane) {
 						const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
