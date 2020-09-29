@@ -81,8 +81,8 @@ describe('azdata', function () {
 					.onFirstCall()
 					.rejects(new Error('not Found')) // First call mock the tool not being found
 					.resolves({ stdout: '1.0.0', stderr: '' });
-				const downloadPromise = azdata.checkAndInstallAzdata();
-				await should(downloadPromise).be.rejected();
+				const azdataTool = await azdata.checkAndInstallAzdata();
+				should(azdataTool).be.undefined();
 			});
 		}
 

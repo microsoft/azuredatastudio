@@ -364,7 +364,6 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
 				vscode.window.showWarningMessage(loc.installError(err));
 				Logger.log(loc.installError(err));
 			}
-			throw err;
 		}
 	}
 	return false;
