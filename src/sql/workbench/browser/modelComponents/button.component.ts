@@ -5,7 +5,7 @@
 import 'vs/css!./media/button';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
-	ViewChild, ElementRef, OnDestroy, AfterViewInit
+	ViewChild, ElementRef, OnDestroy
 } from '@angular/core';
 
 import * as azdata from 'azdata';
@@ -28,7 +28,6 @@ import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUt
 	template: `
 	<div *ngIf="this.buttonType !== 'Informational'; then thenBlock else elseBlock"></div>
 	<ng-template #thenBlock>
-		<span>Expecting Normal|File: {{this.buttonType}}</span>
 		<label for={{this.label}}>
 			<div #input style="width: 100%">
 				<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
@@ -36,17 +35,17 @@ import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUt
 		</label>
 	</ng-template>
 	<ng-template #elseBlock>
-		<span>Expecting Informational: {{this.buttonType}}</span>
 		<div #infoButton style="width: 100%;"></div>
 	</ng-template>
 	`
 })
 
-export default class ButtonComponent extends ComponentWithIconBase<azdata.ButtonProperties> implements IComponent, OnDestroy, AfterViewInit {
+export default class ButtonComponent extends ComponentWithIconBase<azdata.ButtonProperties> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _button: Button | InfoButton;
 	public fileType: string = '.sql';
+	private _currentButtonType?: azdata.ButtonType = undefined;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	@ViewChild('fileInput', { read: ElementRef }) private _fileInputContainer: ElementRef;
@@ -64,7 +63,18 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		this.baseInit();
 	}
 
-	ngAfterViewInit(): void {
+	ngOnDestroy(): void {
+		this.baseDestroy();
+	}
+
+	/// IComponent implementation
+
+	public setLayout(layout: any): void {
+		this.layout();
+	}
+
+	private initButton(): void {
+		this._currentButtonType = this.buttonType;
 		if (this._inputContainer) {
 			this._button = new Button(this._inputContainer.nativeElement);
 		}
@@ -104,19 +114,11 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 			}
 		}));
 	}
-
-	ngOnDestroy(): void {
-		this.baseDestroy();
-	}
-
-	/// IComponent implementation
-
-	public setLayout(layout: any): void {
-		this.layout();
-	}
-
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
+		if (this._currentButtonType !== this.buttonType) {
+			this.initButton();
+		}
 		if (this._infoButtonContainer) {
 			let button = this._button as InfoButton;
 			button.buttonMaxHeight = this.properties.height;
