@@ -23,6 +23,7 @@ describe('Jupyter Server Installation', function () {
 		outputChannelStub.setup(c => c.appendLine(TypeMoq.It.isAnyString()));
 
 		installation = new JupyterServerInstallation('', outputChannelStub.object);
+		installation.execOptions = { env: Object.assign({}, process.env) };
 	});
 
 	afterEach(function (): void {
@@ -229,7 +230,10 @@ describe('Jupyter Server Installation', function () {
 		should(packages).be.deepEqual(expectedPackages);
 
 		// PySpark
-		expectedPackages = expectedPackages.concat([{
+		expectedPackages = [{
+			name: 'jupyter',
+			version: '1.0.0'
+		}, {
 			name: 'sparkmagic',
 			version: '0.12.9'
 		}, {
@@ -238,7 +242,7 @@ describe('Jupyter Server Installation', function () {
 		}, {
 			name: 'prose-codeaccelerator',
 			version: '1.3.0'
-		}]);
+		}];
 		packages = installation.getRequiredPackagesForKernel(pysparkDisplayName);
 		should(packages).be.deepEqual(expectedPackages);
 
