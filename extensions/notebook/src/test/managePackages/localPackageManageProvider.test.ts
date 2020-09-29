@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import * as azdata from 'azdata';
 import * as should from 'should';
 import 'mocha';
 import * as TypeMoq from 'typemoq';
@@ -217,8 +215,7 @@ describe('Manage Package Providers', () => {
 				getCondaExePath: () => { return ''; },
 				pythonExecutable:  '',
 				pythonInstallationPath: '',
-				usingConda: false,
-				installPythonPackage: (backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel) => {return Promise.resolve(); }
+				usingConda: false
 			},
 			piPyClient: {
 				fetchPypiPackage: (packageName) => { return Promise.resolve(); }
