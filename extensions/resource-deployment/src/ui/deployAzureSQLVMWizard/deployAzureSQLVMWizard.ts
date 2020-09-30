@@ -73,7 +73,7 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 		const variableValueStatements = this.model.getCodeCellContentForNotebook();
 		const insertionPosition = 2; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
 		try {
-			await this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
+			await this.notebookService.openNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
 		} catch (error) {
 			vscode.window.showErrorMessage(error);
 		}
