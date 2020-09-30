@@ -37,8 +37,14 @@ export namespace OptionsSources {
 		get variableNames(): { [index: string]: string; } { return this._variableNames; }
 
 		abstract async getOptions(): Promise<string[] | CategoryValue[]>;
-		abstract async getVariableValue(variableName: string, input: string): Promise<string>;
-		abstract getIsPassword(variableName: string): boolean;
+
+		async getVariableValue(variableName: string, controllerLabel: string): Promise<string> {
+			throw new Error(loc.variableValueFetchForUnsupportedVariable(variableName));
+		}
+
+		getIsPassword(variableName: string): boolean {
+			throw new Error(loc.isPasswordFetchForUnsupportedVariable(variableName));
+		}
 
 		constructor(private _variableNames: { [index: string]: string }, private _type: OptionsSourceType) {
 		}
@@ -106,17 +112,9 @@ export namespace OptionsSources {
 	 * Class that provides options sources for an Arc Data Controller's Config Profiles
 	 */
 	export class ArcControllerConfigProfilesOptionsSource extends OptionsSourceBase {
-
 		async getOptions(): Promise<string[]> {
 			return (await apiService.azdataApi.azdata.arc.dc.config.list()).result;
 		}
 
-		async getVariableValue(variableName: string, controllerLabel: string): Promise<string> {
-			throw new Error('No additional variable values defined');
-		}
-
-		getIsPassword(variableName: string): boolean {
-			return false;
-		}
 	}
 }
