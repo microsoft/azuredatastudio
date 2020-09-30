@@ -14,6 +14,9 @@ export class AzurecoreApiStub implements azurecore.IExtension {
 	getSubscriptions(_account?: azdata.Account | undefined, _ignoreErrors?: boolean | undefined): Thenable<azurecore.GetSubscriptionsResult> {
 		throw new Error('Method not implemented.');
 	}
+	getSelectedSubscriptions(_account?: azdata.Account | undefined, _ignoreErrors?: boolean | undefined): Thenable<azurecore.GetSubscriptionsResult> {
+		throw new Error('Method not implemented.');
+	}
 	getResourceGroups(_account?: azdata.Account | undefined, _subscription?: azureResource.AzureResourceSubscription | undefined, _ignoreErrors?: boolean | undefined): Thenable<azurecore.GetResourceGroupsResult> {
 		throw new Error('Method not implemented.');
 	}

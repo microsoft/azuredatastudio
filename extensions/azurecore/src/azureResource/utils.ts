@@ -11,7 +11,7 @@ import { isArray } from 'util';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { AppContext } from '../appContext';
-import { IAzureResourceSubscriptionService } from './interfaces';
+import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionService } from './interfaces';
 import { AzureResourceServiceNames } from './constants';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 
@@ -227,7 +227,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 
 export async function getSubscriptions(appContext: AppContext, account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> {
 	const result: GetSubscriptionsResult = { subscriptions: [], errors: [] };
-	if (!account?.properties?.tenants || !isArray(account.properties.tenants)) {
+	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
 		const error = new Error(localize('azure.accounts.getSubscriptions.invalidParamsError', "Invalid account"));
 		if (!ignoreErrors) {
 			throw error;
@@ -256,5 +256,32 @@ export async function getSubscriptions(appContext: AppContext, account?: azdata.
 			result.errors.push(error);
 		}
 	}));
+	return result;
+}
+
+export async function getSelectedSubscriptions(appContext: AppContext, account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> {
+	const result: GetSubscriptionsResult = { subscriptions: [], errors: [] };
+	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
+		const error = new Error(localize('azure.accounts.getSelectedSubscriptions.invalidParamsError', "Invalid account"));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+		return result;
+	}
+
+	const subscriptionFilterService = appContext.getService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService);
+	try {
+		result.subscriptions.push(...await subscriptionFilterService.getSelectedSubscriptions(account));
+	} catch (err) {
+		const error = new Error(localize('azure.accounts.getSelectedSubscriptions.queryError', "Error fetching subscriptions for account {0} : {1}",
+			account.displayInfo.displayName,
+			err instanceof Error ? err.message : err));
+		console.warn(error);
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
 	return result;
 }
