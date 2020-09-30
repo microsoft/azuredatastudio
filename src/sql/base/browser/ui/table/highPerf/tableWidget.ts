@@ -993,8 +993,6 @@ export class Table<T> implements IDisposable {
 			// if (!filter || filter(this.view.element(index))) {
 			return index;
 			// }
-
-			index++;
 		}
 
 		return -1;
@@ -1010,9 +1008,7 @@ export class Table<T> implements IDisposable {
 
 			// if (!filter || filter(this.view.element(index))) {
 			return index;
-			// }
-
-			index--;
+			//
 		}
 
 		return -1;

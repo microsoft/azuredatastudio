@@ -87,9 +87,9 @@ export class DataExplorerViewlet extends Viewlet {
 }
 
 export class DataExplorerViewPaneContainer extends ViewPaneContainer {
-	private root: HTMLElement;
+	private root?: HTMLElement;
 
-	private dataSourcesBox: HTMLElement;
+	private dataSourcesBox?: HTMLElement;
 
 	constructor(
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
@@ -125,7 +125,7 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 
 	layout(dimension: Dimension): void {
-		toggleClass(this.root, 'narrow', dimension.width <= 300);
+		toggleClass(this.root!, 'narrow', dimension.width <= 300);
 		super.layout(new Dimension(dimension.width, dimension.height));
 	}
 
@@ -135,7 +135,7 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 
 	getSecondaryActions(): IAction[] {
 		let menu = this.menuService.createMenu(MenuId.DataExplorerAction, this.contextKeyService);
-		let actions = [];
+		let actions: IAction[] = [];
 		menu.getActions({}).forEach(group => {
 			if (group[0] === 'secondary') {
 				actions.push(...group[1]);

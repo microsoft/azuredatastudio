@@ -3,13 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ResourceType } from 'arc';
 import * as azdata from 'azdata';
+import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
+import { getConnectionModeDisplayText, getResourceTypeIcon, resourceTypeToDisplayName } from '../../../common/utils';
+import { cssStyles, Endpoints, IconPathHelper, controllerTroubleshootDocsUrl, iconSize } from '../../../constants';
 import * as loc from '../../../localizedConstants';
-import { DashboardPage } from '../../components/dashboardPage';
-import { IconPathHelper, cssStyles, iconSize, ResourceType, Endpoints } from '../../../constants';
 import { ControllerModel } from '../../../models/controllerModel';
-import { resourceTypeToDisplayName, getResourceTypeIcon, parseInstanceName } from '../../../common/utils';
+import { DashboardPage } from '../../components/dashboardPage';
 
 export class ControllerDashboardOverviewPage extends DashboardPage {
 
@@ -18,6 +20,10 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 	private _arcResourcesTable!: azdata.DeclarativeTableComponent;
 	private _propertiesContainer!: azdata.PropertiesContainerComponent;
+
+	private _openInAzurePortalButton!: azdata.ButtonComponent;
+
+	private _azurecoreApi: azurecore.IExtension;
 
 	private controllerProperties = {
 		instanceName: '-',
@@ -31,6 +37,8 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel) {
 		super(modelView);
+
+		this._azurecoreApi = vscode.extensions.getExtension(azurecore.extension.name)?.exports;
 
 		this.disposables.push(
 			this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleRegistrationsUpdated())),
@@ -85,7 +93,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: cssStyles.tableRow
 				}, {
-					displayName: loc.compute,
+					displayName: loc.state,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '34%',
 					isReadOnly: true,
@@ -160,41 +168,54 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				}
 			}));
 
-		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this._openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.openInAzurePortal,
 			iconPath: IconPathHelper.openInTab,
-			enabled: false
+			enabled: !!this._controllerModel.controllerConfig
 		}).component();
 
 		this.disposables.push(
-			openInAzurePortalButton.onDidClick(async () => {
+			this._openInAzurePortalButton.onDidClick(async () => {
 				const config = this._controllerModel.controllerConfig;
 				if (config) {
-					/* TODO CHGAGNON CONFIG
-					vscode.env.openExternal(vscode.Uri.parse(
-						`https://portal.azure.com/#resource/subscriptions/${config.subscriptionId}/resourceGroups/${config.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${config.instanceName}`));
-						*/
+					await vscode.env.openExternal(vscode.Uri.parse(
+						`https://portal.azure.com/#resource/subscriptions/${config.spec.settings.azure.subscription}/resourceGroups/${config.spec.settings.azure.resourceGroup}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${config.metadata.name}`));
 				} else {
-					vscode.window.showErrorMessage(loc.couldNotFindRegistration(this._controllerModel.namespace, 'controller'));
+					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}
 			}));
+
+		const troubleshootButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.troubleshoot,
+			iconPath: IconPathHelper.wrench
+		}).component();
+
+		this.disposables.push(
+			troubleshootButton.onDidClick(async () => {
+				await vscode.env.openExternal(vscode.Uri.parse(controllerTroubleshootDocsUrl));
+			})
+		);
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
 				{ component: newInstance },
 				{ component: refreshButton, toolbarSeparatorAfter: true },
-				{ component: openInAzurePortalButton }
+				{ component: this._openInAzurePortalButton, toolbarSeparatorAfter: true },
+				{ component: troubleshootButton }
 			]
 		).component();
 	}
 
 	private handleRegistrationsUpdated(): void {
 		const config = this._controllerModel.controllerConfig;
+		if (this._openInAzurePortalButton) {
+			this._openInAzurePortalButton.enabled = !!config;
+		}
 		this.controllerProperties.instanceName = config?.metadata.name || this.controllerProperties.instanceName;
-		this.controllerProperties.resourceGroupName = /* TODO CHGAGNON RG */ this.controllerProperties.resourceGroupName;
-		this.controllerProperties.location = /* TODO CHGAGNON LOCATION */ this.controllerProperties.location;
-		this.controllerProperties.subscriptionId = /* TODO CHGAGNON LOCATION */ this.controllerProperties.subscriptionId;
-		this.controllerProperties.connectionMode = /* TODO CHGAGNON MODE getConnectionModeDisplayText(config?.connectionMode) || */ this.controllerProperties.connectionMode;
+		this.controllerProperties.resourceGroupName = config?.spec.settings.azure.resourceGroup || this.controllerProperties.resourceGroupName;
+		this.controllerProperties.location = this._azurecoreApi.getRegionDisplayName(config?.spec.settings.azure.location) || this.controllerProperties.location;
+		this.controllerProperties.subscriptionId = config?.spec.settings.azure.subscription || this.controllerProperties.subscriptionId;
+		this.controllerProperties.connectionMode = getConnectionModeDisplayText(config?.spec.settings.azure.connectionMode) || this.controllerProperties.connectionMode;
 		this.controllerProperties.instanceNamespace = config?.metadata.namespace || this.controllerProperties.instanceNamespace;
 		this.refreshDisplayedProperties();
 
@@ -210,16 +231,18 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 						iconHeight: iconSize,
 						iconWidth: iconSize
 					}).component();
-				const nameLink = this.modelView.modelBuilder.hyperlink()
+
+				const nameComponent = this.modelView.modelBuilder.hyperlink()
 					.withProperties<azdata.HyperlinkComponentProperties>({
 						label: r.instanceName || '',
 						url: ''
 					}).component();
-				nameLink.onDidClick(async () => {
-					await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', parseInstanceName(r.instanceName));
-				});
-				// TODO chgagnon
-				return [imageComponent, nameLink, resourceTypeToDisplayName(r.instanceType), '-'/* loc.numVCores(r.vCores) */];
+
+				this.disposables.push(nameComponent.onDidClick(async () => {
+					await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', r.instanceName);
+				}));
+
+				return [imageComponent, nameComponent, resourceTypeToDisplayName(r.instanceType), r.state];
 			});
 		this._arcResourcesLoadingComponent.loading = !this._controllerModel.registrationsLastUpdated;
 	}

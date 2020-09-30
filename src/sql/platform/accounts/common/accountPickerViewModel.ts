@@ -40,7 +40,7 @@ export class AccountPickerViewModel {
 		try {
 			const accounts = await this._accountManagementService.getAccounts();
 			return accounts;
-		} catch{
+		} catch {
 			return [];
 		}
 	}

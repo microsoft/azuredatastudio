@@ -106,16 +106,19 @@ export class SummaryPage extends ImportPage {
 
 	private async handleImport(): Promise<boolean> {
 		let changeColumnResults = [];
-		this.model.proseColumns.forEach((val, i, arr) => {
+		let i = 0;
+
+		for (let val of this.model.proseColumns) {
 			let columnChangeParams = {
-				index: i,
+				index: i++,
 				newName: val.columnName,
 				newDataType: val.dataType,
 				newNullable: val.nullable,
 				newInPrimaryKey: val.primaryKey
 			};
-			changeColumnResults.push(this.provider.sendChangeColumnSettingsRequest(columnChangeParams));
-		});
+			const changeColumnResult = await this.provider.sendChangeColumnSettingsRequest(columnChangeParams);
+			changeColumnResults.push(changeColumnResult);
+		}
 
 		let result: InsertDataResponse;
 		let err;

@@ -11,7 +11,6 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as types from 'vs/base/common/types';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
-import { startsWith } from 'vs/base/common/strings';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 
 export interface IOptionElement {
@@ -21,11 +20,11 @@ export interface IOptionElement {
 }
 
 export function createOptionElement(option: azdata.ServiceOption, rowContainer: HTMLElement, options: { [name: string]: any },
-	optionsMap: { [optionName: string]: IOptionElement }, contextViewService: IContextViewService, onFocus: (name) => void): IOptionElement {
+	optionsMap: { [optionName: string]: IOptionElement }, contextViewService: IContextViewService, onFocus: (name: string) => void): IOptionElement {
 	let possibleInputs: SelectOptionItemSQL[] = [];
 	let optionValue = getOptionValueAndCategoryValues(option, options, possibleInputs);
 	let optionWidget: any;
-	let inputElement: HTMLElement;
+	let inputElement: HTMLElement | undefined;
 	let missingErrorMessage = localize('optionsDialog.missingRequireField', " is required.");
 	let invalidInputMessage = localize('optionsDialog.invalidInput', "Invalid input.  Numeric value expected.");
 
@@ -65,7 +64,9 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 	}
 	const optionElement = { optionWidget: optionWidget, option: option, optionValue: optionValue };
 	optionsMap[option.name] = optionElement;
-	inputElement.onfocus = () => onFocus(option.name);
+	if (inputElement) {
+		inputElement.onfocus = () => onFocus(option.name);
+	}
 	return optionElement;
 }
 
@@ -153,7 +154,7 @@ export function findElement(container: HTMLElement, className: string): HTMLElem
 	let elementBuilder = container;
 	while (elementBuilder) {
 		let htmlElement = elementBuilder;
-		if (startsWith(htmlElement.className, className)) {
+		if (htmlElement.className.startsWith(className)) {
 			break;
 		}
 		elementBuilder = elementBuilder.firstChild as HTMLElement;

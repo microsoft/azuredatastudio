@@ -1,0 +1,428 @@
+{
+  "name": "kusto",
+  "version": "0.1.1",
+  "publisher": "Microsoft",
+  "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
+  "activationEvents": [
+    "*"
+  ],
+  "engines": {
+    "vscode": "*",
+    "azdata": ">=1.22.0"
+  },
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "typings": "./src/kusto",
+  "scripts": {
+    "compile": "gulp compile-extension:kusto-client",
+    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-kusto ./syntaxes/kusto.tmLanguage"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "kustoCluster.task.newNotebook",
+        "title": "%notebook.command.new%",
+        "icon": {
+          "dark": "resources/dark/new_notebook_inverse.svg",
+          "light": "resources/light/new_notebook.svg"
+        }
+      },
+      {
+        "command": "kustoCluster.task.openNotebook",
+        "title": "%notebook.command.open%",
+        "icon": {
+          "dark": "resources/dark/open_notebook_inverse.svg",
+          "light": "resources/light/open_notebook.svg"
+        }
+      }
+    ],
+    "languages": [
+      {
+        "id": "kusto",
+        "aliases": [
+          "Kusto",
+          "kusto"
+        ],
+        "extensions": [
+          ".kql",
+          ".kusto",
+          ".csl"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "kusto",
+        "scopeName": "source.kusto",
+        "path": "./syntaxes/kusto.tmLanguage"
+      }
+    ],
+    "themes": [
+      {
+        "label": "[Kuskus] Kusto (Dark)",
+        "uiTheme": "vs-dark",
+        "path": "./themes/kuskus-kusto-dark.json"
+      },
+      {
+        "label": "[Kuskus] Kusto Explorer (Dark)",
+        "uiTheme": "vs-dark",
+        "path": "./themes/kuskus-kusto-explorer-dark.json"
+      }
+    ],
+    "outputChannels": [
+      "Kusto"
+    ],
+    "snippets": [
+      {
+        "language": "kusto",
+        "path": "./snippets/kusto.json"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "%kusto.configuration.title%",
+      "properties": {
+        "kusto.query.displayBitAsNumber": {
+          "type": "boolean",
+          "default": true,
+          "description": "%kusto.query.displayBitAsNumber%"
+        },
+        "kusto.format.alignColumnDefinitionsInColumns": {
+          "type": "boolean",
+          "description": "%kusto.format.alignColumnDefinitionsInColumns%",
+          "default": false
+        },
+        "kusto.format.datatypeCasing": {
+          "type": "string",
+          "description": "%kusto.format.datatypeCasing%",
+          "default": "none",
+          "enum": [
+            "none",
+            "uppercase",
+            "lowercase"
+          ]
+        },
+        "kusto.format.keywordCasing": {
+          "type": "string",
+          "description": "%kusto.format.keywordCasing%",
+          "default": "none",
+          "enum": [
+            "none",
+            "uppercase",
+            "lowercase"
+          ]
+        },
+        "kusto.logDebugInfo": {
+          "type": "boolean",
+          "default": false,
+          "description": "%kusto.logDebugInfo%"
+        },
+        "kusto.tracingLevel": {
+          "type": "string",
+          "description": "%kusto.tracingLevel%",
+          "default": "Critical",
+          "enum": [
+            "All",
+            "Off",
+            "Critical",
+            "Error",
+            "Warning",
+            "Information",
+            "Verbose"
+          ]
+        }
+      }
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "kustoCluster.task.newNotebook",
+          "when": "false"
+        },
+        {
+          "command": "kustoCluster.task.openNotebook",
+          "when": "false"
+        }
+      ]
+    },
+    "dashboard": {
+      "provider": "KUSTO",
+      "flavors": [
+        {
+          "flavor": "cloud",
+          "conditions": [
+            {
+              "field": "isCloud",
+              "operator": "==",
+              "value": true
+            }
+          ],
+          "databaseProperties": [
+            {
+              "displayName": "%cloud.databaseProperties.name%",
+              "value": "name"
+            },
+            {
+              "displayName": "%cloud.databaseProperties.size%",
+              "value": "sizeInMB"
+            }
+          ],
+          "serverProperties": [
+            {
+              "displayName": "%cloud.serverProperties.summary%",
+              "value": "summary"
+            },
+            {
+              "displayName": "%cloud.serverProperties.machinesTotal%",
+              "value": "machinesTotal"
+            },
+            {
+              "displayName": "%cloud.serverProperties.diskCacheCapacity%",
+              "value": "diskCacheCapacity"
+            }
+          ],
+          "databasesListProperties": [
+            {
+              "displayName": "%databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 20
+            }
+          ],
+          "objectsListProperties": [
+            {
+              "displayName": "%objectsListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%objectsListProperties.metadataTypeName%",
+              "value": "metadataTypeName",
+              "widthWeight": 20
+            }
+          ]
+        }
+      ]
+    },
+    "connectionProvider": {
+      "providerId": "KUSTO",
+      "languageMode": "kusto",
+      "notebookKernelAlias": "Kusto",
+      "displayName": "%kusto.provider.displayName%",
+      "iconPath": [
+        {
+          "id": "kusto:cloud",
+          "path": {
+            "light": "resources/light/azureDE.svg",
+            "dark": "resources/dark/azureDE_inverse.svg"
+          },
+          "default": true
+        },
+        {
+          "id": "kusto:cluster",
+          "path": {
+            "light": "resources/light/sql_bigdata_cluster.svg",
+            "dark": "resources/dark/sql_bigdata_cluster_inverse.svg"
+          }
+        }
+      ],
+      "connectionOptions": [
+        {
+          "specialValueType": "connectionName",
+          "isIdentity": true,
+          "name": "connectionName",
+          "displayName": "%kusto.connectionOptions.connectionName.displayName%",
+          "description": "%kusto.connectionOptions.connectionName.description%",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": "serverName",
+          "isIdentity": true,
+          "name": "server",
+          "displayName": "%kusto.connectionOptions.serverName.displayName%",
+          "description": "%kusto.connectionOptions.serverName.description%",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "databaseName",
+          "isIdentity": true,
+          "name": "database",
+          "displayName": "%kusto.connectionOptions.databaseName.displayName%",
+          "description": "%kusto.connectionOptions.databaseName.description%",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": "authType",
+          "isIdentity": true,
+          "name": "authenticationType",
+          "displayName": "%kusto.connectionOptions.authType.displayName%",
+          "description": "%kusto.connectionOptions.authType.description%",
+          "groupName": "Security",
+          "valueType": "category",
+          "defaultValue": "AzureMFA",
+          "objectType": null,
+          "categoryValues": [
+            {
+              "displayName": "%kusto.connectionOptions.authType.categoryValues.azureMFA%",
+              "name": "AzureMFA"
+            }
+          ],
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "userName",
+          "isIdentity": true,
+          "name": "user",
+          "displayName": "%kusto.connectionOptions.userName.displayName%",
+          "description": "%kusto.connectionOptions.userName.description%",
+          "groupName": "Security",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "password",
+          "isIdentity": true,
+          "name": "password",
+          "displayName": "%kusto.connectionOptions.password.displayName%",
+          "description": "%kusto.connectionOptions.password.description%",
+          "groupName": "Security",
+          "valueType": "password",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "connectTimeout",
+          "displayName": "%kusto.connectionOptions.connectTimeout.displayName%",
+          "description": "%kusto.connectionOptions.connectTimeout.description%",
+          "groupName": "Initialization",
+          "valueType": "number",
+          "defaultValue": "30",
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "connectRetryCount",
+          "displayName": "%kusto.connectionOptions.connectRetryCount.displayName%",
+          "description": "%kusto.connectionOptions.connectRetryCount.description%",
+          "groupName": "Connection Resiliency",
+          "valueType": "number",
+          "defaultValue": "1",
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "connectRetryInterval",
+          "displayName": "%kusto.connectionOptions.connectRetryInterval.displayName%",
+          "description": "%kusto.connectionOptions.connectRetryInterval.description%",
+          "groupName": "Connection Resiliency",
+          "valueType": "number",
+          "defaultValue": "10",
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": "appName",
+          "isIdentity": false,
+          "name": "applicationName",
+          "displayName": "%kusto.connectionOptions.applicationName.displayName%",
+          "description": "%kusto.connectionOptions.applicationName.description%",
+          "groupName": "Context",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "workstationId",
+          "displayName": "%kusto.connectionOptions.workstationId.displayName%",
+          "description": "%kusto.connectionOptions.workstationId.description%",
+          "groupName": "Context",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "failoverPartner",
+          "displayName": "%kusto.connectionOptions.failoverPartner.displayName%",
+          "description": "%kusto.connectionOptions.failoverPartner.description%",
+          "groupName": " Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.1.0",
+    "figures": "^2.0.0",
+    "find-remove": "1.2.1",
+    "service-downloader": "0.2.1",
+    "vscode-extension-telemetry": "0.1.0",
+    "vscode-languageclient": "5.2.1",
+    "vscode-nls": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/kerberos": "^1.1.0",
+    "@types/request": "^2.48.2",
+    "@types/through2": "^2.0.34"
+  }
+}

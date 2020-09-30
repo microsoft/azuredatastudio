@@ -235,7 +235,11 @@ class Extension implements IExtension {
 			return Promise.resolve(null);
 		}
 
-		return Promise.resolve(this.local!.manifest);
+		if (this.local) {
+			return Promise.resolve(this.local.manifest);
+		}
+
+		return Promise.resolve(null);
 	}
 
 	hasReadme(): boolean {
@@ -694,9 +698,18 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		}
 
 		const extensionsToChoose = enabledExtensions.length ? enabledExtensions : extensions;
+		const manifest = extensionsToChoose.find(e => e.local && e.local.manifest)?.local?.manifest;
+
+		// Manifest is not found which should not happen.
+		// In which case return the first extension.
+		if (!manifest) {
+			return extensionsToChoose[0];
+		}
+
+		const extensionKinds = getExtensionKind(manifest, this.productService, this.configurationService);
 
 		let extension = extensionsToChoose.find(extension => {
-			for (const extensionKind of getExtensionKind(extension.local!.manifest, this.productService, this.configurationService)) {
+			for (const extensionKind of extensionKinds) {
 				switch (extensionKind) {
 					case 'ui':
 						/* UI extension is chosen only if it is installed locally */
@@ -723,7 +736,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 
 		if (!extension && this.extensionManagementServerService.localExtensionManagementServer) {
 			extension = extensionsToChoose.find(extension => {
-				for (const extensionKind of getExtensionKind(extension.local!.manifest, this.productService, this.configurationService)) {
+				for (const extensionKind of extensionKinds) {
 					switch (extensionKind) {
 						case 'workspace':
 							/* Choose local workspace extension if exists */
@@ -745,7 +758,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 
 		if (!extension && this.extensionManagementServerService.remoteExtensionManagementServer) {
 			extension = extensionsToChoose.find(extension => {
-				for (const extensionKind of getExtensionKind(extension.local!.manifest, this.productService, this.configurationService)) {
+				for (const extensionKind of extensionKinds) {
 					switch (extensionKind) {
 						case 'web':
 							/* Choose remote web extension if exists */

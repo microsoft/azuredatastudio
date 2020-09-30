@@ -40,7 +40,7 @@ export const messageByDependencyType: Map<dependencyType, string> = new Map<depe
 ]);
 
 export abstract class ToolBase implements ITool {
-	constructor(private _platformService: IPlatformService) {
+	constructor(protected platformService: IPlatformService) {
 		this.startVersionAndStatusUpdate();
 	}
 
@@ -57,6 +57,10 @@ export abstract class ToolBase implements ITool {
 	protected readonly uninstallCommand?: string;
 
 	protected abstract readonly versionCommand: Command;
+
+	public isEulaAccepted(): boolean { return true; }
+
+	public promptForEula(): Promise<boolean> { return Promise.resolve(true); }
 
 	public get dependencyMessages(): string[] {
 		return (this.dependenciesByOsType.get(this.osDistribution) || []).map((msgType: dependencyType) => messageByDependencyType.get(msgType)!);
@@ -77,7 +81,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	protected logToOutputChannel(data: string | Buffer, header?: string): void {
-		this._platformService.logToOutputChannel(data, header); // data and header are localized by caller
+		this.platformService.logToOutputChannel(data, header); // data and header are localized by caller
 	}
 
 	public get onDidUpdateData(): vscode.Event<ITool> {
@@ -101,11 +105,11 @@ export abstract class ToolBase implements ITool {
 		return this.status === ToolStatus.NotInstalled && this.autoInstallSupported;
 	}
 	public get storagePath(): string {
-		return this._platformService.storagePath();
+		return this.platformService.storagePath();
 	}
 
 	public get osDistribution(): OsDistribution {
-		return this._platformService.osDistribution();
+		return this.platformService.osDistribution();
 	}
 
 	protected get version(): SemVer | undefined {
@@ -126,8 +130,16 @@ export abstract class ToolBase implements ITool {
 		return this._statusDescription;
 	}
 
+	protected setStatusDescription(value: string | undefined): void {
+		this._statusDescription = value;
+	}
+
 	public get installationPathOrAdditionalInformation(): string | undefined {
 		return this._installationPathOrAdditionalInformation;
+	}
+
+	protected setInstallationPathOrAdditionalInformation(value: string | undefined) {
+		this._installationPathOrAdditionalInformation = value;
 	}
 
 	protected get installationCommands(): Command[] | undefined {
@@ -136,7 +148,7 @@ export abstract class ToolBase implements ITool {
 
 	protected async getPip3InstallLocation(packageName: string): Promise<string> {
 		const command = `pip3 show ${packageName}`;
-		const pip3ShowOutput: string = await this._platformService.runCommand(command, { sudo: false, ignoreError: true });
+		const pip3ShowOutput: string = await this.platformService.runCommand(command, { sudo: false, ignoreError: true });
 		const installLocation = /^Location\: (.*)$/gim.exec(pip3ShowOutput);
 		let retValue = installLocation && installLocation[1];
 		if (retValue === undefined || retValue === null) {
@@ -150,11 +162,11 @@ export abstract class ToolBase implements ITool {
 	}
 
 	public get outputChannelName(): string {
-		return this._platformService.outputChannelName();
+		return this.platformService.outputChannelName();
 	}
 
 	public showOutputChannel(preserveFocus?: boolean | undefined): void {
-		this._platformService.showOutputChannel(preserveFocus);
+		this.platformService.showOutputChannel(preserveFocus);
 	}
 
 
@@ -197,7 +209,7 @@ export abstract class ToolBase implements ITool {
 			throw new Error(localize('toolBase.installCore.CannotInstallTool', "Cannot install tool:{0}::{1} as installation commands are unknown for your OS distribution, Please install {0} manually before proceeding", this.displayName, this.description));
 		}
 		for (let i: number = 0; i < installationCommands.length; i++) {
-			await this._platformService.runCommand(installationCommands[i].command,
+			await this.platformService.runCommand(installationCommands[i].command,
 				{
 					workingDirectory: installationCommands[i].workingDirectory || this.downloadPath,
 					additionalEnvironmentVariables: installationCommands[i].additionalEnvironmentVariables,
@@ -250,10 +262,10 @@ export abstract class ToolBase implements ITool {
 	/**
 	 * updates the version and status for the tool.
 	 */
-	private async updateVersionAndStatus(): Promise<void> {
+	protected async updateVersionAndStatus(): Promise<void> {
 		this._statusDescription = '';
 		await this.addInstallationSearchPathsToSystemPath();
-		const commandOutput = await this._platformService.runCommand(
+		const commandOutput = await this.platformService.runCommand(
 			this.versionCommand.command,
 			{
 				workingDirectory: this.versionCommand.workingDirectory,
@@ -289,7 +301,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	protected async setInstallationPath() {
-		const commandOutput = await this._platformService.runCommand(
+		const commandOutput = await this.platformService.runCommand(
 			this.discoveryCommand.command,
 			{
 				workingDirectory: this.discoveryCommand.workingDirectory,
@@ -306,7 +318,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	isSameOrNewerThan(version?: string): boolean {
-		return !version || (this._version ? SemVerCompare(this._version, version) >= 0 : false);
+		return !version || (this._version ? SemVerCompare(this._version.raw, version) >= 0 : false);
 	}
 
 	private _pendingVersionAndStatusUpdate!: Promise<void>;

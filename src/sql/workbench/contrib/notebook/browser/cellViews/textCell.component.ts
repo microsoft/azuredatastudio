@@ -24,9 +24,13 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
-import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import * as turndownPluginGfm from '../turndownPluginGfm';
+import TurndownService = require('turndown');
+import * as Mark from 'mark.js';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -58,18 +62,30 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._model.updateActiveCell(undefined);
 	}
 
-	@HostListener('document:keydown.meta.a', ['$event'])
+	// Double click to edit text cell in notebook
+	@HostListener('dblclick', ['$event']) onDblClick() {
+		this.enableActiveCellEditOnDoubleClick();
+	}
+
+	@HostListener('document:keydown', ['$event'])
 	onkeydown(e) {
 		// use preventDefault() to avoid invoking the editor's select all
 		// select the active .
-		e.preventDefault();
-		document.execCommand('selectAll');
+		if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+			e.preventDefault();
+			document.execCommand('selectAll');
+		}
+		if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+			e.preventDefault();
+			document.execCommand('undo');
+		}
 	}
 
 	private _content: string | string[];
 	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
-	private showPreview: boolean;
+	private _previewMode: boolean = true;
+	private _markdownMode: boolean;
 	private _sanitizer: ISanitizer;
 	private _model: NotebookModel;
 	private _activeCellId: string;
@@ -78,17 +94,21 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownRenderer: NotebookMarkdownRenderer;
 	private markdownResult: IMarkdownRenderResult;
 	public previewFeaturesEnabled: boolean = false;
+	private turndownService;
+	public doubleClickEditEnabled: boolean;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IConfigurationService) private _configurationService: IConfigurationService
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
+		@Inject(INotebookService) private _notebookService: INotebookService,
+
 	) {
 		super();
-		this.isEditMode = true;
-		this.showPreview = true;
+		this.setTurndownOptions();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
+		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
 				this.markdownResult.dispose();
@@ -96,6 +116,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
+		}));
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		}));
 	}
 
@@ -133,6 +156,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.setFocusAndScroll();
+		this.cellModel.isEditMode = false;
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
 		}));
@@ -140,9 +164,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (mode !== this.isEditMode) {
 				this.toggleEditMode(mode);
 			}
+			this._changeRef.detectChanges();
 		}));
-		this._register(this.cellModel.onCellPreviewChanged(preview => {
+		this._register(this.cellModel.onCellPreviewModeChanged(preview => {
 			this.previewMode = preview;
+			this.focusIfPreviewMode();
+		}));
+		this._register(this.cellModel.onCellMarkdownModeChanged(markdown => {
+			this.markdownMode = markdown;
+			this.focusIfPreviewMode();
 		}));
 	}
 
@@ -176,22 +206,25 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	/**
 	 * Updates the preview of markdown component with latest changes
-	 * If content is empty and in non-edit mode, default it to 'Add content here...'
+	 * If content is empty and in non-edit mode, default it to 'Add content here...' or 'Double-click to edit' depending on setting
 	 * Sanitizes the data to be shown in markdown cell
 	 */
 	private updatePreview(): void {
 		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
 		let cellModelSourceJoined = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
 		let contentJoined = Array.isArray(this._content) ? this._content.join('') : this._content;
-		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0 || this.showPreview === true;
+		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0 || this._previewMode === true;
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if ((!cellModelSourceJoined) && !this.isEditMode) {
-				this._content = localize('addContent', "Add content here...");
+				if (this.doubleClickEditEnabled) {
+					this._content = localize('doubleClickEdit', "<i>Double-click to edit</i>");
+				} else {
+					this._content = localize('addContent', "<i>Add content here...</i>");
+				}
 			} else {
-				this._content = this.cellModel.source;
+				this._content = this.cellModel.source[0] === '' ? '<p>&nbsp;</p>' : this.cellModel.source;
 			}
-
 			this.markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
 			this.markdownResult = this.markdownRenderer.render({
 				isTrusted: true,
@@ -199,12 +232,20 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			});
 			this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
 			this.setLoading(false);
-			if (this.showPreview) {
+			if (this._previewMode) {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
+				outputElement.focus();
 			}
 		}
+	}
+
+	private updateCellSource(): void {
+		let textOutputElement = <HTMLElement>this.output.nativeElement;
+		let newCellSource: string = this.turndownService.turndown(textOutputElement.innerHTML, { gfm: true });
+		this.cellModel.source = newCellSource;
+		this._changeRef.detectChanges();
 	}
 
 	//Sanitizes the content based on trusted mode of Cell Model
@@ -230,23 +271,42 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.updatePreview();
 	}
 
+	public handleHtmlChanged(): void {
+		this.updateCellSource();
+	}
+
 	public toggleEditMode(editMode?: boolean): void {
 		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
 		this.cellModel.isEditMode = this.isEditMode;
 		if (!this.isEditMode) {
-			this.previewMode = true;
+			this.cellModel.showPreview = true;
+			this.cellModel.showMarkdown = false;
+		} else {
+			this.markdownMode = this.cellModel.showMarkdown;
 		}
 		this.updatePreview();
 		this._changeRef.detectChanges();
 	}
 
 	public get previewMode(): boolean {
-		return this.showPreview;
+		return this._previewMode;
 	}
 	public set previewMode(value: boolean) {
-		this.showPreview = value;
-		this._changeRef.detectChanges();
-		this.updatePreview();
+		if (this._previewMode !== value) {
+			this._previewMode = value;
+			this.updatePreview();
+			this._changeRef.detectChanges();
+		}
+	}
+
+	public get markdownMode(): boolean {
+		return this._markdownMode;
+	}
+	public set markdownMode(value: boolean) {
+		if (this._markdownMode !== value) {
+			this._markdownMode = value;
+			this._changeRef.detectChanges();
+		}
 	}
 
 	private toggleUserSelect(userSelect: boolean): void {
@@ -264,11 +324,21 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.toggleEditMode(this.isActive());
 
 		if (this.output && this.output.nativeElement) {
-			(<HTMLElement>this.output.nativeElement).scrollTo({ behavior: 'smooth' });
+			let outputElement = this.output.nativeElement as HTMLElement;
+			outputElement.scrollTo({ behavior: 'smooth' });
 		}
 	}
 
-	protected isActive() {
+	private focusIfPreviewMode(): void {
+		if (this.previewMode && !this.markdownMode) {
+			let outputElement = this.output?.nativeElement as HTMLElement;
+			if (outputElement) {
+				outputElement.focus();
+			}
+		}
+	}
+
+	protected isActive(): boolean {
 		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
 
@@ -284,43 +354,54 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private addDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
-			let children = this.getHtmlElements();
-			let ele = children[range.startLineNumber - 1];
-			if (ele) {
-				DOM.addClass(ele, 'rangeHighlight');
-				ele.scrollIntoView({ behavior: 'smooth' });
+			let elements = this.getHtmlElements();
+			if (elements?.length >= range.startLineNumber) {
+				let elementContainingText = elements[range.startLineNumber - 1];
+				let mark = new Mark(elementContainingText);
+				let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
+				if (editor) {
+					let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
+					if (findModel?.findMatches?.length > 0) {
+						let searchString = findModel.findExpression;
+						mark.mark(searchString, {
+							className: 'rangeHighlight'
+						});
+						elementContainingText.scrollIntoView({ behavior: 'smooth' });
+					}
+				}
 			}
 		}
 	}
 
 	private removeDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
-			let children = this.getHtmlElements();
-			let ele = children[range.startLineNumber - 1];
-			if (ele) {
-				DOM.removeClass(ele, 'rangeHighlight');
-			}
+			let elements = this.getHtmlElements();
+			let elementContainingText = elements[range.startLineNumber - 1];
+			let mark = new Mark(elementContainingText);
+			mark.unmark({ acrossElements: true, className: 'rangeHighlight' });
 		}
 	}
 
 	private getHtmlElements(): any[] {
-		let hostElem = this.output.nativeElement;
+		let hostElem = this.output?.nativeElement;
 		let children = [];
-		for (let element of hostElem.children) {
-			if (element.nodeName.toLowerCase() === 'table') {
-				// add table header and table rows.
-				if (element.children.length > 0) {
-					children.push(element.children[0]);
-					if (element.children.length > 1) {
-						for (let trow of element.children[1].children) {
-							children.push(trow);
+		if (hostElem) {
+			for (let element of hostElem.children) {
+				if (element.nodeName.toLowerCase() === 'table') {
+					// add table header and table rows.
+					if (element.children.length > 0) {
+						children.push(element.children[0]);
+						if (element.children.length > 1) {
+							for (let trow of element.children[1].children) {
+								children.push(trow);
+							}
 						}
 					}
+				} else if (element.children.length > 1) {
+					children = children.concat(this.getChildren(element));
+				} else {
+					children.push(element);
 				}
-			} else if (element.children.length > 1) {
-				children = children.concat(this.getChildren(element));
-			} else {
-				children.push(element);
 			}
 		}
 		return children;
@@ -349,5 +430,48 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 		});
 		return textOutput;
+	}
+
+	private setTurndownOptions() {
+		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx' });
+		this.turndownService.keep(['u', 'mark']);
+		this.turndownService.use(turndownPluginGfm.gfm);
+		this.turndownService.addRule('pre', {
+			filter: 'pre',
+			replacement: function (content, node) {
+				return '\n```\n' + node.textContent + '\n```\n';
+			}
+		});
+		this.turndownService.addRule('caption', {
+			filter: 'caption',
+			replacement: function (content, node) {
+				return `${node.outerHTML}
+				`;
+			}
+		});
+		this.turndownService.addRule('span', {
+			filter: function (node, options) {
+				return (
+					node.nodeName === 'MARK' ||
+					(node.nodeName === 'SPAN' &&
+						node.getAttribute('style') === 'background-color: yellow;')
+				);
+			},
+			replacement: function (content, node) {
+				if (node.nodeName === 'SPAN') {
+					return '<mark>' + node.textContent + '</mark>';
+				}
+				return node.textContent;
+			}
+		});
+	}
+
+	// Enables edit mode on double clicking active cell
+	private enableActiveCellEditOnDoubleClick() {
+		if (!this.isEditMode && this.doubleClickEditEnabled) {
+			this.toggleEditMode(true);
+		}
+		this.cellModel.active = true;
+		this._model.updateActiveCell(this.cellModel);
 	}
 }

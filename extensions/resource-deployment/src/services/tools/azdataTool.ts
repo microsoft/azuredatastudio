@@ -8,10 +8,11 @@ import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { AzdataInstallLocationKey, DeploymentConfigurationKey } from '../../constants';
-import { Command, OsDistribution, ToolType } from '../../interfaces';
+import { Command, OsDistribution, ToolStatus, ToolType } from '../../interfaces';
+import { apiService } from '../apiService';
 import { IPlatformService } from '../platformService';
 import { dependencyType, ToolBase } from './toolBase';
-import { SemVerProxy } from './SemVerProxy';
+import * as loc from '../../localizedConstants';
 
 const localize = nls.loadMessageBundle();
 export const AzdataToolName = 'azdata';
@@ -37,32 +38,72 @@ export class AzdataTool extends ToolBase {
 	}
 
 	get displayName(): string {
-		return localize('resourceDeployment.AzdataDisplayName', "azdata");
+		return localize('resourceDeployment.AzdataDisplayName', "Azure Data CLI");
 	}
 
 	get homePage(): string {
 		return 'https://docs.microsoft.com/sql/big-data-cluster/deploy-install-azdata';
 	}
 
+	public isEulaAccepted(): boolean {
+		if (apiService.azdataApi.isEulaAccepted()) {
+			return true;
+		} else {
+			this.setStatusDescription(loc.azdataEulaNotAccepted);
+			return false;
+		}
+	}
+
+	public async promptForEula(): Promise<boolean> {
+		const eulaAccepted = await apiService.azdataApi.promptForEula();
+		if (!eulaAccepted) {
+			this.setStatusDescription(loc.azdataEulaDeclined);
+		}
+		return eulaAccepted;
+	}
+
+	/* unused */
 	protected get versionCommand(): Command {
 		return {
-			command: 'azdata -v'
+			command: ''
 		};
 	}
 
+	/* unused */
 	protected get discoveryCommand(): Command {
 		return {
-			command: this.discoveryCommandString('azdata')
+			command: ''
 		};
+	}
+
+	/**
+	 * updates the version and status for the tool.
+	 */
+	protected async updateVersionAndStatus(): Promise<void> {
+		this.setStatusDescription('');
+		await this.addInstallationSearchPathsToSystemPath();
+
+		const commandOutput = await apiService.azdataApi.azdata.version();
+		this.version = apiService.azdataApi.azdata.getSemVersion();
+		if (this.version) {
+			if (this.autoInstallSupported) {
+				// set the installationPath
+				this.setInstallationPathOrAdditionalInformation(apiService.azdataApi.azdata.getPath());
+			}
+			this.setStatus(ToolStatus.Installed);
+		}
+		else {
+			this.setInstallationPathOrAdditionalInformation(localize('deployCluster.GetToolVersionErrorInformation', "Error retrieving version information. See output channel '{0}' for more details", this.outputChannelName));
+			this.setStatusDescription(localize('deployCluster.GetToolVersionError', "Error retrieving version information.{0}Invalid output received, get version command output: '{1}' ", EOL, commandOutput.stderr.join(EOL)));
+			this.setStatus(ToolStatus.NotInstalled);
+		}
 	}
 
 	protected getVersionFromOutput(output: string): SemVer | undefined {
-		let version: SemVer | undefined = undefined;
-		if (output && output.split(EOL).length > 0) {
-			version = new SemVerProxy(output.split(EOL)[0].replace(/ /g, ''));
-		}
-		return version;
+		return apiService.azdataApi.azdata.getSemVersion();
+
 	}
+
 	protected async getSearchPaths(): Promise<string[]> {
 		switch (this.osDistribution) {
 			case OsDistribution.win32:

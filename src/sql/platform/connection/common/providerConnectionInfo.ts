@@ -27,7 +27,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	public constructor(
 		protected capabilitiesService: ICapabilitiesService,
-		model: string | azdata.IConnectionProfile
+		model: string | azdata.IConnectionProfile | undefined
 	) {
 		super();
 		// we can't really do a whole lot if we don't have a provider
@@ -61,7 +61,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	 */
 	private updateSpecialValueType(typeName: SettableProperty, model: azdata.IConnectionProfile): void {
 		if (!this[typeName]) {
-			this[typeName] = model[typeName];
+			this[typeName] = model[typeName]!;
 		}
 	}
 

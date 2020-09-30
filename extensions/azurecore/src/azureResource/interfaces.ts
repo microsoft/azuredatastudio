@@ -38,5 +38,5 @@ export interface IAzureResourceNodeWithProviderId {
 }
 
 export interface IAzureResourceService<T extends azureResource.AzureResource> {
-	getResources(subscription: azureResource.AzureResourceSubscription, credential: msRest.ServiceClientCredentials, account: Account): Promise<T[]>;
+	getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: Account): Promise<T[]>;
 }

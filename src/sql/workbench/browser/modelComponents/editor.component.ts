@@ -31,7 +31,7 @@ import { convertSizeToNumber } from 'sql/base/browser/dom';
 	template: '',
 	selector: 'modelview-editor-component'
 })
-export default class EditorComponent extends ComponentBase implements IComponent, OnDestroy {
+export default class EditorComponent extends ComponentBase<azdata.EditorProperties> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _editor: QueryTextEditor;
@@ -70,7 +70,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this._editor.setVisible(true);
 		let uri = this.createUri();
 		this._editorInput = this.editorService.createEditorInput({ forceUntitled: true, resource: uri, mode: 'plaintext' }) as UntitledTextEditorInput;
-		await this._editor.setInput(this._editorInput, undefined);
+		await this._editor.setInput(this._editorInput, undefined, undefined);
 		const model = await this._editorInput.resolve();
 		this._editorModel = model.textEditorModel;
 		this.fireEvent({
@@ -164,42 +164,42 @@ export default class EditorComponent extends ComponentBase implements IComponent
 
 	// CSS-bound properties
 	public get content(): string {
-		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.content, undefined);
+		return this.getPropertyOrDefault<string>((props) => props.content, undefined);
 	}
 
 	public set content(newValue: string) {
-		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, content) => { properties.content = content; }, newValue);
+		this.setPropertyFromUI<string>((properties, content) => { properties.content = content; }, newValue);
 	}
 
 	public get languageMode(): string {
-		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.languageMode, undefined);
+		return this.getPropertyOrDefault<string>((props) => props.languageMode, undefined);
 	}
 
 	public set languageMode(newValue: string) {
-		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, languageMode) => { properties.languageMode = languageMode; }, newValue);
+		this.setPropertyFromUI<string>((properties, languageMode) => { properties.languageMode = languageMode; }, newValue);
 	}
 
 	public get isAutoResizable(): boolean {
-		return this.getPropertyOrDefault<azdata.EditorProperties, boolean>((props) => props.isAutoResizable, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.isAutoResizable, false);
 	}
 
 	public set isAutoResizable(newValue: boolean) {
-		this.setPropertyFromUI<azdata.EditorProperties, boolean>((properties, isAutoResizable) => { properties.isAutoResizable = isAutoResizable; }, newValue);
+		this.setPropertyFromUI<boolean>((properties, isAutoResizable) => { properties.isAutoResizable = isAutoResizable; }, newValue);
 	}
 
 	public get minimumHeight(): number {
-		return this.getPropertyOrDefault<azdata.EditorProperties, number>((props) => props.minimumHeight, this._editor.minimumHeight);
+		return this.getPropertyOrDefault<number>((props) => props.minimumHeight, this._editor.minimumHeight);
 	}
 
 	public set minimumHeight(newValue: number) {
-		this.setPropertyFromUI<azdata.EditorProperties, number>((properties, minimumHeight) => { properties.minimumHeight = minimumHeight; }, newValue);
+		this.setPropertyFromUI<number>((properties, minimumHeight) => { properties.minimumHeight = minimumHeight; }, newValue);
 	}
 
 	public get editorUri(): string {
-		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.editorUri, '');
+		return this.getPropertyOrDefault<string>((props) => props.editorUri, '');
 	}
 
 	public set editorUri(newValue: string) {
-		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, editorUri) => { properties.editorUri = editorUri; }, newValue);
+		this.setPropertyFromUI<string>((properties, editorUri) => { properties.editorUri = editorUri; }, newValue);
 	}
 }

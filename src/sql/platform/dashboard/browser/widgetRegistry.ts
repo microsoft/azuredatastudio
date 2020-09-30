@@ -6,7 +6,7 @@
 import * as platform from 'vs/platform/registry/common/platform';
 import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
-import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IInsightsConfig } from 'sql/platform/extensions/common/extensions';
 
 export type WidgetIdentifier = string;
 

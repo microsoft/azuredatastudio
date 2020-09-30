@@ -25,6 +25,8 @@ export const CancelQuery = 'CancelQuery';
 export const NewQuery = 'NewQuery';
 export const FirewallRuleRequested = 'FirewallRuleCreated';
 export const DashboardNavigated = 'DashboardNavigated';
+export const GetDataGridItems = 'GetDataGridItems';
+export const GetDataGridColumns = 'GetDataGridColumns';
 
 // Telemetry Properties
 
@@ -70,6 +72,7 @@ export enum TelemetryView {
 
 export enum TelemetryAction {
 	Click = 'Click',
-	Open = 'Open'
+	Open = 'Open',
+	ModelViewDashboardOpened = 'ModelViewDashboardOpened'
 }
 

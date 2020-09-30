@@ -8,10 +8,9 @@ import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import 'mocha';
 import { createContext } from './utils';
-import { ImportedModel, ModelParameters } from '../../../modelManagement/interfaces';
-import { azureResource } from '../../../typings/azure-resource';
+import { ImportedModel, ModelParameters, WorkspaceModel } from '../../../modelManagement/interfaces';
+import { azureResource } from 'azureResource';
 import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
-import { WorkspaceModel } from '../../../modelManagement/interfaces';
 import { ModelManagementController } from '../../../views/models/modelManagementController';
 import { DatabaseTable, TableColumn } from '../../../prediction/interfaces';
 import { DeleteModelEventName, UpdateModelEventName } from '../../../views/models/modelViewBase';
@@ -42,7 +41,8 @@ const subscriptions: azureResource.AzureResourceSubscription[] = [
 const groups: azureResource.AzureResourceResourceGroup[] = [
 	{
 		name: 'group',
-		id: '3'
+		id: '3',
+		subscriptionId: 's1'
 	}
 ];
 const workspaces: Workspace[] = [

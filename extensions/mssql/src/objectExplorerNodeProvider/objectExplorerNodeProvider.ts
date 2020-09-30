@@ -13,23 +13,22 @@ import { SqlClusterConnection } from './connection';
 import * as utils from '../utils';
 import { TreeNode } from './treeNodes';
 import { ConnectionNode, TreeDataContext, ITreeChangeHandler } from './hdfsProvider';
-import { IFileSource } from './fileSources';
 import { AppContext } from '../appContext';
 import * as constants from '../constants';
-import * as SqlClusterLookUp from '../sqlClusterLookUp';
 import { ICommandObjectExplorerContext } from './command';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
+import { getSqlClusterConnectionParams } from '../sqlClusterLookUp';
 
 export const mssqlOutputChannel = vscode.window.createOutputChannel(constants.providerId);
 
 export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azdata.ObjectExplorerNodeProvider, ITreeChangeHandler {
 	public readonly supportedProviderId: string = constants.providerId;
-	private sessionMap: Map<string, SqlClusterSession>;
+	private clusterSessionMap: Map<string, SqlClusterSession>;
 	private expandCompleteEmitter = new vscode.EventEmitter<azdata.ObjectExplorerExpandInfo>();
 
 	constructor(private prompter: IPrompter, private appContext: AppContext) {
 		super();
-		this.sessionMap = new Map<string, SqlClusterSession>();
+		this.clusterSessionMap = new Map<string, SqlClusterSession>();
 		this.appContext.registerService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService, this);
 	}
 
@@ -49,12 +48,8 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 		let sqlConnProfile = await azdata.objectexplorer.getSessionConnectionProfile(session.sessionId);
 		if (!sqlConnProfile) { return false; }
 
-		let clusterConnInfo = await SqlClusterLookUp.getSqlClusterConnection(sqlConnProfile);
-		if (!clusterConnInfo) { return false; }
-
-		let clusterConnection = new SqlClusterConnection(clusterConnInfo);
-		let clusterSession = new SqlClusterSession(clusterConnection, session, sqlConnProfile, this.appContext, this);
-		this.sessionMap.set(session.sessionId, clusterSession);
+		let clusterSession = new SqlClusterSession(session, sqlConnProfile, this.appContext, this);
+		this.clusterSessionMap.set(session.sessionId, clusterSession);
 		return true;
 	}
 
@@ -69,7 +64,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	}
 
 	private async doExpandNode(nodeInfo: azdata.ExpandNodeInfo, isRefresh: boolean = false): Promise<boolean> {
-		let session = this.sessionMap.get(nodeInfo.sessionId);
+		let session = this.clusterSessionMap.get(nodeInfo.sessionId);
 		let response: azdata.ObjectExplorerExpandInfo = {
 			sessionId: nodeInfo.sessionId,
 			nodePath: nodeInfo.nodePath,
@@ -117,20 +112,31 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 					// Only child returned when failure happens : When failed with 'Unauthorized' error, prompt for password.
 					if (children.length === 1 && this.hasExpansionError(children)) {
 						if (children[0].errorStatusCode === 401) {
+							const sqlClusterConnection = await session.getSqlClusterConnection();
 							// First prompt for username (defaulting to existing username)
-							let username: string = await this.promptInput(localize('promptUsername', "Please provide the username to connect to HDFS:"), session.sqlClusterConnection.user);
+							let username = await this.prompter.promptSingle<string>(<IQuestion>{
+								type: QuestionTypes.input,
+								name: 'inputPrompt',
+								message: localize('promptUsername', "Please provide the username to connect to HDFS:"),
+								default: sqlClusterConnection.user
+							});
 							// Only update the username if it's different than the original (the update functions ignore falsy values)
-							if (username === session.sqlClusterConnection.user) {
+							if (username === sqlClusterConnection.user) {
 								username = '';
 							}
-							session.sqlClusterConnection.updateUsername(username);
+							sqlClusterConnection.updateUsername(username);
 
 							// And then prompt for password
-							const password: string = await this.promptPassword(localize('prmptPwd', "Please provide the password to connect to HDFS:"));
-							session.sqlClusterConnection.updatePassword(password);
+							const password = await this.prompter.promptSingle<string>(<IQuestion>{
+								type: QuestionTypes.password,
+								name: 'passwordPrompt',
+								message: localize('prmptPwd', "Please provide the password to connect to HDFS:"),
+								default: ''
+							});
+							sqlClusterConnection.updatePassword(password);
 
 							if (username || password) {
-								await node.updateFileSource(session.sqlClusterConnection);
+								await node.updateFileSource(sqlClusterConnection);
 								children = await node.getChildren(true);
 							}
 						}
@@ -150,31 +156,13 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 		this.expandCompleteEmitter.fire(expandResult);
 	}
 
-	private async promptInput(promptMsg: string, defaultValue: string): Promise<string> {
-		return await this.prompter.promptSingle(<IQuestion>{
-			type: QuestionTypes.input,
-			name: 'inputPrompt',
-			message: promptMsg,
-			default: defaultValue
-		}).then(confirmed => <string>confirmed);
-	}
-
-	private async promptPassword(promptMsg: string): Promise<string> {
-		return await this.prompter.promptSingle(<IQuestion>{
-			type: QuestionTypes.password,
-			name: 'passwordPrompt',
-			message: promptMsg,
-			default: ''
-		}).then(confirmed => <string>confirmed);
-	}
-
 	refreshNode(nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
 		// TODO #3815 implement properly
 		return this.expandNode(nodeInfo, true);
 	}
 
 	handleSessionClose(closeSessionInfo: azdata.ObjectExplorerCloseSessionInfo): void {
-		this.sessionMap.delete(closeSessionInfo.sessionId);
+		this.clusterSessionMap.delete(closeSessionInfo.sessionId);
 	}
 
 	findNodes(findNodesInfo: azdata.FindNodesInfo): Thenable<azdata.ObjectExplorerFindNodesResponse> {
@@ -242,7 +230,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	}
 
 	public findSqlClusterSessionBySqlConnProfile(connectionProfile: azdata.IConnectionProfile): SqlClusterSession {
-		for (let session of this.sessionMap.values()) {
+		for (let session of this.clusterSessionMap.values()) {
 			if (session.isMatchedSqlConnection(connectionProfile)) {
 				return session;
 			}
@@ -251,11 +239,10 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	}
 }
 
-class SqlClusterSession {
+export class SqlClusterSession {
 	private _rootNode: SqlClusterRootNode;
-
+	private _sqlClusterConnection: SqlClusterConnection | undefined = undefined;
 	constructor(
-		private _sqlClusterConnection: SqlClusterConnection,
 		private _sqlSession: azdata.ObjectExplorerSession,
 		private _sqlConnectionProfile: azdata.IConnectionProfile,
 		private _appContext: AppContext,
@@ -266,7 +253,13 @@ class SqlClusterSession {
 			this._sqlSession.rootNode.nodePath);
 	}
 
-	public get sqlClusterConnection(): SqlClusterConnection { return this._sqlClusterConnection; }
+	public async getSqlClusterConnection(): Promise<SqlClusterConnection> {
+		if (!this._sqlClusterConnection) {
+			const sqlClusterConnectionParams = await getSqlClusterConnectionParams(this._sqlConnectionProfile, this._appContext);
+			this._sqlClusterConnection = new SqlClusterConnection(sqlClusterConnectionParams);
+		}
+		return this._sqlClusterConnection;
+	}
 	public get sqlSession(): azdata.ObjectExplorerSession { return this._sqlSession; }
 	public get sqlConnectionProfile(): azdata.IConnectionProfile { return this._sqlConnectionProfile; }
 	public get sessionId(): string { return this._sqlSession.sessionId; }
@@ -284,7 +277,7 @@ class SqlClusterRootNode extends TreeNode {
 		private _treeDataContext: TreeDataContext,
 		private _nodePathValue: string
 	) {
-		super();
+		super(undefined);
 	}
 
 	public get session(): SqlClusterSession {
@@ -304,8 +297,8 @@ class SqlClusterRootNode extends TreeNode {
 
 	private async refreshChildren(): Promise<TreeNode[]> {
 		this._children = [];
-		let fileSource: IFileSource = await this.session.sqlClusterConnection.createHdfsFileSource();
-		let hdfsNode = new ConnectionNode(this._treeDataContext, localize('hdfsFolder', "HDFS"), fileSource);
+
+		let hdfsNode = new ConnectionNode(this._treeDataContext, localize('hdfsFolder', "HDFS"), this.session);
 		hdfsNode.parent = this;
 		this._children.push(hdfsNode);
 		return this._children;

@@ -50,7 +50,7 @@ export class TopOperationsTab extends Disposable implements IPanelTab {
 }
 
 export class TopOperationsView extends Disposable implements IPanelView {
-	private _state: TopOperationsState;
+	private _state?: TopOperationsState;
 	private table: Table<any>;
 	private container = document.createElement('div');
 	private dataView = new TableDataView();
@@ -86,19 +86,19 @@ export class TopOperationsView extends Disposable implements IPanelView {
 	}
 
 	public showPlan(xml: string) {
-		this.state.xml = xml;
+		this.state!.xml = xml;
 		this.dataView.clear();
 		let parser = new PlanXmlParser(xml);
 		let operations = parser.topOperations;
 		let data = operations.map(i => {
 			return {
 				operation: i.title,
-				object: i.indexObject.title,
+				object: i.indexObject?.title,
 				estCost: i.estimatedOperatorCost,
 				estSubtreeCost: i.subtreeCost,
-				actualRows: i.runtimeInfo.actualRows,
+				actualRows: i.runtimeInfo?.actualRows,
 				estRows: i.estimateRows,
-				actualExecutions: i.runtimeInfo.actualExecutions,
+				actualExecutions: i.runtimeInfo?.actualExecutions,
 				estCPUCost: i.estimateCpu,
 				estIOCost: i.estimateIo,
 				parallel: i.parallel,
@@ -112,14 +112,14 @@ export class TopOperationsView extends Disposable implements IPanelView {
 		this.dataView.push(data);
 	}
 
-	public set state(val: TopOperationsState) {
+	public setState(val: TopOperationsState) {
 		this._state = val;
-		if (this.state.xml) {
-			this.showPlan(this.state.xml);
+		if (this._state.xml) {
+			this.showPlan(this._state.xml);
 		}
 	}
 
-	public get state(): TopOperationsState {
+	public get state(): TopOperationsState | undefined {
 		return this._state;
 	}
 }

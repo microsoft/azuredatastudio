@@ -31,7 +31,6 @@
 
 	<!-- Startup (do not modify order of script tags!) -->
 	<script>
-		// NOTE: Changes to inline scripts require update of content security policy
 		self.require = {
 			baseUrl: `${window.location.origin}/static/out`,
 			recordStats: true,
@@ -70,6 +69,8 @@
 				'ansi_up': `${window.location.origin}/static/node_modules/ansi_up/ansi_up.js`,
 				'iconv-lite-umd': `${window.location.origin}/static/node_modules/iconv-lite-umd/lib/iconv-lite-umd.js`,
 				'jschardet': `${window.location.origin}/static/node_modules/jschardet/dist/jschardet.min.js`,
+				'turndown': `${window.location.origin}/static/node_modules/turndown/lib/turndown.browser.umd.js`,
+				'mark.js': `${window.location.origin}/static/node_modules/mark.js/dist/mark.min.js`
 			}
 		};
 	</script>

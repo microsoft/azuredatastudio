@@ -29,7 +29,7 @@ export class EditDataResultsInput extends EditorInput {
 
 	public readonly onRestoreViewStateEmitter = new Emitter<void>();
 	public readonly onSaveViewStateEmitter = new Emitter<void>();
-	private _editDataGridPanel: IGridPanel;
+	private _editDataGridPanel?: IGridPanel;
 
 	constructor(private _uri: string) {
 		super();
@@ -37,11 +37,11 @@ export class EditDataResultsInput extends EditorInput {
 		this._hasBootstrapped = false;
 	}
 
-	get editDataGridPanel(): IGridPanel {
+	get editDataGridPanel(): IGridPanel | undefined {
 		return this._editDataGridPanel;
 	}
 
-	set editDataGridPanel(gridPanel: IGridPanel) {
+	set editDataGridPanel(gridPanel: IGridPanel | undefined) {
 		this._editDataGridPanel = gridPanel;
 	}
 

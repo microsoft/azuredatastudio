@@ -7,7 +7,7 @@ import { InsightsDialogModel } from 'sql/workbench/services/insights/browser/ins
 import { isUndefinedOrNull } from 'vs/base/common/types';
 
 import * as assert from 'assert';
-import { IInsightsLabel, IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IInsightsLabel, IInsightsConfigDetails } from 'sql/platform/extensions/common/extensions';
 
 suite('Insights Dialog Model Tests', () => {
 	test('does parse condition right', () => {

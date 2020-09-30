@@ -209,6 +209,7 @@ steps:
       mkdir -p $(Build.ArtifactStagingDirectory)/test-results/coverage
       cp --parents -r $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
     displayName: Copy Coverage
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'

@@ -6,7 +6,6 @@
 import * as assert from 'assert';
 import { SelectBox, SelectOptionItemSQL } from 'sql/base/browser/ui/selectBox/selectBox';
 import { deepClone, equals } from 'vs/base/common/objects';
-import { isUndefined } from 'vs/base/common/types';
 
 const options: SelectOptionItemSQL[] = [
 	{ text: 't1', value: 'v1' },
@@ -54,19 +53,5 @@ suite('Select Box tests', () => {
 		const sb = new SelectBox(newOptions, undefined!, undefined!, undefined!, undefined!);
 
 		assert(equals(sb.values, newOptions.map(s => s.text)));
-	});
-
-	test('value did not contain label', () => {
-		const newOptions = deepClone(options).map(s => { return { text: s.text, value: s.text }; });
-		delete newOptions[0].text;
-		const sb = new SelectBox(newOptions, undefined!, undefined!, undefined!, undefined!);
-
-
-		sb.onSelect({
-			index: 0,
-			selected: options[0].value
-		});
-
-		assert(isUndefined(sb.label));
 	});
 });

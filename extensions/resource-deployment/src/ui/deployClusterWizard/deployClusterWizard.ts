@@ -57,8 +57,8 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, WizardP
 		this._saveConfigButton.hidden = true;
 	}
 
-	constructor(private wizardInfo: BdcWizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService, private _notebookService: INotebookService, private _toolsService: IToolsService) {
-		super(DeployClusterWizard.getTitle(wizardInfo.type), new DeployClusterWizardModel(wizardInfo.type));
+	constructor(private wizardInfo: BdcWizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService, private _notebookService: INotebookService, toolsService: IToolsService) {
+		super(DeployClusterWizard.getTitle(wizardInfo.type), 'DeployBdcClusterWizard', new DeployClusterWizardModel(wizardInfo.type), toolsService);
 		this._saveConfigButton = azdata.window.createButton(localize('deployCluster.SaveConfigFiles', "Save config files"), 'left');
 		this._saveConfigButton.hidden = true;
 		this.addButton(this._saveConfigButton);
@@ -141,10 +141,10 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, WizardP
 
 	private async scriptToNotebook(): Promise<void> {
 		this.setEnvironmentVariables(process.env);
-		const variableValueStatements = this.model.getCodeCellContentForNotebook(this._toolsService.toolsForCurrentProvider);
+		const variableValueStatements = this.model.getCodeCellContentForNotebook(this.toolsService.toolsForCurrentProvider);
 		const insertionPosition = 5; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
 		try {
-			await this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
+			await this.notebookService.openNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
 		} catch (error) {
 			vscode.window.showErrorMessage(getErrorMessage(error));
 		}

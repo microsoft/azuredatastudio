@@ -93,7 +93,7 @@ suite('ProviderDescriptor:', () => {
 	});
 });
 
-suite('NotebookService:', function (): void {
+suite.skip('NotebookService:', function (): void {
 	let notebookService: NotebookService;
 	let lifecycleService: TestLifecycleService;
 	let storageService: TestStorageService;

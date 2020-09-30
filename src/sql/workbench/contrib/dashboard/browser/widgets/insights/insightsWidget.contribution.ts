@@ -7,13 +7,13 @@ import { join } from 'vs/base/common/path';
 
 import { registerDashboardWidget, registerNonCustomDashboardWidget } from 'sql/platform/dashboard/browser/widgetRegistry';
 import { Extensions as InsightExtensions, IInsightRegistry, setWidgetAutoRefreshState } from 'sql/platform/dashboard/browser/insightRegistry';
-import { IInsightTypeContrib } from './interfaces';
 import { insightsContribution, insightsSchema } from 'sql/workbench/contrib/dashboard/browser/widgets/insights/insightsWidgetSchemas';
 
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ServicesAccessor } from 'vs/editor/browser/editorExtensions';
+import { IInsightTypeContrib } from 'sql/platform/extensions/common/extensions';
 
 const insightRegistry = Registry.as<IInsightRegistry>(InsightExtensions.InsightContribution);
 
@@ -37,7 +37,7 @@ ExtensionsRegistry.registerExtensionPoint<IInsightTypeContrib | IInsightTypeCont
 
 	for (const extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray<IInsightTypeContrib>(value)) {
+		if (Array.isArray(value)) {
 			for (const command of value) {
 				handleCommand(command, extension);
 			}

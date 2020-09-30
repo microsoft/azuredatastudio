@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
@@ -13,9 +12,9 @@ import { TextModel } from 'vs/editor/common/model/textModel';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { Selection } from 'vs/editor/common/core/selection';
-import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
+import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
 
 
 export class TransformMarkdownAction extends Action {
@@ -35,19 +34,70 @@ export class TransformMarkdownAction extends Action {
 	public run(context: any): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
 			try {
-				let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel);
-				markdownTextTransformer.transformText(this._type);
+				if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
+					this.transformDocumentCommand();
+				} else {
+					let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel);
+					markdownTextTransformer.transformText(this._type);
+				}
 				resolve(true);
 			} catch (e) {
 				reject(e);
 			}
 		});
 	}
+
+	private transformDocumentCommand() {
+		switch (this._type) {
+			case MarkdownButtonType.BOLD:
+				document.execCommand('bold');
+				break;
+			case MarkdownButtonType.CODE:
+				document.execCommand('formatBlock', false, 'pre');
+				break;
+			case MarkdownButtonType.HEADING1:
+				document.execCommand('formatBlock', false, 'H1');
+				break;
+			case MarkdownButtonType.HEADING2:
+				document.execCommand('formatBlock', false, 'H2');
+				break;
+			case MarkdownButtonType.HEADING3:
+				document.execCommand('formatBlock', false, 'H3');
+				break;
+			case MarkdownButtonType.HIGHLIGHT:
+				document.execCommand('hiliteColor', false, 'Yellow');
+				break;
+			case MarkdownButtonType.IMAGE:
+				// TODO
+				break;
+			case MarkdownButtonType.ITALIC:
+				document.execCommand('italic');
+				break;
+			case MarkdownButtonType.LINK:
+				document.execCommand('createLink', false, window.getSelection()?.focusNode?.textContent);
+				break;
+			case MarkdownButtonType.ORDERED_LIST:
+				document.execCommand('insertOrderedList');
+				break;
+			case MarkdownButtonType.PARAGRAPH:
+				document.execCommand('formatBlock', false, 'p');
+				break;
+			case MarkdownButtonType.UNDERLINE:
+				document.execCommand('underline');
+				break;
+			case MarkdownButtonType.UNORDERED_LIST:
+				document.execCommand('insertUnorderedList');
+				break;
+		}
+	}
 }
 
 export class MarkdownTextTransformer {
 
-	constructor(private _notebookService: INotebookService, private _cellModel: ICellModel, private _notebookEditor?: INotebookEditor) { }
+	constructor(
+		private _notebookService: INotebookService,
+		private _cellModel: ICellModel,
+		private _notebookEditor?: INotebookEditor) { }
 
 	public get notebookEditor(): INotebookEditor {
 		return this._notebookEditor;
@@ -473,39 +523,30 @@ function getColumnOffsetForSelection(type: MarkdownButtonType, nothingSelected: 
 	}
 }
 
-export class TogglePreviewAction extends ToggleableAction {
-
-	private static readonly previewShowLabel = localize('previewShowLabel', "Show Preview");
-	private static readonly previewHideLabel = localize('previewHideLabel', "Hide Preview");
-	private static readonly baseClass = 'codicon';
-	private static readonly previewShowCssClass = 'split-toggle-on';
-	private static readonly previewHideCssClass = 'split-toggle-off';
-	private static readonly maskedIconClass = 'masked-icon';
-
+export class ToggleViewAction extends Action {
 	constructor(
-		id: string, toggleTooltip: boolean, showPreview: boolean
+		id: string,
+		label: string,
+		cssClass: string,
+		tooltip: string,
+		private showPreview: boolean,
+		private showMarkdown: boolean
 	) {
-		super(id, {
-			baseClass: TogglePreviewAction.baseClass,
-			toggleOffLabel: TogglePreviewAction.previewShowLabel,
-			toggleOffClass: TogglePreviewAction.previewShowCssClass,
-			toggleOnLabel: TogglePreviewAction.previewHideLabel,
-			toggleOnClass: TogglePreviewAction.previewHideCssClass,
-			maskedIconClass: TogglePreviewAction.maskedIconClass,
-			shouldToggleTooltip: toggleTooltip,
-			isOn: showPreview
-		});
+		super(id, label, cssClass);
+		this._tooltip = tooltip;
 	}
 
-	public get previewMode(): boolean {
-		return this.state.isOn;
-	}
-	public set previewMode(value: boolean) {
-		this.toggle(value);
-	}
-	public async run(context: any): Promise<boolean> {
-		this.previewMode = !this.previewMode;
-		context.cellModel.showPreview = this.previewMode;
+	public async run(context: MarkdownToolbarComponent): Promise<boolean> {
+		context.removeActiveClassFromModeActions();
+		this.class += ' active';
+		context.cellModel.showPreview = this.showPreview;
+		context.cellModel.showMarkdown = this.showMarkdown;
+		// Hide link and image buttons in WYSIWYG mode
+		if (this.showPreview && !this.showMarkdown) {
+			context.hideLinkAndImageButtons();
+		} else {
+			context.showLinkAndImageButtons();
+		}
 		return true;
 	}
 }

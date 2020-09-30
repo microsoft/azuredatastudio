@@ -5,9 +5,10 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as azurecore from 'azurecore';
 import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
-import { azureResource } from '../typings/azure-resource';
+import { azureResource } from 'azureResource';
 import { AzureMachineLearningWorkspaces } from '@azure/arm-machinelearningservices';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { WorkspaceModels } from './workspacesModels';
@@ -52,7 +53,7 @@ export class AzureModelRegistryService {
 	 * @param account azure account
 	 */
 	public async getSubscriptions(account: azdata.Account | undefined): Promise<azureResource.AzureResourceSubscription[] | undefined> {
-		const data: azureResource.GetSubscriptionsResult = await (await this._apiWrapper.getAzurecoreApi()).getSubscriptions(account, true);
+		const data: azurecore.GetSubscriptionsResult = await (await this._apiWrapper.getAzurecoreApi()).getSubscriptions(account, true);
 		return data?.subscriptions;
 	}
 
@@ -64,7 +65,7 @@ export class AzureModelRegistryService {
 	public async getGroups(
 		account: azdata.Account | undefined,
 		subscription: azureResource.AzureResourceSubscription | undefined): Promise<azureResource.AzureResource[] | undefined> {
-		const data: azureResource.GetResourceGroupsResult = await (await this._apiWrapper.getAzurecoreApi()).getResourceGroups(account, subscription, true);
+		const data: azurecore.GetResourceGroupsResult = await (await this._apiWrapper.getAzurecoreApi()).getResourceGroups(account, subscription, true);
 		return data?.resourceGroups;
 	}
 

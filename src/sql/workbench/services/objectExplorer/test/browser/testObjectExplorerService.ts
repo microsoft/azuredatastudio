@@ -26,18 +26,18 @@ export type ObjectExplorerServiceMockOptions = {
  *
  * @param options Options to use for setting up functions on the mock to return various values
  */
-export function createObjectExplorerServiceMock(options: ObjectExplorerServiceMockOptions): TypeMoq.Mock<IObjectExplorerService> {
+export function createObjectExplorerServiceMock(options: ObjectExplorerServiceMockOptions): IObjectExplorerService {
 	const objectExplorerService = TypeMoq.Mock.ofType(TestObjectExplorerService);
 
 	if (options.treeNode) {
-		objectExplorerService.setup(x => x.getTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(options.treeNode));
+		objectExplorerService.setup(x => x.getTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(options.treeNode!));
 	}
 
 	if (options.serverTreeView) {
-		objectExplorerService.setup(x => x.getServerTreeView()).returns(() => options.serverTreeView);
+		objectExplorerService.setup(x => x.getServerTreeView()).returns(() => options.serverTreeView!);
 	}
 
-	return objectExplorerService;
+	return objectExplorerService.object;
 }
 
 /**
@@ -49,13 +49,13 @@ export class TestObjectExplorerService implements IObjectExplorerService {
 
 	constructor() { }
 
-	public getSession(sessionId: string): azdata.ObjectExplorerSession { return undefined; }
+	public getSession(sessionId: string): azdata.ObjectExplorerSession { throw new Error('Method not implemented'); }
 
 	public providerRegistered(providerId: string): boolean { return true; }
 
-	public get onUpdateObjectExplorerNodes(): Event<ObjectExplorerNodeEventArgs> { return undefined; }
+	public get onUpdateObjectExplorerNodes(): Event<ObjectExplorerNodeEventArgs> { throw new Error('Method not implemented'); }
 
-	public get onSelectionOrFocusChange(): Event<void> { return undefined; }
+	public get onSelectionOrFocusChange(): Event<void> { throw new Error('Method not implemented'); }
 
 	public async updateObjectExplorerNodes(connection: IConnectionProfile): Promise<void> { }
 
@@ -67,41 +67,41 @@ export class TestObjectExplorerService implements IObjectExplorerService {
 
 	public async onSessionDisconnected(handle: number, session: azdata.ObjectExplorerSession): Promise<void> { }
 
-	public getObjectExplorerNode(connection: IConnectionProfile): TreeNode { return undefined; }
+	public getObjectExplorerNode(connection: IConnectionProfile): TreeNode { throw new Error('Method not implemented'); }
 
-	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse> { return undefined; }
+	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<azdata.ObjectExplorerSessionResponse> { throw new Error('Method not implemented'); }
 
-	public async expandNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo> { return undefined; }
+	public async expandNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo> { throw new Error('Method not implemented'); }
 
-	public async refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo> { return undefined; }
+	public async refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo> { throw new Error('Method not implemented'); }
 
-	public async closeSession(providerId: string, session: azdata.ObjectExplorerSession): Promise<azdata.ObjectExplorerCloseSessionResponse> { return undefined; }
+	public async closeSession(providerId: string, session: azdata.ObjectExplorerSession): Promise<azdata.ObjectExplorerCloseSessionResponse> { throw new Error('Method not implemented'); }
 
 	public registerProvider(providerId: string, provider: azdata.ObjectExplorerProvider): void { }
 
 	public registerNodeProvider(nodeProvider: azdata.ObjectExplorerNodeProvider): void { }
 
-	public async resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> { return undefined; }
+	public async resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> { throw new Error('Method not implemented'); }
 
-	public async refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> { return undefined; }
+	public async refreshTreeNode(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Promise<TreeNode[]> { throw new Error('Method not implemented'); }
 
 	public registerServerTreeView(view: IServerTreeView): void { }
 
-	public getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string } { return undefined; }
+	public getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string } | undefined { return undefined; }
 
 	public isFocused(): boolean { return true; }
 
-	public getServerTreeView(): IServerTreeView { return undefined; }
+	public getServerTreeView(): IServerTreeView { throw new Error('Method not implemented'); }
 
-	public async findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Promise<azdata.NodeInfo[]> { return undefined; }
+	public async findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames?: string[]): Promise<azdata.NodeInfo[]> { throw new Error('Method not implemented'); }
 
-	public getActiveConnectionNodes(): TreeNode[] { return undefined; }
+	public getActiveConnectionNodes(): TreeNode[] { throw new Error('Method not implemented'); }
 
-	public async getNodeActions(connectionId: string, nodePath: string): Promise<string[]> { return undefined; }
+	public async getNodeActions(connectionId: string, nodePath: string): Promise<string[]> { throw new Error('Method not implemented'); }
 
-	public async refreshNodeInView(connectionId: string, nodePath: string): Promise<TreeNode> { return undefined; }
+	public async refreshNodeInView(connectionId: string, nodePath: string): Promise<TreeNode> { throw new Error('Method not implemented'); }
 
-	public getSessionConnectionProfile(sessionId: string): azdata.IConnectionProfile { return undefined; }
+	public getSessionConnectionProfile(sessionId: string): azdata.IConnectionProfile { throw new Error('Method not implemented'); }
 
-	public async getTreeNode(connectionId: string, nodePath: string): Promise<TreeNode> { return undefined; }
+	public async getTreeNode(connectionId: string, nodePath: string): Promise<TreeNode> { throw new Error('Method not implemented'); }
 }

@@ -9,7 +9,7 @@ import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
-import { notebookLanguages } from './constants';
+import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey } from './constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -322,4 +322,19 @@ export async function getRandomToken(size: number = 24): Promise<string> {
 			resolve(token);
 		});
 	});
+}
+
+export function isBookItemPinned(notebookPath: string): boolean {
+	let pinnedNotebooks: string[] = getPinnedNotebooks();
+	if (pinnedNotebooks?.indexOf(notebookPath) > -1) {
+		return true;
+	}
+	return false;
+}
+
+export function getPinnedNotebooks(): string[] {
+	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
+	let pinnedNotebooks: string[] = config.get(pinnedBooksConfigKey) ?? [];
+
+	return pinnedNotebooks;
 }

@@ -217,8 +217,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 
 		// Intercept keyboard handling
 
-		// React on KEY_UP since the actionBar also reacts on KEY_UP so that appropriate events get canceled
-		this._register(dom.addDisposableListener(this.selectElement, dom.EventType.KEY_UP, (e: KeyboardEvent) => {
+		this._register(dom.addDisposableListener(this.selectElement, dom.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			const event = new StandardKeyboardEvent(e);
 			let showDropDown = false;
 
@@ -235,7 +234,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 
 			if (showDropDown) {
 				this.showSelectDropDown();
-				dom.EventHelper.stop(e, true);
+				dom.EventHelper.stop(e);
 			}
 		}));
 	}
@@ -705,8 +704,8 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 		let elementWidth = 0;
 
 		if (container) {
-			let longest = -1;
-			let longestLength = -1;
+			let longest = 0;
+			let longestLength = 0;
 
 			this.options.forEach((option, index) => {
 				const len = option.text.length + (!!option.decoratorRight ? option.decoratorRight.length : 0);
@@ -716,9 +715,8 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 				}
 			});
 
-			if (longest >= 0) {
-				container.innerHTML = this.options[longest].text + (!!this.options[longest].decoratorRight ? (this.options[longest].decoratorRight + ' ') : '');
-			}
+
+			container.innerHTML = this.options[longest].text + (!!this.options[longest].decoratorRight ? (this.options[longest].decoratorRight + ' ') : '');
 
 			elementWidth = dom.getTotalWidth(container);
 		}

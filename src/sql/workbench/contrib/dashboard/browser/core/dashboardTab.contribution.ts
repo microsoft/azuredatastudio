@@ -15,22 +15,9 @@ import { NAV_SECTION, validateNavSectionContributionAndRegisterIcon } from 'sql/
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardGridContainer.contribution';
 import { values } from 'vs/base/common/collections';
-import { IUserFriendlyIcon } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { isValidIcon, createCSSRuleForIcon } from 'sql/workbench/contrib/dashboard/browser/dashboardIconUtil';
 import { IDashboardTabGroup, IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
-
-export interface IDashboardTabContrib {
-	id: string;
-	title: string;
-	container: { [key: string]: any };
-	provider: string | string[];
-	when?: string;
-	description?: string;
-	alwaysShow?: boolean;
-	isHomeTab?: boolean;
-	group?: string;
-	icon?: IUserFriendlyIcon;
-}
+import { IDashboardTabContrib } from 'sql/platform/extensions/common/extensions';
 
 export interface IDashboardTabGroupContrib {
 	id: string;
@@ -174,7 +161,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 
 	for (const extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray<IDashboardTabContrib>(value)) {
+		if (Array.isArray(value)) {
 			for (const command of value) {
 				handleTab(command, extension);
 			}
@@ -228,7 +215,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 
 	for (const extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray<IDashboardTabGroupContrib>(value)) {
+		if (Array.isArray(value)) {
 			for (const command of value) {
 				handleTabGroup(command, extension);
 			}

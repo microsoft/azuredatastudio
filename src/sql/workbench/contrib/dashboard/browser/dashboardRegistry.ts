@@ -298,7 +298,7 @@ ExtensionsRegistry.registerExtensionPoint<ProviderProperties | ProviderPropertie
 
 	for (let extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray<ProviderProperties>(value)) {
+		if (Array.isArray(value)) {
 			for (let command of value) {
 				handleCommand(command, extension);
 			}

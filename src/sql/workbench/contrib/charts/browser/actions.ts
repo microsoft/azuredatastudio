@@ -12,7 +12,6 @@ import { Action } from 'vs/base/common/actions';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 import { IInsightOptions } from 'sql/workbench/contrib/charts/common/interfaces';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -25,6 +24,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { ConfigureChartDialog } from 'sql/workbench/contrib/charts/browser/configureChartDialog';
+import { IInsightsConfig } from 'sql/platform/extensions/common/extensions';
 
 export interface IChartActionContext {
 	options: IInsightOptions;
@@ -46,18 +46,18 @@ export class CreateInsightAction extends Action {
 	}
 
 	public run(context: IChartActionContext): Promise<boolean> {
-		let uriString: string = this.getActiveUriString();
+		let uriString = this.getActiveUriString();
 		if (!uriString) {
 			this.showError(localize('createInsightNoEditor', "Cannot create insight as the active editor is not a SQL Editor"));
 			return Promise.resolve(false);
 		}
 
 		let uri: URI = URI.parse(uriString);
-		let queryFile: string = uri.fsPath;
-		let query: string = undefined;
-		let type = {};
+		let queryFile = uri.fsPath;
+		let query: string | undefined = undefined;
+		let type: { [key: string]: any } = {};
 		let options = assign({}, context.options);
-		delete options.type;
+		delete (options as any).type;
 		type[context.options.type] = options;
 		// create JSON
 		let config: IInsightsConfig = {
@@ -92,7 +92,7 @@ export class CreateInsightAction extends Action {
 			);
 	}
 
-	private getActiveUriString(): string {
+	private getActiveUriString(): string | undefined {
 		let editor = this.editorService.activeEditor;
 		if (editor instanceof QueryEditorInput) {
 			return editor.uri;
@@ -113,7 +113,7 @@ export class ConfigureChartAction extends Action {
 	public static LABEL = localize('configureChartLabel', "Configure Chart");
 	public static ICON = 'settings';
 
-	private dialog: ConfigureChartDialog;
+	private dialog?: ConfigureChartDialog;
 
 	constructor(private _chart: ChartView,
 		@IInstantiationService private readonly instantiationService: IInstantiationService) {

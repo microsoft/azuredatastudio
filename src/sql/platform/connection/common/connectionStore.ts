@@ -289,7 +289,7 @@ export class ConnectionStore {
 		if (children) {
 			children.map(group => {
 				let connectionGroup = new ConnectionProfileGroup(group.name, parent, group.id, group.color, group.description);
-				this.addGroupFullNameToMap(group.id, connectionGroup.fullName);
+				this.addGroupFullNameToMap(group.id!, connectionGroup.fullName);
 				if (connections) {
 					let connectionsForGroup = connections.filter(conn => conn.groupId === connectionGroup.id);
 					let conns: ConnectionProfile[] = [];

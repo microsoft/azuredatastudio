@@ -103,7 +103,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboar
 
 	for (const extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray<IDashboardContainerContrib>(value)) {
+		if (Array.isArray(value)) {
 			for (const command of value) {
 				handleCommand(command, extension);
 			}

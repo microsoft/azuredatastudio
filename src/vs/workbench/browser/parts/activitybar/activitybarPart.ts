@@ -131,6 +131,8 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 
 		storageKeysSyncRegistryService.registerStorageKey({ key: ActivitybarPart.PINNED_VIEW_CONTAINERS, version: 1 });
 		storageKeysSyncRegistryService.registerStorageKey({ key: ActivitybarPart.HOME_BAR_VISIBILITY_PREFERENCE, version: 1 });
+		storageKeysSyncRegistryService.registerStorageKey({ key: ACCOUNTS_VISIBILITY_PREFERENCE_KEY, version: 1 });
+
 		this.migrateFromOldCachedViewContainersValue();
 
 		for (const cachedViewContainer of this.cachedViewContainers) {
@@ -170,13 +172,12 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 
 				const toggleAccountsVisibilityAction = new Action(
 					'toggleAccountsVisibility',
-					nls.localize('accounts', "Accounts"),
+					this.accountsVisibilityPreference ? nls.localize('hideAccounts', "Hide Accounts") : nls.localize('showAccounts', "Show Accounts"),
 					undefined,
 					true,
 					async () => { this.accountsVisibilityPreference = !this.accountsVisibilityPreference; }
 				);
 
-				toggleAccountsVisibilityAction.checked = !!this.accountsActivityAction;
 				actions.push(toggleAccountsVisibilityAction);
 				actions.push(new Separator());
 
@@ -323,21 +324,22 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		}
 
 		if (viewContainerOrActionId === GLOBAL_ACTIVITY_ID) {
-			return this.showGlobalActivity(this.globalActivity, this.globalActivityAction, badge, clazz, priority);
+			return this.showGlobalActivity(GLOBAL_ACTIVITY_ID, badge, clazz, priority);
 		}
 
 		if (viewContainerOrActionId === ACCOUNTS_ACTIIVTY_ID) {
-			return this.showGlobalActivity(this.accountsActivity, this.accountsActivityAction, badge, clazz, priority);
+			return this.showGlobalActivity(ACCOUNTS_ACTIIVTY_ID, badge, clazz, priority);
 		}
 
 		return Disposable.None;
 	}
 
-	private showGlobalActivity(activityCache: ICompositeActivity[], activityAction: ActivityAction | undefined, badge: IBadge, clazz?: string, priority?: number): IDisposable {
+	private showGlobalActivity(activityId: string, badge: IBadge, clazz?: string, priority?: number): IDisposable {
 		if (typeof priority !== 'number') {
 			priority = 0;
 		}
 		const activity: ICompositeActivity = { badge, clazz, priority };
+		const activityCache = activityId === GLOBAL_ACTIVITY_ID ? this.globalActivity : this.accountsActivity;
 
 		for (let i = 0; i <= activityCache.length; i++) {
 			if (i === activityCache.length) {
@@ -348,24 +350,27 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 				break;
 			}
 		}
-		this.updateGlobalActivity(activityCache, activityAction);
+		this.updateGlobalActivity(activityId);
 
-		return toDisposable(() => this.removeGlobalActivity(activityCache, activityAction, activity));
+		return toDisposable(() => this.removeGlobalActivity(activityId, activity));
 	}
 
-	private removeGlobalActivity(activityCache: ICompositeActivity[], activityAction: ActivityAction | undefined, activity: ICompositeActivity): void {
+	private removeGlobalActivity(activityId: string, activity: ICompositeActivity): void {
+		const activityCache = activityId === GLOBAL_ACTIVITY_ID ? this.globalActivity : this.accountsActivity;
 		const index = activityCache.indexOf(activity);
 		if (index !== -1) {
 			activityCache.splice(index, 1);
-			this.updateGlobalActivity(activityCache, activityAction);
+			this.updateGlobalActivity(activityId);
 		}
 	}
 
-	private updateGlobalActivity(activityCache: ICompositeActivity[], activityAction: ActivityAction | undefined): void {
+	private updateGlobalActivity(activityId: string): void {
+		const activityAction = activityId === GLOBAL_ACTIVITY_ID ? this.globalActivityAction : this.accountsActivityAction;
 		if (!activityAction) {
 			return;
 		}
 
+		const activityCache = activityId === GLOBAL_ACTIVITY_ID ? this.globalActivity : this.accountsActivity;
 		if (activityCache.length) {
 			const [{ badge, clazz, priority }] = activityCache;
 			if (badge instanceof NumberBadge && activityCache.length > 1) {
@@ -630,7 +635,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 			}
 		}
 
-		this.updateGlobalActivity(this.accountsActivity, this.accountsActivityAction);
+		this.updateGlobalActivity(ACCOUNTS_ACTIIVTY_ID);
 	}
 
 	private getCompositeActions(compositeId: string): { activityAction: ViewContainerActivityAction, pinnedAction: ToggleCompositePinnedAction } {

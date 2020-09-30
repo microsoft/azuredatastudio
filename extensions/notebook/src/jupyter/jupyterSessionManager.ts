@@ -17,6 +17,7 @@ import { JupyterKernel } from './jupyterKernel';
 import { Deferred } from '../common/promise';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as bdc from 'bdc';
+import { noBDCConnectionError, providerNotValidError } from '../common/localizedConstants';
 
 const configBase = {
 	'kernel_python_credentials': {
@@ -287,7 +288,7 @@ export class JupyterSession implements nb.ISession {
 				const endpoints = await this.getClusterEndpoints(connectionProfile.id);
 				const gatewayEndpoint: utils.IEndpoint = endpoints?.find(ep => ep.serviceName.toLowerCase() === KNOX_ENDPOINT_GATEWAY);
 				if (!gatewayEndpoint) {
-					return Promise.reject(new Error(localize('connectionNotValid', "Spark kernels require a connection to a SQL Server Big Data Cluster master instance.")));
+					throw new Error(noBDCConnectionError);
 				}
 				let gatewayHostAndPort = utils.getHostAndPortFromEndpoint(gatewayEndpoint.endpoint);
 				connectionProfile.options[KNOX_ENDPOINT_SERVER] = gatewayHostAndPort.host;
@@ -304,11 +305,13 @@ export class JupyterSession implements nb.ISession {
 						connectionProfile.options[USER] = await controller.getKnoxUsername(connectionProfile.userName);
 					} catch (err) {
 						console.log(`Unexpected error getting Knox username for Spark kernel: ${err}`);
+						// Optimistically use the SQL login name - that's going to normally be the case after CU5
+						connectionProfile.options[USER] = connectionProfile.userName;
 					}
 				}
 			}
 			else {
-				connectionProfile.options[KNOX_ENDPOINT_PORT] = this.getKnoxPortOrDefault(connectionProfile);
+				throw new Error(providerNotValidError);
 			}
 			this.setHostAndPort(':', connectionProfile);
 			this.setHostAndPort(',', connectionProfile);
@@ -318,7 +321,6 @@ export class JupyterSession implements nb.ISession {
 			if (this.isIntegratedAuth(connectionProfile)) {
 				doNotCallChangeEndpointParams = `%_do_not_call_change_endpoint --server=${server} --auth=Kerberos`;
 			} else {
-
 				doNotCallChangeEndpointParams = `%_do_not_call_change_endpoint --username=${connectionProfile.options[USER]} --password=${credentials.password} --server=${server} --auth=Basic_Access`;
 			}
 			let future = this.sessionImpl.kernel.requestExecute({
@@ -354,14 +356,6 @@ export class JupyterSession implements nb.ISession {
 		config.kernel_r_credentials = creds;
 		config.logging_config.handlers.magicsHandler.home_path = homePath;
 		config.ignore_ssl_errors = utils.getIgnoreSslVerificationConfigSetting();
-	}
-
-	private getKnoxPortOrDefault(connectionProfile: IConnectionProfile): string {
-		let port = connectionProfile.options[KNOX_ENDPOINT_PORT];
-		if (!port) {
-			port = '30443';
-		}
-		return port;
 	}
 
 	private async getClusterEndpoints(profileId: string): Promise<utils.IEndpoint[]> {

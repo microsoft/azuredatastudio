@@ -150,15 +150,17 @@ describe('Manage Package Dialog', () => {
 		let flex: azdata.FlexContainer = Object.assign({}, componentBase, container, {
 		});
 
-		let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
+		let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties> = {
 			component: () => button,
 			withProperties: () => buttonBuilder,
-			withValidation: () => buttonBuilder
+			withValidation: () => buttonBuilder,
+			withProps: () => buttonBuilder
 		};
-		let radioButtonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
+		let radioButtonBuilder: azdata.ComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties> = {
 			component: () => radioButton,
 			withProperties: () => radioButtonBuilder,
-			withValidation: () => radioButtonBuilder
+			withValidation: () => radioButtonBuilder,
+			withProps: () => radioButtonBuilder
 		};
 		let inputBox: () => azdata.InputBoxComponent = () => Object.assign({}, componentBase, {
 			onTextChanged: undefined!,
@@ -178,6 +180,7 @@ describe('Manage Package Dialog', () => {
 		});
 		let declarativeTable: () => azdata.DeclarativeTableComponent = () => Object.assign({}, componentBase, {
 			onDataChanged: undefined!,
+			onRowSelected: undefined!,
 			data: [],
 			columns: []
 		});
@@ -187,17 +190,19 @@ describe('Manage Package Dialog', () => {
 			component: undefined!
 		});
 
-		let declarativeTableBuilder: azdata.ComponentBuilder<azdata.DeclarativeTableComponent> = {
+		let declarativeTableBuilder: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties> = {
 			component: () => declarativeTable(),
 			withProperties: () => declarativeTableBuilder,
-			withValidation: () => declarativeTableBuilder
+			withValidation: () => declarativeTableBuilder,
+			withProps: () => declarativeTableBuilder
 		};
 
 		let loadingBuilder: azdata.LoadingComponentBuilder = {
 			component: () => loadingComponent(),
 			withProperties: () => loadingBuilder,
 			withValidation: () => loadingBuilder,
-			withItem: () => loadingBuilder
+			withItem: () => loadingBuilder,
+			withProps: () => loadingBuilder
 		};
 
 		let formBuilder: azdata.FormBuilder = Object.assign({}, {
@@ -210,7 +215,8 @@ describe('Manage Package Dialog', () => {
 			withProperties: () => formBuilder,
 			withValidation: () => formBuilder,
 			withItems: () => formBuilder,
-			withLayout: () => formBuilder
+			withLayout: () => formBuilder,
+			withProps: () => formBuilder
 		});
 
 		let flexBuilder: azdata.FlexBuilder = Object.assign({}, {
@@ -218,32 +224,36 @@ describe('Manage Package Dialog', () => {
 			withProperties: () => flexBuilder,
 			withValidation: () => flexBuilder,
 			withItems: () => flexBuilder,
-			withLayout: () => flexBuilder
+			withLayout: () => flexBuilder,
+			withProps: () => flexBuilder
 		});
 
-		let inputBoxBuilder: azdata.ComponentBuilder<azdata.InputBoxComponent> = {
+		let inputBoxBuilder: azdata.ComponentBuilder<azdata.InputBoxComponent, azdata.InputBoxProperties> = {
 			component: () => {
 				let r = inputBox();
 				return r;
 			},
 			withProperties: () => inputBoxBuilder,
-			withValidation: () => inputBoxBuilder
+			withValidation: () => inputBoxBuilder,
+			withProps: () => inputBoxBuilder
 		};
-		let imageBuilder: azdata.ComponentBuilder<azdata.ImageComponent> = {
+		let imageBuilder: azdata.ComponentBuilder<azdata.ImageComponent, azdata.ImageComponentProperties> = {
 			component: () => {
 				let r = image();
 				return r;
 			},
 			withProperties: () => imageBuilder,
-			withValidation: () => imageBuilder
+			withValidation: () => imageBuilder,
+			withProps: () => imageBuilder
 		};
-		let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent> = {
+		let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent, azdata.DropDownProperties> = {
 			component: () => {
 				let r = dropdown();
 				return r;
 			},
 			withProperties: () => dropdownBuilder,
-			withValidation: () => dropdownBuilder
+			withValidation: () => dropdownBuilder,
+			withProps: () => dropdownBuilder
 		};
 
 		let view: azdata.ModelView = {

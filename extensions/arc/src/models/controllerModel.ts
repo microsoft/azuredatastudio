@@ -3,27 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ControllerInfo, ResourceType } from 'arc';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
-import { parseInstanceName, UserCancelledError } from '../common/utils';
-import { ResourceType } from '../constants';
-import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
+import { UserCancelledError } from '../common/utils';
 import * as loc from '../localizedConstants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
-
-export type ControllerInfo = {
-	url: string,
-	name: string,
-	username: string,
-	rememberPassword: boolean,
-	resources: ResourceInfo[]
-};
-
-export type ResourceInfo = {
-	name: string,
-	resourceType: ResourceType | string,
-	connectionId?: string
-};
+import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 
 export type Registration = {
 	instanceName: string,
@@ -34,24 +20,34 @@ export type Registration = {
 export class ControllerModel {
 	private readonly _azdataApi: azdataExt.IExtension;
 	private _endpoints: azdataExt.DcEndpointListResult[] = [];
-	private _namespace: string = '';
 	private _registrations: Registration[] = [];
 	private _controllerConfig: azdataExt.DcConfigShowResult | undefined = undefined;
 
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.DcConfigShowResult | undefined>();
 	private readonly _onEndpointsUpdated = new vscode.EventEmitter<azdataExt.DcEndpointListResult[]>();
 	private readonly _onRegistrationsUpdated = new vscode.EventEmitter<Registration[]>();
+	private readonly _onInfoUpdated = new vscode.EventEmitter<ControllerInfo>();
 
 	public onConfigUpdated = this._onConfigUpdated.event;
 	public onEndpointsUpdated = this._onEndpointsUpdated.event;
 	public onRegistrationsUpdated = this._onRegistrationsUpdated.event;
+	public onInfoUpdated = this._onInfoUpdated.event;
 
 	public configLastUpdated?: Date;
 	public endpointsLastUpdated?: Date;
 	public registrationsLastUpdated?: Date;
 
-	constructor(public treeDataProvider: AzureArcTreeDataProvider, public info: ControllerInfo, private _password?: string) {
+	constructor(public treeDataProvider: AzureArcTreeDataProvider, private _info: ControllerInfo, private _password?: string) {
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+	}
+
+	public get info(): ControllerInfo {
+		return this._info;
+	}
+
+	public set info(value: ControllerInfo) {
+		this._info = value;
+		this._onInfoUpdated.fire(this._info);
 	}
 
 	/**
@@ -66,13 +62,13 @@ export class ControllerModel {
 				// It should be in the credentials store, get it from there
 				this._password = await this.treeDataProvider.getPassword(this.info);
 			}
-			if (promptReconnect) {
+			if (promptReconnect || !this._password) {
 				// No password yet or we want to re-prompt for credentials so prompt for it from the user
 				const dialog = new ConnectToControllerDialog(this.treeDataProvider);
 				dialog.showDialog(this.info, this._password);
 				const model = await dialog.waitForClose();
 				if (model) {
-					this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
+					await this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
 					this._password = model.password;
 				} else {
 					throw new UserCancelledError();
@@ -80,7 +76,7 @@ export class ControllerModel {
 			}
 		}
 
-		await this._azdataApi.login(this.info.url, this.info.username, this._password);
+		await this._azdataApi.azdata.login(this.info.url, this.info.username, this._password);
 	}
 
 	/**
@@ -96,9 +92,9 @@ export class ControllerModel {
 	}
 	public async refresh(showErrors: boolean = true, promptReconnect: boolean = false): Promise<void> {
 		await this.azdataLogin(promptReconnect);
-		this._registrations = [];
+		const newRegistrations: Registration[] = [];
 		await Promise.all([
-			this._azdataApi.dc.config.show().then(result => {
+			this._azdataApi.azdata.arc.dc.config.show().then(result => {
 				this._controllerConfig = result.result;
 				this.configLastUpdated = new Date();
 				this._onConfigUpdated.fire(this._controllerConfig);
@@ -112,7 +108,7 @@ export class ControllerModel {
 				this._onConfigUpdated.fire(this._controllerConfig);
 				throw err;
 			}),
-			this._azdataApi.dc.endpoint.list().then(result => {
+			this._azdataApi.azdata.arc.dc.endpoint.list().then(result => {
 				this._endpoints = result.result;
 				this.endpointsLastUpdated = new Date();
 				this._onEndpointsUpdated.fire(this._endpoints);
@@ -127,8 +123,8 @@ export class ControllerModel {
 				throw err;
 			}),
 			Promise.all([
-				this._azdataApi.postgres.server.list().then(result => {
-					this._registrations.push(...result.result.map(r => {
+				this._azdataApi.azdata.arc.postgres.server.list().then(result => {
+					newRegistrations.push(...result.result.map(r => {
 						return {
 							instanceName: r.name,
 							state: r.state,
@@ -136,8 +132,8 @@ export class ControllerModel {
 						};
 					}));
 				}),
-				this._azdataApi.sql.mi.list().then(result => {
-					this._registrations.push(...result.result.map(r => {
+				this._azdataApi.azdata.arc.sql.mi.list().then(result => {
+					newRegistrations.push(...result.result.map(r => {
 						return {
 							instanceName: r.name,
 							state: r.state,
@@ -146,6 +142,7 @@ export class ControllerModel {
 					}));
 				})
 			]).then(() => {
+				this._registrations = newRegistrations;
 				this.registrationsLastUpdated = new Date();
 				this._onRegistrationsUpdated.fire(this._registrations);
 			})
@@ -160,10 +157,6 @@ export class ControllerModel {
 		return this._endpoints.find(e => e.name === name);
 	}
 
-	public get namespace(): string {
-		return this._namespace;
-	}
-
 	public get registrations(): Registration[] {
 		return this._registrations;
 	}
@@ -174,26 +167,8 @@ export class ControllerModel {
 
 	public getRegistration(type: ResourceType, name: string): Registration | undefined {
 		return this._registrations.find(r => {
-			return r.instanceType === type && parseInstanceName(r.instanceName) === name;
+			return r.instanceType === type && r.instanceName === name;
 		});
-	}
-
-	public async deleteRegistration(_type: ResourceType, _name: string) {
-		/* TODO chgagnon
-		if (r && !r.isDeleted && r.customObjectName) {
-			const r = this.getRegistration(type, name);
-			await this._registrationRouter.apiV1RegistrationNsNameIsDeletedDelete(this._namespace, r.customObjectName, true);
-		}
-		*/
-	}
-
-	/**
-	 * Tests whether this model is for the same controller as another
-	 * @param other The other instance to test
-	 */
-	public equals(other: ControllerModel): boolean {
-		return this.info.url === other.info.url &&
-			this.info.username === other.info.username;
 	}
 
 	/**

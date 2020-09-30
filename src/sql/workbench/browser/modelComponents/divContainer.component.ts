@@ -32,7 +32,7 @@ class DivItem {
 		</div>
 	`
 })
-export default class DivContainer extends ContainerBase<azdata.DivItemLayout> implements IComponent, OnDestroy, AfterViewInit {
+export default class DivContainer extends ContainerBase<azdata.DivItemLayout, azdata.DivContainerProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	@ViewChild('divContainer', { read: ElementRef }) divContainer;
@@ -126,21 +126,21 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout> im
 
 	// CSS-bound properties
 	public get overflowY(): string {
-		return this.getPropertyOrDefault<azdata.DivContainerProperties, any>((props) => props.overflowY, '');
+		return this.getPropertyOrDefault<any>((props) => props.overflowY, '');
 	}
 	public set overflowY(newValue: string) {
-		this.setPropertyFromUI<azdata.DivContainerProperties, any>((properties, newValue) => { properties.overflowY = newValue; }, newValue);
+		this.setPropertyFromUI<any>((properties, newValue) => { properties.overflowY = newValue; }, newValue);
 	}
 
 	public get yOffsetChange(): number {
-		return this.getPropertyOrDefault<azdata.DivContainerProperties, any>((props) => props.yOffsetChange, 0);
+		return this.getPropertyOrDefault<any>((props) => props.yOffsetChange, 0);
 	}
 	public set yOffsetChange(newValue: number) {
-		this.setPropertyFromUI<azdata.DivContainerProperties, any>((properties, newValue) => { properties.yOffsetChange = newValue; }, newValue);
+		this.setPropertyFromUI<any>((properties, newValue) => { properties.yOffsetChange = newValue; }, newValue);
 	}
 
 	public get clickable(): boolean {
-		return this.getPropertyOrDefault<azdata.DivContainerProperties, boolean>((props) => props.clickable, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.clickable, false);
 	}
 
 	public onKey(e: KeyboardEvent) {

@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as assert from 'assert';
 import { ComponentBase, ContainerBase, ItemDescriptor } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ModelStore } from 'sql/workbench/browser/modelComponents/modelStore';
@@ -10,7 +11,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 
 
-class TestComponent extends ComponentBase {
+class TestComponent extends ComponentBase<azdata.ComponentProperties> {
 	public descriptor: IComponentDescriptor;
 
 	constructor(public modelStore: IModelStore, id: string) {

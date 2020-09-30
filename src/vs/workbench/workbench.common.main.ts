@@ -56,7 +56,6 @@ import 'vs/workbench/browser/parts/views/viewsService';
 import 'vs/platform/undoRedo/common/undoRedoService';
 import 'vs/workbench/services/uriIdentity/common/uriIdentityService';
 import 'vs/workbench/services/extensions/browser/extensionUrlHandler';
-import 'vs/workbench/services/bulkEdit/browser/bulkEditService';
 import 'vs/workbench/services/keybinding/common/keybindingEditing';
 import 'vs/workbench/services/decorations/browser/decorationsService';
 import 'vs/workbench/services/progress/browser/progressService';
@@ -198,6 +197,8 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { IScriptingService, ScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
 import { AssessmentService } from 'sql/workbench/services/assessment/common/assessmentService';
+import { DataGridProviderService } from 'sql/workbench/services/dataGridProvider/browser/dataGridProviderService';
+import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -236,6 +237,7 @@ registerSingleton(IAdsTelemetryService, AdsTelemetryService);
 registerSingleton(IObjectExplorerService, ObjectExplorerService);
 registerSingleton(IOEShimService, OEShimService);
 registerSingleton(IAssessmentService, AssessmentService);
+registerSingleton(IDataGridProviderService, DataGridProviderService);
 
 //#endregion
 
@@ -271,7 +273,8 @@ import 'vs/workbench/contrib/files/browser/files.contribution';
 import 'vs/workbench/contrib/backup/common/backup.contribution';
 
 // bulkEdit
-import 'vs/workbench/contrib/bulkEdit/browser/bulkEdit.contribution';
+import 'vs/workbench/contrib/bulkEdit/browser/bulkEditService';
+import 'vs/workbench/contrib/bulkEdit/browser/preview/bulkEdit.contribution';
 
 // Search
 import 'vs/workbench/contrib/search/browser/search.contribution';
@@ -306,6 +309,7 @@ import 'vs/workbench/contrib/url/browser/url.contribution';
 
 // Webview
 import 'vs/workbench/contrib/webview/browser/webview.contribution';
+import 'vs/workbench/contrib/webviewView/browser/webviewView.contribution';
 import 'vs/workbench/contrib/customEditor/browser/customEditor.contribution';
 
 // Extensions Management
@@ -337,6 +341,9 @@ import 'vs/workbench/contrib/remote/browser/remote';
 
 // CodeEditor Contributions
 import 'vs/workbench/contrib/codeEditor/browser/codeEditor.contribution';
+
+// Keybindings Contributions
+import 'vs/workbench/contrib/keybindings/browser/keybindings.contribution';
 
 // Execution
 import 'vs/workbench/contrib/externalTerminal/browser/externalTerminal.contribution';
@@ -436,6 +443,9 @@ import 'sql/workbench/contrib/accounts/browser/accountManagement.contribution';
 // profiler
 import 'sql/workbench/contrib/profiler/browser/profiler.contribution';
 import 'sql/workbench/contrib/profiler/browser/profilerActions.contribution';
+
+// resource viewer
+import 'sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution';
 
 // dashboard
 import 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/barChart.contribution';

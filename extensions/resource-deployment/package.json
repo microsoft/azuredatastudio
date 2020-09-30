@@ -93,7 +93,7 @@
         "providers": [
           {
             "dialog": {
-              "notebook": "%sql-2017-docker-notebook%",
+              "notebook": "./notebooks/docker/2017/deploy-sql2017-image.ipynb",
               "title": "%docker-sql-2017-title%",
               "name": "docker-sql-2017-dialog",
               "tabs": [
@@ -144,7 +144,7 @@
           },
           {
             "dialog": {
-              "notebook": "%sql-2019-docker-notebook%",
+              "notebook": "./notebooks/docker/2019/deploy-sql2019-image.ipynb",
               "title": "%docker-sql-2019-title%",
               "name": "docker-sql-2019-dialog",
               "tabs": [
@@ -247,7 +247,7 @@
           {
             "bdcWizard": {
               "type": "new-aks",
-              "notebook": "%bdc-2019-aks-notebook%"
+              "notebook": "./notebooks/bdc/2019/deploy-bdc-aks.ipynb"
             },
             "requiredTools": [
               {
@@ -258,7 +258,7 @@
                 "name": "azure-cli"
               },
               {
-                "name": "azdata",
+                "name": "azdata-old",
                 "version": "20.0.0"
               }
             ],
@@ -267,7 +267,7 @@
           {
             "bdcWizard": {
               "type": "existing-aks",
-              "notebook": "%bdc-2019-existing-aks-notebook%"
+              "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-aks.ipynb"
             },
             "requiredTools": [
               {
@@ -275,7 +275,7 @@
                 "version": "1.13.0"
               },
               {
-                "name": "azdata",
+                "name": "azdata-old",
                 "version": "20.0.0"
               }
             ],
@@ -284,7 +284,7 @@
           {
             "bdcWizard": {
               "type": "existing-kubeadm",
-              "notebook": "%bdc-2019-existing-kubeadm-notebook%"
+              "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-kubeadm.ipynb"
             },
             "requiredTools": [
               {
@@ -292,7 +292,7 @@
                 "version": "1.13.0"
               },
               {
-                "name": "azdata",
+                "name": "azdata-old",
                 "version": "20.0.0"
               }
             ],
@@ -301,7 +301,7 @@
           {
             "bdcWizard": {
               "type": "existing-aro",
-              "notebook": "%bdc-2019-existing-aro-notebook%"
+              "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-aro.ipynb"
             },
             "requiredTools": [
               {
@@ -309,7 +309,7 @@
                 "version": "1.13.0"
               },
               {
-                "name": "azdata",
+                "name": "azdata-old",
                 "version": "20.0.0"
               }
             ],
@@ -318,7 +318,7 @@
           {
             "bdcWizard": {
               "type": "existing-openshift",
-              "notebook": "%bdc-2019-existing-openshift-notebook%"
+              "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-openshift.ipynb"
             },
             "requiredTools": [
               {
@@ -326,7 +326,7 @@
                 "version": "1.13.0"
               },
               {
-                "name": "azdata",
+                "name": "azdata-old",
                 "version": "20.0.0"
               }
             ],
@@ -391,24 +391,131 @@
             "when": "version=sql2019"
           }
         ]
+      },
+      {
+        "name": "sql-azure-setup",
+        "displayName": "%azure-sqldb-display-name%",
+        "description": "%azure-sqldb-description%",
+        "platforms": "*",
+        "icon": {
+          "light": "./images/azure-sql-db.svg",
+          "dark": "./images/azure-sql-db.svg"
+        },
+        "okButtonText": "%azure-sqldb-ok-button-text%",
+        "options": [
+          {
+            "name": "resource-type",
+            "displayName": "%resource-type-display-name%",
+            "values": [
+              {
+                "name": "single-database",
+                "displayName": "%sql-azure-single-database-display-name%"
+              },
+              {
+                "name": "elastic-pool",
+                "displayName": "%sql-azure-elastic-pool-display-name%"
+              },
+              {
+                "name": "database-server",
+                "displayName": "%sql-azure-database-server-display-name%"
+              }
+            ]
+          }
+        ],
+        "providers": [
+          {
+            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLDatabase",
+            "requiredTools": [],
+            "when": "resource-type=single-database"
+          },
+          {
+            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLElasticDatabasePool",
+            "requiredTools": [],
+            "when": "resource-type=elastic-pool"
+          },
+          {
+            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLServer",
+            "requiredTools": [],
+            "when": "resource-type=database-server"
+          }
+        ],
+        "agreement": {
+          "template": "%azure-sqldb-agreement%",
+          "links": [
+            {
+              "text": "%microsoft-privacy-statement%",
+              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+            },
+            {
+              "text": "%azure-sqldb-agreement-sqldb-eula%",
+              "url": "https://azure.microsoft.com/support/legal/"
+            },
+            {
+              "text": "%azure-sqldb-agreement-azdata-eula%",
+              "url": "https://aka.ms/eula-azdata-en"
+            }
+          ]
+        }
+      },
+      {
+        "name": "azure-sql-vm",
+        "displayName": "%azure-sqlvm-display-name%",
+        "description": "%azure-sqlvm-description%",
+        "platforms": "*",
+        "icon": {
+          "light": "./images/azure-sql-vm.svg",
+          "dark": "./images/azure-sql-vm.svg"
+        },
+        "providers": [
+          {
+            "azureSQLVMWizard":{
+              "notebook": "./notebooks/azurevm/create-sqlvm.ipynb"
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli"
+              }
+            ],
+            "when": true
+          }
+        ],
+        "agreement": {
+          "template": "%azure-sqlvm-agreement%",
+          "links": [
+            {
+              "text": "%microsoft-privacy-statement%",
+              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+            },
+            {
+              "text": "%azure-sqlvm-agreement-sqlvm-eula%",
+              "url": "https://azure.microsoft.com/support/legal/"
+            },
+            {
+              "text": "%azure-sqlvm-agreement-azdata-eula%",
+              "url": "https://aka.ms/eula-azdata-en"
+            }
+          ]
+        }
       }
     ]
   },
   "dependencies": {
     "linux-release-info": "^2.0.0",
     "promisify-child-process": "^3.1.1",
+    "semver": "^7.3.2",
     "sudo-prompt": "9.1.1",
     "vscode-nls": "^4.0.0",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
+    "@types/semver": "^7.3.1",
     "@types/yamljs": "0.2.30",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
+    "should": "^13.2.3",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.1.0",
-    "should": "^13.2.3"
+    "vscodetestcover": "^1.1.0"
   }
 }

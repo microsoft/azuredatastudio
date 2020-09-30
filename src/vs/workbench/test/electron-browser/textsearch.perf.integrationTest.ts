@@ -141,7 +141,7 @@ suite.skip('TextSearch performance (integration)', () => {
 					let i = n;
 					return (function iterate(): Promise<undefined> | undefined {
 						if (!i--) {
-							return undefined;
+							return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 						}
 
 						return runSearch()

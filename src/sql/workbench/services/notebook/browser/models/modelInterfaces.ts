@@ -238,6 +238,10 @@ export interface INotebookModel {
 	 */
 	readonly sessionLoadFinished: Promise<void>;
 	/**
+	 * Promise indicating when output grid data is converted to mimeType and html.
+	 */
+	gridDataConversionComplete: Promise<any>;
+	/**
 	 * LanguageInfo saved in the notebook
 	 */
 	readonly languageInfo: nb.ILanguageInfo;
@@ -478,8 +482,15 @@ export interface ICellModel {
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
 	showPreview: boolean;
-	readonly onCellPreviewChanged: Event<boolean>;
+	showMarkdown: boolean;
+	defaultToWYSIWYG: boolean;
+	readonly onCellPreviewModeChanged: Event<boolean>;
+	readonly onCellMarkdownModeChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;
+	cellSourceChanged: boolean;
+	gridDataConversionComplete: Promise<void>;
+	addGridDataConversionPromise(complete: Promise<void>): void;
+	updateOutputData(batchId: number, id: number, data: any): void;
 }
 
 export interface IModelFactory {

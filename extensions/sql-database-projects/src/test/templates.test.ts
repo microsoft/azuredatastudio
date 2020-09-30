@@ -23,7 +23,7 @@ describe('Templates: loading templates from disk', function (): void {
 
 		// check expected counts
 
-		const numScriptObjectTypes = 4;
+		const numScriptObjectTypes = 6;
 
 		should(templates.projectScriptTypes().length).equal(numScriptObjectTypes);
 		should(Object.keys(templates.projectScriptTypes()).length).equal(numScriptObjectTypes);

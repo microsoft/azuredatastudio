@@ -19,7 +19,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 	public static readonly ID = 'workbench.editorInput.untitledQueryInput';
 
 	constructor(
-		description: string,
+		description: string | undefined,
 		text: UntitledTextEditorInput,
 		results: QueryResultsInput,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,

@@ -3,10 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ResourceType } from 'arc';
 import * as vscode from 'vscode';
-import { ResourceType } from '../../constants';
-import { PostgresModel } from '../../models/postgresModel';
 import { ControllerModel } from '../../models/controllerModel';
+import { PostgresModel } from '../../models/postgresModel';
 import { PostgresDashboard } from '../dashboards/postgres/postgresDashboard';
 import { ResourceTreeNode } from './resourceTreeNode';
 
@@ -16,7 +16,7 @@ import { ResourceTreeNode } from './resourceTreeNode';
 export class PostgresTreeNode extends ResourceTreeNode {
 
 	constructor(private _model: PostgresModel, private _controllerModel: ControllerModel, private _context: vscode.ExtensionContext) {
-		super(_model.name, vscode.TreeItemCollapsibleState.None, ResourceType.postgresInstances, _model);
+		super(_model.info.name, vscode.TreeItemCollapsibleState.None, ResourceType.postgresInstances, _model);
 	}
 
 	public async openDashboard(): Promise<void> {

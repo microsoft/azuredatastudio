@@ -4,27 +4,24 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as DOM from 'vs/base/browser/dom';
-import { EditorOptions } from 'vs/workbench/common/editor';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { QueryPlanInput } from 'sql/workbench/contrib/queryPlan/common/queryPlanInput';
-import { QueryPlanModule } from 'sql/workbench/contrib/queryPlan/browser/queryPlan.module';
-import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
-import { IQueryPlanParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
-import { QUERYPLAN_SELECTOR } from 'sql/workbench/contrib/queryPlan/browser/queryPlan.component';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { QueryPlanView } from 'sql/workbench/contrib/queryPlan/browser/queryPlan';
 
-export class QueryPlanEditor extends BaseEditor {
+export class QueryPlanEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.queryplan';
+
+	private view = this._register(new QueryPlanView());
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
-		@IInstantiationService private instantiationService: IInstantiationService,
 		@IStorageService storageService: IStorageService
 	) {
 		super(QueryPlanEditor.ID, telemetryService, themeService, storageService);
@@ -45,12 +42,14 @@ export class QueryPlanEditor extends BaseEditor {
 		//(plus it's probable that we won't be using this control in the future anyways if development)
 		//continues on the Query plan feature
 		parent.style.background = '#fff';
+		this.view.render(parent);
 	}
 
 	/**
 	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
 	 */
 	public focus(): void {
+		this.view.focus();
 	}
 
 	/**
@@ -58,56 +57,18 @@ export class QueryPlanEditor extends BaseEditor {
 	 * To be called when the container of this editor changes size.
 	 */
 	public layout(dimension: DOM.Dimension): void {
+		this.view.layout(dimension);
 	}
 
-	public async setInput(input: QueryPlanInput, options: EditorOptions): Promise<void> {
+	public async setInput(input: QueryPlanInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
 		if (this.input instanceof QueryPlanInput && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}
 		await input.resolve();
-		if (!input.hasInitialized) {
-			this.bootstrapAngular(input);
-		}
-		this.revealElementWithTagName(input.uniqueSelector, this.getContainer());
 
-		return super.setInput(input, options, CancellationToken.None);
-	}
+		await super.setInput(input, options, context, CancellationToken.None);
 
-	/**
-	 * Reveal the child element with the given tagName and hide all other elements.
-	 */
-	private revealElementWithTagName(tagName: string, parent: HTMLElement): void {
-		let elementToReveal: HTMLElement;
-
-		for (let i = 0; i < parent.children.length; i++) {
-			let child: HTMLElement = <HTMLElement>parent.children[i];
-			if (child.tagName && child.tagName.toLowerCase() === tagName && !elementToReveal) {
-				elementToReveal = child;
-			} else {
-				child.style.display = 'none';
-			}
-		}
-
-		if (elementToReveal) {
-			elementToReveal.style.display = '';
-		}
-	}
-
-	/**
-	 * Load the angular components and record for this input that we have done so
-	 */
-	private bootstrapAngular(input: QueryPlanInput): void {
-		// Get the bootstrap params and perform the bootstrap
-		let params: IQueryPlanParams = {
-			planXml: input.planXml
-		};
-
-		let uniqueSelector = this.instantiationService.invokeFunction(bootstrapAngular,
-			QueryPlanModule,
-			this.getContainer(),
-			QUERYPLAN_SELECTOR,
-			params);
-		input.setUniqueSelector(uniqueSelector);
+		this.view.showPlan(input.planXml!);
 	}
 
 	public dispose(): void {

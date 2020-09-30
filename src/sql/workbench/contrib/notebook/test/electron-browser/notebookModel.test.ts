@@ -6,6 +6,7 @@
 import * as TypeMoq from 'typemoq';
 import { nb } from 'azdata';
 import * as assert from 'assert';
+import * as sinon from 'sinon';
 
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
@@ -485,6 +486,59 @@ suite('notebook model', function (): void {
 		assert(output.metadata['custom-object']['prop2'] === 'value2', 'Custom metadata for object was not preserved');
 	});
 
+	test('Should get Kusto connection and set kernelAlias', async function () {
+		let model = await loadModelAndStartClientSession();
+
+		// Ensure notebook prefix is present in the connection URI
+		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
+		await changeContextWithConnectionProfile(model);
+
+		//Check to see if Kusto is added to kernelAliases
+		assert(!isUndefinedOrNull(model.kernelAliases));
+		let expectedAlias = ['Kusto'];
+		let kernelAliases = model.kernelAliases;
+
+		assert.equal(kernelAliases.length, 1);
+		assert(kernelAliases.includes(expectedAlias[0]));
+
+		// // After client session is started, ensure context isn't null/undefined
+		assert(!isUndefinedOrNull(model.context), 'context should exist after call to change context');
+
+		// After closing the notebook
+		await model.handleClosed();
+
+		// Ensure disconnect is called once
+		queryConnectionService.verify((c) => c.disconnect(TypeMoq.It.isAny()), TypeMoq.Times.once());
+	});
+
+	test.skip('Should change kernel to Kusto when connecting to Kusto connection', async function () {
+		let model = await loadModelAndStartClientSession();
+
+		// Ensure notebook prefix is present in the connection URI
+		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
+		await changeContextWithConnectionProfile(model);
+
+		// // After client session is started, ensure context isn't null/undefined
+		assert(!isUndefinedOrNull(model.context), 'context should exist after call to change context');
+
+		let doChangeKernelStub = sinon.spy(model, 'doChangeKernel').withArgs(model.kernelAliases[0]);
+
+		//Change to kusto kernel
+		//TODO issue with Test not setting serverCapabilities of context
+		await model.changeKernel(model.kernelAliases[0]);
+		let notebookKernelAlias = capabilitiesService.instance.providers.KUSTO.connection.notebookKernelAlias;
+		assert.equal(model.selectedKernelDisplayName, model.kernelAliases[0]);
+		assert.equal(model.currentKernelAlias, notebookKernelAlias);
+		sinon.assert.called(doChangeKernelStub);
+		sinon.restore(doChangeKernelStub);
+
+		// After closing the notebook
+		await model.handleClosed();
+
+		// Ensure disconnect is called once
+		queryConnectionService.verify((c) => c.disconnect(TypeMoq.It.isAny()), TypeMoq.Times.once());
+	});
+
 	async function loadModelAndStartClientSession(): Promise<NotebookModel> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
@@ -505,7 +559,8 @@ suite('notebook model', function (): void {
 		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
 			factory: mockModelFactory.object
 		});
-		let model = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService());
+		let capabilitiesService = new TestCapabilitiesService;
+		let model = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService(), capabilitiesService);
 		model.onClientSessionReady((session) => actualSession = session);
 		await model.requestModelLoad();
 
@@ -534,7 +589,7 @@ suite('notebook model', function (): void {
 			userName: 'testUsername',
 			groupId: undefined,
 			providerName: mssqlProviderName,
-			options: {},
+			options: { serverCapabilities: capabilitiesService.instance.providers.KUSTO.connection },
 			saveProfile: true,
 			id: 'testID'
 		});

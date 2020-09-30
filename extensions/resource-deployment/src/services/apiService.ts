@@ -3,28 +3,22 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as arc from 'arc';
+import * as azdataExt from 'azdata-ext';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 
 export interface IApiService {
-	getAzurecoreApi(): Promise<azurecore.IExtension>;
+	readonly azurecoreApi: azurecore.IExtension;
+	readonly azdataApi: azdataExt.IExtension;
+	readonly arcApi: arc.IExtension;
 }
 
 class ApiService implements IApiService {
-
-	private azurecoreApi: azurecore.IExtension | undefined;
-
 	constructor() { }
-
-	public async getAzurecoreApi(): Promise<azurecore.IExtension> {
-		if (!this.azurecoreApi) {
-			this.azurecoreApi = <azurecore.IExtension>(await vscode.extensions.getExtension(azurecore.extension.name)?.activate());
-			if (!this.azurecoreApi) {
-				throw new Error('Unable to retrieve azurecore API');
-			}
-		}
-		return this.azurecoreApi;
-	}
+	public get azurecoreApi() { return vscode.extensions.getExtension(azurecore.extension.name)?.exports; }
+	public get azdataApi() { return vscode.extensions.getExtension(azdataExt.extension.name)?.exports; }
+	public get arcApi() { return vscode.extensions.getExtension(arc.extension.name)?.exports; }
 }
 
 export const apiService: IApiService = new ApiService();

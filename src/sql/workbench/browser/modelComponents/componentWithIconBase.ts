@@ -16,7 +16,7 @@ export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }
 }
 
-export abstract class ComponentWithIconBase extends ComponentBase {
+export abstract class ComponentWithIconBase<T extends azdata.ComponentWithIconProperties> extends ComponentBase<T> {
 
 	protected _iconClass: string;
 	protected _iconPath: IUserFriendlyIcon;
@@ -49,23 +49,23 @@ export abstract class ComponentWithIconBase extends ComponentBase {
 	}
 
 	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
-		return this.getPropertyOrDefault<azdata.ComponentWithIconProperties, IUserFriendlyIcon>((props) => props.iconPath, undefined);
+		return this.getPropertyOrDefault<IUserFriendlyIcon>((props) => props.iconPath, undefined);
 	}
 
 	public get iconHeight(): number | string {
-		return this.getPropertyOrDefault<azdata.ComponentWithIconProperties, number | string>((props) => props.iconHeight, '50px');
+		return this.getPropertyOrDefault<number | string>((props) => props.iconHeight, '50px');
 	}
 
 	public get iconWidth(): number | string {
-		return this.getPropertyOrDefault<azdata.ComponentWithIconProperties, number | string>((props) => props.iconWidth, '50px');
+		return this.getPropertyOrDefault<number | string>((props) => props.iconWidth, '50px');
 	}
 
 	public get title(): string {
-		return this.getPropertyOrDefault<azdata.ComponentWithIconProperties, string>((props) => props.title, '');
+		return this.getPropertyOrDefault<string>((props) => props.title, '');
 	}
 
 	public set title(newTitle: string) {
-		this.setPropertyFromUI<azdata.ComponentWithIconProperties, string>((properties, title) => { properties.title = title; }, newTitle);
+		this.setPropertyFromUI<string>((properties, title) => { properties.title = title; }, newTitle);
 	}
 
 	ngOnDestroy(): void {
