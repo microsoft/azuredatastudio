@@ -27,7 +27,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _resourceTagsListView!: azdata.ListViewComponent;
 	private _resourceSearchBox!: azdata.InputBoxComponent;
 	private _cardGroup!: azdata.RadioCardGroupComponent;
-	private _resourceContainer!: azdata.FlexContainer;
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 	private _toolsLoadingComponent!: azdata.LoadingComponent;
 	private _agreementContainer!: azdata.DivContainer;
@@ -37,7 +36,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _tools: ITool[] = [];
 	private _eulaValidationSucceeded: boolean = false;
 	// array to store listners that are specific to the selected resource. To be cleared after change in selected resource.
-	private _resourceListeners: vscode.Disposable[] = [];
+	private _currentResourceTypeDisposables: vscode.Disposable[] = [];
 	private _cardsCache: Map<string, azdata.RadioCard> = new Map();
 
 	constructor(
@@ -74,7 +73,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			return true;
 		});
 		tab.registerContent((view: azdata.ModelView) => {
-			const tableWidth = 1000;
+			const tableWidth = 1126;
 			this._view = view;
 			this._resourceTypes = this.resourceTypeService
 				.getResourceTypes()
@@ -144,12 +143,13 @@ export class ResourceTypePickerDialog extends DialogBase {
 			}).component();
 
 			const resourceComponents: azdata.Component[] = [];
-			if (this.getAllResourceTags(this._resourceTypes).length !== 0) {
-				this._resourceTagsListView = this.createResouceButtonsContainer();
+			if (this.getAllResourceTags().length !== 0) {
+				this._resourceTagsListView = this.createTagsListView();
 				resourceComponents.push(this._resourceTagsListView);
 			}
 			this._resourceSearchBox = view.modelBuilder.inputBox().withProperties({
-				placeHolder: localize('deploymentDialog.resourceSearchPlaceholder', "Filter resources...")
+				placeHolder: localize('deploymentDialog.resourceSearchPlaceholder', "Filter resources..."),
+				ariaLabel: localize('deploymentDialog.resourceSearchAriaLabel', "Filter resources")
 			}).component();
 			this._toDispose.push(this._resourceSearchBox.onTextChanged((value: string) => {
 				this.filterResources();
@@ -164,12 +164,11 @@ export class ResourceTypePickerDialog extends DialogBase {
 				flexFlow: 'column'
 			}).withItems([searchContainer, this._cardGroup]).component();
 			resourceComponents.push(cardsContainer);
-			this._resourceContainer = this._view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).withItems(resourceComponents).component();
 
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
-						component: this._resourceContainer,
+						component: this._view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).withItems(resourceComponents).component(),
 						title: ''
 					}, {
 						component: this._agreementContainer,
@@ -200,9 +199,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._dialogObject.content = [tab];
 	}
 
-	private createResouceButtonsContainer(): azdata.ListViewComponent {
+	private createTagsListView(): azdata.ListViewComponent {
 
-		const tags = this.getAllResourceTags(this._resourceTypes);
+		const tags = this.getAllResourceTags();
 		if (!tags.includes('All')) {
 			tags.splice(0, 0, 'All');
 		}
@@ -218,7 +217,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 				text: localize('deploymentDialog.tagsListViewTitle', 'Categories')
 			},
 			CSSStyles: {
-				'width': '140px'
+				'width': '140px',
+				'margin-top': '35px'
 			},
 			options: items,
 			selectedOptionId: items[0].id
@@ -285,7 +285,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private selectResourceType(resourceType: ResourceType): void {
-		this._resourceListeners.forEach(disposable => disposable.dispose());
+		this._currentResourceTypeDisposables.forEach(disposable => disposable.dispose());
 		this._selectedResourceType = resourceType;
 		//handle special case when resource type has different OK button.
 		this._dialogObject.okButton.label = this._selectedResourceType.okButtonText || select;
@@ -312,7 +312,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 					ariaLabel: option.displayName
 				}).component();
 
-				this._resourceListeners.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
+				this._currentResourceTypeDisposables.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
 				this._optionDropDownMap.set(option.name, optionSelectBox);
 				const row = this._view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 				this._optionsContainer.addItem(row);
@@ -364,7 +364,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._toolsTable.data = this.toolRequirements.map(toolRequirement => {
 			const tool = this.toolsService.getToolByName(toolRequirement.name)!;
 			// subscribe to onUpdateData event of the tool.
-			this._resourceListeners.push(tool.onDidUpdateData((t: ITool) => {
+			this._currentResourceTypeDisposables.push(tool.onDidUpdateData((t: ITool) => {
 				this.updateToolsDisplayTableData(t);
 			}));
 
@@ -463,7 +463,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			required: true
 		}).component();
 		checkbox.checked = false;
-		this._resourceListeners.push(checkbox.onChanged(() => {
+		this._currentResourceTypeDisposables.push(checkbox.onChanged(() => {
 			this._agreementCheckboxChecked = !!checkbox.checked;
 		}));
 		const text = this._view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -579,10 +579,10 @@ export class ResourceTypePickerDialog extends DialogBase {
 		}
 	}
 
-	private getAllResourceTags(resourceTypes: ResourceType[]): string[] {
+	private getAllResourceTags(): string[] {
 		const supportedTags = ['All', 'On-premises', 'SQL Server', 'Hybrid', 'PostgreSQL', 'Cloud'];
 		const tagSet: Set<string> = new Set<string>();
-		resourceTypes.forEach((resouceType) => {
+		this._resourceTypes.forEach((resouceType) => {
 			if (resouceType.tags) {
 				resouceType.tags.forEach(tag => {
 					if (supportedTags.includes(tag)) {

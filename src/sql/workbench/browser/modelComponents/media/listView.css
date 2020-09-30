@@ -37,7 +37,7 @@
 }
 
 .listview-li:hover {
-	background-color: #f3f2f1;
+	background-color:rgb(243, 242, 241);
 }
 
 .vs-dark .listview-li:hover {
@@ -45,7 +45,7 @@
 }
 
 .vs .listview-li-active {
-	background-color: #edebe9;
+	background-color: rgb(237, 235, 233);
 }
 
 .vs-dark .listview-li-active {
