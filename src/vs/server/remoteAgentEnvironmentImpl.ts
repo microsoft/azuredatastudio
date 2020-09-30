@@ -10,7 +10,7 @@ import { IRemoteAgentEnvironmentDTO, IGetEnvironmentDataArguments, IScanExtensio
 import * as nls from 'vs/nls';
 import * as pfs from 'vs/base/node/pfs';
 import { Schemas } from 'vs/base/common/network';
-import { INativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
+import { INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import product from 'vs/platform/product/common/product';
 import { ExtensionScanner, ExtensionScannerInput, IExtensionResolver, IExtensionReference } from 'vs/workbench/services/extensions/node/extensionPoints';
 import { IServerChannel } from 'vs/base/parts/ipc/common/ipc';

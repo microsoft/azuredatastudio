@@ -134,7 +134,7 @@ args['extensions-dir'] = args['extensions-dir'] || join(REMOTE_DATA_FOLDER, 'ext
 	} catch (err) { console.error(err); }
 });
 
-const environmentService = new ServerEnvironmentService(args, process.execPath);
+const environmentService = new ServerEnvironmentService(args);
 const logService: ILogService = new SpdLogService(RemoteExtensionLogFileName, environmentService.logsPath, getLogLevel(environmentService));
 logService.trace(`Remote configuration data at ${REMOTE_DATA_FOLDER}`);
 logService.trace('process arguments:', args);
