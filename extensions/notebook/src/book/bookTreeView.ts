@@ -17,7 +17,7 @@ import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
 import { IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
-import { debounce, getPinnedNotebooks } from '../common/utils';
+import { debounce, getPinnedNotebooks, IPinnedBookNotebook } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 
 const content = 'content';
@@ -57,9 +57,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
 		if (this.viewId === constants.PINNED_BOOKS_VIEWID) {
-			await Promise.all(getPinnedNotebooks().map(async (notebookPath) => {
+			await Promise.all(getPinnedNotebooks().map(async (notebook) => {
 				try {
-					await this.createAndAddBookModel(notebookPath, true);
+					await this.createAndAddBookModel(notebook, true);
 				} catch {
 					// no-op, not all workspace folders are going to be valid books
 				}
@@ -90,7 +90,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	trustBook(bookTreeItem?: BookTreeItem): void {
-		let bookPathToTrust = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
+		let bookPathToTrust: string = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath as string;
 		if (bookPathToTrust) {
 			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust);
 			if (trustChanged) {
@@ -169,7 +169,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async addNotebookToPinnedView(bookItem: BookTreeItem): Promise<void> {
 		let notebookPath: string = bookItem.book.contentPath;
 		if (notebookPath) {
-			await this.createAndAddBookModel(notebookPath, true);
+			let rootPath: string = bookItem.book.root ? bookItem.book.root : '';
+			let notebook: IPinnedBookNotebook = { notebookPath: notebookPath, rootPath: rootPath };
+			await this.createAndAddBookModel(notebook, true);
 		}
 	}
 
@@ -216,7 +218,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * were able to successfully parse it.
 	 * @param bookPath The path to the book folder to create the model for
 	 */
-	private async createAndAddBookModel(bookPath: string, isNotebook: boolean): Promise<void> {
+	private async createAndAddBookModel(bookPath: string | IPinnedBookNotebook, isNotebook: boolean): Promise<void> {
 		if (!this.books.find(x => x.bookPath === bookPath)) {
 			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext);
 			await book.initializeContents();
@@ -379,7 +381,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			});
 			if (uris && uris.length > 0) {
 				let pickedFolder = uris[0];
-				let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.currentBook.bookPath)));
+				let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.currentBook.bookPath as string)));
 				if (destinationUri) {
 					if (await fs.pathExists(destinationUri.fsPath)) {
 						let doReplace = await this.confirmReplace();
@@ -393,7 +395,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					}
 					//make directory for each contribution book.
 					await fs.mkdir(destinationUri.fsPath);
-					await fs.copy(this.currentBook.bookPath, destinationUri.fsPath);
+					await fs.copy(this.currentBook.bookPath as string, destinationUri.fsPath);
 
 					//remove book from the untitled books and open it from Saved books
 					let untitledBookIndex: number = this.books.indexOf(this.currentBook);

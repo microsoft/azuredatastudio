@@ -12,6 +12,7 @@ import * as fileServices from 'fs';
 import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, JupyterBookSection, IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
+import { IPinnedBookNotebook } from '../common/utils';
 
 const fsPromises = fileServices.promises;
 const content = 'content';
@@ -32,7 +33,7 @@ export class BookModel {
 	private _errorMessage: string;
 
 	constructor(
-		public readonly bookPath: string,
+		public readonly bookPath: string | IPinnedBookNotebook,
 		public readonly openAsUntitled: boolean,
 		public readonly isNotebook: boolean,
 		private _extensionContext: vscode.ExtensionContext) {
@@ -45,7 +46,7 @@ export class BookModel {
 		if (this.isNotebook) {
 			this.readNotebook();
 		} else {
-			await this.readBookStructure(this.bookPath);
+			await this.readBookStructure(this.bookPath as string);
 			await this.loadTableOfContentFiles();
 			await this.readBooks();
 		}
@@ -102,12 +103,12 @@ export class BookModel {
 		if (!this.isNotebook) {
 			return undefined;
 		}
-
-		let pathDetails = path.parse(this.bookPath);
+		let notebook = this.bookPath as IPinnedBookNotebook;
+		let pathDetails = path.parse(notebook.notebookPath);
 		let notebookItem = new BookTreeItem({
 			title: pathDetails.name,
-			contentPath: this.bookPath,
-			root: pathDetails.dir,
+			contentPath: notebook.notebookPath,
+			root: notebook.rootPath ? notebook.rootPath : pathDetails.dir,
 			tableOfContents: { sections: undefined },
 			page: { sections: undefined },
 			type: BookTreeItemType.Notebook,
@@ -124,7 +125,7 @@ export class BookModel {
 			this._allNotebooks.set(pathDetails.base, notebookItem);
 		} else {
 			// convert to URI to avoid casing issue with drive letters when getting navigation links
-			let uriToNotebook: vscode.Uri = vscode.Uri.file(this.bookPath);
+			let uriToNotebook: vscode.Uri = vscode.Uri.file(notebook.notebookPath);
 			if (!this._allNotebooks.get(uriToNotebook.fsPath)) {
 				this._allNotebooks.set(uriToNotebook.fsPath, notebookItem);
 			}
@@ -167,7 +168,7 @@ export class BookModel {
 				);
 				this._bookItems.push(book);
 			} catch (e) {
-				this._errorMessage = loc.readBookError(this.bookPath, e instanceof Error ? e.message : e);
+				this._errorMessage = loc.readBookError(this.bookPath as string, e instanceof Error ? e.message : e);
 				vscode.window.showErrorMessage(this._errorMessage);
 			}
 		}
