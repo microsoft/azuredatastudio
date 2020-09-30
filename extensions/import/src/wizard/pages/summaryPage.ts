@@ -122,12 +122,14 @@ export class SummaryPage extends ImportPage {
 			}
 		}
 
+		// Stopping import if there are errors in change column setting.
 		if (changeColumnSettingsErrors.length !== 0) {
 			let updateText: string;
 			updateText = changeColumnSettingsErrors.join(EOL);
 			this.statusText.updateProperties({
 				value: updateText
 			});
+			return true;
 		}
 
 		let result: InsertDataResponse;
