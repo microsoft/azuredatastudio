@@ -167,3 +167,4 @@ export function errorConnectingToController(error: any): string { return localiz
 export function passwordAcquisitionFailed(error: any): string { return localize('arc.passwordAcquisitionFailed', "Failed to acquire password. {0}", getErrorMessage(error)); }
 export const invalidPassword = localize('arc.invalidPassword', "The password did not work, try again.");
 export function errorVerifyingPassword(error: any): string { return localize('arc.errorVerifyingPassword', "Error encountered while verifying password. {0}", getErrorMessage(error)); }
+export const onlyOneControllerSupported = localize('arc.onlyOneControllerSupported', "Only one controller connection is currently supported at this time. Do you wish to remove the existing connection and add a new one?");
