@@ -274,11 +274,21 @@ describe('Jupyter Server Installation', function () {
 			existingPython: true,
 			packages: installation.getRequiredPackagesForKernel(python3DisplayName)
 		};
+
 		sinon.stub(utils, 'exists')
-			.onFirstCall().resolves(true)
-			.onSecondCall().resolves(true);
-		sinon.stub(utils, 'executeBufferedCommand').onFirstCall().resolves(`${installSettings.installPath}\\site-packages`);
-		sinon.stub(fs, 'existsSync').onFirstCall().returns(false);
+			.onFirstCall().resolves(true) // First call is in configurePackagePaths
+			.onSecondCall().resolves(true) // Second call is in installDependencies
+			.onThirdCall().rejects(new Error('Unexpected call to utils.exists.'));
+
+		sinon.stub(utils, 'executeBufferedCommand')
+			.onFirstCall().resolves(`${installSettings.installPath}\\site-packages`) // Called from getPythonUserDir, which gets called in configurePackagePaths
+			.onSecondCall().rejects(new Error('Unexpected call to utils.executeBufferedCommand.'));
+
+		sinon.stub(fs, 'existsSync')
+			.onFirstCall().returns(false) // Called from isCondaInstalled, which gets called in configurePackagePaths
+			.onSecondCall().rejects(new Error('Unexpected call to fs.existsSync.'));
+
+		// Both of these are called from upgradePythonPackages
 		sinon.stub(installation, 'getInstalledPipPackages').resolves([]);
 		let pipInstallStub = sinon.stub(installation, 'installPipPackages').resolves();
 
