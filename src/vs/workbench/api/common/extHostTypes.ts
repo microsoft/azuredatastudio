@@ -19,7 +19,7 @@ import { addIdToOutput, CellEditType, ICellEditOperation } from 'vs/workbench/co
 import type * as vscode from 'vscode';
 
 function es5ClassCompat(target: Function): any {
-	///@ts-expect-error
+	// @ts-ignore - {{SQL CARBON EDIT}}
 	function _() { return Reflect.construct(target, arguments, this.constructor); }
 	Object.defineProperty(_, 'name', Object.getOwnPropertyDescriptor(target, 'name')!);
 	Object.setPrototypeOf(_, target);
