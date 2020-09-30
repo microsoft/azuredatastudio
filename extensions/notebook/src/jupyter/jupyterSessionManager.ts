@@ -305,6 +305,8 @@ export class JupyterSession implements nb.ISession {
 						connectionProfile.options[USER] = await controller.getKnoxUsername(connectionProfile.userName);
 					} catch (err) {
 						console.log(`Unexpected error getting Knox username for Spark kernel: ${err}`);
+						// Optimistically use the SQL login name - that's going to normally be the case after CU5
+						connectionProfile.options[USER] = connectionProfile.userName;
 					}
 				}
 			}
