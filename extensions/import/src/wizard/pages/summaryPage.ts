@@ -107,7 +107,6 @@ export class SummaryPage extends ImportPage {
 
 	private async handleImport(): Promise<boolean> {
 		let i = 0;
-
 		const changeColumnSettingsErrors = [];
 		for (let val of this.model.proseColumns) {
 			let columnChangeParams = {
