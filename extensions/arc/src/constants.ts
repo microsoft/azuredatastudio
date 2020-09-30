@@ -40,6 +40,8 @@ export class IconPathHelper {
 	public static controller: IconPath;
 	public static health: IconPath;
 	public static success: IconPath;
+	public static save: IconPath;
+	public static discard: IconPath;
 	public static fail: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
@@ -115,6 +117,14 @@ export class IconPathHelper {
 		IconPathHelper.success = {
 			light: context.asAbsolutePath('images/success.svg'),
 			dark: context.asAbsolutePath('images/success.svg'),
+		};
+		IconPathHelper.save = {
+			light: context.asAbsolutePath('images/save.svg'),
+			dark: context.asAbsolutePath('images/save.svg'),
+		};
+		IconPathHelper.discard = {
+			light: context.asAbsolutePath('images/discard.svg'),
+			dark: context.asAbsolutePath('images/discard.svg'),
 		};
 		IconPathHelper.fail = {
 			light: context.asAbsolutePath('images/fail.svg'),

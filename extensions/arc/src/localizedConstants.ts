@@ -32,6 +32,8 @@ export const resourceHealth = localize('arc.resourceHealth', "Resource health");
 
 export const newInstance = localize('arc.createNew', "New Instance");
 export const deleteText = localize('arc.delete', "Delete");
+export const saveText = localize('arc.save', "Save");
+export const discardText = localize('arc.discard', "Discard");
 export const resetPassword = localize('arc.resetPassword', "Reset Password");
 export const openInAzurePortal = localize('arc.openInAzurePortal', "Open in Azure Portal");
 export const resourceGroup = localize('arc.resourceGroup', "Resource Group");
@@ -59,6 +61,9 @@ export const yes = localize('arc.yes', "Yes");
 export const no = localize('arc.no', "No");
 export const feedback = localize('arc.feedback', "Feedback");
 export const selectConnectionString = localize('arc.selectConnectionString', "Select from available client connection strings below.");
+export const computeAndStorageDescription = localize('arc.computeAndStorageDescription', "You can scale your Azure Arc enabled PostgreSQL Hyperscale server group by adding nodes to it without cluster downtime and by scaling compute cores on coordinator and worker nodes.");
+export const workerNodesDescription = localize('arc.workerNodesDescription', "Expand your server group and scale your database by adding worker nodes. Select up to 64 vCores with 8 GiB RAM per vCore.");
+export const coordinatorNodeDescription = localize('arc.coordinatorNodeDescription', "Custom coordinator node configuration is not available at this time. Your coordinator node configuration will mirror the worker node configuration selected above.");
 export const vCores = localize('arc.vCores', "vCores");
 export const ram = localize('arc.ram', "RAM");
 export const refresh = localize('arc.refresh', "Refresh");
@@ -114,9 +119,22 @@ export const databaseName = localize('arc.databaseName', "Database name");
 export const enterNewPassword = localize('arc.enterNewPassword', "Enter a new password");
 export const confirmNewPassword = localize('arc.confirmNewPassword', "Confirm the new password");
 export const learnAboutPostgresClients = localize('arc.learnAboutPostgresClients', "Learn more about Azure PostgreSQL Hyperscale client interfaces");
+export const learnAboutComputeStorageSettings = localize('arc.learnAboutComputeStorageSettings', "Learn more.");
 export const node = localize('arc.node', "node");
 export const nodes = localize('arc.nodes', "nodes");
+export const workerNodes = localize('arc.workerNodes', "Worker Nodes");
+export const coordinatorNode = localize('coordinatorNode', "Coordinator Node");
 export const storagePerNode = localize('arc.storagePerNode', "storage per node");
+export const workerNodeCount = localize('arc.workerNodeCount', "Worker node count:");
+export const configurationPerNode = localize('arc.configurationPerNode', "Configuration (per node):");
+export const vCoresMax = localize('arc.vCoresMax', "vCores - max (in GiB):");
+export const vCoresMin = localize('arc.vCoresMin', "vCores - min (in GiB):");
+export const memoryMax = localize('arc.memoryMax', "Memory - max (in GiB):");
+export const memoryMin = localize('arc.memoryMin', "Memory - min (in GiB):");
+export const dataStorage = localize('arc.dataStorage', "Storage Data Size (in GiB):");
+export const logsStorage = localize('arc.logsStorage', "Storage Logs Size (in GiB):");
+export const backupsStorage = localize('arc.backupsStorage', "Storage Backups Size (in GiB):");
+export const enableAdvancedConfiguration = localize('arc.enableAdvancedConfiguration', "Enable advanced configuration");
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
 export const enterANonEmptyPassword = localize('arc.enterANonEmptyPassword', "Enter a non empty password or press escape to exit.");
 export const thePasswordsDoNotMatch = localize('arc.thePasswordsDoNotMatch', "The passwords do not match. Confirm the password or press escape to exit.");
@@ -130,7 +148,9 @@ export const podsReady = localize('arc.podsReady', "pods ready");
 
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
 export function deletingInstance(name: string): string { return localize('arc.deletingInstance', "Deleting instance '{0}'...", name); }
+export function updatingInstance(name: string): string { return localize('arc.updatingInstance', "Updating instance '{0}'...", name); }
 export function instanceDeleted(name: string): string { return localize('arc.instanceDeleted', "Instance '{0}' deleted", name); }
+export function instanceUpdated(name: string): string { return localize('arc.instanceUpdated', "Instance '{0}' updated", name); }
 export function copiedToClipboard(name: string): string { return localize('arc.copiedToClipboard', "{0} copied to clipboard", name); }
 export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }
 export function numVCores(vCores: string | undefined): string {
@@ -152,6 +172,7 @@ export const couldNotFindControllerRegistration = localize('arc.couldNotFindCont
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
 export function openDashboardFailed(error: any): string { return localize('arc.openDashboardFailed', "Error opening dashboard. {0}", getErrorMessage(error)); }
 export function instanceDeletionFailed(name: string, error: any): string { return localize('arc.instanceDeletionFailed', "Failed to delete instance {0}. {1}", name, getErrorMessage(error)); }
+export function instanceUpdateFailed(name: string, error: any): string { return localize('arc.instanceUpdateFailed', "Failed to update instance {0}. {1}", name, getErrorMessage(error)); }
 export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database {0}. {1}", name, getErrorMessage(error)); }
 export function connectToControllerFailed(url: string, error: any): string { return localize('arc.connectToControllerFailed', "Could not connect to controller {0}. {1}", url, getErrorMessage(error)); }
 export function connectToSqlFailed(serverName: string, error: any): string { return localize('arc.connectToSqlFailed', "Could not connect to SQL managed instance - Azure Arc Instance {0}. {1}", serverName, getErrorMessage(error)); }
