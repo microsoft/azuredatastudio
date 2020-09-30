@@ -105,7 +105,7 @@ export class SummaryPage extends ImportPage {
 		});
 	}
 
-	private async handleImport(): Promise<boolean> {
+	private async handleImport(): Promise<void> {
 		let i = 0;
 		const changeColumnSettingsErrors = [];
 		for (let val of this.model.proseColumns) {
@@ -117,7 +117,7 @@ export class SummaryPage extends ImportPage {
 				newInPrimaryKey: val.primaryKey
 			};
 			const changeColumnResult = await this.provider.sendChangeColumnSettingsRequest(columnChangeParams);
-			if (changeColumnResult.result.errorMessage) {
+			if (changeColumnResult?.result?.errorMessage) {
 				changeColumnSettingsErrors.push(changeColumnResult.result.errorMessage);
 			}
 		}
@@ -129,12 +129,12 @@ export class SummaryPage extends ImportPage {
 			this.statusText.updateProperties({
 				value: updateText
 			});
-			return true;
+			return;
 		}
 
 		let result: InsertDataResponse;
 		let err;
-		let includePasswordInConnectionString = (this.model.server.options.connectionId === 'Integrated') ? false : true;
+		let includePasswordInConnectionString = (this.model.server.options.authenticationType === 'Integrated') ? false : true;
 
 		try {
 			result = await this.provider.sendInsertDataRequest({
@@ -166,7 +166,7 @@ export class SummaryPage extends ImportPage {
 		this.statusText.updateProperties({
 			value: updateText
 		});
-		return true;
+		return;
 	}
 
 	// private async getCountRowsInserted(): Promise<Number> {
