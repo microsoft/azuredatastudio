@@ -96,10 +96,10 @@ export class ModifyColumnsPage extends ImportPage {
 			this.model.proseColumns = [];
 			this.table.data.forEach((row) => {
 				this.model.proseColumns.push({
-					columnName: row[0],
-					dataType: row[1],
-					primaryKey: row[2],
-					nullable: row[3]
+					columnName: row[0].value,
+					dataType: row[1].value,
+					primaryKey: row[2].value,
+					nullable: row[3].value
 				});
 			});
 		});

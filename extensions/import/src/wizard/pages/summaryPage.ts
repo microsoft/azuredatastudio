@@ -8,6 +8,7 @@ import * as azdata from 'azdata';
 import { ImportPage } from '../api/importPage';
 import { InsertDataResponse } from '../../services/contracts';
 import * as constants from '../../common/constants';
+import { EOL } from 'os';
 
 export class SummaryPage extends ImportPage {
 	private _table: azdata.TableComponent;
@@ -93,7 +94,7 @@ export class SummaryPage extends ImportPage {
 	private populateTable() {
 		this.table.updateProperties({
 			data: [
-				[constants.serverNameText, this.model.server.providerName],
+				[constants.serverNameText, this.model.server.options.server],
 				[constants.databaseText, this.model.database],
 				[constants.tableNameText, this.model.table],
 				[constants.tableSchemaText, this.model.schema],
@@ -105,9 +106,9 @@ export class SummaryPage extends ImportPage {
 	}
 
 	private async handleImport(): Promise<boolean> {
-		let changeColumnResults = [];
 		let i = 0;
 
+		const changeColumnSettingsErrors = [];
 		for (let val of this.model.proseColumns) {
 			let columnChangeParams = {
 				index: i++,
@@ -117,7 +118,17 @@ export class SummaryPage extends ImportPage {
 				newInPrimaryKey: val.primaryKey
 			};
 			const changeColumnResult = await this.provider.sendChangeColumnSettingsRequest(columnChangeParams);
-			changeColumnResults.push(changeColumnResult);
+			if (changeColumnResult.result.errorMessage) {
+				changeColumnSettingsErrors.push(changeColumnResult.result.errorMessage);
+			}
+		}
+
+		if (changeColumnSettingsErrors.length !== 0) {
+			let updateText: string;
+			updateText = changeColumnSettingsErrors.join(EOL);
+			this.statusText.updateProperties({
+				value: updateText
+			});
 		}
 
 		let result: InsertDataResponse;
