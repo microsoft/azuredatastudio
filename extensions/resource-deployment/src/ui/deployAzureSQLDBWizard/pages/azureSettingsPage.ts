@@ -36,7 +36,7 @@ export class AzureSettingsPage extends BasePage {
 	// private _azureRegionsDropdown!: azdata.DropDownComponent;
 
 	//dropdown for Supported Server Versions <- server dropdown.
-	private _dbSupportedServersDropdown!: azdata.DropDownComponent;
+	private _dbManagedInstanceDropdown!: azdata.DropDownComponent;
 
 	//dropdown for Supported Managed Instance Editions <- server dropdown.
 	private _dbSupportedEditionsDropdown!: azdata.DropDownComponent;
@@ -64,7 +64,7 @@ export class AzureSettingsPage extends BasePage {
 				//this.createResourceDropdown(view), //@todo alma1 9/8/2020 used for upcoming server creation feature.
 				this.createServerDropdown(view),
 				//this.createAzureRegionsDropdown(view) //@todo alma1 9/8/2020 used for upcoming server creation feature.
-				this.createSupportedServersDropdown(view),
+				this.createManagedInstanceDropdown(view),
 				this.createSupportedEditionsDropdown(view)
 			]);
 			this.populateAzureAccountsDropdown();
@@ -91,7 +91,7 @@ export class AzureSettingsPage extends BasePage {
 						// 	component: this.wizard.createFormRowComponent(view, constants.AzureAccountRegionDropdownLabel, '', this._azureRegionsDropdown, true)
 						// }
 						{
-							component: this.wizard.createFormRowComponent(view, constants.DatabaseSupportedServersDropdownLabel, '', this._dbSupportedServersDropdown, true)
+							component: this.wizard.createFormRowComponent(view, constants.DatabaseManagedInstanceDropdownLabel, '', this._dbManagedInstanceDropdown, true)
 						},
 						{
 							component: this.wizard.createFormRowComponent(view, constants.DatabaseSupportedEditionsDropdownLabel, '', this._dbSupportedEditionsDropdown, true)
@@ -273,7 +273,7 @@ export class AzureSettingsPage extends BasePage {
 				this.wizard.model.azureServerName = value.selected;
 				this.wizard.model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
 				this.wizard.model.azureRegion = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/location/'), '');
-				this.populateSupportedServersDropdown();
+				this.populateManagedInstanceDropdown();
 			}
 		});
 	}
@@ -286,7 +286,7 @@ export class AzureSettingsPage extends BasePage {
 				values: []
 			});
 			this._serverGroupDropdown.loading = false;
-			await this.populateSupportedServersDropdown();
+			await this.populateManagedInstanceDropdown();
 			return;
 		}
 		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/providers/Microsoft.Sql/servers?api-version=2019-06-01-preview`;
@@ -301,7 +301,7 @@ export class AzureSettingsPage extends BasePage {
 				],
 			});
 			this._serverGroupDropdown.loading = false;
-			await this.populateSupportedServersDropdown();
+			await this.populateManagedInstanceDropdown();
 			return;
 		} else {
 			response.data.value.sort((a: azdata.CategoryValue, b: azdata.CategoryValue) => (a!.name > b!.name) ? 1 : -1);
@@ -322,7 +322,7 @@ export class AzureSettingsPage extends BasePage {
 			this.wizard.model.azureRegion = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/location/'), '');
 		}
 		this._serverGroupDropdown.loading = false;
-		await this.populateSupportedServersDropdown();
+		await this.populateManagedInstanceDropdown();
 		return;
 	}
 
@@ -411,30 +411,30 @@ export class AzureSettingsPage extends BasePage {
 	// 	this._azureRegionsDropdown.loading = false;
 	// }
 
-	private async createSupportedServersDropdown(view: azdata.ModelView) {
-		this._dbSupportedServersDropdown = view.modelBuilder.dropDown().withProperties({
+	private async createManagedInstanceDropdown(view: azdata.ModelView) {
+		this._dbManagedInstanceDropdown = view.modelBuilder.dropDown().withProperties({
 			required: true,
 		}).component();
-		this._dbSupportedServersDropdown.onValueChanged(async (value) => {
+		this._dbManagedInstanceDropdown.onValueChanged(async (value) => {
 			console.log(value);
 		});
 	}
 
-	private async populateSupportedServersDropdown() {
-		this._dbSupportedServersDropdown.loading = true;
+	private async populateManagedInstanceDropdown() {
+		this._dbManagedInstanceDropdown.loading = true;
 		let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
 		if (!currentSubscriptionValue || currentSubscriptionValue.displayName === '') {
-			this._dbSupportedServersDropdown.updateProperties({
+			this._dbManagedInstanceDropdown.updateProperties({
 				values: []
 			});
-			this._dbSupportedServersDropdown.loading = false;
+			this._dbManagedInstanceDropdown.loading = false;
 			await this.populateSupportedEditionsDropdown();
 			return;
 		}
 		let currentServerValue = this._serverGroupDropdown.value as azdata.CategoryValue;
 
 		if (currentServerValue.name === '') {
-			this._dbSupportedServersDropdown.updateProperties({
+			this._dbManagedInstanceDropdown.updateProperties({
 				values: [
 					{
 						displayName: localize('deployAzureSQLDB.NoServerLabel', "No servers found"),
@@ -443,7 +443,7 @@ export class AzureSettingsPage extends BasePage {
 					}
 				]
 			});
-			this._dbSupportedServersDropdown.loading = false;
+			this._dbManagedInstanceDropdown.loading = false;
 			await this.populateSupportedEditionsDropdown();
 			return;
 		}
@@ -451,8 +451,8 @@ export class AzureSettingsPage extends BasePage {
 		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/providers/Microsoft.Sql/locations/${this.wizard.model.azureRegion}/capabilities?api-version=2017-10-01-preview`;
 		let response = await this.wizard.getRequest(url);
 
-		if (response.data.supportedServerVersions.length === 0) {
-			this._dbSupportedServersDropdown.updateProperties({
+		if (response.data.supportedManagedInstanceVersions.length === 0) {
+			this._dbManagedInstanceDropdown.updateProperties({
 				values: [
 					{
 						displayName: localize('deployAzureSQLDB.NoHardwareConfigLabel', "No database hardware configuration found"),
@@ -461,15 +461,15 @@ export class AzureSettingsPage extends BasePage {
 					}
 				],
 			});
-			this._dbSupportedServersDropdown.loading = false;
+			this._dbManagedInstanceDropdown.loading = false;
 			await this.populateSupportedEditionsDropdown();
 			return;
 		} else {
-			response.data.supportedServerVersions.sort((a: any, b: any) => (a!.name > b!.name) ? 1 : -1);
+			response.data.supportedManagedInstanceVersions.sort((a: any, b: any) => (a!.name > b!.name) ? 1 : -1);
 		}
 		this.wizard.addDropdownValues(
-			this._dbSupportedServersDropdown,
-			response.data.supportedServerVersions.map((value: any) => {
+			this._dbManagedInstanceDropdown,
+			response.data.supportedManagedInstanceVersions.map((value: any) => {
 				return {
 					displayName: value.name,
 					name: value.name,
@@ -482,7 +482,7 @@ export class AzureSettingsPage extends BasePage {
 		// 	this.wizard.model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
 		// 	this.wizard.model.azureRegion = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/location/'), '');
 		// }
-		this._dbSupportedServersDropdown.loading = false;
+		this._dbManagedInstanceDropdown.loading = false;
 		await this.populateSupportedEditionsDropdown();
 		return;
 	}
@@ -498,21 +498,20 @@ export class AzureSettingsPage extends BasePage {
 
 	private async populateSupportedEditionsDropdown() {
 		this._dbSupportedEditionsDropdown.loading = true;
-		if (!this._dbSupportedServersDropdown.values || this._dbSupportedServersDropdown.values!.length === 0) {
+		if (!this._dbManagedInstanceDropdown.values || this._dbManagedInstanceDropdown.values!.length === 0) {
 			this._dbSupportedEditionsDropdown.updateProperties({
 				values: []
 			});
 			this._dbSupportedEditionsDropdown.loading = false;
 			return;
 		}
-		let currentServerVersionValue = this._dbSupportedServersDropdown.value as any;
-		if (!currentServerVersionValue.supportedEditions) {
+		let currentManagedInstanceValue = this._dbManagedInstanceDropdown.value as any;
+		if (!currentManagedInstanceValue.supportedEditions) {
 			this._dbSupportedEditionsDropdown.updateProperties({
 				values: [
 					{
-						displayName: localize('deployAzureSQLDB.NoServerVersionLabel', "Server version not selected"),
-						name: '',
-						supportedServiceLvlObj: undefined
+						displayName: localize('deployAzureSQLDB.NoManagedInstanceLabel', "Managed instance not selected"),
+						name: ''
 					}
 				]
 			});
@@ -520,28 +519,26 @@ export class AzureSettingsPage extends BasePage {
 			return;
 		}
 
-		if (currentServerVersionValue.supportedEditions.length === 0) {
+		if (currentManagedInstanceValue.supportedEditions.length === 0) {
 			this._dbSupportedEditionsDropdown.updateProperties({
 				values: [
 					{
 						displayName: localize('deployAzureSQLDB.NoSupportedEditionsLabel', "No supported editions found"),
-						name: '',
-						supportedServiceLvlObj: undefined
+						name: ''
 					}
 				],
 			});
 			this._dbSupportedEditionsDropdown.loading = false;
 			return;
 		} else {
-			currentServerVersionValue.supportedEditions.sort((a: any, b: any) => (a!.name > b!.name) ? 1 : -1);
+			currentManagedInstanceValue.supportedEditions.sort((a: any, b: any) => (a!.name > b!.name) ? 1 : -1);
 		}
 		this.wizard.addDropdownValues(
 			this._dbSupportedEditionsDropdown,
-			currentServerVersionValue.supportedEditions.map((value: any) => {
+			currentManagedInstanceValue.supportedEditions.map((value: any) => {
 				return {
 					displayName: value.name,
-					name: value.name,
-					supportedServiceLvlObj: value.supportedServiceLevelObjectives
+					name: value.name
 				};
 			})
 		);

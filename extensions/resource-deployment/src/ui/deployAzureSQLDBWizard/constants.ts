@@ -33,5 +33,5 @@ export const StartIpAddressLabel = localize('deployAzureSQLDB.StartIpAddressLabe
 export const EndIpAddressLabel = localize('deployAzureSQLDB.EndIpAddressLabel', "Max Ip Address in firewall Ip Range");
 export const StartIpAddressShortLabel = localize('deployAzureSQLDB.StartIpAddressShortLabel', "Min Ip Address");
 export const EndIpAddressShortLabel = localize('deployAzureSQLDB.EndIpAddressShortLabel', "Max Ip Address");
-export const DatabaseSupportedServersDropdownLabel = localize('deployAzureSQLDB.DatabaseSupportedServersDropdownLabel', "SQLDB Supported Server Versions");
+export const DatabaseManagedInstanceDropdownLabel = localize('deployAzureSQLDB.DatabaseManagedInstanceDropdownLabel', "SQLDB Supported Server Versions");
 export const DatabaseSupportedEditionsDropdownLabel = localize('deployAzureSQLDB.DatabaseSupportedEditionsDropdownLabel', "SQLDB Supported Editions");
