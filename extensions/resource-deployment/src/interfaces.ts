@@ -140,10 +140,6 @@ export interface NotebookWizardInfo extends WizardInfoBase {
 }
 
 export interface WizardInfoBase extends FieldInfoBase {
-	/**
-	 * 	the taskName to use when running the notebook as a background task. The default value is the @see title of the wizard.
-	 */
-	taskName?: string;
 	type?: DeploymentType;
 	/**
 	 * 	done button attributes.
