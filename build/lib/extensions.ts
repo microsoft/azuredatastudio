@@ -247,7 +247,6 @@ const externalExtensions = [
 	'arc',
 	'asde-deployment',
 	'azdata',
-	'big-data-cluster',
 	'cms',
 	'dacpac',
 	'data-workspace',
