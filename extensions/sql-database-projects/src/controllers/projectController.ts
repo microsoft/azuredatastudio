@@ -52,18 +52,7 @@ export class ProjectsController {
 		this.projectTreeViewProvider.load(this.projects);
 	}
 
-	public async openProject(projectFile: vscode.Uri, focusProject: boolean = true, isReferencedProject: boolean = false): Promise<Project> {
-		for (const proj of this.projects) {
-			if (proj.projectFilePath === projectFile.fsPath) {
-				if (!isReferencedProject) {
-					vscode.window.showInformationMessage(constants.projectAlreadyOpened(projectFile.fsPath));
-					return proj;
-				} else {
-					throw new Error(constants.projectAlreadyOpened(projectFile.fsPath));
-				}
-			}
-		}
-
+	public async openProject(projectFile: vscode.Uri): Promise<Project> {
 		let newProject: Project;
 
 		try {
@@ -71,18 +60,6 @@ export class ProjectsController {
 			newProject = await Project.openProject(projectFile.fsPath);
 			this.projects.push(newProject);
 
-			// open any reference projects (don't need to worry about circular dependencies because those aren't allowed)
-			const referencedProjects = newProject.databaseReferences.filter(r => r instanceof SqlProjectReferenceProjectEntry);
-			for (const proj of referencedProjects) {
-				const projUri = vscode.Uri.file(path.join(newProject.projectFolderPath, proj.fsUri.fsPath));
-				try {
-					await this.openProject(projUri, false, true);
-				} catch (e) {
-				}
-			}
-
-			// Update for round tripping as needed
-			await this.updateProjectForRoundTrip(newProject);
 
 			// Read datasources.json (if present)
 			const dataSourcesFilePath = path.join(path.dirname(projectFile.fsPath), constants.dataSourcesFileName);
@@ -97,12 +74,6 @@ export class ProjectsController {
 				else {
 					throw err;
 				}
-			}
-
-			this.refreshProjectsTree();
-
-			if (focusProject) {
-				await this.focusProject(newProject);
 			}
 		}
 		catch (err) {
@@ -531,25 +502,6 @@ export class ProjectsController {
 
 	public getAddDatabaseReferenceDialog(project: Project): AddDatabaseReferenceDialog {
 		return new AddDatabaseReferenceDialog(project);
-	}
-
-	public async updateProjectForRoundTrip(project: Project) {
-		if (project.importedTargets.includes(constants.NetCoreTargets) && !project.containsSSDTOnlySystemDatabaseReferences()) {
-			return;
-		}
-
-		if (!project.importedTargets.includes(constants.NetCoreTargets)) {
-			const result = await vscode.window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
-			if (result === constants.yesString) {
-				await project.updateProjectForRoundTrip();
-				await project.updateSystemDatabaseReferencesInProjFile();
-			}
-		} else if (project.containsSSDTOnlySystemDatabaseReferences()) {
-			const result = await vscode.window.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
-			if (result === constants.yesString) {
-				await project.updateSystemDatabaseReferencesInProjFile();
-			}
-		}
 	}
 
 	private getProjectFromContext(context: Project | BaseProjectTreeItem | dataworkspace.WorkspaceTreeItem) {

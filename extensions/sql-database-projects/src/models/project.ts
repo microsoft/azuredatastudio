@@ -49,6 +49,7 @@ export class Project {
 	public static async openProject(projectFilePath: string): Promise<Project> {
 		const proj = new Project(projectFilePath);
 		await proj.readProjFile();
+		await proj.updateProjectForRoundTrip();
 
 		return proj;
 	}
@@ -176,11 +177,27 @@ export class Project {
 		this.projFileXmlDoc = undefined;
 	}
 
-	public async updateProjectForRoundTrip() {
-		await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
-		await this.updateImportToSupportRoundTrip();
-		await this.updatePackageReferenceInProjFile();
-		await this.updateAfterCleanTargetInProjFile();
+	public async updateProjectForRoundTrip(): Promise<void> {
+		if (this.importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences()) {
+			return;
+		}
+
+		if (!this.importedTargets.includes(constants.NetCoreTargets)) {
+			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
+				await this.updateImportToSupportRoundTrip();
+				await this.updatePackageReferenceInProjFile();
+				await this.updateAfterCleanTargetInProjFile();
+				await this.updateSystemDatabaseReferencesInProjFile();
+			}
+		} else if (this.containsSSDTOnlySystemDatabaseReferences()) {
+			const result = await window.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
+				await this.updateSystemDatabaseReferencesInProjFile();
+			}
+		}
 	}
 
 	private async updateImportToSupportRoundTrip(): Promise<void> {
