@@ -7,8 +7,8 @@ import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
-import { getDatabaseStateDisplayText, promptForResourceDeletion } from '../../../common/utils';
-import { cssStyles, Endpoints, IconPathHelper } from '../../../constants';
+import { getDatabaseStateDisplayText, promptForInstanceDeletion } from '../../../common/utils';
+import { cssStyles, Endpoints, IconPathHelper, miaaTroubleshootDocsUrl } from '../../../constants';
 import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
 import { MiaaModel } from '../../../models/miaaModel';
@@ -198,13 +198,22 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			deleteButton.onDidClick(async () => {
 				deleteButton.enabled = false;
 				try {
-					if (await promptForResourceDeletion(this._miaaModel.info.name)) {
-						await this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name);
+					if (await promptForInstanceDeletion(this._miaaModel.info.name)) {
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.deletingInstance(this._miaaModel.info.name),
+								cancellable: false
+							},
+							(_progress, _token) => {
+								return this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name);
+							}
+						);
 						await this._controllerModel.refreshTreeNode();
-						vscode.window.showInformationMessage(loc.resourceDeleted(this._miaaModel.info.name));
+						vscode.window.showInformationMessage(loc.instanceDeleted(this._miaaModel.info.name));
 					}
 				} catch (error) {
-					vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._miaaModel.info.name, error));
+					vscode.window.showErrorMessage(loc.instanceDeletionFailed(this._miaaModel.info.name, error));
 				} finally {
 					deleteButton.enabled = true;
 				}
@@ -247,6 +256,17 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}
 			}));
+
+		const troubleshootButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.troubleshoot,
+			iconPath: IconPathHelper.wrench
+		}).component();
+
+		this.disposables.push(
+			troubleshootButton.onDidClick(async () => {
+				await vscode.env.openExternal(vscode.Uri.parse(miaaTroubleshootDocsUrl));
+			})
+		);
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[

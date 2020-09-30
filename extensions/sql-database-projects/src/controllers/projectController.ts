@@ -17,7 +17,7 @@ import * as azdata from 'azdata';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
+import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry, IDatabaseReferenceProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
@@ -29,6 +29,8 @@ import { BuildHelper } from '../tools/buildHelper';
 import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
+import { WorkspaceTreeItem } from 'dataworkspace';
 
 /**
  * Controller for managing project lifecycle
@@ -39,6 +41,7 @@ export class ProjectsController {
 	private buildHelper: BuildHelper;
 
 	projects: Project[] = [];
+	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
 	constructor(projTreeViewProvider: SqlDatabaseProjectTreeViewProvider) {
 		this.projectTreeViewProvider = projTreeViewProvider;
@@ -166,6 +169,12 @@ export class ProjectsController {
 	public closeProject(treeNode: BaseProjectTreeItem) {
 		const project = this.getProjectFromContext(treeNode);
 		this.projects = this.projects.filter((e) => { return e !== project; });
+
+		if (this.projFileWatchers.has(project.projectFilePath)) {
+			this.projFileWatchers.get(project.projectFilePath)!.dispose();
+			this.projFileWatchers.delete(project.projectFilePath);
+		}
+
 		this.refreshProjectsTree();
 	}
 
@@ -181,7 +190,7 @@ export class ProjectsController {
 	 * @returns path of the built dacpac
 	 */
 	public async buildProject(project: Project): Promise<string>;
-	public async buildProject(context: Project | BaseProjectTreeItem): Promise<string | undefined> {
+	public async buildProject(context: Project | BaseProjectTreeItem | WorkspaceTreeItem): Promise<string | undefined> {
 		const project: Project = this.getProjectFromContext(context);
 
 		// Check mssql extension for project dlls (tracking issue #10273)
@@ -385,7 +394,15 @@ export class ProjectsController {
 	public async delete(context: BaseProjectTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
 
-		const confirmationPrompt = context instanceof FolderNode ? constants.deleteConfirmationContents(context.friendlyName) : constants.deleteConfirmation(context.friendlyName);
+		let confirmationPrompt;
+		if (context instanceof DatabaseReferenceTreeItem) {
+			confirmationPrompt = constants.deleteReferenceConfirmation(context.friendlyName);
+		} else if (context instanceof FolderNode) {
+			confirmationPrompt = constants.deleteConfirmationContents(context.friendlyName);
+		} else {
+			confirmationPrompt = constants.deleteConfirmation(context.friendlyName);
+		}
+
 		const response = await vscode.window.showWarningMessage(confirmationPrompt, { modal: true }, constants.yesString);
 
 		if (response !== constants.yesString) {
@@ -394,7 +411,14 @@ export class ProjectsController {
 
 		let success = false;
 
-		if (context instanceof FileNode || FolderNode) {
+		if (context instanceof DatabaseReferenceTreeItem) {
+			const databaseReference = this.getDatabaseReference(project, context);
+
+			if (databaseReference) {
+				await project.deleteDatabaseReference(databaseReference);
+				success = true;
+			}
+		} else if (context instanceof FileNode || FolderNode) {
 			const fileEntry = this.getFileProjectEntry(project, context);
 
 			if (fileEntry) {
@@ -422,6 +446,17 @@ export class ProjectsController {
 		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
 	}
 
+	private getDatabaseReference(project: Project, context: BaseProjectTreeItem): IDatabaseReferenceProjectEntry | undefined {
+		const root = context.root as ProjectRootTreeItem;
+		const databaseReference = context as DatabaseReferenceTreeItem;
+
+		if (root && databaseReference) {
+			return project.databaseReferences.find(r => r.databaseName === databaseReference.treeItem.label);
+		}
+
+		return undefined;
+	}
+
 	/**
 	 * Opens the folder containing the project
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
@@ -442,12 +477,22 @@ export class ProjectsController {
 		try {
 			await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(project.projectFilePath));
 			const projFileWatcher: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher(project.projectFilePath);
+			this.projFileWatchers.set(project.projectFilePath, projFileWatcher);
 
 			projFileWatcher.onDidChange(async (projectFileUri: vscode.Uri) => {
 				const result = await vscode.window.showInformationMessage(constants.reloadProject, constants.yesString, constants.noString);
 
 				if (result === constants.yesString) {
 					this.reloadProject(projectFileUri);
+				}
+			});
+
+			// stop watching for changes to the sqlproj after it's closed
+			const closeSqlproj = vscode.workspace.onDidCloseTextDocument((d) => {
+				if (this.projFileWatchers.has(d.uri.fsPath)) {
+					this.projFileWatchers.get(d.uri.fsPath)!.dispose();
+					this.projFileWatchers.delete(d.uri.fsPath);
+					closeSqlproj.dispose();
 				}
 			});
 		} catch (err) {
@@ -467,6 +512,24 @@ export class ProjectsController {
 			this.refreshProjectsTree();
 		} else {
 			throw new Error(constants.invalidProjectReload);
+		}
+	}
+
+	/**
+	 * Changes the project's DSP to the selected target platform
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async changeTargetPlatform(context: Project | BaseProjectTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(context);
+		const selectedTargetPlatform = (await vscode.window.showQuickPick((Array.from(constants.targetPlatformToVersion.keys())).map(version => { return { label: version }; }),
+			{
+				canPickMany: false,
+				placeHolder: constants.selectTargetPlatform(constants.getTargetPlatformFromVersion(project.getProjectTargetVersion()))
+			}))?.label;
+
+		if (selectedTargetPlatform) {
+			await project.changeTargetPlatform(constants.targetPlatformToVersion.get(selectedTargetPlatform)!);
+			vscode.window.showInformationMessage(constants.currentTargetPlatform(project.projectFileName, constants.getTargetPlatformFromVersion(project.getProjectTargetVersion())));
 		}
 	}
 
@@ -547,7 +610,11 @@ export class ProjectsController {
 		}
 	}
 
-	private getProjectFromContext(context: Project | BaseProjectTreeItem) {
+	private getProjectFromContext(context: Project | BaseProjectTreeItem | WorkspaceTreeItem): Project {
+		if ('element' in context) {
+			return context.element.project;
+		}
+
 		if (context instanceof Project) {
 			return context;
 		}

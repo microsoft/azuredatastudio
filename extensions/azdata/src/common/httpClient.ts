@@ -61,7 +61,7 @@ export namespace HttpClient {
 					if (targetFolder !== undefined) {
 						const filename = path.basename(response.request.path);
 						const targetPath = path.join(targetFolder, filename);
-						Logger.log(loc.downloadingTo(filename, targetPath));
+						Logger.log(loc.downloadingTo(filename, downloadUrl, targetPath));
 						// Wait to create the WriteStream until here so we can use the actual
 						// filename based off of the URI.
 						downloadRequest.pipe(fs.createWriteStream(targetPath))
@@ -73,6 +73,11 @@ export namespace HttpClient {
 								reject(downloadError);
 								downloadRequest.abort();
 							});
+					} else {
+						response.on('end', () => {
+							Logger.log(loc.downloadFinished);
+							resolve(strings.join(''));
+						});
 					}
 					let contentLength = response.headers['content-length'];
 					let totalBytes = parseInt(contentLength || '0');
@@ -91,13 +96,6 @@ export namespace HttpClient {
 							Logger.log(loc.downloadingProgressMb(receivedMegaBytes.toFixed(2), totalMegaBytes.toFixed(2)));
 							printThreshold += 0.1;
 						}
-					}
-				})
-				.on('close', async () => {
-					if (targetFolder === undefined) {
-
-						Logger.log(loc.downloadFinished);
-						resolve(strings.join(''));
 					}
 				});
 		});

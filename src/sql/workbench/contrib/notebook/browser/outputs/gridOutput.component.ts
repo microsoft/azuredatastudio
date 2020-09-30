@@ -41,6 +41,7 @@ import { IQueryManagementService } from 'sql/workbench/services/query/common/que
 import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
 import { assign } from 'vs/base/common/objects';
+import { escape } from 'sql/base/common/strings';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -294,6 +295,11 @@ class DataResourceTable extends GridTableBase<any> {
 	public convertData(set: ResultSetSummary): Promise<void> {
 		return this._gridDataProvider.convertAllData(set);
 	}
+
+	public updateResult(resultSet: ResultSetSummary): void {
+		super.updateResult(resultSet);
+		this._gridDataProvider.updateResultSet(resultSet);
+	}
 }
 
 export class DataResourceDataProvider implements IGridDataProvider {
@@ -371,8 +377,12 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		});
 	}
 
+	public updateResultSet(resultSet: ResultSetSummary): void {
+		this._resultSet = resultSet;
+	}
+
 	public async convertAllData(result: ResultSetSummary): Promise<void> {
-		// Querying 50 rows at a time. Querying large amount of rows will be slow and
+		// Querying 100 rows at a time. Querying large amount of rows will be slow and
 		// affect table rendering since each time the user scrolls, getRowData is called.
 		let numRows = 100;
 		for (let i = 0; i < result.rowCount; i += 100) {
@@ -382,6 +392,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			let rows = await this._queryRunner.getQueryRows(i, numRows, this._batchId, this._id);
 			this.convertData(rows);
 		}
+		this.cellModel.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 	}
 
 	private convertData(rows: ResultSetSubset): void {

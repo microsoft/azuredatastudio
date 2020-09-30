@@ -4,11 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as dataworkspace from 'dataworkspace';
-import { ProjectProviderRegistry } from './common/projectProviderRegistry';
+import * as loc from '../../localizedConstants';
+import { TreeNode } from './treeNode';
 
-export class DataWorkspaceExtension implements dataworkspace.IExtension {
-	registerProjectProvider(provider: dataworkspace.IProjectProvider): vscode.Disposable {
-		return ProjectProviderRegistry.registerProvider(provider);
+/**
+ * A placeholder TreeNode to display when there aren't any child instances available
+ */
+export class NoInstancesTreeNode extends TreeNode {
+
+	constructor() {
+		super(loc.noInstancesAvailable, vscode.TreeItemCollapsibleState.None, '');
 	}
 }

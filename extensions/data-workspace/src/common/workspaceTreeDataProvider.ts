@@ -4,14 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { IWorkspaceService, WorkspaceTreeItem as WorkspaceTreeItem } from './interfaces';
+import { IWorkspaceService } from './interfaces';
 import { UnknownProjectsErrorMessage } from './constants';
+import { WorkspaceTreeItem } from 'dataworkspace';
 
 /**
  * Tree data provider for the workspace main view
  */
 export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<WorkspaceTreeItem>{
-	constructor(private _workspaceService: IWorkspaceService) { }
+	constructor(private _workspaceService: IWorkspaceService) {
+		this._workspaceService.onDidWorkspaceProjectsChange(() => {
+			this.refresh();
+		});
+	}
 
 	private _onDidChangeTreeData: vscode.EventEmitter<void | WorkspaceTreeItem | null | undefined> | undefined = new vscode.EventEmitter<WorkspaceTreeItem | undefined | void>();
 	readonly onDidChangeTreeData?: vscode.Event<void | WorkspaceTreeItem | null | undefined> | undefined = this._onDidChangeTreeData?.event;

@@ -58,19 +58,15 @@ export interface IWorkspaceService {
 	 * @param projectFiles the list of project files to be added, the project file should be absolute path.
 	 */
 	addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void>;
-}
-
-/**
- * Represents the item for the workspace tree
- */
-export interface WorkspaceTreeItem {
-	/**
-	 * Gets the tree data provider
-	 */
-	treeDataProvider: vscode.TreeDataProvider<any>;
 
 	/**
-	 * Gets the raw element returned by the tree data provider
+	 * Remove the project from workspace
+	 * @param projectFile The project file to be removed
 	 */
-	element: any;
+	removeProject(projectFile: vscode.Uri): Promise<void>;
+
+	/**
+	 * Event fires when projects in workspace changes
+	 */
+	readonly onDidWorkspaceProjectsChange: vscode.Event<void>;
 }

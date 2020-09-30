@@ -32,6 +32,12 @@ declare module 'dataworkspace' {
 		getProjectTreeDataProvider(projectFile: vscode.Uri): Promise<vscode.TreeDataProvider<any>>;
 
 		/**
+		 * Notify the project provider extension that the specified project file has been removed from the data workspace
+		 * @param projectFile The Uri of the project file
+		 */
+		RemoveProject(projectFile: vscode.Uri): Promise<void>;
+
+		/**
 		 * Gets the supported project types
 		 */
 		readonly supportedProjectTypes: IProjectType[];
@@ -55,5 +61,20 @@ declare module 'dataworkspace' {
 		 * Gets the icon path of the project type
 		 */
 		readonly icon: string | vscode.Uri | { light: string | vscode.Uri, dark: string | vscode.Uri }
+	}
+
+	/**
+	 * Represents the item for the workspace tree
+	 */
+	export interface WorkspaceTreeItem {
+		/**
+		 * Gets the tree data provider
+		 */
+		treeDataProvider: vscode.TreeDataProvider<any>;
+
+		/**
+		 * Gets the raw element returned by the tree data provider
+		 */
+		element: any;
 	}
 }

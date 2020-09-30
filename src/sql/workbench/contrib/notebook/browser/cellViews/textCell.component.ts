@@ -67,17 +67,18 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.enableActiveCellEditOnDoubleClick();
 	}
 
-	@HostListener('document:keydown.meta.a', ['$event'])
+	@HostListener('document:keydown', ['$event'])
 	onkeydown(e) {
 		// use preventDefault() to avoid invoking the editor's select all
 		// select the active .
-		e.preventDefault();
-		document.execCommand('selectAll');
-	}
-
-	@HostListener('document:keydown.meta.z', ['$event'])
-	onUndo(e) {
-		document.execCommand('undo');
+		if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+			e.preventDefault();
+			document.execCommand('selectAll');
+		}
+		if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+			e.preventDefault();
+			document.execCommand('undo');
+		}
 	}
 
 	private _content: string | string[];
@@ -439,6 +440,13 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			filter: 'pre',
 			replacement: function (content, node) {
 				return '\n```\n' + node.textContent + '\n```\n';
+			}
+		});
+		this.turndownService.addRule('caption', {
+			filter: 'caption',
+			replacement: function (content, node) {
+				return `${node.outerHTML}
+				`;
 			}
 		});
 		this.turndownService.addRule('span', {

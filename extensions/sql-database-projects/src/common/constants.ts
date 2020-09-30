@@ -68,7 +68,9 @@ export const reloadProject = localize('reloadProject', "Would you like to reload
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
-
+export function deleteReferenceConfirmation(toDelete: string) { return localize('deleteReferenceConfirmation', "Are you sure you want to delete the reference to {0}?", toDelete); }
+export function selectTargetPlatform(currentTargetPlatform: string) { return localize('selectTargetPlatform', "Current target platform: {0}. Select new target platform", currentTargetPlatform); }
+export function currentTargetPlatform(projectName: string, currentTargetPlatform: string) { return localize('currentTargetPlatform', "Target platform of the project {0} is now {1}", projectName, currentTargetPlatform); }
 
 // Publish dialog strings
 
@@ -109,7 +111,7 @@ export const sameDatabase = localize('sameDatabase', "Same database");
 export const differentDbSameServer = localize('differentDbSameServer', "Different database, same server");
 export const differentDbDifferentServer = localize('differentDbDifferentServer', "Different database, different server");
 export const systemDbLocationDropdownValues = [differentDbSameServer];
-export const locationDropdownValues = [sameDatabase, differentDbSameServer, differentDbDifferentServer];
+export const locationDropdownValues = [differentDbSameServer, differentDbDifferentServer];
 export const databaseName = localize('databaseName', "Database name");
 export const databaseVariable = localize('databaseVariable', "Database variable");
 export const serverName = localize('serverName', "Server name");
@@ -120,7 +122,7 @@ export const enterSystemDbName = localize('enterSystemDbName', "Enter a database
 export const databaseNameRequiredVariableOptional = localize('databaseNameRequiredVariableOptional', "A database name is required. The database variable is optional.");
 export const databaseNameServerNameVariableRequired = localize('databaseNameServerNameVariableRequired', "A database name, server name, and server variable are required. The database variable is optional");
 export const otherServer = 'OtherServer';
-export const otherSeverVariable = '$(OtherServer)';
+export const otherSeverVariable = 'OtherServer';
 export const databaseProject = localize('databaseProject', "Database project");
 
 // Error messages
@@ -170,6 +172,8 @@ export function unableToFindObject(path: string, objType: string) { return local
 export function deployScriptExists(scriptType: string) { return localize('deployScriptExists', "A {0} script already exists. The new script will not be included in build.", scriptType); }
 export function notValidVariableName(name: string) { return localize('notValidVariableName', "The variable name '{0}' is not valid.", name); }
 export function cantAddCircularProjectReference(project: string) { return localize('cantAddCircularProjectReference', "A reference to project '{0} cannot be added. Adding this project as a reference would cause a circular dependency", project); }
+export function unableToFindSqlCmdVariable(variableName: string) { return localize('unableToFindSqlCmdVariable', "Unable to find SQLCMD variable '{0}'", variableName); }
+export function unableToFindDatabaseReference(reference: string) { return localize('unableToFindReference', "Unable to find database reference {0}", reference); }
 
 // Action types
 export const deleteAction = localize('deleteAction', 'Delete');
@@ -285,3 +289,27 @@ export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
 export const sameDatabaseExampleUsage = 'SELECT * FROM [Schema1].[Table1]';
 export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]`; }
 export function differentDbDifferentServerExampleUsage(server: string, db: string) { return `SELECT * FROM [${server}].[${db}].[Schema1].[Table1]`; }
+
+export const sqlServer2005 = 'SQL Server 2005';
+export const sqlServer2008 = 'SQL Server 2008';
+export const sqlServer2012 = 'SQL Server 2012';
+export const sqlServer2014 = 'SQL Server 2014';
+export const sqlServer2016 = 'SQL Server 2016';
+export const sqlServer2017 = 'SQL Server 2017';
+export const sqlServer2019 = 'SQL Server 2019';
+export const sqlAzure = 'Microsoft Azure SQL Database';
+
+export const targetPlatformToVersion: Map<string, string> = new Map<string, string>([
+	[sqlServer2005, '90'],
+	[sqlServer2008, '100'],
+	[sqlServer2012, '110'],
+	[sqlServer2014, '120'],
+	[sqlServer2016, '130'],
+	[sqlServer2017, '140'],
+	[sqlServer2019, '150'],
+	[sqlAzure, 'AzureV12']
+]);
+
+export function getTargetPlatformFromVersion(version: string): string {
+	return Array.from(targetPlatformToVersion.keys()).filter(k => targetPlatformToVersion.get(k) === version)[0];
+}

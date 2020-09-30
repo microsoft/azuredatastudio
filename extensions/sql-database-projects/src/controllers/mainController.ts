@@ -5,7 +5,6 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as dataworkspace from 'dataworkspace';
 import * as templates from '../templates/templates';
 import * as constants from '../common/constants';
 import * as path from 'path';
@@ -19,6 +18,7 @@ import { NetCoreTool } from '../tools/netcoreTool';
 import { Project } from '../models/project';
 import { FileNode, FolderNode } from '../models/tree/fileFolderTreeItem';
 import { IconPathHelper } from '../common/iconHelper';
+import { IProjectProvider } from 'dataworkspace';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
@@ -47,8 +47,9 @@ export default class MainController implements vscode.Disposable {
 	public deactivate(): void {
 	}
 
-	public async activate(): Promise<void> {
+	public async activate(): Promise<IProjectProvider> {
 		await this.initializeDatabaseProjects();
+		return new SqlDatabaseProjectProvider();
 	}
 
 	private async initializeDatabaseProjects(): Promise<void> {
@@ -77,9 +78,9 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.editProjectFile', async (node: BaseProjectTreeItem) => { await this.projectsController.editProjectFile(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: BaseProjectTreeItem) => { await this.projectsController.delete(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: BaseProjectTreeItem) => { await this.projectsController.changeTargetPlatform(node); });
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
-		this.registerProjectProvider();
 
 		// init view
 		const treeView = vscode.window.createTreeView(SQL_DATABASE_PROJECTS_VIEW_ID, {
@@ -186,13 +187,6 @@ export default class MainController implements vscode.Disposable {
 		catch (err) {
 			vscode.window.showErrorMessage(getErrorMessage(err));
 			return undefined;
-		}
-	}
-
-	private registerProjectProvider(): void {
-		const dataWorkspaceApi: dataworkspace.IExtension = <dataworkspace.IExtension>vscode.extensions.getExtension(dataworkspace.extension.name)?.exports;
-		if (dataWorkspaceApi) {
-			dataWorkspaceApi.registerProjectProvider(new SqlDatabaseProjectProvider());
 		}
 	}
 

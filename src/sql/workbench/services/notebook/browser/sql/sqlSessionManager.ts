@@ -28,7 +28,6 @@ import { startsWith } from 'vs/base/common/strings';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
-import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -176,8 +175,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ILogService private readonly logService: ILogService,
-		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
-		@IQueryManagementService private queryManagementService: IQueryManagementService
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super();
 		this.initMagics();
@@ -284,7 +282,6 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 		} else if (this._currentConnection && this._currentConnectionProfile) {
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionPath);
-			this.queryManagementService.registerRunner(this._queryRunner, this._connectionPath);
 			this._connectionManagementService.connect(this._currentConnectionProfile, this._connectionPath).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);
 				this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
@@ -351,14 +348,9 @@ class SqlKernel extends Disposable implements nb.IKernel {
 				}
 			}
 		}));
-		this._register(queryRunner.onResultSet(resultSet => {
-			if (this._future) {
-				this._future.onResultSet(resultSet);
-			}
-		}));
 		this._register(queryRunner.onBatchEnd(batch => {
 			if (this._future) {
-				this._future.onBatchEnd(batch);
+				this._future.handleBatchEnd(batch);
 			}
 		}));
 	}
@@ -391,9 +383,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private doneDeferred = new Deferred<nb.IShellMessage>();
 	private configuredMaxRows: number = MAX_ROWS;
 	private _outputAddedPromises: Promise<void>[] = [];
+	private _querySubsetResultMap: Map<number, ResultSetSubset> = new Map<number, ResultSetSubset>();
 	private _errorOccurred: boolean = false;
 	private _stopOnError: boolean = true;
-
 	constructor(
 		private _queryRunner: QueryRunner,
 		private _executionCount: number | undefined,
@@ -449,6 +441,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this.doneHandler.handle(msg);
 		}
 		this.doneDeferred.resolve(msg);
+		this._querySubsetResultMap.clear();
 	}
 
 	sendInputReply(content: nb.IInputReply): void {
@@ -479,32 +472,28 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		}
 	}
 
-	public onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]): void {
+	public handleBatchEnd(batch: BatchSummary): void {
 		if (this.ioHandler) {
-			this._outputAddedPromises.push(this.sendInitialResultSets(resultSet));
+			this._outputAddedPromises.push(this.processResultSets(batch));
 		}
 	}
 
-	public onBatchEnd(batch: BatchSummary): void {
-		if (this.ioHandler) {
-			for (let set of batch.resultSetSummaries) {
-				if (set.rowCount > this.configuredMaxRows) {
-					this.handleMessage(localize('sqlMaxRowsDisplayed', "Displaying Top {0} rows.", this.configuredMaxRows));
-				}
-			}
-		}
-	}
-
-	private async sendInitialResultSets(resultSet: ResultSetSummary | ResultSetSummary[]): Promise<void> {
+	private async processResultSets(batch: BatchSummary): Promise<void> {
 		try {
-			let resultsToAdd: ResultSetSummary[];
-			if (!Array.isArray(resultSet)) {
-				resultsToAdd = [resultSet];
-			} else {
-				resultsToAdd = resultSet?.splice(0);
+			let queryRowsPromises: Promise<void>[] = [];
+			for (let resultSet of batch.resultSetSummaries) {
+				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
+				if (rowCount === this.configuredMaxRows) {
+					this.handleMessage(localize('sqlMaxRowsDisplayed', "Displaying Top {0} rows.", rowCount));
+				}
+				queryRowsPromises.push(this.getAllQueryRows(rowCount, resultSet));
 			}
-			for (let set of resultsToAdd) {
-				this.sendIOPubMessage(set, false);
+			// We want to display table in the same order
+			let i = 0;
+			for (let resultSet of batch.resultSetSummaries) {
+				await queryRowsPromises[i];
+				this.sendResultSetAsIOPub(resultSet);
+				i++;
 			}
 		} catch (err) {
 			// TODO should we output this somewhere else?
@@ -512,7 +501,31 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		}
 	}
 
-	private sendIOPubMessage(resultSet: ResultSetSummary, conversionComplete?: boolean, subsetResult?: ResultSetSubset): void {
+	private async getAllQueryRows(rowCount: number, resultSet: ResultSetSummary): Promise<void> {
+		let deferred: Deferred<void> = new Deferred<void>();
+		if (rowCount > 0) {
+			this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then((result) => {
+				this._querySubsetResultMap.set(resultSet.id, result);
+				deferred.resolve();
+			}, (err) => {
+				this._querySubsetResultMap.set(resultSet.id, { rowCount: 0, rows: [] });
+				deferred.reject(err);
+			});
+		} else {
+			this._querySubsetResultMap.set(resultSet.id, { rowCount: 0, rows: [] });
+			deferred.resolve();
+		}
+		return deferred;
+	}
+
+	private sendResultSetAsIOPub(resultSet: ResultSetSummary): void {
+		if (this._querySubsetResultMap && this._querySubsetResultMap.get(resultSet.id)) {
+			let subsetResult = this._querySubsetResultMap.get(resultSet.id);
+			this.sendIOPubMessage(subsetResult, resultSet);
+		}
+	}
+
+	private sendIOPubMessage(subsetResult: ResultSetSubset, resultSet: ResultSetSummary): void {
 		let msg: nb.IIOPubMessage = {
 			channel: 'iopub',
 			type: 'iopub',
@@ -524,21 +537,16 @@ export class SQLFuture extends Disposable implements FutureInternal {
 				output_type: 'execute_result',
 				metadata: {},
 				execution_count: this._executionCount,
-				// Initial data sent to notebook only contains column headers since
-				// onResultSet only returns the column info (and no row data).
-				// Row data conversion will be handled in DataResourceDataProvider
 				data: {
-					'application/vnd.dataresource+json': this.convertToDataResource(resultSet.columnInfo),
-					'text/html': this.convertToHtmlTable(resultSet.columnInfo)
-				},
-				batchId: resultSet.batchId,
-				id: resultSet.id,
-				queryRunnerUri: this._queryRunner.uri,
+					'application/vnd.dataresource+json': this.convertToDataResource(resultSet.columnInfo, subsetResult),
+					'text/html': this.convertToHtmlTable(resultSet.columnInfo, subsetResult)
+				}
 			},
 			metadata: undefined,
 			parent_header: undefined
 		};
 		this.ioHandler.handle(msg);
+		this._querySubsetResultMap.delete(resultSet.id);
 	}
 
 	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
@@ -552,31 +560,49 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		// no-op
 	}
 
-	private convertToDataResource(columns: IColumn[]): IDataResource {
+	private convertToDataResource(columns: IColumn[], subsetResult: ResultSetSubset): IDataResource {
 		let columnsResources: IDataResourceSchema[] = [];
 		columns.forEach(column => {
 			columnsResources.push({ name: escape(column.columnName) });
 		});
-		let columnsFields: IDataResourceFields = { fields: columnsResources };
+		let columnsFields: IDataResourceFields = { fields: undefined };
+		columnsFields.fields = columnsResources;
 		return {
 			schema: columnsFields,
-			data: []
+			data: subsetResult.rows.map(row => {
+				let rowObject: { [key: string]: any; } = {};
+				row.forEach((val, index) => {
+					rowObject[index] = val.displayValue;
+				});
+				return rowObject;
+			})
 		};
 	}
 
-	private convertToHtmlTable(columns: IColumn[]): string[] {
-		let htmlTable: string[] = new Array(3);
-		htmlTable[0] = '<table>';
+	private convertToHtmlTable(columns: IColumn[], d: ResultSetSubset): string[] {
+		// Adding 3 for <table>, column title rows, </table>
+		let htmlStringArr: string[] = new Array(d.rowCount + 3);
+		htmlStringArr[0] = '<table>';
 		if (columns.length > 0) {
 			let columnHeaders = '<tr>';
 			for (let column of columns) {
 				columnHeaders += `<th>${escape(column.columnName)}</th>`;
 			}
 			columnHeaders += '</tr>';
-			htmlTable[1] = columnHeaders;
+			htmlStringArr[1] = columnHeaders;
 		}
-		htmlTable[2] = '</table>';
-		return htmlTable;
+		let i = 2;
+		for (const row of d.rows) {
+			let rowData = '<tr>';
+			for (let columnIndex = 0; columnIndex < columns.length; columnIndex++) {
+				rowData += `<td>${escape(row[columnIndex].displayValue)}</td>`;
+			}
+			rowData += '</tr>';
+			htmlStringArr[i] = rowData;
+			i++;
+		}
+		htmlStringArr[htmlStringArr.length - 1] = '</table>';
+		return htmlStringArr;
 	}
 
 	private convertToDisplayMessage(msg: IResultMessage | string): nb.IIOPubMessage {
