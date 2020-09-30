@@ -16,9 +16,9 @@ import { createRemoteURITransformer } from 'vs/server/remoteUriTransformer';
 import { ILogService } from 'vs/platform/log/common/log';
 import product from 'vs/platform/product/common/product';
 import { ServerEnvironmentService } from 'vs/server/remoteExtensionHostAgent';
-import { parsePathArg } from 'vs/platform/environment/node/environmentService';
 import { extname, dirname, join, normalize } from 'vs/base/common/path';
 import { WEB_WORKER_IFRAME } from 'vs/workbench/services/extensions/common/webWorkerIframe';
+import { FileAccess } from 'vs/base/common/network';
 
 const textMimeType = {
 	'.html': 'text/html',
@@ -69,7 +69,7 @@ export async function serveFile(logService: ILogService, req: http.IncomingMessa
 	}
 }
 
-const APP_ROOT = dirname(URI.parse(require.toUrl('')).fsPath);
+const APP_ROOT = dirname(FileAccess.asFileUri('', require).fsPath);
 
 export class WebClientServer {
 
@@ -179,10 +179,7 @@ export class WebClientServer {
 			return value.replace(/"/g, '&quot;');
 		}
 
-		const webUserDataDir = this._environmentService.args['web-user-data-dir'];
-		const webUserDataHome = URI.file(parsePathArg(webUserDataDir, process) || this._environmentService.userDataPath);
-
-		const filePath = URI.parse(require.toUrl(this._environmentService.isBuilt ? 'vs/code/browser/workbench/workbench.html' : 'vs/code/browser/workbench/workbench-dev.html')).fsPath;
+		const filePath = FileAccess.asFileUri(this._environmentService.isBuilt ? 'vs/code/browser/workbench/workbench.html' : 'vs/code/browser/workbench/workbench-dev.html', require).fsPath;
 		const data = (await util.promisify(fs.readFile)(filePath)).toString()
 			.replace('{{WORKBENCH_WEB_CONFIGURATION}}', escapeAttribute(JSON.stringify({
 				folderUri: (workspacePath && isFolder) ? transformer.transformOutgoing(URI.file(workspacePath)) : undefined,
@@ -190,8 +187,7 @@ export class WebClientServer {
 				remoteAuthority,
 				webviewEndpoint: this._webviewEndpoint,
 				driver: this._environmentService.driverHandle === 'web' ? true : undefined
-			})))
-			.replace('{{REMOTE_USER_DATA_URI}}', escapeAttribute(JSON.stringify(transformer.transformOutgoing(webUserDataHome))));
+			})));
 
 		const cspDirectives = [
 			'default-src \'self\';',
@@ -318,7 +314,7 @@ export class WebClientServer {
 		// add to map of known callbacks
 		this._mapCallbackUriToRequestId.set(requestId, URI.from({ scheme: vscodeScheme || product.urlProtocol, authority: vscodeAuthority, path: vscodePath, query, fragment: vscodeFragment }).toJSON());
 
-		return serveFile(this._logService, req, res, URI.parse(require.toUrl('vs/code/browser/workbench/callback.html')).fsPath, { 'Content-Type': 'text/html' });
+		return serveFile(this._logService, req, res, FileAccess.asFileUri('vs/code/browser/workbench/callback.html', require).fsPath, { 'Content-Type': 'text/html' });
 	}
 
 	/**

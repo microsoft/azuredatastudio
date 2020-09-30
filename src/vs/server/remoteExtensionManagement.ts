@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import { PersistentProtocol, ProtocolConstants, ISocket } from 'vs/base/parts/ipc/common/ipc.net';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -30,10 +30,10 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { ServerEnvironmentService } from 'vs/server/remoteExtensionHostAgent';
 import { RunOnceScheduler } from 'vs/base/common/async';
-import { ParsedArgs } from 'vs/platform/environment/node/argv';
+import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 
 export interface IExtensionsManagementProcessInitData {
-	args: ParsedArgs;
+	args: NativeParsedArgs;
 }
 
 function printTime(ms: number): string {
@@ -148,14 +148,14 @@ export class ManagementConnection {
 	}
 }
 
-export function shouldSpawnCli(argv: ParsedArgs): boolean {
+export function shouldSpawnCli(argv: NativeParsedArgs): boolean {
 	return !!argv['list-extensions']
 		|| !!argv['install-extension']
 		|| !!argv['uninstall-extension']
 		|| !!argv['locate-extension'];
 }
 
-export async function run(argv: ParsedArgs, environmentService: ServerEnvironmentService, logService: ILogService): Promise<boolean> {
+export async function run(argv: NativeParsedArgs, environmentService: ServerEnvironmentService, logService: ILogService): Promise<boolean> {
 	if (!shouldSpawnCli(argv)) {
 		return false;
 	}
@@ -164,6 +164,8 @@ export async function run(argv: ParsedArgs, environmentService: ServerEnvironmen
 	const services = new ServiceCollection();
 
 	services.set(IEnvironmentService, environmentService);
+	services.set(INativeEnvironmentService, environmentService);
+
 	services.set(ILogService, logService);
 	services.set(IProductService, { _serviceBrand: undefined, ...product });
 

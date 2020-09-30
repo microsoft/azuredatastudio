@@ -4,10 +4,9 @@
 
 import * as os from 'os';
 import * as fs from 'fs';
-import * as path from 'path';
-import { URI } from 'vs/base/common/uri';
+import { FileAccess } from 'vs/base/common/network';
 import { run as runCli, shouldSpawnCli } from 'vs/server/remoteExtensionManagement';
-import { EnvironmentService } from 'vs/platform/environment/node/environmentService';
+import { NativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { RemoteExtensionHostAgentServer } from 'vs/server/remoteExtensionHostAgentServer';
 import { getLogLevel, ILogService } from 'vs/platform/log/common/log';
 import { RemoteExtensionLogFileName } from 'vs/workbench/services/remote/common/remoteAgentService';
@@ -85,7 +84,7 @@ export interface ServerParsedArgs {
 	_: string[];
 }
 
-export class ServerEnvironmentService extends EnvironmentService {
+export class ServerEnvironmentService extends NativeEnvironmentService {
 	get args(): ServerParsedArgs { return super.args as ServerParsedArgs; }
 }
 
@@ -107,7 +106,7 @@ const APP_SETTINGS_HOME = join(USER_DATA_PATH, 'User');
 const GLOBAL_STORAGE_HOME = join(APP_SETTINGS_HOME, 'globalStorage');
 const MACHINE_SETTINGS_HOME = join(USER_DATA_PATH, 'Machine');
 args['user-data-dir'] = USER_DATA_PATH;
-const APP_ROOT = dirname(URI.parse(require.toUrl('')).fsPath);
+const APP_ROOT = dirname(FileAccess.asFileUri('', require).fsPath);
 const BUILTIN_EXTENSIONS_FOLDER_PATH = join(APP_ROOT, 'extensions');
 args['builtin-extensions-dir'] = BUILTIN_EXTENSIONS_FOLDER_PATH;
 const CONNECTION_AUTH_TOKEN = args['connectionToken'] || generateUuid();
@@ -134,7 +133,7 @@ args['extensions-dir'] = args['extensions-dir'] || join(REMOTE_DATA_FOLDER, 'ext
 	} catch (err) { console.error(err); }
 });
 
-const environmentService = new ServerEnvironmentService(args, process.execPath);
+const environmentService = new ServerEnvironmentService(args);
 const logService: ILogService = new SpdLogService(RemoteExtensionLogFileName, environmentService.logsPath, getLogLevel(environmentService));
 logService.trace(`Remote configuration data at ${REMOTE_DATA_FOLDER}`);
 logService.trace('process arguments:', args);
@@ -154,7 +153,7 @@ if (shouldSpawnCli(args)) {
 	const license = `
 
 *
-* Azure Data Studio Server
+* Visual Studio Code Server
 *
 * Reminder: You may only use this software with Visual Studio family products,
 * as described in the license https://aka.ms/vscode-remote/license
@@ -169,9 +168,9 @@ if (shouldSpawnCli(args)) {
 	// if there is node_modules folder under home drive or Users folder.
 	//
 	if (process.platform === 'win32' && process.env.HOMEDRIVE && process.env.HOMEPATH) {
-		const homeDirModulesPath = path.join(process.env.HOMEDRIVE, 'node_modules');
-		const userDir = path.dirname(path.join(process.env.HOMEDRIVE, process.env.HOMEPATH));
-		const userDirModulesPath = path.join(userDir, 'node_modules');
+		const homeDirModulesPath = join(process.env.HOMEDRIVE, 'node_modules');
+		const userDir = dirname(join(process.env.HOMEDRIVE, process.env.HOMEPATH));
+		const userDirModulesPath = join(userDir, 'node_modules');
 		if (fs.existsSync(homeDirModulesPath) || fs.existsSync(userDirModulesPath)) {
 			const message = `
 

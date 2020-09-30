@@ -21,10 +21,9 @@ import { ExtensionHostConnection } from 'vs/server/extensionHostConnection';
 import { ManagementConnection } from 'vs/server/remoteExtensionManagement';
 import { createRemoteURITransformer } from 'vs/server/remoteUriTransformer';
 import { ILogService, LogLevel, AbstractLogService, DEFAULT_LOG_LEVEL, MultiplexLogService, getLogLevel } from 'vs/platform/log/common/log';
-import { Schemas } from 'vs/base/common/network';
-import { getPathFromAmdModule } from 'vs/base/common/amd';
+import { FileAccess, Schemas } from 'vs/base/common/network';
 import product from 'vs/platform/product/common/product';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { ConfigurationService } from 'vs/platform/configuration/common/configurationService';
@@ -203,7 +202,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		this._extHostConnections = Object.create(null);
 		this._managementConnections = Object.create(null);
 
-		const webRootFile = getPathFromAmdModule(require, 'vs/code/browser/workbench/workbench.html');
+		const webRootFile = FileAccess.asFileUri('vs/code/browser/workbench/workbench.html', require).fsPath;
 		if (fs.existsSync(webRootFile)) {
 			this._webClientServer = new WebClientServer(this._connectionToken, this._environmentService, this._logService);
 		} else {
@@ -227,6 +226,8 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		this._socketServer.registerChannel('logger', new LoggerChannel(this._logService));
 
 		services.set(IEnvironmentService, this._environmentService);
+		services.set(INativeEnvironmentService, this._environmentService);
+
 		services.set(ILogService, this._logService);
 		services.set(IProductService, { _serviceBrand: undefined, ...product });
 
