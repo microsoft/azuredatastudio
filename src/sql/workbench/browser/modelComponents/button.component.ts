@@ -73,13 +73,17 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	private initButton(): void {
 		this._currentButtonType = this.buttonType;
-
+		const elementToRemove = this._button?.element;
 		if (this._inputContainer) {
 			this._button = new Button(this._inputContainer.nativeElement);
+		} else if (this._infoButtonContainer) {
+			this._button = new InfoButton(this._infoButtonContainer.nativeElement);
 		}
 
-		if (this._infoButtonContainer) {
-			this._button = new InfoButton(this._infoButtonContainer.nativeElement);
+		// remove the previously created element if any.
+		if (elementToRemove) {
+			const container = this._inputContainer || this._infoButtonContainer;
+			(container.nativeElement as HTMLElement)?.removeChild(elementToRemove);
 		}
 
 		this._register(this._button);
