@@ -9,7 +9,7 @@ import { EOL, homedir as os_homedir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { ArcControllersOptionsSource, OptionsSourceType } from '../helpers/optionSources';
+import { ArcControllerConfigProfilesOptionsSource, ArcControllersOptionsSource, OptionsSourceType } from '../helpers/optionSources';
 import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
@@ -439,7 +439,9 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 				case OptionsSourceType.ArcControllersOptionsSource:
 					optionsSource = new ArcControllersOptionsSource(context.fieldInfo.options.source.variableNames, context.fieldInfo.options.source.type);
 					break;
-				default:
+				case OptionsSourceType.ArcControllerConfigProfilesOptionsSource:
+					optionsSource = new ArcControllerConfigProfilesOptionsSource(context.fieldInfo.options.source.variableNames, context.fieldInfo.options.source.type);
+					break; default:
 					throw new Error(loc.noOptionsSourceDefined(context.fieldInfo.options.source.type));
 			}
 			context.fieldInfo.options.source = optionsSource;

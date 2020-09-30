@@ -11,8 +11,9 @@ import { apiService } from '../services/apiService';
 import { throwUnless } from '../utils';
 import { CacheManager } from './cacheManager';
 
-export enum OptionsSourceType {
-	ArcControllersOptionsSource = 'ArcControllersOptionsSource'
+export const enum OptionsSourceType {
+	ArcControllersOptionsSource = 'ArcControllersOptionsSource',
+	ArcControllerConfigProfilesOptionsSource = 'ArcControllerConfigProfilesOptionsSource'
 }
 
 export abstract class OptionsSource implements IOptionsSource {
@@ -28,6 +29,9 @@ export abstract class OptionsSource implements IOptionsSource {
 	}
 }
 
+/**
+ * Class that provides options sources for an Arc Data Controller
+ */
 export class ArcControllersOptionsSource extends OptionsSource {
 	private _cacheManager = new CacheManager<string, string>();
 
@@ -80,5 +84,27 @@ export class ArcControllersOptionsSource extends OptionsSource {
 			default:
 				throw new Error(loc.isPasswordFetchForUnsupportedVariable(variableName));
 		}
+	}
+}
+
+/**
+ * Class that provides options sources for an Arc Data Controller's Config Profiles
+ */
+export class ArcControllerConfigProfilesOptionsSource extends OptionsSource {
+
+	async getOptions(): Promise<string[]> {
+		return (await apiService.azdataApi.azdata.arc.dc.config.list()).result;
+		// throwUnless(controllers !== undefined && controllers.length !== 0, loc.noControllersConnected);
+		// return controllers.map(ci => {
+		// 	return ci.label;
+		// });
+	}
+
+	async getVariableValue(variableName: string, controllerLabel: string): Promise<string> {
+		throw new Error('No additional variable values defined');
+	}
+
+	getIsPassword(variableName: string): boolean {
+		return false;
 	}
 }

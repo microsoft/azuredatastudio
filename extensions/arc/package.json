@@ -181,16 +181,9 @@
                           "variableName": "AZDATA_NB_VAR_ARC_PROFILE",
                           "editable": false,
                           "options": {
-                            "values": [
-                              "azure-arc-ake",
-                              "azure-arc-aks-default-storage",
-                              "azure-arc-aks-premium-storage",
-                              "azure-arc-aks-hci",
-                              "azure-arc-azure-openshift",
-                              "azure-arc-eks",
-                              "azure-arc-kubeadm",
-                              "azure-arc-openshift"
-                            ],
+                            "source": {
+                              "type": "ArcControllerConfigProfilesOptionsSource"
+                            },
                             "defaultValue": "azure-arc-aks-default-storage",
                             "optionsType": "radio"
                           }
