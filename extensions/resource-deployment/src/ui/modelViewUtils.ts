@@ -9,7 +9,7 @@ import { EOL, homedir as os_homedir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { OptionsSource } from '../helpers/optionSources';
+import { OptionsSources } from '../helpers/optionSources';
 import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
@@ -434,7 +434,7 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 	throwUnless('optionsType' in context.fieldInfo.options, loc.optionsTypeNotFound);
 	if (context.fieldInfo.options.source) {
 		try {
-			context.fieldInfo.options.source = OptionsSource.create(context.fieldInfo.options.source.type, context.fieldInfo.options.source.variableNames);
+			context.fieldInfo.options.source = OptionsSources.create(context.fieldInfo.options.source.type, context.fieldInfo.options.source.variableNames);
 			context.fieldInfo.options.values = await context.fieldInfo.options.source.getOptions();
 		}
 		catch (e) {
