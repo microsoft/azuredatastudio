@@ -166,7 +166,6 @@ export class SummaryPage extends ImportPage {
 		this.statusText.updateProperties({
 			value: updateText
 		});
-		return;
 	}
 
 	// private async getCountRowsInserted(): Promise<Number> {
