@@ -6,7 +6,7 @@ import * as cp from 'child_process';
 import * as net from 'net';
 import { getNLSConfiguration } from 'vs/server/remoteLanguagePacks';
 import { uriTransformerPath } from 'vs/server/remoteUriTransformer';
-import { FileAccess } from 'vs/base/common/network';
+import { getPathFromAmdModule } from 'vs/base/common/amd';
 import { join, delimiter } from 'vs/base/common/path';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { IRemoteConsoleLog } from 'vs/base/common/console';
@@ -168,7 +168,7 @@ export class ExtensionHostConnection {
 			if (useHostProxy !== undefined) {
 				args.push(`--useHostProxy=${useHostProxy}`);
 			}
-			this._extensionHostProcess = cp.fork(FileAccess.asFileUri('bootstrap-fork', require).fsPath, args, opts);
+			this._extensionHostProcess = cp.fork(getPathFromAmdModule(require, 'bootstrap-fork'), args, opts);
 			const pid = this._extensionHostProcess.pid;
 			this._log(`<${pid}> Launched Extension Host Process.`);
 

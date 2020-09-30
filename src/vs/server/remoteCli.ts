@@ -8,8 +8,7 @@ import * as _cp from 'child_process';
 import * as _http from 'http';
 import * as _os from 'os';
 import { dirname, extname, resolve } from 'vs/base/common/path';
-import { parseArgs, buildHelpMessage, buildVersionMessage, OPTIONS, OptionDescriptions } from 'vs/platform/environment/node/argv';
-import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
+import { parseArgs, buildHelpMessage, buildVersionMessage, OPTIONS, OptionDescriptions, ParsedArgs } from 'vs/platform/environment/node/argv';
 import { createWaitMarkerFile } from 'vs/platform/environment/node/waitMarkerFile';
 import { OpenCommandPipeArgs, RunCommandPipeArgs, StatusPipeArgs } from 'vs/workbench/api/node/extHostCLIServer';
 import { hasStdinWithoutTty, getStdinFilePath, readFromStdin } from 'vs/platform/environment/node/stdin';
@@ -22,7 +21,7 @@ interface ProductDescription {
 }
 
 
-const isSupportedForCmd = (optionId: keyof NativeParsedArgs) => {
+const isSupportedForCmd = (optionId: keyof ParsedArgs) => {
 	switch (optionId) {
 		case 'user-data-dir':
 		case 'extensions-dir':
@@ -44,7 +43,7 @@ const isSupportedForCmd = (optionId: keyof NativeParsedArgs) => {
 	}
 };
 
-const isSupportedForPipe = (optionId: keyof NativeParsedArgs) => {
+const isSupportedForPipe = (optionId: keyof ParsedArgs) => {
 	switch (optionId) {
 		case 'version':
 		case 'help':
@@ -68,7 +67,7 @@ const cliCommand = process.env['VSCODE_CLIENT_COMMAND'] as string;
 const cliCommandCwd = process.env['VSCODE_CLIENT_COMMAND_CWD'] as string;
 const remoteAuthority = process.env['VSCODE_CLI_AUTHORITY'] as string;
 
-interface RemoteParsedArgs extends NativeParsedArgs { 'gitCredential'?: string; }
+interface RemoteParsedArgs extends ParsedArgs { 'gitCredential'?: string; }
 
 export function main(desc: ProductDescription, args: string[]): void {
 	if (!cliPipe && !cliCommand) {
@@ -80,7 +79,7 @@ export function main(desc: ProductDescription, args: string[]): void {
 	const options: OptionDescriptions<RemoteParsedArgs> = { ...OPTIONS };
 	const isSupported = cliCommand ? isSupportedForCmd : isSupportedForPipe;
 	for (const optionId in OPTIONS) {
-		const optId = <keyof NativeParsedArgs>optionId;
+		const optId = <keyof ParsedArgs>optionId;
 		if (!isSupported(optId)) {
 			delete options[optId];
 		}
