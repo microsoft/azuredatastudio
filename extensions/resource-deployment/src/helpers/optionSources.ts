@@ -21,8 +21,8 @@ export abstract class OptionsSource implements IOptionsSource {
 	get type(): OptionsSourceType { return this._type; }
 	get variableNames(): { [index: string]: string; } { return this._variableNames; }
 
-	abstract getOptions(): Promise<string[] | CategoryValue[]> | string[] | CategoryValue[];
-	getVariableValue(variableName: string, controllerLabel: string): Promise<string> | string {
+	abstract getOptions(): Promise<string[] | CategoryValue[]>;
+	getVariableValue(variableName: string, controllerLabel: string): Promise<string> {
 		throw new Error(loc.variableValueFetchForUnsupportedVariable(variableName));
 	}
 

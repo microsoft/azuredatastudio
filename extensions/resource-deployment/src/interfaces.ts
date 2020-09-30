@@ -219,10 +219,10 @@ export type ComponentCSSStyles = {
 };
 
 export interface IOptionsSource {
-	readonly type: OptionsSourceType,
-	readonly variableNames: { [index: string]: string; },
-	getOptions(): Promise<string[] | azdata.CategoryValue[]> | string[] | azdata.CategoryValue[],
-	getVariableValue(variableName: string, input: string): Promise<string> | string;
+	readonly type: OptionsSourceType;
+	readonly variableNames: { [index: string]: string; };
+	getOptions(): Promise<string[] | azdata.CategoryValue[]>;
+	getVariableValue(variableName: string, input: string): Promise<string>;
 	getIsPassword(variableName: string): boolean;
 }
 
