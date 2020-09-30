@@ -78,14 +78,21 @@ export class PostgresOverviewPage extends DashboardPage {
 		this.grafanaLink = this.modelView.modelBuilder.hyperlink().component();
 
 		this.kibanaLoading = this.modelView.modelBuilder.loadingComponent()
-			.withItem(this.kibanaLink)
+			.withProperties<azdata.LoadingComponentProperties>(
+				{ loading: !this._postgresModel?.configLastUpdated }
+			)
 			.component();
 
 		this.grafanaLoading = this.modelView.modelBuilder.loadingComponent()
-			.withItem(this.grafanaLink)
+			.withProperties<azdata.LoadingComponentProperties>(
+				{ loading: !this._postgresModel?.configLastUpdated }
+			)
 			.component();
 
 		this.refreshDashboardLinks();
+
+		this.kibanaLoading.component = this.kibanaLink;
+		this.grafanaLoading.component = this.grafanaLink;
 
 		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
