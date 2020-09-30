@@ -441,7 +441,8 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 					break;
 				case OptionsSourceType.ArcControllerConfigProfilesOptionsSource:
 					optionsSource = new ArcControllerConfigProfilesOptionsSource(context.fieldInfo.options.source.variableNames, context.fieldInfo.options.source.type);
-					break; default:
+					break;
+				default:
 					throw new Error(loc.noOptionsSourceDefined(context.fieldInfo.options.source.type));
 			}
 			context.fieldInfo.options.source = optionsSource;
