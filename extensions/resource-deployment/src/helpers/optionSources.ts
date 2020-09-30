@@ -16,7 +16,7 @@ export const enum OptionsSourceType {
 	ArcControllerConfigProfilesOptionsSource = 'ArcControllerConfigProfilesOptionsSource'
 }
 
-export namespace OptionsSources {
+export namespace OptionsSource {
 	/**
 	 *
 	 * Creates a new OptionsSource object for a given type.
@@ -25,7 +25,7 @@ export namespace OptionsSources {
 	 * @param variableNames - additional variableNames to be populated for this source
 	 */
 	export function create(sourceType: OptionsSourceType, variableNames: { [index: string]: string }): IOptionsSource {
-		return new OptionsSources[sourceType](variableNames, sourceType);
+		return new OptionsSource[sourceType](variableNames, sourceType);
 	}
 
 	/**
