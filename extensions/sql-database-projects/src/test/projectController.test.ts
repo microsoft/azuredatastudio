@@ -528,7 +528,9 @@ describe('ProjectsController', function (): void {
 			const addDbReferenceDialog = TypeMoq.Mock.ofType(AddDatabaseReferenceDialog, undefined, undefined, proj);
 			addDbReferenceDialog.callBase = true;
 			addDbReferenceDialog.setup(x => x.addReferenceClick()).returns(() => {
-				projController.object.addDatabaseReferenceCallback(proj, { systemDb: SystemDatabase.master, databaseName: 'master', suppressMissingDependenciesErrors: false }, new SqlDatabaseProjectTreeViewProvider());
+				projController.object.addDatabaseReferenceCallback(proj,
+					{ systemDb: SystemDatabase.master, databaseName: 'master', suppressMissingDependenciesErrors: false },
+					{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
 				return Promise.resolve(undefined);
 			});
 
@@ -563,7 +565,7 @@ describe('ProjectsController', function (): void {
 				projectRelativePath: undefined,
 				suppressMissingDependenciesErrors: false
 			},
-				new SqlDatabaseProjectTreeViewProvider());
+				{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
 			should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
 
 			// try to add circular reference
@@ -573,7 +575,7 @@ describe('ProjectsController', function (): void {
 				projectRelativePath: undefined,
 				suppressMissingDependenciesErrors: false
 			},
-				new SqlDatabaseProjectTreeViewProvider());
+				{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
 			should(showErrorMessageSpy.called).be.true('showErrorMessage should have been called');
 		});
 

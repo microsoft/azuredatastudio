@@ -46,8 +46,8 @@ export class ProjectsController {
 		this.buildHelper = new BuildHelper();
 	}
 
-	public refreshProjectsTree(treeProvider: vscode.TreeDataProvider<any>) {
-		(treeProvider as SqlDatabaseProjectTreeViewProvider).notifyTreeDataChanged();
+	public refreshProjectsTree(workspaceTreeItem: dataworkspace.WorkspaceTreeItem) {
+		(workspaceTreeItem.treeDataProvider as SqlDatabaseProjectTreeViewProvider).notifyTreeDataChanged();
 	}
 
 	public async openProject(projectFile: vscode.Uri): Promise<Project> {
@@ -261,7 +261,7 @@ export class ProjectsController {
 			}
 
 			await project.addFolderItem(relativeFolderPath);
-			this.refreshProjectsTree(treeNode.treeDataProvider);
+			this.refreshProjectsTree(treeNode);
 		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
@@ -337,7 +337,7 @@ export class ProjectsController {
 			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.uri.path));
 		}
 
-		this.refreshProjectsTree(context.treeDataProvider);
+		this.refreshProjectsTree(context);
 	}
 
 	public async delete(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
@@ -364,7 +364,7 @@ export class ProjectsController {
 		}
 
 		if (success) {
-			this.refreshProjectsTree(context.treeDataProvider);
+			this.refreshProjectsTree(context);
 		} else {
 			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.uri.path));
 		}
@@ -434,7 +434,7 @@ export class ProjectsController {
 		if (project) {
 			// won't open any newly referenced projects, but otherwise matches the behavior of reopening the project
 			await project.readProjFile();
-			this.refreshProjectsTree(context.treeDataProvider);
+			this.refreshProjectsTree(context);
 		} else {
 			throw new Error(constants.invalidProjectReload);
 		}
@@ -448,14 +448,14 @@ export class ProjectsController {
 		const project = this.getProjectFromContext(context);
 
 		const addDatabaseReferenceDialog = this.getAddDatabaseReferenceDialog(project);
-		addDatabaseReferenceDialog.addReference = async (proj, prof) => await this.addDatabaseReferenceCallback(proj, prof, (<dataworkspace.WorkspaceTreeItem>context).treeDataProvider);
+		addDatabaseReferenceDialog.addReference = async (proj, prof) => await this.addDatabaseReferenceCallback(proj, prof, context as dataworkspace.WorkspaceTreeItem);
 
 		addDatabaseReferenceDialog.openDialog();
 
 		return addDatabaseReferenceDialog;
 	}
 
-	public async addDatabaseReferenceCallback(project: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings, treeDataProvider: vscode.TreeDataProvider<BaseProjectTreeItem>): Promise<void> {
+	public async addDatabaseReferenceCallback(project: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings, context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		try {
 			if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
 				// get project path and guid
@@ -482,7 +482,7 @@ export class ProjectsController {
 				await project.addDatabaseReference(<IDacpacReferenceSettings>settings);
 			}
 
-			this.refreshProjectsTree(treeDataProvider);
+			this.refreshProjectsTree(context);
 		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
