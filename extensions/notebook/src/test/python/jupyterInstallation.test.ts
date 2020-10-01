@@ -9,6 +9,7 @@ import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 import * as uuid from 'uuid';
 import * as fs from 'fs-extra';
+import * as request from 'request';
 import * as utils from '../../common/utils';
 import { JupyterServerInstallation, PythonInstallSettings, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
 import { powershellDisplayName, pysparkDisplayName, python3DisplayName, sparkRDisplayName, sparkScalaDisplayName, winPlatform } from '../../common/constants';
@@ -202,35 +203,41 @@ describe('Jupyter Server Installation', function () {
 		should(commandStr.includes('"jupyter==1.0.0" "TestPkg2==4.5.6"')).be.true();
 	});
 
-	it('Get required packages test', async function() {
-		// Undefined argument
+	it('Get required packages test - Undefined argument', async function() {
 		let packages = installation.getRequiredPackagesForKernel(undefined);
 		should(packages).not.be.undefined();
 		should(packages.length).be.equal(0);
+	});
 
-		// Invalid kernel name
-		packages = installation.getRequiredPackagesForKernel('NotARealKernel');
+	it('Get required packages test - Fake kernel', async function() {
+		let packages = installation.getRequiredPackagesForKernel('NotARealKernel');
 		should(packages).not.be.undefined();
 		should(packages.length).be.equal(0);
+	});
 
-		// Python 3
+	it('Get required packages test - Python 3 kernel', async function() {
 		let expectedPackages: PythonPkgDetails[] = [{
 			name: 'jupyter',
 			version: '1.0.0'
 		}];
-		packages = installation.getRequiredPackagesForKernel(python3DisplayName);
+		let packages = installation.getRequiredPackagesForKernel(python3DisplayName);
 		should(packages).be.deepEqual(expectedPackages);
+	});
 
-		// Powershell
-		expectedPackages.push({
+	it('Get required packages test - Powershell kernel', async function() {
+		let expectedPackages = [{
+			name: 'jupyter',
+			version: '1.0.0'
+		}, {
 			name: 'powershell-kernel',
 			version: '0.1.3'
-		});
-		packages = installation.getRequiredPackagesForKernel(powershellDisplayName);
+		}];
+		let packages = installation.getRequiredPackagesForKernel(powershellDisplayName);
 		should(packages).be.deepEqual(expectedPackages);
+	});
 
-		// PySpark
-		expectedPackages = [{
+	it('Get required packages test - Spark kernels', async function() {
+		let expectedPackages = [{
 			name: 'jupyter',
 			version: '1.0.0'
 		}, {
@@ -243,17 +250,17 @@ describe('Jupyter Server Installation', function () {
 			name: 'prose-codeaccelerator',
 			version: '1.3.0'
 		}];
-		packages = installation.getRequiredPackagesForKernel(pysparkDisplayName);
-		should(packages).be.deepEqual(expectedPackages);
+		let packages = installation.getRequiredPackagesForKernel(pysparkDisplayName);
+		should(packages).be.deepEqual(expectedPackages, "Unexpected packages for PySpark kernel.");
 
 		packages = installation.getRequiredPackagesForKernel(sparkScalaDisplayName);
-		should(packages).be.deepEqual(expectedPackages);
+		should(packages).be.deepEqual(expectedPackages, "Unexpected packages for Spark Scala kernel.");
 
 		packages = installation.getRequiredPackagesForKernel(sparkRDisplayName);
-		should(packages).be.deepEqual(expectedPackages);
+		should(packages).be.deepEqual(expectedPackages, "Unexpected packages for Spark R kernel.");
 	});
 
-	it('Install python test', async function() {
+	it('Install python test - Run install while Python is already running', async function() {
 		// Should reject overwriting an existing python install if running on Windows and python is currently running.
 		if (process.platform === winPlatform) {
 			sinon.stub(utils, 'executeBufferedCommand').resolves('python.exe');
@@ -264,36 +271,29 @@ describe('Jupyter Server Installation', function () {
 				packages: []
 			};
 			await should(installation.startInstallProcess(false, installSettings)).be.rejected();
-
-			sinon.restore();
 		}
+	});
 
-		// Install required packages to existing python instance
+	it('Install python test - Run install with existing Python instance', async function() {
 		let installSettings: PythonInstallSettings = {
 			installPath: `${process.env['USERPROFILE']}\\ads-python`,
 			existingPython: true,
 			packages: installation.getRequiredPackagesForKernel(python3DisplayName)
 		};
 
-		sinon.stub(utils, 'exists')
-			.onFirstCall().resolves(true) // First call is in configurePackagePaths
-			.onSecondCall().resolves(true) // Second call is in installDependencies
-			.onThirdCall().rejects(new Error('Unexpected call to utils.exists.'));
-
-		sinon.stub(utils, 'executeBufferedCommand')
-			.onFirstCall().resolves(`${installSettings.installPath}\\site-packages`) // Called from getPythonUserDir, which gets called in configurePackagePaths
-			.onSecondCall().rejects(new Error('Unexpected call to utils.executeBufferedCommand.'));
-
-		sinon.stub(fs, 'existsSync')
-			.onFirstCall().returns(false) // Called from isCondaInstalled, which gets called in configurePackagePaths
-			.onSecondCall().rejects(new Error('Unexpected call to fs.existsSync.'));
+		sinon.stub(utils, 'exists').resolves(true);
+		sinon.stub(fs, 'existsSync').returns(false);
+		sinon.stub(utils, 'executeBufferedCommand').resolves(`${installSettings.installPath}\\site-packages`);
 
 		// Both of these are called from upgradePythonPackages
 		sinon.stub(installation, 'getInstalledPipPackages').resolves([]);
 		let pipInstallStub = sinon.stub(installation, 'installPipPackages').resolves();
 
+		let httpRequestSpy = sinon.spy(request, 'get');
+
 		await should(installation.startInstallProcess(false, installSettings)).be.resolved();
 
+		should(httpRequestSpy.callCount).be.equal(0);
 		should(pipInstallStub.callCount).be.equal(1);
 
 		let packagesToInstall = pipInstallStub.firstCall.args[0] as PythonPkgDetails[];
