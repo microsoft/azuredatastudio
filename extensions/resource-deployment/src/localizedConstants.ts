@@ -50,23 +50,17 @@ export function getResourceTypeCategoryLocalizedString(resourceTypeCategory: str
 	switch (resourceTypeCategory) {
 		case ResourceTypeCategories.ALL:
 			return localize('resourceTypePickerDialog.resourceTypeCategoryAll', "All");
-			break;
 		case ResourceTypeCategories.ONPREM:
 			return localize('resourceTypePickerDialog.resourceTypeCategoryOnPrem', "On-premises");
-			break;
 		case ResourceTypeCategories.SQLSERVER:
 			return localize('resourceTypePickerDialog.resourceTypeCategoriesSqlServer', "SQL Server");
-			break;
 		case ResourceTypeCategories.HYBRID:
 			return localize('resourceTypePickerDialog.resourceTypeCategoryOnHybrid', "Hybrid");
-			break;
 		case ResourceTypeCategories.POSTGRESQL:
 			return localize('resourceTypePickerDialog.resourceTypeCategoryOnPostgreSql', "PostgreSQL");
-			break;
 		case ResourceTypeCategories.CLOUD:
 			return localize('resourceTypePickerDialog.resourceTypeCategoryOnCloud', "Cloud");
-			break;
 		default:
-			return '';
+			return resourceTypeCategory;
 	}
 }
