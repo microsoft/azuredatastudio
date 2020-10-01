@@ -35,11 +35,14 @@ export class AzureSettingsPage extends BasePage {
 	// //dropdown for azure regions <- subscription dropdown //@todo alma1 9/8/2020 Region dropdown used for upcoming server creation feature.
 	// private _azureRegionsDropdown!: azdata.DropDownComponent;
 
-	//dropdown for Supported Server Versions <- server dropdown.
+	//dropdown for Managed Instance Versions <- server dropdown.
 	private _dbManagedInstanceDropdown!: azdata.DropDownComponent;
 
-	//dropdown for Supported Managed Instance Editions <- server dropdown.
+	//dropdown for Supported Editions <- Managed Instance dropdown.
 	private _dbSupportedEditionsDropdown!: azdata.DropDownComponent;
+
+	//dropdown for Supported Family <- Supported Editions dropdown.
+	private _dbSupportedFamilyDropdown!: azdata.DropDownComponent;
 
 	private _form!: azdata.FormContainer;
 
@@ -65,7 +68,8 @@ export class AzureSettingsPage extends BasePage {
 				this.createServerDropdown(view),
 				//this.createAzureRegionsDropdown(view) //@todo alma1 9/8/2020 used for upcoming server creation feature.
 				this.createManagedInstanceDropdown(view),
-				this.createSupportedEditionsDropdown(view)
+				this.createSupportedEditionsDropdown(view),
+				this.createSupportedFamilyDropdown(view)
 			]);
 			this.populateAzureAccountsDropdown();
 
@@ -95,6 +99,9 @@ export class AzureSettingsPage extends BasePage {
 						},
 						{
 							component: this.wizard.createFormRowComponent(view, constants.DatabaseSupportedEditionsDropdownLabel, '', this._dbSupportedEditionsDropdown, true)
+						},
+						{
+							component: this.wizard.createFormRowComponent(view, constants.DatabaseSupportedFamilyDropdownLabel, '', this._dbSupportedFamilyDropdown, true)
 						}
 					],
 					{
@@ -416,7 +423,6 @@ export class AzureSettingsPage extends BasePage {
 			required: true,
 		}).component();
 		this._dbManagedInstanceDropdown.onValueChanged(async (value) => {
-			console.log(value);
 		});
 	}
 
@@ -503,6 +509,7 @@ export class AzureSettingsPage extends BasePage {
 				values: []
 			});
 			this._dbSupportedEditionsDropdown.loading = false;
+			await this.populateSupportedFamilyDropdown();
 			return;
 		}
 		let currentManagedInstanceValue = this._dbManagedInstanceDropdown.value as any;
@@ -516,6 +523,7 @@ export class AzureSettingsPage extends BasePage {
 				]
 			});
 			this._dbSupportedEditionsDropdown.loading = false;
+			await this.populateSupportedFamilyDropdown();
 			return;
 		}
 
@@ -529,6 +537,7 @@ export class AzureSettingsPage extends BasePage {
 				],
 			});
 			this._dbSupportedEditionsDropdown.loading = false;
+			await this.populateSupportedFamilyDropdown();
 			return;
 		} else {
 			currentManagedInstanceValue.supportedEditions.sort((a: any, b: any) => (a!.name > b!.name) ? 1 : -1);
@@ -538,7 +547,7 @@ export class AzureSettingsPage extends BasePage {
 			currentManagedInstanceValue.supportedEditions.map((value: any) => {
 				return {
 					displayName: value.name,
-					name: value.name
+					name: value.supportedFamilies
 				};
 			})
 		);
@@ -546,14 +555,85 @@ export class AzureSettingsPage extends BasePage {
 			this.wizard.model.databaseEdition = (this._dbSupportedEditionsDropdown.value as azdata.CategoryValue).displayName;
 		}
 		this._dbSupportedEditionsDropdown.loading = false;
+		await this.populateSupportedFamilyDropdown();
+		return;
+	}
+
+	private async createSupportedFamilyDropdown(view: azdata.ModelView) {
+		this._dbSupportedFamilyDropdown = view.modelBuilder.dropDown().withProperties({
+			required: true,
+		}).component();
+		this._dbSupportedFamilyDropdown.onValueChanged(async (value) => {
+			this.wizard.model.databaseFamily = value.selected;
+		});
+	}
+
+	private async populateSupportedFamilyDropdown() {
+		this._dbSupportedFamilyDropdown.loading = true;
+		if (!this._dbSupportedEditionsDropdown.values || this._dbSupportedEditionsDropdown.values!.length === 0) {
+			this._dbSupportedFamilyDropdown.updateProperties({
+				values: []
+			});
+			this._dbSupportedFamilyDropdown.loading = false;
+			return;
+		}
+		let currentSupportedEditionValue = this._dbSupportedEditionsDropdown.value as any;
+		if (!currentSupportedEditionValue.name) {
+			this._dbSupportedFamilyDropdown.updateProperties({
+				values: [
+					{
+						displayName: localize('deployAzureSQLDB.NoSupportedEditionLabel', "Supported Edition not selected"),
+						name: ''
+					}
+				]
+			});
+			this._dbSupportedFamilyDropdown.loading = false;
+			return;
+		}
+
+		if (currentSupportedEditionValue.name.length === 0) {
+			this._dbSupportedFamilyDropdown.updateProperties({
+				values: [
+					{
+						displayName: localize('deployAzureSQLDB.NoSupportedFamiliesLabel', "No database family types found."),
+						name: ''
+					}
+				],
+			});
+			this._dbSupportedFamilyDropdown.loading = false;
+			return;
+		} else {
+			currentSupportedEditionValue.name.sort((a: any, b: any) => (a!.name > b!.name) ? 1 : -1);
+		}
+		this.wizard.addDropdownValues(
+			this._dbSupportedFamilyDropdown,
+			currentSupportedEditionValue.name.map((value: any) => {
+				return {
+					displayName: value.name,
+					name: value
+				};
+			})
+		);
+		if (this._dbSupportedFamilyDropdown.value) {
+			this.wizard.model.databaseFamily = (this._dbSupportedFamilyDropdown.value as any).displayName;
+		}
+		this._dbSupportedFamilyDropdown.loading = false;
 		return;
 	}
 
 	protected async validatePage(): Promise<string> {
 		let errorMessages = [];
-		let serverName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
-		if (serverName === 'No servers found') {
+		let serverName = (this._serverGroupDropdown.value as azdata.CategoryValue).name;
+		if (serverName === '') {
 			errorMessages.push(localize('deployAzureSQLDB.NoServerError', "No servers found in current subscription.\nSelect a different subscription containing at least one server"));
+		}
+		let supportedEditionName = (this._dbSupportedEditionsDropdown.value as azdata.CategoryValue).name;
+		if (supportedEditionName === '') {
+			errorMessages.push(localize('deployAzureSQLDB.SupportedEditionError', "No Supported DB Edition found in current server.\nSelect a different server"));
+		}
+		let familyName = (this._dbSupportedFamilyDropdown.value as azdata.CategoryValue).name;
+		if (familyName === '') {
+			errorMessages.push(localize('deployAzureSQLDB.SupportedFamiliesError', "No Supported Family found in current DB edition.\nSelect a different edition"));
 		}
 
 		this.wizard.showErrorMessage(errorMessages.join(EOL));
