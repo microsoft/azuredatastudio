@@ -35,7 +35,13 @@ declare module 'arc' {
 		resources: ResourceInfo[]
 	};
 
+	export interface DataController {
+		label: string,
+		info: ControllerInfo
+	}
 	export interface IExtension {
-		getRegisteredDataControllers(): Promise<ControllerInfo[]>;
+		getRegisteredDataControllers(): Promise<DataController[]>;
+		getControllerPassword(controllerInfo: ControllerInfo): Promise<string>;
+		reacquireControllerPassword(controllerInfo: ControllerInfo, password: string, retryCount?: number): Promise<string>;
 	}
 }

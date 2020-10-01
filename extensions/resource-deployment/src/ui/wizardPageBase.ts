@@ -25,7 +25,7 @@ export abstract class WizardPageBase<T> {
 
 	public async onEnter(): Promise<void> { }
 
-	public onLeave(): void { }
+	public async onLeave(): Promise<void> { }
 
 	public abstract initialize(): void;
 

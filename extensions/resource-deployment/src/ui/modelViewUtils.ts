@@ -3,27 +3,28 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
+import { azureResource } from 'azureResource';
 import * as fs from 'fs';
 import { EOL, homedir as os_homedir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { azureResource } from 'azureResource';
+import { OptionsSource } from '../helpers/optionSources';
 import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
-import { assert, getDateTimeString, getErrorMessage } from '../utils';
+import { KubeCtlTool, KubeCtlToolName } from '../services/tools/kubeCtlTool';
+import { IToolsService } from '../services/toolsService';
+import { getDateTimeString, getErrorMessage, throwUnless } from '../utils';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
-import { IToolsService } from '../services/toolsService';
-import { KubeCtlToolName, KubeCtlTool } from '../services/tools/kubeCtlTool';
 
 const localize = nls.loadMessageBundle();
 
 export type Validator = () => { valid: boolean, message: string };
-export type InputValueTransformer = (inputValue: string) => string;
+export type InputValueTransformer = (inputValue: string) => string | Promise<string>;
 export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder;
 export type InputComponentInfo = {
 	component: InputComponent;
@@ -353,7 +354,7 @@ function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata
 async function processField(context: FieldContext): Promise<void> {
 	switch (context.fieldInfo.type) {
 		case FieldType.Options:
-			processOptionsTypeField(context);
+			await processOptionsTypeField(context);
 			break;
 		case FieldType.DateTimeText:
 			processDateTimeTextField(context);
@@ -390,12 +391,23 @@ async function processField(context: FieldContext): Promise<void> {
 			await processKubeStorageClassField(context);
 			break;
 		default:
-			throw new Error(localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", context.fieldInfo.type));
+			throw new Error(loc.unknownFieldTypeError(context.fieldInfo.type));
 	}
 }
 
-function processOptionsTypeField(context: FieldContext): void {
-	assert(context.fieldInfo.options !== undefined, `FieldInfo.options must be defined for FieldType:${FieldType.Options}`);
+function disableControlButtons(container: azdata.window.Dialog | azdata.window.Wizard): void {
+	if ('okButton' in container) {
+		container.okButton.enabled = false;
+	} else {
+		container.doneButton.enabled = false;
+		container.nextButton.enabled = false;
+		container.backButton.enabled = false;
+		container.customButtons.forEach(b => b.enabled = false);
+	}
+}
+
+async function processOptionsTypeField(context: FieldContext): Promise<void> {
+	throwUnless(context.fieldInfo.options !== undefined, loc.optionsNotDefined(context.fieldInfo.type));
 	if (Array.isArray(context.fieldInfo.options)) {
 		context.fieldInfo.options = <OptionsInfo>{
 			values: context.fieldInfo.options,
@@ -403,17 +415,62 @@ function processOptionsTypeField(context: FieldContext): void {
 			optionsType: OptionsType.Dropdown
 		};
 	}
-	assert(typeof context.fieldInfo.options === 'object', `FieldInfo.options must be an object if it is not an array`);
-	assert('optionsType' in context.fieldInfo.options, `When FieldInfo.options is an object it must have 'optionsType' property`);
+	throwUnless(typeof context.fieldInfo.options === 'object', loc.optionsNotObjectOrArray);
+	throwUnless('optionsType' in context.fieldInfo.options, loc.optionsTypeNotFound);
+	if (context.fieldInfo.options.source) {
+		try {
+			// if options.source still points to the IOptionsSource interface make it to point to the implementation
+			context.fieldInfo.options.source = OptionsSource.construct(context.fieldInfo.options.source.type, context.fieldInfo.options.source.variableNames);
+			context.fieldInfo.options.values = await context.fieldInfo.options.source.getOptions();
+		}
+		catch (e) {
+			disableControlButtons(context.container);
+			context.container.message = {
+				text: getErrorMessage(e),
+				description: '',
+				level: azdata.window.MessageLevel.Error
+			};
+			context.fieldInfo.options.values = [];
+		}
+		context.fieldInfo.subFields = context.fieldInfo.subFields || [];
+	}
+	let optionsComponent: InputComponent;
 	if (context.fieldInfo.options.optionsType === OptionsType.Radio) {
-		processRadioOptionsTypeField(context);
+		optionsComponent = await processRadioOptionsTypeField(context);
 	} else {
-		assert(context.fieldInfo.options.optionsType === OptionsType.Dropdown, `When optionsType is not ${OptionsType.Radio} then it must be ${OptionsType.Dropdown}`);
-		processDropdownOptionsTypeField(context);
+		throwUnless(context.fieldInfo.options.optionsType === OptionsType.Dropdown, loc.optionsTypeRadioOrDropdown);
+		optionsComponent = processDropdownOptionsTypeField(context);
+	}
+	if (context.fieldInfo.options.source) {
+		const optionsSource = context.fieldInfo.options.source;
+		for (const key of Object.keys(optionsSource.variableNames ?? {})) {
+			context.fieldInfo.subFields!.push({
+				label: context.fieldInfo.label,
+				variableName: optionsSource.variableNames[key]
+			});
+			context.onNewInputComponentCreated(optionsSource.variableNames[key], {
+				component: optionsComponent,
+				inputValueTransformer: async (controllerName: string) => {
+					try {
+						const variableValue = await optionsSource.getVariableValue(key, controllerName);
+						return variableValue;
+					} catch (e) {
+						disableControlButtons(context.container);
+						context.container.message = {
+							text: getErrorMessage(e),
+							description: '',
+							level: azdata.window.MessageLevel.Error
+						};
+						return '';
+					}
+				},
+				isPassword: optionsSource.getIsPassword(key)
+			});
+		}
 	}
 }
 
-function processDropdownOptionsTypeField(context: FieldContext): void {
+function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDownComponent {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const options = context.fieldInfo.options as OptionsInfo;
 	const dropdown = createDropdown(context.view, {
@@ -427,6 +484,7 @@ function processDropdownOptionsTypeField(context: FieldContext): void {
 	dropdown.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: dropdown });
 	addLabelInputPairToContainer(context.view, context.components, label, dropdown, context.fieldInfo);
+	return dropdown;
 }
 
 function processDateTimeTextField(context: FieldContext): void {
@@ -579,8 +637,8 @@ function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
 	const readOnlyField = processReadonlyTextField(context, false /*allowEvaluation*/);
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
 		component: readOnlyField.text!,
-		inputValueTransformer: () => {
-			readOnlyField.text!.value = substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
+		inputValueTransformer: async () => {
+			readOnlyField.text!.value = await substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
 			return readOnlyField.text?.value!;
 		}
 	});
@@ -596,14 +654,15 @@ function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
  * @param inputValue
  * @param inputComponents
  */
-function substituteVariableValues(inputComponents: InputComponents, inputValue?: string): string | undefined {
-	Object.keys(inputComponents)
+async function substituteVariableValues(inputComponents: InputComponents, inputValue?: string): Promise<string | undefined> {
+	await Promise.all(Object.keys(inputComponents)
 		.filter(key => key.startsWith(NoteBookEnvironmentVariablePrefix))
-		.forEach(key => {
-			const value = getInputComponentValue(inputComponents, key) ?? '<undefined>';
+		.map(async key => {
+			const value = (await getInputComponentValue(inputComponents, key)) ?? '<undefined>';
 			const re: RegExp = new RegExp(`\\\$\\\(${key}\\\)`, 'gi');
 			inputValue = inputValue?.replace(re, value);
-		});
+		})
+	);
 	return inputValue;
 }
 
@@ -984,7 +1043,7 @@ async function handleSelectedAccountChanged(
 	}
 
 	try {
-		const response = await (await apiService.getAzurecoreApi()).getSubscriptions(selectedAccount, true);
+		const response = await apiService.azurecoreApi.getSubscriptions(selectedAccount, true);
 		if (!response) {
 			return;
 		}
@@ -1099,7 +1158,7 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 		return;
 	}
 	try {
-		const response = await (await apiService.getAzurecoreApi()).getResourceGroups(selectedAccount, selectedSubscription, true);
+		const response = await apiService.azurecoreApi.getResourceGroups(selectedAccount, selectedSubscription, true);
 		if (!response) {
 			return;
 		}
@@ -1150,8 +1209,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 		width: context.fieldInfo.labelWidth,
 		cssStyles: context.fieldInfo.labelCSSStyles
 	});
-	const azurecoreApi = await apiService.getAzurecoreApi();
-	const locationValues = context.fieldInfo.locations?.map(l => { return { name: l, displayName: azurecoreApi.getRegionDisplayName(l) }; });
+	const locationValues = context.fieldInfo.locations?.map(l => { return { name: l, displayName: apiService.azurecoreApi.getRegionDisplayName(l) }; });
 	const locationDropdown = createDropdown(context.view, {
 		defaultValue: locationValues?.find(l => l.name === context.fieldInfo.defaultValue),
 		width: context.fieldInfo.inputWidth,
@@ -1174,7 +1232,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 			label: label.value!,
 			variableName: context.fieldInfo.displayLocationVariableName
 		});
-		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, { component: locationDropdown, inputValueTransformer: (value => azurecoreApi.getRegionDisplayName(value)) });
+		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, { component: locationDropdown, inputValueTransformer: (value => apiService.azurecoreApi.getRegionDisplayName(value)) });
 	}
 	addLabelInputPairToContainer(context.view, context.components, label, locationDropdown, context.fieldInfo);
 	return locationDropdown;
@@ -1207,14 +1265,14 @@ export function getPasswordMismatchMessage(fieldName: string): string {
 	return localize('passwordNotMatch', "{0} doesn't match the confirmation password", fieldName);
 }
 
-export function setModelValues(inputComponents: InputComponents, model: Model): void {
-	Object.keys(inputComponents).forEach(key => {
-		const value = getInputComponentValue(inputComponents, key);
+export async function setModelValues(inputComponents: InputComponents, model: Model): Promise<void> {
+	await Promise.all(Object.keys(inputComponents).map(async key => {
+		const value = await getInputComponentValue(inputComponents, key);
 		model.setPropertyValue(key, value);
-	});
+	}));
 }
 
-function getInputComponentValue(inputComponents: InputComponents, key: string): string | undefined {
+async function getInputComponentValue(inputComponents: InputComponents, key: string): Promise<string | undefined> {
 	const input = inputComponents[key].component;
 	if (input === undefined) {
 		return undefined;
@@ -1236,7 +1294,10 @@ function getInputComponentValue(inputComponents: InputComponents, key: string): 
 	}
 	const inputValueTransformer = inputComponents[key].inputValueTransformer;
 	if (inputValueTransformer) {
-		value = inputValueTransformer(value || '');
+		value = inputValueTransformer(value ?? '');
+		if (typeof value !== 'string') {
+			value = await value;
+		}
 	}
 	return value;
 }

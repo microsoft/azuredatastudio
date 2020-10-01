@@ -289,8 +289,8 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		});
 	}
 
-	public onLeave() {
-		setModelValues(this.inputComponents, this.wizard.model);
+	public async onLeave(): Promise<void> {
+		await setModelValues(this.inputComponents, this.wizard.model);
 		Object.assign(this.wizard.inputComponents, this.inputComponents);
 		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			const variableDNSPrefixMapping: { [s: string]: string } = {};

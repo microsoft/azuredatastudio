@@ -94,9 +94,9 @@ export class DeploymentInputDialog extends DialogBase {
 		});
 	}
 
-	protected onComplete(): void {
+	protected async onComplete(): Promise<void> {
 		const model: Model = new Model();
-		setModelValues(this.inputComponents, model);
+		await setModelValues(this.inputComponents, model);
 		if (instanceOfNotebookBasedDialogInfo(this.dialogInfo)) {
 			model.setEnvironmentVariables();
 			if (this.dialogInfo.runNotebook) {
@@ -110,7 +110,7 @@ export class DeploymentInputDialog extends DialogBase {
 				});
 			}
 		} else {
-			vscode.commands.executeCommand(this.dialogInfo.command, model);
+			await vscode.commands.executeCommand(this.dialogInfo.command, model);
 		}
 	}
 
