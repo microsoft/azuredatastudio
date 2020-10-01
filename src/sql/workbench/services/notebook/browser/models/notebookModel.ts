@@ -846,8 +846,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (newConnection) {
 				if (newConnection.serverCapabilities?.notebookKernelAlias) {
 					this._currentKernelAlias = newConnection.serverCapabilities.notebookKernelAlias;
-					let sqlConnectionProvider = this._kernelDisplayNameToConnectionProviderIds.get('SQL');
-					this._kernelDisplayNameToConnectionProviderIds.set('SQL', sqlConnectionProvider);
 					this._kernelDisplayNameToConnectionProviderIds.set(newConnection.serverCapabilities.notebookKernelAlias, [newConnection.providerName]);
 				}
 				this._activeConnection = newConnection;
