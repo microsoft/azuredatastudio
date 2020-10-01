@@ -211,7 +211,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		const items: azdata.ListViewOption[] = [];
 		tags.forEach((t: string, idx: number) => {
 			items.push({
-				label: localize('deploymentDialog.tag' + idx, '{0}', t),
+				label: loc.getResourceTypeCategoryLocalizedString(t),
 				id: t
 			});
 		});
@@ -575,13 +575,12 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 	private getAllResourceTags(): string[] {
 		const supportedTags = [
-			constants.ResourceTypeCategoryAll,
-			constants.ResourceTypeCategoryOnPrem,
-			constants.ResourceTypeCategoryHybrid,
-			constants.ResourceTypeCategoryCloud,
-			constants.ResourceTypeCategorySql,
-			constants.ResourceTypeCategoryPostgre,
-			constants.ResourceTypeCategoryIot
+			constants.ResourceTypeCategories.ALL,
+			constants.ResourceTypeCategories.ONPREM,
+			constants.ResourceTypeCategories.HYBRID,
+			constants.ResourceTypeCategories.CLOUD,
+			constants.ResourceTypeCategories.SQLSERVER,
+			constants.ResourceTypeCategories.POSTGRESQL
 		];
 
 		const tagsWithResourceTypes = supportedTags.filter((tag) => {

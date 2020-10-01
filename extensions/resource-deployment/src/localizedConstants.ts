@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
+import { ResourceTypeCategories } from './constants';
 import { OptionsSourceType } from './helpers/optionSources';
 import { FieldType, OptionsType } from './interfaces';
 
@@ -45,11 +46,27 @@ export const resoucrceTypeCategoryListViewTitle = localize('resourceTypePickerDi
 export const scriptToNotebook = localize('ui.ScriptToNotebookButton', "Script");
 export const deployNotebook = localize('ui.DeployButton', "Run");
 
-export const ResourceTypeCategoryAll = 'All';
-export const ResourceTypeCategoryOnPrem = 'On-premises';
-export const ResourceTypeCategorySql = 'SQL Server';
-export const ResourceTypeCategoryHybrid = 'Hybrid';
-export const ResourceTypeCategoryPostgre = 'PostgreSQL';
-export const ResourceTypeCategoryCloud = 'Cloud';
-export const ResourceTypeCategoryIot = 'IoT Edge';
-
+export function getResourceTypeCategoryLocalizedString(resourceTypeCategory: string): string {
+	switch (resourceTypeCategory) {
+		case ResourceTypeCategories.ALL:
+			return localize('resourceTypePickerDialog.resourceTypeCategoryAll', "All");
+			break;
+		case ResourceTypeCategories.ONPREM:
+			return localize('resourceTypePickerDialog.resourceTypeCategoryOnPrem', "On-premises");
+			break;
+		case ResourceTypeCategories.SQLSERVER:
+			return localize('resourceTypePickerDialog.resourceTypeCategoriesSqlServer', "SQL Server");
+			break;
+		case ResourceTypeCategories.HYBRID:
+			return localize('resourceTypePickerDialog.resourceTypeCategoryOnHybrid', "Hybrid");
+			break;
+		case ResourceTypeCategories.POSTGRESQL:
+			return localize('resourceTypePickerDialog.resourceTypeCategoryOnPostgreSql', "PostgreSQL");
+			break;
+		case ResourceTypeCategories.CLOUD:
+			return localize('resourceTypePickerDialog.resourceTypeCategoryOnCloud', "Cloud");
+			break;
+		default:
+			return '';
+	}
+}
