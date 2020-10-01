@@ -325,21 +325,25 @@ export async function getRandomToken(size: number = 24): Promise<string> {
 }
 
 export function isBookItemPinned(notebookPath: string): boolean {
-	let pinnedNotebooks: IPinnedBookNotebook[] = getPinnedNotebooks();
+	let pinnedNotebooks: IBookNotebook[] = getPinnedNotebooks();
 	if (pinnedNotebooks?.find(x => x.notebookPath === notebookPath)) {
 		return true;
 	}
 	return false;
 }
 
-export function getPinnedNotebooks(): IPinnedBookNotebook[] {
+export function getPinnedNotebooks(): IBookNotebook[] {
 	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
-	let pinnedNotebooks: IPinnedBookNotebook[] = config.get(pinnedBooksConfigKey) ?? [];
+	let pinnedNotebooks: IBookNotebook[] = config.get(pinnedBooksConfigKey) ?? [];
 
 	return pinnedNotebooks;
 }
 
-export interface IPinnedBookNotebook {
-	rootPath?: string;
+export interface IBookNotebook {
+	bookPath?: string;
+	notebookPath: string;
+}
+
+export interface INotebook {
 	notebookPath: string;
 }

@@ -12,7 +12,7 @@ import * as fileServices from 'fs';
 import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, JupyterBookSection, IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
-import { IPinnedBookNotebook } from '../common/utils';
+import { IBookNotebook } from '../common/utils';
 
 const fsPromises = fileServices.promises;
 const content = 'content';
@@ -33,7 +33,7 @@ export class BookModel {
 	private _errorMessage: string;
 
 	constructor(
-		public readonly bookPath: string | IPinnedBookNotebook,
+		public readonly bookPath: string | IBookNotebook,
 		public readonly openAsUntitled: boolean,
 		public readonly isNotebook: boolean,
 		private _extensionContext: vscode.ExtensionContext) {
@@ -103,12 +103,17 @@ export class BookModel {
 		if (!this.isNotebook) {
 			return undefined;
 		}
-		let notebook = this.bookPath as IPinnedBookNotebook;
+		let notebook: IBookNotebook;
+		if (typeof this.bookPath === 'string') {
+			notebook = { bookPath: '', notebookPath: this.bookPath };
+		} else {
+			notebook = this.bookPath as IBookNotebook;
+		}
 		let pathDetails = path.parse(notebook.notebookPath);
 		let notebookItem = new BookTreeItem({
 			title: pathDetails.name,
 			contentPath: notebook.notebookPath,
-			root: notebook.rootPath ? notebook.rootPath : pathDetails.dir,
+			root: notebook.bookPath ? notebook.bookPath : pathDetails.dir,
 			tableOfContents: { sections: undefined },
 			page: { sections: undefined },
 			type: BookTreeItemType.Notebook,

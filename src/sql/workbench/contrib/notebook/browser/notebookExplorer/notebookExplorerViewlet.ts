@@ -273,7 +273,12 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 								this.updateViewletsState();
 								if (root.contextValue !== 'pinnedNotebook') {
 									let rootFolder = URI.file(root.resourceUri.path);
-									let folderToSearch = { folder: rootFolder };
+									let folderToSearch = {
+										folder: rootFolder, includePattern: {
+											'**/*.md': true,
+											'**/*.ipynb': true
+										}
+									};
 									query.folderQueries.push(folderToSearch);
 									filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
 								} else {
