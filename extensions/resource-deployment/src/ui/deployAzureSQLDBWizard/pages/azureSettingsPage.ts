@@ -691,6 +691,14 @@ export class AzureSettingsPage extends BasePage {
 				};
 			})
 		);
+		for (let i = 0; i < this._dbVCoreDropdown.values!.length; i++) {
+			let value = this._dbVCoreDropdown.values![i] as azdata.CategoryValue;
+			if (value.name === 'Default') {
+				this._dbVCoreDropdown.value = this._dbVCoreDropdown.values![i];
+				break;
+			}
+		}
+
 		if (this._dbVCoreDropdown.value) {
 			this.wizard.model.vCoreNumber = Number((this._dbVCoreDropdown.value as any).displayName);
 		}
