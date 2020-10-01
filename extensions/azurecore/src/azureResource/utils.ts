@@ -3,17 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
-import { azureResource } from 'azureResource';
-import { GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult } from 'azurecore';
-import { isArray } from 'util';
-import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
-import { TokenCredentials } from '@azure/ms-rest-js';
-import { AppContext } from '../appContext';
-import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionService } from './interfaces';
-import { AzureResourceServiceNames } from './constants';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
+import { TokenCredentials } from '@azure/ms-rest-js';
+import * as azdata from 'azdata';
+import { GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult } from 'azurecore';
+import { azureResource } from 'azureResource';
+import * as nls from 'vscode-nls';
+import { AppContext } from '../appContext';
+import { AzureResourceServiceNames } from './constants';
+import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionService } from './interfaces';
+import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
 
 const localize = nls.loadMessageBundle();
 
@@ -106,7 +105,7 @@ export function equals(one: any, other: any): boolean {
 
 export async function getResourceGroups(appContext: AppContext, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false): Promise<GetResourceGroupsResult> {
 	const result: GetResourceGroupsResult = { resourceGroups: [], errors: [] };
-	if (!account?.properties?.tenants || !isArray(account.properties.tenants) || !subscription) {
+	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants) || !subscription) {
 		const error = new Error(localize('azure.accounts.getResourceGroups.invalidParamsError', "Invalid account or subscription"));
 		if (!ignoreErrors) {
 			throw error;
@@ -146,7 +145,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 	ignoreErrors: boolean = false,
 	query: string): Promise<ResourceQueryResult<T>> {
 	const result: ResourceQueryResult<T> = { resources: [], errors: [] };
-	if (!account?.properties?.tenants || !isArray(account.properties.tenants)) {
+	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
 		const error = new Error(localize('azure.accounts.runResourceQuery.errors.invalidAccount', "Invalid account"));
 		if (!ignoreErrors) {
 			throw error;

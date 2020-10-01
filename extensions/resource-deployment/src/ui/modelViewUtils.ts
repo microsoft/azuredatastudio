@@ -1070,7 +1070,7 @@ async function handleSelectedAccountChanged(
 	}
 
 	try {
-		const response = await apiService.azurecoreApi.getSelectedSubscriptions(selectedAccount, true);
+		const response = await apiService.azurecoreApi.getSubscriptions(selectedAccount, true, false);
 		if (!response) {
 			return;
 		}

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-//import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { OptionsSourceType } from './helpers/optionSources';
 import { FieldType, OptionsType } from './interfaces';
@@ -12,7 +11,7 @@ const localize = nls.loadMessageBundle();
 
 export const account = localize('azure.account', "Azure Account");
 export const subscription = localize('azure.account.subscription', "Subscription (selected subset)");
-export const subscriptionDescription = localize('azure.account.subscriptionDescription', "Only subscriptions selected in Azure navigation tree are shown. Change the set of selected subscriptions in 'CONNECTIONS->AZURE' navigation tree to see others)");
+export const subscriptionDescription = localize('azure.account.subscriptionDescription', "Change the currently selected subscriptions through the 'Select Subscriptions' action on an account listed in the 'Azure' tree view of the 'Connections' viewlet");
 export const resourceGroup = localize('azure.account.resourceGroup', "Resource Group");
 export const location = localize('azure.account.location', "Azure Location");
 export const browse = localize('filePicker.browse', "Browse");
