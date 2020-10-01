@@ -32,6 +32,12 @@ declare module 'dataworkspace' {
 		getProjectTreeDataProvider(projectFile: vscode.Uri): Promise<vscode.TreeDataProvider<any>>;
 
 		/**
+		 * Notify the project provider extension that the specified project file has been removed from the data workspace
+		 * @param projectFile The Uri of the project file
+		 */
+		RemoveProject(projectFile: vscode.Uri): Promise<void>;
+
+		/**
 		 * Gets the supported project types
 		 */
 		readonly supportedProjectTypes: IProjectType[];

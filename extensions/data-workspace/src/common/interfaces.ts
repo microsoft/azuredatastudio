@@ -58,6 +58,17 @@ export interface IWorkspaceService {
 	 * @param projectFiles the list of project files to be added, the project file should be absolute path.
 	 */
 	addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void>;
+
+	/**
+	 * Remove the project from workspace
+	 * @param projectFile The project file to be removed
+	 */
+	removeProject(projectFile: vscode.Uri): Promise<void>;
+
+	/**
+	 * Event fires when projects in workspace changes
+	 */
+	readonly onDidWorkspaceProjectsChange: vscode.Event<void>;
 }
 
 /**

@@ -186,6 +186,10 @@ suite('WorkspaceService Tests', function (): void {
 		stubWorkspaceFile(DefaultWorkspaceFilePath);
 		const updateConfigurationStub = sinon.stub();
 		const getConfigurationStub = sinon.stub().returns([processPath('folder1/proj2.sqlproj')]);
+		const onWorkspaceProjectsChangedStub = sinon.stub();
+		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
+			onWorkspaceProjectsChangedStub();
+		});
 		stubGetConfigurationValue(getConfigurationStub, updateConfigurationStub);
 		const asRelativeStub = sinon.stub(vscode.workspace, 'asRelativePath');
 		sinon.stub(vscode.workspace, 'workspaceFolders').value(['.']);
@@ -207,5 +211,28 @@ suite('WorkspaceService Tests', function (): void {
 		should.strictEqual(updateWorkspaceFoldersStub.calledWith(1, null, sinon.match((arg) => {
 			return arg.uri.path === '/test/other';
 		})), true, 'updateWorkspaceFolder parameters does not match expectation');
+		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, true, 'the onDidWorkspaceProjectsChange event should have been fired');
+		onWorkspaceProjectsChangedDisposable.dispose();
 	});
+
+	test('test removeProject', async () => {
+		const processPath = (original: string): string => {
+			return original.replace(/\//g, path.sep);
+		};
+		stubWorkspaceFile(DefaultWorkspaceFilePath);
+		const updateConfigurationStub = sinon.stub();
+		const getConfigurationStub = sinon.stub().returns([processPath('folder1/proj2.sqlproj'), processPath('folder2/proj3.sqlproj')]);
+		const onWorkspaceProjectsChangedStub = sinon.stub();
+		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
+			onWorkspaceProjectsChangedStub();
+		});
+		stubGetConfigurationValue(getConfigurationStub, updateConfigurationStub);
+		await service.removeProject(vscode.Uri.file('/test/folder/folder1/proj2.sqlproj'));
+		should.strictEqual(updateConfigurationStub.calledWith('projects', sinon.match.array.deepEquals([
+			processPath('folder2/proj3.sqlproj')
+		]), vscode.ConfigurationTarget.Workspace), true, 'updateConfiguration parameters does not match expectation for remove project');
+		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, true, 'the onDidWorkspaceProjectsChange event should have been fired');
+		onWorkspaceProjectsChangedDisposable.dispose();
+	});
+
 });

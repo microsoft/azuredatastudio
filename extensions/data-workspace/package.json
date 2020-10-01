@@ -46,6 +46,10 @@
         "title": "%refresh-workspace-command%",
         "category": "",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "projects.removeProject",
+        "title": "%remove-project-command%"
       }
     ],
     "menus": {
@@ -69,6 +73,17 @@
         {
           "command": "dataworkspace.refresh",
           "when": "false"
+        },
+        {
+          "command": "projects.removeProject",
+          "when": "false"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "projects.removeProject",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "group": "9_dbProjectsLast@9"
         }
       ]
     },
