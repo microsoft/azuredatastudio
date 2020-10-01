@@ -7,6 +7,8 @@ import * as vscode from 'vscode';
 
 export const refreshActionId = 'arc.refresh';
 
+export const credentialNamespace = 'arcCredentials';
+
 export interface IconPath {
 	dark: string;
 	light: string;
