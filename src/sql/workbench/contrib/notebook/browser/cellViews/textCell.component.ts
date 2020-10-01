@@ -441,6 +441,13 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				return '\n```\n' + node.textContent + '\n```\n';
 			}
 		});
+		this.turndownService.addRule('caption', {
+			filter: 'caption',
+			replacement: function (content, node) {
+				return `${node.outerHTML}
+				`;
+			}
+		});
 		this.turndownService.addRule('span', {
 			filter: function (node, options) {
 				return (
