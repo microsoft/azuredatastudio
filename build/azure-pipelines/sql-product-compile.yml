@@ -96,8 +96,8 @@ steps:
     yarn gulp compile-build
     yarn gulp compile-extensions-build
     yarn gulp minify-vscode
-    yarn gulp minify-vscode-reh
-    yarn gulp minify-vscode-reh-web
+    yarn gulp minify-vscode-x64-reh
+    yarn gulp minify-vscode-x64-reh-web
   displayName: Compile
   condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
 
