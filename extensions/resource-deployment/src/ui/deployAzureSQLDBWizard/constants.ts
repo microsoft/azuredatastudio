@@ -36,3 +36,4 @@ export const EndIpAddressShortLabel = localize('deployAzureSQLDB.EndIpAddressSho
 export const DatabaseManagedInstanceDropdownLabel = localize('deployAzureSQLDB.DatabaseManagedInstanceDropdownLabel', "SQLDB Supported Versions");
 export const DatabaseSupportedEditionsDropdownLabel = localize('deployAzureSQLDB.DatabaseSupportedEditionsDropdownLabel', "Purpose Type");
 export const DatabaseSupportedFamilyDropdownLabel = localize('deployAzureSQLDB.DatabaseSupportedFamilyDropdownLabel', "Family Type");
+export const DatabaseVCoreNumberDropdownLabel = localize('deployAzureSQLDB.DatabaseVCoreNumberDropdownLabel', "Number of Vcores");

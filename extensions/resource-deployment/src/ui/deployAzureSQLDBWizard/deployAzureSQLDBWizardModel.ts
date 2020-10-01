@@ -18,6 +18,8 @@ export class DeployAzureSQLDBWizardModel extends Model {
 
 	public databaseEdition!: string;
 	public databaseFamily!: string;
+	public vCoreNumber!: number;
+	public storageInBytes!: number;
 
 	public databaseName!: string;
 	//public newServer!: 'True' | 'False'; //@todo alma1 9/8/2020 used for upcoming server creation feature.
@@ -45,6 +47,7 @@ export class DeployAzureSQLDBWizardModel extends Model {
 		statements.push(`azure_sqldb_firewall_name = '${this.firewallRuleName}'`);
 		statements.push(`azure_sqldb_collation = '${this.databaseCollation}'`);
 		statements.push(`azure_sqldb_family = '${this.databaseFamily}'`);
+		statements.push(`azure_sqldb_vcore = '${this.vCoreNumber}'`);
 		//statements.push(`azure_sqldb_new_server = '${this.newServer}'`); //@todo alma1 9/8/2020 used for upcoming server creation feature.
 
 		return statements.map(line => line.concat(EOL));

@@ -44,6 +44,9 @@ export class AzureSettingsPage extends BasePage {
 	//dropdown for Supported Family <- Supported Editions dropdown.
 	private _dbSupportedFamilyDropdown!: azdata.DropDownComponent;
 
+	//dropdown for VCore <= Supported Family dropdown.
+	private _dbVCoreDropdown!: azdata.DropDownComponent;
+
 	private _form!: azdata.FormContainer;
 
 	private _accountsMap!: Map<string, azdata.Account>;
@@ -69,7 +72,8 @@ export class AzureSettingsPage extends BasePage {
 				//this.createAzureRegionsDropdown(view) //@todo alma1 9/8/2020 used for upcoming server creation feature.
 				this.createManagedInstanceDropdown(view),
 				this.createSupportedEditionsDropdown(view),
-				this.createSupportedFamilyDropdown(view)
+				this.createSupportedFamilyDropdown(view),
+				this.createVCoreDropdown(view)
 			]);
 			this.populateAzureAccountsDropdown();
 
@@ -102,6 +106,9 @@ export class AzureSettingsPage extends BasePage {
 						},
 						{
 							component: this.wizard.createFormRowComponent(view, constants.DatabaseSupportedFamilyDropdownLabel, '', this._dbSupportedFamilyDropdown, true)
+						},
+						{
+							component: this.wizard.createFormRowComponent(view, constants.DatabaseVCoreNumberDropdownLabel, '', this._dbVCoreDropdown, true)
 						}
 					],
 					{
@@ -423,6 +430,7 @@ export class AzureSettingsPage extends BasePage {
 			required: true,
 		}).component();
 		this._dbManagedInstanceDropdown.onValueChanged(async (value) => {
+			this.populateSupportedEditionsDropdown();
 		});
 	}
 
@@ -499,6 +507,7 @@ export class AzureSettingsPage extends BasePage {
 		}).component();
 		this._dbSupportedEditionsDropdown.onValueChanged(async (value) => {
 			this.wizard.model.databaseEdition = value.selected;
+			this.populateSupportedFamilyDropdown();
 		});
 	}
 
@@ -565,6 +574,7 @@ export class AzureSettingsPage extends BasePage {
 		}).component();
 		this._dbSupportedFamilyDropdown.onValueChanged(async (value) => {
 			this.wizard.model.databaseFamily = value.selected;
+			this.populateVCoreDropdown();
 		});
 	}
 
@@ -575,6 +585,7 @@ export class AzureSettingsPage extends BasePage {
 				values: []
 			});
 			this._dbSupportedFamilyDropdown.loading = false;
+			await this.populateVCoreDropdown();
 			return;
 		}
 		let currentSupportedEditionValue = this._dbSupportedEditionsDropdown.value as any;
@@ -588,6 +599,7 @@ export class AzureSettingsPage extends BasePage {
 				]
 			});
 			this._dbSupportedFamilyDropdown.loading = false;
+			await this.populateVCoreDropdown();
 			return;
 		}
 
@@ -601,6 +613,7 @@ export class AzureSettingsPage extends BasePage {
 				],
 			});
 			this._dbSupportedFamilyDropdown.loading = false;
+			await this.populateVCoreDropdown();
 			return;
 		} else {
 			currentSupportedEditionValue.name.sort((a: any, b: any) => (a!.name > b!.name) ? 1 : -1);
@@ -618,6 +631,70 @@ export class AzureSettingsPage extends BasePage {
 			this.wizard.model.databaseFamily = (this._dbSupportedFamilyDropdown.value as any).displayName;
 		}
 		this._dbSupportedFamilyDropdown.loading = false;
+		await this.populateVCoreDropdown();
+		return;
+	}
+
+	private async createVCoreDropdown(view: azdata.ModelView) {
+		this._dbVCoreDropdown = view.modelBuilder.dropDown().withProperties({
+			required: true,
+		}).component();
+		this._dbVCoreDropdown.onValueChanged(async (value) => {
+			this.wizard.model.vCoreNumber = value.selected;
+		});
+	}
+
+	private async populateVCoreDropdown() {
+		this._dbVCoreDropdown.loading = true;
+		if (!this._dbSupportedFamilyDropdown.values || this._dbSupportedFamilyDropdown.values!.length === 0) {
+			this._dbVCoreDropdown.updateProperties({
+				values: []
+			});
+			this._dbVCoreDropdown.loading = false;
+			return;
+		}
+		let currentSupportedFamilyValue = this._dbSupportedFamilyDropdown.value as any;
+		if (!currentSupportedFamilyValue.name && !currentSupportedFamilyValue.name.supportedVcoresValues) {
+			this._dbVCoreDropdown.updateProperties({
+				values: [
+					{
+						displayName: localize('deployAzureSQLDB.NoSupportedFamilyLabel', "Supported Family not selected"),
+						name: ''
+					}
+				]
+			});
+			this._dbVCoreDropdown.loading = false;
+			return;
+		}
+
+		if (currentSupportedFamilyValue.name.supportedVcoresValues === 0) {
+			this._dbVCoreDropdown.updateProperties({
+				values: [
+					{
+						displayName: localize('deployAzureSQLDB.NoSupportedVCoreValuesLabel', "No VCore values found."),
+						name: ''
+					}
+				],
+			});
+			this._dbVCoreDropdown.loading = false;
+			return;
+		} else {
+			currentSupportedFamilyValue.name.supportedVcoresValues.sort((a: any, b: any) => (a!.value > b!.value) ? 1 : -1);
+		}
+
+		this.wizard.addDropdownValues(
+			this._dbVCoreDropdown,
+			currentSupportedFamilyValue.name.supportedVcoresValues.map((value: any) => {
+				return {
+					displayName: String(value.value),
+					name: value.status
+				};
+			})
+		);
+		if (this._dbVCoreDropdown.value) {
+			this.wizard.model.vCoreNumber = Number((this._dbVCoreDropdown.value as any).displayName);
+		}
+		this._dbVCoreDropdown.loading = false;
 		return;
 	}
 
