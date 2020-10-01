@@ -48,6 +48,7 @@ export class Checkbox extends Widget {
 		this.onkeydown(this._el, e => {
 			if (e.equals(KeyCode.Enter)) {
 				this.checked = !this.checked;
+				this._onChange.fire(this.checked);
 				e.stopPropagation();
 			}
 		});
