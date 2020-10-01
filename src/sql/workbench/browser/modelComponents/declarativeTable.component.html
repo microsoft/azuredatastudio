@@ -34,8 +34,8 @@
 						<span *ngIf="isLabel(c)" (click)="onCellClick(r)">
 							{{cellData.value}}
 						</span>
-						<model-component-wrapper *ngIf="isComponent(c) && getItemDescriptor(cellData)"
-							[descriptor]="getItemDescriptor(cellData)" [modelStore]="modelStore">
+						<model-component-wrapper *ngIf="isComponent(c) && getItemDescriptor(cellData.value)"
+							[descriptor]="getItemDescriptor(cellData.value)" [modelStore]="modelStore">
 						</model-component-wrapper>
 					</td>
 				</ng-container>
