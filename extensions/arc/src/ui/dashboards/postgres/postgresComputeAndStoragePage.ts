@@ -23,11 +23,16 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	private memoryMax?: azdata.InputBoxComponent;
 	private memoryMin?: azdata.InputBoxComponent;
 
+	private discardButton?: azdata.ButtonComponent;
+	private saveButton?: azdata.ButtonComponent;
+
 	private readonly _azdataApi: azdataExt.IExtension;
 
 	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+
+		this.initializeConfiguration();
 
 		this.disposables.push(this._postgresModel.onConfigUpdated(
 			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
@@ -77,11 +82,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.workerNodesDescription,
-			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'margin-bottom': '25px' }
 		}).component());
 
 		this.workerContainer = this.modelView.modelBuilder.divContainer().component();
-		this.workerContainer.addItems(this.updateWorkerConfiguration(), { CSSStyles: { 'margin-bottom': '5px', 'min-height': '30px', 'max-width': '350px' } });
+		this.workerContainer.addItems(this.updateWorkerConfiguration());
 		content.addItem(this.workerContainer);
 
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -91,11 +96,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.coordinatorNodeDescription,
-			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'margin-bottom': '25px' }
 		}).component());
 
 		this.coordinatorContainer = this.modelView.modelBuilder.divContainer().component();
-		this.coordinatorContainer.addItems(this.getCordinatorConfiguration(), { CSSStyles: { 'margin-bottom': '5px', 'min-height': '30px', 'max-width': '350px' } });
+		this.coordinatorContainer.addItems(this.getCordinatorConfiguration());
 		content.addItem(this.coordinatorContainer);
 
 		this.initialized = true;
@@ -105,14 +110,15 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
 		// Save Edits
-		const saveButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.saveButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.saveText,
-			iconPath: IconPathHelper.save
+			iconPath: IconPathHelper.save,
+			enabled: false
 		}).component();
 
 		this.disposables.push(
-			saveButton.onDidClick(async () => {
-				saveButton.enabled = false;
+			this.saveButton.onDidClick(async () => {
+				this.saveButton!.enabled = false;
 				try {
 					await vscode.window.withProgress(
 						{
@@ -124,7 +130,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 							return this._azdataApi.azdata.arc.postgres.server.edit(
 								this._postgresModel.info.name,
 								{
-									workers: this.worker?.value,
+									workers: this.worker!.value,
 									coresLimit: this.vCoresMin?.value,
 									coresRequest: this.vCoresMax?.value,
 									memoryLimit: this.memoryMin?.value,
@@ -138,36 +144,62 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
 				} finally {
-					saveButton.enabled = true;
+					this.discardButton!.enabled = false;
 				}
 			}));
 
 		// Discard
-		const discardButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.discardButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.discardText,
 			iconPath: IconPathHelper.discard,
-			enabled: true
+			enabled: false
 		}).component();
 
 		this.disposables.push(
-			discardButton.onDidClick(async () => {
-
-				discardButton.enabled = false;
+			this.discardButton.onDidClick(async () => {
+				this.discardButton!.enabled = false;
 				try {
 					this.workerContainer?.clearItems();
-					this.workerContainer?.addItems(this.updateWorkerConfiguration(), { CSSStyles: { 'margin-bottom': '5px', 'min-height': '30px', 'max-width': '350px' } });
+					this.workerContainer?.addItems(this.updateWorkerConfiguration());
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.refreshFailed(error));
-				}
-				finally {
-					discardButton.enabled = true;
+				} finally {
+					this.saveButton!.enabled = false;
 				}
 			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
-			{ component: saveButton },
-			{ component: discardButton }
+			{ component: this.saveButton },
+			{ component: this.discardButton }
 		]).component();
+	}
+
+	private initializeConfiguration() {
+		this.worker = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			readOnly: false
+		}).component();
+
+		this.advancedConfiguration = this.modelView.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+			checked: false,
+			label: loc.enableAdvancedConfiguration
+		}).component();
+
+		this.vCoresMax = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			readOnly: false
+		}).component();
+
+		this.vCoresMin = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			readOnly: false
+		}).component();
+
+		this.memoryMax = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			readOnly: false
+		}).component();
+
+		this.memoryMin = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			readOnly: false
+		}).component();
+
 	}
 
 	private updateWorkerConfiguration(): azdata.Component[] {
@@ -176,44 +208,20 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			return [];
 		}
 		else {
-			this.worker = this.editWorkerNodeCount();
-			this.advancedConfiguration = this.editAdvancedConfiguration();
-			this.vCoresMax = this.editMaxVCores();
-			this.vCoresMin = this.editMinVCores();
-			this.memoryMax = this.editMaxMemory();
-			this.memoryMin = this.editMinMemory();
+
+			this.editWorkerNodeCount();
+			this.editVCores(loc.vCoresMax);
+			this.editVCores(loc.vCoresMin);
+			this.editMemory(loc.memoryMax);
+			this.editMemory(loc.memoryMin);
 
 			return [
-				this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: loc.workerNodeCount,
-					CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-				}).component(),
-				this.worker,
-				this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: loc.configurationPerNode,
-					CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-				}).component(),
-				this.advancedConfiguration,
-				this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: loc.vCoresMax,
-					CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-				}).component(),
-				this.vCoresMax,
-				this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: loc.vCoresMin,
-					CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-				}).component(),
-				this.vCoresMin,
-				this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: loc.memoryMax,
-					CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-				}).component(),
-				this.memoryMax,
-				this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: loc.memoryMin,
-					CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-				}).component(),
-				this.memoryMin
+				this.keyInputContainer(loc.workerNodeCount, this.worker!),
+				this.keyInputContainer(loc.configurationPerNode, this.advancedConfiguration!),
+				this.keyInputContainer(loc.vCoresMax, this.vCoresMax!),
+				this.keyInputContainer(loc.vCoresMin, this.vCoresMin!),
+				this.keyInputContainer(loc.memoryMax, this.memoryMax!),
+				this.keyInputContainer(loc.memoryMin, this.memoryMin!)
 			];
 
 		}
@@ -226,133 +234,149 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			return [];
 		}
 		else {
-			let vCoresMax = this.getVCores(loc.vCoresMax);
-			let vCoresMin = this.getVCores(loc.vCoresMin);
-			let memoryMax = this.getMemory(loc.memoryMax);
-			let memoryMin = this.getMemory(loc.memoryMin);
-			let dataStorage = this.getStorage(loc.dataStorage);
-			let logStorage = this.getStorage(loc.logsStorage);
-			let backlogStorage = this.getStorage(loc.backupsStorage);
 
 			return [
-				this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: loc.vCoresMax,
-					CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-				}).component(),
-				vCoresMax,
-				this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: loc.vCoresMin,
-					CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-				}).component(),
-				vCoresMin,
-				this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: loc.memoryMax,
-					CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-				}).component(),
-				memoryMax,
-				this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: loc.memoryMin,
-					CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-				}).component(),
-				memoryMin,
-				this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: loc.dataStorage,
-					CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-				}).component(),
-				dataStorage,
-				this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: loc.logsStorage,
-					CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-				}).component(),
-				logStorage,
-				this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: loc.backupsStorage,
-					CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-				}).component(),
-				backlogStorage
+				this.keyInputContainer(loc.vCoresMax, this.getVCores(loc.vCoresMax)),
+				this.keyInputContainer(loc.vCoresMin, this.getVCores(loc.vCoresMin)!),
+				this.keyInputContainer(loc.memoryMax, this.getMemory(loc.memoryMax)!),
+				this.keyInputContainer(loc.memoryMin, this.getMemory(loc.memoryMin)),
+				this.keyInputContainer(loc.dataStorage, this.getStorage(loc.dataStorage)),
+				this.keyInputContainer(loc.logsStorage, this.getStorage(loc.logsStorage)),
+				this.keyInputContainer(loc.backupsStorage, this.getStorage(loc.backupsStorage))
 			];
 
 		}
 
 	}
 
-	private editWorkerNodeCount(): azdata.InputBoxComponent {
+	private keyInputContainer(key: string, input: azdata.Component): azdata.FlexContainer {
+		let valueFlex = { flex: '1 1 250px' };
+		let keyFlex = { flex: `0 0 200px` };
+
+		let flexContainer = this.modelView.modelBuilder.flexContainer().withLayout({
+			flexWrap: 'wrap',
+			alignItems: 'center'
+		}).component();
+
+		const keyComponent = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: key,
+			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
+		}).component();
+
+		flexContainer!.addItem(keyComponent, keyFlex);
+
+		let inputContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
+		inputContainer.addItem(input, { CSSStyles: { 'min-height': '30px', 'max-width': '350px' } });
+
+
+		flexContainer!.addItem(inputContainer, valueFlex);
+
+		return flexContainer;
+	}
+
+	private editWorkerNodeCount() {
 		let currentNodeCount = this._postgresModel.config?.spec.scale.shards;
 
 		if (!currentNodeCount) {
 			currentNodeCount = 0;
 		}
 
-		return this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			value: currentNodeCount.toString(),
-			readOnly: false,
-			min: currentNodeCount
-		}).component();
+		this.worker!.value = currentNodeCount.toString();
+		this.worker!.min = currentNodeCount;
+
+		this.disposables.push(
+			this.worker!.onTextChanged(() => {
+				if (this.worker!.value !== currentNodeCount) {
+					this.discardButton!.enabled = true;
+					this.saveButton!.enabled = true;
+				}
+			})
+		);
 
 	}
 
-	private editAdvancedConfiguration(): azdata.CheckBoxComponent {
+	/* private editAdvancedConfiguration(): azdata.CheckBoxComponent {
 
 		return this.modelView.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
 			checked: false,
 			label: loc.enableAdvancedConfiguration
 		}).component();
 
-	}
+	} */
 
-	private editMaxVCores(): azdata.InputBoxComponent {
-		let currentCPURequest = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
+	private editVCores(type: string) {
+		let currentCPUSize: string | undefined;
+		if (type === loc.vCoresMin) {
+			currentCPUSize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
+			if (!currentCPUSize) {
+				currentCPUSize = '0';
+			}
 
-		if (!currentCPURequest) {
-			currentCPURequest = '0';
+			this.vCoresMin!.value = currentCPUSize;
+			this.disposables.push(
+				this.vCoresMin!.onTextChanged(() => {
+					if (this.vCoresMin!.value !== currentCPUSize) {
+						this.discardButton!.enabled = true;
+						this.saveButton!.enabled = true;
+					}
+				})
+			);
+
 		}
+		else if (type === loc.vCoresMax) {
+			currentCPUSize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
+			if (!currentCPUSize) {
+				currentCPUSize = '0';
+			}
 
-		return this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			value: currentCPURequest,
-			readOnly: false
-		}).component();
+			this.vCoresMax!.value = currentCPUSize;
+			this.disposables.push(
+				this.vCoresMax!.onTextChanged(() => {
+					if (this.vCoresMax!.value !== currentCPUSize) {
+						this.discardButton!.enabled = true;
+						this.saveButton!.enabled = true;
+					}
+				})
+			);
 
-	}
-
-	private editMinVCores(): azdata.InputBoxComponent {
-		let currentCPULimit = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
-
-		if (!currentCPULimit) {
-			currentCPULimit = '0';
 		}
-
-		return this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			value: currentCPULimit,
-			readOnly: false,
-		}).component();
-
-	}
-
-	private editMaxMemory(): azdata.InputBoxComponent {
-		let currentMemRequest = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
-
-		if (!currentMemRequest) {
-			currentMemRequest = '0';
-		}
-
-		return this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			value: currentMemRequest,
-			readOnly: false
-		}).component();
 
 	}
 
-	private editMinMemory(): azdata.InputBoxComponent {
-		let currentMemLimit = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
+	private editMemory(type: string) {
+		let currentMemorySize: string | undefined;
+		if (type === loc.memoryMin) {
+			currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
+			if (!currentMemorySize) {
+				currentMemorySize = '0';
+			}
 
-		if (!currentMemLimit) {
-			currentMemLimit = '0';
+			this.memoryMin!.value = currentMemorySize;
+			this.disposables.push(
+				this.memoryMin!.onTextChanged(() => {
+					if (this.memoryMin!.value !== currentMemorySize) {
+						this.discardButton!.enabled = true;
+						this.saveButton!.enabled = true;
+					}
+				})
+			);
 		}
+		else if (type === loc.memoryMax) {
+			currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
+			if (!currentMemorySize) {
+				currentMemorySize = '0';
+			}
 
-		return this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			value: currentMemLimit,
-			readOnly: false
-		}).component();
+			this.memoryMax!.value = currentMemorySize;
+			this.disposables.push(
+				this.memoryMax!.onTextChanged(() => {
+					if (this.memoryMax!.value !== currentMemorySize) {
+						this.discardButton!.enabled = true;
+						this.saveButton!.enabled = true;
+					}
+				})
+			);
+		}
 
 	}
 
@@ -417,7 +441,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private handleServiceUpdated() {
-		this.workerContainer?.addItems(this.updateWorkerConfiguration(), { CSSStyles: { 'margin-bottom': '5px', 'min-height': '30px', 'max-width': '350px' } });
-		this.coordinatorContainer?.addItems(this.getCordinatorConfiguration(), { CSSStyles: { 'margin-bottom': '5px', 'min-height': '30px', 'max-width': '350px' } });
+		this.workerContainer?.addItems(this.updateWorkerConfiguration());
+		this.coordinatorContainer?.addItems(this.getCordinatorConfiguration());
 	}
 }
