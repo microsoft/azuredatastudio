@@ -1007,6 +1007,7 @@ function createAzureSubscriptionDropdown(
 	subscriptionValueToSubscriptionMap: Map<string, azureResource.AzureResourceSubscription>): azdata.DropDownComponent {
 	const label = createLabel(context.view, {
 		text: loc.subscription,
+		description: loc.subscriptionDescription,
 		required: context.fieldInfo.required,
 		width: context.fieldInfo.labelWidth,
 		cssStyles: context.fieldInfo.labelCSSStyles
@@ -1066,7 +1067,7 @@ async function handleSelectedAccountChanged(
 	}
 
 	try {
-		const response = await apiService.azurecoreApi.getSubscriptions(selectedAccount, true);
+		const response = await apiService.azurecoreApi.getSubscriptions(selectedAccount, true, false);
 		if (!response) {
 			return;
 		}
