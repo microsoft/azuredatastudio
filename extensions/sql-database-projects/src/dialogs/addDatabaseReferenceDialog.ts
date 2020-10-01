@@ -300,7 +300,7 @@ export class AddDatabaseReferenceDialog {
 		});
 
 		// only master is a valid system db reference for projects targetting Azure
-		if (this.project.getProjectTargetPlatform().toLowerCase().includes('azure')) {
+		if (this.project.getProjectTargetVersion().toLowerCase().includes('azure')) {
 			this.systemDatabaseDropdown.values?.splice(1);
 		}
 

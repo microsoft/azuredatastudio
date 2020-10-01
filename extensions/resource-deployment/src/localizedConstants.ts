@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
-import { FieldType, OptionsType } from './interfaces';
 import { OptionsSourceType } from './helpers/optionSources';
+import { FieldType, OptionsType } from './interfaces';
 
 const localize = nls.loadMessageBundle();
 
@@ -38,7 +38,9 @@ export const azdataEulaNotAccepted = localize('azdataEulaNotAccepted', "Deployme
 export const azdataEulaDeclined = localize('azdataEulaDeclined', "Deployment cannot continue. Azure Data CLI license terms were declined.You can either Accept EULA to continue or Cancel this operation");
 export const acceptEulaAndSelect = localize('deploymentDialog.RecheckEulaButton', "Accept EULA & Select");
 
-
 export const resourceTypePickerDialogTitle = localize('resourceTypePickerDialog.title', "Select the deployment options");
 export const resourceTypeSearchBoxDescription = localize('resourceTypePickerDialog.resourceSearchPlaceholder', "Filter resources...");
 export const resoucrceTypeCategoryListViewTitle = localize('resourceTypePickerDialog.tagsListViewTitle', 'Categories');
+
+export const scriptToNotebook = localize('ui.ScriptToNotebookButton', "Script");
+export const deployNotebook = localize('ui.DeployButton', "Run");

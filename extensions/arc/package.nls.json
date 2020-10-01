@@ -58,8 +58,8 @@
 	"arc.data.controller.summary.location": "Location",
 	"arc.data.controller.arc.data.controller.agreement": "I accept {0} and {1}.",
 	"microsoft.agreement.privacy.statement":"Microsoft Privacy Statement",
-	"deploy.script.to.notebook.action":"Script to notebook",
-
+	"deploy.script.action":"Script to notebook",
+	"deploy.done.action":"Deploy",
 
 	"resource.type.arc.sql.display.name": "Azure SQL managed instance - Azure Arc (preview)",
 	"resource.type.arc.postgres.display.name": "PostgreSQL Hyperscale server groups - Azure Arc (preview)",

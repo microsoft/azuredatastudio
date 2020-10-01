@@ -12,7 +12,7 @@ import { getCommonLaunchArgsAndCleanupOldLogFiles } from './utils';
 import { localize } from './localize';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { TelemetryFeature, SerializationFeature } from './features';
+import { TelemetryFeature, SerializationFeature, AccountFeature } from './features';
 import { AppContext } from './appContext';
 import { CompletionExtensionParams, CompletionExtLoadRequest } from './contracts';
 import { promises as fs } from 'fs';
@@ -135,6 +135,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			// we only want to add new features
 			...SqlOpsDataClient.defaultFeatures,
 			TelemetryFeature,
+			AccountFeature,
 			SerializationFeature
 		],
 		outputChannel: new CustomOutputChannel()
