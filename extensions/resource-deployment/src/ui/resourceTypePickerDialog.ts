@@ -583,16 +583,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 			constants.ResourceTypeCategories.POSTGRESQL
 		];
 
-		const tagsWithResourceTypes = supportedTags.filter((tag) => {
-			let includeTag = false;
-			this._resourceTypes.some((resouceType) => {
-				if (resouceType.tags?.includes(tag)) {
-					includeTag = true;
-					return true;
-				}
-				return false;
-			});
-			return includeTag;
+		const tagsWithResourceTypes = supportedTags.filter(tag => {
+			return this._resourceTypes.find(resourceType => { resourceType.tags?.includes(tag); }) !== undefined;
 		});
 
 		return tagsWithResourceTypes;
