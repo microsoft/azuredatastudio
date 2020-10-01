@@ -140,14 +140,14 @@ export class ProjectsController {
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 * @returns path of the built dacpac
 	 */
-	public async buildProject(treeNode: BaseProjectTreeItem): Promise<string>;
+	public async buildProject(treeNode: dataworkspace.WorkspaceTreeItem): Promise<string>;
 	/**
 	 * Builds a project, producing a dacpac
 	 * @param project Project to be built
 	 * @returns path of the built dacpac
 	 */
 	public async buildProject(project: Project): Promise<string>;
-	public async buildProject(context: Project | BaseProjectTreeItem | dataworkspace.WorkspaceTreeItem): Promise<string | undefined> {
+	public async buildProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<string> {
 		const project: Project = this.getProjectFromContext(context);
 
 		// Check mssql extension for project dlls (tracking issue #10273)
@@ -165,7 +165,7 @@ export class ProjectsController {
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
-			return undefined;
+			return '';
 		}
 	}
 
@@ -173,13 +173,13 @@ export class ProjectsController {
 	 * Builds and publishes a project
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public publishProject(treeNode: BaseProjectTreeItem): PublishDatabaseDialog;
+	public publishProject(treeNode: dataworkspace.WorkspaceTreeItem): PublishDatabaseDialog;
 	/**
 	 * Builds and publishes a project
 	 * @param project Project to be built and published
 	 */
 	public publishProject(project: Project): PublishDatabaseDialog;
-	public publishProject(context: Project | BaseProjectTreeItem): PublishDatabaseDialog {
+	public publishProject(context: Project | dataworkspace.WorkspaceTreeItem): PublishDatabaseDialog {
 		const project: Project = this.getProjectFromContext(context);
 		let publishDatabaseDialog = this.getPublishDialog(project);
 
@@ -225,7 +225,7 @@ export class ProjectsController {
 		}
 	}
 
-	public async schemaCompare(treeNode: BaseProjectTreeItem): Promise<void> {
+	public async schemaCompare(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		// check if schema compare extension is installed
 		if (vscode.extensions.getExtension(constants.schemaCompareExtensionId)) {
 			// build project
@@ -246,9 +246,9 @@ export class ProjectsController {
 		}
 	}
 
-	public async addFolderPrompt(treeNode: BaseProjectTreeItem) {
+	public async addFolderPrompt(treeNode: dataworkspace.WorkspaceTreeItem) {
 		const project = this.getProjectFromContext(treeNode);
-		const relativePathToParent = this.getRelativePath(treeNode);
+		const relativePathToParent = this.getRelativePath(treeNode.element);
 		const absolutePathToParent = path.join(project.projectFolderPath, relativePathToParent);
 		const newFolderName = await this.promptForNewObjectName(new templates.ProjectScriptType(templates.folder, constants.folderFriendlyName, ''),
 			project, absolutePathToParent);
@@ -269,7 +269,7 @@ export class ProjectsController {
 			}
 
 			await project.addFolderItem(relativeFolderPath);
-			this.refreshProjectsTree();
+			(treeNode.treeDataProvider as SqlDatabaseProjectTreeViewProvider).notifyTreeDataChanged();
 		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
@@ -281,11 +281,11 @@ export class ProjectsController {
 		return sameName && sameLocation;
 	}
 
-	public async addItemPromptFromNode(treeNode: BaseProjectTreeItem, itemTypeName?: string) {
-		await this.addItemPrompt(this.getProjectFromContext(treeNode), this.getRelativePath(treeNode), itemTypeName);
+	public async addItemPromptFromNode(treeNode: dataworkspace.WorkspaceTreeItem, itemTypeName?: string) {
+		await this.addItemPrompt(this.getProjectFromContext(treeNode), this.getRelativePath(treeNode.element), itemTypeName, treeNode.treeDataProvider as SqlDatabaseProjectTreeViewProvider);
 	}
 
-	public async addItemPrompt(project: Project, relativePath: string, itemTypeName?: string) {
+	public async addItemPrompt(project: Project, relativePath: string, itemTypeName?: string, treeDataProvider?: SqlDatabaseProjectTreeViewProvider) {
 		if (!itemTypeName) {
 			const items: vscode.QuickPickItem[] = [];
 
@@ -327,31 +327,32 @@ export class ProjectsController {
 			const newEntry = await project.addScriptItem(relativeFilePath, newFileText, itemType.type);
 
 			await vscode.commands.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
-
-			this.refreshProjectsTree();
+			treeDataProvider?.notifyTreeDataChanged();
 		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 
-	public async exclude(context: BaseProjectTreeItem): Promise<void> {
-		const project = this.getProjectFromContext(context);
+	public async exclude(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const node = context.element as BaseProjectTreeItem;
+		const project = this.getProjectFromContext(node);
 
-		const fileEntry = this.getFileProjectEntry(project, context);
+		const fileEntry = this.getFileProjectEntry(project, node);
 
 		if (fileEntry) {
 			await project.exclude(fileEntry);
 		} else {
-			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, context.uri.path));
+			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.uri.path));
 		}
 
-		this.refreshProjectsTree();
+		(context.treeDataProvider as SqlDatabaseProjectTreeViewProvider).notifyTreeDataChanged();
 	}
 
-	public async delete(context: BaseProjectTreeItem): Promise<void> {
-		const project = this.getProjectFromContext(context);
+	public async delete(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const node = context.element as BaseProjectTreeItem;
+		const project = this.getProjectFromContext(node);
 
-		const confirmationPrompt = context instanceof FolderNode ? constants.deleteConfirmationContents(context.friendlyName) : constants.deleteConfirmation(context.friendlyName);
+		const confirmationPrompt = node instanceof FolderNode ? constants.deleteConfirmationContents(node.friendlyName) : constants.deleteConfirmation(node.friendlyName);
 		const response = await vscode.window.showWarningMessage(confirmationPrompt, { modal: true }, constants.yesString);
 
 		if (response !== constants.yesString) {
@@ -360,8 +361,9 @@ export class ProjectsController {
 
 		let success = false;
 
-		if (context instanceof FileNode || FolderNode) {
-			const fileEntry = this.getFileProjectEntry(project, context);
+
+		if (node instanceof FileNode || FolderNode) {
+			const fileEntry = this.getFileProjectEntry(project, node);
 
 			if (fileEntry) {
 				await project.deleteFileFolder(fileEntry);
@@ -370,9 +372,9 @@ export class ProjectsController {
 		}
 
 		if (success) {
-			this.refreshProjectsTree();
+			(context.treeDataProvider as SqlDatabaseProjectTreeViewProvider).notifyTreeDataChanged();
 		} else {
-			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, context.uri.path));
+			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.uri.path));
 		}
 	}
 
@@ -392,7 +394,7 @@ export class ProjectsController {
 	 * Opens the folder containing the project
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async openContainingFolder(context: BaseProjectTreeItem): Promise<void> {
+	public async openContainingFolder(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
 		await vscode.commands.executeCommand(constants.revealFileInOsCommand, vscode.Uri.file(project.projectFilePath));
 	}
@@ -402,7 +404,7 @@ export class ProjectsController {
 	 * reload their project.
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async editProjectFile(context: BaseProjectTreeItem): Promise<void> {
+	public async editProjectFile(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
 
 		try {
@@ -450,7 +452,7 @@ export class ProjectsController {
 	 * Adds a database reference to the project
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async addDatabaseReference(context: Project | BaseProjectTreeItem): Promise<AddDatabaseReferenceDialog> {
+	public async addDatabaseReference(context: Project | dataworkspace.WorkspaceTreeItem): Promise<AddDatabaseReferenceDialog> {
 		const project = this.getProjectFromContext(context);
 
 		const addDatabaseReferenceDialog = this.getAddDatabaseReferenceDialog(project);
