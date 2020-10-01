@@ -229,7 +229,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 		return node;
 	}
 
-	public findSqlClusterSessionBySqlConnProfile(connectionProfile: azdata.IConnectionProfile): SqlClusterSession {
+	public findSqlClusterSessionBySqlConnProfile(connectionProfile: azdata.IConnectionProfile): SqlClusterSession | undefined {
 		for (let session of this.clusterSessionMap.values()) {
 			if (session.isMatchedSqlConnection(connectionProfile)) {
 				return session;
