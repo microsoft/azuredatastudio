@@ -272,21 +272,17 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 							items?.forEach(root => {
 								this.updateViewletsState();
 								if (root.contextValue !== 'pinnedNotebook') {
-									let rootFolder = URI.file(isString(root.tooltip) ? root.tooltip : root.tooltip.value);
+									let rootFolder = URI.file(root.resourceUri.path);
 									let folderToSearch = { folder: rootFolder };
-									query.folderQueries = query.folderQueries.filter((folder) => {
-										//verify if pinned notebook is not opened in Books Viewlet
-										return !!folder.includePattern && path.relative(folder.folder.fsPath, folderToSearch.folder.fsPath) !== '..';
-									});
 									query.folderQueries.push(folderToSearch);
 									filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
 								} else {
 									let pattern = {};
-									let rootFolder = isString(root.tooltip) ? root.tooltip : root.tooltip.value;
-									let baseName = path.join('**', path.basename(rootFolder));
-									let contentFolder = URI.file(path.dirname(rootFolder));
+									let rootFolder = URI.file(root.resourceUri.path);
+									let pathToNotebook = isString(root.tooltip) ? root.tooltip : root.tooltip.value;
+									let baseName = path.join('**', path.basename(pathToNotebook));
 									pattern[baseName] = true;
-									let folderToSearch = { folder: contentFolder, includePattern: pattern };
+									let folderToSearch = { folder: rootFolder, includePattern: pattern };
 									query.folderQueries.push(folderToSearch);
 									filesToIncludeFiltered = filesToIncludeFiltered + rootFolder + ',';
 								}
