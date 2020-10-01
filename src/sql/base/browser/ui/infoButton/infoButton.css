@@ -1,0 +1,73 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.info-button-container {
+	display: flex;
+	justify-content: space-around;
+}
+.info-button .info-main {
+	cursor: pointer;
+	padding: 10px;
+}
+.info-button .info-icon {
+	align-items: flex-start;
+	display: flex;
+	flex-flow: column;
+	padding-right: 10px;
+}
+.info-button .info-text {
+	display: flex;
+	flex-flow: column;
+	justify-content: space-between;
+	padding: 0 0 0 10px;
+	margin: 0px;
+}
+.info-button .info-text p.info-title {
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 20px;
+	margin: 0px;
+}
+.info-button .info-text p.info-desc {
+	font-size: 12px;
+	line-height: 16px;
+	margin: 0px;
+}
+
+.info-button {
+	background-color: #fff;
+	border-radius: 2px;
+	box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.13);
+	display: inline-block;
+}
+.info-button[tabindex="0"]:active {
+	background-color: #fff;
+	box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.13);
+}
+.vs-dark .info-button {
+	background-color: #1b1a19;
+	box-shadow: 0px 1px 4px rgba(255, 255, 255, 0.13);
+}
+.vs-dark .info-button[tabindex="0"]:active {
+	background-color: #1b1a19;
+	box-shadow: 0px 3px 8px rgba(255, 255, 255, 0.13);
+}
+.hc-black .info-button {
+	background-color: #000;
+	box-shadow: none;
+}
+.hc-black .info-button[tabindex="0"]:active {
+	background-color: #000;
+}
+.info-button:hover {
+	box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.13);
+}
+.vs-dark .info-button:hover {
+	box-shadow: 0px 3px 8px rgba(255, 255, 255, 0.13);
+}
+.hc-black .info-button[tabindex="0"]:hover {
+	border-style: dashed !important;
+	border-color: rgb(243, 133, 24) !important;
+}
