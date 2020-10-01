@@ -8,6 +8,7 @@ import * as os from 'os';
 import * as constants from './constants';
 import * as path from 'path';
 import * as glob from 'fast-glob';
+import * as dataworkspace from 'dataworkspace';
 import { promises as fs } from 'fs';
 
 /**
@@ -227,4 +228,12 @@ export async function getSqlProjectFilesInFolder(folderPath: string): Promise<st
 	const results = await glob(sqlprojFilter);
 
 	return results;
+}
+
+/**
+ * Get all the projects in the workspace that are sqlproj
+ */
+export function getSqlProjectsInWorkspace(): vscode.Uri[] {
+	return (<dataworkspace.IExtension>vscode.extensions.getExtension(dataworkspace.extension.name)?.exports).getProjectsInWorkspace()
+		.filter((p: vscode.Uri) => path.parse(p.fsPath).ext === constants.sqlprojExtension);
 }

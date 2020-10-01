@@ -468,7 +468,8 @@ export class ProjectsController {
 			if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
 				// get project path and guid
 				const projectReferenceSettings = settings as IProjectReferenceSettings;
-				const referencedProject = this.projects.find(p => p.projectFileName === projectReferenceSettings.projectName);
+				const workspaceProjects = utils.getSqlProjectsInWorkspace();
+				const referencedProject = await Project.openProject(workspaceProjects.filter(p => path.parse(p.fsPath).name === projectReferenceSettings.projectName)[0].fsPath);
 				const relativePath = path.relative(project.projectFolderPath, referencedProject?.projectFilePath!);
 				projectReferenceSettings.projectRelativePath = vscode.Uri.file(relativePath);
 				projectReferenceSettings.projectGuid = referencedProject?.projectGuid!;
