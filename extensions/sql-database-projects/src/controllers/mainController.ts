@@ -10,7 +10,6 @@ import * as constants from '../common/constants';
 import * as path from 'path';
 import * as newProjectTool from '../tools/newProjectTool';
 
-import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { getErrorMessage } from '../common/utils';
 import { ProjectsController } from './projectController';
 import { NetCoreTool } from '../tools/netcoreTool';
@@ -23,12 +22,11 @@ import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
  * The main controller class that initializes the extension
  */
 export default class MainController implements vscode.Disposable {
-	protected dbProjectTreeViewProvider: SqlDatabaseProjectTreeViewProvider = new SqlDatabaseProjectTreeViewProvider();
 	protected projectsController: ProjectsController;
 	protected netcoreTool: NetCoreTool;
 
 	public constructor(private context: vscode.ExtensionContext) {
-		this.projectsController = new ProjectsController(this.dbProjectTreeViewProvider);
+		this.projectsController = new ProjectsController();
 		this.netcoreTool = new NetCoreTool();
 	}
 
