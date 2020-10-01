@@ -1396,7 +1396,7 @@ suite('TreeModel - Dynamic data model', () => {
 						assert.equal(gotTimes, 1);
 
 						let p2Complete: () => void;
-						dataModel.promiseFactory = () => { return new Promise((c) => { p2Complete = c; }); };
+						dataModel.promiseFactory = () => { return new Promise<void>((c) => { p2Complete = c; }); };
 						const p2 = model.refresh('father');
 
 						// same situation still

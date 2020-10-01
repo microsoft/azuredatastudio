@@ -54,7 +54,7 @@ describe('HttpClient', function (): void {
 			const mockWriteStream = new PassThrough();
 			const deferredPromise = new Deferred();
 			sinon.stub(fs, 'createWriteStream').callsFake(() => {
-				deferredPromise.resolve();
+				deferredPromise.resolve(undefined);
 				return <any>mockWriteStream;
 			});
 			nock('https://127.0.0.1')

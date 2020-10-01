@@ -446,7 +446,7 @@ async function installAzdataLinux(): Promise<void> {
 async function findSpecificAzdata(): Promise<IAzdataTool> {
 	const path = await ((process.platform === 'win32') ? searchForCmd('azdata.cmd') : searchForCmd('azdata'));
 	const versionOutput = await executeAzdataCommand(`"${path}"`, ['--version']);
-	return new AzdataTool(path, parseVersion(versionOutput.stdout));
+	return new AzdataTool(path!, parseVersion(versionOutput.stdout));
 }
 
 function getConfig(key: string): AzdataDeployOption | undefined {

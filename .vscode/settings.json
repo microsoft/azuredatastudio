@@ -14,20 +14,19 @@
 		"cglicenses.json": "jsonc"
 	},
 	"search.exclude": {
-		"**/node_modules": true,
-		"**/bower_components": true,
 		".build/**": true,
-		"out/**": true,
+		"**/bower_components": true,
+		"**/node_modules": true,
+		"i18n/**": true,
 		"out-build/**": true,
 		"out-vscode/**": true,
-		"i18n/**": true,
-		"extensions/**/out/**": true,
-		"test/smoke/out/**": true,
+		"out/**": true,
+		"src/vs/base/test/node/uri.test.data.txt": true,
+		"src/vs/server": false,
+		"src/vs/workbench/test/browser/api/extHostDocumentData.test.perf-data.ts": true,
 		"test/automation/out/**": true,
 		"test/integration/browser/out/**": true,
-		"src/vs/base/test/node/uri.test.data.txt": true,
-		"src/vs/workbench/test/browser/api/extHostDocumentData.test.perf-data.ts": true,
-		"src/vs/server": false
+		"test/smoke/out/**": true
 	},
 	"lcov.path": [
 		"./.build/coverage/lcov.info",

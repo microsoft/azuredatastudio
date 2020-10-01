@@ -51,7 +51,7 @@ export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model
 	}
 
 	protected abstract initialize(): void;
-	protected abstract async onOk(): Promise<void>;
+	protected abstract onOk(): Promise<void>;
 	protected abstract onCancel(): void;
 
 	public addButton(button: azdata.window.Button) {
