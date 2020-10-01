@@ -84,6 +84,9 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 	}
 
+	async createProject(projectName: string, projectFile: vscode.Uri): Promise<void> {
+	}
+
 	/**
 	 * Ensure the project provider extension for the specified project is loaded
 	 * @param projectType The file extension of the project, if not specified, all project provider extensions will be loaded.

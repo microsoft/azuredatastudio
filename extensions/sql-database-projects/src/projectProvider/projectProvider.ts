@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { sqlprojExtension, projectTypeDisplayName } from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
+import { ProjectsController } from '../controllers/projectController';
 import { Project } from '../models/project';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 
@@ -31,6 +32,15 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	RemoveProject(projectFile: vscode.Uri): Promise<void> {
 		// No resource release needed
 		console.log(`project file unloaded: ${projectFile.fsPath}`);
+		return Promise.resolve();
+	}
+
+	/**
+	 * Callback method when a project has been created from the workspace view
+	 * @param projectFile The Uri of the project file
+	 */
+	async CreateProject(projectName: string, projectFile: vscode.Uri): Promise<void> {
+		await ProjectsController.createNewProject(projectName, projectFile, true);
 		return Promise.resolve();
 	}
 

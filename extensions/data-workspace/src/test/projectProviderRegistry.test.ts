@@ -28,6 +28,9 @@ export function createProjectProvider(projectTypes: IProjectType[]): IProjectPro
 		},
 		getProjectTreeDataProvider: (projectFile: vscode.Uri): Promise<vscode.TreeDataProvider<any>> => {
 			return Promise.resolve(treeDataProvider);
+		},
+		CreateProject: (projectName: string, projectFile: vscode.Uri): Promise<void> => {
+			return Promise.resolve();
 		}
 	};
 	return projectProvider;

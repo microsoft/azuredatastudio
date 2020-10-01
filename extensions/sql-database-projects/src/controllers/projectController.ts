@@ -127,7 +127,7 @@ export class ProjectsController {
 	 * @param folderUri
 	 * @param projectGuid
 	 */
-	public async createNewProject(newProjName: string, folderUri: vscode.Uri, makeOwnFolder: boolean, projectGuid?: string): Promise<string> {
+	public static async createNewProject(newProjName: string, folderUri: vscode.Uri, makeOwnFolder: boolean, projectGuid?: string): Promise<string> {
 		if (projectGuid && !UUID.isUUID(projectGuid)) {
 			throw new Error(`Specified GUID is invalid: '${projectGuid}'`);
 		}
@@ -137,7 +137,7 @@ export class ProjectsController {
 			'PROJECT_GUID': projectGuid ?? UUID.generateUuid().toUpperCase()
 		};
 
-		let newProjFileContents = this.macroExpansion(templates.newSqlProjectTemplate, macroDict);
+		let newProjFileContents = ProjectsController.macroExpansion(templates.newSqlProjectTemplate, macroDict);
 
 		let newProjFileName = newProjName;
 
@@ -353,7 +353,7 @@ export class ProjectsController {
 			return; // user cancelled
 		}
 
-		const newFileText = this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
+		const newFileText = ProjectsController.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
 		const relativeFilePath = path.join(relativePath, itemObjectName + constants.sqlFileExtension);
 
 		try {
@@ -584,7 +584,7 @@ export class ProjectsController {
 		return (ext.exports as mssql.IExtension).dacFx;
 	}
 
-	private macroExpansion(template: string, macroDict: Record<string, string>): string {
+	private static macroExpansion(template: string, macroDict: Record<string, string>): string {
 		const macroIndicator = '@@';
 		let output = template;
 
@@ -641,7 +641,7 @@ export class ProjectsController {
 
 			newProjectTool.updateSaveLocationSetting();
 
-			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
+			const newProjFilePath = await ProjectsController.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
 			model.filePath = path.dirname(newProjFilePath);
 
 			if (model.extractTarget === mssql.ExtractTarget.file) {

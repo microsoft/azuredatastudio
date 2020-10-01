@@ -38,6 +38,13 @@ declare module 'dataworkspace' {
 		RemoveProject(projectFile: vscode.Uri): Promise<void>;
 
 		/**
+		 * Notify the project provider extension that the specified project file has been created from the data workspace
+		 * @param projectName The name of the project file to be created
+		 * @param projectFile The Uri of the project file
+		 */
+		CreateProject(projectName: string, projectFile: vscode.Uri): Promise<void>;
+
+		/**
 		 * Gets the supported project types
 		 */
 		readonly supportedProjectTypes: IProjectType[];
