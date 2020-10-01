@@ -227,6 +227,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			selectedOptionId: items[0].id
 		}).component();
 		this._toDispose.push(listView.onDidClick((e) => {
+			this._resourceSearchBox.value = '';
 			this.filterResources();
 			listView.focus();
 		}));
@@ -584,7 +585,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		];
 
 		const tagsWithResourceTypes = supportedTags.filter(tag => {
-			return this._resourceTypes.find(resourceType => { resourceType.tags?.includes(tag); }) !== undefined;
+			return (tag === constants.ResourceTypeCategories.ALL) || this._resourceTypes.find(resourceType => resourceType.tags?.includes(tag)) !== undefined;
 		});
 
 		return tagsWithResourceTypes;
