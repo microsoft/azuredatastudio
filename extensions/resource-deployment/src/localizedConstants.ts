@@ -44,3 +44,12 @@ export const resoucrceTypeCategoryListViewTitle = localize('resourceTypePickerDi
 
 export const scriptToNotebook = localize('ui.ScriptToNotebookButton', "Script");
 export const deployNotebook = localize('ui.DeployButton', "Run");
+
+export const ResourceTypeCategoryAll = 'All';
+export const ResourceTypeCategoryOnPrem = 'On-premises';
+export const ResourceTypeCategorySql = 'SQL Server';
+export const ResourceTypeCategoryHybrid = 'Hybrid';
+export const ResourceTypeCategoryPostgre = 'PostgreSQL';
+export const ResourceTypeCategoryCloud = 'Cloud';
+export const ResourceTypeCategoryIot = 'IoT Edge';
+
