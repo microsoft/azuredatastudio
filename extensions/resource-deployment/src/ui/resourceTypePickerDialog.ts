@@ -91,6 +91,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				cardHeight: '150px',
 				ariaLabel: localize('deploymentDialog.deploymentOptions', "Deployment options"),
 				width: '1000px',
+				height: '550px',
 				iconPosition: 'left'
 			}).component();
 			this._toDispose.push(this._cardGroup.onSelectionChanged(({ cardId }) => {
@@ -153,6 +154,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			}).component();
 			this._toDispose.push(this._resourceSearchBox.onTextChanged((value: string) => {
 				this.filterResources();
+				this._resourceSearchBox.focus();
 			}));
 			const searchContainer = view.modelBuilder.divContainer().withItems([this._resourceSearchBox]).withProps({
 				CSSStyles: {
@@ -226,6 +228,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		}).component();
 		this._toDispose.push(listView.onDidClick((e) => {
 			this.filterResources();
+			listView.focus();
 		}));
 
 		return listView;

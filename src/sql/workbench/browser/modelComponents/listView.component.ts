@@ -115,7 +115,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 
 	public setProperties(properties: { [key: string]: any }) {
 		super.setProperties(properties);
-		// This is the entry point for the extension to set the selectedCardId
+		// This is the entry point for the extension to set the selectedOptionId
 		if (this.selectedOptionId) {
 			this.selectOption(this.selectedOptionId);
 		}
@@ -175,5 +175,8 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 		this._changeRef.detectChanges();
 	}
 
-
+	public focus() {
+		super.focus();
+		this.focusOption(this.selectedOptionId);
+	}
 }
