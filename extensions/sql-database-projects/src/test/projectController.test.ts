@@ -573,7 +573,7 @@ describe('ProjectsController', function (): void {
 				projectRelativePath: undefined,
 				suppressMissingDependenciesErrors: false
 			},
-			new SqlDatabaseProjectTreeViewProvider());
+				new SqlDatabaseProjectTreeViewProvider());
 			should(showErrorMessageSpy.called).be.true('showErrorMessage should have been called');
 		});
 
