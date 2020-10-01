@@ -19,7 +19,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView);
 
-		this.disposables.push(this._postgresModel.onServiceUpdated(
+		this.disposables.push(this._postgresModel.onConfigUpdated(
 			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
 
 		this.disposables.push(this._controllerModel.onRegistrationsUpdated(
@@ -54,7 +54,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 		this.loading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.keyValueContainer.container)
 			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this._postgresModel.serviceLastUpdated && !this._controllerModel.registrationsLastUpdated
+				loading: !this._postgresModel.configLastUpdated && !this._controllerModel.registrationsLastUpdated
 			}).component();
 
 		content.addItem(this.loading);

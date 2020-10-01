@@ -83,6 +83,34 @@ export class AzdataTool implements IAzdataTool {
 				},
 				show: async (name: string) => {
 					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name]);
+				},
+				edit: async (args: {
+					name: string,
+					adminPassword?: boolean,
+					coresLimit?: string,
+					coresRequest?: string,
+					engineSettings?: string,
+					extensions?: string,
+					memoryLimit?: string,
+					memoryRequest?: string,
+					noWait?: boolean,
+					port?: number,
+					replaceEngineSettings?: boolean,
+					workers?: number
+				}) => {
+					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', args.name];
+					if (args.adminPassword) { argsArray.push('--admin-password'); }
+					if (args.coresLimit !== undefined) { argsArray.push('--cores-limit', args.coresLimit); }
+					if (args.coresRequest !== undefined) { argsArray.push('--cores-request', args.coresRequest); }
+					if (args.engineSettings !== undefined) { argsArray.push('--engine-settings', args.engineSettings); }
+					if (args.extensions !== undefined) { argsArray.push('--extensions', args.extensions); }
+					if (args.memoryLimit !== undefined) { argsArray.push('--memory-limit', args.memoryLimit); }
+					if (args.memoryRequest !== undefined) { argsArray.push('--memory-request', args.memoryRequest); }
+					if (args.noWait) { argsArray.push('--no-wait'); }
+					if (args.port !== undefined) { argsArray.push('--port', args.port.toString()); }
+					if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
+					if (args.workers !== undefined) { argsArray.push('--workers', args.workers.toString()); }
+					return this.executeCommand<void>(argsArray);
 				}
 			}
 		},

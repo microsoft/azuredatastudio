@@ -195,23 +195,6 @@ export function getErrorMessage(error: any): string {
 }
 
 /**
- * Parses an instance name from the controller. An instance name will either be just its name
- * e.g. myinstance or namespace_name e.g. mynamespace_my-instance.
- * @param instanceName The instance name in one of the formats described
- */
-export function parseInstanceName(instanceName: string | undefined): string {
-	instanceName = instanceName ?? '';
-	const parts: string[] = instanceName.split('_');
-	if (parts.length === 2) {
-		instanceName = parts[1];
-	}
-	else if (parts.length > 2) {
-		throw new Error(`Cannot parse resource '${instanceName}'. Acceptable formats are 'namespace_name' or 'name'.`);
-	}
-	return instanceName;
-}
-
-/**
  * Parses an address into its separate ip and port values. Address must be in the form <ip>:<port>
  * @param address The address to parse
  */

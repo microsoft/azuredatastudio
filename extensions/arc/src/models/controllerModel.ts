@@ -6,7 +6,7 @@
 import { ControllerInfo, ResourceType } from 'arc';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
-import { parseInstanceName, UserCancelledError } from '../common/utils';
+import { UserCancelledError } from '../common/utils';
 import * as loc from '../localizedConstants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
@@ -171,7 +171,7 @@ export class ControllerModel {
 
 	public getRegistration(type: ResourceType, name: string): Registration | undefined {
 		return this._registrations.find(r => {
-			return r.instanceType === type && parseInstanceName(r.instanceName) === name;
+			return r.instanceType === type && r.instanceName === name;
 		});
 	}
 
