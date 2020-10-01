@@ -7,13 +7,13 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolStatus } from '../interfaces';
-import { select } from '../localizedConstants';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { getErrorMessage } from '../utils';
 import * as loc from './../localizedConstants';
 import { DialogBase } from './dialogBase';
 import { createFlexContainer } from './modelViewUtils';
+import * as constants from '../constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -44,7 +44,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		private resourceTypeService: IResourceTypeService,
 		defaultResourceType: ResourceType,
 		private _resourceTypeNameFilters?: string[]) {
-		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
+		super(loc.resourceTypePickerDialogTitle, 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = defaultResourceType;
 		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', "Install tools"));
 		this._toDispose.push(this._installToolButton.onClick(() => {
@@ -148,8 +148,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 				resourceComponents.push(this._resourceTagsListView);
 			}
 			this._resourceSearchBox = view.modelBuilder.inputBox().withProperties({
-				placeHolder: localize('deploymentDialog.resourceSearchPlaceholder', "Filter resources..."),
-				ariaLabel: localize('deploymentDialog.resourceSearchAriaLabel', "Filter resources")
+				placeHolder: loc.resourceTypeSearchBoxDescription,
+				ariaLabel: loc.resourceTypeSearchBoxDescription
 			}).component();
 			this._toDispose.push(this._resourceSearchBox.onTextChanged((value: string) => {
 				this.filterResources();
@@ -197,6 +197,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			});
 		});
 		this._dialogObject.content = [tab];
+
 	}
 
 	private createTagsListView(): azdata.ListViewComponent {
@@ -214,7 +215,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		});
 		const listView = this._view.modelBuilder.listView().withProps({
 			title: {
-				text: localize('deploymentDialog.tagsListViewTitle', 'Categories')
+				text: loc.resoucrceTypeCategoryListViewTitle
 			},
 			CSSStyles: {
 				'width': '140px',
@@ -248,29 +249,19 @@ export class ResourceTypePickerDialog extends DialogBase {
 			filteredResourceTypes = this._resourceTypes;
 		}
 
-		let filteredResourceTypesonSearch: ResourceType[] = [];
-		filteredResourceTypes.forEach(element => {
-			if (element.displayName.toLowerCase().includes(search!)) {
-				filteredResourceTypesonSearch.push(element);
-			}
-		});
-		filteredResourceTypes.forEach(element => {
-			if (!element.displayName.toLowerCase().includes(search!) && element.description.toLowerCase().includes(search!)) {
-				filteredResourceTypesonSearch.push(element);
-			}
-		});
+		const filteredResourceTypesOnSearch: ResourceType[] = filteredResourceTypes.filter((element) => element.displayName.toLowerCase().includes(search!));
 
-		const cards = filteredResourceTypesonSearch.map((resourceType) => {
-			return this.createOrGetCard(resourceType);
-		});
+		filteredResourceTypesOnSearch.push(...filteredResourceTypes.filter((element) => !element.displayName.toLowerCase().includes(search!) && element.description.toLowerCase().includes(search!)));
 
-		if (filteredResourceTypesonSearch.length > 0) {
+		const cards = filteredResourceTypesOnSearch.map((resourceType) => this.createOrGetCard(resourceType));
+
+		if (filteredResourceTypesOnSearch.length > 0) {
 			this._cardGroup.updateProperties({
 				selectedCardId: cards[0].id,
 				cards: cards
 			});
 
-			this.selectResourceType(filteredResourceTypesonSearch[0]);
+			this.selectResourceType(filteredResourceTypesOnSearch[0]);
 		}
 		else {
 			this._cardGroup.updateProperties({
@@ -288,7 +279,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._currentResourceTypeDisposables.forEach(disposable => disposable.dispose());
 		this._selectedResourceType = resourceType;
 		//handle special case when resource type has different OK button.
-		this._dialogObject.okButton.label = this._selectedResourceType.okButtonText || select;
+		this._dialogObject.okButton.label = this._selectedResourceType.okButtonText || loc.select;
 
 		this._agreementCheckboxChecked = false;
 		this._agreementContainer.clearItems();
@@ -580,22 +571,29 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private getAllResourceTags(): string[] {
-		const supportedTags = ['All', 'On-premises', 'SQL Server', 'Hybrid', 'PostgreSQL', 'Cloud'];
-		const tagSet: Set<string> = new Set<string>();
-		this._resourceTypes.forEach((resouceType) => {
-			if (resouceType.tags) {
-				resouceType.tags.forEach(tag => {
-					if (supportedTags.includes(tag)) {
-						tagSet.add(tag);
-					}
-					else {
-						console.error(`The extension has contributed a tag that is not supported yet. Use only ${supportedTags.toString()} tags for now.`);
-					}
-				});
-			}
+		const supportedTags = [
+			constants.ResourceTypeCategoryAll,
+			constants.ResourceTypeCategoryOnPrem,
+			constants.ResourceTypeCategoryHybrid,
+			constants.ResourceTypeCategoryCloud,
+			constants.ResourceTypeCategorySql,
+			constants.ResourceTypeCategoryPostgre,
+			constants.ResourceTypeCategoryIot
+		];
+
+		const tagsWithResourceTypes = supportedTags.filter((tag) => {
+			let includeTag = false;
+			this._resourceTypes.some((resouceType) => {
+				if (resouceType.tags?.includes(tag)) {
+					includeTag = true;
+					return true;
+				}
+				return false;
+			});
+			return includeTag;
 		});
 
-		return Array.from(tagSet);
+		return tagsWithResourceTypes;
 	}
 
 	private createOrGetCard(resourceType: ResourceType): azdata.RadioCard {
