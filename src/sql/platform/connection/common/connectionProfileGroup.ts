@@ -35,7 +35,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	) {
 		super();
 		this.parentId = parent ? parent.id : undefined;
-		if (this.name === ConnectionProfileGroup.RootGroupName) {
+		if (ConnectionProfileGroup.isRoot(this.name)) {
 			this.name = '';
 			this.isRoot = true;
 		}
