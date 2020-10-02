@@ -20,7 +20,6 @@ import { ClientSession } from 'sql/workbench/services/notebook/browser/models/cl
 import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { Deferred } from 'sql/base/common/promise';
 import { Memento } from 'vs/workbench/common/memento';
-import { Emitter } from 'vs/base/common/event';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
@@ -79,7 +78,7 @@ let expectedNotebookContentOneCell: nb.INotebookContents = {
 
 let defaultUri = URI.file('/some/path.ipynb');
 
-let mockClientSession: TypeMoq.Mock<IClientSession>;
+let mockClientSession: IClientSession;
 let clientSessionOptions: IClientSessionOptions;
 let sessionReady: Deferred<void>;
 let mockModelFactory: TypeMoq.Mock<ModelFactory>;
@@ -125,15 +124,12 @@ suite('notebook model', function (): void {
 			notificationService: notificationService.object,
 			kernelSpec: defaultModelOptions.defaultKernel
 		};
-		mockClientSession = TypeMoq.Mock.ofType(ClientSession, undefined, clientSessionOptions);
-		mockClientSession.setup(c => c.initialize()).returns(() => {
-			return Promise.resolve();
-		});
-		mockClientSession.setup(c => c.ready).returns(() => sessionReady.promise);
+		mockClientSession = new ClientSession(clientSessionOptions);
+		mockClientSession.initialize();
 		mockModelFactory = TypeMoq.Mock.ofType(ModelFactory);
 		mockModelFactory.callBase = true;
 		mockModelFactory.setup(f => f.createClientSession(TypeMoq.It.isAny())).returns(() => {
-			return mockClientSession.object;
+			return mockClientSession;
 		});
 	});
 
@@ -373,8 +369,6 @@ suite('notebook model', function (): void {
 		defaultModelOptions.contentManager = mockContentManager.object;
 
 		// Given I have a session that fails to start
-		mockClientSession.setup(c => c.isInErrorState).returns(() => true);
-		mockClientSession.setup(c => c.errorMessage).returns(() => 'Error');
 		sessionReady.resolve();
 		let sessionFired = false;
 
@@ -400,7 +394,7 @@ suite('notebook model', function (): void {
 
 		assert.equal(model.inErrorState, false);
 		assert.equal(model.notebookManagers.length, 1);
-		assert.deepEqual(model.clientSession, mockClientSession.object);
+		assert.deepEqual(model.clientSession, mockClientSession);
 	});
 
 	test('Should notify on trust set', async function () {
@@ -486,16 +480,16 @@ suite('notebook model', function (): void {
 		assert(output.metadata['custom-object']['prop2'] === 'value2', 'Custom metadata for object was not preserved');
 	});
 
-	test('1234abc Should get Fake connection and set kernelAlias', async function () {
+	test('Should connect to Fake (kernel alias) connection and set kernelAlias', async function () {
 		let model = await loadModelAndStartClientSession();
 
 		// Ensure notebook prefix is present in the connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
 		await changeContextWithFakeConnectionProfile(model);
 
-		//Check to see if Kusto is added to kernelAliases
+		//Check to see if Alias is added to kernelAliases
 		assert(!isUndefinedOrNull(model.kernelAliases));
-		let expectedAlias = ['Fake'];
+		let expectedAlias = ['fakeAlias'];
 		let kernelAliases = model.kernelAliases;
 
 		assert.equal(kernelAliases.length, 1);
@@ -511,9 +505,8 @@ suite('notebook model', function (): void {
 		queryConnectionService.verify((c) => c.disconnect(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
-	test('1234abc Should change kernel to Kusto when connecting to Kusto connection', async function () {
+	test('Should change kernel to Fake (kernel alias) connection when connecting to Kusto connection', async function () {
 		let model = await loadModelAndStartClientSession();
-
 		// Ensure notebook prefix is present in the connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
 		await changeContextWithFakeConnectionProfile(model);
@@ -521,16 +514,52 @@ suite('notebook model', function (): void {
 		// // After client session is started, ensure context isn't null/undefined
 		assert(!isUndefinedOrNull(model.context), 'context should exist after call to change context');
 
+		let notebookKernelAlias = model.context.serverCapabilities.notebookKernelAlias;
 		let doChangeKernelStub = sinon.spy(model, 'doChangeKernel').withArgs(model.kernelAliases[0]);
 
-		//Change to kusto kernel
-		//TODO issue with Test not setting serverCapabilities of context
-		model.changeKernel(model.kernelAliases[0]);
-		let notebookKernelAlias = capabilitiesService.providers.Fake.connection.notebookKernelAlias;
-		assert.equal(model.selectedKernelDisplayName, model.kernelAliases[0]);
+		model.changeKernel(notebookKernelAlias);
+		assert.equal(model.selectedKernelDisplayName, notebookKernelAlias);
 		assert.equal(model.currentKernelAlias, notebookKernelAlias);
 		sinon.assert.called(doChangeKernelStub);
 		sinon.restore(doChangeKernelStub);
+
+		// After closing the notebook
+		await model.handleClosed();
+
+		// Ensure disconnect is called once
+		queryConnectionService.verify((c) => c.disconnect(TypeMoq.It.isAny()), TypeMoq.Times.once());
+	});
+
+	test('Should change kernel from Fake (kernel alias) connection to SQL kernel when connecting to SQL connection', async function () {
+		let model = await loadModelAndStartClientSession();
+
+		// Ensure notebook prefix is present in the connection URI
+		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
+		// Connect to fake connection enables kernel alias connection
+		await changeContextWithFakeConnectionProfile(model);
+
+		// After client session is started, ensure context isn't null/undefined
+		assert(!isUndefinedOrNull(model.context), 'context should exist after call to change context');
+
+		let notebookKernelAlias = model.context.serverCapabilities.notebookKernelAlias;
+		let doChangeKernelStub = sinon.spy(model, 'doChangeKernel');
+
+		// Change kernel first to alias kernel and then connect to SQL connection
+		model.changeKernel(notebookKernelAlias);
+		assert.equal(model.selectedKernelDisplayName, notebookKernelAlias);
+		assert.equal(model.currentKernelAlias, notebookKernelAlias);
+		sinon.assert.called(doChangeKernelStub);
+		sinon.restore(doChangeKernelStub);
+
+		// Change to SQL connection from Fake connection
+		await changeContextWithConnectionProfile(model);
+		let expectedKernel = 'SQL';
+		model.changeKernel(expectedKernel);
+		assert.equal(model.selectedKernelDisplayName, expectedKernel);
+		assert.equal(model.currentKernelAlias, undefined);
+		sinon.assert.called(doChangeKernelStub);
+		sinon.restore(doChangeKernelStub);
+
 
 		// After closing the notebook
 		await model.handleClosed();
@@ -543,13 +572,6 @@ suite('notebook model', function (): void {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
 		defaultModelOptions.contentManager = mockContentManager.object;
-		let kernelChangedEmitter: Emitter<nb.IKernelChangedArgs> = new Emitter<nb.IKernelChangedArgs>();
-		let statusChangedEmitter: Emitter<nb.ISession> = new Emitter<nb.ISession>();
-
-		mockClientSession.setup(c => c.isInErrorState).returns(() => false);
-		mockClientSession.setup(c => c.isReady).returns(() => true);
-		mockClientSession.setup(c => c.kernelChanged).returns(() => kernelChangedEmitter.event);
-		mockClientSession.setup(c => c.statusChanged).returns(() => statusChangedEmitter.event);
 
 		queryConnectionService.setup(c => c.getActiveConnections(TypeMoq.It.isAny())).returns(() => null);
 
@@ -568,7 +590,7 @@ suite('notebook model', function (): void {
 		// Then I expect load to succeed
 		assert(!isUndefinedOrNull(model.clientSession), 'clientSession should exist after session is started');
 
-		assert.deepEqual(actualSession, mockClientSession.object, 'session returned is not the expected object');
+		assert.deepEqual(actualSession, mockClientSession, 'session returned is not the expected object');
 
 		// but on server load completion I expect error state to be set
 		// Note: do not expect serverLoad event to throw even if failed
