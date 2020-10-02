@@ -62,4 +62,19 @@ declare module 'dataworkspace' {
 		 */
 		readonly icon: string | vscode.Uri | { light: string | vscode.Uri, dark: string | vscode.Uri }
 	}
+
+	/**
+	 * Represents the item for the workspace tree
+	 */
+	export interface WorkspaceTreeItem {
+		/**
+		 * Gets the tree data provider
+		 */
+		treeDataProvider: vscode.TreeDataProvider<any>;
+
+		/**
+		 * Gets the raw element returned by the tree data provider
+		 */
+		element: any;
+	}
 }

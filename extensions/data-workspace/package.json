@@ -105,7 +105,14 @@
           "icon": "images/data-workspace.svg"
         }
       ]
-    }
+    },
+    "viewsWelcome": [
+      {
+        "view": "dataworkspace.views.main",
+        "contents": "%projects-view-no-workspace-content%",
+        "when": "workbenchState != workspace"
+      }
+    ]
   },
   "dependencies": {
     "vscode-nls": "^4.0.0"
