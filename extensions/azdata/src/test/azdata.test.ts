@@ -13,6 +13,11 @@ import * as utils from '../common/utils';
 import * as loc from '../localizedConstants';
 
 const oldAzdataMock = new azdata.AzdataTool('/path/to/azdata', '0.0.0');
+
+/**
+ * This matches the schema of the JSON file used to determine the current version of
+ * azdata - do not modify unless also updating the corresponding JSON file
+ */
 const releaseJson = {
 	win32: {
 		'version': '9999.999.999',
@@ -136,9 +141,8 @@ describe('azdata', function () {
 		});
 
 		describe('discoverLatestAvailableAzdataVersion', function (): void {
-			this.timeout(20000);
-			it(`finds latest available version of azdata successfully`, async function (): Promise<void> {
-				// if the latest version is not discovered then the following call throws failing the test
+			it('finds latest available version of azdata successfully', async function (): Promise<void> {
+				sinon.stub(HttpClient, 'getTextContent').resolves(JSON.stringify(releaseJson));
 				await azdata.discoverLatestAvailableAzdataVersion();
 			});
 		});
