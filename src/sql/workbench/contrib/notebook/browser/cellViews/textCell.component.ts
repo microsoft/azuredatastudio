@@ -68,16 +68,24 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	@HostListener('document:keydown', ['$event'])
-	onkeydown(e) {
+	onkeydown(e: KeyboardEvent) {
 		// use preventDefault() to avoid invoking the editor's select all
 		// select the active .
 		if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 			e.preventDefault();
 			document.execCommand('selectAll');
-		}
-		if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+		} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y')) {
+			e.preventDefault();
+			document.execCommand('redo');
+		} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
 			e.preventDefault();
 			document.execCommand('undo');
+		} else if (e.shiftKey && e.key === 'Tab') {
+			e.preventDefault();
+			document.execCommand('outdent');
+		} else if (e.key === 'Tab') {
+			e.preventDefault();
+			document.execCommand('indent');
 		}
 	}
 
