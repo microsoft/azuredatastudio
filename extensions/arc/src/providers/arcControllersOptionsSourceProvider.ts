@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as rd from 'resource-deployment';
 import { getControllerPassword, getRegisteredDataControllers, reacquireControllerPassword } from '../common/api';
 import { CacheManager } from '../common/cacheManager';
-import { switchReturn, throwUnless } from '../common/utils';
+import { throwUnless } from '../common/utils';
 import * as loc from '../localizedConstants';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 
