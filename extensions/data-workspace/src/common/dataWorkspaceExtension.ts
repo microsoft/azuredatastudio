@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as constants from './constants';
 import { IExtension } from 'dataworkspace';
 import { WorkspaceService } from '../services/workspaceService';
 
@@ -21,6 +20,6 @@ export class DataWorkspaceExtension implements IExtension {
 	}
 
 	showProjectsView(): void {
-		vscode.commands.executeCommand(constants.projectsViewFocusCommand);
+		vscode.commands.executeCommand('dataworkspace.views.main.focus');
 	}
 }

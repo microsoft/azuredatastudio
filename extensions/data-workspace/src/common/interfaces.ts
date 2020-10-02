@@ -66,6 +66,12 @@ export interface IWorkspaceService {
 	removeProject(projectFile: vscode.Uri): Promise<void>;
 
 	/**
+	 * Creates a new project from workspace
+	 * @param projectFile The Uri of the project file
+	 */
+	createProject(projectFile: vscode.Uri): Promise<void>;
+
+	/**
 	 * Event fires when projects in workspace changes
 	 */
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void>;

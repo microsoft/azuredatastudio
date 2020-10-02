@@ -84,6 +84,10 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 	}
 
+	createProject(projectFile: vscode.Uri): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
 	/**
 	 * Ensure the project provider extension for the specified project is loaded
 	 * @param projectType The file extension of the project, if not specified, all project provider extensions will be loaded.
