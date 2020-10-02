@@ -24,7 +24,7 @@ export const accept = localize('azdata.accept', "Accept");
 export const decline = localize('azdata.decline', "Decline");
 export const doNotAskAgain = localize('azdata.doNotAskAgain', "Don't Ask Again");
 export const askLater = localize('azdata.askLater', "Ask Later");
-export const downloadingTo = (name: string, location: string): string => localize('azdata.downloadingTo', "Downloading {0} to {1}", name, location);
+export const downloadingTo = (name: string, url: string, location: string): string => localize('azdata.downloadingTo', "Downloading {0} from {1} to {2}", name, url, location);
 export const executingCommand = (command: string, args: string[]): string => localize('azdata.executingCommand', "Executing command: '{0} {1}'", command, args?.join(' '));
 export const stdoutOutput = (stdout: string): string => localize('azdata.stdoutOutput', "stdout: {0}", stdout);
 export const stderrOutput = (stderr: string): string => localize('azdata.stderrOutput', "stderr: {0}", stderr);

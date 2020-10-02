@@ -6,6 +6,7 @@
 import * as azdataExt from 'azdata-ext';
 import * as fs from 'fs';
 import * as os from 'os';
+import * as path from 'path';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
@@ -452,8 +453,14 @@ export async function promptForEula(memento: vscode.Memento, userRequested: bool
 async function downloadAndInstallAzdataWin32(): Promise<void> {
 	const downLoadLink = await getPlatformDownloadLink();
 	const downloadFolder = os.tmpdir();
+	const downloadLogs = path.join(downloadFolder, 'ads_azdata_install_logs.log');
 	const downloadedFile = await HttpClient.downloadFile(downLoadLink, downloadFolder);
-	await executeCommand('msiexec', ['/qn', '/i', downloadedFile]);
+
+	try {
+		await executeSudoCommand(`msiexec /qn /i "${downloadedFile}" /lvx "${downloadLogs}"`);
+	} catch (err) {
+		throw new Error(`${err.message}. See logs at ${downloadLogs} for more details.`);
+	}
 }
 
 /**
