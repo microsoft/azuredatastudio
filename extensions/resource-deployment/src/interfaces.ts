@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { OptionsSource, OptionsSourceType } from './helpers/optionSources';
+import { OptionsSourceType } from './helpers/optionSources';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 
@@ -196,7 +196,7 @@ export interface IOptionsSource {
 
 export interface OptionsInfo {
 	values?: string[] | azdata.CategoryValue[],
-	source?: OptionsSource,
+	source?: IOptionsSource,
 	defaultValue: string,
 	optionsType?: OptionsType
 }

@@ -9,8 +9,8 @@ import { EOL, homedir as os_homedir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { OptionsSource } from '../helpers/optionSources';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
+import { ArcControllersOptionsSource, OptionsSourceType } from '../helpers/optionSources';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
@@ -419,8 +419,15 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 	throwUnless('optionsType' in context.fieldInfo.options, loc.optionsTypeNotFound);
 	if (context.fieldInfo.options.source) {
 		try {
-			// if options.source still points to the IOptionsSource interface make it to point to the implementation
-			context.fieldInfo.options.source = OptionsSource.construct(context.fieldInfo.options.source.type, context.fieldInfo.options.source.variableNames);
+			let optionsSource: IOptionsSource;
+			switch (context.fieldInfo.options.source.type) {
+				case OptionsSourceType.ArcControllersOptionsSource:
+					optionsSource = new ArcControllersOptionsSource(context.fieldInfo.options.source.variableNames, context.fieldInfo.options.source.type);
+					break;
+				default:
+					throw new Error(loc.noOptionsSourceDefined(context.fieldInfo.options.source.type));
+			}
+			context.fieldInfo.options.source = optionsSource;
 			context.fieldInfo.options.values = await context.fieldInfo.options.source.getOptions();
 		}
 		catch (e) {
