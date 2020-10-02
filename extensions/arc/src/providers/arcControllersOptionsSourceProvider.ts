@@ -28,19 +28,16 @@ export class ArcControllersOptionsSourceProvider implements rd.IOptionsSourcePro
 		});
 	}
 
-	private async retrieveVariable(key: string) {
+	private async retrieveVariable(key: string): Promise<string> {
 		const [variableName, controllerLabel] = JSON.parse(key);
 		const controller = (await getRegisteredDataControllers(this._treeProvider)).find(ci => ci.label === controllerLabel);
 		throwUnless(controller !== undefined, loc.noControllerInfoFound(controllerLabel));
-		return await switchReturn({
-			switchExpression: variableName,
-			caseExpressions: {
-				'endpoint': () => controller.info.url,
-				'username': () => controller.info.username,
-				'password': () => this.getPassword(controller)
-			},
-			defaultCase: () => { throw new Error(loc.variableValueFetchForUnsupportedVariable(variableName)); }
-		});
+		switch (variableName) {
+			case 'endpoint': return controller.info.url;
+			case 'username': return controller.info.username;
+			case 'password': return this.getPassword(controller);
+			default: throw new Error(loc.variableValueFetchForUnsupportedVariable(variableName));
+		}
 	}
 
 	getVariableValue(variableName: string, controllerLabel: string): Promise<string> {
@@ -56,15 +53,12 @@ export class ArcControllersOptionsSourceProvider implements rd.IOptionsSourcePro
 		return password;
 	}
 
-	getIsPassword(variableName: string): boolean | Promise<boolean> {
-		return switchReturn<boolean>({
-			switchExpression: variableName,
-			caseExpressions: {
-				'endpoint': () => false,
-				'username': () => false,
-				'password': () => true
-			},
-			defaultCase: () => { throw new Error(loc.isPasswordFetchForUnsupportedVariable(variableName)); }
-		});
+	getIsPassword(variableName: string): boolean {
+		switch (variableName) {
+			case 'endpoint': return false;
+			case 'username': return false;
+			case 'password': return true;
+			default: throw new Error(loc.isPasswordFetchForUnsupportedVariable(variableName));
+		}
 	}
 }
