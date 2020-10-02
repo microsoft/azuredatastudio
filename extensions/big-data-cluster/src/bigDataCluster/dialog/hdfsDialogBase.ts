@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ClusterController, ControllerError, IEndPointsResponse } from '../controller/clusterControllerApi';
+import { ClusterController, ControllerError } from '../controller/clusterControllerApi';
 import { Deferred } from '../../common/promise';
 import * as loc from '../localizedConstants';
-import { AuthType } from 'bdc';
+import { AuthType, IEndPointsResponse } from 'bdc';
 
 function getAuthCategory(name: AuthType): azdata.CategoryValue {
 	if (name === 'basic') {
