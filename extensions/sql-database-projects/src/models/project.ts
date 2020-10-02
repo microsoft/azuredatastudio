@@ -57,7 +57,7 @@ export class Project {
 	/**
 	 * Reads the project setting and contents from the file
 	 */
-	public async readProjFile() {
+	public async readProjFile(): Promise<void> {
 		this.resetProject();
 
 		const projFileText = await fs.readFile(this.projectFilePath);
@@ -166,7 +166,7 @@ export class Project {
 		}
 	}
 
-	private resetProject() {
+	private resetProject(): void {
 		this.files = [];
 		this.importedTargets = [];
 		this.databaseReferences = [];
@@ -414,7 +414,7 @@ export class Project {
 	 * @param name name of the variable
 	 * @param defaultValue
 	 */
-	public async addSqlCmdVariable(name: string, defaultValue: string) {
+	public async addSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
 		const sqlCmdVariableEntry = new SqlCmdVariableProjectEntry(name, defaultValue);
 		await this.addToProjFile(sqlCmdVariableEntry);
 	}
@@ -760,7 +760,7 @@ export class Project {
 		}
 	}
 
-	private async addToProjFile(entry: ProjectEntry, xmlTag?: string) {
+	private async addToProjFile(entry: ProjectEntry, xmlTag?: string): Promise<void> {
 		switch (entry.type) {
 			case EntryType.File:
 				this.addFileToProjFile((<FileProjectEntry>entry).relativePath, xmlTag ? xmlTag : constants.Build);
@@ -779,7 +779,7 @@ export class Project {
 		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
-	private async removeFromProjFile(entries: ProjectEntry | ProjectEntry[]) {
+	private async removeFromProjFile(entries: ProjectEntry | ProjectEntry[]): Promise<void> {
 		if (entries instanceof ProjectEntry) {
 			entries = [entries];
 		}
@@ -803,7 +803,7 @@ export class Project {
 		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
-	private async serializeToProjFile(projFileContents: any) {
+	private async serializeToProjFile(projFileContents: any): Promise<void> {
 		let xml = new xmldom.XMLSerializer().serializeToString(projFileContents);
 		xml = xmlFormat(xml, <any>{ collapseContent: true, indentation: '  ', lineSeparator: os.EOL }); // TODO: replace <any>
 
