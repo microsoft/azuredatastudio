@@ -723,7 +723,6 @@
                           "textValidationRequired": true,
                           "textValidationRegex": "^[a-z]([-a-z0-9]{0,8}[a-z0-9])?$",
                           "textValidationDescription": "%arc.postgres.server.group.name.validation.description%",
-                          "defaultValue": "postgres1",
                           "required": true
                         },
                         {

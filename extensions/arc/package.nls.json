@@ -67,7 +67,7 @@
 	"resource.type.arc.sql.display.name": "Azure SQL managed instance - Azure Arc (preview)",
 	"resource.type.arc.postgres.display.name": "PostgreSQL Hyperscale server groups - Azure Arc (preview)",
 	"resource.type.arc.sql.description": "Managed SQL Instance service for app developers in a customer-managed environment",
-	"resource.type.arc.postgres.description": "Deploy PostgreSQL server groups into an Azure Arc environment",
+	"resource.type.arc.postgres.description": "Deploy PosgreSQL Hyperscale server groups into an Azure Arc environment",
 	"arc.controller": "Target Azure Arc Controller",
 
 
@@ -101,7 +101,7 @@
 	"arc.azure.subscription": "Azure subscription",
 	"arc.azure.resource.group": "Azure resource group",
 	"arc.azure.location": "Azure location",
-	"arc.postgres.new.dialog.title": "Deploy a PostgreSQL server group on Azure Arc (preview)",
+	"arc.postgres.new.dialog.title": "Deploy an Azure Arc enabled PostgreSQL Hyperscale server group (Preview)",
 	"arc.postgres.settings.section.title": "PostgreSQL server group settings",
 	"arc.postgres.settings.resource.title": "PostgreSQL server group resource settings",
 	"arc.postgres.settings.storage.title": "PostgreSQL server group storage settings",
@@ -125,6 +125,6 @@
 	"arc.postgres.server.group.memory.limit": "Max memory MB (per node) to allow",
 	"arc.agreement": "I accept {0} and {1}.",
 	"arc.agreement.sql.terms.conditions":"Azure SQL managed instance - Azure Arc terms and conditions",
-	"arc.agreement.postgres.terms.conditions":"PostgreSQL server groups - Azure Arc terms and conditions",
+	"arc.agreement.postgres.terms.conditions":"Azure Arc enabled PostgreSQL Hyperscale terms and conditions",
 	"arc.deploy.action":"Deploy"
 }
