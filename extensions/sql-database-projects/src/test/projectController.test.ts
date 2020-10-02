@@ -350,7 +350,7 @@ describe('ProjectsController', function (): void {
 		});
 	});
 
-	describe('import operations', function (): void {
+	describe('Create project from database', function (): void {
 		it('Should create list of all files and folders correctly', async function (): Promise<void> {
 			const testFolderPath = await testUtils.createDummyFileStructure();
 
