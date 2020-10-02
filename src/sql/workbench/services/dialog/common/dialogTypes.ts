@@ -200,6 +200,7 @@ export class Wizard {
 	public width: DialogWidth | undefined;
 
 	constructor(public title: string,
+		public readonly name: string,
 		public doneButton: DialogButton,
 		public cancelButton: DialogButton,
 		public nextButton: DialogButton,

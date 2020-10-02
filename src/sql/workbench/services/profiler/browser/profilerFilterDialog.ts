@@ -106,7 +106,7 @@ export class ProfilerFilterDialog extends Modal {
 		this._loadFilterButton = this.addFooterButton(LoadFilterText, () => this.loadSavedFilter(), 'left');
 		this._applyButton = this.addFooterButton(ApplyText, () => this.filterSession());
 		this._okButton = this.addFooterButton(OkText, () => this.handleOkButtonClick());
-		this._cancelButton = this.addFooterButton(CancelText, () => this.hide());
+		this._cancelButton = this.addFooterButton(CancelText, () => this.hide('cancel'));
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
 		this._register(attachButtonStyler(this._applyButton, this._themeService));
@@ -138,7 +138,7 @@ export class ProfilerFilterDialog extends Modal {
 
 	/* espace key */
 	protected onClose() {
-		this.hide();
+		this.hide('close');
 	}
 
 	/* enter key */
@@ -148,7 +148,7 @@ export class ProfilerFilterDialog extends Modal {
 
 	private handleOkButtonClick(): void {
 		this.filterSession();
-		this.hide();
+		this.hide('ok');
 	}
 
 	private handleClearButtonClick() {
