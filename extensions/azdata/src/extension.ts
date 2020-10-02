@@ -65,7 +65,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 	const rdApi = <rd.IExtension>await vscode.extensions.getExtension(rd.extension.name)?.activate();
 	rdApi.contributeOptionsSource(new ArcControllerConfigProfilesOptionsSource(localAzdata!));
 
-	return getExtensionApi(context, localAzdata, eulaAccepted, localAzdataDiscovered.promise);
+	return getExtensionApi(context, localAzdata, eulaAccepted, localAzdataDiscovered);
 }
 
 export function deactivate(): void { }
