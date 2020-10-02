@@ -886,13 +886,14 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 
 			loadValue(item, rowNumber): void {
+				const itemForDisplay = deepClone(item);
 				if (self.overrideCellFn) {
-					let overrideValue = self.overrideCellFn(rowNumber, this._args.column.id, item[this._args.column.id]);
+					let overrideValue = self.overrideCellFn(rowNumber, this._args.column.id, itemForDisplay[this._args.column.id]);
 					if (overrideValue !== undefined) {
-						item[this._args.column.id] = overrideValue;
+						itemForDisplay[this._args.column.id] = overrideValue;
 					}
 				}
-				this._textEditor.loadValue(item);
+				this._textEditor.loadValue(itemForDisplay);
 			}
 
 			serializeValue(): string {
