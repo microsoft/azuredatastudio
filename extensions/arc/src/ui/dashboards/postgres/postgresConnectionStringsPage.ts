@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
@@ -12,7 +11,6 @@ import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresConnectionStringsPage extends DashboardPage {
-	private loading?: azdata.LoadingComponent;
 	private keyValueContainer?: KeyValueContainer;
 
 	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
@@ -61,40 +59,13 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 
 		this.keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, this.getConnectionStrings());
 		this.disposables.push(this.keyValueContainer);
-
-		this.loading = this.modelView.modelBuilder.loadingComponent()
-			.withItem(this.keyValueContainer.container)
-			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this._postgresModel.configLastUpdated
-			}).component();
-
-		content.addItem(this.loading);
+		content.addItem(this.keyValueContainer.container);
 		this.initialized = true;
 		return root;
 	}
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
-		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.refresh,
-			iconPath: IconPathHelper.refresh
-		}).component();
-
-		this.disposables.push(
-			refreshButton.onDidClick(async () => {
-				refreshButton.enabled = false;
-				try {
-					this.loading!.loading = true;
-					await this._postgresModel.refresh();
-				} catch (error) {
-					vscode.window.showErrorMessage(loc.refreshFailed(error));
-				} finally {
-					refreshButton.enabled = true;
-				}
-			}));
-
-		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
-			{ component: refreshButton }
-		]).component();
+		return this.modelView.modelBuilder.toolbarContainer().component();
 	}
 
 	private getConnectionStrings(): KeyValue[] {
@@ -118,6 +89,5 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 
 	private handleServiceUpdated() {
 		this.keyValueContainer?.refresh(this.getConnectionStrings());
-		this.loading!.loading = false;
 	}
 }

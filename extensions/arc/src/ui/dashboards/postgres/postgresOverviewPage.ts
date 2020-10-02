@@ -245,17 +245,20 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	private getProperties(): azdata.PropertiesContainerItem[] {
-		const endpoint = this._postgresModel.endpoint;
+		const status = this._postgresModel.config?.status;
+		const azure = this._controllerModel.controllerConfig?.spec.settings.azure;
 
 		return [
-			{ displayName: loc.name, value: this._postgresModel.info.name },
-			{ displayName: loc.coordinatorEndpoint, value: endpoint ? `postgresql://postgres@${endpoint.ip}:${endpoint.port}` : '-' },
-			{ displayName: loc.status, value: this._postgresModel.config?.status.state || '-' },
+			{ displayName: loc.resourceGroup, value: azure?.resourceGroup || '-' },
+			{ displayName: loc.dataController, value: this._controllerModel.controllerConfig?.metadata.name || '-' },
+			{ displayName: loc.region, value: azure?.location || '-' },
+			{ displayName: loc.namespace, value: this._postgresModel.config?.metadata.namespace || '-' },
+			{ displayName: loc.subscriptionId, value: azure?.subscription || '-' },
+			{ displayName: loc.externalEndpoint, value: this._postgresModel.config?.status.externalEndpoint || '-' },
+			{ displayName: loc.status, value: status ? `${status.state} (${status.readyPods} ${loc.podsReady})` : '-' },
 			{ displayName: loc.postgresAdminUsername, value: 'postgres' },
-			{ displayName: loc.dataController, value: this._controllerModel?.controllerConfig?.metadata.namespace || '-' },
-			{ displayName: loc.nodeConfiguration, value: this._postgresModel.scaleConfiguration || '-' },
-			{ displayName: loc.subscriptionId, value: this._controllerModel.controllerConfig?.spec.settings.azure.subscription ?? '' },
-			{ displayName: loc.postgresVersion, value: this._postgresModel.engineVersion ?? '-' }
+			{ displayName: loc.postgresVersion, value: this._postgresModel.engineVersion ?? '-' },
+			{ displayName: loc.nodeConfiguration, value: this._postgresModel.scaleConfiguration || '-' }
 		];
 	}
 
