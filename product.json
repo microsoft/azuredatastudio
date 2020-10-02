@@ -43,6 +43,8 @@
 		"Microsoft.admin-pack",
 		"Microsoft.admin-tool-ext-win",
 		"Microsoft.agent",
+		"Microsoft.arc",
+		"Microsoft.azdata",
 		"Microsoft.azuredatastudio-postgresql",
 		"Microsoft.cms",
 		"Microsoft.dacpac",
