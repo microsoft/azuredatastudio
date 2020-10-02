@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
-import { OptionsSourceType } from './helpers/optionSources';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 
@@ -219,11 +219,9 @@ export type ComponentCSSStyles = {
 };
 
 export interface IOptionsSource {
-	readonly type: OptionsSourceType;
+	provider?: IOptionsSourceProvider
 	readonly variableNames: { [index: string]: string; };
-	getOptions(): Promise<string[] | azdata.CategoryValue[]>;
-	getVariableValue(variableName: string, input: string): Promise<string>;
-	getIsPassword(variableName: string): boolean;
+	readonly providerId: string;
 }
 
 

@@ -10,6 +10,8 @@ import Logger from './common/logger';
 import { NoAzdataError } from './common/utils';
 import * as constants from './constants';
 import * as loc from './localizedConstants';
+import * as rd from 'resource-deployment';
+import { ArcControllerConfigProfilesOptionsSource } from './providers/arcControllerConfigProfilesOptionsSource';
 
 let localAzdata: IAzdataTool | undefined = undefined;
 let eulaAccepted: boolean = false;
@@ -57,6 +59,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 				}
 			}
 		});
+
+	// register option source(s)
+	//const rdApi = <rd.IExtension> await vscode.extensions.getExtension(rd.extension.name)?.activate();
+	//rdApi.contributeOptionsSource(new ArcControllerConfigProfilesOptionsSource(localAzdata!));
 
 	return {
 		isEulaAccepted: () => !!context.globalState.get<boolean>(constants.eulaAccepted),

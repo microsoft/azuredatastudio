@@ -18,6 +18,9 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
+  "extensionDependencies": [
+    "microsoft.resource-deployment"
+  ],
   "main": "./out/extension",
   "contributes": {
     "configuration": [

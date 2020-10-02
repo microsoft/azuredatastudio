@@ -18,7 +18,8 @@
     "onView:azureArc"
   ],
   "extensionDependencies": [
-    "Microsoft.azdata"
+    "Microsoft.azdata",
+    "Microsoft.resource-deployment"
   ],
   "repository": {
     "type": "git",

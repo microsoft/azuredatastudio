@@ -8,7 +8,7 @@ import { SemVer, compare as SemVerCompare } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { Command, ITool, OsDistribution, ToolStatus, ToolType } from '../../interfaces';
-import { getErrorMessage } from '../../utils';
+import { getErrorMessage } from '../../common/utils';
 import { IPlatformService } from '../platformService';
 
 const localize = nls.loadMessageBundle();

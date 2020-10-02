@@ -9,17 +9,18 @@ import { EOL, homedir as os_homedir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { ArcControllerConfigProfilesOptionsSource, ArcControllersOptionsSource, OptionsSourceType } from '../helpers/optionSources';
 import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
 import { KubeCtlTool, KubeCtlToolName } from '../services/tools/kubeCtlTool';
 import { IToolsService } from '../services/toolsService';
-import { getDateTimeString, getErrorMessage, throwUnless } from '../utils';
+import { getDateTimeString, getErrorMessage, throwUnless } from '../common/utils';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
+import { OptionsSources } from '../common/optionSources';
+import { IOptionsSourceProvider } from 'resource-deployment';
 
 const localize = nls.loadMessageBundle();
 
@@ -432,21 +433,10 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 	}
 	throwUnless(typeof context.fieldInfo.options === 'object', loc.optionsNotObjectOrArray);
 	throwUnless('optionsType' in context.fieldInfo.options, loc.optionsTypeNotFound);
-	if (context.fieldInfo.options.source) {
+	if (context.fieldInfo.options.source?.providerId) {
 		try {
-			let optionsSource: IOptionsSource;
-			switch (context.fieldInfo.options.source.type) {
-				case OptionsSourceType.ArcControllersOptionsSource:
-					optionsSource = new ArcControllersOptionsSource(context.fieldInfo.options.source.variableNames, context.fieldInfo.options.source.type);
-					break;
-				case OptionsSourceType.ArcControllerConfigProfilesOptionsSource:
-					optionsSource = new ArcControllerConfigProfilesOptionsSource(context.fieldInfo.options.source.variableNames, context.fieldInfo.options.source.type);
-					break;
-				default:
-					throw new Error(loc.noOptionsSourceDefined(context.fieldInfo.options.source.type));
-			}
-			context.fieldInfo.options.source = optionsSource;
-			context.fieldInfo.options.values = await context.fieldInfo.options.source.getOptions();
+			context.fieldInfo.options.source.provider = OptionsSources.getOptionsSource(context.fieldInfo.options.source.providerId);
+			context.fieldInfo.options.values = await context.fieldInfo.options.source.provider.getOptions();
 		}
 		catch (e) {
 			disableControlButtons(context.container);
@@ -466,33 +456,37 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 		throwUnless(context.fieldInfo.options.optionsType === OptionsType.Dropdown, loc.optionsTypeRadioOrDropdown);
 		optionsComponent = processDropdownOptionsTypeField(context);
 	}
-	if (context.fieldInfo.options.source) {
-		const optionsSource = context.fieldInfo.options.source;
-		for (const key of Object.keys(optionsSource.variableNames ?? {})) {
-			context.fieldInfo.subFields!.push({
-				label: context.fieldInfo.label,
-				variableName: optionsSource.variableNames[key]
-			});
-			context.onNewInputComponentCreated(optionsSource.variableNames[key], {
-				component: optionsComponent,
-				inputValueTransformer: async (controllerName: string) => {
-					try {
-						const variableValue = await optionsSource.getVariableValue(key, controllerName);
-						return variableValue;
-					} catch (e) {
-						disableControlButtons(context.container);
-						context.container.message = {
-							text: getErrorMessage(e),
-							description: '',
-							level: azdata.window.MessageLevel.Error
-						};
-						return '';
-					}
-				},
-				isPassword: optionsSource.getIsPassword(key)
-			});
-		}
+	const optionsSource = context.fieldInfo.options.source;
+	if (optionsSource?.provider) {
+		const optionsSourceProvider = optionsSource.provider;
+		await Promise.all(Object.keys(context.fieldInfo.options.source?.variableNames ?? {}).map(async key => {
+			await configureOptionsSourceSubfields(context, optionsSource, key, optionsComponent, optionsSourceProvider);
+		}));
 	}
+}
+
+async function configureOptionsSourceSubfields(context: FieldContext, optionsSource: IOptionsSource, variableKey: string, optionsComponent: InputComponent, optionsSourceProvider: IOptionsSourceProvider) {
+	context.fieldInfo.subFields!.push({
+		label: context.fieldInfo.label,
+		variableName: optionsSource.variableNames[variableKey]
+	});
+	context.onNewInputComponentCreated(optionsSource.variableNames[variableKey], {
+		component: optionsComponent,
+		inputValueTransformer: async (optionValue: string) => {
+			try {
+				return await optionsSourceProvider.getVariableValue!(variableKey, optionValue);
+			} catch (e) {
+				disableControlButtons(context.container);
+				context.container.message = {
+					text: getErrorMessage(e),
+					description: '',
+					level: azdata.window.MessageLevel.Error
+				};
+				return '';
+			}
+		},
+		isPassword: await optionsSourceProvider.getIsPassword!(variableKey)
+	});
 }
 
 function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDownComponent {
@@ -1303,7 +1297,7 @@ async function getInputComponentValue(inputComponents: InputComponents, key: str
 	if (input === undefined) {
 		return undefined;
 	}
-	let value;
+	let value: string | undefined;
 	if (input instanceof RadioGroupLoadingComponentBuilder) {
 		value = input.value;
 	} else if ('checked' in input) { // CheckBoxComponent
@@ -1318,14 +1312,7 @@ async function getInputComponentValue(inputComponents: InputComponents, key: str
 	} else {
 		throw new Error(`Unknown input type with ID ${input.id}`);
 	}
-	const inputValueTransformer = inputComponents[key].inputValueTransformer;
-	if (inputValueTransformer) {
-		value = inputValueTransformer(value ?? '');
-		if (typeof value !== 'string') {
-			value = await value;
-		}
-	}
-	return value;
+	return inputComponents[key].inputValueTransformer ? await inputComponents[key].inputValueTransformer!(value ?? '') : value;
 }
 
 export function isInputBoxEmpty(input: azdata.InputBoxComponent): boolean {

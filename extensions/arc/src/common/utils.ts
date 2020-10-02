@@ -216,3 +216,44 @@ export function parseIpAndPort(address: string): { ip: string, port: string } {
 export function createCredentialId(controllerId: string, resourceType: string, instanceName: string): string {
 	return `${controllerId}::${resourceType}::${instanceName}`;
 }
+
+/**
+ * Throws an Error with given {@link message} unless {@link condition} is true.
+ * This also tells the typescript compiler that the condition is 'truthy' in the remainder of the scope
+ * where this function was called.
+ *
+ * @param condition
+ * @param message
+ */
+export function throwUnless(condition: boolean, message?: string): asserts condition {
+	if (!condition) {
+		throw new Error(message);
+	}
+}
+
+/**
+ *	object to house the cases of the switcher.
+ */
+export interface SwitcherCaseDictionary<T> {
+	[key: string]: () => T | Promise<T>;
+}
+
+/**
+ * type for handling the default case in the switcher.
+ */
+export type DefaultCase<T> = (switchExpression: string) => T;
+
+/**
+ * Provides an alternative to a switch statement without the 'branching' associated with the switch statement.
+ * Each case always returns (even if the return value is a void), so there is no fallThrough available.
+ * Inspired by https://github.com/nebrius/conditional-reduce, but with a mandatory defaultCase!
+ * Also for readability, this implementation uses a destructed object parameters.
+ * Also see discussion here: https://dev.to/nebrius/a-new-coding-style-for-switch-statements-in-javascript-typescript-ipe
+ */
+export function switchReturn<T>({ switchExpression, caseExpressions, defaultCase }: { switchExpression: string; caseExpressions: SwitcherCaseDictionary<T>; defaultCase: DefaultCase<T>; }): T | Promise<T> {
+	const retVal = caseExpressions[switchExpression];
+	if (!retVal) {
+		return defaultCase(switchExpression);
+	}
+	return retVal();
+}
