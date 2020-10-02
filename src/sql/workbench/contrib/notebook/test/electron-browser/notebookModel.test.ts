@@ -505,7 +505,7 @@ suite('notebook model', function (): void {
 		queryConnectionService.verify((c) => c.disconnect(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
-	test('Should change kernel to Fake (kernel alias) connection when connecting to Kusto connection', async function () {
+	test('Should change kernel when connecting to a Fake (kernel alias) connection', async function () {
 		let model = await loadModelAndStartClientSession();
 		// Ensure notebook prefix is present in the connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
@@ -530,7 +530,7 @@ suite('notebook model', function (): void {
 		queryConnectionService.verify((c) => c.disconnect(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
-	test('Should change kernel from Fake (kernel alias) connection to SQL kernel when connecting to SQL connection', async function () {
+	test('Should change kernel from Fake (kernel alias) to SQL kernel when connecting to SQL connection', async function () {
 		let model = await loadModelAndStartClientSession();
 
 		// Ensure notebook prefix is present in the connection URI
