@@ -633,13 +633,6 @@
                           "labelWidth": "100%"
                         },
                         {
-                          "label": "%arc.sql.instance.port%",
-                          "variableName": "AZDATA_NB_VAR_SQL_INSTANCE_PORT",
-                          "type": "number",
-                          "required": false,
-                          "labelWidth": "100%"
-                        },
-                        {
                           "label": "%arc.sql.username%",
                           "variableName": "AZDATA_NB_VAR_SQL_USERNAME",
                           "type": "text",
