@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ResourceInfo } from 'arc';
+import { MiaaResourceInfo } from 'arc';
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
@@ -37,8 +37,8 @@ export class MiaaModel extends ResourceModel {
 
 	private _refreshPromise: Deferred<void> | undefined = undefined;
 
-	constructor(private _controllerModel: ControllerModel, info: ResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
-		super(info, registration);
+	constructor(private _controllerModel: ControllerModel, private _miaaInfo: MiaaResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
+		super(_miaaInfo, registration);
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
 
@@ -165,7 +165,7 @@ export class MiaaModel extends ResourceModel {
 			authenticationType: 'SqlLogin',
 			providerName: 'MSSQL',
 			connectionName: '',
-			userName: 'sa',
+			userName: this._miaaInfo.userName || '',
 			password: '',
 			savePassword: true,
 			groupFullName: undefined,
@@ -183,12 +183,15 @@ export class MiaaModel extends ResourceModel {
 				if (credentials.password) {
 					// Try to connect to verify credentials are still valid
 					connectionProfile.password = credentials.password;
-					const result = await azdata.connection.connect(connectionProfile, false, false);
-					if (!result.connected) {
-						vscode.window.showErrorMessage(loc.connectToSqlFailed(connectionProfile.serverName, result.errorMessage));
-						const connectToSqlDialog = new ConnectToSqlDialog(this._controllerModel, this);
-						connectToSqlDialog.showDialog(connectionProfile);
-						connectionProfile = await connectToSqlDialog.waitForClose();
+					// If we don't have a username for some reason then just continue on and we'll prompt for the username below
+					if (connectionProfile.userName) {
+						const result = await azdata.connection.connect(connectionProfile, false, false);
+						if (!result.connected) {
+							vscode.window.showErrorMessage(loc.connectToSqlFailed(connectionProfile.serverName, result.errorMessage));
+							const connectToSqlDialog = new ConnectToSqlDialog(this._controllerModel, this);
+							connectToSqlDialog.showDialog(connectionProfile);
+							connectionProfile = await connectToSqlDialog.waitForClose();
+						}
 					}
 				}
 			} catch (err) {
@@ -197,7 +200,7 @@ export class MiaaModel extends ResourceModel {
 			}
 		}
 
-		if (!connectionProfile?.password) {
+		if (!connectionProfile?.userName || !connectionProfile?.password) {
 			// Need to prompt user for password since we don't have one stored
 			const connectToSqlDialog = new ConnectToSqlDialog(this._controllerModel, this);
 			connectToSqlDialog.showDialog(connectionProfile);
@@ -214,6 +217,7 @@ export class MiaaModel extends ResourceModel {
 	private async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
 		this._connectionProfile = connectionProfile;
 		this.info.connectionId = connectionProfile.id;
+		this._miaaInfo.userName = connectionProfile.userName;
 		await this._treeDataProvider.saveControllers();
 	}
 }

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ResourceInfo, ResourceType } from 'arc';
+import { MiaaResourceInfo, ResourceInfo, ResourceType } from 'arc';
 import * as vscode from 'vscode';
 import { UserCancelledError } from '../../common/utils';
 import * as loc from '../../localizedConstants';
@@ -105,6 +105,10 @@ export class ControllerTreeNode extends TreeNode {
 						node = new PostgresTreeNode(postgresModel, this.model, this._context);
 						break;
 					case ResourceType.sqlManagedInstances:
+						// Fill in the username too if we already have it
+						(resourceInfo as MiaaResourceInfo).userName = (this.model.info.resources.find(info =>
+							info.name === resourceInfo.name &&
+							info.resourceType === resourceInfo.resourceType) as MiaaResourceInfo)?.userName;
 						const miaaModel = new MiaaModel(this.model, resourceInfo, registration, this._treeDataProvider);
 						node = new MiaaTreeNode(miaaModel, this.model);
 						break;
