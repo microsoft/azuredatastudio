@@ -5,7 +5,7 @@
 
 import * as arc from 'arc';
 import * as vscode from 'vscode';
-import * as rd from 'resource-deployment';
+//import * as rd from 'resource-deployment';
 import { arcApi } from './common/api';
 import { IconPathHelper, refreshActionId } from './constants';
 import * as loc from './localizedConstants';
@@ -13,7 +13,7 @@ import { ConnectToControllerDialog } from './ui/dialogs/connectControllerDialog'
 import { AzureArcTreeDataProvider } from './ui/tree/azureArcTreeDataProvider';
 import { ControllerTreeNode } from './ui/tree/controllerTreeNode';
 import { TreeNode } from './ui/tree/treeNode';
-import { ArcControllersOptionsSourceProvider } from './providers/arcControllersOptionsSourceProvider';
+//import { ArcControllersOptionsSourceProvider } from './providers/arcControllersOptionsSourceProvider';
 
 export async function activate(context: vscode.ExtensionContext): Promise<arc.IExtension> {
 	IconPathHelper.setExtensionContext(context);

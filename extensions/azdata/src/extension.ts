@@ -10,8 +10,8 @@ import Logger from './common/logger';
 import { NoAzdataError } from './common/utils';
 import * as constants from './constants';
 import * as loc from './localizedConstants';
-import * as rd from 'resource-deployment';
-import { ArcControllerConfigProfilesOptionsSource } from './providers/arcControllerConfigProfilesOptionsSource';
+//import * as rd from 'resource-deployment';
+//import { ArcControllerConfigProfilesOptionsSource } from './providers/arcControllerConfigProfilesOptionsSource';
 
 let localAzdata: IAzdataTool | undefined = undefined;
 let eulaAccepted: boolean = false;
