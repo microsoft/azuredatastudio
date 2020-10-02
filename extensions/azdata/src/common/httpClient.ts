@@ -73,6 +73,11 @@ export namespace HttpClient {
 								reject(downloadError);
 								downloadRequest.abort();
 							});
+					} else {
+						response.on('end', () => {
+							Logger.log(loc.downloadFinished);
+							resolve(strings.join(''));
+						});
 					}
 					let contentLength = response.headers['content-length'];
 					let totalBytes = parseInt(contentLength || '0');
@@ -91,13 +96,6 @@ export namespace HttpClient {
 							Logger.log(loc.downloadingProgressMb(receivedMegaBytes.toFixed(2), totalMegaBytes.toFixed(2)));
 							printThreshold += 0.1;
 						}
-					}
-				})
-				.on('close', async () => {
-					if (targetFolder === undefined) {
-
-						Logger.log(loc.downloadFinished);
-						resolve(strings.join(''));
 					}
 				});
 		});

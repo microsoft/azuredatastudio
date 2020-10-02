@@ -56,7 +56,6 @@ export interface IJupyterServerInstallation {
 	uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void>;
 	pythonExecutable: string;
 	pythonInstallationPath: string;
-	installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel): Promise<void>;
 }
 export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public extensionPath: string;
@@ -163,7 +162,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		vscode.window.showInformationMessage(msgInstallPkgFinish);
 	}
 
-	public installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel): Promise<void> {
+	private installPythonPackage(backgroundOperation: azdata.BackgroundOperation, usingExistingPython: boolean, pythonInstallationPath: string, outputChannel: vscode.OutputChannel): Promise<void> {
 		if (usingExistingPython) {
 			return Promise.resolve();
 		}

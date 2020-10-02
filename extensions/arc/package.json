@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -144,9 +144,13 @@
             "notebookWizard": {
               "notebook": "./notebooks/arcDeployment/deploy.arc.data.controller.ipynb",
               "type": "new-arc-control-plane",
-              "runNotebook": false,
+              "doneAction": {
+                "label": "%deploy.done.action%"
+              },
+              "scriptAction": {
+                "label": "%deploy.script.action%"
+              },
               "codeCellInsertionPosition": 5,
-              "actionText": "%deploy.script.to.notebook.action%",
               "title": "%arc.data.controller.new.wizard.title%",
               "name": "arc.data.controller.new.wizard",
               "labelPosition": "left",
@@ -181,16 +185,9 @@
                           "variableName": "AZDATA_NB_VAR_ARC_PROFILE",
                           "editable": false,
                           "options": {
-                            "values": [
-                              "azure-arc-ake",
-                              "azure-arc-aks-default-storage",
-                              "azure-arc-aks-premium-storage",
-                              "azure-arc-aks-hci",
-                              "azure-arc-azure-openshift",
-                              "azure-arc-eks",
-                              "azure-arc-kubeadm",
-                              "azure-arc-openshift"
-                            ],
+                            "source": {
+                              "type": "ArcControllerConfigProfilesOptionsSource"
+                            },
                             "defaultValue": "azure-arc-aks-default-storage",
                             "optionsType": "radio"
                           }
@@ -521,9 +518,13 @@
           {
             "notebookWizard": {
               "notebook": "./notebooks/arcDeployment/deploy.sql.existing.arc.ipynb",
-              "runNotebook": false,
+              "doneAction": {
+                "label": "%deploy.done.action%"
+              },
+              "scriptAction": {
+                "label": "%deploy.script.action%"
+              },
               "codeCellInsertionPosition": 5,
-              "actionText": "%deploy.script.to.notebook.action%",
               "title": "%arc.sql.wizard.title%",
               "name": "arc.sql.wizard",
               "labelPosition": "left",
@@ -682,9 +683,13 @@
           {
             "notebookWizard": {
               "notebook": "./notebooks/arcDeployment/deploy.postgres.existing.arc.ipynb",
-              "runNotebook": false,
+              "doneAction": {
+                "label": "%deploy.done.action%"
+              },
+              "scriptAction": {
+                "label": "%deploy.script.action%"
+              },
               "codeCellInsertionPosition": 5,
-              "actionText": "%deploy.script.to.notebook.action%",
               "title": "%arc.postgres.wizard.title%",
               "name": "arc.postgres.wizard",
               "labelPosition": "left",
