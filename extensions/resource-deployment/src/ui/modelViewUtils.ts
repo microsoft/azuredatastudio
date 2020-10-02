@@ -19,7 +19,7 @@ import { getDateTimeString, getErrorMessage, throwUnless } from '../common/utils
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
-import { OptionsSources } from '../common/optionSources';
+import { optionsSourcesService } from '../services/optionSourcesService';
 import { IOptionsSourceProvider } from 'resource-deployment';
 
 const localize = nls.loadMessageBundle();
@@ -435,7 +435,7 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 	throwUnless('optionsType' in context.fieldInfo.options, loc.optionsTypeNotFound);
 	if (context.fieldInfo.options.source?.providerId) {
 		try {
-			context.fieldInfo.options.source.provider = OptionsSources.getOptionsSource(context.fieldInfo.options.source.providerId);
+			context.fieldInfo.options.source.provider = optionsSourcesService.getOptionsSource(context.fieldInfo.options.source.providerId);
 			context.fieldInfo.options.values = await context.fieldInfo.options.source.provider.getOptions();
 		}
 		catch (e) {
