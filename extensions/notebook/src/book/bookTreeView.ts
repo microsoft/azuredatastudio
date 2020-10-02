@@ -17,7 +17,7 @@ import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
 import { IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
-import { debounce, getPinnedNotebooks, IBookNotebook } from '../common/utils';
+import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 
 const content = 'content';
@@ -59,7 +59,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (this.viewId === constants.PINNED_BOOKS_VIEWID) {
 			await Promise.all(getPinnedNotebooks().map(async (notebook) => {
 				try {
-					await this.createAndAddBookModel(notebook, true);
+					await this.createAndAddBookModel(notebook.notebookPath, true, notebook.bookPath);
 				} catch {
 					// no-op, not all workspace folders are going to be valid books
 				}
@@ -170,8 +170,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		let notebookPath: string = bookItem.book.contentPath;
 		if (notebookPath) {
 			let rootPath: string = bookItem.book.root ? bookItem.book.root : '';
-			let notebook: IBookNotebook = { notebookPath: notebookPath, bookPath: rootPath };
-			await this.createAndAddBookModel(notebook, true);
+			await this.createAndAddBookModel(notebookPath, true, rootPath);
 		}
 	}
 
@@ -218,9 +217,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * were able to successfully parse it.
 	 * @param bookPath The path to the book folder to create the model for
 	 */
-	private async createAndAddBookModel(bookPath: string | IBookNotebook, isNotebook: boolean): Promise<void> {
+	private async createAndAddBookModel(bookPath: string, isNotebook: boolean, notebookBookRoot?: string): Promise<void> {
 		if (!this.books.find(x => x.bookPath === bookPath)) {
-			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext);
+			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext, notebookBookRoot);
 			await book.initializeContents();
 			this.books.push(book);
 			if (!this.currentBook) {

@@ -12,7 +12,6 @@ import * as fileServices from 'fs';
 import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, JupyterBookSection, IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
-import { IBookNotebook } from '../common/utils';
 
 const fsPromises = fileServices.promises;
 const content = 'content';
@@ -33,10 +32,11 @@ export class BookModel {
 	private _errorMessage: string;
 
 	constructor(
-		public readonly bookPath: string | IBookNotebook,
+		public readonly bookPath: string,
 		public readonly openAsUntitled: boolean,
 		public readonly isNotebook: boolean,
-		private _extensionContext: vscode.ExtensionContext) {
+		private _extensionContext: vscode.ExtensionContext,
+		public readonly notebookRootPath?: string) {
 		this._bookItems = [];
 	}
 
@@ -103,17 +103,12 @@ export class BookModel {
 		if (!this.isNotebook) {
 			return undefined;
 		}
-		let notebook: IBookNotebook;
-		if (typeof this.bookPath === 'string') {
-			notebook = { bookPath: '', notebookPath: this.bookPath };
-		} else {
-			notebook = this.bookPath as IBookNotebook;
-		}
-		let pathDetails = path.parse(notebook.notebookPath);
+
+		let pathDetails = path.parse(this.bookPath);
 		let notebookItem = new BookTreeItem({
 			title: pathDetails.name,
-			contentPath: notebook.notebookPath,
-			root: notebook.bookPath ? notebook.bookPath : pathDetails.dir,
+			contentPath: this.bookPath,
+			root: this.notebookRootPath ? this.notebookRootPath : pathDetails.dir,
 			tableOfContents: { sections: undefined },
 			page: { sections: undefined },
 			type: BookTreeItemType.Notebook,
@@ -130,7 +125,7 @@ export class BookModel {
 			this._allNotebooks.set(pathDetails.base, notebookItem);
 		} else {
 			// convert to URI to avoid casing issue with drive letters when getting navigation links
-			let uriToNotebook: vscode.Uri = vscode.Uri.file(notebook.notebookPath);
+			let uriToNotebook: vscode.Uri = vscode.Uri.file(this.bookPath);
 			if (!this._allNotebooks.get(uriToNotebook.fsPath)) {
 				this._allNotebooks.set(uriToNotebook.fsPath, notebookItem);
 			}

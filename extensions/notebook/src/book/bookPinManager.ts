@@ -46,8 +46,15 @@ export class BookPinManager implements IBookPinManager {
 
 	getPinnedBookPathsInConfig(): IBookNotebook[] {
 		let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(constants.notebookConfigKey);
-		let pinnedBookDirectories: IBookNotebook[] = config.get(constants.pinnedBooksConfigKey);
-
+		let pinnedNotebooks: [] = config.get(constants.pinnedBooksConfigKey);
+		let pinnedBookDirectories: IBookNotebook[] = [];
+		pinnedNotebooks.map((elem, index) => {
+			if (typeof (elem) === 'string') {
+				pinnedBookDirectories[index] = { notebookPath: elem, bookPath: '' };
+			} else if (typeof (elem) === 'object') {
+				pinnedBookDirectories[index] = elem as IBookNotebook;
+			}
+		});
 		return pinnedBookDirectories;
 	}
 
