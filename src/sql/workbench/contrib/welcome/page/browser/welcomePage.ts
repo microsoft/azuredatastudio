@@ -361,13 +361,13 @@ class WelcomePage extends Disposable {
 
 		const getDropdownBtn = container.querySelector('#dropdown-btn-container .monaco-button') as HTMLElement;
 		getDropdownBtn.id = 'dropdown-btn';
-		getDropdownBtn.setAttribute('role', 'navigation');
+		getDropdownBtn.setAttribute('role', 'button');
 		getDropdownBtn.setAttribute('aria-haspopup', 'true');
 		getDropdownBtn.setAttribute('aria-controls', 'dropdown');
 		nav.setAttribute('role', 'navigation');
 		nav.classList.add('dropdown-nav');
 		dropdownUl.classList.add('dropdown');
-		getDropdownBtn.id = 'dropdown-btn';
+		getDropdownBtn.setAttribute('aria-expanded', 'false');
 		getDropdownBtn.appendChild(i);
 		nav.appendChild(dropdownUl);
 		dropdownButtonContainer.appendChild(nav);
