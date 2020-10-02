@@ -66,9 +66,11 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 		const treeDataProvider = new MockTreeDataProvider();
 		const projectProvider: IProjectProvider = {
 			supportedProjectTypes: [{
+				id: 'sp1',
 				projectFileExtension: 'sqlproj',
 				icon: '',
-				displayName: 'sql project'
+				displayName: 'sql project',
+				description: ''
 			}],
 			RemoveProject: (projectFile: vscode.Uri): Promise<void> => {
 				return Promise.resolve();

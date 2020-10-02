@@ -57,9 +57,19 @@ declare module 'dataworkspace' {
 	 */
 	export interface IProjectType {
 		/**
+		 * id of the project type
+		 */
+		readonly id: string;
+
+		/**
 		 * display name of the project type
 		 */
 		readonly displayName: string;
+
+		/**
+		 * description of the project type
+		 */
+		readonly description: string;
 
 		/**
 		 * project file extension, e.g. sqlproj

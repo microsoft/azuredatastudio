@@ -5,17 +5,17 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { okButtonText } from '../common/constants';
+import { OkButtonText } from '../common/constants';
 
 export abstract class DialogBase {
 	protected _toDispose: vscode.Disposable[] = [];
 	protected _dialogObject: azdata.window.Dialog;
 
 	constructor(dialogTitle: string, dialogName: string) {
-		this._dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, 'narrow');
-		this._dialogObject.okButton.label = okButtonText;
-		this._toDispose.push(this._dialogObject.cancelButton.onClick(() => this.onCancelButtonClicked()));
-		this._toDispose.push(this._dialogObject.okButton.onClick(() => this.onOkButtonClicked()));
+		this._dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, 'wide');
+		this._dialogObject.okButton.label = OkButtonText;
+		this.register(this._dialogObject.cancelButton.onClick(() => this.onCancelButtonClicked()));
+		this.register(this._dialogObject.okButton.onClick(() => this.onOkButtonClicked()));
 	}
 
 	protected abstract initialize(view: azdata.ModelView): Promise<void>;
@@ -43,5 +43,9 @@ export abstract class DialogBase {
 
 	protected dispose(): void {
 		this._toDispose.forEach(disposable => disposable.dispose());
+	}
+
+	protected register(disposable: vscode.Disposable): void {
+		this._toDispose.push(disposable);
 	}
 }

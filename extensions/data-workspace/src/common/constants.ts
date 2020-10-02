@@ -13,7 +13,21 @@ export const UnknownProjectsErrorMessage = (projectFiles: string[]): string => {
 export const SelectProjectFileActionName = localize('SelectProjectFileActionName', "Select");
 export const AllProjectTypes = localize('AllProjectTypes', "All Project Types");
 
-// Dialogs
-export const OpenProjectDialogTitle = localize('dataworkspace.openProjectDialogTitle', "Open Project");
+// UI
+export const OkButtonText = localize('dataworkspace.ok', "OK");
+export const BrowseButtonText = localize('dataworkspace.browse', "Browse");
+export const DefaultInputWidth = '400px';
+export const DefaultButtonWidth = '100px';
+
+// New Project Dialog
 export const NewProjectDialogTitle = localize('dataworkspace.NewProjectDialogTitle', "New Project");
-export const okButtonText = localize('dataworkspace.ok', "OK");
+export const ProjectTypeSelectorTitle = localize('dataworkspace.ProjectTypeSelectorTitle', "Project type");
+export const ProjectNameTitle = localize('dataworkspace.projectNameTitle', "Project name");
+export const ProjectLocationTitle = localize('dataworkspace.projectLocationTitle', "Location");
+
+//Open Project Dialog
+export const OpenProjectDialogTitle = localize('dataworkspace.openProjectDialogTitle', "Open Project");
+
+
+
+

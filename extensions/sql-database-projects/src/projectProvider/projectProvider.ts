@@ -5,7 +5,7 @@
 
 import * as dataworkspace from 'dataworkspace';
 import * as vscode from 'vscode';
-import { sqlprojExtension, projectTypeDisplayName } from '../common/constants';
+import { sqlprojExtension, projectTypeDisplayName, projectTypeDescription, sqlDatabaseProjectTypeId } from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { Project } from '../models/project';
@@ -39,8 +39,10 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	get supportedProjectTypes(): dataworkspace.IProjectType[] {
 		return [{
+			id: sqlDatabaseProjectTypeId,
 			projectFileExtension: sqlprojExtension.replace(/\./g, ''),
 			displayName: projectTypeDisplayName,
+			description: projectTypeDescription,
 			icon: IconPathHelper.databaseProject
 		}];
 	}

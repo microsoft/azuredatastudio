@@ -37,20 +37,26 @@ suite('ProjectProviderRegistry Tests', function (): void {
 	test('register and unregister project providers', async () => {
 		const provider1 = createProjectProvider([
 			{
+				id: 'tp1',
 				projectFileExtension: 'testproj',
 				icon: '',
-				displayName: 'test project'
+				displayName: 'test project',
+				description: ''
 			}, {
+				id: 'tp2',
 				projectFileExtension: 'testproj1',
 				icon: '',
-				displayName: 'test project 1'
+				displayName: 'test project 1',
+				description: ''
 			}
 		]);
 		const provider2 = createProjectProvider([
 			{
+				id: 'sp1',
 				projectFileExtension: 'sqlproj',
 				icon: '',
-				displayName: 'sql project'
+				displayName: 'sql project',
+				description: ''
 			}
 		]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
@@ -89,9 +95,11 @@ suite('ProjectProviderRegistry Tests', function (): void {
 	test('Clear the project provider registry', async () => {
 		const provider = createProjectProvider([
 			{
+				id: 'tp1',
 				projectFileExtension: 'testproj',
 				icon: '',
-				displayName: 'test project'
+				displayName: 'test project',
+				description: ''
 			}
 		]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');

@@ -23,7 +23,9 @@ export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.S
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
 // Project Provider
-export const projectTypeDisplayName = localize('projectTypeDisplayName', 'Database Project');
+export const sqlDatabaseProjectTypeId = 'sqldbproj';
+export const projectTypeDisplayName = localize('projectTypeDisplayName', "Database Project");
+export const projectTypeDescription = localize('projectTypeDescription', "Create and manage SQL Server databases using DacFx");
 
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
