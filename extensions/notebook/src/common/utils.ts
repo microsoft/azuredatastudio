@@ -334,9 +334,29 @@ export function isBookItemPinned(notebookPath: string): boolean {
 
 export function getPinnedNotebooks(): IBookNotebook[] {
 	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
-	let pinnedNotebooks: IBookNotebook[] = config.get(pinnedBooksConfigKey) ?? [];
+	let pinnedNotebooks: [] = config.get(pinnedBooksConfigKey);
+	let pinnedBookDirectories: IBookNotebook[] = [];
+	let updateFormat: boolean = false;
+	pinnedNotebooks.map((elem, index) => {
+		if (typeof (elem) === 'string') {
+			pinnedBookDirectories[index] = { notebookPath: elem, bookPath: '' };
+			updateFormat = true;
+		} else if (typeof (elem) === 'object') {
+			pinnedBookDirectories[index] = elem as IBookNotebook;
+		}
+	});
+	if (updateFormat) {
+		//Need to modify the format of how pinnedNotebooks are stored for users that used the September release version.
+		setPinnedBookPathsInConfig(pinnedBookDirectories);
+	}
+	return pinnedBookDirectories;
+}
 
-	return pinnedNotebooks;
+export function setPinnedBookPathsInConfig(bookPaths: IBookNotebook[]) {
+	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
+	let storeInWorspace: boolean = this.hasWorkspaceFolders();
+
+	config.update(pinnedBooksConfigKey, bookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
 }
 
 export interface IBookNotebook {

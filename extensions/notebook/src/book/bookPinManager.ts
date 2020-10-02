@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as constants from './../common/constants';
 import { BookTreeItem } from './bookTreeItem';
-import { getPinnedNotebooks, IBookNotebook } from '../common/utils';
+import { getPinnedNotebooks, setPinnedBookPathsInConfig, IBookNotebook } from '../common/utils';
 
 export interface IBookPinManager {
 	pinNotebook(notebook: BookTreeItem): boolean;
@@ -44,27 +44,6 @@ export class BookPinManager implements IBookPinManager {
 		return this.updatePinnedBooks(notebook, PinBookOperation.Unpin);
 	}
 
-	getPinnedBookPathsInConfig(): IBookNotebook[] {
-		let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(constants.notebookConfigKey);
-		let pinnedNotebooks: [] = config.get(constants.pinnedBooksConfigKey);
-		let pinnedBookDirectories: IBookNotebook[] = [];
-		pinnedNotebooks.map((elem, index) => {
-			if (typeof (elem) === 'string') {
-				pinnedBookDirectories[index] = { notebookPath: elem, bookPath: '' };
-			} else if (typeof (elem) === 'object') {
-				pinnedBookDirectories[index] = elem as IBookNotebook;
-			}
-		});
-		return pinnedBookDirectories;
-	}
-
-	setPinnedBookPathsInConfig(bookPaths: IBookNotebook[]) {
-		let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(constants.notebookConfigKey);
-		let storeInWorspace: boolean = this.hasWorkspaceFolders();
-
-		config.update(constants.pinnedBooksConfigKey, bookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
-	}
-
 	hasWorkspaceFolders(): boolean {
 		let workspaceFolders = vscode.workspace.workspaceFolders;
 		return workspaceFolders && workspaceFolders.length > 0;
@@ -74,7 +53,7 @@ export class BookPinManager implements IBookPinManager {
 		let modifiedPinnedBooks = false;
 		let bookPathToChange: string = notebook.book.contentPath;
 
-		let pinnedBooks: IBookNotebook[] = this.getPinnedBookPathsInConfig();
+		let pinnedBooks: IBookNotebook[] = getPinnedNotebooks();
 		let existingBookIndex = pinnedBooks.map(pinnedBookPath => path.normalize(pinnedBookPath?.notebookPath)).indexOf(bookPathToChange);
 
 		if (existingBookIndex !== -1 && operation === PinBookOperation.Unpin) {
@@ -86,7 +65,7 @@ export class BookPinManager implements IBookPinManager {
 			modifiedPinnedBooks = true;
 		}
 
-		this.setPinnedBookPathsInConfig(pinnedBooks);
+		setPinnedBookPathsInConfig(pinnedBooks);
 		this.setPinnedSectionContext();
 
 		return modifiedPinnedBooks;
