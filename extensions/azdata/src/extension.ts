@@ -6,14 +6,15 @@
 import * as azdataExt from 'azdata-ext';
 import * as rd from 'resource-deployment';
 import * as vscode from 'vscode';
+import { getExtensionApi } from './api';
 import { checkAndInstallAzdata, checkAndUpdateAzdata, findAzdata, IAzdataTool, promptForEula } from './azdata';
 import Logger from './common/logger';
-import { NoAzdataError } from './common/utils';
 import * as constants from './constants';
 import * as loc from './localizedConstants';
 import { ArcControllerConfigProfilesOptionsSource } from './providers/arcControllerConfigProfilesOptionsSource';
 
 let localAzdata: IAzdataTool | undefined = undefined;
+let localAzdataDiscovered: Promise<void> | undefined = undefined;
 let eulaAccepted: boolean = false;
 export async function activate(context: vscode.ExtensionContext): Promise<azdataExt.IExtension> {
 	vscode.commands.registerCommand('azdata.acceptEula', async () => {
@@ -36,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 	Logger.log(loc.eulaAcceptedStateOnStartup(eulaAccepted));
 
 	// Don't block on this since we want the extension to finish activating without needing user input
-	checkAndInstallAzdata() // install if not installed and user wants it.
+	localAzdataDiscovered = checkAndInstallAzdata() // install if not installed and user wants it.
 		.then(async azdataTool => {
 			localAzdata = azdataTool;
 			if (localAzdata !== undefined) {
@@ -64,118 +65,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 	const rdApi = <rd.IExtension>await vscode.extensions.getExtension(rd.extension.name)?.activate();
 	rdApi.contributeOptionsSource(new ArcControllerConfigProfilesOptionsSource(localAzdata!));
 
-	return {
-		isEulaAccepted: () => !!context.globalState.get<boolean>(constants.eulaAccepted),
-		promptForEula: (onError: boolean = true): Promise<boolean> => promptForEula(context.globalState, true /* userRequested */, onError),
-		azdata: {
-			arc: {
-				dc: {
-					create: async (namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string) => {
-						throwIfNoAzdataOrEulaNotAccepted();
-						return localAzdata!.arc.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass);
-					},
-					endpoint: {
-						list: async () => {
-							throwIfNoAzdataOrEulaNotAccepted();
-							return localAzdata!.arc.dc.endpoint.list();
-						}
-					},
-					config: {
-						list: async () => {
-							throwIfNoAzdataOrEulaNotAccepted();
-							return localAzdata!.arc.dc.config.list();
-						},
-						show: async () => {
-							throwIfNoAzdataOrEulaNotAccepted();
-							return localAzdata!.arc.dc.config.show();
-						}
-					}
-				},
-				postgres: {
-					server: {
-						delete: async (name: string) => {
-							throwIfNoAzdataOrEulaNotAccepted();
-							return localAzdata!.arc.postgres.server.delete(name);
-						},
-						list: async () => {
-							throwIfNoAzdataOrEulaNotAccepted();
-							return localAzdata!.arc.postgres.server.list();
-						},
-						show: async (name: string) => {
-							throwIfNoAzdataOrEulaNotAccepted();
-							return localAzdata!.arc.postgres.server.show(name);
-						},
-						edit: async (
-							name: string,
-							args: {
-								adminPassword?: boolean,
-								coresLimit?: string,
-								coresRequest?: string,
-								engineSettings?: string,
-								extensions?: string,
-								memoryLimit?: string,
-								memoryRequest?: string,
-								noWait?: boolean,
-								port?: number,
-								replaceEngineSettings?: boolean,
-								workers?: number
-							},
-							additionalEnvVars?: { [key: string]: string }) => {
-							throwIfNoAzdataOrEulaNotAccepted();
-							return localAzdata!.arc.postgres.server.edit(name, args, additionalEnvVars);
-						}
-					}
-				},
-				sql: {
-					mi: {
-						delete: async (name: string) => {
-							throwIfNoAzdataOrEulaNotAccepted();
-							return localAzdata!.arc.sql.mi.delete(name);
-						},
-						list: async () => {
-							throwIfNoAzdataOrEulaNotAccepted();
-							return localAzdata!.arc.sql.mi.list();
-						},
-						show: async (name: string) => {
-							throwIfNoAzdataOrEulaNotAccepted();
-							return localAzdata!.arc.sql.mi.show(name);
-						}
-					}
-				}
-			},
-			getPath: () => {
-				throwIfNoAzdata();
-				return localAzdata!.getPath();
-			},
-			login: async (endpoint: string, username: string, password: string) => {
-				throwIfNoAzdataOrEulaNotAccepted();
-				return localAzdata!.login(endpoint, username, password);
-			},
-			getSemVersion: () => {
-				throwIfNoAzdata();
-				return localAzdata!.getSemVersion();
-			},
-			version: async () => {
-				throwIfNoAzdata();
-				return localAzdata!.version();
-			}
-		}
-	};
-}
-
-function throwIfNoAzdataOrEulaNotAccepted(): void {
-	throwIfNoAzdata();
-	if (!eulaAccepted) {
-		Logger.log(loc.eulaNotAccepted);
-		throw new Error(loc.eulaNotAccepted);
-	}
-}
-
-function throwIfNoAzdata() {
-	if (!localAzdata) {
-		Logger.log(loc.noAzdata);
-		throw new NoAzdataError();
-	}
+	return getExtensionApi(context, localAzdata, eulaAccepted, localAzdataDiscovered.promise);
 }
 
 export function deactivate(): void { }

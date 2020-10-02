@@ -9,10 +9,10 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { AzdataInstallLocationKey, DeploymentConfigurationKey } from '../../constants';
 import { Command, OsDistribution, ToolStatus, ToolType } from '../../interfaces';
-import { apiService } from '../apiService';
 import { IPlatformService } from '../platformService';
 import { dependencyType, ToolBase } from './toolBase';
 import * as loc from '../../localizedConstants';
+import * as azdataExt from 'azdata-ext';
 
 const localize = nls.loadMessageBundle();
 export const AzdataToolName = 'azdata';
@@ -21,6 +21,7 @@ const macInstallationRoot = '/usr/local/bin';
 const debianInstallationRoot = '/usr/local/bin';
 
 export class AzdataTool extends ToolBase {
+	private azdataApi!: azdataExt.IExtension;
 	constructor(platformService: IPlatformService) {
 		super(platformService);
 	}
@@ -46,7 +47,7 @@ export class AzdataTool extends ToolBase {
 	}
 
 	public isEulaAccepted(): boolean {
-		if (apiService.azdataApi.isEulaAccepted()) {
+		if (this.azdataApi.isEulaAccepted()) {
 			return true;
 		} else {
 			this.setStatusDescription(loc.azdataEulaNotAccepted);
@@ -55,7 +56,7 @@ export class AzdataTool extends ToolBase {
 	}
 
 	public async promptForEula(): Promise<boolean> {
-		const eulaAccepted = await apiService.azdataApi.promptForEula();
+		const eulaAccepted = await this.azdataApi.promptForEula();
 		if (!eulaAccepted) {
 			this.setStatusDescription(loc.azdataEulaDeclined);
 		}
@@ -80,15 +81,17 @@ export class AzdataTool extends ToolBase {
 	 * updates the version and status for the tool.
 	 */
 	protected async updateVersionAndStatus(): Promise<void> {
+		this.azdataApi = await vscode.extensions.getExtension(azdataExt.extension.name)?.activate();
+		await this.azdataApi.waitForAzdataToolDiscovery();
 		this.setStatusDescription('');
 		await this.addInstallationSearchPathsToSystemPath();
 
-		const commandOutput = await apiService.azdataApi.azdata.version();
-		this.version = apiService.azdataApi.azdata.getSemVersion();
+		const commandOutput = await this.azdataApi.azdata.version();
+		this.version = this.azdataApi.azdata.getSemVersion();
 		if (this.version) {
 			if (this.autoInstallSupported) {
 				// set the installationPath
-				this.setInstallationPathOrAdditionalInformation(apiService.azdataApi.azdata.getPath());
+				this.setInstallationPathOrAdditionalInformation(this.azdataApi.azdata.getPath());
 			}
 			this.setStatus(ToolStatus.Installed);
 		}
@@ -100,7 +103,7 @@ export class AzdataTool extends ToolBase {
 	}
 
 	protected getVersionFromOutput(output: string): SemVer | undefined {
-		return apiService.azdataApi.azdata.getSemVersion();
+		return this.azdataApi.azdata.getSemVersion();
 
 	}
 

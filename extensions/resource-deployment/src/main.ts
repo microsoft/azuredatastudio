@@ -13,7 +13,7 @@ import { ToolsService } from './services/toolsService';
 import { DeploymentInputDialog } from './ui/deploymentInputDialog';
 import { ResourceTypePickerDialog } from './ui/resourceTypePickerDialog';
 import * as rd from 'resource-deployment';
-import { resourceDeploymentApi } from './common/api';
+import { getExtensionApi } from './api';
 
 const localize = nls.loadMessageBundle();
 
@@ -75,7 +75,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<rd.IEx
 		const dialog = new DeploymentInputDialog(notebookService, platformService, toolsService, dialogInfo);
 		dialog.open();
 	});
-	return resourceDeploymentApi();
+	return getExtensionApi();
 }
 
 // this method is called when your extension is deactivated

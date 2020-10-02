@@ -290,5 +290,10 @@ declare module 'azdata-ext' {
 		 * returns true if the user accepted the EULA.
 		 */
 		promptForEula(requireUserAction?: boolean): Promise<boolean>
+
+		/**
+		 * allows clients to wait for AzdataTool discovery to be completed
+		 */
+		waitForAzdataToolDiscovery(): Promise<void>;
 	}
 }
