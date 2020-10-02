@@ -21,9 +21,12 @@ const localize = nls.loadMessageBundle();
 
 export async function findSqlClusterConnection(
 	obj: ICommandObjectExplorerContext | azdata.IConnectionProfile,
-	appContext: AppContext): Promise<SqlClusterConnection> {
+	appContext: AppContext): Promise<SqlClusterConnection | undefined> {
 
-	if (!obj || !appContext) { return undefined; }
+	if (!obj || !appContext) {
+		console.error('SqlClusterLookup::findSqlClusterConnection - No context available');
+		return undefined;
+	}
 
 	let sqlConnProfile: azdata.IConnectionProfile;
 	if ('type' in obj && obj.type === constants.ObjectExplorerService
@@ -36,18 +39,29 @@ export async function findSqlClusterConnection(
 	let sqlClusterConnection: SqlClusterConnection = undefined;
 	if (sqlConnProfile) {
 		sqlClusterConnection = await findSqlClusterConnectionBySqlConnProfile(sqlConnProfile, appContext);
+	} else {
+		console.error('SqlClusterLookup::findSqlClusterConnection - No connection profile');
 	}
 	return sqlClusterConnection;
 }
 
-async function findSqlClusterConnectionBySqlConnProfile(sqlConnProfile: azdata.IConnectionProfile, appContext: AppContext): Promise<SqlClusterConnection> {
-	if (!sqlConnProfile || !appContext) { return undefined; }
+async function findSqlClusterConnectionBySqlConnProfile(sqlConnProfile: azdata.IConnectionProfile, appContext: AppContext): Promise<SqlClusterConnection | undefined> {
+	if (!sqlConnProfile || !appContext) {
+		console.error('SqlClusterLookup::findSqlClusterConnectionBySqlConnProfile - No context available');
+		return undefined;
+	}
 
 	let sqlOeNodeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
-	if (!sqlOeNodeProvider) { return undefined; }
+	if (!sqlOeNodeProvider) {
+		console.error('SqlClusterLookup::findSqlClusterConnectionBySqlConnProfile - No OE Node Provider available');
+		return undefined;
+	}
 
 	let sqlClusterSession = sqlOeNodeProvider.findSqlClusterSessionBySqlConnProfile(sqlConnProfile);
-	if (!sqlClusterSession) { return undefined; }
+	if (!sqlClusterSession) {
+		console.error('SqlClusterLookup::findSqlClusterConnectionBySqlConnProfile - No SQL Cluster Session found');
+		return undefined;
+	}
 
 	return sqlClusterSession.getSqlClusterConnection();
 }
