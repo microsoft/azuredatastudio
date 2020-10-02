@@ -294,6 +294,11 @@ class DataResourceTable extends GridTableBase<any> {
 	public convertData(set: ResultSetSummary): Promise<void> {
 		return this._gridDataProvider.convertAllData(set);
 	}
+
+	public updateResult(resultSet: ResultSetSummary): void {
+		super.updateResult(resultSet);
+		this._gridDataProvider.updateResultSet(resultSet);
+	}
 }
 
 export class DataResourceDataProvider implements IGridDataProvider {
@@ -369,6 +374,10 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			});
 			return rowData;
 		});
+	}
+
+	public updateResultSet(resultSet: ResultSetSummary): void {
+		this._resultSet = resultSet;
 	}
 
 	public async convertAllData(result: ResultSetSummary): Promise<void> {
