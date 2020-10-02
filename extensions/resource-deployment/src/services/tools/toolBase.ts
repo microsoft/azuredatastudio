@@ -58,6 +58,8 @@ export abstract class ToolBase implements ITool {
 
 	protected abstract readonly versionCommand: Command;
 
+	public validateEula(): boolean { return true; }
+
 	public get dependencyMessages(): string[] {
 		return (this.dependenciesByOsType.get(this.osDistribution) || []).map((msgType: dependencyType) => messageByDependencyType.get(msgType)!);
 	}
@@ -126,8 +128,16 @@ export abstract class ToolBase implements ITool {
 		return this._statusDescription;
 	}
 
+	protected setStatusDescription(value: string | undefined): void {
+		this._statusDescription = value;
+	}
+
 	public get installationPathOrAdditionalInformation(): string | undefined {
 		return this._installationPathOrAdditionalInformation;
+	}
+
+	protected setInstallationPathOrAdditionalInformation(value: string | undefined) {
+		this._installationPathOrAdditionalInformation = value;
 	}
 
 	protected get installationCommands(): Command[] | undefined {
@@ -250,7 +260,7 @@ export abstract class ToolBase implements ITool {
 	/**
 	 * updates the version and status for the tool.
 	 */
-	private async updateVersionAndStatus(): Promise<void> {
+	protected async updateVersionAndStatus(): Promise<void> {
 		this._statusDescription = '';
 		await this.addInstallationSearchPathsToSystemPath();
 		const commandOutput = await this.platformService.runCommand(
@@ -306,7 +316,7 @@ export abstract class ToolBase implements ITool {
 	}
 
 	isSameOrNewerThan(version?: string): boolean {
-		return !version || (this._version ? SemVerCompare(this._version, version) >= 0 : false);
+		return !version || (this._version ? SemVerCompare(this._version.raw, version) >= 0 : false);
 	}
 
 	private _pendingVersionAndStatusUpdate!: Promise<void>;

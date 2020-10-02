@@ -26,6 +26,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _agreementContainer!: azdata.DivContainer;
 	private _agreementCheckboxChecked: boolean = false;
 	private _installToolButton: azdata.window.Button;
+	private _recheckEulaButton: azdata.window.Button;
 	private _installationInProgress: boolean = false;
 	private _tools: ITool[] = [];
 
@@ -37,10 +38,15 @@ export class ResourceTypePickerDialog extends DialogBase {
 		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = defaultResourceType;
 		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', "Install tools"));
+		this._recheckEulaButton = azdata.window.createButton(localize('deploymentDialog.RecheckEulaButton', "Validate EULA"));
 		this._toDispose.push(this._installToolButton.onClick(() => {
 			this.installTools().catch(error => console.log(error));
 		}));
-		this._dialogObject.customButtons = [this._installToolButton];
+		this._toDispose.push(this._recheckEulaButton.onClick(() => {
+			this._dialogObject.message = { text: '' }; // clear any previous message.
+			this._dialogObject.okButton.enabled = this.validateToolsEula(); // re-enable the okButton if validation succeeds.
+		}));
+		this._dialogObject.customButtons = [this._installToolButton, this._recheckEulaButton];
 		this._installToolButton.hidden = true;
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Select");
 		this._dialogObject.okButton.enabled = false; // this is enabled after all tools are discovered.
@@ -278,12 +284,12 @@ export class ResourceTypePickerDialog extends DialogBase {
 			return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', toolRequirement.version || '', tool.installationPathOrAdditionalInformation || ''];
 		});
 		this._installToolButton.hidden = erroredOrFailedTool || minVersionCheckFailed || (toolsToAutoInstall.length === 0);
-		this._dialogObject.okButton.enabled = !erroredOrFailedTool && messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0);
+		this._dialogObject.okButton.enabled = !erroredOrFailedTool && messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0) && this.validateToolsEula();
 		if (messages.length !== 0) {
 			if (messages.length > 1) {
 				messages = messages.map(message => `•	${message}`);
 			}
-			messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed manually after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in 'Deployments' output channel"));
+			messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed manually to pick up the change. You may find additional details in 'Deployments' and 'azdata' output channels"));
 			this._dialogObject.message = {
 				level: azdata.window.MessageLevel.Error,
 				text: messages.join(EOL)
@@ -311,6 +317,21 @@ export class ResourceTypePickerDialog extends DialogBase {
 			};
 		}
 		this._toolsLoadingComponent.loading = false;
+	}
+
+	private validateToolsEula(): boolean {
+		const validationSucceeded = this._tools.every(tool => {
+			const eulaValidated = tool.validateEula();
+			if (!eulaValidated) {
+				this._dialogObject.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: tool.statusDescription!
+				};
+			}
+			return eulaValidated;
+		});
+		this._recheckEulaButton.hidden = validationSucceeded;
+		return validationSucceeded;
 	}
 
 	private get toolRequirements() {
