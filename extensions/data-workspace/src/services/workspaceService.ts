@@ -89,30 +89,35 @@ export class WorkspaceService implements IWorkspaceService {
 	 * @param projectType The file extension of the project, if not specified, all project provider extensions will be loaded.
 	 */
 	private async ensureProviderExtensionLoaded(projectType: string | undefined = undefined): Promise<void> {
-		const inactiveExtensions = vscode.extensions.all.filter(ext => !ext.isActive);
 		const projType = projectType ? projectType.toUpperCase() : undefined;
 		let extension: vscode.Extension<any>;
-		for (extension of inactiveExtensions) {
+		for (extension of vscode.extensions.all) {
 			const projectTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.projects as string[];
 			// Process only when this extension is contributing project providers
 			if (projectTypes && projectTypes.length > 0) {
 				if (projType) {
 					if (projectTypes.findIndex((proj: string) => proj.toUpperCase() === projType) !== -1) {
-						await this.activateExtension(extension);
+						await this.handleProjectProviderExtension(extension);
 						break;
 					}
 				} else {
-					await this.activateExtension(extension);
+					await this.handleProjectProviderExtension(extension);
 				}
 			}
 		}
 	}
 
-	private async activateExtension(extension: vscode.Extension<any>): Promise<void> {
+	private async handleProjectProviderExtension(extension: vscode.Extension<any>): Promise<void> {
 		try {
-			await extension.activate();
+			if (!extension.isActive) {
+				await extension.activate();
+			}
 		} catch (err) {
 			Logger.error(ExtensionActivationErrorMessage(extension.id, err));
+		}
+
+		if (extension.isActive && extension.exports && !ProjectProviderRegistry.providers.includes(extension.exports)) {
+			ProjectProviderRegistry.registerProvider(extension.exports);
 		}
 	}
 
