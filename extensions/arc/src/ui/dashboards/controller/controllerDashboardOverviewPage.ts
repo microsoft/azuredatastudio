@@ -93,7 +93,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: cssStyles.tableRow
 				}, {
-					displayName: loc.compute,
+					displayName: loc.state,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '34%',
 					isReadOnly: true,
@@ -230,8 +230,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 					await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', r.instanceName);
 				}));
 
-				// TODO chgagnon
-				return [imageComponent, nameComponent, resourceTypeToDisplayName(r.instanceType), '-'/* loc.numVCores(r.vCores) */];
+				return [imageComponent, nameComponent, resourceTypeToDisplayName(r.instanceType), r.state];
 			});
 		this._arcResourcesLoadingComponent.loading = !this._controllerModel.registrationsLastUpdated;
 	}
