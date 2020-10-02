@@ -16,6 +16,10 @@ declare module 'azdata-ext' {
 		name = 'Microsoft.azdata'
 	}
 
+	export interface ErrorWithLink extends Error {
+		messageWithLink: string;
+	}
+
 	export interface DcEndpointListResult {
 		description: string, // "Management Proxy"
 		endpoint: string, // "https://10.91.86.39:30777"

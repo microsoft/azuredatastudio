@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
-import { getErrorMessage, searchForCmd } from './common/utils';
+import { getErrorMessage, NoAzdataError, searchForCmd } from './common/utils';
 import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
 import { getPlatformDownloadLink, getPlatformReleaseVersion } from './azdataReleaseInfo';
@@ -195,7 +195,7 @@ export class AzdataTool implements IAzdataTool {
 					} catch (e) {
 						// this.path does not exist
 						await vscode.commands.executeCommand('setContext', azdataFound, false);
-						throw (loc.noAzdata);
+						throw new NoAzdataError();
 					}
 					throw err; // rethrow the original error
 				}

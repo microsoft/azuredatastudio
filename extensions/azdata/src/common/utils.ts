@@ -3,8 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdataExt from 'azdata-ext';
 import * as which from 'which';
+import * as loc from '../localizedConstants';
 
+export class NoAzdataError extends Error implements azdataExt.ErrorWithLink {
+	constructor() {
+		super(loc.noAzdata);
+	}
+
+	public get messageWithLink(): string {
+		return loc.noAzdataWithLink;
+	}
+}
 /**
  * Searches for the first instance of the specified executable in the PATH environment variable
  * @param exe The executable to search for
