@@ -52,7 +52,6 @@
 	"arc.control.plane.summary.cluster.context": "Cluster context",
 	"arc.control.plane.summary.profile": "Config profile",
 	"arc.control.plane.summary.username": "Username",
-	"arc.control.plane.summary.docker.username": "Docker username",
 	"arc.control.plane.summary.azure": "Azure",
 	"arc.control.plane.summary.subscription": "Subscription",
 	"arc.control.plane.summary.resource.group": "Resource group",
