@@ -1,5 +1,30 @@
 # Change Log
 
+## Version 1.22.0
+* Release date: September 22, 2020
+* Release status: General Availability
+* New Notebook Features
+    * Supports brand new text cell editing experience based on rich text formatting and seamless conversion to markdown, also known as WYSIWYG toolbar (What You See Is What You Get)
+    * Supports Kusto kernel
+    * Supports pinning of notebooks
+    * Added support for new version of Jupyter Books
+    * Improved Jupyter Shortcuts
+    * Introduced perf loading improvements
+* Added Azure Arc extension - Users can try out Azure Arc public preview through Azure Data Studio. This includes:
+    * Deploy data controller
+    * Deploy Postgres
+    * Deploy Managed Instance for Azure Arc
+    * Connect to data controller
+    * Access data service dashboards
+    * Azure Arc Jupyter Book
+* Added new deployment options
+    * Azure SQL Database Edge
+    * (Edge will require Azure SQL Edge Deployment Extension)
+* Added SQL Database Projects extension - The SQL Database Projects extension brings project-based database development to Azure Data Studio. In this preview release, SQL projects can be created and published from Azure Data Studio.
+* Added Kusto (KQL) extension - Brings native Kusto experiences in Azure Data Studio for data exploration and data analytics against massive amount of real-time streaming data stored in Azure Data Explorer. This preview release supports connecting and browsing Azure Data Explorer clusters, writing KQL queries as well as authoring notebooks with Kusto kernel.
+* SQL Server Import extension GA - Announcing the GA of the SQL Server Import extension, features no longer in preview. This extension facilitates importing csv/txt files. Learn more about the extension in [this article](sql-server-import-extension.md).
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue+milestone%3A%22September+2020+Release%22+is%3Aclosed).
+
 ## Version 1.21.0
 * Release date: August 12, 2020
 * Release status: General Availability
