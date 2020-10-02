@@ -778,7 +778,7 @@ suite('Cell Model', function (): void {
 
 		test('Execute returns error status', async function (): Promise<void> {
 			mockKernel.setup(k => k.requiresConnection).returns(() => false);
-			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 				let replyMsg: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg>{
 					content: <nb.IExecuteReply>{
 						execution_count: 1,
@@ -796,7 +796,7 @@ suite('Cell Model', function (): void {
 
 		test('Execute returns abort status', async function (): Promise<void> {
 			mockKernel.setup(k => k.requiresConnection).returns(() => false);
-			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 				let replyMsg: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg>{
 					content: <nb.IExecuteReply>{
 						execution_count: 1,
@@ -815,7 +815,7 @@ suite('Cell Model', function (): void {
 		test('Execute throws exception', async function (): Promise<void> {
 			let testMsg = 'Test message';
 			mockKernel.setup(k => k.requiresConnection).returns(() => false);
-			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			mockKernel.setup(k => k.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 				throw new Error(testMsg);
 			});
 
