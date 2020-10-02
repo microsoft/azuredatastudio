@@ -352,9 +352,14 @@ export function getPinnedNotebooks(): IBookNotebook[] {
 	return pinnedBookDirectories;
 }
 
+function hasWorkspaceFolders(): boolean {
+	let workspaceFolders = vscode.workspace.workspaceFolders;
+	return workspaceFolders && workspaceFolders.length > 0;
+}
+
 export function setPinnedBookPathsInConfig(bookPaths: IBookNotebook[]) {
 	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
-	let storeInWorspace: boolean = this.hasWorkspaceFolders();
+	let storeInWorspace: boolean = hasWorkspaceFolders();
 
 	config.update(pinnedBooksConfigKey, bookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
 }
@@ -364,6 +369,3 @@ export interface IBookNotebook {
 	notebookPath: string;
 }
 
-export interface INotebook {
-	notebookPath: string;
-}

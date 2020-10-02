@@ -44,11 +44,6 @@ export class BookPinManager implements IBookPinManager {
 		return this.updatePinnedBooks(notebook, PinBookOperation.Unpin);
 	}
 
-	hasWorkspaceFolders(): boolean {
-		let workspaceFolders = vscode.workspace.workspaceFolders;
-		return workspaceFolders && workspaceFolders.length > 0;
-	}
-
 	updatePinnedBooks(notebook: BookTreeItem, operation: PinBookOperation) {
 		let modifiedPinnedBooks = false;
 		let bookPathToChange: string = notebook.book.contentPath;
