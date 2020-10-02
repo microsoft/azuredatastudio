@@ -96,7 +96,7 @@ export default () => `
 					<div class="tabs">
 					<!-- Checkbox is not accessible to user yet, this feature is still in development -->
 					<input tabindex="-1" class="input" name="tabs" type="radio" id="tab-1" checked="checked" />
-					<span id="historyLabel" class="label" for="tab-1" tabIndex="0">${escape(localize('welcomePage.history', "History"))}</span>
+					<span id="historyLabel" class="label" for="tab-1" tabIndex="0" role="tab">${escape(localize('welcomePage.history', "History"))}</span>
 						<div class="panel">
 							<div class="recent history">
 								<div class="flex list-header-container">
