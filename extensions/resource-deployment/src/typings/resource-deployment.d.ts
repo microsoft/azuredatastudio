@@ -23,6 +23,6 @@ declare module 'resource-deployment' {
 	 */
 
 	export interface IExtension {
-		contributeOptionsSource(provider: IOptionsSourceProvider): void
+		registerOptionsSourceProvider(provider: IOptionsSourceProvider): void
 	}
 }

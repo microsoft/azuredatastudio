@@ -8,7 +8,7 @@ import * as loc from '../localizedConstants';
 
 export class OptionsSources {
 	private static _optionsSourceStore = new Map<string, rd.IOptionsSourceProvider>();
-	static contributeOptionsSource(provider: rd.IOptionsSourceProvider): void {
+	static registerOptionsSourceProvider(provider: rd.IOptionsSourceProvider): void {
 		if (OptionsSources._optionsSourceStore.has(provider.optionsSourceId)) {
 			throw new Error(loc.optionsSourceAlreadyDefined(provider.optionsSourceId));
 		}
