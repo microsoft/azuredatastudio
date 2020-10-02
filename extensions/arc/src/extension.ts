@@ -4,16 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as arc from 'arc';
+import * as rd from 'resource-deployment';
 import * as vscode from 'vscode';
-//import * as rd from 'resource-deployment';
 import { arcApi } from './common/api';
 import { IconPathHelper, refreshActionId } from './constants';
 import * as loc from './localizedConstants';
+import { ArcControllersOptionsSourceProvider } from './providers/arcControllersOptionsSourceProvider';
 import { ConnectToControllerDialog } from './ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from './ui/tree/azureArcTreeDataProvider';
 import { ControllerTreeNode } from './ui/tree/controllerTreeNode';
 import { TreeNode } from './ui/tree/treeNode';
-//import { ArcControllersOptionsSourceProvider } from './providers/arcControllersOptionsSourceProvider';
 
 export async function activate(context: vscode.ExtensionContext): Promise<arc.IExtension> {
 	IconPathHelper.setExtensionContext(context);
@@ -66,8 +66,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 	});
 
 	// register option sources
-	//const rdApi = <rd.IExtension>vscode.extensions.getExtension(rd.extension.name)?.exports;
-	//rdApi.contributeOptionsSource(new ArcControllersOptionsSourceProvider(treeDataProvider));
+	const rdApi = <rd.IExtension>vscode.extensions.getExtension(rd.extension.name)?.exports;
+	rdApi.contributeOptionsSource(new ArcControllersOptionsSourceProvider(treeDataProvider));
 
 	return arcApi(treeDataProvider);
 }
