@@ -29,7 +29,6 @@ import { getGalleryExtensionId } from 'vs/platform/extensionManagement/common/ex
 import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IWillActivateEvent, IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { timeout } from 'vs/base/common/async';
 import { TestExtensionService } from 'vs/workbench/test/common/workbenchTestServices';
 import { OS } from 'vs/base/common/platform';
 
@@ -108,68 +107,6 @@ suite('Experiment Service', () => {
 		});
 	});
 
-	test('Simple Experiment Test', () => {
-		experimentData = {
-			experiments: [
-				{
-					id: 'experiment1'
-				},
-				{
-					id: 'experiment2',
-					enabled: false
-				},
-				{
-					id: 'experiment3',
-					enabled: true
-				},
-				{
-					id: 'experiment4',
-					enabled: true,
-					condition: {
-
-					}
-				},
-				{
-					id: 'experiment5',
-					enabled: true,
-					condition: {
-						insidersOnly: true
-					}
-				}
-			]
-		};
-
-		testObject = instantiationService.createInstance(TestExperimentService);
-		const tests: Promise<IExperiment>[] = [];
-		tests.push(testObject.getExperimentById('experiment1'));
-		tests.push(testObject.getExperimentById('experiment2'));
-		tests.push(testObject.getExperimentById('experiment3'));
-		tests.push(testObject.getExperimentById('experiment4'));
-		tests.push(testObject.getExperimentById('experiment5'));
-
-		return Promise.all(tests).then(results => {
-			assert.equal(results[0].id, 'experiment1');
-			assert.equal(results[0].enabled, false);
-			assert.equal(results[0].state, ExperimentState.NoRun);
-
-			assert.equal(results[1].id, 'experiment2');
-			assert.equal(results[1].enabled, false);
-			assert.equal(results[1].state, ExperimentState.NoRun);
-
-			assert.equal(results[2].id, 'experiment3');
-			assert.equal(results[2].enabled, true);
-			assert.equal(results[2].state, ExperimentState.Run);
-
-			assert.equal(results[3].id, 'experiment4');
-			assert.equal(results[3].enabled, true);
-			assert.equal(results[3].state, ExperimentState.Run);
-
-			assert.equal(results[4].id, 'experiment5');
-			assert.equal(results[4].enabled, true);
-			assert.equal(results[4].state, ExperimentState.Run);
-		});
-	});
-
 	test('filters out experiments with newer schema versions', async () => {
 		experimentData = {
 			experiments: [
@@ -240,26 +177,6 @@ suite('Experiment Service', () => {
 			},
 			getBoolean: (a: string, b: StorageScope, c?: boolean) => c, store: () => { }, remove: () => { }
 		});
-		testObject = instantiationService.createInstance(TestExperimentService);
-		return testObject.getExperimentById('experiment1').then(result => {
-			assert.equal(result.enabled, true);
-			assert.equal(result.state, ExperimentState.NoRun);
-		});
-	});
-
-	test('OldUsers experiment shouldnt be enabled for new users', () => {
-		experimentData = {
-			experiments: [
-				{
-					id: 'experiment1',
-					enabled: true,
-					condition: {
-						newUser: false
-					}
-				}
-			]
-		};
-
 		testObject = instantiationService.createInstance(TestExperimentService);
 		return testObject.getExperimentById('experiment1').then(result => {
 			assert.equal(result.enabled, true);
@@ -514,43 +431,6 @@ suite('Experiment Service', () => {
 		assert(didGetCall);
 	});
 
-	test('Activation events run experiments in realtime', async () => {
-		experimentData = {
-			experiments: [
-				{
-					id: 'experiment1',
-					enabled: true,
-					condition: {
-						activationEvent: {
-							event: 'my:event',
-							minEvents: 2,
-						}
-					}
-				}
-			]
-		};
-
-		let calls = 0;
-		instantiationService.stub(IStorageService, 'get', (a: string, b: StorageScope, c?: string) => {
-			return a === 'experimentEventRecord-my-event'
-				? JSON.stringify({ count: [++calls, 0, 0, 0, 0, 0, 0], mostRecentBucket: Date.now() })
-				: undefined;
-		});
-
-		const enabledListener = sinon.stub();
-		testObject = instantiationService.createInstance(TestExperimentService);
-		testObject.onExperimentEnabled(enabledListener);
-
-		assert.equal((await testObject.getExperimentById('experiment1')).state, ExperimentState.Evaluating);
-		assert.equal((await testObject.getExperimentById('experiment1')).state, ExperimentState.Evaluating);
-		assert.equal(enabledListener.callCount, 0);
-
-		activationEvent.fire({ event: 'my:event', activation: Promise.resolve() });
-		await timeout(1);
-		assert.equal(enabledListener.callCount, 1);
-		assert.equal((await testObject.getExperimentById('experiment1')).state, ExperimentState.Run);
-	});
-
 	test('Experiment not matching user setting should be disabled', () => {
 		experimentData = {
 			experiments: [
@@ -772,70 +652,6 @@ suite('Experiment Service', () => {
 			return testObject.getCuratedExtensionsList(curatedExtensionsKey).then(curatedList => {
 				assert.equal(curatedList, curatedExtensionsList);
 			});
-		});
-	});
-
-	test('Curated list shouldnt be available if experiment is disabled.', () => {
-		const promptText = 'Hello there! Can you see this?';
-		const curatedExtensionsKey = 'AzureDeploy';
-		const curatedExtensionsList = ['uninstalled-extention-id1', 'uninstalled-extention-id2'];
-		experimentData = {
-			experiments: [
-				{
-					id: 'experiment1',
-					enabled: false,
-					action: {
-						type: 'Prompt',
-						properties: {
-							promptText,
-							commands: [
-								{
-									text: 'Search Marketplace',
-									dontShowAgain: true,
-									curatedExtensionsKey,
-									curatedExtensionsList
-								},
-								{
-									text: 'No'
-								}
-							]
-						}
-					}
-				}
-			]
-		};
-
-		testObject = instantiationService.createInstance(TestExperimentService);
-		return testObject.getExperimentById('experiment1').then(result => {
-			assert.equal(result.enabled, false);
-			assert.equal(result.action?.type, 'Prompt');
-			assert.equal(result.state, ExperimentState.NoRun);
-			return testObject.getCuratedExtensionsList(curatedExtensionsKey).then(curatedList => {
-				assert.equal(curatedList.length, 0);
-			});
-		});
-	});
-
-	test('Maps action2 to action.', () => {
-		experimentData = {
-			experiments: [
-				{
-					id: 'experiment1',
-					enabled: false,
-					action2: {
-						type: 'Prompt',
-						properties: {
-							promptText: 'Hello world',
-							commands: []
-						}
-					}
-				}
-			]
-		};
-
-		testObject = instantiationService.createInstance(TestExperimentService);
-		return testObject.getExperimentById('experiment1').then(result => {
-			assert.equal(result.action?.type, 'Prompt');
 		});
 	});
 
