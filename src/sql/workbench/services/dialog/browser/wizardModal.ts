@@ -74,12 +74,10 @@ export class WizardModal extends Modal {
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 
-		if (this._wizard.customButtons) {
-			this._wizard.customButtons.forEach(button => {
-				let buttonElement = this.addDialogButton(button);
-				this.updateButtonElement(buttonElement, button);
-			});
-		}
+		this._wizard.customButtons.forEach(button => {
+			let buttonElement = this.addDialogButton(button);
+			this.updateButtonElement(buttonElement, button);
+		});
 
 		this._previousButton = this.addDialogButton(this._wizard.backButton, () => this.showPage(this._wizard.currentPage - 1));
 		this._nextButton = this.addDialogButton(this._wizard.nextButton, () => this.showPage(this._wizard.currentPage + 1, true, true), true, true);

@@ -27,7 +27,7 @@ suite('Dialog Pane Tests', () => {
 	}
 
 	setup(() => {
-		dialog = new Dialog('test_dialog');
+		dialog = new Dialog('test_dialog', 'narrow');
 		container = document.createElement('div');
 		bootstrapSave = bootstrapAngular;
 	});
