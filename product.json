@@ -43,6 +43,8 @@
 		"Microsoft.admin-pack",
 		"Microsoft.admin-tool-ext-win",
 		"Microsoft.agent",
+		"Microsoft.arc",
+		"Microsoft.azdata",
 		"Microsoft.azuredatastudio-postgresql",
 		"Microsoft.cms",
 		"Microsoft.dacpac",
@@ -76,7 +78,7 @@
 	"builtInExtensions": [
 		{
 			"name": "Microsoft.sqlservernotebook",
-			"version": "0.3.7",
+			"version": "0.3.8",
 			"repo": "https://github.com/Microsoft/azuredatastudio"
 		}
 	],

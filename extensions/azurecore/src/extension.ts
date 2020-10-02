@@ -147,7 +147,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	});
 
 	return {
-		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean): Thenable<azurecore.GetSubscriptionsResult> { return azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors); },
+		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean, selectedOnly: boolean = false): Thenable<azurecore.GetSubscriptionsResult> {
+			return selectedOnly
+				? azureResourceUtils.getSelectedSubscriptions(appContext, account, ignoreErrors)
+				: azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors);
+		},
 		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Thenable<azurecore.GetResourceGroupsResult> { return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors); },
 		provideResources(): azureResource.IAzureResourceProvider[] {
 			const arcFeaturedEnabled = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('enableArcFeatures');

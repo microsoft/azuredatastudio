@@ -8,6 +8,7 @@ import * as azdata from 'azdata';
 import { ImportPage } from '../api/importPage';
 import { InsertDataResponse } from '../../services/contracts';
 import * as constants from '../../common/constants';
+import { EOL } from 'os';
 
 export class SummaryPage extends ImportPage {
 	private _table: azdata.TableComponent;
@@ -93,7 +94,7 @@ export class SummaryPage extends ImportPage {
 	private populateTable() {
 		this.table.updateProperties({
 			data: [
-				[constants.serverNameText, this.model.server.providerName],
+				[constants.serverNameText, this.model.server.options.server],
 				[constants.databaseText, this.model.database],
 				[constants.tableNameText, this.model.table],
 				[constants.tableSchemaText, this.model.schema],
@@ -104,22 +105,36 @@ export class SummaryPage extends ImportPage {
 		});
 	}
 
-	private async handleImport(): Promise<boolean> {
-		let changeColumnResults = [];
-		this.model.proseColumns.forEach((val, i, arr) => {
+	private async handleImport(): Promise<void> {
+		let i = 0;
+		const changeColumnSettingsErrors = [];
+		for (let val of this.model.proseColumns) {
 			let columnChangeParams = {
-				index: i,
+				index: i++,
 				newName: val.columnName,
 				newDataType: val.dataType,
 				newNullable: val.nullable,
 				newInPrimaryKey: val.primaryKey
 			};
-			changeColumnResults.push(this.provider.sendChangeColumnSettingsRequest(columnChangeParams));
-		});
+			const changeColumnResult = await this.provider.sendChangeColumnSettingsRequest(columnChangeParams);
+			if (changeColumnResult?.result?.errorMessage) {
+				changeColumnSettingsErrors.push(changeColumnResult.result.errorMessage);
+			}
+		}
+
+		// Stopping import if there are errors in change column setting.
+		if (changeColumnSettingsErrors.length !== 0) {
+			let updateText: string;
+			updateText = changeColumnSettingsErrors.join(EOL);
+			this.statusText.updateProperties({
+				value: updateText
+			});
+			return;
+		}
 
 		let result: InsertDataResponse;
 		let err;
-		let includePasswordInConnectionString = (this.model.server.options.connectionId === 'Integrated') ? false : true;
+		let includePasswordInConnectionString = (this.model.server.options.authenticationType === 'Integrated') ? false : true;
 
 		try {
 			result = await this.provider.sendInsertDataRequest({
@@ -151,7 +166,6 @@ export class SummaryPage extends ImportPage {
 		this.statusText.updateProperties({
 			value: updateText
 		});
-		return true;
 	}
 
 	// private async getCountRowsInserted(): Promise<Number> {

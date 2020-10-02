@@ -4,13 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
-import { FieldType, OptionsType } from './interfaces';
 import { OptionsSourceType } from './helpers/optionSources';
+import { FieldType, OptionsType } from './interfaces';
 
 const localize = nls.loadMessageBundle();
 
 export const account = localize('azure.account', "Azure Account");
-export const subscription = localize('azure.account.subscription', "Subscription");
+export const subscription = localize('azure.account.subscription', "Subscription (selected subset)");
+export const subscriptionDescription = localize('azure.account.subscriptionDescription', "Change the currently selected subscriptions through the 'Select Subscriptions' action on an account listed in the 'Azure' tree view of the 'Connections' viewlet");
 export const resourceGroup = localize('azure.account.resourceGroup', "Resource Group");
 export const location = localize('azure.account.location', "Azure Location");
 export const browse = localize('filePicker.browse', "Browse");
@@ -37,3 +38,5 @@ export const optionsTypeRadioOrDropdown = localize('optionsTypeRadioOrDropdown',
 export const azdataEulaNotAccepted = localize('azdataEulaNotAccepted', "Deployment cannot continue. Azure Data CLI license terms have not yet been accepted. Please accept the EULA to enable the features that requires Azure Data CLI.");
 export const azdataEulaDeclined = localize('azdataEulaDeclined', "Deployment cannot continue. Azure Data CLI license terms were declined.You can either Accept EULA to continue or Cancel this operation");
 export const acceptEulaAndSelect = localize('deploymentDialog.RecheckEulaButton', "Accept EULA & Select");
+export const scriptToNotebook = localize('ui.ScriptToNotebookButton', "Script");
+export const deployNotebook = localize('ui.DeployButton', "Run");
