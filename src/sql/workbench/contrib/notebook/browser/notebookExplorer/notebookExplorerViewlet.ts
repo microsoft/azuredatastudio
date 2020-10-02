@@ -271,12 +271,16 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 							let items = await treeView?.dataProvider.getChildren(treeView?.root);
 							items?.forEach(root => {
 								this.updateViewletsState();
-								if (root.contextValue !== 'pinnedNotebook') {
+								if (root.contextValue === 'providedBook' || root.contextValue === 'savedBook') {
 									let rootFolder = URI.file(root.resourceUri.path);
 									let folderToSearch = { folder: rootFolder };
 									query.folderQueries = query.folderQueries.filter((folder) => {
-										//verify if pinned notebook is not opened in Books Viewlet
-										return !!folder.includePattern && path.relative(folder.folder.fsPath, folderToSearch.folder.fsPath) !== '..';
+										if (!!folder.includePattern) {
+											//verify if pinned notebook is not opened in Books Viewlet
+											return path.relative(folder.folder.fsPath, folderToSearch.folder.fsPath) !== '..';
+										} else {
+											return true;
+										}
 									});
 									query.folderQueries.push(folderToSearch);
 									filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
