@@ -539,7 +539,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 			return {
 				accounts,
-				ButtonType: sqlExtHostTypes.ButtonType,
 				connection,
 				credentials,
 				objectexplorer: objectExplorer,
