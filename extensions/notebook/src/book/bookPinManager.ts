@@ -33,7 +33,10 @@ export class BookPinManager implements IBookPinManager {
 	}
 
 	isNotebookPinned(notebookPath: string): boolean {
-		return (getPinnedNotebooks().filter(function (x) { return x.notebookPath === notebookPath; }).length > 0);
+		if (getPinnedNotebooks().findIndex(x => x.notebookPath === notebookPath) > -1) {
+			return true;
+		}
+		return false;
 	}
 
 	pinNotebook(notebook: BookTreeItem): boolean {

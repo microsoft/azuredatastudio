@@ -46,7 +46,7 @@ export class BookModel {
 		if (this.isNotebook) {
 			this.readNotebook();
 		} else {
-			await this.readBookStructure(this.bookPath as string);
+			await this.readBookStructure(this.bookPath);
 			await this.loadTableOfContentFiles();
 			await this.readBooks();
 		}

@@ -335,14 +335,13 @@ export function isBookItemPinned(notebookPath: string): boolean {
 export function getPinnedNotebooks(): IBookNotebook[] {
 	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
 	let pinnedNotebooks: [] = config.get(pinnedBooksConfigKey);
-	let pinnedBookDirectories: IBookNotebook[] = [];
 	let updateFormat: boolean = false;
-	pinnedNotebooks.map((elem, index) => {
+	const pinnedBookDirectories = pinnedNotebooks.map(elem => {
 		if (typeof (elem) === 'string') {
-			pinnedBookDirectories[index] = { notebookPath: elem, bookPath: '' };
 			updateFormat = true;
-		} else if (typeof (elem) === 'object') {
-			pinnedBookDirectories[index] = elem as IBookNotebook;
+			return { notebookPath: elem, bookPath: '' };
+		} else {
+			return elem as IBookNotebook;
 		}
 	});
 	if (updateFormat) {
@@ -357,15 +356,14 @@ function hasWorkspaceFolders(): boolean {
 	return workspaceFolders && workspaceFolders.length > 0;
 }
 
-export function setPinnedBookPathsInConfig(bookPaths: IBookNotebook[]) {
+export function setPinnedBookPathsInConfig(pinnedNotebookPaths: IBookNotebook[]) {
 	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
 	let storeInWorspace: boolean = hasWorkspaceFolders();
 
-	config.update(pinnedBooksConfigKey, bookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
+	config.update(pinnedBooksConfigKey, pinnedNotebookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
 }
 
 export interface IBookNotebook {
 	bookPath?: string;
 	notebookPath: string;
 }
-

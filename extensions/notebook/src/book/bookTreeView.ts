@@ -216,6 +216,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * Creates a model for the specified folder path and adds it to the known list of books if we
 	 * were able to successfully parse it.
 	 * @param bookPath The path to the book folder to create the model for
+	 * @param isNotebook A boolean value to know we are creating a model for a notebook or a book
+	 * @param notebookBookRoot For pinned notebooks we need to know if the notebook is part of a book or it's a standalone notebook
 	 */
 	private async createAndAddBookModel(bookPath: string, isNotebook: boolean, notebookBookRoot?: string): Promise<void> {
 		if (!this.books.find(x => x.bookPath === bookPath)) {
