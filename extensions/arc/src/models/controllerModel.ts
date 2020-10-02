@@ -20,7 +20,6 @@ export type Registration = {
 export class ControllerModel {
 	private readonly _azdataApi: azdataExt.IExtension;
 	private _endpoints: azdataExt.DcEndpointListResult[] = [];
-	private _namespace: string = '';
 	private _registrations: Registration[] = [];
 	private _controllerConfig: azdataExt.DcConfigShowResult | undefined = undefined;
 
@@ -158,10 +157,6 @@ export class ControllerModel {
 		return this._endpoints.find(e => e.name === name);
 	}
 
-	public get namespace(): string {
-		return this._namespace;
-	}
-
 	public get registrations(): Registration[] {
 		return this._registrations;
 	}
@@ -174,15 +169,6 @@ export class ControllerModel {
 		return this._registrations.find(r => {
 			return r.instanceType === type && r.instanceName === name;
 		});
-	}
-
-	public async deleteRegistration(_type: ResourceType, _name: string) {
-		/* TODO chgagnon
-		if (r && !r.isDeleted && r.customObjectName) {
-			const r = this.getRegistration(type, name);
-			await this._registrationRouter.apiV1RegistrationNsNameIsDeletedDelete(this._namespace, r.customObjectName, true);
-		}
-		*/
 	}
 
 	/**

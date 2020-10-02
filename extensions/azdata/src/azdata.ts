@@ -101,21 +101,23 @@ export class AzdataTool implements IAzdataTool {
 				show: async (name: string) => {
 					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name]);
 				},
-				edit: async (args: {
+				edit: async (
 					name: string,
-					adminPassword?: boolean,
-					coresLimit?: string,
-					coresRequest?: string,
-					engineSettings?: string,
-					extensions?: string,
-					memoryLimit?: string,
-					memoryRequest?: string,
-					noWait?: boolean,
-					port?: number,
-					replaceEngineSettings?: boolean,
-					workers?: number
-				}) => {
-					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', args.name];
+					args: {
+						adminPassword?: boolean,
+						coresLimit?: string,
+						coresRequest?: string,
+						engineSettings?: string,
+						extensions?: string,
+						memoryLimit?: string,
+						memoryRequest?: string,
+						noWait?: boolean,
+						port?: number,
+						replaceEngineSettings?: boolean,
+						workers?: number
+					},
+					additionalEnvVars?: { [key: string]: string }) => {
+					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', name];
 					if (args.adminPassword) { argsArray.push('--admin-password'); }
 					if (args.coresLimit !== undefined) { argsArray.push('--cores-limit', args.coresLimit); }
 					if (args.coresRequest !== undefined) { argsArray.push('--cores-request', args.coresRequest); }
@@ -127,7 +129,7 @@ export class AzdataTool implements IAzdataTool {
 					if (args.port !== undefined) { argsArray.push('--port', args.port.toString()); }
 					if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
 					if (args.workers !== undefined) { argsArray.push('--workers', args.workers.toString()); }
-					return this.executeCommand<void>(argsArray);
+					return this.executeCommand<void>(argsArray, additionalEnvVars);
 				}
 			}
 		},
@@ -182,18 +184,18 @@ export class AzdataTool implements IAzdataTool {
 					// ERROR: { stderr: '...' }
 					// so we also need to trim off the start that isn't a valid JSON blob
 					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'), err.stderr.indexOf('}') + 1)).stderr;
-				} catch (err) {
+				} catch {
 					// it means this was probably some other generic error (such as command not being found)
 					// check if azdata still exists if it does then rethrow the original error if not then emit a new specific error.
 					try {
 						await fs.promises.access(this._path);
 						//this.path exists
-						throw err; // rethrow the error
 					} catch (e) {
 						// this.path does not exist
 						await vscode.commands.executeCommand('setContext', azdataFound, false);
 						throw (loc.noAzdata);
 					}
+					throw err; // rethrow the original error
 				}
 
 			}
