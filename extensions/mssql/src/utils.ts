@@ -240,6 +240,12 @@ export function getClusterEndpoints(serverInfo: azdata.ServerInfo): bdc.IEndpoin
 	});
 }
 
+export async function isBigDataCluster(connectionId: string): Promise<boolean> {
+	const serverInfo = await azdata.connection.getServerInfo(connectionId);
+
+	return !!serverInfo?.options?.[constants.isBigDataClusterProperty];
+}
+
 export type HostAndIp = { host: string, port: string };
 
 export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
