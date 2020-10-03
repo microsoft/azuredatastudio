@@ -1,7 +1,13 @@
 {
+<<<<<<< HEAD
   "name": "azuredatastudio",
   "version": "1.23.0",
   "distro": "05f08ef15e584dd5d5b5e3d03d447265869d2b0d",
+=======
+  "name": "code-oss-dev",
+  "version": "1.50.0",
+  "distro": "8d78341175414dcfde7cd493d481064cd4bf96d4",
+>>>>>>> d58ebff71a6d6e5794240382580ae6b38aec8df6
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -212,10 +218,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Microsoft/azuredatastudio.git"
+    "url": "https://github.com/microsoft/azuredatastudio.git"
   },
   "bugs": {
-    "url": "https://github.com/Microsoft/azuredatastudio/issues"
+    "url": "https://github.com/microsoft/azuredatastudio/issues"
   },
   "optionalDependencies": {
     "vscode-windows-ca-certs": "0.2.0",

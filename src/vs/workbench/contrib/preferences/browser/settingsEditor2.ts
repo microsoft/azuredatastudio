@@ -1065,7 +1065,7 @@ export class SettingsEditor2 extends EditorPane {
 		if (key) {
 			const elements = this.currentSettingsModel.getElementsByName(key);
 			if (elements && elements.length) {
-				// TODO https://github.com/Microsoft/vscode/issues/57360
+				// TODO https://github.com/microsoft/vscode/issues/57360
 				this.refreshTree();
 			} else {
 				// Refresh requested for a key that we don't know about

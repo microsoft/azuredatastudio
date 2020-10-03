@@ -11,8 +11,8 @@ import { env } from 'vs/base/common/process';
 
 let product: IProductConfiguration;
 
-// Web
-if (isWeb) {
+// Web or Native (sandbox TODO@sandbox need to add all properties of product.json)
+if (isWeb || typeof require === 'undefined' || typeof require.__$__nodeRequire !== 'function') {
 
 	// Built time configuration (do NOT modify)
 	product = { /*BUILD->INSERT_PRODUCT_CONFIGURATION*/ } as IProductConfiguration;
@@ -26,6 +26,8 @@ if (isWeb) {
 			nameShort: 'Azure Data Studio Web Dev',
 			urlProtocol: 'azuredatastudio-oss',
 			extensionAllowedProposedApi: [
+				'ms-vscode.vscode-js-profile-flame',
+				'ms-vscode.vscode-js-profile-table',
 				'ms-vscode.references-view',
 				'ms-vscode.github-browser'
 			],
@@ -33,8 +35,8 @@ if (isWeb) {
 	}
 }
 
-// Node: AMD loader
-else if (typeof require !== 'undefined' && typeof require.__$__nodeRequire === 'function') {
+// Native (non-sandboxed)
+else {
 
 	// Obtain values from product.json and package.json
 	const rootPath = path.dirname(getPathFromAmdModule(require, ''));
@@ -54,11 +56,6 @@ else if (typeof require !== 'undefined' && typeof require.__$__nodeRequire === '
 	Object.assign(product, {
 		version: pkg.version
 	});
-}
-
-// Unknown
-else {
-	throw new Error('Unable to resolve product configuration');
 }
 
 export default product;

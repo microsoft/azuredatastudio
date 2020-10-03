@@ -18,7 +18,7 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IsMacContext } from 'vs/platform/contextkey/common/contextkeys';
 import { EditorsVisibleContext, SingleEditorGroupsContext } from 'vs/workbench/common/editor';
-import { IElectronService } from 'vs/platform/electron/electron-sandbox/electron';
+import { INativeHostService } from 'vs/platform/native/electron-sandbox/native';
 import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 import product from 'vs/platform/product/common/product';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
@@ -51,8 +51,8 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 			when: ContextKeyExpr.and(EditorsVisibleContext.toNegated(), SingleEditorGroupsContext),
 			primary: KeyMod.CtrlCmd | KeyCode.KEY_W,
 			handler: accessor => {
-				const electronService = accessor.get(IElectronService);
-				electronService.closeWindow();
+				const nativeHostService = accessor.get(INativeHostService);
+				nativeHostService.closeWindow();
 			}
 		});
 
@@ -60,8 +60,8 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 			id: 'workbench.action.quit',
 			weight: KeybindingWeight.WorkbenchContrib,
 			handler(accessor: ServicesAccessor) {
-				const electronService = accessor.get(IElectronService);
-				electronService.quit();
+				const nativeHostService = accessor.get(INativeHostService);
+				nativeHostService.quit();
 			},
 			when: undefined,
 			mac: { primary: KeyMod.CtrlCmd | KeyCode.KEY_Q },
