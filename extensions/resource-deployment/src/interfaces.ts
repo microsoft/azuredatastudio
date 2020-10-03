@@ -220,7 +220,7 @@ export type ComponentCSSStyles = {
 
 export interface IOptionsSource {
 	provider?: IOptionsSourceProvider
-	readonly variableNames: { [index: string]: string; };
+	readonly variableNames?: { [index: string]: string; };
 	readonly providerId: string;
 }
 

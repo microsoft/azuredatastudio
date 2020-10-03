@@ -468,9 +468,9 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 async function configureOptionsSourceSubfields(context: FieldContext, optionsSource: IOptionsSource, variableKey: string, optionsComponent: InputComponent, optionsSourceProvider: IOptionsSourceProvider) {
 	context.fieldInfo.subFields!.push({
 		label: context.fieldInfo.label,
-		variableName: optionsSource.variableNames[variableKey]
+		variableName: optionsSource.variableNames![variableKey]
 	});
-	context.onNewInputComponentCreated(optionsSource.variableNames[variableKey], {
+	context.onNewInputComponentCreated(optionsSource.variableNames![variableKey], {
 		component: optionsComponent,
 		inputValueTransformer: async (optionValue: string) => {
 			try {
