@@ -84,8 +84,8 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 	}
 
-	createProject(projectFile: vscode.Uri): Promise<void> {
-		throw new Error('Method not implemented.');
+	createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<void> {
+		throw new Error('Not Implemented');
 	}
 
 	/**

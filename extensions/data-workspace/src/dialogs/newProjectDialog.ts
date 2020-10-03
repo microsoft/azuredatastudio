@@ -5,10 +5,13 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { DialogBase } from './dialogBase';
 import { IWorkspaceService } from '../common/interfaces';
 import * as constants from '../common/constants';
 import { IProjectType } from 'dataworkspace';
+import { createHorizontalContainer, directoryExists } from './Utils';
+import { WorkspaceTreeDataProvider } from '../common/workspaceTreeDataProvider';
 
 class NewProjectDialogModel {
 	projectTypeId: string = '';
@@ -18,8 +21,41 @@ class NewProjectDialogModel {
 }
 export class NewProjectDialog extends DialogBase {
 	private model: NewProjectDialogModel = new NewProjectDialogModel();
-	constructor(private workspaceService: IWorkspaceService) {
-		super(constants.NewProjectDialogTitle, 'NewProject');
+	constructor(private workspaceService: IWorkspaceService, private workspaceTreeDataProvider: WorkspaceTreeDataProvider) {
+		super(constants.NewProjectDialogTitle, 'NewProject', 'medium');
+		this._dialogObject.registerCloseValidator(async () => {
+			try {
+				// the selected location should be an existing directory
+				const parentDirectoryExists = await directoryExists(this.model.location);
+				if (!parentDirectoryExists) {
+					this.showErrorMessage(constants.ProjectParentDirectoryNotExistError(this.model.location));
+					return false;
+				}
+
+				// there shouldn't be an existing sub directory with the same name as the project in the selected location
+				const projectDirectoryExists = await directoryExists(path.join(this.model.location, this.model.name));
+				if (projectDirectoryExists) {
+					this.showErrorMessage(constants.ProjectDirectoryAlreadyExistError(this.model.name, this.model.location));
+					return false;
+				}
+
+				return true;
+			}
+			catch (err) {
+				this.showErrorMessage(err?.message ? err.message : err);
+				return false;
+			}
+		});
+	}
+
+	async onComplete(): Promise<void> {
+		try {
+			await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId);
+			this.workspaceTreeDataProvider.refresh();
+		}
+		catch (err) {
+			vscode.window.showErrorMessage(err?.message ? err.message : err);
+		}
 	}
 
 	protected async initialize(view: azdata.ModelView): Promise<void> {
@@ -46,19 +82,15 @@ export class NewProjectDialog extends DialogBase {
 			iconHeight: '25px',
 			iconWidth: '25px',
 			cardWidth: '250px',
-			cardHeight: '150px',
+			cardHeight: '130px',
 			ariaLabel: constants.ProjectTypeSelectorTitle,
-			width: '1100px',
+			width: '700px',
 			iconPosition: 'left',
 			selectedCardId: allProjectTypes.length > 0 ? allProjectTypes[0].id : undefined
 		}).component();
 
 		this.register(projectTypeRadioCardGroup.onSelectionChanged((e) => {
-			const selectedProjectType = allProjectTypes.find(pt => pt.id === e.cardId);
-			if (selectedProjectType) {
-				this.model.projectTypeId = selectedProjectType.id;
-				this.model.projectFileExtension = selectedProjectType.projectFileExtension;
-			}
+			this.model.projectTypeId = e.cardId;
 		}));
 
 		const projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
@@ -74,9 +106,11 @@ export class NewProjectDialog extends DialogBase {
 		const locationTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.ProjectLocationTitle,
 			required: true,
-			width: constants.DefaultInputWidth,
-			enabled: false
+			width: constants.DefaultInputWidth
 		}).component();
+		this.register(locationTextBox.onTextChanged(() => {
+			this.model.location = locationTextBox.value!;
+		}));
 
 		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: constants.BrowseButtonText, width: constants.DefaultButtonWidth }).component();
 		this.register(browseFolderButton.onDidClick(async () => {
@@ -97,23 +131,20 @@ export class NewProjectDialog extends DialogBase {
 			this.model.name = projectNameTextBox.value!;
 		}));
 
-		const locationContainer = view.modelBuilder.flexContainer().withItems([
-			locationTextBox,
-			browseFolderButton
-		], { CSSStyles: { 'margin-right': '5px', } }).withLayout({ flexFlow: 'row' }).component();
-
 		const form = view.modelBuilder.formContainer().withFormItems([
 			{
 				title: constants.ProjectTypeSelectorTitle,
+				required: true,
 				component: projectTypeRadioCardGroup
 			},
 			{
 				title: constants.ProjectNameTitle,
-				component: projectNameTextBox
+				required: true,
+				component: createHorizontalContainer(view, [projectNameTextBox])
 			}, {
 				title: constants.ProjectLocationTitle,
 				required: true,
-				component: locationContainer
+				component: createHorizontalContainer(view, [locationTextBox, browseFolderButton])
 			}
 		]).component();
 		await view.initializeModel(form);

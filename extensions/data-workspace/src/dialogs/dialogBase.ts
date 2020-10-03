@@ -11,8 +11,8 @@ export abstract class DialogBase {
 	protected _toDispose: vscode.Disposable[] = [];
 	protected _dialogObject: azdata.window.Dialog;
 
-	constructor(dialogTitle: string, dialogName: string) {
-		this._dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, 'wide');
+	constructor(dialogTitle: string, dialogName: string, dialogWidth: azdata.window.DialogWidth = 'narrow') {
+		this._dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, dialogWidth);
 		this._dialogObject.okButton.label = OkButtonText;
 		this.register(this._dialogObject.cancelButton.onClick(() => this.onCancelButtonClicked()));
 		this.register(this._dialogObject.okButton.onClick(() => this.onOkButtonClicked()));
@@ -47,5 +47,12 @@ export abstract class DialogBase {
 
 	protected register(disposable: vscode.Disposable): void {
 		this._toDispose.push(disposable);
+	}
+
+	protected showErrorMessage(message: string): void {
+		this._dialogObject.message = {
+			text: message,
+			level: azdata.window.MessageLevel.Error
+		};
 	}
 }

@@ -24,6 +24,8 @@ export const NewProjectDialogTitle = localize('dataworkspace.NewProjectDialogTit
 export const ProjectTypeSelectorTitle = localize('dataworkspace.ProjectTypeSelectorTitle', "Project type");
 export const ProjectNameTitle = localize('dataworkspace.projectNameTitle', "Project name");
 export const ProjectLocationTitle = localize('dataworkspace.projectLocationTitle', "Location");
+export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected location: '{0}' does not exist or is not a directory.", location); };
+export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
 
 //Open Project Dialog
 export const OpenProjectDialogTitle = localize('dataworkspace.openProjectDialogTitle', "Open Project");

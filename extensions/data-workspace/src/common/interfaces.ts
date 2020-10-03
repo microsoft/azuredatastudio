@@ -67,9 +67,11 @@ export interface IWorkspaceService {
 
 	/**
 	 * Creates a new project from workspace
-	 * @param projectFile The Uri of the project file
+	 * @param name The name of the project
+	 * @param location The location of the project
+	 * @param projectTypeId The project type id
 	 */
-	createProject(projectFile: vscode.Uri): Promise<void>;
+	createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<void>;
 
 	/**
 	 * Event fires when projects in workspace changes
