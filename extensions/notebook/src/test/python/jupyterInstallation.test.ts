@@ -9,7 +9,10 @@ import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 import * as uuid from 'uuid';
 import * as fs from 'fs-extra';
-import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
+import * as request from 'request';
+import * as utils from '../../common/utils';
+import { JupyterServerInstallation, PythonInstallSettings, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
+import { powershellDisplayName, pysparkDisplayName, python3DisplayName, sparkRDisplayName, sparkScalaDisplayName, winPlatform } from '../../common/constants';
 
 describe('Jupyter Server Installation', function () {
 	let outputChannelStub: TypeMoq.IMock<vscode.OutputChannel>;
@@ -21,10 +24,16 @@ describe('Jupyter Server Installation', function () {
 		outputChannelStub.setup(c => c.appendLine(TypeMoq.It.isAnyString()));
 
 		installation = new JupyterServerInstallation('', outputChannelStub.object);
+		installation.execOptions = { env: Object.assign({}, process.env) };
 	});
 
 	afterEach(function (): void {
 		sinon.restore();
+	});
+
+	it('Getters and setters', async function() {
+		let pythonPath = installation.pythonInstallationPath;
+		should(pythonPath).be.equal(JupyterServerInstallation.getPythonInstallPath());
 	});
 
 	it('Get pip packages', async function() {
@@ -43,7 +52,7 @@ describe('Jupyter Server Installation', function () {
 		// Should return nothing on error
 		sinon.restore();
 		sinon.stub(JupyterServerInstallation, 'isPythonInstalled').returns(true);
-		sinon.stub(installation, 'executeBufferedCommand').rejects(new Error('Expected test failure.'));
+		sinon.stub(utils, 'executeBufferedCommand').rejects(new Error('Expected test failure.'));
 		pkgResult = await installation.getInstalledPipPackages();
 		should(pkgResult).not.be.undefined();
 		should(pkgResult.length).be.equal(0);
@@ -59,13 +68,13 @@ describe('Jupyter Server Installation', function () {
 			version: '4.5.6'
 		}];
 		sinon.stub(JupyterServerInstallation, 'isPythonInstalled').returns(true);
-		sinon.stub(installation, 'executeBufferedCommand').resolves(JSON.stringify(testPackages));
+		sinon.stub(utils, 'executeBufferedCommand').resolves(JSON.stringify(testPackages));
 		pkgResult = await installation.getInstalledPipPackages();
 		should(pkgResult).be.deepEqual(testPackages);
 	});
 
 	it('Install pip package', async function() {
-		let commandStub = sinon.stub(installation, 'executeStreamedCommand').resolves();
+		let commandStub = sinon.stub(utils, 'executeStreamedCommand').resolves();
 
 		// Should not execute any commands when passed an empty package list
 		await installation.installPipPackages(undefined, false);
@@ -95,7 +104,7 @@ describe('Jupyter Server Installation', function () {
 	});
 
 	it('Uninstall pip package', async function() {
-		let commandStub = sinon.stub(installation, 'executeStreamedCommand').resolves();
+		let commandStub = sinon.stub(utils, 'executeStreamedCommand').resolves();
 
 		let testPackages = [{
 			name: 'jupyter',
@@ -120,7 +129,7 @@ describe('Jupyter Server Installation', function () {
 		// Should return nothing on error
 		sinon.restore();
 		sinon.stub(fs, 'existsSync').returns(true);
-		sinon.stub(installation, 'executeBufferedCommand').rejects(new Error('Expected test failure.'));
+		sinon.stub(utils, 'executeBufferedCommand').rejects(new Error('Expected test failure.'));
 		pkgResult = await installation.getInstalledCondaPackages();
 		should(pkgResult).not.be.undefined();
 		should(pkgResult.length).be.equal(0);
@@ -142,14 +151,14 @@ describe('Jupyter Server Installation', function () {
 			channel: 'conda'
 		}];
 		sinon.stub(fs, 'existsSync').returns(true);
-		sinon.stub(installation, 'executeBufferedCommand').resolves(JSON.stringify(testPackages));
+		sinon.stub(utils, 'executeBufferedCommand').resolves(JSON.stringify(testPackages));
 		pkgResult = await installation.getInstalledCondaPackages();
 		let filteredPackages = testPackages.filter(pkg => pkg.channel !== 'pypi');
 		should(pkgResult).be.deepEqual(filteredPackages);
 	});
 
 	it('Install conda package', async function() {
-		let commandStub = sinon.stub(installation, 'executeStreamedCommand').resolves();
+		let commandStub = sinon.stub(utils, 'executeStreamedCommand').resolves();
 
 		// Should not execute any commands when passed an empty package list
 		await installation.installCondaPackages(undefined, false);
@@ -179,7 +188,7 @@ describe('Jupyter Server Installation', function () {
 	});
 
 	it('Uninstall conda package', async function() {
-		let commandStub = sinon.stub(installation, 'executeStreamedCommand').resolves();
+		let commandStub = sinon.stub(utils, 'executeStreamedCommand').resolves();
 
 		let testPackages = [{
 			name: 'jupyter',
@@ -192,5 +201,102 @@ describe('Jupyter Server Installation', function () {
 		should(commandStub.calledOnce).be.true();
 		let commandStr = commandStub.args[0][0] as string;
 		should(commandStr.includes('"jupyter==1.0.0" "TestPkg2==4.5.6"')).be.true();
+	});
+
+	it('Get required packages test - Undefined argument', async function() {
+		let packages = installation.getRequiredPackagesForKernel(undefined);
+		should(packages).not.be.undefined();
+		should(packages.length).be.equal(0);
+	});
+
+	it('Get required packages test - Fake kernel', async function() {
+		let packages = installation.getRequiredPackagesForKernel('NotARealKernel');
+		should(packages).not.be.undefined();
+		should(packages.length).be.equal(0);
+	});
+
+	it('Get required packages test - Python 3 kernel', async function() {
+		let expectedPackages: PythonPkgDetails[] = [{
+			name: 'jupyter',
+			version: '1.0.0'
+		}];
+		let packages = installation.getRequiredPackagesForKernel(python3DisplayName);
+		should(packages).be.deepEqual(expectedPackages);
+	});
+
+	it('Get required packages test - Powershell kernel', async function() {
+		let expectedPackages = [{
+			name: 'jupyter',
+			version: '1.0.0'
+		}, {
+			name: 'powershell-kernel',
+			version: '0.1.3'
+		}];
+		let packages = installation.getRequiredPackagesForKernel(powershellDisplayName);
+		should(packages).be.deepEqual(expectedPackages);
+	});
+
+	it('Get required packages test - Spark kernels', async function() {
+		let expectedPackages = [{
+			name: 'jupyter',
+			version: '1.0.0'
+		}, {
+			name: 'sparkmagic',
+			version: '0.12.9'
+		}, {
+			name: 'pandas',
+			version: '0.24.2'
+		}, {
+			name: 'prose-codeaccelerator',
+			version: '1.3.0'
+		}];
+		let packages = installation.getRequiredPackagesForKernel(pysparkDisplayName);
+		should(packages).be.deepEqual(expectedPackages, "Unexpected packages for PySpark kernel.");
+
+		packages = installation.getRequiredPackagesForKernel(sparkScalaDisplayName);
+		should(packages).be.deepEqual(expectedPackages, "Unexpected packages for Spark Scala kernel.");
+
+		packages = installation.getRequiredPackagesForKernel(sparkRDisplayName);
+		should(packages).be.deepEqual(expectedPackages, "Unexpected packages for Spark R kernel.");
+	});
+
+	it('Install python test - Run install while Python is already running', async function() {
+		// Should reject overwriting an existing python install if running on Windows and python is currently running.
+		if (process.platform === winPlatform) {
+			sinon.stub(utils, 'executeBufferedCommand').resolves('python.exe');
+
+			let installSettings: PythonInstallSettings = {
+				installPath: `${process.env['USERPROFILE']}\\ads-python`,
+				existingPython: false,
+				packages: []
+			};
+			await should(installation.startInstallProcess(false, installSettings)).be.rejected();
+		}
+	});
+
+	it('Install python test - Run install with existing Python instance', async function() {
+		let installSettings: PythonInstallSettings = {
+			installPath: `${process.env['USERPROFILE']}\\ads-python`,
+			existingPython: true,
+			packages: installation.getRequiredPackagesForKernel(python3DisplayName)
+		};
+
+		sinon.stub(utils, 'exists').resolves(true);
+		sinon.stub(fs, 'existsSync').returns(false);
+		sinon.stub(utils, 'executeBufferedCommand').resolves(`${installSettings.installPath}\\site-packages`);
+
+		// Both of these are called from upgradePythonPackages
+		sinon.stub(installation, 'getInstalledPipPackages').resolves([]);
+		let pipInstallStub = sinon.stub(installation, 'installPipPackages').resolves();
+
+		let httpRequestSpy = sinon.spy(request, 'get');
+
+		await should(installation.startInstallProcess(false, installSettings)).be.resolved();
+
+		should(httpRequestSpy.callCount).be.equal(0);
+		should(pipInstallStub.callCount).be.equal(1);
+
+		let packagesToInstall = pipInstallStub.firstCall.args[0] as PythonPkgDetails[];
+		should(packagesToInstall).be.deepEqual(installation.getRequiredPackagesForKernel(python3DisplayName));
 	});
 });
