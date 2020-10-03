@@ -14,6 +14,7 @@ export const debugConfigKey = 'logDebugInfo';
 // context keys && memento keys
 export const eulaAccepted = 'azdata.eulaAccepted';
 export const azdataFound = 'azdata.found';
+export const localAzdata = 'azdata.localAzdata';
 
 // other constants
 export const azdataHostname = 'https://aka.ms';

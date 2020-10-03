@@ -225,7 +225,7 @@ export async function findAzdata(): Promise<IAzdataTool> {
 	try {
 		const azdata = await findSpecificAzdata();
 		await vscode.commands.executeCommand('setContext', azdataFound, true); // save a context key that azdata was found so that command for installing azdata is no longer available in commandPalette and that for updating it is.
-		Logger.log(loc.foundExistingAzdata(azdata.getPath(), azdata.getSemVersion().raw));
+		Logger.log(loc.foundExistingAzdata(await azdata.getPath(), (await azdata.getSemVersion()).raw));
 		return azdata;
 	} catch (err) {
 		Logger.log(loc.couldNotFindAzdata(err));
@@ -312,11 +312,11 @@ export async function checkAndInstallAzdata(userRequested: boolean = false): Pro
 export async function checkAndUpdateAzdata(currentAzdata?: IAzdataTool, userRequested: boolean = false): Promise<boolean> {
 	if (currentAzdata !== undefined) {
 		const newSemVersion = await discoverLatestAvailableAzdataVersion();
-		if (newSemVersion.compare(currentAzdata.getSemVersion()) === 1) {
-			Logger.log(loc.foundAzdataVersionToUpdateTo(newSemVersion.raw, currentAzdata.getSemVersion().raw));
+		if (newSemVersion.compare(await currentAzdata.getSemVersion()) === 1) {
+			Logger.log(loc.foundAzdataVersionToUpdateTo(newSemVersion.raw, (await currentAzdata.getSemVersion()).raw));
 			return await promptToUpdateAzdata(newSemVersion.raw, userRequested);
 		} else {
-			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.getSemVersion().raw));
+			Logger.log(loc.currentlyInstalledVersionIsLatest((await currentAzdata.getSemVersion()).raw));
 		}
 	} else {
 		Logger.log(loc.updateCheckSkipped);
@@ -411,6 +411,17 @@ async function promptToUpdateAzdata(newVersion: string, userRequested: boolean =
 		}
 	}
 	return false;
+}
+
+
+
+/**
+ *	Returns true if Eula has been accepted.
+ *
+ * @param memento The memento that stores the eulaAccepted state
+ */
+export function isEulaAccepted(memento: vscode.Memento): boolean {
+	return !!memento.get<boolean>(eulaAccepted);
 }
 
 /**

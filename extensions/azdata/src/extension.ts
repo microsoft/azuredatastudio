@@ -7,40 +7,39 @@ import * as azdataExt from 'azdata-ext';
 import * as rd from 'resource-deployment';
 import * as vscode from 'vscode';
 import { getExtensionApi } from './api';
-import { checkAndInstallAzdata, checkAndUpdateAzdata, findAzdata, IAzdataTool, promptForEula } from './azdata';
+import { checkAndInstallAzdata, checkAndUpdateAzdata, findAzdata, isEulaAccepted, promptForEula } from './azdata';
 import Logger from './common/logger';
 import * as constants from './constants';
 import * as loc from './localizedConstants';
 import { ArcControllerConfigProfilesOptionsSource } from './providers/arcControllerConfigProfilesOptionsSource';
+import { AzdataToolService } from './services/azdataToolService';
 
-let localAzdata: IAzdataTool | undefined = undefined;
-let localAzdataDiscovered: Promise<void> | undefined = undefined;
-let eulaAccepted: boolean = false;
 export async function activate(context: vscode.ExtensionContext): Promise<azdataExt.IExtension> {
+	const azdataToolService = new AzdataToolService(context.globalState);
+	let eulaAccepted: boolean = false;
 	vscode.commands.registerCommand('azdata.acceptEula', async () => {
-		eulaAccepted = await promptForEula(context.globalState, true /* userRequested */);
-
+		await promptForEula(context.globalState, true /* userRequested */);
 	});
 
 	vscode.commands.registerCommand('azdata.install', async () => {
-		localAzdata = await checkAndInstallAzdata(true /* userRequested */);
+		azdataToolService.localAzdata = await checkAndInstallAzdata(true /* userRequested */);
 	});
 
 	vscode.commands.registerCommand('azdata.update', async () => {
-		if (await checkAndUpdateAzdata(localAzdata, true /* userRequested */)) { // if an update was performed
-			localAzdata = await findAzdata(); // find and save the currently installed azdata
+		if (await checkAndUpdateAzdata(azdataToolService.localAzdata, true /* userRequested */)) { // if an update was performed
+			azdataToolService.localAzdata = await findAzdata(); // find and save the currently installed azdata
 		}
 	});
 
-	eulaAccepted = !!context.globalState.get<boolean>(constants.eulaAccepted); // fetch eula acceptance state from memento
+	eulaAccepted = isEulaAccepted(context.globalState); // fetch eula acceptance state from memento
 	await vscode.commands.executeCommand('setContext', constants.eulaAccepted, eulaAccepted); // set a context key for current value of eulaAccepted state retrieved from memento so that command for accepting eula is available/unavailable in commandPalette appropriately.
 	Logger.log(loc.eulaAcceptedStateOnStartup(eulaAccepted));
 
 	// Don't block on this since we want the extension to finish activating without needing user input
-	localAzdataDiscovered = checkAndInstallAzdata() // install if not installed and user wants it.
+	const localAzdataDiscovered = checkAndInstallAzdata() // install if not installed and user wants it.
 		.then(async azdataTool => {
-			localAzdata = azdataTool;
-			if (localAzdata !== undefined) {
+			if (azdataTool !== undefined) {
+				azdataToolService.localAzdata = azdataTool;
 				if (!eulaAccepted) {
 					// Don't block on this since we want extension to finish activating without requiring user actions.
 					// If EULA has not been accepted then we will check again while executing azdata commands.
@@ -52,20 +51,21 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 				}
 				try {
 					//update if available and user wants it.
-					if (await checkAndUpdateAzdata(localAzdata)) { // if an update was performed
-						localAzdata = await findAzdata(); // find and save the currently installed azdata
+					if (await checkAndUpdateAzdata(azdataToolService.localAzdata)) { // if an update was performed
+						azdataToolService.localAzdata = await findAzdata(); // find and save the currently installed azdata
 					}
 				} catch (err) {
 					vscode.window.showWarningMessage(loc.updateError(err));
 				}
 			}
+			return azdataTool;
 		});
 
 	// register option source(s)
-	const rdApi = <rd.IExtension>await vscode.extensions.getExtension(rd.extension.name)?.activate();
-	rdApi.registerOptionsSourceProvider(new ArcControllerConfigProfilesOptionsSource(localAzdata!));
+	const rdApi = <rd.IExtension>vscode.extensions.getExtension(rd.extension.name)?.exports;
+	rdApi.registerOptionsSourceProvider(new ArcControllerConfigProfilesOptionsSource(context.globalState, azdataToolService, localAzdataDiscovered));
 
-	return getExtensionApi(context, localAzdata, eulaAccepted, localAzdataDiscovered);
+	return getExtensionApi(context.globalState, azdataToolService, localAzdataDiscovered);
 }
 
 export function deactivate(): void { }

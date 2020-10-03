@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import * as azdataExt from 'azdata-ext';
 import { EOL } from 'os';
 import * as path from 'path';
 import { SemVer } from 'semver';
@@ -9,10 +10,9 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { AzdataInstallLocationKey, DeploymentConfigurationKey } from '../../constants';
 import { Command, OsDistribution, ToolStatus, ToolType } from '../../interfaces';
+import * as loc from '../../localizedConstants';
 import { IPlatformService } from '../platformService';
 import { dependencyType, ToolBase } from './toolBase';
-import * as loc from '../../localizedConstants';
-import * as azdataExt from 'azdata-ext';
 
 const localize = nls.loadMessageBundle();
 export const AzdataToolName = 'azdata';
@@ -82,16 +82,15 @@ export class AzdataTool extends ToolBase {
 	 */
 	protected async updateVersionAndStatus(): Promise<void> {
 		this.azdataApi = await vscode.extensions.getExtension(azdataExt.extension.name)?.activate();
-		await this.azdataApi.waitForAzdataToolDiscovery();
 		this.setStatusDescription('');
 		await this.addInstallationSearchPathsToSystemPath();
 
 		const commandOutput = await this.azdataApi.azdata.version();
-		this.version = this.azdataApi.azdata.getSemVersion();
+		this.version = await this.azdataApi.azdata.getSemVersion();
 		if (this.version) {
 			if (this.autoInstallSupported) {
 				// set the installationPath
-				this.setInstallationPathOrAdditionalInformation(this.azdataApi.azdata.getPath());
+				this.setInstallationPathOrAdditionalInformation(await this.azdataApi.azdata.getPath());
 			}
 			this.setStatus(ToolStatus.Installed);
 		}
@@ -102,7 +101,7 @@ export class AzdataTool extends ToolBase {
 		}
 	}
 
-	protected getVersionFromOutput(output: string): SemVer | undefined {
+	protected getVersionFromOutput(output: string): SemVer | Promise<SemVer> | undefined {
 		return this.azdataApi.azdata.getSemVersion();
 
 	}
