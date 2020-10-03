@@ -50,13 +50,8 @@ let BUNDLED_FILE_HEADER = [
 	'/*!-----------------------------------------------------------',
 	' * Copyright (c) Microsoft Corporation. All rights reserved.',
 	' * Version: ' + headerVersion,
-<<<<<<< HEAD
 	' * Released under the Source EULA',
-	' * https://github.com/Microsoft/vscode/blob/master/LICENSE.txt',
-=======
-	' * Released under the MIT license',
 	' * https://github.com/microsoft/vscode/blob/master/LICENSE.txt',
->>>>>>> d58ebff71a6d6e5794240382580ae6b38aec8df6
 	' *-----------------------------------------------------------*/',
 	''
 ].join('\n');
