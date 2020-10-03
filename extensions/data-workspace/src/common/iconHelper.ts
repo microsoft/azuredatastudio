@@ -10,14 +10,13 @@ export interface IconPath {
 	light: string;
 }
 
-export class IconPathHelper {
+export class IconHelper {
 	private static extensionContext: vscode.ExtensionContext;
-	public static folder_blue: IconPath;
+	public static localFileSystem: IconPath;
 
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
-		IconPathHelper.extensionContext = extensionContext;
-
-		IconPathHelper.folder_blue = IconPathHelper.makeIcon('folder_blue', true);
+		IconHelper.extensionContext = extensionContext;
+		IconHelper.localFileSystem = IconHelper.makeIcon('file');
 	}
 
 	private static makeIcon(name: string, sameIcon: boolean = false) {
@@ -25,13 +24,13 @@ export class IconPathHelper {
 
 		if (sameIcon) {
 			return {
-				dark: IconPathHelper.extensionContext.asAbsolutePath(`${folder}/${name}.svg`),
-				light: IconPathHelper.extensionContext.asAbsolutePath(`${folder}/${name}.svg`)
+				dark: IconHelper.extensionContext.asAbsolutePath(`${folder}/${name}.svg`),
+				light: IconHelper.extensionContext.asAbsolutePath(`${folder}/${name}.svg`)
 			};
 		} else {
 			return {
-				dark: IconPathHelper.extensionContext.asAbsolutePath(`${folder}/dark/${name}.svg`),
-				light: IconPathHelper.extensionContext.asAbsolutePath(`${folder}/light/${name}.svg`)
+				dark: IconHelper.extensionContext.asAbsolutePath(`${folder}/dark/${name}.svg`),
+				light: IconHelper.extensionContext.asAbsolutePath(`${folder}/light/${name}.svg`)
 			};
 		}
 	}

@@ -11,14 +11,21 @@ export abstract class DialogBase {
 	protected _toDispose: vscode.Disposable[] = [];
 	protected _dialogObject: azdata.window.Dialog;
 
-	constructor(dialogTitle: string, dialogName: string, dialogWidth: azdata.window.DialogWidth = 'narrow') {
+	constructor(dialogTitle: string, dialogName: string, dialogWidth: azdata.window.DialogWidth = 600) {
 		this._dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, dialogWidth);
 		this._dialogObject.okButton.label = OkButtonText;
 		this.register(this._dialogObject.cancelButton.onClick(() => this.onCancelButtonClicked()));
 		this.register(this._dialogObject.okButton.onClick(() => this.onOkButtonClicked()));
+		this._dialogObject.registerCloseValidator(async () => {
+			return this.validate();
+		});
 	}
 
 	protected abstract initialize(view: azdata.ModelView): Promise<void>;
+
+	protected async validate(): Promise<boolean> {
+		return Promise.resolve(true);
+	}
 
 	public open(): void {
 		const tab = azdata.window.createTab('');

@@ -10,8 +10,7 @@ import { DialogBase } from './dialogBase';
 import { IWorkspaceService } from '../common/interfaces';
 import * as constants from '../common/constants';
 import { IProjectType } from 'dataworkspace';
-import { createHorizontalContainer, directoryExists } from './Utils';
-import { WorkspaceTreeDataProvider } from '../common/workspaceTreeDataProvider';
+import { createHorizontalContainer, directoryExist } from './Utils';
 
 class NewProjectDialogModel {
 	projectTypeId: string = '';
@@ -21,37 +20,37 @@ class NewProjectDialogModel {
 }
 export class NewProjectDialog extends DialogBase {
 	private model: NewProjectDialogModel = new NewProjectDialogModel();
-	constructor(private workspaceService: IWorkspaceService, private workspaceTreeDataProvider: WorkspaceTreeDataProvider) {
-		super(constants.NewProjectDialogTitle, 'NewProject', 'medium');
-		this._dialogObject.registerCloseValidator(async () => {
-			try {
-				// the selected location should be an existing directory
-				const parentDirectoryExists = await directoryExists(this.model.location);
-				if (!parentDirectoryExists) {
-					this.showErrorMessage(constants.ProjectParentDirectoryNotExistError(this.model.location));
-					return false;
-				}
+	constructor(private workspaceService: IWorkspaceService) {
+		super(constants.NewProjectDialogTitle, 'NewProject');
+	}
 
-				// there shouldn't be an existing sub directory with the same name as the project in the selected location
-				const projectDirectoryExists = await directoryExists(path.join(this.model.location, this.model.name));
-				if (projectDirectoryExists) {
-					this.showErrorMessage(constants.ProjectDirectoryAlreadyExistError(this.model.name, this.model.location));
-					return false;
-				}
-
-				return true;
-			}
-			catch (err) {
-				this.showErrorMessage(err?.message ? err.message : err);
+	async validate(): Promise<boolean> {
+		try {
+			// the selected location should be an existing directory
+			const parentDirectoryExists = await directoryExist(this.model.location);
+			if (!parentDirectoryExists) {
+				this.showErrorMessage(constants.ProjectParentDirectoryNotExistError(this.model.location));
 				return false;
 			}
-		});
+
+			// there shouldn't be an existing sub directory with the same name as the project in the selected location
+			const projectDirectoryExists = await directoryExist(path.join(this.model.location, this.model.name));
+			if (projectDirectoryExists) {
+				this.showErrorMessage(constants.ProjectDirectoryAlreadyExistError(this.model.name, this.model.location));
+				return false;
+			}
+
+			return true;
+		}
+		catch (err) {
+			this.showErrorMessage(err?.message ? err.message : err);
+			return false;
+		}
 	}
 
 	async onComplete(): Promise<void> {
 		try {
 			await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId);
-			this.workspaceTreeDataProvider.refresh();
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(err?.message ? err.message : err);
@@ -70,7 +69,7 @@ export class NewProjectDialog extends DialogBase {
 						{
 							textValue: projectType.displayName,
 							textStyles: {
-								'font-size': '14px',
+								'font-size': '13px',
 								'font-weight': 'bold'
 							}
 						}, {
@@ -84,7 +83,7 @@ export class NewProjectDialog extends DialogBase {
 			cardWidth: '250px',
 			cardHeight: '130px',
 			ariaLabel: constants.ProjectTypeSelectorTitle,
-			width: '700px',
+			width: '500px',
 			iconPosition: 'left',
 			selectedCardId: allProjectTypes.length > 0 ? allProjectTypes[0].id : undefined
 		}).component();

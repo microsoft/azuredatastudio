@@ -29,6 +29,10 @@ export const ProjectDirectoryAlreadyExistError = (projectName: string, location:
 
 //Open Project Dialog
 export const OpenProjectDialogTitle = localize('dataworkspace.openProjectDialogTitle', "Open Project");
+export const ProjectFileNotExistError = (projectFilePath: string): string => { return localize('dataworkspace.projectFileNotExistError', "The selected project file: '{0}' does not exist or is not a file.", projectFilePath); };
+export const LocalFileSystem = localize('dataworkspace.localFileSystem', "Local File");
+export const TargetTypeSelectorTitle = localize('dataworkspace.TargetTypeSelectorTitle', "Target");
+export const ProjectFileTitle = localize('dataworkspace.projectFileTitle', "Project file");
 
 
 

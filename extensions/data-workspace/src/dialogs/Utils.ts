@@ -10,14 +10,24 @@ export function createHorizontalContainer(view: azdata.ModelView, items: azdata.
 	return view.modelBuilder.flexContainer().withItems(items, { CSSStyles: { 'margin-right': '5px', 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row' }).component();
 }
 
-export async function directoryExists(directoryPath: string): Promise<boolean> {
+export async function directoryExist(directoryPath: string): Promise<boolean> {
+	const stats = await getFileStatus(directoryPath);
+	return stats ? stats.isDirectory() : false;
+}
+
+export async function fileExist(filePath: string): Promise<boolean> {
+	const stats = await getFileStatus(filePath);
+	return stats ? stats.isFile() : false;
+}
+
+async function getFileStatus(path: string): Promise<fs.Stats | undefined> {
 	try {
-		const stats = await fs.promises.stat(directoryPath);
-		return stats.isDirectory();
+		const stats = await fs.promises.stat(path);
+		return stats;
 	}
 	catch (e) {
 		if (e.code === 'ENOENT') {
-			return false;
+			return undefined;
 		}
 		else {
 			throw e;

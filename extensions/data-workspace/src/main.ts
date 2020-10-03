@@ -10,7 +10,7 @@ import { WorkspaceTreeItem, IExtension } from 'dataworkspace';
 import { DataWorkspaceExtension } from './common/dataWorkspaceExtension';
 import { NewProjectDialog } from './dialogs/newProjectDialog';
 import { OpenProjectDialog } from './dialogs/openProjectDialog';
-import { IconPathHelper } from './common/iconHelper';
+import { IconHelper } from './common/iconHelper';
 
 export function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const workspaceService = new WorkspaceService();
@@ -32,7 +32,7 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
 	}));
 
-	IconPathHelper.setExtensionContext(context);
+	IconHelper.setExtensionContext(context);
 
 	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	return Promise.resolve(dataWorkspaceExtension);
