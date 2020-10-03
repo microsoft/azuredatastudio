@@ -47,6 +47,10 @@ export class AzureSettingsPage extends BasePage {
 	//dropdown for VCore <= Supported Family dropdown.
 	private _dbVCoreDropdown!: azdata.DropDownComponent;
 
+
+	//input box for maximum memory size, supports between 1 and 1024 GB (1 TB)
+	private _dbMemoryTextBox!: azdata.InputBoxComponent;
+
 	private _form!: azdata.FormContainer;
 
 	private _accountsMap!: Map<string, azdata.Account>;
@@ -73,7 +77,8 @@ export class AzureSettingsPage extends BasePage {
 				this.createManagedInstanceDropdown(view),
 				this.createSupportedEditionsDropdown(view),
 				this.createSupportedFamilyDropdown(view),
-				this.createVCoreDropdown(view)
+				this.createVCoreDropdown(view),
+				this.createMaxMemoryText(view),
 			]);
 			this.populateAzureAccountsDropdown();
 
@@ -109,6 +114,9 @@ export class AzureSettingsPage extends BasePage {
 						},
 						{
 							component: this.wizard.createFormRowComponent(view, constants.DatabaseVCoreNumberDropdownLabel, '', this._dbVCoreDropdown, true)
+						},
+						{
+							component: this.wizard.createFormRowComponent(view, constants.DatabaseMaxMemoryTextLabel, '', this._dbMemoryTextBox, true)
 						}
 					],
 					{
@@ -705,6 +713,21 @@ export class AzureSettingsPage extends BasePage {
 		this._dbVCoreDropdown.loading = false;
 		return;
 	}
+
+	private createMaxMemoryText(view: azdata.ModelView) {
+		this._dbMemoryTextBox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+			inputType: 'number',
+			max: 1024,
+			min: 1,
+			value: '32',
+			required: true
+		}).component();
+
+		this._dbMemoryTextBox.onTextChanged((value) => {
+			this.wizard.model.storageInGB = value + ' GB';
+		});
+	}
+
 
 	protected async validatePage(): Promise<string> {
 		let errorMessages = [];

@@ -37,3 +37,4 @@ export const DatabaseManagedInstanceDropdownLabel = localize('deployAzureSQLDB.D
 export const DatabaseSupportedEditionsDropdownLabel = localize('deployAzureSQLDB.DatabaseSupportedEditionsDropdownLabel', "Purpose Type");
 export const DatabaseSupportedFamilyDropdownLabel = localize('deployAzureSQLDB.DatabaseSupportedFamilyDropdownLabel', "Family Type");
 export const DatabaseVCoreNumberDropdownLabel = localize('deployAzureSQLDB.DatabaseVCoreNumberDropdownLabel', "Number of Vcores");
+export const DatabaseMaxMemoryTextLabel = localize('deployAzureSQLDB.DatabaseMaxMemoryTextLabel', 'Maximum Data Storage Capacity in GB, can go up to 1TB (1024 GB).');
