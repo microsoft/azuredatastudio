@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
@@ -19,34 +20,39 @@ export class WorkspaceService implements IWorkspaceService {
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void> = this._onDidWorkspaceProjectsChange?.event;
 
 	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
-		if (vscode.workspace.workspaceFile) {
-			const currentProjects: vscode.Uri[] = this.getProjectsInWorkspace();
-			const newWorkspaceFolders: string[] = [];
-			let newProjectFileAdded = false;
-			for (const projectFile of projectFiles) {
-				if (currentProjects.findIndex((p: vscode.Uri) => p.fsPath === projectFile.fsPath) === -1) {
-					currentProjects.push(projectFile);
-					newProjectFileAdded = true;
+		if (!projectFiles || projectFiles.length === 0) {
+			return;
+		}
 
-					// if the relativePath and the original path is the same, that means the project file is not under
-					// any workspace folders, we should add the parent folder of the project file to the workspace
-					const relativePath = vscode.workspace.asRelativePath(projectFile, false);
-					if (vscode.Uri.file(relativePath).fsPath === projectFile.fsPath) {
-						newWorkspaceFolders.push(path.dirname(projectFile.path));
-					}
+		if (!vscode.workspace.workspaceFile) {
+			await azdata.workspace.createWorkspace(vscode.Uri.file(path.dirname(projectFiles[0].fsPath)));
+		}
+		const currentProjects: vscode.Uri[] = this.getProjectsInWorkspace();
+		const newWorkspaceFolders: string[] = [];
+		let newProjectFileAdded = false;
+		for (const projectFile of projectFiles) {
+			if (currentProjects.findIndex((p: vscode.Uri) => p.fsPath === projectFile.fsPath) === -1) {
+				currentProjects.push(projectFile);
+				newProjectFileAdded = true;
+
+				// if the relativePath and the original path is the same, that means the project file is not under
+				// any workspace folders, we should add the parent folder of the project file to the workspace
+				const relativePath = vscode.workspace.asRelativePath(projectFile, false);
+				if (vscode.Uri.file(relativePath).fsPath === projectFile.fsPath) {
+					newWorkspaceFolders.push(path.dirname(projectFile.path));
 				}
 			}
+		}
 
-			if (newProjectFileAdded) {
-				// Save the new set of projects to the workspace configuration.
-				await this.setWorkspaceConfigurationValue(ProjectsConfigurationName, currentProjects.map(project => this.toRelativePath(project)));
-				this._onDidWorkspaceProjectsChange.fire();
-			}
+		if (newProjectFileAdded) {
+			// Save the new set of projects to the workspace configuration.
+			await this.setWorkspaceConfigurationValue(ProjectsConfigurationName, currentProjects.map(project => this.toRelativePath(project)));
+			this._onDidWorkspaceProjectsChange.fire();
+		}
 
-			if (newWorkspaceFolders.length > 0) {
-				// second parameter is null means don't remove any workspace folders
-				vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length, null, ...(newWorkspaceFolders.map(folder => ({ uri: vscode.Uri.file(folder) }))));
-			}
+		if (newWorkspaceFolders.length > 0) {
+			// second parameter is null means don't remove any workspace folders
+			vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length, null, ...(newWorkspaceFolders.map(folder => ({ uri: vscode.Uri.file(folder) }))));
 		}
 	}
 
@@ -88,6 +94,9 @@ export class WorkspaceService implements IWorkspaceService {
 		const provider = ProjectProviderRegistry.getProviderByProjectType(projectTypeId);
 		if (provider) {
 			const projectFile = await provider.createProject(name, location);
+			if (!vscode.workspace.workspaceFile) {
+				await azdata.workspace.createWorkspace(location);
+			}
 			this.addProjectsToWorkspace([projectFile]);
 			this._onDidWorkspaceProjectsChange.fire();
 			return projectFile;
