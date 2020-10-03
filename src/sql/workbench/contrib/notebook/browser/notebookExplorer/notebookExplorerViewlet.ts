@@ -274,8 +274,13 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 								if (root.contextValue === 'providedBook' || root.contextValue === 'savedBook') {
 									let rootFolder = URI.file(root.resourceUri.path);
 									let folderToSearch = { folder: rootFolder };
+									if (root.tooltip.toString().includes('content')) {
+										let pattern = {};
+										pattern['content/**'] = true;
+										folderToSearch['includePattern'] = pattern;
+									}
 									query.folderQueries = query.folderQueries.filter((folder) => {
-										if (!!folder.includePattern) {
+										if (!!folder.includePattern && !folder.includePattern.toString().startsWith('content')) {
 											//verify if pinned notebook is not opened in Books Viewlet
 											return path.relative(folder.folder.fsPath, folderToSearch.folder.fsPath) !== '..';
 										} else {
