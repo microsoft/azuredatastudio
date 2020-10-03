@@ -10,7 +10,6 @@ import { WorkspaceTreeItem, IExtension } from 'dataworkspace';
 import { DataWorkspaceExtension } from './common/dataWorkspaceExtension';
 import { NewProjectDialog } from './dialogs/newProjectDialog';
 import { OpenProjectDialog } from './dialogs/openProjectDialog';
-import { IconHelper } from './common/iconHelper';
 
 export function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const workspaceService = new WorkspaceService();
@@ -21,7 +20,7 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 		dialog.open();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openProject', async () => {
-		const dialog = new OpenProjectDialog(workspaceService);
+		const dialog = new OpenProjectDialog(workspaceService, context);
 		dialog.open();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', () => {
@@ -31,8 +30,6 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.removeProject', async (treeItem: WorkspaceTreeItem) => {
 		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
 	}));
-
-	IconHelper.setExtensionContext(context);
 
 	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	return Promise.resolve(dataWorkspaceExtension);

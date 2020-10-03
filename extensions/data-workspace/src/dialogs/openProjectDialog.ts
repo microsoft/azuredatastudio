@@ -9,18 +9,20 @@ import { DialogBase } from './dialogBase';
 import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
 import { createHorizontalContainer, fileExist } from './Utils';
-import { IconHelper, IconPath } from '../common/iconHelper';
 
 export class OpenProjectDialog extends DialogBase {
 	private _projectFile: string = '';
-	private _targetTypes: { name: string, icon: IconPath }[] = [
+	private _targetTypes = [
 		{
 			name: constants.LocalFileSystem,
-			icon: IconHelper.localFileSystem
+			icon: {
+				dark: this.extensionContext.asAbsolutePath('images/file_inverse.svg'),
+				light: this.extensionContext.asAbsolutePath('images/file.svg')
+			}
 		}
 	];
 
-	constructor(private workspaceService: IWorkspaceService) {
+	constructor(private workspaceService: IWorkspaceService, private extensionContext: vscode.ExtensionContext) {
 		super(constants.OpenProjectDialogTitle, 'OpenProject');
 	}
 
