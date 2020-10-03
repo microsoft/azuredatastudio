@@ -62,4 +62,8 @@ export abstract class DialogBase {
 			level: azdata.window.MessageLevel.Error
 		};
 	}
+
+	protected createHorizontalContainer(view: azdata.ModelView, items: azdata.Component[]): azdata.FlexContainer {
+		return view.modelBuilder.flexContainer().withItems(items, { CSSStyles: { 'margin-right': '5px', 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row' }).component();
+	}
 }

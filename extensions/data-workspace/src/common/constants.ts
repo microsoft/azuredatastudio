@@ -18,7 +18,7 @@ export const ProviderNotFoundForProjectTypeError = (projectType: string): string
 export const OkButtonText = localize('dataworkspace.ok', "OK");
 export const BrowseButtonText = localize('dataworkspace.browse', "Browse");
 export const DefaultInputWidth = '400px';
-export const DefaultButtonWidth = '100px';
+export const DefaultButtonWidth = '80px';
 
 // New Project Dialog
 export const NewProjectDialogTitle = localize('dataworkspace.NewProjectDialogTitle', "New Project");

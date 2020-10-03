@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { DialogBase } from './dialogBase';
 import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
-import { createHorizontalContainer, fileExist } from './Utils';
+import { fileExist } from '../common/utils';
 
 export class OpenProjectDialog extends DialogBase {
 	private _projectFile: string = '';
@@ -119,7 +119,7 @@ export class OpenProjectDialog extends DialogBase {
 			}, {
 				title: constants.ProjectFileTitle,
 				required: true,
-				component: createHorizontalContainer(view, [projectFilePathTextBox, browseFolderButton])
+				component: this.createHorizontalContainer(view, [projectFilePathTextBox, browseFolderButton])
 			}
 		]).component();
 		await view.initializeModel(form);

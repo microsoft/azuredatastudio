@@ -10,7 +10,7 @@ import { DialogBase } from './dialogBase';
 import { IWorkspaceService } from '../common/interfaces';
 import * as constants from '../common/constants';
 import { IProjectType } from 'dataworkspace';
-import { createHorizontalContainer, directoryExist } from './Utils';
+import { directoryExist } from '../common/utils';
 
 class NewProjectDialogModel {
 	projectTypeId: string = '';
@@ -139,11 +139,11 @@ export class NewProjectDialog extends DialogBase {
 			{
 				title: constants.ProjectNameTitle,
 				required: true,
-				component: createHorizontalContainer(view, [projectNameTextBox])
+				component: this.createHorizontalContainer(view, [projectNameTextBox])
 			}, {
 				title: constants.ProjectLocationTitle,
 				required: true,
-				component: createHorizontalContainer(view, [locationTextBox, browseFolderButton])
+				component: this.createHorizontalContainer(view, [locationTextBox, browseFolderButton])
 			}
 		]).component();
 		await view.initializeModel(form);
