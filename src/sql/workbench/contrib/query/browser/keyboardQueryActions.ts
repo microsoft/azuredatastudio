@@ -21,7 +21,6 @@ import { EditDataEditor } from 'sql/workbench/contrib/editData/browser/editDataE
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
-import { firstIndex } from 'vs/base/common/arrays';
 
 const singleQuote = '\'';
 
@@ -369,7 +368,7 @@ export class RunQueryShortcutAction extends Action {
 	}
 
 	private getColumnIndex(columnInfo: azdata.IDbColumn[], columnName: string): number {
-		return columnInfo ? firstIndex(columnInfo, c => c.columnName === columnName) : undefined;
+		return columnInfo ? columnInfo.findIndex(c => c.columnName === columnName) : undefined;
 	}
 
 	private canQueryProcMetadata(editor: QueryEditor): boolean {

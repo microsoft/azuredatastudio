@@ -261,7 +261,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			.pipe(fileLengthFilter.restore)
 			.pipe(util.skipDirectories())
 			.pipe(util.fixWin32DirectoryPermissions())
-			.pipe(electron(_.extend({}, config, { platform, arch, ffmpegChromium: true })))
+			.pipe(electron(_.extend({}, config, { platform, arch: arch === 'armhf' ? 'arm' : arch, ffmpegChromium: true })))
 			.pipe(filter(['**', '!LICENSE', '!LICENSES.chromium.html', '!version'], { dot: true }));
 
 		if (platform === 'linux') {
@@ -345,7 +345,7 @@ const BUILD_TARGETS = [
 	{ platform: 'darwin', arch: null, opts: { stats: true } },
 	{ platform: 'linux', arch: 'ia32' },
 	{ platform: 'linux', arch: 'x64' },
-	{ platform: 'linux', arch: 'arm' },
+	{ platform: 'linux', arch: 'armhf' },
 	{ platform: 'linux', arch: 'arm64' },
 ];
 BUILD_TARGETS.forEach(buildTarget => {
