@@ -6,6 +6,7 @@
 	"new-project-command": "New Project",
 	"refresh-workspace-command": "Refresh",
 	"remove-project-command": "Remove Project",
-	"projects-view-no-workspace-content": "To use projects, open a workspace and add projects to it, or use the 'New Project' or 'Open Project' feature and we will create a workspace for you.\n[Open Workspace](command:workbench.action.openWorkspace)\n[Open Project](command:projects.openProject)\n[New Project](command:projects.newProject)",
+	"projects-view-no-workspace-content": "You need to open a workspace in order to use the project feature.\n[Open Workspace…](command:workbench.action.openWorkspace)\n[Save Workspace…](command:workbench.action.saveWorkspaceAs)\n",
+	"projects-view-no-project-content": "No project found in current workspace.\n[New Project…](command:projects.newProject)\n[Open Project…](command:projects.openProject)\n",
 	"open-project-command": "Open Project"
 }

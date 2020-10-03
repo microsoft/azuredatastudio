@@ -126,6 +126,11 @@
         "view": "dataworkspace.views.main",
         "contents": "%projects-view-no-workspace-content%",
         "when": "workbenchState != workspace"
+      },
+      {
+        "view": "dataworkspace.views.main",
+        "contents": "%projects-view-no-project-content%",
+        "when": "workbenchState == workspace && isProjectsViewEmpty"
       }
     ]
   },
