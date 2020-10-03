@@ -10,19 +10,19 @@ const path = require('path');
 const os = require('os');
 
 const extensionList = [
-	'admin-tool-ext-win',
-	'agent',
-	'azdata',
-	'azurecore',
-	'cms',
-	'dacpac',
-	'import',
-	'schema-compare',
-	//'mssql',
-	'notebook',
-	'resource-deployment',
-	'machine-learning',
-	'sql-database-projects',
+	// 'admin-tool-ext-win',
+	// 'agent',
+	// 'azdata',
+	// 'azurecore',
+	// 'cms',
+	// 'dacpac',
+	// 'import',
+	// 'schema-compare',
+	// //'mssql',
+	// 'notebook',
+	// 'resource-deployment',
+	// 'machine-learning',
+	// 'sql-database-projects',
 	'data-workspace'
 ];
 

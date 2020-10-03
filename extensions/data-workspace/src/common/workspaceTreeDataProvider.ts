@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import { IWorkspaceService } from './interfaces';
-import { UnknownProjectsErrorMessage } from './constants';
+import { UnknownProjectsError } from './constants';
 import { WorkspaceTreeItem } from 'dataworkspace';
 
 /**
@@ -60,7 +60,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 				});
 			}
 			if (unknownProjects.length > 0) {
-				vscode.window.showErrorMessage(UnknownProjectsErrorMessage(unknownProjects));
+				vscode.window.showErrorMessage(UnknownProjectsError(unknownProjects));
 			}
 			return treeItems;
 		}

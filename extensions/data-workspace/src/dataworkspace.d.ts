@@ -47,6 +47,13 @@ declare module 'dataworkspace' {
 		RemoveProject(projectFile: vscode.Uri): Promise<void>;
 
 		/**
+		 *
+		 * @param name Create a project
+		 * @param location the parent directory of the project
+		 */
+		createProject(name: string, location: vscode.Uri): Promise<vscode.Uri>;
+
+		/**
 		 * Gets the supported project types
 		 */
 		readonly supportedProjectTypes: IProjectType[];

@@ -69,11 +69,11 @@ export class OpenProjectDialog extends DialogBase {
 			}),
 			iconHeight: '25px',
 			iconWidth: '25px',
-			cardWidth: '140px',
+			cardWidth: '160px',
 			cardHeight: '80px',
 			ariaLabel: constants.ProjectTypeSelectorTitle,
 			width: '500px',
-			iconPosition: 'top',
+			iconPosition: 'left',
 			selectedCardId: constants.LocalFileSystem
 		}).component();
 

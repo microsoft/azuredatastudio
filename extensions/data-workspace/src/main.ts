@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.newProject', async () => {
-		const dialog = new NewProjectDialog(workspaceService, workspaceTreeDataProvider);
+		const dialog = new NewProjectDialog(workspaceService);
 		dialog.open();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openProject', async () => {

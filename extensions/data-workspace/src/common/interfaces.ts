@@ -27,8 +27,14 @@ export interface IProjectProviderRegistry {
 	readonly providers: IProjectProvider[];
 
 	/**
+	 * Gets the project provider for the specified project extension
+	 * @param extension The file extension of the project
+	 */
+	getProviderByProjectExtension(extension: string): IProjectProvider | undefined;
+
+	/**
 	 * Gets the project provider for the specified project type
-	 * @param projectType The project type, file extension of the project
+	 * @param projectType The id of the project type
 	 */
 	getProviderByProjectType(projectType: string): IProjectProvider | undefined;
 }
@@ -71,7 +77,7 @@ export interface IWorkspaceService {
 	 * @param location The location of the project
 	 * @param projectTypeId The project type id
 	 */
-	createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<void>;
+	createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
 
 	/**
 	 * Event fires when projects in workspace changes

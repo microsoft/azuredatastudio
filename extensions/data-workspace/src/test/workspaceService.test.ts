@@ -155,7 +155,7 @@ suite('WorkspaceService Tests', function (): void {
 		const extension2 = createMockExtension('ext2', false, ['sqlproj']);
 		const extension3 = createMockExtension('ext3', false, ['dbproj']);
 		stubAllExtensions([extension1, extension2, extension3].map(ext => ext.extension));
-		const getProviderByProjectTypeStub = sinon.stub(ProjectProviderRegistry, 'getProviderByProjectType');
+		const getProviderByProjectTypeStub = sinon.stub(ProjectProviderRegistry, 'getProviderByProjectExtension');
 		getProviderByProjectTypeStub.onFirstCall().returns(undefined);
 		getProviderByProjectTypeStub.onSecondCall().returns(createProjectProvider([
 			{
