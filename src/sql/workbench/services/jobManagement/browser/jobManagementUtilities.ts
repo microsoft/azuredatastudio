@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
-import { find } from 'vs/base/common/arrays';
 
 export class JobManagementUtilities {
 
@@ -42,7 +41,9 @@ export class JobManagementUtilities {
 	}
 
 	public static convertToNextRun(date: string) {
-		if (find(date, x => x === '1/1/0001')) {
+		let newDate = date as unknown;
+		let dateArr = newDate as [];
+		if (dateArr.find(x => x === '1/1/0001')) {
 			return nls.localize('agentUtilities.notScheduled', "Not Scheduled");
 		} else {
 			return date;
@@ -50,7 +51,9 @@ export class JobManagementUtilities {
 	}
 
 	public static convertToLastRun(date: string) {
-		if (find(date, x => x === '1/1/0001')) {
+		let newDate = date as unknown;
+		let dateArr = newDate as [];
+		if (dateArr.find(x => x === '1/1/0001')) {
 			return nls.localize('agentUtilities.neverRun', "Never Run");
 		} else {
 			return date;
@@ -58,7 +61,9 @@ export class JobManagementUtilities {
 	}
 
 	public static setRunnable(icon: HTMLElement, index: number) {
-		if (find(icon.className, x => x === 'non-runnable')) {
+		let temp = icon.className as unknown;
+		let classNameArr = temp as [];
+		if (classNameArr.find(x => x === 'non-runnable')) {
 			icon.className = icon.className.slice(0, index);
 		}
 	}

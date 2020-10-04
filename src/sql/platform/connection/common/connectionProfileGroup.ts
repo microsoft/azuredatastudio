@@ -7,7 +7,6 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { Disposable } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { assign } from 'vs/base/common/objects';
-import { find } from 'vs/base/common/arrays';
 
 export interface INewConnectionProfileGroup {
 	id?: string;
@@ -108,7 +107,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	 * Returns true if all connections in the tree have valid options using the correct capabilities
 	 */
 	public get hasValidConnections(): boolean {
-		let invalidConnections = find(this._childConnections, c => !c.isConnectionOptionsValid);
+		let invalidConnections = this._childConnections.find(c => !c.isConnectionOptionsValid);
 		if (invalidConnections !== undefined) {
 			return false;
 		} else {
