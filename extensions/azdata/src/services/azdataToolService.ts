@@ -11,14 +11,14 @@ export class AzdataToolService {
 	}
 
 	/**
-	*	Gets the localAzdata that was last saved
+	* Gets the localAzdata that was last saved
 	*/
 	get localAzdata(): IAzdataTool | undefined {
 		return this._localAzdata;
 	}
 
 	/**
-	*	Sets the localAzdata that was last saved
+	* Sets the localAzdata that was last saved
 	*
 	* @param memento The memento that stores the localAzdata object
 	*/
