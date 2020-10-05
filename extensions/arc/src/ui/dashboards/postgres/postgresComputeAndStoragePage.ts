@@ -65,14 +65,20 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const link = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-			label: loc.learnAboutComputeStorageSettings,
-			url: 'https://docs.microsoft.com/en-us/azure/postgresql/concepts-hyperscale-configuration-options',
+		const workerNodeLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+			label: loc.learnAboutWorkerNodeSettings,
+			url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/scale-out-postgresql-hyperscale-server-group',
+		}).component();
+
+		const memVCoreslink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+			label: loc.learnAboutMemoryVCoresSettings,
+			url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/scale-up-down-postgresql-hyperscale-server-group-using-cli',
 		}).component();
 
 		const infoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
 		infoAndLink.addItem(infoComputeStorage, { CSSStyles: { 'margin-right': '5px' } });
-		infoAndLink.addItem(link);
+		infoAndLink.addItem(workerNodeLink);
+		infoAndLink.addItem(memVCoreslink);
 		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '25px' } });
 
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -177,24 +183,36 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	private initializeConfigurationBoxes() {
 		this.worker = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
-			required: true,
-			validationErrorMessage: 'Error'
+			validationErrorMessage: 'The number of workers cannot be decreased.',
+			inputType: 'number'
 		}).component();
 
 		this.vCoresMax = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			readOnly: false
+			readOnly: false,
+			min: 1,
+			validationErrorMessage: 'Valid Cpu resource quantities are strictly positive and request is greater than 0.',
+			inputType: 'number'
 		}).component();
 
 		this.vCoresMin = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			readOnly: false
+			readOnly: false,
+			min: 1,
+			validationErrorMessage: 'Valid Cpu resource quantities are strictly positive and limit is greater than 0.',
+			inputType: 'number'
 		}).component();
 
 		this.memoryMax = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			readOnly: false
+			readOnly: false,
+			min: 0.25,
+			validationErrorMessage: 'Memory request must be at least 0.25Gib',
+			inputType: 'number'
 		}).component();
 
 		this.memoryMin = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			readOnly: false
+			readOnly: false,
+			min: 0.25,
+			validationErrorMessage: 'Memory limit must be at least 0.25Gib',
+			inputType: 'number'
 		}).component();
 
 	}
@@ -207,13 +225,13 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		else {
 
 			this.editWorkerNodeCount();
-			this.editAdvancedConfiguration(
-				this.keyInputContainer(loc.vCoresMin, this.vCoresMin!),
-				this.keyInputContainer(loc.memoryMin, this.memoryMin!));
 			this.editVCores(loc.vCoresMax);
 			this.editVCores(loc.vCoresMin);
 			this.editMemory(loc.memoryMax);
 			this.editMemory(loc.memoryMin);
+			this.editAdvancedConfiguration(
+				this.keyInputContainer(loc.vCoresMin, this.vCoresMin!),
+				this.keyInputContainer(loc.memoryMin, this.memoryMin!));
 
 			return [
 				this.keyInputContainer(loc.workerNodeCount, this.worker!),
@@ -380,7 +398,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 				currentMemorySize = '0';
 			}
 
-			currentMemSizeConversion = String(parseInt(currentMemorySize) / 1024);
+			currentMemSizeConversion = this.gigabyteConversion(currentMemorySize);
 			this.memoryMax!.value = currentMemSizeConversion;
 			this.disposables.push(
 				this.memoryMax!.onTextChanged(() => {
@@ -403,7 +421,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 				currentMemorySize = '0';
 			}
 
-			currentMemSizeConversion = String(parseInt(currentMemorySize) / 1024);
+			currentMemSizeConversion = this.gigabyteConversion(currentMemorySize);
 			this.memoryMin!.value = currentMemSizeConversion;
 			this.disposables.push(
 				this.memoryMin!.onTextChanged(() => {
@@ -462,7 +480,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}
 
 		return this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			value: memorySize,
+			value: this.gigabyteConversion(memorySize),
 			readOnly: true
 		}).component();
 	}
@@ -484,9 +502,28 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}
 
 		return this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			value: String(parseInt(storageSize)),
+			value: this.gigabyteConversion(storageSize),
 			readOnly: true
 		}).component();
+	}
+
+	private gigabyteConversion(value: string): string {
+		const giToGConversion = 0.93132257461548;
+		let num = parseFloat(value);
+		let splitValue = value.split(String(num));
+		let unit = splitValue[1];
+
+		if (unit === 'M' || unit === 'G' || unit === 'T') {
+			num = num * giToGConversion;
+		}
+		if (unit === 'M' || unit === 'Mi') {
+			num = num * 1024;
+		}
+		else if (unit === 'T' || unit === 'Ti') {
+			num = num / 1024;
+		}
+
+		return String(num);
 	}
 
 	private handleServiceUpdated() {

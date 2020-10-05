@@ -14,6 +14,7 @@ import { Dashboard } from '../../components/dashboard';
 import { PostgresDiagnoseAndSolveProblemsPage } from './postgresDiagnoseAndSolveProblemsPage';
 import { PostgresSupportRequestPage } from './postgresSupportRequestPage';
 import { PostgresComputeAndStoragePage } from './postgresComputeAndStoragePage';
+import { PostgresPropertiesPage } from './postgresPropertiesPage';
 
 export class PostgresDashboard extends Dashboard {
 	constructor(private _context: vscode.ExtensionContext, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
