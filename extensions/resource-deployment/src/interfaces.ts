@@ -39,11 +39,6 @@ export interface ResourceTypeOptionValue {
 	displayName: string;
 }
 
-export interface OkButtonTextValue {
-	value: string;
-	when: string;
-}
-
 export interface DialogDeploymentProvider extends DeploymentProviderBase {
 	dialog: DialogInfo;
 }
