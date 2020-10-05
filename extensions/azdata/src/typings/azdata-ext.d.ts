@@ -295,9 +295,5 @@ declare module 'azdata-ext' {
 		 */
 		promptForEula(requireUserAction?: boolean): Promise<boolean>;
 
-		/**
-		 * allows clients to wait for AzdataTool discovery to be completed
-		 */
-		//waitForAzdataToolDiscovery(): Promise<void>;
 	}
 }
