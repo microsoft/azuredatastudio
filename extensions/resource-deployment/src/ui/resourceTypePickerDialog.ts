@@ -241,17 +241,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 		const tag = this._resourceTagsListView.selectedOptionId!;
 
-		let filteredResourceTypes: ResourceType[] = [];
-
-		if (tag !== 'All') {
-			this._resourceTypes.forEach(element => {
-				if (element.tags?.includes(tag)) {
-					filteredResourceTypes.push(element);
-				}
-			});
-		} else {
-			filteredResourceTypes = this._resourceTypes;
-		}
+		let filteredResourceTypes = (tag !== 'All') ? this._resourceTypes.filter(element => element.tags?.includes(tag) ?? false) : this._resourceTypes;
 
 		const filteredResourceTypesOnSearch: ResourceType[] = filteredResourceTypes.filter((element) => element.displayName.toLowerCase().includes(search!));
 
