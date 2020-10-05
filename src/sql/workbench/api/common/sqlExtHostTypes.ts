@@ -861,3 +861,9 @@ export enum SqlAssessmentResultItemKind {
 	Warning = 1,
 	Error = 2
 }
+
+export enum ButtonType {
+	File = 'File',
+	Normal = 'Normal',
+	Informational = 'Informational'
+}
