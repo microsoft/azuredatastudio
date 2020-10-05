@@ -8,7 +8,6 @@ import * as fs from 'fs';
 import * as os from 'os';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
-import { getPlatformDownloadLink, getPlatformReleaseVersion } from './azdataReleaseInfo';
 import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
