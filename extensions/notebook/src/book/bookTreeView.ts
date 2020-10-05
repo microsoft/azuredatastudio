@@ -90,7 +90,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	trustBook(bookTreeItem?: BookTreeItem): void {
-		let bookPathToTrust: string = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath as string;
+		let bookPathToTrust: string = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
 		if (bookPathToTrust) {
 			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust);
 			if (trustChanged) {
@@ -382,7 +382,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			});
 			if (uris && uris.length > 0) {
 				let pickedFolder = uris[0];
-				let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.currentBook.bookPath as string)));
+				let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.currentBook.bookPath)));
 				if (destinationUri) {
 					if (await fs.pathExists(destinationUri.fsPath)) {
 						let doReplace = await this.confirmReplace();
@@ -396,7 +396,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					}
 					//make directory for each contribution book.
 					await fs.mkdir(destinationUri.fsPath);
-					await fs.copy(this.currentBook.bookPath as string, destinationUri.fsPath);
+					await fs.copy(this.currentBook.bookPath, destinationUri.fsPath);
 
 					//remove book from the untitled books and open it from Saved books
 					let untitledBookIndex: number = this.books.indexOf(this.currentBook);

@@ -168,7 +168,7 @@ export class BookModel {
 				);
 				this._bookItems.push(book);
 			} catch (e) {
-				this._errorMessage = loc.readBookError(this.bookPath as string, e instanceof Error ? e.message : e);
+				this._errorMessage = loc.readBookError(this.bookPath, e instanceof Error ? e.message : e);
 				vscode.window.showErrorMessage(this._errorMessage);
 			}
 		}
