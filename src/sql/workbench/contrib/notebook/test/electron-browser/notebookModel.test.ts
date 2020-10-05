@@ -560,7 +560,6 @@ suite('notebook model', function (): void {
 		sinon.assert.called(doChangeKernelStub);
 		sinon.restore(doChangeKernelStub);
 
-
 		// After closing the notebook
 		await model.handleClosed();
 
