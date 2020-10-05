@@ -191,7 +191,7 @@ export class DatabaseSettingsPage extends BasePage {
 		if (/^\d+$/.test(firewallname)) {
 			errorMessages.push(localize('deployAzureSQLDB.DBFirewallOnlyNumericNameError', "Firewall name cannot contain only numbers."));
 		}
-		if (firewallname.length < 1 || firewallname.length > 15) {
+		if (firewallname.length < 1 || firewallname.length > 100) {
 			errorMessages.push(localize('deployAzureSQLDB.DBFirewallLengthError', "Firewall name must be between 1 and 15 characters long."));
 		}
 		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(firewallname)) {
@@ -201,7 +201,7 @@ export class DatabaseSettingsPage extends BasePage {
 		if (/^\d+$/.test(databasename)) {
 			errorMessages.push(localize('deployAzureSQLDB.DBNameOnlyNumericNameError', "Database name cannot contain only numbers."));
 		}
-		if (databasename.length < 1 || databasename.length > 15) {
+		if (databasename.length < 1 || databasename.length > 100) {
 			errorMessages.push(localize('deployAzureSQLDB.DBNameLengthError', "Database name must be between 1 and 15 characters long."));
 		}
 		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(databasename)) {
@@ -214,7 +214,7 @@ export class DatabaseSettingsPage extends BasePage {
 		if (/^\d+$/.test(collationname)) {
 			errorMessages.push(localize('deployAzureSQLDB.DBCollationOnlyNumericNameError', "Collation name cannot contain only numbers."));
 		}
-		if (collationname.length < 1 || collationname.length > 15) {
+		if (collationname.length < 1 || collationname.length > 100) {
 			errorMessages.push(localize('deployAzureSQLDB.DBCollationLengthError', "Collation name must be between 1 and 15 characters long."));
 		}
 		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(collationname)) {

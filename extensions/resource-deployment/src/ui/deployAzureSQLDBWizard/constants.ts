@@ -23,18 +23,23 @@ export const AzureAccountResourceGroupDropdownLabel = localize('deployAzureSQLDB
 //@todo alma1 9/8/20 Region label used for upcoming server creation feature.
 //export const AzureAccountRegionDropdownLabel = localize('deployAzureSQLDB.AzureRegionDropdownLabel', "Region (for Public IP Address)");
 
+//Azure settings Database hardware properties.
+export const DatabaseHardwareInfoLabel = localize('deployAzureSQLDB.DatabaseHardwareInfo', 'SQLDB Hardware Settings');
+export const DatabaseManagedInstanceDropdownLabel = localize('deployAzureSQLDB.DatabaseManagedInstanceDropdownLabel', "SQLDB Version");
+export const DatabaseSupportedEditionsDropdownLabel = localize('deployAzureSQLDB.DatabaseSupportedEditionsDropdownLabel', "Edition Type");
+export const DatabaseSupportedFamilyDropdownLabel = localize('deployAzureSQLDB.DatabaseSupportedFamilyDropdownLabel', "Family Type");
+export const DatabaseVCoreNumberDropdownLabel = localize('deployAzureSQLDB.DatabaseVCoreNumberDropdownLabel', "Number of Vcores");
+export const DatabaseMaxMemoryTextLabel = localize('deployAzureSQLDB.DatabaseMaxMemoryTextLabel', 'Maximum Data Storage Capacity in GB, can go up to 1TB (1024 GB).');
+export const DatabaseMaxMemorySummaryTextLabel = localize('deployAzureSQLDB.DatabaseMaxMemorySummaryTextLabel', 'Maximum Data Storage Capacity in GB');
+
 // Database settings page constants
 export const DatabaseSettingsPageTitle = localize('deployAzureSQLDB.DatabaseSettingsPageTitle', "Database settings");
 export const FirewallRuleNameLabel = localize('deployAzureSQLDB.FirewallRuleNameLabel', 'Firewall rule name');
 export const DatabaseNameLabel = localize('deployAzureSQLDB.DatabaseNameLabel', 'SQL database name');
 export const CollationNameLabel = localize('deployAzureSQLDB.CollationNameLabel', 'Collation for database, default value is \"SQL_Latin1_General_CP1_CI_AS\"');
+export const CollationNameSummaryLabel = localize('deployAzureSQLDB.CollationNameSummaryLabel', 'Collation for database');
 export const IpAddressInfoLabel = localize('deployAzureSQLDB.IpAddressInfoLabel', "Enter Ip Addresses in IVP4 format.");
 export const StartIpAddressLabel = localize('deployAzureSQLDB.StartIpAddressLabel', "Min Ip Address in firewall Ip Range");
 export const EndIpAddressLabel = localize('deployAzureSQLDB.EndIpAddressLabel', "Max Ip Address in firewall Ip Range");
 export const StartIpAddressShortLabel = localize('deployAzureSQLDB.StartIpAddressShortLabel', "Min Ip Address");
 export const EndIpAddressShortLabel = localize('deployAzureSQLDB.EndIpAddressShortLabel', "Max Ip Address");
-export const DatabaseManagedInstanceDropdownLabel = localize('deployAzureSQLDB.DatabaseManagedInstanceDropdownLabel', "SQLDB Supported Versions");
-export const DatabaseSupportedEditionsDropdownLabel = localize('deployAzureSQLDB.DatabaseSupportedEditionsDropdownLabel', "Purpose Type");
-export const DatabaseSupportedFamilyDropdownLabel = localize('deployAzureSQLDB.DatabaseSupportedFamilyDropdownLabel', "Family Type");
-export const DatabaseVCoreNumberDropdownLabel = localize('deployAzureSQLDB.DatabaseVCoreNumberDropdownLabel', "Number of Vcores");
-export const DatabaseMaxMemoryTextLabel = localize('deployAzureSQLDB.DatabaseMaxMemoryTextLabel', 'Maximum Data Storage Capacity in GB, can go up to 1TB (1024 GB).');

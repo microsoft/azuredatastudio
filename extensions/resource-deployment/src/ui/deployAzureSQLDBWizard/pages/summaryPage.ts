@@ -82,6 +82,41 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 			]
 		};
 
+		const databaseHardwareSettingSection: SectionInfo = {
+			labelPosition: LabelPosition.Left,
+			labelWidth: labelWidth,
+			inputWidth: inputWidth,
+			fieldHeight: fieldHeight,
+			spaceBetweenFields: '0',
+			title: constants.DatabaseHardwareInfoLabel,
+			fields: [
+				{
+					type: FieldType.ReadonlyText,
+					label: constants.DatabaseSupportedEditionsDropdownLabel,
+					defaultValue: model.databaseEdition,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
+				},
+				{
+					type: FieldType.ReadonlyText,
+					label: constants.DatabaseSupportedFamilyDropdownLabel,
+					defaultValue: model.databaseFamily,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
+				},
+				{
+					type: FieldType.ReadonlyText,
+					label: constants.DatabaseVCoreNumberDropdownLabel,
+					defaultValue: String(model.vCoreNumber),
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
+				},
+				{
+					type: FieldType.ReadonlyText,
+					label: constants.DatabaseMaxMemorySummaryTextLabel,
+					defaultValue: model.storageInGB,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
+				}
+			]
+		};
+
 		const databaseSettingSection: SectionInfo = {
 			labelPosition: LabelPosition.Left,
 			labelWidth: labelWidth,
@@ -93,6 +128,12 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 					type: FieldType.ReadonlyText,
 					label: constants.DatabaseNameLabel,
 					defaultValue: model.databaseName,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
+				},
+				{
+					type: FieldType.ReadonlyText,
+					label: constants.CollationNameSummaryLabel,
+					defaultValue: model.databaseCollation,
 					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				},
 				{
@@ -134,9 +175,10 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 		};
 
 		const azureSection = await createSectionFunc(auzreSettingSection);
+		const databaseHardwareSection = await createSectionFunc(databaseHardwareSettingSection);
 		const databaseSection = await createSectionFunc(databaseSettingSection);
 
-		this.formItems.push(azureSection, databaseSection);
+		this.formItems.push(azureSection, databaseHardwareSection, databaseSection);
 		this._form.addFormItems(this.formItems);
 
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {

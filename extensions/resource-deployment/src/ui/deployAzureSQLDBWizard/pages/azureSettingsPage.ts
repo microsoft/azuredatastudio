@@ -35,6 +35,9 @@ export class AzureSettingsPage extends BasePage {
 	// //dropdown for azure regions <- subscription dropdown //@todo alma1 9/8/2020 Region dropdown used for upcoming server creation feature.
 	// private _azureRegionsDropdown!: azdata.DropDownComponent;
 
+	//information text about hardware settings.
+	private _dbHardwareInfoText!: azdata.TextComponent;
+
 	//dropdown for Managed Instance Versions <- server dropdown.
 	private _dbManagedInstanceDropdown!: azdata.DropDownComponent;
 
@@ -74,6 +77,7 @@ export class AzureSettingsPage extends BasePage {
 				//this.createResourceDropdown(view), //@todo alma1 9/8/2020 used for upcoming server creation feature.
 				this.createServerDropdown(view),
 				//this.createAzureRegionsDropdown(view) //@todo alma1 9/8/2020 used for upcoming server creation feature.
+				this.createDatabaseHardwareSettingsText(view),
 				this.createManagedInstanceDropdown(view),
 				this.createSupportedEditionsDropdown(view),
 				this.createSupportedFamilyDropdown(view),
@@ -103,6 +107,9 @@ export class AzureSettingsPage extends BasePage {
 						// { //@todo alma1 9/8/2020 Used for upcoming server creation feature.
 						// 	component: this.wizard.createFormRowComponent(view, constants.AzureAccountRegionDropdownLabel, '', this._azureRegionsDropdown, true)
 						// }
+						{
+							component: this._dbHardwareInfoText
+						},
 						{
 							component: this.wizard.createFormRowComponent(view, constants.DatabaseManagedInstanceDropdownLabel, '', this._dbManagedInstanceDropdown, true)
 						},
@@ -433,6 +440,13 @@ export class AzureSettingsPage extends BasePage {
 	// 	this._azureRegionsDropdown.loading = false;
 	// }
 
+	private createDatabaseHardwareSettingsText(view: azdata.ModelView) {
+		this._dbHardwareInfoText = view.modelBuilder.text()
+			.withProperties({
+				value: constants.DatabaseHardwareInfoLabel
+			}).component();
+	}
+
 	private async createManagedInstanceDropdown(view: azdata.ModelView) {
 		this._dbManagedInstanceDropdown = view.modelBuilder.dropDown().withProperties({
 			required: true,
@@ -724,7 +738,7 @@ export class AzureSettingsPage extends BasePage {
 		}).component();
 
 		this._dbMemoryTextBox.onTextChanged((value) => {
-			this.wizard.model.storageInGB = value + ' GB';
+			this.wizard.model.storageInGB = value + 'GB';
 		});
 	}
 
