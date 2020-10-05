@@ -61,11 +61,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 			return azdataTool;
 		});
 
+	const azdataApi = getExtensionApi(context.globalState, azdataToolService, localAzdataDiscovered);
+
 	// register option source(s)
 	const rdApi = <rd.IExtension>vscode.extensions.getExtension(rd.extension.name)?.exports;
-	rdApi.registerOptionsSourceProvider(new ArcControllerConfigProfilesOptionsSource(context.globalState, azdataToolService, localAzdataDiscovered));
+	rdApi.registerOptionsSourceProvider(new ArcControllerConfigProfilesOptionsSource(azdataApi));
 
-	return getExtensionApi(context.globalState, azdataToolService, localAzdataDiscovered);
+	return azdataApi;
 }
 
 export function deactivate(): void { }

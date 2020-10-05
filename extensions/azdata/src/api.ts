@@ -33,9 +33,9 @@ export function getExtensionApi(memento: vscode.Memento, azdataToolService: Azda
 			throwIfNoAzdata(await localAzdataDiscovered); // ensure that we have discovered Azdata
 			return !!memento.get<boolean>(constants.eulaAccepted);
 		},
-		promptForEula: async (onError: boolean = true): Promise<boolean> => {
+		promptForEula: async (requireUserAction: boolean = true): Promise<boolean> => {
 			await localAzdataDiscovered;
-			return promptForEula(memento, true /* userRequested */, onError);
+			return promptForEula(memento, true /* userRequested */, requireUserAction);
 		},
 		azdata: getAzdataApi(localAzdataDiscovered, azdataToolService, memento)
 	};

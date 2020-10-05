@@ -4,24 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as rd from 'resource-deployment';
-import { Memento } from 'vscode';
-import { throwIfNoAzdata } from '../api';
-import { IAzdataTool, isEulaAccepted, promptForEula } from '../azdata';
-import { AzdataToolService } from '../services/azdataToolService';
-
+import * as azdataExt from 'azdata-ext';
 
 /**
  * Class that provides options sources for an Arc Data Controller
  */
 export class ArcControllerConfigProfilesOptionsSource implements rd.IOptionsSourceProvider {
 	readonly optionsSourceId = 'arc.controller.config.profiles';
-	constructor(private _memento: Memento, private _azdataToolService: AzdataToolService, private _azdataDiscovered: Promise<IAzdataTool | undefined>) { }
+	constructor(private _azdataExtApi: azdataExt.IExtension) { }
 	async getOptions(): Promise<string[]> {
-		await this._azdataDiscovered;
-		throwIfNoAzdata(this._azdataToolService.localAzdata);
-		if (!isEulaAccepted(this._memento)) { // this is defense in depth, just ensuring that eula has been accepted before using azdata tool.
-			await promptForEula(this._memento, true /* userRequested */, true /* requireUserAction */);
+
+		if (this._azdataExtApi.isEulaAccepted()) { // if eula has not yet be accepted then give user a chance to accept it
+			await this._azdataExtApi.promptForEula();
 		}
-		return (await this._azdataToolService.localAzdata.arc.dc.config.list()).result;
+		return (await this._azdataExtApi.azdata.arc.dc.config.list()).result;
 	}
 }
