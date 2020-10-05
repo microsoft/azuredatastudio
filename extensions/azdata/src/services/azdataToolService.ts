@@ -3,21 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import { AzdataTool, IAzdataTool } from '../azdata';
-import * as constants from '../constants';
-
+import { IAzdataTool } from '../azdata';
 
 export class AzdataToolService {
 	private _localAzdata: IAzdataTool | undefined;
-	constructor(private _memento: vscode.Memento) {
-		this._localAzdata = this._memento.get<AzdataTool>(constants.localAzdata);
+	constructor() {
 	}
 
 	/**
 	*	Gets the localAzdata that was last saved
-	*
-	* @param memento The memento that stores the localAzdata object
 	*/
 	get localAzdata(): IAzdataTool | undefined {
 		return this._localAzdata;
@@ -30,7 +24,6 @@ export class AzdataToolService {
 	*/
 	set localAzdata(azdata: IAzdataTool | undefined) {
 		this._localAzdata = azdata;
-		this._memento.update(constants.localAzdata, <AzdataTool>azdata);
 	}
 }
 

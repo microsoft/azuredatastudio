@@ -20,7 +20,7 @@ export class ArcControllerConfigProfilesOptionsSource implements rd.IOptionsSour
 		await this._azdataDiscovered;
 		throwIfNoAzdata(this._azdataToolService.localAzdata);
 		if (!isEulaAccepted(this._memento)) { // this is defense in depth, just ensuring that eula has been accepted before using azdata tool.
-			promptForEula(this._memento, true /* userRequested */, true /* requireUserAction */);
+			await promptForEula(this._memento, true /* userRequested */, true /* requireUserAction */);
 		}
 		return (await this._azdataToolService.localAzdata.arc.dc.config.list()).result;
 	}

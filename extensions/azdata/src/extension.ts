@@ -15,7 +15,7 @@ import { ArcControllerConfigProfilesOptionsSource } from './providers/arcControl
 import { AzdataToolService } from './services/azdataToolService';
 
 export async function activate(context: vscode.ExtensionContext): Promise<azdataExt.IExtension> {
-	const azdataToolService = new AzdataToolService(context.globalState);
+	const azdataToolService = new AzdataToolService();
 	let eulaAccepted: boolean = false;
 	vscode.commands.registerCommand('azdata.acceptEula', async () => {
 		await promptForEula(context.globalState, true /* userRequested */);
