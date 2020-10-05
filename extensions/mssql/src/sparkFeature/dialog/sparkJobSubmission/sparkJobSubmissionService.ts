@@ -98,6 +98,9 @@ export class SparkJobSubmissionService {
 			options.data['numExecutors'] = submissionArgs.config.executorCount;
 		}
 
+		if (submissionArgs.config.queueName) {
+			options.data['queue'] = submissionArgs.config.queueName;
+		}
 		// Set driver memory
 		const configurationValues = submissionArgs.config.configValues?.trim();
 		if (configurationValues) {

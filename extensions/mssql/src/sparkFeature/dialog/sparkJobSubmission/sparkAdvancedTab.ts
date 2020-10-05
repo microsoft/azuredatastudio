@@ -185,6 +185,7 @@ export class SparkAdvancedTab {
 			executorMemory: this._executorMemoryInputBox.value,
 			executeCores: +this._executorCoresInputBox.value,
 			executorCount: +this._executorCountInputBox.value,
+			queueName: this._queueInputBox.value,
 			configValues: this._configValuesInputBox.value
 		};
 	}
