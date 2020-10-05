@@ -49,14 +49,14 @@ export class AzdataTool implements IAzdataTool {
 	 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
 	 * Azdata has gotten reinstalled in the background after this IAzdataApi object was constructed.
 	 */
-	public getSemVersion() {
+	public getSemVersion(): SemVer {
 		return this._semVersion;
 	}
 
 	/**
 	 * gets the path where azdata tool is installed
 	 */
-	public getPath() {
+	public getPath(): string {
 		return this._path;
 	}
 

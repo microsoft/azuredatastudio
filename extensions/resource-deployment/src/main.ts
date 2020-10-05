@@ -29,7 +29,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<rd.IEx
 		const errorMessage = localize('resourceDeployment.FailedToLoadExtension', "Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.", context.extensionPath);
 		vscode.window.showErrorMessage(errorMessage);
 		validationFailures.forEach(message => console.error(message));
-		return <rd.IExtension><unknown>undefined;
+		return <any>undefined;
 	}
 	/**
 	 * Opens a new ResourceTypePickerDialog

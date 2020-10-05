@@ -23,8 +23,8 @@ export const createNewResourceGroup = localize('azure.resourceGroup.createNewRes
 export const NewResourceGroupAriaLabel = localize('azure.resourceGroup.NewResourceGroupAriaLabel', "New resource group name");
 export const realm = localize('deployCluster.Realm', "Realm");
 export const unknownFieldTypeError = (type: FieldType) => localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", type);
-export const optionsSourceAlreadyDefined = (optionsSourceId: string) => localize('optionsSource.alreadyDefined', "options source with id:{0} is already defined", optionsSourceId);
-export const noOptionsSourceDefined = (optionsSourceId: string) => localize('optionsSource.notDefined', "No OptionsSource defined for id: {0}", optionsSourceId);
+export const optionsSourceAlreadyDefined = (optionsSourceId: string) => localize('optionsSource.alreadyDefined', "Options Source with id:{0} is already defined", optionsSourceId);
+export const noOptionsSourceDefined = (optionsSourceId: string) => localize('optionsSource.notDefined', "No Options Source defined for id: {0}", optionsSourceId);
 export const variableValueFetchForUnsupportedVariable = (variableName: string) => localize('getVariableValue.unknownVariableName', "Attempt to get variable value for unknown variable:{0}", variableName);
 export const isPasswordFetchForUnsupportedVariable = (variableName: string) => localize('getIsPassword.unknownVariableName', "Attempt to get isPassword for unknown variable:{0}", variableName);
 export const optionsNotDefined = (fieldType: FieldType) => localize('optionsNotDefined', "FieldInfo.options was not defined for field type: {0}", fieldType);
