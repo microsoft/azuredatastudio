@@ -23,6 +23,7 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 	constructor(private wizardInfo: AzureSQLDBWizardInfo, private _notebookService: INotebookService, private _toolsService: IToolsService) {
 		super(
 			constants.WizardTitle,
+			'DeployAzureSqlDBWizard',
 			new DeployAzureSQLDBWizardModel(),
 			_toolsService
 		);
@@ -67,7 +68,7 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 		const variableValueStatements = this.model.getCodeCellContentForNotebook();
 		const insertionPosition = 2; // Cell number 2 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
 		try {
-			await this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
+			await this.notebookService.openNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
 		} catch (error) {
 			vscode.window.showErrorMessage(error);
 		}
