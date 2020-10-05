@@ -6,9 +6,26 @@
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { IAzdataTool, isEulaAccepted, promptForEula } from './azdata';
-import { throwIfNoAzdata, throwIfNoAzdataOrEulaNotAccepted } from './common/utils';
+import Logger from './common/logger';
+import { NoAzdataError } from './common/utils';
 import * as constants from './constants';
+import * as loc from './localizedConstants';
 import { AzdataToolService } from './services/azdataToolService';
+
+function throwIfNoAzdataOrEulaNotAccepted(azdata: IAzdataTool | undefined, eulaAccepted: boolean): asserts azdata {
+	throwIfNoAzdata(azdata);
+	if (!eulaAccepted) {
+		Logger.log(loc.eulaNotAccepted);
+		throw new Error(loc.eulaNotAccepted);
+	}
+}
+
+export function throwIfNoAzdata(localAzdata: IAzdataTool | undefined): asserts localAzdata {
+	if (!localAzdata) {
+		Logger.log(loc.noAzdata);
+		throw new NoAzdataError();
+	}
+}
 
 export function getExtensionApi(memento: vscode.Memento, azdataToolService: AzdataToolService, localAzdataDiscovered: Promise<IAzdataTool | undefined>): azdataExt.IExtension {
 	return {

@@ -5,24 +5,7 @@
 
 import * as azdataExt from 'azdata-ext';
 import * as which from 'which';
-import { IAzdataTool } from '../azdata';
 import * as loc from '../localizedConstants';
-import Logger from './logger';
-
-export function throwIfNoAzdataOrEulaNotAccepted(azdata: IAzdataTool | undefined, eulaAccepted: boolean): asserts azdata {
-	throwIfNoAzdata(azdata);
-	if (!eulaAccepted) {
-		Logger.log(loc.eulaNotAccepted);
-		throw new Error(loc.eulaNotAccepted);
-	}
-}
-
-export function throwIfNoAzdata(azdata: IAzdataTool | undefined): asserts azdata {
-	if (!azdata) {
-		Logger.log(loc.noAzdata);
-		throw new NoAzdataError();
-	}
-}
 
 export class NoAzdataError extends Error implements azdataExt.ErrorWithLink {
 	constructor() {

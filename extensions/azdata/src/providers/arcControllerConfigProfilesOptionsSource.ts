@@ -5,9 +5,10 @@
 
 import * as rd from 'resource-deployment';
 import { Memento } from 'vscode';
+import { throwIfNoAzdata } from '../api';
 import { IAzdataTool, isEulaAccepted, promptForEula } from '../azdata';
-import { throwIfNoAzdata } from '../common/utils';
 import { AzdataToolService } from '../services/azdataToolService';
+
 
 /**
  * Class that provides options sources for an Arc Data Controller
