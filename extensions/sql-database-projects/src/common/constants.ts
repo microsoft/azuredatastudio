@@ -45,12 +45,6 @@ export const okString = localize('okString', "Ok");
 export const extractTargetInput = localize('extractTargetInput', "Select folder structure for SQL files");
 export const extractDatabaseSelection = localize('extractDatabaseSelection', "Select database to create project from");
 export const selectString = localize('selectString', "Select");
-export const addDatabaseReferenceInput = localize('addDatabaseReferenceInput', "Add database reference for:");
-export const systemDatabaseReferenceInput = localize('systemDatabaseReferenceInput', "System Database:");
-export const databaseReferenceLocation = localize('databaseReferenceLocation', "Database location");
-export const databaseReferenceSameDatabase = localize('databaseReferenceSameDatabase', "Same database");
-export const databaseReferenceDifferentDabaseSameServer = localize('databaseReferenceDifferentDabaseSameServer', "Different database, same server");
-export const databaseReferenceDatabaseName = localize('databaseReferenceDatabaseName', "Database name");
 export const dacpacFiles = localize('dacpacFiles', "dacpac Files");
 export const publishSettingsFiles = localize('publishSettingsFiles', "Publish Settings File");
 export const systemDatabase = localize('systemDatabase', "System Database");
@@ -171,7 +165,7 @@ export function unableToPerformAction(action: string, uri: string) { return loca
 export function unableToFindObject(path: string, objType: string) { return localize('unableToFindFile', "Unable to find {1} with path '{0}'", path, objType); }
 export function deployScriptExists(scriptType: string) { return localize('deployScriptExists', "A {0} script already exists. The new script will not be included in build.", scriptType); }
 export function notValidVariableName(name: string) { return localize('notValidVariableName', "The variable name '{0}' is not valid.", name); }
-export function cantAddCircularProjectReference(project: string) { return localize('cantAddCircularProjectReference', "A reference to project '{0} cannot be added. Adding this project as a reference would cause a circular dependency", project); }
+export function cantAddCircularProjectReference(project: string) { return localize('cantAddCircularProjectReference', "A reference to project '{0}' cannot be added. Adding this project as a reference would cause a circular dependency", project); }
 export function unableToFindSqlCmdVariable(variableName: string) { return localize('unableToFindSqlCmdVariable', "Unable to find SQLCMD variable '{0}'", variableName); }
 export function unableToFindDatabaseReference(reference: string) { return localize('unableToFindReference', "Unable to find database reference {0}", reference); }
 

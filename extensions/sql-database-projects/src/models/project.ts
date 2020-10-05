@@ -679,7 +679,9 @@ export class Project {
 
 	public addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): void {
 		// Remove any entries with the same variable name. It'll be replaced with a new one
-		this.removeFromProjFile(entry);
+		if (Object.keys(this.sqlCmdVariables).includes(entry.variableName)) {
+			this.removeFromProjFile(entry);
+		}
 
 		const sqlCmdVariableNode = this.projFileXmlDoc.createElement(constants.SqlCmdVariable);
 		sqlCmdVariableNode.setAttribute(constants.Include, entry.variableName);

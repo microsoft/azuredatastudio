@@ -48,6 +48,9 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 		let sqlConnProfile = await azdata.objectexplorer.getSessionConnectionProfile(session.sessionId);
 		if (!sqlConnProfile) { return false; }
 
+		const isBigDataCluster = await utils.isBigDataCluster(sqlConnProfile.id);
+		if (!isBigDataCluster) { return false; }
+
 		let clusterSession = new SqlClusterSession(session, sqlConnProfile, this.appContext, this);
 		this.clusterSessionMap.set(session.sessionId, clusterSession);
 		return true;
@@ -229,7 +232,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 		return node;
 	}
 
-	public findSqlClusterSessionBySqlConnProfile(connectionProfile: azdata.IConnectionProfile): SqlClusterSession {
+	public findSqlClusterSessionBySqlConnProfile(connectionProfile: azdata.IConnectionProfile): SqlClusterSession | undefined {
 		for (let session of this.clusterSessionMap.values()) {
 			if (session.isMatchedSqlConnection(connectionProfile)) {
 				return session;

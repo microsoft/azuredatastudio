@@ -13,7 +13,7 @@ import { Event as EventOf, Emitter } from 'vs/base/common/event';
 import { IAction, Action, Separator, SubmenuAction } from 'vs/base/common/actions';
 import { IViewlet } from 'vs/workbench/common/viewlet';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import { append, $, addClass, toggleClass, Dimension, hide, show } from 'vs/base/browser/dom';
+import { append, $, Dimension, hide, show } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -50,7 +50,6 @@ import { Query } from 'vs/workbench/contrib/extensions/common/extensionQuery';
 import { SuggestEnabledInput, attachSuggestEnabledInputBoxStyler } from 'vs/workbench/contrib/codeEditor/browser/suggestEnabledInput/suggestEnabledInput';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { createErrorWithActions } from 'vs/base/common/errorsWithActions';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { ExtensionType, EXTENSION_CATEGORIES } from 'vs/platform/extensions/common/extensions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILabelService } from 'vs/platform/label/common/label';
@@ -355,8 +354,6 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService,
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
-		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
-		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
 		@IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IViewletService private readonly viewletService: IViewletService,
@@ -406,7 +403,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 	}
 
 	create(parent: HTMLElement): void {
-		addClass(parent, 'extensions-viewlet');
+		parent.classList.add('extensions-viewlet');
 		this.root = parent;
 
 		const overlay = append(this.root, $('.overlay'));
@@ -502,7 +499,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 
 	layout(dimension: Dimension): void {
 		if (this.root) {
-			toggleClass(this.root, 'narrow', dimension.width <= 300);
+			this.root.classList.toggle('narrow', dimension.width <= 300);
 		}
 		if (this.searchBox) {
 			this.searchBox.layout({ height: 20, width: dimension.width - 34 });
@@ -536,9 +533,6 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 				new SubmenuAction('workbench.extensions.action.filterExtensionsByCategory', localize('filter by category', "Category"), EXTENSION_CATEGORIES.map(category => this.instantiationService.createInstance(SearchCategoryAction, `extensions.actions.searchByCategory.${category}`, category, category))),
 				new Separator(),
 			];
-			if (this.extensionManagementServerService.webExtensionManagementServer || !this.environmentService.isBuilt) {
-				galleryFilterActions.splice(4, 0, this.instantiationService.createInstance(PredefinedExtensionFilterAction, 'extensions.filter.web', localize('web filter', "Web"), '@web'));
-			}
 			filterActions.splice(0, 0, ...galleryFilterActions);
 			filterActions.push(...[
 				new Separator(),
@@ -752,7 +746,7 @@ export class MaliciousExtensionChecker implements IWorkbenchContribution {
 		@IHostService private readonly hostService: IHostService,
 		@ILogService private readonly logService: ILogService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IEnvironmentService private readonly environmentService: IEnvironmentService
+		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService
 	) {
 		if (!this.environmentService.disableExtensions) {
 			this.loopCheckForMaliciousExtensions();

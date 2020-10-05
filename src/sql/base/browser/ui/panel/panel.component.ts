@@ -18,7 +18,6 @@ import * as types from 'vs/base/common/types';
 import { mixin } from 'vs/base/common/objects';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
-import { firstIndex } from 'vs/base/common/arrays';
 import * as nls from 'vs/nls';
 import { TabHeaderComponent } from 'sql/base/browser/ui/panel/tabHeader.component';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -250,7 +249,7 @@ export class PanelComponent extends Disposable implements IThemable {
 	 * Select on the next tab
 	 */
 	public selectOnNextTab(): void {
-		let activeIndex = firstIndex(this._tabs.toArray(), i => i === this._activeTab);
+		let activeIndex = this._tabs.toArray().findIndex(i => i === this._activeTab);
 		let nextTabIndex = activeIndex + 1;
 		if (nextTabIndex === this._tabs.length) {
 			nextTabIndex = 0;
@@ -284,7 +283,7 @@ export class PanelComponent extends Disposable implements IThemable {
 	}
 
 	private findAndRemoveTabFromMRU(tab: TabComponent): void {
-		let mruIndex = firstIndex(this._mru, i => i === tab);
+		let mruIndex = this._mru.findIndex(i => i === tab);
 
 		if (mruIndex !== -1) {
 			// Remove old index

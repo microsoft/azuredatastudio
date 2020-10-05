@@ -10,7 +10,6 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { CommandLineWorkbenchContribution, SqlArgs } from 'sql/workbench/contrib/commandLine/electron-browser/commandLine';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { ParsedArgs } from 'vs/platform/environment/node/argv';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -34,8 +33,9 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
 import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
+import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 
-class TestParsedArgs implements ParsedArgs, SqlArgs {
+class TestParsedArgs implements NativeParsedArgs, SqlArgs {
 	[arg: string]: any;
 	_: string[];
 	database?: string;
