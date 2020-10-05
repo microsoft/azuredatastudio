@@ -1332,3 +1332,4 @@ async function getInputComponentValue(inputComponents: InputComponents, key: str
 export function isInputBoxEmpty(input: azdata.InputBoxComponent): boolean {
 	return input.value === undefined || input.value === '';
 }
+

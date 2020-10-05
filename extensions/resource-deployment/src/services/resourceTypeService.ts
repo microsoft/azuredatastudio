@@ -21,6 +21,7 @@ import { KubeService } from './kubeService';
 import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
+
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
