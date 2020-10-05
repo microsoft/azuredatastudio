@@ -37,7 +37,7 @@ export interface IAzdataTool extends azdataExt.IAzdataApi {
 /**
  * An object to interact with the azdata tool installed on the box.
  */
-export class AzdataTool implements IAzdataTool {
+export class AzdataTool implements azdataExt.IAzdataApi {
 
 	private _semVersion: SemVer;
 	constructor(private _path: string, version: string) {
@@ -49,14 +49,14 @@ export class AzdataTool implements IAzdataTool {
 	 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
 	 * Azdata has gotten reinstalled in the background after this IAzdataApi object was constructed.
 	 */
-	public getSemVersion(): SemVer {
+	public async getSemVersion(): Promise<SemVer> {
 		return this._semVersion;
 	}
 
 	/**
 	 * gets the path where azdata tool is installed
 	 */
-	public getPath(): string {
+	public async getPath(): Promise<string> {
 		return this._path;
 	}
 

@@ -267,14 +267,14 @@ declare module 'azdata-ext' {
 				}
 			}
 		},
-		getPath(): string | Promise<string>,
+		getPath(): Promise<string>,
 		login(endpoint: string, username: string, password: string): Promise<AzdataOutput<any>>,
 		/**
 		 * The semVersion corresponding to this installation of azdata. version() method should have been run
 		 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
 		 * Azdata has gotten reinstalled in the background after this IAzdataApi object was constructed.
 		 */
-		getSemVersion(): SemVer | Promise<SemVer>,
+		getSemVersion(): Promise<SemVer>,
 		version(): Promise<AzdataOutput<string>>
 	}
 
