@@ -69,23 +69,19 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
-		// use preventDefault() to avoid invoking the editor's select all
-		// select the active .
-		if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
-			e.preventDefault();
-			document.execCommand('selectAll');
-		} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y')) {
-			e.preventDefault();
-			document.execCommand('redo');
-		} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-			e.preventDefault();
-			document.execCommand('undo');
-		} else if (e.shiftKey && e.key === 'Tab') {
-			e.preventDefault();
-			document.execCommand('outdent');
-		} else if (e.key === 'Tab') {
-			e.preventDefault();
-			document.execCommand('indent');
+		if (this.isActive()) {
+			// select the active .
+			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+				this.preventDefaultAndExecCommand(e, 'selectAll');
+			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y')) {
+				this.preventDefaultAndExecCommand(e, 'redo');
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+				this.preventDefaultAndExecCommand(e, 'undo');
+			} else if (e.shiftKey && e.key === 'Tab') {
+				this.preventDefaultAndExecCommand(e, 'outdent');
+			} else if (e.key === 'Tab') {
+				this.preventDefaultAndExecCommand(e, 'indent');
+			}
 		}
 	}
 
@@ -279,7 +275,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.updatePreview();
 	}
 
-	public handleHtmlChanged(): void {
+	public handleHtmlChanged(event): void {
 		this.updateCellSource();
 	}
 
@@ -481,5 +477,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 		this.cellModel.active = true;
 		this._model.updateActiveCell(this.cellModel);
+	}
+
+	private preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {
+		// use preventDefault() to avoid invoking the editor's select all
+		e.preventDefault();
+		document.execCommand(commandId);
 	}
 }
