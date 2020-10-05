@@ -48,8 +48,6 @@ declare module 'azdata' {
 
 		export interface IExecuteResult {
 			data: any;
-			batchId?: number;
-			id?: number;
 		}
 	}
 

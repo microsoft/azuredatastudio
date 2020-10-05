@@ -309,7 +309,6 @@ export abstract class NotebookInput extends EditorInput {
 			}
 		};
 		const notificationHandle = this.notificationService.notify(conversionNotification);
-		await this._model.getNotebookModel().gridDataConversionComplete;
 		notificationHandle.close();
 		this.updateModel();
 		let input = await this.textInput.save(groupId, options);

@@ -6,7 +6,7 @@
 import { nb, IResultMessage } from 'azdata';
 import { localize } from 'vs/nls';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { ResultSetSummary, ResultSetSubset, IColumn, BatchSummary } from 'sql/workbench/services/query/common/query';
+import { ResultSetSummary, IColumn, BatchSummary, ICellValue } from 'sql/workbench/services/query/common/query';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
@@ -349,6 +349,16 @@ class SqlKernel extends Disposable implements nb.IKernel {
 				}
 			}
 		}));
+		this._register(queryRunner.onResultSet(resultSet => {
+			if (this._future) {
+				this._future.handleResultSet(resultSet);
+			}
+		}));
+		this._register(queryRunner.onResultSetUpdate(resultSet => {
+			if (this._future) {
+				this._future.handleResultSetUpdate(resultSet);
+			}
+		}));
 		this._register(queryRunner.onBatchEnd(batch => {
 			if (this._future) {
 				this._future.handleBatchEnd(batch);
@@ -384,9 +394,11 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private doneDeferred = new Deferred<nb.IShellMessage>();
 	private configuredMaxRows: number = MAX_ROWS;
 	private _outputAddedPromises: Promise<void>[] = [];
-	private _querySubsetResultMap: Map<number, ResultSetSubset> = new Map<number, ResultSetSubset>();
 	private _errorOccurred: boolean = false;
 	private _stopOnError: boolean = true;
+	private _lastRowCountMap: Map<string, number> = new Map<string, number>();
+	private _dataMap: Map<string, any> = new Map<string, any>();
+
 	constructor(
 		private _queryRunner: QueryRunner,
 		private _executionCount: number | undefined,
@@ -442,7 +454,6 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this.doneHandler.handle(msg);
 		}
 		this.doneDeferred.resolve(msg);
-		this._querySubsetResultMap.clear();
 	}
 
 	sendInputReply(content: nb.IInputReply): void {
@@ -473,60 +484,76 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		}
 	}
 
-	public handleBatchEnd(batch: BatchSummary): void {
-		if (this.ioHandler) {
-			this._outputAddedPromises.push(this.processResultSets(batch));
+	public handleResultSet(resultSet: ResultSetSummary | ResultSetSummary[]): void {
+		let resultSets: ResultSetSummary[];
+		if (!Array.isArray(resultSet)) {
+			resultSets = [resultSet];
+		} else {
+			resultSets = resultSet?.splice(0);
+		}
+		for (let set of resultSets) {
+			let key = set.batchId + '-' + set.id;
+			this._lastRowCountMap.set(key, 0);
+			// Convert the headers to data resource and html and send to cell model
+			let data = {
+				'application/vnd.dataresource+json': this.convertHeaderToDataResource(set.columnInfo),
+				'text/html': this.convertHeaderToHtmlTable(set.columnInfo)
+			};
+			this._dataMap.set(key, data);
+			this.sendIOPubMessage(set.batchId, set.id, data, set);
 		}
 	}
 
-	private async processResultSets(batch: BatchSummary): Promise<void> {
-		try {
-			let queryRowsPromises: Promise<void>[] = [];
-			for (let resultSet of batch.resultSetSummaries) {
-				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
-				if (rowCount === this.configuredMaxRows) {
-					this.handleMessage(localize('sqlMaxRowsDisplayed', "Displaying Top {0} rows.", rowCount));
+	public handleResultSetUpdate(resultSet: ResultSetSummary | ResultSetSummary[]): void {
+		let resultSets: ResultSetSummary[];
+		if (!Array.isArray(resultSet)) {
+			resultSets = [resultSet];
+		} else {
+			resultSets = resultSet?.splice(0);
+		}
+		for (let set of resultSets) {
+			if (set.rowCount > this.configuredMaxRows) {
+				set.rowCount = this.configuredMaxRows;
+			}
+			let key = set.batchId + '-' + set.id;
+			if (set.rowCount !== this._lastRowCountMap.get(key)) {
+				this._outputAddedPromises.push(this.queryAndConvertData(set, this._lastRowCountMap.get(key)));
+				this._lastRowCountMap.set(key, set.rowCount);
+			}
+		}
+	}
+
+	public async handleBatchEnd(batch: BatchSummary): Promise<void> {
+		if (this.ioHandler) {
+			for (let set of batch.resultSetSummaries) {
+				if (set.rowCount > this.configuredMaxRows) {
+					this.handleMessage(localize('sqlMaxRowsDisplayed', "Displaying Top {0} rows.", this.configuredMaxRows));
 				}
-				queryRowsPromises.push(this.getAllQueryRows(rowCount, resultSet));
 			}
-			// We want to display table in the same order
-			let i = 0;
-			for (let resultSet of batch.resultSetSummaries) {
-				await queryRowsPromises[i];
-				this.sendResultSetAsIOPub(resultSet);
-				i++;
-			}
+		}
+	}
+
+	public async queryAndConvertData(resultSet: ResultSetSummary, lastRowCount: number): Promise<void> {
+		try {
+			let key = resultSet.batchId + '-' + resultSet.id;
+			let queryResult = await this._queryRunner.getQueryRows(lastRowCount, resultSet.rowCount - lastRowCount, resultSet.batchId, resultSet.id);
+			let dataResourceRows = this.convertRowsToDataResource(queryResult.rows);
+			// Update data map with new data resource and send to cell model
+			let data = this._dataMap.get(key);
+			data['application/vnd.dataresource+json'].data = data['application/vnd.dataresource+json'].data.concat(dataResourceRows);
+			this.sendIOPubMessage(resultSet.batchId, resultSet.id, data, resultSet);
+
+			// To make streaming grid results faster, we convert rows to html after data resource
+			// is sent to cell model since ADS does not use html to render tables
+			this.convertRowsToHtml(queryResult.rows, key);
+			this.sendIOPubMessage(resultSet.batchId, resultSet.id, data, resultSet, resultSet.complete);
 		} catch (err) {
 			// TODO should we output this somewhere else?
 			this.logService.error(`Error outputting result sets from Notebook query: ${err}`);
 		}
 	}
 
-	private async getAllQueryRows(rowCount: number, resultSet: ResultSetSummary): Promise<void> {
-		let deferred: Deferred<void> = new Deferred<void>();
-		if (rowCount > 0) {
-			this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then((result) => {
-				this._querySubsetResultMap.set(resultSet.id, result);
-				deferred.resolve();
-			}, (err) => {
-				this._querySubsetResultMap.set(resultSet.id, { rowCount: 0, rows: [] });
-				deferred.reject(err);
-			});
-		} else {
-			this._querySubsetResultMap.set(resultSet.id, { rowCount: 0, rows: [] });
-			deferred.resolve();
-		}
-		return deferred;
-	}
-
-	private sendResultSetAsIOPub(resultSet: ResultSetSummary): void {
-		if (this._querySubsetResultMap && this._querySubsetResultMap.get(resultSet.id)) {
-			let subsetResult = this._querySubsetResultMap.get(resultSet.id);
-			this.sendIOPubMessage(subsetResult, resultSet);
-		}
-	}
-
-	private sendIOPubMessage(subsetResult: ResultSetSubset, resultSet: ResultSetSummary): void {
+	private sendIOPubMessage(batchId: number, id: number, data: any, resultSet: ResultSetSummary, complete: boolean = false): void {
 		let msg: nb.IIOPubMessage = {
 			channel: 'iopub',
 			type: 'iopub',
@@ -536,18 +563,17 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			},
 			content: <nb.IExecuteResult>{
 				output_type: 'execute_result',
-				metadata: {},
+				metadata: {
+					resultSet: resultSet,
+					complete: complete
+				},
 				execution_count: this._executionCount,
-				data: {
-					'application/vnd.dataresource+json': this.convertToDataResource(resultSet.columnInfo, subsetResult),
-					'text/html': this.convertToHtmlTable(resultSet.columnInfo, subsetResult)
-				}
+				data: data
 			},
 			metadata: undefined,
 			parent_header: undefined
 		};
 		this.ioHandler.handle(msg);
-		this._querySubsetResultMap.delete(resultSet.id);
 	}
 
 	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
@@ -561,49 +587,57 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		// no-op
 	}
 
-	private convertToDataResource(columns: IColumn[], subsetResult: ResultSetSubset): IDataResource {
+	private convertHeaderToDataResource(columns: IColumn[]): IDataResource {
 		let columnsResources: IDataResourceSchema[] = [];
 		columns.forEach(column => {
 			columnsResources.push({ name: escape(column.columnName) });
 		});
-		let columnsFields: IDataResourceFields = { fields: undefined };
-		columnsFields.fields = columnsResources;
+		let columnsFields: IDataResourceFields = { fields: columnsResources };
 		return {
 			schema: columnsFields,
-			data: subsetResult.rows.map(row => {
-				let rowObject: { [key: string]: any; } = {};
-				row.forEach((val, index) => {
-					rowObject[index] = val.displayValue;
-				});
-				return rowObject;
-			})
+			data: []
 		};
 	}
 
-	private convertToHtmlTable(columns: IColumn[], d: ResultSetSubset): string[] {
-		// Adding 3 for <table>, column title rows, </table>
-		let htmlStringArr: string[] = new Array(d.rowCount + 3);
-		htmlStringArr[0] = '<table>';
+	private convertHeaderToHtmlTable(columns: IColumn[]): string[] {
+		let htmlTable: string[] = new Array(3);
+		htmlTable[0] = '<table>';
 		if (columns.length > 0) {
 			let columnHeaders = '<tr>';
 			for (let column of columns) {
 				columnHeaders += `<th>${escape(column.columnName)}</th>`;
 			}
 			columnHeaders += '</tr>';
-			htmlStringArr[1] = columnHeaders;
+			htmlTable[1] = columnHeaders;
 		}
-		let i = 2;
-		for (const row of d.rows) {
+		htmlTable[2] = '</table>';
+		return htmlTable;
+	}
+
+	private convertRowsToDataResource(rows: ICellValue[][]): any[] {
+		return rows.map(row => {
+			let rowObject: { [key: string]: any; } = {};
+			row.forEach((val, index) => {
+				rowObject[index] = val.displayValue;
+			});
+			return rowObject;
+		});
+	}
+
+	private async convertRowsToHtml(rows: ICellValue[][], key: string): Promise<void> {
+		let htmlStringArr = [];
+		for (const row of rows) {
 			let rowData = '<tr>';
-			for (let columnIndex = 0; columnIndex < columns.length; columnIndex++) {
+			for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
 				rowData += `<td>${escape(row[columnIndex].displayValue)}</td>`;
 			}
 			rowData += '</tr>';
-			htmlStringArr[i] = rowData;
-			i++;
+			htmlStringArr.push(rowData);
 		}
-		htmlStringArr[htmlStringArr.length - 1] = '</table>';
-		return htmlStringArr;
+		let data = this._dataMap.get(key);
+		// Last value in array is '</table>' so we want to add row data before that
+		data['text/html'].splice(data['text/html'].length - 1, 0, ...htmlStringArr);
+		this._dataMap.set(key, data);
 	}
 
 	private convertToDisplayMessage(msg: IResultMessage | string): nb.IIOPubMessage {

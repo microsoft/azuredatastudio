@@ -4694,6 +4694,8 @@ declare module 'azdata' {
 			output_type: OutputTypeName;
 			metadata?: {
 				azdata_chartOptions?: any;
+				resultSet?: ResultSetSummary;
+				complete?: boolean;
 			};
 		}
 
@@ -4727,7 +4729,10 @@ declare module 'azdata' {
 			/**
 			 * Optional metadata, also a mime bundle
 			 */
-			metadata?: {};
+			metadata?: {
+				resultSet?: ResultSetSummary;
+				complete?: boolean;
+			};
 		}
 		export interface IDisplayData extends IDisplayResult {
 			output_type: 'display_data';

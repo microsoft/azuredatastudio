@@ -21,6 +21,7 @@ import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
+import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -41,9 +42,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	private _initialized: boolean = false;
 	private _activeCellId: string;
 	private _componentInstance: IMimeComponent;
-	private _batchId?: number;
-	private _id?: number;
-	private _queryRunnerUri?: string;
+	private _resultSet: ResultSetSummary | undefined;
 	public errorText: string;
 
 	constructor(
@@ -105,16 +104,8 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 		return this._componentInstance;
 	}
 
-	@Input() set batchId(value: number) {
-		this._batchId = value;
-	}
-
-	@Input() set id(value: number) {
-		this._id = value;
-	}
-
-	@Input() set queryRunnerUri(value: string) {
-		this._queryRunnerUri = value;
+	@Input() set resultSet(value: ResultSetSummary | undefined) {
+		this._resultSet = value;
 	}
 
 	get trustedMode(): boolean {
@@ -189,10 +180,9 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			this._componentInstance.cellModel = this.cellModel;
 			this._componentInstance.cellOutput = this.cellOutput;
 			this._componentInstance.bundleOptions = options;
-			if (this._queryRunnerUri) {
-				this._componentInstance.batchId = this._batchId;
-				this._componentInstance.id = this._id;
-				this._componentInstance.queryRunnerUri = this._queryRunnerUri;
+			if (this._resultSet) {
+				this._componentInstance.batchId = this._resultSet.batchId;
+				this._componentInstance.id = this._resultSet.id;
 			}
 			this._changeref.detectChanges();
 			let el = <HTMLElement>componentRef.location.nativeElement;
