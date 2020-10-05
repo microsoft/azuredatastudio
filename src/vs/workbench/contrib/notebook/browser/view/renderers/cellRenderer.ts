@@ -10,7 +10,7 @@ import { IListRenderer, IListVirtualDelegate } from 'vs/base/browser/ui/list/lis
 import { ProgressBar } from 'vs/base/browser/ui/progressbar/progressbar';
 import { ToolBar } from 'vs/base/browser/ui/toolbar/toolbar';
 import { IAction } from 'vs/base/common/actions';
-import { renderCodiconsAsElement } from 'vs/base/browser/codicons';
+import { renderCodicons } from 'vs/base/browser/codicons';
 import { Color } from 'vs/base/common/color';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable, DisposableStore, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
@@ -48,7 +48,7 @@ import { StatefulMarkdownCell } from 'vs/workbench/contrib/notebook/browser/view
 import { CodeCellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/codeCellViewModel';
 import { MarkdownCellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/markdownCellViewModel';
 import { CellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/notebookViewModel';
-import { CellKind, NotebookCellMetadata, NotebookCellRunState, ShowCellStatusBarKey } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { CellEditType, CellKind, NotebookCellMetadata, NotebookCellRunState, ShowCellStatusBarKey } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { createAndFillInActionBarActionsWithVerticalSeparators, VerticalSeparator, VerticalSeparatorViewItem } from './cellActionView';
 
 const $ = DOM.$;
@@ -332,16 +332,27 @@ abstract class AbstractCellRenderer {
 				return;
 			}
 
+			const textModel = this.notebookEditor.viewModel!.notebookDocument;
+			const index = textModel.cells.indexOf(templateData.currentRenderedCell.model);
+
+			if (index < 0) {
+				return;
+			}
+
 			if (templateData.currentRenderedCell.metadata?.inputCollapsed) {
-				this.notebookEditor.viewModel!.notebookDocument.deltaCellMetadata(templateData.currentRenderedCell.handle, { inputCollapsed: false });
+				textModel.applyEdits(textModel.versionId, [
+					{ editType: CellEditType.Metadata, index, metadata: { ...templateData.currentRenderedCell.metadata, inputCollapsed: false } }
+				], true, undefined, () => undefined);
 			} else if (templateData.currentRenderedCell.metadata?.outputCollapsed) {
-				this.notebookEditor.viewModel!.notebookDocument.deltaCellMetadata(templateData.currentRenderedCell.handle, { outputCollapsed: false });
+				textModel.applyEdits(textModel.versionId, [
+					{ editType: CellEditType.Metadata, index, metadata: { ...templateData.currentRenderedCell.metadata, outputCollapsed: false } }
+				], true, undefined, () => undefined);
 			}
 		}));
 	}
 
 	protected setupCollapsedPart(container: HTMLElement): { collapsedPart: HTMLElement, expandButton: HTMLElement } {
-		const collapsedPart = DOM.append(container, $('.cell.cell-collapsed-part', undefined, ...renderCodiconsAsElement('$(unfold)')));
+		const collapsedPart = DOM.append(container, $('.cell.cell-collapsed-part', undefined, ...renderCodicons('$(unfold)')));
 		const expandButton = collapsedPart.querySelector('.codicon') as HTMLElement;
 		const keybinding = this.keybindingService.lookupKeybinding(EXPAND_CELL_CONTENT_COMMAND_ID);
 		let title = localize('cellExpandButtonLabel', "Expand");
@@ -586,8 +597,9 @@ class CodeCellDragImageRenderer {
 	}
 
 	private getDragImageImpl(templateData: BaseCellRenderTemplate, editor: ICodeEditor, type: 'code' | 'markdown'): HTMLElement | null {
-		const dragImageContainer = DOM.$(`.cell-drag-image.monaco-list-row.focused.${type}-cell-row`);
-		dragImageContainer.innerHTML = templateData.container.innerHTML;
+		const dragImageContainer = templateData.container.cloneNode(true) as HTMLElement;
+		dragImageContainer.classList.forEach(c => dragImageContainer.classList.remove(c));
+		dragImageContainer.classList.add('cell-drag-image', 'monaco-list-row', 'focused', `${type}-cell-row`);
 
 		const editorContainer = dragImageContainer.querySelector('.cell-editor-container');
 		if (!editorContainer) {
@@ -948,11 +960,11 @@ export class RunStateRenderer {
 		}
 
 		if (runState === NotebookCellRunState.Success) {
-			DOM.reset(this.element, ...renderCodiconsAsElement('$(check)'));
+			DOM.reset(this.element, ...renderCodicons('$(check)'));
 		} else if (runState === NotebookCellRunState.Error) {
-			DOM.reset(this.element, ...renderCodiconsAsElement('$(error)'));
+			DOM.reset(this.element, ...renderCodicons('$(error)'));
 		} else if (runState === NotebookCellRunState.Running) {
-			DOM.reset(this.element, ...renderCodiconsAsElement('$(sync~spin)'));
+			DOM.reset(this.element, ...renderCodicons('$(sync~spin)'));
 
 			this.spinnerTimer = setTimeout(() => {
 				this.spinnerTimer = undefined;
@@ -1010,6 +1022,8 @@ export class ListTopCellToolbar extends Disposable {
 				this._modelDisposables.add(this.notebookEditor.viewModel.onDidChangeViewCells(() => {
 					this.updateClass();
 				}));
+
+				this.updateClass();
 			}
 		}));
 
