@@ -72,15 +72,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (this.isActive()) {
 			// select the active .
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
-				this.preventDefaultAndExecCommand(e, 'selectAll');
+				preventDefaultAndExecCommand(e, 'selectAll');
 			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y')) {
-				this.preventDefaultAndExecCommand(e, 'redo');
+				preventDefaultAndExecCommand(e, 'redo');
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-				this.preventDefaultAndExecCommand(e, 'undo');
+				preventDefaultAndExecCommand(e, 'undo');
 			} else if (e.shiftKey && e.key === 'Tab') {
-				this.preventDefaultAndExecCommand(e, 'outdent');
+				preventDefaultAndExecCommand(e, 'outdent');
 			} else if (e.key === 'Tab') {
-				this.preventDefaultAndExecCommand(e, 'indent');
+				preventDefaultAndExecCommand(e, 'indent');
 			}
 		}
 	}
@@ -478,10 +478,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.cellModel.active = true;
 		this._model.updateActiveCell(this.cellModel);
 	}
+}
 
-	private preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {
-		// use preventDefault() to avoid invoking the editor's select all
-		e.preventDefault();
-		document.execCommand(commandId);
-	}
+function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {
+	// use preventDefault() to avoid invoking the editor's select all
+	e.preventDefault();
+	document.execCommand(commandId);
 }
