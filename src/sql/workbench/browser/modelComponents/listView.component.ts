@@ -2,17 +2,22 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, ViewChild } from '@angular/core';
 import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { IListOptions, List } from 'vs/base/browser/ui/list/listWidget';
 
 import 'vs/css!./media/listView';
 
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { deepClone } from 'vs/base/common/objects';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IListRenderer, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
+import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./listView.component.html'))
@@ -21,12 +26,13 @@ import { deepClone } from 'vs/base/common/objects';
 export default class ListViewComponent extends ComponentBase<azdata.ListViewComponentProperties> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
-	@ViewChildren('optionDiv') optionElements: QueryList<ElementRef>;
-
-	private focusedOptionId: string | undefined;
+	@ViewChild('vscodelist', { read: ElementRef }) private _vscodeList: ElementRef;
+	private _optionsList!: List<azdata.ListViewOption>;
+	private _selectedElementIdx!: number;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 	) {
 		super(changeRef, el);
@@ -36,57 +42,43 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 		this.baseInit();
 	}
 
+	ngAfterViewInit(): void {
+		const vscodelistOption: IListOptions<azdata.ListViewOption> = {
+			keyboardSupport: true,
+			mouseSupport: true,
+			smoothScrolling: true,
+			verticalScrollMode: ScrollbarVisibility.Auto,
+
+		};
+
+		this._optionsList = new List<azdata.ListViewOption>('ModelViewListView', this._vscodeList.nativeElement, new OptionListDelegate(26), [new OptionsListRenderer()], vscodelistOption);
+		this._optionsList?.layout(400);
+		this._register(attachListStyler(this._optionsList, this.themeService));
+
+		this._register(this._optionsList.onDidChangeSelection((e) => {
+			if (e.indexes.length !== 0) {
+				this.selectOptionByIdx(e.indexes[0]);
+			}
+		}));
+
+		this._register(this._optionsList.onKeyDown((event: any) => {
+			if (!this.enabled || this.options.length === 0) {
+				return;
+			}
+			let e = new StandardKeyboardEvent(event);
+			if (e.keyCode === KeyCode.Space) {
+				this._optionsList.setSelection([this._optionsList.getFocus()[0]]);
+				DOM.EventHelper.stop(e, true);
+			}
+		}));
+	}
+
 	setLayout(layout: any): void {
 		this.layout();
 	}
 
 	ngOnDestroy(): void {
 		this.baseDestroy();
-	}
-
-	onKeyDown(event: KeyboardEvent): void {
-		if (!this.enabled || this.options.length === 0) {
-			return;
-		}
-		let e = new StandardKeyboardEvent(event);
-		if (e.keyCode === KeyCode.Enter || e.keyCode === KeyCode.Space) {
-			if (this.focusedOptionId) {
-				this.selectOption(this.focusedOptionId);
-			}
-			DOM.EventHelper.stop(e, true);
-		}
-		else if (e.keyCode === KeyCode.LeftArrow || e.keyCode === KeyCode.UpArrow) {
-			if (this.focusedOptionId) {
-				this.focusOption(this.findPreviousOption(this.focusedOptionId));
-			}
-			DOM.EventHelper.stop(e, true);
-		} else if (e.keyCode === KeyCode.RightArrow || e.keyCode === KeyCode.DownArrow) {
-			if (this.focusedOptionId) {
-				this.focusOption(this.findNextOption(this.focusedOptionId));
-			}
-			DOM.EventHelper.stop(e, true);
-		}
-	}
-
-	private getOptionById(optionId: string): azdata.ListViewOption {
-		const filteredOptions = this.options.filter(o => { return o.id === optionId; });
-		if (filteredOptions.length === 1) {
-			return filteredOptions[0];
-		} else {
-			throw new Error(`There should be one and only one matching option for the giving option id, actual number: ${filteredOptions.length}, option id: ${optionId}.`);
-		}
-	}
-
-	private findPreviousOption(optionId: string): string {
-		const currentIndex = this.options.indexOf(this.getOptionById(optionId));
-		const previousOptionIndex = currentIndex === 0 ? this.options.length - 1 : currentIndex - 1;
-		return this.options[previousOptionIndex].id;
-	}
-
-	private findNextOption(optionId: string): string {
-		const currentIndex = this.options.indexOf(this.getOptionById(optionId));
-		const nextOptionIndex = currentIndex === this.options.length - 1 ? 0 : currentIndex + 1;
-		return this.options[nextOptionIndex].id;
 	}
 
 	public get options(): azdata.ListViewOption[] {
@@ -116,67 +108,83 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 	public setProperties(properties: { [key: string]: any }) {
 		super.setProperties(properties);
 		// This is the entry point for the extension to set the selectedOptionId
-		if (this.selectedOptionId) {
-			this.selectOption(this.selectedOptionId);
+		// if (this.selectedOptionId) {
+		// 	this._optionsList.setSelection([this.options.map(v => v.id).indexOf(this.selectedOptionId)]);
+		// } else {
+		// 	this._optionsList.setSelection([0]);
+		// }
+
+		if (this.options) {
+			this._optionsList!.splice(0, this._optionsList!.length, this.options);
 		}
 	}
 
-	public selectOption(optionId: string): void {
+	public selectOptionByIdx(idx: number): void {
 		if (!this.enabled || this.options.length === 0) {
 			return;
 		}
-		const optionElement = this.getOptionElement(optionId);
-		optionElement.nativeElement.focus();
-		this.setPropertyFromUI<string | undefined>((props, value) => props.selectedOptionId = value, optionId);
-		this._changeRef.detectChanges();
+		this._selectedElementIdx = idx;
+		const selectedOption = this.options[idx];
+		this.setPropertyFromUI<string | undefined>((props, value) => props.selectedOptionId = value, selectedOption.id);
 		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
 			args: {
-				option: deepClone(this.getOptionById(optionId))
+				option: deepClone(selectedOption)
 			}
 		});
 	}
 
-	public getOptionElement(optionId: string): ElementRef {
-		const option = this.getOptionById(optionId);
-		return this.optionElements.toArray()[this.options.indexOf(option)];
-	}
-
-	public getTabIndex(optionId: string): number {
-		if (!this.enabled) {
-			return -1;
-		}
-		else if (!this.selectedOptionId) {
-			return this.options.indexOf(this.getOptionById(optionId)) === 0 ? 0 : -1;
-		} else {
-			return optionId === this.selectedOptionId ? 0 : -1;
-		}
-	}
-
-	public isOptionSelected(optionId: string): boolean {
-		return optionId === this.selectedOptionId;
-	}
-
-	public onOptionFocus(optionId: string): void {
-		this.focusedOptionId = optionId;
-	}
-
-	public onOptionBlur(optionId: string): void {
-		this.focusedOptionId = undefined;
-	}
-
-	public focusOption(optionId: string): void {
-		if (!this.enabled || this.options.length === 0) {
-			return;
-		}
-		this.focusedOptionId = optionId;
-		const optionElement = this.getOptionElement(optionId);
-		optionElement.nativeElement.focus();
-		this._changeRef.detectChanges();
-	}
-
-	public focus() {
+	public focus(): void {
 		super.focus();
-		this.focusOption(this.selectedOptionId);
+		if (this._selectedElementIdx !== undefined) {
+			this._optionsList.domFocus();
+			const focusElement = (this._selectedElementIdx === undefined) ? 0 : this._selectedElementIdx;
+			this._optionsList.setFocus([focusElement]);
+		}
+	}
+}
+
+export class OptionListDelegate implements IListVirtualDelegate<azdata.ListViewOption> {
+	constructor(
+		private _height: number
+	) {
+	}
+
+	public getHeight(element: azdata.ListViewOption): number {
+		return this._height;
+	}
+
+	public getTemplateId(element: azdata.ListViewOption): string {
+		return 'optionListRenderer';
+	}
+}
+
+interface ExtensionListTemplate {
+	root: HTMLElement;
+}
+
+class OptionsListRenderer implements IListRenderer<azdata.ListViewOption, ExtensionListTemplate> {
+	public static TEMPLATE_ID = 'optionListRenderer';
+
+	public get templateId(): string {
+		return OptionsListRenderer.TEMPLATE_ID;
+	}
+
+	public renderTemplate(container: HTMLElement): ExtensionListTemplate {
+		const tableTemplate: ExtensionListTemplate = Object.create(null);
+		tableTemplate.root = DOM.append(container, DOM.$('div.list-row.listview-option'));
+		return tableTemplate;
+	}
+
+	public renderElement(option: azdata.ListViewOption, index: number, templateData: ExtensionListTemplate): void {
+		templateData.root.innerText = option.label ?? '';
+	}
+
+	public disposeTemplate(template: ExtensionListTemplate): void {
+		// noop
+	}
+
+	public disposeElement(element: azdata.ListViewOption, index: number, templateData: ExtensionListTemplate): void {
+		// noop
 	}
 }

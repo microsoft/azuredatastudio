@@ -196,6 +196,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				if (this._selectedResourceType) {
 					this._cardGroup.selectedCardId = this._selectedResourceType.name;
 				}
+				this._resourceTagsListView.focus();
 			});
 		});
 		this._dialogObject.content = [tab];
