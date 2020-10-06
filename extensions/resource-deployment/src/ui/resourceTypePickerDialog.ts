@@ -237,15 +237,15 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private filterResources(): void {
-
+		const tag = this._resourceTagsListView.selectedOptionId!;
 		const search = this._resourceSearchBox.value?.toLowerCase() ?? '';
 
-		const tag = this._resourceTagsListView.selectedOptionId!;
-
+		// Getting resourceType based on the selected tag
 		let filteredResourceTypes = (tag !== 'All') ? this._resourceTypes.filter(element => element.tags?.includes(tag) ?? false) : this._resourceTypes;
 
+		// This piece of code will filter resourceTypes based on their names.
 		const filteredResourceTypesOnSearch: ResourceType[] = filteredResourceTypes.filter((element) => element.displayName.toLowerCase().includes(search!));
-
+		// Adding resourceTypes with descriptions matching the search text to the result at the end as they might less relevant.
 		filteredResourceTypesOnSearch.push(...filteredResourceTypes.filter((element) => !element.displayName.toLowerCase().includes(search!) && element.description.toLowerCase().includes(search!)));
 
 		const cards = filteredResourceTypesOnSearch.map((resourceType) => this.createOrGetCard(resourceType));
@@ -567,16 +567,16 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 	private getAllResourceTags(): string[] {
 		const supportedTags = [
-			constants.ResourceTypeCategories.ALL,
-			constants.ResourceTypeCategories.ONPREM,
-			constants.ResourceTypeCategories.HYBRID,
-			constants.ResourceTypeCategories.CLOUD,
-			constants.ResourceTypeCategories.SQLSERVER,
-			constants.ResourceTypeCategories.POSTGRESQL
+			constants.ResourceTypeCategories.All,
+			constants.ResourceTypeCategories.OnPrem,
+			constants.ResourceTypeCategories.Hybrid,
+			constants.ResourceTypeCategories.Cloud,
+			constants.ResourceTypeCategories.SqlServer,
+			constants.ResourceTypeCategories.PostgreSql
 		];
 
 		const tagsWithResourceTypes = supportedTags.filter(tag => {
-			return (tag === constants.ResourceTypeCategories.ALL) || this._resourceTypes.find(resourceType => resourceType.tags?.includes(tag)) !== undefined;
+			return (tag === constants.ResourceTypeCategories.All) || this._resourceTypes.find(resourceType => resourceType.tags?.includes(tag)) !== undefined;
 		});
 
 		return tagsWithResourceTypes;

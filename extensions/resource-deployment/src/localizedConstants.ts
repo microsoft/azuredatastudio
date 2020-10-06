@@ -48,17 +48,17 @@ export const deployNotebook = localize('ui.DeployButton', "Run");
 
 export function getResourceTypeCategoryLocalizedString(resourceTypeCategory: string): string {
 	switch (resourceTypeCategory) {
-		case ResourceTypeCategories.ALL:
+		case ResourceTypeCategories.All:
 			return localize('resourceTypePickerDialog.resourceTypeCategoryAll', "All");
-		case ResourceTypeCategories.ONPREM:
+		case ResourceTypeCategories.OnPrem:
 			return localize('resourceTypePickerDialog.resourceTypeCategoryOnPrem', "On-premises");
-		case ResourceTypeCategories.SQLSERVER:
+		case ResourceTypeCategories.SqlServer:
 			return localize('resourceTypePickerDialog.resourceTypeCategoriesSqlServer', "SQL Server");
-		case ResourceTypeCategories.HYBRID:
+		case ResourceTypeCategories.Hybrid:
 			return localize('resourceTypePickerDialog.resourceTypeCategoryOnHybrid', "Hybrid");
-		case ResourceTypeCategories.POSTGRESQL:
+		case ResourceTypeCategories.PostgreSql:
 			return localize('resourceTypePickerDialog.resourceTypeCategoryOnPostgreSql', "PostgreSQL");
-		case ResourceTypeCategories.CLOUD:
+		case ResourceTypeCategories.Cloud:
 			return localize('resourceTypePickerDialog.resourceTypeCategoryOnCloud', "Cloud");
 		default:
 			return resourceTypeCategory;

@@ -8,11 +8,11 @@ export const AzdataInstallLocationKey: string = 'azdataInstallLocation';
 export const ToolsInstallPath = 'AZDATA_NB_VAR_TOOLS_INSTALLATION_PATH';
 
 export const enum ResourceTypeCategories {
-	ALL = 'All',
-	ONPREM = 'On-premises',
-	SQLSERVER = 'SQL Server',
-	HYBRID = 'Hybrid',
-	POSTGRESQL = 'PostgreSQL',
-	CLOUD = 'Cloud',
+	All = 'All',
+	OnPrem = 'On-premises',
+	SqlServer = 'SQL Server',
+	Hybrid = 'Hybrid',
+	PostgreSql = 'PostgreSQL',
+	Cloud = 'Cloud',
 }
 

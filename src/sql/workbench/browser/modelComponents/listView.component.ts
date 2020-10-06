@@ -13,7 +13,6 @@ import { IListOptions, List } from 'vs/base/browser/ui/list/listWidget';
 import 'vs/css!./media/listView';
 
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
-import { deepClone } from 'vs/base/common/objects';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IListRenderer, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -132,7 +131,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
 			args: {
-				option: deepClone(selectedOption)
+				id: selectedOption.id
 			}
 		});
 	}
@@ -147,7 +146,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 	}
 }
 
-export class OptionListDelegate implements IListVirtualDelegate<azdata.ListViewOption> {
+class OptionListDelegate implements IListVirtualDelegate<azdata.ListViewOption> {
 	constructor(
 		private _height: number
 	) {
