@@ -541,18 +541,14 @@ declare module 'azdata' {
 
 		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
-		export enum DialogStyle {
-			Normal = 0,
-			Flyout = 1,
-			Callout = 2
-		}
+		export type DialogStyle = 'Normal' | 'Flyout' | 'Callout';
 
 		/**
 		 * Create a dialog with the given title
 		 * @param title The title of the dialog, displayed at the top
 		 * @param dialogName the name of the dialog
 		 * @param width width of the dialog, default is 'wide'
-		 * @param dialogStyle Enum representing choice of dialog style: flyout or callout.
+		 * @param dialogStyle Defines the dialog style, default is 'Flyout'
 		 */
 		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle): Dialog;
 
