@@ -60,8 +60,8 @@ export class UserDataInitializationService implements IUserDataInitializationSer
 					return undefined; // {{SQL CARBON EDIT}} strict-null-check
 				}
 
-				if (!this.environmentService.options?.enableSyncByDefault) {
-					this.logService.trace(`Skipping initializing user data as sync is not enabled by default`);
+				if (!this.environmentService.options?.enableSyncByDefault && !this.environmentService.options?.enableSettingsSync) {
+					this.logService.trace(`Skipping initializing user data as settings sync is not enabled`);
 					return undefined; // {{SQL CARBON EDIT}} strict-null-check
 				}
 
