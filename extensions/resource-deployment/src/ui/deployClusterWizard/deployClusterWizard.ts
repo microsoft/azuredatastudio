@@ -14,7 +14,7 @@ import { IAzdataService } from '../../services/azdataService';
 import { IKubeService } from '../../services/kubeService';
 import { INotebookService } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
-import { getErrorMessage } from '../../utils';
+import { getErrorMessage } from '../../common/utils';
 import { InputComponents } from '../modelViewUtils';
 import { WizardBase } from '../wizardBase';
 import { WizardPageBase } from '../wizardPageBase';
