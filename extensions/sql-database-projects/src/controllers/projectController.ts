@@ -460,7 +460,7 @@ export class ProjectsController {
 			if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
 				// get project path and guid
 				const projectReferenceSettings = settings as IProjectReferenceSettings;
-				const workspaceProjects = utils.getSqlProjectsInWorkspace();
+				const workspaceProjects = await utils.getSqlProjectsInWorkspace();
 				const referencedProject = await Project.openProject(workspaceProjects.filter(p => path.parse(p.fsPath).name === projectReferenceSettings.projectName)[0].fsPath);
 				const relativePath = path.relative(project.projectFolderPath, referencedProject?.projectFilePath!);
 				projectReferenceSettings.projectRelativePath = vscode.Uri.file(relativePath);
@@ -567,6 +567,13 @@ export class ProjectsController {
 
 		// TODO: Refactor code
 		try {
+			const workspaceApi = await utils.getDataWorkspaceExtensionApi();
+
+			if (!vscode.workspace.workspaceFile) {
+				workspaceApi.showWorkspaceRequiredNotification();
+				return;
+			}
+
 			const model: ImportDataModel | undefined = await this.getModelFromContext(context);
 
 			if (!model) {
@@ -593,9 +600,8 @@ export class ProjectsController {
 			await project.addToProject(fileFolderList); // Add generated file structure to the project
 
 			// add project to workspace
-			const dataWorkspaceExtension = (<dataworkspace.IExtension>vscode.extensions.getExtension(dataworkspace.extension.name)?.exports);
-			dataWorkspaceExtension.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
-			dataWorkspaceExtension.showProjectsView();
+			workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
+			workspaceApi.showProjectsView();
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));

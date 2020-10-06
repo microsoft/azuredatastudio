@@ -13,6 +13,9 @@ export const UnknownProjectsError = (projectFiles: string[]): string => { return
 export const SelectProjectFileActionName = localize('SelectProjectFileActionName', "Select");
 export const AllProjectTypes = localize('AllProjectTypes', "All Project Types");
 export const ProviderNotFoundForProjectTypeError = (projectType: string): string => { return localize('UnknownProjectTypeError', "No provider was found for project type with id: '{0}'", projectType); };
+export const WorkspaceRequiredMessage = localize('dataworkspace.workspaceRequiredMessage', "A workspace is required in order to use the project feature.");
+export const OpenWorkspace = localize('dataworkspace.openWorkspace', "Open Workspace…");
+export const CreateWorkspace = localize('dataworkspace.createWorkspace', "Create Workspace…");
 
 // UI
 export const OkButtonText = localize('dataworkspace.ok', "OK");

@@ -14,24 +14,30 @@ import { OpenProjectDialog } from './dialogs/openProjectDialog';
 export function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const workspaceService = new WorkspaceService();
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
+	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.newProject', async () => {
-		const dialog = new NewProjectDialog(workspaceService);
-		dialog.open();
+		if (vscode.workspace.workspaceFile) {
+			const dialog = new NewProjectDialog(workspaceService);
+			dialog.open();
+		} else {
+			dataWorkspaceExtension.showWorkspaceRequiredNotification();
+		}
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openProject', async () => {
-		const dialog = new OpenProjectDialog(workspaceService, context);
-		dialog.open();
+		if (vscode.workspace.workspaceFile) {
+			const dialog = new OpenProjectDialog(workspaceService, context);
+			dialog.open();
+		} else {
+			dataWorkspaceExtension.showWorkspaceRequiredNotification();
+		}
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', () => {
 		workspaceTreeDataProvider.refresh();
 	}));
-
 	context.subscriptions.push(vscode.commands.registerCommand('projects.removeProject', async (treeItem: WorkspaceTreeItem) => {
 		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
 	}));
-
-	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	return Promise.resolve(dataWorkspaceExtension);
 }
 
