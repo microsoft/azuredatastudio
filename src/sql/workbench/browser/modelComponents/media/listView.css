@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.listview-container {
+.modelview-listview-container {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
@@ -16,27 +16,14 @@
 	font-size: 12px;
 }
 
-.listview-title {
+.modelview-listview-container .modelview-listview-title {
 	margin: 0 5px 5px 0;
 	font-weight: bold;
 	line-height: 16px;
 	padding: 5px 0px 5px 5px;
 }
 
-.listview-li {
-	position: relative;
-	display: block;
-	padding: 0;
-	list-style-type: none;
-	display: inline-block;
-	overflow: hidden;
-	width: 100%;
-	margin: 0;
-	border: #000;
-	border-width: 2px;
-}
-
-.listview-option {
+.modelview-listview-container .listview-option {
 	line-height: 16px;
 	width: 95%;
 	padding: 5px 0px 5px 5px;

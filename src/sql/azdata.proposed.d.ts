@@ -316,7 +316,6 @@ declare module 'azdata' {
 	export interface ListViewOption {
 		label: string;
 		id: string;
-		styles?: CssStyles
 	}
 
 	export type ListViewClickEvent = { option: ListViewOption };
