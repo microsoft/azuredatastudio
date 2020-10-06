@@ -13,14 +13,14 @@ import { ResourceTreeNode } from './resourceTreeNode';
 /**
  * The TreeNode for displaying a SQL Managed Instance on Azure Arc
  */
-export class MiaaTreeNode extends ResourceTreeNode {
+export class MiaaTreeNode extends ResourceTreeNode<MiaaModel> {
 
 	constructor(model: MiaaModel, private _controllerModel: ControllerModel) {
 		super(model.info.name, vscode.TreeItemCollapsibleState.None, ResourceType.sqlManagedInstances, model);
 	}
 
 	public async openDashboard(): Promise<void> {
-		const miaaDashboard = new MiaaDashboard(this._controllerModel, this.model as MiaaModel);
+		const miaaDashboard = new MiaaDashboard(this._controllerModel, this.model);
 		await miaaDashboard.showDashboard();
 	}
 }

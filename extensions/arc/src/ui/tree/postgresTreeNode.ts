@@ -13,14 +13,14 @@ import { ResourceTreeNode } from './resourceTreeNode';
 /**
  * The TreeNode for displaying an Postgres Server group
  */
-export class PostgresTreeNode extends ResourceTreeNode {
+export class PostgresTreeNode extends ResourceTreeNode<PostgresModel> {
 
 	constructor(model: PostgresModel, private _controllerModel: ControllerModel, private _context: vscode.ExtensionContext) {
 		super(model.info.name, vscode.TreeItemCollapsibleState.None, ResourceType.postgresInstances, model);
 	}
 
 	public async openDashboard(): Promise<void> {
-		const postgresDashboard = new PostgresDashboard(this._context, this._controllerModel, this.model as PostgresModel);
+		const postgresDashboard = new PostgresDashboard(this._context, this._controllerModel, this.model);
 		await postgresDashboard.showDashboard();
 	}
 }
