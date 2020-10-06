@@ -340,7 +340,7 @@ describe('Utils Tests', function () {
 
 	describe('getPinnedNotebooks', function (): void {
 		it('Should NOT have any pinned notebooks', async function (): Promise<void> {
-			let pinnedNotebooks: string[] = utils.getPinnedNotebooks();
+			let pinnedNotebooks: utils.IBookNotebook[] = utils.getPinnedNotebooks();
 
 			should(pinnedNotebooks.length).equal(0, 'Should not have any pinned notebooks');
 		});

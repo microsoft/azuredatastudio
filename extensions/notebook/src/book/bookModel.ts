@@ -35,7 +35,8 @@ export class BookModel {
 		public readonly bookPath: string,
 		public readonly openAsUntitled: boolean,
 		public readonly isNotebook: boolean,
-		private _extensionContext: vscode.ExtensionContext) {
+		private _extensionContext: vscode.ExtensionContext,
+		public readonly notebookRootPath?: string) {
 		this._bookItems = [];
 	}
 
@@ -107,7 +108,7 @@ export class BookModel {
 		let notebookItem = new BookTreeItem({
 			title: pathDetails.name,
 			contentPath: this.bookPath,
-			root: pathDetails.dir,
+			root: this.notebookRootPath ? this.notebookRootPath : pathDetails.dir,
 			tableOfContents: { sections: undefined },
 			page: { sections: undefined },
 			type: BookTreeItemType.Notebook,
