@@ -39,6 +39,7 @@ import { GridStackItemComponent } from 'sql/workbench/contrib/notebook/browser/n
 import { NotebookEditorComponent } from 'sql/workbench/contrib/notebook/browser/notebookEditor.component';
 import { ViewCellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewCellToolbar.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
+import { ViewsCodeCellComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewsCodeCell.component';
 
 const outputComponentRegistry = Registry.as<ICellComponenetRegistry>(OutputComponentExtensions.CellComponentContributions);
 
@@ -58,6 +59,7 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			TextCellComponent,
 			CellToolbarComponent,
 			ViewCellToolbarComponent,
+			ViewsCodeCellComponent,
 			MarkdownToolbarComponent,
 			PlaceholderCellComponent,
 			NotebookComponent,

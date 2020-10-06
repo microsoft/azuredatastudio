@@ -11,11 +11,11 @@
 	[class.active]="cell.active"
 >
 	<div #actionbar [style.display]="showActionBar ? 'block' : 'none'" class="actionbar"></div>
-	<div #item class="grid-stack-item-content">
+	<div *ngIf="ready" #item class="grid-stack-item-content">
 		<div class="grid-stack-content-wrapper">
 			<div class="grid-stack-content-wrapper-inner">
-				<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
-				</code-cell-component>
+				<views-code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
+				</views-code-cell-component>
 				<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
 				</text-cell-component>
 			</div>

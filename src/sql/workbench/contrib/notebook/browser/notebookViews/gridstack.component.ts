@@ -29,10 +29,13 @@ export class GridStackComponent implements OnInit {
 	@ViewChildren(GridStackItemComponent) private _items: QueryList<GridStackItemComponent>;
 
 	protected _grid: any;
+	public loaded: boolean;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-	) { }
+	) {
+		this.loaded = false;
+	}
 
 	public get hiddenItems(): GridStackItemComponent[] {
 		return this._items.filter(item => !item.display);
@@ -56,6 +59,11 @@ export class GridStackComponent implements OnInit {
 				alwaysShowResizeHandle: true,
 				verticalMargin: 5
 			});
+
+			this.cells.forEach((cell) => self._grid);
+
+			this.loaded = true;
+			this.detectChanges();
 
 			self._grid.on('added', function (e, items) { self.persist('added', items, self._grid, self._items); });
 			self._grid.on('removed', function (e, items) { self.persist('removed', items, self._grid, self._items); });
