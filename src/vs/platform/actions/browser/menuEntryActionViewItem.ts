@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { addClasses, createCSSRule, removeClasses, asCSSUrl } from 'vs/base/browser/dom';
+import { createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
 import { domEvent } from 'vs/base/browser/event';
 import { IAction, Separator } from 'vs/base/common/actions';
 import { Emitter } from 'vs/base/common/event';
@@ -238,10 +238,10 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 			// theme icons
 			const iconClass = ThemeIcon.asClassName(icon);
 			if (this.label && iconClass) {
-				addClasses(this.label, iconClass);
+				this.label.classList.add(...iconClass.split(' '));
 				this._itemClassDispose.value = toDisposable(() => {
 					if (this.label) {
-						removeClasses(this.label, iconClass);
+						this.label.classList.remove(...iconClass.split(' '));
 					}
 				});
 			}
@@ -264,11 +264,10 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 				}
 
 				if (this.label) {
-
-					addClasses(this.label, 'icon', iconClass);
+					this.label.classList.add('icon', ...iconClass.split(' '));
 					this._itemClassDispose.value = toDisposable(() => {
 						if (this.label) {
-							removeClasses(this.label, 'icon', iconClass);
+							this.label.classList.remove('icon', ...iconClass.split(' '));
 						}
 					});
 				}
@@ -356,10 +355,10 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 				}
 
 				if (this.label) {
-					addClasses(this.label, 'codicon', this._defaultCSSClassToAdd, iconClass);
+					this.label.classList.add('codicon', this._defaultCSSClassToAdd, ...iconClass.split(' '));
 					this._labeledItemClassDispose = toDisposable(() => {
 						if (this.label) {
-							removeClasses(this.label, 'codicon', this._defaultCSSClassToAdd, iconClass);
+							this.label.classList.remove('codicon', this._defaultCSSClassToAdd, ...iconClass.split(' '));
 						}
 					});
 				}
