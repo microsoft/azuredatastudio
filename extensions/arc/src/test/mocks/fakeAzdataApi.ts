@@ -15,7 +15,7 @@ export class FakeAzdataApi implements azdataExt.IAzdataApi {
 
 	//
 	// API Implementation
-	// 
+	//
 	public get arc() {
 		const self = this;
 		return {
@@ -61,7 +61,7 @@ export class FakeAzdataApi implements azdataExt.IAzdataApi {
 			}
 		};
 	}
-	getPath(): string {
+	getPath(): Promise<string> {
 		throw new Error('Method not implemented.');
 	}
 	login(_endpoint: string, _username: string, _password: string): Promise<azdataExt.AzdataOutput<any>> {
