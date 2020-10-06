@@ -301,7 +301,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (this.shouldShowExpandMessageButton) {
 			DOM.append(this._detailsButtonContainer!, this._toggleMessageDetailButton!.element);
 		} else {
-			DOM.removeNode(this._toggleMessageDetailButton!.element);
+			this._toggleMessageDetailButton!.element.remove();
 		}
 	}
 
@@ -312,7 +312,7 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (this._messageDetailText) {
 			if (isExpanded) {
-				DOM.removeNode(this._messageDetail!);
+				this._messageDetail!.remove();
 			} else {
 				DOM.append(this._messageBody!, this._messageDetail!);
 			}
@@ -454,7 +454,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		});
 		if (buttonIndex > -1 && buttonIndex < this._footerButtons.length) {
 			let button = this._footerButtons[buttonIndex];
-			DOM.removeNode(button.element);
+			button.element.remove();
 			button.dispose();
 			this._footerButtons.splice(buttonIndex, 1);
 		}
@@ -493,7 +493,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				this._messageSummary!.title = message!;
 				this._messageDetail!.innerText = description;
 			}
-			DOM.removeNode(this._messageDetail!);
+			this._messageDetail!.remove();
 			this.messagesElementVisible = !!this._messageSummaryText;
 			this.updateExpandMessageState();
 		}
@@ -505,7 +505,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				DOM.prepend(this._modalContent!, this._messageElement!);
 			}
 		} else {
-			DOM.removeNode(this._messageElement!);
+			this._messageElement!.remove();
 			// Set the focus to first focus element if the focus is not within the dialog
 			if (!DOM.isAncestor(document.activeElement, this._bodyContainer!)) {
 				this.setInitialFocusedElement();
