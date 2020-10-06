@@ -281,6 +281,13 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 				'scope': ConfigurationScope.APPLICATION,
 				'description': nls.localize('titleBarStyle', "Adjust the appearance of the window title bar. On Linux and Windows, this setting also affects the application and context menu appearances. Changes require a full restart to apply.")
 			},
+			'window.dialogStyle': {
+				'type': 'string',
+				'enum': ['native', 'custom'],
+				'default': 'native',
+				'scope': ConfigurationScope.APPLICATION,
+				'description': nls.localize('dialogStyle', "Adjust the appearance of dialog windows.")
+			},
 			'window.nativeTabs': {
 				'type': 'boolean',
 				'default': false,
