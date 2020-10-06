@@ -18,7 +18,8 @@
     "onView:azureArc"
   ],
   "extensionDependencies": [
-    "Microsoft.azdata"
+    "Microsoft.azdata",
+    "Microsoft.resource-deployment"
   ],
   "repository": {
     "type": "git",
@@ -186,7 +187,7 @@
                           "editable": false,
                           "options": {
                             "source": {
-                              "type": "ArcControllerConfigProfilesOptionsSource"
+                              "providerId": "arc.controller.config.profiles"
                             },
                             "defaultValue": "azure-arc-aks-default-storage",
                             "optionsType": "radio"
@@ -546,7 +547,7 @@
                           "required": true,
                           "options": {
                             "source": {
-                              "type": "ArcControllersOptionsSource",
+                              "providerId": "arc.controllers",
                               "variableNames": {
                                 "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
                                 "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
@@ -711,7 +712,7 @@
                           "required": true,
                           "options": {
                             "source": {
-                              "type": "ArcControllersOptionsSource",
+                              "providerId": "arc.controllers",
                               "variableNames": {
                                 "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
                                 "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",

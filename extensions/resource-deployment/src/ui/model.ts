@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
 import { ITool, NoteBookEnvironmentVariablePrefix } from '../interfaces';
-import { setEnvironmentVariablesForInstallPaths, getRuntimeBinaryPathEnvironmentVariableName } from '../utils';
+import { setEnvironmentVariablesForInstallPaths, getRuntimeBinaryPathEnvironmentVariableName } from '../common/utils';
 import { ToolsInstallPath } from '../constants';
 import { delimiter } from 'path';
 

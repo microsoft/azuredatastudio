@@ -1412,7 +1412,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('providerNameToDisplayNameMap should return all providers', () => {
-		let expectedNames = ['MSSQL', 'PGSQL', 'KUSTO'];
+		let expectedNames = ['MSSQL', 'PGSQL', 'FAKE'];
 		let providerNames = Object.keys(connectionManagementService.providerNameToDisplayNameMap);
 		assert.equal(providerNames.length, 3);
 		assert.equal(providerNames[0], expectedNames[0]);

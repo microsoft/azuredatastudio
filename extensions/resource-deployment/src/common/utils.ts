@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as path from 'path';
-import { ToolsInstallPath } from './constants';
-import { ITool, NoteBookEnvironmentVariablePrefix } from './interfaces';
+import { ToolsInstallPath } from '../constants';
+import { ITool, NoteBookEnvironmentVariablePrefix } from '../interfaces';
 
 export function getErrorMessage(error: any): string {
 	return (error instanceof Error)

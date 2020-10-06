@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
-import { OptionsSourceType } from './helpers/optionSources';
 import { FieldType, OptionsType } from './interfaces';
 
 const localize = nls.loadMessageBundle();
@@ -23,14 +22,11 @@ export const refresh = localize('azure.refresh', "Refresh");
 export const createNewResourceGroup = localize('azure.resourceGroup.createNewResourceGroup', "Create a new resource group");
 export const NewResourceGroupAriaLabel = localize('azure.resourceGroup.NewResourceGroupAriaLabel', "New resource group name");
 export const realm = localize('deployCluster.Realm', "Realm");
-export const unexpectedOptionsSourceType = (type: OptionsSourceType) => localize('optionsSourceType.Invalid', "Invalid options source type:{0}", type);
 export const unknownFieldTypeError = (type: FieldType) => localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", type);
+export const optionsSourceAlreadyDefined = (optionsSourceId: string) => localize('optionsSource.alreadyDefined', "Options Source with id:{0} is already defined", optionsSourceId);
+export const noOptionsSourceDefined = (optionsSourceId: string) => localize('optionsSource.notDefined', "No Options Source defined for id: {0}", optionsSourceId);
 export const variableValueFetchForUnsupportedVariable = (variableName: string) => localize('getVariableValue.unknownVariableName', "Attempt to get variable value for unknown variable:{0}", variableName);
 export const isPasswordFetchForUnsupportedVariable = (variableName: string) => localize('getIsPassword.unknownVariableName', "Attempt to get isPassword for unknown variable:{0}", variableName);
-export const noControllersConnected = localize('noControllersConnected', "No Azure Arc controllers are currently connected. Please run the command: 'Connect to Existing Azure Arc Controller' and then try again");
-export const noOptionsSourceDefined = (optionsSourceType: string) => localize('noOptionsSourceDefined', "No OptionsSource defined for type: {0}", optionsSourceType);
-export const noControllerInfoFound = (name: string) => localize('noControllerInfoFound', "controllerInfo could not be found with name: {0}", name);
-export const noPasswordFound = (controllerName: string) => localize('noPasswordFound', "Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.", controllerName);
 export const optionsNotDefined = (fieldType: FieldType) => localize('optionsNotDefined', "FieldInfo.options was not defined for field type: {0}", fieldType);
 export const optionsNotObjectOrArray = localize('optionsNotObjectOrArray', "FieldInfo.options must be an object if it is not an array");
 export const optionsTypeNotFound = localize('optionsTypeNotFound', "When FieldInfo.options is an object it must have 'optionsType' property");
