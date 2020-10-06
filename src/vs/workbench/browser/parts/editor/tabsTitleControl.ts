@@ -34,7 +34,7 @@ import { IExtensionService } from 'vs/workbench/services/extensions/common/exten
 import { MergeGroupMode, IMergeGroupOptions, GroupsArrangement, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { addDisposableListener, EventType, EventHelper, Dimension, scheduleAtNextAnimationFrame, findParentWithClass, clearNode } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import { IEditorGroupsAccessor, IEditorGroupView, EditorServiceImpl, EDITOR_TITLE_HEIGHT } from 'vs/workbench/browser/parts/editor/editor';
+import { IEditorGroupsAccessor, IEditorGroupView, EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 import { CloseOneEditorAction, UnpinEditorAction } from 'vs/workbench/browser/parts/editor/editorActions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BreadcrumbsControl } from 'vs/workbench/browser/parts/editor/breadcrumbsControl';
@@ -68,11 +68,13 @@ export class TabsTitleControl extends TitleControl {
 		large: 10
 	};
 
-	private static readonly TAB_SIZES = {
+	private static readonly TAB_WIDTH = {
 		compact: 38,
 		shrink: 80,
 		fit: 120
 	};
+
+	private static readonly TAB_HEIGHT = 35;
 
 	private titleContainer: HTMLElement | undefined;
 	private tabsAndActionsContainer: HTMLElement | undefined;
@@ -513,6 +515,11 @@ export class TabsTitleControl extends TitleControl {
 			this.computeTabLabels();
 		}
 
+		// Update tabs scrollbar sizing
+		if (oldOptions.titleScrollbarSizing !== newOptions.titleScrollbarSizing) {
+			this.updateTabsScrollbarSizing();
+		}
+
 		// Redraw tabs when other options change
 		if (
 			oldOptions.labelFormat !== newOptions.labelFormat ||
@@ -524,11 +531,6 @@ export class TabsTitleControl extends TitleControl {
 			oldOptions.highlightModifiedTabs !== newOptions.highlightModifiedTabs
 		) {
 			this.redraw();
-		}
-
-		// Udate tabs scrollbar sizing
-		if (oldOptions.titleScrollbarSizing !== newOptions.titleScrollbarSizing) {
-			this.updateTabsScrollbarSizing();
 		}
 	}
 
@@ -1076,10 +1078,10 @@ export class TabsTitleControl extends TitleControl {
 			let stickyTabWidth = 0;
 			switch (options.pinnedTabSizing) {
 				case 'compact':
-					stickyTabWidth = TabsTitleControl.TAB_SIZES.compact;
+					stickyTabWidth = TabsTitleControl.TAB_WIDTH.compact;
 					break;
 				case 'shrink':
-					stickyTabWidth = TabsTitleControl.TAB_SIZES.shrink;
+					stickyTabWidth = TabsTitleControl.TAB_WIDTH.shrink;
 					break;
 			}
 
@@ -1237,7 +1239,12 @@ export class TabsTitleControl extends TitleControl {
 	}
 
 	getPreferredHeight(): number {
-		return EDITOR_TITLE_HEIGHT + (this.breadcrumbsControl && !this.breadcrumbsControl.isHidden() ? BreadcrumbsControl.HEIGHT : 0);
+		let height = TabsTitleControl.TAB_HEIGHT;
+		if (this.breadcrumbsControl && !this.breadcrumbsControl.isHidden()) {
+			height += BreadcrumbsControl.HEIGHT;
+		}
+
+		return height;
 	}
 
 	layout(dimension: Dimension | undefined): void {
@@ -1315,10 +1322,10 @@ export class TabsTitleControl extends TitleControl {
 			let stickyTabWidth = 0;
 			switch (this.accessor.partOptions.pinnedTabSizing) {
 				case 'compact':
-					stickyTabWidth = TabsTitleControl.TAB_SIZES.compact;
+					stickyTabWidth = TabsTitleControl.TAB_WIDTH.compact;
 					break;
 				case 'shrink':
-					stickyTabWidth = TabsTitleControl.TAB_SIZES.shrink;
+					stickyTabWidth = TabsTitleControl.TAB_WIDTH.shrink;
 					break;
 			}
 
@@ -1330,7 +1337,7 @@ export class TabsTitleControl extends TitleControl {
 		// Special case: we have sticky tabs but the available space for showing tabs
 		// is little enough that we need to disable sticky tabs sticky positioning
 		// so that tabs can be scrolled at naturally.
-		if (this.group.stickyCount > 0 && availableTabsContainerWidth < TabsTitleControl.TAB_SIZES.fit) {
+		if (this.group.stickyCount > 0 && availableTabsContainerWidth < TabsTitleControl.TAB_WIDTH.fit) {
 			tabsContainer.classList.add('disable-sticky-tabs');
 
 			availableTabsContainerWidth = visibleTabsContainerWidth;
