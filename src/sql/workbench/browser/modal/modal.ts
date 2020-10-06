@@ -58,8 +58,14 @@ export interface IModalDialogStyles {
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
+export enum DialogStyle {
+	Normal = 0,
+	Flyout = 1,
+	Callout = 2
+}
 export interface IModalOptions {
 	isFlyout?: boolean;
+	dialogStyle?: DialogStyle;
 	width?: DialogWidth;
 	isAngular?: boolean;
 	hasBackButton?: boolean;
@@ -71,6 +77,7 @@ export interface IModalOptions {
 
 const defaultOptions: IModalOptions = {
 	isFlyout: true,
+	dialogStyle: 1,
 	width: 'narrow',
 	isAngular: false,
 	hasBackButton: false,
@@ -165,6 +172,10 @@ export abstract class Modal extends Disposable implements IThemable {
 		mixin(this._modalOptions, defaultOptions, false);
 		this._staticKey = generateUuid();
 		this._modalShowingContext = MODAL_SHOWING_CONTEXT.bindTo(_contextKeyService);
+
+		if (this._modalOptions.isFlyout) {
+			this._modalOptions.dialogStyle = 1;
+		}
 	}
 
 	/**
@@ -172,9 +183,10 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	public render() {
 		let builderClass = '.modal.fade';
-		if (this._modalOptions.isFlyout) {
-			builderClass += '.flyout-dialog';
-		}
+
+		builderClass += this._modalOptions.dialogStyle === 1 ? '.flyout-dialog'
+			: this._modalOptions.dialogStyle === 2 ? '.callout-dialog'
+				: '';
 
 		this._bodyContainer = DOM.$(`${builderClass}`, { role: 'dialog', 'aria-label': this._title });
 		const top = this.layoutService.offset?.top ?? 0;

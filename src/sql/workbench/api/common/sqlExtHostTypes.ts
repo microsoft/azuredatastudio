@@ -296,6 +296,12 @@ export interface IModelViewWizardDetails {
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
+export enum DialogStyle {
+	Normal = 0,
+	Flyout = 1,
+	Callout = 2
+}
+
 export enum MessageLevel {
 	Error = 0,
 	Warning = 1,

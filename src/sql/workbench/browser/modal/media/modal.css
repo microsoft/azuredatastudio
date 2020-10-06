@@ -13,7 +13,7 @@
 	z-index: 500;
 }
 
-.modal:not(.flyout-dialog) .modal-dialog {
+.modal:not(.flyout-dialog):not(.callout-dialog) .modal-dialog {
 	margin: auto;
 	width: 640px;
 	height: 480px;
