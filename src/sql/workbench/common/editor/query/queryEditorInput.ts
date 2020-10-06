@@ -15,7 +15,6 @@ import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResult
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 import { ExecutionPlanOptions } from 'azdata';
-import { startsWith } from 'vs/base/common/strings';
 import { IRange } from 'vs/editor/common/core/range';
 import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
@@ -316,6 +315,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	public get isSharedSession(): boolean {
-		return !!(this.uri && startsWith(this.uri, 'vsls:'));
+		return !!(this.uri && this.uri.startsWith('vsls:'));
 	}
 }

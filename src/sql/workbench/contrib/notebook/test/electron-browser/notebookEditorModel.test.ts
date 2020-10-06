@@ -34,7 +34,6 @@ import { nb } from 'azdata';
 import { Emitter } from 'vs/base/common/event';
 import { INotebookEditor, INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
-import { startsWith } from 'vs/base/common/strings';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestStorageService, TestTextResourcePropertiesService } from 'vs/workbench/test/common/workbenchTestServices';
@@ -659,7 +658,7 @@ suite('Notebook Editor Model', function (): void {
 			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(10 + i * 21), '            ],');
 			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(14 + i * 21), '            "outputs": [');
 			assert.equal(notebookEditorModel.editorModel.textEditorModel.getLineContent(25 + i * 21), '            "execution_count": null');
-			assert(startsWith(notebookEditorModel.editorModel.textEditorModel.getLineContent(26 + i * 21), '        }'));
+			assert(notebookEditorModel.editorModel.textEditorModel.getLineContent(26 + i * 21).startsWith('        }'));
 		}
 	});
 

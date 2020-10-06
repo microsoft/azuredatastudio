@@ -85,7 +85,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 						try {
 							const folder = await this.fileService.resolve(folderUri);
 							const files = folder.children ? folder.children.map(child => child.name) : [];
-							const file = files.sort().find(file => strings.startsWith(file.toLowerCase(), 'readme'));
+							const file = files.sort().find(file => (file.toLowerCase().startsWith('readme')));
 							if (file) {
 								return joinPath(folderUri, file);
 							}
@@ -97,7 +97,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 					arrays.coalesceInPlace(readmes);
 					if (!this.editorService.activeEditor) {
 						if (readmes.length) {
-							const isMarkDown = (readme: URI) => strings.endsWith(readme.path.toLowerCase(), '.md');
+							const isMarkDown = (readme: URI) => readme.path.toLowerCase().endsWith('.md');
 							await Promise.all([
 								this.commandService.executeCommand('markdown.showPreview', null, readmes.filter(isMarkDown), { locked: true }),
 								this.editorService.openEditors(readmes.filter(readme => !isMarkDown(readme)).map(readme => ({ resource: readme }))),
