@@ -730,7 +730,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 			canSelectFiles: true,
 			canSelectFolders: false,
 			canSelectMany: false,
-			defaultUri: vscode.Uri.file(path.dirname(input.value || os_homedir())),
+			defaultUri: input.value ? vscode.Uri.file(path.dirname(input.value)) : undefined,
 			openLabel: loc.select,
 			filters: filter
 		});
