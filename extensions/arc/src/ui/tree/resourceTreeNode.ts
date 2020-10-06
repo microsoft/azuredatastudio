@@ -10,8 +10,8 @@ import { TreeNode } from './treeNode';
 /**
  * A TreeNode belonging to a child of a Controller
  */
-export abstract class ResourceTreeNode extends TreeNode {
-	constructor(label: string, collapsibleState: vscode.TreeItemCollapsibleState, resourceType?: string, public model?: ResourceModel) {
+export abstract class ResourceTreeNode<M extends ResourceModel> extends TreeNode {
+	constructor(label: string, collapsibleState: vscode.TreeItemCollapsibleState, resourceType: string, public model: M) {
 		super(label, collapsibleState, resourceType);
 	}
 }
