@@ -16,6 +16,22 @@ import { SparkFileSource } from './sparkJobSubmissionService';
 
 const localize = nls.loadMessageBundle();
 
+/**
+ * Configuration values for the general tab of the spark job submission dialog.
+ * See https://livy.incubator.apache.org/docs/latest/rest-api.html for more information
+ * on the specific values
+ */
+export interface SparkConfigModel {
+	jobName: string,
+	mainClass: string,
+	arguments: string
+}
+
+const baseFormItemLayout: azdata.FormItemLayout = {
+	horizontal: false,
+	componentWidth: '400px'
+};
+
 export class SparkConfigurationTab {
 	private _tab: azdata.window.DialogTab;
 	public get tab(): azdata.window.DialogTab { return this._tab; }
@@ -37,10 +53,6 @@ export class SparkConfigurationTab {
 
 		this._tab.registerContent(async (modelView) => {
 			let builder = modelView.modelBuilder;
-			let parentLayout: azdata.FormItemLayout = {
-				horizontal: false,
-				componentWidth: '400px'
-			};
 
 			let formContainer = builder.formContainer();
 
@@ -53,7 +65,7 @@ export class SparkConfigurationTab {
 				component: this._jobNameInputBox,
 				title: localize('sparkJobSubmission.JobName', "Job Name"),
 				required: true
-			}, parentLayout);
+			}, baseFormItemLayout);
 
 			this._sparkContextLabel = builder.text().withProperties({
 				value: this._dataModel.getSparkClusterUrl()
@@ -61,7 +73,7 @@ export class SparkConfigurationTab {
 			formContainer.addFormItem({
 				component: this._sparkContextLabel,
 				title: localize('sparkJobSubmission.SparkCluster', "Spark Cluster")
-			}, parentLayout);
+			}, baseFormItemLayout);
 
 			this._fileSourceDropDown = builder.dropDown().withProperties<azdata.DropDownProperties>({
 				values: [SparkFileSource.Local.toString(), SparkFileSource.HDFS.toString()],
@@ -161,23 +173,24 @@ export class SparkConfigurationTab {
 				component: this._sourceFlexContainerWithHint,
 				title: localize('sparkJobSubmission.MainFilePath', "JAR/py File"),
 				required: true
-			}, parentLayout);
+			}, baseFormItemLayout);
 
 			this._mainClassInputBox = builder.inputBox().component();
 			formContainer.addFormItem({
 				component: this._mainClassInputBox,
 				title: localize('sparkJobSubmission.MainClass', "Main Class"),
 				required: true
-			}, parentLayout);
+			}, baseFormItemLayout);
 
 			this._argumentsInputBox = builder.inputBox().component();
 			formContainer.addFormItem({
 				component: this._argumentsInputBox,
 				title: localize('sparkJobSubmission.Arguments', "Arguments")
 			},
-				Object.assign(
-					{ info: localize('sparkJobSubmission.ArgumentsTooltip', "Command line arguments used in your main class, multiple arguments should be split by space.") },
-					parentLayout));
+				{
+					...baseFormItemLayout,
+					info: localize('sparkJobSubmission.ArgumentsTooltip', "Command line arguments used in your main class, multiple arguments should be split by space.")
+				});
 
 			await modelView.initializeModel(formContainer.component());
 		});
@@ -242,8 +255,12 @@ export class SparkConfigurationTab {
 		}
 	}
 
-	public getInputValues(): string[] {
-		return [this._jobNameInputBox.value, this._mainClassInputBox.value, this._argumentsInputBox.value];
+	public getSparkConfigValues(): SparkConfigModel {
+		return {
+			jobName: this._jobNameInputBox.value ?? '',
+			mainClass: this._mainClassInputBox.value ?? '',
+			arguments: this._argumentsInputBox.value ?? ''
+		};
 	}
 
 	public async pickFile(): Promise<string> {

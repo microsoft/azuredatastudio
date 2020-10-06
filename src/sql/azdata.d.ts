@@ -3179,7 +3179,13 @@ declare module 'azdata' {
 		multiline?: boolean;
 		rows?: number;
 		columns?: number;
+		/**
+		 * The minimum value allowed for the input. Only valid for number inputs.
+		 */
 		min?: number;
+		/**
+		 * The maxmimum value allowed for the input. Only valid for number inputs.
+		 */
 		max?: number;
 		/**
 		 * Whether to stop key event propagation when enter is pressed in the input box. Leaving this as false
