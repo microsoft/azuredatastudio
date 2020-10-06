@@ -275,7 +275,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.updatePreview();
 	}
 
-	public handleHtmlChanged(event): void {
+	public handleHtmlChanged(): void {
 		this.updateCellSource();
 	}
 
