@@ -30,6 +30,8 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 	private _optionsList!: List<azdata.ListViewOption>;
 	private _selectedElementIdx!: number;
 
+	static ROW_HEIGHT = 26;
+
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
@@ -51,8 +53,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 
 		};
 
-		this._optionsList = new List<azdata.ListViewOption>('ModelViewListView', this._vscodeList.nativeElement, new OptionListDelegate(26), [new OptionsListRenderer()], vscodelistOption);
-		this._optionsList?.layout(400);
+		this._optionsList = new List<azdata.ListViewOption>('ModelViewListView', this._vscodeList.nativeElement, new OptionListDelegate(ListViewComponent.ROW_HEIGHT), [new OptionsListRenderer()], vscodelistOption);
 		this._register(attachListStyler(this._optionsList, this.themeService));
 
 		this._register(this._optionsList.onDidChangeSelection((e) => {
@@ -107,16 +108,18 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 
 	public setProperties(properties: { [key: string]: any }) {
 		super.setProperties(properties);
-		// This is the entry point for the extension to set the selectedOptionId
-		// if (this.selectedOptionId) {
-		// 	this._optionsList.setSelection([this.options.map(v => v.id).indexOf(this.selectedOptionId)]);
-		// } else {
-		// 	this._optionsList.setSelection([0]);
-		// }
-
 		if (this.options) {
 			this._optionsList!.splice(0, this._optionsList!.length, this.options);
+			let height = (<number>this.height) ?? (this.options.length * ListViewComponent.ROW_HEIGHT);
+			this._optionsList.layout(height);
 		}
+
+		// This is the entry point for the extension to set the selectedOptionId
+		if (this.selectedOptionId) {
+			this._optionsList.setSelection([this.options.map(v => v.id).indexOf(this.selectedOptionId)]);
+		}
+
+
 	}
 
 	public selectOptionByIdx(idx: number): void {
