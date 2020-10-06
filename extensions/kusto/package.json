@@ -424,5 +424,10 @@
     "@types/kerberos": "^1.1.0",
     "@types/request": "^2.48.2",
     "@types/through2": "^2.0.34"
+  },
+  "__metadata": {
+    "id": "74",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }
