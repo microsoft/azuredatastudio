@@ -761,7 +761,10 @@
                           "label": "%arc.postgres.server.group.engine.version%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_ENGINE_VERSION",
                           "type": "options",
-                          "options" : ["11","12"],
+                          "options": [
+                            "11",
+                            "12"
+                          ],
                           "defaultValue": "12"
                         },
                         {
@@ -905,5 +908,10 @@
     "sinon": "^9.0.2",
     "typemoq": "2.1.0",
     "vscodetestcover": "^1.1.0"
+  },
+  "__metadata": {
+    "id": "68",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }
