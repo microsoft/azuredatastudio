@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import { azureResource } from 'azureResource';
 import * as fs from 'fs';
-import { EOL, homedir as os_homedir } from 'os';
+import { EOL } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
