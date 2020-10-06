@@ -22,6 +22,7 @@ export const CODE_SELECTOR: string = 'code-cell-component';
 })
 
 export class CodeCellComponent extends CellView implements OnInit, OnChanges {
+
 	@ViewChildren(CodeComponent) private codeCells: QueryList<ICellEditorProvider>;
 	@ViewChildren(OutputComponent) private outputCells: QueryList<ICellEditorProvider>;
 	@Input() cellModel: ICellModel;
@@ -45,7 +46,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	public stdIn: nb.IStdinMessage;
 
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
 	) {
 		super();
 	}

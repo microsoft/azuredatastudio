@@ -575,6 +575,11 @@ Includes non-masked style declarations. */
 	mask-image: url("start-outline.svg");
 }
 
+.masked-pseudo.stop:before {
+	-webkit-mask-image: url("stop_cell_solidanimation_inverse.svg");
+	mask-image: url("stop_cell_solidanimation_inverse.svg");
+}
+
 .masked-pseudo.code:before {
 	-webkit-mask-image: url("code.svg");
 	mask-image: url("code.svg");

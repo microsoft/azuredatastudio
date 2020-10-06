@@ -24,7 +24,7 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { ICellModel, INotebookModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider, ICellEditorProvider, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, INotebookSection, INavigationProvider, ICellEditorProvider, NotebookRange, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
@@ -129,7 +129,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	ngOnDestroy() {
 		this.dispose();
 		if (this.notebookService) {
-			this.notebookService.removeNotebookEditor(this);
+			//this.notebookService.removeNotebookEditor(this);
 		}
 	}
 
@@ -302,9 +302,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		// Wait on provider information to be available before loading kernel and other information
 		await this.awaitNonDefaultProvider();
 		await this._model.requestModelLoad();
+		/*
 		this.detectChanges();
 		this.setContextKeyServiceWithProviderId(this._model.providerId);
 		await this._model.startSession(this._model.notebookManager, undefined, true);
+		this.fillInActionsForCurrentContext();
+		this.detectChanges();
+		*/
+		//await this._model.sessionLoadFinished;
+		await this._model.onClientSessionReady;
+		this.detectChanges();
 		this.fillInActionsForCurrentContext();
 		this.detectChanges();
 	}
@@ -355,6 +362,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.notebookManagers.push(notebookManager);
 		}
 	}
+
 
 	private async awaitNonDefaultProvider(): Promise<void> {
 		// Wait on registration for now. Long-term would be good to cache and refresh

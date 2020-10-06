@@ -92,8 +92,7 @@ export class NotebookViewExtension extends NotebookExtension {
 	readonly version = 1;
 	protected _extensionMeta: INotebookViewMetadata;
 
-	private readonly _onViewDeleted = new Emitter<INotebookView>();
-	public readonly onViewDeleted = this._onViewDeleted.event;
+	private _onViewDeleted = new Emitter<void>();
 
 	constructor(protected _notebook: INotebookModel) {
 		super();
@@ -155,7 +154,6 @@ export class NotebookViewExtension extends NotebookExtension {
 			let removedView = this._extensionMeta.views.splice(viewToRemove, 1);
 
 			if (removedView.length) {
-				this._onViewDeleted.fire(removedView[0]);
 
 				this._notebook?.cells.forEach((cell) => {
 					let meta = this.getCellMetadata(cell);
@@ -173,6 +171,7 @@ export class NotebookViewExtension extends NotebookExtension {
 			this._extensionMeta.activeView = undefined;
 		}
 
+		this._onViewDeleted.fire();
 		this.commit();
 	}
 
@@ -211,13 +210,17 @@ export class NotebookViewExtension extends NotebookExtension {
 			this.setCellMetadata(cell, cellMetadata);
 		}
 	}
+
+	public get onViewDeleted(): Event<void> {
+		return this._onViewDeleted.event;
+	}
 }
 
 
 class NotebookView implements INotebookView {
 	public readonly guid: string;
 
-	private readonly _onDeleted = new Emitter<INotebookView>();
+	private _onDeleted = new Emitter<INotebookView>();
 	public readonly onDeleted = this._onDeleted.event;
 
 	constructor(
@@ -239,7 +242,7 @@ class NotebookView implements INotebookView {
 
 	public initialize() {
 		const cells = this._notebook.cells;
-		cells.forEach((cell) => {
+		cells.forEach((cell, idx) => {
 			let meta = this._notebookViewExtension.getCellMetadata(cell);
 
 			if (!meta) {
@@ -250,8 +253,8 @@ class NotebookView implements INotebookView {
 			meta.views.push({
 				guid: this.guid,
 				hidden: false,
+				y: idx,
 				x: 0,
-				y: 0,
 				width: 0,
 				height: 0
 			});

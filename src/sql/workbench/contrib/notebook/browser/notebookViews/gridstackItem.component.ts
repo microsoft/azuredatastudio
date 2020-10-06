@@ -3,16 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Component, OnInit, Input, ViewChild, TemplateRef, ElementRef, Inject, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, TemplateRef, ElementRef, Inject, Output, EventEmitter, ChangeDetectorRef, forwardRef } from '@angular/core';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { ToggleMoreWidgetAction } from 'sql/workbench/contrib/dashboard/browser/core/actions';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Action, IAction } from 'vs/base/common/actions';
-import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
-import { HideCellAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/actions';
+import { HideCellAction, RunCellAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/actions';
 import { NotebookViewExtension, INotebookViewCellMetadata, INotebookView, CellChangeEventType } from 'sql/workbench/services/notebook/browser/models/notebookView';
+import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 
 
 //declare var $: any; // JQuery
@@ -22,7 +20,7 @@ import { NotebookViewExtension, INotebookViewCellMetadata, INotebookView, CellCh
 	templateUrl: decodeURI(require.toUrl('./gridstackItem.component.html'))
 })
 export class GridStackItemComponent implements OnInit {
-	private _actions: Array<Action>;
+	//private _actions: Array<Action>;
 	private _actionbar: ActionBar;
 	private _metadata: INotebookViewCellMetadata;
 	private _activeView: INotebookView;
@@ -30,6 +28,7 @@ export class GridStackItemComponent implements OnInit {
 	@Input() cell: ICellModel;
 	@Input() model: NotebookModel;
 	@Input() extension: NotebookViewExtension;
+	@Input() ready: boolean;
 	@Output() onChange: EventEmitter<any> = new EventEmitter();
 
 	@ViewChild('templateRef') templateRef: TemplateRef<any>;
@@ -37,7 +36,8 @@ export class GridStackItemComponent implements OnInit {
 	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
 
 	constructor(
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 	) { }
 
 	ngOnInit() {
@@ -60,17 +60,23 @@ export class GridStackItemComponent implements OnInit {
 
 	ngAfterViewInit() {
 		this.initActionBar();
+		this.detectChanges();
 	}
 
 	initActionBar() {
 		// top action bar
-		this._actions = new Array<Action>();
-		//this._actions.push(new HideCellAction(this.hide, this));
+		//this._actions = new Array<Action>();
 		if (this._actionbarRef) {
+			let context = new CellContext(this.model, this.cell);
+			let runCellAction = this._instantiationService.createInstance(RunCellAction, context);
+
 			let hideButton = new HideCellAction(this.hide, this);
+
 			this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
 			this._actionbar.context = { target: this._actionbarRef.nativeElement };
-			this._actionbar.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions as Array<IAction>, new CellContext(this.model, this.cell)), { icon: true, label: false });
+
+			//this._actionbar.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, this._actions as Array<IAction>, new CellContext(this.model, this.cell)), { icon: true, label: false });
+			this._actionbar.push(runCellAction, { icon: true });
 			this._actionbar.push(hideButton, { icon: true });
 		}
 	}
@@ -81,6 +87,10 @@ export class GridStackItemComponent implements OnInit {
 
 	changed(event: CellChangeEventType) {
 		this.onChange.emit({ cell: this.cell, event: event });
+	}
+
+	detectChanges() {
+		this._changeRef.detectChanges();
 	}
 
 	public selectCell(cell: ICellModel, event?: Event) {
