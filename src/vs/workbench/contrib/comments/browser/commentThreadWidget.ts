@@ -721,7 +721,7 @@ export class ReviewZoneWidget extends ZoneWidget implements ICommentThreadWidget
 		this._disposables.add(dom.addDisposableListener(this._reviewThreadReplyButton, 'focus', _ => this.expandReplyArea()));
 
 		this._commentEditor.onDidBlurEditorWidget(() => {
-			if (this._commentEditor.getModel()!.getValueLength() === 0 && this._commentForm.classList.add('expand')) {
+			if (this._commentEditor.getModel()!.getValueLength() === 0 && this._commentForm.classList.contains('expand')) {
 				dom.removeClass(this._commentForm, 'expand');
 			}
 		});

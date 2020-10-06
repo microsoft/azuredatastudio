@@ -7,7 +7,6 @@ import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ViewChild, OnI
 
 import { mixin } from 'vs/base/common/objects';
 import { IInsightsView, IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
-import { startsWith } from 'vs/base/common/strings';
 
 interface IConfig {
 	encoding?: string;
