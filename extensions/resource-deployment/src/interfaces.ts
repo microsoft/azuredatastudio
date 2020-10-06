@@ -19,7 +19,8 @@ export interface ResourceType {
 	providers: DeploymentProvider[];
 	agreement?: AgreementInfo;
 	displayIndex?: number;
-	okButtonText?: string;
+	okButtonText?: OkButtonTextValue[];
+	getOkButtonText(selectedOptions: { option: string, value: string }[]): string | undefined;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
 }
 
@@ -37,6 +38,11 @@ export interface ResourceTypeOption {
 export interface ResourceTypeOptionValue {
 	name: string;
 	displayName: string;
+}
+
+export interface OkButtonTextValue {
+	value: string;
+	when: string;
 }
 
 export interface DialogDeploymentProvider extends DeploymentProviderBase {

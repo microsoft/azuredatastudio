@@ -47,6 +47,7 @@ export class ResourceTypeService implements IResourceTypeService {
 					extensionResourceTypes.forEach((resourceType: ResourceType) => {
 						this.updatePathProperties(resourceType, extension.extensionPath);
 						resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
+						resourceType.getOkButtonText = (selectedOptions) => { return this.getOkButtonText(resourceType, selectedOptions); };
 						this._resourceTypes.push(resourceType);
 					});
 				}
@@ -243,6 +244,42 @@ export class ResourceTypeService implements IResourceTypeService {
 					}
 					if (matches) {
 						return provider;
+					}
+				}
+			}
+		}
+		return undefined;
+	}
+
+	/**
+	 * Get the ok button text based on the selected options
+	 */
+	private getOkButtonText(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): string | undefined {
+		if (resourceType.okButtonText) {
+			for (let i = 0; i < resourceType.okButtonText.length; i++) {
+				const buttonText = resourceType.okButtonText[i];
+				if (buttonText.when === undefined || buttonText.when.toString().toLowerCase() === 'true') {
+					return buttonText.value;
+				} else {
+					let expected = buttonText.when.replace(' ', '').split('&&').sort();
+
+					let actual: string[] = [];
+					selectedOptions.forEach(option => {
+						actual.push(`${option.option}=${option.value}`);
+					});
+					actual = actual.sort();
+
+					if (actual.length === expected.length) {
+						let matches = true;
+						for (let j = 0; j < actual.length; j++) {
+							if (actual[j] !== expected[j]) {
+								matches = false;
+								break;
+							}
+						}
+						if (matches) {
+							return buttonText.value;
+						}
 					}
 				}
 			}
