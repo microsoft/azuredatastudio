@@ -10,6 +10,7 @@ import * as loc from '../../localizedConstants';
 import { ControllerModel, Registration } from '../../models/controllerModel';
 import { MiaaModel } from '../../models/miaaModel';
 import { PostgresModel } from '../../models/postgresModel';
+import { ResourceModel } from '../../models/resourceModel';
 import { ControllerDashboard } from '../dashboards/controller/controllerDashboard';
 import { AzureArcTreeDataProvider } from './azureArcTreeDataProvider';
 import { MiaaTreeNode } from './miaaTreeNode';
@@ -24,7 +25,7 @@ import { TreeNode } from './treeNode';
  */
 export class ControllerTreeNode extends TreeNode {
 
-	private _children: ResourceTreeNode[] = [];
+	private _children: ResourceTreeNode<ResourceModel>[] = [];
 
 	constructor(public model: ControllerModel, private _context: vscode.ExtensionContext, private _treeDataProvider: AzureArcTreeDataProvider) {
 		super(model.label, vscode.TreeItemCollapsibleState.Collapsed, ResourceType.dataControllers);
@@ -69,14 +70,14 @@ export class ControllerTreeNode extends TreeNode {
 	 * @param resourceType The resourceType of the node
 	 * @param name The name of the node
 	 */
-	public getResourceNode(resourceType: string, name: string): ResourceTreeNode | undefined {
+	public getResourceNode(resourceType: string, name: string): ResourceTreeNode<ResourceModel> | undefined {
 		return this._children.find(c =>
 			c.model?.info.resourceType === resourceType &&
 			c.model.info.name === name);
 	}
 
 	private updateChildren(registrations: Registration[]): void {
-		const newChildren: ResourceTreeNode[] = [];
+		const newChildren: ResourceTreeNode<ResourceModel>[] = [];
 		registrations.forEach(registration => {
 			if (!registration.instanceName) {
 				console.warn('Registration is missing required name value, skipping');

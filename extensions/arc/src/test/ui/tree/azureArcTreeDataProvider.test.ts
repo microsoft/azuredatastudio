@@ -3,16 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ControllerInfo } from 'arc';
+import { ControllerInfo, ResourceType } from 'arc';
 import 'mocha';
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
+import * as sinon from 'sinon';
 import { v4 as uuid } from 'uuid';
 import * as vscode from 'vscode';
+import * as azdataExt from 'azdata-ext';
 import { ControllerModel } from '../../../models/controllerModel';
+import { MiaaModel } from '../../../models/miaaModel';
 import { AzureArcTreeDataProvider } from '../../../ui/tree/azureArcTreeDataProvider';
 import { ControllerTreeNode } from '../../../ui/tree/controllerTreeNode';
+import { MiaaTreeNode } from '../../../ui/tree/miaaTreeNode';
 import { FakeControllerModel } from '../../mocks/fakeControllerModel';
+import { FakeAzdataApi } from '../../mocks/fakeAzdataApi';
 
 describe('AzureArcTreeDataProvider tests', function (): void {
 	let treeDataProvider: AzureArcTreeDataProvider;
@@ -84,6 +89,27 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 			let children = await treeDataProvider.getChildren();
 			should(children.length).equal(0, 'After loading we should have 0 children');
 		});
+
+		it('should return all children of controller after loading', async function (): Promise<void> {
+			const mockArcExtension = TypeMoq.Mock.ofType<vscode.Extension<any>>();
+			const mockArcApi = TypeMoq.Mock.ofType<azdataExt.IExtension>();
+			mockArcExtension.setup(x => x.exports).returns(() => {
+				return mockArcApi.object;
+			});
+			const fakeAzdataApi = new FakeAzdataApi();
+			fakeAzdataApi.postgresInstances = [{ name: 'pg1', state: '', workers: 0 }];
+			fakeAzdataApi.miaaInstances = [{ name: 'miaa1', state: '', replicas: '', serverEndpoint: '' }];
+			mockArcApi.setup(x => x.azdata).returns(() => fakeAzdataApi);
+
+			sinon.stub(vscode.extensions, 'getExtension').returns(mockArcExtension.object);
+			const controllerModel = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] }, 'mypassword');
+			await treeDataProvider.addOrUpdateController(controllerModel, '');
+			const controllerNode = treeDataProvider.getControllerNode(controllerModel);
+			const children = await treeDataProvider.getChildren(controllerNode);
+			should(children.filter(c => c.label === fakeAzdataApi.postgresInstances[0].name).length).equal(1, 'Should have a Postgres child');
+			should(children.filter(c => c.label === fakeAzdataApi.miaaInstances[0].name).length).equal(1, 'Should have a MIAA child');
+			should(children.length).equal(2, 'Should have excatly 2 children');
+		});
 	});
 
 	describe('removeController', function (): void {
@@ -102,6 +128,33 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 			should((await treeDataProvider.getChildren()).length).equal(0, 'Removing other node should work');
 			await treeDataProvider.removeController(children[1]);
 			should((await treeDataProvider.getChildren()).length).equal(0, 'Removing other node again should do nothing');
+		});
+	});
+
+	describe('openResourceDashboard', function (): void {
+		it('Opening dashboard for nonexistent controller node throws', async function (): Promise<void> {
+			const controllerModel = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] });
+			const openDashboardPromise = treeDataProvider.openResourceDashboard(controllerModel, ResourceType.sqlManagedInstances, '');
+			await should(openDashboardPromise).be.rejected();
+		});
+
+		it('Opening dashboard for nonexistent resource throws', async function (): Promise<void> {
+			const controllerModel = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] });
+			await treeDataProvider.addOrUpdateController(controllerModel, '');
+			const openDashboardPromise = treeDataProvider.openResourceDashboard(controllerModel, ResourceType.sqlManagedInstances, '');
+			await should(openDashboardPromise).be.rejected();
+		});
+
+		it('Opening dashboard for existing resource node succeeds', async function (): Promise<void> {
+			const controllerModel = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] });
+			const miaaModel = new MiaaModel(controllerModel, { name: 'miaa-1', resourceType: ResourceType.sqlManagedInstances }, undefined!, treeDataProvider);
+			await treeDataProvider.addOrUpdateController(controllerModel, '');
+			const controllerNode = treeDataProvider.getControllerNode(controllerModel)!;
+			const resourceNode = new MiaaTreeNode(miaaModel, controllerModel);
+			sinon.stub(controllerNode, 'getResourceNode').returns(resourceNode);
+			const showDashboardStub = sinon.stub(resourceNode, 'openDashboard');
+			await treeDataProvider.openResourceDashboard(controllerModel, ResourceType.sqlManagedInstances, '');
+			should(showDashboardStub.calledOnce).be.true('showDashboard should have been called exactly once');
 		});
 	});
 });

@@ -8,15 +8,15 @@ import * as vscode from 'vscode';
 import { ControllerModel } from '../../models/controllerModel';
 import { MiaaModel } from '../../models/miaaModel';
 import { MiaaDashboard } from '../dashboards/miaa/miaaDashboard';
-import { TreeNode } from './treeNode';
+import { ResourceTreeNode } from './resourceTreeNode';
 
 /**
  * The TreeNode for displaying a SQL Managed Instance on Azure Arc
  */
-export class MiaaTreeNode extends TreeNode {
+export class MiaaTreeNode extends ResourceTreeNode<MiaaModel> {
 
-	constructor(public model: MiaaModel, private _controllerModel: ControllerModel) {
-		super(model.info.name, vscode.TreeItemCollapsibleState.None, ResourceType.sqlManagedInstances);
+	constructor(model: MiaaModel, private _controllerModel: ControllerModel) {
+		super(model.info.name, vscode.TreeItemCollapsibleState.None, ResourceType.sqlManagedInstances, model);
 	}
 
 	public async openDashboard(): Promise<void> {
