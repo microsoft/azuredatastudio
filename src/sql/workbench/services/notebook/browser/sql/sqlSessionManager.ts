@@ -545,7 +545,10 @@ export class SQLFuture extends Disposable implements FutureInternal {
 
 			// To make streaming grid results faster, we convert rows to html after data resource
 			// is sent to cell model since ADS does not use html to render tables
-			this.convertRowsToHtml(queryResult.rows, key);
+			let htmlRows = this.convertRowsToHtml(queryResult.rows, key);
+			// Last value in array is '</table>' so we want to add row data before that
+			data['text/html'].splice(data['text/html'].length - 1, 0, ...htmlRows);
+			this._dataMap.set(key, data);
 			this.sendIOPubMessage(resultSet.batchId, resultSet.id, data, resultSet, resultSet.complete);
 		} catch (err) {
 			// TODO should we output this somewhere else?
@@ -624,7 +627,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		});
 	}
 
-	private async convertRowsToHtml(rows: ICellValue[][], key: string): Promise<void> {
+	private convertRowsToHtml(rows: ICellValue[][], key: string): string[] {
 		let htmlStringArr = [];
 		for (const row of rows) {
 			let rowData = '<tr>';
@@ -634,10 +637,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			rowData += '</tr>';
 			htmlStringArr.push(rowData);
 		}
-		let data = this._dataMap.get(key);
-		// Last value in array is '</table>' so we want to add row data before that
-		data['text/html'].splice(data['text/html'].length - 1, 0, ...htmlStringArr);
-		this._dataMap.set(key, data);
+		return htmlStringArr;
 	}
 
 	private convertToDisplayMessage(msg: IResultMessage | string): nb.IIOPubMessage {
