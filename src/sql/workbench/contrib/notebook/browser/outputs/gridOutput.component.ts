@@ -106,7 +106,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		if (this.cellModel) {
 			this._register(this.cellModel.onTableUpdated(e => {
 				if (e.resultSet.batchId === this._batchId && e.resultSet.id === this._id) {
-					this.updateResult(e.resultSet, e.source);
+					this.updateResult(e.resultSet, e.rows);
 				}
 			}));
 		}
@@ -137,8 +137,8 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		}
 	}
 
-	updateResult(resultSet: ResultSetSummary, source: IDataResource): void {
-		this._table.updateResultSet(resultSet, source);
+	updateResult(resultSet: ResultSetSummary, rows: ICellValue[][]): void {
+		this._table.updateResultSet(resultSet, rows);
 		if (!this._layoutCalledOnce) {
 			this.layout();
 			this._layoutCalledOnce = true;
@@ -251,8 +251,8 @@ class DataResourceTable extends GridTableBase<any> {
 		this.cellModel.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
 	}
 
-	public updateResultSet(resultSet: ResultSetSummary, source: IDataResource): void {
-		this._gridDataProvider.updateResultSet(resultSet, source);
+	public updateResultSet(resultSet: ResultSetSummary, rows: ICellValue[][]): void {
+		this._gridDataProvider.updateResultSet(resultSet, rows);
 		super.updateResult(resultSet);
 	}
 }
@@ -293,9 +293,9 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		});
 	}
 
-	public updateResultSet(resultSet: ResultSetSummary, source: IDataResource): void {
+	public updateResultSet(resultSet: ResultSetSummary, rows: ICellValue[][]): void {
 		this._resultSet = resultSet;
-		this.transformSource(source);
+		this._rows = this._rows.concat(rows);
 	}
 
 	getRowData(rowStart: number, numberOfRows: number): Thenable<ResultSetSubset> {

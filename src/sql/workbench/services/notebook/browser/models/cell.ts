@@ -582,21 +582,21 @@ export class CellModel extends Disposable implements ICellModel {
 						let resultSet: ResultSetSummary = (<nb.IExecuteResult>this._outputs[i]).metadata.resultSet;
 						let newResultSet: ResultSetSummary = output.metadata.resultSet;
 						if (resultSet.batchId === newResultSet.batchId && resultSet.id === newResultSet.id) {
-							// If it does, update output and send data to gridoutput component
+							// If it does, update output with data resource and html table
 							this._outputs[i] = output;
-							this._onTableUpdated.fire({
-								resultSet: newResultSet,
-								source: (<nb.IExecuteResult>output).data['application/vnd.dataresource+json']
-							});
-							// Only send change to notebook when both data resource and html data conversion is complete
-							if ((<nb.IExecuteResult>output).metadata.complete) {
-								this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
-							}
+							this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 							added = true;
 							break;
 						}
 					}
 				}
+				break;
+			case 'execute_result_update':
+				let update = msg.content as nb.IExecuteResultUpdate;
+				this._onTableUpdated.fire({
+					resultSet: update.resultSet,
+					rows: update.data
+				});
 				break;
 			case 'display_data':
 				output = msg.content as nb.ICellOutput;

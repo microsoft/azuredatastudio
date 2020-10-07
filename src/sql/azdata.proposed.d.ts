@@ -49,6 +49,12 @@ declare module 'azdata' {
 		export interface IExecuteResult {
 			data: any;
 		}
+
+		export interface IExecuteResultUpdate {
+			output_type: string;
+			resultSet: ResultSetSummary;
+			data: any;
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'

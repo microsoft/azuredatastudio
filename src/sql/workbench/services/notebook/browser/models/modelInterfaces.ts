@@ -21,8 +21,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
-import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
-import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
+import { ICellValue, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 
 export interface ICellRange {
 	readonly start: number;
@@ -449,7 +448,7 @@ export interface IOutputChangedEvent {
 
 export interface ITableUpdatedEvent {
 	resultSet: ResultSetSummary;
-	source: IDataResource;
+	rows: ICellValue[][];
 }
 
 export interface ICellModel {

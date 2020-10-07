@@ -397,7 +397,10 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private _errorOccurred: boolean = false;
 	private _stopOnError: boolean = true;
 	private _lastRowCountMap: Map<string, number> = new Map<string, number>();
-	private _dataMap: Map<string, any> = new Map<string, any>();
+	// Map containing data resource and html table to be saved in notebook
+	private _dataToSaveMap: Map<string, any> = new Map<string, any>();
+	// Map containing row data returned from STS and used for table rendering
+	private _rowsMap: Map<string, any> = new Map<string, any>();
 
 	constructor(
 		private _queryRunner: QueryRunner,
@@ -499,7 +502,8 @@ export class SQLFuture extends Disposable implements FutureInternal {
 				'application/vnd.dataresource+json': this.convertHeaderToDataResource(set.columnInfo),
 				'text/html': this.convertHeaderToHtmlTable(set.columnInfo)
 			};
-			this._dataMap.set(key, data);
+			this._dataToSaveMap.set(key, data);
+			this._rowsMap.set(key, []);
 			this.sendIOPubMessage(set.batchId, set.id, data, set);
 		}
 	}
@@ -536,27 +540,30 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	public async queryAndConvertData(resultSet: ResultSetSummary, lastRowCount: number): Promise<void> {
 		try {
 			let key = resultSet.batchId + '-' + resultSet.id;
+			// Query for rows and send rows to cell model
 			let queryResult = await this._queryRunner.getQueryRows(lastRowCount, resultSet.rowCount - lastRowCount, resultSet.batchId, resultSet.id);
-			let dataResourceRows = this.convertRowsToDataResource(queryResult.rows);
-			// Update data map with new data resource and send to cell model
-			let data = this._dataMap.get(key);
-			data['application/vnd.dataresource+json'].data = data['application/vnd.dataresource+json'].data.concat(dataResourceRows);
-			this.sendIOPubMessage(resultSet.batchId, resultSet.id, data, resultSet);
+			this.sendIOPubUpdateMessage(resultSet.batchId, resultSet.id, queryResult.rows, resultSet);
+			let rows = this._rowsMap.get(key);
+			this._rowsMap.set(key, rows.concat(queryResult.rows));
 
-			// To make streaming grid results faster, we convert rows to html after data resource
-			// is sent to cell model since ADS does not use html to render tables
+			// Convert rows to data resource and html and send to cell model to be saved
+			let dataResourceRows = this.convertRowsToDataResource(queryResult.rows);
+			let saveData = this._dataToSaveMap.get(key);
+			saveData['application/vnd.dataresource+json'].data = saveData['application/vnd.dataresource+json'].data.concat(dataResourceRows);
 			let htmlRows = this.convertRowsToHtml(queryResult.rows, key);
 			// Last value in array is '</table>' so we want to add row data before that
-			data['text/html'].splice(data['text/html'].length - 1, 0, ...htmlRows);
-			this._dataMap.set(key, data);
-			this.sendIOPubMessage(resultSet.batchId, resultSet.id, data, resultSet, resultSet.complete);
+			saveData['text/html'].splice(saveData['text/html'].length - 1, 0, ...htmlRows);
+			this._dataToSaveMap.set(key, saveData);
+			if (resultSet.complete) {
+				this.sendIOPubMessage(resultSet.batchId, resultSet.id, saveData, resultSet);
+			}
 		} catch (err) {
 			// TODO should we output this somewhere else?
 			this.logService.error(`Error outputting result sets from Notebook query: ${err}`);
 		}
 	}
 
-	private sendIOPubMessage(batchId: number, id: number, data: any, resultSet: ResultSetSummary, complete: boolean = false): void {
+	private sendIOPubMessage(batchId: number, id: number, data: any, resultSet: ResultSetSummary): void {
 		let msg: nb.IIOPubMessage = {
 			channel: 'iopub',
 			type: 'iopub',
@@ -568,10 +575,29 @@ export class SQLFuture extends Disposable implements FutureInternal {
 				output_type: 'execute_result',
 				metadata: {
 					resultSet: resultSet,
-					complete: complete
+					complete: true
 				},
 				execution_count: this._executionCount,
 				data: data
+			},
+			metadata: undefined,
+			parent_header: undefined
+		};
+		this.ioHandler.handle(msg);
+	}
+
+	private sendIOPubUpdateMessage(batchId: number, id: number, rows: any, resultSet: ResultSetSummary): void {
+		let msg: nb.IIOPubMessage = {
+			channel: 'iopub',
+			type: 'iopub',
+			header: <nb.IHeader>{
+				msg_id: undefined,
+				msg_type: 'execute_result_update'
+			},
+			content: <nb.IExecuteResultUpdate>{
+				output_type: 'execute_result_update',
+				resultSet: resultSet,
+				data: rows
 			},
 			metadata: undefined,
 			parent_header: undefined
