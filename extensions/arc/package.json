@@ -227,9 +227,11 @@
                         {
                           "type": "text",
                           "label": "%arc.data.controller.arc.data.controller.namespace%",
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$",
-                          "textValidationDescription": "%arc.data.controller.arc.data.controller.namespace.validation.description%",
+                          "validations" : [{
+                            "type": "regex",
+                            "text": "^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$",
+                            "description": "%arc.data.controller.arc.data.controller.namespace.validation.description%"
+                          }],
                           "defaultValue": "arc",
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE"
@@ -237,9 +239,11 @@
                         {
                           "type": "text",
                           "label": "%arc.data.controller.arc.data.controller.name%",
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^[a-z0-9]([-.a-z0-9]{0,251}[a-z0-9])?$",
-                          "textValidationDescription": "%arc.data.controller.arc.data.controller.name.validation.description%",
+                          "validations" : [{
+                            "type": "regex",
+                            "text": "^[a-z0-9]([-.a-z0-9]{0,251}[a-z0-9])?$",
+                            "description": "%arc.data.controller.arc.data.controller.name.validation.description%"
+                          }],
                           "defaultValue": "arc-dc",
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME"
@@ -563,9 +567,11 @@
                           "defaultValue": "sqlinstance1",
                           "description": "%arc.sql.invalid.instance.name%",
                           "required": true,
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
-                          "textValidationDescription": "%arc.sql.invalid.instance.name%"
+                          "validations" : [{
+                            "type": "regex",
+                            "text": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
+                            "description": "%arc.sql.invalid.instance.name%"
+                          }]
                         },
                         {
                           "label": "%arc.sql.username%",
@@ -573,9 +579,11 @@
                           "type": "text",
                           "description": "%arc.sql.invalid.username%",
                           "required": true,
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^(?!sa$)",
-                          "textValidationDescription": "%arc.sql.invalid.username%"
+                          "validations" : [{
+                            "type": "regex",
+                            "text": "^(?!sa$)",
+                            "description": "%arc.sql.invalid.username%"
+                          }]
                         },
                         {
                           "label": "%arc.password%",
@@ -636,9 +644,15 @@
                           "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
                           "type": "number",
                           "min": 2,
-                          "required": false
+                          "required": false,
+                          "validation"
                         }
                       ]
+                    }
+                  ],
+                  "pageValidations" : [
+                    {
+                      "expression": ""
                     }
                   ]
                 }
@@ -726,9 +740,11 @@
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_NAME",
                           "type": "text",
                           "description": "%arc.postgres.server.group.name.validation.description%",
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^[a-z]([-a-z0-9]{0,10}[a-z0-9])?$",
-                          "textValidationDescription": "%arc.postgres.server.group.name.validation.description%",
+                          "validations" : [{
+                            "type": "regex",
+                            "text": "^[a-z]([-a-z0-9]{0,10}[a-z0-9])?$",
+                            "description": "%arc.postgres.server.group.name.validation.description%"
+                          }],
                           "required": true
                         },
                         {

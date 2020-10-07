@@ -267,9 +267,6 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	defaultValue?: string;
 	confirmationRequired?: boolean;
 	confirmationLabel?: string;
-	textValidationRequired?: boolean;
-	textValidationRegex?: string;
-	textValidationDescription?: string;
 	min?: number;
 	max?: number;
 	required?: boolean;
@@ -283,8 +280,7 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean;
 	isEvaluated?: boolean;
-	valueLookup?: string; // for fetching dropdown options
-	validationLookup?: string // for fetching text field validations
+	validations?: FieldValidation[]
 }
 
 export interface KubeClusterContextFieldInfo extends FieldInfo {
@@ -343,6 +339,21 @@ export enum FieldType {
 	FilePicker = 'file_picker',
 	KubeClusterContextPicker = 'kube_cluster_context_picker',
 	KubeStorageClass = 'kube_storage_class'
+}
+
+export enum FieldValidationType {
+	IsInteger = 'is_integer',
+	Regex = 'regex'
+}
+
+export interface FieldValidation {
+	type: FieldValidationType
+	text?: string;
+	description?: string;
+}
+
+export interface PageValidation {
+	expression: string
 }
 
 export enum OptionsType {

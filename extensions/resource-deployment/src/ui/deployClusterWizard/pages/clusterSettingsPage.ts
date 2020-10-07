@@ -7,13 +7,13 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { FieldType, LabelPosition, SectionInfo } from '../../../interfaces';
+import { FieldType, FieldValidationType, LabelPosition, SectionInfo } from '../../../interfaces';
+import * as localizedConstants from '../../../localizedConstants';
 import { createSection, getInputBoxComponent, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, InputComponentInfo, InputComponents, isValidSQLPassword, setModelValues, Validator } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { AuthenticationMode } from '../deployClusterWizardModel';
-import * as localizedConstants from '../../../localizedConstants';
 const localize = nls.loadMessageBundle();
 
 const ConfirmPasswordName = 'ConfirmPassword';
@@ -41,9 +41,11 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					required: true,
 					variableName: VariableNames.ClusterName_VariableName,
 					defaultValue: 'mssql-cluster',
-					textValidationRequired: true,
-					textValidationRegex: '^[a-z0-9]$|^[a-z0-9][a-z0-9-]*[a-z0-9]$',
-					textValidationDescription: clusterNameFieldDescription,
+					validations: [{
+						type: FieldValidationType.Regex,
+						text: '^[a-z0-9]$|^[a-z0-9][a-z0-9-]*[a-z0-9]$',
+						description: clusterNameFieldDescription
+					}],
 					description: clusterNameFieldDescription
 				}, {
 					type: FieldType.Text,
