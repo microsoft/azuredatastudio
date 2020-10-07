@@ -10,16 +10,16 @@ import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
+import { DeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption } from '../interfaces';
+import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
+import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
+import { NotebookWizard } from '../ui/notebookWizard/notebookWizard';
+import { AzdataService } from './azdataService';
+import { KubeService } from './kubeService';
 import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
-import { ResourceType, ResourceTypeOption, NotebookPathInfo, DeploymentProvider, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookWizardDeploymentProvider, NotebookInfo } from '../interfaces';
-import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
-import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
 
-import { KubeService } from './kubeService';
-import { AzdataService } from './azdataService';
-import { NotebookWizard } from '../ui/notebookWizard/notebookWizard';
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
@@ -252,7 +252,7 @@ export class ResourceTypeService implements IResourceTypeService {
 			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, this.toolsService, provider.dialog);
 			dialog.open();
 		} else if (instanceOfNotebookDeploymentProvider(provider)) {
-			this.notebookService.launchNotebook(provider.notebook);
+			this.notebookService.openNotebook(provider.notebook);
 		} else if (instanceOfDownloadDeploymentProvider(provider)) {
 			const taskName = localize('resourceDeployment.DownloadAndLaunchTaskName', "Download and launch installer, URL: {0}", provider.downloadUrl);
 			azdata.tasks.startBackgroundOperation({
