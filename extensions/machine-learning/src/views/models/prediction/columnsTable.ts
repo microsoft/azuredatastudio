@@ -326,7 +326,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				}
 
 				const currentColumn = columns.find(x => x.columnName === value);
-				if (currentColumn && modelParameter.type !== currentColumn?.dataType) {
+				if (currentColumn && modelParameter.type === currentColumn?.dataType) {
 					inputContainer.removeItem(warningButton);
 				} else {
 					inputContainer.addItem(warningButton, {
