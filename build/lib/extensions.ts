@@ -249,7 +249,6 @@ const externalExtensions = [
 	'azdata',
 	'cms',
 	'dacpac',
-	'data-workspace',
 	'import',
 	'kusto',
 	'liveshare',
