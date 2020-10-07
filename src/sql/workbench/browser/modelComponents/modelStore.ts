@@ -5,7 +5,6 @@
 
 import { Deferred } from 'sql/base/common/promise';
 import { entries } from 'sql/base/common/collections';
-import { find } from 'vs/base/common/arrays';
 import { IComponentDescriptor, IModelStore, IComponent } from 'sql/platform/dashboard/browser/interfaces';
 
 class ComponentDescriptor implements IComponentDescriptor {
@@ -65,7 +64,7 @@ export class ModelStore implements IModelStore {
 	}
 
 	validate(component: IComponent): Thenable<boolean> {
-		let componentId = find(entries(this._componentMappings), ([id, mappedComponent]) => component === mappedComponent)[0];
+		let componentId = entries(this._componentMappings).find(([id, mappedComponent]) => component === mappedComponent)[0];
 		return Promise.all(this._validationCallbacks.map(callback => callback(componentId))).then(validations => validations.every(validation => validation === true));
 	}
 

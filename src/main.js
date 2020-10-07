@@ -207,9 +207,9 @@ async function onReady() {
 }
 
 /**
- * @typedef	 {{ [arg: string]: any; '--'?: string[]; _: string[]; }} ParsedArgs
+ * @typedef	 {{ [arg: string]: any; '--'?: string[]; _: string[]; }} NativeParsedArgs
  *
- * @param {ParsedArgs} cliArgs
+ * @param {NativeParsedArgs} cliArgs
  */
 function configureCommandlineSwitchesSync(cliArgs) {
 	const SUPPORTED_ELECTRON_SWITCHES = [
@@ -362,7 +362,7 @@ function getArgvConfigPath() {
 }
 
 /**
- * @param {ParsedArgs} cliArgs
+ * @param {NativeParsedArgs} cliArgs
  * @returns {string}
  */
 function getJSFlags(cliArgs) {
@@ -382,7 +382,7 @@ function getJSFlags(cliArgs) {
 }
 
 /**
- * @param {ParsedArgs} cliArgs
+ * @param {NativeParsedArgs} cliArgs
  *
  * @returns {string}
  */
@@ -395,7 +395,7 @@ function getUserDataPath(cliArgs) {
 }
 
 /**
- * @returns {ParsedArgs}
+ * @returns {NativeParsedArgs}
  */
 function parseCLIArgs() {
 	const minimist = require('minimist');
