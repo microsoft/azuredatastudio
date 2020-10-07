@@ -21,6 +21,7 @@ import { KubeService } from './kubeService';
 import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
+import * as loc from './../localizedConstants';
 
 const localize = nls.loadMessageBundle();
 
@@ -255,36 +256,15 @@ export class ResourceTypeService implements IResourceTypeService {
 	 * Get the ok button text based on the selected options
 	 */
 	private getOkButtonText(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): string | undefined {
-		if (resourceType.okButtonText) {
-			for (let i = 0; i < resourceType.okButtonText.length; i++) {
-				const buttonText = resourceType.okButtonText[i];
-				if (buttonText.when === undefined || buttonText.when.toString().toLowerCase() === 'true') {
-					return buttonText.value;
-				} else {
-					let expected = buttonText.when.replace(' ', '').split('&&').sort();
-
-					let actual: string[] = [];
-					selectedOptions.forEach(option => {
-						actual.push(`${option.option}=${option.value}`);
-					});
-					actual = actual.sort();
-
-					if (actual.length === expected.length) {
-						let matches = true;
-						for (let j = 0; j < actual.length; j++) {
-							if (actual[j] !== expected[j]) {
-								matches = false;
-								break;
-							}
-						}
-						if (matches) {
-							return buttonText.value;
-						}
-					}
+		if (resourceType.okButtonText && selectedOptions.length === 1) {
+			const optionGiven = `${selectedOptions[0].option}=${selectedOptions[0].value}`;
+			for (const possibleOption of resourceType.okButtonText) {
+				if (possibleOption.when === optionGiven || possibleOption.when === undefined || possibleOption.when.toString().toLowerCase() === 'true') {
+					return possibleOption.value;
 				}
 			}
 		}
-		return undefined;
+		return loc.select;
 	}
 
 	public startDeployment(provider: DeploymentProvider): void {

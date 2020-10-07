@@ -312,7 +312,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private updateOkButtonText(): void {
 		//handle special case when resource type has different OK button.
 		let text = this.getCurrentOkText();
-		console.log('current ok button text is ' + text);
 		if (text) {
 			this._dialogObject.okButton.label = text;
 		}

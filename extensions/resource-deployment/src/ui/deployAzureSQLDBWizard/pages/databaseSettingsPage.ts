@@ -197,6 +197,9 @@ export class DatabaseSettingsPage extends BasePage {
 		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(firewallname)) {
 			errorMessages.push(localize('deployAzureSQLDB.DBFirewallSpecialCharError', "Firewall name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
 		}
+		if (/[A-Z]/g.test(firewallname)) {
+			errorMessages.push(localize('deployAzureSQLDB.DBFirewallUpperCaseError', "Upper case letters are not allowed for firealll name"));
+		}
 
 		if (/^\d+$/.test(databasename)) {
 			errorMessages.push(localize('deployAzureSQLDB.DBNameOnlyNumericNameError', "Database name cannot contain only numbers."));

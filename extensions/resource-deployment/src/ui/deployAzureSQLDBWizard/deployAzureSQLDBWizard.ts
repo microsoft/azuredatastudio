@@ -46,9 +46,6 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 		return this._toolsService;
 	}
 
-
-
-
 	protected async onOk(): Promise<void> {
 		await this.scriptToNotebook();
 	}
