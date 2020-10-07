@@ -114,7 +114,7 @@
                           "label": "%docker-repository-field%",
                           "variableName": "AZDATA_NB_VAR_DOCKER_REPOSITORY",
                           "type": "text",
-                          "defaultValue": "azure-sql-edge-developer",
+                          "defaultValue": "azure-sql-edge",
                           "required": true
                         },
                         {
@@ -235,7 +235,7 @@
                           "label": "%docker-repository-field%",
                           "variableName": "AZDATA_NB_VAR_DOCKER_REPOSITORY",
                           "type": "text",
-                          "defaultValue": "azure-sql-edge-developer",
+                          "defaultValue": "azure-sql-edge",
                           "required": true
                         },
                         {
@@ -364,14 +364,17 @@
                           "required": true
                         },
                         {
-                          "label": "%dacpac_path%",
-                          "variableName": "AZDATA_NB_VAR_ASDE_DACPAC_PATH",
+                          "label": "%package_path%",
+                          "description": "%package_path_description%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_PACKAGE_PATH",
                           "type": "file_picker",
                           "required": false,
                           "filter": {
-                            "displayName": "%dacpac-zip-files%",
+                            "displayName": "%package-files%",
                             "fileTypes": [
-                              "zip"
+                              "zip",
+                              "bacpac",
+                              "dacpac"
                             ]
                           }
                         }
@@ -451,14 +454,17 @@
                           "required": true
                         },
                         {
-                          "label": "%dacpac_path%",
-                          "variableName": "AZDATA_NB_VAR_ASDE_DACPAC_PATH",
+                          "label": "%package_path%",
+                          "description": "%package_path_description%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_PACKAGE_PATH",
                           "type": "file_picker",
                           "required": false,
                           "filter": {
-                            "displayName": "%dacpac-zip-files%",
+                            "displayName": "%package-files%",
                             "fileTypes": [
-                              "zip"
+                              "zip",
+                              "bacpac",
+                              "dacpac"
                             ]
                           }
                         }
@@ -541,14 +547,17 @@
                           "required": true
                         },
                         {
-                          "label": "%dacpac_path%",
-                          "variableName": "AZDATA_NB_VAR_ASDE_DACPAC_PATH",
+                          "label": "%package_path%",
+                          "description": "%package_path_description%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_PACKAGE_PATH",
                           "type": "file_picker",
                           "required": false,
                           "filter": {
-                            "displayName": "%dacpac-zip-files%",
+                            "displayName": "%package-files%",
                             "fileTypes": [
-                              "zip"
+                              "zip",
+                              "bacpac",
+                              "dacpac"
                             ]
                           }
                         }
@@ -582,5 +591,10 @@
         }
       }
     ]
+  },
+  "__metadata": {
+    "id": "76",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }

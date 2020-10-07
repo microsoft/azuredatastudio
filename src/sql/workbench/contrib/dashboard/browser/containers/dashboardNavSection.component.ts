@@ -19,7 +19,6 @@ import * as dashboardHelper from 'sql/workbench/contrib/dashboard/browser/core/d
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ILogService } from 'vs/platform/log/common/log';
-import { find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
 
 @Component({
@@ -129,7 +128,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 	}
 
 	private addNewTab(tab: TabConfig): void {
-		const existedTab = find(this.tabs, i => i.id === tab.id);
+		const existedTab = this.tabs.find(i => i.id === tab.id);
 		if (!existedTab) {
 			this.tabs.push(tab);
 			this._cd.detectChanges();

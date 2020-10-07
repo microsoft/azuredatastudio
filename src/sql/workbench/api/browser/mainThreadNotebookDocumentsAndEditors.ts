@@ -33,7 +33,6 @@ import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
-import { find } from 'vs/base/common/arrays';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
@@ -384,7 +383,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let cell: ICellModel;
 		if (cellUri) {
 			let uriString = URI.revive(cellUri).toString();
-			cell = find(editor.cells, c => c.cellUri.toString() === uriString);
+			cell = editor.cells.find(c => c.cellUri.toString() === uriString);
 			// If it's markdown what should we do? Show notification??
 		} else {
 			// Use the active cell in this case, or 1st cell if there's none active
@@ -406,11 +405,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let endCell: ICellModel;
 		if (startCellUri) {
 			let uriString = URI.revive(startCellUri).toString();
-			startCell = find(editor.cells, c => c.cellUri.toString() === uriString);
+			startCell = editor.cells.find(c => c.cellUri.toString() === uriString);
 		}
 		if (endCellUri) {
 			let uriString = URI.revive(endCellUri).toString();
-			endCell = find(editor.cells, c => c.cellUri.toString() === uriString);
+			endCell = editor.cells.find(c => c.cellUri.toString() === uriString);
 		}
 		return editor.runAllCells(startCell, endCell);
 	}
@@ -424,7 +423,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let cell: ICellModel;
 		if (cellUri) {
 			let uriString = URI.revive(cellUri).toString();
-			cell = find(editor.cells, c => c.cellUri.toString() === uriString);
+			cell = editor.cells.find(c => c.cellUri.toString() === uriString);
 			// If it's markdown what should we do? Show notification??
 		} else {
 			// Use the active cell in this case, or 1st cell if there's none active

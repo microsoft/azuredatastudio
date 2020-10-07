@@ -74,7 +74,8 @@ class EditorOpener implements IOpener {
 		}
 
 		await this._editorService.openCodeEditor(
-			{ resource: target, options: { selection, context: options?.fromUserGesture ? EditorOpenContext.USER : EditorOpenContext.API } },
+			// {{SQL CARBON EDIT}} - cast target to fix hygine break
+			{ resource: <any>target, options: { selection, context: options?.fromUserGesture ? EditorOpenContext.USER : EditorOpenContext.API } },
 			this._editorService.getFocusedCodeEditor(),
 			options?.openToSide
 		);

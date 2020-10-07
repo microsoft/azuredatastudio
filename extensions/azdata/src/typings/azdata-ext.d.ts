@@ -143,7 +143,9 @@ declare module 'azdata-ext' {
 		},
 		status: {
 			readyReplicas: string, // "1/1"
-			state: string, // "Ready"
+			state: string, // "Ready",
+			logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
+			metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
 			externalEndpoint?: string // "10.91.86.39:32718"
 		}
 	}
@@ -208,7 +210,9 @@ declare module 'azdata-ext' {
 		status: {
 			externalEndpoint: string, // "10.130.12.136:26630"
 			readyPods: string, // "1/1",
-			state: string // "Ready"
+			state: string, // "Ready"
+			logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:pg1'))
+			metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=pg1
 		}
 	}
 
@@ -263,14 +267,14 @@ declare module 'azdata-ext' {
 				}
 			}
 		},
-		getPath(): string,
+		getPath(): Promise<string>,
 		login(endpoint: string, username: string, password: string): Promise<AzdataOutput<any>>,
 		/**
 		 * The semVersion corresponding to this installation of azdata. version() method should have been run
 		 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
 		 * Azdata has gotten reinstalled in the background after this IAzdataApi object was constructed.
 		 */
-		getSemVersion(): SemVer,
+		getSemVersion(): Promise<SemVer>,
 		version(): Promise<AzdataOutput<string>>
 	}
 
@@ -280,7 +284,7 @@ declare module 'azdata-ext' {
 		/**
 		 * returns true if AZDATA CLI EULA has been previously accepted by the user.
 		 */
-		isEulaAccepted(): boolean;
+		isEulaAccepted(): Promise<boolean>;
 
 		/**
 		 * Prompts user to accept EULA. Stores and returns the user response to EULA prompt.
@@ -289,6 +293,7 @@ declare module 'azdata-ext' {
 		 * pre-requisite, the calling code has to ensure that the EULA has not yet been previously accepted by the user. The code can use @see isEulaAccepted() call to ascertain this.
 		 * returns true if the user accepted the EULA.
 		 */
-		promptForEula(requireUserAction?: boolean): Promise<boolean>
+		promptForEula(requireUserAction?: boolean): Promise<boolean>;
+
 	}
 }

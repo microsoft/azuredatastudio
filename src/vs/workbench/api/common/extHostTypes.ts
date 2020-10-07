@@ -19,7 +19,7 @@ import { addIdToOutput, CellEditType, ICellEditOperation } from 'vs/workbench/co
 import type * as vscode from 'vscode';
 
 function es5ClassCompat(target: Function): any {
-	///@ts-expect-error
+	// @ts-ignore - {{SQL CARBON EDIT}}
 	function _() { return Reflect.construct(target, arguments, this.constructor); }
 	Object.defineProperty(_, 'name', Object.getOwnPropertyDescriptor(target, 'name')!);
 	Object.setPrototypeOf(_, target);
@@ -601,7 +601,8 @@ export interface IFileTextEdit {
 export interface IFileCellEdit {
 	_type: FileEditType.Cell;
 	uri: URI;
-	edit: ICellEditOperation;
+	edit?: ICellEditOperation;
+	notebookMetadata?: vscode.NotebookDocumentMetadata;
 	metadata?: vscode.WorkspaceEditEntryMetadata;
 }
 
@@ -629,17 +630,21 @@ export class WorkspaceEdit implements vscode.WorkspaceEdit {
 		this._edits.push({ _type: FileEditType.File, from: uri, to: undefined, options, metadata });
 	}
 
-	// --- cell
+	// --- notebook
 
-	replaceCells(uri: URI, start: number, end: number, cells: vscode.NotebookCellData[], metadata?: vscode.WorkspaceEditEntryMetadata): void {
+	replaceNotebookMetadata(uri: URI, value: vscode.NotebookDocumentMetadata, metadata?: vscode.WorkspaceEditEntryMetadata): void {
+		this._edits.push({ _type: FileEditType.Cell, metadata, uri, notebookMetadata: value });
+	}
+
+	replaceNotebookCells(uri: URI, start: number, end: number, cells: vscode.NotebookCellData[], metadata?: vscode.WorkspaceEditEntryMetadata): void {
 		this._edits.push({ _type: FileEditType.Cell, metadata, uri, edit: { editType: CellEditType.Replace, index: start, count: end - start, cells: cells.map(cell => ({ ...cell, outputs: cell.outputs.map(output => addIdToOutput(output)) })) } });
 	}
 
-	replaceCellOutput(uri: URI, index: number, outputs: vscode.CellOutput[], metadata?: vscode.WorkspaceEditEntryMetadata): void {
+	replaceNotebookCellOutput(uri: URI, index: number, outputs: vscode.CellOutput[], metadata?: vscode.WorkspaceEditEntryMetadata): void {
 		this._edits.push({ _type: FileEditType.Cell, metadata, uri, edit: { editType: CellEditType.Output, index, outputs: outputs.map(output => addIdToOutput(output)) } });
 	}
 
-	replaceCellMetadata(uri: URI, index: number, cellMetadata: vscode.NotebookCellMetadata, metadata?: vscode.WorkspaceEditEntryMetadata): void {
+	replaceNotebookCellMetadata(uri: URI, index: number, cellMetadata: vscode.NotebookCellMetadata, metadata?: vscode.WorkspaceEditEntryMetadata): void {
 		this._edits.push({ _type: FileEditType.Cell, metadata, uri, edit: { editType: CellEditType.Metadata, index, metadata: cellMetadata } });
 	}
 
