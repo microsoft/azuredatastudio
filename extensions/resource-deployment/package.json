@@ -406,6 +406,7 @@
           "light": "./images/azure-sql.svg",
           "dark": "./images/azure-sql.svg"
         },
+        "tags": ["Cloud"],
         "options": [],
         "providers": [
           {
