@@ -19,6 +19,17 @@
 	height: 480px;
 }
 
+.modal.callout-dialog {
+	background-color: transparent;
+}
+.modal.callout-dialog .modal-dialog {
+	height: auto;
+	margin: 0 auto;
+	top: 50%;
+	transform: translateY(50%);
+	width: 500px;
+}
+
 .modal .modal-header {
 	padding: 15px;
 }
@@ -303,3 +314,5 @@
 .dialog-message.error .dialog-message-icon {
 	background: url('error_notification_inverse.svg') center center no-repeat;
 }
+
+
