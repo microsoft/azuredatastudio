@@ -26,6 +26,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	private discardButton?: azdata.ButtonComponent;
 	private saveButton?: azdata.ButtonComponent;
 
+	private workerChanged?: boolean;
+	private vCoresMaxChanged?: boolean;
+	private vCoresMinChanged?: boolean;
+	private memoryMaxChanged?: boolean;
+	private memoryMinChanged?: boolean;
+
 	private readonly _azdataApi: azdataExt.IExtension;
 
 	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
@@ -130,24 +136,87 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.saveButton.onDidClick(async () => {
 				this.saveButton!.enabled = false;
 				try {
-					await vscode.window.withProgress(
-						{
-							location: vscode.ProgressLocation.Notification,
-							title: loc.updatingInstance(this._postgresModel.info.name),
-							cancellable: false
-						},
-						(_progress, _token) => {
-							return this._azdataApi.azdata.arc.postgres.server.edit(
-								this._postgresModel.info.name,
-								{
-									workers: this.worker!.value,
-									coresLimit: this.vCoresMin?.value,
-									coresRequest: this.vCoresMax?.value,
-									memoryLimit: this.memoryMin?.value + 'Gi',
-									memoryRequest: this.memoryMax?.value + 'Gi'
-								});
-						}
-					);
+					if (this.workerChanged) {
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.updatingInstance(this._postgresModel.info.name),
+								cancellable: false
+							},
+							(_progress, _token) => {
+								return this._azdataApi.azdata.arc.postgres.server.edit(
+									this._postgresModel.info.name,
+									{
+										workers: this.worker!.value
+									});
+							}
+						);
+					}
+					if (this.vCoresMaxChanged) {
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.updatingInstance(this._postgresModel.info.name),
+								cancellable: false
+							},
+							(_progress, _token) => {
+								return this._azdataApi.azdata.arc.postgres.server.edit(
+									this._postgresModel.info.name,
+									{
+										coresRequest: this.vCoresMax?.value
+									});
+							}
+						);
+					}
+					if (this.vCoresMinChanged) {
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.updatingInstance(this._postgresModel.info.name),
+								cancellable: false
+							},
+							(_progress, _token) => {
+								return this._azdataApi.azdata.arc.postgres.server.edit(
+									this._postgresModel.info.name,
+									{
+										coresLimit: this.vCoresMin?.value
+									});
+							}
+						);
+					}
+					if (this.memoryMaxChanged) {
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.updatingInstance(this._postgresModel.info.name),
+								cancellable: false
+							},
+							(_progress, _token) => {
+								return this._azdataApi.azdata.arc.postgres.server.edit(
+									this._postgresModel.info.name,
+									{
+										memoryRequest: this.memoryMax?.value + 'Gi'
+									});
+							}
+						);
+					}
+					if (this.memoryMinChanged) {
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.updatingInstance(this._postgresModel.info.name),
+								cancellable: false
+							},
+							(_progress, _token) => {
+								return this._azdataApi.azdata.arc.postgres.server.edit(
+									this._postgresModel.info.name,
+									{
+										memoryLimit: this.memoryMin?.value + 'Gi'
+									});
+							}
+						);
+					}
+
 					await this._controllerModel.refreshTreeNode();
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 
@@ -171,6 +240,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 				try {
 					this.workerContainer?.clearItems();
 					this.workerContainer?.addItems(this.updateWorkerConfiguration(), { CSSStyles: { 'min-height': '30px' } });
+
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.refreshFailed(error));
 				} finally {
@@ -349,17 +419,15 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.worker!.onTextChanged(() => {
-				if (this.worker!.value) {
-					if ((this.worker!.value !== currentNodeCount!.toString()) && (parseInt(this.worker!.value) > currentNodeCount!)) {
-						this.discardButton!.enabled = true;
-						this.saveButton!.enabled = true;
-					}
-					else {
-						this.discardButton!.enabled = false;
-						this.saveButton!.enabled = false;
-					}
-
+				if ((!this.worker!.value) || (parseInt(this.worker!.value) < this.worker!.min!) || (this.worker!.value === currentNodeCount!.toString())) {
+					this.workerChanged = false;
 				}
+				else {
+					this.workerChanged = true;
+					this.saveButton!.enabled = true;
+				}
+
+				this.discardButton!.enabled = true;
 			})
 		);
 
@@ -397,14 +465,15 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.vCoresMax!.value = currentCPUSize;
 			this.disposables.push(
 				this.vCoresMax!.onTextChanged(() => {
-					if (this.vCoresMax!.value !== currentCPUSize) {
-						this.discardButton!.enabled = true;
-						this.saveButton!.enabled = true;
+					if ((!this.vCoresMax!.value) || (parseFloat(this.vCoresMax!.value!) < this.vCoresMax!.min!) || (this.vCoresMax!.value === currentCPUSize)) {
+						this.vCoresMaxChanged = false;
 					}
 					else {
-						this.discardButton!.enabled = false;
-						this.saveButton!.enabled = false;
+						this.vCoresMaxChanged = true;
+						this.saveButton!.enabled = true;
 					}
+
+					this.discardButton!.enabled = true;
 				})
 			);
 
@@ -418,14 +487,15 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.vCoresMin!.value = currentCPUSize;
 			this.disposables.push(
 				this.vCoresMin!.onTextChanged(() => {
-					if (this.vCoresMin!.value !== currentCPUSize) {
-						this.discardButton!.enabled = true;
-						this.saveButton!.enabled = true;
+					if ((!this.vCoresMin!.value) || (parseFloat(this.vCoresMin!.value!) < this.vCoresMin!.min!) || (this.vCoresMin!.value === currentCPUSize)) {
+						this.vCoresMinChanged = false;
 					}
 					else {
-						this.discardButton!.enabled = false;
-						this.saveButton!.enabled = false;
+						this.vCoresMinChanged = true;
+						this.saveButton!.enabled = true;
 					}
+
+					this.discardButton!.enabled = true;
 				})
 			);
 
@@ -448,16 +518,16 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.memoryMax!.value = currentMemSizeConversion;
 			this.disposables.push(
 				this.memoryMax!.onTextChanged(() => {
-					if (this.memoryMax!.value) {
-						if (this.memoryMax!.value !== currentMemSizeConversion) {
-							this.discardButton!.enabled = true;
-							this.saveButton!.enabled = true;
-						}
-						else {
-							this.discardButton!.enabled = false;
-							this.saveButton!.enabled = false;
-						}
+					if ((!this.memoryMax!.value!) || (parseFloat(this.memoryMax!.value!) < this.memoryMax!.min!) || (this.memoryMax!.value === currentMemSizeConversion)) {
+						this.memoryMaxChanged = false;
 					}
+					else {
+						this.memoryMaxChanged = true;
+						this.saveButton!.enabled = true;
+					}
+
+					this.discardButton!.enabled = true;
+
 				})
 			);
 		}
@@ -471,16 +541,15 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.memoryMin!.value = currentMemSizeConversion;
 			this.disposables.push(
 				this.memoryMin!.onTextChanged(() => {
-					if (this.memoryMin!.value) {
-						if (this.memoryMin!.value !== currentMemSizeConversion) {
-							this.discardButton!.enabled = true;
-							this.saveButton!.enabled = true;
-						}
-						else {
-							this.discardButton!.enabled = false;
-							this.saveButton!.enabled = false;
-						}
+					if ((!this.memoryMin!.value!) || (parseFloat(this.memoryMin!.value!) < this.memoryMin!.min!) || (this.memoryMin!.value === currentMemSizeConversion)) {
+						this.memoryMinChanged = false;
 					}
+					else {
+						this.memoryMinChanged = true;
+						this.saveButton!.enabled = true;
+					}
+
+					this.discardButton!.enabled = true;
 				})
 			);
 		}
