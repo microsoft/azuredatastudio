@@ -12,6 +12,7 @@ const fs = require('fs');
 const path = require('path');
 
 const externals = {
+	'node-fetch': 'commonjs node-fetch',
 	'adm-zip': 'commonjs adm-zip'
 };
 
