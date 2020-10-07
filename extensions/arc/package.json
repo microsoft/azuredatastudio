@@ -143,11 +143,15 @@
             "notebookWizard": {
               "notebook": "./notebooks/arcDeployment/deploy.arc.control.plane.ipynb",
               "type": "new-arc-control-plane",
-              "runNotebook": false,
+              "doneAction": {
+                "label": "%deploy.done.action%"
+              },
+              "scriptAction": {
+                "label": "%deploy.script.action%"
+              },
               "codeCellInsertionPosition": 5,
-              "actionText": "%deploy.arc.control.plane.action%",
-              "title": "%arc.control.plane.new.wizard.title%",
-              "name": "arc.control.plane.new.wizard",
+              "title": "%arc.data.controller.new.wizard.title%",
+              "name": "arc.data.controller.new.wizard",
               "labelPosition": "left",
               "generateSummaryPage": false,
               "pages": [
@@ -556,12 +560,18 @@
           {
             "dialog": {
               "notebook": "./notebooks/arcDeployment/deploy.sql.existing.arc.ipynb",
-              "runNotebook": true,
-              "taskName": "%arc.sql.new.dialog.title%",
-              "actionText": "%arc.deploy.action%",
-              "title": "%arc.sql.new.dialog.title%",
-              "name": "arc.sql.new.dialog",
-              "tabs": [
+              "doneAction": {
+                "label": "%deploy.done.action%"
+              },
+              "scriptAction": {
+                "label": "%deploy.script.action%"
+              },
+              "codeCellInsertionPosition": 5,
+              "title": "%arc.sql.wizard.title%",
+              "name": "arc.sql.wizard",
+              "labelPosition": "left",
+              "generateSummaryPage": false,
+              "pages": [
                 {
                   "title": "",
                   "sections": [
@@ -671,12 +681,18 @@
           {
             "dialog": {
               "notebook": "./notebooks/arcDeployment/deploy.postgres.existing.arc.ipynb",
-              "runNotebook": true,
-              "taskName": "%arc.postgres.new.dialog.title%",
-              "actionText": "%arc.deploy.action%",
-              "title": "%arc.postgres.new.dialog.title%",
-              "name": "arc.postgres.new.dialog",
-              "tabs": [
+              "doneAction": {
+                "label": "%deploy.done.action%"
+              },
+              "scriptAction": {
+                "label": "%deploy.script.action%"
+              },
+              "codeCellInsertionPosition": 5,
+              "title": "%arc.postgres.wizard.title%",
+              "name": "arc.postgres.wizard",
+              "labelPosition": "left",
+              "generateSummaryPage": false,
+              "pages": [
                 {
                   "title": "",
                   "sections": [
