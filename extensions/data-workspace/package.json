@@ -36,10 +36,16 @@
     ],
     "commands": [
       {
-        "command": "projects.addProject",
-        "title": "%add-project-command%",
+        "command": "projects.newProject",
+        "title": "%new-project-command%",
         "category": "",
         "icon": "$(add)"
+      },
+      {
+        "command": "projects.openProject",
+        "title": "%open-project-command%",
+        "category": "",
+        "icon": "$(folder-opened)"
       },
       {
         "command": "dataworkspace.refresh",
@@ -57,17 +63,22 @@
         {
           "command": "dataworkspace.refresh",
           "when": "view == dataworkspace.views.main",
+          "group": "secondary"
+        },
+        {
+          "command": "projects.newProject",
+          "when": "view == dataworkspace.views.main",
           "group": "navigation"
         },
         {
-          "command": "projects.addProject",
+          "command": "projects.openProject",
           "when": "view == dataworkspace.views.main",
           "group": "navigation"
         }
       ],
       "commandPalette": [
         {
-          "command": "projects.addProject",
+          "command": "projects.newProject",
           "when": "false"
         },
         {
@@ -76,6 +87,10 @@
         },
         {
           "command": "projects.removeProject",
+          "when": "false"
+        },
+        {
+          "command": "projects.openProject",
           "when": "false"
         }
       ],
@@ -111,6 +126,11 @@
         "view": "dataworkspace.views.main",
         "contents": "%projects-view-no-workspace-content%",
         "when": "workbenchState != workspace"
+      },
+      {
+        "view": "dataworkspace.views.main",
+        "contents": "%projects-view-no-project-content%",
+        "when": "workbenchState == workspace && isProjectsViewEmpty"
       }
     ]
   },

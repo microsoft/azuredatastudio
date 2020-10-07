@@ -66,15 +66,20 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 		const treeDataProvider = new MockTreeDataProvider();
 		const projectProvider: IProjectProvider = {
 			supportedProjectTypes: [{
+				id: 'sp1',
 				projectFileExtension: 'sqlproj',
 				icon: '',
-				displayName: 'sql project'
+				displayName: 'sql project',
+				description: ''
 			}],
 			RemoveProject: (projectFile: vscode.Uri): Promise<void> => {
 				return Promise.resolve();
 			},
 			getProjectTreeDataProvider: (projectFile: vscode.Uri): Promise<vscode.TreeDataProvider<any>> => {
 				return Promise.resolve(treeDataProvider);
+			},
+			createProject: (name: string, location: vscode.Uri): Promise<vscode.Uri> => {
+				return Promise.resolve(location);
 			}
 		};
 		const getProjectProviderStub = sinon.stub(workspaceService, 'getProjectProvider');

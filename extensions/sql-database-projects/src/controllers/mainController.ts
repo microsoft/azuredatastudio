@@ -43,7 +43,7 @@ export default class MainController implements vscode.Disposable {
 
 	public async activate(): Promise<IProjectProvider> {
 		await this.initializeDatabaseProjects();
-		return new SqlDatabaseProjectProvider();
+		return new SqlDatabaseProjectProvider(this.projectsController);
 	}
 
 	private async initializeDatabaseProjects(): Promise<void> {

@@ -28,6 +28,11 @@ declare module 'dataworkspace' {
 		 * Change focus to Projects view
 		 */
 		showProjectsView(): void;
+
+		/**
+		 * Show the workspace required notification
+		 */
+		showWorkspaceRequiredNotification(): void;
 	}
 
 	/**
@@ -47,6 +52,13 @@ declare module 'dataworkspace' {
 		RemoveProject(projectFile: vscode.Uri): Promise<void>;
 
 		/**
+		 *
+		 * @param name Create a project
+		 * @param location the parent directory of the project
+		 */
+		createProject(name: string, location: vscode.Uri): Promise<vscode.Uri>;
+
+		/**
 		 * Gets the supported project types
 		 */
 		readonly supportedProjectTypes: IProjectType[];
@@ -57,9 +69,19 @@ declare module 'dataworkspace' {
 	 */
 	export interface IProjectType {
 		/**
+		 * id of the project type
+		 */
+		readonly id: string;
+
+		/**
 		 * display name of the project type
 		 */
 		readonly displayName: string;
+
+		/**
+		 * description of the project type
+		 */
+		readonly description: string;
 
 		/**
 		 * project file extension, e.g. sqlproj

@@ -23,7 +23,9 @@ export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.S
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
 // Project Provider
-export const projectTypeDisplayName = localize('projectTypeDisplayName', 'Database Project');
+export const sqlDatabaseProjectTypeId = 'sqldbproj';
+export const projectTypeDisplayName = localize('projectTypeDisplayName', "Database Project");
+export const projectTypeDescription = localize('projectTypeDescription', "Design, edit, and publish schemas for SQL databases");
 
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';

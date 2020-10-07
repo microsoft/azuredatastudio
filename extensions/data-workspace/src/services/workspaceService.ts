@@ -9,7 +9,7 @@ import * as path from 'path';
 import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
-import { ExtensionActivationErrorMessage } from '../common/constants';
+import * as constants from '../common/constants';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
@@ -65,11 +65,11 @@ export class WorkspaceService implements IWorkspaceService {
 
 	async getProjectProvider(projectFile: vscode.Uri): Promise<dataworkspace.IProjectProvider | undefined> {
 		const projectType = path.extname(projectFile.path).replace(/\./g, '');
-		let provider = ProjectProviderRegistry.getProviderByProjectType(projectType);
+		let provider = ProjectProviderRegistry.getProviderByProjectExtension(projectType);
 		if (!provider) {
 			await this.ensureProviderExtensionLoaded(projectType);
 		}
-		return ProjectProviderRegistry.getProviderByProjectType(projectType);
+		return ProjectProviderRegistry.getProviderByProjectExtension(projectType);
 	}
 
 	async removeProject(projectFile: vscode.Uri): Promise<void> {
@@ -81,6 +81,18 @@ export class WorkspaceService implements IWorkspaceService {
 				await this.setWorkspaceConfigurationValue(ProjectsConfigurationName, currentProjects.map(project => this.toRelativePath(project)));
 				this._onDidWorkspaceProjectsChange.fire();
 			}
+		}
+	}
+
+	async createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri> {
+		const provider = ProjectProviderRegistry.getProviderByProjectType(projectTypeId);
+		if (provider) {
+			const projectFile = await provider.createProject(name, location);
+			this.addProjectsToWorkspace([projectFile]);
+			this._onDidWorkspaceProjectsChange.fire();
+			return projectFile;
+		} else {
+			throw new Error(constants.ProviderNotFoundForProjectTypeError(projectTypeId));
 		}
 	}
 
@@ -113,7 +125,7 @@ export class WorkspaceService implements IWorkspaceService {
 				await extension.activate();
 			}
 		} catch (err) {
-			Logger.error(ExtensionActivationErrorMessage(extension.id, err));
+			Logger.error(constants.ExtensionActivationError(extension.id, err));
 		}
 
 		if (extension.isActive && extension.exports && !ProjectProviderRegistry.providers.includes(extension.exports)) {

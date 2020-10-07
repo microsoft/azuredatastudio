@@ -233,7 +233,15 @@ export async function getSqlProjectFilesInFolder(folderPath: string): Promise<st
 /**
  * Get all the projects in the workspace that are sqlproj
  */
-export function getSqlProjectsInWorkspace(): vscode.Uri[] {
-	return (<dataworkspace.IExtension>vscode.extensions.getExtension(dataworkspace.extension.name)?.exports).getProjectsInWorkspace()
-		.filter((p: vscode.Uri) => path.parse(p.fsPath).ext === constants.sqlprojExtension);
+export async function getSqlProjectsInWorkspace(): Promise<vscode.Uri[]> {
+	const api = await getDataWorkspaceExtensionApi();
+	return api.getProjectsInWorkspace().filter((p: vscode.Uri) => path.extname(p.fsPath) === constants.sqlprojExtension);
+}
+
+export async function getDataWorkspaceExtensionApi(): Promise<dataworkspace.IExtension> {
+	const extension = vscode.extensions.getExtension(dataworkspace.extension.name)!;
+	if (!extension.isActive) {
+		await extension.activate();
+	}
+	return extension.exports as dataworkspace.IExtension;
 }

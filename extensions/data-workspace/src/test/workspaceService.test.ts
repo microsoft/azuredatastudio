@@ -111,10 +111,14 @@ suite('WorkspaceService Tests', function (): void {
 
 		const provider1 = createProjectProvider([
 			{
+				id: 'tp1',
+				description: '',
 				projectFileExtension: 'testproj',
 				icon: '',
 				displayName: 'test project'
 			}, {
+				id: 'tp2',
+				description: '',
 				projectFileExtension: 'testproj1',
 				icon: '',
 				displayName: 'test project 1'
@@ -122,6 +126,8 @@ suite('WorkspaceService Tests', function (): void {
 		]);
 		const provider2 = createProjectProvider([
 			{
+				id: 'sp1',
+				description: '',
 				projectFileExtension: 'sqlproj',
 				icon: '',
 				displayName: 'sql project'
@@ -149,10 +155,12 @@ suite('WorkspaceService Tests', function (): void {
 		const extension2 = createMockExtension('ext2', false, ['sqlproj']);
 		const extension3 = createMockExtension('ext3', false, ['dbproj']);
 		stubAllExtensions([extension1, extension2, extension3].map(ext => ext.extension));
-		const getProviderByProjectTypeStub = sinon.stub(ProjectProviderRegistry, 'getProviderByProjectType');
+		const getProviderByProjectTypeStub = sinon.stub(ProjectProviderRegistry, 'getProviderByProjectExtension');
 		getProviderByProjectTypeStub.onFirstCall().returns(undefined);
 		getProviderByProjectTypeStub.onSecondCall().returns(createProjectProvider([
 			{
+				id: 'sp1',
+				description: '',
 				projectFileExtension: 'sqlproj',
 				icon: '',
 				displayName: 'test project'
@@ -167,6 +175,8 @@ suite('WorkspaceService Tests', function (): void {
 
 		getProviderByProjectTypeStub.reset();
 		getProviderByProjectTypeStub.returns(createProjectProvider([{
+			id: 'tp2',
+			description: '',
 			projectFileExtension: 'csproj',
 			icon: '',
 			displayName: 'test cs project'

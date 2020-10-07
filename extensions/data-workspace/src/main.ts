@@ -4,55 +4,40 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as path from 'path';
 import { WorkspaceTreeDataProvider } from './common/workspaceTreeDataProvider';
 import { WorkspaceService } from './services/workspaceService';
-import { AllProjectTypes, SelectProjectFileActionName } from './common/constants';
 import { WorkspaceTreeItem, IExtension } from 'dataworkspace';
 import { DataWorkspaceExtension } from './common/dataWorkspaceExtension';
+import { NewProjectDialog } from './dialogs/newProjectDialog';
+import { OpenProjectDialog } from './dialogs/openProjectDialog';
 
 export function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const workspaceService = new WorkspaceService();
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
+	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
-	context.subscriptions.push(vscode.commands.registerCommand('projects.addProject', async (uri: vscode.Uri) => {
-		// To Sakshi - You can replace the implementation with your complete dialog implementation
-		// but all the code here should be reusable by you
+	context.subscriptions.push(vscode.commands.registerCommand('projects.newProject', async () => {
 		if (vscode.workspace.workspaceFile) {
-			if (uri) {
-				await workspaceService.addProjectsToWorkspace([uri]);
-			} else {
-				const filters: { [name: string]: string[] } = {};
-				const projectTypes = await workspaceService.getAllProjectTypes();
-				filters[AllProjectTypes] = projectTypes.map(type => type.projectFileExtension);
-				projectTypes.forEach(type => {
-					filters[type.displayName] = [type.projectFileExtension];
-				});
-				let fileUris = await vscode.window.showOpenDialog({
-					canSelectFiles: true,
-					canSelectFolders: false,
-					canSelectMany: false,
-					defaultUri: vscode.Uri.file(path.dirname(vscode.workspace.workspaceFile.path)),
-					openLabel: SelectProjectFileActionName,
-					filters: filters
-				});
-				if (!fileUris || fileUris.length === 0) {
-					return;
-				}
-				await workspaceService.addProjectsToWorkspace(fileUris);
-			}
+			const dialog = new NewProjectDialog(workspaceService);
+			dialog.open();
+		} else {
+			dataWorkspaceExtension.showWorkspaceRequiredNotification();
 		}
 	}));
-
+	context.subscriptions.push(vscode.commands.registerCommand('projects.openProject', async () => {
+		if (vscode.workspace.workspaceFile) {
+			const dialog = new OpenProjectDialog(workspaceService, context);
+			dialog.open();
+		} else {
+			dataWorkspaceExtension.showWorkspaceRequiredNotification();
+		}
+	}));
 	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', () => {
 		workspaceTreeDataProvider.refresh();
 	}));
-
 	context.subscriptions.push(vscode.commands.registerCommand('projects.removeProject', async (treeItem: WorkspaceTreeItem) => {
 		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
 	}));
-
-	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	return Promise.resolve(dataWorkspaceExtension);
 }
 
