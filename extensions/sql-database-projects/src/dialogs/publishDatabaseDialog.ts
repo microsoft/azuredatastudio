@@ -80,7 +80,6 @@ export class PublishDatabaseDialog {
 
 	private initializePublishTab(): void {
 		this.publishTab.registerContent(async view => {
-
 			// TODO : enable using this when data source creation is enabled
 			this.createRadioButtons(view);
 
@@ -455,9 +454,10 @@ export class PublishDatabaseDialog {
 		loadSqlCmdVarsButton.onDidClick(async () => {
 			this.sqlCmdVars = { ...this.project.sqlCmdVariables };
 
-			const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
-			await (<azdata.DeclarativeTableComponent>this.sqlCmdVariablesTable).updateProperties({
-				data: data
+			const data = this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars!);
+			(<azdata.DeclarativeTableComponent>this.sqlCmdVariablesTable)!.updateProperties({
+				dataValues: data,
+				data: [] // data is deprecated, but the table gets updated incorrectly if this isn't set to an empty array
 			});
 
 			this.tryEnableGenerateScriptAndOkButtons();
