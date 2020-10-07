@@ -537,7 +537,7 @@ function processNumberField(context: FieldContext): void {
 }
 
 function processTextField(context: FieldContext): void {
-	let validationRegex: RegExp | undefined = context.fieldInfo.textValidationRequired ? new RegExp(context.fieldInfo.textValidationRegex!) : undefined;
+	let validationRegex: RegExp | undefined = context.fieldInfo?.validations![0] ? new RegExp(context.fieldInfo?.validations![0].text!) : undefined;
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const input = createTextInput(context.view, {
 		defaultValue: context.fieldInfo.defaultValue,
@@ -547,15 +547,15 @@ function processTextField(context: FieldContext): void {
 		width: context.fieldInfo.inputWidth,
 		enabled: context.fieldInfo.enabled,
 		validationRegex: validationRegex,
-		validationErrorMessage: context.fieldInfo.textValidationDescription
+		validationErrorMessage: context.fieldInfo?.validations![0].description
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: input });
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo);
 
-	if (context.fieldInfo.textValidationRequired) {
+	if (context.fieldInfo?.validations![0]) {
 		const removeInvalidInputMessage = (): void => {
 			if (validationRegex!.test(input.value!)) { // input is valid
-				removeValidationMessage(context.container, context.fieldInfo.textValidationDescription!);
+				removeValidationMessage(context.container, context.fieldInfo?.validations![0].description!);
 			}
 		};
 
@@ -565,7 +565,7 @@ function processTextField(context: FieldContext): void {
 
 		const inputValidator: Validator = (): { valid: boolean; message: string; } => {
 			const inputIsValid = validationRegex!.test(input.value!);
-			return { valid: inputIsValid, message: context.fieldInfo.textValidationDescription! };
+			return { valid: inputIsValid, message: context.fieldInfo?.validations![0].description! };
 		};
 		context.onNewValidatorCreated(inputValidator);
 	}
