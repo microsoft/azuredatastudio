@@ -243,9 +243,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 		// Getting resourceType based on the selected tag
 		let filteredResourceTypes = (tag !== 'All') ? this._resourceTypes.filter(element => element.tags?.includes(tag) ?? false) : this._resourceTypes;
 
-		// This piece of code will filter resourceTypes based on their names.
+		// Filtering resourceTypes based on their names.
 		const filteredResourceTypesOnSearch: ResourceType[] = filteredResourceTypes.filter((element) => element.displayName.toLowerCase().includes(search!));
-		// Adding resourceTypes with descriptions matching the search text to the result at the end as they might less relevant.
+		// Adding resourceTypes with descriptions matching the search text to the result at the end as they might be less relevant.
 		filteredResourceTypesOnSearch.push(...filteredResourceTypes.filter((element) => !element.displayName.toLowerCase().includes(search!) && element.description.toLowerCase().includes(search!)));
 
 		const cards = filteredResourceTypesOnSearch.map((resourceType) => this.createOrGetCard(resourceType));
