@@ -318,7 +318,7 @@ declare module 'azdata' {
 		id: string;
 	}
 
-	export type ListViewClickEvent = { option: ListViewOption };
+	export type ListViewClickEvent = { id: string };
 
 	export interface ListViewComponent extends Component, ListViewComponentProperties {
 		onDidClick: vscode.Event<ListViewClickEvent>;
