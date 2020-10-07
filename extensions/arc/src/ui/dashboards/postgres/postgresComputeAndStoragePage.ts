@@ -65,34 +65,38 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const workerNodeLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-			label: loc.learnAboutWorkerNodeSettings,
-			url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/scale-out-postgresql-hyperscale-server-group',
-		}).component();
-
 		const memVCoreslink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 			label: loc.learnAboutMemoryVCoresSettings,
 			url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/scale-up-down-postgresql-hyperscale-server-group-using-cli',
 		}).component();
 
-		const infoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
-		infoAndLink.addItem(infoComputeStorage, { CSSStyles: { 'margin-right': '5px' } });
-		infoAndLink.addItem(workerNodeLink);
-		infoAndLink.addItem(memVCoreslink);
-		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '25px' } });
+		const computeInfoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
+		computeInfoAndLink.addItem(infoComputeStorage, { CSSStyles: { 'margin-right': '5px' } });
+		computeInfoAndLink.addItem(memVCoreslink);
+		content.addItem(computeInfoAndLink, { CSSStyles: { 'margin-bottom': '25px' } });
 
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.workerNodes,
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const infoWorkerNodes = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.workerNodesDescription,
-			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'margin-bottom': '25px' }
-		}).component());
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+		}).component();
+
+		const workerNodeLink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+			label: loc.learnAboutWorkerNodeSettings,
+			url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/scale-out-postgresql-hyperscale-server-group',
+		}).component();
+
+		const workerInfoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
+		workerInfoAndLink.addItem(infoWorkerNodes, { CSSStyles: { 'margin-right': '5px' } });
+		workerInfoAndLink.addItem(workerNodeLink);
+		content.addItem(workerInfoAndLink, { CSSStyles: { 'margin-bottom': '25px' } });
 
 		this.workerContainer = this.modelView.modelBuilder.divContainer().component();
-		this.workerContainer.addItems(this.updateWorkerConfiguration(), { CSSStyles: { 'margin-bottom': '25px', 'min-height': '30px' } });
+		this.workerContainer.addItems(this.updateWorkerConfiguration(), { CSSStyles: { 'min-height': '30px' } });
 		content.addItem(this.workerContainer);
 
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -106,7 +110,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component());
 
 		this.coordinatorContainer = this.modelView.modelBuilder.divContainer().component();
-		this.coordinatorContainer.addItems(this.getCordinatorConfiguration());
+		this.coordinatorContainer.addItems(this.getCordinatorConfiguration(), { CSSStyles: { 'margin-bottom': '10px', 'min-height': '30px' } });
 		content.addItem(this.coordinatorContainer);
 
 		this.initialized = true;
@@ -166,7 +170,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 				this.discardButton!.enabled = false;
 				try {
 					this.workerContainer?.clearItems();
-					this.workerContainer?.addItems(this.updateWorkerConfiguration(), { CSSStyles: { 'margin-bottom': '25px', 'min-height': '30px' } });
+					this.workerContainer?.addItems(this.updateWorkerConfiguration(), { CSSStyles: { 'min-height': '30px' } });
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.refreshFailed(error));
 				} finally {
@@ -184,7 +188,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.worker = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			validationErrorMessage: 'The number of workers cannot be decreased.',
-			inputType: 'number'
+			inputType: 'number',
+			value: '3'
 		}).component();
 
 		this.vCoresMax = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
@@ -229,15 +234,16 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.editVCores(loc.vCoresMin);
 			this.editMemory(loc.memoryMax);
 			this.editMemory(loc.memoryMin);
+
 			this.editAdvancedConfiguration(
-				this.keyInputContainer(loc.vCoresMin, this.vCoresMin!),
-				this.keyInputContainer(loc.memoryMin, this.memoryMin!));
+				this.keyInputContainer(loc.vCoresMin, this.vCoresMin!, '100px', true, '40px', `0 1 200px`), //Causes line to get longer on second checkbox click
+				this.keyInputContainer(loc.memoryMin, this.memoryMin!, '100px', true, '20px', `0 1 200px`));
 
 			return [
-				this.keyInputContainer(loc.workerNodeCount, this.worker!),
-				this.keyInputContainer(loc.configurationPerNode, this.advancedConfiguration!),
-				this.keyInputContainer(loc.vCoresMax, this.vCoresMax!),
-				this.keyInputContainer(loc.memoryMax, this.memoryMax!)
+				this.keyInputContainer(loc.workerNodeCount, this.worker!, '100px', false, '', `0 1 250px`),
+				this.keyInputContainer(loc.configurationPerNode, this.advancedConfiguration!, '200px', false, '', `0 1 250px`),
+				this.keyInputContainer(loc.vCoresMax, this.vCoresMax!, '100px', true, '40px', `0 1 200px`),
+				this.keyInputContainer(loc.memoryMax, this.memoryMax!, '100px', true, '40px', `0 1 200px`)
 			];
 
 		}
@@ -252,22 +258,63 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		else {
 
 			return [
-				this.keyInputContainer(loc.vCoresMax, this.getVCores(loc.vCoresMax)),
-				this.keyInputContainer(loc.vCoresMin, this.getVCores(loc.vCoresMin)!),
-				this.keyInputContainer(loc.memoryMax, this.getMemory(loc.memoryMax)!),
-				this.keyInputContainer(loc.memoryMin, this.getMemory(loc.memoryMin)),
-				this.keyInputContainer(loc.dataStorage, this.getStorage(loc.dataStorage)),
-				this.keyInputContainer(loc.logsStorage, this.getStorage(loc.logsStorage)),
-				this.keyInputContainer(loc.backupsStorage, this.getStorage(loc.backupsStorage))
+				this.keyValueContainer(loc.vCoresMax, this.getVCores(loc.vCoresMax)),
+				this.keyValueContainer(loc.vCoresMin, this.getVCores(loc.vCoresMin)!),
+				this.keyValueContainer(loc.memoryMax, this.getMemory(loc.memoryMax)!),
+				this.keyValueContainer(loc.memoryMin, this.getMemory(loc.memoryMin)),
+				this.keyValueContainer(loc.dataStorage, this.getStorage(loc.dataStorage)),
+				this.keyValueContainer(loc.logsStorage, this.getStorage(loc.logsStorage)),
+				this.keyValueContainer(loc.backupsStorage, this.getStorage(loc.backupsStorage))
 			];
 
 		}
 
 	}
 
-	private keyInputContainer(key: string, input: azdata.Component): azdata.FlexContainer {
-		const inputFlex = { flex: '1 1 200px' };
-		const keyFlex = { flex: `0 1 200px` };
+	// Input boxes that can be edited
+	private keyInputContainer(key: string, input: azdata.Component, maxWidth: string, pointer: Boolean, pointerHeight: string, keyFlexString: string): azdata.FlexContainer {
+		const inputFlex = { flex: '1 1 150px' };
+		const keyFlex = { flex: keyFlexString };
+		const bottomFlex = { flex: `0 1 50px` };
+
+		const flexContainer = this.modelView.modelBuilder.flexContainer().withLayout({
+			flexWrap: 'wrap',
+			alignItems: 'center'
+		}).component();
+
+		if (pointer) {
+			const left = this.modelView.modelBuilder.divContainer().withProperties({
+				CSSStyles: { 'max-height': pointerHeight, 'min-height': pointerHeight, 'max-width': '1px', 'border-left-style': 'solid', 'border-left-color': '#ccc' }
+			}).component();
+
+			flexContainer!.addItem(left, { CSSStyles: { 'align-self': 'flex-start' } });
+
+			const bottom = this.modelView.modelBuilder.divContainer().withProperties({
+				CSSStyles: { 'max-width': '45px', 'border-bottom-style': 'solid', 'border-bottom-color': '#ccc' }
+			}).component();
+
+			flexContainer!.addItem(bottom, bottomFlex);
+		}
+
+		const keyComponent = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: key,
+			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-bottom': '10px', 'margin-block-start': '0px', 'margin-block-end': '0px' }
+		}).component();
+
+		flexContainer!.addItem(keyComponent, keyFlex);
+
+		const inputContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
+		inputContainer.addItem(input, { CSSStyles: { 'margin-bottom': '10px', 'max-width': maxWidth } });
+
+
+		flexContainer!.addItem(inputContainer, inputFlex);
+
+		return flexContainer;
+	}
+
+	private keyValueContainer(key: string, value: azdata.Component): azdata.FlexContainer {
+		const valueFlex = { flex: '1 1 150px' };
+		const keyFlex = { flex: `0 1 250px` };
 
 		const flexContainer = this.modelView.modelBuilder.flexContainer().withLayout({
 			flexWrap: 'wrap',
@@ -276,16 +323,16 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		const keyComponent = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: key,
-			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
+			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px', 'color': '#ccc' }
 		}).component();
 
 		flexContainer!.addItem(keyComponent, keyFlex);
 
-		const inputContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		inputContainer.addItem(input, { CSSStyles: { 'min-height': '30px', 'max-width': '350px' } });
+		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
+		valueContainer.addItem(value, { CSSStyles: { 'max-width': '100px' } });
 
 
-		flexContainer!.addItem(inputContainer, inputFlex);
+		flexContainer!.addItem(valueContainer, valueFlex);
 
 		return flexContainer;
 	}
@@ -321,15 +368,14 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	private editAdvancedConfiguration(vCores: azdata.FlexContainer, memory: azdata.FlexContainer) {
 
 		this.advancedConfiguration = this.modelView.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
-			label: loc.enableAdvancedConfiguration,
-			checked: false
+			label: loc.enableAdvancedConfiguration
 		}).component();
 
 		this.advancedConfiguration!.onChanged(() => {
 
 			if (this.advancedConfiguration!.checked) {
-				this.workerContainer?.addItem(vCores, { CSSStyles: { 'margin-bottom': '25px', 'min-height': '30px' } });
-				this.workerContainer?.addItem(memory, { CSSStyles: { 'margin-bottom': '25px', 'min-height': '30px' } });
+				this.workerContainer?.addItem(vCores, { CSSStyles: { 'min-height': '30px' } });
+				this.workerContainer?.addItem(memory, { CSSStyles: { 'min-height': '30px' } });
 			}
 			else {
 				this.workerContainer?.removeItem(vCores);
@@ -459,7 +505,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		return this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			value: coresSize,
-			readOnly: true,
+			readOnly: true
 
 		}).component();
 	}
@@ -513,14 +559,26 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		let splitValue = value.split(String(num));
 		let unit = splitValue[1];
 
-		if (unit === 'M' || unit === 'G' || unit === 'T') {
+		if (unit === 'm' || unit === 'K' || unit === 'M' || unit === 'G' || unit === 'T' || unit === 'P' || unit === 'E') {
 			num = num * giToGConversion;
 		}
-		if (unit === 'M' || unit === 'Mi') {
-			num = num * 1024;
+		if (unit === 'm') {
+			num = num / (1024 ^ 3);
+		}
+		else if (unit === 'K' || unit === 'Ki') {
+			num = num / (1024 ^ 2);
+		}
+		else if (unit === 'M' || unit === 'Mi') {
+			num = num / 1024;
 		}
 		else if (unit === 'T' || unit === 'Ti') {
-			num = num / 1024;
+			num = num * 1024;
+		}
+		else if (unit === 'P' || unit === 'Pi') {
+			num = num * (1024 ^ 2);
+		}
+		else if (unit === 'E' || unit === 'Ei') {
+			num = num * (1024 ^ 3);
 		}
 
 		return String(num);
@@ -528,8 +586,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private handleServiceUpdated() {
 		this.workerContainer?.clearItems();
-		this.workerContainer?.addItems(this.updateWorkerConfiguration(), { CSSStyles: { 'margin-bottom': '25px', 'min-height': '30px' } });
+		this.workerContainer?.addItems(this.updateWorkerConfiguration(), { CSSStyles: { 'min-height': '30px' } });
 		this.coordinatorContainer?.clearItems();
-		this.coordinatorContainer?.addItems(this.getCordinatorConfiguration());
+		this.coordinatorContainer?.addItems(this.getCordinatorConfiguration(), { CSSStyles: { 'margin-bottom': '10px', 'min-height': '30px' } });
 	}
 }
