@@ -437,11 +437,11 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				createWizardPage(title: string): azdata.window.WizardPage {
 					return extHostModelViewDialog.createWizardPage(title, extension);
 				},
-				createWizard(title: string, width?: azdata.window.DialogWidth): azdata.window.Wizard {
-					return extHostModelViewDialog.createWizard(title, width);
+				createWizard(title: string, name?: string, width?: azdata.window.DialogWidth): azdata.window.Wizard {
+					return extHostModelViewDialog.createWizard(title, name, width);
 				},
-				createModelViewDashboard(title: string, options?: azdata.ModelViewDashboardOptions): azdata.window.ModelViewDashboard {
-					return extHostModelViewDialog.createModelViewDashboard(title, options, extension);
+				createModelViewDashboard(title: string, name?: string, options?: azdata.ModelViewDashboardOptions): azdata.window.ModelViewDashboard {
+					return extHostModelViewDialog.createModelViewDashboard(title, name, options, extension);
 				},
 				MessageLevel: sqlExtHostTypes.MessageLevel
 			};
@@ -458,8 +458,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			const workspace: typeof azdata.workspace = {
 				onDidOpenDashboard: extHostDashboard.onDidOpenDashboard,
 				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard,
-				createModelViewEditor(title: string, options?: azdata.ModelViewEditorOptions): azdata.workspace.ModelViewEditor {
-					return extHostModelViewDialog.createModelViewEditor(title, extension, options);
+				createModelViewEditor(title: string, options?: azdata.ModelViewEditorOptions, name?: string): azdata.workspace.ModelViewEditor {
+					return extHostModelViewDialog.createModelViewEditor(title, extension, name, options);
 				}
 			};
 
@@ -539,6 +539,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 			return {
 				accounts,
+				ButtonType: sqlExtHostTypes.ButtonType,
 				connection,
 				credentials,
 				objectexplorer: objectExplorer,

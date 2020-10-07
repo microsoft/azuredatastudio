@@ -17,7 +17,7 @@ import * as dataworkspace from 'dataworkspace';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
+import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry, IDatabaseReferenceProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
@@ -29,6 +29,7 @@ import { BuildHelper } from '../tools/buildHelper';
 import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 
 /**
  * Controller for managing project lifecycle
@@ -309,7 +310,15 @@ export class ProjectsController {
 		const node = context.element as BaseProjectTreeItem;
 		const project = this.getProjectFromContext(node);
 
-		const confirmationPrompt = node instanceof FolderNode ? constants.deleteConfirmationContents(node.friendlyName) : constants.deleteConfirmation(node.friendlyName);
+		let confirmationPrompt;
+		if (node instanceof DatabaseReferenceTreeItem) {
+			confirmationPrompt = constants.deleteReferenceConfirmation(node.friendlyName);
+		} else if (node instanceof FolderNode) {
+			confirmationPrompt = constants.deleteConfirmationContents(node.friendlyName);
+		} else {
+			confirmationPrompt = constants.deleteConfirmation(node.friendlyName);
+		}
+
 		const response = await vscode.window.showWarningMessage(confirmationPrompt, { modal: true }, constants.yesString);
 
 		if (response !== constants.yesString) {
@@ -318,8 +327,14 @@ export class ProjectsController {
 
 		let success = false;
 
+		if (node instanceof DatabaseReferenceTreeItem) {
+			const databaseReference = this.getDatabaseReference(project, node);
 
-		if (node instanceof FileNode || FolderNode) {
+			if (databaseReference) {
+				await project.deleteDatabaseReference(databaseReference);
+				success = true;
+			}
+		} else if (node instanceof FileNode || FolderNode) {
 			const fileEntry = this.getFileProjectEntry(project, node);
 
 			if (fileEntry) {
@@ -345,6 +360,17 @@ export class ProjectsController {
 			return allFileEntries.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)));
 		}
 		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
+	}
+
+	private getDatabaseReference(project: Project, context: BaseProjectTreeItem): IDatabaseReferenceProjectEntry | undefined {
+		const root = context.root as ProjectRootTreeItem;
+		const databaseReference = context as DatabaseReferenceTreeItem;
+
+		if (root && databaseReference) {
+			return project.databaseReferences.find(r => r.databaseName === databaseReference.treeItem.label);
+		}
+
+		return undefined;
 	}
 
 	/**
@@ -402,6 +428,24 @@ export class ProjectsController {
 			this.refreshProjectsTree(context);
 		} else {
 			throw new Error(constants.invalidProjectReload);
+		}
+	}
+
+	/**
+	 * Changes the project's DSP to the selected target platform
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async changeTargetPlatform(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(context);
+		const selectedTargetPlatform = (await vscode.window.showQuickPick((Array.from(constants.targetPlatformToVersion.keys())).map(version => { return { label: version }; }),
+			{
+				canPickMany: false,
+				placeHolder: constants.selectTargetPlatform(constants.getTargetPlatformFromVersion(project.getProjectTargetVersion()))
+			}))?.label;
+
+		if (selectedTargetPlatform) {
+			await project.changeTargetPlatform(constants.targetPlatformToVersion.get(selectedTargetPlatform)!);
+			vscode.window.showInformationMessage(constants.currentTargetPlatform(project.projectFileName, constants.getTargetPlatformFromVersion(project.getProjectTargetVersion())));
 		}
 	}
 
@@ -510,6 +554,25 @@ export class ProjectsController {
 
 	public getAddDatabaseReferenceDialog(project: Project): AddDatabaseReferenceDialog {
 		return new AddDatabaseReferenceDialog(project);
+	}
+
+	public async updateProjectForRoundTrip(project: Project) {
+		if (project.importedTargets.includes(constants.NetCoreTargets) && !project.containsSSDTOnlySystemDatabaseReferences()) {
+			return;
+		}
+
+		if (!project.importedTargets.includes(constants.NetCoreTargets)) {
+			const result = await vscode.window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await project.updateProjectForRoundTrip();
+				await project.updateSystemDatabaseReferencesInProjFile();
+			}
+		} else if (project.containsSSDTOnlySystemDatabaseReferences()) {
+			const result = await vscode.window.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await project.updateSystemDatabaseReferencesInProjFile();
+			}
+		}
 	}
 
 	private getProjectFromContext(context: Project | BaseProjectTreeItem | dataworkspace.WorkspaceTreeItem): Project {

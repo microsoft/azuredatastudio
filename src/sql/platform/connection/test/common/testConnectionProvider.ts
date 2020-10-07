@@ -29,8 +29,12 @@ export class TestConnectionProvider implements azdata.ConnectionProvider {
 		return Promise.resolve(true);
 	}
 
-	getConnectionString(connectionUri: string): Thenable<string> {
+	getConnectionString(connectionUri: string, includePassword?: boolean): Thenable<string> {
 		return Promise.resolve('');
+	}
+
+	buildConnectionInfo(connectionString: string): Thenable<azdata.ConnectionInfo> {
+		return Promise.resolve({ options: {} });
 	}
 
 	rebuildIntelliSenseCache(connectionUri: string): Thenable<void> {

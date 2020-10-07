@@ -65,7 +65,7 @@
           "default": [],
           "description": "%notebook.pinnedNotebooks.description%",
           "items": {
-            "type": "string"
+            "type": "object"
           }
         }
       }

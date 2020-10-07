@@ -19,7 +19,7 @@ export class QueryHistoryDataSource implements IDataSource {
 		if (element instanceof QueryHistoryNode && element.info) {
 			return element.info.id;
 		}
-		return undefined;
+		return '';
 	}
 
 	/**
