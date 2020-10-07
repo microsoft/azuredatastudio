@@ -408,7 +408,7 @@ export class PublishDatabaseDialog {
 
 		const table = view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			ariaLabel: constants.sqlCmdTableLabel,
-			data: this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars),
+			dataValues: this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars),
 			columns: [
 				{
 					displayName: constants.sqlCmdVariableColumn,
@@ -431,8 +431,8 @@ export class PublishDatabaseDialog {
 
 		table.onDataChanged(() => {
 			this.sqlCmdVars = {};
-			table.data?.forEach((row) => {
-				(<Record<string, string>>this.sqlCmdVars)[row[0]] = row[1];
+			table.dataValues?.forEach((row) => {
+				(<Record<string, string>>this.sqlCmdVars)[<string>row[0].value] = <string>row[1].value;
 			});
 
 			this.tryEnableGenerateScriptAndOkButtons();
@@ -586,10 +586,10 @@ export class PublishDatabaseDialog {
 		return loadProfileButton;
 	}
 
-	private convertSqlCmdVarsToTableFormat(sqlCmdVars: Record<string, string>): string[][] {
+	private convertSqlCmdVarsToTableFormat(sqlCmdVars: Record<string, string>): azdata.DeclarativeTableCellValue[][] {
 		let data = [];
 		for (let key in sqlCmdVars) {
-			data.push([key, sqlCmdVars[key]]);
+			data.push([{ value: key }, { value: sqlCmdVars[key] }]);
 		}
 
 		return data;
