@@ -115,7 +115,7 @@ export default class MainController implements vscode.Disposable {
 
 			const newProjFolderUri = (selectionResult as vscode.Uri[])[0];
 			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri, true);
-			const proj = await this.projectsController.openProject(vscode.Uri.file(newProjFilePath));
+			const proj = await Project.openProject(vscode.Uri.file(newProjFilePath).fsPath);
 
 			newProjectTool.updateSaveLocationSetting();
 

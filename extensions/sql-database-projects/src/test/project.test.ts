@@ -473,10 +473,36 @@ describe('Project: round trip updates', function (): void {
 	it('Should update SSDT project to work in ADS handling pre-exsiting targets', async function (): Promise<void> {
 		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithCleanTarget, baselines.SSDTProjectBaselineWithCleanTargetAfterUpdate);
 	});
+
+	it('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
+		sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.noString));
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+
+		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
+
+		should(await exists(sqlProjPath + '_backup')).equal(false);	// backup file should not be generated
+		should(project.importedTargets.length).equal(2); // additional target should not be added by updateProjectForRoundTrip method
+
+		sinon.restore();
+	});
+
+	it('Should not show warning message for non-SSDT projects that have the additional information for Build', async function (): Promise<void> {
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+
+		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);	// no error thrown
+
+		should(project.importedTargets.length).equal(3); // additional target should exist by default
+	});
 });
 
 async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: string): Promise<void> {
-	sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
+	const stub = sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
 
 	projFilePath = await testUtils.createTestSqlProjFile(fileBeforeupdate);
 	const project = await Project.openProject(projFilePath); // project gets updated if needed in openProject()
@@ -487,6 +513,7 @@ async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: 
 	let projFileText = (await fs.readFile(projFilePath)).toString();
 	should(projFileText).equal(fileAfterUpdate.trim());
 
+	should(stub.calledOnce).be.true('showWarningMessage should have been called exactly once');
 	sinon.restore();
 }
 
