@@ -3,7 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/// <reference path='../../../../src/sql/azdata.d.ts'/>
-/// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
-/// <reference path='../../../../src/vs/vscode.d.ts'/>
-/// <reference path='../../../resource-deployment/src/typings/resource-deployment.d.ts'/>
+import * as rd from 'resource-deployment';
+import { optionsSourcesService } from './services/optionSourcesService';
+
+export function getExtensionApi(): rd.IExtension {
+	return {
+		registerOptionsSourceProvider: (provider: rd.IOptionsSourceProvider) => optionsSourcesService.registerOptionsSourceProvider(provider)
+	};
+}
+

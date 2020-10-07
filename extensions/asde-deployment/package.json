@@ -2,7 +2,7 @@
   "name": "asde-deployment",
   "displayName": "%extension-displayName%",
   "description": "%extension-description%",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -590,5 +590,10 @@
         }
       }
     ]
+  },
+  "__metadata": {
+    "id": "76",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }

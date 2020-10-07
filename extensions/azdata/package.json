@@ -18,6 +18,9 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
+  "extensionDependencies": [
+    "microsoft.resource-deployment"
+  ],
   "main": "./out/extension",
   "contributes": {
     "configuration": [
@@ -129,5 +132,10 @@
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.1.0"
+  },
+  "__metadata": {
+    "id": "73",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }
