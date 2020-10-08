@@ -7,13 +7,14 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DialogInfo, instanceOfNotebookBasedDialogInfo, NotebookBasedDialogInfo, FieldType, NotebookPathInfo } from '../interfaces';
+import { DialogInfo, FieldType, instanceOfNotebookBasedDialogInfo, NotebookBasedDialogInfo, NotebookPathInfo } from '../interfaces';
 import { INotebookService } from '../services/notebookService';
 import { IPlatformService } from '../services/platformService';
+import { IToolsService } from '../services/toolsService';
 import { DialogBase } from './dialogBase';
 import { Model } from './model';
-import { initializeDialog, InputComponentInfo, InputComponents, setModelValues, Validator } from './modelViewUtils';
-import { IToolsService } from '../services/toolsService';
+import { initializeDialog, InputComponentInfo, InputComponents, setModelValues } from './modelViewUtils';
+import { Validator } from './validation/Validations';
 
 const localize = nls.loadMessageBundle();
 

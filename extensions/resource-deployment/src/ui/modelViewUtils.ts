@@ -7,24 +7,24 @@ import { azureResource } from 'azureResource';
 import * as fs from 'fs';
 import { EOL } from 'os';
 import * as path from 'path';
+import { IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
+import { getDateTimeString, getErrorMessage, throwUnless } from '../common/utils';
 import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
+import { optionsSourcesService } from '../services/optionSourcesService';
 import { KubeCtlTool, KubeCtlToolName } from '../services/tools/kubeCtlTool';
 import { IToolsService } from '../services/toolsService';
-import { getDateTimeString, getErrorMessage, throwUnless } from '../common/utils';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
-import { optionsSourcesService } from '../services/optionSourcesService';
-import { IOptionsSourceProvider } from 'resource-deployment';
+import { createValidation, Validator } from './validation/Validations';
 
 const localize = nls.loadMessageBundle();
 
-export type Validator = () => { valid: boolean, message: string };
 export type InputValueTransformer = (inputValue: string) => string | Promise<string>;
 export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder;
 export type InputComponentInfo = {
@@ -368,6 +368,11 @@ function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata
 }
 
 async function processField(context: FieldContext): Promise<void> {
+	context.fieldInfo.validations = context.fieldInfo.validations?.map((validation => createValidation(
+		validation,
+		() => '',	// callback to fetch the value of this field
+		(variable) => getInputComponentValue(context.inputComponents, variable)	// callback to fetch the value of a variable corresponding to any field already defined.
+	)));
 	switch (context.fieldInfo.type) {
 		case FieldType.Options:
 			await processOptionsTypeField(context);

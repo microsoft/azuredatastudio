@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { Validator } from './modelViewUtils';
+import { Validator } from './validation/Validations';
 import { WizardPageInfo } from './wizardPageInfo';
 
 export abstract class WizardPageBase<T> {

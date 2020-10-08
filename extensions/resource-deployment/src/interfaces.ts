@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import { IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
+import { IValidation } from './ui/validation/Validations';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 
@@ -279,7 +280,7 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean;
 	isEvaluated?: boolean;
-	validations?: FieldValidation[]
+	validations?: IValidation[]
 }
 
 export interface KubeClusterContextFieldInfo extends FieldInfo {
@@ -338,21 +339,6 @@ export enum FieldType {
 	FilePicker = 'file_picker',
 	KubeClusterContextPicker = 'kube_cluster_context_picker',
 	KubeStorageClass = 'kube_storage_class'
-}
-
-export enum FieldValidationType {
-	IsInteger = 'is_integer',
-	Regex = 'regex'
-}
-
-export interface FieldValidation {
-	type: FieldValidationType
-	text?: string;
-	description?: string;
-}
-
-export interface PageValidation {
-	expression: string
 }
 
 export enum OptionsType {
