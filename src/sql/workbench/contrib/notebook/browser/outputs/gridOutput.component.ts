@@ -55,8 +55,8 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	private _cellOutput: azdata.nb.ICellOutput;
 	private _bundleOptions: MimeModel.IOptions;
 	private _table: DataResourceTable;
-	private _batchId: number;
-	private _id: number;
+	private _batchId: number | undefined;
+	private _id: number | undefined;
 	private _layoutCalledOnce: boolean = false;
 
 	constructor(
@@ -94,11 +94,11 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		this._cellOutput = value;
 	}
 
-	@Input() set batchId(value: number) {
+	@Input() set batchId(value: number | undefined) {
 		this._batchId = value;
 	}
 
-	@Input() set id(value: number) {
+	@Input() set id(value: number | undefined) {
 		this._id = value;
 	}
 

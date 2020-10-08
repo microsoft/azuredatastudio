@@ -579,7 +579,7 @@ export class CellModel extends Disposable implements ICellModel {
 				// Check if the table already exists
 				for (let i = 0; i < this._outputs.length; i++) {
 					if (this._outputs[i].output_type === 'execute_result') {
-						let resultSet: ResultSetSummary = (<nb.IExecuteResult>this._outputs[i]).metadata.resultSet;
+						let resultSet: ResultSetSummary = this._outputs[i].metadata.resultSet;
 						let newResultSet: ResultSetSummary = output.metadata.resultSet;
 						if (resultSet.batchId === newResultSet.batchId && resultSet.id === newResultSet.id) {
 							// If it does, update output with data resource and html table
@@ -593,6 +593,7 @@ export class CellModel extends Disposable implements ICellModel {
 				break;
 			case 'execute_result_update':
 				let update = msg.content as nb.IExecuteResultUpdate;
+				// Send update to gridOutput component
 				this._onTableUpdated.fire({
 					resultSet: update.resultSet,
 					rows: update.data
