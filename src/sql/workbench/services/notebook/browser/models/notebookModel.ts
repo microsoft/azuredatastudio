@@ -586,7 +586,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				await clientSession.kernel.ready;
 				await this.updateKernelInfoOnKernelChange(clientSession.kernel, kernelAlias);
 			}
-			if (clientSession.isInErrorState && clientSession.errorMessage) {
+			if (clientSession.isInErrorState) {
 				if (setErrorStateOnFail) {
 					this.setErrorState(clientSession.errorMessage);
 				} else {
