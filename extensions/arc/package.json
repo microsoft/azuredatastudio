@@ -139,6 +139,7 @@
           "light": "./images/data_controller.svg",
           "dark": "./images/data_controller.svg"
         },
+        "tags": ["Hybrid", "SQL Server", "PostgreSQL"],
         "providers": [
           {
             "notebookWizard": {
@@ -557,6 +558,7 @@
           "light": "./images/miaa.svg",
           "dark": "./images/miaa.svg"
         },
+        "tags": ["Hybrid", "SQL Server"],
         "providers": [
           {
             "dialog": {
@@ -678,6 +680,7 @@
           "light": "./images/postgres.svg",
           "dark": "./images/postgres.svg"
         },
+        "tags": ["Hybrid", "PostgreSQL"],
         "providers": [
           {
             "dialog": {

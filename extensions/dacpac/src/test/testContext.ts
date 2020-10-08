@@ -278,6 +278,7 @@ export function createViewContext(): ViewTestContext {
 		validate: undefined!,
 		initializeModel: () => { return Promise.resolve(); },
 		modelBuilder: {
+			listView: undefined!,
 			radioCardGroup: undefined!,
 			navContainer: undefined!,
 			divContainer: () => divBuilder,

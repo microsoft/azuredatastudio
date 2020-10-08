@@ -21,6 +21,7 @@ export interface ResourceType {
 	displayIndex?: number;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
 	okButtonText?: string;
+	tags?: string[];
 }
 
 export interface AgreementInfo {
