@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
+import { getErrorMessage } from '../../common/utils';
 import * as loc from '../../localizedConstants';
 import { INotebookService, Notebook } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
@@ -58,7 +59,9 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 			const notebook = await this.prepareNotebookAndEnvironment();
 			await this.openNotebook(notebook);
 		} catch (error) {
-			vscode.window.showErrorMessage(error);
+			console.log(error);
+			vscode.window.showErrorMessage(getErrorMessage(error));
+			throw error;
 		}
 	}
 	protected async onOk(): Promise<void> {
@@ -67,7 +70,9 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 			const openedNotebook = await this.openNotebook(notebook);
 			openedNotebook.runAllCells();
 		} catch (error) {
-			vscode.window.showErrorMessage(error);
+			console.log(error);
+			vscode.window.showErrorMessage(getErrorMessage(error));
+			throw error;
 		}
 	}
 
