@@ -1,6 +1,6 @@
 {
   "name": "kusto",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "Microsoft",
   "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
   "activationEvents": [
@@ -223,7 +223,8 @@
           "path": {
             "light": "resources/light/azureDE.svg",
             "dark": "resources/dark/azureDE_inverse.svg"
-          }
+          },
+          "default": true
         },
         {
           "id": "kusto:cluster",
@@ -423,5 +424,10 @@
     "@types/kerberos": "^1.1.0",
     "@types/request": "^2.48.2",
     "@types/through2": "^2.0.34"
+  },
+  "__metadata": {
+    "id": "74",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }

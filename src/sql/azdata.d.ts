@@ -2485,7 +2485,9 @@ declare module 'azdata' {
 		export const onDidChangeToDashboard: vscode.Event<DashboardDocument>;
 
 		/**
-		 * Create a new model view editor
+		 * Create a new ModelView editor
+		 * @param title The title shown in the editor tab
+		 * @param options Options to configure the editor
 		 */
 		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions): ModelViewEditor;
 
@@ -3177,7 +3179,13 @@ declare module 'azdata' {
 		multiline?: boolean;
 		rows?: number;
 		columns?: number;
+		/**
+		 * The minimum value allowed for the input. Only valid for number inputs.
+		 */
 		min?: number;
+		/**
+		 * The maxmimum value allowed for the input. Only valid for number inputs.
+		 */
 		max?: number;
 		/**
 		 * Whether to stop key event propagation when enter is pressed in the input box. Leaving this as false
@@ -4905,8 +4913,6 @@ declare module 'azdata' {
 			 *
 			 * @param disposeOnDone - Whether to dispose of the future when done.
 			 *
-			 * @param cellId - Cell id (used by queryRunner)
-			 *
 			 * @returns A kernel future.
 			 *
 			 * #### Notes
@@ -4921,7 +4927,7 @@ declare module 'azdata' {
 			 *
 			 * **See also:** [[IExecuteReply]]
 			 */
-			requestExecute(content: IExecuteRequest, disposeOnDone?: boolean, cellUri?: string): IFuture;
+			requestExecute(content: IExecuteRequest, disposeOnDone?: boolean): IFuture;
 
 			/**
 			 * Send a `complete_request` message.

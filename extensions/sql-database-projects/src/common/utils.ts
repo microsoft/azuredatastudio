@@ -8,6 +8,7 @@ import * as os from 'os';
 import * as constants from './constants';
 import * as path from 'path';
 import * as glob from 'fast-glob';
+import * as mssql from '../../../mssql';
 import { promises as fs } from 'fs';
 
 /**
@@ -227,4 +228,14 @@ export async function getSqlProjectFilesInFolder(folderPath: string): Promise<st
 	const results = await glob(sqlprojFilter);
 
 	return results;
+}
+
+/**
+ * Returns the default deployment options from DacFx
+ */
+export async function GetDefaultDeploymentOptions(): Promise<mssql.DeploymentOptions> {
+	const service = (vscode.extensions.getExtension(mssql.extension.name)!.exports as mssql.IExtension).schemaCompare;
+	const result = await service.schemaCompareGetDefaultOptions();
+
+	return result.defaultDeploymentOptions;
 }

@@ -29,6 +29,24 @@ export class TelemetryParams {
 
 // ------------------------------- </ Telemetry Sent Event > ----------------------------------
 
+// ------------------------------- < Security Token Request > ------------------------------------------
+export interface RequestSecurityTokenParams {
+	authority: string;
+	provider: string;
+	resource: string;
+	accountId: string;
+}
+
+export interface RequestSecurityTokenResponse {
+	accountKey: string;
+	token: string;
+}
+
+export namespace SecurityTokenRequest {
+	export const type = new RequestType<RequestSecurityTokenParams, RequestSecurityTokenResponse, void, void>('account/securityTokenRequest');
+}
+// ------------------------------- </ Security Token Request > ------------------------------------------
+
 // ------------------------------- <Serialization> -----------------------------
 export namespace SerializeDataStartRequest {
 	export const type = new RequestType<azdata.SerializeDataStartRequestParams, azdata.SerializeDataResult, void, void>('serialize/start');

@@ -24,7 +24,6 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator, IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { find, firstIndex } from 'vs/base/common/arrays';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
@@ -107,7 +106,7 @@ export class ProfilerFilterDialog extends Modal {
 		this._loadFilterButton = this.addFooterButton(LoadFilterText, () => this.loadSavedFilter(), 'left');
 		this._applyButton = this.addFooterButton(ApplyText, () => this.filterSession());
 		this._okButton = this.addFooterButton(OkText, () => this.handleOkButtonClick());
-		this._cancelButton = this.addFooterButton(CancelText, () => this.hide());
+		this._cancelButton = this.addFooterButton(CancelText, () => this.hide('cancel'));
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
 		this._register(attachButtonStyler(this._applyButton, this._themeService));
@@ -139,7 +138,7 @@ export class ProfilerFilterDialog extends Modal {
 
 	/* espace key */
 	protected onClose() {
-		this.hide();
+		this.hide('close');
 	}
 
 	/* enter key */
@@ -149,7 +148,7 @@ export class ProfilerFilterDialog extends Modal {
 
 	private handleOkButtonClick(): void {
 		this.filterSession();
-		this.hide();
+		this.hide('ok');
 	}
 
 	private handleClearButtonClick() {
@@ -223,7 +222,7 @@ export class ProfilerFilterDialog extends Modal {
 
 	private addClauseRow(setInitialValue: boolean, field?: string, operator?: string, value?: string): void {
 		const columns = this._input!.columns.map(column => column.name);
-		if (field && !find(columns, x => x === field)) {
+		if (field && !columns.find(x => x === field)) {
 			return;
 		}
 
@@ -272,7 +271,7 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	private removeRow(clauseId: string) {
-		const idx = firstIndex(this._clauseRows, (entry) => { return entry.id === clauseId; });
+		const idx = this._clauseRows.findIndex(entry => { return entry.id === clauseId; });
 		if (idx !== -1) {
 			this._clauseRows[idx].row.remove();
 			this._clauseRows.splice(idx, 1);

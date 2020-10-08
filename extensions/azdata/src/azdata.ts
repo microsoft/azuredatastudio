@@ -9,13 +9,13 @@ import * as os from 'os';
 import * as path from 'path';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
+import { getPlatformDownloadLink, getPlatformReleaseVersion } from './azdataReleaseInfo';
 import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
-import { getErrorMessage, searchForCmd } from './common/utils';
+import { getErrorMessage, NoAzdataError, searchForCmd } from './common/utils';
 import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
-import { getPlatformDownloadLink, getPlatformReleaseVersion } from './azdataReleaseInfo';
 
 const enum AzdataDeployOption {
 	dontPrompt = 'dontPrompt',
@@ -37,7 +37,7 @@ export interface IAzdataTool extends azdataExt.IAzdataApi {
 /**
  * An object to interact with the azdata tool installed on the box.
  */
-export class AzdataTool implements IAzdataTool {
+export class AzdataTool implements azdataExt.IAzdataApi {
 
 	private _semVersion: SemVer;
 	constructor(private _path: string, version: string) {
@@ -49,14 +49,14 @@ export class AzdataTool implements IAzdataTool {
 	 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
 	 * Azdata has gotten reinstalled in the background after this IAzdataApi object was constructed.
 	 */
-	public getSemVersion() {
+	public async getSemVersion(): Promise<SemVer> {
 		return this._semVersion;
 	}
 
 	/**
 	 * gets the path where azdata tool is installed
 	 */
-	public getPath() {
+	public async getPath(): Promise<string> {
 		return this._path;
 	}
 
@@ -195,7 +195,7 @@ export class AzdataTool implements IAzdataTool {
 					} catch (e) {
 						// this.path does not exist
 						await vscode.commands.executeCommand('setContext', azdataFound, false);
-						throw (loc.noAzdata);
+						throw new NoAzdataError();
 					}
 					throw err; // rethrow the original error
 				}
@@ -225,7 +225,7 @@ export async function findAzdata(): Promise<IAzdataTool> {
 	try {
 		const azdata = await findSpecificAzdata();
 		await vscode.commands.executeCommand('setContext', azdataFound, true); // save a context key that azdata was found so that command for installing azdata is no longer available in commandPalette and that for updating it is.
-		Logger.log(loc.foundExistingAzdata(azdata.getPath(), azdata.getSemVersion().raw));
+		Logger.log(loc.foundExistingAzdata(await azdata.getPath(), (await azdata.getSemVersion()).raw));
 		return azdata;
 	} catch (err) {
 		Logger.log(loc.couldNotFindAzdata(err));
@@ -312,11 +312,11 @@ export async function checkAndInstallAzdata(userRequested: boolean = false): Pro
 export async function checkAndUpdateAzdata(currentAzdata?: IAzdataTool, userRequested: boolean = false): Promise<boolean> {
 	if (currentAzdata !== undefined) {
 		const newSemVersion = await discoverLatestAvailableAzdataVersion();
-		if (newSemVersion.compare(currentAzdata.getSemVersion()) === 1) {
-			Logger.log(loc.foundAzdataVersionToUpdateTo(newSemVersion.raw, currentAzdata.getSemVersion().raw));
+		if (newSemVersion.compare(await currentAzdata.getSemVersion()) === 1) {
+			Logger.log(loc.foundAzdataVersionToUpdateTo(newSemVersion.raw, (await currentAzdata.getSemVersion()).raw));
 			return await promptToUpdateAzdata(newSemVersion.raw, userRequested);
 		} else {
-			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.getSemVersion().raw));
+			Logger.log(loc.currentlyInstalledVersionIsLatest((await currentAzdata.getSemVersion()).raw));
 		}
 	} else {
 		Logger.log(loc.updateCheckSkipped);
@@ -413,15 +413,26 @@ async function promptToUpdateAzdata(newVersion: string, userRequested: boolean =
 	return false;
 }
 
+
+
 /**
- * Prompts user to accept EULA it if was not previously accepted. Stores and returns the user response to EULA prompt.
+ *	Returns true if Eula has been accepted.
+ *
+ * @param memento The memento that stores the eulaAccepted state
+ */
+export function isEulaAccepted(memento: vscode.Memento): boolean {
+	return !!memento.get<boolean>(eulaAccepted);
+}
+
+/**
+ * Prompts user to accept EULA. Stores and returns the user response to EULA prompt.
  * @param memento - memento where the user response is stored.
  * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
+ * @param requireUserAction - if the prompt is required to be acted upon by the user. This is typically 'true' when this method is called to address an Error when the EULA needs to be accepted to proceed.
  * pre-requisite, the calling code has to ensure that the eula has not yet been previously accepted by the user.
  * returns true if the user accepted the EULA.
  */
-
-export async function promptForEula(memento: vscode.Memento, userRequested: boolean = false): Promise<boolean> {
+export async function promptForEula(memento: vscode.Memento, userRequested: boolean = false, requireUserAction: boolean = false): Promise<boolean> {
 	let response: string | undefined = loc.no;
 	const config = <AzdataDeployOption>getConfig(azdataAcceptEulaKey);
 	if (userRequested) {
@@ -434,7 +445,9 @@ export async function promptForEula(memento: vscode.Memento, userRequested: bool
 	if (config === AzdataDeployOption.prompt || userRequested) {
 		Logger.show();
 		Logger.log(loc.promptForEulaLog(microsoftPrivacyStatementUrl, eulaUrl));
-		response = await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), ...responses);
+		response = requireUserAction
+			? await vscode.window.showErrorMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), ...responses)
+			: await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), ...responses);
 		Logger.log(loc.userResponseToEulaPrompt(response));
 	}
 	if (response === loc.doNotAskAgain) {

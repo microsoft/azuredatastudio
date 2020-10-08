@@ -28,7 +28,7 @@ const BUILTIN_MARKETPLACE_EXTENSIONS_ROOT = path.join(APP_ROOT, '.build', 'built
 const WEB_DEV_EXTENSIONS_ROOT = path.join(APP_ROOT, '.build', 'builtInWebDevExtensions');
 const WEB_MAIN = path.join(APP_ROOT, 'src', 'vs', 'code', 'browser', 'workbench', 'workbench-dev.html');
 
-const WEB_PLAYGROUND_VERSION = '0.0.8';
+const WEB_PLAYGROUND_VERSION = '0.0.9';
 
 const args = minimist(process.argv, {
 	boolean: [
@@ -395,8 +395,7 @@ async function handleRoot(req, res) {
 		.replace('{{WORKBENCH_WEB_CONFIGURATION}}', () => escapeAttribute(JSON.stringify(webConfigJSON))) // use a replace function to avoid that regexp replace patterns ($&, $0, ...) are applied
 		.replace('{{WORKBENCH_BUILTIN_EXTENSIONS}}', () => escapeAttribute(JSON.stringify(dedupedBuiltInExtensions)))
 		.replace('{{WORKBENCH_CREDENTIALS}}', () => escapeAttribute(JSON.stringify(credentials)))
-		.replace('{{WEBVIEW_ENDPOINT}}', '')
-		.replace('{{REMOTE_USER_DATA_URI}}', '');
+		.replace('{{WEBVIEW_ENDPOINT}}', '');
 
 
 	const headers = { 'Content-Type': 'text/html' };

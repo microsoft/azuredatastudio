@@ -95,8 +95,8 @@ steps:
       $ErrorActionPreference = "Stop"
       exec { yarn gulp "package-rebuild-extensions" }
       exec { yarn gulp "vscode-win32-x64-min-ci" }
-      exec { yarn gulp "vscode-reh-win32-x64-min-ci" }
-      exec { yarn gulp "vscode-reh-web-win32-x64-min-ci" }
+      exec { yarn gulp "vscode-reh-win32-x64-min" }
+      exec { yarn gulp "vscode-reh-web-win32-x64-min" }
       exec { yarn gulp "vscode-win32-x64-code-helper" }
       exec { yarn gulp "vscode-win32-x64-inno-updater" }
     displayName: Build
@@ -131,7 +131,7 @@ steps:
       $AppRoot = "$(agent.builddirectory)\azuredatastudio-win32-x64"
       $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
       $AppNameShort = $AppProductJson.nameShort
-      exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; $env:VSCODE_REMOTE_SERVER_PATH = "$(agent.builddirectory)\azuredatastudio-reh-win32-x64"; .\scripts\test-integration.bat --build --tfs "Integration Tests" }
+      # exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; $env:VSCODE_REMOTE_SERVER_PATH = "$(agent.builddirectory)\azuredatastudio-reh-win32-x64"; .\scripts\test-integration.bat --build --tfs "Integration Tests" }
     displayName: Run integration tests (Electron)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 

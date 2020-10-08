@@ -16,7 +16,7 @@ import { PostgresSupportRequestPage } from './postgresSupportRequestPage';
 
 export class PostgresDashboard extends Dashboard {
 	constructor(private _context: vscode.ExtensionContext, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
-		super(loc.postgresDashboard(_postgresModel.info.name));
+		super(loc.postgresDashboard(_postgresModel.info.name), 'ArcPgDashboard');
 	}
 
 	public async showDashboard(): Promise<void> {
@@ -33,7 +33,7 @@ export class PostgresDashboard extends Dashboard {
 		// TODO: Removed properties page while investigating bug where refreshed values don't appear in UI
 		// const propertiesPage = new PostgresPropertiesPage(modelView, this._controllerModel, this._postgresModel);
 		const diagnoseAndSolveProblemsPage = new PostgresDiagnoseAndSolveProblemsPage(modelView, this._context, this._postgresModel);
-		const supportRequestPage = new PostgresSupportRequestPage(modelView);
+		const supportRequestPage = new PostgresSupportRequestPage(modelView, this._controllerModel, this._postgresModel);
 
 		return [
 			overviewPage.tab,
