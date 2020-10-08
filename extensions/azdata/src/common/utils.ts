@@ -7,7 +7,6 @@ import * as azdataExt from 'azdata-ext';
 import * as which from 'which';
 import * as loc from '../localizedConstants';
 
-
 export class NoAzdataError extends Error implements azdataExt.ErrorWithLink {
 	constructor() {
 		super(loc.noAzdata);
@@ -17,7 +16,6 @@ export class NoAzdataError extends Error implements azdataExt.ErrorWithLink {
 		return loc.noAzdataWithLink;
 	}
 }
-
 /**
  * Searches for the first instance of the specified executable in the PATH environment variable
  * @param exe The executable to search for

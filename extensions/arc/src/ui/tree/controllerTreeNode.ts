@@ -3,16 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ResourceInfo, ResourceType } from 'arc';
+import { MiaaResourceInfo, ResourceInfo, ResourceType } from 'arc';
 import * as vscode from 'vscode';
-import { parseInstanceName, UserCancelledError } from '../../common/utils';
+import { UserCancelledError } from '../../common/utils';
 import * as loc from '../../localizedConstants';
 import { ControllerModel, Registration } from '../../models/controllerModel';
 import { MiaaModel } from '../../models/miaaModel';
 import { PostgresModel } from '../../models/postgresModel';
+import { ResourceModel } from '../../models/resourceModel';
 import { ControllerDashboard } from '../dashboards/controller/controllerDashboard';
 import { AzureArcTreeDataProvider } from './azureArcTreeDataProvider';
 import { MiaaTreeNode } from './miaaTreeNode';
+import { NoInstancesTreeNode } from './noInstancesTreeNode';
 import { PostgresTreeNode } from './postgresTreeNode';
 import { RefreshTreeNode } from './refreshTreeNode';
 import { ResourceTreeNode } from './resourceTreeNode';
@@ -23,7 +25,7 @@ import { TreeNode } from './treeNode';
  */
 export class ControllerTreeNode extends TreeNode {
 
-	private _children: ResourceTreeNode[] = [];
+	private _children: ResourceTreeNode<ResourceModel>[] = [];
 
 	constructor(public model: ControllerModel, private _context: vscode.ExtensionContext, private _treeDataProvider: AzureArcTreeDataProvider) {
 		super(model.label, vscode.TreeItemCollapsibleState.Collapsed, ResourceType.dataControllers);
@@ -55,7 +57,7 @@ export class ControllerTreeNode extends TreeNode {
 			}
 		}
 
-		return this._children;
+		return this._children.length > 0 ? this._children : [new NoInstancesTreeNode()];
 	}
 
 	public async openDashboard(): Promise<void> {
@@ -68,14 +70,14 @@ export class ControllerTreeNode extends TreeNode {
 	 * @param resourceType The resourceType of the node
 	 * @param name The name of the node
 	 */
-	public getResourceNode(resourceType: string, name: string): ResourceTreeNode | undefined {
+	public getResourceNode(resourceType: string, name: string): ResourceTreeNode<ResourceModel> | undefined {
 		return this._children.find(c =>
 			c.model?.info.resourceType === resourceType &&
 			c.model.info.name === name);
 	}
 
 	private updateChildren(registrations: Registration[]): void {
-		const newChildren: ResourceTreeNode[] = [];
+		const newChildren: ResourceTreeNode<ResourceModel>[] = [];
 		registrations.forEach(registration => {
 			if (!registration.instanceName) {
 				console.warn('Registration is missing required name value, skipping');
@@ -83,7 +85,7 @@ export class ControllerTreeNode extends TreeNode {
 			}
 
 			const resourceInfo: ResourceInfo = {
-				name: parseInstanceName(registration.instanceName),
+				name: registration.instanceName,
 				resourceType: registration.instanceType ?? ''
 			};
 
@@ -100,10 +102,14 @@ export class ControllerTreeNode extends TreeNode {
 
 				switch (registration.instanceType) {
 					case ResourceType.postgresInstances:
-						const postgresModel = new PostgresModel(resourceInfo, registration);
+						const postgresModel = new PostgresModel(this.model, resourceInfo, registration);
 						node = new PostgresTreeNode(postgresModel, this.model, this._context);
 						break;
 					case ResourceType.sqlManagedInstances:
+						// Fill in the username too if we already have it
+						(resourceInfo as MiaaResourceInfo).userName = (this.model.info.resources.find(info =>
+							info.name === resourceInfo.name &&
+							info.resourceType === resourceInfo.resourceType) as MiaaResourceInfo)?.userName;
 						const miaaModel = new MiaaModel(this.model, resourceInfo, registration, this._treeDataProvider);
 						node = new MiaaTreeNode(miaaModel, this.model);
 						break;
