@@ -18,6 +18,16 @@ export class WorkspaceService implements IWorkspaceService {
 	private _onDidWorkspaceProjectsChange: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void> = this._onDidWorkspaceProjectsChange?.event;
 
+	get isProjectProviderAvailable(): boolean {
+		for (const extension of vscode.extensions.all) {
+			const projectTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.projects as string[];
+			if (projectTypes && projectTypes.length > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
 		if (vscode.workspace.workspaceFile) {
 			const currentProjects: vscode.Uri[] = this.getProjectsInWorkspace();

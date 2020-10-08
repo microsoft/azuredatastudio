@@ -10,12 +10,17 @@ import { WorkspaceTreeItem, IExtension } from 'dataworkspace';
 import { DataWorkspaceExtension } from './common/dataWorkspaceExtension';
 import { NewProjectDialog } from './dialogs/newProjectDialog';
 import { OpenProjectDialog } from './dialogs/openProjectDialog';
+import { IWorkspaceService } from './common/interfaces';
 
 export function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const workspaceService = new WorkspaceService();
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
 	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
+	context.subscriptions.push(vscode.extensions.onDidChange(() => {
+		setProjectProviderContextValue(workspaceService);
+	}));
+	setProjectProviderContextValue(workspaceService);
 	context.subscriptions.push(vscode.commands.registerCommand('projects.newProject', async () => {
 		if (vscode.workspace.workspaceFile) {
 			const dialog = new NewProjectDialog(workspaceService);
@@ -39,6 +44,10 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
 	}));
 	return Promise.resolve(dataWorkspaceExtension);
+}
+
+function setProjectProviderContextValue(workspaceService: IWorkspaceService): void {
+	vscode.commands.executeCommand('setContext', 'isProjectProviderAvailable', workspaceService.isProjectProviderAvailable);
 }
 
 export function deactivate(): void {
