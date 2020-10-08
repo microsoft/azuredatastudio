@@ -207,25 +207,25 @@ const externalExtensions = [
     // they get packaged separately. Adding extension name here, will make the build to create
     // a separate vsix package for the extension and the extension will be excluded from the main package.
     // Any extension not included here will be installed by default.
+    'admin-pack',
     'admin-tool-ext-win',
     'agent',
     'arc',
+    'asde-deployment',
     'azdata',
-    'import',
-    'profiler',
-    'admin-pack',
-    'dacpac',
-    'schema-compare',
     'cms',
-    'query-history',
+    'dacpac',
+    'data-workspace',
+    'import',
     'kusto',
     'liveshare',
-    'sql-database-projects',
     'machine-learning',
+    'profiler',
+    'query-history',
+    'schema-compare',
     'sql-assessment',
-    'asde-deployment',
+    'sql-database-projects',
     'sql-migration',
-    'data-workspace'
 ];
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [

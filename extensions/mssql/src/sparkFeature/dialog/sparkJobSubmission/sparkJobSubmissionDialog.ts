@@ -56,7 +56,7 @@ export class SparkJobSubmissionDialog {
 
 	private onClickOk(): void {
 		let jobName = localize('sparkJobSubmission.SubmitSparkJob', "{0} Spark Job Submission:",
-			this._sparkConfigTab.getInputValues()[0]);
+			this._sparkConfigTab.getSparkConfigValues().jobName);
 		azdata.tasks.startBackgroundOperation(
 			{
 				connection: this.sqlClusterConnection.connection,
@@ -96,8 +96,8 @@ export class SparkJobSubmissionDialog {
 
 			// 2. Submit job to cluster.
 			let submissionSettings: SparkJobSubmissionInput = this.getSubmissionInput();
-			this.outputChannel.appendLine(this.addInfoTag(LocalizedConstants.sparkJobSubmissionPrepareSubmitJob(submissionSettings.jobName)));
-			op.updateStatus(azdata.TaskStatus.InProgress, LocalizedConstants.sparkJobSubmissionPrepareSubmitJob(submissionSettings.jobName));
+			this.outputChannel.appendLine(this.addInfoTag(LocalizedConstants.sparkJobSubmissionPrepareSubmitJob(submissionSettings.config.jobName)));
+			op.updateStatus(azdata.TaskStatus.InProgress, LocalizedConstants.sparkJobSubmissionPrepareSubmitJob(submissionSettings.config.jobName));
 			let livyBatchId = await this._dataModel.submitBatchJobByLivy(submissionSettings);
 			vscode.window.showInformationMessage(LocalizedConstants.sparkJobSubmissionSparkJobHasBeenSubmitted);
 			this.outputChannel.appendLine(this.addInfoTag(LocalizedConstants.sparkJobSubmissionSparkJobHasBeenSubmitted));
@@ -146,10 +146,14 @@ export class SparkJobSubmissionDialog {
 	}
 
 	private getSubmissionInput(): SparkJobSubmissionInput {
-		let generalConfig = this._sparkConfigTab.getInputValues();
-		let advancedConfig = this._sparkAdvancedTab.getInputValues();
-		return new SparkJobSubmissionInput(generalConfig[0], this._dataModel.hdfsSubmitFilePath, generalConfig[1], generalConfig[2],
-			advancedConfig[0], advancedConfig[1], advancedConfig[2]);
+		const generalConfig = this._sparkConfigTab.getSparkConfigValues();
+		const advancedConfig = this._sparkAdvancedTab.getAdvancedConfigValues();
+		return new SparkJobSubmissionInput(
+			{
+				sparkFile: this._dataModel.hdfsSubmitFilePath,
+				...generalConfig,
+				...advancedConfig
+			});
 	}
 
 	private addInfoTag(info: string): string {
