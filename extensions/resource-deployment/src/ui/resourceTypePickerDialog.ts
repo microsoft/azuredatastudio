@@ -9,7 +9,7 @@ import * as nls from 'vscode-nls';
 import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolStatus } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
-import { getErrorMessage } from '../utils';
+import { getErrorMessage } from '../common/utils';
 import * as loc from './../localizedConstants';
 import { DialogBase } from './dialogBase';
 import { createFlexContainer } from './modelViewUtils';

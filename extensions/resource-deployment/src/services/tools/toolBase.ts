@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 import { EOL } from 'os';
 import * as path from 'path';
-import { SemVer, compare as SemVerCompare } from 'semver';
+import { compare as SemVerCompare, SemVer } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
+import { getErrorMessage } from '../../common/utils';
 import { Command, ITool, OsDistribution, ToolStatus, ToolType } from '../../interfaces';
-import { getErrorMessage } from '../../utils';
 import { IPlatformService } from '../platformService';
 
 const localize = nls.loadMessageBundle();
@@ -52,7 +52,7 @@ export abstract class ToolBase implements ITool {
 	protected abstract readonly allInstallationCommands: Map<OsDistribution, Command[]>;
 	protected readonly dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>();
 
-	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
+	protected abstract getVersionFromOutput(output: string): SemVer | Promise<SemVer> | undefined;
 	protected readonly _onDidUpdateData = new vscode.EventEmitter<ITool>();
 	protected readonly uninstallCommand?: string;
 
@@ -274,7 +274,7 @@ export abstract class ToolBase implements ITool {
 				ignoreError: true
 			},
 		);
-		this.version = this.getVersionFromOutput(commandOutput);
+		this.version = await this.getVersionFromOutput(commandOutput);
 		if (this.version) {
 			if (this.autoInstallSupported) {
 				// discover and set the installationPath

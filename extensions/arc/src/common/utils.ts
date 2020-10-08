@@ -225,3 +225,21 @@ export function parseIpAndPort(address: string): { ip: string, port: string } {
 		port: sections[1]
 	};
 }
+
+export function createCredentialId(controllerId: string, resourceType: string, instanceName: string): string {
+	return `${controllerId}::${resourceType}::${instanceName}`;
+}
+
+/**
+ * Throws an Error with given {@link message} unless {@link condition} is true.
+ * This also tells the typescript compiler that the condition is 'truthy' in the remainder of the scope
+ * where this function was called.
+ *
+ * @param condition
+ * @param message
+ */
+export function throwUnless(condition: boolean, message?: string): asserts condition {
+	if (!condition) {
+		throw new Error(message);
+	}
+}
