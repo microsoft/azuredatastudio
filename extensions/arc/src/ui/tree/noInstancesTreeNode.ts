@@ -6,20 +6,13 @@
 import * as vscode from 'vscode';
 import * as loc from '../../localizedConstants';
 import { TreeNode } from './treeNode';
-import { refreshActionId } from '../../constants';
 
 /**
- * A placeholder TreeNode to display when credentials weren't entered
+ * A placeholder TreeNode to display when there aren't any child instances available
  */
-export class RefreshTreeNode extends TreeNode {
+export class NoInstancesTreeNode extends TreeNode {
 
-	constructor(private _parent: TreeNode) {
-		super(loc.refreshToEnterCredentials, vscode.TreeItemCollapsibleState.None, '');
+	constructor() {
+		super(loc.noInstancesAvailable, vscode.TreeItemCollapsibleState.None, '');
 	}
-
-	public command: vscode.Command = {
-		command: refreshActionId,
-		title: loc.refreshToEnterCredentials,
-		arguments: [this._parent]
-	};
 }

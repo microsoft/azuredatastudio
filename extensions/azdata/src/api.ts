@@ -72,6 +72,11 @@ export function getAzdataApi(localAzdataDiscovered: Promise<IAzdataTool | undefi
 			},
 			postgres: {
 				server: {
+					delete: async (name: string) => {
+						await localAzdataDiscovered;
+						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
+						return azdataToolService.localAzdata.arc.postgres.server.delete(name);
+					},
 					list: async () => {
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
@@ -81,6 +86,26 @@ export function getAzdataApi(localAzdataDiscovered: Promise<IAzdataTool | undefi
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
 						return azdataToolService.localAzdata.arc.postgres.server.show(name);
+					},
+					edit: async (
+						name: string,
+						args: {
+							adminPassword?: boolean;
+							coresLimit?: string;
+							coresRequest?: string;
+							engineSettings?: string;
+							extensions?: string;
+							memoryLimit?: string;
+							memoryRequest?: string;
+							noWait?: boolean;
+							port?: number;
+							replaceEngineSettings?: boolean;
+							workers?: number;
+						},
+						additionalEnvVars?: { [key: string]: string; }) => {
+						await localAzdataDiscovered;
+						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
+						return azdataToolService.localAzdata.arc.postgres.server.edit(name, args, additionalEnvVars);
 					}
 				}
 			},
