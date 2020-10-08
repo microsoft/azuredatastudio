@@ -5,10 +5,8 @@
 
 import * as azdata from 'azdata';
 import { Validator } from './modelViewUtils';
-import { WizardPageInfo } from './wizardPageInfo';
 
 export abstract class WizardPageBase<T> {
-
 	private _page: azdata.window.WizardPage;
 	private _validators: Validator[] = [];
 
@@ -25,9 +23,9 @@ export abstract class WizardPageBase<T> {
 		return this._wizard;
 	}
 
-	public async onEnter(_pageInfo?: WizardPageInfo): Promise<void> { }
+	public async onEnter(): Promise<void> { }
 
-	public async onLeave(_pageInfo?: WizardPageInfo): Promise<void> { }
+	public async onLeave(): Promise<void> { }
 
 	public abstract initialize(): void;
 

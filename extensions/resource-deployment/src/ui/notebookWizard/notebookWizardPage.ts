@@ -9,7 +9,6 @@ import * as nls from 'vscode-nls';
 import { NotebookWizardPageInfo } from '../../interfaces';
 import { initializeWizardPage, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
 import { WizardPageBase } from '../wizardPageBase';
-import { WizardPageInfo } from '../wizardPageInfo';
 import { NotebookWizard } from './notebookWizard';
 
 const localize = nls.loadMessageBundle();
@@ -31,20 +30,6 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 			wizard.wizardInfo.pages[_pageIndex].description || description || '',
 			wizard
 		);
-	}
-
-	/**
-	 * If the return value is true then done button should be visible to the user
-	 */
-	private get isDoneButtonVisible(): boolean {
-		return !!this.wizard.wizardInfo.doneAction;
-	}
-
-	/**
-	 * If the return value is true then generateScript button should be visible to the user
-	 */
-	private get isGenerateScriptButtonVisible(): boolean {
-		return !!this.wizard.wizardInfo.scriptAction;
 	}
 
 	public initialize(): void {
@@ -79,17 +64,7 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 		});
 	}
 
-	public async onEnter(pageInfo: WizardPageInfo): Promise<void> {
-		if (pageInfo.isLastPage) {
-			// on the last page either one or both of done button and generateScript button are visible depending on configuration of 'runNotebook' in wizard info
-			this.wizard.wizardObject.doneButton.hidden = !this.isDoneButtonVisible;
-			this.wizard.wizardObject.generateScriptButton.hidden = !this.isGenerateScriptButtonVisible;
-		} else {
-			//on any page but the last page doneButton and generateScriptButton are hidden
-			this.wizard.wizardObject.doneButton.hidden = true;
-			this.wizard.wizardObject.generateScriptButton.hidden = true;
-		}
-
+	public async onEnter(): Promise<void> {
 		if (this.pageInfo.isSummaryPage) {
 			await setModelValues(this.wizard.inputComponents, this.wizard.model);
 		}
