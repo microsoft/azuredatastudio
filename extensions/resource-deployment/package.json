@@ -401,6 +401,7 @@
           "light": "./images/azure-sql-db.svg",
           "dark": "./images/azure-sql-db.svg"
         },
+        "tags": ["SQL Server", "Cloud"],
         "okButtonText": [
           {
             "value": "%azure-sqldb-notebook-ok-button-text%",
