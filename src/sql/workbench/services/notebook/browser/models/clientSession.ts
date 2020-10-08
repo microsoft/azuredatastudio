@@ -291,7 +291,7 @@ export class ClientSession implements IClientSession {
 			// TODO is there any case where skipping causes errors? So far it seems like it gets called twice
 			return;
 		}
-		if (connection.id !== '-1' && this._session && connection.id !== this._connectionId) {
+		if (connection.id !== '-1' && connection.id !== this._connectionId && this._session) {
 			await this._session.configureConnection(connection);
 			this._connectionId = connection.id;
 		}
