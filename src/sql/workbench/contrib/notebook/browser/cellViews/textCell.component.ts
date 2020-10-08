@@ -31,6 +31,7 @@ import * as turndownPluginGfm from '../turndownPluginGfm';
 import TurndownService = require('turndown');
 import * as Mark from 'mark.js';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import * as path from 'vs/base/common/path';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -468,6 +469,30 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				return node.textContent;
 			}
 		});
+		this.turndownService.addRule('img', {
+			filter: 'img',
+			replacement: (content, node) => {
+				if (node?.src) {
+					let relativePath = this.findPathRelativeToContent(node.src);
+					if (relativePath) {
+						return `![${node.alt}](${relativePath})`;
+					}
+				}
+				return `![${node.alt}](${node.src})`;
+			}
+		});
+		this.turndownService.addRule('a', {
+			filter: 'a',
+			replacement: (content, node) => {
+				if (node?.href) {
+					let relativePath = this.findPathRelativeToContent(node.href);
+					if (relativePath) {
+						return `[${node.innerText}](${relativePath})`;
+					}
+				}
+				return `[${node.innerText}](${node.href})`;
+			}
+		});
 	}
 
 	// Enables edit mode on double clicking active cell
@@ -477,6 +502,18 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 		this.cellModel.active = true;
 		this._model.updateActiveCell(this.cellModel);
+	}
+
+	private findPathRelativeToContent(elementContent: string): string {
+		let notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
+		if (notebookFolder) {
+			let absolutePathURI = URI.parse(elementContent);
+			if (absolutePathURI?.scheme === 'file') {
+				let relativePath = path.relative(notebookFolder, absolutePathURI.fsPath);
+				return relativePath ? relativePath : '';
+			}
+		}
+		return '';
 	}
 }
 
