@@ -24,9 +24,9 @@ export const pySparkNotebookContent: azdata.nb.INotebookContents = {
 		execution_count: 1
 	}],
 	metadata: {
-		'kernelspec': {
-			'name': 'pysparkkernel',
-			'display_name': 'PySpark'
+		kernelspec: {
+			name: 'pysparkkernel',
+			display_name: 'PySpark'
 		}
 	},
 	nbformat: 4,
@@ -41,8 +41,9 @@ export const notebookContentForCellLanguageTest: azdata.nb.INotebookContents = {
 		execution_count: 1
 	}],
 	metadata: {
-		'kernelspec': {
-			'name': ''
+		kernelspec: {
+			name: '',
+			display_name: ''
 		},
 	},
 	nbformat: 4,
@@ -72,9 +73,9 @@ export const pythonNotebookMultipleCellsContent: azdata.nb.INotebookContents = {
 		execution_count: 1
 	}],
 	metadata: {
-		'kernelspec': {
-			'name': 'python3',
-			'display_name': 'Python 3'
+		kernelspec: {
+			name: 'python3',
+			display_name: 'Python 3'
 		}
 	},
 	nbformat: 4,
@@ -89,9 +90,9 @@ export const sqlNotebookContent: azdata.nb.INotebookContents = {
 		execution_count: 1
 	}],
 	metadata: {
-		'kernelspec': {
-			'name': 'SQL',
-			'display_name': 'SQL'
+		kernelspec: {
+			name: 'SQL',
+			display_name: 'SQL'
 		}
 	},
 	nbformat: 4,
@@ -116,9 +117,9 @@ export const sqlNotebookMultipleCellsContent: azdata.nb.INotebookContents = {
 		execution_count: 1
 	}],
 	metadata: {
-		'kernelspec': {
-			'name': 'SQL',
-			'display_name': 'SQL'
+		kernelspec: {
+			name: 'SQL',
+			display_name: 'SQL'
 		}
 	},
 	nbformat: 4,
@@ -126,9 +127,9 @@ export const sqlNotebookMultipleCellsContent: azdata.nb.INotebookContents = {
 };
 
 export const pySparkKernelMetadata = {
-	'kernelspec': {
-		'name': 'pysparkkernel',
-		'display_name': 'PySpark'
+	kernelspec: {
+		name: 'pysparkkernel',
+		display_name: 'PySpark'
 	}
 };
 
@@ -138,9 +139,9 @@ export const pySparkKernelSpec = {
 };
 
 export const sqlKernelMetadata = {
-	'kernelspec': {
-		'name': 'SQL',
-		'display_name': 'SQL'
+	kernelspec: {
+		name: 'SQL',
+		display_name: 'SQL'
 	}
 };
 
@@ -150,9 +151,9 @@ export const sqlKernelSpec: azdata.nb.IKernelSpec = {
 };
 
 export const pythonKernelMetadata = {
-	'kernelspec': {
-		'name': 'python3',
-		'display_name': 'Python 3'
+	kernelspec: {
+		name: 'python3',
+		display_name: 'Python 3'
 	}
 };
 

@@ -28,7 +28,7 @@ export class SqlNotebookManager implements nb.NotebookProvider {
 		return this._contentManager;
 	}
 
-	public get serverManager(): nb.ServerManager {
+	public get serverManager(): nb.ServerManager | undefined {
 		return undefined;
 	}
 
