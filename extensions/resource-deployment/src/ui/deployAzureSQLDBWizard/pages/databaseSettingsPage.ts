@@ -192,7 +192,7 @@ export class DatabaseSettingsPage extends BasePage {
 			errorMessages.push(localize('deployAzureSQLDB.DBFirewallOnlyNumericNameError', "Firewall name cannot contain only numbers."));
 		}
 		if (firewallname.length < 1 || firewallname.length > 100) {
-			errorMessages.push(localize('deployAzureSQLDB.DBFirewallLengthError', "Firewall name must be between 1 and 15 characters long."));
+			errorMessages.push(localize('deployAzureSQLDB.DBFirewallLengthError', "Firewall name must be between 1 and 100 characters long."));
 		}
 		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(firewallname)) {
 			errorMessages.push(localize('deployAzureSQLDB.DBFirewallSpecialCharError', "Firewall name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
@@ -205,7 +205,7 @@ export class DatabaseSettingsPage extends BasePage {
 			errorMessages.push(localize('deployAzureSQLDB.DBNameOnlyNumericNameError', "Database name cannot contain only numbers."));
 		}
 		if (databasename.length < 1 || databasename.length > 100) {
-			errorMessages.push(localize('deployAzureSQLDB.DBNameLengthError', "Database name must be between 1 and 15 characters long."));
+			errorMessages.push(localize('deployAzureSQLDB.DBNameLengthError', "Database name must be between 1 and 100 characters long."));
 		}
 		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(databasename)) {
 			errorMessages.push(localize('deployAzureSQLDB.DBNameSpecialCharError', "Database name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
@@ -218,7 +218,7 @@ export class DatabaseSettingsPage extends BasePage {
 			errorMessages.push(localize('deployAzureSQLDB.DBCollationOnlyNumericNameError', "Collation name cannot contain only numbers."));
 		}
 		if (collationname.length < 1 || collationname.length > 100) {
-			errorMessages.push(localize('deployAzureSQLDB.DBCollationLengthError', "Collation name must be between 1 and 15 characters long."));
+			errorMessages.push(localize('deployAzureSQLDB.DBCollationLengthError', "Collation name must be between 1 and 100 characters long."));
 		}
 		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(collationname)) {
 			errorMessages.push(localize('deployAzureSQLDB.DBCollationSpecialCharError', "Collation name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
