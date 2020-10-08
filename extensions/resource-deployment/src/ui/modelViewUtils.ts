@@ -415,7 +415,6 @@ function disableControlButtons(container: azdata.window.Dialog | azdata.window.W
 	if ('okButton' in container) {
 		container.okButton.enabled = false;
 	} else {
-		container.generateScriptButton.enabled = false;
 		container.doneButton.enabled = false;
 		container.nextButton.enabled = false;
 		container.backButton.enabled = false;
