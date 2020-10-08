@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { NotebookWizardPageInfo } from '../../interfaces';
 import { initializeWizardPage, InputComponentInfo, setModelValues } from '../modelViewUtils';
-import { Validator } from '../validation/Validations';
+import { Validator } from '../validation/validations';
 import { WizardPageBase } from '../wizardPageBase';
 import { WizardPageInfo } from '../wizardPageInfo';
 import { NotebookWizard } from './notebookWizard';

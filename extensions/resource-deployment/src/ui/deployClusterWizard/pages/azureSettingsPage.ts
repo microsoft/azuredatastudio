@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { FieldType, LabelPosition, SectionInfo } from '../../../interfaces';
 import { createSection, getDropdownComponent, InputComponentInfo, InputComponents, setModelValues } from '../../modelViewUtils';
-import { Validator } from '../../validation/Validations';
+import { Validator } from '../../validation/validations';
 import { WizardPageBase } from '../../wizardPageBase';
 import { AksName_VariableName, Location_VariableName, ResourceGroup_VariableName, SubscriptionId_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';

@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
-import { IValidation } from './ui/validation/Validations';
+import { IValidation } from './ui/validation/validations';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 

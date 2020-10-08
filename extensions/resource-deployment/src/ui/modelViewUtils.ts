@@ -21,7 +21,7 @@ import { IToolsService } from '../services/toolsService';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
-import { createValidation, Validator } from './validation/Validations';
+import { createValidation, Validator } from './validation/validations';
 
 const localize = nls.loadMessageBundle();
 

@@ -10,7 +10,7 @@ import * as nls from 'vscode-nls';
 import { FieldType, LabelPosition, SectionInfo } from '../../../interfaces';
 import * as localizedConstants from '../../../localizedConstants';
 import { createSection, getInputBoxComponent, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, InputComponentInfo, InputComponents, isValidSQLPassword, setModelValues } from '../../modelViewUtils';
-import { ValidationType, Validator } from '../../validation/Validations';
+import { ValidationType, Validator } from '../../validation/validations';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';

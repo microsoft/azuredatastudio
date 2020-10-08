@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { FieldType, SectionInfo } from '../../../interfaces';
 import { createFlexContainer, createGroupContainer, createLabel, createNumberInput, createSection, createTextInput, getCheckboxComponent, getDropdownComponent, getInputBoxComponent, InputComponentInfo, InputComponents, setModelValues } from '../../modelViewUtils';
-import { Validator } from '../../validation/Validations';
+import { Validator } from '../../validation/validations';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';

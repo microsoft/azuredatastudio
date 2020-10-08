@@ -14,7 +14,7 @@ import { IToolsService } from '../services/toolsService';
 import { DialogBase } from './dialogBase';
 import { Model } from './model';
 import { initializeDialog, InputComponentInfo, InputComponents, setModelValues } from './modelViewUtils';
-import { Validator } from './validation/Validations';
+import { Validator } from './validation/validations';
 
 const localize = nls.loadMessageBundle();
 
