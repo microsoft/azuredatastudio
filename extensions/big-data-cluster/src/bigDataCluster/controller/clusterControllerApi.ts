@@ -264,7 +264,7 @@ export class ClusterController implements IClusterController {
 		return await this.withConnectRetry<MountStatusResponse>(
 			this.getMountStatusImpl,
 			promptConnect,
-			localize('bdc.error.mountHdfs', "Error creating mount"),
+			localize('bdc.error.statusHdfs', "Error getting mount status"),
 			mountPath);
 	}
 
