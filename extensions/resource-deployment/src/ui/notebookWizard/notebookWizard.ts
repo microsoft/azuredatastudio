@@ -53,27 +53,13 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 	}
 
 	protected async onGenerateScript(): Promise<void> {
-		try {
-			const notebook = await this.prepareNotebookAndEnvironment();
-			await this.openNotebook(notebook);
-		} catch (error) {
-			// Any errors winding up here are dev errors so log them to the console. We can consider adding support for the logging to output channel in the future
-			// Not showing in a UI element as these should have displayed to the user at source if relevant to users.
-			console.log(error);
-			throw error; // rethrow so that wizard close action gets aborted
-		}
+		const notebook = await this.prepareNotebookAndEnvironment();
+		await this.openNotebook(notebook);
 	}
 	protected async onOk(): Promise<void> {
-		try {
-			const notebook = await this.prepareNotebookAndEnvironment();
-			const openedNotebook = await this.openNotebook(notebook);
-			openedNotebook.runAllCells();
-		} catch (error) {
-			// Any errors winding up here are dev errors so log them to the console. We can consider adding support for the logging to output channel in the future
-			// Not showing in a UI element as these should have displayed to the user at source if relevant to users.
-			console.log(error);
-			throw error;  // rethrow so that wizard close action gets aborted
-		}
+		const notebook = await this.prepareNotebookAndEnvironment();
+		const openedNotebook = await this.openNotebook(notebook);
+		openedNotebook.runAllCells();
 	}
 
 	private async openNotebook(notebook: Notebook) {
