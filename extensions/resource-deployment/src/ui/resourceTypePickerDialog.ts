@@ -255,6 +255,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				selectedCardId: cards[0].id,
 				cards: cards
 			});
+
 			this.selectResourceType(filteredResourceTypesOnSearch[0]);
 		}
 		else {
