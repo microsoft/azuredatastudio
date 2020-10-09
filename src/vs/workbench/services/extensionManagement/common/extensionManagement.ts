@@ -123,7 +123,7 @@ export const enum ExtensionRecommendationReason {
 	Application,
 }
 
-export interface IExtensionRecommendationReson {
+export interface IExtensionRecommendationReason {
 	reasonId: ExtensionRecommendationReason;
 	reasonText: string;
 }
@@ -133,7 +133,7 @@ export const IExtensionRecommendationsService = createDecorator<IExtensionRecomm
 export interface IExtensionRecommendationsService {
 	readonly _serviceBrand: undefined;
 
-	getAllRecommendationsWithReason(): IStringDictionary<IExtensionRecommendationReson>;
+	getAllRecommendationsWithReason(): IStringDictionary<IExtensionRecommendationReason>;
 	getImportantRecommendations(): Promise<IExtensionRecommendation[]>;
 	getOtherRecommendations(): Promise<IExtensionRecommendation[]>;
 	getFileBasedRecommendations(): IExtensionRecommendation[];

@@ -29,7 +29,7 @@ export const enum ExtensionRecommendationReason {
 	Application,
 }
 
-export interface IExtensionRecommendationReson {
+export interface IExtensionRecommendationReason {
 	reasonId: ExtensionRecommendationReason;
 	reasonText: string;
 }
@@ -40,7 +40,7 @@ export interface IExtensionRecommendationsService {
 	readonly _serviceBrand: undefined;
 
 	readonly onDidChangeRecommendations: Event<void>;
-	getAllRecommendationsWithReason(): IStringDictionary<IExtensionRecommendationReson>;
+	getAllRecommendationsWithReason(): IStringDictionary<IExtensionRecommendationReason>;
 
 	getImportantRecommendations(): Promise<string[]>;
 	getOtherRecommendations(): Promise<string[]>;

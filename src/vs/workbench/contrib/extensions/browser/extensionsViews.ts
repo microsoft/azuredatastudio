@@ -602,8 +602,8 @@ export class ExtensionsListView extends ViewPane {
 
 						// sort the marketplace extensions
 						pager.firstPage.sort((a, b) => {
-							let isRecommendedA: boolean = recommmended.findIndex(ext => ext.extensionId === `${a.publisher}.${a.name}`) > -1;
-							let isRecommendedB: boolean = recommmended.findIndex(ext => ext.extensionId === `${b.publisher}.${b.name}`) > -1;
+							let isRecommendedA: boolean = recommmended.findIndex(extensionId => extensionId === `${a.publisher}.${a.name}`) > -1;
+							let isRecommendedB: boolean = recommmended.findIndex(extensionId => extensionId === `${b.publisher}.${b.name}`) > -1;
 
 							// sort recommeded extensions before other extensions
 							if (isRecommendedA !== isRecommendedB) {
@@ -629,7 +629,7 @@ export class ExtensionsListView extends ViewPane {
 		return this.extensionsWorkbenchService.queryLocal()
 			.then(result => result.filter(e => e.type === ExtensionType.User))
 			.then(local => {
-				return this.extensionRecommendationsService.getRecommendedExtensionsByScenario(scenarioType).then((recommmended) => {
+				return this.getRecommendedExtensionsByScenario(token, scenarioType).then((recommmended) => {
 					const installedExtensions = local.map(x => `${x.publisher}.${x.name}`);
 					return this.extensionsWorkbenchService.queryGallery(token).then((pager) => {
 						// filter out installed extensions and the extensions not in the recommended list
