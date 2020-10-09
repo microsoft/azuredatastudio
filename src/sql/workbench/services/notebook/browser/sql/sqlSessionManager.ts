@@ -554,9 +554,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			// Last value in array is '</table>' so we want to add row data before that
 			saveData['text/html'].splice(saveData['text/html'].length - 1, 0, ...htmlRows);
 			this._dataToSaveMap.set(key, saveData);
-			if (resultSet.complete) {
-				this.sendIOPubMessage(resultSet.batchId, resultSet.id, saveData, resultSet);
-			}
+			this.sendIOPubMessage(resultSet.batchId, resultSet.id, saveData, resultSet);
 		} catch (err) {
 			// TODO should we output this somewhere else?
 			this.logService.error(`Error outputting result sets from Notebook query: ${err}`);
