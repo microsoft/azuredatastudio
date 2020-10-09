@@ -9,6 +9,37 @@ import * as vscode from 'vscode';
 import { LoadingComponentProperties } from 'azdata';
 
 declare module 'azdata' {
+
+	export namespace connection {
+
+		/**
+		 * Supported connection event types
+		 */
+		export type ConnectionEventType =
+			| 'onConnect'
+			| 'onDisconnect'
+			| 'onConnectionChanged';
+
+		/**
+		 * Connection Event Lister
+		 */
+		export interface ConnectionEventListener {
+			/**
+			 * Connection event handler
+			 * @param type Connection event type
+			 * @param ownerUri Connection's owner uri
+			 * @param args Connection profile
+			 */
+			onConnectionEvent(type: ConnectionEventType, ownerUri: string, args: IConnectionProfile): void;
+		}
+
+		/**
+		 * Register a connection event listener
+		 * @param listener The connection event listener
+		 */
+		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): vscode.Disposable;
+	}
+
 	export namespace nb {
 		export interface NotebookDocument {
 			/**
