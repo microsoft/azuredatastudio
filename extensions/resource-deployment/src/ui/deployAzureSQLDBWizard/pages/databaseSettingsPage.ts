@@ -77,13 +77,11 @@ export class DatabaseSettingsPage extends BasePage {
 	}
 
 	public async onEnter(): Promise<void> {
-		this.liveValidation = false;
 		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
 			}
-			this.liveValidation = true;
-			let errorMessage = await this.validatePage();
+			let errorMessage = await this.validate();
 
 			if (errorMessage !== '') {
 				return false;
@@ -113,7 +111,6 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._startIpAddressTextbox.onTextChanged((value) => {
 			this.wizard.model.startIpAddress = value;
-			this.activateRealTimeFormValidation();
 		});
 
 		this._startIpAddressTextRow = this.wizard.createFormRowComponent(view, constants.StartIpAddressLabel, '', this._startIpAddressTextbox, true);
@@ -126,7 +123,6 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._endIpAddressTextbox.onTextChanged((value) => {
 			this.wizard.model.endIpAddress = value;
-			this.activateRealTimeFormValidation();
 		});
 
 		this._endIpAddressTextRow = this.wizard.createFormRowComponent(view, constants.EndIpAddressLabel, '', this._endIpAddressTextbox, true);
@@ -140,7 +136,6 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._firewallRuleNameTextbox.onTextChanged((value) => {
 			this.wizard.model.firewallRuleName = value;
-			this.activateRealTimeFormValidation();
 		});
 	}
 
@@ -152,7 +147,6 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._databaseNameTextbox.onTextChanged((value) => {
 			this.wizard.model.databaseName = value;
-			this.activateRealTimeFormValidation();
 		});
 	}
 
@@ -164,14 +158,13 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._collationTextbox.onTextChanged((value) => {
 			this.wizard.model.databaseCollation = value;
-			this.activateRealTimeFormValidation();
 		});
 
 		this._collationTextRow = this.wizard.createFormRowComponent(view, constants.CollationNameLabel, '', this._collationTextbox, true);
 	}
 
 
-	protected async validatePage(): Promise<string> {
+	protected async validate(): Promise<string> {
 		let errorMessages = [];
 		let ipRegex = /(^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$)/;
 		let startipvalue = this._startIpAddressTextbox.value!;

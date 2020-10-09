@@ -141,8 +141,7 @@ export class AzureSettingsPage extends BasePage {
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
 			}
-			this.liveValidation = true;
-			let errorMessage = await this.validatePage();
+			let errorMessage = await this.validate();
 
 			if (errorMessage !== '') {
 				return false;
@@ -745,7 +744,7 @@ export class AzureSettingsPage extends BasePage {
 	// }
 
 
-	protected async validatePage(): Promise<string> {
+	protected async validate(): Promise<string> {
 		let errorMessages = [];
 		let serverName = (this._serverGroupDropdown.value as azdata.CategoryValue).name;
 		if (serverName === '') {
