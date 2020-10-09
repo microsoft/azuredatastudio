@@ -32,7 +32,9 @@ let mockRefreshToken: RefreshToken;
 const mockClaims = {
 	name: 'Name',
 	email: 'example@example.com',
-	sub: 'someUniqueId'
+	sub: 'someUniqueId',
+	idp: 'idp',
+	oid: 'userUniqueKey'
 } as TokenClaims;
 
 const mockTenant: Tenant = {
@@ -55,6 +57,9 @@ describe('Azure Authentication', function () {
 		// authDeviceCode.callBase = true;
 
 		mockAccount = {
+			key: {
+				accountId: mockClaims.oid
+			},
 			isStale: false,
 			properties: {
 				tenants: [mockTenant]
@@ -159,7 +164,8 @@ describe('Azure Authentication', function () {
 				const mockToken: AccessToken = JSON.parse(JSON.stringify(mockAccessToken));
 				delete (mockToken as any).invalidData;
 				return Promise.resolve({
-					accessToken: mockToken
+					accessToken: mockToken,
+					tokenClaims: mockClaims
 				} as OAuthTokenResponse);
 			});
 			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, mockTenant.id, AzureResource.MicrosoftResourceManagement);
@@ -192,14 +198,15 @@ describe('Azure Authentication', function () {
 					return Promise.resolve({
 						accessToken: mockAccessToken,
 						refreshToken: mockRefreshToken,
-						expiresOn: ''
+						expiresOn: '',
 					});
 				});
 				delete (mockAccessToken as any).tokenType;
 
 				azureAuthCodeGrant.setup(x => x.refreshToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 					return Promise.resolve({
-						accessToken: mockAccessToken
+						accessToken: mockAccessToken,
+						tokenClaims: mockClaims,
 					} as OAuthTokenResponse);
 				});
 
@@ -270,6 +277,79 @@ describe('Azure Authentication', function () {
 			azureAuthCodeGrant.verify(x => x.getTokenHelper(mockTenant, provider.settings.microsoftResource, TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 
 			should(result.accessToken).be.deepEqual(mockAccessToken);
+		});
+	});
+
+	describe('getUserKey', function () {
+		let tokenClaims: TokenClaims;
+		beforeEach(function () {
+			tokenClaims = {
+				unique_name: 'unique_name',
+				email: 'email',
+				sub: 'sub',
+				oid: 'oid',
+				home_oid: 'home_oid'
+			} as TokenClaims;
+		});
+		describe('personal accounts - live.com', function () {
+			beforeEach(function () {
+				tokenClaims.idp = 'live.com';
+			});
+			it('prefer unique_name', function () {
+				const value = azureAuthCodeGrant.object.getUserKey(tokenClaims);
+
+				should(value).be.equal(tokenClaims.unique_name);
+			});
+			it('fallback to email', function () {
+				delete tokenClaims.unique_name;
+				const value = azureAuthCodeGrant.object.getUserKey(tokenClaims);
+
+				should(value).be.equal(tokenClaims.email);
+			});
+			it('fallback to sub', function () {
+				delete tokenClaims.unique_name;
+				delete tokenClaims.email;
+				const value = azureAuthCodeGrant.object.getUserKey(tokenClaims);
+
+				should(value).be.equal(tokenClaims.sub);
+			});
+		});
+		describe('work accounts', function () {
+			it('prefer home_oid', function () {
+				const value = azureAuthCodeGrant.object.getUserKey(tokenClaims);
+
+				should(value).be.equal(tokenClaims.home_oid);
+			});
+			it('fallback to oid', function () {
+				delete tokenClaims.home_oid;
+				const value = azureAuthCodeGrant.object.getUserKey(tokenClaims);
+
+				should(value).be.equal(tokenClaims.oid);
+			});
+			it('fallback to unique_name', function () {
+				delete tokenClaims.home_oid;
+				delete tokenClaims.oid;
+				const value = azureAuthCodeGrant.object.getUserKey(tokenClaims);
+
+				should(value).be.equal(tokenClaims.unique_name);
+			});
+			it('fallback to email', function () {
+				delete tokenClaims.home_oid;
+				delete tokenClaims.oid;
+				delete tokenClaims.unique_name;
+				const value = azureAuthCodeGrant.object.getUserKey(tokenClaims);
+
+				should(value).be.equal(tokenClaims.email);
+			});
+			it('fallback to sub', function () {
+				delete tokenClaims.home_oid;
+				delete tokenClaims.oid;
+				delete tokenClaims.unique_name;
+				delete tokenClaims.email;
+				const value = azureAuthCodeGrant.object.getUserKey(tokenClaims);
+
+				should(value).be.equal(tokenClaims.sub);
+			});
 		});
 	});
 
