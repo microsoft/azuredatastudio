@@ -2,8 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as vscode from 'vscode';
-import { getErrorMessage } from '../../common/utils';
 import * as loc from '../../localizedConstants';
 import { INotebookService, Notebook } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
@@ -59,9 +57,10 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 			const notebook = await this.prepareNotebookAndEnvironment();
 			await this.openNotebook(notebook);
 		} catch (error) {
+			// Any errors winding up here are dev errors so log them to the console. We can consider adding support for the logging to output channel in the future
+			// Not showing in a UI element as these should have displayed to the user at source if relevant to users.
 			console.log(error);
-			vscode.window.showErrorMessage(getErrorMessage(error));
-			throw error;
+			throw error; // rethrow so that wizard close action gets aborted
 		}
 	}
 	protected async onOk(): Promise<void> {
@@ -70,9 +69,10 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 			const openedNotebook = await this.openNotebook(notebook);
 			openedNotebook.runAllCells();
 		} catch (error) {
+			// Any errors winding up here are dev errors so log them to the console. We can consider adding support for the logging to output channel in the future
+			// Not showing in a UI element as these should have displayed to the user at source if relevant to users.
 			console.log(error);
-			vscode.window.showErrorMessage(getErrorMessage(error));
-			throw error;
+			throw error;  // rethrow so that wizard close action gets aborted
 		}
 	}
 
