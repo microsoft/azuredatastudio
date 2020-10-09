@@ -11,7 +11,7 @@ import * as utils from '../common/utils';
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
-import { DeploymentOptions } from '../../../mssql/src/mssql';
+import { DeploymentOptions, SchemaObjectType } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 
@@ -215,9 +215,8 @@ export class PublishDatabaseDialog {
 		if (!this.deploymentOptions) {
 			this.deploymentOptions = await utils.GetDefaultDeploymentOptions();
 
-			// re-include database-scoped credentials
-			// 53 comes from $\DacFx_Preview_Dev\Product\Source\DeploymentApi\ObjectTypes.cs (exact value from decompiled metadata)
-			this.deploymentOptions.excludeObjectTypes = this.deploymentOptions.excludeObjectTypes.filter(x => x !== 53);
+			// re-include database-scoped credentials so that ASA jobs work with defaults.
+			this.deploymentOptions.excludeObjectTypes = this.deploymentOptions.excludeObjectTypes.filter(x => x !== SchemaObjectType.DatabaseScopedCredentials);
 
 			// this option needs to be true for same database references validation to work
 			if (this.project.databaseReferences.length > 0) {
