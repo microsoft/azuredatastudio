@@ -13,7 +13,7 @@ import { AccountPicker } from 'sql/workbench/services/accountManagement/browser/
 export class AccountPickerService implements IAccountPickerService {
 	_serviceBrand: undefined;
 
-	private _accountPicker: AccountPicker;
+	private _accountPicker?: AccountPicker;
 
 	// EVENTING ////////////////////////////////////////////////////////////
 	private _addAccountCompleteEmitter: Emitter<void>;
@@ -38,7 +38,7 @@ export class AccountPickerService implements IAccountPickerService {
 		this._addAccountCompleteEmitter = new Emitter<void>();
 		this._addAccountErrorEmitter = new Emitter<string>();
 		this._addAccountStartEmitter = new Emitter<void>();
-		this._onAccountSelectionChangeEvent = new Emitter<azdata.Account>();
+		this._onAccountSelectionChangeEvent = new Emitter<azdata.Account | undefined>();
 		this._onTenantSelectionChangeEvent = new Emitter<string | undefined>();
 	}
 
@@ -46,7 +46,11 @@ export class AccountPickerService implements IAccountPickerService {
 	 * Get selected account
 	 */
 	public get selectedAccount(): azdata.Account | undefined {
-		return this._accountPicker.viewModel.selectedAccount;
+		if (this._accountPicker) {
+			return this._accountPicker.viewModel.selectedAccount;
+		} else {
+			return undefined;
+		}
 	}
 
 	/**

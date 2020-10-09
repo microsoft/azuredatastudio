@@ -9,6 +9,7 @@ import { Action } from 'vs/base/common/actions';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { TabType } from 'sql/base/browser/ui/panel/tab.component';
 import { IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
+import { IUserFriendlyIcon } from 'sql/platform/extensions/common/extensions';
 
 export interface IDashboardWidget {
 	actions: Array<Action>;
@@ -47,7 +48,6 @@ export interface TabConfig extends IDashboardTab {
 }
 
 
-export type IUserFriendlyIcon = string | { light: string; dark: string; };
 
 export interface NavSectionConfig {
 	id: string;

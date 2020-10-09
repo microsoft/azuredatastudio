@@ -12,7 +12,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 export interface IEditorDescriptorService {
 	_serviceBrand: undefined;
 
-	getEditor(input: EditorInput): IEditorDescriptor;
+	getEditor(input: EditorInput): IEditorDescriptor | undefined;
 }
 
 export class EditorDescriptorService implements IEditorDescriptorService {
@@ -21,7 +21,7 @@ export class EditorDescriptorService implements IEditorDescriptorService {
 	constructor() {
 	}
 
-	public getEditor(input: EditorInput): IEditorDescriptor {
+	public getEditor(input: EditorInput): IEditorDescriptor | undefined {
 		return Registry.as<IEditorRegistry>(Extensions.Editors).getEditor(input);
 	}
 }

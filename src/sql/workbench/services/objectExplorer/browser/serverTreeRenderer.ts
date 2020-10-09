@@ -15,6 +15,8 @@ import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode'
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { badgeRenderer, iconRenderer } from 'sql/workbench/services/objectExplorer/browser/iconRenderer';
 import { URI } from 'vs/base/common/uri';
+import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
+import { withNullAsUndefined } from 'vs/base/common/types';
 
 export interface IConnectionTemplateData {
 	root: HTMLElement;
@@ -44,10 +46,10 @@ export class ServerTreeRenderer implements IRenderer {
 
 	public static CONNECTION_HEIGHT = 23;
 	public static CONNECTION_GROUP_HEIGHT = 38;
-	private static CONNECTION_TEMPLATE_ID = 'connectionProfile';
-	private static CONNECTION_GROUP_TEMPLATE_ID = 'connectionProfileGroup';
+	public static CONNECTION_TEMPLATE_ID = 'connectionProfile';
+	public static CONNECTION_GROUP_TEMPLATE_ID = 'connectionProfileGroup';
 	public static OBJECTEXPLORER_HEIGHT = 23;
-	private static OBJECTEXPLORER_TEMPLATE_ID = 'objectExplorer';
+	public static OBJECTEXPLORER_TEMPLATE_ID = 'objectExplorer';
 	/**
 	 * _isCompact is used to render connections tiles with and without the action buttons.
 	 * When set to true, like in the connection dialog recent connections tree, the connection
@@ -97,7 +99,7 @@ export class ServerTreeRenderer implements IRenderer {
 		if (templateId === ServerTreeRenderer.CONNECTION_TEMPLATE_ID) {
 			const connectionTemplate: IObjectExplorerTemplateData = Object.create(null);
 			connectionTemplate.root = dom.append(container, dom.$('.connection-tile'));
-			connectionTemplate.icon = dom.append(connectionTemplate.root, dom.$('div.icon server-page'));
+			connectionTemplate.icon = dom.append(connectionTemplate.root, dom.$('div.icon.server-page'));
 			connectionTemplate.label = dom.append(connectionTemplate.root, dom.$('div.label'));
 			return connectionTemplate;
 		} else if (templateId === ServerTreeRenderer.CONNECTION_GROUP_TEMPLATE_ID) {
@@ -131,7 +133,7 @@ export class ServerTreeRenderer implements IRenderer {
 	private renderObjectExplorer(treeNode: TreeNode, templateData: IObjectExplorerTemplateData): void {
 		// Use an explicitly defined iconType first. If not defined, fall back to using nodeType and
 		// other compount indicators instead.
-		let iconName: string = undefined;
+		let iconName: string | undefined = undefined;
 		if (treeNode.iconType) {
 			iconName = (typeof treeNode.iconType === 'string') ? treeNode.iconType : treeNode.iconType.id;
 		} else {
@@ -146,7 +148,7 @@ export class ServerTreeRenderer implements IRenderer {
 
 		let tokens: string[] = [];
 		for (let index = 1; index < templateData.icon.classList.length; index++) {
-			tokens.push(templateData.icon.classList.item(index));
+			tokens.push(templateData.icon.classList.item(index)!);
 		}
 		templateData.icon.classList.remove(...tokens);
 		templateData.icon.classList.add('icon');
@@ -161,45 +163,41 @@ export class ServerTreeRenderer implements IRenderer {
 		templateData.root.title = treeNode.label;
 	}
 
-	private getIconPath(connection: ConnectionProfile): IconPath {
+	private getIconPath(connection: ConnectionProfile): IconPath | undefined {
 		if (!connection) { return undefined; }
 
-		if (connection['iconPath']) {
-			return connection['iconPath'];
+		if (connection.iconPath) {
+			return connection.iconPath;
 		}
 
 		let iconId = this._connectionManagementService.getConnectionIconId(connection.id);
-		if (!iconId) { return undefined; }
-
 		let providerProperties = this._connectionManagementService.getProviderProperties(connection.providerName);
 		if (!providerProperties) { return undefined; }
 
-		let iconPath: IconPath = undefined;
-		let pathConfig: URI | IconPath | { id: string, path: IconPath }[] = providerProperties['iconPath'];
+		let iconPath: IconPath | undefined = undefined;
+		let pathConfig: URI | IconPath | { id: string, path: IconPath, default?: boolean }[] | undefined = providerProperties.iconPath;
 		if (Array.isArray(pathConfig)) {
 			for (const e of pathConfig) {
-				if (!e.id || e.id === iconId) {
+				if (!e.id || e.id === iconId || (!iconId && e.default)) {
 					iconPath = e.path;
 					connection['iconPath'] = iconPath;
 					break;
 				}
 			}
-		} else if (pathConfig['light']) {
-			iconPath = pathConfig as IconPath;
-			connection['iconPath'] = iconPath;
-		} else {
+		} else if (URI.isUri(pathConfig)) {
 			let singlePath = pathConfig as URI;
 			iconPath = { light: singlePath, dark: singlePath };
-			connection['iconPath'] = iconPath;
+			connection.iconPath = iconPath;
+		} else {
+			iconPath = pathConfig as IconPath;
+			connection.iconPath = iconPath;
 		}
 		return iconPath;
 	}
 
-	private renderServerIcon(element: HTMLElement, iconPath: IconPath, isConnected: boolean): void {
+	private renderServerIcon(element: HTMLElement, iconPath: IconPath | undefined, isConnected: boolean): void {
 		if (!element) { return; }
-		if (iconPath) {
-			iconRenderer.putIcon(element, iconPath);
-		}
+		iconRenderer.putIcon(element, iconPath);
 		let badgeToRemove: string = isConnected ? badgeRenderer.serverDisconnected : badgeRenderer.serverConnected;
 		let badgeToAdd: string = isConnected ? badgeRenderer.serverConnected : badgeRenderer.serverDisconnected;
 		badgeRenderer.removeBadge(element, badgeToRemove);
@@ -207,18 +205,20 @@ export class ServerTreeRenderer implements IRenderer {
 	}
 
 	private renderConnection(connection: ConnectionProfile, templateData: IConnectionTemplateData): void {
+
+		let isConnected = this._connectionManagementService.isConnected(undefined, connection);
 		if (!this._isCompact) {
-			let iconPath: IconPath = this.getIconPath(connection);
-			if (this._connectionManagementService.isConnected(undefined, connection)) {
+			if (isConnected) {
 				templateData.icon.classList.remove('disconnected');
 				templateData.icon.classList.add('connected');
-				this.renderServerIcon(templateData.icon, iconPath, true);
 			} else {
 				templateData.icon.classList.remove('connected');
 				templateData.icon.classList.add('disconnected');
-				this.renderServerIcon(templateData.icon, iconPath, false);
 			}
 		}
+
+		let iconPath = this.getIconPath(connection);
+		this.renderServerIcon(templateData.icon, iconPath, isConnected);
 
 		let label = connection.title;
 		if (!connection.isConnectionOptionsValid) {
@@ -238,7 +238,7 @@ export class ServerTreeRenderer implements IRenderer {
 				rowElement.style.background = connectionProfileGroup.color;
 			} else {
 				// If the group doesn't contain specific color, assign the default color
-				rowElement.style.background = '#515151';
+				rowElement.style.background = DefaultServerGroupColor;
 			}
 		}
 		if (connectionProfileGroup.description && (connectionProfileGroup.description !== '')) {
@@ -251,15 +251,15 @@ export class ServerTreeRenderer implements IRenderer {
 	/**
 	 * Returns the first parent which contains the className
 	 */
-	private findParentElement(container: HTMLElement, className: string): HTMLElement {
-		let currentElement = container;
+	private findParentElement(container: HTMLElement, className: string): HTMLElement | undefined {
+		let currentElement: HTMLElement | null = container;
 		while (currentElement) {
 			if (currentElement.className.indexOf(className) > -1) {
 				break;
 			}
 			currentElement = currentElement.parentElement;
 		}
-		return currentElement;
+		return withNullAsUndefined(currentElement);
 	}
 
 	public disposeTemplate(tree: ITree, templateId: string, templateData: any): void {

@@ -12,7 +12,6 @@ import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape }
 import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IURITransformer } from 'vs/base/common/uriIpc';
 import { URI } from 'vs/base/common/uri';
-import { find } from 'vs/base/common/arrays';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { mapToSerializable } from 'sql/base/common/map';
 
@@ -77,7 +76,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (!providersForType) {
 			return undefined;
 		}
-		return find(providersForType, provider => provider.providerId === providerId) as T;
+		return providersForType.find(provider => provider.providerId === providerId) as T;
 	}
 
 	public getProvidersByType<T extends azdata.DataProvider>(providerType: azdata.DataProviderType): T[] {
@@ -171,6 +170,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	$registerSqlAssessmentServiceProvider(provider: azdata.SqlAssessmentServicesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.SqlAssessmentServicesProvider);
 		this._proxy.$registerSqlAssessmentServicesProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+	$registerDataGridProvider(provider: azdata.DataGridProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.DataGridProvider);
+		this._proxy.$registerDataGridProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 	$registerCapabilitiesServiceProvider(provider: azdata.CapabilitiesProvider): vscode.Disposable {
@@ -855,5 +859,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	public $generateAssessmentScript(handle: number, items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> {
 		return this._resolveProvider<azdata.SqlAssessmentServicesProvider>(handle).generateAssessmentScript(items);
+	}
+
+	public $getDataGridItems(handle: number): Thenable<azdata.DataGridItem[]> {
+		return this._resolveProvider<azdata.DataGridProvider>(handle).getDataGridItems();
+	}
+
+	public $getDataGridColumns(handle: number): Thenable<azdata.DataGridColumn[]> {
+		return this._resolveProvider<azdata.DataGridProvider>(handle).getDataGridColumns();
 	}
 }

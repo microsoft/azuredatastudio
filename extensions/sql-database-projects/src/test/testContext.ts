@@ -138,7 +138,10 @@ export function createContext(): TestContext {
 			logPath: '',
 			extensionUri: vscode.Uri.parse(''),
 			environmentVariableCollection: undefined as any,
-			extensionMode: undefined as any
+			extensionMode: undefined as any,
+			globalStorageUri: vscode.Uri.parse('test://'),
+			logUri: vscode.Uri.parse('test://'),
+			storageUri: vscode.Uri.parse('test://')
 		},
 		dacFxService: TypeMoq.Mock.ofType(MockDacFxService)
 	};

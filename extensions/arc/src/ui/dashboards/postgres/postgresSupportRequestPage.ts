@@ -6,9 +6,10 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles, ResourceType } from '../../../constants';
+import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
+import { ResourceType } from 'arc';
 import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresSupportRequestPage extends DashboardPage {
@@ -51,12 +52,12 @@ export class PostgresSupportRequestPage extends DashboardPage {
 
 		this.disposables.push(
 			supportRequestButton.onDidClick(() => {
-				const r = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
-				if (!r) {
-					vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this._postgresModel.fullName));
-				} else {
+				const azure = this._controllerModel.controllerConfig?.spec.settings.azure;
+				if (azure) {
 					vscode.env.openExternal(vscode.Uri.parse(
-						`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${r.instanceName}/supportrequest`));
+						`https://portal.azure.com/#resource/subscriptions/${azure.subscription}/resourceGroups/${azure.resourceGroup}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${this._postgresModel.info.name}/supportrequest`));
+				} else {
+					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}
 			}));
 

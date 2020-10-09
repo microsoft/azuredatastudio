@@ -7,14 +7,17 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DialogInfo, instanceOfNotebookBasedDialogInfo, NotebookBasedDialogInfo } from '../interfaces';
+import { DialogInfo, instanceOfNotebookBasedDialogInfo, NotebookBasedDialogInfo, FieldType, NotebookPathInfo } from '../interfaces';
 import { INotebookService } from '../services/notebookService';
 import { IPlatformService } from '../services/platformService';
 import { DialogBase } from './dialogBase';
 import { Model } from './model';
 import { initializeDialog, InputComponentInfo, InputComponents, setModelValues, Validator } from './modelViewUtils';
+import { IToolsService } from '../services/toolsService';
 
 const localize = nls.loadMessageBundle();
+
+const NotebookTypeVariableName: string = 'SYS_NotebookType';
 
 export class DeploymentInputDialog extends DialogBase {
 
@@ -22,6 +25,7 @@ export class DeploymentInputDialog extends DialogBase {
 
 	constructor(private notebookService: INotebookService,
 		private platformService: IPlatformService,
+		private toolsService: IToolsService,
 		private dialogInfo: DialogInfo) {
 		super(dialogInfo.title, dialogInfo.name, false);
 		let okButtonText: string;
@@ -39,6 +43,25 @@ export class DeploymentInputDialog extends DialogBase {
 	protected initialize() {
 		const self = this;
 		const validators: Validator[] = [];
+
+		if (this.dialogInfo.tabs.length > 0
+			&& instanceOfNotebookBasedDialogInfo(this.dialogInfo)
+			&& Array.isArray(this.dialogInfo.notebook)) {
+			// Add the notebook type field to the dialog
+			this.dialogInfo.tabs[0].sections.push(
+				{
+					fields: [
+						{
+							type: FieldType.Options,
+							label: localize('notebookType', 'Notebook type'),
+							options: this.dialogInfo.notebook.map(nb => nb.type),
+							variableName: NotebookTypeVariableName
+						}
+					]
+				}
+			);
+		}
+
 		initializeDialog({
 			dialogInfo: this.dialogInfo,
 			container: this._dialogObject,
@@ -51,7 +74,8 @@ export class DeploymentInputDialog extends DialogBase {
 			},
 			onNewValidatorCreated: (validator: Validator): void => {
 				validators.push(validator);
-			}
+			},
+			toolsService: this.toolsService
 		});
 		this._dialogObject.registerCloseValidator(() => {
 			const messages: string[] = [];
@@ -70,24 +94,27 @@ export class DeploymentInputDialog extends DialogBase {
 		});
 	}
 
-	protected onComplete(): void {
+	protected async onComplete(): Promise<void> {
 		const model: Model = new Model();
-		setModelValues(this.inputComponents, model);
+		await setModelValues(this.inputComponents, model);
 		if (instanceOfNotebookBasedDialogInfo(this.dialogInfo)) {
 			model.setEnvironmentVariables();
 			if (this.dialogInfo.runNotebook) {
 				this.executeNotebook(this.dialogInfo);
 			} else {
-				this.notebookService.launchNotebook(this.dialogInfo.notebook).then(() => { }, (error) => {
+				const notebook = Array.isArray(this.dialogInfo.notebook) ?
+					this.dialogInfo.notebook.find(nb => nb.type === model.getStringValue(NotebookTypeVariableName))?.path :
+					this.dialogInfo.notebook;
+				this.notebookService.openNotebook(notebook!).catch(error => {
 					vscode.window.showErrorMessage(error);
 				});
 			}
 		} else {
-			vscode.commands.executeCommand(this.dialogInfo.command, model);
+			await vscode.commands.executeCommand(this.dialogInfo.command, model);
 		}
 	}
 
 	private executeNotebook(notebookDialogInfo: NotebookBasedDialogInfo): void {
-		this.notebookService.backgroundExecuteNotebook(notebookDialogInfo.taskName, notebookDialogInfo.notebook, 'deploy', this.platformService);
+		this.notebookService.backgroundExecuteNotebook(notebookDialogInfo.taskName, notebookDialogInfo.notebook as string | NotebookPathInfo, 'deploy', this.platformService);
 	}
 }

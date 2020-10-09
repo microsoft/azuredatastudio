@@ -5,7 +5,7 @@
 
 import { Account } from 'azdata';
 
-import { azureResource } from '../azure-resource';
+import { azureResource } from 'azureResource';
 import { IAzureResourceSubscriptionFilterService, IAzureResourceCacheService } from '../interfaces';
 
 interface AzureResourceSelectedSubscriptionsCache {
@@ -50,7 +50,7 @@ export class AzureResourceSubscriptionFilterService implements IAzureResourceSub
 
 		const filters: string[] = [];
 		for (const accountId in selectedSubscriptionsCache) {
-			filters.push(...selectedSubscriptionsCache[accountId].map((subcription) => `${accountId}/${subcription.id}/${subcription.name}`));
+			filters.push(...selectedSubscriptionsCache[accountId].map((subscription) => `${accountId}/${subscription.id}/${subscription.name}`));
 		}
 	}
 

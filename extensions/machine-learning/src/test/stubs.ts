@@ -4,11 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as azurecore from '../../../azurecore/src/azurecore';
-import { azureResource } from '../../../azurecore/src/azureResource/azure-resource';
+import * as azurecore from 'azurecore';
+import { azureResource } from 'azureResource';
 
 export class AzurecoreApiStub implements azurecore.IExtension {
-	getSubscriptions(_account?: azdata.Account | undefined, _ignoreErrors?: boolean | undefined): Thenable<azurecore.GetSubscriptionsResult> {
+	runGraphQuery<T extends azureResource.AzureGraphResource>(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors: boolean, _query: string): Promise<azurecore.ResourceQueryResult<T>> {
+		throw new Error('Method not implemented.');
+	}
+	getSubscriptions(_account?: azdata.Account | undefined, _ignoreErrors?: boolean | undefined, _selectedOnly?: boolean | undefined): Thenable<azurecore.GetSubscriptionsResult> {
 		throw new Error('Method not implemented.');
 	}
 	getResourceGroups(_account?: azdata.Account | undefined, _subscription?: azureResource.AzureResourceSubscription | undefined, _ignoreErrors?: boolean | undefined): Thenable<azurecore.GetResourceGroupsResult> {

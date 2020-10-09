@@ -37,7 +37,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 	</p>
 	</ng-template>`
 })
-export default class TextComponent extends TitledComponent implements IComponent, OnDestroy, AfterViewInit {
+export default class TextComponent extends TitledComponent<azdata.TextComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	@ViewChild('textContainer', { read: ElementRef }) textContainer: ElementRef;
@@ -71,27 +71,27 @@ export default class TextComponent extends TitledComponent implements IComponent
 	}
 
 	public set value(newValue: string) {
-		this.setPropertyFromUI<azdata.TextComponentProperties, string>((properties, value) => { properties.value = value; }, newValue);
+		this.setPropertyFromUI<string>((properties, value) => { properties.value = value; }, newValue);
 	}
 
 	public get value(): string {
-		return this.getPropertyOrDefault<azdata.TextComponentProperties, string>((props) => props.value, '');
+		return this.getPropertyOrDefault<string>((props) => props.value, '');
 	}
 
 	public set description(newValue: string) {
-		this.setPropertyFromUI<azdata.TextComponentProperties, string>((properties, value) => { properties.description = value; }, newValue);
+		this.setPropertyFromUI<string>((properties, value) => { properties.description = value; }, newValue);
 	}
 
 	public get description(): string {
-		return this.getPropertyOrDefault<azdata.TextComponentProperties, string>((props) => props.description, '');
+		return this.getPropertyOrDefault<string>((props) => props.description, '');
 	}
 
 	public set requiredIndicator(newValue: boolean) {
-		this.setPropertyFromUI<azdata.TextComponentProperties, boolean>((properties, value) => { properties.requiredIndicator = value; }, newValue);
+		this.setPropertyFromUI<boolean>((properties, value) => { properties.requiredIndicator = value; }, newValue);
 	}
 
 	public get requiredIndicator(): boolean {
-		return this.getPropertyOrDefault<azdata.TextComponentProperties, boolean>((props) => props.requiredIndicator, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.requiredIndicator, false);
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {
@@ -102,7 +102,7 @@ export default class TextComponent extends TitledComponent implements IComponent
 
 	public updateText(): void {
 		DOM.clearNode((<HTMLElement>this.textContainer.nativeElement));
-		const links = this.getPropertyOrDefault<azdata.TextComponentProperties, azdata.LinkArea[]>((props) => props.links, []);
+		const links = this.getPropertyOrDefault<azdata.LinkArea[]>((props) => props.links, []);
 		// The text may contain link placeholders so go through and create those and insert them as needed now
 		let text = this.value;
 		for (let i: number = 0; i < links.length; i++) {

@@ -27,19 +27,19 @@ export interface IProfilerSession {
 	/**
 	 * Called by the service when more rows are available to render
 	 */
-	onMoreRows(events: azdata.ProfilerSessionEvents);
+	onMoreRows(events: azdata.ProfilerSessionEvents): void;
 	/**
 	 * Called by the service when the session is closed unexpectedly
 	 */
-	onSessionStopped(events: azdata.ProfilerSessionStoppedParams);
+	onSessionStopped(events: azdata.ProfilerSessionStoppedParams): void;
 	/**
 	 * Called by the service when a new profiler session is created by the dialog
 	 */
-	onProfilerSessionCreated(events: azdata.ProfilerSessionCreatedParams);
+	onProfilerSessionCreated(events: azdata.ProfilerSessionCreatedParams): void;
 	/**
 	 * Called by the service when the session state is changed
 	 */
-	onSessionStateChanged(newState: INewProfilerState);
+	onSessionStateChanged(newState: INewProfilerState): void;
 }
 
 /**
@@ -83,7 +83,7 @@ export interface IProfilerService {
 	/**
 	 * Gets a list of running XEvent sessions on the Profiler Session's target
 	 */
-	getXEventSessions(sessionId: ProfilerSessionID): Thenable<string[]>;
+	getXEventSessions(sessionId: ProfilerSessionID): Promise<string[] | undefined>;
 	/**
 	 * The method called by the service provider for when more rows are available to render
 	 */
@@ -95,7 +95,7 @@ export interface IProfilerService {
 	/**
 	 * Called by the service when a new profiler session is created by the dialog
 	 */
-	onProfilerSessionCreated(events: azdata.ProfilerSessionCreatedParams);
+	onProfilerSessionCreated(events: azdata.ProfilerSessionCreatedParams): void;
 	/**
 	 * Gets a list of the view templates that are specified in the settings
 	 * @param provider An optional string to limit the view templates to a specific provider

@@ -59,6 +59,14 @@
           "type": "number",
           "default": 60000,
           "description": "%notebook.remoteBookDownloadTimeout.description%"
+        },
+        "notebook.pinnedNotebooks": {
+          "type": "array",
+          "default": [],
+          "description": "%notebook.pinnedNotebooks.description%",
+          "items": {
+            "type": "object"
+          }
         }
       }
     },
@@ -247,6 +255,21 @@
           "dark": "resources/dark/open_notebook_inverse.svg",
           "light": "resources/light/open_notebook.svg"
         }
+      },
+      {
+        "command": "notebook.command.pinNotebook",
+        "title": "%title.pinNotebook%",
+        "category": "%books-preview-category%",
+        "icon": "$(pinned)"
+      },
+      {
+        "command": "notebook.command.unpinNotebook",
+        "title": "%title.unpinNotebook%",
+        "category": "%books-preview-category%",
+        "icon": {
+          "dark": "resources/dark/unpin_inverse.svg",
+          "light": "resources/light/unpin.svg"
+        }
       }
     ],
     "languages": [
@@ -364,6 +387,14 @@
         {
           "command": "notebook.command.revealInBooksViewlet",
           "when": "false"
+        },
+        {
+          "command": "notebook.command.pinNotebook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.unpinNotebook",
+          "when": "false"
         }
       ],
       "notebooks/title": [
@@ -424,6 +455,16 @@
         {
           "command": "notebook.command.closeNotebook",
           "when": "view == bookTreeView && viewItem == savedNotebook"
+        },
+        {
+          "command": "notebook.command.pinNotebook",
+          "when": "view == bookTreeView && viewItem  == savedNotebook",
+          "group": "inline"
+        },
+        {
+          "command": "notebook.command.unpinNotebook",
+          "when": "view == pinnedBooksView || view == bookTreeView && viewItem == pinnedNotebook",
+          "group": "inline"
         }
       ],
       "view/title": [
@@ -440,7 +481,8 @@
           "command": "notebook.command.openNotebookFolder",
           "when": "view == bookTreeView",
           "group": "navigation"
-        }, {
+        },
+        {
           "command": "notebook.command.openRemoteBook",
           "when": "view == bookTreeView"
         }
@@ -454,6 +496,11 @@
     },
     "views": {
       "notebooks": [
+        {
+          "id": "pinnedBooksView",
+          "name": "%title.PinnedBooks%",
+          "when": "showPinnedbooks"
+        },
         {
           "id": "bookTreeView",
           "name": "%title.SavedBooks%"
@@ -562,23 +609,20 @@
   },
   "dependencies": {
     "@jupyterlab/services": "^3.2.1",
-    "@types/adm-zip": "^0.4.32",
-    "@types/tar": "^4.0.3",
     "adm-zip": "^0.4.14",
     "error-ex": "^1.3.1",
     "fast-glob": "^3.1.0",
-    "figures": "^2.0.0",
     "fs-extra": "^5.0.0",
     "glob": "^7.1.1",
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^2.6.1",
     "request": "^2.88.0",
     "tar": "^6.0.1",
-    "temp-write": "^3.4.0",
     "vscode-languageclient": "^5.3.0-next.1",
     "vscode-nls": "^4.0.0",
     "ws": "^7.2.0"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0.4.32",
     "@types/fs-extra": "^5.0.0",
     "@types/glob": "^7.1.1",
     "@types/js-yaml": "^3.12.1",
@@ -587,16 +631,17 @@
     "@types/request": "^2.48.1",
     "@types/rimraf": "^2.0.2",
     "@types/sinon": "^9.0.4",
-    "@types/temp-write": "^3.3.0",
+    "@types/tar": "^4.0.3",
     "@types/uuid": "^3.4.5",
     "assert": "^1.4.1",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
+    "nock": "^13.0.2",
     "should": "^13.2.3",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.0.9"
+    "vscodetestcover": "^1.1.0"
   },
   "enableProposedApi": true
 }

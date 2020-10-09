@@ -12,7 +12,7 @@ import { AzureResourceItemType } from '../../../azureResource/constants';
 import { generateGuid } from '../../utils';
 import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
-import { azureResource } from '../../azure-resource';
+import { azureResource } from 'azureResource';
 
 export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainer';
@@ -34,7 +34,7 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
 			},
-			collapsibleState: vscode.workspace.getConfiguration('workbench').get<boolean>('enablePreviewFeatures') ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
+			collapsibleState: vscode.workspace.getConfiguration('connection').get<boolean>('dialog.browse') ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServer,
 			payload: {
 				id: generateGuid(),

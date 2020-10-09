@@ -6,7 +6,7 @@
 import { IInsightsDialogModel, ListResource } from 'sql/workbench/services/insights/browser/insightsDialogService';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { IInsightsConfigDetails, IInsightsLabel } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IInsightsConfigDetails, IInsightsLabel } from 'sql/platform/extensions/common/extensions';
 
 export enum Conditional {
 	'equals',

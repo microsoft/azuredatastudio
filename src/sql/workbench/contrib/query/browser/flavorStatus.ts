@@ -205,7 +205,7 @@ export class ChangeFlavorAction extends Action {
 		let providerNameToDisplayNameMap = this._connectionManagementService.providerNameToDisplayNameMap;
 		let providerOptions = Object.keys(this._connectionManagementService.getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap)).map(p => new SqlProviderEntry(p));
 
-		return this._quickInputService.pick(providerOptions, { placeHolder: nls.localize('pickSqlProvider', "Select SQL Language Provider") }).then(provider => {
+		return this._quickInputService.pick(providerOptions, { placeHolder: nls.localize('pickSqlProvider', "Select Language Provider") }).then(provider => {
 			if (provider) {
 				let activeEditor = this._editorService.activeEditorPane.getControl();
 				const editorWidget = getCodeEditor(activeEditor);

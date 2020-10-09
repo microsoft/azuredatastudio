@@ -13,44 +13,43 @@ import { FlavorProperties } from 'sql/workbench/contrib/dashboard/browser/dashbo
 
 suite('Explorer Widget Tests', () => {
 	test('Sorting dashboard search objects works correctly', () => {
-		let testMetadata = ObjectMetadataWrapper.createFromObjectMetadata(
-			[
-				{
-					metadataType: MetadataType.View,
-					metadataTypeName: undefined,
-					urn: undefined,
-					name: 'testView',
-					schema: undefined
-				},
-				{
-					metadataType: MetadataType.Table,
-					metadataTypeName: undefined,
-					urn: undefined,
-					name: 'testTable',
-					schema: undefined
-				},
-				{
-					metadataType: MetadataType.SProc,
-					metadataTypeName: undefined,
-					urn: undefined,
-					name: 'testSProc',
-					schema: undefined
-				},
-				{
-					metadataType: MetadataType.Function,
-					metadataTypeName: undefined,
-					urn: undefined,
-					name: 'testFunction',
-					schema: undefined
-				},
-				{
-					metadataType: MetadataType.View,
-					metadataTypeName: undefined,
-					urn: undefined,
-					name: 'firstView',
-					schema: undefined
-				}
-			]);
+		let testMetadata = [
+			{
+				metadataType: MetadataType.View,
+				metadataTypeName: undefined,
+				urn: undefined,
+				name: 'testView',
+				schema: undefined
+			},
+			{
+				metadataType: MetadataType.Table,
+				metadataTypeName: undefined,
+				urn: undefined,
+				name: 'testTable',
+				schema: undefined
+			},
+			{
+				metadataType: MetadataType.SProc,
+				metadataTypeName: undefined,
+				urn: undefined,
+				name: 'testSProc',
+				schema: undefined
+			},
+			{
+				metadataType: MetadataType.Function,
+				metadataTypeName: undefined,
+				urn: undefined,
+				name: 'testFunction',
+				schema: undefined
+			},
+			{
+				metadataType: MetadataType.View,
+				metadataTypeName: undefined,
+				urn: undefined,
+				name: 'firstView',
+				schema: undefined
+			}
+		].map(m => new ObjectMetadataWrapper(m));
 
 		// If I sort the object metadata wrapper list using ExplorerWidget's sort function
 		let sortedMetadata = testMetadata.slice().sort(ObjectMetadataWrapper.sort);
@@ -79,44 +78,43 @@ suite('Explorer Widget Tests', () => {
 	});
 
 	test('object type filter', () => {
-		const testMetadata = ObjectMetadataWrapper.createFromObjectMetadata(
-			[
-				{
-					metadataType: MetadataType.View,
-					metadataTypeName: undefined,
-					urn: undefined,
-					name: 'testView',
-					schema: undefined
-				},
-				{
-					metadataType: MetadataType.Table,
-					metadataTypeName: undefined,
-					urn: undefined,
-					name: 'testTable',
-					schema: undefined
-				},
-				{
-					metadataType: MetadataType.SProc,
-					metadataTypeName: undefined,
-					urn: undefined,
-					name: 'testSProc',
-					schema: undefined
-				},
-				{
-					metadataType: MetadataType.Function,
-					metadataTypeName: undefined,
-					urn: undefined,
-					name: 'testFunction',
-					schema: undefined
-				},
-				{
-					metadataType: MetadataType.View,
-					metadataTypeName: undefined,
-					urn: undefined,
-					name: 'firstView',
-					schema: undefined
-				}
-			]);
+		const testMetadata = [
+			{
+				metadataType: MetadataType.View,
+				metadataTypeName: undefined,
+				urn: undefined,
+				name: 'testView',
+				schema: undefined
+			},
+			{
+				metadataType: MetadataType.Table,
+				metadataTypeName: undefined,
+				urn: undefined,
+				name: 'testTable',
+				schema: undefined
+			},
+			{
+				metadataType: MetadataType.SProc,
+				metadataTypeName: undefined,
+				urn: undefined,
+				name: 'testSProc',
+				schema: undefined
+			},
+			{
+				metadataType: MetadataType.Function,
+				metadataTypeName: undefined,
+				urn: undefined,
+				name: 'testFunction',
+				schema: undefined
+			},
+			{
+				metadataType: MetadataType.View,
+				metadataTypeName: undefined,
+				urn: undefined,
+				name: 'firstView',
+				schema: undefined
+			}
+		].map(o => new ObjectMetadataWrapper(o));
 		const filter = new ExplorerFilter('database', ['name']);
 		let result = filter.filter('t:', testMetadata);
 		assert.equal(result.length, 1, 'table type filter should return only 1 item');

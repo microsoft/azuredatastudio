@@ -186,13 +186,13 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 
 	public async onLoading(): Promise<void> {
 		if (this._loader) {
-			await this._loader.updateProperties({ loading: true });
+			this._loader.loading = true;
 		}
 	}
 
 	public async onLoaded(): Promise<void> {
 		if (this._loader) {
-			await this._loader.updateProperties({ loading: false });
+			this._loader.loading = false;
 		}
 	}
 

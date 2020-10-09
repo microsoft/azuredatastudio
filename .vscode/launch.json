@@ -19,7 +19,8 @@
 			"timeout": 30000,
 			"port": 5870,
 			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
+				"${workspaceFolder}/out/**/*.js",
+				"${workspaceFolder}/extensions/*/out/**/*.js"
 			]
 		},
 		{
@@ -68,10 +69,9 @@
 			}
 		},
 		{
-			"type": "pwa-chrome",
+			"type": "chrome",
 			"request": "attach",
 			"name": "Attach to azuredatastudio",
-			"timeout": 50000,
 			"port": 9222
 		},
 		{
@@ -100,7 +100,9 @@
 				"--no-cached-data",
 			],
 			"webRoot": "${workspaceFolder}",
-			// Settings for js-debug:
+			"cascadeTerminateToConfigurations": [
+				"Attach to Extension Host"
+			],
 			"userDataDir": false,
 			"pauseForSourceMap": false,
 			"outFiles": [
@@ -110,10 +112,10 @@
 			"preLaunchTask": "Ensure Prelaunch Dependencies",
 		},
 		{
-			"type": "chrome",
+			"type": "node",
 			"request": "launch",
 			"name": "Launch ADS (Web) (TBD)",
-			"program": "${workspaceFolder}/resources/serverless/code-web.js",
+			"program": "${workspaceFolder}/resources/web/code-web.js",
 			"presentation": {
 				"group": "0_vscode",
 				"order": 2
@@ -274,6 +276,7 @@
 				"Attach to Extension Host",
 				"Attach to Shared Process",
 			],
+			"preLaunchTask": "Ensure Prelaunch Dependencies",
 			"presentation": {
 				"group": "0_vscode",
 				"order": 1

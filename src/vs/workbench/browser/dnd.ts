@@ -377,7 +377,7 @@ export function fillResourceDataTransfers(accessor: ServicesAccessor, resources:
 		// to restore dirty state. Get that from the text model directly
 		let dirtyContent: string | undefined = undefined;
 		if (model?.isDirty()) {
-			dirtyContent = model.textEditorModel.getValue();
+			dirtyContent = model.textEditorModel!.getValue(); // {{SQL CARBON EDIT}} strict-null-checks
 		}
 
 		// Add as dragged editor

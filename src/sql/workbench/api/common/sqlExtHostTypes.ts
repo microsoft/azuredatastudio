@@ -174,6 +174,7 @@ export enum ModelComponentTypes {
 	Hyperlink,
 	Image,
 	RadioCardGroup,
+	ListView,
 	TabbedPanel,
 	Separator,
 	PropertiesContainer
@@ -280,6 +281,7 @@ export interface IModelViewWizardPageDetails {
 
 export interface IModelViewWizardDetails {
 	title: string;
+	name?: string;
 	pages: number[];
 	currentPage: number;
 	doneButton: number;
@@ -354,7 +356,8 @@ export enum DataProviderType {
 	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 	SerializationProvider = 'SerializationProvider',
 	IconProvider = 'IconProvider',
-	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider'
+	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
+	DataGridProvider = 'DataGridProvider'
 }
 
 export enum DeclarativeDataType {
@@ -373,7 +376,7 @@ export enum CardType {
 
 export enum Orientation {
 	Horizontal = 'horizontal',
-	Vertical = 'vertial'
+	Vertical = 'vertical'
 }
 
 /**
@@ -859,4 +862,10 @@ export enum SqlAssessmentResultItemKind {
 	RealResult = 0,
 	Warning = 1,
 	Error = 2
+}
+
+export enum ButtonType {
+	File = 'File',
+	Normal = 'Normal',
+	Informational = 'Informational'
 }

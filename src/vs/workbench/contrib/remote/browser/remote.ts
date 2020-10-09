@@ -53,9 +53,10 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { Event } from 'vs/base/common/event';
 import { ExtensionsRegistry, IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { RemoteWindowActiveIndicator } from 'vs/workbench/contrib/remote/browser/remoteIndicator';
+import { RemoteStatusIndicator } from 'vs/workbench/contrib/remote/browser/remoteIndicator';
 import { inQuickPickContextKeyValue } from 'vs/workbench/browser/quickaccess';
 import { Codicon, registerIcon } from 'vs/base/common/codicons';
+import { ITerminalService } from 'vs/workbench/contrib/terminal/browser/terminal';
 
 export interface HelpInformation {
 	extensionDescription: IExtensionDescription;
@@ -273,18 +274,22 @@ class HelpItemValue {
 	constructor(private commandService: ICommandService, public extensionDescription: IExtensionDescription, public remoteAuthority: string[] | undefined, private urlOrCommand?: string) { }
 
 	get url(): Promise<string> {
-		return new Promise(async (resolve) => {
+		return new Promise<string>(async (resolve) => {
 			if (this._url === undefined) {
 				if (this.urlOrCommand) {
 					let url = URI.parse(this.urlOrCommand);
 					if (url.authority) {
 						this._url = this.urlOrCommand;
 					} else {
-						this._url = await this.commandService.executeCommand(this.urlOrCommand);
+						const urlCommand: Promise<string | undefined> = this.commandService.executeCommand(this.urlOrCommand);
+						// We must be defensive. The command may never return, meaning that no help at all is ever shown!
+						const emptyString: Promise<string> = new Promise(resolve => setTimeout(() => resolve(''), 500));
+						this._url = await Promise.race([urlCommand, emptyString]);
 					}
-				} else {
-					this._url = '';
 				}
+			}
+			if (this._url === undefined) {
+				this._url = '';
 			}
 			resolve(this._url);
 		});
@@ -325,13 +330,13 @@ abstract class HelpItemBase implements IHelpItem {
 		}
 
 		if (this.values.length > 1) {
-			let actions = await Promise.all(this.values.map(async (value) => {
+			let actions = (await Promise.all(this.values.map(async (value) => {
 				return {
 					label: value.extensionDescription.displayName || value.extensionDescription.identifier.value,
 					description: await value.url,
 					extensionDescription: value.extensionDescription
 				};
-			}));
+			}))).filter(item => item.description);
 
 			const action = await this.quickInputService.pick(actions, { placeHolder: nls.localize('pickRemoteExtension', "Select url to open") });
 
@@ -481,6 +486,7 @@ export class RemoteViewPaneContainer extends FilterViewPaneContainer implements 
 		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
+		@ITerminalService private readonly terminalService: ITerminalService
 	) {
 		super(VIEWLET_ID, remoteExplorerService.onDidChangeTargetType, configurationService, layoutService, telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService, viewDescriptorService);
 		this.addConstantViewDescriptors([this.helpPanelDescriptor]);
@@ -555,7 +561,7 @@ export class RemoteViewPaneContainer extends FilterViewPaneContainer implements 
 		// This context key is set to false in the constructor, but is expected to be changed by resolver extensions to enable the forwarded ports view.
 		const viewEnabled: boolean = !!forwardedPortsViewEnabled.getValue(this.contextKeyService);
 		if (this.environmentService.configuration.remoteAuthority && !this.tunnelPanelDescriptor && viewEnabled) {
-			this.tunnelPanelDescriptor = new TunnelPanelDescriptor(new TunnelViewModel(this.remoteExplorerService), this.environmentService);
+			this.tunnelPanelDescriptor = new TunnelPanelDescriptor(new TunnelViewModel(this.remoteExplorerService, this.terminalService), this.environmentService);
 			const viewsRegistry = Registry.as<IViewsRegistry>(Extensions.ViewsRegistry);
 			viewsRegistry.registerViews([this.tunnelPanelDescriptor!], this.viewContainer);
 		}
@@ -836,4 +842,4 @@ class RemoteAgentConnectionStatusListener implements IWorkbenchContribution {
 
 const workbenchContributionsRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 workbenchContributionsRegistry.registerWorkbenchContribution(RemoteAgentConnectionStatusListener, LifecyclePhase.Eventually);
-workbenchContributionsRegistry.registerWorkbenchContribution(RemoteWindowActiveIndicator, LifecyclePhase.Starting);
+workbenchContributionsRegistry.registerWorkbenchContribution(RemoteStatusIndicator, LifecyclePhase.Starting);

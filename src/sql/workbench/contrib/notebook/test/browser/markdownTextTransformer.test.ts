@@ -40,12 +40,13 @@ suite('MarkdownTextTransformer', () => {
 	let notebookEditor: NotebookEditorStub;
 	let mockNotebookService: TypeMoq.Mock<INotebookService>;
 	let cellModel: CellModel;
+	let instantiationService: TestInstantiationService;
 
 	setup(() => {
 		const dialogService = new TestDialogService();
 		const notificationService = new TestNotificationService();
 		const undoRedoService = new UndoRedoService(dialogService, notificationService);
-		const instantiationService = new TestInstantiationService();
+		instantiationService = new TestInstantiationService();
 
 		instantiationService.stub(IAccessibilityService, new TestAccessibilityService());
 		instantiationService.stub(IContextKeyService, new MockContextKeyService());

@@ -7,58 +7,13 @@ import * as platform from 'vs/platform/registry/common/platform';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 import { values } from 'vs/base/common/collections';
+import { IInsightsConfig } from 'sql/platform/extensions/common/extensions';
 
 export type InsightIdentifier = string;
 
 export const Extensions = {
 	InsightContribution: 'dashboard.contributions.insights'
 };
-
-export interface IInsightsConfig {
-	cacheId?: string;
-	type: any;
-	name?: string;
-	when?: string;
-	gridItemConfig?: ISize;
-	query?: string | Array<string>;
-	queryFile?: string;
-	details?: IInsightsConfigDetails;
-	autoRefreshInterval?: number;
-	id?: string;
-}
-
-export interface IInsightsLabel {
-	column: string;
-	icon?: string;
-	state?: Array<IStateCondition>;
-}
-
-export interface IStateCondition {
-	condition: {
-		if: string,
-		equals?: string
-	};
-	color?: string;
-	icon?: string;
-}
-
-export interface IInsightsConfigDetails {
-	query?: string | Array<string>;
-	queryFile?: string;
-	label?: string | IInsightsLabel;
-	value?: string;
-	actions?: {
-		types: Array<string>;
-		database?: string;
-		server?: string;
-		user?: string;
-	};
-}
-
-export interface ISize {
-	x: number;
-	y: number;
-}
 
 export interface IInsightData {
 	columns: Array<string>;

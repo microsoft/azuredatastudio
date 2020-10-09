@@ -35,14 +35,15 @@ import { SqlInstanceArcProvider } from './azureResource/providers/sqlinstanceArc
 import { SqlInstanceArcResourceService } from './azureResource/providers/sqlinstanceArc/sqlInstanceArcService';
 import { PostgresServerArcProvider } from './azureResource/providers/postgresArcServer/postgresServerProvider';
 import { PostgresServerArcService } from './azureResource/providers/postgresArcServer/postgresServerService';
-import { azureResource } from './azureResource/azure-resource';
-import * as azurecore from './azurecore';
+import { azureResource } from 'azureResource';
+import * as azurecore from 'azurecore';
 import * as azureResourceUtils from './azureResource/utils';
 import * as utils from './utils';
 import * as loc from './localizedConstants';
 import * as constants from './constants';
 import { AzureResourceGroupService } from './azureResource/providers/resourceGroup/resourceGroupService';
 import { Logger } from './utils/Logger';
+import { TokenCredentials } from '@azure/ms-rest-js';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -88,8 +89,69 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
 	registerAzureResourceCommands(appContext, azureResourceTree);
 
+	const typesClause = [
+		azureResource.AzureResourceType.sqlDatabase,
+		azureResource.AzureResourceType.sqlServer,
+		azureResource.AzureResourceType.sqlManagedInstance,
+		azureResource.AzureResourceType.postgresServer,
+		azureResource.AzureResourceType.azureArcService,
+		azureResource.AzureResourceType.azureArcSqlManagedInstance,
+		azureResource.AzureResourceType.azureArcPostgresServer
+	].map(type => `type == "${type}"`).join(' or ');
+	azdata.dataprotocol.registerDataGridProvider({
+		providerId: constants.dataGridProviderId,
+		getDataGridItems: async () => {
+			const accounts = await azdata.accounts.getAllAccounts();
+			const items: any[] = [];
+			await Promise.all(accounts.map(async (account) => {
+				await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {
+					try {
+						const tokenResponse = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
+						const token = tokenResponse.token;
+						const tokenType = tokenResponse.tokenType;
+						const credential = new TokenCredentials(token, tokenType);
+						const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
+						const subscriptions = await subscriptionService.getSubscriptions(account, credential, tenant.id);
+						try {
+							const newItems = (await azureResourceUtils.runResourceQuery(account, subscriptions, true, `where ${typesClause}`)).resources
+								.map(item => {
+									return {
+										...item,
+										subscriptionName: subscriptions.find(subscription => subscription.id === item.subscriptionId)?.name ?? item.subscriptionId,
+										locationDisplayName: utils.getRegionDisplayName(item.location),
+										typeDisplayName: utils.getResourceTypeDisplayName(item.type),
+										iconPath: utils.getResourceTypeIcon(appContext, item.type)
+									};
+								});
+							items.push(...newItems);
+						} catch (err) {
+							console.log(err);
+						}
+					} catch (err) {
+						console.log(err);
+					}
+				}));
+			}));
+			return items;
+		},
+		getDataGridColumns: async () => {
+			return [
+				{ id: 'icon', type: 'image', field: 'iconPath', name: '', width: 25, sortable: false, filterable: false, resizable: false, tooltip: loc.typeIcon },
+				{ id: 'name', type: 'text', field: 'name', name: loc.name, width: 150 },
+				{ id: 'type', type: 'text', field: 'typeDisplayName', name: loc.resourceType, width: 150 },
+				{ id: 'type', type: 'text', field: 'resourceGroup', name: loc.resourceGroup, width: 150 },
+				{ id: 'location', type: 'text', field: 'locationDisplayName', name: loc.location, width: 150 },
+				{ id: 'subscriptionId', type: 'text', field: 'subscriptionName', name: loc.subscription, width: 150 }
+			];
+		}
+	});
+
 	return {
-		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean): Thenable<azurecore.GetSubscriptionsResult> { return azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors); },
+		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean, selectedOnly: boolean = false): Thenable<azurecore.GetSubscriptionsResult> {
+			return selectedOnly
+				? azureResourceUtils.getSelectedSubscriptions(appContext, account, ignoreErrors)
+				: azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors);
+		},
 		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Thenable<azurecore.GetResourceGroupsResult> { return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors); },
 		provideResources(): azureResource.IAzureResourceProvider[] {
 			const arcFeaturedEnabled = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('enableArcFeatures');
@@ -108,7 +170,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			}
 			return providers;
 		},
-		getRegionDisplayName: utils.getRegionDisplayName
+		getRegionDisplayName: utils.getRegionDisplayName,
+		runGraphQuery<T extends azureResource.AzureGraphResource>(account: azdata.Account,
+			subscriptions: azureResource.AzureResourceSubscription[],
+			ignoreErrors: boolean,
+			query: string): Promise<azurecore.ResourceQueryResult<T>> {
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, query);
+		}
 	};
 }
 
@@ -160,14 +228,6 @@ function registerAzureServices(appContext: AppContext): void {
 }
 
 async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Promise<void> {
-	if (e.affectsConfiguration('azure.enableArcFeatures')) {
-		const response = await vscode.window.showInformationMessage(loc.requiresReload, loc.reload);
-		if (response === loc.reload) {
-			await vscode.commands.executeCommand('workbench.action.reloadWindow');
-		}
-		return;
-	}
-
 	if (e.affectsConfiguration('azure.piiLogging')) {
 		updatePiiLoggingLevel();
 	}

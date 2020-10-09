@@ -29,14 +29,17 @@ export default class MainController extends ControllerBase {
 	public deactivate(): void {
 	}
 
-	public async activate(): Promise<boolean> {
-		return new Promise<boolean>(async (resolve) => {
+	public async activate(): Promise<void> {
+		const registerFileProviderPromise = new Promise<boolean>(async (resolve) => {
 			managerInstance.onRegisteredApi<FlatFileProvider>(ApiType.FlatFileProvider)(provider => {
 				this.initializeFlatFileProvider(provider);
 				resolve(true);
 			});
-			await new ServiceClient(this._outputChannel).startService(this._context);
 		});
+		const serviceClient = new ServiceClient(this._outputChannel);
+		const serviceStartPromise = serviceClient.startService(this._context);
+
+		await Promise.all([registerFileProviderPromise, serviceStartPromise]);
 	}
 
 

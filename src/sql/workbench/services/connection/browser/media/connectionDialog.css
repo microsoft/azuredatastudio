@@ -162,3 +162,13 @@
 	width: 8px;
 	height: 8px;
 }
+
+.connection-dialog .explorer-servers .connection-profile .monaco-tl-twistie {
+	/* Hide twisties */
+	display: none !important;
+}
+
+.connection-dialog .tabbedPanel .tabList,
+.connection-dialog .tabbedPanel .tabBody {
+	padding-left: 10px;
+}

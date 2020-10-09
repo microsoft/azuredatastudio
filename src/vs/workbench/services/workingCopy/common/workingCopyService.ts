@@ -16,6 +16,11 @@ import { Schemas } from 'vs/base/common/network'; // {{SQL CARBON EDIT}} @chlafr
 export const enum WorkingCopyCapabilities {
 
 	/**
+	 * Signals no specific capability for the working copy.
+	 */
+	None = 0,
+
+	/**
 	 * Signals that the working copy requires
 	 * additional input when saving, e.g. an
 	 * associated path to save to.

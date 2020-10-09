@@ -197,7 +197,7 @@ ExtensionsRegistry.registerExtensionPoint<NotebookProviderRegistration | Noteboo
 
 	for (let extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray<NotebookProviderRegistration>(value)) {
+		if (Array.isArray(value)) {
 			for (let command of value) {
 				handleExtension(command, extension);
 			}
@@ -215,7 +215,7 @@ ExtensionsRegistry.registerExtensionPoint<NotebookLanguageMagicRegistration | No
 
 	for (let extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray<NotebookLanguageMagicRegistration>(value)) {
+		if (Array.isArray(value)) {
 			for (let command of value) {
 				handleExtension(command, extension);
 			}

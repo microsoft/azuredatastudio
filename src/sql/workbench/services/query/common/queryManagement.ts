@@ -39,9 +39,10 @@ export interface IQueryManagementService {
 	isProviderRegistered(providerId: string): boolean;
 	getRegisteredProviders(): string[];
 	registerRunner(runner: QueryRunner, uri: string): void;
+	getRunner(uri: string): QueryRunner | undefined;
 
 	cancelQuery(ownerUri: string): Promise<QueryCancelResult>;
-	runQuery(ownerUri: string, range: IRange, runOptions?: ExecutionPlanOptions): Promise<void>;
+	runQuery(ownerUri: string, range?: IRange, runOptions?: ExecutionPlanOptions): Promise<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Promise<void>;
 	runQueryString(ownerUri: string, queryString: string): Promise<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
@@ -79,7 +80,7 @@ export interface IQueryManagementService {
  */
 export interface IQueryRequestHandler {
 	cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult>;
-	runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: ExecutionPlanOptions): Promise<void>;
+	runQuery(ownerUri: string, selection?: azdata.ISelectionData, runOptions?: ExecutionPlanOptions): Promise<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Promise<void>;
 	runQueryString(ownerUri: string, queryString: string): Promise<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
@@ -136,6 +137,10 @@ export class QueryManagementService implements IQueryManagementService {
 		if (!runner.hasCompleted) {
 			this._queryRunners.set(uri, runner);
 		}
+	}
+
+	public getRunner(uri: string): QueryRunner | undefined {
+		return this._queryRunners.get(uri);
 	}
 
 	// Handles logic to run the given handlerCallback at the appropriate time. If the given runner is

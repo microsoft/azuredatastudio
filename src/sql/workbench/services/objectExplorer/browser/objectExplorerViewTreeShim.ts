@@ -18,7 +18,6 @@ import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { localize } from 'vs/nls';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
 import { UserCancelledConnectionError } from 'sql/base/common/errors';
-import { assign } from 'vs/base/common/objects';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -29,7 +28,7 @@ export interface IOEShimService {
 	disconnectNode(viewId: string, node: ITreeItem): Promise<boolean>;
 	providerExists(providerId: string): boolean;
 	isNodeConnected(viewId: string, node: ITreeItem): boolean;
-	getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo;
+	getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo | undefined;
 }
 
 export class OEShimService extends Disposable implements IOEShimService {
@@ -67,10 +66,14 @@ export class OEShimService extends Disposable implements IOEShimService {
 						reject(new Error(e.errorMessage));
 						return;
 					}
-					let rootNode = this.oe.getSession(sessionResp.sessionId).rootNode;
+					let session = this.oe.getSession(sessionResp.sessionId);
+					if (!session) {
+						reject(new Error(`Could not have session for ${sessionResp.sessionId}`));
+						return;
+					}
 					// this is how we know it was shimmed
-					if (rootNode.nodePath) {
-						this.nodeHandleMap.set(generateNodeMapKey(viewId, node), rootNode.nodePath);
+					if (session.rootNode.nodePath) {
+						this.nodeHandleMap.set(generateNodeMapKey(viewId, node), session.rootNode.nodePath);
 					}
 				}
 				listener.dispose();
@@ -92,9 +95,9 @@ export class OEShimService extends Disposable implements IOEShimService {
 				onConnectCanceled: () => {
 					reject(new UserCancelledConnectionError(localize('loginCanceled', "User canceled")));
 				},
-				onConnectReject: undefined,
-				onConnectStart: undefined,
-				onDisconnect: undefined
+				onConnectReject: () => { },
+				onConnectStart: () => { },
+				onDisconnect: () => { }
 			});
 			// connection cancelled from firewall dialog
 			if (!result) {
@@ -110,7 +113,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 		let key = generateSessionMapKey(viewId, node);
 		let session = this.sessionMap.get(key);
 		if (session) {
-			let closed = (await this.oe.closeSession(node.childProvider, this.oe.getSession(session))).success;
+			let closed = (await this.oe.closeSession(node.childProvider!, this.oe.getSession(session)!))!.success;
 			if (closed) {
 				this.sessionMap.delete(key);
 			}
@@ -123,21 +126,21 @@ export class OEShimService extends Disposable implements IOEShimService {
 		// verify the map is correct
 		let key = generateSessionMapKey(viewId, node);
 		if (!this.sessionMap.has(key)) {
-			this.sessionMap.set(key, await this.createSession(viewId, node.childProvider, node));
+			this.sessionMap.set(key, await this.createSession(viewId, node.childProvider!, node));
 		}
-		return this.sessionMap.get(key);
+		return this.sessionMap.get(key)!;
 	}
 
 	public async getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]> {
 		if (node.payload) {
 			const sessionId = await this.getOrCreateSession(viewId, node);
 			const requestHandle = this.nodeHandleMap.get(generateNodeMapKey(viewId, node)) || node.handle;
-			const treeNode = new TreeNode(undefined, undefined, undefined, requestHandle, undefined, undefined, undefined, undefined, undefined, undefined);
+			const treeNode = new TreeNode(undefined!, undefined!, undefined!, requestHandle, undefined!); // hack since this entire system is a hack anyways
 			treeNode.connection = new ConnectionProfile(this.capabilities, node.payload);
 			const childrenNodes = await this.oe.refreshTreeNode({
-				success: undefined,
+				success: true,
 				sessionId,
-				rootNode: undefined,
+				rootNode: undefined!, // hack since this entire system is a hack anyways
 				errorMessage: undefined
 			}, treeNode);
 			return childrenNodes.map(n => this.treeNodeToITreeItem(viewId, n, node));
@@ -169,7 +172,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 			const database = node.getDatabaseName();
 			if (database) {
 				databaseChanged = true;
-				updatedPayload = assign(updatedPayload, parentNode.payload);
+				updatedPayload = Object.assign(updatedPayload, parentNode.payload);
 				updatedPayload.databaseName = node.getDatabaseName();
 			}
 		}
@@ -187,7 +190,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 			payload: node.payload || (databaseChanged ? updatedPayload : parentNode.payload)
 		};
 		let newTreeItem: ITreeItem = {
-			parentHandle: node.parent.id,
+			parentHandle: node.parent!.id,
 			handle,
 			collapsibleState: node.isAlwaysLeaf ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			label: {
@@ -213,7 +216,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 		return this.sessionMap.has(generateSessionMapKey(viewId, node));
 	}
 
-	public getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo {
+	public getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo | undefined {
 		if (this.nodeInfoMap.has(treeItem)) {
 			return this.nodeInfoMap.get(treeItem);
 		}

@@ -107,4 +107,8 @@ export class CellToolbarComponent {
 
 		this._actionBar.setContent(taskbarContent);
 	}
+
+	public getEditCellAction(): EditCellAction {
+		return this._editCellAction;
+	}
 }

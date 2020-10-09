@@ -24,7 +24,6 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator, IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { find, firstIndex } from 'vs/base/common/arrays';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
@@ -63,13 +62,13 @@ const Operators = [Equals, NotEquals, LessThan, LessThanOrEquals, GreaterThan, G
 
 export class ProfilerFilterDialog extends Modal {
 
-	private _clauseBuilder: HTMLElement;
-	private _okButton: Button;
-	private _cancelButton: Button;
-	private _applyButton: Button;
-	private _loadFilterButton: Button;
-	private _saveFilterButton: Button;
-	private _input: ProfilerInput;
+	private _clauseBuilder?: HTMLElement;
+	private _okButton?: Button;
+	private _cancelButton?: Button;
+	private _applyButton?: Button;
+	private _loadFilterButton?: Button;
+	private _saveFilterButton?: Button;
+	private _input?: ProfilerInput;
 	private _clauseRows: ClauseRowUI[] = [];
 
 
@@ -80,7 +79,7 @@ export class ProfilerFilterDialog extends Modal {
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
-		@IContextViewService private contextViewService: IContextViewService,
+		@IContextViewService private readonly contextViewService: IContextViewService,
 		@IProfilerService private profilerService: IProfilerService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
@@ -91,7 +90,7 @@ export class ProfilerFilterDialog extends Modal {
 		this._input = input;
 		this.render();
 		this.show();
-		this._okButton.focus();
+		this._okButton!.focus();
 	}
 
 	public dispose(): void {
@@ -107,7 +106,7 @@ export class ProfilerFilterDialog extends Modal {
 		this._loadFilterButton = this.addFooterButton(LoadFilterText, () => this.loadSavedFilter(), 'left');
 		this._applyButton = this.addFooterButton(ApplyText, () => this.filterSession());
 		this._okButton = this.addFooterButton(OkText, () => this.handleOkButtonClick());
-		this._cancelButton = this.addFooterButton(CancelText, () => this.hide());
+		this._cancelButton = this.addFooterButton(CancelText, () => this.hide('cancel'));
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
 		this._register(attachButtonStyler(this._applyButton, this._themeService));
@@ -125,7 +124,7 @@ export class ProfilerFilterDialog extends Modal {
 		DOM.append(headerRow, DOM.$('td')).innerText = ValueText;
 		DOM.append(headerRow, DOM.$('td')).innerText = '';
 
-		this._input.filter.clauses.forEach(clause => {
+		this._input!.filter.clauses.forEach(clause => {
 			this.addClauseRow(true, clause.field, this.convertToOperatorString(clause.operator), clause.value);
 		});
 
@@ -139,7 +138,7 @@ export class ProfilerFilterDialog extends Modal {
 
 	/* espace key */
 	protected onClose() {
-		this.hide();
+		this.hide('close');
 	}
 
 	/* enter key */
@@ -149,7 +148,7 @@ export class ProfilerFilterDialog extends Modal {
 
 	private handleOkButtonClick(): void {
 		this.filterSession();
-		this.hide();
+		this.hide('ok');
 	}
 
 	private handleClearButtonClick() {
@@ -182,7 +181,7 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	private filterSession(): void {
-		this._input.filterSession(this.getFilter());
+		this._input!.filterSession(this.getFilter());
 	}
 
 	private saveFilter(): void {
@@ -222,19 +221,19 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	private addClauseRow(setInitialValue: boolean, field?: string, operator?: string, value?: string): void {
-		const columns = this._input.columns.map(column => column.name);
-		if (field && !find(columns, x => x === field)) {
+		const columns = this._input!.columns.map(column => column.name);
+		if (field && !columns.find(x => x === field)) {
 			return;
 		}
 
-		const row = DOM.append(this._clauseBuilder, DOM.$('tr'));
+		const row = DOM.append(this._clauseBuilder!, DOM.$('tr'));
 		const clauseId = generateUuid();
 
 		const fieldDropDown = this.createSelectBox(DOM.append(row, DOM.$('td')), columns, columns[0], FieldText);
 
 		const operatorDropDown = this.createSelectBox(DOM.append(row, DOM.$('td')), Operators, Operators[0], OperatorText);
 
-		const valueText = new InputBox(DOM.append(row, DOM.$('td')), undefined, {});
+		const valueText = new InputBox(DOM.append(row, DOM.$('td')), this.contextViewService, {});
 		this._register(attachInputBoxStyler(valueText, this._themeService));
 
 		const removeCell = DOM.append(row, DOM.$('td'));
@@ -259,7 +258,7 @@ export class ProfilerFilterDialog extends Modal {
 		if (setInitialValue) {
 			fieldDropDown.selectWithOptionName(field);
 			operatorDropDown.selectWithOptionName(operator);
-			valueText.value = value;
+			valueText.value = value ?? '';
 		}
 
 		this._clauseRows.push({
@@ -272,7 +271,7 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	private removeRow(clauseId: string) {
-		const idx = firstIndex(this._clauseRows, (entry) => { return entry.id === clauseId; });
+		const idx = this._clauseRows.findIndex(entry => { return entry.id === clauseId; });
 		if (idx !== -1) {
 			this._clauseRows[idx].row.remove();
 			this._clauseRows.splice(idx, 1);

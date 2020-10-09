@@ -10,11 +10,11 @@ import { URI } from 'vs/base/common/uri';
 class IconRenderer {
 	private iconRegistered: Set<string> = new Set<string>();
 
-	public registerIcon(path: URI | IconPath): string {
+	public registerIcon(path: URI | IconPath | undefined): string | undefined {
 		if (!path) { return undefined; }
 		let iconPath: IconPath = this.toIconPath(path);
-		let iconUid: string = this.getIconUid(iconPath);
-		if (!this.iconRegistered.has(iconUid)) {
+		let iconUid: string | undefined = this.getIconUid(iconPath);
+		if (iconUid && !this.iconRegistered.has(iconUid)) {
 			createCSSRule(`.icon#${iconUid}`, `background: ${asCSSUrl(iconPath.light || iconPath.dark)} center center no-repeat`);
 			createCSSRule(`.vs-dark .icon#${iconUid}, .hc-black .icon#${iconUid}`, `background: ${asCSSUrl(iconPath.dark)} center center no-repeat`);
 			this.iconRegistered.add(iconUid);
@@ -22,30 +22,29 @@ class IconRenderer {
 		return iconUid;
 	}
 
-	public getIconUid(path: URI | IconPath): string {
+	public getIconUid(path: URI | IconPath): string | undefined {
 		if (!path) { return undefined; }
 		let iconPath: IconPath = this.toIconPath(path);
 		return `icon${hash(iconPath.light.toString() + iconPath.dark.toString())}`;
 	}
 
 	private toIconPath(path: URI | IconPath): IconPath {
-		if (path['light']) {
-			return path as IconPath;
-		} else {
-			let singlePath = path as URI;
+		if (URI.isUri(path)) {
+			let singlePath = path;
 			return { light: singlePath, dark: singlePath };
+		} else {
+			return path;
 		}
 	}
 
-	public putIcon(element: HTMLElement, path: URI | IconPath): void {
-		if (!element || !path) { return undefined; }
-		let iconUid: string = this.registerIcon(path);
-		element.id = iconUid;
+	public putIcon(element: HTMLElement, path: URI | IconPath | undefined): void {
+		let iconUid: string | undefined = this.registerIcon(path);
+		element.id = iconUid ?? '';
 	}
 
 	public removeIcon(element: HTMLElement): void {
 		if (!element) { return undefined; }
-		element.id = undefined;
+		element.id = '';
 	}
 }
 
@@ -117,9 +116,9 @@ class BadgeRenderer {
 
 	public removeBadge(element: HTMLElement, badgeClass: string): void {
 		let children: HTMLCollection = element.children;
-		let current = children[0];
+		let current: Element | null = children[0];
 		while (current) {
-			let next = current.nextElementSibling;
+			let next: Element | null = current.nextElementSibling;
 			if (current.classList.contains(badgeClass)) {
 				current.remove();
 				break;

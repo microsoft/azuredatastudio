@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import 'mocha';
 import { AppContext } from '../../../appContext';
 
-import { azureResource } from '../../../azureResource/azure-resource';
+import { azureResource } from 'azureResource';
 import { IAzureResourceTreeChangeHandler } from '../../../azureResource/tree/treeChangeHandler';
 import { AzureResourceSubscriptionTreeNode } from '../../../azureResource/tree/subscriptionTreeNode';
 import { AzureResourceItemType, AzureResourceServiceNames } from '../../../azureResource/constants';
@@ -44,9 +44,10 @@ const mockAccount: azdata.Account = {
 };
 
 const mockTenantId: string = 'mock_tenant';
+const mockSubscriptionId: string = 'mock_subscription';
 
 const mockSubscription: azureResource.AzureResourceSubscription = {
-	id: 'mock_subscription',
+	id: mockSubscriptionId,
 	name: 'mock subscription',
 	tenant: mockTenantId
 };

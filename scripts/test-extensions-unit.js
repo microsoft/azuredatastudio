@@ -12,6 +12,7 @@ const os = require('os');
 const extensionList = [
 	'admin-tool-ext-win',
 	'agent',
+	'arc',
 	'azdata',
 	'azurecore',
 	'cms',
@@ -22,7 +23,9 @@ const extensionList = [
 	'notebook',
 	'resource-deployment',
 	'machine-learning',
-	'sql-database-projects'];
+	'sql-database-projects',
+	'data-workspace'
+];
 
 let argv = require('yargs')
 	.command('$0 [extensions...]')

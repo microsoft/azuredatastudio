@@ -26,10 +26,10 @@ export interface IBackupUiService {
 	/**
 	 * Close backup wizard
 	 */
-	closeBackup();
+	closeBackup(): void;
 
 	/**
 	 * After the backup dialog is rendered, run Modal methods to set focusable elements, etc.
 	 */
-	onShowBackupDialog();
+	onShowBackupDialog(): void;
 }

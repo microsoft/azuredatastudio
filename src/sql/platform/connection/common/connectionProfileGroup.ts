@@ -7,14 +7,17 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { Disposable } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { assign } from 'vs/base/common/objects';
-import { find } from 'vs/base/common/arrays';
 
-export interface IConnectionProfileGroup {
-	id: string;
+export interface INewConnectionProfileGroup {
+	id?: string;
 	parentId?: string;
 	name: string;
 	color?: string;
 	description?: string;
+}
+
+export interface IConnectionProfileGroup extends INewConnectionProfileGroup {
+	id?: string;
 }
 
 export class ConnectionProfileGroup extends Disposable implements IConnectionProfileGroup {
@@ -23,17 +26,19 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	private _childConnections: ConnectionProfile[] = [];
 	public parentId?: string;
 	private _isRenamed = false;
+	public readonly isRoot: boolean = false;
 	public constructor(
 		public name: string,
-		public parent: ConnectionProfileGroup | undefined,
-		public id: string,
+		public parent?: ConnectionProfileGroup,
+		public id?: string,
 		public color?: string,
 		public description?: string
 	) {
 		super();
 		this.parentId = parent ? parent.id : undefined;
-		if (this.name === ConnectionProfileGroup.RootGroupName) {
+		if (ConnectionProfileGroup.isRoot(this.name)) {
 			this.name = '';
+			this.isRoot = true;
 		}
 	}
 
@@ -102,7 +107,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	 * Returns true if all connections in the tree have valid options using the correct capabilities
 	 */
 	public get hasValidConnections(): boolean {
-		let invalidConnections = find(this._childConnections, c => !c.isConnectionOptionsValid);
+		let invalidConnections = this._childConnections.find(c => !c.isConnectionOptionsValid);
 		if (invalidConnections !== undefined) {
 			return false;
 		} else {

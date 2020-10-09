@@ -8,7 +8,7 @@ import {
 	Output, OnChanges, SimpleChanges, EventEmitter
 } from '@angular/core';
 
-import { SelectBox as vsSelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { SelectBox as sqlSelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -21,7 +21,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 	template: ''
 })
 export class SelectBox extends AngularDisposable implements OnInit, OnChanges {
-	private _selectbox!: vsSelectBox;
+	private _selectbox!: sqlSelectBox;
 
 	@Input() options!: string[];
 	@Input() selectedOption!: string;
@@ -41,7 +41,7 @@ export class SelectBox extends AngularDisposable implements OnInit, OnChanges {
 	}
 
 	ngOnInit(): void {
-		this._selectbox = new vsSelectBox(this.options, this.selectedOption, this.contextViewService, undefined, { ariaLabel: this.ariaLabel });
+		this._selectbox = new sqlSelectBox(this.options, this.selectedOption, this.contextViewService, undefined, { ariaLabel: this.ariaLabel });
 		this._selectbox.render(this._el.nativeElement);
 		this._selectbox.onDidSelect(e => {
 			if (this.onlyEmitOnChange) {

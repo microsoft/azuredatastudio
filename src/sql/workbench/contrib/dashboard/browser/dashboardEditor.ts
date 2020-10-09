@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as DOM from 'vs/base/browser/dom';
-import { EditorOptions } from 'vs/workbench/common/editor';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -25,7 +25,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 
-export class DashboardEditor extends BaseEditor {
+export class DashboardEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.connectiondashboard';
 	private _dashboardContainer: HTMLElement;
@@ -77,14 +77,14 @@ export class DashboardEditor extends BaseEditor {
 		this._dashboardService.layout(dimension);
 	}
 
-	public async setInput(input: DashboardInput, options: EditorOptions): Promise<void> {
+	public async setInput(input: DashboardInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
 		if (this.input && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}
 
 		const parentElement = this.getContainer();
 
-		super.setInput(input, options, CancellationToken.None);
+		super.setInput(input, options, context, CancellationToken.None);
 
 		DOM.clearNode(parentElement);
 

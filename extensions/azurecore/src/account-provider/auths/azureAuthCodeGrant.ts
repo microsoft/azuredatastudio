@@ -103,7 +103,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			resource: resource.id
 		};
 
-		const signInUrl = `${this.loginEndpointUrl}${tenant}/oauth2/authorize?${qs.stringify(loginQuery)}`;
+		const signInUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/authorize?${qs.stringify(loginQuery)}`;
 		await vscode.env.openExternal(vscode.Uri.parse(signInUrl));
 
 		const authCode = await this.handleWebResponse(state);

@@ -16,7 +16,7 @@ import { EditorDescriptorService } from 'sql/workbench/services/queryEditor/brow
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
@@ -76,7 +76,7 @@ suite('SQL QueryEditor Tests', () => {
 			getId: function (): string { return 'id'; },
 			getName: function (): string { return 'name'; },
 			describes: function (obj: any): boolean { return true; },
-			instantiate(instantiationService: IInstantiationService): BaseEditor { return undefined; }
+			instantiate(instantiationService: IInstantiationService): EditorPane { return undefined; }
 		};
 		editorDescriptorService = TypeMoq.Mock.ofType(EditorDescriptorService, TypeMoq.MockBehavior.Loose);
 		editorDescriptorService.setup(x => x.getEditor(TypeMoq.It.isAny())).returns(() => descriptor);

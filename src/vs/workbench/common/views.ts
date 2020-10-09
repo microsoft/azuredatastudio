@@ -197,6 +197,8 @@ Registry.add(Extensions.ViewContainersRegistry, new ViewContainersRegistryImpl()
 
 export interface IViewDescriptor {
 
+	readonly type?: string;
+
 	readonly id: string;
 
 	readonly name: string;
@@ -245,6 +247,7 @@ export interface IAddedViewDescriptorRef extends IViewDescriptorRef {
 export interface IAddedViewDescriptorState {
 	viewDescriptor: IViewDescriptor,
 	collapsed?: boolean;
+	visible?: boolean;
 }
 
 export interface IViewContainerModel {
@@ -552,6 +555,8 @@ export interface ITreeView extends IDisposable {
 
 	title: string;
 
+	root: ITreeItem; // {{SQL CARBON EDIT}}
+
 	readonly visible: boolean;
 
 	readonly onDidExpandItem: Event<ITreeItem>;
@@ -719,6 +724,7 @@ export interface IViewPaneContainer {
 	getActions(): IAction[];
 	getSecondaryActions(): IAction[];
 	getActionViewItem(action: IAction): IActionViewItem | undefined;
+	getActionsContext(): unknown;
 	getView(viewId: string): IView | undefined;
 	saveState(): void;
 }

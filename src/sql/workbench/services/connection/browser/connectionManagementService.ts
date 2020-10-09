@@ -45,7 +45,6 @@ import { Memento } from 'vs/workbench/common/memento';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { entries } from 'sql/base/common/collections';
-import { find } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
 import { assign } from 'vs/base/common/objects';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
@@ -213,7 +212,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param params Include the uri, type of connection
 	 * @param model the existing connection profile to create a new one from
 	 */
-	public showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: interfaces.IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
+	public showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: Partial<interfaces.IConnectionProfile>, connectionResult?: IConnectionResult): Promise<void> {
 		if (!params) {
 			params = { connectionType: ConnectionType.default };
 		}
@@ -795,7 +794,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return AzureResource.Sql;
 		}
 
-		let result = find(ConnectionManagementService._azureResources, r => AzureResource[r] === provider.properties.azureResource);
+		let result = ConnectionManagementService._azureResources.find(r => AzureResource[r] === provider.properties.azureResource);
 		return result ? result : AzureResource.Sql;
 	}
 
@@ -814,7 +813,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 		if (azureAccounts && azureAccounts.length > 0) {
 			let accountId = (connection.authenticationType === Constants.azureMFA || connection.authenticationType === Constants.azureMFAAndUser) ? connection.azureAccount : connection.userName;
-			let account = find(azureAccounts, account => account.key.accountId === accountId);
+			let account = azureAccounts.find(account => account.key.accountId === accountId);
 			if (account) {
 				this._logService.debug(`Getting security token for Azure account ${account.key.accountId}`);
 				if (account.isStale) {
@@ -995,6 +994,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let id = Utils.generateUri(source);
 		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.MoveServerGroup);
 		return this._connectionStore.changeGroupIdForConnection(source, targetGroupId).then(result => {
+			this._onAddConnectionProfile.fire(source);
 			if (id && targetGroupId) {
 				source.groupId = targetGroupId;
 			}
@@ -1093,7 +1093,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		];
 
 		return this._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', "Are you sure you want to cancel this connection?"), ignoreFocusLost: true }).then((choice) => {
-			let confirm = find(choices, x => x.key === choice);
+			let confirm = choices.find(x => x.key === choice);
 			return confirm && confirm.value;
 		});
 	}
@@ -1349,10 +1349,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public async getConnectionCredentials(profileId: string): Promise<{ [name: string]: string }> {
-		let profile = find(this.getActiveConnections(), connectionProfile => connectionProfile.id === profileId);
+		let profile = this.getActiveConnections().find(connectionProfile => connectionProfile.id === profileId);
 		if (!profile) {
 			// Couldn't find an active profile so try all profiles now - fetching the password if we found one
-			profile = find(this.getConnections(), connectionProfile => connectionProfile.id === profileId);
+			profile = this.getConnections().find(connectionProfile => connectionProfile.id === profileId);
 			if (!profile) {
 				return undefined;
 			}
@@ -1360,7 +1360,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		// Find the password option for the connection provider
-		let passwordOption = find(this._capabilitiesService.getCapabilities(profile.providerName).connection.connectionOptions,
+		let passwordOption = this._capabilitiesService.getCapabilities(profile.providerName).connection.connectionOptions.find(
 			option => option.specialValueType === ConnectionOptionSpecialType.password);
 		if (!passwordOption) {
 			return undefined;
@@ -1371,7 +1371,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return credentials;
 	}
 
-	public getServerInfo(profileId: string): azdata.ServerInfo {
+	public getServerInfo(profileId: string): azdata.ServerInfo | undefined {
 		let profile = this._connectionStatusManager.findConnectionByProfileId(profileId);
 		if (!profile) {
 			return undefined;
@@ -1432,6 +1432,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
+	 * Gets languageMode property of provider if it exists. Defaults to 'sql'
+	*/
+	public getProviderLanguageMode(providerName?: string): string {
+		return this._providers.get(providerName)?.properties?.['languageMode'] || 'sql';
+	}
+
+	/**
 	 * Get known connection profiles including active connections, recent connections and saved connections.
 	 * @param activeConnectionsOnly Indicates whether only get the active connections, default value is false.
 	 * @returns array of connections
@@ -1441,7 +1448,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		const connections = this.getActiveConnections();
 
 		const connectionExists: (conn: ConnectionProfile) => boolean = (conn) => {
-			return find(connections, existingConnection => existingConnection.id === conn.id) !== undefined;
+			return connections.find(existingConnection => existingConnection.id === conn.id) !== undefined;
 		};
 
 		if (!activeConnectionsOnly) {

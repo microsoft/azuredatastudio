@@ -128,7 +128,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						this.inputComponents[name] = { component: inputComponentInfo.component };
 					},
 					onNewValidatorCreated: (validator: Validator): void => {
-					}
+					},
+					toolsService: this.wizard.toolsService
 				});
 			};
 			const scaleSection = await createSectionFunc(scaleSectionInfo);
@@ -399,8 +400,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		});
 	}
 
-	public onLeave(): void {
-		setModelValues(this.inputComponents, this.wizard.model);
+	public async onLeave(): Promise<void> {
+		await setModelValues(this.inputComponents, this.wizard.model);
 		Object.assign(this.wizard.inputComponents, this.inputComponents);
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;

@@ -9,7 +9,7 @@ import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
-import { notebookLanguages } from './constants';
+import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey } from './constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -322,4 +322,48 @@ export async function getRandomToken(size: number = 24): Promise<string> {
 			resolve(token);
 		});
 	});
+}
+
+export function isBookItemPinned(notebookPath: string): boolean {
+	let pinnedNotebooks: IBookNotebook[] = getPinnedNotebooks();
+	if (pinnedNotebooks?.find(x => x.notebookPath === notebookPath)) {
+		return true;
+	}
+	return false;
+}
+
+export function getPinnedNotebooks(): IBookNotebook[] {
+	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
+	let pinnedNotebooks: [] = config.get(pinnedBooksConfigKey);
+	let updateFormat: boolean = false;
+	const pinnedBookDirectories = pinnedNotebooks.map(elem => {
+		if (typeof (elem) === 'string') {
+			updateFormat = true;
+			return { notebookPath: elem, bookPath: '' };
+		} else {
+			return elem as IBookNotebook;
+		}
+	});
+	if (updateFormat) {
+		//Need to modify the format of how pinnedNotebooks are stored for users that used the September release version.
+		setPinnedBookPathsInConfig(pinnedBookDirectories);
+	}
+	return pinnedBookDirectories;
+}
+
+function hasWorkspaceFolders(): boolean {
+	let workspaceFolders = vscode.workspace.workspaceFolders;
+	return workspaceFolders && workspaceFolders.length > 0;
+}
+
+export function setPinnedBookPathsInConfig(pinnedNotebookPaths: IBookNotebook[]) {
+	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
+	let storeInWorspace: boolean = hasWorkspaceFolders();
+
+	config.update(pinnedBooksConfigKey, pinnedNotebookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
+}
+
+export interface IBookNotebook {
+	bookPath?: string;
+	notebookPath: string;
 }

@@ -29,7 +29,7 @@ export function providerIterator(service: IInstantiationService): Provider[] {
 function createUniqueSelector(selector: string): string {
 	let num: number;
 	if (selectorCounter.has(selector)) {
-		num = selectorCounter.get(selector);
+		num = selectorCounter.get(selector)!;
 	} else {
 		num = 0;
 	}

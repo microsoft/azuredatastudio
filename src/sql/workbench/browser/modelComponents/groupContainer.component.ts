@@ -36,7 +36,7 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dash
 		</div>
 	`
 })
-export default class GroupContainer extends ContainerBase<GroupLayout> implements IComponent, OnDestroy, AfterViewInit {
+export default class GroupContainer extends ContainerBase<GroupLayout, GroupContainerProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -88,11 +88,11 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 	}
 
 	public set collapsed(newValue: boolean) {
-		this.setPropertyFromUI<GroupContainerProperties, boolean>((properties, value) => { properties.collapsed = value; }, newValue);
+		this.setPropertyFromUI<boolean>((properties, value) => { properties.collapsed = value; }, newValue);
 	}
 
 	public get collapsed(): boolean {
-		return this.getPropertyOrDefault<GroupContainerProperties, boolean>((props) => props.collapsed, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.collapsed, false);
 	}
 
 	private hasHeader(): boolean {

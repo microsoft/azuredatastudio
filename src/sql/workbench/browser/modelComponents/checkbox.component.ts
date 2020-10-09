@@ -24,7 +24,7 @@ import { convertSize } from 'sql/base/browser/dom';
 		<div #input width="100%" [style.display]="display"></div>
 	`
 })
-export default class CheckBoxComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _input: Checkbox;
@@ -102,27 +102,27 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 	// CSS-bound properties
 
 	public get checked(): boolean {
-		return this.getPropertyOrDefault<azdata.CheckBoxProperties, boolean>((props) => props.checked, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.checked, false);
 	}
 
 	public set checked(newValue: boolean) {
-		this.setPropertyFromUI<azdata.CheckBoxProperties, boolean>((properties, value) => { properties.checked = value; }, newValue);
+		this.setPropertyFromUI<boolean>((properties, value) => { properties.checked = value; }, newValue);
 	}
 
 	private get label(): string {
-		return this.getPropertyOrDefault<azdata.CheckBoxProperties, string>((props) => props.label, '');
+		return this.getPropertyOrDefault<string>((props) => props.label, '');
 	}
 
 	private set label(newValue: string) {
-		this.setPropertyFromUI<azdata.CheckBoxProperties, string>((properties, label) => { properties.label = label; }, newValue);
+		this.setPropertyFromUI<string>((properties, label) => { properties.label = label; }, newValue);
 	}
 
 	public get required(): boolean {
-		return this.getPropertyOrDefault<azdata.CheckBoxProperties, boolean>((props) => props.required, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.required, false);
 	}
 
 	public set required(newValue: boolean) {
-		this.setPropertyFromUI<azdata.CheckBoxProperties, boolean>((props, value) => props.required = value, newValue);
+		this.setPropertyFromUI<boolean>((props, value) => props.required = value, newValue);
 	}
 
 	public focus(): void {

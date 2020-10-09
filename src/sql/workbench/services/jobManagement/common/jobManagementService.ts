@@ -34,32 +34,32 @@ export class JobManagementService implements IJobManagementService {
 	}
 
 	// Jobs
-	public getJobs(connectionUri: string): Thenable<azdata.AgentJobsResult> {
+	public getJobs(connectionUri: string): Promise<azdata.AgentJobsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getJobs(connectionUri);
 		});
 	}
 
-	public deleteJob(connectionUri: string, job: azdata.AgentJobInfo): Thenable<azdata.ResultStatus> {
+	public deleteJob(connectionUri: string, job: azdata.AgentJobInfo): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteJob(connectionUri, job);
 		});
 	}
 
-	public getJobHistory(connectionUri: string, jobID: string, jobName: string): Thenable<azdata.AgentJobHistoryResult> {
+	public getJobHistory(connectionUri: string, jobID: string, jobName: string): Promise<azdata.AgentJobHistoryResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getJobHistory(connectionUri, jobID, jobName);
 		});
 	}
 
-	public jobAction(connectionUri: string, jobName: string, action: string): Thenable<azdata.ResultStatus> {
+	public jobAction(connectionUri: string, jobName: string, action: string): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.jobAction(connectionUri, jobName, action);
 		});
 	}
 
 	// Steps
-	public deleteJobStep(connectionUri: string, stepInfo: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus> {
+	public deleteJobStep(connectionUri: string, stepInfo: azdata.AgentJobStepInfo): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteJobStep(connectionUri, stepInfo);
 		});
@@ -71,100 +71,100 @@ export class JobManagementService implements IJobManagementService {
 	}
 
 	// Notebooks
-	public getNotebooks(connectionUri: string): Thenable<azdata.AgentNotebooksResult> {
+	public getNotebooks(connectionUri: string): Promise<azdata.AgentNotebooksResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getNotebooks(connectionUri);
 		});
 	}
 
-	public getNotebookHistory(connectionUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> {
+	public getNotebookHistory(connectionUri: string, jobID: string, jobName: string, targetDatabase: string): Promise<azdata.AgentNotebookHistoryResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getNotebookHistory(connectionUri, jobID, jobName, targetDatabase);
 		});
 	}
 
-	public getMaterialziedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> {
+	public getMaterialziedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Promise<azdata.AgentNotebookMaterializedResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getMaterializedNotebook(connectionUri, targetDatabase, notebookMaterializedId);
 		});
 	}
 
-	public getTemplateNotebook(connectionUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> {
+	public getTemplateNotebook(connectionUri: string, targetDatabase: string, jobId: string): Promise<azdata.AgentNotebookTemplateResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getTemplateNotebook(connectionUri, targetDatabase, jobId);
 		});
 	}
 
-	public deleteNotebook(connectionUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> {
+	public deleteNotebook(connectionUri: string, notebook: azdata.AgentNotebookInfo): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteNotebook(connectionUri, notebook);
 		});
 	}
 
-	public deleteMaterializedNotebook(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> {
+	public deleteMaterializedNotebook(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteMaterializedNotebook(connectionUri, agentNotebookHistory, targetDatabase);
 		});
 	}
 
-	public updateNotebookMaterializedName(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
+	public updateNotebookMaterializedName(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.updateNotebookMaterializedName(connectionUri, agentNotebookHistory, targetDatabase, name);
 		});
 	}
 
-	public updateNotebookMaterializedPin(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
+	public updateNotebookMaterializedPin(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.updateNotebookMaterializedPin(connectionUri, agentNotebookHistory, targetDatabase, pin);
 		});
 	}
 
 	// Alerts
-	public getAlerts(connectionUri: string): Thenable<azdata.AgentAlertsResult> {
+	public getAlerts(connectionUri: string): Promise<azdata.AgentAlertsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getAlerts(connectionUri);
 		});
 	}
 
-	public deleteAlert(connectionUri: string, alert: azdata.AgentAlertInfo): Thenable<azdata.ResultStatus> {
+	public deleteAlert(connectionUri: string, alert: azdata.AgentAlertInfo): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteAlert(connectionUri, alert);
 		});
 	}
 
 	// Operators
-	public getOperators(connectionUri: string): Thenable<azdata.AgentOperatorsResult> {
+	public getOperators(connectionUri: string): Promise<azdata.AgentOperatorsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getOperators(connectionUri);
 		});
 	}
 
-	public deleteOperator(connectionUri: string, operator: azdata.AgentOperatorInfo): Thenable<azdata.ResultStatus> {
+	public deleteOperator(connectionUri: string, operator: azdata.AgentOperatorInfo): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteOperator(connectionUri, operator);
 		});
 	}
 
 	// Proxies
-	public getProxies(connectionUri: string): Thenable<azdata.AgentProxiesResult> {
+	public getProxies(connectionUri: string): Promise<azdata.AgentProxiesResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getProxies(connectionUri);
 		});
 	}
 
-	public deleteProxy(connectionUri: string, proxy: azdata.AgentProxyInfo): Thenable<azdata.ResultStatus> {
+	public deleteProxy(connectionUri: string, proxy: azdata.AgentProxyInfo): Promise<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteProxy(connectionUri, proxy);
 		});
 	}
 
-	public getCredentials(connectionUri: string): Thenable<azdata.GetCredentialsResult> {
+	public getCredentials(connectionUri: string): Promise<azdata.GetCredentialsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getCredentials(connectionUri);
 		});
 	}
 
-	private _runAction<T>(uri: string, action: (handler: azdata.AgentServicesProvider) => Thenable<T>): Thenable<T> {
+	private _runAction<T>(uri: string, action: (handler: azdata.AgentServicesProvider) => Thenable<T>): Promise<T> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId) {
@@ -172,7 +172,7 @@ export class JobManagementService implements IJobManagementService {
 		}
 		let handler = this._providers[providerId];
 		if (handler) {
-			return action(handler);
+			return Promise.resolve(action(handler));
 		} else {
 			return Promise.reject(new Error(localize('noHandlerRegistered', "No Handler Registered")));
 		}
@@ -228,9 +228,9 @@ export class JobCacheObject {
 	private _jobAlerts: { [jobID: string]: azdata.AgentAlertInfo[]; } = {};
 	private _jobSchedules: { [jobID: string]: azdata.AgentJobScheduleInfo[]; } = {};
 	private _runCharts: { [jobID: string]: string[]; } = {};
-	private _prevJobID: string;
-	private _serverName: string;
-	private _dataView: Slick.Data.DataView<any>;
+	private _prevJobID?: string;
+	private _serverName?: string;
+	private _dataView?: Slick.Data.DataView<any>;
 
 	/* Getters */
 	public get jobs(): azdata.AgentJobInfo[] {
@@ -241,7 +241,7 @@ export class JobCacheObject {
 		return this._jobHistories;
 	}
 
-	public get prevJobID(): string {
+	public get prevJobID(): string | undefined {
 		return this._prevJobID;
 	}
 
@@ -249,11 +249,11 @@ export class JobCacheObject {
 		return this._jobHistories[jobID];
 	}
 
-	public get serverName(): string {
+	public get serverName(): string | undefined {
 		return this._serverName;
 	}
 
-	public get dataView(): Slick.Data.DataView<any> {
+	public get dataView(): Slick.Data.DataView<any> | undefined {
 		return this._dataView;
 	}
 
@@ -282,7 +282,7 @@ export class JobCacheObject {
 		this._jobHistories = value;
 	}
 
-	public set prevJobID(value: string) {
+	public set prevJobID(value: string | undefined) {
 		this._prevJobID = value;
 	}
 
@@ -294,11 +294,11 @@ export class JobCacheObject {
 		this._runCharts[jobID] = value;
 	}
 
-	public set serverName(value: string) {
+	public set serverName(value: string | undefined) {
 		this._serverName = value;
 	}
 
-	public set dataView(value: Slick.Data.DataView<any>) {
+	public set dataView(value: Slick.Data.DataView<any> | undefined) {
 		this._dataView = value;
 	}
 
@@ -324,9 +324,9 @@ export class NotebookCacheObject {
 	private _jobSteps: { [jobID: string]: azdata.AgentJobStepInfo[]; } = {};
 	private _jobSchedules: { [jobID: string]: azdata.AgentJobScheduleInfo[]; } = {};
 	private _runCharts: { [jobID: string]: string[]; } = {};
-	private _prevJobID: string;
-	private _serverName: string;
-	private _dataView: Slick.Data.DataView<any>;
+	private _prevJobID?: string;
+	private _serverName?: string;
+	private _dataView?: Slick.Data.DataView<any>;
 
 	/* Getters */
 	public get notebooks(): azdata.AgentNotebookInfo[] {
@@ -337,7 +337,7 @@ export class NotebookCacheObject {
 		return this._notebookHistories;
 	}
 
-	public get prevJobID(): string {
+	public get prevJobID(): string | undefined {
 		return this._prevJobID;
 	}
 
@@ -345,11 +345,11 @@ export class NotebookCacheObject {
 		return this._notebookHistories[jobID];
 	}
 
-	public get serverName(): string {
+	public get serverName(): string | undefined {
 		return this._serverName;
 	}
 
-	public get dataView(): Slick.Data.DataView<any> {
+	public get dataView(): Slick.Data.DataView<any> | undefined {
 		return this._dataView;
 	}
 
@@ -374,7 +374,7 @@ export class NotebookCacheObject {
 		this._notebookHistories = value;
 	}
 
-	public set prevJobID(value: string) {
+	public set prevJobID(value: string | undefined) {
 		this._prevJobID = value;
 	}
 
@@ -386,11 +386,11 @@ export class NotebookCacheObject {
 		this._runCharts[jobID] = value;
 	}
 
-	public set serverName(value: string) {
+	public set serverName(value: string | undefined) {
 		this._serverName = value;
 	}
 
-	public set dataView(value: Slick.Data.DataView<any>) {
+	public set dataView(value: Slick.Data.DataView<any> | undefined) {
 		this._dataView = value;
 	}
 
@@ -408,33 +408,33 @@ export class NotebookCacheObject {
  */
 export class OperatorsCacheObject {
 	_serviceBrand: undefined;
-	private _operators: azdata.AgentOperatorInfo[];
-	private _dataView: Slick.Data.DataView<any>;
-	private _serverName: string;
+	private _operators?: azdata.AgentOperatorInfo[];
+	private _dataView?: Slick.Data.DataView<any>;
+	private _serverName?: string;
 
 	/** Getters */
-	public get operators(): azdata.AgentOperatorInfo[] {
+	public get operators(): azdata.AgentOperatorInfo[] | undefined {
 		return this._operators;
 	}
 
-	public get dataview(): Slick.Data.DataView<any> {
+	public get dataview(): Slick.Data.DataView<any> | undefined {
 		return this._dataView;
 	}
 
-	public get serverName(): string {
+	public get serverName(): string | undefined {
 		return this._serverName;
 	}
 
 	/** Setters */
-	public set operators(value: azdata.AgentOperatorInfo[]) {
+	public set operators(value: azdata.AgentOperatorInfo[] | undefined) {
 		this._operators = value;
 	}
 
-	public set dataview(value: Slick.Data.DataView<any>) {
+	public set dataview(value: Slick.Data.DataView<any> | undefined) {
 		this._dataView = value;
 	}
 
-	public set serverName(value: string) {
+	public set serverName(value: string | undefined) {
 		this._serverName = value;
 	}
 
@@ -445,33 +445,33 @@ export class OperatorsCacheObject {
 */
 export class AlertsCacheObject {
 	_serviceBrand: undefined;
-	private _alerts: azdata.AgentAlertInfo[];
-	private _dataView: Slick.Data.DataView<any>;
-	private _serverName: string;
+	private _alerts?: azdata.AgentAlertInfo[];
+	private _dataView?: Slick.Data.DataView<any>;
+	private _serverName?: string;
 
 	/** Getters */
-	public get alerts(): azdata.AgentAlertInfo[] {
+	public get alerts(): azdata.AgentAlertInfo[] | undefined {
 		return this._alerts;
 	}
 
-	public get dataview(): Slick.Data.DataView<any> {
+	public get dataview(): Slick.Data.DataView<any> | undefined {
 		return this._dataView;
 	}
 
-	public get serverName(): string {
+	public get serverName(): string | undefined {
 		return this._serverName;
 	}
 
 	/** Setters */
-	public set alerts(value: azdata.AgentAlertInfo[]) {
+	public set alerts(value: azdata.AgentAlertInfo[] | undefined) {
 		this._alerts = value;
 	}
 
-	public set dataview(value: Slick.Data.DataView<any>) {
+	public set dataview(value: Slick.Data.DataView<any> | undefined) {
 		this._dataView = value;
 	}
 
-	public set serverName(value: string) {
+	public set serverName(value: string | undefined) {
 		this._serverName = value;
 	}
 }
@@ -482,36 +482,36 @@ export class AlertsCacheObject {
  */
 export class ProxiesCacheObject {
 	_serviceBrand: undefined;
-	private _proxies: azdata.AgentProxyInfo[];
-	private _dataView: Slick.Data.DataView<any>;
-	private _serverName: string;
+	private _proxies?: azdata.AgentProxyInfo[];
+	private _dataView?: Slick.Data.DataView<any>;
+	private _serverName?: string;
 
 	/**
 	 * Getters
 	 */
-	public get proxies(): azdata.AgentProxyInfo[] {
+	public get proxies(): azdata.AgentProxyInfo[] | undefined {
 		return this._proxies;
 	}
 
-	public get dataview(): Slick.Data.DataView<any> {
+	public get dataview(): Slick.Data.DataView<any> | undefined {
 		return this._dataView;
 	}
 
-	public get serverName(): string {
+	public get serverName(): string | undefined {
 		return this._serverName;
 	}
 
 	/** Setters */
 
-	public set proxies(value: azdata.AgentProxyInfo[]) {
+	public set proxies(value: azdata.AgentProxyInfo[] | undefined) {
 		this._proxies = value;
 	}
 
-	public set dataview(value: Slick.Data.DataView<any>) {
+	public set dataview(value: Slick.Data.DataView<any> | undefined) {
 		this._dataView = value;
 	}
 
-	public set serverName(value: string) {
+	public set serverName(value: string | undefined) {
 		this._serverName = value;
 	}
 }

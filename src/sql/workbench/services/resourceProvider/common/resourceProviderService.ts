@@ -14,8 +14,8 @@ export const IResourceProviderService = createDecorator<IResourceProviderService
 
 export interface IHandleFirewallRuleResult {
 	canHandleFirewallRule: boolean;
-	ipAddress: string;
-	resourceProviderId: string;
+	ipAddress?: string;
+	resourceProviderId?: string;
 }
 
 export interface IResourceProviderService {

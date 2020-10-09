@@ -28,6 +28,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { assign } from 'vs/base/common/objects';
 import { serializableToMap } from 'sql/base/common/map';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
+import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -55,7 +56,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@IProfilerService private _profilerService: IProfilerService,
 		@ISerializationService private _serializationService: ISerializationService,
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
-		@IAssessmentService private _assessmentService: IAssessmentService
+		@IAssessmentService private _assessmentService: IAssessmentService,
+		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService
 	) {
 		super();
 		if (extHostContext) {
@@ -466,6 +468,20 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 
 		return undefined;
 	}
+
+	public $registerDataGridProvider(providerId: string, handle: number): void {
+		const self = this;
+		this._dataGridProviderService.registerProvider(providerId, <azdata.DataGridProvider>{
+			providerId: providerId,
+			getDataGridItems(): Thenable<azdata.DataGridItem[]> {
+				return self._proxy.$getDataGridItems(handle);
+			},
+			getDataGridColumns(): Thenable<azdata.DataGridColumn[]> {
+				return self._proxy.$getDataGridColumns(handle);
+			}
+		});
+	}
+
 	public $registerCapabilitiesServiceProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._capabilitiesService.registerProvider(<azdata.CapabilitiesProvider>{

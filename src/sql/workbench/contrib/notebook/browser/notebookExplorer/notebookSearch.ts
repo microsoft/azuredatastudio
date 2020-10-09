@@ -259,7 +259,7 @@ export class NotebookSearchView extends SearchView {
 			progressComplete();
 
 			// Do final render, then expand if just 1 file with less than 50 matches
-			await this.onSearchResultsChanged();
+			this.onSearchResultsChanged();
 
 			const collapseResults = this.searchConfig.collapseResults;
 			if (collapseResults !== 'alwaysCollapse' && this.viewModel.searchResult.matches().length === 1) {

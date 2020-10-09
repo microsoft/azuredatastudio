@@ -18,6 +18,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ILogService } from 'vs/platform/log/common/log';
+import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 export interface IServerView {
 	showFilteredTree(filter: string): void;
@@ -28,23 +29,21 @@ export class RefreshAction extends Action {
 
 	public static ID = 'objectExplorer.refresh';
 	public static LABEL = localize('connectionTree.refresh', "Refresh");
-	private _tree: ITree;
 
 	constructor(
 		id: string,
 		label: string,
-		tree: ITree,
-		private element: IConnectionProfile | TreeNode,
+		private _tree: AsyncServerTree | ITree,
+		private element: ServerTreeElement,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@ILogService private _logService: ILogService
 	) {
 		super(id, label);
-		this._tree = tree;
 	}
 	public async run(): Promise<boolean> {
-		let treeNode: TreeNode;
+		let treeNode: TreeNode | undefined = undefined;
 		if (this.element instanceof ConnectionProfile) {
 			let connection: ConnectionProfile = this.element;
 			if (this._connectionManagementService.isConnected(undefined, connection)) {
@@ -61,12 +60,19 @@ export class RefreshAction extends Action {
 		if (treeNode) {
 			try {
 				try {
-					await this._objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
+					const session = treeNode.getSession();
+					if (session) {
+						await this._objectExplorerService.refreshTreeNode(session, treeNode);
+					}
 				} catch (error) {
 					this.showError(error);
 					return true;
 				}
-				await this._tree.refresh(this.element);
+				if (this._tree instanceof AsyncServerTree) {
+					await this._tree.updateChildren(this.element);
+				} else {
+					await this._tree.refresh(this.element);
+				}
 			} catch (ex) {
 				this._logService.error(ex);
 				return true;
@@ -157,7 +163,8 @@ export class AddServerAction extends Action {
 	}
 
 	public async run(element: ConnectionProfileGroup): Promise<boolean> {
-		let connection: IConnectionProfile = element === undefined ? undefined : {
+		// Not sure how to fix this....
+		let connection: Partial<IConnectionProfile> | undefined = element === undefined ? undefined : {
 			connectionName: undefined,
 			serverName: undefined,
 			databaseName: undefined,
@@ -172,8 +179,8 @@ export class AddServerAction extends Action {
 			providerName: '',
 			options: {},
 			saveProfile: true,
-			id: element.id
-		};
+			id: element.id!
+		} as Partial<IConnectionProfile>;
 		await this._connectionManagementService.showConnectionDialog(undefined, undefined, connection);
 		return true;
 	}
@@ -233,7 +240,7 @@ export class ActiveConnectionsFilterAction extends Action {
 	private static enabledClass = 'active-connections-action';
 	private static disabledClass = 'icon server-page';
 	private static showAllConnectionsLabel = localize('showAllConnections', "Show All Connections");
-	private _isSet: boolean;
+	private _isSet: boolean = false;
 	public static readonly ACTIVE = 'active';
 	public get isSet(): boolean {
 		return this._isSet;
@@ -339,7 +346,7 @@ export class DeleteConnectionAction extends Action {
 		}
 
 		if (element instanceof ConnectionProfile) {
-			let parent: ConnectionProfileGroup = element.parent;
+			let parent: ConnectionProfileGroup | undefined = element.parent;
 			if (parent && parent.id === UNSAVED_GROUP_ID) {
 				this.enabled = false;
 			}

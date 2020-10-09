@@ -7,7 +7,7 @@ import * as should from 'should';
 import * as path from 'path';
 import * as os from 'os';
 import { createDummyFileStructure } from './testUtils';
-import { exists, trimUri } from '../common/utils';
+import { exists, trimUri, removeSqlCmdVariableFormatting, formatSqlCmdVariable, isValidSqlCmdVariableName } from '../common/utils';
 import { Uri } from 'vscode';
 
 describe('Tests to verify utils functions', function (): void {
@@ -37,6 +37,46 @@ describe('Tests to verify utils functions', function (): void {
 
 		fileUri = Uri.file(path.join(root, 'forked', 'from', 'top', 'file.sql'));
 		should(trimUri(projectUri, fileUri)).equal('../../forked/from/top/file.sql');
+	});
+
+	it('Should remove $() from sqlcmd variables', () => {
+		should(removeSqlCmdVariableFormatting('$(test)')).equal('test', '$() surrounding the variable should have been removed');
+		should(removeSqlCmdVariableFormatting('$(test')).equal('test', '$( at the beginning of the variable should have been removed');
+		should(removeSqlCmdVariableFormatting('test')).equal('test', 'string should not have been changed because it is not in sqlcmd variable format');
+	});
+
+	it('Should make variable be in sqlcmd variable format with $()', () => {
+		should(formatSqlCmdVariable('$(test)')).equal('$(test)', 'string should not have been changed because it was already in the correct format');
+		should(formatSqlCmdVariable('test')).equal('$(test)', 'string should have been changed to be in sqlcmd variable format');
+		should(formatSqlCmdVariable('$(test')).equal('$(test)', 'string should have been changed to be in sqlcmd variable format');
+		should(formatSqlCmdVariable('')).equal('', 'should not do anything to an empty string');
+	});
+
+	it('Should determine invalid sqlcmd variable names', () => {
+		// valid names
+		should(isValidSqlCmdVariableName('$(test)')).equal(true);
+		should(isValidSqlCmdVariableName('$(test    )')).equal(true, 'trailing spaces should be valid because they will be trimmed');
+		should(isValidSqlCmdVariableName('test')).equal(true);
+		should(isValidSqlCmdVariableName('test  ')).equal(true, 'trailing spaces should be valid because they will be trimmed');
+		should(isValidSqlCmdVariableName('$(test')).equal(true);
+		should(isValidSqlCmdVariableName('$(test    ')).equal(true, 'trailing spaces should be valid because they will be trimmed');
+
+		// whitespace
+		should(isValidSqlCmdVariableName('')).equal(false);
+		should(isValidSqlCmdVariableName(' ')).equal(false);
+		should(isValidSqlCmdVariableName('     ')).equal(false);
+		should(isValidSqlCmdVariableName('test abc')).equal(false);
+		should(isValidSqlCmdVariableName('	')).equal(false);
+
+		// invalid characters
+		should(isValidSqlCmdVariableName('$($test')).equal(false);
+		should(isValidSqlCmdVariableName('$test')).equal(false);
+		should(isValidSqlCmdVariableName('$test')).equal(false);
+		should(isValidSqlCmdVariableName('test@')).equal(false);
+		should(isValidSqlCmdVariableName('test#')).equal(false);
+		should(isValidSqlCmdVariableName('test"')).equal(false);
+		should(isValidSqlCmdVariableName('test\'')).equal(false);
+		should(isValidSqlCmdVariableName('test-1')).equal(false);
 	});
 });
 

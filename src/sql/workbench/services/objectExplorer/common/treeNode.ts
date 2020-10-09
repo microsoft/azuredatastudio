@@ -17,7 +17,7 @@ export enum TreeItemCollapsibleState {
 }
 
 export interface ObjectExplorerCallbacks {
-	getChildren(treeNode: TreeNode): Thenable<TreeNode[]>;
+	getChildren(treeNode?: TreeNode): Thenable<TreeNode[]>;
 	isExpanded(treeNode: TreeNode): Thenable<boolean>;
 	setNodeExpandedState(TreeNode: TreeNode, expandedState: TreeItemCollapsibleState): Thenable<void>;
 	setNodeSelected(TreeNode: TreeNode, selected: boolean, clearOtherSelections?: boolean): Thenable<void>;
@@ -27,7 +27,7 @@ export class TreeNode {
 	/**
 	 * Informs who provides the children to a node, used by data explorer tree view api
 	 */
-	public childProvider: string;
+	public childProvider?: string;
 	/**
 	 * Holds the connection profile for nodes, used by data explorer tree view api
 	 */
@@ -56,12 +56,12 @@ export class TreeNode {
 	 * Message to show if this Node is in an error state. This indicates
 	 * that children could be retrieved
 	 */
-	public errorStateMessage: string;
+	public errorStateMessage?: string;
 
 	/**
 	 * Parent of this node
 	 */
-	public parent: TreeNode;
+	public parent?: TreeNode;
 
 	/**
 	 * Path identifying this node
@@ -76,28 +76,28 @@ export class TreeNode {
 	/**
 	 * Node Status
 	 */
-	public nodeStatus: string;
+	public nodeStatus?: string;
 
 	/**
 	 * Children of this node
 	 */
-	public children: TreeNode[];
+	public children?: TreeNode[];
 
 
-	public connection: ConnectionProfile;
+	public connection?: ConnectionProfile;
 
-	public session: azdata.ObjectExplorerSession;
+	public session?: azdata.ObjectExplorerSession;
 
-	public metadata: azdata.ObjectMetadata;
+	public metadata?: azdata.ObjectMetadata;
 
-	public iconType: string | SqlThemeIcon;
+	public iconType?: string | SqlThemeIcon;
 
-	public iconPath: URI | { light: URI, dark: URI };
+	public iconPath?: URI | { light: URI, dark: URI };
 
 	constructor(nodeTypeId: string, label: string, isAlwaysLeaf: boolean, nodePath: string,
-		nodeSubType: string, nodeStatus: string, parent: TreeNode, metadata: azdata.ObjectMetadata,
-		iconType: string | SqlThemeIcon,
-		private _objectExplorerCallbacks: ObjectExplorerCallbacks) {
+		nodeSubType: string, nodeStatus?: string, parent?: TreeNode, metadata?: azdata.ObjectMetadata,
+		iconType?: string | SqlThemeIcon,
+		private _objectExplorerCallbacks?: ObjectExplorerCallbacks) {
 		this.nodeTypeId = nodeTypeId;
 		this.label = label;
 		this.isAlwaysLeaf = isAlwaysLeaf;
@@ -109,7 +109,7 @@ export class TreeNode {
 		this.nodeSubType = nodeSubType;
 		this.nodeStatus = nodeStatus;
 	}
-	public getConnectionProfile(): ConnectionProfile {
+	public getConnectionProfile(): ConnectionProfile | undefined {
 		let currentNode: TreeNode = this;
 		while (!currentNode.connection && currentNode.parent) {
 			currentNode = currentNode.parent;
@@ -117,7 +117,7 @@ export class TreeNode {
 		return currentNode.connection;
 	}
 
-	public getDatabaseName(): string {
+	public getDatabaseName(): string | undefined {
 		if (this.connection) {
 			return undefined;
 		}
@@ -127,12 +127,12 @@ export class TreeNode {
 		}
 
 		if (currentNode && currentNode.nodeTypeId === NodeType.Database) {
-			return currentNode.metadata ? currentNode.metadata.name : null;
+			return currentNode?.metadata?.name;
 		}
 		return undefined;
 	}
 
-	public getSession(): azdata.ObjectExplorerSession {
+	public getSession(): azdata.ObjectExplorerSession | undefined {
 		let currentNode: TreeNode = this;
 		while (!currentNode.session && currentNode.parent) {
 			currentNode = currentNode.parent;
@@ -161,18 +161,18 @@ export class TreeNode {
 	}
 
 	public getChildren(): Thenable<TreeNode[]> {
-		return this._objectExplorerCallbacks.getChildren(this);
+		return this._objectExplorerCallbacks?.getChildren(this) ?? Promise.resolve([]);
 	}
 
 	public isExpanded(): Thenable<boolean> {
-		return this._objectExplorerCallbacks.isExpanded(this);
+		return this._objectExplorerCallbacks?.isExpanded(this) ?? Promise.resolve(false);
 	}
 
-	public setExpandedState(expandedState: TreeItemCollapsibleState): Thenable<void> {
-		return this._objectExplorerCallbacks.setNodeExpandedState(this, expandedState);
+	public setExpandedState(expandedState: TreeItemCollapsibleState): Thenable<void | undefined> {
+		return this._objectExplorerCallbacks?.setNodeExpandedState(this, expandedState) ?? Promise.resolve();
 	}
 
-	public setSelected(selected: boolean, clearOtherSelections?: boolean): Thenable<void> {
-		return this._objectExplorerCallbacks.setNodeSelected(this, selected, clearOtherSelections);
+	public setSelected(selected: boolean, clearOtherSelections?: boolean): Thenable<void | undefined> {
+		return this._objectExplorerCallbacks?.setNodeSelected(this, selected, clearOtherSelections) ?? Promise.resolve();
 	}
 }

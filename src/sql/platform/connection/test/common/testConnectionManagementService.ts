@@ -287,6 +287,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
+	getProviderLanguageMode(providerName?: string): string {
+		return undefined!;
+	}
+
 	getConnectionIconId(connectionId: string): string {
 		return undefined!;
 	}

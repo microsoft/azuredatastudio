@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as bdc from 'bdc';
 import * as path from 'path';
 import * as crypto from 'crypto';
 import * as os from 'os';
@@ -222,21 +223,27 @@ export function getUserHome(): string {
 	return process.env.HOME || process.env.USERPROFILE;
 }
 
-export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] | undefined {
+export function getClusterEndpoints(serverInfo: azdata.ServerInfo): bdc.IEndpointModel[] | undefined {
 	let endpoints: RawEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
 	if (!endpoints || endpoints.length === 0) { return []; }
 
 	return endpoints.map(e => {
 		// If endpoint is missing, we're on CTP bits. All endpoints from the CTP serverInfo should be treated as HTTPS
 		let endpoint = e.endpoint ? e.endpoint : `https://${e.ipAddress}:${e.port}`;
-		let updatedEndpoint: IEndpoint = {
-			serviceName: e.serviceName,
+		let updatedEndpoint: bdc.IEndpointModel = {
+			name: e.serviceName,
 			description: e.description,
 			endpoint: endpoint,
 			protocol: e.protocol
 		};
 		return updatedEndpoint;
 	});
+}
+
+export async function isBigDataCluster(connectionId: string): Promise<boolean> {
+	const serverInfo = await azdata.connection.getServerInfo(connectionId);
+
+	return !!serverInfo?.options?.[constants.isBigDataClusterProperty];
 }
 
 export type HostAndIp = { host: string, port: string };
@@ -264,13 +271,6 @@ interface RawEndpoint {
 	protocol?: string;
 	ipAddress?: string;
 	port?: number;
-}
-
-export interface IEndpoint {
-	serviceName: string;
-	description: string;
-	endpoint: string;
-	protocol: string;
 }
 
 export function isValidNumber(maybeNumber: any) {

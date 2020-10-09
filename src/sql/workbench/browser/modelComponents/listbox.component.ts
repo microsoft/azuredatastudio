@@ -26,7 +26,7 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 		<div #input style="width: 100%"></div>
 	`
 })
-export default class ListBoxComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _input: ListBox;
@@ -108,18 +108,18 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 	// CSS-bound properties
 
 	private get values(): string[] {
-		return this.getPropertyOrDefault<azdata.ListBoxProperties, string[]>((props) => props.values, undefined);
+		return this.getPropertyOrDefault<string[]>((props) => props.values, undefined);
 	}
 
 	private set values(newValue: string[]) {
-		this.setPropertyFromUI<azdata.ListBoxProperties, string[]>((props, value) => props.values = value, newValue);
+		this.setPropertyFromUI<string[]>((props, value) => props.values = value, newValue);
 	}
 
 	private get selectedRow(): number {
-		return this.getPropertyOrDefault<azdata.ListBoxProperties, number>((props) => props.selectedRow, undefined);
+		return this.getPropertyOrDefault<number>((props) => props.selectedRow, undefined);
 	}
 
 	private set selectedRow(newValue: number) {
-		this.setPropertyFromUI<azdata.ListBoxProperties, number>((props, value) => props.selectedRow = value, newValue);
+		this.setPropertyFromUI<number>((props, value) => props.selectedRow = value, newValue);
 	}
 }

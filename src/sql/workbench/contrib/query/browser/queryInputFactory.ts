@@ -28,7 +28,8 @@ const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(Edit
 
 export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 	static readonly isDefault = true;
-	static readonly languages = ['sql'];
+	static readonly languages = ['sql', 'kusto'];	//TODO Add language id here for new languages supported in query editor. Make it easier to contribute new extension's languageID
+
 
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,

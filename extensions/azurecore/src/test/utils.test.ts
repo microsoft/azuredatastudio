@@ -6,7 +6,7 @@
 import * as should from 'should';
 import 'mocha';
 import { getRegionDisplayName } from '../utils';
-import { AzureRegion } from '../azurecore';
+import { AzureRegion } from 'azurecore';
 import * as loc from '../localizedConstants';
 
 describe('Azurecore Utils Tests', function (): void {

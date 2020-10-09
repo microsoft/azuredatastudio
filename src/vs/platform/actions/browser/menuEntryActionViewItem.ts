@@ -111,11 +111,11 @@ export function fillInActions(groups: ReadonlyArray<[string, ReadonlyArray<MenuI
 		}
 
 		if (isPrimaryGroup(group)) {
-			const to = Array.isArray<IAction>(target) ? target : target.primary;
+			const to = Array.isArray(target) ? target : target.primary;
 
 			to.unshift(...actions);
 		} else {
-			const to = Array.isArray<IAction>(target) ? target : target.secondary;
+			const to = Array.isArray(target) ? target : target.secondary;
 
 			if (to.length > 0) {
 				to.push(new Separator());
@@ -304,7 +304,7 @@ export class SubmenuEntryActionViewItem extends DropdownMenuActionViewItem {
 			}
 		}
 
-		super(action, Array.isArray(action.actions) ? action.actions : action.actions(), _contextMenuService, { classNames });
+		super(action, action.actions, _contextMenuService, { classNames });
 	}
 }
 

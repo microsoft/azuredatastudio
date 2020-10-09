@@ -13,10 +13,10 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 
 export class AutoOAuthDialogController {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
-	private _autoOAuthDialog: AutoOAuthDialog;
+	private _autoOAuthDialog?: AutoOAuthDialog;
 	private _providerId?: string;
-	private _userCode: string;
-	private _uri: string;
+	private _userCode?: string;
+	private _uri?: string;
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -27,7 +27,7 @@ export class AutoOAuthDialogController {
 	/**
 	 * Open auto OAuth dialog
 	 */
-	public openAutoOAuthDialog(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
+	public openAutoOAuthDialog(providerId: string, title: string, message: string, userCode: string, uri: string): Promise<void> {
 		if (this._providerId !== undefined) {
 			// If a oauth flyout is already open, return an error
 			const errorMessage = localize('oauthFlyoutIsAlreadyOpen', "Cannot start auto OAuth. An auto OAuth is already in progress.");
@@ -57,7 +57,9 @@ export class AutoOAuthDialogController {
 	 * Close auto OAuth dialog
 	 */
 	public closeAutoOAuthDialog(): void {
-		this._autoOAuthDialog.close();
+		if (this._autoOAuthDialog) {
+			this._autoOAuthDialog.close();
+		}
 		this._providerId = undefined;
 	}
 
@@ -71,6 +73,10 @@ export class AutoOAuthDialogController {
 	}
 
 	private handleOnAddAccount(): void {
-		this._accountManagementService.copyUserCodeAndOpenBrowser(this._userCode, this._uri);
+		if (this._userCode && this._uri) {
+			this._accountManagementService.copyUserCodeAndOpenBrowser(this._userCode, this._uri);
+		} else {
+			throw new Error('Missing user code and uri');
+		}
 	}
 }

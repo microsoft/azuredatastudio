@@ -9,6 +9,7 @@ import * as nls from 'vscode-nls';
 import { NotebookWizardPageInfo } from '../../interfaces';
 import { initializeWizardPage, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
 import { WizardPageBase } from '../wizardPageBase';
+import { WizardPageInfo } from '../wizardPageInfo';
 import { NotebookWizard } from './notebookWizard';
 
 const localize = nls.loadMessageBundle();
@@ -32,6 +33,20 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 		);
 	}
 
+	/**
+	 * If the return value is true then done button should be visible to the user
+	 */
+	private get isDoneButtonVisible(): boolean {
+		return !!this.wizard.wizardInfo.doneAction;
+	}
+
+	/**
+	 * If the return value is true then generateScript button should be visible to the user
+	 */
+	private get isGenerateScriptButtonVisible(): boolean {
+		return !!this.wizard.wizardInfo.scriptAction;
+	}
+
 	public initialize(): void {
 		initializeWizardPage({
 			container: this.wizard.wizardObject,
@@ -53,19 +68,30 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 			onNewValidatorCreated: (validator: Validator): void => {
 				this.validators.push(validator);
 			},
+			toolsService: this.wizard.toolsService
 		});
 	}
 
-	public onLeave(): void {
+	public async onLeave(): Promise<void> {
 		// The following callback registration clears previous navigation validators.
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
 	}
 
-	public async onEnter(): Promise<void> {
+	public async onEnter(pageInfo: WizardPageInfo): Promise<void> {
+		if (pageInfo.isLastPage) {
+			// on the last page either one or both of done button and generateScript button are visible depending on configuration of 'runNotebook' in wizard info
+			this.wizard.wizardObject.doneButton.hidden = !this.isDoneButtonVisible;
+			this.wizard.wizardObject.generateScriptButton.hidden = !this.isGenerateScriptButtonVisible;
+		} else {
+			//on any page but the last page doneButton and generateScriptButton are hidden
+			this.wizard.wizardObject.doneButton.hidden = true;
+			this.wizard.wizardObject.generateScriptButton.hidden = true;
+		}
+
 		if (this.pageInfo.isSummaryPage) {
-			setModelValues(this.wizard.inputComponents, this.wizard.model);
+			await setModelValues(this.wizard.inputComponents, this.wizard.model);
 		}
 
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
