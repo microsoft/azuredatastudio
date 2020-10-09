@@ -432,7 +432,7 @@ async function getClusterController(controllerEndpoint: string, authType: bdc.Au
 				errorMessage = localize('bdcConnectError', "Error: {0}. ", err.message ?? err);
 			}
 		}
-		throw new Error(localize('usernameAndPasswordRequired', "Username and password are required"));
+		throw new Error(localize('clusterControllerConnectionRequired', "A connection to the cluster controller is required to run Spark jobs"));
 	}
 }
 
