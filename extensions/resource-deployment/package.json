@@ -403,7 +403,7 @@
         "icon": {
           "light": "./images/azure-sql-db.svg",
           "dark": "./images/azure-sql-db.svg"
-        }, 
+        },
         "tags": ["SQL Server", "Cloud"],
         "okButtonText": [
           {
