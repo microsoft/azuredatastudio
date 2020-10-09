@@ -10,6 +10,9 @@ import { LoadingComponentProperties } from 'azdata';
 
 declare module 'azdata' {
 
+	/**
+	 * Namespace for connection management
+	 */
 	export namespace connection {
 		/**
 		 * Supported connection event types
