@@ -33,6 +33,8 @@ export class TestClusterController implements bdc.IClusterController {
 			endPoints: []
 		});
 	}
+	username: string;
+	password: string;
 }
 
 describe('Jupyter Session Manager', function (): void {
@@ -278,14 +280,14 @@ describe('Jupyter Session', function (): void {
 			osVersion: '',
 			options: {}
 		};
-		const mockGatewayEndpoint: utils.IEndpoint = {
-			serviceName: 'gateway',
+		const mockGatewayEndpoint: bdc.IEndpointModel = {
+			name: 'gateway',
 			description: '',
 			endpoint: '',
 			protocol: '',
 		};
-		const mockControllerEndpoint: utils.IEndpoint = {
-			serviceName: 'controller',
+		const mockControllerEndpoint: bdc.IEndpointModel = {
+			name: 'controller',
 			description: '',
 			endpoint: '',
 			protocol: '',
