@@ -211,9 +211,13 @@ export class PublishDatabaseDialog {
 
 	private async getDeploymentOptions(): Promise<DeploymentOptions> {
 		// eventually, database options will be configurable in this dialog
-		// but for now,  just send the default DacFx deployment options if no options were loaded from a publish profile
+		// but for now, just send the default DacFx deployment options if no options were loaded from a publish profile
 		if (!this.deploymentOptions) {
 			this.deploymentOptions = await utils.GetDefaultDeploymentOptions();
+
+			// re-include database-scoped credentials
+			// 53 comes from $\DacFx_Preview_Dev\Product\Source\DeploymentApi\ObjectTypes.cs (exact value from decompiled metadata)
+			this.deploymentOptions.excludeObjectTypes = this.deploymentOptions.excludeObjectTypes.filter(x => x !== 53);
 
 			// this option needs to be true for same database references validation to work
 			if (this.project.databaseReferences.length > 0) {
