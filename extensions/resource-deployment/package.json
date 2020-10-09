@@ -405,7 +405,20 @@
           "dark": "./images/azure-sql-db.svg"
         },
         "tags": ["SQL Server", "Cloud"],
-        "okButtonText": "%azure-sqldb-ok-button-text%",
+        "okButtonText": [
+          {
+            "value": "%azure-sqldb-notebook-ok-button-text%",
+            "when": "resource-type=single-database"
+          },
+          {
+            "value": "%azure-sqldb-portal-ok-button-text%",
+            "when": "resource-type=elastic-pool"
+          },
+          {
+            "value": "%azure-sqldb-portal-ok-button-text%",
+            "when": "resource-type=database-server"
+          }
+        ],
         "options": [
           {
             "name": "resource-type",
@@ -428,8 +441,14 @@
         ],
         "providers": [
           {
-            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLDatabase",
-            "requiredTools": [],
+            "azureSQLDBWizard":{
+              "notebook": "./notebooks/azuredb/create-sqldb.ipynb"
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli"
+              }
+            ],
             "when": "resource-type=single-database"
           },
           {
