@@ -295,7 +295,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 					ariaLabel: option.displayName
 				}).component();
 
-				this._toDispose.push(optionSelectBox.onValueChanged(() => {
+				this._currentResourceTypeDisposables.push(optionSelectBox.onValueChanged(() => {
 					this.updateOkButtonText();
 					this.updateToolsDisplayTable();
 				}));
