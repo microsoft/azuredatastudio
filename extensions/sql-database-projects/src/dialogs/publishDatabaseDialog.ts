@@ -382,6 +382,7 @@ export class PublishDatabaseDialog {
 
 	private createDatabaseRow(view: azdata.ModelView): azdata.FlexContainer {
 		this.targetDatabaseDropDown = view.modelBuilder.dropDown().withProperties({
+			values: [this.getDefaultDatabaseName()],
 			value: this.getDefaultDatabaseName(),
 			ariaLabel: constants.databaseNameLabel,
 			required: true,
@@ -556,7 +557,8 @@ export class PublishDatabaseDialog {
 				await this.updateConnectionComponents(result.connection, <string>this.connectionId);
 
 				if (result.databaseName) {
-					(<azdata.DropDownComponent>this.targetDatabaseDropDown).value = result.databaseName;
+					this.targetDatabaseDropDown!.values?.push(result.databaseName);
+					this.targetDatabaseDropDown!.value = result.databaseName;
 				}
 
 				for (let key in result.sqlCmdVariables) {
