@@ -41,7 +41,9 @@ export class ArcControllersOptionsSourceProvider implements rd.IOptionsSourcePro
 	}
 
 	getVariableValue(variableName: string, controllerLabel: string): Promise<string> {
-		return this._cacheManager.getCacheEntry(JSON.stringify([variableName, controllerLabel]), this.retrieveVariable);
+		// capture 'this' in an arrow function object
+		const retrieveVariable = (key: string) => this.retrieveVariable(key);
+		return this._cacheManager.getCacheEntry(JSON.stringify([variableName, controllerLabel]), retrieveVariable);
 	}
 
 	private async getPassword(controller: arc.DataController): Promise<string> {
