@@ -267,7 +267,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._agreementContainer.clearItems();
 			this._optionsContainer.clearItems();
 			this._toolsLoadingComponent.loading = false;
-			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
+			this._toolsTable.data = [[]];
 			this._tools = [];
 			this._dialogObject.okButton.enabled = false;
 		}
