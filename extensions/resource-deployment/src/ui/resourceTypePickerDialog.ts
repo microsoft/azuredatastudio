@@ -312,12 +312,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private updateOkButtonText(): void {
 		//handle special case when resource type has different OK button.
 		let text = this.getCurrentOkText();
-		if (text) {
-			this._dialogObject.okButton.label = text;
-		}
-		else {
-			this._dialogObject.okButton.label = loc.select;
-		}
+		this._dialogObject.okButton.label = text || loc.select;
 	}
 
 	private updateToolsDisplayTable(): void {

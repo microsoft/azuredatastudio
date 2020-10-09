@@ -10,9 +10,7 @@ export abstract class BasePage extends WizardPageBase<DeployAzureSQLDBWizard> {
 
 	protected liveValidation!: boolean;
 
-	public initialize(): void {
-		throw new Error('Method not implemented.');
-	}
+	public abstract initialize(): void;
 
 	protected async validatePage(): Promise<string> {
 		return '';

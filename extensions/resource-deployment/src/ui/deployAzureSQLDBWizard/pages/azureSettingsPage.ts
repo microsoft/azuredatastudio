@@ -193,7 +193,7 @@ export class AzureSettingsPage extends BasePage {
 		let accounts = await azdata.accounts.getAllAccounts();
 
 		if (accounts.length === 0) {
-			this.wizard.showErrorMessage('Sign in to an Azure account first');
+			this.wizard.showErrorMessage(localize('deployAzureSQLDB.azureSignInError', "Sign in to an Azure account first"));
 			return;
 		} else {
 			this.wizard.showErrorMessage('');
@@ -218,7 +218,7 @@ export class AzureSettingsPage extends BasePage {
 	}
 
 	private async createAzureSubscriptionsDropdown(view: azdata.ModelView) {
-		this._azureSubscriptionsDropdown = view.modelBuilder.dropDown().withProperties({}).component();
+		this._azureSubscriptionsDropdown = view.modelBuilder.dropDown().component();
 
 		this._azureSubscriptionsDropdown.onValueChanged(async (value) => {
 
@@ -232,7 +232,7 @@ export class AzureSettingsPage extends BasePage {
 				azdata.AzureResource.ResourceManagement
 			);
 
-			this.populateServerGroupDropdown();
+			await this.populateServerGroupDropdown();
 			//@todo alma1 9/8/2020 used for upcoming server creation feature.
 			//this.populateResourceGroupDropdown();
 			//this.populateAzureRegionsDropdown();
