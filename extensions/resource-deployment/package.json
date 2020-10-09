@@ -401,7 +401,6 @@
         "displayName": "%azure-sql-displayName%",
         "description": "%azure-sql-description%",
         "platforms": "*",
-        "okButtonText": "%azure-sql-ok-button-text%",
         "icon": {
           "light": "./images/azure-sql.svg",
           "dark": "./images/azure-sql.svg"
@@ -487,10 +486,12 @@
         "displayName": "%azure-sqlvm-display-name%",
         "description": "%azure-sqlvm-description%",
         "platforms": "*",
+        "displayIndex": 5,
         "icon": {
           "light": "./images/azure-sql-vm.svg",
           "dark": "./images/azure-sql-vm.svg"
         },
+        "tags": ["SQL Server", "Cloud"],
         "providers": [
           {
             "azureSQLVMWizard":{
