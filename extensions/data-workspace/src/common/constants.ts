@@ -24,19 +24,22 @@ export const DefaultInputWidth = '400px';
 export const DefaultButtonWidth = '80px';
 
 // New Project Dialog
-export const NewProjectDialogTitle = localize('dataworkspace.NewProjectDialogTitle', "New Project");
-export const ProjectTypeSelectorTitle = localize('dataworkspace.ProjectTypeSelectorTitle', "Project type");
-export const ProjectNameTitle = localize('dataworkspace.projectNameTitle', "Project name");
+export const NewProjectDialogTitle = localize('dataworkspace.NewProjectDialogTitle', "Create new project");
+export const ProjectTypeSelectorTitle = localize('dataworkspace.ProjectTypeSelectorTitle', "Type");
+export const ProjectNameTitle = localize('dataworkspace.projectNameTitle', "Name");
+export const ProjectNamePlaceholder = localize('dataworkspace.projectNamePlaceholder', "Enter project name");
 export const ProjectLocationTitle = localize('dataworkspace.projectLocationTitle', "Location");
+export const ProjectLoacationPlaceholder = localize('dataworkspace.projectLocationPlaceholder', "Select folder");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected location: '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
 
-//Open Project Dialog
-export const OpenProjectDialogTitle = localize('dataworkspace.openProjectDialogTitle', "Open Project");
+//Open Existing Project Dialog
+export const OpenProjectDialogTitle = localize('dataworkspace.openProjectDialogTitle', "Open existing project");
 export const ProjectFileNotExistError = (projectFilePath: string): string => { return localize('dataworkspace.projectFileNotExistError', "The selected project file: '{0}' does not exist or is not a file.", projectFilePath); };
 export const LocalFileSystem = localize('dataworkspace.localFileSystem', "Local File");
-export const TargetTypeSelectorTitle = localize('dataworkspace.TargetTypeSelectorTitle', "Target");
+export const LocationSelectorTitle = localize('dataworkspace.LocationSelectorTitle', "Location");
 export const ProjectFileTitle = localize('dataworkspace.projectFileTitle', "Project file");
+export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Select project file");
 
 
 
