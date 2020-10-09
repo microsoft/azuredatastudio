@@ -255,7 +255,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 				selectedCardId: cards[0].id,
 				cards: cards
 			});
-
 			this.selectResourceType(filteredResourceTypesOnSearch[0]);
 		}
 		else {
@@ -267,6 +266,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._agreementContainer.clearItems();
 			this._optionsContainer.clearItems();
 			this.updateToolsDisplayTable();
+			this._dialogObject.okButton.enabled = false;
 		}
 	}
 
