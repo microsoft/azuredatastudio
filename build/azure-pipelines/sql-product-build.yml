@@ -99,7 +99,7 @@ jobs:
   dependsOn:
   - macOS
   - Linux
-  # - Docker
+  - Docker
   - Windows
   - Windows_Test
   - LinuxWeb
