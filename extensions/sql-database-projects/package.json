@@ -2,7 +2,7 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "The SQL Database Projects extension for Azure Data Studio allows users to develop and publish database schemas.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -426,5 +426,10 @@
     "typemoq": "^2.1.0",
     "typescript": "^2.6.1",
     "vscodetestcover": "^1.1.0"
+  },
+  "__metadata": {
+    "id": "70",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }

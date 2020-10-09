@@ -22,6 +22,7 @@ export interface ResourceType {
 	okButtonText?: OkButtonTextValue[];
 	getOkButtonText(selectedOptions: { option: string, value: string }[]): string | undefined;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
+	tags?: string[];
 }
 
 export interface AgreementInfo {

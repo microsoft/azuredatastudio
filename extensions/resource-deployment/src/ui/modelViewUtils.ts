@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import { azureResource } from 'azureResource';
 import * as fs from 'fs';
-import { EOL, homedir as os_homedir } from 'os';
+import { EOL } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -415,6 +415,7 @@ function disableControlButtons(container: azdata.window.Dialog | azdata.window.W
 	if ('okButton' in container) {
 		container.okButton.enabled = false;
 	} else {
+		container.generateScriptButton.enabled = false;
 		container.doneButton.enabled = false;
 		container.nextButton.enabled = false;
 		container.backButton.enabled = false;
@@ -724,7 +725,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 			canSelectFiles: true,
 			canSelectFolders: false,
 			canSelectMany: false,
-			defaultUri: vscode.Uri.file(path.dirname(input.value || os_homedir())),
+			defaultUri: input.value ? vscode.Uri.file(path.dirname(input.value)) : undefined,
 			openLabel: loc.select,
 			filters: filter
 		});

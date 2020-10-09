@@ -936,7 +936,7 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$runAllCells(id: string, startCellUri?: UriComponents, endCellUri?: UriComponents): Promise<boolean>;
 	$clearOutput(id: string, cellUri: UriComponents): Promise<boolean>;
 	$clearAllOutputs(id: string): Promise<boolean>;
-	$changeKernel(id: string, kernel: azdata.nb.IKernelInfo): Promise<boolean>;
+	$changeKernel(id: string, kernel: azdata.nb.IKernelSpec): Promise<boolean>;
 	$registerNavigationProvider(providerId: string, handle: number);
 }
 

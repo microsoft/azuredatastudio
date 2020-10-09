@@ -11,7 +11,7 @@ import * as utils from '../common/utils';
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
-import { DeploymentOptions } from '../../../mssql/src/mssql';
+import { DeploymentOptions, SchemaObjectType } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 
@@ -80,7 +80,6 @@ export class PublishDatabaseDialog {
 
 	private initializePublishTab(): void {
 		this.publishTab.registerContent(async view => {
-
 			// TODO : enable using this when data source creation is enabled
 			this.createRadioButtons(view);
 
@@ -212,9 +211,12 @@ export class PublishDatabaseDialog {
 
 	private async getDeploymentOptions(): Promise<DeploymentOptions> {
 		// eventually, database options will be configurable in this dialog
-		// but for now,  just send the default DacFx deployment options if no options were loaded from a publish profile
+		// but for now, just send the default DacFx deployment options if no options were loaded from a publish profile
 		if (!this.deploymentOptions) {
 			this.deploymentOptions = await utils.GetDefaultDeploymentOptions();
+
+			// re-include database-scoped credentials
+			this.deploymentOptions.excludeObjectTypes = this.deploymentOptions.excludeObjectTypes.filter(x => x !== SchemaObjectType.DatabaseScopedCredentials);
 
 			// this option needs to be true for same database references validation to work
 			if (this.project.databaseReferences.length > 0) {
@@ -408,7 +410,7 @@ export class PublishDatabaseDialog {
 
 		const table = view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			ariaLabel: constants.sqlCmdTableLabel,
-			data: this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars),
+			dataValues: this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars),
 			columns: [
 				{
 					displayName: constants.sqlCmdVariableColumn,
@@ -431,8 +433,8 @@ export class PublishDatabaseDialog {
 
 		table.onDataChanged(() => {
 			this.sqlCmdVars = {};
-			table.data?.forEach((row) => {
-				(<Record<string, string>>this.sqlCmdVars)[row[0]] = row[1];
+			table.dataValues?.forEach((row) => {
+				(<Record<string, string>>this.sqlCmdVars)[<string>row[0].value] = <string>row[1].value;
 			});
 
 			this.tryEnableGenerateScriptAndOkButtons();
@@ -455,9 +457,10 @@ export class PublishDatabaseDialog {
 		loadSqlCmdVarsButton.onDidClick(async () => {
 			this.sqlCmdVars = { ...this.project.sqlCmdVariables };
 
-			const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
-			await (<azdata.DeclarativeTableComponent>this.sqlCmdVariablesTable).updateProperties({
-				data: data
+			const data = this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars!);
+			(<azdata.DeclarativeTableComponent>this.sqlCmdVariablesTable)!.updateProperties({
+				dataValues: data,
+				data: [] // data is deprecated, but the table gets updated incorrectly if this isn't set to an empty array
 			});
 
 			this.tryEnableGenerateScriptAndOkButtons();
@@ -586,10 +589,10 @@ export class PublishDatabaseDialog {
 		return loadProfileButton;
 	}
 
-	private convertSqlCmdVarsToTableFormat(sqlCmdVars: Record<string, string>): string[][] {
+	private convertSqlCmdVarsToTableFormat(sqlCmdVars: Record<string, string>): azdata.DeclarativeTableCellValue[][] {
 		let data = [];
 		for (let key in sqlCmdVars) {
-			data.push([key, sqlCmdVars[key]]);
+			data.push([{ value: key }, { value: sqlCmdVars[key] }]);
 		}
 
 		return data;
