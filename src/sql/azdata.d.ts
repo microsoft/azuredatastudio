@@ -189,13 +189,6 @@ declare module 'azdata' {
 		 * @param connectionProfile connection profile
 		 */
 		export function connect(connectionProfile: IConnectionProfile, saveConnection?: boolean, showDashboard?: boolean): Thenable<ConnectionResult>;
-
-		/**
-		 * Get connection profile by its owner uri
-		 * @param ownerUri The owner uri of the connection
-		 * @returns Promise to return the connection profile matching the ownerUri
-		 */
-		export function getConnection(ownerUri: string): Thenable<ConnectionProfile>;
 	}
 
 	/**

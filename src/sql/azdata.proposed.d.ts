@@ -11,7 +11,6 @@ import { LoadingComponentProperties } from 'azdata';
 declare module 'azdata' {
 
 	export namespace connection {
-
 		/**
 		 * Supported connection event types
 		 */
@@ -38,6 +37,13 @@ declare module 'azdata' {
 		 * @param listener The connection event listener
 		 */
 		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): vscode.Disposable;
+
+		/**
+		 * Get connection profile by its owner uri
+		 * @param ownerUri The owner uri of the connection
+		 * @returns Promise to return the connection profile matching the ownerUri
+		 */
+		export function getConnection(ownerUri: string): Thenable<ConnectionProfile>;
 	}
 
 	export namespace nb {
