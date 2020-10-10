@@ -86,6 +86,18 @@ export class AzureSettingsPage extends BasePage {
 			]);
 			this.populateAzureAccountsDropdown();
 
+			this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
+				if (pcInfo.newPage < pcInfo.lastPage) {
+					return true;
+				}
+				let errorMessage = await this.validate();
+
+				if (errorMessage !== '') {
+					return false;
+				}
+				return true;
+			});
+
 			this._form = view.modelBuilder.formContainer()
 				.withFormItems(
 					[
