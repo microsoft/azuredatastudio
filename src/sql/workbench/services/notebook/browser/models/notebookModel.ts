@@ -847,11 +847,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					this._currentKernelAlias = newConnection.serverCapabilities.notebookKernelAlias;
 					// Removes SQL kernel to Kernel Alias Connection Provider map
 					let sqlConnectionProvider = this._kernelDisplayNameToConnectionProviderIds.get('SQL');
-					let index = sqlConnectionProvider.indexOf(newConnection.serverCapabilities.notebookKernelAlias.toUpperCase());
-					if (index > -1) {
-						sqlConnectionProvider.splice(index, 1);
+					if (sqlConnectionProvider) {
+						let index = sqlConnectionProvider.indexOf(newConnection.serverCapabilities.notebookKernelAlias.toUpperCase());
+						if (index > -1) {
+							sqlConnectionProvider.splice(index, 1);
+						}
+						this._kernelDisplayNameToConnectionProviderIds.set('SQL', sqlConnectionProvider);
 					}
-					this._kernelDisplayNameToConnectionProviderIds.set('SQL', sqlConnectionProvider);
 					this._kernelDisplayNameToConnectionProviderIds.set(newConnection.serverCapabilities.notebookKernelAlias, [newConnection.providerName]);
 				}
 				this._activeConnection = newConnection;
