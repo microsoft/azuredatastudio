@@ -402,6 +402,10 @@ describe('ProjectsController', function (): void {
 	});
 
 	describe('Create project from database', function (): void {
+		afterEach(() => {
+			sinon.restore();
+		});
+
 		it('Should create list of all files and folders correctly', async function (): Promise<void> {
 			const testFolderPath = await testUtils.createDummyFileStructure();
 
@@ -427,6 +431,10 @@ describe('ProjectsController', function (): void {
 
 		it('Should show error when no project name provided', async function (): Promise<void> {
 			for (const name of ['', '    ', undefined]) {
+				const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
+				dataWorkspaceMock.setup(x => x.getProjectsInWorkspace()).returns(() => []);
+				sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object});
+				sinon.stub(vscode.workspace, 'workspaceFile').value(vscode.Uri.file('/test/folder/ws.code-workspace'));
 				sinon.stub(vscode.window, 'showInputBox').resolves(name);
 				const spy = sinon.spy(vscode.window, 'showErrorMessage');
 
@@ -439,6 +447,10 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should show error when no target information provided', async function (): Promise<void> {
+			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
+			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace()).returns(() => []);
+			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object});
+			sinon.stub(vscode.workspace, 'workspaceFile').value(vscode.Uri.file('/test/folder/ws.code-workspace'));
 			sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
 			sinon.stub(vscode.window, 'showQuickPick').resolves(undefined);
 			sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file('fakePath')]);
@@ -451,6 +463,10 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should show error when no location provided with ExtractTarget = File', async function (): Promise<void> {
+			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
+			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace()).returns(() => []);
+			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object});
+			sinon.stub(vscode.workspace, 'workspaceFile').value(vscode.Uri.file('/test/folder/ws.code-workspace'));
 			sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
 			sinon.stub(vscode.window, 'showOpenDialog').resolves(undefined);
 			sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.file });
@@ -463,6 +479,10 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should show error when no location provided with ExtractTarget = SchemaObjectType', async function (): Promise<void> {
+			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
+			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace()).returns(() => []);
+			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object});
+			sinon.stub(vscode.workspace, 'workspaceFile').value(vscode.Uri.file('/test/folder/ws.code-workspace'));
 			sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
 			sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.schemaObjectType });
 			sinon.stub(vscode.window, 'showOpenDialog').resolves(undefined);
@@ -478,6 +498,10 @@ describe('ProjectsController', function (): void {
 			const projectName = 'MyProjectName';
 			let folderPath = await testUtils.generateTestFolderPath();
 
+			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
+			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace()).returns(() => []);
+			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object});
+			sinon.stub(vscode.workspace, 'workspaceFile').value(vscode.Uri.file('/test/folder/ws.code-workspace'));
 			sinon.stub(vscode.window, 'showInputBox').resolves(projectName);
 			const showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.file });
 			sinon.stub(vscode.window, 'showOpenDialog').callsFake(() => Promise.resolve([vscode.Uri.file(folderPath)]));

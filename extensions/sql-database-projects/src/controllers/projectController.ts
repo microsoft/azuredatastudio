@@ -506,7 +506,7 @@ export class ProjectsController {
 
 		// TODO: Refactor code
 		try {
-			const workspaceApi = await utils.getDataWorkspaceExtensionApi();
+			const workspaceApi = utils.getDataWorkspaceExtensionApi();
 
 			if (!vscode.workspace.workspaceFile) {
 				workspaceApi.showWorkspaceRequiredNotification();
