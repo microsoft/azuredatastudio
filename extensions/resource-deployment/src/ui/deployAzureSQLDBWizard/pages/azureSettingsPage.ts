@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { EOL } from 'os';
 import * as constants from '../constants';
 import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 import { apiService } from '../../../services/apiService';
@@ -137,15 +136,7 @@ export class AzureSettingsPage extends BasePage {
 	}
 
 	public async onEnter(): Promise<void> {
-		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
-			if (pcInfo.newPage < pcInfo.lastPage) {
-				return true;
-			}
-			let errorMessage = await this.validate();
-
-			if (errorMessage !== '') {
-				return false;
-			}
+		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
 	}
@@ -293,9 +284,9 @@ export class AzureSettingsPage extends BasePage {
 	}
 
 	private async createServerDropdown(view: azdata.ModelView) {
-		this._serverGroupDropdown = view.modelBuilder.dropDown().withProperties({
-			required: true,
-		}).component();
+		this._serverGroupDropdown = view.modelBuilder.dropDown().withProperties({ required: true })
+			.withValidation(component => ((component.value as azdata.CategoryValue).name !== ''))
+			.component();
 		this._serverGroupDropdown.onValueChanged(async (value) => {
 			if (value.selected === ((this._serverGroupDropdown.value as azdata.CategoryValue).displayName)) {
 				this.wizard.model.azureServerName = value.selected;
@@ -742,24 +733,4 @@ export class AzureSettingsPage extends BasePage {
 	// 		this.wizard.model.storageInGB = value + 'GB';
 	// 	});
 	// }
-
-
-	protected async validate(): Promise<string> {
-		let errorMessages = [];
-		let serverName = (this._serverGroupDropdown.value as azdata.CategoryValue).name;
-		if (serverName === '') {
-			errorMessages.push(localize('deployAzureSQLDB.NoServerError', "No servers found in current subscription.\nSelect a different subscription containing at least one server"));
-		}
-		// let supportedEditionName = (this._dbSupportedEditionsDropdown.value as azdata.CategoryValue).name;
-		// if (supportedEditionName === '') {
-		// 	errorMessages.push(localize('deployAzureSQLDB.SupportedEditionError', "No Supported DB Edition found in current server.\nSelect a different server"));
-		// }
-		// let familyName = (this._dbSupportedFamilyDropdown.value as azdata.CategoryValue).name;
-		// if (familyName === '') {
-		// 	errorMessages.push(localize('deployAzureSQLDB.SupportedFamiliesError', "No Supported Family found in current DB edition.\nSelect a different edition"));
-		// }
-
-		this.wizard.showErrorMessage(errorMessages.join(EOL));
-		return errorMessages.join(EOL);
-	}
 }

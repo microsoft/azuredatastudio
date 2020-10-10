@@ -103,10 +103,22 @@ export class DatabaseSettingsPage extends BasePage {
 				value: constants.IpAddressInfoLabel
 			}).component();
 
+		// regex for validation
+		let ipRegex = /(^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$)/;
+
 		//Start IP Address Section:
 
 		this._startIpAddressTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
-			inputType: 'text'
+			inputType: 'text',
+			required: true,
+			validationErrorMessage: localize('deployAzureSQLDB.DBMaxIpInvalidError', "Max Ip address is invalid")
+		}).withValidation(component => {
+			if (component.value) {
+				return ipRegex.test(component.value);
+			}
+			else {
+				return false;
+			}
 		}).component();
 
 		this._startIpAddressTextbox.onTextChanged((value) => {
@@ -118,7 +130,16 @@ export class DatabaseSettingsPage extends BasePage {
 		//End IP Address Section:
 
 		this._endIpAddressTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
-			inputType: 'text'
+			inputType: 'text',
+			required: true,
+			validationErrorMessage: localize('deployAzureSQLDB.DBMaxIpInvalidError', "Max Ip address is invalid")
+		}).withValidation(component => {
+			if (component.value) {
+				return ipRegex.test(component.value);
+			}
+			else {
+				return false;
+			}
 		}).component();
 
 		this._endIpAddressTextbox.onTextChanged((value) => {
@@ -128,9 +149,33 @@ export class DatabaseSettingsPage extends BasePage {
 		this._endIpAddressTextRow = this.wizard.createFormRowComponent(view, constants.EndIpAddressLabel, '', this._endIpAddressTextbox, true);
 	}
 
-	private createFirewallNameText(view: azdata.ModelView) {
+	private validateFirewallNameText(firewallname: string | undefined): boolean {
+		if (firewallname) {
+			if (/^\d+$/.test(firewallname)) {
+				return false;
+			}
+			else if (firewallname.length < 1 || firewallname.length > 100) {
+				return false;
+			}
+			else if (/[\\\/"\'\[\]:\|<>\+=;\?\*@\&,\{\} ]/g.test(firewallname)) {
+				return false;
+			}
+			else if (/[A-Z]/g.test(firewallname)) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
 
-		this._firewallRuleNameTextbox = view.modelBuilder.inputBox().component();
+	private createFirewallNameText(view: azdata.ModelView) {
+		this._firewallRuleNameTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+			required: true,
+			validationErrorMessage: localize('deployAzureSQLDB.DBFirewallNameError', "Firewall name cannot contain only numbers, upper case letters, or special characters [\/\\\"\"[]:|<>+=;,?*@&, .\{\}] and must be between 1 and 100 characters")
+		}).withValidation(component => this.validateFirewallNameText(component.value)).component();
 
 		this._firewallRuleNameTextRow = this.wizard.createFormRowComponent(view, constants.FirewallRuleNameLabel, '', this._firewallRuleNameTextbox, true);
 
@@ -139,9 +184,32 @@ export class DatabaseSettingsPage extends BasePage {
 		});
 	}
 
+	private validateDatabaseNameText(databasename: string | undefined): boolean {
+		if (databasename) {
+			if (/^\d+$/.test(databasename)) {
+				return false;
+			}
+			else if (databasename.length < 1 || databasename.length > 100) {
+				return false;
+			}
+			else if (/[\\\/"\'\[\]:\|<>\+=;\?\*@\&,\{\} ]/g.test(databasename)) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+
+
 	private createDatabaseNameText(view: azdata.ModelView) {
 
-		this._databaseNameTextbox = view.modelBuilder.inputBox().component();
+		this._databaseNameTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+			required: true,
+			validationErrorMessage: localize('deployAzureSQLDB.DBDatabaseNameError', "Database name cannot contain only numbers or special characters [\/\\\"\"[]:|<>+=;,?*@&, .\{\}] and must be between 1 and 100 characters")
+		}).withValidation(component => this.validateDatabaseNameText(component.value)).component();
 
 		this._databaseNameTextRow = this.wizard.createFormRowComponent(view, constants.DatabaseNameLabel, '', this._databaseNameTextbox, true);
 
@@ -153,8 +221,10 @@ export class DatabaseSettingsPage extends BasePage {
 	private createCollationText(view: azdata.ModelView) {
 		this._collationTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			inputType: 'text',
+			required: true,
+			validationErrorMessage: localize('deployAzureSQLDB.DBCollationNameError', "Collation name cannot contain only numbers or special characters [\/\\\"\"[]:|<>+=;,?*@&, .\{\}] and must be between 1 and 100 characters"),
 			value: 'SQL_Latin1_General_CP1_CI_AS'
-		}).component();
+		}).withValidation(component => this.validateDatabaseNameText(component.value)).component();
 
 		this._collationTextbox.onTextChanged((value) => {
 			this.wizard.model.databaseCollation = value;
@@ -166,55 +236,10 @@ export class DatabaseSettingsPage extends BasePage {
 
 	protected async validate(): Promise<string> {
 		let errorMessages = [];
-		let ipRegex = /(^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$)/;
-		let startipvalue = this._startIpAddressTextbox.value!;
-		let endipvalue = this._endIpAddressTextbox.value!;
-		let firewallname = this._firewallRuleNameTextbox.value!;
 		let databasename = this._databaseNameTextbox.value!;
-		let collationname = this._collationTextbox.value!;
 
-		if (!(ipRegex.test(startipvalue))) {
-			errorMessages.push(localize('deployAzureSQLDB.DBMinIpInvalidError', "Min Ip address is invalid"));
-		}
-
-		if (!(ipRegex.test(endipvalue))) {
-			errorMessages.push(localize('deployAzureSQLDB.DBMaxIpInvalidError', "Max Ip address is invalid"));
-		}
-
-		if (/^\d+$/.test(firewallname)) {
-			errorMessages.push(localize('deployAzureSQLDB.DBFirewallOnlyNumericNameError', "Firewall name cannot contain only numbers."));
-		}
-		if (firewallname.length < 1 || firewallname.length > 100) {
-			errorMessages.push(localize('deployAzureSQLDB.DBFirewallLengthError', "Firewall name must be between 1 and 100 characters long."));
-		}
-		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(firewallname)) {
-			errorMessages.push(localize('deployAzureSQLDB.DBFirewallSpecialCharError', "Firewall name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
-		}
-		if (/[A-Z]/g.test(firewallname)) {
-			errorMessages.push(localize('deployAzureSQLDB.DBFirewallUpperCaseError', "Upper case letters are not allowed for firealll name"));
-		}
-
-		if (/^\d+$/.test(databasename)) {
-			errorMessages.push(localize('deployAzureSQLDB.DBNameOnlyNumericNameError', "Database name cannot contain only numbers."));
-		}
-		if (databasename.length < 1 || databasename.length > 100) {
-			errorMessages.push(localize('deployAzureSQLDB.DBNameLengthError', "Database name must be between 1 and 100 characters long."));
-		}
-		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(databasename)) {
-			errorMessages.push(localize('deployAzureSQLDB.DBNameSpecialCharError', "Database name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
-		}
 		if (await this.databaseNameExists(databasename)) {
 			errorMessages.push(localize('deployAzureSQLDB.DBNameExistsError', "Database name must be unique in the current server."));
-		}
-
-		if (/^\d+$/.test(collationname)) {
-			errorMessages.push(localize('deployAzureSQLDB.DBCollationOnlyNumericNameError', "Collation name cannot contain only numbers."));
-		}
-		if (collationname.length < 1 || collationname.length > 100) {
-			errorMessages.push(localize('deployAzureSQLDB.DBCollationLengthError', "Collation name must be between 1 and 100 characters long."));
-		}
-		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(collationname)) {
-			errorMessages.push(localize('deployAzureSQLDB.DBCollationSpecialCharError', "Collation name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
 		}
 
 		this.wizard.showErrorMessage(errorMessages.join(EOL));
