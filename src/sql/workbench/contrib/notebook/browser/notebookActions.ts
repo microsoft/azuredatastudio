@@ -425,13 +425,6 @@ export class AttachToDropdown extends SelectBox {
 		if ((connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
 			this.setOptions([msgLocalHost]);
 		} else {
-			// Removes kernel to connection provider mapping of SQL kernel to KUSTO connection
-			for (let kernelAlias of this.model.kernelAliases) {
-				if (connProviderIds.findIndex(e => e === kernelAlias.toUpperCase()) > -1 && currentKernel === 'SQL') {
-					let kernelAliasIndex = connProviderIds.findIndex(e => e === kernelAlias.toUpperCase());
-					connProviderIds.splice(kernelAliasIndex, 1);
-				}
-			}
 			let connections: string[] = model.context && model.context.title && (connProviderIds.includes(this.model.context.providerName)) ? [model.context.title] : [msgSelectConnection];
 			if (!connections.find(x => x === msgChangeConnection)) {
 				connections.push(msgChangeConnection);
