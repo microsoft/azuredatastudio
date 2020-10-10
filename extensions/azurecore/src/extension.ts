@@ -228,14 +228,6 @@ function registerAzureServices(appContext: AppContext): void {
 }
 
 async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Promise<void> {
-	if (e.affectsConfiguration('azure.enableArcFeatures')) {
-		const response = await vscode.window.showInformationMessage(loc.requiresReload, loc.reload);
-		if (response === loc.reload) {
-			await vscode.commands.executeCommand('workbench.action.reloadWindow');
-		}
-		return;
-	}
-
 	if (e.affectsConfiguration('azure.piiLogging')) {
 		updatePiiLoggingLevel();
 	}
