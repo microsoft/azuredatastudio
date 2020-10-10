@@ -225,28 +225,8 @@ export class ResourceTypeService implements IResourceTypeService {
 	private getProvider(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined {
 		for (let i = 0; i < resourceType.providers.length; i++) {
 			const provider = resourceType.providers[i];
-			if (provider.when === undefined || provider.when.toString().toLowerCase() === 'true') {
+			if (this.processWhenClause(provider.when, selectedOptions)) {
 				return provider;
-			} else {
-				const expected = provider.when.replace(' ', '').split('&&').sort();
-				let actual: string[] = [];
-				selectedOptions.forEach(option => {
-					actual.push(`${option.option}=${option.value}`);
-				});
-				actual = actual.sort();
-
-				if (actual.length === expected.length) {
-					let matches = true;
-					for (let j = 0; j < actual.length; j++) {
-						if (actual[j] !== expected[j]) {
-							matches = false;
-							break;
-						}
-					}
-					if (matches) {
-						return provider;
-					}
-				}
 			}
 		}
 		return undefined;
@@ -256,15 +236,37 @@ export class ResourceTypeService implements IResourceTypeService {
 	 * Get the ok button text based on the selected options
 	 */
 	private getOkButtonText(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): string | undefined {
-		if (resourceType.okButtonText && selectedOptions.length === 1) {
-			const optionGiven = `${selectedOptions[0].option}=${selectedOptions[0].value}`;
+		if (resourceType.okButtonText) {
 			for (const possibleOption of resourceType.okButtonText) {
-				if (possibleOption.when === optionGiven || possibleOption.when === undefined || possibleOption.when.toString().toLowerCase() === 'true') {
+				if (this.processWhenClause(possibleOption.when, selectedOptions)) {
 					return possibleOption.value;
 				}
 			}
 		}
 		return loc.select;
+	}
+
+	private processWhenClause(when: string, selectedOptions: { option: string, value: string }[]): boolean {
+		if (when === undefined || when.toString().toLowerCase() === 'true') {
+			return true;
+		} else {
+			const expected = when.replace(' ', '').split('&&').sort();
+			let actual: string[] = [];
+			selectedOptions.forEach(option => {
+				actual.push(`${option.option}=${option.value}`);
+			});
+			actual = actual.sort();
+
+			if (actual.length === expected.length) {
+				for (let j = 0; j < actual.length; j++) {
+					if (actual[j] !== expected[j]) {
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public startDeployment(provider: DeploymentProvider): void {
