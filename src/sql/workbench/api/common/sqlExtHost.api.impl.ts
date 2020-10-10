@@ -484,8 +484,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 					extHostQueryEditor.$runQuery(fileUri, runCurrentQuery);
 				},
 
-				registerQueryEventListener(listener: azdata.queryeditor.QueryEventListener): void {
-					extHostQueryEditor.$registerQueryInfoListener(listener);
+				registerQueryEventListener(listener: azdata.queryeditor.QueryEventListener): extHostTypes.Disposable {
+					return extHostQueryEditor.$registerQueryInfoListener(listener);
 				},
 
 				getQueryDocument(fileUri: string): Thenable<azdata.queryeditor.QueryDocument> {
