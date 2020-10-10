@@ -177,7 +177,7 @@ export class PerFolderServerInstance implements IServerInstance {
 		let kernelsExtensionSource: string;
 		if (this.options.install.runningOnSaw) {
 			kernelsExtensionSource = path.join(this.options.install.extensionPath, 'saw-kernels');
-			await this.options.install.updateKernelSpecPaths(kernelsExtensionSource);
+			//await this.options.install.updateKernelSpecPaths(kernelsExtensionSource);
 		} else {
 			kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
 		}
