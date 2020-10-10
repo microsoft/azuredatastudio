@@ -86,17 +86,7 @@ export class AzureSettingsPage extends BasePage {
 			]);
 			this.populateAzureAccountsDropdown();
 
-			this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
-				if (pcInfo.newPage < pcInfo.lastPage) {
-					return true;
-				}
-				let errorMessage = await this.validate();
-
-				if (errorMessage !== '') {
-					return false;
-				}
-				return true;
-			});
+			this.registerValidator();
 
 			this._form = view.modelBuilder.formContainer()
 				.withFormItems(
@@ -149,17 +139,7 @@ export class AzureSettingsPage extends BasePage {
 	}
 
 	public async onEnter(): Promise<void> {
-		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
-			if (pcInfo.newPage < pcInfo.lastPage) {
-				return true;
-			}
-			let errorMessage = await this.validate();
-
-			if (errorMessage !== '') {
-				return false;
-			}
-			return true;
-		});
+		this.registerValidator();
 	}
 
 	public async onLeave(): Promise<void> {
@@ -755,6 +735,19 @@ export class AzureSettingsPage extends BasePage {
 	// 	});
 	// }
 
+	private registerValidator(): void {
+		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
+			if (pcInfo.newPage < pcInfo.lastPage) {
+				return true;
+			}
+			let errorMessage = await this.validate();
+
+			if (errorMessage !== '') {
+				return false;
+			}
+			return true;
+		});
+	}
 
 	protected async validate(): Promise<string> {
 		let errorMessages = [];
