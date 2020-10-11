@@ -19,8 +19,9 @@ export interface ResourceType {
 	providers: DeploymentProvider[];
 	agreement?: AgreementInfo;
 	displayIndex?: number;
+	okButtonText?: OkButtonTextValue[];
+	getOkButtonText(selectedOptions: { option: string, value: string }[]): string | undefined;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
-	okButtonText?: string;
 	tags?: string[];
 }
 
@@ -38,6 +39,11 @@ export interface ResourceTypeOption {
 export interface ResourceTypeOptionValue {
 	name: string;
 	displayName: string;
+}
+
+export interface OkButtonTextValue {
+	value: string;
+	when: string;
 }
 
 export interface DialogDeploymentProvider extends DeploymentProviderBase {
@@ -68,6 +74,14 @@ export interface CommandDeploymentProvider extends DeploymentProviderBase {
 	command: string;
 }
 
+export interface AzureSQLVMDeploymentProvider extends DeploymentProviderBase {
+	azureSQLVMWizard: AzureSQLVMWizardInfo;
+}
+
+export interface AzureSQLDBDeploymentProvider extends DeploymentProviderBase {
+	azureSQLDBWizard: AzureSQLDBWizardInfo;
+}
+
 export function instanceOfDialogDeploymentProvider(obj: any): obj is DialogDeploymentProvider {
 	return obj && 'dialog' in obj;
 }
@@ -96,12 +110,20 @@ export function instanceOfCommandDeploymentProvider(obj: any): obj is CommandDep
 	return obj && 'command' in obj;
 }
 
+export function instanceOfAzureSQLVMDeploymentProvider(obj: any): obj is AzureSQLVMDeploymentProvider {
+	return obj && 'azureSQLVMWizard' in obj;
+}
+
+export function instanceOfAzureSQLDBDeploymentProvider(obj: any): obj is AzureSQLDBDeploymentProvider {
+	return obj && 'azureSQLDBWizard' in obj;
+}
+
 export interface DeploymentProviderBase {
 	requiredTools: ToolRequirementInfo[];
 	when: string;
 }
 
-export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider;
+export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider | AzureSQLVMDeploymentProvider | AzureSQLDBDeploymentProvider;
 
 export interface BdcWizardInfo {
 	notebook: string | NotebookPathInfo;
@@ -168,6 +190,14 @@ export interface NotebookBasedDialogInfo extends DialogInfoBase {
 
 export interface CommandBasedDialogInfo extends DialogInfoBase {
 	command: string;
+}
+
+export interface AzureSQLVMWizardInfo {
+	notebook: string | NotebookPathInfo;
+}
+
+export interface AzureSQLDBWizardInfo {
+	notebook: string | NotebookPathInfo;
 }
 
 export type DialogInfo = NotebookBasedDialogInfo | CommandBasedDialogInfo;
@@ -270,6 +300,8 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean;
 	isEvaluated?: boolean;
+	valueLookup?: string; // for fetching dropdown options
+	validationLookup?: string // for fetching text field validations
 }
 
 export interface KubeClusterContextFieldInfo extends FieldInfo {
