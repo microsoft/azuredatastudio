@@ -2634,8 +2634,8 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.3",
-							"lastUpdated": "12/19/2019",
+							"version": "0.1.5",
+							"lastUpdated": "10/11/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
