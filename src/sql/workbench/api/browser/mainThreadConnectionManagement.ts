@@ -12,7 +12,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { generateUuid } from 'vs/base/common/uuid';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -24,6 +24,7 @@ import { deepClone } from 'vs/base/common/objects';
 export class MainThreadConnectionManagement extends Disposable implements MainThreadConnectionManagementShape {
 
 	private _proxy: ExtHostConnectionManagementShape;
+	private _connectionEventListenerDisposables = new Map<number, IDisposable>();
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -39,7 +40,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		}
 	}
 
-	public $registerConnectionEventListener(handle: number, providerId: string): void {
+	public $registerConnectionEventListener(handle: number): void {
 
 		let stripProfile = (inputProfile: azdata.IConnectionProfile) => {
 			if (!inputProfile) {
@@ -66,17 +67,28 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 			return outputProfile;
 		};
 
-		this._connectionManagementService.onConnect((params: IConnectionParams) => {
+		const disposable = new DisposableStore();
+		disposable.add(this._connectionManagementService.onConnect((params: IConnectionParams) => {
 			this._proxy.$onConnectionEvent(handle, 'onConnect', params.connectionUri, stripProfile(params.connectionProfile));
-		});
+		}));
 
-		this._connectionManagementService.onConnectionChanged((params: IConnectionParams) => {
+		disposable.add(this._connectionManagementService.onConnectionChanged((params: IConnectionParams) => {
 			this._proxy.$onConnectionEvent(handle, 'onConnectionChanged', params.connectionUri, stripProfile(params.connectionProfile));
-		});
+		}));
 
-		this._connectionManagementService.onDisconnect((params: IConnectionParams) => {
+		disposable.add(this._connectionManagementService.onDisconnect((params: IConnectionParams) => {
 			this._proxy.$onConnectionEvent(handle, 'onDisconnect', params.connectionUri, stripProfile(params.connectionProfile));
-		});
+		}));
+
+		this._connectionEventListenerDisposables.set(handle, disposable);
+	}
+
+	public $unregisterConnectionEventListener(handle: number): void {
+		const disposable = this._connectionEventListenerDisposables.get(handle);
+		if (disposable) {
+			disposable.dispose();
+			this._connectionEventListenerDisposables.delete(handle);
+		}
 	}
 
 	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
