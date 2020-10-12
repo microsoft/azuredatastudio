@@ -19,6 +19,7 @@ import * as glob from 'fast-glob';
 import { IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
 import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
+import { BookTocManager, IBookTocManager, tocBookOperation } from './bookTocManager';
 
 const content = 'content';
 
@@ -36,6 +37,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _openAsUntitled: boolean;
 	private _bookTrustManager: IBookTrustManager;
 	public bookPinManager: IBookPinManager;
+	public bookTocManager: IBookTocManager;
 
 	private _bookViewer: vscode.TreeView<BookTreeItem>;
 	public viewId: string;
@@ -47,6 +49,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._extensionContext = extensionContext;
 		this.books = [];
 		this.bookPinManager = new BookPinManager();
+		this.bookTocManager = new BookTocManager();
 		this.viewId = view;
 		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.prompter = new CodeAdapter();
@@ -129,6 +132,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				bookTreeItem.contextValue = 'savedNotebook';
 			}
 		}
+	}
+
+	async createBook(): Promise<void> {
+
+	}
+
+	async editBook(book: BookTreeItem, section: BookTreeItem, sectionParent: BookTreeItem): Promise<void> {
+		this.bookTocManager.updateToc(tocBookOperation.Edit, section, book);
 	}
 
 	async openBook(bookPath: string, urlToOpen?: string, showPreview?: boolean, isNotebook?: boolean): Promise<void> {
