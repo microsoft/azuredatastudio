@@ -353,7 +353,7 @@ async function exists(path: string): Promise<boolean> {
 
 /**
  * processWhenClause takes in a when clause (either the word 'true' or a series of clauses in the format:
- * 'resource-type="<typename>" joined by &&').
+ * '<type_name>=<value_name>' joined by '&&').
  * If the where clause is true or undefined, return true as there is no clause to check.
  * It evaluates each individual when clause by comparing the equivalent selected options (sorted in alphabetical order and formatted to match).
  * If there is any selected option that doesn't match, return false.
