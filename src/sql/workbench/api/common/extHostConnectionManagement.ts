@@ -6,6 +6,8 @@
 import { ExtHostConnectionManagementShape, SqlMainContext, MainThreadConnectionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import * as azdata from 'azdata';
+import { IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 
 export class ExtHostConnectionManagement extends ExtHostConnectionManagementShape {
 
@@ -27,10 +29,15 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		}
 	}
 
-	public $registerConnectionEventListener(providerId: string, listener: azdata.connection.ConnectionEventListener): void {
-		this._connectionListeners[this._nextListenerHandle] = listener;
-		this._proxy.$registerConnectionEventListener(this._nextListenerHandle, providerId);
-		this._nextListenerHandle++;
+	public $registerConnectionEventListener(listener: azdata.connection.ConnectionEventListener): IDisposable {
+		const handle = this._nextListenerHandle++;
+		this._connectionListeners[handle] = listener;
+		this._proxy.$registerConnectionEventListener(handle);
+
+		return new Disposable(() => {
+			this._connectionListeners.delete(handle);
+			this._proxy.$unregisterConnectionEventListener(handle);
+		});
 	}
 
 	public $getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {

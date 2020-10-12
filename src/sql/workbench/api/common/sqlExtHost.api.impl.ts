@@ -27,7 +27,6 @@ import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/ext
 import { ExtHostExtensionManagement } from 'sql/workbench/api/common/extHostExtensionManagement';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransformerService';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
@@ -107,8 +106,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
 					return extHostConnectionManagement.$getConnections(activeConnectionsOnly);
 				},
-				registerConnectionEventListener(listener: azdata.connection.ConnectionEventListener): void {
-					return extHostConnectionManagement.$registerConnectionEventListener(mssqlProviderName, listener);
+				registerConnectionEventListener(listener: azdata.connection.ConnectionEventListener): vscode.Disposable {
+					return extHostConnectionManagement.$registerConnectionEventListener(listener);
 				},
 				getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile> {
 					return extHostConnectionManagement.$getConnection(uri);
@@ -485,8 +484,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 					extHostQueryEditor.$runQuery(fileUri, runCurrentQuery);
 				},
 
-				registerQueryEventListener(listener: azdata.queryeditor.QueryEventListener): void {
-					extHostQueryEditor.$registerQueryInfoListener(listener);
+				registerQueryEventListener(listener: azdata.queryeditor.QueryEventListener): extHostTypes.Disposable {
+					return extHostQueryEditor.$registerQueryInfoListener(listener);
 				},
 
 				getQueryDocument(fileUri: string): Thenable<azdata.queryeditor.QueryDocument> {
