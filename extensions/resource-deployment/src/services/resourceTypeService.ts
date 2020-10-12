@@ -225,7 +225,7 @@ export class ResourceTypeService implements IResourceTypeService {
 	private getProvider(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined {
 		for (let i = 0; i < resourceType.providers.length; i++) {
 			const provider = resourceType.providers[i];
-			if (this.processWhenClause(provider.when, selectedOptions)) {
+			if (processWhenClause(provider.when, selectedOptions)) {
 				return provider;
 			}
 		}
@@ -238,7 +238,7 @@ export class ResourceTypeService implements IResourceTypeService {
 	private getOkButtonText(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): string | undefined {
 		if (resourceType.okButtonText) {
 			for (const possibleOption of resourceType.okButtonText) {
-				if (this.processWhenClause(possibleOption.when, selectedOptions)) {
+				if (processWhenClause(possibleOption.when, selectedOptions)) {
 					return possibleOption.value;
 				}
 			}
@@ -246,28 +246,6 @@ export class ResourceTypeService implements IResourceTypeService {
 		return loc.select;
 	}
 
-	private processWhenClause(when: string, selectedOptions: { option: string, value: string }[]): boolean {
-		if (when === undefined || when.toString().toLowerCase() === 'true') {
-			return true;
-		} else {
-			const expected = when.replace(' ', '').split('&&').sort();
-			let actual: string[] = [];
-			selectedOptions.forEach(option => {
-				actual.push(`${option.option}=${option.value}`);
-			});
-			actual = actual.sort();
-
-			if (actual.length === expected.length) {
-				for (let j = 0; j < actual.length; j++) {
-					if (actual[j] !== expected[j]) {
-						return false;
-					}
-				}
-				return true;
-			}
-		}
-		return false;
-	}
 
 	public startDeployment(provider: DeploymentProvider): void {
 		const self = this;
@@ -371,4 +349,35 @@ async function exists(path: string): Promise<boolean> {
 	} catch (e) {
 		return false;
 	}
+}
+
+/**
+ * processWhenClause takes in a when clause (either the word 'true' or a series of clauses in the format:
+ * 'resource-type="<typename>" joined by &&').
+ * If the where clause is true or undefined, return true as there is no clause to check.
+ * It evaluates each individual when clause by comparing the equivalent selected options (sorted in alphabetical order and formatted to match).
+ * If there is any selected option that doesn't match, return false.
+ * Return true if all clauses match.
+ */
+function processWhenClause(when: string, selectedOptions: { option: string, value: string }[]): boolean {
+	if (when === undefined || when.toString().toLowerCase() === 'true') {
+		return true;
+	} else {
+		const expected = when.replace(' ', '').split('&&').sort();
+		let actual: string[] = [];
+		selectedOptions.forEach(option => {
+			actual.push(`${option.option}=${option.value}`);
+		});
+		actual = actual.sort();
+
+		if (actual.length === expected.length) {
+			for (let j = 0; j < actual.length; j++) {
+				if (actual[j] !== expected[j]) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+	return false;
 }
