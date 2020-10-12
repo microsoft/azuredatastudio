@@ -615,7 +615,8 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 }
 
 export interface MainThreadConnectionManagementShape extends IDisposable {
-	$registerConnectionEventListener(handle: number, providerId: string): void;
+	$registerConnectionEventListener(handle: number): void;
+	$unregisterConnectionEventListener(handle: number): void;
 	$getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]>;
 	$getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile>;
 	$getActiveConnections(): Thenable<azdata.connection.Connection[]>;
@@ -804,7 +805,7 @@ export interface ExtHostModelViewDialogShape {
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
-	$openEditor(handle: number, modelViewId: string, title: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
+	$openEditor(handle: number, modelViewId: string, title: string, name?: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
 	$openDialog(handle: number, dialogName?: string): Thenable<void>;
 	$closeDialog(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
@@ -820,7 +821,7 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$setDirty(handle: number, isDirty: boolean): void;
 }
 export interface ExtHostQueryEditorShape {
-	$onQueryEvent(handle: number, fileUri: string, event: IQueryEvent): void;
+	$onQueryEvent(providerId: string, handle: number, fileUri: string, event: IQueryEvent): void;
 }
 
 export interface MainThreadQueryEditorShape extends IDisposable {
@@ -829,7 +830,8 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 	$runQuery(fileUri: string, runCurrentQuery?: boolean): void;
 	$createQueryTab(fileUri: string, title: string, content: string): void;
 	$setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
-	$registerQueryInfoListener(handle: number, providerId: string): void;
+	$registerQueryInfoListener(handle: number): void;
+	$unregisterQueryInfoListener(handle: number): void;
 }
 
 export interface ExtHostNotebookShape {
@@ -936,7 +938,7 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$runAllCells(id: string, startCellUri?: UriComponents, endCellUri?: UriComponents): Promise<boolean>;
 	$clearOutput(id: string, cellUri: UriComponents): Promise<boolean>;
 	$clearAllOutputs(id: string): Promise<boolean>;
-	$changeKernel(id: string, kernel: azdata.nb.IKernelInfo): Promise<boolean>;
+	$changeKernel(id: string, kernel: azdata.nb.IKernelSpec): Promise<boolean>;
 	$registerNavigationProvider(providerId: string, handle: number);
 }
 

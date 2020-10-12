@@ -22,6 +22,9 @@ export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
+// Project Provider
+export const projectTypeDisplayName = localize('projectTypeDisplayName', 'Database Project');
+
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';
@@ -42,12 +45,6 @@ export const okString = localize('okString', "Ok");
 export const extractTargetInput = localize('extractTargetInput', "Select folder structure for SQL files");
 export const extractDatabaseSelection = localize('extractDatabaseSelection', "Select database to create project from");
 export const selectString = localize('selectString', "Select");
-export const addDatabaseReferenceInput = localize('addDatabaseReferenceInput', "Add database reference for:");
-export const systemDatabaseReferenceInput = localize('systemDatabaseReferenceInput', "System Database:");
-export const databaseReferenceLocation = localize('databaseReferenceLocation', "Database location");
-export const databaseReferenceSameDatabase = localize('databaseReferenceSameDatabase', "Same database");
-export const databaseReferenceDifferentDabaseSameServer = localize('databaseReferenceDifferentDabaseSameServer', "Different database, same server");
-export const databaseReferenceDatabaseName = localize('databaseReferenceDatabaseName', "Database name");
 export const dacpacFiles = localize('dacpacFiles', "dacpac Files");
 export const publishSettingsFiles = localize('publishSettingsFiles', "Publish Settings File");
 export const systemDatabase = localize('systemDatabase', "System Database");
@@ -65,7 +62,9 @@ export const reloadProject = localize('reloadProject', "Would you like to reload
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
-
+export function deleteReferenceConfirmation(toDelete: string) { return localize('deleteReferenceConfirmation', "Are you sure you want to delete the reference to {0}?", toDelete); }
+export function selectTargetPlatform(currentTargetPlatform: string) { return localize('selectTargetPlatform', "Current target platform: {0}. Select new target platform", currentTargetPlatform); }
+export function currentTargetPlatform(projectName: string, currentTargetPlatform: string) { return localize('currentTargetPlatform', "Target platform of the project {0} is now {1}", projectName, currentTargetPlatform); }
 
 // Publish dialog strings
 
@@ -96,6 +95,7 @@ export const defaultUser = localize('default', "default");
 export const addDatabaseReferenceDialogName = localize('addDatabaseReferencedialogName', "Add database reference");
 export const addDatabaseReferenceOkButtonText = localize('addDatabaseReferenceOkButtonText', "Add reference");
 export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Type");
+export const projectRadioButtonTitle = localize('projectRadioButtonTitle', "Database project in folder");
 export const systemDatabaseRadioButtonTitle = localize('systemDatabaseRadioButtonTitle', "System database");
 export const dacpacText = localize('dacpacText', "Data-tier application (.dacpac)");
 export const dacpacPlaceholder = localize('dacpacPlaceholder', "Select .dacpac");
@@ -115,6 +115,9 @@ export const exampleUsage = localize('exampleUsage', "Example Usage");
 export const enterSystemDbName = localize('enterSystemDbName', "Enter a database name for this system database");
 export const databaseNameRequiredVariableOptional = localize('databaseNameRequiredVariableOptional', "A database name is required. The database variable is optional.");
 export const databaseNameServerNameVariableRequired = localize('databaseNameServerNameVariableRequired', "A database name, server name, and server variable are required. The database variable is optional");
+export const otherServer = 'OtherServer';
+export const otherSeverVariable = 'OtherServer';
+export const databaseProject = localize('databaseProject', "Database project");
 
 // Error messages
 
@@ -161,6 +164,10 @@ export function unexpectedProjectContext(uri: string) { return localize('unexpec
 export function unableToPerformAction(action: string, uri: string) { return localize('unableToPerformAction', "Unable to locate '{0}' target: '{1}'", action, uri); }
 export function unableToFindObject(path: string, objType: string) { return localize('unableToFindFile', "Unable to find {1} with path '{0}'", path, objType); }
 export function deployScriptExists(scriptType: string) { return localize('deployScriptExists', "A {0} script already exists. The new script will not be included in build.", scriptType); }
+export function notValidVariableName(name: string) { return localize('notValidVariableName', "The variable name '{0}' is not valid.", name); }
+export function cantAddCircularProjectReference(project: string) { return localize('cantAddCircularProjectReference', "A reference to project '{0}' cannot be added. Adding this project as a reference would cause a circular dependency", project); }
+export function unableToFindSqlCmdVariable(variableName: string) { return localize('unableToFindSqlCmdVariable', "Unable to find SQLCMD variable '{0}'", variableName); }
+export function unableToFindDatabaseReference(reference: string) { return localize('unableToFindReference', "Unable to find database reference {0}", reference); }
 
 // Action types
 export const deleteAction = localize('deleteAction', 'Delete');
@@ -214,6 +221,8 @@ export const PostDeploy = 'PostDeploy';
 export const None = 'None';
 export const True = 'True';
 export const False = 'False';
+export const Private = 'Private';
+export const ProjectGuid = 'ProjectGuid';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
@@ -272,5 +281,29 @@ export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
 
 // SQL queries
 export const sameDatabaseExampleUsage = 'SELECT * FROM [Schema1].[Table1]';
-export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]"`; }
+export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]`; }
 export function differentDbDifferentServerExampleUsage(server: string, db: string) { return `SELECT * FROM [${server}].[${db}].[Schema1].[Table1]`; }
+
+export const sqlServer2005 = 'SQL Server 2005';
+export const sqlServer2008 = 'SQL Server 2008';
+export const sqlServer2012 = 'SQL Server 2012';
+export const sqlServer2014 = 'SQL Server 2014';
+export const sqlServer2016 = 'SQL Server 2016';
+export const sqlServer2017 = 'SQL Server 2017';
+export const sqlServer2019 = 'SQL Server 2019';
+export const sqlAzure = 'Microsoft Azure SQL Database';
+
+export const targetPlatformToVersion: Map<string, string> = new Map<string, string>([
+	[sqlServer2005, '90'],
+	[sqlServer2008, '100'],
+	[sqlServer2012, '110'],
+	[sqlServer2014, '120'],
+	[sqlServer2016, '130'],
+	[sqlServer2017, '140'],
+	[sqlServer2019, '150'],
+	[sqlAzure, 'AzureV12']
+]);
+
+export function getTargetPlatformFromVersion(version: string): string {
+	return Array.from(targetPlatformToVersion.keys()).filter(k => targetPlatformToVersion.get(k) === version)[0];
+}

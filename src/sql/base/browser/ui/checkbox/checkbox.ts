@@ -48,6 +48,9 @@ export class Checkbox extends Widget {
 		this.onkeydown(this._el, e => {
 			if (e.equals(KeyCode.Enter)) {
 				this.checked = !this.checked;
+				// Manually fire the event since we stop the event propagation which means
+				// the onchange event won't fire.
+				this._onChange.fire(this.checked);
 				e.stopPropagation();
 			}
 		});

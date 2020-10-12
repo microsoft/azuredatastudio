@@ -104,6 +104,7 @@ export function createViewContext(): ViewTestContext {
 	});
 	let declarativeTable: () => azdata.DeclarativeTableComponent = () => Object.assign({}, componentBase, {
 		onDataChanged: undefined!,
+		onRowSelected: undefined!,
 		data: [],
 		columns: []
 	});
@@ -226,6 +227,7 @@ export function createViewContext(): ViewTestContext {
 		validate: undefined!,
 		initializeModel: () => { return Promise.resolve(); },
 		modelBuilder: {
+			listView: undefined!,
 			radioCardGroup: undefined!,
 			navContainer: undefined!,
 			divContainer: () => divBuilder,

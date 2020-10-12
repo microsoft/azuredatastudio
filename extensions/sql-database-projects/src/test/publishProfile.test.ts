@@ -62,7 +62,7 @@ describe('Publish profile tests', function (): void {
 			connectionId: 'connId',
 			options: {
 				'server': 'testserver',
-				'username': 'testUser'
+				'user': 'testUser'
 			}
 		};
 		testContext.dacFxService.setup(x => x.getOptionsFromProfile(TypeMoq.It.isAny())).returns(async () => {

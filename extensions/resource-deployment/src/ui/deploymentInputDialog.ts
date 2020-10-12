@@ -94,9 +94,9 @@ export class DeploymentInputDialog extends DialogBase {
 		});
 	}
 
-	protected onComplete(): void {
+	protected async onComplete(): Promise<void> {
 		const model: Model = new Model();
-		setModelValues(this.inputComponents, model);
+		await setModelValues(this.inputComponents, model);
 		if (instanceOfNotebookBasedDialogInfo(this.dialogInfo)) {
 			model.setEnvironmentVariables();
 			if (this.dialogInfo.runNotebook) {
@@ -105,12 +105,12 @@ export class DeploymentInputDialog extends DialogBase {
 				const notebook = Array.isArray(this.dialogInfo.notebook) ?
 					this.dialogInfo.notebook.find(nb => nb.type === model.getStringValue(NotebookTypeVariableName))?.path :
 					this.dialogInfo.notebook;
-				this.notebookService.launchNotebook(notebook!).catch(error => {
+				this.notebookService.openNotebook(notebook!).catch(error => {
 					vscode.window.showErrorMessage(error);
 				});
 			}
 		} else {
-			vscode.commands.executeCommand(this.dialogInfo.command, model);
+			await vscode.commands.executeCommand(this.dialogInfo.command, model);
 		}
 	}
 

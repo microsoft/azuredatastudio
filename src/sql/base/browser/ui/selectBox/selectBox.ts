@@ -336,6 +336,7 @@ export class SelectBox extends vsSelectBox {
 		if (selectOptions && selectOptions.labelText && selectOptions.labelText !== undefined) {
 			let outerContainer = document.createElement('div');
 			let selectContainer = document.createElement('div');
+			selectContainer.setAttribute('role', 'presentation');
 
 			outerContainer.className = selectOptions.labelOnTop ? 'labelOnTopContainer' : 'labelOnLeftContainer';
 

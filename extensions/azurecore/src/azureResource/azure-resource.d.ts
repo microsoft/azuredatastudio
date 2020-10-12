@@ -13,7 +13,7 @@ declare module 'azureResource' {
 			sqlServer = 'microsoft.sql/servers',
 			sqlDatabase = 'microsoft.sql/servers/databases',
 			sqlManagedInstance = 'microsoft.sql/managedinstances',
-			azureArcSqlManagedInstance = 'microsoft.azuredata/sqlinstances',
+			azureArcSqlManagedInstance = 'microsoft.azuredata/sqlmanagedinstances',
 			virtualMachines = 'microsoft.compute/virtualmachines',
 			kustoClusters = 'microsoft.kusto/clusters',
 			azureArcPostgresServer = 'microsoft.azuredata/postgresinstances',

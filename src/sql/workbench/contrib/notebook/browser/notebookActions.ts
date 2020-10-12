@@ -24,7 +24,6 @@ import { IFindNotebookController } from 'sql/workbench/contrib/notebook/browser/
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
-import { find, firstIndex } from 'vs/base/common/arrays';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
@@ -323,10 +322,10 @@ export class KernelsDropdown extends SelectBox {
 			if (kernels) {
 				let index;
 				if (standardKernel) {
-					index = firstIndex(kernels, kernel => kernel === standardKernel.displayName);
+					index = kernels.findIndex(kernel => kernel === standardKernel.displayName);
 				} else {
 					let kernelSpec = this.model.specs.kernels.find(k => k.name === kernel.name);
-					index = firstIndex(kernels, k => k === kernelSpec?.display_name);
+					index = kernels.findIndex(k => k === kernelSpec?.display_name);
 				}
 				if (nbKernelAlias) {
 					index = kernels.indexOf(nbKernelAlias);
@@ -407,7 +406,7 @@ export class AttachToDropdown extends SelectBox {
 		let kernelDisplayName: string;
 		if (this.model.clientSession && this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
 			let currentKernelName = this.model.clientSession.kernel.name.toLowerCase();
-			let currentKernelSpec = find(this.model.specs.kernels, kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
+			let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
 			if (currentKernelSpec) {
 				//KernelDisplayName should be Kusto when connecting to Kusto connection
 				if ((this.model.context?.serverCapabilities.notebookKernelAlias && this.model.currentKernelAlias === this.model.context?.serverCapabilities.notebookKernelAlias) || (this.model.kernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.selectedKernelDisplayName)) {
@@ -427,7 +426,7 @@ export class AttachToDropdown extends SelectBox {
 			this.setOptions([msgLocalHost]);
 		} else {
 			let connections: string[] = model.context && model.context.title && (connProviderIds.includes(this.model.context.providerName)) ? [model.context.title] : [msgSelectConnection];
-			if (!find(connections, x => x === msgChangeConnection)) {
+			if (!connections.find(x => x === msgChangeConnection)) {
 				connections.push(msgChangeConnection);
 			}
 			this.setOptions(connections, 0);
@@ -455,10 +454,22 @@ export class AttachToDropdown extends SelectBox {
 	 **/
 	public async openConnectionDialog(useProfile: boolean = false): Promise<boolean> {
 		try {
+			// Get all providers to show all available connections in connection dialog
+			let providers = this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name);
+			// Spark kernels are unable to get providers from above, therefore ensure that we get the
+			// correct providers for the selected kernel and load the proper connections for the connection dialog
+			// Example Scenario: Spark Kernels should only have MSSQL connections in connection dialog
+			if (!this.model.kernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.clientSession.kernel.name !== 'SQL') {
+				providers = providers.concat(this.model.getApplicableConnectionProviderIds(this.model.selectedKernelDisplayName));
+			} else {
+				for (let alias of this.model.kernelAliases) {
+					providers = providers.concat(this.model.getApplicableConnectionProviderIds(alias));
+				}
+			}
 			let connection = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
 				{
 					connectionType: ConnectionType.temporary,
-					providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name)
+					providers: providers
 				},
 				useProfile ? this.model.connectionProfile : undefined);
 
@@ -485,7 +496,7 @@ export class AttachToDropdown extends SelectBox {
 			//To ignore n/a after we have at least one valid connection
 			attachToConnections = attachToConnections.filter(val => val !== msgSelectConnection);
 
-			let index = firstIndex(attachToConnections, connection => connection === connectedServer);
+			let index = attachToConnections.findIndex(connection => connection === connectedServer);
 			this.setOptions([]);
 			this.setOptions(attachToConnections);
 			if (!index || index < 0 || index >= attachToConnections.length) {
@@ -500,7 +511,7 @@ export class AttachToDropdown extends SelectBox {
 			//Changes kernel based on connection attached to
 			if (this.model.kernelAliases.includes(connectionProfile.serverCapabilities.notebookKernelAlias)) {
 				this.model.changeKernel(connectionProfile.serverCapabilities.notebookKernelAlias);
-			} else {
+			} else if (this.model.clientSession.kernel.name === 'SQL') {
 				this.model.changeKernel('SQL');
 			}
 			return true;

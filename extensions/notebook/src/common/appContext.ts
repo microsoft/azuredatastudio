@@ -25,7 +25,7 @@ export class AppContext {
 		let workspaceFolders = vscode.workspace.workspaceFolders?.slice() ?? [];
 		this.bookTreeViewProvider = new BookTreeViewProvider(workspaceFolders, extensionContext, false, BOOKS_VIEWID, NavigationProviders.NotebooksNavigator);
 		this.providedBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, true, PROVIDED_BOOKS_VIEWID, NavigationProviders.ProvidedBooksNavigator);
-		this.pinnedBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, false, PINNED_BOOKS_VIEWID, NavigationProviders.NotebooksNavigator);
+		this.pinnedBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, false, PINNED_BOOKS_VIEWID, NavigationProviders.PinnedNotebooksNavigator);
 		this.outputChannel = vscode.window.createOutputChannel(extensionOutputChannelName);
 	}
 }

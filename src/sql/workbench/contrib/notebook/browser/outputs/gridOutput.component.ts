@@ -11,10 +11,10 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
+import { IDataResource, MaxTableRowsConfigName, NotebookConfigSectionName, IDataResourceSchema, IDataResourceFields, MAX_ROWS } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
-import { ICellValue, ResultSetSummary, ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import QueryRunner, { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
+import { ResultSetSummary, ResultSetSubset, ICellValue, BatchSummary } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
@@ -30,16 +30,18 @@ import { GridTableBase } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
 import { SaveResultAction, IGridActionContext } from 'sql/workbench/contrib/query/browser/actions';
-import { ResultSerializer, SaveResultsResponse, SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
-import { values } from 'vs/base/common/collections';
-import { assign } from 'vs/base/common/objects';
+import { SaveFormat, ResultSerializer, SaveResultsResponse } from 'sql/workbench/services/query/common/resultSerializer';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
-import { URI } from 'vs/base/common/uri';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
+import { values } from 'vs/base/common/collections';
+import { URI } from 'vs/base/common/uri';
+import { assign } from 'vs/base/common/objects';
+import { escape } from 'sql/base/common/strings';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -55,10 +57,17 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	private _cellOutput: azdata.nb.ICellOutput;
 	private _bundleOptions: MimeModel.IOptions;
 	private _table: DataResourceTable;
+	private _batchId: number;
+	private _id: number;
+	private _queryRunnerUri: string;
+	private _queryRunner: QueryRunner;
+	private _configuredMaxRows: number = MAX_ROWS;
 
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IThemeService) private readonly themeService: IThemeService
+		@Inject(IThemeService) private readonly themeService: IThemeService,
+		@Inject(IConfigurationService) private configurationService: IConfigurationService,
+		@Inject(IQueryManagementService) private queryManagementService: IQueryManagementService
 	) {
 		super();
 	}
@@ -91,7 +100,28 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		this._cellOutput = value;
 	}
 
+	@Input() set batchId(value: number) {
+		this._batchId = value;
+	}
+
+	@Input() set id(value: number) {
+		this._id = value;
+	}
+
+	@Input() set queryRunnerUri(value: string) {
+		this._queryRunnerUri = value;
+	}
+
 	ngOnInit() {
+		let config = this.configurationService.getValue(NotebookConfigSectionName);
+		if (config) {
+			let maxRows = config[MaxTableRowsConfigName] ? config[MaxTableRowsConfigName] : undefined;
+			if (maxRows && maxRows > 0) {
+				this._configuredMaxRows = maxRows;
+			}
+		}
+		// When a saved notebook is opened, there is no query runner
+		this._queryRunner = this.queryManagementService.getRunner(this._queryRunnerUri);
 		this.renderGrid();
 	}
 
@@ -102,13 +132,42 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		if (!this._table) {
 			let source = <IDataResource><any>this._bundleOptions.data[this.mimeType];
 			let state = new GridTableState(0, 0);
-			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, this.cellOutput, state);
+			this._table = this.instantiationService.createInstance(DataResourceTable, this._batchId, this._id, this._queryRunner, source, this.cellModel, this.cellOutput, state);
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.appendChild(this._table.element);
 			this._register(attachTableStyler(this._table, this.themeService));
 			this._table.onDidInsert();
 			this.layout();
+			if (this._queryRunner) {
+				this._register(this._queryRunner.onResultSetUpdate(resultSet => { this.updateResultSet(resultSet); }));
+				this._register(this._queryRunner.onBatchEnd(batch => { this.convertData(batch); }));
+			}
 			this._initialized = true;
+		}
+	}
+
+	updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]): void {
+		let resultsToUpdate: ResultSetSummary[];
+		if (!Array.isArray(resultSet)) {
+			resultsToUpdate = [resultSet];
+		} else {
+			resultsToUpdate = resultSet?.splice(0);
+		}
+		for (let set of resultsToUpdate) {
+			if (this._batchId === set.batchId && this._id === set.id) {
+				set.rowCount = set.rowCount > this._configuredMaxRows ? this._configuredMaxRows : set.rowCount;
+				this._table.updateResult(set);
+				this.layout();
+			}
+		}
+	}
+
+	convertData(batch: BatchSummary): void {
+		for (let set of batch.resultSetSummaries) {
+			if (set.batchId === this._batchId && set.id === this._id) {
+				set.rowCount = set.rowCount > this._configuredMaxRows ? this._configuredMaxRows : set.rowCount;
+				this._cellModel.addGridDataConversionPromise(this._table.convertData(set));
+			}
 		}
 	}
 
@@ -122,11 +181,17 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 
 class DataResourceTable extends GridTableBase<any> {
 
-	private _gridDataProvider: IGridDataProvider;
+	private _gridDataProvider: DataResourceDataProvider;
 	private _chart: ChartView;
 	private _chartContainer: HTMLElement;
+	private _batchId: number;
+	private _id: number;
+	private _queryRunner: QueryRunner;
 
-	constructor(source: IDataResource,
+	constructor(batchId: number,
+		id: number,
+		queryRunner: QueryRunner,
+		source: IDataResource,
 		private cellModel: ICellModel,
 		private cellOutput: azdata.nb.ICellOutput,
 		state: GridTableState,
@@ -137,7 +202,10 @@ class DataResourceTable extends GridTableBase<any> {
 		@IConfigurationService configurationService: IConfigurationService
 	) {
 		super(state, createResultSet(source), { actionOrientation: ActionsOrientation.HORIZONTAL }, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
-		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel.notebookModel.notebookUri.toString());
+		this._batchId = batchId;
+		this._id = id;
+		this._queryRunner = queryRunner;
+		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, this._batchId, this._id, this._queryRunner, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
 		if (!this.cellOutput.metadata) {
@@ -223,25 +291,78 @@ class DataResourceTable extends GridTableBase<any> {
 		this.cellOutput.metadata.azdata_chartOptions = options;
 		this.cellModel.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
 	}
+
+	public convertData(set: ResultSetSummary): Promise<void> {
+		return this._gridDataProvider.convertAllData(set);
+	}
+
+	public updateResult(resultSet: ResultSetSummary): void {
+		super.updateResult(resultSet);
+		this._gridDataProvider.updateResultSet(resultSet);
+	}
 }
 
 export class DataResourceDataProvider implements IGridDataProvider {
-	private rows: ICellValue[][];
-	constructor(source: IDataResource,
-		private resultSet: ResultSetSummary,
-		private documentUri: string,
+	private _rows: ICellValue[][];
+	private _documentUri: string;
+	private _queryRunner: QueryRunner;
+	private _batchId: number;
+	private _id: number;
+	private _resultSet: ResultSetSummary;
+	private _data: any;
+	constructor(
+		batchId: number,
+		id: number,
+		queryRunner: QueryRunner,
+		source: IDataResource,
+		resultSet: ResultSetSummary,
+		private cellModel: ICellModel,
 		@INotificationService private _notificationService: INotificationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService,
 		@ISerializationService private _serializationService: ISerializationService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
 	) {
+		this._documentUri = this.cellModel.notebookModel.notebookUri.toString();
+		this._queryRunner = queryRunner;
+		this._batchId = batchId;
+		this._id = id;
+		this._resultSet = resultSet;
+		this.initializeData();
 		this.transformSource(source);
 	}
 
+	private initializeData(): void {
+		// Set up data resource
+		let columnsResources: IDataResourceSchema[] = [];
+		this._resultSet.columnInfo.forEach(column => {
+			columnsResources.push({ name: escape(column.columnName) });
+		});
+		let columnsFields: IDataResourceFields = { fields: columnsResources };
+		let dataResource = {
+			schema: columnsFields,
+			data: []
+		};
+		// Set up html table string
+		let htmlTable: string[] = new Array(3);
+		htmlTable[0] = '<table>';
+		let columnHeaders = '<tr>';
+		for (let column of this._resultSet.columnInfo) {
+			columnHeaders += `<th>${escape(column.columnName)}</th>`;
+		}
+		columnHeaders += '</tr>';
+		htmlTable[1] = columnHeaders;
+		htmlTable[2] = '</table>';
+
+		this._data = {
+			'application/vnd.dataresource+json': dataResource,
+			'text/html': htmlTable
+		};
+	}
+
 	private transformSource(source: IDataResource): void {
-		this.rows = source.data.map(row => {
+		this._rows = source.data.map(row => {
 			let rowData: azdata.DbCellValue[] = [];
 			Object.keys(row).forEach((val, index) => {
 				let displayValue = String(values(row)[index]);
@@ -256,16 +377,46 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		});
 	}
 
-	getRowData(rowStart: number, numberOfRows: number): Thenable<ResultSetSubset> {
-		let rowEnd = rowStart + numberOfRows;
-		if (rowEnd > this.rows.length) {
-			rowEnd = this.rows.length;
+	public updateResultSet(resultSet: ResultSetSummary): void {
+		this._resultSet = resultSet;
+	}
+
+	public async convertAllData(result: ResultSetSummary): Promise<void> {
+		// Querying 100 rows at a time. Querying large amount of rows will be slow and
+		// affect table rendering since each time the user scrolls, getRowData is called.
+		let numRows = 100;
+		for (let i = 0; i < result.rowCount; i += 100) {
+			if (i + 100 > result.rowCount) {
+				numRows += result.rowCount - i;
+			}
+			let rows = await this._queryRunner.getQueryRows(i, numRows, this._batchId, this._id);
+			this.convertData(rows);
 		}
-		let resultSubset: ResultSetSubset = {
-			rowCount: rowEnd - rowStart,
-			rows: this.rows.slice(rowStart, rowEnd)
-		};
-		return Promise.resolve(resultSubset);
+		this.cellModel.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
+	}
+
+	private convertData(rows: ResultSetSubset): void {
+		let dataResourceRows = this.convertRowsToDataResource(rows);
+		let htmlStringArr = this.convertRowsToHtml(rows);
+		this._data['application/vnd.dataresource+json'].data = this._data['application/vnd.dataresource+json'].data.concat(dataResourceRows);
+		this._data['text/html'].splice(this._data['text/html'].length - 1, 0, ...htmlStringArr);
+		this.cellModel.updateOutputData(this._batchId, this._id, this._data);
+	}
+
+	getRowData(rowStart: number, numberOfRows: number): Thenable<ResultSetSubset> {
+		if (this._queryRunner) {
+			return this._queryRunner.getQueryRows(rowStart, numberOfRows, this._batchId, this._id);
+		} else {
+			let rowEnd = rowStart + numberOfRows;
+			if (rowEnd > this._rows.length) {
+				rowEnd = this._rows.length;
+			}
+			let resultSubset: ResultSetSubset = {
+				rowCount: rowEnd - rowStart,
+				rows: this._rows.slice(rowStart, rowEnd)
+			};
+			return Promise.resolve(resultSubset);
+		}
 	}
 
 	async copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
@@ -282,7 +433,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	getEolString(): string {
-		return getEolString(this._textResourcePropertiesService, this.documentUri);
+		return getEolString(this._textResourcePropertiesService, this._documentUri);
 	}
 	shouldIncludeHeaders(includeHeaders: boolean): boolean {
 		return shouldIncludeHeaders(includeHeaders, this._configurationService);
@@ -292,7 +443,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	getColumnHeaders(range: Slick.Range): string[] {
-		let headers: string[] = this.resultSet.columnInfo.slice(range.fromCell, range.toCell + 1).map((info, i) => {
+		let headers: string[] = this._resultSet.columnInfo.slice(range.fromCell, range.toCell + 1).map((info, i) => {
 			return info.columnName;
 		});
 		return headers;
@@ -303,8 +454,13 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	serializeResults(format: SaveFormat, selection: Slick.Range[]): Thenable<void> {
-		let serializer = this._instantiationService.createInstance(ResultSerializer);
-		return serializer.handleSerialization(this.documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
+		if (this._queryRunner) {
+			selection = selection ? selection : [new Slick.Range(0, 0, this._resultSet.rowCount - 1, this._resultSet.columnInfo.length - 1)];
+			return this._queryRunner.serializeResults(this._batchId, this._id, format, selection);
+		} else {
+			let serializer = this._instantiationService.createInstance(ResultSerializer);
+			return serializer.handleSerialization(this._documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
+		}
 	}
 
 	private doSerialize(serializer: ResultSerializer, filePath: URI, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | undefined> {
@@ -312,10 +468,10 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			return Promise.resolve(undefined);
 		}
 		// TODO implement selection support
-		let columns = this.resultSet.columnInfo;
-		let rowLength = this.rows.length;
+		let columns = this._resultSet.columnInfo;
+		let rowLength = this._rows.length;
 		let minRow = 0;
-		let maxRow = this.rows.length;
+		let maxRow = this._rows.length;
 		let singleSelection = selection && selection.length > 0 ? selection[0] : undefined;
 		if (singleSelection && this.isSelected(singleSelection)) {
 			rowLength = singleSelection.toRow - singleSelection.fromRow + 1;
@@ -345,7 +501,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 					return headerData;
 				}));
 			}
-			result = result.concat(this.rows.slice(index, endIndex).map(row => {
+			result = result.concat(this._rows.slice(index, endIndex).map(row => {
 				if (this.isSelected(singleSelection)) {
 					return row.slice(singleSelection.fromCell, singleSelection.toCell + 1);
 				} else {
@@ -370,6 +526,29 @@ export class DataResourceDataProvider implements IGridDataProvider {
 	 */
 	private isSelected(selection: Slick.Range): boolean {
 		return (selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
+	}
+
+	private convertRowsToDataResource(subset: ResultSetSubset): any[] {
+		return subset.rows.map(row => {
+			let rowObject: { [key: string]: any; } = {};
+			row.forEach((val, index) => {
+				rowObject[index] = val.displayValue;
+			});
+			return rowObject;
+		});
+	}
+
+	private convertRowsToHtml(subset: ResultSetSubset): string[] {
+		let htmlStringArr = [];
+		for (const row of subset.rows) {
+			let rowData = '<tr>';
+			for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
+				rowData += `<td>${escape(row[columnIndex].displayValue)}</td>`;
+			}
+			rowData += '</tr>';
+			htmlStringArr.push(rowData);
+		}
+		return htmlStringArr;
 	}
 }
 

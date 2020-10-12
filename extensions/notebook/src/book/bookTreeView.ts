@@ -11,16 +11,16 @@ import * as constants from '../common/constants';
 import { IPrompter, IQuestion, confirm } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
-import { BookModel } from './bookModel';
+import { BookModel, BookVersion } from './bookModel';
 import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { isNullOrUndefined } from 'util';
+import { IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
 import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 
-const Content = 'content';
+const content = 'content';
 
 interface BookSearchResults {
 	notebookPaths: string[];
@@ -57,9 +57,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	private async initialize(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
 		if (this.viewId === constants.PINNED_BOOKS_VIEWID) {
-			await Promise.all(getPinnedNotebooks().map(async (notebookPath) => {
+			await Promise.all(getPinnedNotebooks().map(async (notebook) => {
 				try {
-					await this.createAndAddBookModel(notebookPath, true);
+					await this.createAndAddBookModel(notebook.notebookPath, true, notebook.bookPath);
 				} catch {
 					// no-op, not all workspace folders are going to be valid books
 				}
@@ -90,7 +90,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	trustBook(bookTreeItem?: BookTreeItem): void {
-		let bookPathToTrust = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
+		let bookPathToTrust: string = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
 		if (bookPathToTrust) {
 			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust);
 			if (trustChanged) {
@@ -152,7 +152,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 			// add file watcher on toc file.
 			if (!isNotebook) {
-				fs.watchFile(path.join(bookPath, '_data', 'toc.yml'), async (curr, prev) => {
+				fs.watchFile(this.currentBook.tableOfContentsPath, async (curr, prev) => {
 					if (curr.mtime > prev.mtime) {
 						let book = this.books.find(book => book.bookPath === bookPath);
 						if (book) {
@@ -169,7 +169,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async addNotebookToPinnedView(bookItem: BookTreeItem): Promise<void> {
 		let notebookPath: string = bookItem.book.contentPath;
 		if (notebookPath) {
-			await this.createAndAddBookModel(notebookPath, true);
+			let rootPath: string = bookItem.book.root ? bookItem.book.root : '';
+			await this.createAndAddBookModel(notebookPath, true, rootPath);
 		}
 	}
 
@@ -206,7 +207,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} finally {
 			// remove watch on toc file.
 			if (deletedBook && !deletedBook.isNotebook) {
-				fs.unwatchFile(path.join(deletedBook.bookPath, '_data', 'toc.yml'));
+				fs.unwatchFile(deletedBook.tableOfContentsPath);
 			}
 		}
 	}
@@ -215,10 +216,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * Creates a model for the specified folder path and adds it to the known list of books if we
 	 * were able to successfully parse it.
 	 * @param bookPath The path to the book folder to create the model for
+	 * @param isNotebook A boolean value to know we are creating a model for a notebook or a book
+	 * @param notebookBookRoot For pinned notebooks we need to know if the notebook is part of a book or it's a standalone notebook
 	 */
-	private async createAndAddBookModel(bookPath: string, isNotebook: boolean): Promise<void> {
+	private async createAndAddBookModel(bookPath: string, isNotebook: boolean, notebookBookRoot?: string): Promise<void> {
 		if (!this.books.find(x => x.bookPath === bookPath)) {
-			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext);
+			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext, notebookBookRoot);
 			await book.initializeContents();
 			this.books.push(book);
 			if (!this.currentBook) {
@@ -247,7 +250,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					const sectionToOpen = bookRoot.findChildSection(urlToOpen);
 					urlPath = sectionToOpen?.url;
 				} else {
-					urlPath = this.currentBook.bookItems[0].tableOfContents.sections[0].url;
+					urlPath = this.currentBook.version === BookVersion.v1 ? (this.currentBook.bookItems[0].tableOfContents.sections[0] as IJupyterBookSectionV1).url : (this.currentBook.bookItems[0].tableOfContents.sections[0] as IJupyterBookSectionV2).file;
 				}
 			}
 			if (urlPath) {
@@ -260,8 +263,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					}
 				} else {
 					// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-					const sectionToOpenMarkdown: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat('.md'));
-					const sectionToOpenNotebook: string = path.posix.join(this.currentBook.bookPath, Content, urlPath.concat('.ipynb'));
+					const sectionToOpenMarkdown: string = path.posix.join(this.currentBook.contentFolderPath, urlPath.concat('.md'));
+					const sectionToOpenNotebook: string = path.posix.join(this.currentBook.contentFolderPath, urlPath.concat('.ipynb'));
 					if (await fs.pathExists(sectionToOpenMarkdown)) {
 						this.openMarkdown(sectionToOpenMarkdown);
 					}
@@ -312,7 +315,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (shouldReveal || this._bookViewer?.visible) {
 			bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath) : undefined;
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
-			if (bookItem) {
+			if (bookItem?.contextValue !== 'pinnedNotebook') {
 				// Note: 3 is the maximum number of levels that the vscode APIs let you expand to
 				await this._bookViewer.reveal(bookItem, { select: true, focus: true, expand: true });
 			}
@@ -411,13 +414,22 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public async searchJupyterBooks(treeItem?: BookTreeItem): Promise<void> {
 		let folderToSearch: string;
 		if (treeItem && treeItem.sections !== undefined) {
-			if (treeItem.uri) {
-				folderToSearch = path.join(treeItem.root, Content, path.dirname(treeItem.uri));
-			} else {
-				folderToSearch = path.join(treeItem.root, Content);
+			if (treeItem.book.version === BookVersion.v1) {
+				if (treeItem.uri) {
+					folderToSearch = path.join(treeItem.book.root, content, path.dirname(treeItem.uri));
+				} else {
+					folderToSearch = path.join(treeItem.root, content);
+				}
+			} else if (treeItem.book.version === BookVersion.v2) {
+				if (treeItem.uri) {
+					folderToSearch = path.join(treeItem.book.root, path.dirname(treeItem.uri));
+				} else {
+					folderToSearch = path.join(treeItem.root);
+				}
 			}
+
 		} else if (this.currentBook && !this.currentBook.isNotebook) {
-			folderToSearch = path.join(this.currentBook.bookPath, Content);
+			folderToSearch = path.join(this.currentBook.contentFolderPath);
 		} else {
 			vscode.window.showErrorMessage(loc.noBooksSelectedError);
 		}
@@ -476,23 +488,39 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	private async getNotebooksInTree(folderPath: string): Promise<BookSearchResults> {
+		let tocTrimLength: number;
+		let ignorePaths: string[] = [];
+
 		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
 		let maxDepth = notebookConfig[constants.maxBookSearchDepth];
 		// Use default value if user enters an invalid value
-		if (isNullOrUndefined(maxDepth) || maxDepth < 0) {
+		if (maxDepth === null || maxDepth === undefined || maxDepth < 0) {
 			maxDepth = 10;
 		} else if (maxDepth === 0) { // No limit of search depth if user enters 0
 			maxDepth = undefined;
 		}
 
 		let escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
-		let bookFilter = path.posix.join(escapedPath, '**', '_data', 'toc.yml');
-		let bookPaths = await glob(bookFilter, { deep: maxDepth });
-		let tocTrimLength = '/_data/toc.yml'.length * -1;
-		bookPaths = bookPaths.map(path => path.slice(0, tocTrimLength));
+		let bookV1Filter = path.posix.join(escapedPath, '**', '_data', 'toc.yml');
+		let bookV2Filter = path.posix.join(escapedPath, '**', '_toc.yml');
+		let bookPaths = await glob([bookV1Filter, bookV2Filter], { deep: maxDepth });
+		let ignoreNotebook: string[];
+		bookPaths = bookPaths.map(function (path) {
+			if (path.includes('/_data/toc.yml')) {
+				tocTrimLength = '/_data/toc.yml'.length * -1;
+				ignoreNotebook = ['/**/*.ipynb'];
+			} else {
+				tocTrimLength = '/_toc.yml'.length * -1;
+				ignoreNotebook = ['/**/*.ipynb', '/*.ipynb'];
+			}
+			path = path.slice(0, tocTrimLength);
+			ignoreNotebook.map(notebook => ignorePaths.push(glob.escapePath(path) + notebook));
+			return path;
+		});
 
 		let notebookFilter = path.posix.join(escapedPath, '**', '*.ipynb');
-		let notebookPaths = await glob(notebookFilter, { ignore: bookPaths.map(path => glob.escapePath(path) + '/**/*.ipynb'), deep: maxDepth });
+
+		let notebookPaths = await glob(notebookFilter, { ignore: ignorePaths, deep: maxDepth });
 
 		return { notebookPaths: notebookPaths, bookPaths: bookPaths };
 	}
@@ -512,7 +540,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getChildren(element?: BookTreeItem): Thenable<BookTreeItem[]> {
 		if (element) {
 			if (element.sections) {
-				return Promise.resolve(this.currentBook.getSections(element.tableOfContents, element.sections, element.root).then(sections => { return sections; }));
+				return Promise.resolve(this.currentBook.getSections(element.tableOfContents, element.sections, element.root, element.book).then(sections => { return sections; }));
 			} else {
 				return Promise.resolve([]);
 			}
@@ -528,7 +556,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
 		if (element?.uri) {
 			let parentPath: string;
-			parentPath = path.join(element.root, Content, element.uri.substring(0, element.uri.lastIndexOf(path.posix.sep)));
+			let contentFolder = element.book.version === BookVersion.v1 ? path.join(element.book.root, content) : element.book.root;
+			parentPath = path.join(contentFolder, element.uri.substring(0, element.uri.lastIndexOf(path.posix.sep)));
 			if (parentPath === element.root) {
 				return undefined;
 			}

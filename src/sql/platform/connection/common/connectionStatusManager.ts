@@ -16,7 +16,6 @@ import * as azdata from 'azdata';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { startsWith } from 'vs/base/common/strings';
 import { values } from 'vs/base/common/collections';
-import { firstIndex, find } from 'vs/base/common/arrays';
 
 export class ConnectionStatusManager {
 
@@ -39,7 +38,7 @@ export class ConnectionStatusManager {
 	}
 
 	public findConnectionByProfileId(profileId: string): ConnectionManagementInfo | undefined {
-		return find(values(this._connections), connection => connection.connectionProfile.id === profileId);
+		return values(this._connections).find(connection => connection.connectionProfile.id === profileId);
 	}
 
 	public findConnectionProfile(connectionProfile: IConnectionProfile): ConnectionManagementInfo | undefined {
@@ -231,10 +230,10 @@ export class ConnectionStatusManager {
 	public getActiveConnectionProfiles(providers?: string[]): ConnectionProfile[] {
 		let profiles = values(this._connections).map((connectionInfo: ConnectionManagementInfo) => connectionInfo.connectionProfile);
 		// Remove duplicate profiles that may be listed multiple times under different URIs by filtering for profiles that don't have the same ID as an earlier profile in the list
-		profiles = profiles.filter((profile, index) => firstIndex(profiles, otherProfile => otherProfile.id === profile.id) === index);
+		profiles = profiles.filter((profile, index) => profiles.findIndex(otherProfile => otherProfile.id === profile.id) === index);
 
 		if (providers) {
-			profiles = profiles.filter(f => find(providers, x => x === f.providerName));
+			profiles = profiles.filter(f => providers.find(x => x === f.providerName));
 		}
 		return profiles;
 	}

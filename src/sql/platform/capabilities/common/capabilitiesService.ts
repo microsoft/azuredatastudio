@@ -22,7 +22,7 @@ export const clientCapabilities = {
 
 export interface ConnectionProviderProperties {
 	providerId: string;
-	iconPath?: URI | IconPath | { id: string, path: IconPath }[]
+	iconPath?: URI | IconPath | { id: string, path: IconPath, default?: boolean }[]
 	displayName: string;
 	notebookKernelAlias?: string;
 	azureResource?: string;

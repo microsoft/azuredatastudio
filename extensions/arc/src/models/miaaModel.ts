@@ -3,13 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ResourceInfo } from 'arc';
+import { MiaaResourceInfo } from 'arc';
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { Deferred } from '../common/promise';
-import { UserCancelledError } from '../common/utils';
+import { createCredentialId, parseIpAndPort, UserCancelledError } from '../common/utils';
+import { credentialNamespace } from '../constants';
 import * as loc from '../localizedConstants';
+import { ConnectToSqlDialog } from '../ui/dialogs/connectSqlDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
@@ -35,8 +37,8 @@ export class MiaaModel extends ResourceModel {
 
 	private _refreshPromise: Deferred<void> | undefined = undefined;
 
-	constructor(private _controllerModel: ControllerModel, info: ResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
-		super(info, registration);
+	constructor(private _controllerModel: ControllerModel, private _miaaInfo: MiaaResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
+		super(_miaaInfo, registration);
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
 
@@ -155,83 +157,58 @@ export class MiaaModel extends ResourceModel {
 		if (this._connectionProfile) {
 			return;
 		}
-		let connection: azdata.connection.ConnectionProfile | azdata.connection.Connection | undefined;
 
+		const ipAndPort = parseIpAndPort(this.config?.status.externalEndpoint || '');
+		let connectionProfile: azdata.IConnectionProfile | undefined = {
+			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
+			databaseName: '',
+			authenticationType: 'SqlLogin',
+			providerName: 'MSSQL',
+			connectionName: '',
+			userName: this._miaaInfo.userName || '',
+			password: '',
+			savePassword: true,
+			groupFullName: undefined,
+			saveProfile: true,
+			id: '',
+			groupId: undefined,
+			options: {}
+		};
+
+		// If we have the ID stored then try to retrieve the password from previous connections
 		if (this.info.connectionId) {
 			try {
-				const connections = await azdata.connection.getConnections();
-				const existingConnection = connections.find(conn => conn.connectionId === this.info.connectionId);
-				if (existingConnection) {
-					const credentials = await azdata.connection.getCredentials(this.info.connectionId);
-					if (credentials) {
-						existingConnection.options['password'] = credentials.password;
-						connection = existingConnection;
-					} else {
-						// We need the password so prompt the user for it
-						const connectionProfile: azdata.IConnectionProfile = {
-							serverName: existingConnection.options['serverName'],
-							databaseName: existingConnection.options['databaseName'],
-							authenticationType: existingConnection.options['authenticationType'],
-							providerName: 'MSSQL',
-							connectionName: '',
-							userName: existingConnection.options['user'],
-							password: '',
-							savePassword: false,
-							groupFullName: undefined,
-							saveProfile: true,
-							id: '',
-							groupId: undefined,
-							options: existingConnection.options
-						};
-						connection = await azdata.connection.openConnectionDialog(['MSSQL'], connectionProfile);
+				const credentialProvider = await azdata.credentials.getProvider(credentialNamespace);
+				const credentials = await credentialProvider.readCredential(createCredentialId(this._controllerModel.info.id, this.info.resourceType, this.info.name));
+				if (credentials.password) {
+					// Try to connect to verify credentials are still valid
+					connectionProfile.password = credentials.password;
+					// If we don't have a username for some reason then just continue on and we'll prompt for the username below
+					if (connectionProfile.userName) {
+						const result = await azdata.connection.connect(connectionProfile, false, false);
+						if (!result.connected) {
+							vscode.window.showErrorMessage(loc.connectToSqlFailed(connectionProfile.serverName, result.errorMessage));
+							const connectToSqlDialog = new ConnectToSqlDialog(this._controllerModel, this);
+							connectToSqlDialog.showDialog(connectionProfile);
+							connectionProfile = await connectToSqlDialog.waitForClose();
+						}
 					}
 				}
 			} catch (err) {
-				// ignore - the connection may not necessarily exist anymore and in that case we'll just reprompt for a connection
+				console.warn(`Unexpected error fetching password for MIAA instance ${err}`);
+				// ignore - something happened fetching the password so just reprompt
 			}
 		}
 
-		if (!connection) {
-			// We need the password so prompt the user for it
-			const connectionProfile: azdata.IConnectionProfile = {
-				// TODO chgagnon fill in external IP and port
-				// serverName: (this.registration.externalIp && this.registration.externalPort) ? `${this.registration.externalIp},${this.registration.externalPort}` : '',
-				serverName: '',
-				databaseName: '',
-				authenticationType: 'SqlLogin',
-				providerName: 'MSSQL',
-				connectionName: '',
-				userName: 'sa',
-				password: '',
-				savePassword: true,
-				groupFullName: undefined,
-				saveProfile: true,
-				id: '',
-				groupId: undefined,
-				options: {}
-			};
-			// Weren't able to load the existing connection so prompt user for new one
-			connection = await azdata.connection.openConnectionDialog(['MSSQL'], connectionProfile);
+		if (!connectionProfile?.userName || !connectionProfile?.password) {
+			// Need to prompt user for password since we don't have one stored
+			const connectToSqlDialog = new ConnectToSqlDialog(this._controllerModel, this);
+			connectToSqlDialog.showDialog(connectionProfile);
+			connectionProfile = await connectToSqlDialog.waitForClose();
 		}
 
-		if (connection) {
-			const profile = {
-				// The option name might be different here based on where it came from
-				serverName: connection.options['serverName'] || connection.options['server'],
-				databaseName: connection.options['databaseName'] || connection.options['database'],
-				authenticationType: connection.options['authenticationType'],
-				providerName: 'MSSQL',
-				connectionName: '',
-				userName: connection.options['user'],
-				password: connection.options['password'],
-				savePassword: false,
-				groupFullName: undefined,
-				saveProfile: true,
-				id: connection.connectionId,
-				groupId: undefined,
-				options: connection.options
-			};
-			this.updateConnectionProfile(profile);
+		if (connectionProfile) {
+			this.updateConnectionProfile(connectionProfile);
 		} else {
 			throw new UserCancelledError();
 		}
@@ -240,6 +217,7 @@ export class MiaaModel extends ResourceModel {
 	private async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
 		this._connectionProfile = connectionProfile;
 		this.info.connectionId = connectionProfile.id;
+		this._miaaInfo.userName = connectionProfile.userName;
 		await this._treeDataProvider.saveControllers();
 	}
 }

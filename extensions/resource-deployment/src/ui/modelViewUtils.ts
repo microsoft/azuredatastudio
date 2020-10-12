@@ -3,27 +3,29 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
+import { azureResource } from 'azureResource';
 import * as fs from 'fs';
-import { EOL, homedir as os_homedir } from 'os';
+import { EOL } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { azureResource } from 'azureResource';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
-import { assert, getDateTimeString, getErrorMessage } from '../utils';
+import { KubeCtlTool, KubeCtlToolName } from '../services/tools/kubeCtlTool';
+import { IToolsService } from '../services/toolsService';
+import { getDateTimeString, getErrorMessage, throwUnless } from '../common/utils';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
-import { IToolsService } from '../services/toolsService';
-import { KubeCtlToolName, KubeCtlTool } from '../services/tools/kubeCtlTool';
+import { optionsSourcesService } from '../services/optionSourcesService';
+import { IOptionsSourceProvider } from 'resource-deployment';
 
 const localize = nls.loadMessageBundle();
 
 export type Validator = () => { valid: boolean, message: string };
-export type InputValueTransformer = (inputValue: string) => string;
+export type InputValueTransformer = (inputValue: string) => string | Promise<string>;
 export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder;
 export type InputComponentInfo = {
 	component: InputComponent;
@@ -116,7 +118,16 @@ interface ContextBase {
 	onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo) => void;
 }
 
-export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValue?: string, ariaLabel: string, required?: boolean, placeHolder?: string, width?: string, enabled?: boolean }): azdata.InputBoxComponent {
+export function createTextInput(view: azdata.ModelView, inputInfo: {
+	defaultValue?: string,
+	ariaLabel: string,
+	required?: boolean,
+	placeHolder?: string,
+	width?: string,
+	enabled?: boolean,
+	validationRegex?: RegExp,
+	validationErrorMessage?: string
+}): azdata.InputBoxComponent {
 	return view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		value: inputInfo.defaultValue,
 		ariaLabel: inputInfo.ariaLabel,
@@ -124,7 +135,13 @@ export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValu
 		required: inputInfo.required,
 		placeHolder: inputInfo.placeHolder,
 		width: inputInfo.width,
-		enabled: inputInfo.enabled
+		enabled: inputInfo.enabled,
+		validationErrorMessage: inputInfo.validationErrorMessage
+	}).withValidation(component => {
+		if (inputInfo.validationRegex?.test(component.value || '') === false) {
+			return false;
+		}
+		return true;
 	}).component();
 }
 
@@ -353,7 +370,7 @@ function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata
 async function processField(context: FieldContext): Promise<void> {
 	switch (context.fieldInfo.type) {
 		case FieldType.Options:
-			processOptionsTypeField(context);
+			await processOptionsTypeField(context);
 			break;
 		case FieldType.DateTimeText:
 			processDateTimeTextField(context);
@@ -390,12 +407,24 @@ async function processField(context: FieldContext): Promise<void> {
 			await processKubeStorageClassField(context);
 			break;
 		default:
-			throw new Error(localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", context.fieldInfo.type));
+			throw new Error(loc.unknownFieldTypeError(context.fieldInfo.type));
 	}
 }
 
-function processOptionsTypeField(context: FieldContext): void {
-	assert(context.fieldInfo.options !== undefined, `FieldInfo.options must be defined for FieldType:${FieldType.Options}`);
+function disableControlButtons(container: azdata.window.Dialog | azdata.window.Wizard): void {
+	if ('okButton' in container) {
+		container.okButton.enabled = false;
+	} else {
+		container.generateScriptButton.enabled = false;
+		container.doneButton.enabled = false;
+		container.nextButton.enabled = false;
+		container.backButton.enabled = false;
+		container.customButtons.forEach(b => b.enabled = false);
+	}
+}
+
+async function processOptionsTypeField(context: FieldContext): Promise<void> {
+	throwUnless(context.fieldInfo.options !== undefined, loc.optionsNotDefined(context.fieldInfo.type));
 	if (Array.isArray(context.fieldInfo.options)) {
 		context.fieldInfo.options = <OptionsInfo>{
 			values: context.fieldInfo.options,
@@ -403,17 +432,65 @@ function processOptionsTypeField(context: FieldContext): void {
 			optionsType: OptionsType.Dropdown
 		};
 	}
-	assert(typeof context.fieldInfo.options === 'object', `FieldInfo.options must be an object if it is not an array`);
-	assert('optionsType' in context.fieldInfo.options, `When FieldInfo.options is an object it must have 'optionsType' property`);
+	throwUnless(typeof context.fieldInfo.options === 'object', loc.optionsNotObjectOrArray);
+	throwUnless('optionsType' in context.fieldInfo.options, loc.optionsTypeNotFound);
+	if (context.fieldInfo.options.source?.providerId) {
+		try {
+			context.fieldInfo.options.source.provider = optionsSourcesService.getOptionsSource(context.fieldInfo.options.source.providerId);
+			context.fieldInfo.options.values = await context.fieldInfo.options.source.provider.getOptions();
+		}
+		catch (e) {
+			disableControlButtons(context.container);
+			context.container.message = {
+				text: getErrorMessage(e),
+				description: '',
+				level: azdata.window.MessageLevel.Error
+			};
+			context.fieldInfo.options.values = [];
+		}
+		context.fieldInfo.subFields = context.fieldInfo.subFields || [];
+	}
+	let optionsComponent: InputComponent;
 	if (context.fieldInfo.options.optionsType === OptionsType.Radio) {
-		processRadioOptionsTypeField(context);
+		optionsComponent = await processRadioOptionsTypeField(context);
 	} else {
-		assert(context.fieldInfo.options.optionsType === OptionsType.Dropdown, `When optionsType is not ${OptionsType.Radio} then it must be ${OptionsType.Dropdown}`);
-		processDropdownOptionsTypeField(context);
+		throwUnless(context.fieldInfo.options.optionsType === OptionsType.Dropdown, loc.optionsTypeRadioOrDropdown);
+		optionsComponent = processDropdownOptionsTypeField(context);
+	}
+	const optionsSource = context.fieldInfo.options.source;
+	if (optionsSource?.provider) {
+		const optionsSourceProvider = optionsSource.provider;
+		await Promise.all(Object.keys(context.fieldInfo.options.source?.variableNames ?? {}).map(async key => {
+			await configureOptionsSourceSubfields(context, optionsSource, key, optionsComponent, optionsSourceProvider);
+		}));
 	}
 }
 
-function processDropdownOptionsTypeField(context: FieldContext): void {
+async function configureOptionsSourceSubfields(context: FieldContext, optionsSource: IOptionsSource, variableKey: string, optionsComponent: InputComponent, optionsSourceProvider: IOptionsSourceProvider) {
+	context.fieldInfo.subFields!.push({
+		label: context.fieldInfo.label,
+		variableName: optionsSource.variableNames![variableKey]
+	});
+	context.onNewInputComponentCreated(optionsSource.variableNames![variableKey], {
+		component: optionsComponent,
+		inputValueTransformer: async (optionValue: string) => {
+			try {
+				return await optionsSourceProvider.getVariableValue!(variableKey, optionValue);
+			} catch (e) {
+				disableControlButtons(context.container);
+				context.container.message = {
+					text: getErrorMessage(e),
+					description: '',
+					level: azdata.window.MessageLevel.Error
+				};
+				return '';
+			}
+		},
+		isPassword: await optionsSourceProvider.getIsPassword!(variableKey)
+	});
+}
+
+function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDownComponent {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const options = context.fieldInfo.options as OptionsInfo;
 	const dropdown = createDropdown(context.view, {
@@ -427,6 +504,7 @@ function processDropdownOptionsTypeField(context: FieldContext): void {
 	dropdown.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: dropdown });
 	addLabelInputPairToContainer(context.view, context.components, label, dropdown, context.fieldInfo);
+	return dropdown;
 }
 
 function processDateTimeTextField(context: FieldContext): void {
@@ -460,6 +538,7 @@ function processNumberField(context: FieldContext): void {
 }
 
 function processTextField(context: FieldContext): void {
+	let validationRegex: RegExp | undefined = context.fieldInfo.textValidationRequired ? new RegExp(context.fieldInfo.textValidationRegex!) : undefined;
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const input = createTextInput(context.view, {
 		defaultValue: context.fieldInfo.defaultValue,
@@ -467,16 +546,16 @@ function processTextField(context: FieldContext): void {
 		required: context.fieldInfo.required,
 		placeHolder: context.fieldInfo.placeHolder,
 		width: context.fieldInfo.inputWidth,
-		enabled: context.fieldInfo.enabled
+		enabled: context.fieldInfo.enabled,
+		validationRegex: validationRegex,
+		validationErrorMessage: context.fieldInfo.textValidationDescription
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: input });
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo);
 
 	if (context.fieldInfo.textValidationRequired) {
-		let validationRegex: RegExp = new RegExp(context.fieldInfo.textValidationRegex!);
-
 		const removeInvalidInputMessage = (): void => {
-			if (validationRegex.test(input.value!)) { // input is valid
+			if (validationRegex!.test(input.value!)) { // input is valid
 				removeValidationMessage(context.container, context.fieldInfo.textValidationDescription!);
 			}
 		};
@@ -486,7 +565,7 @@ function processTextField(context: FieldContext): void {
 		}));
 
 		const inputValidator: Validator = (): { valid: boolean; message: string; } => {
-			const inputIsValid = validationRegex.test(input.value!);
+			const inputIsValid = validationRegex!.test(input.value!);
 			return { valid: inputIsValid, message: context.fieldInfo.textValidationDescription! };
 		};
 		context.onNewValidatorCreated(inputValidator);
@@ -579,8 +658,8 @@ function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
 	const readOnlyField = processReadonlyTextField(context, false /*allowEvaluation*/);
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
 		component: readOnlyField.text!,
-		inputValueTransformer: () => {
-			readOnlyField.text!.value = substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
+		inputValueTransformer: async () => {
+			readOnlyField.text!.value = await substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
 			return readOnlyField.text?.value!;
 		}
 	});
@@ -596,14 +675,15 @@ function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
  * @param inputValue
  * @param inputComponents
  */
-function substituteVariableValues(inputComponents: InputComponents, inputValue?: string): string | undefined {
-	Object.keys(inputComponents)
+async function substituteVariableValues(inputComponents: InputComponents, inputValue?: string): Promise<string | undefined> {
+	await Promise.all(Object.keys(inputComponents)
 		.filter(key => key.startsWith(NoteBookEnvironmentVariablePrefix))
-		.forEach(key => {
-			const value = getInputComponentValue(inputComponents, key) ?? '<undefined>';
+		.map(async key => {
+			const value = (await getInputComponentValue(inputComponents, key)) ?? '<undefined>';
 			const re: RegExp = new RegExp(`\\\$\\\(${key}\\\)`, 'gi');
 			inputValue = inputValue?.replace(re, value);
-		});
+		})
+	);
 	return inputValue;
 }
 
@@ -645,7 +725,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 			canSelectFiles: true,
 			canSelectFolders: false,
 			canSelectMany: false,
-			defaultUri: vscode.Uri.file(path.dirname(input.value || os_homedir())),
+			defaultUri: input.value ? vscode.Uri.file(path.dirname(input.value)) : undefined,
 			openLabel: loc.select,
 			filters: filter
 		});
@@ -925,6 +1005,7 @@ function createAzureSubscriptionDropdown(
 	subscriptionValueToSubscriptionMap: Map<string, azureResource.AzureResourceSubscription>): azdata.DropDownComponent {
 	const label = createLabel(context.view, {
 		text: loc.subscription,
+		description: loc.subscriptionDescription,
 		required: context.fieldInfo.required,
 		width: context.fieldInfo.labelWidth,
 		cssStyles: context.fieldInfo.labelCSSStyles
@@ -984,7 +1065,7 @@ async function handleSelectedAccountChanged(
 	}
 
 	try {
-		const response = await (await apiService.getAzurecoreApi()).getSubscriptions(selectedAccount, true);
+		const response = await apiService.azurecoreApi.getSubscriptions(selectedAccount, true, false);
 		if (!response) {
 			return;
 		}
@@ -1099,7 +1180,7 @@ async function handleSelectedSubscriptionChanged(context: AzureAccountFieldConte
 		return;
 	}
 	try {
-		const response = await (await apiService.getAzurecoreApi()).getResourceGroups(selectedAccount, selectedSubscription, true);
+		const response = await apiService.azurecoreApi.getResourceGroups(selectedAccount, selectedSubscription, true);
 		if (!response) {
 			return;
 		}
@@ -1150,8 +1231,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 		width: context.fieldInfo.labelWidth,
 		cssStyles: context.fieldInfo.labelCSSStyles
 	});
-	const azurecoreApi = await apiService.getAzurecoreApi();
-	const locationValues = context.fieldInfo.locations?.map(l => { return { name: l, displayName: azurecoreApi.getRegionDisplayName(l) }; });
+	const locationValues = context.fieldInfo.locations?.map(l => { return { name: l, displayName: apiService.azurecoreApi.getRegionDisplayName(l) }; });
 	const locationDropdown = createDropdown(context.view, {
 		defaultValue: locationValues?.find(l => l.name === context.fieldInfo.defaultValue),
 		width: context.fieldInfo.inputWidth,
@@ -1174,7 +1254,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 			label: label.value!,
 			variableName: context.fieldInfo.displayLocationVariableName
 		});
-		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, { component: locationDropdown, inputValueTransformer: (value => azurecoreApi.getRegionDisplayName(value)) });
+		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, { component: locationDropdown, inputValueTransformer: (value => apiService.azurecoreApi.getRegionDisplayName(value)) });
 	}
 	addLabelInputPairToContainer(context.view, context.components, label, locationDropdown, context.fieldInfo);
 	return locationDropdown;
@@ -1207,19 +1287,19 @@ export function getPasswordMismatchMessage(fieldName: string): string {
 	return localize('passwordNotMatch', "{0} doesn't match the confirmation password", fieldName);
 }
 
-export function setModelValues(inputComponents: InputComponents, model: Model): void {
-	Object.keys(inputComponents).forEach(key => {
-		const value = getInputComponentValue(inputComponents, key);
+export async function setModelValues(inputComponents: InputComponents, model: Model): Promise<void> {
+	await Promise.all(Object.keys(inputComponents).map(async key => {
+		const value = await getInputComponentValue(inputComponents, key);
 		model.setPropertyValue(key, value);
-	});
+	}));
 }
 
-function getInputComponentValue(inputComponents: InputComponents, key: string): string | undefined {
+async function getInputComponentValue(inputComponents: InputComponents, key: string): Promise<string | undefined> {
 	const input = inputComponents[key].component;
 	if (input === undefined) {
 		return undefined;
 	}
-	let value;
+	let value: string | undefined;
 	if (input instanceof RadioGroupLoadingComponentBuilder) {
 		value = input.value;
 	} else if ('checked' in input) { // CheckBoxComponent
@@ -1234,11 +1314,7 @@ function getInputComponentValue(inputComponents: InputComponents, key: string): 
 	} else {
 		throw new Error(`Unknown input type with ID ${input.id}`);
 	}
-	const inputValueTransformer = inputComponents[key].inputValueTransformer;
-	if (inputValueTransformer) {
-		value = inputValueTransformer(value || '');
-	}
-	return value;
+	return inputComponents[key].inputValueTransformer ? await inputComponents[key].inputValueTransformer!(value ?? '') : value;
 }
 
 export function isInputBoxEmpty(input: azdata.InputBoxComponent): boolean {

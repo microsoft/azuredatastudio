@@ -180,6 +180,7 @@ describe('Manage Package Dialog', () => {
 		});
 		let declarativeTable: () => azdata.DeclarativeTableComponent = () => Object.assign({}, componentBase, {
 			onDataChanged: undefined!,
+			onRowSelected: undefined!,
 			data: [],
 			columns: []
 		});
@@ -264,6 +265,7 @@ describe('Manage Package Dialog', () => {
 			validate: undefined!,
 			initializeModel: () => { return Promise.resolve(); },
 			modelBuilder: {
+				listView: undefined!,
 				radioCardGroup: undefined!,
 				navContainer: undefined!,
 				divContainer: undefined!,

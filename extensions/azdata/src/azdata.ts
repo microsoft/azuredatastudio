@@ -4,16 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdataExt from 'azdata-ext';
+import * as fs from 'fs';
 import * as os from 'os';
+import * as path from 'path';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
+import { getPlatformDownloadLink, getPlatformReleaseVersion } from './azdataReleaseInfo';
 import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
-import { getErrorMessage, searchForCmd } from './common/utils';
-import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataHostname, azdataInstallKey, azdataReleaseJson, azdataUpdateKey, azdataUri, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
+import { getErrorMessage, NoAzdataError, searchForCmd } from './common/utils';
+import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
-import * as fs from 'fs';
 
 const enum AzdataDeployOption {
 	dontPrompt = 'dontPrompt',
@@ -24,9 +26,6 @@ const enum AzdataDeployOption {
  * Interface for an object to interact with the azdata tool installed on the box.
  */
 export interface IAzdataTool extends azdataExt.IAzdataApi {
-	path: string,
-	cachedVersion: SemVer
-
 	/**
 	 * Executes azdata with the specified arguments (e.g. --version) and returns the result
 	 * @param args The args to pass to azdata
@@ -38,10 +37,27 @@ export interface IAzdataTool extends azdataExt.IAzdataApi {
 /**
  * An object to interact with the azdata tool installed on the box.
  */
-export class AzdataTool implements IAzdataTool {
-	public cachedVersion: SemVer;
-	constructor(public path: string, version: string) {
-		this.cachedVersion = new SemVer(version);
+export class AzdataTool implements azdataExt.IAzdataApi {
+
+	private _semVersion: SemVer;
+	constructor(private _path: string, version: string) {
+		this._semVersion = new SemVer(version);
+	}
+
+	/**
+	 * The semVersion corresponding to this installation of azdata. version() method should have been run
+	 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
+	 * Azdata has gotten reinstalled in the background after this IAzdataApi object was constructed.
+	 */
+	public async getSemVersion(): Promise<SemVer> {
+		return this._semVersion;
+	}
+
+	/**
+	 * gets the path where azdata tool is installed
+	 */
+	public async getPath(): Promise<string> {
+		return this._path;
 	}
 
 	public arc = {
@@ -78,11 +94,44 @@ export class AzdataTool implements IAzdataTool {
 		},
 		postgres: {
 			server: {
+				delete: async (name: string) => {
+					return this.executeCommand<void>(['arc', 'postgres', 'server', 'delete', '-n', name]);
+				},
 				list: async () => {
 					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list']);
 				},
 				show: async (name: string) => {
 					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name]);
+				},
+				edit: async (
+					name: string,
+					args: {
+						adminPassword?: boolean,
+						coresLimit?: string,
+						coresRequest?: string,
+						engineSettings?: string,
+						extensions?: string,
+						memoryLimit?: string,
+						memoryRequest?: string,
+						noWait?: boolean,
+						port?: number,
+						replaceEngineSettings?: boolean,
+						workers?: number
+					},
+					additionalEnvVars?: { [key: string]: string }) => {
+					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', name];
+					if (args.adminPassword) { argsArray.push('--admin-password'); }
+					if (args.coresLimit !== undefined) { argsArray.push('--cores-limit', args.coresLimit); }
+					if (args.coresRequest !== undefined) { argsArray.push('--cores-request', args.coresRequest); }
+					if (args.engineSettings !== undefined) { argsArray.push('--engine-settings', args.engineSettings); }
+					if (args.extensions !== undefined) { argsArray.push('--extensions', args.extensions); }
+					if (args.memoryLimit !== undefined) { argsArray.push('--memory-limit', args.memoryLimit); }
+					if (args.memoryRequest !== undefined) { argsArray.push('--memory-request', args.memoryRequest); }
+					if (args.noWait) { argsArray.push('--no-wait'); }
+					if (args.port !== undefined) { argsArray.push('--port', args.port.toString()); }
+					if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
+					if (args.workers !== undefined) { argsArray.push('--workers', args.workers.toString()); }
+					return this.executeCommand<void>(argsArray, additionalEnvVars);
 				}
 			}
 		},
@@ -110,8 +159,8 @@ export class AzdataTool implements IAzdataTool {
 	 * It also updates the cachedVersion property based on the return value from the tool.
 	 */
 	public async version(): Promise<azdataExt.AzdataOutput<string>> {
-		const output = await executeAzdataCommand(`"${this.path}"`, ['--version']);
-		this.cachedVersion = new SemVer(parseVersion(output.stdout));
+		const output = await executeAzdataCommand(`"${this._path}"`, ['--version']);
+		this._semVersion = new SemVer(parseVersion(output.stdout));
 		return {
 			logs: [],
 			stdout: output.stdout.split(os.EOL),
@@ -122,7 +171,7 @@ export class AzdataTool implements IAzdataTool {
 
 	public async executeCommand<R>(args: string[], additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<R>> {
 		try {
-			const output = JSON.parse((await executeAzdataCommand(`"${this.path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
+			const output = JSON.parse((await executeAzdataCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
 			return {
 				logs: <string[]>output.log,
 				stdout: <string[]>output.stdout,
@@ -136,19 +185,19 @@ export class AzdataTool implements IAzdataTool {
 					// to get the correct stderr out. The actual value we get is something like
 					// ERROR: { stderr: '...' }
 					// so we also need to trim off the start that isn't a valid JSON blob
-					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'))).stderr;
-				} catch (err) {
+					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'), err.stderr.indexOf('}') + 1)).stderr;
+				} catch {
 					// it means this was probably some other generic error (such as command not being found)
 					// check if azdata still exists if it does then rethrow the original error if not then emit a new specific error.
 					try {
-						await fs.promises.access(this.path);
+						await fs.promises.access(this._path);
 						//this.path exists
-						throw err; // rethrow the error
 					} catch (e) {
 						// this.path does not exist
 						await vscode.commands.executeCommand('setContext', azdataFound, false);
-						throw (loc.noAzdata);
+						throw new NoAzdataError();
 					}
+					throw err; // rethrow the original error
 				}
 
 			}
@@ -176,7 +225,7 @@ export async function findAzdata(): Promise<IAzdataTool> {
 	try {
 		const azdata = await findSpecificAzdata();
 		await vscode.commands.executeCommand('setContext', azdataFound, true); // save a context key that azdata was found so that command for installing azdata is no longer available in commandPalette and that for updating it is.
-		Logger.log(loc.foundExistingAzdata(azdata.path, azdata.cachedVersion.raw));
+		Logger.log(loc.foundExistingAzdata(await azdata.getPath(), (await azdata.getSemVersion()).raw));
 		return azdata;
 	} catch (err) {
 		Logger.log(loc.couldNotFindAzdata(err));
@@ -262,12 +311,12 @@ export async function checkAndInstallAzdata(userRequested: boolean = false): Pro
  */
 export async function checkAndUpdateAzdata(currentAzdata?: IAzdataTool, userRequested: boolean = false): Promise<boolean> {
 	if (currentAzdata !== undefined) {
-		const newVersion = await discoverLatestAvailableAzdataVersion();
-		if (newVersion.compare(currentAzdata.cachedVersion) === 1) {
-			Logger.log(loc.foundAzdataVersionToUpdateTo(newVersion.raw, currentAzdata.cachedVersion.raw));
-			return await promptToUpdateAzdata(newVersion.raw, userRequested);
+		const newSemVersion = await discoverLatestAvailableAzdataVersion();
+		if (newSemVersion.compare(await currentAzdata.getSemVersion()) === 1) {
+			Logger.log(loc.foundAzdataVersionToUpdateTo(newSemVersion.raw, (await currentAzdata.getSemVersion()).raw));
+			return await promptToUpdateAzdata(newSemVersion.raw, userRequested);
 		} else {
-			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.cachedVersion.raw));
+			Logger.log(loc.currentlyInstalledVersionIsLatest((await currentAzdata.getSemVersion()).raw));
 		}
 	} else {
 		Logger.log(loc.updateCheckSkipped);
@@ -297,6 +346,7 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
 		? [loc.yes, loc.no]
 		: [loc.yes, loc.askLater, loc.doNotAskAgain];
 	if (config === AzdataDeployOption.prompt) {
+		Logger.log(loc.promptForAzdataInstallLog);
 		response = await vscode.window.showErrorMessage(loc.promptForAzdataInstall, ...responses);
 		Logger.log(loc.userResponseToInstallPrompt(response));
 	}
@@ -340,6 +390,7 @@ async function promptToUpdateAzdata(newVersion: string, userRequested: boolean =
 		? [loc.yes, loc.no]
 		: [loc.yes, loc.askLater, loc.doNotAskAgain];
 	if (config === AzdataDeployOption.prompt) {
+		Logger.log(loc.promptForAzdataUpdateLog(newVersion));
 		response = await vscode.window.showInformationMessage(loc.promptForAzdataUpdate(newVersion), ...responses);
 		Logger.log(loc.userResponseToUpdatePrompt(response));
 	}
@@ -362,15 +413,26 @@ async function promptToUpdateAzdata(newVersion: string, userRequested: boolean =
 	return false;
 }
 
+
+
 /**
- * Prompts user to accept EULA it if was not previously accepted. Stores and returns the user response to EULA prompt.
+ *	Returns true if Eula has been accepted.
+ *
+ * @param memento The memento that stores the eulaAccepted state
+ */
+export function isEulaAccepted(memento: vscode.Memento): boolean {
+	return !!memento.get<boolean>(eulaAccepted);
+}
+
+/**
+ * Prompts user to accept EULA. Stores and returns the user response to EULA prompt.
  * @param memento - memento where the user response is stored.
  * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
+ * @param requireUserAction - if the prompt is required to be acted upon by the user. This is typically 'true' when this method is called to address an Error when the EULA needs to be accepted to proceed.
  * pre-requisite, the calling code has to ensure that the eula has not yet been previously accepted by the user.
  * returns true if the user accepted the EULA.
  */
-
-export async function promptForEula(memento: vscode.Memento, userRequested: boolean = false): Promise<boolean> {
+export async function promptForEula(memento: vscode.Memento, userRequested: boolean = false, requireUserAction: boolean = false): Promise<boolean> {
 	let response: string | undefined = loc.no;
 	const config = <AzdataDeployOption>getConfig(azdataAcceptEulaKey);
 	if (userRequested) {
@@ -383,7 +445,9 @@ export async function promptForEula(memento: vscode.Memento, userRequested: bool
 	if (config === AzdataDeployOption.prompt || userRequested) {
 		Logger.show();
 		Logger.log(loc.promptForEulaLog(microsoftPrivacyStatementUrl, eulaUrl));
-		response = await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), ...responses);
+		response = requireUserAction
+			? await vscode.window.showErrorMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), ...responses)
+			: await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), ...responses);
 		Logger.log(loc.userResponseToEulaPrompt(response));
 	}
 	if (response === loc.doNotAskAgain) {
@@ -400,9 +464,16 @@ export async function promptForEula(memento: vscode.Memento, userRequested: bool
  * Downloads the Windows installer and runs it
  */
 async function downloadAndInstallAzdataWin32(): Promise<void> {
+	const downLoadLink = await getPlatformDownloadLink();
 	const downloadFolder = os.tmpdir();
-	const downloadedFile = await HttpClient.downloadFile(`${azdataHostname}/${azdataUri}`, downloadFolder);
-	await executeCommand('msiexec', ['/qn', '/i', downloadedFile]);
+	const downloadLogs = path.join(downloadFolder, 'ads_azdata_install_logs.log');
+	const downloadedFile = await HttpClient.downloadFile(downLoadLink, downloadFolder);
+
+	try {
+		await executeSudoCommand(`msiexec /qn /i "${downloadedFile}" /lvx "${downloadLogs}"`);
+	} catch (err) {
+		throw new Error(`${err.message}. See logs at ${downloadLogs} for more details.`);
+	}
 }
 
 /**
@@ -475,25 +546,8 @@ export async function discoverLatestAvailableAzdataVersion(): Promise<SemVer> {
 		// However, doing discovery that way required apt update to be performed which requires sudo privileges. At least currently this code path
 		// gets invoked on extension start up and prompt user for sudo privileges is annoying at best. So for now basing linux discovery also on a releaseJson file.
 		default:
-			return await discoverLatestAzdataVersionFromJson();
+			return await getPlatformReleaseVersion();
 	}
-}
-
-/**
- * Gets the latest azdata version from a json document published by azdata release
- */
-async function discoverLatestAzdataVersionFromJson(): Promise<SemVer> {
-	// get version information for current platform from http://aka.ms/azdata/release.json
-	const fileContents = await HttpClient.getTextContent(`${azdataHostname}/${azdataReleaseJson}`);
-	let azdataReleaseInfo;
-	try {
-		azdataReleaseInfo = JSON.parse(fileContents);
-	} catch (e) {
-		throw Error(`failed to parse the JSON of contents at: ${azdataHostname}/${azdataReleaseJson}, text being parsed: '${fileContents}', error:${getErrorMessage(e)}`);
-	}
-	const version = azdataReleaseInfo[process.platform]['version'];
-	Logger.log(loc.latestAzdataVersionAvailable(version));
-	return new SemVer(version);
 }
 
 /**

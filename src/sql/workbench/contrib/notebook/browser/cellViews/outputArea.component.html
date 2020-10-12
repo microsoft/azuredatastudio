@@ -6,7 +6,7 @@
 -->
 <div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: column">
 	<div #outputarea link-handler [isTrusted]="isTrusted" [notebookUri]="notebookUri" class="notebook-output" style="flex: 0 0 auto;">
-		<output-component *ngFor="let output of cellModel.outputs" [cellOutput]="output" [trustedMode] = "cellModel.trustedMode" [cellModel]="cellModel" [activeCellId]="activeCellId">
+		<output-component *ngFor="let output of cellModel.outputs" [cellOutput]="output" [trustedMode] = "cellModel.trustedMode" [cellModel]="cellModel" [activeCellId]="activeCellId" [batchId]="output.batchId" [id]="output.id" [queryRunnerUri]="output.queryRunnerUri">
 		</output-component>
 	</div>
 </div>

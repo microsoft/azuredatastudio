@@ -7,8 +7,8 @@ import { ResourceType } from 'arc';
 import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
-import { getConnectionModeDisplayText, getResourceTypeIcon, parseInstanceName, resourceTypeToDisplayName } from '../../../common/utils';
-import { cssStyles, Endpoints, IconPathHelper, iconSize } from '../../../constants';
+import { getConnectionModeDisplayText, getResourceTypeIcon, resourceTypeToDisplayName } from '../../../common/utils';
+import { cssStyles, Endpoints, IconPathHelper, controllerTroubleshootDocsUrl, iconSize } from '../../../constants';
 import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
 import { DashboardPage } from '../../components/dashboardPage';
@@ -93,7 +93,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: cssStyles.tableRow
 				}, {
-					displayName: loc.compute,
+					displayName: loc.state,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '34%',
 					isReadOnly: true,
@@ -178,18 +178,30 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			this._openInAzurePortalButton.onDidClick(async () => {
 				const config = this._controllerModel.controllerConfig;
 				if (config) {
-					vscode.env.openExternal(vscode.Uri.parse(
+					await vscode.env.openExternal(vscode.Uri.parse(
 						`https://portal.azure.com/#resource/subscriptions/${config.spec.settings.azure.subscription}/resourceGroups/${config.spec.settings.azure.resourceGroup}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${config.metadata.name}`));
 				} else {
 					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}
 			}));
 
+		const troubleshootButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.troubleshoot,
+			iconPath: IconPathHelper.wrench
+		}).component();
+
+		this.disposables.push(
+			troubleshootButton.onDidClick(async () => {
+				await vscode.env.openExternal(vscode.Uri.parse(controllerTroubleshootDocsUrl));
+			})
+		);
+
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
 				{ component: newInstance },
 				{ component: refreshButton, toolbarSeparatorAfter: true },
-				{ component: this._openInAzurePortalButton }
+				{ component: this._openInAzurePortalButton, toolbarSeparatorAfter: true },
+				{ component: troubleshootButton }
 			]
 		).component();
 	}
@@ -219,26 +231,18 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 						iconHeight: iconSize,
 						iconWidth: iconSize
 					}).component();
-				let nameComponent: azdata.Component;
-				if (r.instanceType === ResourceType.postgresInstances) {
-					nameComponent = this.modelView.modelBuilder.text()
-						.withProperties<azdata.TextComponentProperties>({
-							value: r.instanceName || '',
-							CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
-						}).component();
-				} else {
-					nameComponent = this.modelView.modelBuilder.hyperlink()
-						.withProperties<azdata.HyperlinkComponentProperties>({
-							label: r.instanceName || '',
-							url: ''
-						}).component();
-					(<azdata.HyperlinkComponent>nameComponent).onDidClick(async () => {
-						await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', parseInstanceName(r.instanceName));
-					});
-				}
 
-				// TODO chgagnon
-				return [imageComponent, nameComponent, resourceTypeToDisplayName(r.instanceType), '-'/* loc.numVCores(r.vCores) */];
+				const nameComponent = this.modelView.modelBuilder.hyperlink()
+					.withProperties<azdata.HyperlinkComponentProperties>({
+						label: r.instanceName || '',
+						url: ''
+					}).component();
+
+				this.disposables.push(nameComponent.onDidClick(async () => {
+					await this._controllerModel.treeDataProvider.openResourceDashboard(this._controllerModel, r.instanceType || '', r.instanceName);
+				}));
+
+				return [imageComponent, nameComponent, resourceTypeToDisplayName(r.instanceType), r.state];
 			});
 		this._arcResourcesLoadingComponent.loading = !this._controllerModel.registrationsLastUpdated;
 	}

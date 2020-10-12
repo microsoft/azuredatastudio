@@ -33,7 +33,7 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 		});
 	}
 
-	public onLeave(): void {
+	public async onLeave(): Promise<void> {
 		this.wizard.wizardObject.message = { text: '' };
 	}
 

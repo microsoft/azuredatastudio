@@ -148,15 +148,15 @@ async function promptInputBox(title: string, options: vscode.InputBoxOptions): P
 }
 
 /**
- * Opens an input box prompting the user to enter in the name of a resource to delete
- * @param name The name of the resource to delete
+ * Opens an input box prompting the user to enter in the name of an instance to delete
+ * @param name The name of the instance to delete
  * @returns Promise resolving to true if the user confirmed the name, false if the input box was closed for any other reason
  */
-export async function promptForResourceDeletion(name: string): Promise<boolean> {
-	const title = loc.resourceDeletionWarning(name);
+export async function promptForInstanceDeletion(name: string): Promise<boolean> {
+	const title = loc.instanceDeletionWarning(name);
 	const options: vscode.InputBoxOptions = {
 		placeHolder: name,
-		validateInput: input => input !== name ? loc.invalidResourceDeletionName(name) : ''
+		validateInput: input => input !== name ? loc.invalidInstanceDeletionName(name) : ''
 	};
 
 	return await promptInputBox(title, options) !== undefined;
@@ -189,26 +189,13 @@ export async function promptAndConfirmPassword(validate: (input: string) => stri
 /**
  * Gets the message to display for a given error object that may be a variety of types.
  * @param error The error object
+ * @param useMessageWithLink Whether to use the messageWithLink - if available
  */
-export function getErrorMessage(error: any): string {
+export function getErrorMessage(error: any, useMessageWithLink: boolean = false): string {
+	if (useMessageWithLink && error.messageWithLink) {
+		return error.messageWithLink;
+	}
 	return error.message ?? error;
-}
-
-/**
- * Parses an instance name from the controller. An instance name will either be just its name
- * e.g. myinstance or namespace_name e.g. mynamespace_my-instance.
- * @param instanceName The instance name in one of the formats described
- */
-export function parseInstanceName(instanceName: string | undefined): string {
-	instanceName = instanceName ?? '';
-	const parts: string[] = instanceName.split('_');
-	if (parts.length === 2) {
-		instanceName = parts[1];
-	}
-	else if (parts.length > 2) {
-		throw new Error(`Cannot parse resource '${instanceName}'. Acceptable formats are 'namespace_name' or 'name'.`);
-	}
-	return instanceName;
 }
 
 /**
@@ -224,4 +211,22 @@ export function parseIpAndPort(address: string): { ip: string, port: string } {
 		ip: sections[0],
 		port: sections[1]
 	};
+}
+
+export function createCredentialId(controllerId: string, resourceType: string, instanceName: string): string {
+	return `${controllerId}::${resourceType}::${instanceName}`;
+}
+
+/**
+ * Throws an Error with given {@link message} unless {@link condition} is true.
+ * This also tells the typescript compiler that the condition is 'truthy' in the remainder of the scope
+ * where this function was called.
+ *
+ * @param condition
+ * @param message
+ */
+export function throwUnless(condition: boolean, message?: string): asserts condition {
+	if (!condition) {
+		throw new Error(message);
+	}
 }

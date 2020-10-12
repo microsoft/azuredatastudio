@@ -27,6 +27,12 @@ export class TestClusterController implements bdc.IClusterController {
 	getKnoxUsername(clusterUsername: string): Promise<string> {
 		return Promise.resolve('knoxUsername');
 	}
+	getEndPoints(promptConnect?: boolean): Promise<bdc.IEndPointsResponse> {
+		return Promise.resolve( {
+			response: undefined,
+			endPoints: []
+		});
+	}
 }
 
 describe('Jupyter Session Manager', function (): void {
@@ -180,7 +186,8 @@ describe('Jupyter Session', function (): void {
 
 		// When I call changeKernel on the wrapper
 		let kernel = await session.changeKernel({
-			name: 'python'
+			name: 'python',
+			display_name: 'Python'
 		});
 		// Then I expect it to have the ID, and only be called once
 		should(kernel.id).equal('id');

@@ -7,8 +7,9 @@
 
         <key>fileTypes</key>
         <array>
-            <string>csl</string>
+            <string>kql</string>
             <string>kusto</string>
+			<string>csl</string>
         </array>
 
         <key>name</key>
@@ -70,7 +71,7 @@
                 <dict>
                     <!-- timespan literals
                     -  https://docs.microsoft.com/en-us/azure/kusto/query/scalar-data-types/timespan#timespan-literals
-                    -->
+					-->
                     <key>match</key>
                     <string>(?<=\.\d|\d|\d\W)(d|h|m|s|ms|microsecond|tick|seconds)\b</string>
                     <key>name</key>
@@ -230,9 +231,9 @@
                 <string>keyword.control.kusto</string>
             </dict>
             <dict>
-                <!-- User-defined functions
+                 <!-- User-defined functions
                     -  https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions
-                -->
+				-->
                 <key>match</key>
                 <string>(?<=let ).+(?=\W*=)</string>
                 <key>name</key>

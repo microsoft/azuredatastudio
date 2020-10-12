@@ -8,17 +8,18 @@ import * as vscode from 'vscode';
 import * as templates from '../templates/templates';
 import * as constants from '../common/constants';
 import * as path from 'path';
-import * as glob from 'fast-glob';
 import * as newProjectTool from '../tools/newProjectTool';
 
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { getErrorMessage } from '../common/utils';
+import { getErrorMessage, getSqlProjectFilesInFolder } from '../common/utils';
 import { ProjectsController } from './projectController';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { NetCoreTool } from '../tools/netcoreTool';
 import { Project } from '../models/project';
 import { FileNode, FolderNode } from '../models/tree/fileFolderTreeItem';
 import { IconPathHelper } from '../common/iconHelper';
+import { IProjectProvider } from 'dataworkspace';
+import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
 
 const SQL_DATABASE_PROJECTS_VIEW_ID = 'sqlDatabaseProjectsView';
 
@@ -46,8 +47,9 @@ export default class MainController implements vscode.Disposable {
 	public deactivate(): void {
 	}
 
-	public async activate(): Promise<void> {
+	public async activate(): Promise<IProjectProvider> {
 		await this.initializeDatabaseProjects();
+		return new SqlDatabaseProjectProvider();
 	}
 
 	private async initializeDatabaseProjects(): Promise<void> {
@@ -76,6 +78,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.editProjectFile', async (node: BaseProjectTreeItem) => { await this.projectsController.editProjectFile(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: BaseProjectTreeItem) => { await this.projectsController.delete(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: BaseProjectTreeItem) => { await this.projectsController.changeTargetPlatform(node); });
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
 
@@ -110,10 +113,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	public async loadProjectsInFolder(folderPath: string): Promise<void> {
-		// path needs to use forward slashes for glob to work
-		let escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
-		let sqlprojFilter = path.posix.join(escapedPath, '**', '*.sqlproj');
-		let results = await glob(sqlprojFilter);
+		const results = await getSqlProjectFilesInFolder(folderPath);
 
 		for (let f in results) {
 			// open the project, but don't switch focus to the file explorer viewlet

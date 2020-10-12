@@ -108,7 +108,6 @@ describe('File config page', function () {
 		should.notEqual(fileConfigPage.tableNameTextBox, undefined, 'tableNameTextBox should not be undefined');
 		should.notEqual(fileConfigPage.schemaDropdown, undefined, 'schemaDropdown should not be undefined');
 		should.notEqual(fileConfigPage.form, undefined, 'form should not be undefined');
-		should.notEqual(fileConfigPage.databaseLoader, undefined, 'databaseLoader should not be undefined');
 		should.notEqual(fileConfigPage.schemaLoader, undefined, 'schemaLoader should not be undefined');
 
 		await fileConfigPage.onPageLeave();

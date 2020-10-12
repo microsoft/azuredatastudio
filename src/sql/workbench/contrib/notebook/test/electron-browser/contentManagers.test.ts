@@ -27,7 +27,8 @@ let expectedNotebookContent: nb.INotebookContents = {
 	metadata: {
 		kernelspec: {
 			name: 'mssql',
-			language: 'sql'
+			language: 'sql',
+			display_name: 'SQL'
 		}
 	},
 	nbformat: 4,
@@ -117,7 +118,8 @@ suite('Local Content Manager', function (): void {
 			metadata: {
 				kernelspec: {
 					name: 'mssql',
-					language: 'sql'
+					language: 'sql',
+					display_name: 'SQL'
 				}
 			},
 			nbformat: 4,
@@ -158,7 +160,8 @@ suite('Local Content Manager', function (): void {
 			metadata: {
 				kernelspec: {
 					name: 'mssql',
-					language: 'sql'
+					language: 'sql',
+					display_name: 'SQL'
 				}
 			},
 			nbformat: 4,
@@ -191,7 +194,8 @@ suite('Local Content Manager', function (): void {
 			metadata: {
 				kernelspec: {
 					name: 'Python 3',
-					language: 'python3'
+					language: 'python3',
+					display_name: 'Python 3'
 				}
 			},
 			nbformat: 4,

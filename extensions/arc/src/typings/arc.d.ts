@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 declare module 'arc' {
-	import * as vscode from 'vscode';
 
 	/**
 	 * Covers defining what the arc extension exports to other extensions
@@ -20,6 +19,10 @@ declare module 'arc' {
 		sqlManagedInstances = 'sqlManagedInstances'
 	}
 
+	export type MiaaResourceInfo = ResourceInfo & {
+		userName?: string
+	};
+
 	export type ResourceInfo = {
 		name: string,
 		resourceType: ResourceType | string,
@@ -35,7 +38,13 @@ declare module 'arc' {
 		resources: ResourceInfo[]
 	};
 
+	export interface DataController {
+		label: string,
+		info: ControllerInfo
+	}
 	export interface IExtension {
-		getRegisteredDataControllers(): Promise<ControllerInfo[]>;
+		getRegisteredDataControllers(): Promise<DataController[]>;
+		getControllerPassword(controllerInfo: ControllerInfo): Promise<string>;
+		reacquireControllerPassword(controllerInfo: ControllerInfo, password: string, retryCount?: number): Promise<string>;
 	}
 }

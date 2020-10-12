@@ -20,63 +20,84 @@
 	padding: 10px 16px 4px 16px;
 }
 
-.markdown-toolbar ul {
-	position: relative;
-}
-
-.markdown-toolbar .carbon-taskbar li.action-item {
-	display: inline-block;
+.markdown-toolbar .carbon-taskbar ul.actions-container li {
 	margin-right: 14px;
 }
-.markdown-toolbar .carbon-taskbar li:nth-child(1) {
+.markdown-toolbar .carbon-taskbar ul.actions-container li:nth-child(1) {
 	margin-right: 9px;
 }
-.markdown-toolbar .carbon-taskbar li:nth-child(2) {
+.markdown-toolbar .carbon-taskbar ul.actions-container li:nth-child(2) {
 	margin-right: 9px;
 }
-.markdown-toolbar .carbon-taskbar li.action-item .masked-pseudo-after.dropdown-arrow {
+.markdown-toolbar .carbon-taskbar ul.actions-container li:nth-last-child(-n+3) {
+	margin-left: auto;
+}
+.markdown-toolbar .carbon-taskbar ul.actions-container li:nth-last-child(-n+2) {
+	margin-left: initial;
+}
+.markdown-toolbar .carbon-taskbar ul.actions-container li:nth-last-child(-n+1) {
+	margin-left: initial;
+	margin-right: 0;
+}
+
+.markdown-toolbar .carbon-taskbar ul.actions-container li.action-item .masked-pseudo-after.dropdown-arrow {
 	background-color: transparent;
 	font-size: 14px;
 	height: 100%;
 	line-height: 20px;
 	width: 100%;
 }
-.markdown-toolbar .carbon-taskbar li.action-item .masked-pseudo-after.dropdown-arrow:after {
+.markdown-toolbar .carbon-taskbar ul.actions-container li.action-item .masked-pseudo-after.dropdown-arrow:after {
 	position: relative;
 	right: -6px;
 	top: -3px;
 	width: 26px;
 }
-.markdown-toolbar .carbon-taskbar li:last-child {
-	margin-right: 0;
-	position: absolute;
-	right: 0;
-}
 
-.markdown-toolbar .carbon-taskbar li a {
+.markdown-toolbar .carbon-taskbar a {
 	display: flex;
 	height: 20px;
 	width: 20px;
 }
+.markdown-toolbar a.active::after {
+	border-bottom-style: solid;
+	border-bottom-width: 2px;
+	bottom: -2px;
+	content: '';
+	display: block;
+	left: 50%;
+	position: absolute;
+	width: 32px;
+	transform: translateX(-50%);
+}
 
-.markdown-toolbar li a.codicon.masked-icon::before {
+.markdown-toolbar .codicon.masked-icon::before {
 	-webkit-mask-size: auto;
 	mask-size: auto;
 }
 
-.markdown-toolbar li a.codicon.code::before {
+.markdown-toolbar .codicon.code::before {
 	-webkit-mask-size: 88% 100%;
 	mask-size: 88% 100%;
 }
 
-.markdown-toolbar li a.codicon.insert-link::before {
+.markdown-toolbar .codicon.insert-link::before {
 	-webkit-mask-size: 80% 100%;
 	mask-size: 80% 100%;
 }
 
-.markdown-toolbar li a.codicon.ordered-list::before {
+.markdown-toolbar .codicon.ordered-list::before {
 	-webkit-mask-size: 86% 100%;
 	mask-size: 86% 100%;
+}
+
+.markdown-toolbar .codicon.show-markdown::before {
+	-webkit-mask-size: 100%;
+	mask-size: 100%;
+}
+.markdown-toolbar .codicon.show-text::before {
+	-webkit-mask-size: 100%;
+	mask-size: 100%;
 }
 
 text-cell-component .offscreen {

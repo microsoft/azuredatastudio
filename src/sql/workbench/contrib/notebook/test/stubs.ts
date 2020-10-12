@@ -43,13 +43,16 @@ export class NotebookModelStub implements INotebookModel {
 	get sessionLoadFinished(): Promise<void> {
 		throw new Error('method not implemented.');
 	}
+	get gridDataConversionComplete(): Promise<any[]> {
+		throw new Error('method not implemented.');
+	}
 	get notebookManagers(): INotebookManager[] {
 		throw new Error('method not implemented.');
 	}
 	get kernelChanged(): vsEvent.Event<nb.IKernelChangedArgs> {
 		throw new Error('method not implemented.');
 	}
-	get kernelsChanged(): vsEvent.Event<nb.IKernelSpec> {
+	get kernelsChanged(): vsEvent.Event<nb.IKernel> {
 		throw new Error('method not implemented.');
 	}
 	get layoutChanged(): vsEvent.Event<void> {

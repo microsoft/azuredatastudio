@@ -6,27 +6,46 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
+import { LoadingComponentProperties } from 'azdata';
 
 declare module 'azdata' {
 	/**
 	 * Namespace for connection management
 	 */
 	export namespace connection {
+		/**
+		 * Supported connection event types
+		 */
 		export type ConnectionEventType =
 			| 'onConnect'
 			| 'onDisconnect'
 			| 'onConnectionChanged';
 
+		/**
+		 * Connection Event Lister
+		 */
 		export interface ConnectionEventListener {
+			/**
+			 * Connection event handler
+			 * @param type Connection event type
+			 * @param ownerUri Connection's owner uri
+			 * @param args Connection profile
+			 */
 			onConnectionEvent(type: ConnectionEventType, ownerUri: string, args: IConnectionProfile): void;
 		}
 
 		/**
 		 * Register a connection event listener
+		 * @param listener The connection event listener
 		 */
-		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): void;
+		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): vscode.Disposable;
 
-		export function getConnection(uri: string): Thenable<ConnectionProfile>;
+		/**
+		 * Get connection profile by its owner uri
+		 * @param ownerUri The owner uri of the connection
+		 * @returns Promise to return the connection profile matching the ownerUri
+		 */
+		export function getConnection(ownerUri: string): Thenable<ConnectionProfile>;
 	}
 
 	export namespace nb {
@@ -43,6 +62,12 @@ declare module 'azdata' {
 
 		export interface IKernelChangedArgs {
 			nbKernelAlias?: string
+		}
+
+		export interface IExecuteResult {
+			data: any;
+			batchId?: number;
+			id?: number;
 		}
 	}
 
@@ -197,15 +222,24 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableColumn {
-		headerCssStyles?: { [key: string]: string };
-		rowCssStyles?: { [key: string]: string };
+		headerCssStyles?: CssStyles;
+		rowCssStyles?: CssStyles;
 		ariaLabel?: string;
 		showCheckAll?: boolean;
 		isChecked?: boolean;
 	}
 
+
 	export enum DeclarativeDataType {
 		component = 'component'
+	}
+
+	export type DeclarativeTableRowSelectedEvent = {
+		row: number
+	};
+
+	export interface DeclarativeTableComponent extends Component, DeclarativeTableProperties {
+		onRowSelected: vscode.Event<DeclarativeTableRowSelectedEvent>;
 	}
 
 	/*
@@ -232,6 +266,7 @@ declare module 'azdata' {
 
 	export interface ModelBuilder {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent, RadioCardGroupComponentProperties>;
+		listView(): ComponentBuilder<ListViewComponent, ListViewComponentProperties>;
 		tabbedPanel(): TabbedPanelComponentBuilder;
 		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
 		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
@@ -239,6 +274,9 @@ declare module 'azdata' {
 
 	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
 		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
+	}
+
+	export interface DropDownProperties extends LoadingComponentProperties {
 	}
 
 	export interface RadioCard {
@@ -265,7 +303,8 @@ declare module 'azdata' {
 		iconWidth?: string;
 		iconHeight?: string;
 		selectedCardId?: string;
-		orientation?: Orientation // Defaults to horizontal
+		orientation?: Orientation; // Defaults to horizontal
+		iconPosition?: 'top' | 'left'; // Defaults to top
 	}
 
 	export type RadioCardSelectionChangedEvent = { cardId: string; card: RadioCard };
@@ -281,13 +320,50 @@ declare module 'azdata' {
 
 	}
 
+	export interface ListViewComponentProperties extends ComponentProperties {
+		title?: ListViewTitle;
+		options: ListViewOption[];
+		selectedOptionId?: string;
+	}
+
+	export interface ListViewTitle {
+		text?: string;
+		style?: CssStyles;
+	}
+
+	export interface ListViewOption {
+		label: string;
+		id: string;
+	}
+
+	export type ListViewClickEvent = { id: string };
+
+	export interface ListViewComponent extends Component, ListViewComponentProperties {
+		onDidClick: vscode.Event<ListViewClickEvent>;
+	}
+
 	export interface SeparatorComponent extends Component {
 	}
 	export interface SeparatorComponentProperties extends ComponentProperties {
 
 	}
 
-	export interface DeclarativeTableProperties extends ComponentProperties {
+	export interface DeclarativeTableProperties {
+		/**
+		 * dataValues will only be used if data is an empty array
+		 */
+		dataValues?: DeclarativeTableCellValue[][];
+
+		/**
+		 * Should the table react to user selections
+		 */
+		selectEffect?: boolean; // Defaults to false
+	}
+
+	export interface DeclarativeTableCellValue {
+		value: string | number | boolean;
+		ariaLabel?: string;
+		style?: CssStyles
 	}
 
 	export interface ComponentProperties {
@@ -478,7 +554,13 @@ declare module 'azdata' {
 			selectTab(id: string): void;
 		}
 
-		export function createModelViewDashboard(title: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
+		/**
+		 *
+		 * @param title The title displayed in the editor tab for the dashboard
+		 * @param name The name used to identify this dashboard in telemetry
+		 * @param options Options to configure the dashboard
+		 */
+		export function createModelViewDashboard(title: string, name?: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
 
 		export interface Dialog {
 			/**
@@ -488,6 +570,10 @@ declare module 'azdata' {
 		}
 
 		export interface Wizard {
+			/**
+			 * The name used to identify the wizard in telemetry
+			 */
+			name?: string;
 			/**
 			 * Width of the wizard
 			 */
@@ -507,9 +593,20 @@ declare module 'azdata' {
 		/**
 		 * Create a wizard with the given title and width
 		 * @param title The title of the wizard
+		 * @param name The name used to identify the wizard in telemetry
 		 * @param width The width of the wizard, default value is 'narrow'
 		 */
-		export function createWizard(title: string, width?: DialogWidth): Wizard;
+		export function createWizard(title: string, name?: string, width?: DialogWidth): Wizard;
+	}
+
+	export namespace workspace {
+		/**
+		 * Create a new ModelView editor
+		 * @param title The title shown in the editor tab
+		 * @param options Options to configure the editor
+		 * @param name The name used to identify the editor in telemetry
+		 */
+		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions, name?: string,): ModelViewEditor;
 	}
 
 	export interface DashboardTab extends Tab {
@@ -635,6 +732,24 @@ declare module 'azdata' {
 		 */
 		delete?: boolean;
 	}
+
+	export interface ButtonProperties {
+		/**
+		* Specifies whether to use expanded layout or not.
+		*/
+		buttonType?: ButtonType;
+		/**
+		* Description text to display inside button element.
+		*/
+		description?: string;
+	}
+
+	export enum ButtonType {
+		File = 'File',
+		Normal = 'Normal',
+		Informational = 'Informational'
+	}
+
 	export interface DiffEditorComponent {
 		/**
 		 * Title of editor

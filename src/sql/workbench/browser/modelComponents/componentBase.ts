@@ -18,7 +18,6 @@ import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { firstIndex } from 'vs/base/common/arrays';
 import { IComponentDescriptor, IComponent, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
 
@@ -319,7 +318,7 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 		if (!componentDescriptor) {
 			return false;
 		}
-		let index = firstIndex(this.items, item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type);
+		let index = this.items.findIndex(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type);
 		if (index >= 0) {
 			this.items.splice(index, 1);
 			this._changeRef.detectChanges();
@@ -370,6 +369,17 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 			throw new Error(`Unable to set item layout - unknown item ${componentDescriptor.id}`);
 		}
 		return;
+	}
+
+	public mergeCss(...styles: azdata.CssStyles[]): azdata.CssStyles {
+		const x = styles.reduce((previous, current) => {
+			if (current) {
+				return Object.assign(previous, current);
+			}
+			return previous;
+		}, {});
+
+		return x;
 	}
 
 	protected onItemsUpdated(): void {

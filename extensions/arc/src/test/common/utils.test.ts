@@ -7,7 +7,7 @@ import { ResourceType } from 'arc';
 import 'mocha';
 import * as should from 'should';
 import * as vscode from 'vscode';
-import { getAzurecoreApi, getConnectionModeDisplayText, getDatabaseStateDisplayText, getErrorMessage, getResourceTypeIcon, parseEndpoint, parseInstanceName, parseIpAndPort, promptAndConfirmPassword, promptForResourceDeletion, resourceTypeToDisplayName } from '../../common/utils';
+import { getAzurecoreApi, getConnectionModeDisplayText, getDatabaseStateDisplayText, getErrorMessage, getResourceTypeIcon, parseEndpoint, parseIpAndPort, promptAndConfirmPassword, promptForInstanceDeletion, resourceTypeToDisplayName } from '../../common/utils';
 import { ConnectionMode as ConnectionMode, IconPathHelper } from '../../constants';
 import * as loc from '../../localizedConstants';
 import { MockInputBox } from '../stubs';
@@ -44,24 +44,6 @@ describe('parseEndpoint Method Tests', function (): void {
 
 	it('Should parse undefined endpoint correctly', function (): void {
 		should(parseEndpoint('')).deepEqual({ ip: '', port: '' });
-	});
-});
-
-describe('parseInstanceName Method Tests', () => {
-	it('Should parse valid instanceName with namespace correctly', function (): void {
-		should(parseInstanceName('mynamespace_myinstance')).equal('myinstance');
-	});
-
-	it('Should parse valid instanceName without namespace correctly', function (): void {
-		should(parseInstanceName('myinstance')).equal('myinstance');
-	});
-
-	it('Should return empty string when undefined value passed in', function (): void {
-		should(parseInstanceName(undefined)).equal('');
-	});
-
-	it('Should return empty string when empty string value passed in', function (): void {
-		should(parseInstanceName('')).equal('');
 	});
 });
 
@@ -140,7 +122,7 @@ describe('promptForResourceDeletion Method Tests', function (): void {
 	});
 
 	it('Resolves as true when value entered is correct', function (done): void {
-		promptForResourceDeletion('myname').then((value: boolean) => {
+		promptForInstanceDeletion('myname').then((value: boolean) => {
 			value ? done() : done(new Error('Expected return value to be true'));
 		});
 		mockInputBox.value = 'myname';
@@ -148,14 +130,14 @@ describe('promptForResourceDeletion Method Tests', function (): void {
 	});
 
 	it('Resolves as false when input box is closed early', function (done): void {
-		promptForResourceDeletion('myname').then((value: boolean) => {
+		promptForInstanceDeletion('myname').then((value: boolean) => {
 			!value ? done() : done(new Error('Expected return value to be false'));
 		});
 		mockInputBox.hide();
 	});
 
 	it('Validation message is set when value entered is incorrect', async function (): Promise<void> {
-		promptForResourceDeletion('myname');
+		promptForInstanceDeletion('myname');
 		mockInputBox.value = 'wrong value';
 		await mockInputBox.triggerAccept();
 		should(mockInputBox.validationMessage).not.be.equal('', 'Validation message should not be empty after incorrect value entered');
@@ -257,22 +239,6 @@ describe('getErrorMessage Method Tests', function () {
 	it('Error with no message', function (): void {
 		const error = new Error();
 		should(getErrorMessage(error)).equal(error.message);
-	});
-});
-
-describe('parseInstanceName Method Tests', function () {
-	it('2 part name', function (): void {
-		const name = 'MyName';
-		should(parseInstanceName(`MyNamespace_${name}`)).equal(name);
-	});
-
-	it('1 part name', function (): void {
-		const name = 'MyName';
-		should(parseInstanceName(name)).equal(name);
-	});
-
-	it('Invalid name', function (): void {
-		should(() => parseInstanceName('Some_Invalid_Name')).throwError();
 	});
 });
 

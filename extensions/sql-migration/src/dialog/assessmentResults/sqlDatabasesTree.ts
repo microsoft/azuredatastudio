@@ -16,31 +16,76 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 	private createTableComponent(view: azdata.ModelView): azdata.DeclarativeTableComponent {
 
-		const table = view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>(
+		const style: azdata.CssStyles = {
+			'border': 'none',
+			'text-align': 'left'
+		};
+
+		const table = view.modelBuilder.declarativeTable().withProps(
 			{
+				selectEffect: true,
 				columns: [
+					{
+						displayName: '',
+						valueType: azdata.DeclarativeDataType.boolean,
+						width: 5,
+						isReadOnly: false,
+						showCheckAll: true,
+						headerCssStyles: style,
+						ariaLabel: 'Database Migration Check' // TODO localize
+					},
 					{
 						displayName: 'Database', // TODO localize
 						valueType: azdata.DeclarativeDataType.string,
 						width: 50,
 						isReadOnly: true,
-						showCheckAll: true
+						headerCssStyles: style
 					},
 					{
 						displayName: '', // Incidents
 						valueType: azdata.DeclarativeDataType.string,
 						width: 5,
 						isReadOnly: true,
-						showCheckAll: false
+						headerCssStyles: style,
+						ariaLabel: 'Issue Count' // TODO localize
 					}
 				],
-				data: [
-					['DB1', '1'],
-					['DB2', '0']
+				dataValues: [
+					[
+						{
+							value: false,
+							style
+						},
+						{
+							value: 'DB1',
+							style
+						},
+						{
+							value: 1,
+							style
+						}
+					],
+					[
+						{
+							value: true,
+							style
+						},
+						{
+							value: 'DB2',
+							style
+						},
+						{
+							value: 2,
+							style
+						}
+					]
 				],
-				width: '200px'
 			}
 		);
+
+		table.component().onRowSelected(({ row }) => {
+			console.log(row);
+		});
 
 		return table.component();
 	}
