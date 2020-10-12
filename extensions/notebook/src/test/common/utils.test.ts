@@ -131,6 +131,12 @@ describe('Utils Tests', function () {
 			const randomSorted = ['0.1', '1.0.0', '1.0.1', '42', '100.0'];
 			should(utils.sortPackageVersions(random)).deepEqual(randomSorted);
 		});
+
+		it('versions with non-numeric components', () => {
+			const random = ['1.0.1h', '1.0.0', '42', '1.0.1b', '100.0', '0.1', '1.0.1'];
+			const randomSorted = ['0.1', '1.0.0', '1.0.1', '1.0.1b', '1.0.1h', '42', '100.0'];
+			should(utils.sortPackageVersions(random)).deepEqual(randomSorted);
+		});
 	});
 
 	describe('executeBufferedCommand', () => {
