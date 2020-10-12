@@ -267,15 +267,13 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._agreementContainer.clearItems();
 			this._optionsContainer.clearItems();
 			this.updateToolsDisplayTable();
+			this._dialogObject.okButton.enabled = false;
 		}
 	}
 
 	private selectResourceType(resourceType: ResourceType): void {
 		this._currentResourceTypeDisposables.forEach(disposable => disposable.dispose());
 		this._selectedResourceType = resourceType;
-		//handle special case when resource type has different OK button.
-		this._dialogObject.okButton.label = this._selectedResourceType.okButtonText || loc.select;
-
 		this._agreementCheckboxChecked = false;
 		this._agreementContainer.clearItems();
 		if (resourceType.agreement) {
@@ -298,13 +296,24 @@ export class ResourceTypePickerDialog extends DialogBase {
 					ariaLabel: option.displayName
 				}).component();
 
-				this._currentResourceTypeDisposables.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
+				this._currentResourceTypeDisposables.push(optionSelectBox.onValueChanged(() => {
+					this.updateOkButtonText();
+					this.updateToolsDisplayTable();
+				}));
+
 				this._optionDropDownMap.set(option.name, optionSelectBox);
 				const row = this._view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 				this._optionsContainer.addItem(row);
 			});
 		}
+		this.updateOkButtonText();
 		this.updateToolsDisplayTable();
+	}
+
+	private updateOkButtonText(): void {
+		//handle special case when resource type has different OK button.
+		let text = this.getCurrentOkText();
+		this._dialogObject.okButton.label = text || loc.select;
 	}
 
 	private updateToolsDisplayTable(): void {
@@ -479,6 +488,17 @@ export class ResourceTypePickerDialog extends DialogBase {
 		});
 
 		return this._selectedResourceType.getProvider(options)!;
+	}
+
+	private getCurrentOkText(): string {
+		const options: { option: string, value: string }[] = [];
+
+		this._optionDropDownMap.forEach((selectBox, option) => {
+			let selectedValue: azdata.CategoryValue = selectBox.value as azdata.CategoryValue;
+			options.push({ option: option, value: selectedValue.name });
+		});
+
+		return this._selectedResourceType.getOkButtonText(options)!;
 	}
 
 	protected async onComplete(): Promise<void> {
