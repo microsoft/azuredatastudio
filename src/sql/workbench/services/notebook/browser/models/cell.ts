@@ -459,6 +459,8 @@ export class CellModel extends Disposable implements ICellModel {
 		} finally {
 			this.disposeFuture();
 			this.fireExecutionStateChanged();
+			// Serialize cell output once the cell is done executing
+			this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 			this.notifyExecutionComplete();
 		}
 
@@ -534,9 +536,7 @@ export class CellModel extends Disposable implements ICellModel {
 			shouldScroll: !!shouldScroll
 		};
 		this._onOutputsChanged.fire(outputEvent);
-		if (this.outputs.length !== 0) {
-			this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
-		} else {
+		if (this.outputs.length === 0) {
 			this.sendChangeToNotebook(NotebookChangeType.CellOutputCleared);
 		}
 	}
@@ -584,7 +584,6 @@ export class CellModel extends Disposable implements ICellModel {
 						if (resultSet.batchId === newResultSet.batchId && resultSet.id === newResultSet.id) {
 							// If it does, update output with data resource and html table
 							this._outputs[i] = output;
-							this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 							added = true;
 							break;
 						}
