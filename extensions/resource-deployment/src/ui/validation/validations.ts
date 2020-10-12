@@ -3,9 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export type Validator = () => { valid: boolean, message: string };
-export type VariableValueGetter = (variable: string) => string | number | undefined;
-export type ValueGetter = () => string | number | undefined;
+export interface ValidationState {
+	valid: boolean;
+	message?: string;
+}
+
+export type Validator = () => Promise<ValidationState>;
+export type VariableValueGetter = (variable: string) => Promise<string | number | undefined>;
+export type ValueGetter = () => Promise<string | number | undefined>;
 
 export const enum ValidationType {
 	IsInteger = 'is_integer',
@@ -46,13 +51,10 @@ export abstract class Validation implements IValidationBase {
 	// gets the validator for this validation object
 	abstract getValidator(): Validator;
 
-	protected getValue(): string | number | undefined {
+	protected getValue(): string | number | undefined | Promise<string | number | undefined> {
 		return this._valueGetter();
 	}
 
-	public setValueGetter(valueGetter: ValueGetter): void {
-		this._valueGetter = valueGetter;
-	}
 	protected getVariableValue(variable: string): string | number | undefined | Promise<string | number | undefined> {
 		return this._variableValueGetter(variable);
 	}
@@ -68,18 +70,16 @@ export class IsIntegerValidation extends Validation implements IIsIntegerValidat
 		super(validation, valueGetter, variableValueGetter);
 	}
 
-	private isInteger(): boolean {
-		const value = this.getValue();
-		return (typeof value === 'number') ? Number.isInteger(value) : /^[-+]?\d+$/.test(value);
+	private async isInteger(): Promise<boolean> {
+		const value = await this.getValue();
+		return (typeof value === 'number') ? Number.isInteger(value) : /^[-+]?\d+$/.test(value!);
 	}
 
 	getValidator(): Validator {
-		return () => {
-			return {
-				valid: this.isInteger(),
-				message: this.description
-			};
-		};
+		return async () => Promise.resolve({
+			valid: await this.isInteger(),
+			message: this.description
+		});
 	}
 }
 
@@ -96,12 +96,10 @@ export class RegexValidation extends Validation implements IRegexValidation {
 	}
 
 	getValidator(): Validator {
-		return () => {
-			return {
-				valid: this.regex.test(this.getValue().toString()),
-				message: this.description
-			};
-		};
+		return async () => Promise.resolve({
+			valid: this.regex.test((await this.getValue())?.toString()!),
+			message: this.description
+		});
 	}
 }
 
@@ -117,26 +115,24 @@ export abstract class Comparison extends Validation implements IComparisonValida
 		this._target = validation.target;
 	}
 
-	abstract isComparisonSuccessful(): boolean;
+	abstract isComparisonSuccessful(): Promise<boolean>;
 	getValidator(): Validator {
-		return () => {
-			return {
-				valid: this.isComparisonSuccessful(),
-				message: this.description
-			};
-		};
+		return async () => Promise.resolve({
+			valid: await this.isComparisonSuccessful(),
+			message: this.description
+		});
 	}
 }
 
 export class LessThanOrEqualsValidation extends Comparison {
-	isComparisonSuccessful() {
-		return this.getValue() <= this.getVariableValue(this.target) ?? this.target; //if target is not a variable then compare to target itself
+	async isComparisonSuccessful() {
+		return (await this.getValue())! <= ((await this.getVariableValue(this.target)) ?? this.target); //if target is not a variable then compare to target itself
 	}
 }
 
 export class GreaterThanOrEqualsValidation extends Comparison {
-	isComparisonSuccessful() {
-		return this.getValue() >= this.getVariableValue(this.target) ?? this.target; //if target is not a variable then compare to target itself
+	async isComparisonSuccessful() {
+		return (await this.getValue())! >= ((await this.getVariableValue(this.target)) ?? this.target); //if target is not a variable then compare to target itself
 	}
 }
 
@@ -166,3 +162,12 @@ export function createValidation(validation: IValidation, valueGetter: ValueGett
 		default: throw new Error(`unknown validation type:${validation.type}`); //dev error
 	}
 }
+
+// export function validateField(component: InputComponent, context: ContextBase, ...validations: Validation[]) {
+// 	const message = context.container.message;
+// 	(<azdata.Component>component).updateProperty()
+// 	const evaluatedValidations = validations.map(validation => {
+// 		validation.getValidator()();
+// 	});
+// 	return true;
+// }

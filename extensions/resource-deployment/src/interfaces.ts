@@ -298,7 +298,7 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean;
 	isEvaluated?: boolean;
-	validations?: IValidation[]
+	validations?: IValidation[];
 }
 
 export interface KubeClusterContextFieldInfo extends FieldInfo {

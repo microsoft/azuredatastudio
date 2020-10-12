@@ -78,14 +78,14 @@ export class DeploymentInputDialog extends DialogBase {
 			},
 			toolsService: this.toolsService
 		});
-		this._dialogObject.registerCloseValidator(() => {
+		this._dialogObject.registerCloseValidator(async () => {
 			const messages: string[] = [];
-			validators.forEach(validator => {
-				const result = validator();
+			await Promise.all(validators.map(async validator => {
+				const result = await validator();
 				if (!result.valid) {
-					messages.push(result.message);
+					messages.push(result.message!);
 				}
-			});
+			}));
 			if (messages.length > 0) {
 				self._dialogObject.message = { level: azdata.window.MessageLevel.Error, text: messages.join(EOL) };
 			} else {

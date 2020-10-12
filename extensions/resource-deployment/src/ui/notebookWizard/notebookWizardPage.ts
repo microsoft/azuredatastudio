@@ -95,17 +95,17 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 			await setModelValues(this.wizard.inputComponents, this.wizard.model);
 		}
 
-		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
 			if (pcInfo.newPage > pcInfo.lastPage) {
 				const messages: string[] = [];
 
-				this.validators.forEach((validator) => {
-					const result = validator();
+				await Promise.all(this.validators.map(async (validator) => {
+					const result = await validator();
 					if (!result.valid) {
-						messages.push(result.message);
+						messages.push(result.message!);
 					}
-				});
+				}));
 
 				if (messages.length > 0) {
 					this.wizard.wizardObject.message = {
