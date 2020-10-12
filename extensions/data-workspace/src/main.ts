@@ -12,7 +12,7 @@ import { NewProjectDialog } from './dialogs/newProjectDialog';
 import { OpenProjectDialog } from './dialogs/openProjectDialog';
 
 export function activate(context: vscode.ExtensionContext): Promise<IExtension> {
-	const workspaceService = new WorkspaceService();
+	const workspaceService = new WorkspaceService(context);
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.newProject', async () => {

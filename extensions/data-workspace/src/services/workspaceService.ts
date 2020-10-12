@@ -18,6 +18,22 @@ const ProjectsConfigurationName = 'projects';
 export class WorkspaceService implements IWorkspaceService {
 	private _onDidWorkspaceProjectsChange: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void> = this._onDidWorkspaceProjectsChange?.event;
+	private tempProject = 'TempProject';
+
+	constructor(private _context: vscode.ExtensionContext) {
+		this.loadProject();
+	}
+
+	private async loadProject(): Promise<void> {
+		const tempProjectFile = this._context.globalState.get(this.tempProject);
+
+		if (tempProjectFile && vscode.workspace.workspaceFile) {
+			console.error('found something in tempProjects:' + JSON.stringify(tempProjectFile));
+			console.error('workspace file: ' + vscode.workspace.workspaceFile);
+			let workspaceFolders = vscode.workspace.workspaceFolders;
+			await this.addProjectsToWorkspace([vscode.Uri.file(<string>tempProjectFile)]);
+		}
+	}
 
 	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
 		if (!projectFiles || projectFiles.length === 0) {
@@ -25,7 +41,9 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 
 		if (!vscode.workspace.workspaceFile) {
-			await azdata.workspace.createWorkspace(vscode.Uri.file(path.dirname(projectFiles[0].fsPath)));
+			const projectFilePath = vscode.Uri.file(path.dirname(projectFiles[0].fsPath));
+			await this._context.globalState.update('TempProject', projectFilePath.fsPath);
+			await azdata.workspace.createWorkspace(projectFilePath);
 		}
 		const currentProjects: vscode.Uri[] = this.getProjectsInWorkspace();
 		const newWorkspaceFolders: string[] = [];
