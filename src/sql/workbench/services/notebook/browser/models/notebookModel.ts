@@ -846,6 +846,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (newConnection) {
 				if (newConnection.serverCapabilities?.notebookKernelAlias) {
 					this._currentKernelAlias = newConnection.serverCapabilities.notebookKernelAlias;
+					// Removes SQL kernel to Kernel Alias Connection Provider map
+					let sqlConnectionProvider = this._kernelDisplayNameToConnectionProviderIds.get('SQL');
+					if (sqlConnectionProvider) {
+						let index = sqlConnectionProvider.indexOf(newConnection.serverCapabilities.notebookKernelAlias.toUpperCase());
+						if (index > -1) {
+							sqlConnectionProvider.splice(index, 1);
+						}
+						this._kernelDisplayNameToConnectionProviderIds.set('SQL', sqlConnectionProvider);
+					}
 					this._kernelDisplayNameToConnectionProviderIds.set(newConnection.serverCapabilities.notebookKernelAlias, [newConnection.providerName]);
 				}
 				this._activeConnection = newConnection;
@@ -973,7 +982,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private async loadActiveContexts(kernelChangedArgs: nb.IKernelChangedArgs): Promise<void> {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name) {
 			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue);
-			let context = NotebookContexts.getContextForKernel(this._activeConnection, this.getApplicableConnectionProviderIds(kernelDisplayName));
+			if (this.context?.serverCapabilities?.notebookKernelAlias && this.selectedKernelDisplayName === this.context?.serverCapabilities?.notebookKernelAlias) {
+				kernelDisplayName = this.context.serverCapabilities?.notebookKernelAlias;
+			}
+			let context;
+			if (this._activeConnection) {
+				context = NotebookContexts.getContextForKernel(this._activeConnection, this.getApplicableConnectionProviderIds(kernelDisplayName));
+			}
 			if (context !== undefined && context.serverName !== undefined && context.title !== undefined) {
 				await this.changeContext(context.title, context);
 			}
