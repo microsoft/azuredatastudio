@@ -136,9 +136,6 @@ export class AzureSettingsPage extends BasePage {
 	}
 
 	public async onEnter(): Promise<void> {
-		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
-			return true;
-		});
 	}
 
 	public async onLeave(): Promise<void> {
@@ -284,9 +281,10 @@ export class AzureSettingsPage extends BasePage {
 	}
 
 	private async createServerDropdown(view: azdata.ModelView) {
-		this._serverGroupDropdown = view.modelBuilder.dropDown()
-			.withValidation(component => ((component.value as azdata.CategoryValue).name !== ''))
-			.component();
+		this._serverGroupDropdown = view.modelBuilder.dropDown().withProperties({
+			required: true,
+			validationErrorMessage: localize('deployAzureSQLDB.NoServerFoundError', "No servers found in current subscription")
+		}).component();
 		this._serverGroupDropdown.onValueChanged(async (value) => {
 			if (value.selected === ((this._serverGroupDropdown.value as azdata.CategoryValue).displayName)) {
 				this.wizard.model.azureServerName = value.selected;
@@ -312,12 +310,7 @@ export class AzureSettingsPage extends BasePage {
 		let response = await this.wizard.getRequest(url);
 		if (response.data.value.length === 0) {
 			this._serverGroupDropdown.updateProperties({
-				values: [
-					{
-						displayName: localize('deployAzureSQLDB.NoServerLabel', "No servers found"),
-						name: ''
-					}
-				],
+				values: [],
 			});
 			this._serverGroupDropdown.loading = false;
 			// await this.populateManagedInstanceDropdown(); //@todo alma1 9/8/2020 functions below are used for upcoming database hardware creation feature.

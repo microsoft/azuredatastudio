@@ -111,7 +111,7 @@ export class DatabaseSettingsPage extends BasePage {
 		this._startIpAddressTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			inputType: 'text',
 			required: true,
-			validationErrorMessage: localize('deployAzureSQLDB.DBMaxIpInvalidError', "Max Ip address is invalid")
+			validationErrorMessage: localize('deployAzureSQLDB.DBIpInvalidError', "Invalid IP address format")
 		}).withValidation(component => {
 			if (component.value) {
 				return ipRegex.test(component.value);
@@ -132,7 +132,7 @@ export class DatabaseSettingsPage extends BasePage {
 		this._endIpAddressTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			inputType: 'text',
 			required: true,
-			validationErrorMessage: localize('deployAzureSQLDB.DBMaxIpInvalidError', "Max Ip address is invalid")
+			validationErrorMessage: localize('deployAzureSQLDB.DBIpInvalidError', "Invalid IP address format")
 		}).withValidation(component => {
 			if (component.value) {
 				return ipRegex.test(component.value);
@@ -149,12 +149,13 @@ export class DatabaseSettingsPage extends BasePage {
 		this._endIpAddressTextRow = this.wizard.createFormRowComponent(view, constants.EndIpAddressLabel, '', this._endIpAddressTextbox, true);
 	}
 
+	//Firewall rules are based on the firewall rule creation policy here: https://ms.portal.azure.com/#create/Microsoft.FirewallPolicy
 	private validateFirewallNameText(firewallname: string | undefined): boolean {
 		if (firewallname) {
 			if (/^\d+$/.test(firewallname)) {
 				return false;
 			}
-			else if (firewallname.length < 1 || firewallname.length > 100) {
+			else if (firewallname.length < 1 || firewallname.length > 80) {
 				return false;
 			}
 			else if (/[\\\/"\'\[\]:\|<>\+=;\?\*@\&,\{\} ]/g.test(firewallname)) {
@@ -174,7 +175,7 @@ export class DatabaseSettingsPage extends BasePage {
 	private createFirewallNameText(view: azdata.ModelView) {
 		this._firewallRuleNameTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			required: true,
-			validationErrorMessage: localize('deployAzureSQLDB.DBFirewallNameError', "Firewall name cannot contain only numbers, upper case letters, or special characters [\/\\\"\"[]:|<>+=;,?*@&, .\{\}] and must be between 1 and 100 characters")
+			validationErrorMessage: localize('deployAzureSQLDB.DBFirewallNameError', "Firewall name cannot contain only numbers, upper case letters, or special characters [\/\\\"\"[]:|<>+=;,?*@&, .\{\}] and must be between 1 and 80 characters")
 		}).withValidation(component => this.validateFirewallNameText(component.value)).component();
 
 		this._firewallRuleNameTextRow = this.wizard.createFormRowComponent(view, constants.FirewallRuleNameLabel, '', this._firewallRuleNameTextbox, true);
