@@ -284,7 +284,7 @@ export class AzureSettingsPage extends BasePage {
 	}
 
 	private async createServerDropdown(view: azdata.ModelView) {
-		this._serverGroupDropdown = view.modelBuilder.dropDown().withProperties({ required: true })
+		this._serverGroupDropdown = view.modelBuilder.dropDown()
 			.withValidation(component => ((component.value as azdata.CategoryValue).name !== ''))
 			.component();
 		this._serverGroupDropdown.onValueChanged(async (value) => {

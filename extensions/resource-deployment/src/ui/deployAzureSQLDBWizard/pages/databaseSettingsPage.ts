@@ -184,7 +184,7 @@ export class DatabaseSettingsPage extends BasePage {
 		});
 	}
 
-	private validateDatabaseNameText(databasename: string | undefined): boolean {
+	private validateStandardNameText(databasename: string | undefined): boolean {
 		if (databasename) {
 			if (/^\d+$/.test(databasename)) {
 				return false;
@@ -209,7 +209,7 @@ export class DatabaseSettingsPage extends BasePage {
 		this._databaseNameTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			required: true,
 			validationErrorMessage: localize('deployAzureSQLDB.DBDatabaseNameError', "Database name cannot contain only numbers or special characters [\/\\\"\"[]:|<>+=;,?*@&, .\{\}] and must be between 1 and 100 characters")
-		}).withValidation(component => this.validateDatabaseNameText(component.value)).component();
+		}).withValidation(component => this.validateStandardNameText(component.value)).component();
 
 		this._databaseNameTextRow = this.wizard.createFormRowComponent(view, constants.DatabaseNameLabel, '', this._databaseNameTextbox, true);
 
@@ -224,7 +224,7 @@ export class DatabaseSettingsPage extends BasePage {
 			required: true,
 			validationErrorMessage: localize('deployAzureSQLDB.DBCollationNameError', "Collation name cannot contain only numbers or special characters [\/\\\"\"[]:|<>+=;,?*@&, .\{\}] and must be between 1 and 100 characters"),
 			value: 'SQL_Latin1_General_CP1_CI_AS'
-		}).withValidation(component => this.validateDatabaseNameText(component.value)).component();
+		}).withValidation(component => this.validateStandardNameText(component.value)).component();
 
 		this._collationTextbox.onTextChanged((value) => {
 			this.wizard.model.databaseCollation = value;
