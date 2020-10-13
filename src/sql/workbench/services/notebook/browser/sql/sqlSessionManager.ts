@@ -504,7 +504,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			};
 			this._dataToSaveMap.set(key, data);
 			this._rowsMap.set(key, []);
-			this.sendIOPubMessage(set.batchId, set.id, data, set);
+			this.sendIOPubMessage(data, set);
 		}
 	}
 
@@ -542,7 +542,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			let key = resultSet.batchId + '-' + resultSet.id;
 			// Query for rows and send rows to cell model
 			let queryResult = await this._queryRunner.getQueryRows(lastRowCount, resultSet.rowCount - lastRowCount, resultSet.batchId, resultSet.id);
-			this.sendIOPubUpdateMessage(resultSet.batchId, resultSet.id, queryResult.rows, resultSet);
+			this.sendIOPubUpdateMessage(queryResult.rows, resultSet);
 			let rows = this._rowsMap.get(key);
 			this._rowsMap.set(key, rows.concat(queryResult.rows));
 
@@ -554,14 +554,14 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			// Last value in array is '</table>' so we want to add row data before that
 			saveData['text/html'].splice(saveData['text/html'].length - 1, 0, ...htmlRows);
 			this._dataToSaveMap.set(key, saveData);
-			this.sendIOPubMessage(resultSet.batchId, resultSet.id, saveData, resultSet);
+			this.sendIOPubMessage(saveData, resultSet);
 		} catch (err) {
 			// TODO should we output this somewhere else?
 			this.logService.error(`Error outputting result sets from Notebook query: ${err}`);
 		}
 	}
 
-	private sendIOPubMessage(batchId: number, id: number, data: any, resultSet: ResultSetSummary): void {
+	private sendIOPubMessage(data: any, resultSet: ResultSetSummary): void {
 		let msg: nb.IIOPubMessage = {
 			channel: 'iopub',
 			type: 'iopub',
@@ -583,7 +583,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		this.ioHandler.handle(msg);
 	}
 
-	private sendIOPubUpdateMessage(batchId: number, id: number, rows: any, resultSet: ResultSetSummary): void {
+	private sendIOPubUpdateMessage(rows: any, resultSet: ResultSetSummary): void {
 		let msg: nb.IIOPubMessage = {
 			channel: 'iopub',
 			type: 'iopub',
