@@ -122,8 +122,8 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 		try {
 			clusterController = await getClusterController(controllerEndpoint.endpoint, clusterConnInfo);
 			// We've successfully connected so now store the username/password for future connections
-			await appContext.extensionContext.globalState.update(usernameKey, clusterConnInfo.options[constants.userPropName]);
-			await credentialProvider.saveCredential(connectionId, clusterConnInfo.options[constants.passwordPropName]);
+			appContext.extensionContext.globalState.update(usernameKey, clusterConnInfo.options[constants.userPropName]);
+			credentialProvider.saveCredential(connectionId, clusterConnInfo.options[constants.passwordPropName]);
 			clusterConnInfo.options[constants.userPropName] = await clusterController.getKnoxUsername(clusterConnInfo.options[constants.userPropName]);
 		} catch (err) {
 			console.log(`Unexpected error getting Knox username for SQL Cluster connection: ${err}`);
@@ -163,8 +163,8 @@ async function getClusterController(controllerEndpoint: string, connInfo: Connec
 		// cancels out or we successfully connect
 		console.log(`Error connecting to cluster controller: ${err}`);
 		let errorMessage = '';
-		const prompter = new CodeAdapter();
 		while (true) {
+			const prompter = new CodeAdapter();
 			let username = await prompter.promptSingle<string>(<IQuestion>{
 				type: QuestionTypes.input,
 				name: 'inputPrompt',
