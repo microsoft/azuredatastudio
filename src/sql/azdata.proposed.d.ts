@@ -13,21 +13,39 @@ declare module 'azdata' {
 	 * Namespace for connection management
 	 */
 	export namespace connection {
+		/**
+		 * Supported connection event types
+		 */
 		export type ConnectionEventType =
 			| 'onConnect'
 			| 'onDisconnect'
 			| 'onConnectionChanged';
 
+		/**
+		 * Connection Event Lister
+		 */
 		export interface ConnectionEventListener {
+			/**
+			 * Connection event handler
+			 * @param type Connection event type
+			 * @param ownerUri Connection's owner uri
+			 * @param args Connection profile
+			 */
 			onConnectionEvent(type: ConnectionEventType, ownerUri: string, args: IConnectionProfile): void;
 		}
 
 		/**
 		 * Register a connection event listener
+		 * @param listener The connection event listener
 		 */
-		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): void;
+		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): vscode.Disposable;
 
-		export function getConnection(uri: string): Thenable<ConnectionProfile>;
+		/**
+		 * Get connection profile by its owner uri
+		 * @param ownerUri The owner uri of the connection
+		 * @returns Promise to return the connection profile matching the ownerUri
+		 */
+		export function getConnection(ownerUri: string): Thenable<ConnectionProfile>;
 	}
 
 	export namespace nb {

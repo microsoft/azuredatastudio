@@ -8,6 +8,7 @@ import { ExtHostQueryEditorShape, SqlMainContext, MainThreadQueryEditorShape } f
 import * as azdata from 'azdata';
 import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 
 class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {
 	constructor(
@@ -52,10 +53,14 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 		return this._proxy.$runQuery(fileUri, runCurrentQuery);
 	}
 
-	public $registerQueryInfoListener(listener: azdata.queryeditor.QueryEventListener): void {
-		this._queryListeners[this._nextListenerHandle] = listener;
-		this._proxy.$registerQueryInfoListener(this._nextListenerHandle);
-		this._nextListenerHandle++;
+	public $registerQueryInfoListener(listener: azdata.queryeditor.QueryEventListener): Disposable {
+		const handle = this._nextListenerHandle++;
+		this._queryListeners[handle] = listener;
+		this._proxy.$registerQueryInfoListener(handle);
+		return new Disposable(() => {
+			this._queryListeners.delete(handle);
+			this._proxy.$unregisterQueryInfoListener(handle);
+		});
 	}
 
 	public $onQueryEvent(providerId: string, handle: number, fileUri: string, event: IQueryEvent): void {
