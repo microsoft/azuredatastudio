@@ -283,7 +283,6 @@ export class AzureSettingsPage extends BasePage {
 	private async createServerDropdown(view: azdata.ModelView) {
 		this._serverGroupDropdown = view.modelBuilder.dropDown().withProperties({
 			required: true,
-			validationErrorMessage: localize('deployAzureSQLDB.NoServerFoundError', "No servers found in current subscription")
 		}).component();
 		this._serverGroupDropdown.onValueChanged(async (value) => {
 			if (value.selected === ((this._serverGroupDropdown.value as azdata.CategoryValue).displayName)) {
