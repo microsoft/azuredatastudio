@@ -82,7 +82,7 @@ export class NotebookToolbar {
 	constructor(private code: Code) { }
 
 	async changeKernel(kernel: string): Promise<void> {
-		const kernelDropdown = `${NotebookToolbar.toolbarSelector} select[aria-label="Kernel "]`;
+		const kernelDropdown = `${NotebookToolbar.toolbarSelector} select[id="kernel-dropdown"]`;
 		await this.code.waitForSetValue(kernelDropdown, kernel);
 		await this.code.dispatchKeybinding('enter');
 	}

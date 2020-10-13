@@ -19,7 +19,8 @@ export class ConfigurePythonDialog extends Dialog {
 	}
 
 	async installPython(): Promise<void> {
-		await this.code.waitAndClick('.modal');
+		const dialog = '.modal .modal-dialog';
+		await this.code.waitAndClick(dialog);
 
 		const newPythonInstallation = '.modal .modal-body input[aria-label="New Python installation"]';
 		await this.code.waitAndClick(newPythonInstallation);
