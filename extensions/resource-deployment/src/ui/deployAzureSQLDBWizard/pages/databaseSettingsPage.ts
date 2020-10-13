@@ -152,16 +152,10 @@ export class DatabaseSettingsPage extends BasePage {
 	//Firewall rules are based on the firewall rule creation policy here: https://ms.portal.azure.com/#create/Microsoft.FirewallPolicy
 	private validateFirewallNameText(firewallname: string | undefined): boolean {
 		if (firewallname) {
-			if (/^\d+$/.test(firewallname)) {
+			if (firewallname.length < 1 || firewallname.length > 80) {
 				return false;
 			}
-			else if (firewallname.length < 1 || firewallname.length > 80) {
-				return false;
-			}
-			else if (/[\\\/"\'\[\]:\|<>\+=;\?\*@\&,\{\} ]/g.test(firewallname)) {
-				return false;
-			}
-			else if (/[A-Z]/g.test(firewallname)) {
+			else if (/^((?=[^_])(?=[A-z0-9]))[A-z0-9_.-]*[A-z0-9_]$/.test(firewallname)) {
 				return false;
 			}
 			else {
