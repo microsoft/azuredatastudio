@@ -37,7 +37,7 @@ jobs:
   timeoutInMinutes: 60
 
 - job: Linux
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], 'true'), ne(variables['VSCODE_QUALITY'], 'saw'))
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], 'true'))
   pool:
     vmImage: 'Ubuntu-16.04'
   container: linux-x64
