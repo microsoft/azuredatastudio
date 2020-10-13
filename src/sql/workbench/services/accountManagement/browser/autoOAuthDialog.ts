@@ -65,7 +65,7 @@ export class AutoOAuthDialog extends Modal {
 			textResourcePropertiesService,
 			contextKeyService,
 			{
-				isFlyout: true,
+				dialogStyle: 'Flyout',
 				hasBackButton: true,
 				hasSpinner: true
 			}

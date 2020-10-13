@@ -297,6 +297,8 @@ export interface IModelViewWizardDetails {
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
+export type DialogStyle = 'Normal' | 'Flyout' | 'Callout';
+
 export enum MessageLevel {
 	Error = 0,
 	Warning = 1,
@@ -416,6 +418,17 @@ export enum AzureResource {
 export class TreeItem extends vsExtTypes.TreeItem {
 	payload?: IConnectionProfile;
 	providerHandle?: string;
+}
+
+export interface ServerInfoOption {
+	isBigDataCluster: boolean;
+	clusterEndpoints: ClusterEndpoint;
+}
+
+export interface ClusterEndpoint {
+	serviceName: string;
+	ipAddress: string;
+	port: number;
 }
 
 export class SqlThemeIcon {

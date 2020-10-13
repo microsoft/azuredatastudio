@@ -88,7 +88,7 @@ export class FirewallRuleDialog extends Modal {
 			textResourcePropertiesService,
 			contextKeyService,
 			{
-				isFlyout: true,
+				dialogStyle: 'Flyout',
 				hasBackButton: true,
 				hasSpinner: true
 			}
