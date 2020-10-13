@@ -28,7 +28,7 @@ const localize = nls.loadMessageBundle();
 export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
-	startDeployment(provider: DeploymentProvider): void;
+	startDeployment(provider: DeploymentProvider, resourceType?: ResourceType): void;
 }
 
 export class ResourceTypeService implements IResourceTypeService {
@@ -267,13 +267,13 @@ export class ResourceTypeService implements IResourceTypeService {
 		return loc.select;
 	}
 
-	public startDeployment(provider: DeploymentProvider): void {
+	public startDeployment(provider: DeploymentProvider, resourceType?: ResourceType): void {
 		const self = this;
 		if (instanceOfWizardDeploymentProvider(provider)) {
 			const wizard = new DeployClusterWizard(provider.bdcWizard, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService);
 			wizard.open();
 		} else if (instanceOfNotebookWizardDeploymentProvider(provider)) {
-			const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService, this.toolsService);
+			const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService, this.toolsService, resourceType);
 			wizard.open();
 		} else if (instanceOfDialogDeploymentProvider(provider)) {
 			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, this.toolsService, provider.dialog);

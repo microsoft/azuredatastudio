@@ -27,8 +27,8 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 		description?: string
 	) {
 		super(
-			wizard.wizardInfo.pages[_pageIndex].title || title || '',
-			wizard.wizardInfo.pages[_pageIndex].description || description || '',
+			title || wizard.wizardInfo.pages[_pageIndex].title || '',
+			description || wizard.wizardInfo.pages[_pageIndex].description || '',
 			wizard
 		);
 	}

@@ -503,7 +503,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 	protected async onComplete(): Promise<void> {
 		this.toolsService.toolsForCurrentProvider = this._tools;
-		this.resourceTypeService.startDeployment(this.getCurrentProvider());
+		this.resourceTypeService.startDeployment(this.getCurrentProvider(), this._selectedResourceType);
 	}
 
 	protected updateToolsDisplayTableData(tool: ITool) {
