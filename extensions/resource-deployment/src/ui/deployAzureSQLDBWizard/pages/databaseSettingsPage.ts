@@ -149,9 +149,14 @@ export class DatabaseSettingsPage extends BasePage {
 		this._endIpAddressTextRow = this.wizard.createFormRowComponent(view, constants.EndIpAddressLabel, '', this._endIpAddressTextbox, true);
 	}
 
-	//Firewall rules are based on the firewall rule creation policy here: https://ms.portal.azure.com/#create/Microsoft.FirewallPolicy
+	/**
+	 * Firewall rule names are based on the name rules here: https://ms.portal.azure.com/#create/Microsoft.FirewallPolicy
+	*/
 	private validateFirewallNameText(firewallname: string | undefined): boolean {
 		if (firewallname) {
+			if (/^[ ]+$/.test(firewallname)) {
+				return false;
+			}
 			if (firewallname.length < 1 || firewallname.length > 80) {
 				return false;
 			}
@@ -178,16 +183,26 @@ export class DatabaseSettingsPage extends BasePage {
 			this.wizard.model.firewallRuleName = value;
 		});
 	}
-
-	private validateStandardNameText(databasename: string | undefined): boolean {
+	/**
+	 * database name rules are based on the name rules here: https://ms.portal.azure.com/#create/Microsoft.SQLDatabase
+	 * reserved names and substrings listed here: https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-reserved-resource-name
+	 */
+	private validateDatabaseNameText(databasename: string | undefined): boolean {
 		if (databasename) {
-			if (/^\d+$/.test(databasename)) {
+			if (/^[ ]+$/.test(databasename)) {
 				return false;
 			}
-			else if (databasename.length < 1 || databasename.length > 100) {
+			if (databasename.length < 1 || databasename.length > 128) {
 				return false;
 			}
-			else if (/[\\\/"\'\[\]:\|<>\+=;\?\*@\&,\{\} ]/g.test(databasename)) {
+			else if (/(?i)(^ACCESS$|^AZURE$|^BING$|^BIZSPARK$|^BIZTALK$|^CORTANA$|^DIRECTX$|^DOTNET$|^DYNAMICS$|^EXCEL$|^EXCHANGE$|^FOREFRONT$|^GROOVE$|^HOLOLENS$|^HYPERV$|^KINECT$|^LYNC$|^MSDN$|^O365$|^OFFICE$|^OFFICE365$|^ONEDRIVE$|^ONENOTE$|^OUTLOOK$|^POWERPOINT$|^SHAREPOINT$|^SKYPE$|^VISIO$|^VISUALSTUDIO$)]/
+				.test(databasename)) {
+				return false;
+			}
+			else if (/?i)(LOGIN|MICROSOFT|WINDOWS|XBOX)/.test(databasename)) {
+				return false;
+			}
+			else if (/^[^<>*%&:\\\/?]*[^. <>*%&:\\\/?]$/.test(databasename)) {
 				return false;
 			}
 			else {
@@ -203,8 +218,8 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._databaseNameTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			required: true,
-			validationErrorMessage: localize('deployAzureSQLDB.DBDatabaseNameError', "Database name cannot contain only numbers or special characters [\/\\\"\"[]:|<>+=;,?*@&, .\{\}] and must be between 1 and 100 characters")
-		}).withValidation(component => this.validateStandardNameText(component.value)).component();
+			validationErrorMessage: localize('deployAzureSQLDB.DBDatabaseNameError', "Database name must less than 128 characters, can't end with '.' or ' ', can't contain '<,>,*,%,&,:,\,/,?' or control characters, or be a reserved name found here: https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-reserved-resource-name")
+		}).withValidation(component => this.validateDatabaseNameText(component.value)).component();
 
 		this._databaseNameTextRow = this.wizard.createFormRowComponent(view, constants.DatabaseNameLabel, '', this._databaseNameTextbox, true);
 
@@ -213,13 +228,27 @@ export class DatabaseSettingsPage extends BasePage {
 		});
 	}
 
+	//Collation name has no rules, aside from it not being all spaces (No REST APIs exist for finding the list).
+	private validateCollationNameText(collationname: string | undefined): boolean {
+		if (collationname) {
+			if (/^[ ]+$/.test(collationname)) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+
 	private createCollationText(view: azdata.ModelView) {
 		this._collationTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			inputType: 'text',
 			required: true,
-			validationErrorMessage: localize('deployAzureSQLDB.DBCollationNameError', "Collation name cannot contain only numbers or special characters [\/\\\"\"[]:|<>+=;,?*@&, .\{\}] and must be between 1 and 100 characters"),
+			validationErrorMessage: localize('deployAzureSQLDB.DBCollationNameError', "Collation name must not be all spaces."),
 			value: 'SQL_Latin1_General_CP1_CI_AS'
-		}).withValidation(component => this.validateStandardNameText(component.value)).component();
+		}).withValidation(component => this.validateCollationNameText(component.value)).component();
 
 		this._collationTextbox.onTextChanged((value) => {
 			this.wizard.model.databaseCollation = value;
