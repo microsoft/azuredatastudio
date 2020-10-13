@@ -24,7 +24,6 @@ export interface ITabbedPanelStyles {
 	activeBackgroundForVerticalLayout?: Color;
 	border?: Color;
 	activeTabContrastBorder?: Color;
-	contrastBorder?: Color;
 }
 
 export interface IPanelOptions {
