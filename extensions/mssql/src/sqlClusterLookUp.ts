@@ -149,7 +149,7 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 
 async function getClusterController(controllerEndpoint: string, connInfo: ConnectionParam): Promise<bdc.IClusterController | undefined> {
 	const bdcApi = <bdc.IExtension>await vscode.extensions.getExtension(bdc.constants.extensionName).activate();
-	let authType: bdc.AuthType = connInfo.options[constants.authenticationTypePropName] === AuthType.Integrated ? 'integrated' : 'basic';
+	let authType: bdc.AuthType = connInfo.options[constants.authenticationTypePropName].toLowerCase() === AuthType.Integrated ? 'integrated' : 'basic';
 	const controller = bdcApi.getClusterController(
 		controllerEndpoint,
 		authType,
