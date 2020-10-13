@@ -50,6 +50,8 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { TestTreeView } from 'sql/workbench/services/connection/test/browser/testTreeView';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { ConnectionTreeService, IConnectionTreeService } from 'sql/workbench/services/connection/common/connectionTreeService';
+import { ConnectionBrowserView } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
 
 suite('ConnectionDialogService tests', () => {
 	const testTreeViewId = 'testTreeView';
@@ -101,6 +103,7 @@ suite('ConnectionDialogService tests', () => {
 		testInstantiationService.stub(IThemeService, new TestThemeService());
 		testInstantiationService.stub(ILayoutService, new TestLayoutService());
 		testInstantiationService.stub(IAdsTelemetryService, new NullAdsTelemetryService());
+		testInstantiationService.stub(IConnectionTreeService, new ConnectionTreeService());
 		connectionDialogService = new ConnectionDialogService(testInstantiationService, capabilitiesService, errorMessageService.object,
 			new TestConfigurationService(), new BrowserClipboardService(), NullCommandService, new NullLogService());
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
@@ -212,6 +215,9 @@ suite('ConnectionDialogService tests', () => {
 		});
 		mockInstantationService.setup(x => x.createInstance(TypeMoq.It.isValue(RecentConnectionsDragAndDrop))).returns(() => {
 			return testInstantiationService.createInstance(RecentConnectionsDragAndDrop);
+		});
+		mockInstantationService.setup(x => x.createInstance(TypeMoq.It.isValue(ConnectionBrowserView))).returns(() => {
+			return testInstantiationService.createInstance(ConnectionBrowserView);
 		});
 	});
 

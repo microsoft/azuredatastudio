@@ -33,7 +33,7 @@ export interface IConnectionTreeDescriptor {
 	readonly icon: string;
 }
 
-class ConnectionTreeService implements IConnectionTreeService {
+export class ConnectionTreeService implements IConnectionTreeService {
 	_serviceBrand;
 	private readonly _onDidAddProvider = new Emitter<ITreeViewDataProvider>();
 	public readonly onDidAddProvider = this._onDidAddProvider.event;
