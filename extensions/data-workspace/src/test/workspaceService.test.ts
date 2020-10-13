@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import * as should from 'should';
 import * as path from 'path';
+import * as TypeMoq from 'typemoq';
 import { WorkspaceService } from '../services/workspaceService';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import { createProjectProvider } from './projectProviderRegistry.test';
@@ -61,7 +62,12 @@ function createMockExtension(id: string, isActive: boolean, projectTypes: string
 }
 
 suite('WorkspaceService Tests', function (): void {
-	const service = new WorkspaceService();
+	const mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+	const mockGlobalState = TypeMoq.Mock.ofType<vscode.Memento>();
+	mockGlobalState.setup(x => x.update(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
+	mockExtensionContext.setup(x => x.globalState).returns(() => mockGlobalState.object);
+
+	const service = new WorkspaceService(mockExtensionContext.object);
 
 	this.afterEach(() => {
 		sinon.restore();
