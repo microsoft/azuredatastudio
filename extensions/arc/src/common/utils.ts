@@ -189,8 +189,12 @@ export async function promptAndConfirmPassword(validate: (input: string) => stri
 /**
  * Gets the message to display for a given error object that may be a variety of types.
  * @param error The error object
+ * @param useMessageWithLink Whether to use the messageWithLink - if available
  */
-export function getErrorMessage(error: any): string {
+export function getErrorMessage(error: any, useMessageWithLink: boolean = false): string {
+	if (useMessageWithLink && error.messageWithLink) {
+		return error.messageWithLink;
+	}
 	return error.message ?? error;
 }
 
@@ -211,4 +215,18 @@ export function parseIpAndPort(address: string): { ip: string, port: string } {
 
 export function createCredentialId(controllerId: string, resourceType: string, instanceName: string): string {
 	return `${controllerId}::${resourceType}::${instanceName}`;
+}
+
+/**
+ * Throws an Error with given {@link message} unless {@link condition} is true.
+ * This also tells the typescript compiler that the condition is 'truthy' in the remainder of the scope
+ * where this function was called.
+ *
+ * @param condition
+ * @param message
+ */
+export function throwUnless(condition: boolean, message?: string): asserts condition {
+	if (!condition) {
+		throw new Error(message);
+	}
 }

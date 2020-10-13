@@ -4,9 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
+import { getErrorMessage } from './common/utils';
 import { azdataConfigSection, azdataInstallKey, azdataUpdateKey } from './constants';
 const localize = nls.loadMessageBundle();
 
+export const azdata = localize('azdata.azdata', "Azure Data CLI");
 export const searchingForAzdata = localize('azdata.searchingForAzdata', "Searching for existing Azure Data CLI installation...");
 export const foundExistingAzdata = (path: string, version: string): string => localize('azdata.foundExistingAzdata', "Found existing Azure Data CLI installation of version (v{0}) at path:{1}", version, path);
 
@@ -22,7 +24,7 @@ export const accept = localize('azdata.accept', "Accept");
 export const decline = localize('azdata.decline', "Decline");
 export const doNotAskAgain = localize('azdata.doNotAskAgain', "Don't Ask Again");
 export const askLater = localize('azdata.askLater', "Ask Later");
-export const downloadingTo = (name: string, location: string): string => localize('azdata.downloadingTo', "Downloading {0} to {1}", name, location);
+export const downloadingTo = (name: string, url: string, location: string): string => localize('azdata.downloadingTo', "Downloading {0} from {1} to {2}", name, url, location);
 export const executingCommand = (command: string, args: string[]): string => localize('azdata.executingCommand', "Executing command: '{0} {1}'", command, args?.join(' '));
 export const stdoutOutput = (stdout: string): string => localize('azdata.stdoutOutput', "stdout: {0}", stdout);
 export const stderrOutput = (stderr: string): string => localize('azdata.stderrOutput', "stderr: {0}", stderr);
@@ -44,10 +46,13 @@ export const updateError = (err: any): string => localize('azdata.updateError', 
 export const platformUnsupported = (platform: string): string => localize('azdata.platformUnsupported', "Platform '{0}' is currently unsupported", platform);
 export const unexpectedCommandError = (errMsg: string): string => localize('azdata.unexpectedCommandError', "Unexpected error executing command: {0}", errMsg);
 export const unexpectedExitCode = (code: number, err: string): string => localize('azdata.unexpectedExitCode', "Unexpected exit code from command: {1} ({0})", code, err);
-export const noAzdata = localize('azdata.NoAzdata', "No Azure Data CLI is available, [install the Azure Data CLI](command:azdata.install) to enable the features that require it.");
+export const noAzdata = localize('azdata.noAzdata', "No Azure Data CLI is available, run the command 'Azure Data CLI: Install' to enable the features that require it.");
+export const noAzdataWithLink = localize('azdata.noAzdataWithLink', "No Azure Data CLI is available, [install the Azure Data CLI](command:azdata.install) to enable the features that require it.");
 export const skipInstall = (config: string): string => localize('azdata.skipInstall', "Skipping installation of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}", azdataConfigSection, azdataInstallKey, config);
 export const skipUpdate = (config: string): string => localize('azdata.skipUpdate', "Skipping update of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}", azdataConfigSection, azdataUpdateKey, config);
-
+export const noReleaseVersion = (platform: string, releaseInfo: string): string => localize('azdata.noReleaseVersion', "No release version available for platform '{0}'\nRelease info: ${1}", platform, releaseInfo);
+export const noDownloadLink = (platform: string, releaseInfo: string): string => localize('azdata.noDownloadLink', "No download link available for platform '{0}'\nRelease info: ${1}", platform, releaseInfo);
+export const failedToParseReleaseInfo = (url: string, fileContents: string, err: any): string => localize('azdata.failedToParseReleaseInfo', "Failed to parse the JSON of contents at: {0}.\nFile contents:\n{1}\nError: {2}", url, fileContents, getErrorMessage(err));
 export const azdataUserSettingRead = (configName: string, configValue: string): string => localize('azdata.azdataUserSettingReadLog', "Azure Data CLI user setting: {0}.{1} read, value: {2}", azdataConfigSection, configName, configValue);
 export const azdataUserSettingUpdated = (configName: string, configValue: string): string => localize('azdata.azdataUserSettingUpdatedLog', "Azure Data CLI user setting: {0}.{1} updated, newValue: {2}", azdataConfigSection, configName, configValue);
 export const userResponseToInstallPrompt = (response: string | undefined): string => localize('azdata.userResponseInstall', "User Response on prompt to install Azure Data CLI: {0}", response);

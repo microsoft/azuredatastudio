@@ -13,7 +13,7 @@
     "azdata": ">=1.22.0"
   },
   "activationEvents": [
-    "onView:dataworkspace.views.main"
+    "*"
   ],
   "main": "./out/main",
   "repository": {
@@ -117,7 +117,8 @@
           "id": "dataworkspace.views.main",
           "name": "%main-view-name%",
           "contextualTitle": "%data-workspace-view-container-name%",
-          "icon": "images/data-workspace.svg"
+          "icon": "images/data-workspace.svg",
+          "when": "isProjectProviderAvailable"
         }
       ]
     },
@@ -126,6 +127,11 @@
         "view": "dataworkspace.views.main",
         "contents": "%projects-view-no-workspace-content%",
         "when": "workbenchState != workspace"
+      },
+      {
+        "view": "dataworkspace.views.main",
+        "contents": "%projects-view-no-project-content%",
+        "when": "workbenchState == workspace && isProjectsViewEmpty"
       }
     ]
   },

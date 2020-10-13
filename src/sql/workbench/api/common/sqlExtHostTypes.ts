@@ -280,6 +280,7 @@ export interface IModelViewWizardPageDetails {
 
 export interface IModelViewWizardDetails {
 	title: string;
+	name?: string;
 	pages: number[];
 	currentPage: number;
 	doneButton: number;
@@ -860,4 +861,10 @@ export enum SqlAssessmentResultItemKind {
 	RealResult = 0,
 	Warning = 1,
 	Error = 2
+}
+
+export enum ButtonType {
+	File = 'File',
+	Normal = 'Normal',
+	Informational = 'Informational'
 }

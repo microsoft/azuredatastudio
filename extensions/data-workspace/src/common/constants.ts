@@ -13,6 +13,9 @@ export const UnknownProjectsError = (projectFiles: string[]): string => { return
 export const SelectProjectFileActionName = localize('SelectProjectFileActionName', "Select");
 export const AllProjectTypes = localize('AllProjectTypes', "All Project Types");
 export const ProviderNotFoundForProjectTypeError = (projectType: string): string => { return localize('UnknownProjectTypeError', "No provider was found for project type with id: '{0}'", projectType); };
+export const WorkspaceRequiredMessage = localize('dataworkspace.workspaceRequiredMessage', "A workspace is required in order to use the project feature.");
+export const OpenWorkspace = localize('dataworkspace.openWorkspace', "Open Workspace…");
+export const CreateWorkspaceConfirmation = localize('dataworkspace.createWorkspaceConfirmation', "A new workspace will be created and opened in order to open project. If there is a folder currently open, it will be closed and the Extension Host will restart");
 
 // UI
 export const OkButtonText = localize('dataworkspace.ok', "OK");
@@ -34,6 +37,3 @@ export const ProjectFileNotExistError = (projectFilePath: string): string => { r
 export const LocalFileSystem = localize('dataworkspace.localFileSystem', "Local File");
 export const TargetTypeSelectorTitle = localize('dataworkspace.TargetTypeSelectorTitle', "Target");
 export const ProjectFileTitle = localize('dataworkspace.projectFileTitle', "Project file");
-
-// Create workspace
-export const CreateWorkspaceConfirmation = localize('dataworkspace.createWorkspaceConfirmation', "A new workspace will be created and opened in order to open project. If there is a folder currently open, it will be closed and the Extension Host will restart");

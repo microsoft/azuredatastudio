@@ -3,10 +3,10 @@
 Microsoft SQL Server Import for Azure Data Studio includes the wizard:
 - [Import Flat File Wizard](#import-flat-file-wizard-preview)
 
-## Import Flat File Wizard *(preview)*
-**The Import Flat File Wizard** is a simple way to copy data from a flat file (.csv, .txt, .json) to a SQL Server table. Checkout below the reasons for using the Import Flat File wizard, how to find this wizard, and a simple example.
+## Import Flat File Wizard
+**The Import Flat File Wizard** is a simple way to copy data from a flat file (.csv, .txt) to a SQL Server table. Checkout below the reasons for using the Import Flat File wizard, how to find this wizard, and a simple example.
 
-This experience is currently in its initial preview. Please report issues and feature requests [here.](https://github.com/microsoft/azuredatastudio/issues)
+Please report issues and feature requests [here.](https://github.com/microsoft/azuredatastudio/issues)
 
 <img src="https://user-images.githubusercontent.com/30873802/43433347-c958ed28-942b-11e8-8bbc-f4f2529c3978.png" width="800px" />
 
@@ -23,6 +23,9 @@ This wizard was created to improve the current import experience leveraging an i
  PROSE analyzes data patterns in your input file to infer column names, types, delimiters, and more. This framework learns the structure of the file and does all of the hard work so users don't have to.
 
  Please note that the PROSE binary components used by this extension are licensed under the [MICROSOFT SQL TOOLS IMPORT FLAT FILE  EULA](https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx).
+
+ ## Documentation
+ For more detailed information, please check out our [documentation](https://docs.microsoft.com/sql/azure-data-studio/extensions/sql-server-import-extension).
 
 ## License
 

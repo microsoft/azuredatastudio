@@ -10,7 +10,7 @@ import * as sudo from 'sudo-prompt';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { OsDistribution, OsRelease } from '../interfaces';
-import { getErrorMessage } from '../utils';
+import { getErrorMessage } from '../common/utils';
 
 const localize = nls.loadMessageBundle();
 const extensionOutputChannel = localize('resourceDeployment.outputChannel', "Deployments");

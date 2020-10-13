@@ -40,9 +40,9 @@ export class ResultsViewState {
  */
 export class QueryResultsInput extends EditorInput {
 
-	private _state?= new ResultsViewState();
+	private _state = new ResultsViewState();
 
-	public get state(): ResultsViewState | undefined {
+	public get state(): ResultsViewState {
 		return this._state;
 	}
 

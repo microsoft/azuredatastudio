@@ -69,6 +69,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.editProjectFile', async (node: WorkspaceTreeItem) => { await this.projectsController.editProjectFile(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: WorkspaceTreeItem) => { await this.projectsController.delete(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: WorkspaceTreeItem) => { await this.projectsController.exclude(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: WorkspaceTreeItem) => { await this.projectsController.changeTargetPlatform(node); });
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
 
@@ -115,7 +116,7 @@ export default class MainController implements vscode.Disposable {
 
 			const newProjFolderUri = (selectionResult as vscode.Uri[])[0];
 			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri, true);
-			const proj = await this.projectsController.openProject(vscode.Uri.file(newProjFilePath));
+			const proj = await Project.openProject(vscode.Uri.file(newProjFilePath).fsPath);
 
 			newProjectTool.updateSaveLocationSetting();
 

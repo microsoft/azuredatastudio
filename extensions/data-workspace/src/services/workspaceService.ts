@@ -38,6 +38,16 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 	}
 
+	get isProjectProviderAvailable(): boolean {
+		for (const extension of vscode.extensions.all) {
+			const projectTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.projects as string[];
+			if (projectTypes && projectTypes.length > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
 		if (!projectFiles || projectFiles.length === 0) {
 			return;

@@ -37,6 +37,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 		else {
 			// if the element is undefined return the project tree items
 			const projects = await this._workspaceService.getProjectsInWorkspace();
+			await vscode.commands.executeCommand('setContext', 'isProjectsViewEmpty', projects.length === 0);
 			const unknownProjects: string[] = [];
 			const treeItems: WorkspaceTreeItem[] = [];
 			for (const project of projects) {

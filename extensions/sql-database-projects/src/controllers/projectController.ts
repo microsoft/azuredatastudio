@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as constants from '../common/constants';
-import * as dataSources from '../models/dataSources/dataSources';
 import * as mssql from '../../../mssql';
 import * as os from 'os';
 import * as path from 'path';
@@ -18,7 +17,7 @@ import * as dataworkspace from 'dataworkspace';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
+import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry, IDatabaseReferenceProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
@@ -30,6 +29,7 @@ import { BuildHelper } from '../tools/buildHelper';
 import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 
 /**
  * Controller for managing project lifecycle
@@ -46,42 +46,8 @@ export class ProjectsController {
 		this.buildHelper = new BuildHelper();
 	}
 
-	public refreshProjectsTree(workspaceTreeItem: dataworkspace.WorkspaceTreeItem) {
+	public refreshProjectsTree(workspaceTreeItem: dataworkspace.WorkspaceTreeItem): void {
 		(workspaceTreeItem.treeDataProvider as SqlDatabaseProjectTreeViewProvider).notifyTreeDataChanged();
-	}
-
-	public async openProject(projectFile: vscode.Uri): Promise<Project> {
-		let newProject: Project;
-
-		try {
-			// Read project file
-			newProject = await Project.openProject(projectFile.fsPath);
-			this.projects.push(newProject);
-
-
-			// Read datasources.json (if present)
-			const dataSourcesFilePath = path.join(path.dirname(projectFile.fsPath), constants.dataSourcesFileName);
-
-			try {
-				newProject.dataSources = await dataSources.load(dataSourcesFilePath);
-			}
-			catch (err) {
-				if (err instanceof dataSources.NoDataSourcesFileError) {
-					// TODO: prompt to create new datasources.json; for now, swallow
-				}
-				else {
-					throw err;
-				}
-			}
-		}
-		catch (err) {
-			// if the project didnt load - remove it from the list of open projects
-			this.projects = this.projects.filter((e) => { return e !== newProject; });
-
-			throw err;
-		}
-
-		return newProject!;
 	}
 
 	/**
@@ -175,8 +141,8 @@ export class ProjectsController {
 		const project: Project = this.getProjectFromContext(context);
 		let publishDatabaseDialog = this.getPublishDialog(project);
 
-		publishDatabaseDialog.publish = async (proj, prof) => await this.executionCallback(proj, prof);
-		publishDatabaseDialog.generateScript = async (proj, prof) => await this.executionCallback(proj, prof);
+		publishDatabaseDialog.publish = async (proj, prof) => await this.publishProjectCallback(proj, prof);
+		publishDatabaseDialog.generateScript = async (proj, prof) => await this.publishProjectCallback(proj, prof);
 		publishDatabaseDialog.readPublishProfile = async (profileUri) => await this.readPublishProfileCallback(profileUri);
 
 		publishDatabaseDialog.openDialog();
@@ -184,7 +150,7 @@ export class ProjectsController {
 		return publishDatabaseDialog;
 	}
 
-	public async executionCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
+	public async publishProjectCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
 		const dacpacPath = await this.buildProject(project);
 
 		if (!dacpacPath) {
@@ -238,7 +204,7 @@ export class ProjectsController {
 		}
 	}
 
-	public async addFolderPrompt(treeNode: dataworkspace.WorkspaceTreeItem) {
+	public async addFolderPrompt(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(treeNode);
 		const relativePathToParent = this.getRelativePath(treeNode.element);
 		const absolutePathToParent = path.join(project.projectFolderPath, relativePathToParent);
@@ -273,11 +239,11 @@ export class ProjectsController {
 		return sameName && sameLocation;
 	}
 
-	public async addItemPromptFromNode(treeNode: dataworkspace.WorkspaceTreeItem, itemTypeName?: string) {
+	public async addItemPromptFromNode(treeNode: dataworkspace.WorkspaceTreeItem, itemTypeName?: string): Promise<void> {
 		await this.addItemPrompt(this.getProjectFromContext(treeNode), this.getRelativePath(treeNode.element), itemTypeName, treeNode.treeDataProvider as SqlDatabaseProjectTreeViewProvider);
 	}
 
-	public async addItemPrompt(project: Project, relativePath: string, itemTypeName?: string, treeDataProvider?: SqlDatabaseProjectTreeViewProvider) {
+	public async addItemPrompt(project: Project, relativePath: string, itemTypeName?: string, treeDataProvider?: SqlDatabaseProjectTreeViewProvider): Promise<void> {
 		if (!itemTypeName) {
 			const items: vscode.QuickPickItem[] = [];
 
@@ -344,7 +310,15 @@ export class ProjectsController {
 		const node = context.element as BaseProjectTreeItem;
 		const project = this.getProjectFromContext(node);
 
-		const confirmationPrompt = node instanceof FolderNode ? constants.deleteConfirmationContents(node.friendlyName) : constants.deleteConfirmation(node.friendlyName);
+		let confirmationPrompt;
+		if (node instanceof DatabaseReferenceTreeItem) {
+			confirmationPrompt = constants.deleteReferenceConfirmation(node.friendlyName);
+		} else if (node instanceof FolderNode) {
+			confirmationPrompt = constants.deleteConfirmationContents(node.friendlyName);
+		} else {
+			confirmationPrompt = constants.deleteConfirmation(node.friendlyName);
+		}
+
 		const response = await vscode.window.showWarningMessage(confirmationPrompt, { modal: true }, constants.yesString);
 
 		if (response !== constants.yesString) {
@@ -353,8 +327,14 @@ export class ProjectsController {
 
 		let success = false;
 
+		if (node instanceof DatabaseReferenceTreeItem) {
+			const databaseReference = this.getDatabaseReference(project, node);
 
-		if (node instanceof FileNode || FolderNode) {
+			if (databaseReference) {
+				await project.deleteDatabaseReference(databaseReference);
+				success = true;
+			}
+		} else if (node instanceof FileNode || FolderNode) {
 			const fileEntry = this.getFileProjectEntry(project, node);
 
 			if (fileEntry) {
@@ -380,6 +360,17 @@ export class ProjectsController {
 			return allFileEntries.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)));
 		}
 		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
+	}
+
+	private getDatabaseReference(project: Project, context: BaseProjectTreeItem): IDatabaseReferenceProjectEntry | undefined {
+		const root = context.root as ProjectRootTreeItem;
+		const databaseReference = context as DatabaseReferenceTreeItem;
+
+		if (root && databaseReference) {
+			return project.databaseReferences.find(r => r.databaseName === databaseReference.treeItem.label);
+		}
+
+		return undefined;
 	}
 
 	/**
@@ -429,7 +420,7 @@ export class ProjectsController {
 	 * Reloads the given project. Throws an error if given project is not a valid open project.
 	 * @param projectFileUri the uri of the project to be reloaded
 	 */
-	public async reloadProject(context: dataworkspace.WorkspaceTreeItem) {
+	public async reloadProject(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);
 		if (project) {
 			// won't open any newly referenced projects, but otherwise matches the behavior of reopening the project
@@ -437,6 +428,24 @@ export class ProjectsController {
 			this.refreshProjectsTree(context);
 		} else {
 			throw new Error(constants.invalidProjectReload);
+		}
+	}
+
+	/**
+	 * Changes the project's DSP to the selected target platform
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async changeTargetPlatform(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const project = this.getProjectFromContext(context);
+		const selectedTargetPlatform = (await vscode.window.showQuickPick((Array.from(constants.targetPlatformToVersion.keys())).map(version => { return { label: version }; }),
+			{
+				canPickMany: false,
+				placeHolder: constants.selectTargetPlatform(constants.getTargetPlatformFromVersion(project.getProjectTargetVersion()))
+			}))?.label;
+
+		if (selectedTargetPlatform) {
+			await project.changeTargetPlatform(constants.targetPlatformToVersion.get(selectedTargetPlatform)!);
+			vscode.window.showInformationMessage(constants.currentTargetPlatform(project.projectFileName, constants.getTargetPlatformFromVersion(project.getProjectTargetVersion())));
 		}
 	}
 
@@ -460,7 +469,7 @@ export class ProjectsController {
 			if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
 				// get project path and guid
 				const projectReferenceSettings = settings as IProjectReferenceSettings;
-				const workspaceProjects = utils.getSqlProjectsInWorkspace();
+				const workspaceProjects = await utils.getSqlProjectsInWorkspace();
 				const referencedProject = await Project.openProject(workspaceProjects.filter(p => path.parse(p.fsPath).name === projectReferenceSettings.projectName)[0].fsPath);
 				const relativePath = path.relative(project.projectFolderPath, referencedProject?.projectFilePath!);
 				projectReferenceSettings.projectRelativePath = vscode.Uri.file(relativePath);
@@ -489,6 +498,54 @@ export class ProjectsController {
 		}
 	}
 
+	/**
+	 * Creates a new SQL database project from the existing database,
+	 * prompting the user for a name, file path location and extract target
+	 */
+	public async createProjectFromDatabase(context: azdata.IConnectionProfile | any): Promise<void> {
+
+		// TODO: Refactor code
+		try {
+			const workspaceApi = utils.getDataWorkspaceExtensionApi();
+
+			if (!vscode.workspace.workspaceFile) {
+				workspaceApi.showWorkspaceRequiredNotification();
+				return;
+			}
+			const model: ImportDataModel | undefined = await this.getModelFromContext(context);
+
+			if (!model) {
+				return; // cancelled by user
+			}
+			model.projName = await this.getProjectName(model.database);
+			let newProjFolderUri = (await this.getFolderLocation()).fsPath;
+			model.extractTarget = await this.getExtractTarget();
+			model.version = '1.0.0.0';
+
+			newProjectTool.updateSaveLocationSetting();
+
+			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
+			model.filePath = path.dirname(newProjFilePath);
+
+			if (model.extractTarget === mssql.ExtractTarget.file) {
+				model.filePath = path.join(model.filePath, model.projName + '.sql'); // File extractTarget specifies the exact file rather than the containing folder
+			}
+
+			const project = await Project.openProject(newProjFilePath);
+			await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
+			let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
+
+			await project.addToProject(fileFolderList); // Add generated file structure to the project
+
+			// add project to workspace
+			await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
+			workspaceApi.showProjectsView();
+		}
+		catch (err) {
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
 	//#region Helper methods
 
 	public getPublishDialog(project: Project): PublishDatabaseDialog {
@@ -497,6 +554,25 @@ export class ProjectsController {
 
 	public getAddDatabaseReferenceDialog(project: Project): AddDatabaseReferenceDialog {
 		return new AddDatabaseReferenceDialog(project);
+	}
+
+	public async updateProjectForRoundTrip(project: Project) {
+		if (project.importedTargets.includes(constants.NetCoreTargets) && !project.containsSSDTOnlySystemDatabaseReferences()) {
+			return;
+		}
+
+		if (!project.importedTargets.includes(constants.NetCoreTargets)) {
+			const result = await vscode.window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await project.updateProjectForRoundTrip();
+				await project.updateSystemDatabaseReferencesInProjFile();
+			}
+		} else if (project.containsSSDTOnlySystemDatabaseReferences()) {
+			const result = await vscode.window.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await project.updateSystemDatabaseReferencesInProjFile();
+			}
+		}
 	}
 
 	private getProjectFromContext(context: Project | BaseProjectTreeItem | dataworkspace.WorkspaceTreeItem): Project {
@@ -557,49 +633,6 @@ export class ProjectsController {
 
 	private getRelativePath(treeNode: BaseProjectTreeItem): string {
 		return treeNode instanceof FolderNode ? utils.trimUri(treeNode.root.uri, treeNode.uri) : '';
-	}
-
-	/**
-	 * Creates a new SQL database project from the existing database,
-	 * prompting the user for a name, file path location and extract target
-	 */
-	public async createProjectFromDatabase(context: azdata.IConnectionProfile | any): Promise<void> {
-
-		// TODO: Refactor code
-		try {
-			const model: ImportDataModel | undefined = await this.getModelFromContext(context);
-
-			if (!model) {
-				return; // cancelled by user
-			}
-			model.projName = await this.getProjectName(model.database);
-			let newProjFolderUri = (await this.getFolderLocation()).fsPath;
-			model.extractTarget = await this.getExtractTarget();
-			model.version = '1.0.0.0';
-
-			newProjectTool.updateSaveLocationSetting();
-
-			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
-			model.filePath = path.dirname(newProjFilePath);
-
-			if (model.extractTarget === mssql.ExtractTarget.file) {
-				model.filePath = path.join(model.filePath, model.projName + '.sql'); // File extractTarget specifies the exact file rather than the containing folder
-			}
-
-			const project = await Project.openProject(newProjFilePath);
-			await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
-			let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
-
-			await project.addToProject(fileFolderList); // Add generated file structure to the project
-
-			// add project to workspace
-			const dataWorkspaceExtension = (<dataworkspace.IExtension>vscode.extensions.getExtension(dataworkspace.extension.name)?.exports);
-			dataWorkspaceExtension.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
-			dataWorkspaceExtension.showProjectsView();
-		}
-		catch (err) {
-			vscode.window.showErrorMessage(utils.getErrorMessage(err));
-		}
 	}
 
 	public async getModelFromContext(context: any): Promise<ImportDataModel | undefined> {

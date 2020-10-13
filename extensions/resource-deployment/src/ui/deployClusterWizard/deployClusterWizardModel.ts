@@ -7,7 +7,7 @@ import { delimiter } from 'path';
 import { BdcDeploymentType, ITool } from '../../interfaces';
 import { BigDataClusterDeploymentProfile, DataResource, HdfsResource, SqlServerMasterResource } from '../../services/bigDataClusterDeploymentProfile';
 import { KubeCtlToolName } from '../../services/tools/kubeCtlTool';
-import { getRuntimeBinaryPathEnvironmentVariableName, setEnvironmentVariablesForInstallPaths } from '../../utils';
+import { getRuntimeBinaryPathEnvironmentVariableName, setEnvironmentVariablesForInstallPaths } from '../../common/utils';
 import { Model } from '../model';
 import { ToolsInstallPath } from './../../constants';
 import * as VariableNames from './constants';

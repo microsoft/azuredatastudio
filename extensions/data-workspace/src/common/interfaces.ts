@@ -79,6 +79,8 @@ export interface IWorkspaceService {
 	 */
 	createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
 
+	readonly isProjectProviderAvailable: boolean;
+
 	/**
 	 * Event fires when projects in workspace changes
 	 */

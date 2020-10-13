@@ -10,7 +10,7 @@ import { URI } from 'vs/base/common/uri';
 class IconRenderer {
 	private iconRegistered: Set<string> = new Set<string>();
 
-	public registerIcon(path: URI | IconPath): string | undefined {
+	public registerIcon(path: URI | IconPath | undefined): string | undefined {
 		if (!path) { return undefined; }
 		let iconPath: IconPath = this.toIconPath(path);
 		let iconUid: string | undefined = this.getIconUid(iconPath);
@@ -37,8 +37,7 @@ class IconRenderer {
 		}
 	}
 
-	public putIcon(element: HTMLElement, path: URI | IconPath): void {
-		if (!element || !path) { return undefined; }
+	public putIcon(element: HTMLElement, path: URI | IconPath | undefined): void {
 		let iconUid: string | undefined = this.registerIcon(path);
 		element.id = iconUid ?? '';
 	}
