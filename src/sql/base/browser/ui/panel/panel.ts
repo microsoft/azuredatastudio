@@ -24,6 +24,7 @@ export interface ITabbedPanelStyles {
 	activeBackgroundForVerticalLayout?: Color;
 	border?: Color;
 	activeTabContrastBorder?: Color;
+	contrastBorder?: Color;
 }
 
 export interface IPanelOptions {
@@ -317,6 +318,13 @@ export class TabbedPanel extends Disposable {
 
 	public style(styles: ITabbedPanelStyles): void {
 		const content: string[] = [];
+
+		if (styles.border) {
+			content.push(`
+			.tabbedPanel {
+				border-color: ${styles.border};
+			}`);
+		}
 
 		if (styles.titleActiveForeground && styles.titleActiveBorder) {
 			content.push(`
