@@ -22,7 +22,7 @@ import { FileKind } from 'vs/platform/files/common/files';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { WorkbenchAsyncDataTree } from 'vs/platform/list/browser/listService';
-import { FileThemeIcon, FolderThemeIcon, IThemeService, LIGHT, ThemeIcon } from 'vs/platform/theme/common/themeService';
+import { FileThemeIcon, FolderThemeIcon, IThemeService, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { IResourceLabel, ResourceLabels } from 'vs/workbench/browser/labels';
 import { ITreeItemLabel, ITreeViewDataProvider, TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -35,6 +35,7 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
 import { ConnectionProfileGroupRenderer, ConnectionProfileRenderer, TreeNodeRenderer } from 'sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer';
+import { ColorScheme } from 'vs/platform/theme/common/theme';
 
 export type TreeElement = ConnectionProviderElement | ITreeItemFromProvider | SavedConnectionNode | ServerTreeElement;
 
@@ -364,7 +365,7 @@ class TreeItemRenderer extends Disposable implements ITreeRenderer<ITreeItemFrom
 		const treeItemLabel: ITreeItemLabel | undefined = node.label ? node.label : resource ? { label: basename(resource) } : undefined;
 		const description = isString(node.description) ? node.description : resource && node.description === true ? this.labelService.getUriLabel(dirname(resource), { relative: true }) : undefined;
 		const label = treeItemLabel ? treeItemLabel.label : undefined;
-		const icon = this.themeService.getColorTheme().type === LIGHT ? node.icon : node.iconDark;
+		const icon = this.themeService.getColorTheme().type === ColorScheme.LIGHT ? node.icon : node.iconDark;
 		const iconUrl = icon ? URI.revive(icon) : null;
 		const title = node.tooltip ? isString(node.tooltip) ? node.tooltip : undefined : resource ? undefined : label;
 		const sqlIcon = node.sqlIcon;
