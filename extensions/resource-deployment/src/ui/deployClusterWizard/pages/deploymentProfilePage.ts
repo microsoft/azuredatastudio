@@ -11,6 +11,7 @@ import { createFlexContainer, createLabel } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';
+import { DeployClusterWizardModel } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
 const serviceScaleTableTitle = localize('deployCluster.serviceScaleTableTitle', "Service scale settings (Instances)");
@@ -19,7 +20,7 @@ const featureTableTitle = localize('deployCluster.featureTableTitle', "Features"
 const YesText = localize('deployCluster.yesText', "Yes");
 const NoText = localize('deployCluster.noText', "No");
 
-export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
+export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard, DeployClusterWizardModel> {
 	private _loadingComponent: azdata.LoadingComponent | undefined;
 	private _container: azdata.FlexContainer | undefined;
 

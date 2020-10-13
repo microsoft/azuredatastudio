@@ -12,7 +12,7 @@ import { WizardPageBase } from './wizardPageBase';
 import { WizardPageInfo } from './wizardPageInfo';
 const localize = nls.loadMessageBundle();
 
-export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model> {
+export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, M extends Model> {
 	private customButtons: azdata.window.Button[] = [];
 	public pages: P[] = [];
 

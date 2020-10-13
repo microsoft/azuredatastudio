@@ -9,8 +9,9 @@ import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 import * as constants from '../constants';
 import { SectionInfo, LabelPosition, FontWeight, FieldType } from '../../../interfaces';
 import { createSection } from '../../modelViewUtils';
+import { DeployAzureSQLVMWizardModel } from '../deployAzureSQLVMWizardModel';
 
-export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard> {
+export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel> {
 
 	private formItems: azdata.FormComponent[] = [];
 	private _form!: azdata.FormBuilder;

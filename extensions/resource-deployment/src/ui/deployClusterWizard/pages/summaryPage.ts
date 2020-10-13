@@ -9,11 +9,11 @@ import { SectionInfo, FieldType, LabelPosition, BdcDeploymentType, FontWeight } 
 import { createSection, createGroupContainer, createFlexContainer, createLabel } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
-import { AuthenticationMode } from '../deployClusterWizardModel';
+import { AuthenticationMode, DeployClusterWizardModel } from '../deployClusterWizardModel';
 import * as localizedConstants from '../../../localizedConstants';
 const localize = nls.loadMessageBundle();
 
-export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
+export class SummaryPage extends WizardPageBase<DeployClusterWizard, DeployClusterWizardModel> {
 	private formItems: azdata.FormComponent[] = [];
 	private form!: azdata.FormBuilder;
 	private view!: azdata.ModelView;

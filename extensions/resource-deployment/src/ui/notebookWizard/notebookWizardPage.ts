@@ -7,6 +7,7 @@ import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { NotebookWizardPageInfo } from '../../interfaces';
+import { Model } from '../model';
 import { initializeWizardPage, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
 import { WizardPageBase } from '../wizardPageBase';
 import { WizardPageInfo } from '../wizardPageInfo';
@@ -14,7 +15,7 @@ import { NotebookWizard } from './notebookWizard';
 
 const localize = nls.loadMessageBundle();
 
-export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
+export class NotebookWizardPage extends WizardPageBase<NotebookWizard, Model> {
 
 	protected get pageInfo(): NotebookWizardPageInfo {
 		return this.wizard.wizardInfo.pages[this._pageIndex];

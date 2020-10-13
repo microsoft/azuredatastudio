@@ -28,7 +28,7 @@ import { SummaryPage } from './pages/summaryPage';
 import { TargetClusterContextPage } from './pages/targetClusterPage';
 const localize = nls.loadMessageBundle();
 
-export class DeployClusterWizard extends WizardBase<DeployClusterWizard, WizardPageBase<DeployClusterWizard>, DeployClusterWizardModel> {
+export class DeployClusterWizard extends WizardBase<WizardPageBase<DeployClusterWizard, DeployClusterWizardModel>, DeployClusterWizardModel> {
 	private _inputComponents: InputComponents = {};
 
 	private _saveConfigButton: azdata.window.Button;
@@ -82,8 +82,8 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, WizardP
 		await this.scriptToNotebook();
 	}
 
-	private getPages(): WizardPageBase<DeployClusterWizard>[] {
-		const pages: WizardPageBase<DeployClusterWizard>[] = [];
+	private getPages(): WizardPageBase<DeployClusterWizard, DeployClusterWizardModel>[] {
+		const pages: WizardPageBase<DeployClusterWizard, DeployClusterWizardModel>[] = [];
 		switch (this.deploymentType) {
 			case BdcDeploymentType.NewAKS:
 				pages.push(

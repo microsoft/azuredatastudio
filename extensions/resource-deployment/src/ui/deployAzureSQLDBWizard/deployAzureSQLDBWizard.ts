@@ -18,7 +18,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { AzureSQLDBSummaryPage } from './pages/summaryPage';
 import { EOL } from 'os';
 
-export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, WizardPageBase<DeployAzureSQLDBWizard>, DeployAzureSQLDBWizardModel> {
+export class DeployAzureSQLDBWizard extends WizardBase<WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>, DeployAzureSQLDBWizardModel> {
 
 	constructor(private wizardInfo: AzureSQLDBWizardInfo, private _notebookService: INotebookService, private _toolsService: IToolsService) {
 		super(
@@ -53,8 +53,8 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 	protected onCancel(): void {
 	}
 
-	private getPages(): WizardPageBase<DeployAzureSQLDBWizard>[] {
-		const pages: WizardPageBase<DeployAzureSQLDBWizard>[] = [];
+	private getPages(): WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>[] {
+		const pages: WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>[] = [];
 		pages.push(new AzureSettingsPage(this));
 		pages.push(new DatabaseSettingsPage(this));
 		pages.push(new AzureSQLDBSummaryPage(this));

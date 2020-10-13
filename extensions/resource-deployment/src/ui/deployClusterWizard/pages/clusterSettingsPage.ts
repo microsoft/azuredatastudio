@@ -12,14 +12,14 @@ import { createSection, getInputBoxComponent, getInvalidSQLPasswordMessage, getP
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';
-import { AuthenticationMode } from '../deployClusterWizardModel';
+import { AuthenticationMode, DeployClusterWizardModel } from '../deployClusterWizardModel';
 import * as localizedConstants from '../../../localizedConstants';
 const localize = nls.loadMessageBundle();
 
 const ConfirmPasswordName = 'ConfirmPassword';
 const clusterNameFieldDescription = localize('deployCluster.ClusterNameDescription', "The cluster name must consist only of alphanumeric lowercase characters or '-' and must start and end with an alphanumeric character.");
 
-export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
+export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard, DeployClusterWizardModel> {
 	private inputComponents: InputComponents = {};
 	private activeDirectorySection!: azdata.FormComponent;
 	private formBuilder!: azdata.FormBuilder;

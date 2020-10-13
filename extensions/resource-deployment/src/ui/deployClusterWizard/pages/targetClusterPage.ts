@@ -11,11 +11,12 @@ import { DeployClusterWizard } from '../deployClusterWizard';
 import { WizardPageBase } from '../../wizardPageBase';
 import { KubeClusterContext } from '../../../services/kubeService';
 import { ClusterContext_VariableName, KubeConfigPath_VariableName } from '../constants';
+import { DeployClusterWizardModel } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
 const ClusterRadioButtonGroupName = 'ClusterRadioGroup';
 
-export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard> {
+export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard, DeployClusterWizardModel> {
 	private existingClusterControl: azdata.FlexContainer | undefined;
 	private clusterContextsLabel: azdata.TextComponent | undefined;
 	private errorLoadingClustersLabel: azdata.TextComponent | undefined;

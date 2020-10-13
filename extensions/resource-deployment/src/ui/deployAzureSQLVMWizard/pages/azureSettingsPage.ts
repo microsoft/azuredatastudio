@@ -10,8 +10,9 @@ import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 import { apiService } from '../../../services/apiService';
 import { azureResource } from 'azureResource';
 import * as vscode from 'vscode';
+import { DeployAzureSQLVMWizardModel } from '../deployAzureSQLVMWizardModel';
 
-export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
+export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel> {
 	// <- means depends on
 	//dropdown for azure accounts
 	private _azureAccountsDropdown!: azdata.DropDownComponent;

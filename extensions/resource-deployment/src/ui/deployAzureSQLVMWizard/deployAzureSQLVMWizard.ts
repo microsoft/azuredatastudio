@@ -22,7 +22,7 @@ import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, WizardPageBase<DeployAzureSQLVMWizard>, DeployAzureSQLVMWizardModel> {
+export class DeployAzureSQLVMWizard extends WizardBase<WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>, DeployAzureSQLVMWizardModel> {
 	private cache: Map<string, any> = new Map();
 
 	constructor(private wizardInfo: AzureSQLVMWizardInfo, private _notebookService: INotebookService, private _toolsService: IToolsService) {
@@ -58,8 +58,8 @@ export class DeployAzureSQLVMWizard extends WizardBase<DeployAzureSQLVMWizard, W
 	protected onCancel(): void {
 	}
 
-	private getPages(): WizardPageBase<DeployAzureSQLVMWizard>[] {
-		const pages: WizardPageBase<DeployAzureSQLVMWizard>[] = [];
+	private getPages(): WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>[] {
+		const pages: WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>[] = [];
 		pages.push(new AzureSettingsPage(this));
 		pages.push(new VmSettingsPage(this));
 		pages.push(new NetworkSettingsPage(this));

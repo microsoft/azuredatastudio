@@ -5,8 +5,9 @@
 
 import { WizardPageBase } from '../../wizardPageBase';
 import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
+import { DeployAzureSQLVMWizardModel } from '../deployAzureSQLVMWizardModel';
 
-export abstract class BasePage extends WizardPageBase<DeployAzureSQLVMWizard> {
+export abstract class BasePage extends WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel> {
 
 	protected liveValidation!: boolean;
 

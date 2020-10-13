@@ -10,14 +10,14 @@ import { createFlexContainer, createGroupContainer, createLabel, createNumberInp
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';
-import { AuthenticationMode } from '../deployClusterWizardModel';
+import { AuthenticationMode, DeployClusterWizardModel } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
 const NumberInputWidth = '100px';
 const inputWidth = '180px';
 const labelWidth = '200px';
 
-export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
+export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard, DeployClusterWizardModel> {
 	private inputComponents: InputComponents = {};
 	private endpointHeaderRow!: azdata.FlexContainer;
 	private dnsColumnHeader!: azdata.TextComponent;

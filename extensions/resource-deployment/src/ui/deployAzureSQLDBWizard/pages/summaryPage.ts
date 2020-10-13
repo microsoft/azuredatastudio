@@ -9,8 +9,9 @@ import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 import * as constants from '../constants';
 import { SectionInfo, LabelPosition, FontWeight, FieldType } from '../../../interfaces';
 import { createSection } from '../../modelViewUtils';
+import { DeployAzureSQLDBWizardModel } from '../deployAzureSQLDBWizardModel';
 
-export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard> {
+export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel> {
 
 	private formItems: azdata.FormComponent[] = [];
 	private _form!: azdata.FormBuilder;

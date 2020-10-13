@@ -5,7 +5,8 @@
 
 import { WizardPageBase } from '../../wizardPageBase';
 import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
+import { DeployAzureSQLDBWizardModel } from '../deployAzureSQLDBWizardModel';
 
-export abstract class BasePage extends WizardPageBase<DeployAzureSQLDBWizard> {
+export abstract class BasePage extends WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel> {
 	public abstract initialize(): void;
 }
