@@ -4020,7 +4020,7 @@ declare module 'azdata' {
 	 */
 	export namespace queryeditor {
 		export type QueryEventType =
-			| 'queryStart'
+			| 'queryStarted'
 			| 'queryUpdate'
 			| 'queryStop'
 			| 'executionPlan'
