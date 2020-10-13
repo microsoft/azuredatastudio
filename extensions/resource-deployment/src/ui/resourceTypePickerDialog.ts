@@ -266,7 +266,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._agreementCheckboxChecked = false;
 			this._agreementContainer.clearItems();
 			this._optionsContainer.clearItems();
-			this.updateToolsDisplayTable();
+			this._toolsLoadingComponent.loading = false;
+			this._toolsTable.data = [[]];
+			this._tools = [];
 			this._dialogObject.okButton.enabled = false;
 		}
 	}

@@ -418,17 +418,6 @@ export class TreeItem extends vsExtTypes.TreeItem {
 	providerHandle?: string;
 }
 
-export interface ServerInfoOption {
-	isBigDataCluster: boolean;
-	clusterEndpoints: ClusterEndpoint;
-}
-
-export interface ClusterEndpoint {
-	serviceName: string;
-	ipAddress: string;
-	port: number;
-}
-
 export class SqlThemeIcon {
 
 	static readonly Folder = new SqlThemeIcon('Folder');
