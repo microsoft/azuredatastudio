@@ -59,9 +59,11 @@ export interface IModalDialogStyles {
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
 export type DialogStyle = 'Normal' | 'Flyout' | 'Callout';
+export type CalloutPosition = 'left' | 'right' | 'above' | 'below' | null;
 
 export interface IModalOptions {
 	dialogStyle?: DialogStyle;
+	dialogPosition?: CalloutPosition;
 	width?: DialogWidth;
 	isAngular?: boolean;
 	hasBackButton?: boolean;
@@ -73,6 +75,7 @@ export interface IModalOptions {
 
 const defaultOptions: IModalOptions = {
 	dialogStyle: 'Flyout',
+	dialogPosition: null,
 	width: 'narrow',
 	isAngular: false,
 	hasBackButton: false,
@@ -174,7 +177,6 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	public render() {
 		let builderClass = '.modal.fade';
-
 		builderClass += this._modalOptions.dialogStyle === 'Flyout' ? '.flyout-dialog'
 			: this._modalOptions.dialogStyle === 'Callout' ? '.callout-dialog'
 				: '';
@@ -183,12 +185,22 @@ export abstract class Modal extends Disposable implements IThemable {
 		const top = this.layoutService.offset?.top ?? 0;
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
-		this._modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
+
+		if (this._modalOptions.dialogStyle === 'Callout') {
+			let arrowClass = `.arrow.from-${this._modalOptions.dialogPosition}`;
+			this._modalContent = DOM.append(this._modalDialog, DOM.$(`.modal-content${arrowClass}`));
+		} else {
+			this._modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
+		}
 
 		if (typeof this._modalOptions.width === 'number') {
 			this._modalDialog.style.width = `${this._modalOptions.width}px`;
 		} else {
 			this._modalDialog.classList.add(`${this._modalOptions.width}-dialog`);
+		}
+
+		if (this._modalOptions.dialogStyle === 'Callout') {
+			this._register(DOM.addDisposableListener(this._bodyContainer, DOM.EventType.CLICK, (e) => this.handleClickOffModal(e)));
 		}
 
 		if (!isUndefinedOrNull(this._title)) {
@@ -269,6 +281,19 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected onClose(e?: StandardKeyboardEvent) {
 		this.hide();
+	}
+
+	/**
+	 * Used to close modal when a click occurs outside the modal.
+	 * This is exclusive to the Callout.
+	 * @param e The Callout modal click event
+	 */
+	private handleClickOffModal(e: any) {
+		if (e.target.parentElement.closest('.modal-content')) {
+			return;
+		} else {
+			this.hide();
+		}
 	}
 
 	/**
@@ -377,6 +402,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				}
 			}
 		}));
+
 		this.disposableStore.add(DOM.addDisposableListener(window, DOM.EventType.RESIZE, (e: Event) => {
 			this.layout(DOM.getTotalHeight(this._modalBodySection!));
 		}));
@@ -572,7 +598,11 @@ export abstract class Modal extends Disposable implements IThemable {
 	public style(styles: IModalDialogStyles): void {
 		this._dialogForeground = styles.dialogForeground;
 		this._dialogBorder = styles.dialogBorder;
-		this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground;
+		if (this._modalOptions.dialogStyle === 'Callout') {
+			this._dialogHeaderAndFooterBackground = styles.dialogBodyBackground;
+		} else {
+			this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground;
+		}
 		this._dialogBodyBackground = styles.dialogBodyBackground;
 		this.applyStyles();
 	}

@@ -23,6 +23,8 @@
 	background-color: transparent;
 }
 .modal.callout-dialog .modal-dialog {
+	border-radius: 2px;
+	box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.14);
 	height: auto;
 	margin: 0 auto;
 	top: 50%;
@@ -30,12 +32,34 @@
 	width: 500px;
 }
 
+.modal.callout-dialog .modal-content.arrow:before {
+	content: "";
+	display: block;
+	height: 0;
+	position: absolute;
+	width: 0;
+}
+.modal.callout-dialog .modal-content.arrow.from-below:before {
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	border-bottom: 15px solid #fff;
+	left: 0;
+	top: -15px;
+}
+
 .modal .modal-header {
 	padding: 15px;
 }
 
+.modal.callout-dialog .modal-header {
+	padding: 15px 24px 8px 24px;
+}
+
 .modal .modal-footer {
 	padding: 15px;
+}
+.modal.callout-dialog .modal-footer {
+	padding: 8px 24px 15px 24px;
 }
 
 .modal .codicon.in-progress {
@@ -43,6 +67,7 @@
 	height: 25px;
 }
 
+/** FLYOUT **/
 .modal.flyout-dialog .modal-dialog {
 	margin: auto auto auto auto;
 	height: 100%;
@@ -94,6 +119,10 @@
 	overflow: hidden;
 }
 
+.modal.callout-dialog .modal-body {
+	padding: 8px 24px;
+}
+
 /* modl body content style(excluding dialogErrorMessage section) for angulr component dialog */
 .angular-modal-body-content {
 	overflow-x: hidden;
@@ -126,19 +155,19 @@
 }
 
 .vs-dark .modal.flyout-dialog .input {
-	background-color: #3C3C3C;
+	background-color: #3c3c3c;
 }
 
 .vs-dark .modal.flyout-dialog input:disabled {
-	background-color: #E1E1E1;
-	color:  #3C3C3C;
+	background-color: #e1e1e1;
+	color: #3c3c3c;
 }
 
 .modal .select-box,
 .modal .monaco-select-box {
 	width: 100%;
 	height: 25px;
-	color: #6C6C6C;
+	color: #6c6c6c;
 	font-size: 11px;
 	border: 1px solid transparent;
 }
@@ -177,7 +206,6 @@
 	margin-right: none;
 }
 
-
 .modal.flyout-dialog .dialog-message {
 	padding: 6px 10px 10px 10px;
 	font-size: 13px;
@@ -187,20 +215,20 @@
 
 .vs .modal.flyout-dialog .dialog-message.error,
 .vs-dark .modal.flyout-dialog .dialog-message.error {
-	background-color:#B62E00 !important;
-	color:#FFFFFF !important;
+	background-color: #b62e00 !important;
+	color: #ffffff !important;
 }
 
 .vs .modal.flyout-dialog .dialog-message.warning,
 .vs-dark .modal.flyout-dialog .dialog-message.warning {
-	background-color:#F9E385 !important;
-	color:#4A4A4A !important;
+	background-color: #f9e385 !important;
+	color: #4a4a4a !important;
 }
 
 .vs .modal.flyout-dialog .dialog-message.info,
 .vs-dark .modal.flyout-dialog .dialog-message.info {
-	background-color:#096CC9 !important;
-	color:#FFFFFF !important;
+	background-color: #096cc9 !important;
+	color: #ffffff !important;
 }
 
 .modal.flyout-dialog .dialog-message-header {
@@ -237,18 +265,18 @@
 }
 
 .modal.flyout-dialog .dialog-message.info .dialog-message-button > a:focus,
-.modal.flyout-dialog .dialog-message.error .dialog-message-button > a:focus{
-	outline-color: #FFFFFF;
+.modal.flyout-dialog .dialog-message.error .dialog-message-button > a:focus {
+	outline-color: #ffffff;
 }
 
-.modal.flyout-dialog .dialog-message.warning .dialog-message-button > a:focus{
+.modal.flyout-dialog .dialog-message.warning .dialog-message-button > a:focus {
 	outline-color: #000000;
 }
 
 .modal.flyout-dialog .dialog-message-button > a {
 	background-position-x: 2px !important;
 	background-color: inherit !important;
-	color:inherit !important;
+	color: inherit !important;
 	padding-left: 22px !important;
 	background-size: 16px 16px !important;
 	text-align: left !important;
@@ -274,45 +302,43 @@
 
 .hc-black .dialog-message.warning .close-message-icon,
 .close-message-icon {
-	background: url('close_inverse.svg') center center no-repeat;
+	background: url("close_inverse.svg") center center no-repeat;
 }
 
 .dialog-message.warning .close-message-icon {
-	background: url('close.svg') center center no-repeat;
+	background: url("close.svg") center center no-repeat;
 }
 
 .hc-black .dialog-message.warning .copy-message-icon,
 .copy-message-icon {
-	background: url('copy_inverse.svg') center center no-repeat;
+	background: url("copy_inverse.svg") center center no-repeat;
 }
 
 .dialog-message.warning .copy-message-icon {
-	background: url('copy.svg') center center no-repeat;
+	background: url("copy.svg") center center no-repeat;
 }
 
 .hc-black .dialog-message.warning .message-details-icon,
 .message-details-icon {
-	background: url('show_details_inverse.svg') center center no-repeat;
+	background: url("show_details_inverse.svg") center center no-repeat;
 }
 
 .dialog-message.warning .message-details-icon {
-	background: url('show_details.svg') center center no-repeat;
+	background: url("show_details.svg") center center no-repeat;
 }
 
-.dialog-message.info .dialog-message-icon  {
-	background: url('info_notification_inverse.svg') center center no-repeat;
+.dialog-message.info .dialog-message-icon {
+	background: url("info_notification_inverse.svg") center center no-repeat;
 }
 
 .hc-black .dialog-message.warning .dialog-message-icon {
-	background: url('warning_notification_inverse.svg') center center no-repeat;
+	background: url("warning_notification_inverse.svg") center center no-repeat;
 }
 
 .dialog-message.warning .dialog-message-icon {
-	background: url('warning_notification.svg') center center no-repeat;
+	background: url("warning_notification.svg") center center no-repeat;
 }
 
 .dialog-message.error .dialog-message-icon {
-	background: url('error_notification_inverse.svg') center center no-repeat;
+	background: url("error_notification_inverse.svg") center center no-repeat;
 }
-
-
