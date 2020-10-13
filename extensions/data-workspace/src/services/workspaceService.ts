@@ -14,24 +14,27 @@ import * as constants from '../common/constants';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
+const TempProject = 'tempProject';
 
 export class WorkspaceService implements IWorkspaceService {
 	private _onDidWorkspaceProjectsChange: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void> = this._onDidWorkspaceProjectsChange?.event;
-	private tempProject = 'TempProject';
 
 	constructor(private _context: vscode.ExtensionContext) {
 		this.loadProject();
 	}
 
+	/**
+	 * Load any projects that needed to be loaded before the extension host was restarted
+	 * which would happen if a workspace was created in order open or create a project
+	 */
 	private async loadProject(): Promise<void> {
-		const tempProjectFile = this._context.globalState.get(this.tempProject);
+		const tempProjectFile = this._context.globalState.get(TempProject);
 
 		if (tempProjectFile && vscode.workspace.workspaceFile) {
-			console.error('found something in tempProjects:' + JSON.stringify(tempProjectFile));
-			console.error('workspace file: ' + vscode.workspace.workspaceFile);
-			let workspaceFolders = vscode.workspace.workspaceFolders;
+			// add project to workspace now that the workspace has been created and saved
 			await this.addProjectsToWorkspace([vscode.Uri.file(<string>tempProjectFile)]);
+			await this._context.globalState.update(TempProject, undefined);
 		}
 	}
 
@@ -40,11 +43,22 @@ export class WorkspaceService implements IWorkspaceService {
 			return;
 		}
 
+		// a workspace needs to be open to add projects
 		if (!vscode.workspace.workspaceFile) {
-			const projectFilePath = vscode.Uri.file(path.dirname(projectFiles[0].fsPath));
-			await this._context.globalState.update('TempProject', projectFilePath.fsPath);
-			await azdata.workspace.createWorkspace(projectFilePath);
+			const result = await vscode.window.showWarningMessage(constants.CreateWorkspaceConfirmation, constants.OkButtonText);
+			if (result === constants.OkButtonText) {
+				const projectFileFsPath = projectFiles[0].fsPath;
+				const projectFolder = vscode.Uri.file(path.dirname(projectFileFsPath));
+				await this._context.globalState.update(TempProject, projectFiles[0].fsPath);
+
+				// create a new workspace - the workspace file will be  created in the same folder as the project
+				const workspaceFileFsPath = vscode.Uri.file(path.join(path.dirname(projectFileFsPath), `${path.parse(projectFileFsPath).name}.code-workspace`)).fsPath;
+				await azdata.workspace.createWorkspace(projectFolder, workspaceFileFsPath);
+			} else {
+				return;
+			}
 		}
+
 		const currentProjects: vscode.Uri[] = this.getProjectsInWorkspace();
 		const newWorkspaceFolders: string[] = [];
 		let newProjectFileAdded = false;
@@ -112,9 +126,6 @@ export class WorkspaceService implements IWorkspaceService {
 		const provider = ProjectProviderRegistry.getProviderByProjectType(projectTypeId);
 		if (provider) {
 			const projectFile = await provider.createProject(name, location);
-			if (!vscode.workspace.workspaceFile) {
-				await azdata.workspace.createWorkspace(location);
-			}
 			this.addProjectsToWorkspace([projectFile]);
 			this._onDidWorkspaceProjectsChange.fire();
 			return projectFile;

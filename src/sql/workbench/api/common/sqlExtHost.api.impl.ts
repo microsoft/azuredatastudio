@@ -463,8 +463,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				createModelViewEditor(title: string, options?: azdata.ModelViewEditorOptions): azdata.workspace.ModelViewEditor {
 					return extHostModelViewDialog.createModelViewEditor(title, extension, options);
 				},
-				createWorkspace(location: vscode.Uri): Promise<void> {
-					return extHostWorkspace.$createWorkspace(location);
+				createWorkspace(location: vscode.Uri, path: string): Promise<void> {
+					return extHostWorkspace.$createWorkspace(location, path);
 				}
 			};
 

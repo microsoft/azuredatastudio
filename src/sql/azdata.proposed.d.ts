@@ -678,6 +678,6 @@ declare module 'azdata' {
 	}
 
 	export namespace workspace {
-		export function createWorkspace(location: vscode.Uri): Promise<void>;
+		export function createWorkspace(location: vscode.Uri, filePath?: string): Promise<void>;
 	}
 }

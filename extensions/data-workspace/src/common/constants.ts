@@ -35,6 +35,5 @@ export const LocalFileSystem = localize('dataworkspace.localFileSystem', "Local 
 export const TargetTypeSelectorTitle = localize('dataworkspace.TargetTypeSelectorTitle', "Target");
 export const ProjectFileTitle = localize('dataworkspace.projectFileTitle', "Project file");
 
-
-
-
+// Create workspace
+export const CreateWorkspaceConfirmation = localize('dataworkspace.createWorkspaceConfirmation', "A new workspace will be created and opened in order to open project. If there is a folder currently open, it will be closed and the Extension Host will restart");

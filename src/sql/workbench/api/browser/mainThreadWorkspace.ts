@@ -19,7 +19,9 @@ export class MainThreadWorkspace extends Disposable implements MainThreadWorkspa
 	) {
 		super();
 	}
-	$createWorkspace(folder: URI): Promise<void> {
-		return this.workspaceEditingService.createAndEnterWorkspace([{ uri: folder }]);
+
+	$createWorkspace(folder: URI, path?: string): Promise<void> {
+		const pathUri = path ? URI.file(path) : undefined;
+		return this.workspaceEditingService.createAndEnterWorkspace([{ uri: folder }], pathUri);
 	}
 }
