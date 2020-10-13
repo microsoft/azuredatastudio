@@ -6,8 +6,6 @@
 import * as vscode from 'vscode';
 import * as azdataExt from 'azdata-ext';
 import * as should from 'should';
-import * as childProcess from '../../common/childProcess';
-import * as TypeMoq from 'typemoq';
 import * as sinon from 'sinon';
 import { ArcControllerConfigProfilesOptionsSource } from '../../providers/arcControllerConfigProfilesOptionsSource';
 
