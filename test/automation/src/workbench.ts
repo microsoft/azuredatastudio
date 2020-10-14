@@ -27,6 +27,7 @@ import { Profiler } from './sql/profiler';
 import { QueryEditors } from './sql/queryEditors';
 import { QueryEditor } from './sql/queryEditor';
 import { Notebook as SqlNotebook } from './sql/notebook';
+import { ConfigurePythonDialog } from './sql/configurePythonDialog';
 // {{END}}
 
 export interface Commands {
@@ -57,7 +58,8 @@ export class Workbench {
 	readonly profiler: Profiler;
 	readonly queryEditors: QueryEditors;
 	readonly queryEditor: QueryEditor;
-	readonly sqlNotebbok: SqlNotebook;
+	readonly sqlNotebook: SqlNotebook;
+	readonly configurePythonDialog: ConfigurePythonDialog;
 	// {{END}}
 
 	constructor(code: Code, userDataPath: string) {
@@ -81,7 +83,8 @@ export class Workbench {
 		this.profiler = new Profiler(code, this.quickaccess);
 		this.queryEditors = new QueryEditors(code, this.editors);
 		this.queryEditor = new QueryEditor(code);
-		this.sqlNotebbok = new SqlNotebook(code, this.quickaccess, this.quickinput, this.editors);
+		this.sqlNotebook = new SqlNotebook(code, this.quickaccess, this.quickinput, this.editors);
+		this.configurePythonDialog = new ConfigurePythonDialog(code);
 		// {{END}}
 		this.notebook = new Notebook(this.quickaccess, code);
 	}
