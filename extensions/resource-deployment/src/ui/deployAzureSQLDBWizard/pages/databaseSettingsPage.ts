@@ -151,15 +151,15 @@ export class DatabaseSettingsPage extends BasePage {
 	}
 
 	/**
-	 * Firewall rule names are based on the Name field (under "Policy Details") when entering erroneous input here: https://ms.portal.azure.com/#create/Microsoft.FirewallPolicy
+	 * Firewall rule names shown below are based on the Name field (under "Policy Details") when entering erroneous input here: https://ms.portal.azure.com/#create/Microsoft.FirewallPolicy
 	*/
 	private validateFirewallNameText(firewallname: string | undefined): boolean {
 		if (firewallname) {
-			// Check for firewall rule name that is only spaces.
+			// Check for firewall rule name that is only spaces (not allowed).
 			if (/^[ ]+$/.test(firewallname)) {
 				return false;
 			}
-			// Check for valid firewall rule name length.
+			// Check for valid firewall rule name length between 1 and 80.
 			if (firewallname.length < 1 || firewallname.length > 80) {
 				return false;
 			}
@@ -191,16 +191,16 @@ export class DatabaseSettingsPage extends BasePage {
 		});
 	}
 	/**
-	 * database name rules are based on the name rules found on the "database name" field in "database details" when entering erroneous input: https://ms.portal.azure.com/#create/Microsoft.SQLDatabase
+	 * database name rules shown below are based on the name rules found on the "database name" field in "database details" when entering erroneous input: https://ms.portal.azure.com/#create/Microsoft.SQLDatabase
 	 * reserved names and substrings listed here: https://docs.microsoft.com/azure/azure-resource-manager/templates/error-reserved-resource-name
 	 */
 	private validateDatabaseNameText(databasename: string | undefined): boolean {
 		if (databasename) {
-			// Check for database name that is only spaces.
+			// Check for database name that is only spaces (not allowed).
 			if (/^[ ]+$/.test(databasename)) {
 				return false;
 			}
-			// Check for valid database name length.
+			// Check for valid database name length between 1 and 128.
 			if (databasename.length < 1 || databasename.length > 128) {
 
 				return false;
