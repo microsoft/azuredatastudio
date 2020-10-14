@@ -2634,14 +2634,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.3",
-							"lastUpdated": "12/19/2019",
+							"version": "0.1.5",
+							"lastUpdated": "10/11/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/ecirpnaes/SimpleDataScripter/releases/tag/0.1.3"
+									"source": "https://github.com/ecirpnaes/SimpleDataScripter/releases/tag/0.1.5"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
