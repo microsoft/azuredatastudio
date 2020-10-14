@@ -24,7 +24,7 @@ export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
 // Project Provider
 export const sqlDatabaseProjectTypeId = 'sqldbproj';
-export const projectTypeDisplayName = localize('projectTypeDisplayName', "Database Project");
+export const projectTypeDisplayName = localize('projectTypeDisplayName', "SQL Database");
 export const projectTypeDescription = localize('projectTypeDescription', "Design, edit, and publish schemas for SQL databases");
 
 // commands
@@ -96,7 +96,7 @@ export const defaultUser = localize('default', "default");
 export const addDatabaseReferenceDialogName = localize('addDatabaseReferencedialogName', "Add database reference");
 export const addDatabaseReferenceOkButtonText = localize('addDatabaseReferenceOkButtonText', "Add reference");
 export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Type");
-export const projectRadioButtonTitle = localize('projectRadioButtonTitle', "Database project in workspace");
+export const projectRadioButtonTitle = localize('projectRadioButtonTitle', "Project");
 export const systemDatabaseRadioButtonTitle = localize('systemDatabaseRadioButtonTitle', "System database");
 export const dacpacText = localize('dacpacText', "Data-tier application (.dacpac)");
 export const dacpacPlaceholder = localize('dacpacPlaceholder', "Select .dacpac");

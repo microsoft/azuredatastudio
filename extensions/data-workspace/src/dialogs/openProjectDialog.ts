@@ -9,6 +9,7 @@ import { DialogBase } from './dialogBase';
 import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
 import { fileExist } from '../common/utils';
+import { IconPathHelper } from '../common/iconHelper';
 
 export class OpenProjectDialog extends DialogBase {
 	private _projectFile: string = '';
@@ -69,18 +70,19 @@ export class OpenProjectDialog extends DialogBase {
 					]
 				};
 			}),
-			iconHeight: '25px',
-			iconWidth: '25px',
-			cardWidth: '160px',
-			cardHeight: '80px',
+			iconHeight: '50px',
+			iconWidth: '50px',
+			cardWidth: '170px',
+			cardHeight: '170px',
 			ariaLabel: constants.ProjectTypeSelectorTitle,
 			width: '500px',
-			iconPosition: 'left',
+			iconPosition: 'top',
 			selectedCardId: constants.LocalFileSystem
 		}).component();
 
 		const projectFilePathTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.ProjectFileTitle,
+			placeHolder: constants.ProjectFilePlaceholder,
 			required: true,
 			width: constants.DefaultInputWidth
 		}).component();
@@ -88,7 +90,12 @@ export class OpenProjectDialog extends DialogBase {
 			this._projectFile = projectFilePathTextBox.value!;
 		}));
 
-		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: constants.BrowseButtonText, width: constants.DefaultButtonWidth }).component();
+		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			ariaLabel: constants.BrowseButtonText,
+			iconPath: IconPathHelper.folder,
+			width: '16px',
+			height: '16px',
+		}).component();
 		this.register(browseFolderButton.onDidClick(async () => {
 			const filters: { [name: string]: string[] } = {};
 			const projectTypes = await this.workspaceService.getAllProjectTypes();
@@ -113,9 +120,9 @@ export class OpenProjectDialog extends DialogBase {
 
 		const form = view.modelBuilder.formContainer().withFormItems([
 			{
-				title: constants.TargetTypeSelectorTitle,
+				title: constants.LocationSelectorTitle,
 				required: true,
-				component: targetTypeRadioCardGroup
+				component: targetTypeRadioCardGroup,
 			}, {
 				title: constants.ProjectFileTitle,
 				required: true,

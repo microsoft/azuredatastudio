@@ -11,6 +11,7 @@ import { IWorkspaceService } from '../common/interfaces';
 import * as constants from '../common/constants';
 import { IProjectType } from 'dataworkspace';
 import { directoryExist } from '../common/utils';
+import { IconPathHelper } from '../common/iconHelper';
 
 class NewProjectDialogModel {
 	projectTypeId: string = '';
@@ -78,13 +79,13 @@ export class NewProjectDialog extends DialogBase {
 					]
 				};
 			}),
-			iconHeight: '25px',
-			iconWidth: '25px',
-			cardWidth: '250px',
-			cardHeight: '130px',
+			iconHeight: '50px',
+			iconWidth: '50px',
+			cardWidth: '170px',
+			cardHeight: '170px',
 			ariaLabel: constants.ProjectTypeSelectorTitle,
 			width: '500px',
-			iconPosition: 'left',
+			iconPosition: 'top',
 			selectedCardId: allProjectTypes.length > 0 ? allProjectTypes[0].id : undefined
 		}).component();
 
@@ -94,6 +95,7 @@ export class NewProjectDialog extends DialogBase {
 
 		const projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.ProjectNameTitle,
+			placeHolder: constants.ProjectNamePlaceholder,
 			required: true,
 			width: constants.DefaultInputWidth
 		}).component();
@@ -104,6 +106,7 @@ export class NewProjectDialog extends DialogBase {
 
 		const locationTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.ProjectLocationTitle,
+			placeHolder: constants.ProjectLoacationPlaceholder,
 			required: true,
 			width: constants.DefaultInputWidth
 		}).component();
@@ -111,7 +114,12 @@ export class NewProjectDialog extends DialogBase {
 			this.model.location = locationTextBox.value!;
 		}));
 
-		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: constants.BrowseButtonText, width: constants.DefaultButtonWidth }).component();
+		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			ariaLabel: constants.BrowseButtonText,
+			iconPath: IconPathHelper.folder,
+			height: '16px',
+			width: '16px'
+		}).component();
 		this.register(browseFolderButton.onDidClick(async () => {
 			let folderUris = await vscode.window.showOpenDialog({
 				canSelectFiles: false,

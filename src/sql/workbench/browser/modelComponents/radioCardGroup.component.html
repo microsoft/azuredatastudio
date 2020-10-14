@@ -11,7 +11,7 @@
 			<div *ngIf="card.icon" class="icon-container">
 				<div [class]="getIconClass(card.id)" [style.width]="iconWidth" [style.height]="iconHeight"> </div>
 			</div>
-			<div class="text-container">
+			<div class="text-container" [style.height]="textHeight">
 				<div *ngFor="let description of card.descriptions" class="inner-text-content">
 					<span class="text-value" [ngStyle]="description.textStyles">{{description.textValue}}</span>
 					<a *ngIf="description.linkDisplayValue" class="link-value" href="#"
