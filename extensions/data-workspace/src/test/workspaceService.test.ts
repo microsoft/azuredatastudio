@@ -9,6 +9,7 @@ import * as sinon from 'sinon';
 import * as should from 'should';
 import * as path from 'path';
 import * as TypeMoq from 'typemoq';
+import * as constants from '../common/constants';
 import { WorkspaceService } from '../services/workspaceService';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import { createProjectProvider } from './projectProviderRegistry.test';
@@ -228,6 +229,30 @@ suite('WorkspaceService Tests', function (): void {
 			return arg.uri.path === '/test/other';
 		})), true, 'updateWorkspaceFolder parameters does not match expectation');
 		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, true, 'the onDidWorkspaceProjectsChange event should have been fired');
+		onWorkspaceProjectsChangedDisposable.dispose();
+	});
+
+	test('test addProjectsToWorkspace when no workspace open', async () => {
+		const processPath = (original: string): string => {
+			return original.replace(/\//g, path.sep);
+		};
+		stubWorkspaceFile(undefined);
+		const updateConfigurationStub = sinon.stub();
+		const getConfigurationStub = sinon.stub().returns([processPath('folder1/proj2.sqlproj')]);
+		const onWorkspaceProjectsChangedStub = sinon.stub();
+		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
+			onWorkspaceProjectsChangedStub();
+		});
+		stubGetConfigurationValue(getConfigurationStub, updateConfigurationStub);
+		const showWarningMessage = sinon.stub(vscode.window, 'showWarningMessage').resolves(undefined);
+
+		await service.addProjectsToWorkspace([
+			vscode.Uri.file('/test/folder/proj1.sqlproj')
+		]);
+
+		should(showWarningMessage.calledOnce).be.true('showWarningMessage should have been called');
+		should(showWarningMessage.calledWith(constants.CreateWorkspaceConfirmation)).be.true(`showInfoMessage not called with expected message '${constants.CreateWorkspaceConfirmation}' Actual '${showWarningMessage.getCall(0).args[0]}'`);
+		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, false, 'the onDidWorkspaceProjectsChange event should not have been fired');
 		onWorkspaceProjectsChangedDisposable.dispose();
 	});
 
