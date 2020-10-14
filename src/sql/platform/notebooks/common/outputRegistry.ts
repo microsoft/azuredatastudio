@@ -10,6 +10,8 @@ export const Extensions = {
 };
 
 export const HideInputTag = 'hide_input';
+export const ParametersTag = 'parameters';
+export const InjectedParametersTag = 'injected-parameters';
 
 export interface ICellComponenetRegistry {
 	registerComponent(component: any): void;

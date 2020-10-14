@@ -340,7 +340,7 @@ suite('Cell Model', function (): void {
 		assert(!isCollapsed);
 	});
 
-	test('Should not allow markdown cells to be collapsible', async function (): Promise<void> {
+	test('Should not allow markdown cells to be collapsible or parameters', async function (): Promise<void> {
 		let mdCellData: nb.ICellContents = {
 			cell_type: CellTypes.Markdown,
 			source: 'some *markdown*',
@@ -349,11 +349,16 @@ suite('Cell Model', function (): void {
 		};
 		let cell = factory.createCell(mdCellData, undefined);
 		assert(cell.isCollapsed === false);
+		assert(cell.isParameter === false);
+
 		cell.isCollapsed = true;
+		cell.isParameter = true;
 		// The typescript compiler will complain if we don't ignore the error from the following line,
 		// claiming that cell.isCollapsed will return true. It doesn't.
 		// @ts-ignore
 		assert(cell.isCollapsed === false);
+		// @ts-ignore
+		assert(cell.isParameter === false);
 
 		let codeCellData: nb.ICellContents = {
 			cell_type: CellTypes.Code,
@@ -364,8 +369,159 @@ suite('Cell Model', function (): void {
 		};
 		cell = factory.createCell(codeCellData, undefined);
 		assert(cell.isCollapsed === false);
+		assert(cell.isParameter === false);
+
 		cell.isCollapsed = true;
 		assert(cell.isCollapsed === true);
+		cell.isParameter = true;
+		assert(cell.isParameter === true);
+	});
+
+	test('Should parse metadata\'s parameters tag correctly', async function (): Promise<void> {
+		// Setup Notebook Model and Contents
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: ''
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+
+		assert(!model.isParameter);
+		model.isParameter = true;
+		assert(model.isParameter);
+		model.isParameter = false;
+		assert(!model.isParameter);
+
+		// Should not have parameters cell
+		let modelJson = model.toJSON();
+		assert(!isUndefinedOrNull(modelJson.metadata.tags));
+		assert(!modelJson.metadata.tags.some(x => x === 'parameter'));
+
+		// Add parameters tag
+		contents.metadata = {
+			tags: ['parameters']
+		};
+		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+
+		assert(model.isParameter);
+		model.isParameter = false;
+		assert(!model.isParameter);
+		model.isParameter = true;
+		assert(model.isParameter);
+
+		// Should find parameters tag in metadata
+		modelJson = model.toJSON();
+		assert(!isUndefinedOrNull(modelJson.metadata.tags));
+		assert(modelJson.metadata.tags.some(x => x === 'parameters'));
+
+		contents.metadata = {
+			tags: ['not_a_real_tag']
+		};
+		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		modelJson = model.toJSON();
+		assert(!isUndefinedOrNull(modelJson.metadata.tags));
+		assert(!modelJson.metadata.tags.some(x => x === 'parameters'));
+
+		contents.metadata = {
+			tags: ['not_a_real_tag', 'parameters']
+		};
+		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		modelJson = model.toJSON();
+		assert(!isUndefinedOrNull(modelJson.metadata.tags));
+		assert(modelJson.metadata.tags.some(x => x === 'parameters'));
+	});
+
+	test('Should emit event setting cell as Parameter', async function (): Promise<void> {
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: ''
+		};
+
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		assert(!model.isParameter);
+
+		let createParameterPromise = () => {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => reject(), 2000);
+				model.onParameterStateChanged(isParameter => {
+					resolve(isParameter);
+				});
+			});
+		};
+
+		assert(!model.isParameter);
+		let parameterPromise = createParameterPromise();
+		model.isParameter = true;
+		let isParameter = await parameterPromise;
+		assert(isParameter);
+
+		parameterPromise = createParameterPromise();
+		model.isParameter = false;
+		isParameter = await parameterPromise;
+		assert(!isParameter);
+	});
+
+	test('Should parse metadata\'s injected parameter tag correctly', async function (): Promise<void> {
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: ''
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+
+		assert(!model.isInjectedParameter);
+		model.isInjectedParameter = true;
+		assert(model.isInjectedParameter);
+		model.isInjectedParameter = false;
+		assert(!model.isInjectedParameter);
+
+		let modelJson = model.toJSON();
+		assert(!isUndefinedOrNull(modelJson.metadata.tags));
+		assert(!modelJson.metadata.tags.some(x => x === 'injected-parameters'));
+
+		contents.metadata = {
+			tags: ['injected-parameters']
+		};
+		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+
+		assert(model.isInjectedParameter);
+		model.isInjectedParameter = false;
+		assert(!model.isInjectedParameter);
+		model.isInjectedParameter = true;
+		assert(model.isInjectedParameter);
+
+		modelJson = model.toJSON();
+		assert(!isUndefinedOrNull(modelJson.metadata.tags));
+		assert(modelJson.metadata.tags.some(x => x === 'injected-parameters'));
+
+		contents.metadata = {
+			tags: ['not_a_real_tag']
+		};
+		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		modelJson = model.toJSON();
+		assert(!isUndefinedOrNull(modelJson.metadata.tags));
+		assert(!modelJson.metadata.tags.some(x => x === 'injected-parameters'));
+
+		contents.metadata = {
+			tags: ['not_a_real_tag', 'injected-parameters']
+		};
+		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		modelJson = model.toJSON();
+		assert(!isUndefinedOrNull(modelJson.metadata.tags));
+		assert(modelJson.metadata.tags.some(x => x === 'injected-parameters'));
 	});
 
 	suite('Model Future handling', function (): void {

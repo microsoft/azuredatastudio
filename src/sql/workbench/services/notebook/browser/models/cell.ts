@@ -22,7 +22,7 @@ import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
-import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
+import { HideInputTag, ParametersTag, InjectedParametersTag } from 'sql/platform/notebooks/common/outputRegistry';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
@@ -68,6 +68,9 @@ export class CellModel extends Disposable implements ICellModel {
 	private _cellSourceChanged: boolean = false;
 	private _gridDataConversionComplete: Promise<void>[] = [];
 	private _defaultToWYSIWYG: boolean;
+	private _isParameter: boolean;
+	private _onParameterStateChanged = new Emitter<boolean>();
+	private _isInjectedParameter: boolean;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -338,6 +341,76 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get onCellMarkdownModeChanged(): Event<boolean> {
 		return this._onCellMarkdownChanged.event;
+	}
+
+	public get onParameterStateChanged(): Event<boolean> {
+		return this._onParameterStateChanged.event;
+	}
+
+	public get isParameter() {
+		return this._isParameter;
+	}
+
+	public set isParameter(value: boolean) {
+		if (this.cellType !== CellTypes.Code) {
+			return;
+		}
+		let stateChanged = this._isParameter !== value;
+		this._isParameter = value;
+
+		let tagIndex = -1;
+		if (this._metadata.tags) {
+			tagIndex = this._metadata.tags.findIndex(tag => tag === ParametersTag);
+		}
+
+		if (this._isParameter) {
+			if (tagIndex === -1) {
+				if (!this._metadata.tags) {
+					this._metadata.tags = [];
+				}
+				this._metadata.tags.push(ParametersTag);
+			}
+		} else {
+			if (tagIndex > -1) {
+				this._metadata.tags.splice(tagIndex, 1);
+			}
+		}
+
+		if (stateChanged) {
+			this._onParameterStateChanged.fire(this._isParameter);
+			this.sendChangeToNotebook(NotebookChangeType.CellInputVisibilityChanged);
+		}
+	}
+
+	// Injected Parameters will be used for future scenarios
+	// when we need to hide this cell for Parameterization
+	public get isInjectedParameter() {
+		return this._isInjectedParameter;
+	}
+
+	public set isInjectedParameter(value: boolean) {
+		if (this.cellType !== CellTypes.Code) {
+			return;
+		}
+		this._isInjectedParameter = value;
+
+		let tagIndex = -1;
+		if (this._metadata.tags) {
+			tagIndex = this._metadata.tags.findIndex(tag => tag === InjectedParametersTag);
+		}
+
+		if (this._isInjectedParameter) {
+			if (tagIndex === -1) {
+				if (!this._metadata.tags) {
+					this._metadata.tags = [];
+				}
+				this._metadata.tags.push(InjectedParametersTag);
+			}
+		} else {
+			if (tagIndex > -1) {
+				this._metadata.tags.splice(tagIndex, 1);
+			}
+		}
 	}
 
 	private notifyExecutionComplete(): void {
@@ -729,11 +802,16 @@ export class CellModel extends Disposable implements ICellModel {
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata || {};
 
-		if (this._metadata.tags && this._metadata.tags.some(x => x === HideInputTag) && this._cellType === CellTypes.Code) {
+		if (this._metadata.tags && this._metadata.tags.some(x => x === HideInputTag || x === ParametersTag || x === InjectedParametersTag) && this._cellType === CellTypes.Code) {
 			this._isCollapsed = true;
+			this._isParameter = true;
+			this._isInjectedParameter = true;
 		} else {
 			this._isCollapsed = false;
+			this._isParameter = false;
+			this._isInjectedParameter = false;
 		}
+
 
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);

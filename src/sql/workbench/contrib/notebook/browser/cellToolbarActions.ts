@@ -145,6 +145,9 @@ export class CellToggleMoreActions {
 			instantiationService.createInstance(CollapseCellAction, 'collapseCell', localize('collapseCell', "Collapse Cell"), true),
 			instantiationService.createInstance(CollapseCellAction, 'expandCell', localize('expandCell', "Expand Cell"), false),
 			new Separator(),
+			instantiationService.createInstance(ParmaetersCellAction, 'makeParameterCell', localize('makeParameterCell', "Make parameter cell"), true),
+			instantiationService.createInstance(ParmaetersCellAction, 'RemoveParameterCell', localize('RemoveParameterCell', "Remove parameter cell"), false),
+			new Separator(),
 			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', "Clear Result")),
 		);
 	}
@@ -362,5 +365,43 @@ export class ToggleMoreActions extends Action {
 			getActionsContext: () => this._context
 		});
 		return Promise.resolve(true);
+	}
+}
+
+export class ParmaetersCellAction extends CellActionBase {
+	constructor(id: string,
+		label: string,
+		private parametersCell: boolean,
+		@INotificationService notificationService: INotificationService
+	) {
+		super(id, label, undefined, notificationService);
+	}
+
+	public canRun(context: CellContext): boolean {
+		return context.cell && context.cell.cellType === CellTypes.Code;
+	}
+
+	async doRun(context: CellContext): Promise<void> {
+		try {
+			let cell = context.cell || context.model.activeCell;
+			if (cell) {
+				if (this.parametersCell) {
+					if (!cell.isParameter) {
+						cell.isParameter = true;
+					}
+				} else {
+					if (cell.isParameter) {
+						cell.isParameter = false;
+					}
+				}
+			}
+		} catch (error) {
+			let message = getErrorMessage(error);
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: message
+			});
+		}
+		return Promise.resolve();
 	}
 }
