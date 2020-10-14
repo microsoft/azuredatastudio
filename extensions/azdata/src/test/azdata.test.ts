@@ -13,6 +13,7 @@ import * as utils from '../common/utils';
 import * as loc from '../localizedConstants';
 import * as os from 'os';
 import * as fs from 'fs';
+import { AzdataReleaseInfo } from '../azdataReleaseInfo';
 
 const oldAzdataMock = new azdata.AzdataTool('/path/to/azdata', '0.0.0');
 
@@ -20,7 +21,7 @@ const oldAzdataMock = new azdata.AzdataTool('/path/to/azdata', '0.0.0');
  * This matches the schema of the JSON file used to determine the current version of
  * azdata - do not modify unless also updating the corresponding JSON file
  */
-const releaseJson = {
+const releaseJson: AzdataReleaseInfo = {
 	win32: {
 		'version': '9999.999.999',
 		'link': 'https://download.com/azdata-20.0.1.msi'
