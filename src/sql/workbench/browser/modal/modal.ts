@@ -56,7 +56,6 @@ export interface IModalDialogStyles {
 }
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
-
 export type DialogStyle = 'Normal' | 'Flyout' | 'Callout';
 export type CalloutPosition = 'left' | 'right' | 'above' | 'below' | null;
 
@@ -622,6 +621,12 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalDialog.style.borderWidth = border ? '1px' : '';
 			this._modalDialog.style.borderStyle = border ? 'solid' : '';
 			this._modalDialog.style.borderColor = border;
+
+			let calloutStyle = this._modalDialog.style;
+			let foregroundRgb = Color.Format.CSS.parseHex(foreground);
+			calloutStyle.setProperty('--border', `${border}`);
+			calloutStyle.setProperty('--bodybackground', `${bodyBackground}`);
+			calloutStyle.setProperty('--foreground', `${foregroundRgb.rgba.r}, ${foregroundRgb.rgba.g}, ${foregroundRgb.rgba.b}, 0.14`);
 		}
 
 		if (this._modalHeaderSection) {
