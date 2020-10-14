@@ -15,7 +15,7 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
@@ -29,6 +29,7 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -51,6 +52,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	private _checkboxColumns: CheckboxSelectColumn<{}>[] = [];
 	private _buttonsColumns: ButtonColumn<{}>[] = [];
 	private _pluginsRegisterStatus: boolean[] = [];
+	private _filterPlugin: HeaderFilter<Slick.SlickData>;
 	private _onCheckBoxChanged = new Emitter<ICheckboxCellActionEventArgs>();
 	private _onButtonClicked = new Emitter<ButtonClickEventArgs<{}>>();
 	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
@@ -133,7 +135,30 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-			this._tableData = new TableDataView<Slick.SlickData>();
+			this._tableData = new TableDataView<Slick.SlickData>(
+				null,
+				null,
+				null,
+				(data: Slick.SlickData[]) => {
+					let columns = this._table.grid.getColumns();
+
+					for (let i = 0; i < columns.length; i++) {
+						let col: any = columns[i];
+						let filterValues: Array<any> = col.filterValues;
+						if (filterValues && filterValues.length > 0) {
+							return data.filter(item => {
+								let colValue = item[col.field];
+								if (colValue instanceof Array) {
+									return filterValues.find(x => colValue.indexOf(x) >= 0);
+								}
+								return filterValues.find(x => x === colValue);
+							});
+						}
+					}
+
+					return data;
+				}
+			);
 
 			let options = <Slick.GridOptions<any>>{
 				syncColumnCellResize: true,
@@ -249,7 +274,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 		Object.keys(this._checkboxColumns).forEach(col => this.registerPlugins(col, this._checkboxColumns[col]));
 		Object.keys(this._buttonsColumns).forEach(col => this.registerPlugins(col, this._buttonsColumns[col]));
-
+		if (this.properties['headerFilter'] === true) {
+			this.registerFilterPlugin();
+		}
 		if (this.ariaRowCount === -1) {
 			this._table.removeAriaRowCount();
 		}
@@ -354,6 +381,35 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		this._table.columns = this._tableColumns;
 		this._table.autosizeColumns();
 
+	}
+
+
+	private registerFilterPlugin() {
+		const filterPlugin = new HeaderFilter<Slick.SlickData>();
+		this._register(attachButtonStyler(filterPlugin, this.themeService));
+		this._filterPlugin = filterPlugin;
+		this._filterPlugin.onFilterApplied.subscribe((e, args) => {
+			let filterValues = (<any>args).column.filterValues;
+			if (filterValues) {
+				this._tableData.filter();
+				this._table.grid.resetActiveCell();
+				this.layoutTable();
+			} else {
+				this._tableData.clearFilter();
+			}
+		});
+
+		this._filterPlugin.onCommand.subscribe((e, args: any) => {
+			this._tableData.sort({
+				sortAsc: args.command === 'sort-asc',
+				sortCol: args.column,
+				multiColumnSort: false,
+				grid: this._table.grid
+			});
+			this.layoutTable();
+		});
+
+		this._table.registerPlugin(filterPlugin);
 	}
 
 	public focus(): void {
