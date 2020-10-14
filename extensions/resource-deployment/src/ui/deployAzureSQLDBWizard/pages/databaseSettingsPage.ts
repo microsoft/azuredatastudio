@@ -150,13 +150,15 @@ export class DatabaseSettingsPage extends BasePage {
 	}
 
 	/**
-	 * Firewall rule names are based on the name rules here: https://ms.portal.azure.com/#create/Microsoft.FirewallPolicy
+	 * Firewall rule names are based on the Name field (under "Policy Details") when entering erroneous input here: https://ms.portal.azure.com/#create/Microsoft.FirewallPolicy
 	*/
 	private validateFirewallNameText(firewallname: string | undefined): boolean {
 		if (firewallname) {
+			//Check for firewall rule name that is only spaces.
 			if (/^[ ]+$/.test(firewallname)) {
 				return false;
 			}
+			//Check for valid firewall rule name length.
 			if (firewallname.length < 1 || firewallname.length > 80) {
 				return false;
 			}
@@ -184,24 +186,29 @@ export class DatabaseSettingsPage extends BasePage {
 		});
 	}
 	/**
-	 * database name rules are based on the name rules here: https://ms.portal.azure.com/#create/Microsoft.SQLDatabase
-	 * reserved names and substrings listed here: https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-reserved-resource-name
+	 * database name rules are based on the name rules found on the "database name" field in "database details" when entering erroneous input: https://ms.portal.azure.com/#create/Microsoft.SQLDatabase
+	 * reserved names and substrings listed here: https://docs.microsoft.com/azure/azure-resource-manager/templates/error-reserved-resource-name
 	 */
 	private validateDatabaseNameText(databasename: string | undefined): boolean {
 		if (databasename) {
+			//Check for database name that is only spaces.
 			if (/^[ ]+$/.test(databasename)) {
 				return false;
 			}
+			//Check for valid database name length.
 			if (databasename.length < 1 || databasename.length > 128) {
 				return false;
 			}
-			else if (/(?i)(^ACCESS$|^AZURE$|^BING$|^BIZSPARK$|^BIZTALK$|^CORTANA$|^DIRECTX$|^DOTNET$|^DYNAMICS$|^EXCEL$|^EXCHANGE$|^FOREFRONT$|^GROOVE$|^HOLOLENS$|^HYPERV$|^KINECT$|^LYNC$|^MSDN$|^O365$|^OFFICE$|^OFFICE365$|^ONEDRIVE$|^ONENOTE$|^OUTLOOK$|^POWERPOINT$|^SHAREPOINT$|^SKYPE$|^VISIO$|^VISUALSTUDIO$)]/
+			//Check if database name matches any forbidden reserved names.
+			else if (/(?i)(^ACCESS$|^AZURE$|^BING$|^BIZSPARK$|^BIZTALK$|^CORTANA$|^DIRECTX$|^DOTNET$|^DYNAMICS$|^EXCEL$|^EXCHANGE$|^FOREFRONT$|^GROOVE$|^HOLOLENS$|^HYPERV$|^KINECT$|^LYNC$|^MSDN$|^O365$|^OFFICE$|^OFFICE365$|^ONEDRIVE$|^ONENOTE$|^OUTLOOK$|^POWERPOINT$|^SHAREPOINT$|^SKYPE$|^VISIO$|^VISUALSTUDIO$)/
 				.test(databasename)) {
 				return false;
 			}
+			//Check if database name contains forbidden words.
 			else if (/?i)(LOGIN|MICROSOFT|WINDOWS|XBOX)/.test(databasename)) {
 				return false;
 			}
+			//Check if database name contains invalid characters in the middle/start and at the end.
 			else if (/^[^<>*%&:\\\/?]*[^. <>*%&:\\\/?]$/.test(databasename)) {
 				return false;
 			}
