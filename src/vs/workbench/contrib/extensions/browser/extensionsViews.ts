@@ -629,7 +629,7 @@ export class ExtensionsListView extends ViewPane {
 		return this.extensionsWorkbenchService.queryLocal()
 			.then(result => result.filter(e => e.type === ExtensionType.User))
 			.then(local => {
-				return this.getRecommendedExtensionsByScenario(token, scenarioType).then((recommmended) => {
+				return this.extensionRecommendationsService.getRecommendedExtensionsByScenario(scenarioType).then((recommmended) => {
 					const installedExtensions = local.map(x => `${x.publisher}.${x.name}`);
 					return this.extensionsWorkbenchService.queryGallery(token).then((pager) => {
 						// filter out installed extensions and the extensions not in the recommended list
