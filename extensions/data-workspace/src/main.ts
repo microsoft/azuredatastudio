@@ -22,20 +22,13 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 	}));
 	setProjectProviderContextValue(workspaceService);
 	context.subscriptions.push(vscode.commands.registerCommand('projects.newProject', async () => {
-		if (vscode.workspace.workspaceFile) {
-			const dialog = new NewProjectDialog(workspaceService);
-			dialog.open();
-		} else {
-			dataWorkspaceExtension.showWorkspaceRequiredNotification();
-		}
+		const dialog = new NewProjectDialog(workspaceService);
+		dialog.open();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openProject', async () => {
-		if (vscode.workspace.workspaceFile) {
-			const dialog = new OpenProjectDialog(workspaceService, context);
-			dialog.open();
-		} else {
-			dataWorkspaceExtension.showWorkspaceRequiredNotification();
-		}
+		const dialog = new OpenProjectDialog(workspaceService, context);
+		dialog.open();
+
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', () => {
 		workspaceTreeDataProvider.refresh();
