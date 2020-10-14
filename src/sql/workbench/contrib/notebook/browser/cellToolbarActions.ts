@@ -145,8 +145,8 @@ export class CellToggleMoreActions {
 			instantiationService.createInstance(CollapseCellAction, 'collapseCell', localize('collapseCell', "Collapse Cell"), true),
 			instantiationService.createInstance(CollapseCellAction, 'expandCell', localize('expandCell', "Expand Cell"), false),
 			new Separator(),
-			instantiationService.createInstance(ParmaetersCellAction, 'makeParameterCell', localize('makeParameterCell', "Make parameter cell"), true),
-			instantiationService.createInstance(ParmaetersCellAction, 'RemoveParameterCell', localize('RemoveParameterCell', "Remove parameter cell"), false),
+			instantiationService.createInstance(ParametersCellAction, 'makeParameterCell', localize('makeParameterCell', "Make parameter cell"), true),
+			instantiationService.createInstance(ParametersCellAction, 'removeParameterCell', localize('RemoveParameterCell', "Remove parameter cell"), false),
 			new Separator(),
 			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', "Clear Result")),
 		);
@@ -368,7 +368,7 @@ export class ToggleMoreActions extends Action {
 	}
 }
 
-export class ParmaetersCellAction extends CellActionBase {
+export class ParametersCellAction extends CellActionBase {
 	constructor(id: string,
 		label: string,
 		private parametersCell: boolean,

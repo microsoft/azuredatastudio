@@ -812,7 +812,6 @@ export class CellModel extends Disposable implements ICellModel {
 			this._isInjectedParameter = false;
 		}
 
-
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
 		if (cell.outputs) {
