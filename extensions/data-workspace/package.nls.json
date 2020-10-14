@@ -6,7 +6,7 @@
 	"new-project-command": "New Project",
 	"refresh-workspace-command": "Refresh",
 	"remove-project-command": "Remove Project",
-	"projects-view-no-workspace-content": "Projects feature description text [Learn more](https://docs.microsoft.com/en-us/sql/azure-data-studio/extensions/sql-database-project-extension?view=sql-server-ver15) \n[Open Workspace…](command:workbench.action.openWorkspace)\n[Open Project…](command:projects.openProject)\n[New Project...](command:projects.newProject)\n",
+	"projects-view-no-workspace-content": "[Open Workspace…](command:workbench.action.openWorkspace)\n[Open Project…](command:projects.openProject)\n[New Project...](command:projects.newProject)\n",
 	"projects-view-no-project-content": "No projects found in current workspace.\n[New Project…](command:projects.newProject)\n[Open Project…](command:projects.openProject)\n",
 	"open-project-command": "Open Project"
 }
