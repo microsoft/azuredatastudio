@@ -229,7 +229,7 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._databaseNameTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			required: true,
-			validationErrorMessage: localize('deployAzureSQLDB.DBDatabaseNameError', "Database name must less than 128 characters, can't end with '.' or ' ', can't contain '<,>,*,%,&,:,\,/,?' or control characters, or be a reserved name found here: https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-reserved-resource-name")
+			validationErrorMessage: localize('deployAzureSQLDB.DBDatabaseNameError', "Database name must less than 128 characters, can't end with '.' or ' ', can't contain '<,>,*,%,&,:,\,/,?' or control characters, or be a reserved name found here: https://docs.microsoft.com/azure/azure-resource-manager/templates/error-reserved-resource-name")
 		}).withValidation(component => this.validateDatabaseNameText(component.value)).component();
 
 		this._databaseNameTextRow = this.wizard.createFormRowComponent(view, constants.DatabaseNameLabel, '', this._databaseNameTextbox, true);
