@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { AgreementInfo, DeploymentProvider, ITool, ToolStatus } from '../../interfaces';
+import { AgreementInfo, DeploymentProvider, DeploymentProviderBase, ITool, ResourceType, ToolStatus } from '../../interfaces';
 import { createFlexContainer } from '../modelViewUtils';
 import * as loc from '../../localizedConstants';
 import { IToolsService } from '../../services/toolsService';
@@ -42,13 +42,13 @@ export class NotebookWizardToolsAndEulaPage<W extends WizardBase<WizardPageBase<
 		return this._agreementCheckboxChecked;
 	}
 
-	// public get resourceType(): ResourceType {
-	// 	return this.wizard.resourceType;
-	// }
+	public get resourceType(): ResourceType {
+		return this.wizard.resourceType;
+	}
 
-	// public set resourceProvider(provider: DeploymentProviderBase) {
-	// 	this.wizard.resourceProvider = provider;
-	// }
+	public set resourceProvider(provider: DeploymentProviderBase) {
+		this.wizard.resourceProvider = provider;
+	}
 
 	public get toolsService(): IToolsService {
 		return this.wizard.toolsService;
@@ -64,14 +64,14 @@ export class NotebookWizardToolsAndEulaPage<W extends WizardBase<WizardPageBase<
 				return true;
 			}
 
-			// const isValid = this.resourceType && (this.resourceType.agreement === undefined || this.agreementCheckboxChecked);
-			// if (!isValid) {
-			// 	this.wizard.wizardObject.message = {
-			// 		text: localize('deploymentDialog.AcceptAgreements', "You must agree to the license agreements in order to proceed."),
-			// 		level: azdata.window.MessageLevel.Error
-			// 	};
-			// 	return false;
-			// }
+			const isValid = this.resourceType && (this.resourceType.agreement === undefined || this.agreementCheckboxChecked);
+			if (!isValid) {
+				this.wizard.wizardObject.message = {
+					text: localize('deploymentDialog.AcceptAgreements', "You must agree to the license agreements in order to proceed."),
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
 			if (!this._eulaValidationSucceeded && !(await this.acquireEulaAndProceed())) {
 				return false; // we return false so that the workflow does not proceed and user gets to either click acceptEulaAndSelect again or cancel
 			}
@@ -160,37 +160,37 @@ export class NotebookWizardToolsAndEulaPage<W extends WizardBase<WizardPageBase<
 			return view.initializeModel(this.form!.withLayout({ width: '100%' }).component()).then(() => {
 				this.agreementCheckboxChecked = false;
 				this._agreementContainer.clearItems();
-				// if (this.resourceType.agreement) {
-				this._agreementContainer.addItem(this.createAgreementCheckbox(<AgreementInfo>{}/*this.resourceType.agreement*/));
-				// }
+				if (this.resourceType.agreement) {
+					this._agreementContainer.addItem(this.createAgreementCheckbox(this.resourceType.agreement));
+				}
 
-				// this._optionsContainer.clearItems();
-				// this._optionDropDownMap.clear();
-				// if (this.resourceType.options) {
-				// 	this.resourceType.options.forEach(option => {
-				// 		const optionLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-				// 			value: option.displayName
-				// 		}).component();
-				// 		optionLabel.width = '150px';
+				this._optionsContainer.clearItems();
+				this._optionDropDownMap.clear();
+				if (this.resourceType.options) {
+					this.resourceType.options.forEach(option => {
+						const optionLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+							value: option.displayName
+						}).component();
+						optionLabel.width = '150px';
 
-				// 		const optionSelectBox = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
-				// 			values: option.values,
-				// 			value: option.values[0],
-				// 			width: '300px',
-				// 			ariaLabel: option.displayName
-				// 		}).component();
+						const optionSelectBox = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+							values: option.values,
+							value: option.values[0],
+							width: '300px',
+							ariaLabel: option.displayName
+						}).component();
 
-				// 		optionSelectBox.onValueChanged(() => {
-				// 			this.updateOkButtonText();
-				// 			this.updateToolsDisplayTable();
-				// 			this.wizard.refreshPage();
-				// 		});
+						optionSelectBox.onValueChanged(() => {
+							this.updateOkButtonText();
+							this.updateToolsDisplayTable();
+							this.wizard.refreshPages();
+						});
 
-				// 		this._optionDropDownMap.set(option.name, optionSelectBox);
-				// 		const row = this.view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-				// 		this._optionsContainer.addItem(row);
-				// 	});
-				// }
+						this._optionDropDownMap.set(option.name, optionSelectBox);
+						const row = this.view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+						this._optionsContainer.addItem(row);
+					});
+				}
 
 				this.updateOkButtonText();
 				this.updateToolsDisplayTable();
@@ -251,8 +251,8 @@ export class NotebookWizardToolsAndEulaPage<W extends WizardBase<WizardPageBase<
 			options.push({ option: option, value: selectedValue.name });
 		});
 
-		// this.resourceProvider = this.resourceType.getProvider(options)!;
-		return <DeploymentProvider>{}; //this.resourceType.getProvider(options)!;
+		this.resourceProvider = this.resourceType.getProvider(options)!;
+		return this.resourceType.getProvider(options)!;
 	}
 
 	private getCurrentOkText(): string {
@@ -263,7 +263,7 @@ export class NotebookWizardToolsAndEulaPage<W extends WizardBase<WizardPageBase<
 			options.push({ option: option, value: selectedValue.name });
 		});
 
-		return ''; //this.resourceType.getOkButtonText(options)!;
+		return this.resourceType.getOkButtonText(options)!;
 	}
 
 	private updateOkButtonText(): void {

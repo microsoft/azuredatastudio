@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
+import { DeploymentProviderBase, ResourceType } from '../interfaces';
 import { IToolsService } from '../services/toolsService';
 import { Model } from './model';
 import { WizardPageBase } from './wizardPageBase';
@@ -15,6 +16,8 @@ const localize = nls.loadMessageBundle();
 export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, M extends Model> {
 	private customButtons: azdata.window.Button[] = [];
 	public pages: P[] = [];
+	private _resourceProvider!: DeploymentProviderBase;
+
 
 	public wizardObject: azdata.window.Wizard;
 	public toDispose: vscode.Disposable[] = [];
@@ -26,8 +29,23 @@ export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, 
 		return this._useGenerateScriptButton;
 	}
 
-	constructor(private title: string, name: string, private _model: M, public toolsService: IToolsService, private _useGenerateScriptButton: boolean = false) {
+	public get resourceType(): ResourceType {
+		return this._resourceType!;
+	}
+
+	public set resourceProvider(provider: DeploymentProviderBase) {
+		this._resourceProvider = provider;
+	}
+
+	public get resourceProvider(): DeploymentProviderBase {
+		return this._resourceProvider;
+	}
+
+	constructor(private title: string, name: string, private _model: M, public toolsService: IToolsService, private _useGenerateScriptButton: boolean = false, private _resourceType?: ResourceType) {
 		this.wizardObject = azdata.window.createWizard(title, name);
+		if (this.resourceType) {
+			this._resourceProvider = this.resourceType.providers[0];
+		}
 	}
 
 	public async open(): Promise<void> {
@@ -108,5 +126,9 @@ export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, 
 
 	public registerDisposable(disposable: vscode.Disposable): void {
 		this.toDispose.push(disposable);
+	}
+
+	public async refreshPages() {
+		throw new Error('Method not implemented');
 	}
 }

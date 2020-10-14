@@ -9,15 +9,15 @@ import { Model } from '../model';
 import { InputComponents, setModelValues } from '../modelViewUtils';
 import { WizardBase } from '../wizardBase';
 import { WizardPageBase } from '../wizardPageBase';
-import { DeploymentProviderBase, DeploymentType, instanceOfNotebookWizardDeploymentProvider, NotebookWizardInfo, ResourceType } from './../../interfaces';
+import { DeploymentProvider, DeploymentType, instanceOfNotebookWizardDeploymentProvider, NotebookWizardInfo, ResourceType } from './../../interfaces';
 import { IPlatformService } from './../../services/platformService';
 import { NotebookWizardAutoSummaryPage } from './notebookWizardAutoSummaryPage';
 import { NotebookWizardPage } from './notebookWizardPage';
 import { NotebookWizardToolsAndEulaPage } from './notebookWizardToolsAndEulaPage';
+import { IResourceTypeService } from '../../services/resourceTypeService';
 
 export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Model>, Model> {
 	private _inputComponents: InputComponents = {};
-	private _resourceProvider!: DeploymentProviderBase;
 
 	public get notebookService(): INotebookService {
 		return this._notebookService;
@@ -35,20 +35,10 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 		return this._inputComponents;
 	}
 
-	public get resourceType(): ResourceType {
-		return this._resourceType!;
-	}
 
-	public set resourceProvider(provider: DeploymentProviderBase) {
-		this._resourceProvider = provider;
-	}
 
-	public get resourceProvider(): DeploymentProviderBase {
-		return this._resourceProvider;
-	}
-
-	constructor(private _wizardInfo: NotebookWizardInfo, private _notebookService: INotebookService, private _platformService: IPlatformService, toolsService: IToolsService, private _resourceType?: ResourceType) {
-		super(_wizardInfo.title, _wizardInfo.name || '', new Model(), toolsService);
+	constructor(private _wizardInfo: NotebookWizardInfo, private _notebookService: INotebookService, private _platformService: IPlatformService, toolsService: IToolsService, resourceType?: ResourceType, private _resourceTypeService?: IResourceTypeService) {
+		super(_wizardInfo.title, _wizardInfo.name || '', new Model(), toolsService, false, resourceType);
 		if (this._wizardInfo.codeCellInsertionPosition === undefined) {
 			this._wizardInfo.codeCellInsertionPosition = 0;
 		}
@@ -56,9 +46,7 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 		this.wizardObject.generateScriptButton.label = _wizardInfo.scriptAction?.label || loc.scriptToNotebook;
 
 		//Setting the first provider as the default initially.
-		if (this.resourceType) {
-			this._resourceProvider = this.resourceType.providers[0];
-		}
+
 	}
 
 	public get deploymentType(): DeploymentType | undefined {
@@ -77,9 +65,17 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 		await this.openNotebook(notebook);
 	}
 	protected async onOk(): Promise<void> {
-		const notebook = await this.prepareNotebookAndEnvironment();
-		const openedNotebook = await this.openNotebook(notebook);
-		openedNotebook.runAllCells();
+
+		if (instanceOfNotebookWizardDeploymentProvider(this.resourceProvider)) {
+			const notebook = await this.prepareNotebookAndEnvironment();
+			const openedNotebook = await this.openNotebook(notebook);
+			openedNotebook.runAllCells();
+		} else {
+			this._resourceTypeService?.startDeployment(<DeploymentProvider>this.resourceProvider, this.resourceType);
+			return;
+		}
+
+
 	}
 
 	private async openNotebook(notebook: Notebook) {
@@ -132,12 +128,14 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 		return pages;
 	}
 
-	public async refreshPage() {
+
+	public async refreshPages() {
 		// All the providers will be handled differently
 
-		if (instanceOfNotebookWizardDeploymentProvider(this._resourceProvider)) {
-			this._wizardInfo = this._resourceProvider.notebookWizard!;
+		if (instanceOfNotebookWizardDeploymentProvider(this.resourceProvider)) {
+			this._wizardInfo = this.resourceProvider.notebookWizard!;
 		} else {
+
 			return;
 		}
 
@@ -145,6 +143,7 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 
 		for (let i = 1; i < currentPageNumber; i++) {
 			this.wizardObject.removePage(this.wizardObject.pages.length - 1);
+			this.wizardObject.pages.pop();
 		}
 
 		const newPages = this.getPages();
@@ -162,9 +161,12 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 			this.wizardObject.addPage(newPages[i].pageObject);
 		}
 
+
 		//this.setPages(this.getPages());
 
 		// await this.wizardObject.close();
 		// await this.wizardObject.open();
 	}
+
+
 }

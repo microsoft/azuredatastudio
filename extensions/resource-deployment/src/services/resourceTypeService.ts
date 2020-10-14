@@ -273,7 +273,7 @@ export class ResourceTypeService implements IResourceTypeService {
 			const wizard = new DeployClusterWizard(provider.bdcWizard, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService);
 			wizard.open();
 		} else if (instanceOfNotebookWizardDeploymentProvider(provider)) {
-			const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService, this.toolsService, resourceType);
+			const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService, this.toolsService, resourceType, this);
 			wizard.open();
 		} else if (instanceOfDialogDeploymentProvider(provider)) {
 			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, this.toolsService, provider.dialog);
