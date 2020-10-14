@@ -396,7 +396,7 @@
         ]
       },
       {
-        "name": "sql-azure-setup",
+        "name": "sql-azure-db",
         "displayName": "%azure-sqldb-display-name%",
         "description": "%azure-sqldb-description%",
         "platforms": "*",
