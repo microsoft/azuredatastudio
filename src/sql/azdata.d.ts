@@ -3467,6 +3467,7 @@ declare module 'azdata' {
 		onChanged: vscode.Event<any>;
 	}
 
+	//Drop the base! (test comment)
 	export interface DropDownComponent extends Component, DropDownProperties {
 		onValueChanged: vscode.Event<any>;
 	}
