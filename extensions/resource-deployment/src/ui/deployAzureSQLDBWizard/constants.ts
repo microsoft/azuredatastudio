@@ -43,3 +43,4 @@ export const StartIpAddressLabel = localize('deployAzureSQLDB.StartIpAddressLabe
 export const EndIpAddressLabel = localize('deployAzureSQLDB.EndIpAddressLabel', "Max IP Address in firewall IP Range");
 export const StartIpAddressShortLabel = localize('deployAzureSQLDB.StartIpAddressShortLabel', "Min IP Address");
 export const EndIpAddressShortLabel = localize('deployAzureSQLDB.EndIpAddressShortLabel', "Max IP Address");
+export const DBIpInvalidError = localize('deployAzureSQLDB.DBIpInvalidError', "Invalid IP address format");

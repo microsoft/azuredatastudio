@@ -103,7 +103,7 @@ export class DatabaseSettingsPage extends BasePage {
 				value: constants.IpAddressInfoLabel
 			}).component();
 
-		// regex for validation
+		// regex for validation (check to see if IP address is in IPv4 format)
 		let ipRegex = /(^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$)/;
 
 		//Start IP Address Section:
@@ -111,7 +111,7 @@ export class DatabaseSettingsPage extends BasePage {
 		this._startIpAddressTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			inputType: 'text',
 			required: true,
-			validationErrorMessage: localize('deployAzureSQLDB.DBIpInvalidError', "Invalid IP address format")
+			validationErrorMessage: constants.DBIpInvalidError
 		}).withValidation(component => {
 			if (component.value) {
 				return ipRegex.test(component.value);
@@ -132,7 +132,7 @@ export class DatabaseSettingsPage extends BasePage {
 		this._endIpAddressTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			inputType: 'text',
 			required: true,
-			validationErrorMessage: localize('deployAzureSQLDB.DBIpInvalidError', "Invalid IP address format")
+			validationErrorMessage: constants.DBIpInvalidError
 		}).withValidation(component => {
 			if (component.value) {
 				return ipRegex.test(component.value);
@@ -208,7 +208,7 @@ export class DatabaseSettingsPage extends BasePage {
 			else if (/?i)(LOGIN|MICROSOFT|WINDOWS|XBOX)/.test(databasename)) {
 				return false;
 			}
-			//Check if database name contains invalid characters in the middle/start and at the end.
+			//Check if database name contains invalid characters, and also check if the name doesn't end with a space or period.
 			else if (/^[^<>*%&:\\\/?]*[^. <>*%&:\\\/?]$/.test(databasename)) {
 				return false;
 			}
@@ -219,7 +219,6 @@ export class DatabaseSettingsPage extends BasePage {
 			return false;
 		}
 	}
-
 
 	private createDatabaseNameText(view: azdata.ModelView) {
 
@@ -236,9 +235,10 @@ export class DatabaseSettingsPage extends BasePage {
 	}
 
 	//Collation name has no rules, aside from it not being all spaces (No REST APIs exist for finding the list).
-	private validateCollationNameText(collationname: string | undefined): boolean {
-		if (collationname) {
-			if (/^[ ]+$/.test(collationname)) {
+	private validateCollationNameText(collationName: string | undefined): boolean {
+		if (collationName) {
+			//Check for collation name that is only spaces.
+			if (/^[ ]+$/.test(collationName)) {
 				return false;
 			}
 			else {
