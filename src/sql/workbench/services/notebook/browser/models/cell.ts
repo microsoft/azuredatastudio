@@ -382,10 +382,15 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 	}
 
+<<<<<<< HEAD
 	/**
 	Injected Parameters will be used for future scenarios
 	when we need to hide this cell for Parameterization
 	*/
+=======
+	// Injected Parameters will be used for future scenarios
+	// when we need to hide this cell for Parameterization
+>>>>>>> Backend work for  Parameterization + Tests
 	public get isInjectedParameter() {
 		return this._isInjectedParameter;
 	}
@@ -811,6 +816,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._isParameter = false;
 			this._isInjectedParameter = false;
 		}
+
 
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
