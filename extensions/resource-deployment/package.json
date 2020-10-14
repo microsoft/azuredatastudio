@@ -407,10 +407,6 @@
         "tags": ["SQL Server", "Cloud"],
         "okButtonText": [
           {
-            "value": "%azure-sqldb-notebook-ok-button-text%",
-            "when": "resource-type=single-database"
-          },
-          {
             "value": "%azure-sqldb-portal-ok-button-text%",
             "when": "resource-type=elastic-pool"
           },
