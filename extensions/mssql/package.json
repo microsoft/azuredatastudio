@@ -20,6 +20,11 @@
     "postinstall": "node ./build/postinstall.js"
   },
   "contributes": {
+    "problemMatchers": [
+      {
+        "name": "tasks"
+      }
+    ],
     "commands": [
       {
         "command": "mssql.exportSqlAsNotebook",
