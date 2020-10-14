@@ -23,21 +23,19 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	private discardButton?: azdata.ButtonComponent;
 	private saveButton?: azdata.ButtonComponent;
 
-	private saveArgs?: {
+	private saveArgs: {
 		workers?: number,
 		coresLimit?: string,
 		coresRequest?: string,
 		memoryLimit?: string,
 		memoryRequest?: string
-	};
+	} = {};
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
 	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
 		super(modelView);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
-
-		this.saveArgs = {};
 
 		this.initializeConfigurationBoxes();
 
@@ -153,14 +151,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 						},
 						(_progress, _token) => {
 							return this._azdataApi.azdata.arc.postgres.server.edit(
-								this._postgresModel.info.name, this.saveArgs!);
+								this._postgresModel.info.name, this.saveArgs);
 						}
 					);
 
-					await Promise.
-						all([
-							this._postgresModel.refresh()
-						]);
+					this._postgresModel.refresh();
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 
@@ -211,9 +206,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.disposables.push(
 			this.workerBox!.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.workerBox!))) {
-					this.saveArgs!.workers = undefined;
+					this.saveArgs.workers = undefined;
 				} else {
-					this.saveArgs!.workers = parseInt(this.workerBox!.value!);
+					this.saveArgs.workers = parseInt(this.workerBox!.value!);
 				}
 			})
 		);
@@ -229,9 +224,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.disposables.push(
 			this.coreLimitBox!.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.coreLimitBox!))) {
-					this.saveArgs!.coresRequest = undefined;
+					this.saveArgs.coresRequest = undefined;
 				} else {
-					this.saveArgs!.coresRequest = this.coreLimitBox!.value;
+					this.saveArgs.coresRequest = this.coreLimitBox!.value;
 				}
 			})
 		);
@@ -247,9 +242,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.disposables.push(
 			this.coresRequestBox!.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.coresRequestBox!))) {
-					this.saveArgs!.coresLimit = undefined;
+					this.saveArgs.coresLimit = undefined;
 				} else {
-					this.saveArgs!.coresLimit = this.coresRequestBox!.value;
+					this.saveArgs.coresLimit = this.coresRequestBox!.value;
 				}
 			})
 		);
@@ -265,9 +260,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.disposables.push(
 			this.memoryLimitBox!.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.memoryLimitBox!))) {
-					this.saveArgs!.memoryRequest = undefined;
+					this.saveArgs.memoryRequest = undefined;
 				} else {
-					this.saveArgs!.memoryRequest = this.memoryLimitBox!.value + 'Gi';
+					this.saveArgs.memoryRequest = this.memoryLimitBox!.value + 'Gi';
 				}
 			})
 		);
@@ -283,9 +278,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.disposables.push(
 			this.memoryRequestBox!.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.memoryRequestBox!))) {
-					this.saveArgs!.memoryLimit = undefined;
+					this.saveArgs.memoryLimit = undefined;
 				} else {
-					this.saveArgs!.memoryLimit = this.memoryRequestBox!.value + 'Gi';
+					this.saveArgs.memoryLimit = this.memoryRequestBox!.value + 'Gi';
 				}
 			})
 		);
@@ -293,34 +288,23 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private updateUserInputSection(): azdata.Component[] {
-		if (!this._postgresModel.configLastUpdated) {
-			return [
-				this.createWorkerNodesSectionContainer(),
-				this.createCoresMemorySection(),
-				this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox!, '40px'),
-				this.createConfigurationSectionContainer(loc.coresLimit, this.coreLimitBox!, '40px'),
-				this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox!, '40px'),
-				this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!, '20px')
-
-			];
-		} else {
+		if (this._postgresModel.configLastUpdated) {
 			this.editWorkerNodeCount();
 			this.editCores(loc.coresRequest);
 			this.editCores(loc.coresLimit);
 			this.editMemory(loc.memoryRequest);
 			this.editMemory(loc.memoryLimit);
-
-			return [
-				this.createWorkerNodesSectionContainer(),
-				this.createCoresMemorySection(),
-				this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox!, '40px'),
-				this.createConfigurationSectionContainer(loc.coresLimit, this.coreLimitBox!, '40px'),
-				this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox!, '40px'),
-				this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!, '20px')
-
-			];
 		}
 
+		return [
+			this.createWorkerNodesSectionContainer(),
+			this.createCoresMemorySection(),
+			this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox!, '40px'),
+			this.createConfigurationSectionContainer(loc.coresLimit, this.coreLimitBox!, '40px'),
+			this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox!, '40px'),
+			this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!, '20px')
+
+		];
 	}
 
 	private createWorkerNodesSectionContainer(): azdata.FlexContainer {
@@ -354,7 +338,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const inputContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 		inputContainer.addItem(this.workerBox!, { CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '225px' } });
 
-		flexContainer!.addItem(inputContainer, inputFlex);
+		flexContainer.addItem(inputContainer, inputFlex);
 
 		return flexContainer;
 	}
@@ -373,25 +357,25 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			CSSStyles: { 'max-height': nestingLineHeight, 'min-height': nestingLineHeight, 'max-width': '1px', 'border-left-style': 'solid', 'border-left-color': '#ccc' }
 		}).component();
 
-		flexContainer!.addItem(leftLine, { CSSStyles: { 'align-self': 'flex-start' } });
+		flexContainer.addItem(leftLine, { CSSStyles: { 'align-self': 'flex-start' } });
 
 		const bottomLine = this.modelView.modelBuilder.divContainer().withProperties({
 			CSSStyles: { 'margin-right': '5px', 'min-width': '5px', 'border-bottom-style': 'solid', 'border-bottom-color': '#ccc' }
 		}).component();
 
-		flexContainer!.addItem(bottomLine, bottomLineFlex);
+		flexContainer.addItem(bottomLine, bottomLineFlex);
 
 		const keyComponent = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: key,
 			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'min-width': '100px', 'margin-bottom': '10px', 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		flexContainer!.addItem(keyComponent, keyFlex);
+		flexContainer.addItem(keyComponent, keyFlex);
 
 		const inputContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 		inputContainer.addItem(input, { CSSStyles: { 'margin-bottom': '10px', 'min-width': '50px', 'max-width': '225px' } });
 
-		flexContainer!.addItem(inputContainer, inputFlex);
+		flexContainer.addItem(inputContainer, inputFlex);
 
 		return flexContainer;
 	}
@@ -417,7 +401,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.workerBox!.placeHolder = currentShards!.toString();
 		this.workerBox!.value = '';
 
-		this.saveArgs!.workers = undefined;
+		this.saveArgs.workers = undefined;
 	}
 
 	private createCoresMemorySection(): azdata.DivContainer {
@@ -465,7 +449,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.coresRequestBox!.placeHolder = currentCPUSize;
 			this.coresRequestBox!.value = '';
 
-			this.saveArgs!.coresRequest = undefined;
+			this.saveArgs.coresRequest = undefined;
 
 		} else if (type === loc.coresLimit) {
 			currentCPUSize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
@@ -477,7 +461,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.coreLimitBox!.placeHolder = currentCPUSize;
 			this.coreLimitBox!.value = '';
 
-			this.saveArgs!.coresLimit = undefined;
+			this.saveArgs.coresLimit = undefined;
 
 		}
 	}
@@ -498,7 +482,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.memoryRequestBox!.placeHolder = currentMemSizeConversion!;
 			this.memoryRequestBox!.value = '';
 
-			this.saveArgs!.memoryRequest = undefined;
+			this.saveArgs.memoryRequest = undefined;
 
 		} else if (type === loc.memoryLimit) {
 			currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
@@ -512,7 +496,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.memoryLimitBox!.placeHolder = currentMemSizeConversion!;
 			this.memoryLimitBox!.value = '';
 
-			this.saveArgs!.memoryLimit = undefined;
+			this.saveArgs.memoryLimit = undefined;
 
 		}
 	}

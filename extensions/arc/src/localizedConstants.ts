@@ -146,7 +146,6 @@ export const workerValidationErrorMessage = localize('arc.workerValidationErrorM
 export const coresValidationErrorMessage = localize('arc.coresValidationErrorMessage', "Valid CPU resource quantities are strictly positive.");
 export const memoryRequestValidationErrorMessage = localize('arc.memoryRequestValidationErrorMessage', "Memory request must be at least 0.25Gib");
 export const memoryLimitValidationErrorMessage = localize('arc.memoryLimitValidationErrorMessage', "Memory limit must be at least 0.25Gib");
-
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
 export const enterANonEmptyPassword = localize('arc.enterANonEmptyPassword', "Enter a non empty password or press escape to exit.");
 export const thePasswordsDoNotMatch = localize('arc.thePasswordsDoNotMatch', "The passwords do not match. Confirm the password or press escape to exit.");
