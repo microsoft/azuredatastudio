@@ -396,10 +396,10 @@
         ]
       },
       {
-        "name": "azure-sql",
+        "name": "azure-sql-db",
         "displayIndex": 4,
-        "displayName": "%azure-sql-displayName%",
-        "description": "%azure-sql-description%",
+        "displayName": "%azure-sqldb-display-name%",
+        "description": "%azure-sqldb-description%",
         "platforms": "*",
         "icon": {
           "light": "./images/azure-sql.svg",
