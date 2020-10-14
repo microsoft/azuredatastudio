@@ -353,13 +353,8 @@ suite('Cell Model', function (): void {
 
 		cell.isCollapsed = true;
 		cell.isParameter = true;
-<<<<<<< HEAD
 		// The typescript compiler will complain if we don't ignore the error from the following lines,
 		// claiming that cell.isCollapsed and cell.isParameter will return true. It doesn't.
-=======
-		// The typescript compiler will complain if we don't ignore the error from the following line,
-		// claiming that cell.isCollapsed will return true. It doesn't.
->>>>>>> Backend work for  Parameterization + Tests
 		// @ts-ignore
 		assert(cell.isCollapsed === false);
 		// @ts-ignore
