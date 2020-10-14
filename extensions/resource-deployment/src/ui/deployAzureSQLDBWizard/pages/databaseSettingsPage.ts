@@ -156,7 +156,7 @@ export class DatabaseSettingsPage extends BasePage {
 	private validateFirewallNameText(firewallname: string | undefined): boolean {
 		if (firewallname) {
 			// Check for firewall rule name that is only spaces (not allowed).
-			if (/^[ ]+$/.test(firewallname)) {
+			if (/^[\s]+$/.test(firewallname)) {
 				return false;
 			}
 			// Check for valid firewall rule name length between 1 and 80.
@@ -197,7 +197,7 @@ export class DatabaseSettingsPage extends BasePage {
 	private validateDatabaseNameText(databasename: string | undefined): boolean {
 		if (databasename) {
 			// Check for database name that is only spaces (not allowed).
-			if (/^[ ]+$/.test(databasename)) {
+			if (/^[\s]+$/.test(databasename)) {
 				return false;
 			}
 			// Check for valid database name length between 1 and 128.
@@ -239,11 +239,11 @@ export class DatabaseSettingsPage extends BasePage {
 		});
 	}
 
-	//Collation name has no rules, aside from it not being all spaces (No REST APIs exist for finding the list).
 	private validateCollationNameText(collationName: string | undefined): boolean {
+		//Collation name has no rules, aside from it not being all spaces (No REST APIs exist for finding the list).
 		if (collationName) {
 			//Check for collation name that is only spaces.
-			if (/^[ ]+$/.test(collationName)) {
+			if (/^[\s]+$/.test(collationName)) {
 				return false;
 			}
 			else {
