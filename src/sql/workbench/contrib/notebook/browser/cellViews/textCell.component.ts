@@ -256,7 +256,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	//Sanitizes the content based on trusted mode of Cell Model
 	private sanitizeContent(content: string): string {
 		if (this.cellModel && !this.cellModel.trustedMode) {
-			content = this.sanitizer.sanitize(content);
+			content = this.sanitizer.sanitize(content, { allowedTags: ['a'] });
 		}
 		return content;
 	}
@@ -473,7 +473,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			filter: 'img',
 			replacement: (content, node) => {
 				if (node?.src) {
-					let relativePath = this.findPathRelativeToContent(node.src);
+					let path = URI.parse(node.src);
+					let relativePath = this.findPathRelativeToContent(path);
 					if (relativePath) {
 						return `![${node.alt}](${relativePath})`;
 					}
@@ -484,11 +485,16 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.turndownService.addRule('a', {
 			filter: 'a',
 			replacement: (content, node) => {
-				if (node?.href) {
-					let relativePath = this.findPathRelativeToContent(node.href);
-					if (relativePath) {
-						return `[${node.innerText}](${relativePath})`;
-					}
+				//if notebook is untrusted then the link is save on the title
+				let path: URI;
+				if (node.href) {
+					path = URI.parse(node.href);
+				} else {
+					path = URI.file(node.title);
+				}
+				let relativePath = this.findPathRelativeToContent(path);
+				if (relativePath) {
+					return `[${node.innerText}](${relativePath})`;
 				}
 				return `[${node.innerText}](${node.href})`;
 			}
@@ -504,13 +510,16 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._model.updateActiveCell(this.cellModel);
 	}
 
-	private findPathRelativeToContent(elementContent: string): string {
+	private findPathRelativeToContent(absolutePathURI: URI): string {
 		let notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
 		if (notebookFolder) {
-			let absolutePathURI = URI.parse(elementContent);
 			if (absolutePathURI?.scheme === 'file') {
 				let relativePath = path.relative(notebookFolder, absolutePathURI.fsPath);
-				return relativePath ? relativePath : '';
+				if (relativePath.startsWith(path.join('.', path.sep))) {
+					return relativePath;
+				} else {
+					return path.join(path.sep, relativePath);
+				}
 			}
 		}
 		return '';
