@@ -378,7 +378,7 @@ export class ParametersCellAction extends CellActionBase {
 	}
 
 	public canRun(context: CellContext): boolean {
-		return context.cell && context.cell.cellType === CellTypes.Code;
+		return context.cell?.cellType === CellTypes.Code;
 	}
 
 	async doRun(context: CellContext): Promise<void> {
@@ -402,6 +402,5 @@ export class ParametersCellAction extends CellActionBase {
 				message: message
 			});
 		}
-		return Promise.resolve();
 	}
 }

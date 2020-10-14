@@ -382,8 +382,10 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 	}
 
-	// Injected Parameters will be used for future scenarios
-	// when we need to hide this cell for Parameterization
+	/**
+	Injected Parameters will be used for future scenarios
+	when we need to hide this cell for Parameterization
+	*/
 	public get isInjectedParameter() {
 		return this._isInjectedParameter;
 	}
