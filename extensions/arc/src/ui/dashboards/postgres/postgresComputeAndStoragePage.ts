@@ -9,7 +9,6 @@ import * as azdataExt from 'azdata-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
-import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresComputeAndStoragePage extends DashboardPage {
@@ -26,7 +25,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	private saveButton?: azdata.ButtonComponent;
 
 	private saveArgs?: {
-		workers?: string,
+		workers?: number,
 		coresLimit?: string,
 		coresRequest?: string,
 		memoryLimit?: string,
@@ -35,7 +34,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
-	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
+	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
 		super(modelView);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
@@ -75,42 +74,41 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 		const infoComputeStorage_p2 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.computeAndStorageDescriptionPartTwo,
-			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
 		const workerNodeslink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 			label: loc.addingWokerNodes,
 			url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/scale-up-down-postgresql-hyperscale-server-group-using-cli',
-			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
+			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
 		const infoComputeStorage_p3 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.computeAndStorageDescriptionPartThree,
-			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
 		const memoryVCoreslink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 			label: loc.scalingCompute,
 			url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/scale-up-down-postgresql-hyperscale-server-group-using-cli',
-			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
+			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
 		const infoComputeStorage_p4 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.computeAndStorageDescriptionPartFour,
-			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
 		const infoComputeStorage_p5 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.computeAndStorageDescriptionPartFive,
-			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
 		const infoComputeStorage_p6 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.computeAndStorageDescriptionPartSix,
-			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const flexProperty = { flex: `0 1 auto` };
 		const computeInfoAndLinks = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
 		computeInfoAndLinks.addItem(infoComputeStorage_p1, { CSSStyles: { 'margin-right': '5px' } });
 		computeInfoAndLinks.addItem(infoComputeStorage_p2, { CSSStyles: { 'margin-right': '5px' } });
@@ -162,8 +160,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 					await Promise.
 						all([
-							this._postgresModel.refresh(),
-							this._controllerModel.refresh()
+							this._postgresModel.refresh()
 						]);
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
@@ -195,7 +192,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 					this.workerContainer!.addItems(this.updateUserInputSection(), { CSSStyles: { 'min-height': '30px' } });
 
 				} catch (error) {
-					vscode.window.showErrorMessage(loc.refreshFailed(error));
+					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
 					this.saveButton!.enabled = false;
 				}
@@ -210,14 +207,14 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	private initializeConfigurationBoxes() {
 		this.workerBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
-			validationErrorMessage: 'The number of workers cannot be decreased.',
+			validationErrorMessage: loc.workerValidationErrorMessage,
 			inputType: 'number'
 		}).component();
 
 		this.vCoresMaxBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 1,
-			validationErrorMessage: 'Valid Cpu resource quantities are strictly positive and request is greater than 0.',
+			validationErrorMessage: loc.vCoresValidationErrorMessage,
 			inputType: 'number'
 		}).component();
 
@@ -231,25 +228,28 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.memoryMaxBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 0.25,
-			validationErrorMessage: 'Memory request must be at least 0.25Gib',
+			validationErrorMessage: loc.memoryMaxValidationErrorMessage,
 			inputType: 'number'
 		}).component();
 
 		this.memoryMinBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 0.25,
-			validationErrorMessage: 'Memory limit must be at least 0.25Gib',
+			validationErrorMessage: loc.memoryMinValidationErrorMessage,
 			inputType: 'number'
 		}).component();
 
 	}
 
 	private updateUserInputSection(): azdata.Component[] {
-		const endpoint = this._postgresModel.endpoint;
-		if (!endpoint) {
-			return [];
-		}
-		else {
+		if (!this._postgresModel.configLastUpdated) {
+			return [this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+				value: loc.loading,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+			}).component()];
+		} else {
+
+			this.initializeConfigurationBoxes();
 			this.editWorkerNodeCount();
 			this.editVCores(loc.vCoresMin);
 			this.editVCores(loc.vCoresMax);
@@ -258,14 +258,16 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 			return [
 				this.workerNodesSectionContainer(),
-				this.showvCoreMemorySection(),
+				this.vCoreMemorySection(),
 				this.configurationSectionContainer(loc.vCoresMin, this.vCoresMinBox!, '40px'),
 				this.configurationSectionContainer(loc.vCoresMax, this.vCoresMaxBox!, '40px'),
 				this.configurationSectionContainer(loc.memoryMin, this.memoryMinBox!, '40px'),
 				this.configurationSectionContainer(loc.memoryMax, this.memoryMaxBox!, '20px')
+
 			];
 
 		}
+
 
 	}
 
@@ -342,33 +344,39 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		return flexContainer;
 	}
 
-	private editWorkerNodeCount() {
-		let currentNodeCount = this._postgresModel.config?.spec.scale.shards;
-
-		this.workerBox!.value = currentNodeCount!.toString();
-		this.workerBox!.min = currentNodeCount;
-
-		this.disposables.push(
-			this.workerBox!.onTextChanged(() => {
-				if (this.workerBox!.value === currentNodeCount!.toString()) {
-					this.saveArgs!.workers = undefined;
-				}
-				else if ((!this.workerBox!.value) || (parseInt(this.workerBox!.value) < this.workerBox!.min!)) {
-					this.saveArgs!.workers = undefined;
-					this.discardButton!.enabled = true;
-				}
-				else {
-					this.saveArgs!.workers = this.workerBox!.value;
-					this.discardButton!.enabled = true;
-					this.saveButton!.enabled = true;
-				}
-			})
-		);
+	private handleOnTextChanged(component: azdata.InputBoxComponent, currentValue: string): boolean {
+		if (component.value === currentValue) {
+			return false;
+		} else if ((!component.value) || (!component.valid)) {
+			this.discardButton!.enabled = true;
+			return false;
+		} else {
+			this.saveButton!.enabled = true;
+			this.discardButton!.enabled = true;
+			return true;
+		}
 
 	}
 
-	private showvCoreMemorySection(): azdata.DivContainer {
-		//const inputFlex = { flex: '1 1 150px' };
+	private editWorkerNodeCount() {
+		let currentShards = this._postgresModel.config?.spec.scale.shards;
+		let currentNodeCount = currentShards!.toString();
+
+		this.workerBox!.value = currentNodeCount;
+		this.workerBox!.min = currentShards;
+
+		this.disposables.push(
+			this.workerBox!.onTextChanged(() => {
+				if (!(this.handleOnTextChanged(this.workerBox!, currentNodeCount))) {
+					this.saveArgs!.workers = undefined;
+				} else {
+					this.saveArgs!.workers = parseInt(this.workerBox!.value!);
+				}
+			})
+		);
+	}
+
+	private vCoreMemorySection(): azdata.DivContainer {
 		const titleFlex = { flex: `0 1 250px` };
 
 		const flexContainer = this.modelView.modelBuilder.flexContainer().withLayout({
@@ -414,23 +422,14 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 			this.disposables.push(
 				this.vCoresMaxBox!.onTextChanged(() => {
-					if (this.vCoresMaxBox!.value === currentCPUSize) {
+					if (!(this.handleOnTextChanged(this.vCoresMaxBox!, currentCPUSize!))) {
 						this.saveArgs!.coresRequest = undefined;
-					}
-					else if ((!this.vCoresMaxBox!.value) || (parseFloat(this.vCoresMaxBox!.value!) < this.vCoresMaxBox!.min!)) {
-						this.saveArgs!.coresRequest = undefined;
-						this.discardButton!.enabled = true;
-					}
-					else {
+					} else {
 						this.saveArgs!.coresRequest = this.vCoresMaxBox!.value;
-						this.discardButton!.enabled = true;
-						this.saveButton!.enabled = true;
 					}
 				})
 			);
-
-		}
-		else if (type === loc.vCoresMin) {
+		} else if (type === loc.vCoresMin) {
 			currentCPUSize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
 
 			if (!currentCPUSize) {
@@ -441,23 +440,14 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 			this.disposables.push(
 				this.vCoresMinBox!.onTextChanged(() => {
-					if (this.vCoresMinBox!.value === currentCPUSize) {
+					if (!(this.handleOnTextChanged(this.vCoresMinBox!, currentCPUSize!))) {
 						this.saveArgs!.coresLimit = undefined;
-					}
-					else if ((!this.vCoresMinBox!.value) || (parseFloat(this.vCoresMinBox!.value!) < this.vCoresMinBox!.min!)) {
-						this.saveArgs!.coresLimit = undefined;
-						this.discardButton!.enabled = true;
-					}
-					else {
+					} else {
 						this.saveArgs!.coresLimit = this.vCoresMinBox!.value;
-						this.discardButton!.enabled = true;
-						this.saveButton!.enabled = true;
 					}
 				})
 			);
 		}
-
-
 	}
 
 	private editMemory(type: string) {
@@ -466,83 +456,91 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		if (type === loc.memoryMax) {
 			currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
-			currentMemSizeConversion = this.gigabyteConversion(currentMemorySize!);
-			this.memoryMaxBox!.value = currentMemSizeConversion;
+
+			if (!currentMemorySize) {
+				currentMemorySize = '0';
+			} else {
+				currentMemSizeConversion = this.gibibyteConversion(currentMemorySize);
+			}
+
+			this.memoryMaxBox!.value = currentMemSizeConversion!;
 
 			this.disposables.push(
 				this.memoryMaxBox!.onTextChanged(() => {
-					if (this.memoryMaxBox!.value === currentMemSizeConversion) {
+					if (!(this.handleOnTextChanged(this.memoryMaxBox!, currentMemSizeConversion!))) {
 						this.saveArgs!.memoryRequest = undefined;
-					}
-					else if ((!this.memoryMaxBox!.value!) || (parseFloat(this.memoryMaxBox!.value!) < this.memoryMaxBox!.min!)) {
-						this.saveArgs!.memoryRequest = undefined;
-						this.discardButton!.enabled = true;
-					}
-					else {
+					} else {
 						this.saveArgs!.memoryRequest = this.memoryMaxBox!.value + 'Gi';
-						this.discardButton!.enabled = true;
-						this.saveButton!.enabled = true;
 					}
 				})
 			);
-		}
-		else if (type === loc.memoryMin) {
+		} else if (type === loc.memoryMin) {
 			currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
 
 			if (!currentMemorySize) {
 				currentMemorySize = '0';
+			} else {
+				currentMemSizeConversion = this.gibibyteConversion(currentMemorySize);
 			}
 
-			currentMemSizeConversion = this.gigabyteConversion(currentMemorySize);
-			this.memoryMinBox!.value = currentMemSizeConversion;
+			this.memoryMinBox!.value = currentMemSizeConversion!;
 
 			this.disposables.push(
 				this.memoryMinBox!.onTextChanged(() => {
-					if (this.memoryMinBox!.value === currentMemSizeConversion) {
+					if (!(this.handleOnTextChanged(this.memoryMinBox!, currentMemSizeConversion!))) {
 						this.saveArgs!.memoryLimit = undefined;
-					}
-					else if ((!this.memoryMinBox!.value!) || (parseFloat(this.memoryMinBox!.value!) < this.memoryMinBox!.min!)) {
-						this.saveArgs!.memoryLimit = undefined;
-						this.discardButton!.enabled = true;
-					}
-					else {
+					} else {
 						this.saveArgs!.memoryLimit = this.memoryMinBox!.value + 'Gi';
-						this.discardButton!.enabled = true;
-						this.saveButton!.enabled = true;
 					}
 				})
 			);
 		}
 	}
 
-	private gigabyteConversion(value: string): string {
-		const giToGConversion = 0.93132257461548;
-		let num = parseFloat(value);
-		let splitValue = value.split(String(num));
+	private gibibyteConversion(value: string): string {
+		let gtoGIConversion;
+		let floatValue = parseFloat(value);
+
+		let splitValue = value.split(String(floatValue));
 		let unit = splitValue[1];
 
-		if (unit === 'm' || unit === 'K' || unit === 'M' || unit === 'G' || unit === 'T' || unit === 'P' || unit === 'E') {
-			num = num * giToGConversion;
-		}
 		if (unit === 'm') {
-			num = num / (1024 ^ 3);
+			floatValue = (floatValue * Math.pow(10, 3)) / Math.pow(1024, 3);
+		} else if (unit === 'K') {
+			gtoGIConversion = 1000 / 1024;
+			floatValue = (floatValue * gtoGIConversion) / Math.pow(1024, 2);
+		} else if (unit === 'M') {
+			gtoGIConversion = Math.pow(1000, 2) / Math.pow(1024, 2);
+			floatValue = (floatValue * gtoGIConversion) / 1024;
+		} else if (unit === 'G') {
+			gtoGIConversion = Math.pow(1000, 3) / Math.pow(1024, 3);
+			floatValue = floatValue * gtoGIConversion;
+		} else if (unit === 'T') {
+			gtoGIConversion = Math.pow(1000, 4) / Math.pow(1024, 4);
+			floatValue = (floatValue * gtoGIConversion) * 1024;
+		} else if (unit === 'P') {
+			gtoGIConversion = Math.pow(1000, 5) / Math.pow(1024, 5);
+			floatValue = (floatValue * gtoGIConversion) * Math.pow(1024, 2);
+		} else if (unit === 'E') {
+			gtoGIConversion = Math.pow(1000, 6) / Math.pow(1024, 6);
+			floatValue = (floatValue * gtoGIConversion) * Math.pow(1024, 3);
 		}
-		else if (unit === 'K' || unit === 'Ki') {
-			num = num / (1024 ^ 2);
+
+		if (unit === '') {
+			floatValue = floatValue / Math.pow(1024, 3);
+		} else if (unit === 'Ki') {
+			floatValue = floatValue / Math.pow(1024, 2);
+		} else if (unit === 'Mi') {
+			floatValue = floatValue / 1024;
+		} else if (unit === 'Ti') {
+			floatValue = floatValue * 1024;
+		} else if (unit === 'Pi') {
+			floatValue = floatValue * Math.pow(1024, 2);
+		} else if (unit === 'Ei') {
+			floatValue = floatValue * Math.pow(1024, 3);
 		}
-		else if (unit === 'M' || unit === 'Mi') {
-			num = num / 1024;
-		}
-		else if (unit === 'T' || unit === 'Ti') {
-			num = num * 1024;
-		}
-		else if (unit === 'P' || unit === 'Pi') {
-			num = num * (1024 ^ 2);
-		}
-		else if (unit === 'E' || unit === 'Ei') {
-			num = num * (1024 ^ 3);
-		}
-		return String(num);
+
+		return String(floatValue);
 	}
 
 	/* private getCordinatorConfiguration(): azdata.Component[] {
@@ -604,7 +602,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}
 
 		return this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			value: this.gigabyteConversion(memorySize),
+			value: this.gibibyteConversion(memorySize),
 			readOnly: true
 		}).component();
 	}
@@ -626,7 +624,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}
 
 		return this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			value: this.gigabyteConversion(storageSize),
+			value: this.gibibyteConversion(storageSize),
 			readOnly: true
 		}).component();
 	} */

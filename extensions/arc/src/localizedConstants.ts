@@ -143,6 +143,11 @@ export const dataStorage = localize('arc.dataStorage', "Storage Data Size (in Gi
 export const logsStorage = localize('arc.logsStorage', "Storage Logs Size (in GiB):");
 export const backupsStorage = localize('arc.backupsStorage', "Storage Backups Size (in GiB):");
 export const enableAdvancedConfiguration = localize('arc.enableAdvancedConfiguration', "Enable advanced configuration");
+export const workerValidationErrorMessage = localize('arc.workerValidationErrorMessage', "The number of workers cannot be decreased.");
+export const vCoresValidationErrorMessage = localize('arc.vCoresValidationErrorMessage', "Valid Cpu resource quantities are strictly positive and request is greater than 0.");
+export const memoryMaxValidationErrorMessage = localize('arc.memoryMaxValidationErrorMessage', "Memory request must be at least 0.25Gib");
+export const memoryMinValidationErrorMessage = localize('arc.memoryMinValidationErrorMessage', "Memory limit must be at least 0.25Gib");
+
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
 export const enterANonEmptyPassword = localize('arc.enterANonEmptyPassword', "Enter a non empty password or press escape to exit.");
 export const thePasswordsDoNotMatch = localize('arc.thePasswordsDoNotMatch', "The passwords do not match. Confirm the password or press escape to exit.");
@@ -181,6 +186,7 @@ export function refreshFailed(error: any): string { return localize('arc.refresh
 export function openDashboardFailed(error: any): string { return localize('arc.openDashboardFailed', "Error opening dashboard. {0}", getErrorMessage(error)); }
 export function instanceDeletionFailed(name: string, error: any): string { return localize('arc.instanceDeletionFailed', "Failed to delete instance {0}. {1}", name, getErrorMessage(error)); }
 export function instanceUpdateFailed(name: string, error: any): string { return localize('arc.instanceUpdateFailed', "Failed to update instance {0}. {1}", name, getErrorMessage(error)); }
+export function pageDiscardFailed(error: any): string { return localize('arc.pageDiscardFailed', "Failed to discard user input. {0}", getErrorMessage(error)); }
 export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database {0}. {1}", name, getErrorMessage(error)); }
 export function connectToControllerFailed(url: string, error: any): string { return localize('arc.connectToControllerFailed', "Could not connect to controller {0}. {1}", url, getErrorMessage(error)); }
 export function connectToSqlFailed(serverName: string, error: any): string { return localize('arc.connectToSqlFailed', "Could not connect to SQL managed instance - Azure Arc Instance {0}. {1}", serverName, getErrorMessage(error)); }
