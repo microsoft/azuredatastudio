@@ -188,9 +188,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 					this.saveArgs!.coresRequest = undefined;
 					this.saveArgs!.memoryLimit = undefined;
 					this.saveArgs!.memoryRequest = undefined;
-					this.workerContainer!.clearItems();
-					this.workerContainer!.addItems(this.updateUserInputSection(), { CSSStyles: { 'min-height': '30px' } });
-
+					this.editWorkerNodeCount();
+					this.editVCores(loc.vCoresMin);
+					this.editVCores(loc.vCoresMax);
+					this.editMemory(loc.memoryMin);
+					this.editMemory(loc.memoryMax);
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
@@ -249,7 +251,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			}).component()];
 		} else {
 
-			this.initializeConfigurationBoxes();
 			this.editWorkerNodeCount();
 			this.editVCores(loc.vCoresMin);
 			this.editVCores(loc.vCoresMax);
@@ -458,7 +459,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
 
 			if (!currentMemorySize) {
-				currentMemorySize = '0';
+				currentMemSizeConversion = '0';
 			} else {
 				currentMemSizeConversion = this.gibibyteConversion(currentMemorySize);
 			}
@@ -478,7 +479,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
 
 			if (!currentMemorySize) {
-				currentMemorySize = '0';
+				currentMemSizeConversion = '0';
 			} else {
 				currentMemSizeConversion = this.gibibyteConversion(currentMemorySize);
 			}
