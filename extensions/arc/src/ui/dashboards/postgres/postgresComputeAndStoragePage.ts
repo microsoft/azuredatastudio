@@ -221,7 +221,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.vCoresMinBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 1,
-			validationErrorMessage: 'Valid Cpu resource quantities are strictly positive and limit is greater than 0.',
+			validationErrorMessage: loc.vCoresValidationErrorMessage,
 			inputType: 'number'
 		}).component();
 
