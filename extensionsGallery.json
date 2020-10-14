@@ -2398,7 +2398,7 @@
 					},
 					"versions": [
 						{
-							"version": "0.9.7",
+							"version": "0.9.8",
 							"lastUpdated": "3/3/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
@@ -2413,7 +2413,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://downloads.sentryone.com/downloads/ads/readme.0.9.7.md"
+									"source": "https://downloads.sentryone.com/downloads/ads/readme.0.9.8.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
