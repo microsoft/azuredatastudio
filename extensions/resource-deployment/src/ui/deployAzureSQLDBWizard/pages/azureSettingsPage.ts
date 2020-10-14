@@ -283,8 +283,7 @@ export class AzureSettingsPage extends BasePage {
 	private async createServerDropdown(view: azdata.ModelView) {
 		this._serverGroupDropdown = view.modelBuilder.dropDown().withProperties({
 			required: true,
-			validationErrorMessage: localize('deployAzureSQLDB.NoServerLabel', "No servers found")
-		}).withValidation(component => component.value !== undefined).component();
+		}).component();
 		this._serverGroupDropdown.onValueChanged(async (value) => {
 			if (value.selected === ((this._serverGroupDropdown.value as azdata.CategoryValue).displayName)) {
 				this.wizard.model.azureServerName = value.selected;
@@ -309,6 +308,7 @@ export class AzureSettingsPage extends BasePage {
 		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/providers/Microsoft.Sql/servers?api-version=2019-06-01-preview`;
 		let response = await this.wizard.getRequest(url);
 		if (response.data.value.length === 0) {
+			this.wizard.showErrorMessage(localize('deployAzureSQLDB.NoServerLabel', "No servers found, please select another subscription"));
 			this._serverGroupDropdown.updateProperties({
 				values: [],
 			});

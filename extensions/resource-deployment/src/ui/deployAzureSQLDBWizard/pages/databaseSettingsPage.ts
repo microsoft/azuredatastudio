@@ -104,6 +104,7 @@ export class DatabaseSettingsPage extends BasePage {
 			}).component();
 
 		// regex for validation (check to see if IP address is in IPv4 format)
+		// sql db create requires IPv4 addresses as documented here: https://docs.microsoft.com/cli/azure/sql/server/firewall-rule?view=azure-cli-latest#az_sql_server_firewall_rule_create
 		let ipRegex = /(^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$)/;
 
 		//Start IP Address Section:
@@ -154,19 +155,23 @@ export class DatabaseSettingsPage extends BasePage {
 	*/
 	private validateFirewallNameText(firewallname: string | undefined): boolean {
 		if (firewallname) {
-			//Check for firewall rule name that is only spaces.
+			// Check for firewall rule name that is only spaces.
 			if (/^[ ]+$/.test(firewallname)) {
 				return false;
 			}
-			//Check for valid firewall rule name length.
+			// Check for valid firewall rule name length.
 			if (firewallname.length < 1 || firewallname.length > 80) {
 				return false;
 			}
+			// Check if Firewall name matches rules:
+			// 1. Start with an letter or number.
+			// 2. contain only numbers, underline, hyphens and periods.
+			// 3. End with a letter, number, or underline.
 			else if (/^((?=[^_])(?=[A-z0-9]))[A-z0-9_.-]*[A-z0-9_]$/.test(firewallname)) {
-				return false;
+				return true;
 			}
 			else {
-				return true;
+				return false;
 			}
 		} else {
 			return false;
@@ -176,7 +181,7 @@ export class DatabaseSettingsPage extends BasePage {
 	private createFirewallNameText(view: azdata.ModelView) {
 		this._firewallRuleNameTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			required: true,
-			validationErrorMessage: localize('deployAzureSQLDB.DBFirewallNameError', "Firewall name cannot contain only numbers, upper case letters, or special characters [\/\\\"\"[]:|<>+=;,?*@&, .\{\}] and must be between 1 and 80 characters")
+			validationErrorMessage: localize('deployAzureSQLDB.DBFirewallNameError', "Firewall name must start with letter or number, have only letter, number, period, hyphen, or underline characters, end with letter, number, or underline and must be between 1 and 80 characters")
 		}).withValidation(component => this.validateFirewallNameText(component.value)).component();
 
 		this._firewallRuleNameTextRow = this.wizard.createFormRowComponent(view, constants.FirewallRuleNameLabel, '', this._firewallRuleNameTextbox, true);
@@ -191,29 +196,29 @@ export class DatabaseSettingsPage extends BasePage {
 	 */
 	private validateDatabaseNameText(databasename: string | undefined): boolean {
 		if (databasename) {
-			//Check for database name that is only spaces.
+			// Check for database name that is only spaces.
 			if (/^[ ]+$/.test(databasename)) {
 				return false;
 			}
-			//Check for valid database name length.
+			// Check for valid database name length.
 			if (databasename.length < 1 || databasename.length > 128) {
+
 				return false;
 			}
-			//Check if database name matches any forbidden reserved names.
-			else if (/(?i)(^ACCESS$|^AZURE$|^BING$|^BIZSPARK$|^BIZTALK$|^CORTANA$|^DIRECTX$|^DOTNET$|^DYNAMICS$|^EXCEL$|^EXCHANGE$|^FOREFRONT$|^GROOVE$|^HOLOLENS$|^HYPERV$|^KINECT$|^LYNC$|^MSDN$|^O365$|^OFFICE$|^OFFICE365$|^ONEDRIVE$|^ONENOTE$|^OUTLOOK$|^POWERPOINT$|^SHAREPOINT$|^SKYPE$|^VISIO$|^VISUALSTUDIO$)/
-				.test(databasename)) {
+			// Check if database name matches any forbidden reserved names.
+			if (/(^ACCESS$|^AZURE$|^BING$|^BIZSPARK$|^BIZTALK$|^CORTANA$|^DIRECTX$|^DOTNET$|^DYNAMICS$|^EXCEL$|^EXCHANGE$|^FOREFRONT$|^GROOVE$|^HOLOLENS$|^HYPERV$|^KINECT$|^LYNC$|^MSDN$|^O365$|^OFFICE$|^OFFICE365$|^ONEDRIVE$|^ONENOTE$|^OUTLOOK$|^POWERPOINT$|^SHAREPOINT$|^SKYPE$|^VISIO$|^VISUALSTUDIO$)/i.test(databasename)) {
 				return false;
 			}
 			//Check if database name contains forbidden words.
-			else if (/?i)(LOGIN|MICROSOFT|WINDOWS|XBOX)/.test(databasename)) {
+			if (/(LOGIN|MICROSOFT|WINDOWS|XBOX)/i.test(databasename)) {
 				return false;
 			}
-			//Check if database name contains invalid characters, and also check if the name doesn't end with a space or period.
-			else if (/^[^<>*%&:\\\/?]*[^. <>*%&:\\\/?]$/.test(databasename)) {
-				return false;
+			//Check if database name doesn't contain invalid characters, and also check if the name doesn't end with a space or period.
+			if (/^[^<>*%&:\\\/?]*[^. <>*%&:\\\/?]$/.test(databasename)) {
+				return true;
 			}
 			else {
-				return true;
+				return false;
 			}
 		} else {
 			return false;
