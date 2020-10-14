@@ -48,7 +48,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			projectFileExtension: sqlprojExtension.replace(/\./g, ''),
 			displayName: projectTypeDisplayName,
 			description: projectTypeDescription,
-			icon: IconPathHelper.databaseProject
+			icon: IconPathHelper.colorfulSqlProject
 		}];
 	}
 
