@@ -452,7 +452,7 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 				description: '',
 				level: azdata.window.MessageLevel.Error
 			};
-			context.fieldInfo.options.values = [];
+			throw e;
 		}
 		context.fieldInfo.subFields = context.fieldInfo.subFields || [];
 	}
@@ -489,7 +489,7 @@ async function configureOptionsSourceSubfields(context: FieldContext, optionsSou
 					description: '',
 					level: azdata.window.MessageLevel.Error
 				};
-				return '';
+				throw e;
 			}
 		},
 		isPassword: await optionsSourceProvider.getIsPassword!(variableKey)
