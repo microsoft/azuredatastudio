@@ -139,29 +139,24 @@
 	left: -35px;
 }
 
-.monaco-list .connection-tile > .icon.server-page::after {
-	position: absolute;
-	height: 0.25rem;
-	width: 0.25rem;
-	top: 14px;
-	left: 45px;
-	border-radius: 100%;
-	content:"";
-	font-size: 100%;
-	line-height: 100%;
-	color:white;
-	text-align:center;
-	vertical-align:middle;
+.monaco-list .connection-tile .connection-status-badge {
+	width: 0.35em;
+	height: 0.35em;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	border-radius: 50%;
+	margin-left: 13px;
+	margin-top: 10px;
 }
 
 /* Connected badge */
-.monaco-list .connection-tile > .icon.server-page.connected::after {
+.monaco-list .connection-tile .connection-status-badge.connected {
 	border: 0.12rem solid rgba(59, 180, 74, 100%);
 	background: rgba(59, 180, 74, 100%);
 }
 
 /* Disconnected badge */
-.monaco-list .connection-tile > .icon.server-page.disconnected::after {
+.monaco-list .connection-tile .connection-status-badge.disconnected {
 	border: 0.12rem solid rgba(208, 46, 0, 100%);
 	background: rgba(255, 255, 255, 80%);
 }

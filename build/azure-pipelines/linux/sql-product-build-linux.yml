@@ -91,8 +91,7 @@ steps:
   - script: |
       set -e
       yarn gulp vscode-linux-x64-min-ci
-      yarn gulp vscode-reh-linux-x64-min-ci
-      yarn gulp vscode-reh-web-linux-x64-min-ci
+      yarn gulp vscode-web-min-ci
     displayName: Build
     env:
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
@@ -209,6 +208,7 @@ steps:
       mkdir -p $(Build.ArtifactStagingDirectory)/test-results/coverage
       cp --parents -r $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
     displayName: Copy Coverage
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'

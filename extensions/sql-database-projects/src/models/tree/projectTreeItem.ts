@@ -8,7 +8,7 @@ import * as path from 'path';
 import { DataSourcesTreeItem } from './dataSourceTreeItem';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import * as fileTree from './fileFolderTreeItem';
-import { Project, ProjectEntry, EntryType } from '../project';
+import { Project, EntryType, FileProjectEntry } from '../project';
 import * as utils from '../../common/utils';
 import { DatabaseReferencesTreeItem } from './databaseReferencesTreeItem';
 import { DatabaseProjectItemType, RelativeOuterPath } from '../../common/constants';
@@ -37,7 +37,8 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 	public get children(): BaseProjectTreeItem[] {
 		const output: BaseProjectTreeItem[] = [];
-		output.push(this.dataSourceNode);
+		// [8/31/2020] Hiding Data source for Preview since we do not have a way to add or update those.
+		// output.push(this.dataSourceNode);
 		output.push(this.databaseReferencesNode);
 
 		return output.concat(Object.values(this.fileChildren).sort(fileTree.sortFileFolderNodes));
@@ -91,7 +92,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	/**
 	 * Gets the immediate parent tree node for an entry in a project file
 	 */
-	private getEntryParentNode(entry: ProjectEntry): fileTree.FolderNode | ProjectRootTreeItem {
+	private getEntryParentNode(entry: FileProjectEntry): fileTree.FolderNode | ProjectRootTreeItem {
 		const relativePathParts = utils.trimChars(utils.trimUri(vscode.Uri.file(this.project.projectFilePath), entry.fsUri), '/').split('/').slice(0, -1); // remove the last part because we only care about the parent
 
 		if (relativePathParts.length === 0) {

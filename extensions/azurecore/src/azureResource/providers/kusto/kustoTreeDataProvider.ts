@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ExtensionNodeType, TreeItem, Account } from 'azdata';
-import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
+import { TreeItemCollapsibleState, ExtensionContext, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -34,7 +34,7 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureRes
 				dark: this._extensionContext.asAbsolutePath('resources/dark/azureDE_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/azureDE.svg')
 			},
-			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			collapsibleState: workspace.getConfiguration('connection').get<boolean>('dialog.browse') ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.azureDataExplorer,
 			payload: {
 				id: generateGuid(),

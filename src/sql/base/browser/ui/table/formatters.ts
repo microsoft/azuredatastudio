@@ -68,6 +68,10 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
 
+export function imageFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
+	return `<img src="${value.text}" />`;
+}
+
 /**
  * Provide slick grid cell with encoded ariaLabel and plain text.
  * text will be escaped by the textFormatter and ariaLabel will be consumed by slickgrid directly.

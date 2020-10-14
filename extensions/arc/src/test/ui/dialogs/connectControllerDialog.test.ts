@@ -3,11 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ControllerInfo } from 'arc';
 import * as should from 'should';
 import * as sinon from 'sinon';
-import { ControllerInfo, ControllerModel } from '../../../models/controllerModel';
-import { ConnectToControllerDialog } from '../../../ui/dialogs/connectControllerDialog';
+import { v4 as uuid } from 'uuid';
 import * as loc from '../../../localizedConstants';
+import { ControllerModel } from '../../../models/controllerModel';
+import { ConnectToControllerDialog } from '../../../ui/dialogs/connectControllerDialog';
 
 describe('ConnectControllerDialog', function (): void {
 	afterEach(function (): void {
@@ -30,7 +32,7 @@ describe('ConnectControllerDialog', function (): void {
 	it('validate returns false if controller refresh fails', async function (): Promise<void> {
 		sinon.stub(ControllerModel.prototype, 'refresh').returns(Promise.reject('Controller refresh failed'));
 		const connectControllerDialog = new ConnectToControllerDialog(undefined!);
-		const info = { url: 'https://127.0.0.1:30080', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] };
+		const info = { id: uuid(), url: 'https://127.0.0.1:30080', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] };
 		connectControllerDialog.showDialog(info, 'pwd');
 		await connectControllerDialog.isInitialized;
 		const validateResult = await connectControllerDialog.validate();
@@ -39,36 +41,36 @@ describe('ConnectControllerDialog', function (): void {
 
 	it('validate replaces http with https', async function (): Promise<void> {
 		await validateConnectControllerDialog(
-			{ url: 'http://127.0.0.1:30081', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] },
+			{ id: uuid(), url: 'http://127.0.0.1:30081', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] },
 			'https://127.0.0.1:30081');
 	});
 
 	it('validate appends https if missing', async function (): Promise<void> {
-		await validateConnectControllerDialog({ url: '127.0.0.1:30080', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] },
+		await validateConnectControllerDialog({ id: uuid(), url: '127.0.0.1:30080', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] },
 			'https://127.0.0.1:30080');
 	});
 
 	it('validate appends default port if missing', async function (): Promise<void> {
-		await validateConnectControllerDialog({ url: 'https://127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] },
+		await validateConnectControllerDialog({ id: uuid(), url: 'https://127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] },
 			'https://127.0.0.1:30080');
 	});
 
 	it('validate appends both port and https if missing', async function (): Promise<void> {
-		await validateConnectControllerDialog({ url: '127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] },
+		await validateConnectControllerDialog({ id: uuid(), url: '127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] },
 			'https://127.0.0.1:30080');
 	});
 
 	for (const name of ['', undefined]) {
 		it.skip(`validate display name gets set to arc instance name for user chosen name of:${name}`, async function (): Promise<void> {
 			await validateConnectControllerDialog(
-				{ url: 'http://127.0.0.1:30081', name: name!, username: 'sa', rememberPassword: true, resources: [] },
+				{ id: uuid(), url: 'http://127.0.0.1:30081', name: name!, username: 'sa', rememberPassword: true, resources: [] },
 				'https://127.0.0.1:30081');
 		});
 	}
 
 	it.skip(`validate display name gets set to default data controller name for user chosen name of:'' and instanceName in explicably returned as undefined from the controller endpoint`, async function (): Promise<void> {
 		await validateConnectControllerDialog(
-			{ url: 'http://127.0.0.1:30081', name: '', username: 'sa', rememberPassword: true, resources: [] },
+			{ id: uuid(), url: 'http://127.0.0.1:30081', name: '', username: 'sa', rememberPassword: true, resources: [] },
 			'https://127.0.0.1:30081',
 			undefined);
 	});

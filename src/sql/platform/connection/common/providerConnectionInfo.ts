@@ -10,7 +10,6 @@ import * as azdata from 'azdata';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { assign } from 'vs/base/common/objects';
-import { find } from 'vs/base/common/arrays';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 
 type SettableProperty = 'serverName' | 'authenticationType' | 'databaseName' | 'password' | 'connectionName' | 'userName';
@@ -27,7 +26,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	public constructor(
 		protected capabilitiesService: ICapabilitiesService,
-		model: string | azdata.IConnectionProfile
+		model: string | azdata.IConnectionProfile | undefined
 	) {
 		super();
 		// we can't really do a whole lot if we don't have a provider
@@ -61,7 +60,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	 */
 	private updateSpecialValueType(typeName: SettableProperty, model: azdata.IConnectionProfile): void {
 		if (!this[typeName]) {
-			this[typeName] = model[typeName];
+			this[typeName] = model[typeName]!;
 		}
 	}
 
@@ -198,7 +197,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			return false;
 		}
 
-		let optionMetadata = find(this._serverCapabilities.connectionOptions,
+		let optionMetadata = this._serverCapabilities.connectionOptions.find(
 			option => option.specialValueType === ConnectionOptionSpecialType.password)!; // i guess we are going to assume there is a password field
 		let isPasswordRequired = optionMetadata.isRequired;
 		if (this.providerName === Constants.mssqlProviderName) {
@@ -269,7 +268,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	public getSpecialTypeOptionName(type: string): string | undefined {
 		if (this._serverCapabilities) {
-			let optionMetadata = find(this._serverCapabilities.connectionOptions, o => o.specialValueType === type);
+			let optionMetadata = this._serverCapabilities.connectionOptions.find(o => o.specialValueType === type);
 			return !!optionMetadata ? optionMetadata.name : undefined;
 		} else {
 			return type.toString();
@@ -284,7 +283,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public get authenticationTypeDisplayName(): string {
-		let optionMetadata = this._serverCapabilities ? find(this._serverCapabilities.connectionOptions, o => o.specialValueType === ConnectionOptionSpecialType.authType) : undefined;
+		let optionMetadata = this._serverCapabilities ? this._serverCapabilities.connectionOptions.find(o => o.specialValueType === ConnectionOptionSpecialType.authType) : undefined;
 		let authType = this.authenticationType;
 		let displayName: string = authType;
 

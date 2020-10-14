@@ -26,3 +26,7 @@
 	width: 100%;
 	text-align: center;
 }
+
+.declarative-table-row.selected {
+	background-color: rgb(0, 120, 215);
+}

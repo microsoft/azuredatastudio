@@ -10,16 +10,19 @@ import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
+import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption } from '../interfaces';
+import { DeployAzureSQLVMWizard } from '../ui/deployAzureSQLVMWizard/deployAzureSQLVMWizard';
+import { DeployAzureSQLDBWizard } from '../ui/deployAzureSQLDBWizard/deployAzureSQLDBWizard';
+import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
+import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
+import { NotebookWizard } from '../ui/notebookWizard/notebookWizard';
+import { AzdataService } from './azdataService';
+import { KubeService } from './kubeService';
 import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
-import { ResourceType, ResourceTypeOption, NotebookPathInfo, DeploymentProvider, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookWizardDeploymentProvider } from '../interfaces';
-import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
-import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
+import * as loc from './../localizedConstants';
 
-import { KubeService } from './kubeService';
-import { AzdataService } from './azdataService';
-import { NotebookWizard } from '../ui/notebookWizard/notebookWizard';
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
@@ -42,9 +45,10 @@ export class ResourceTypeService implements IResourceTypeService {
 			vscode.extensions.all.forEach((extension) => {
 				const extensionResourceTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.resourceDeploymentTypes as ResourceType[];
 				if (extensionResourceTypes) {
-					extensionResourceTypes.forEach((resourceType) => {
+					extensionResourceTypes.forEach((resourceType: ResourceType) => {
 						this.updatePathProperties(resourceType, extension.extensionPath);
 						resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
+						resourceType.getOkButtonText = (selectedOptions) => { return this.getOkButtonText(resourceType, selectedOptions); };
 						this._resourceTypes.push(resourceType);
 					});
 				}
@@ -74,13 +78,23 @@ export class ResourceTypeService implements IResourceTypeService {
 			else if ('notebookWizard' in provider) {
 				this.updateNotebookPath(provider.notebookWizard, extensionPath);
 			}
+			else if ('azureSQLVMWizard' in provider) {
+				this.updateNotebookPath(provider.azureSQLVMWizard, extensionPath);
+			}
+			else if ('azureSQLDBWizard' in provider) {
+				this.updateNotebookPath(provider.azureSQLDBWizard, extensionPath);
+			}
 		});
 	}
 
-	private updateNotebookPath(objWithNotebookProperty: { notebook: string | NotebookPathInfo } | undefined, extensionPath: string): void {
+	private updateNotebookPath(objWithNotebookProperty: { notebook: string | NotebookPathInfo | NotebookInfo[] } | undefined, extensionPath: string): void {
 		if (objWithNotebookProperty && objWithNotebookProperty.notebook) {
 			if (typeof objWithNotebookProperty.notebook === 'string') {
 				objWithNotebookProperty.notebook = path.join(extensionPath, objWithNotebookProperty.notebook);
+			} else if (Array.isArray(objWithNotebookProperty.notebook)) {
+				objWithNotebookProperty.notebook.forEach(nb => {
+					nb.path = path.join(extensionPath, nb.path);
+				});
 			} else {
 				if (objWithNotebookProperty.notebook.darwin) {
 					objWithNotebookProperty.notebook.darwin = path.join(extensionPath, objWithNotebookProperty.notebook.darwin);
@@ -178,7 +192,9 @@ export class ResourceTypeService implements IResourceTypeService {
 					&& !instanceOfNotebookDeploymentProvider(provider)
 					&& !instanceOfDownloadDeploymentProvider(provider)
 					&& !instanceOfWebPageDeploymentProvider(provider)
-					&& !instanceOfCommandDeploymentProvider(provider)) {
+					&& !instanceOfCommandDeploymentProvider(provider)
+					&& !instanceOfAzureSQLVMDeploymentProvider(provider)
+					&& !instanceOfAzureSQLDBDeploymentProvider(provider)) {
 					errorMessages.push(`No deployment method defined for the provider, ${providerPositionInfo}`);
 				}
 
@@ -236,6 +252,21 @@ export class ResourceTypeService implements IResourceTypeService {
 		return undefined;
 	}
 
+	/**
+	 * Get the ok button text based on the selected options
+	 */
+	private getOkButtonText(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): string | undefined {
+		if (resourceType.okButtonText && selectedOptions.length === 1) {
+			const optionGiven = `${selectedOptions[0].option}=${selectedOptions[0].value}`;
+			for (const possibleOption of resourceType.okButtonText) {
+				if (possibleOption.when === optionGiven || possibleOption.when === undefined || possibleOption.when.toString().toLowerCase() === 'true') {
+					return possibleOption.value;
+				}
+			}
+		}
+		return loc.select;
+	}
+
 	public startDeployment(provider: DeploymentProvider): void {
 		const self = this;
 		if (instanceOfWizardDeploymentProvider(provider)) {
@@ -245,10 +276,10 @@ export class ResourceTypeService implements IResourceTypeService {
 			const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService, this.toolsService);
 			wizard.open();
 		} else if (instanceOfDialogDeploymentProvider(provider)) {
-			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, provider.dialog);
+			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, this.toolsService, provider.dialog);
 			dialog.open();
 		} else if (instanceOfNotebookDeploymentProvider(provider)) {
-			this.notebookService.launchNotebook(provider.notebook);
+			this.notebookService.openNotebook(provider.notebook);
 		} else if (instanceOfDownloadDeploymentProvider(provider)) {
 			const taskName = localize('resourceDeployment.DownloadAndLaunchTaskName', "Download and launch installer, URL: {0}", provider.downloadUrl);
 			azdata.tasks.startBackgroundOperation({
@@ -271,6 +302,12 @@ export class ResourceTypeService implements IResourceTypeService {
 			vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(provider.webPageUrl));
 		} else if (instanceOfCommandDeploymentProvider(provider)) {
 			vscode.commands.executeCommand(provider.command);
+		} else if (instanceOfAzureSQLVMDeploymentProvider(provider)) {
+			const wizard = new DeployAzureSQLVMWizard(provider.azureSQLVMWizard, this.notebookService, this.toolsService);
+			wizard.open();
+		} else if (instanceOfAzureSQLDBDeploymentProvider(provider)) {
+			const wizard = new DeployAzureSQLDBWizard(provider.azureSQLDBWizard, this.notebookService, this.toolsService);
+			wizard.open();
 		}
 	}
 

@@ -24,7 +24,6 @@ import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/serverInfoContextKey';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
-import { firstIndex, find } from 'vs/base/common/arrays';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 
 /**
@@ -52,11 +51,14 @@ export class ServerTreeActionProvider {
 			return this.getConnectionProfileGroupActions(element);
 		}
 		if (element instanceof TreeNode) {
-			return this.getObjectExplorerNodeActions({
-				tree: tree,
-				profile: element.getConnectionProfile(),
-				treeNode: element
-			});
+			const profile = element.getConnectionProfile();
+			if (profile) {
+				return this.getObjectExplorerNodeActions({
+					tree: tree,
+					profile,
+					treeNode: element
+				});
+			}
 		}
 		return [];
 	}
@@ -80,15 +82,17 @@ export class ServerTreeActionProvider {
 
 		// Fill in all actions
 		const builtIn = getDefaultActions(context);
-		const actions = [];
+		const actions: IAction[] = [];
 		const options = { arg: undefined, shouldForwardArgs: true };
 		const groups = menu.getActions(options);
 		let insertIndex: number | undefined = 0;
-		const queryIndex = firstIndex(groups, v => {
+		const queryIndex = groups.findIndex(v => {
 			if (v[0] === '0_query') {
 				return true;
 			} else {
-				insertIndex += v[1].length;
+				if (v[1].length) {
+					insertIndex! += v[1].length;
+				}
 				return false;
 			}
 		});
@@ -99,7 +103,7 @@ export class ServerTreeActionProvider {
 			if (!(actions[insertIndex] instanceof Separator) && builtIn.length > 0) {
 				builtIn.unshift(new Separator());
 			}
-			actions.splice(insertIndex, 0, ...builtIn);
+			actions?.splice(insertIndex, 0, ...builtIn);
 		} else {
 			if (actions.length > 0 && builtIn.length > 0) {
 				builtIn.push(new Separator());
@@ -138,7 +142,9 @@ export class ServerTreeActionProvider {
 		let serverInfoContextKey = new ServerInfoContextKey(scopedContextService);
 		if (connectionProfile.id) {
 			let serverInfo = this._connectionManagementService.getServerInfo(connectionProfile.id);
-			serverInfoContextKey.set(serverInfo);
+			if (serverInfo) {
+				serverInfoContextKey.set(serverInfo);
+			}
 		}
 		let treeNodeContextKey = new TreeNodeContextKey(scopedContextService);
 		if (context.treeNode) {
@@ -168,13 +174,14 @@ export class ServerTreeActionProvider {
 	private getBuiltInNodeActions(context: ObjectExplorerContext): IAction[] {
 		let actions: IAction[] = [];
 		let treeNode = context.treeNode;
-		if (TreeUpdateUtils.isDatabaseNode(treeNode)) {
-			if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
-			} else {
-				return actions;
+		if (treeNode) {
+			if (TreeUpdateUtils.isDatabaseNode(treeNode)) {
+				if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
+				} else {
+					return actions;
+				}
 			}
 		}
-
 		// Contribute refresh action for scriptable objects via contribution
 		if (!this.isScriptableObject(context)) {
 			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.treeNode || context.profile));
@@ -185,7 +192,7 @@ export class ServerTreeActionProvider {
 
 	private isScriptableObject(context: ObjectExplorerContext): boolean {
 		if (context.treeNode) {
-			if (find(NodeType.SCRIPTABLE_OBJECTS, x => x === context.treeNode.nodeTypeId)) {
+			if (NodeType.SCRIPTABLE_OBJECTS.find(x => x === context?.treeNode?.nodeTypeId)) {
 				return true;
 			}
 		}

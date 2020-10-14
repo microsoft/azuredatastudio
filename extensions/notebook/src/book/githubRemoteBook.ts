@@ -14,14 +14,14 @@ import { IAsset } from './remoteBookController';
 import * as constants from '../common/constants';
 
 export class GitHubRemoteBook extends RemoteBook {
-	constructor(public remotePath: vscode.Uri, public outputChannel: vscode.OutputChannel, protected _asset: IAsset) {
-		super(remotePath, outputChannel, _asset);
+	constructor(public readonly remotePath: vscode.Uri, public readonly outputChannel: vscode.OutputChannel, public readonly asset: IAsset) {
+		super(remotePath, outputChannel, asset);
 	}
 
 	public async createLocalCopy(): Promise<void> {
 		this.outputChannel.show(true);
 		this.setLocalPath();
-		this.outputChannel.appendLine(loc.msgDownloadLocation(this._localPath.fsPath));
+		this.outputChannel.appendLine(loc.msgDownloadLocation(this.localPath.fsPath));
 		this.outputChannel.appendLine(loc.msgRemoteBookDownloadProgress);
 		this.createDirectory();
 		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
@@ -34,7 +34,7 @@ export class GitHubRemoteBook extends RemoteBook {
 					'timeout': downloadTimeout
 				}
 			};
-			let downloadRequest = request.get(this._asset.browserDownloadUrl.toString(false), options)
+			let downloadRequest = request.get(this.asset.browserDownloadUrl.toString(false), options)
 				.on('error', (error) => {
 					this.outputChannel.appendLine(loc.msgRemoteBookDownloadError);
 					this.outputChannel.appendLine(error.message);
@@ -46,7 +46,7 @@ export class GitHubRemoteBook extends RemoteBook {
 						return reject(new Error(loc.httpRequestError(response.statusCode, response.statusMessage)));
 					}
 				});
-			let remoteBookFullPath = vscode.Uri.file(this._localPath.fsPath.concat('.', this._asset.format));
+			let remoteBookFullPath = vscode.Uri.file(this.localPath.fsPath.concat('.', this.asset.format));
 			downloadRequest.pipe(fs.createWriteStream(remoteBookFullPath.fsPath))
 				.on('close', async () => {
 					resolve(this.extractFiles(remoteBookFullPath));
@@ -60,14 +60,14 @@ export class GitHubRemoteBook extends RemoteBook {
 		});
 	}
 	public async createDirectory(): Promise<void> {
-		let fileName = this._asset.book.concat('-').concat(this._asset.version).concat('-').concat(this._asset.language);
-		this._localPath = vscode.Uri.file(path.join(this._localPath.fsPath, fileName));
+		let fileName = this.asset.book.concat('-').concat(this.asset.version).concat('-').concat(this.asset.language);
+		this.localPath = vscode.Uri.file(path.join(this.localPath.fsPath, fileName));
 		try {
-			let exists = await fs.pathExists(this._localPath.fsPath);
+			let exists = await fs.pathExists(this.localPath.fsPath);
 			if (exists) {
-				await fs.remove(this._localPath.fsPath);
+				await fs.remove(this.localPath.fsPath);
 			}
-			await fs.promises.mkdir(this._localPath.fsPath);
+			await fs.promises.mkdir(this.localPath.fsPath);
 		} catch (error) {
 			this.outputChannel.appendLine(loc.msgRemoteBookDirectoryError);
 			this.outputChannel.appendLine(error.message);
@@ -77,13 +77,13 @@ export class GitHubRemoteBook extends RemoteBook {
 		try {
 			if (process.platform === constants.winPlatform || process.platform === constants.macPlatform) {
 				let zippedFile = new zip(remoteBookFullPath.fsPath);
-				zippedFile.extractAllTo(this._localPath.fsPath);
+				zippedFile.extractAllTo(this.localPath.fsPath);
 			} else {
-				await tar.extract({ file: remoteBookFullPath.fsPath, cwd: this._localPath.fsPath });
+				await tar.extract({ file: remoteBookFullPath.fsPath, cwd: this.localPath.fsPath });
 			}
 			await fs.promises.unlink(remoteBookFullPath.fsPath);
 			this.outputChannel.appendLine(loc.msgRemoteBookDownloadComplete);
-			vscode.commands.executeCommand('notebook.command.openNotebookFolder', this._localPath.fsPath, undefined, true);
+			vscode.commands.executeCommand('notebook.command.openNotebookFolder', this.localPath.fsPath, undefined, true);
 		}
 		catch (err) {
 			this.outputChannel.appendLine(loc.msgRemoteBookUnpackingError);

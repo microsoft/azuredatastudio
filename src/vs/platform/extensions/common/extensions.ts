@@ -115,6 +115,11 @@ export interface ICodeActionContribution {
 	readonly actions: readonly ICodeActionContributionAction[];
 }
 
+export interface IAuthenticationContribution {
+	readonly id: string;
+	readonly label: string;
+}
+
 export interface IExtensionContributions {
 	commands?: ICommand[];
 	configuration?: IConfiguration | IConfiguration[];
@@ -133,6 +138,7 @@ export interface IExtensionContributions {
 	localizations?: ILocalization[];
 	readonly customEditors?: readonly IWebviewEditor[];
 	readonly codeActions?: readonly ICodeActionContribution[];
+	authentication?: IAuthenticationContribution[];
 }
 
 export type ExtensionKind = 'ui' | 'workspace' | 'web';
@@ -275,6 +281,10 @@ export interface IExtensionDescription extends IExtensionManifest {
 
 export function isLanguagePackExtension(manifest: IExtensionManifest): boolean {
 	return manifest.contributes && manifest.contributes.localizations ? manifest.contributes.localizations.length > 0 : false;
+}
+
+export function isAuthenticaionProviderExtension(manifest: IExtensionManifest): boolean {
+	return manifest.contributes && manifest.contributes.authentication ? manifest.contributes.authentication.length > 0 : false;
 }
 
 export interface IScannedExtension {

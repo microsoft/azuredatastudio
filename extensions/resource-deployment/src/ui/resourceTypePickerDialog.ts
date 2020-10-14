@@ -2,25 +2,30 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolStatus } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
-import { getErrorMessage } from '../utils';
+import { getErrorMessage } from '../common/utils';
+import * as loc from './../localizedConstants';
 import { DialogBase } from './dialogBase';
 import { createFlexContainer } from './modelViewUtils';
+import * as constants from '../constants';
 
 const localize = nls.loadMessageBundle();
 
 export class ResourceTypePickerDialog extends DialogBase {
 	private toolRefreshTimestamp: number = 0;
+	private _resourceTypes!: ResourceType[];
 	private _selectedResourceType: ResourceType;
 	private _view!: azdata.ModelView;
-	private _resourceDescriptionLabel!: azdata.TextComponent;
 	private _optionsContainer!: azdata.FlexContainer;
 	private _toolsTable!: azdata.TableComponent;
+	private _resourceTagsListView!: azdata.ListViewComponent;
+	private _resourceSearchBox!: azdata.InputBoxComponent;
 	private _cardGroup!: azdata.RadioCardGroupComponent;
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 	private _toolsLoadingComponent!: azdata.LoadingComponent;
@@ -29,13 +34,17 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _installToolButton: azdata.window.Button;
 	private _installationInProgress: boolean = false;
 	private _tools: ITool[] = [];
+	private _eulaValidationSucceeded: boolean = false;
+	// array to store listners that are specific to the selected resource. To be cleared after change in selected resource.
+	private _currentResourceTypeDisposables: vscode.Disposable[] = [];
+	private _cardsCache: Map<string, azdata.RadioCard> = new Map();
 
 	constructor(
 		private toolsService: IToolsService,
 		private resourceTypeService: IResourceTypeService,
 		defaultResourceType: ResourceType,
 		private _resourceTypeNameFilters?: string[]) {
-		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
+		super(loc.resourceTypePickerDialogTitle, 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = defaultResourceType;
 		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', "Install tools"));
 		this._toDispose.push(this._installToolButton.onClick(() => {
@@ -43,58 +52,61 @@ export class ResourceTypePickerDialog extends DialogBase {
 		}));
 		this._dialogObject.customButtons = [this._installToolButton];
 		this._installToolButton.hidden = true;
-		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Select");
+		this._dialogObject.okButton.label = loc.select;
 		this._dialogObject.okButton.enabled = false; // this is enabled after all tools are discovered.
 	}
 
 	initialize() {
 		let tab = azdata.window.createTab('');
-		this._dialogObject.registerCloseValidator(() => {
+		this._dialogObject.registerCloseValidator(async () => {
 			const isValid = this._selectedResourceType && (this._selectedResourceType.agreement === undefined || this._agreementCheckboxChecked);
 			if (!isValid) {
 				this._dialogObject.message = {
 					text: localize('deploymentDialog.AcceptAgreements', "You must agree to the license agreements in order to proceed."),
 					level: azdata.window.MessageLevel.Error
 				};
+				return false;
 			}
-			return isValid;
+			if (!this._eulaValidationSucceeded && !(await this.acquireEulaAndProceed())) {
+				return false; // we return false so that the workflow does not proceed and user gets to either click acceptEulaAndSelect again or cancel
+			}
+			return true;
 		});
 		tab.registerContent((view: azdata.ModelView) => {
 			const tableWidth = 1126;
 			this._view = view;
-			const resourceTypes = this.resourceTypeService
+			this._resourceTypes = this.resourceTypeService
 				.getResourceTypes()
 				.filter(rt => !this._resourceTypeNameFilters || this._resourceTypeNameFilters.find(rtn => rt.name === rtn))
 				.sort((a: ResourceType, b: ResourceType) => {
 					return (a.displayIndex || Number.MAX_VALUE) - (b.displayIndex || Number.MAX_VALUE);
 				});
 			this._cardGroup = view.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
-				cards: resourceTypes.map((resourceType) => {
-					return <azdata.RadioCard>{
-						id: resourceType.name,
-						label: resourceType.displayName,
-						icon: resourceType.icon
-					};
+				cards: this._resourceTypes.map((resourceType) => {
+					return this.createOrGetCard(resourceType);
 				}),
-				iconHeight: '50px',
-				iconWidth: '50px',
-				cardWidth: '220px',
-				cardHeight: '180px',
+				iconHeight: '35px',
+				iconWidth: '35px',
+				cardWidth: '300px',
+				cardHeight: '150px',
 				ariaLabel: localize('deploymentDialog.deploymentOptions', "Deployment options"),
-				width: '1100px'
+				width: '1000px',
+				height: '550px',
+				iconPosition: 'left'
 			}).component();
-			this._toDispose.push(this._cardGroup.onSelectionChanged((cardId: string) => {
-				const resourceType = resourceTypes.find(rt => { return rt.name === cardId; });
+			this._toDispose.push(this._cardGroup.onSelectionChanged(({ cardId }) => {
+				this._dialogObject.message = { text: '' };
+				this._dialogObject.okButton.label = loc.select;
+				const resourceType = this._resourceTypes.find(rt => { return rt.name === cardId; });
 				if (resourceType) {
 					this.selectResourceType(resourceType);
 				}
 			}));
-			this._resourceDescriptionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this._selectedResourceType ? this._selectedResourceType.description : undefined }).component();
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolNameColumnHeader', "Tool"),
-				width: 55
+				width: 105
 			};
 			const descriptionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDescriptionColumnHeader', "Description"),
@@ -110,7 +122,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			};
 			const minVersionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolMinimumVersionColumnHeader', "Required Version"),
-				width: 95
+				width: 105
 			};
 			const installedPathColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDiscoveredPathColumnHeader', "Discovered Path or Additional Information"),
@@ -130,13 +142,35 @@ export class ResourceTypePickerDialog extends DialogBase {
 				loadingText: localize('deploymentDialog.loadingRequiredTools', "Loading required tools information"),
 				showText: true
 			}).component();
+
+			const resourceComponents: azdata.Component[] = [];
+			if (this.getAllResourceTags().length !== 0) {
+				this._resourceTagsListView = this.createTagsListView();
+				resourceComponents.push(this._resourceTagsListView);
+			}
+			this._resourceSearchBox = view.modelBuilder.inputBox().withProperties({
+				placeHolder: loc.resourceTypeSearchBoxDescription,
+				ariaLabel: loc.resourceTypeSearchBoxDescription
+			}).component();
+			this._toDispose.push(this._resourceSearchBox.onTextChanged((value: string) => {
+				this.filterResources();
+				this._resourceSearchBox.focus();
+			}));
+			const searchContainer = view.modelBuilder.divContainer().withItems([this._resourceSearchBox]).withProps({
+				CSSStyles: {
+					'margin-left': '15px',
+					'width': '300px'
+				},
+			}).component();
+			const cardsContainer = this._view.modelBuilder.flexContainer().withLayout({
+				flexFlow: 'column'
+			}).withItems([searchContainer, this._cardGroup]).component();
+			resourceComponents.push(cardsContainer);
+
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
-						component: this._cardGroup,
-						title: ''
-					}, {
-						component: this._resourceDescriptionLabel,
+						component: this._view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).withItems(resourceComponents).component(),
 						title: ''
 					}, {
 						component: this._agreementContainer,
@@ -158,17 +192,90 @@ export class ResourceTypePickerDialog extends DialogBase {
 			const form = formBuilder.withLayout({ width: '100%' }).component();
 
 			return view.initializeModel(form).then(() => {
+				this.selectResourceType(this._resourceTypes[0]);
 				if (this._selectedResourceType) {
 					this._cardGroup.selectedCardId = this._selectedResourceType.name;
 				}
+				this._resourceTagsListView.focus();
 			});
 		});
 		this._dialogObject.content = [tab];
+
+	}
+
+	private createTagsListView(): azdata.ListViewComponent {
+
+		const tags = this.getAllResourceTags();
+		if (!tags.includes('All')) {
+			tags.splice(0, 0, 'All');
+		}
+		const items: azdata.ListViewOption[] = [];
+		tags.forEach((t: string, idx: number) => {
+			items.push({
+				label: loc.getResourceTypeCategoryLocalizedString(t),
+				id: t
+			});
+		});
+		const listView = this._view.modelBuilder.listView().withProps({
+			title: {
+				text: loc.resoucrceTypeCategoryListViewTitle
+			},
+			CSSStyles: {
+				'width': '140px',
+				'margin-top': '35px'
+			},
+			options: items,
+			selectedOptionId: items[0].id
+		}).component();
+		this._toDispose.push(listView.onDidClick((e) => {
+			this._resourceSearchBox.value = '';
+			this.filterResources();
+			listView.focus();
+		}));
+
+		return listView;
+	}
+
+	private filterResources(): void {
+		const tag = this._resourceTagsListView.selectedOptionId!;
+		const search = this._resourceSearchBox.value?.toLowerCase() ?? '';
+
+		// Getting resourceType based on the selected tag
+		let filteredResourceTypes = (tag !== 'All') ? this._resourceTypes.filter(element => element.tags?.includes(tag) ?? false) : this._resourceTypes;
+
+		// Filtering resourceTypes based on their names.
+		const filteredResourceTypesOnSearch: ResourceType[] = filteredResourceTypes.filter((element) => element.displayName.toLowerCase().includes(search!));
+		// Adding resourceTypes with descriptions matching the search text to the result at the end as they might be less relevant.
+		filteredResourceTypesOnSearch.push(...filteredResourceTypes.filter((element) => !element.displayName.toLowerCase().includes(search!) && element.description.toLowerCase().includes(search!)));
+
+		const cards = filteredResourceTypesOnSearch.map((resourceType) => this.createOrGetCard(resourceType));
+
+		if (filteredResourceTypesOnSearch.length > 0) {
+			this._cardGroup.updateProperties({
+				selectedCardId: cards[0].id,
+				cards: cards
+			});
+
+			this.selectResourceType(filteredResourceTypesOnSearch[0]);
+		}
+		else {
+			this._cardGroup.updateProperties({
+				selectedCardId: '',
+				cards: []
+			});
+			this._agreementCheckboxChecked = false;
+			this._agreementContainer.clearItems();
+			this._optionsContainer.clearItems();
+			this._toolsLoadingComponent.loading = false;
+			this._toolsTable.data = [[]];
+			this._tools = [];
+			this._dialogObject.okButton.enabled = false;
+		}
 	}
 
 	private selectResourceType(resourceType: ResourceType): void {
+		this._currentResourceTypeDisposables.forEach(disposable => disposable.dispose());
 		this._selectedResourceType = resourceType;
-		this._resourceDescriptionLabel.value = resourceType.description;
 		this._agreementCheckboxChecked = false;
 		this._agreementContainer.clearItems();
 		if (resourceType.agreement) {
@@ -191,13 +298,24 @@ export class ResourceTypePickerDialog extends DialogBase {
 					ariaLabel: option.displayName
 				}).component();
 
-				this._toDispose.push(optionSelectBox.onValueChanged(() => { this.updateToolsDisplayTable(); }));
+				this._currentResourceTypeDisposables.push(optionSelectBox.onValueChanged(() => {
+					this.updateOkButtonText();
+					this.updateToolsDisplayTable();
+				}));
+
 				this._optionDropDownMap.set(option.name, optionSelectBox);
 				const row = this._view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 				this._optionsContainer.addItem(row);
 			});
 		}
+		this.updateOkButtonText();
 		this.updateToolsDisplayTable();
+	}
+
+	private updateOkButtonText(): void {
+		//handle special case when resource type has different OK button.
+		let text = this.getCurrentOkText();
+		this._dialogObject.okButton.label = text || loc.select;
 	}
 
 	private updateToolsDisplayTable(): void {
@@ -243,7 +361,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._toolsTable.data = this.toolRequirements.map(toolRequirement => {
 			const tool = this.toolsService.getToolByName(toolRequirement.name)!;
 			// subscribe to onUpdateData event of the tool.
-			this._toDispose.push(tool.onDidUpdateData((t: ITool) => {
+			this._currentResourceTypeDisposables.push(tool.onDidUpdateData((t: ITool) => {
 				this.updateToolsDisplayTableData(t);
 			}));
 
@@ -268,7 +386,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			if (messages.length > 1) {
 				messages = messages.map(message => `•	${message}`);
 			}
-			messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed manually after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in 'Deployments' output channel"));
+			messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed manually to pick up the change. You may find additional details in 'Deployments' and 'Azure Data CLI' output channels"));
 			this._dialogObject.message = {
 				level: azdata.window.MessageLevel.Error,
 				text: messages.join(EOL)
@@ -295,7 +413,41 @@ export class ResourceTypePickerDialog extends DialogBase {
 				text: infoText.join(EOL)
 			};
 		}
+		if (!this.areToolsEulaAccepted()) {
+			this._dialogObject.okButton.label = loc.acceptEulaAndSelect;
+		}
 		this._toolsLoadingComponent.loading = false;
+	}
+
+	private areToolsEulaAccepted(): boolean {
+		// we run 'map' on each tool before doing 'every' so that we collect eula messages for all tools (instead of bailing out after 1st failure)
+		this._eulaValidationSucceeded = this._tools.map(tool => {
+			const eulaAccepted = tool.isEulaAccepted();
+			if (!eulaAccepted) {
+				this._dialogObject.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: [tool.statusDescription!, this._dialogObject.message.text].join(EOL)
+				};
+			}
+			return eulaAccepted;
+		}).every(isEulaAccepted => isEulaAccepted);
+		return this._eulaValidationSucceeded;
+	}
+
+	private async acquireEulaAndProceed(): Promise<boolean> {
+		this._dialogObject.message = { text: '' };
+		let eulaAccepted = true;
+		for (const tool of this._tools) {
+			eulaAccepted = tool.isEulaAccepted() || await tool.promptForEula();
+			if (!eulaAccepted) {
+				this._dialogObject.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: [tool.statusDescription!, this._dialogObject.message.text].join(EOL)
+				};
+				break;
+			}
+		}
+		return eulaAccepted;
 	}
 
 	private get toolRequirements() {
@@ -308,7 +460,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			required: true
 		}).component();
 		checkbox.checked = false;
-		this._toDispose.push(checkbox.onChanged(() => {
+		this._currentResourceTypeDisposables.push(checkbox.onChanged(() => {
 			this._agreementCheckboxChecked = !!checkbox.checked;
 		}));
 		const text = this._view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -340,7 +492,18 @@ export class ResourceTypePickerDialog extends DialogBase {
 		return this._selectedResourceType.getProvider(options)!;
 	}
 
-	protected onComplete(): void {
+	private getCurrentOkText(): string {
+		const options: { option: string, value: string }[] = [];
+
+		this._optionDropDownMap.forEach((selectBox, option) => {
+			let selectedValue: azdata.CategoryValue = selectBox.value as azdata.CategoryValue;
+			options.push({ option: option, value: selectedValue.name });
+		});
+
+		return this._selectedResourceType.getOkButtonText(options)!;
+	}
+
+	protected async onComplete(): Promise<void> {
 		this.toolsService.toolsForCurrentProvider = this._tools;
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
 	}
@@ -423,4 +586,49 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._installationInProgress = false;
 		}
 	}
+
+	private getAllResourceTags(): string[] {
+		const supportedTags = [
+			constants.ResourceTypeCategories.All,
+			constants.ResourceTypeCategories.OnPrem,
+			constants.ResourceTypeCategories.Hybrid,
+			constants.ResourceTypeCategories.Cloud,
+			constants.ResourceTypeCategories.SqlServer,
+			constants.ResourceTypeCategories.PostgreSql
+		];
+
+		const tagsWithResourceTypes = supportedTags.filter(tag => {
+			return (tag === constants.ResourceTypeCategories.All) || this._resourceTypes.find(resourceType => resourceType.tags?.includes(tag)) !== undefined;
+		});
+
+		return tagsWithResourceTypes;
+	}
+
+	private createOrGetCard(resourceType: ResourceType): azdata.RadioCard {
+		if (this._cardsCache.has(resourceType.name)) {
+			return this._cardsCache.get(resourceType.name)!;
+		}
+
+		const newCard = <azdata.RadioCard>{
+			id: resourceType.name,
+			label: resourceType.displayName,
+			icon: resourceType.icon,
+			descriptions: [
+				{
+					textValue: resourceType.displayName,
+					textStyles: {
+						'font-size': '14px',
+						'font-weight': 'bold'
+					}
+				},
+				{
+					textValue: resourceType.description,
+				}
+			]
+		};
+
+		this._cardsCache.set(resourceType.name, newCard);
+		return newCard;
+	}
+
 }

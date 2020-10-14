@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ExtensionNodeType, TreeItem, Account } from 'azdata';
-import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
+import { TreeItemCollapsibleState, ExtensionContext, workspace } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -34,7 +34,7 @@ export class SqlInstanceArcTreeDataProvider extends ResourceTreeDataProviderBase
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_instance_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_instance.svg')
 			},
-			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			collapsibleState: workspace.getConfiguration('connection').get<boolean>('dialog.browse') ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServer,
 			payload: {
 				id: generateGuid(),

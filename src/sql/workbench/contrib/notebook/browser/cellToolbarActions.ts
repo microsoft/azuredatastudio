@@ -12,7 +12,6 @@ import { CellActionBase, CellContext } from 'sql/workbench/contrib/notebook/brow
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { CellTypes, CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import { firstIndex } from 'vs/base/common/arrays';
 import { getErrorMessage } from 'vs/base/common/errors';
 import Severity from 'vs/base/common/severity';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -20,6 +19,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 
+const moreActionsLabel = localize('moreActionsLabel', "More");
 
 export class EditCellAction extends ToggleableAction {
 	// Constants
@@ -151,10 +151,11 @@ export class CellToggleMoreActions {
 
 	public onInit(elementRef: HTMLElement, context: CellContext) {
 		this._moreActionsElement = elementRef;
+		this._moreActionsElement.setAttribute('aria-haspopup', 'menu');
 		if (this._moreActionsElement.childNodes.length > 0) {
 			this._moreActionsElement.removeChild(this._moreActionsElement.childNodes[0]);
 		}
-		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
+		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL, ariaLabel: moreActionsLabel });
 		this._moreActions.context = { target: this._moreActionsElement };
 		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
 		removeDuplicatedAndStartingSeparators(validActions);
@@ -216,7 +217,7 @@ export class AddCellFromContextAction extends CellActionBase {
 	doRun(context: CellContext): Promise<void> {
 		try {
 			let model = context.model;
-			let index = firstIndex(model.cells, (cell) => cell.id === context.cell.id);
+			let index = model.cells.findIndex((cell) => cell.id === context.cell.id);
 			if (index !== undefined && this.isAfter) {
 				index += 1;
 			}
@@ -343,7 +344,7 @@ export class CollapseCellAction extends CellActionBase {
 export class ToggleMoreActions extends Action {
 
 	private static readonly ID = 'toggleMore';
-	private static readonly LABEL = localize('toggleMore', "Toggle More");
+	private static readonly LABEL = moreActionsLabel;
 	private static readonly ICON = 'masked-icon more';
 
 	constructor(

@@ -5,7 +5,7 @@
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-export type MigrationProductType = 'AzureSQLMI' | 'AzureSQLVM';
+export type MigrationProductType = 'AzureSQLMI' | 'AzureSQLVM' | 'AzureSQL';
 export interface MigrationProduct {
 	readonly type: MigrationProductType;
 }
@@ -22,12 +22,12 @@ export interface Checks {
 
 export interface Product extends MigrationProduct {
 	readonly name: string;
-	readonly icon: string;
 	readonly learnMoreLink?: string;
+	readonly icon?: string;
 }
 
 export class Product implements Product {
-	constructor(public readonly type: MigrationProductType, public readonly name: string, public readonly icon: string, public readonly learnMoreLink?: string) {
+	constructor(public readonly type: MigrationProductType, public readonly name: string, public readonly icon?: string, public readonly learnMoreLink?: string) {
 
 	}
 
@@ -45,15 +45,17 @@ export interface SKURecommendation {
 }
 
 
-const ProductLookupTable: { [key in MigrationProductType]: Product } = {
+export const ProductLookupTable: { [key in MigrationProductType]: Product } = {
 	'AzureSQLMI': {
 		type: 'AzureSQLMI',
 		name: localize('sql.migration.products.azuresqlmi.name', 'Azure Managed Instance (Microsoft managed)'),
-		icon: 'TODO',
 	},
 	'AzureSQLVM': {
 		type: 'AzureSQLVM',
 		name: localize('sql.migration.products.azuresqlvm.name', 'Azure SQL Virtual Machine (Customer managed)'),
-		icon: 'TODO',
+	},
+	'AzureSQL': {
+		type: 'AzureSQL',
+		name: localize('sql.migration.products.azuresql.name', 'Azure SQL'),
 	}
 };

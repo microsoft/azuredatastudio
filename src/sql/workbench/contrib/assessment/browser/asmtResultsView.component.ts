@@ -20,7 +20,6 @@ import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardServi
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
-import { find } from 'vs/base/common/arrays';
 import { RowDetailView, ExtendedItem } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import {
 	IAssessmentComponent,
@@ -110,7 +109,13 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			id: 'tags',
 			formatter: (row, cell, value, columnDef, dataContext) => this.renderTags(row, cell, value, columnDef, dataContext)
 		},
-		{ name: LocalizedStrings.CHECKID_COLUMN_NAME, field: 'checkId', maxWidth: 140, id: 'checkId' }
+		{
+			name: LocalizedStrings.CHECKID_COLUMN_NAME,
+			field: 'checkId',
+			maxWidth: 140,
+			id: 'checkId',
+			formatter: (_row, _cell, value, _columnDef, _dataContext) => `<span title='${value}'>${value}</span>`
+		}
 	];
 	private dataView: any;
 	private filterPlugin: any;
@@ -188,6 +193,10 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 	public get isActive(): boolean {
 		return this.isVisible;
+	}
+
+	public get isBusy(): boolean {
+		return Object.values(this.spinner).find(item => item.style.visibility === 'visible') !== undefined;
 	}
 
 	public layout(): void {
@@ -468,13 +477,13 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			let filterValues = col.filterValues;
 			if (filterValues && filterValues.length > 0) {
 				if (item._parent) {
-					value = value && find(filterValues, x => x === item._parent[col.field]);
+					value = value && filterValues.find(x => x === item._parent[col.field]);
 				} else {
 					let colValue = item[col.field];
 					if (colValue instanceof Array) {
-						value = value && find(filterValues, x => colValue.indexOf(x) >= 0);
+						value = value && filterValues.find(x => colValue.indexOf(x) >= 0);
 					} else {
-						value = value && find(filterValues, x => x === colValue);
+						value = value && filterValues.find(x => x === colValue);
 					}
 				}
 			}
@@ -499,13 +508,13 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 
 	private renderTags(_row, _cell, _value, _columnDef, dataContext) {
 		if (dataContext.tags !== undefined) {
-			return dataContext.tags.join(`, `);
+			return `<span title='${dataContext.tags.join(', ')}'>${dataContext.tags.join(', ')}</span>`;
 		}
 		return dataContext.tags;
 	}
 
 	private renderTarget(_row, _cell, _value, _columnDef, dataContext) {
-		return `<div class='carbon-taskbar'><span class='action-label codicon ${TARGET_ICON_CLASS[dataContext.targetType]}'>${dataContext.targetName}</span></div>`;
+		return `<div class='carbon-taskbar ellps'><span class='action-label codicon ${TARGET_ICON_CLASS[dataContext.targetType]}' title='${dataContext.targetName}'>${dataContext.targetName}</span></div>`;
 	}
 
 	private detailSelectionFormatter(_row: number, _cell: number, _value: any, _columnDef: Slick.Column<Slick.SlickData>, dataContext: Slick.SlickData): string | undefined {

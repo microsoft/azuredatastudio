@@ -11,7 +11,7 @@ Please report issues and feature requests [here.](https://github.com/microsoft/a
 
 * Create a new database project by going to the **Projects** viewlet under Explorer, or by searching for **New Database Project** in the command palette.
 * Existing database projects can be opened via **Open Database Project** in the command palette.
-* Start from an existing database by using **Import New Database Project** from the command palette.
+* Start from an existing database by using **Create Project From Database** from the command palette or database context menu.
 
 ## Code of Conduct
 

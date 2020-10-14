@@ -14,7 +14,7 @@ import { MiaaModel } from '../../../models/miaaModel';
 export class MiaaDashboard extends Dashboard {
 
 	constructor(private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
-		super(loc.miaaDashboard);
+		super(loc.miaaDashboard(_miaaModel.info.name), 'ArcMiaaDashboard');
 	}
 
 	public async showDashboard(): Promise<void> {
@@ -26,7 +26,7 @@ export class MiaaDashboard extends Dashboard {
 
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
 		const overviewPage = new MiaaDashboardOverviewPage(modelView, this._controllerModel, this._miaaModel);
-		const connectionStringsPage = new MiaaConnectionStringsPage(modelView, this._controllerModel);
+		const connectionStringsPage = new MiaaConnectionStringsPage(modelView, this._controllerModel, this._miaaModel);
 		return [
 			overviewPage.tab,
 			{

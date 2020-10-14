@@ -82,6 +82,7 @@ class ModelViewEditorImpl extends ModelViewPanelImpl implements azdata.workspace
 		extension: IExtensionDescription,
 		private _proxy: MainThreadModelViewDialogShape,
 		private _title: string,
+		private _name: string,
 		private _options: azdata.ModelViewEditorOptions
 	) {
 		super('modelViewEditor', extHostModelViewDialog, extHostModelView, extension);
@@ -89,7 +90,7 @@ class ModelViewEditorImpl extends ModelViewPanelImpl implements azdata.workspace
 	}
 
 	public openEditor(position?: vscode.ViewColumn): Thenable<void> {
-		return this._proxy.$openEditor(this.handle, this._modelViewId, this._title, this._options, position);
+		return this._proxy.$openEditor(this.handle, this._modelViewId, this._title, this._name, this._options, position);
 	}
 
 	public get isDirty(): boolean {
@@ -205,7 +206,6 @@ class TabImpl extends ModelViewPanelImpl implements azdata.window.DialogTab {
 
 	public title: string;
 	public content: string;
-	public handle: number;
 
 	public setModelViewId(value: string) {
 		super.setModelViewId(value);
@@ -383,7 +383,7 @@ class WizardImpl implements azdata.window.Wizard {
 	private _operationHandler: BackgroundOperationHandler;
 	private _width: DialogWidth;
 
-	constructor(public title: string, private _extHostModelViewDialog: ExtHostModelViewDialog, extHostTaskManagement: ExtHostBackgroundTaskManagementShape) {
+	constructor(public title: string, public name: string, private _extHostModelViewDialog: ExtHostModelViewDialog, extHostTaskManagement: ExtHostBackgroundTaskManagementShape) {
 		this.doneButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
 		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL);
 		this.generateScriptButton = this._extHostModelViewDialog.createButton(GENERATE_SCRIPT_LABEL);
@@ -649,14 +649,16 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._proxy.$closeDialog(handle);
 	}
 
-	public createModelViewEditor(title: string, extension: IExtensionDescription, options?: azdata.ModelViewEditorOptions): azdata.workspace.ModelViewEditor {
-		let editor = new ModelViewEditorImpl(this, this._extHostModelView, extension, this._proxy, title, options);
+	public createModelViewEditor(title: string, extension: IExtensionDescription, name?: string, options?: azdata.ModelViewEditorOptions): azdata.workspace.ModelViewEditor {
+		name = name ?? 'ModelViewEditor';
+		let editor = new ModelViewEditorImpl(this, this._extHostModelView, extension, this._proxy, title, name, options);
 		editor.handle = this.getHandle(editor);
 		return editor;
 	}
 
-	public createModelViewDashboard(title: string, options: azdata.ModelViewDashboardOptions | undefined, extension: IExtensionDescription): azdata.window.ModelViewDashboard {
-		const editor = this.createModelViewEditor(title, extension, { supportsSave: false }) as ModelViewEditorImpl;
+	public createModelViewDashboard(title: string, name: string | undefined, options: azdata.ModelViewDashboardOptions | undefined, extension: IExtensionDescription): azdata.window.ModelViewDashboard {
+		name = name ?? 'ModelViewDashboard';
+		const editor = this.createModelViewEditor(title, extension, name, { supportsSave: false }) as ModelViewEditorImpl;
 		return new ModelViewDashboardImpl(editor, options);
 	}
 
@@ -762,8 +764,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return page;
 	}
 
-	public createWizard(title: string, width: azdata.window.DialogWidth = 'wide'): azdata.window.Wizard {
-		let wizard = new WizardImpl(title, this, this._extHostTaskManagement);
+	public createWizard(title: string, name: string = 'ModelViewWizard', width: azdata.window.DialogWidth = 'wide'): azdata.window.Wizard {
+		let wizard = new WizardImpl(title, name, this, this._extHostTaskManagement);
 		wizard.width = width;
 		this.getHandle(wizard);
 		return wizard;
@@ -796,6 +798,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		}
 		return this._proxy.$setWizardDetails(handle, {
 			title: wizard.title,
+			name: wizard.name,
 			width: wizard.width,
 			pages: wizard.pages.map(page => this.getHandle(page)),
 			currentPage: wizard.currentPage,

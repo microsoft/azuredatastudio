@@ -12,6 +12,8 @@ export const msgNo = localize('msgNo', "No");
 
 // Jupyter Constants ///////////////////////////////////////////////////////
 export const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
+export const noBDCConnectionError = localize('noBDCConnectionError', "Spark kernels require a connection to a SQL Server Big Data Cluster master instance.");
+export const providerNotValidError = localize('providerNotValidError', "Non-MSSQL providers are not supported for spark kernels.");
 
 //  Book view-let constants
 export const allFiles = localize('allFiles', "All Files");
@@ -25,6 +27,8 @@ export const msgBookTrusted = localize('msgBookTrusted', "Book is now trusted in
 export const msgBookAlreadyTrusted = localize('msgBookAlreadyTrusted', "Book is already trusted in this workspace.");
 export const msgBookUntrusted = localize('msgBookUntrusted', "Book is no longer trusted in this workspace");
 export const msgBookAlreadyUntrusted = localize('msgBookAlreadyUntrusted', "Book is already untrusted in this workspace.");
+export function msgBookPinned(book: string): string { return localize('msgBookPinned', "Book {0} is now pinned in the workspace.", book); }
+export function msgBookUnpinned(book: string): string { return localize('msgBookUnpinned', "Book {0} is no longer pinned in this workspace", book); }
 export const missingTocError = localize('bookInitializeFailed', "Failed to find a Table of Contents file in the specified book.");
 export const noBooksSelectedError = localize('noBooksSelected', "No books are currently selected in the viewlet.");
 

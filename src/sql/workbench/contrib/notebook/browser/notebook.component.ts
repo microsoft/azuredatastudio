@@ -50,13 +50,13 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
-import { find, firstIndex } from 'vs/base/common/arrays';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -71,6 +71,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	@ViewChildren(CodeCellComponent) private codeCells: QueryList<CodeCellComponent>;
 	@ViewChildren(TextCellComponent) private textCells: QueryList<TextCellComponent>;
+	@ViewChildren(CellToolbarComponent) private cellToolbar: QueryList<CellToolbarComponent>;
 
 	private _model: NotebookModel;
 	protected _actionBar: Taskbar;
@@ -85,6 +86,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _navProvider: INavigationProvider;
 	private navigationResult: nb.NavigationResult;
 	public previewFeaturesEnabled: boolean = false;
+	public doubleClickEditEnabled: boolean;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -110,8 +112,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		super();
 		this.updateProfile();
 		this.isLoading = true;
+		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
+		}));
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		}));
 	}
 
@@ -201,6 +207,18 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public unselectActiveCell() {
 		this.model.updateActiveCell(undefined);
 		this.detectChanges();
+	}
+
+	// Handles double click to edit icon change
+	// See textcell.component.ts for changing edit behavior
+	public enableActiveCellIconOnDoubleClick() {
+		if (this.doubleClickEditEnabled) {
+			const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
+			const toolbarEditCellAction = toolbarComponent.getEditCellAction();
+			if (!toolbarEditCellAction.editMode) {
+				toolbarEditCellAction.editMode = !toolbarEditCellAction.editMode;
+			}
+		}
 	}
 
 	// Add cell based on cell type
@@ -320,6 +338,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider)));
 		this._register(model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs)));
 		this._register(model.onCellTypeChanged(() => this.detectChanges()));
+		this._register(model.layoutChanged(() => this.detectChanges()));
 		this._model = this._register(model);
 		await this._model.loadContents(trusted);
 		this.setLoading(false);
@@ -344,7 +363,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 		if (DEFAULT_NOTEBOOK_PROVIDER === providerInfo.providerId) {
 			let providers = notebookUtils.getProvidersForFileName(this._notebookParams.notebookUri.fsPath, this.notebookService);
-			let tsqlProvider = find(providers, provider => provider === SQL_NOTEBOOK_PROVIDER);
+			let tsqlProvider = providers.find(provider => provider === SQL_NOTEBOOK_PROVIDER);
 			providerInfo.providerId = tsqlProvider ? SQL_NOTEBOOK_PROVIDER : providers[0];
 		}
 	}
@@ -391,7 +410,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	findCellIndex(cellModel: ICellModel): number {
-		return firstIndex(this._model.cells, (cell) => cell.id === cellModel.id);
+		return this._model.cells.findIndex((cell) => cell.id === cellModel.id);
 	}
 
 	private setViewInErrorState(error: any): any {
@@ -587,7 +606,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private addPrimaryContributedActions(primary: IAction[]) {
 		for (let action of primary) {
 			// Need to ensure that we don't add the same action multiple times
-			let foundIndex = firstIndex(this._providerRelatedActions, act => act.id === action.id);
+			let foundIndex = this._providerRelatedActions.findIndex(act => act.id === action.id);
 			if (foundIndex < 0) {
 				this._actionBar.addAction(action);
 				this._providerRelatedActions.push(action);
@@ -638,7 +657,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public async runCell(cell: ICellModel): Promise<boolean> {
 		await this.modelReady;
 		let uriString = cell.cellUri.toString();
-		if (firstIndex(this._model.cells, c => c.cellUri.toString() === uriString) > -1) {
+		if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
 			this.selectCell(cell);
 			return cell.runCell(this.notificationService, this.connectionManagementService);
 		} else {
@@ -654,10 +673,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let startIndex = 0;
 			let endIndex = codeCells.length;
 			if (!isUndefinedOrNull(startCell)) {
-				startIndex = firstIndex(codeCells, c => c.id === startCell.id);
+				startIndex = codeCells.findIndex(c => c.id === startCell.id);
 			}
 			if (!isUndefinedOrNull(endCell)) {
-				endIndex = firstIndex(codeCells, c => c.id === endCell.id);
+				endIndex = codeCells.findIndex(c => c.id === endCell.id);
 			}
 			for (let i = startIndex; i < endIndex; i++) {
 				let cellStatus = await this.runCell(codeCells[i]);
@@ -673,7 +692,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		try {
 			await this.modelReady;
 			let uriString = cell.cellUri.toString();
-			if (firstIndex(this._model.cells, c => c.cellUri.toString() === uriString) > -1) {
+			if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
 				this.selectCell(cell);
 				// Clear outputs of the requested cell if cell type is code cell.
 				// If cell is markdown cell, clearOutputs() is a no-op
@@ -747,7 +766,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let elBody: HTMLElement = document.body;
 		let tabBar = elBody.querySelector('.title.tabs') as HTMLElement;
 		let actionBar = elBody.querySelector('.editor-toolbar.actionbar-container') as HTMLElement;
-		let section = find(this.getSectionElements(), s => s.relativeUri && s.relativeUri.toLowerCase() === id);
+		let section = this.getSectionElements().find(s => s.relativeUri && s.relativeUri.toLowerCase() === id);
 		if (section) {
 			// Scroll this section to the top of the header instead of just bringing header into view.
 			if (tabBar && actionBar) {

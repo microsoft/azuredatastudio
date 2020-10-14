@@ -15,13 +15,13 @@ interface DatabaseGraphData extends GraphData {
 	kind: string;
 }
 export class AzureResourceDatabaseService implements IAzureResourceService<azureResource.AzureResourceDatabase> {
-	public async getResources(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials, account: Account): Promise<azureResource.AzureResourceDatabase[]> {
+	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: ServiceClientCredentials, account: Account): Promise<azureResource.AzureResourceDatabase[]> {
 		const databases: azureResource.AzureResourceDatabase[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 
 		// Query servers and databases in parallel (start both promises before waiting on the 1st)
-		let serverQueryPromise = queryGraphResources<GraphData>(resourceClient, subscription.id, serversQuery);
-		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscription.id, 'where type == "microsoft.sql/servers/databases"');
+		let serverQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, serversQuery);
+		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, `where type == "${azureResource.AzureResourceType.sqlDatabase}"`);
 		let servers: DbServerGraphData[] = await serverQueryPromise as DbServerGraphData[];
 		let dbByGraph: DatabaseGraphData[] = await dbQueryPromise as DatabaseGraphData[];
 
@@ -35,7 +35,7 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 		});
 
 		// Match database ID. When calling exec [0] is full match, [1] is resource group name, [2] is server name
-		const svrIdRegExp = new RegExp(`\/subscriptions\/${subscription.id}\/resourceGroups\/(.+)\/providers\/Microsoft\.Sql\/servers\/(.+)\/databases\/.+`);
+		const svrIdRegExp = new RegExp(`\/subscriptions\/.+\/resourceGroups\/(.+)\/providers\/Microsoft\.Sql\/servers\/(.+)\/databases\/.+`);
 
 		dbByGraph.forEach(db => {
 			// Filter master DBs, and for all others find their server to get login info
@@ -51,6 +51,7 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 						serverName: server.name,
 						serverFullName: server.properties.fullyQualifiedDomainName,
 						loginName: server.properties.administratorLogin,
+						subscriptionId: db.subscriptionId,
 						tenant: db.tenantId
 					});
 				}

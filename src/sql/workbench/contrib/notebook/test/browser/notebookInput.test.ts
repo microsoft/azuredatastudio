@@ -20,6 +20,7 @@ import { IExtensionService, NullExtensionService } from 'vs/workbench/services/e
 import { INotebookService, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 
 suite('Notebook Input', function (): void {
 	const instantiationService = workbenchInstantiationService();
@@ -44,6 +45,8 @@ suite('Notebook Input', function (): void {
 
 	(instantiationService as TestInstantiationService).stub(INotebookService, mockNotebookService.object);
 
+	const mockNotificationService = TypeMoq.Mock.ofType(TestNotificationService);
+
 	let untitledTextInput: UntitledTextEditorInput;
 	let untitledNotebookInput: UntitledNotebookInput;
 
@@ -53,14 +56,14 @@ suite('Notebook Input', function (): void {
 		untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: untitledUri }));
 		untitledNotebookInput = new UntitledNotebookInput(
 			testTitle, untitledUri, untitledTextInput,
-			undefined, instantiationService, mockNotebookService.object, mockExtensionService.object);
+			undefined, instantiationService, mockNotebookService.object, mockExtensionService.object, mockNotificationService.object);
 	});
 
 	test('File Notebook Input', async function (): Promise<void> {
 		let fileUri = URI.from({ scheme: Schemas.file, path: 'TestPath' });
 		let fileNotebookInput = new FileNotebookInput(
 			testTitle, fileUri, undefined,
-			undefined, instantiationService, mockNotebookService.object, mockExtensionService.object);
+			undefined, instantiationService, mockNotebookService.object, mockExtensionService.object, mockNotificationService.object);
 
 		let inputId = fileNotebookInput.getTypeId();
 		assert.strictEqual(inputId, FileNotebookInput.ID);

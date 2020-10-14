@@ -73,12 +73,12 @@ suite('Restore Dialog view model tests', () => {
 		stringServiceOption = {
 			name: option1String,
 			displayName: 'Option 1',
-			description: null,
-			groupName: null,
+			description: null!,
+			groupName: null!,
 			valueType: ServiceOptionType.string,
 			defaultValue: 'default',
-			objectType: null,
-			categoryValues: null,
+			objectType: null!,
+			categoryValues: null!,
 			isRequired: false,
 			isArray: false
 		};
@@ -86,11 +86,11 @@ suite('Restore Dialog view model tests', () => {
 		categoryServiceOption = {
 			name: option2Category,
 			displayName: 'Option 2',
-			description: null,
-			groupName: null,
+			description: null!,
+			groupName: null!,
 			valueType: ServiceOptionType.category,
 			defaultValue: 'catagory1',
-			objectType: null,
+			objectType: null!,
 			categoryValues: [{
 				displayName: 'Catagory 1',
 				name: 'catagory1'
@@ -106,12 +106,12 @@ suite('Restore Dialog view model tests', () => {
 		booleanServiceOption = {
 			name: option3Boolean,
 			displayName: 'Option 3',
-			description: null,
-			groupName: null,
+			description: null!,
+			groupName: null!,
 			valueType: ServiceOptionType.boolean,
 			defaultValue: 'true',
-			objectType: null,
-			categoryValues: null,
+			objectType: null!,
+			categoryValues: null!,
 			isRequired: false,
 			isArray: false
 		};
@@ -171,7 +171,6 @@ suite('Restore Dialog view model tests', () => {
 			sessionId: '123',
 			backupSetsToRestore: backupSets,
 			canRestore: true,
-			errorMessage: null,
 			dbFiles: [],
 			databaseNamesFromBackupSets: ['dbSource', 'dbSource2'],
 			planDetails: planDetails
@@ -191,8 +190,8 @@ suite('Restore Dialog view model tests', () => {
 
 		// verify that selected backup sets get set correctly
 		let selectedBackupSets = viewModel.selectedBackupSets;
-		assert.equal(1, selectedBackupSets.length);
-		assert.equal('file2', selectedBackupSets[0]);
+		assert.equal(1, selectedBackupSets!.length);
+		assert.equal('file2', selectedBackupSets![0]);
 	});
 
 
@@ -201,7 +200,6 @@ suite('Restore Dialog view model tests', () => {
 			sessionId: '123',
 			backupSetsToRestore: backupSets,
 			canRestore: true,
-			errorMessage: null,
 			dbFiles: [],
 			databaseNamesFromBackupSets: ['dbSource', 'dbSource2'],
 			planDetails: planDetails
@@ -217,7 +215,7 @@ suite('Restore Dialog view model tests', () => {
 		assert.equal('db2', viewModel.sourceDatabaseName);
 		assert.equal('db2', viewModel.targetDatabaseName);
 		assert.equal('', viewModel.lastBackupTaken);
-		assert.equal(0, viewModel.databaseList.length);
+		assert.equal(0, viewModel.databaseList!.length);
 
 		// verify that advanced options get set correctly
 		options = {};
@@ -235,10 +233,11 @@ suite('Restore Dialog view model tests', () => {
 		configInfo['sourceDatabaseNamesWithBackupSets'] = databaseList;
 		configInfo[option1String] = 'option1 from config info';
 		viewModel.updateOptionWithConfigInfo(configInfo);
-		assert.equal(3, viewModel.databaseList.length);
-		assert.equal('', viewModel.databaseList[0]);
-		assert.equal(databaseList[1], viewModel.databaseList[1]);
-		assert.equal(databaseList[2], viewModel.databaseList[2]);
+		assert.ok(viewModel.databaseList);
+		assert.equal(3, viewModel.databaseList!.length);
+		assert.equal('', viewModel.databaseList![0]);
+		assert.equal(databaseList[1], viewModel.databaseList![1]);
+		assert.equal(databaseList[2], viewModel.databaseList![2]);
 		assert.equal('option1 from config info', viewModel.getOptionValue(option1String));
 
 		// verify that the options from get restore advanced options doesn't contain option1String

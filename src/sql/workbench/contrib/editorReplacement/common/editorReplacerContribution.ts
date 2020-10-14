@@ -17,6 +17,7 @@ import * as path from 'vs/base/common/path';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { isThenable } from 'vs/base/common/async';
+import { withNullAsUndefined } from 'vs/base/common/types';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -44,7 +45,7 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 			return undefined;
 		}
 
-		let language: string;
+		let language: string | undefined;
 		if (editor instanceof FileEditorInput) {
 			language = editor.getPreferredMode();
 		} else if (editor instanceof UntitledTextEditorInput) {
@@ -52,7 +53,7 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 		}
 
 		if (!language) { // in the case the input doesn't have a preferred mode set we will attempt to guess the mode from the file path
-			language = this.modeService.getModeIdByFilepathOrFirstLine(editor.resource);
+			language = withNullAsUndefined(this.modeService.getModeIdByFilepathOrFirstLine(editor.resource));
 		}
 
 		if (!language) {
@@ -66,7 +67,7 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 				editor.setMode(defaultInputCreator[0]);
 				const newInput = defaultInputCreator[1].convertInput(editor);
 				if (newInput) {
-					return { override: isThenable(newInput) ? newInput.then(input => this.editorService.openEditor(input, options, group)) : this.editorService.openEditor(newInput, options, group) };
+					return { override: isThenable(newInput) ? newInput.then(input => this.editorService.openEditor(input ?? editor, options, group)) : this.editorService.openEditor(newInput, options, group) };
 				}
 			}
 		} else {
@@ -74,7 +75,7 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 			if (inputCreator) {
 				const newInput = inputCreator.convertInput(editor);
 				if (newInput) {
-					return { override: isThenable(newInput) ? newInput.then(input => this.editorService.openEditor(input, options, group)) : this.editorService.openEditor(newInput, options, group) };
+					return { override: isThenable(newInput) ? newInput.then(input => this.editorService.openEditor(input ?? editor, options, group)) : this.editorService.openEditor(newInput, options, group) };
 				}
 			}
 		}

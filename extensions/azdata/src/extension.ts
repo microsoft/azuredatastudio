@@ -4,112 +4,70 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdataExt from 'azdata-ext';
-import { findAzdata, IAzdataTool } from './azdata';
+import * as rd from 'resource-deployment';
+import * as vscode from 'vscode';
+import { getExtensionApi } from './api';
+import { checkAndInstallAzdata, checkAndUpdateAzdata, findAzdata, isEulaAccepted, promptForEula } from './azdata';
+import Logger from './common/logger';
+import * as constants from './constants';
 import * as loc from './localizedConstants';
+import { ArcControllerConfigProfilesOptionsSource } from './providers/arcControllerConfigProfilesOptionsSource';
+import { AzdataToolService } from './services/azdataToolService';
 
-let localAzdata: IAzdataTool | undefined = undefined;
+export async function activate(context: vscode.ExtensionContext): Promise<azdataExt.IExtension> {
+	const azdataToolService = new AzdataToolService();
+	let eulaAccepted: boolean = false;
+	vscode.commands.registerCommand('azdata.acceptEula', async () => {
+		await promptForEula(context.globalState, true /* userRequested */);
+	});
 
-export async function activate(): Promise<azdataExt.IExtension> {
-	localAzdata = await checkForAzdata();
-	return {
-		azdata: {
-			arc: {
-				dc: {
-					create: async (namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string) => {
-						throwIfNoAzdata();
-						return localAzdata!.arc.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass);
-					},
-					endpoint: {
-						list: async () => {
-							throwIfNoAzdata();
-							return localAzdata!.arc.dc.endpoint.list();
-						}
-					},
-					config: {
-						list: async () => {
-							throwIfNoAzdata();
-							return localAzdata!.arc.dc.config.list();
-						},
-						show: async () => {
-							throwIfNoAzdata();
-							return localAzdata!.arc.dc.config.show();
-						}
-					}
-				},
-				postgres: {
-					server: {
-						list: async () => {
-							throwIfNoAzdata();
-							return localAzdata!.arc.postgres.server.list();
-						},
-						show: async (name: string) => {
-							throwIfNoAzdata();
-							return localAzdata!.arc.postgres.server.show(name);
-						}
-					}
-				},
-				sql: {
-					mi: {
-						delete: async (name: string) => {
-							throwIfNoAzdata();
-							return localAzdata!.arc.sql.mi.delete(name);
-						},
-						list: async () => {
-							throwIfNoAzdata();
-							return localAzdata!.arc.sql.mi.list();
-						},
-						show: async (name: string) => {
-							throwIfNoAzdata();
-							return localAzdata!.arc.sql.mi.show(name);
-						}
-					}
+	vscode.commands.registerCommand('azdata.install', async () => {
+		azdataToolService.localAzdata = await checkAndInstallAzdata(true /* userRequested */);
+	});
+
+	vscode.commands.registerCommand('azdata.update', async () => {
+		if (await checkAndUpdateAzdata(azdataToolService.localAzdata, true /* userRequested */)) { // if an update was performed
+			azdataToolService.localAzdata = await findAzdata(); // find and save the currently installed azdata
+		}
+	});
+
+	eulaAccepted = isEulaAccepted(context.globalState); // fetch eula acceptance state from memento
+	await vscode.commands.executeCommand('setContext', constants.eulaAccepted, eulaAccepted); // set a context key for current value of eulaAccepted state retrieved from memento so that command for accepting eula is available/unavailable in commandPalette appropriately.
+	Logger.log(loc.eulaAcceptedStateOnStartup(eulaAccepted));
+
+	// Don't block on this since we want the extension to finish activating without needing user input
+	const localAzdataDiscovered = checkAndInstallAzdata() // install if not installed and user wants it.
+		.then(async azdataTool => {
+			if (azdataTool !== undefined) {
+				azdataToolService.localAzdata = azdataTool;
+				if (!eulaAccepted) {
+					// Don't block on this since we want extension to finish activating without requiring user actions.
+					// If EULA has not been accepted then we will check again while executing azdata commands.
+					promptForEula(context.globalState)
+						.then(async (userResponse: boolean) => {
+							eulaAccepted = userResponse;
+						})
+						.catch((err) => console.log(err));
 				}
-			},
-			login: async (endpoint: string, username: string, password: string) => {
-				throwIfNoAzdata();
-				return localAzdata!.login(endpoint, username, password);
-			},
-			version: async () => {
-				throwIfNoAzdata();
-				return localAzdata!.version();
+				try {
+					//update if available and user wants it.
+					if (await checkAndUpdateAzdata(azdataToolService.localAzdata)) { // if an update was performed
+						azdataToolService.localAzdata = await findAzdata(); // find and save the currently installed azdata
+					}
+				} catch (err) {
+					vscode.window.showWarningMessage(loc.updateError(err));
+				}
 			}
-		}
-	};
-}
+			return azdataTool;
+		});
 
-function throwIfNoAzdata(): void {
-	if (!localAzdata) {
-		throw new Error(loc.noAzdata);
-	}
-}
+	const azdataApi = getExtensionApi(context.globalState, azdataToolService, localAzdataDiscovered);
 
-async function checkForAzdata(): Promise<IAzdataTool | undefined> {
-	try {
-		return await findAzdata();
-	} catch (err) {
-		// Don't block on this since we want the extension to finish activating without needing user input.
-		// Calls will be made to handle azdata not being installed
-		promptToInstallAzdata().catch(e => console.log(`Unexpected error prompting to install azdata ${e}`));
-	}
-	return undefined;
-}
+	// register option source(s)
+	const rdApi = <rd.IExtension>vscode.extensions.getExtension(rd.extension.name)?.exports;
+	rdApi.registerOptionsSourceProvider(new ArcControllerConfigProfilesOptionsSource(azdataApi));
 
-async function promptToInstallAzdata(): Promise<void> {
-	//TODO: Figure out better way to display/prompt
-	/*
-	const response = await vscode.window.showErrorMessage(loc.couldNotFindAzdataWithPrompt, loc.install, loc.cancel);
-	if (response === loc.install) {
-		try {
-			await downloadAndInstallAzdata();
-			vscode.window.showInformationMessage(loc.azdataInstalled);
-		} catch (err) {
-			// Windows: 1602 is User Cancelling installation - not unexpected so don't display
-			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
-				vscode.window.showWarningMessage(loc.installError(err));
-			}
-		}
-	}
-	*/
+	return azdataApi;
 }
 
 export function deactivate(): void { }

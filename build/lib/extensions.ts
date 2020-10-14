@@ -241,23 +241,25 @@ const externalExtensions = [
 	// they get packaged separately. Adding extension name here, will make the build to create
 	// a separate vsix package for the extension and the extension will be excluded from the main package.
 	// Any extension not included here will be installed by default.
+	'admin-pack',
 	'admin-tool-ext-win',
 	'agent',
 	'arc',
-	'azdata',
-	'import',
-	'profiler',
-	'admin-pack',
-	'dacpac',
-	'schema-compare',
-	'cms',
-	'query-history',
-	'liveshare',
-	'sql-database-projects',
-	'machine-learning',
-	'sql-assessment',
 	'asde-deployment',
-	'sql-migration'
+	'azdata',
+	'cms',
+	'dacpac',
+	'data-workspace',
+	'import',
+	'kusto',
+	'liveshare',
+	'machine-learning',
+	'profiler',
+	'query-history',
+	'schema-compare',
+	'sql-assessment',
+	'sql-database-projects',
+	'sql-migration',
 ];
 
 // extensions that require a rebuild since they have native parts
@@ -307,7 +309,6 @@ export function packageLocalExtensionsStream(forWeb: boolean): Stream {
 				const extensionName = path.basename(extensionPath);
 				return { name: extensionName, path: extensionPath, manifestPath: absoluteManifestPath };
 			})
-			.filter(({ name }) => (name === 'vscode-web-playground' ? forWeb : true)) // package vscode-web-playground only for web
 			.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
 			.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
 			.filter(({ name }) => externalExtensions.indexOf(name) === -1) // {{SQL CARBON EDIT}} Remove external Extensions with separate package

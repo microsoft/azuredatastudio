@@ -139,7 +139,8 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.validators.push(validator);
 				},
 				container: this.wizard.wizardObject,
-				inputComponents: this.wizard.inputComponents
+				inputComponents: this.wizard.inputComponents,
+				toolsService: this.wizard.toolsService
 			});
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[{
@@ -175,11 +176,11 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		});
 	}
 
-	public onLeave(): void {
+	public async onLeave(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
-		setModelValues(this.inputComponents, this.wizard.model);
+		await setModelValues(this.inputComponents, this.wizard.model);
 		Object.assign(this.wizard.inputComponents, this.inputComponents);
 	}
 }

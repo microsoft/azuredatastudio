@@ -17,8 +17,8 @@
 		<!-- Builtin Extensions (running out of sources) -->
 		<meta id="vscode-workbench-builtin-extensions" data-settings="{{WORKBENCH_BUILTIN_EXTENSIONS}}">
 
-		<!-- Workarounds/Hacks (remote user data uri) -->
-		<meta id="vscode-remote-user-data-uri" data-settings="{{REMOTE_USER_DATA_URI}}">
+		<!-- Workbench Credentials (running out of sources) -->
+		<meta id="vscode-workbench-credentials" data-settings="{{WORKBENCH_CREDENTIALS}}">
 
 		<!-- Workbench Icon/Manifest/CSS -->
 		<link rel="icon" href="/favicon.ico" type="image/x-icon" />
@@ -30,10 +30,10 @@
 
 	<!-- Startup (do not modify order of script tags!) -->
 	<script>
-		// NOTE: Changes to inline scripts require update of content security policy
 		self.require = {
 			baseUrl: `${window.location.origin}/static/out`,
 			recordStats: true,
+			createTrustedScriptURL: value => value,
 			paths: {
 				'vscode-textmate': `${window.location.origin}/static/remote/web/node_modules/vscode-textmate/release/main`,
 				'vscode-oniguruma': `${window.location.origin}/static/remote/web/node_modules/vscode-oniguruma/release/main`,
@@ -83,6 +83,8 @@
 				'ansi_up': `${window.location.origin}/static/remote/web/node_modules/ansi_up/ansi_up.js`,
 				'iconv-lite-umd': `${window.location.origin}/static/remote/web/node_modules/iconv-lite-umd/lib/iconv-lite-umd.js`,
 				'jschardet': `${window.location.origin}/static/remote/web/node_modules/jschardet/dist/jschardet.min.js`,
+				'turndown': `${window.location.origin}/static/remote/web/node_modules/turndown/lib/turndown.browser.umd.js`,
+				'mark.js': `${window.location.origin}/static/remote/web/node_modules/mark.js/dist/mark.min.js`
 			}
 		};
 	</script>
@@ -101,7 +103,6 @@
 		globalThis.MonacoPerformanceMarks.push('willLoadWorkbenchMain', Date.now());
 	</script>
 	<script>
-		// NOTE: Changes to inline scripts require update of content security policy
 		require(['vs/code/browser/workbench/workbench'], function() {});
 	</script>
 </html>

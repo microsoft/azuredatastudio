@@ -23,7 +23,6 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IGridDataProvider, getResultsString } from 'sql/workbench/services/query/common/gridDataProvider';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
-import { find } from 'vs/base/common/arrays';
 import { IRange, Range } from 'vs/editor/common/core/range';
 import { BatchSummary, IQueryMessage, ResultSetSummary, QueryExecuteSubsetParams, CompleteBatchSummary, IResultMessage, ResultSetSubset, BatchStartSummary } from './query';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
@@ -323,7 +322,7 @@ export default class QueryRunner extends Disposable {
 			}
 			// handle getting queryPlanxml if we need too
 			// check if this result has show plan, this needs work, it won't work for any other provider
-			let hasShowPlan = !!find(resultSet.columnInfo, e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+			let hasShowPlan = !!resultSet.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 			if (hasShowPlan && resultSet.rowCount > 0) {
 				this._isQueryPlan = true;
 

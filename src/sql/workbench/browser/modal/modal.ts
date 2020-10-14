@@ -23,7 +23,6 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
-import { find, firstIndex } from 'vs/base/common/arrays';
 import { IThemable } from 'vs/base/common/styler';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
@@ -171,12 +170,12 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Build and render the modal, will call {@link Modal#renderBody}
 	 */
 	public render() {
-		let builderClass = 'modal fade';
+		let builderClass = '.modal.fade';
 		if (this._modalOptions.isFlyout) {
-			builderClass += ' flyout-dialog';
+			builderClass += '.flyout-dialog';
 		}
 
-		this._bodyContainer = DOM.$(`.${builderClass}`, { role: 'dialog', 'aria-label': this._title });
+		this._bodyContainer = DOM.$(`${builderClass}`, { role: 'dialog', 'aria-label': this._title });
 		const top = this.layoutService.offset?.top ?? 0;
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
@@ -392,12 +391,15 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Hides the modal and removes key listeners
 	 */
-	protected hide() {
+	protected hide(reason?: string) {
 		this._modalShowingContext.get()!.pop();
 		this._bodyContainer!.remove();
 		this.disposableStore.clear();
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogClosed)
-			.withAdditionalProperties({ name: this._name })
+			.withAdditionalProperties({
+				name: this._name,
+				reason: reason
+			})
 			.send();
 		this.restoreKeyboardFocus();
 	}
@@ -433,7 +435,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * @param onSelect The callback to call when the button is selected
 	 */
 	protected findFooterButton(label: string): Button | undefined {
-		return find(this._footerButtons, e => {
+		return this._footerButtons.find(e => {
 			try {
 				return e && e.element.innerText === label;
 			} catch {
@@ -447,7 +449,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	* @param label Label on the button
 	*/
 	protected removeFooterButton(label: string): void {
-		let buttonIndex = firstIndex(this._footerButtons, e => {
+		let buttonIndex = this._footerButtons.findIndex(e => {
 			return e && e.element && e.element.innerText === label;
 		});
 		if (buttonIndex > -1 && buttonIndex < this._footerButtons.length) {

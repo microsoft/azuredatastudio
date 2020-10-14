@@ -28,11 +28,11 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { listActiveSelectionBackground, listActiveSelectionForeground } from 'vs/platform/theme/common/colorRegistry';
 import { ICssStyleCollector, IColorTheme, IThemeService, registerThemingParticipant, Themable } from 'vs/platform/theme/common/themeService';
 import { DraggedEditorGroupIdentifier, DraggedEditorIdentifier, fillResourceDataTransfers, LocalSelectionTransfer } from 'vs/workbench/browser/dnd';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { BreadcrumbsConfig } from 'vs/workbench/browser/parts/editor/breadcrumbs';
 import { BreadcrumbsControl, IBreadcrumbsControlOptions } from 'vs/workbench/browser/parts/editor/breadcrumbsControl';
 import { IEditorGroupsAccessor, IEditorGroupView } from 'vs/workbench/browser/parts/editor/editor';
-import { EditorCommandsContextActionRunner, IEditorCommandsContext, IEditorInput, toResource, IEditorPartOptions, SideBySideEditor, EditorPinnedContext, EditorStickyContext } from 'vs/workbench/common/editor';
+import { EditorCommandsContextActionRunner, IEditorCommandsContext, IEditorInput, toResource, IEditorPartOptions, SideBySideEditor, ActiveEditorPinnedContext, ActiveEditorStickyContext } from 'vs/workbench/common/editor';
 import { ResourceContextKey } from 'vs/workbench/common/resources';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
@@ -87,8 +87,8 @@ export abstract class TitleControl extends Themable {
 		super(themeService);
 
 		this.resourceContext = this._register(instantiationService.createInstance(ResourceContextKey));
-		this.editorPinnedContext = EditorPinnedContext.bindTo(contextKeyService);
-		this.editorStickyContext = EditorStickyContext.bindTo(contextKeyService);
+		this.editorPinnedContext = ActiveEditorPinnedContext.bindTo(contextKeyService);
+		this.editorStickyContext = ActiveEditorStickyContext.bindTo(contextKeyService);
 
 		this.contextMenu = this._register(this.menuService.createMenu(MenuId.EditorTitleContext, this.contextKeyService));
 
@@ -138,7 +138,7 @@ export abstract class TitleControl extends Themable {
 		this.editorActionsToolbar = this._register(new ToolBar(container, this.contextMenuService, {
 			actionViewItemProvider: action => this.actionViewItemProvider(action),
 			orientation: ActionsOrientation.HORIZONTAL,
-			ariaLabel: localize('araLabelEditorActions', "Editor actions"),
+			ariaLabel: localize('ariaLabelEditorActions', "Editor actions"),
 			getKeyBinding: action => this.getKeybinding(action),
 			actionRunner: this._register(new EditorCommandsContextActionRunner(context)),
 			anchorAlignmentProvider: () => AnchorAlignment.RIGHT
@@ -164,7 +164,7 @@ export abstract class TitleControl extends Themable {
 		const activeEditorPane = this.group.activeEditorPane;
 
 		// Check Active Editor
-		if (activeEditorPane instanceof BaseEditor) {
+		if (activeEditorPane instanceof EditorPane) {
 			const result = activeEditorPane.getActionViewItem(action);
 
 			if (result) {
@@ -237,7 +237,7 @@ export abstract class TitleControl extends Themable {
 
 		// Editor actions require the editor control to be there, so we retrieve it via service
 		const activeEditorPane = this.group.activeEditorPane;
-		if (activeEditorPane instanceof BaseEditor) {
+		if (activeEditorPane instanceof EditorPane) {
 			const codeEditor = getCodeEditor(activeEditorPane.getControl());
 			const scopedContextKeyService = codeEditor?.invokeWithinContext(accessor => accessor.get(IContextKeyService)) || this.contextKeyService;
 			const titleBarMenu = this.menuService.createMenu(MenuId.EditorTitle, scopedContextKeyService);

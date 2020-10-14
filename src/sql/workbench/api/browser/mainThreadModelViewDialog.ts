@@ -17,6 +17,8 @@ import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/wo
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { assign } from 'vs/base/common/objects';
+import { TelemetryView, TelemetryAction } from 'sql/platform/telemetry/common/telemetryKeys';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
 export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape {
@@ -33,7 +35,8 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	constructor(
 		context: IExtHostContext,
 		@IInstantiationService private _instatiationService: IInstantiationService,
-		@IEditorService private _editorService: IEditorService
+		@IEditorService private _editorService: IEditorService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModelViewDialog);
 		this._dialogService = new CustomDialogService(_instatiationService);
@@ -43,7 +46,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		throw new Error('Method not implemented.');
 	}
 
-	public $openEditor(handle: number, modelViewId: string, title: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void> {
+	public $openEditor(handle: number, modelViewId: string, title: string, name?: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void> {
 		return new Promise<void>((resolve, reject) => {
 			let saveHandler: ModeViewSaveHandler = options && options.supportsSave ? (h) => this.handleSave(h) : undefined;
 			let model = new ModelViewInputModel(modelViewId, handle, saveHandler);
@@ -52,7 +55,9 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 				preserveFocus: true,
 				pinned: true
 			};
-
+			this._telemetryService.createActionEvent(TelemetryView.Shell, TelemetryAction.ModelViewDashboardOpened)
+				.withAdditionalProperties({ name: name })
+				.send();
 			this._editorService.openEditor(input, editorOptions, position as any).then((editor) => {
 				this._editorInputModels.set(handle, model);
 				resolve();
@@ -83,7 +88,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	public $setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void> {
 		let dialog = this._dialogs.get(handle);
 		if (!dialog) {
-			dialog = new Dialog(details.title);
+			dialog = new Dialog(details.title, details.width);
 			let okButton = this.getButton(details.okButton);
 			let cancelButton = this.getButton(details.cancelButton);
 			dialog.okButton = okButton;
@@ -91,10 +96,11 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			dialog.onValidityChanged(valid => this._proxy.$onPanelValidityChanged(handle, valid));
 			dialog.registerCloseValidator(() => this.validateDialogClose(handle));
 			this._dialogs.set(handle, dialog);
+		} else {
+			dialog.title = details.title;
+			dialog.width = details.width;
 		}
 
-		dialog.title = details.title;
-		dialog.width = details.width;
 		if (details.content && typeof details.content !== 'string') {
 			dialog.content = details.content.map(tabHandle => this.getTab(tabHandle));
 		} else {
@@ -165,13 +171,15 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	public $setWizardDetails(handle: number, details: IModelViewWizardDetails): Thenable<void> {
 		let wizard = this._wizards.get(handle);
 		if (!wizard) {
-			wizard = new Wizard(details.title);
+			wizard = new Wizard(
+				details.title,
+				details.name || 'WizardPage',
+				this.getButton(details.doneButton),
+				this.getButton(details.cancelButton),
+				this.getButton(details.nextButton),
+				this.getButton(details.backButton),
+				this.getButton(details.generateScriptButton));
 			wizard.width = details.width;
-			wizard.backButton = this.getButton(details.backButton);
-			wizard.cancelButton = this.getButton(details.cancelButton);
-			wizard.generateScriptButton = this.getButton(details.generateScriptButton);
-			wizard.doneButton = this.getButton(details.doneButton);
-			wizard.nextButton = this.getButton(details.nextButton);
 			wizard.onPageChanged(info => this._proxy.$onWizardPageChanged(handle, info));
 			wizard.onPageAdded(() => this.handleWizardPageAddedOrRemoved(handle));
 			wizard.onPageRemoved(() => this.handleWizardPageAddedOrRemoved(handle));
@@ -211,8 +219,8 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	public $setWizardPage(wizardHandle: number, pageIndex: number): Thenable<void> {
 		let wizard = this.getWizard(wizardHandle);
-		wizard.setCurrentPage(pageIndex);
-		return Promise.resolve();
+		const modal = this._dialogService.getWizardModal(wizard);
+		return modal.showPage(pageIndex);
 	}
 
 	public $openWizard(handle: number): Thenable<void> {

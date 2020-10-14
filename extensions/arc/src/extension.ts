@@ -3,15 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as arc from 'arc';
+import * as rd from 'resource-deployment';
 import * as vscode from 'vscode';
-import * as loc from './localizedConstants';
+import { arcApi } from './common/api';
 import { IconPathHelper, refreshActionId } from './constants';
+import * as loc from './localizedConstants';
+import { ArcControllersOptionsSourceProvider } from './providers/arcControllersOptionsSourceProvider';
+import { ConnectToControllerDialog } from './ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from './ui/tree/azureArcTreeDataProvider';
 import { ControllerTreeNode } from './ui/tree/controllerTreeNode';
 import { TreeNode } from './ui/tree/treeNode';
-import { ConnectToControllerDialog } from './ui/dialogs/connectControllerDialog';
 
-export async function activate(context: vscode.ExtensionContext): Promise<void> {
+export async function activate(context: vscode.ExtensionContext): Promise<arc.IExtension> {
 	IconPathHelper.setExtensionContext(context);
 
 	await vscode.commands.executeCommand('setContext', 'arc.loaded', false);
@@ -24,6 +28,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	});
 
 	vscode.commands.registerCommand('arc.connectToController', async () => {
+		const nodes = await treeDataProvider.getChildren();
+		if (nodes.length > 0) {
+			const response = await vscode.window.showErrorMessage(loc.onlyOneControllerSupported, loc.yes, loc.no);
+			if (response !== loc.yes) {
+				return;
+			}
+			await treeDataProvider.removeController(nodes[0] as ControllerTreeNode);
+		}
 		const dialog = new ConnectToControllerDialog(treeDataProvider);
 		dialog.showDialog();
 		const model = await dialog.waitForClose();
@@ -44,19 +56,21 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		await treeNode.openDashboard().catch(err => vscode.window.showErrorMessage(loc.openDashboardFailed(err)));
 	});
 
-	await checkArcDeploymentExtension();
+	vscode.commands.registerCommand('arc.editConnection', async (treeNode: ControllerTreeNode) => {
+		const dialog = new ConnectToControllerDialog(treeDataProvider);
+		dialog.showDialog(treeNode.model.info, await treeDataProvider.getPassword(treeNode.model.info));
+		const model = await dialog.waitForClose();
+		if (model) {
+			await treeDataProvider.addOrUpdateController(model.controllerModel, model.password, true);
+		}
+	});
+
+	// register option sources
+	const rdApi = <rd.IExtension>vscode.extensions.getExtension(rd.extension.name)?.exports;
+	rdApi.registerOptionsSourceProvider(new ArcControllersOptionsSourceProvider(treeDataProvider));
+
+	return arcApi(treeDataProvider);
 }
 
 export function deactivate(): void {
-}
-
-async function checkArcDeploymentExtension(): Promise<void> {
-	const version = vscode.extensions.getExtension('Microsoft.arcdeployment')?.packageJSON.version;
-	if (version && version !== '0.3.2') {
-		// If we have an older verison of the deployment extension installed then uninstall it now since it's replaced
-		// by this extension. (the latest version of the Arc Deployment extension will uninstall itself so don't do
-		// anything here if that's already updated)
-		await vscode.commands.executeCommand('workbench.extensions.uninstallExtension', 'Microsoft.arcdeployment');
-		vscode.window.showInformationMessage(loc.arcDeploymentDeprecation);
-	}
 }

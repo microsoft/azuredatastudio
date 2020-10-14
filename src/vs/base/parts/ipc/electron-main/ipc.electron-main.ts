@@ -18,7 +18,7 @@ interface IIPCEvent {
 function createScopedOnMessageEvent(senderId: number, eventName: string): Event<VSBuffer | null> {
 	const onMessage = Event.fromNodeEventEmitter<IIPCEvent>(ipcMain, eventName, (event, message) => ({ event, message }));
 	const onMessageFromSender = Event.filter(onMessage, ({ event }) => event.sender.id === senderId);
-	// {{SQL CARBON EDIT}} cast message as null since typescript isn't saying its always null
+	// {{SQL CARBON EDIT}} strict-null-checks
 	return Event.map(onMessageFromSender, ({ message }) => message ? VSBuffer.wrap(message) : message as null);
 }
 

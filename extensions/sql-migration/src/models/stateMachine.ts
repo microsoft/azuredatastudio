@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as mssql from '../../../mssql';
 import { SKURecommendations } from './externalContract';
 
 export enum State {
@@ -42,8 +43,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _currentState: State;
 	private _gatheringInformationError: string | undefined;
 	private _skuRecommendations: SKURecommendations | undefined;
+	private _assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined;
 
-	constructor(private readonly _sourceConnection: azdata.connection.Connection) {
+	constructor(
+		private readonly _extensionContext: vscode.ExtensionContext,
+		private readonly _sourceConnection: azdata.connection.Connection,
+		public readonly migrationService: mssql.ISqlMigrationService
+	) {
 		this._currentState = State.INIT;
 	}
 
@@ -61,6 +67,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._currentState = newState;
 
 		this._stateChangeEventEmitter.fire({ oldState, newState: this.currentState });
+	}
+
+	public get assessmentResults(): mssql.SqlMigrationAssessmentResultItem[] | undefined {
+		return this._assessmentResults;
+	}
+
+	public set assessmentResults(assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined) {
+		this._assessmentResults = assessmentResults;
 	}
 
 	public get gatheringInformationError(): string | undefined {
@@ -85,5 +99,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	dispose() {
 		this._stateChangeEventEmitter.dispose();
+	}
+
+	public getExtensionPath(): string {
+		return this._extensionContext.extensionPath;
 	}
 }

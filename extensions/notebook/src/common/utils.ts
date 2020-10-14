@@ -3,13 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as bdc from 'bdc';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
-import { notebookLanguages } from './constants';
+import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, INTEGRATED_AUTH, KNOX_ENDPOINT_PORT, KNOX_ENDPOINT_SERVER } from './constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -114,13 +115,6 @@ interface RawEndpoint {
 	port?: number;
 }
 
-export interface IEndpoint {
-	serviceName: string;
-	description: string;
-	endpoint: string;
-	protocol: string;
-}
-
 export function getOSPlatformId(): string {
 	let platformId = undefined;
 	switch (process.platform) {
@@ -144,22 +138,31 @@ export function getOSPlatformId(): string {
  * @returns 1 if the first version is greater, -1 if it's less, and 0 otherwise.
  */
 export function comparePackageVersions(first: string, second: string): number {
-	let firstVersion = first.split('.').map(numStr => Number.parseInt(numStr));
-	let secondVersion = second.split('.').map(numStr => Number.parseInt(numStr));
+	let firstVersion = first.split('.');
+	let secondVersion = second.split('.');
 
 	// If versions have different lengths, then append zeroes to the shorter one
 	if (firstVersion.length > secondVersion.length) {
 		let diff = firstVersion.length - secondVersion.length;
-		secondVersion = secondVersion.concat(new Array(diff).fill(0));
+		secondVersion = secondVersion.concat(new Array(diff).fill('0'));
 	} else if (secondVersion.length > firstVersion.length) {
 		let diff = secondVersion.length - firstVersion.length;
-		firstVersion = firstVersion.concat(new Array(diff).fill(0));
+		firstVersion = firstVersion.concat(new Array(diff).fill('0'));
 	}
 
 	for (let i = 0; i < firstVersion.length; ++i) {
-		if (firstVersion[i] > secondVersion[i]) {
+		let firstVersionNum: string | number = Number(firstVersion[i]);
+		let secondVersionNum: string | number = Number(secondVersion[i]);
+
+		// Fallback to string comparison if either value isn't a number
+		if (isNaN(firstVersionNum) || isNaN(secondVersionNum)) {
+			firstVersionNum = firstVersion[i];
+			secondVersionNum = secondVersion[i];
+		}
+
+		if (firstVersionNum > secondVersionNum) {
 			return 1;
-		} else if (firstVersion[i] < secondVersion[i]) {
+		} else if (firstVersionNum < secondVersionNum) {
 			return -1;
 		}
 	}
@@ -184,15 +187,15 @@ export function isEditorTitleFree(title: string): boolean {
 	return !hasTextDoc && !hasNotebookDoc;
 }
 
-export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] {
+export function getClusterEndpoints(serverInfo: azdata.ServerInfo): bdc.IEndpointModel[] {
 	let endpoints: RawEndpoint[] = serverInfo.options['clusterEndpoints'];
 	if (!endpoints || endpoints.length === 0) { return []; }
 
 	return endpoints.map(e => {
 		// If endpoint is missing, we're on CTP bits. All endpoints from the CTP serverInfo should be treated as HTTPS
 		let endpoint = e.endpoint ? e.endpoint : `https://${e.ipAddress}:${e.port}`;
-		let updatedEndpoint: IEndpoint = {
-			serviceName: e.serviceName,
+		let updatedEndpoint: bdc.IEndpointModel = {
+			name: e.serviceName,
 			description: e.description,
 			endpoint: endpoint,
 			protocol: e.protocol
@@ -200,7 +203,6 @@ export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] 
 		return updatedEndpoint;
 	});
 }
-
 
 export type HostAndIp = { host: string, port: string };
 
@@ -218,6 +220,26 @@ export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
 		host: authority,
 		port: undefined
 	};
+}
+
+export function isIntegratedAuth(connection: azdata.IConnectionProfile): boolean {
+	return connection.options[AUTHTYPE] && connection.options[AUTHTYPE].toLowerCase() === INTEGRATED_AUTH.toLowerCase();
+}
+
+export function isSparkKernel(kernelName: string): boolean {
+	return kernelName && kernelName.toLowerCase().indexOf('spark') > -1;
+}
+
+export function setHostAndPort(delimeter: string, connection: azdata.IConnectionProfile): void {
+	let originalHost = connection.options[KNOX_ENDPOINT_SERVER];
+	if (!originalHost) {
+		return;
+	}
+	let index = originalHost.indexOf(delimeter);
+	if (index > -1) {
+		connection.options[KNOX_ENDPOINT_SERVER] = originalHost.slice(0, index);
+		connection.options[KNOX_ENDPOINT_PORT] = originalHost.slice(index + 1);
+	}
 }
 
 export async function exists(path: string): Promise<boolean> {
@@ -322,4 +344,48 @@ export async function getRandomToken(size: number = 24): Promise<string> {
 			resolve(token);
 		});
 	});
+}
+
+export function isBookItemPinned(notebookPath: string): boolean {
+	let pinnedNotebooks: IBookNotebook[] = getPinnedNotebooks();
+	if (pinnedNotebooks?.find(x => x.notebookPath === notebookPath)) {
+		return true;
+	}
+	return false;
+}
+
+export function getPinnedNotebooks(): IBookNotebook[] {
+	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
+	let pinnedNotebooks: [] = config.get(pinnedBooksConfigKey);
+	let updateFormat: boolean = false;
+	const pinnedBookDirectories = pinnedNotebooks.map(elem => {
+		if (typeof (elem) === 'string') {
+			updateFormat = true;
+			return { notebookPath: elem, bookPath: '' };
+		} else {
+			return elem as IBookNotebook;
+		}
+	});
+	if (updateFormat) {
+		//Need to modify the format of how pinnedNotebooks are stored for users that used the September release version.
+		setPinnedBookPathsInConfig(pinnedBookDirectories);
+	}
+	return pinnedBookDirectories;
+}
+
+function hasWorkspaceFolders(): boolean {
+	let workspaceFolders = vscode.workspace.workspaceFolders;
+	return workspaceFolders && workspaceFolders.length > 0;
+}
+
+export function setPinnedBookPathsInConfig(pinnedNotebookPaths: IBookNotebook[]) {
+	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
+	let storeInWorspace: boolean = hasWorkspaceFolders();
+
+	config.update(pinnedBooksConfigKey, pinnedNotebookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
+}
+
+export interface IBookNotebook {
+	bookPath?: string;
+	notebookPath: string;
 }

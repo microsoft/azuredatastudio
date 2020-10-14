@@ -24,16 +24,16 @@ import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { localize } from 'vs/nls';
 
 export class DialogPane extends Disposable implements IThemable {
-	private _tabbedPanel: TabbedPanel;
+	private _tabbedPanel: TabbedPanel | undefined;
 	private _moduleRefs: NgModuleRef<{}>[] = [];
 
 	// Validation
 	private _modelViewValidityMap = new Map<string, boolean>();
 
-	private _body: HTMLElement;
+	private _body!: HTMLElement;
 	private _selectedTabIndex: number = 0; //TODO: can be an option
 	private _onLayoutChange = new Emitter<LayoutRequestParams>();
-	private _selectedTabContent: string;
+	private _selectedTabContent: string = '';
 	public pageNumber?: number;
 
 	constructor(
@@ -68,11 +68,11 @@ export class DialogPane extends Disposable implements IThemable {
 				tabContainer.style.display = 'none';
 				this._body.appendChild(tabContainer);
 				this.initializeModelViewContainer(tabContainer, tab.content, tab);
-				this._tabbedPanel.onTabChange(e => {
-					tabContainer.style.height = (this.getTabDimension().height - this._tabbedPanel.headersize) + 'px';
+				this._tabbedPanel!.onTabChange(e => {
+					tabContainer.style.height = (this.getTabDimension().height - this._tabbedPanel!.headersize) + 'px';
 					this._onLayoutChange.fire({ modelViewId: tab.content });
 				});
-				this._tabbedPanel.pushTab({
+				this._tabbedPanel!.pushTab({
 					title: tab.title,
 					identifier: 'dialogPane.' + this.title + '.' + tabIndex,
 					view: {
@@ -114,7 +114,7 @@ export class DialogPane extends Disposable implements IThemable {
 	 * Bootstrap angular for the dialog's model view controller with the given model view ID
 	 */
 	private initializeModelViewContainer(bodyContainer: HTMLElement, modelViewId: string, tab?: DialogTab) {
-		this._instantiationService.invokeFunction(bootstrapAngular,
+		this._instantiationService.invokeFunction<void, any[]>(bootstrapAngular,
 			DialogModule,
 			bodyContainer,
 			'dialog-modelview-container',
@@ -130,7 +130,7 @@ export class DialogPane extends Disposable implements IThemable {
 				dialogPane: this
 			} as DialogComponentParams,
 			undefined,
-			(moduleRef) => {
+			(moduleRef: NgModuleRef<{}>) => {
 				return this._moduleRefs.push(moduleRef);
 			});
 	}
@@ -155,8 +155,8 @@ export class DialogPane extends Disposable implements IThemable {
 	 * Called by the theme registry on theme change to style the component
 	 */
 	public style(styles: IModalDialogStyles): void {
-		this._body.style.backgroundColor = styles.dialogBodyBackground ? styles.dialogBodyBackground.toString() : undefined;
-		this._body.style.color = styles.dialogForeground ? styles.dialogForeground.toString() : undefined;
+		this._body.style.backgroundColor = styles.dialogBodyBackground ? styles.dialogBodyBackground.toString() : '';
+		this._body.style.color = styles.dialogForeground ? styles.dialogForeground.toString() : '';
 	}
 
 	private _setValidity(modelViewId: string, valid: boolean) {

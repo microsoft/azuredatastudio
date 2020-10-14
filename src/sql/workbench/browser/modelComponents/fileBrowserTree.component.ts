@@ -22,7 +22,7 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 		<div #fileBrowserTree [style.width]="getWidth()" [style.height]="getHeight()"></div>
 	`
 })
-export default class FileBrowserTreeComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class FileBrowserTreeComponent extends ComponentBase<azdata.FileBrowserTreeProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _treeView: FileBrowserTreeView;
@@ -124,10 +124,10 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 
 	// CSS-bound properties
 	public get ownerUri(): string {
-		return this.getPropertyOrDefault<azdata.FileBrowserTreeProperties, string>((props) => props.ownerUri, '');
+		return this.getPropertyOrDefault<string>((props) => props.ownerUri, '');
 	}
 
 	public set ownerUri(newValue: string) {
-		this.setPropertyFromUI<azdata.FileBrowserTreeProperties, string>((props, value) => props.ownerUri = value, newValue);
+		this.setPropertyFromUI<string>((props, value) => props.ownerUri = value, newValue);
 	}
 }

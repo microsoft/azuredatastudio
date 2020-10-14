@@ -11,7 +11,7 @@ import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyt
 import * as utils from '../../common/utils';
 import { ManagePackagesDialog } from './managePackagesDialog';
 import CodeAdapter from '../../prompts/adapter';
-import { IQuestion, confirm } from '../../prompts/question';
+import { IQuestion, QuestionTypes } from '../../prompts/question';
 import { IconPathHelper } from '../../common/iconHelper';
 
 const localize = nls.loadMessageBundle();
@@ -165,21 +165,26 @@ export class InstalledPackagesTab {
 	 */
 	public static async getLocationComponent(view: azdata.ModelView, dialog: ManagePackagesDialog): Promise<azdata.Component> {
 		const locations = await dialog.model.getLocations();
+		let location: string;
 		let component: azdata.Component;
 		if (locations && locations.length === 1) {
 			component = view.modelBuilder.text().withProperties({
 				value: locations[0].displayName
 			}).component();
-		} else if (locations) {
+			location = locations[0].name;
+		} else if (locations && locations.length > 1) {
 			let dropdownValues = locations.map(x => {
 				return {
 					name: x.name,
 					displayName: x.displayName
 				};
 			});
+			const currentLocation = await dialog.model.getCurrentLocation();
+			const selectedLocation = dropdownValues.find(x => x.name === currentLocation);
+			location = currentLocation || locations[0].name;
 			let locationDropDown = view.modelBuilder.dropDown().withProperties({
 				values: dropdownValues,
-				value: dropdownValues[0]
+				value: selectedLocation || dropdownValues[0]
 			}).component();
 
 			locationDropDown.onValueChanged(async () => {
@@ -196,8 +201,8 @@ export class InstalledPackagesTab {
 			component = view.modelBuilder.text().withProperties({
 			}).component();
 		}
-		if (locations && locations.length > 0) {
-			dialog.changeLocation(locations[0].name);
+		if (location) {
+			dialog.changeLocation(location);
 		}
 		return component;
 	}
@@ -250,7 +255,7 @@ export class InstalledPackagesTab {
 
 		this.uninstallPackageButton.updateProperties({ enabled: false });
 		let doUninstall = await this.prompter.promptSingle<boolean>(<IQuestion>{
-			type: confirm,
+			type: QuestionTypes.confirm,
 			message: localize('managePackages.confirmUninstall', "Are you sure you want to uninstall the specified packages?"),
 			default: false
 		});

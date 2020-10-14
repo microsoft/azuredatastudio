@@ -13,7 +13,6 @@ import { IConnectionProfile, ProfileMatcher } from 'sql/platform/connection/comm
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { find } from 'vs/base/common/arrays';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -148,7 +147,7 @@ export class ConnectionStore {
 	public getRecentlyUsedConnections(providers?: string[]): ConnectionProfile[] {
 		let mru = this.mru.slice();
 		if (providers && providers.length > 0) {
-			mru = mru.filter(c => find(providers, x => x === c.providerName));
+			mru = mru.filter(c => providers.find(x => x === c.providerName));
 		}
 		return this.convertConfigValuesToConnectionProfiles(mru);
 	}
@@ -275,7 +274,7 @@ export class ConnectionStore {
 		if (!withoutConnections) {
 			profilesInConfiguration = this.connectionConfig.getConnections(true);
 			if (providers && providers.length > 0) {
-				profilesInConfiguration = profilesInConfiguration.filter(x => find(providers, p => p === x.providerName));
+				profilesInConfiguration = profilesInConfiguration.filter(x => providers.find(p => p === x.providerName));
 			}
 		}
 		const groups = this.connectionConfig.getAllGroups();
@@ -289,7 +288,7 @@ export class ConnectionStore {
 		if (children) {
 			children.map(group => {
 				let connectionGroup = new ConnectionProfileGroup(group.name, parent, group.id, group.color, group.description);
-				this.addGroupFullNameToMap(group.id, connectionGroup.fullName);
+				this.addGroupFullNameToMap(group.id!, connectionGroup.fullName);
 				if (connections) {
 					let connectionsForGroup = connections.filter(conn => conn.groupId === connectionGroup.id);
 					let conns: ConnectionProfile[] = [];
@@ -313,7 +312,7 @@ export class ConnectionStore {
 
 	public getGroupFromId(groupId: string): IConnectionProfileGroup | undefined {
 		const groups = this.connectionConfig.getAllGroups();
-		return find(groups, group => group.id === groupId);
+		return groups.find(group => group.id === groupId);
 	}
 
 	private getMaxRecentConnectionsCount(): number {

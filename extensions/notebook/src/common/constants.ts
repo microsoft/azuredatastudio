@@ -10,6 +10,8 @@ const localize = nls.loadMessageBundle();
 // CONFIG VALUES ///////////////////////////////////////////////////////////
 export const extensionOutputChannelName = 'Notebooks';
 
+export const notebookCommandNew = 'notebook.command.new';
+
 // JUPYTER CONFIG //////////////////////////////////////////////////////////
 export const pythonBundleVersion = '0.0.1';
 export const pythonVersion = '3.6.6';
@@ -17,6 +19,7 @@ export const pythonPathConfigKey = 'pythonPath';
 export const existingPythonConfigKey = 'useExistingPython';
 export const notebookConfigKey = 'notebook';
 export const trustedBooksConfigKey = 'trustedBooks';
+export const pinnedBooksConfigKey = 'pinnedNotebooks';
 export const maxBookSearchDepth = 'maxBookSearchDepth';
 export const remoteBookDownloadTimeout = 'remoteBookDownloadTimeout';
 export const collapseBookItems = 'collapseBookItems';
@@ -43,10 +46,13 @@ export const sparkScalaDisplayName = 'Spark | Scala';
 export const sparkRDisplayName = 'Spark | R';
 export const powershellDisplayName = 'PowerShell';
 export const allKernelsName = 'All Kernels';
+
 export const BOOKS_VIEWID = 'bookTreeView';
 export const PROVIDED_BOOKS_VIEWID = 'providedBooksView';
+export const PINNED_BOOKS_VIEWID = 'pinnedBooksView';
 
 export const visitedNotebooksMementoKey = 'notebooks.visited';
+export const pinnedNotebooksMementoKey = 'notebooks.pinned';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext'
@@ -63,13 +69,24 @@ export enum PythonPkgType {
 
 export enum NavigationProviders {
 	NotebooksNavigator = 'BookNavigator.Notebooks',
-	ProvidedBooksNavigator = 'BookNavigator.ProvidedBooks'
+	ProvidedBooksNavigator = 'BookNavigator.ProvidedBooks',
+	PinnedNotebooksNavigator = 'BookNavigator.PinnedNotebooks'
 }
 
 export const unsavedBooksContextKey = 'unsavedBooks';
+export const showPinnedBooksContextKey = 'showPinnedbooks';
 
 export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110625';
 export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2128152';
 export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110524';
 
 export const notebookLanguages = ['notebook', 'ipynb'];
+
+export const KNOX_ENDPOINT_SERVER = 'host';
+export const KNOX_ENDPOINT_PORT = 'knoxport';
+export const KNOX_ENDPOINT_GATEWAY = 'gateway';
+export const CONTROLLER_ENDPOINT = 'controller';
+export const SQL_PROVIDER = 'MSSQL';
+export const USER = 'user';
+export const AUTHTYPE = 'authenticationType';
+export const INTEGRATED_AUTH = 'integrated';

@@ -14,7 +14,6 @@ import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeServic
 import { IInsight, IPointDataSet, customMixin } from './interfaces';
 import { IInsightOptions, DataDirection, ChartType, LegendPosition, DataType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { values } from 'vs/base/common/collections';
-import { find } from 'vs/base/common/arrays';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
 const noneLineGraphs = [ChartType.Doughnut, ChartType.Pie];
@@ -43,12 +42,12 @@ const defaultOptions: IInsightOptions = {
 };
 
 export class Graph implements IInsight {
-	private _options: IInsightOptions;
+	private _options: IInsightOptions = { type: ChartType.Bar };
 	private canvas: HTMLCanvasElement;
-	private chartjs: chartjs;
-	private _data: IInsightData;
+	private chartjs?: chartjs;
+	private _data?: IInsightData;
 
-	private originalType: ChartType;
+	private originalType?: ChartType;
 
 	public static readonly types = [ChartType.Bar, ChartType.Doughnut, ChartType.HorizontalBar, ChartType.Line, ChartType.Pie, ChartType.Scatter, ChartType.TimeSeries];
 	public readonly types = Graph.types;
@@ -62,7 +61,9 @@ export class Graph implements IInsight {
 		this._theme = themeService.getColorTheme();
 		themeService.onDidColorThemeChange(e => {
 			this._theme = e;
-			this.data = this._data;
+			if (this._data) {
+				this.data = this._data;
+			}
 		});
 		this.options = mixin(options, defaultOptions, false);
 
@@ -84,8 +85,8 @@ export class Graph implements IInsight {
 
 	}
 
-	public getCanvasData(): string {
-		return this.chartjs.toBase64Image();
+	public getCanvasData(): string | undefined {
+		return this.chartjs && this.chartjs.toBase64Image();
 	}
 
 	public set data(data: IInsightData) {
@@ -155,7 +156,7 @@ export class Graph implements IInsight {
 		}
 
 		chartData = chartData.map((c, i) => {
-			return mixin(c, getColors(this.options.type, i, c.data.length), false);
+			return mixin(c, getColors(this.options.type, i, c.data!.length), false);
 		});
 
 		if (this.chartjs) {
@@ -166,7 +167,7 @@ export class Graph implements IInsight {
 			this.chartjs.options = this.transformOptions(this.options);
 			this.chartjs.update({ duration: 0 });
 		} else {
-			this.chartjs = new chartjs.Chart(this.canvas.getContext('2d'), {
+			this.chartjs = new chartjs.Chart(this.canvas.getContext('2d')!, {
 				data: {
 					// we don't want to include lables for timeSeries
 					labels: this.originalType === 'timeSeries' ? [] : labels,
@@ -183,16 +184,16 @@ export class Graph implements IInsight {
 		retval.maintainAspectRatio = false;
 
 		let foregroundColor = this._theme.getColor(colors.editorForeground);
-		let foreground = foregroundColor ? foregroundColor.toString() : null;
+		let foreground = foregroundColor ? foregroundColor.toString() : undefined;
 		let gridLinesColor = this._theme.getColor(editorLineNumbers);
-		let gridLines = gridLinesColor ? gridLinesColor.toString() : null;
+		let gridLines = gridLinesColor ? gridLinesColor.toString() : undefined;
 		let backgroundColor = this._theme.getColor(colors.editorBackground);
-		let background = backgroundColor ? backgroundColor.toString() : null;
+		let background = backgroundColor ? backgroundColor.toString() : undefined;
 
 		if (options) {
 			retval.scales = {};
 			// we only want to include axis if it is a axis based graph type
-			if (!find(noneLineGraphs, x => x === options.type as ChartType)) {
+			if (!noneLineGraphs.find(x => x === options.type as ChartType)) {
 				retval.scales.xAxes = [{
 					scaleLabel: {
 						fontColor: foreground,
@@ -215,7 +216,7 @@ export class Graph implements IInsight {
 					retval.scales = mixin(retval.scales, { xAxes: [{ ticks: { min: options.xAxisMin } }] }, true, customMixin);
 				}
 
-				retval.scales.yAxes = [{
+				retval.scales!.yAxes = [{
 					scaleLabel: {
 						fontColor: foreground,
 						labelString: options.yAxisLabel,
@@ -290,7 +291,9 @@ export class Graph implements IInsight {
 			this.options.dataType = DataType.Point;
 			this.options.dataDirection = DataDirection.Horizontal;
 		}
-		this.data = this._data;
+		if (this._data) {
+			this.data = this._data;
+		}
 	}
 
 	public get options(): IInsightOptions {

@@ -34,6 +34,8 @@ import TabbedPanelComponent from 'sql/workbench/browser/modelComponents/tabbedPa
 import SeparatorComponent from 'sql/workbench/browser/modelComponents/separator.component';
 import { ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
 import PropertiesContainerComponent from 'sql/workbench/browser/modelComponents/propertiesContainer.component';
+import ListViewComponent from 'sql/workbench/browser/modelComponents/listView.component';
+
 export const DIV_CONTAINER = 'div-container';
 registerComponentType(DIV_CONTAINER, ModelComponentTypes.DivContainer, DivContainer);
 
@@ -112,6 +114,9 @@ registerComponentType(HYPERLINK_COMPONENT, ModelComponentTypes.Hyperlink, Hyperl
 
 export const RADIOCARDGROUP_COMPONENT = 'radiocardgroup-component';
 registerComponentType(RADIOCARDGROUP_COMPONENT, ModelComponentTypes.RadioCardGroup, RadioCardGroup);
+
+export const LISTVIEW_COMPONENT = 'listView-component';
+registerComponentType(LISTVIEW_COMPONENT, ModelComponentTypes.ListView, ListViewComponent);
 
 export const TABBEDPANEL_COMPONENT = 'tabbedpanel-component';
 registerComponentType(TABBEDPANEL_COMPONENT, ModelComponentTypes.TabbedPanel, TabbedPanelComponent);

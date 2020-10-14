@@ -49,7 +49,7 @@ describe('Manage Packages', () => {
 		should.equal(model.defaultLocation, undefined, 'Default Location should be undefined');
 		should.equal(model.defaultProviderId, provider.providerId, 'Default Provider ID should be correct');
 		should.deepEqual(model.getPackageTypes(), [], 'Undefined location should return empty array when calling getPackageTypes');
-		should.deepEqual(model.getPackageTypes('location1'), [],'Valid location should return empty array when calling getPackageTypes');
+		should.deepEqual(model.getPackageTypes('location1'), [], 'Valid location should return empty array when calling getPackageTypes');
 		should.equal(model.getDefaultPackageType(), undefined, 'Default Package Type should be undefined');
 		should.deepEqual(await model.listPackages(), [], 'Packages list should be empty');
 		await should(model.installPackages([])).rejected();
@@ -138,6 +138,34 @@ describe('Manage Packages', () => {
 		should.equal(model.jupyterInstallation, jupyterServerInstallation);
 	});
 
+	it('CurrentLocation should return provider current location if specified', async function (): Promise<void> {
+		let testContext1 = createContext();
+		testContext1.provider.providerId = 'providerId1';
+		testContext1.provider.packageTarget = {
+			location: 'location1',
+			packageType: 'package-type1'
+		};
+
+		let testContext2 = createContext();
+		testContext2.provider.providerId = 'providerId2';
+		testContext2.provider.packageTarget = {
+			location: 'location1',
+			packageType: 'package-type2'
+		};
+		let providers = new Map<string, IPackageManageProvider>();
+		providers.set(testContext1.provider.providerId, createProvider(testContext1));
+		providers.set(testContext2.provider.providerId, createProvider(testContext2));
+
+		let model = new ManagePackagesDialogModel(jupyterServerInstallation, providers, undefined);
+
+		await model.init();
+		let actual = await model.getCurrentLocation();
+		should.equal(actual, 'location2');
+		model.changeLocation('location1');
+		actual = await model.getCurrentLocation();
+		should.equal(actual, 'location1');
+	});
+
 	it('Should create a cache for multiple providers successfully', async function (): Promise<void> {
 		let testContext1 = createContext();
 		testContext1.provider.providerId = 'providerId1';
@@ -168,8 +196,8 @@ describe('Manage Packages', () => {
 
 		await model.init();
 		should.equal(model.defaultLocation, testContext1.provider.packageTarget.location);
-		should.deepEqual(model.getPackageTypes('location1'), [{ providerId: 'providerId1', packageType: 'package-type1'}, {providerId: 'providerId2', packageType: 'package-type2'}]);
-		should.deepEqual(model.getPackageTypes('location2'), [{providerId: 'providerId3', packageType: 'package-type1'}]);
+		should.deepEqual(model.getPackageTypes('location1'), [{ providerId: 'providerId1', packageType: 'package-type1' }, { providerId: 'providerId2', packageType: 'package-type2' }]);
+		should.deepEqual(model.getPackageTypes('location2'), [{ providerId: 'providerId3', packageType: 'package-type1' }]);
 	});
 
 	it('Should not include a provider that can not be used in current context', async function (): Promise<void> {
@@ -196,7 +224,7 @@ describe('Manage Packages', () => {
 
 		await model.init();
 		should.equal(model.defaultLocation, testContext1.provider.packageTarget.location);
-		should.deepEqual(model.getPackageTypes('location1'), [{providerId: 'providerId1', packageType: 'package-type1'}]);
+		should.deepEqual(model.getPackageTypes('location1'), [{ providerId: 'providerId1', packageType: 'package-type1' }]);
 	});
 
 	it('Should set default location to one set in given options', async function (): Promise<void> {
@@ -226,13 +254,13 @@ describe('Manage Packages', () => {
 
 		await model.init();
 		should.equal(model.defaultLocation, testContext2.provider.packageTarget.location);
-		should.deepEqual(model.getPackageTypes('location1'), [{providerId: 'providerId1', packageType: 'package-type1'}]);
+		should.deepEqual(model.getPackageTypes('location1'), [{ providerId: 'providerId1', packageType: 'package-type1' }]);
 	});
 
 	it('changeProvider should change current provider successfully', async function (): Promise<void> {
 		let testContext1 = createContext();
 		testContext1.provider.providerId = 'providerId1';
-		testContext1.provider.getLocations = () => Promise.resolve([{displayName: 'location title 1', name: 'location1'}]);
+		testContext1.provider.getLocations = () => Promise.resolve([{ displayName: 'location title 1', name: 'location1' }]);
 		testContext1.provider.packageTarget = {
 			location: 'location1',
 			packageType: 'package-type1'
@@ -240,7 +268,7 @@ describe('Manage Packages', () => {
 
 		let testContext2 = createContext();
 		testContext2.provider.providerId = 'providerId2';
-		testContext2.provider.getLocations = () => Promise.resolve([{displayName: 'location title 2', name: 'location2'}]);
+		testContext2.provider.getLocations = () => Promise.resolve([{ displayName: 'location title 2', name: 'location2' }]);
 		testContext2.provider.packageTarget = {
 			location: 'location2',
 			packageType: 'package-type2'
@@ -254,7 +282,7 @@ describe('Manage Packages', () => {
 
 		await model.init();
 		model.changeProvider('providerId2');
-		should.deepEqual(await model.getLocations(), [{displayName: 'location title 2', name: 'location2'}]);
+		should.deepEqual(await model.getLocations(), [{ displayName: 'location title 2', name: 'location2' }]);
 	});
 
 	it('changeProvider should throw exception given invalid provider', async function (): Promise<void> {
@@ -320,7 +348,7 @@ describe('Manage Packages', () => {
 
 		let testContext2 = createContext();
 		testContext2.provider.providerId = 'providerId2';
-		testContext2.provider.getLocations = () => Promise.resolve([{displayName: 'location title 2', name: 'location2'}]);
+		testContext2.provider.getLocations = () => Promise.resolve([{ displayName: 'location title 2', name: 'location2' }]);
 		testContext2.provider.packageTarget = {
 			location: 'location2',
 			packageType: 'package-type2'
@@ -358,7 +386,7 @@ describe('Manage Packages', () => {
 		await should(model.installPackages(packages)).resolved();
 		await should(model.uninstallPackages(packages)).resolved();
 		await should(model.getPackageOverview('p1')).resolved();
-		await should(model.getLocations()).resolvedWith([{displayName: 'location title 2', name: 'location2'}]);
+		await should(model.getLocations()).resolvedWith([{ displayName: 'location title 2', name: 'location2' }]);
 	});
 
 	it('listPackages should return packages for current location', async function (): Promise<void> {
@@ -385,7 +413,7 @@ describe('Manage Packages', () => {
 		}];
 		testContext.provider.listPackages = (location) => {
 			if (location === 'location1') {
-			return Promise.resolve(packages1);
+				return Promise.resolve(packages1);
 			} else {
 				return Promise.resolve(packages2);
 			}
@@ -413,8 +441,9 @@ describe('Manage Packages', () => {
 					packageType: 'package-type'
 				},
 				canUseProvider: () => { return Promise.resolve(true); },
-				getLocations: () => { return Promise.resolve([{displayName: 'location-title', name: 'location'}]); },
-				installPackages:() =>  { return Promise.resolve(); },
+				getLocations: () => { return Promise.resolve([{ displayName: 'location-title', name: 'location' }, { displayName: 'location2-title', name: 'location2' }]); },
+				getCurrentLocation: () => { return Promise.resolve('location2'); },
+				installPackages: () => { return Promise.resolve(); },
 				uninstallPackages: (packages: IPackageDetails[]) => { return Promise.resolve(); },
 				listPackages: () => { return Promise.resolve([]); },
 				getPackageOverview: (name: string) => { return Promise.resolve(undefined); },
@@ -426,6 +455,7 @@ describe('Manage Packages', () => {
 		let mockProvider = TypeMoq.Mock.ofType(LocalPipPackageManageProvider);
 		mockProvider.setup(x => x.canUseProvider()).returns(() => testContext.provider.canUseProvider());
 		mockProvider.setup(x => x.getLocations()).returns(() => testContext.provider.getLocations());
+		mockProvider.setup(x => x.getCurrentLocation()).returns(() => testContext.provider.getCurrentLocation());
 		mockProvider.setup(x => x.installPackages(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((packages, useMinVersion) => testContext.provider.installPackages(packages, useMinVersion));
 		mockProvider.setup(x => x.uninstallPackages(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((packages) => testContext.provider.uninstallPackages(packages));
 		mockProvider.setup(x => x.listPackages(TypeMoq.It.isAny())).returns(() => testContext.provider.listPackages());

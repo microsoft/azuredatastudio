@@ -131,6 +131,12 @@ describe('Utils Tests', function () {
 			const randomSorted = ['0.1', '1.0.0', '1.0.1', '42', '100.0'];
 			should(utils.sortPackageVersions(random)).deepEqual(randomSorted);
 		});
+
+		it('versions with non-numeric components', () => {
+			const random = ['1.0.1h', '1.0.0', '42', '1.0.1b', '100.0', '0.1', '1.0.1'];
+			const randomSorted = ['0.1', '1.0.0', '1.0.1', '1.0.1b', '1.0.1h', '42', '100.0'];
+			should(utils.sortPackageVersions(random)).deepEqual(randomSorted);
+		});
 	});
 
 	describe('executeBufferedCommand', () => {
@@ -325,6 +331,24 @@ describe('Utils Tests', function () {
 				let char = token.charAt(i);
 				should(validChars.indexOf(char)).be.greaterThan(-1);
 			}
+		});
+	});
+
+	describe('isBookItemPinned', function (): void {
+		it('Should NOT pin an unknown book within a workspace', async function (): Promise<void> {
+
+			let notebookUri = path.join(path.sep, 'randomfolder', 'randomsubfolder', 'content', 'randomnotebook.ipynb');
+			let isNotebookPinned = utils.isBookItemPinned(notebookUri);
+
+			should(isNotebookPinned).be.false('Random notebooks should not be pinned');
+		});
+	});
+
+	describe('getPinnedNotebooks', function (): void {
+		it('Should NOT have any pinned notebooks', async function (): Promise<void> {
+			let pinnedNotebooks: utils.IBookNotebook[] = utils.getPinnedNotebooks();
+
+			should(pinnedNotebooks.length).equal(0, 'Should not have any pinned notebooks');
 		});
 	});
 });

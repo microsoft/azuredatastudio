@@ -42,6 +42,7 @@ const vscodeEntryPoints = _.flatten([
 	buildfile.entrypoint('vs/workbench/workbench.desktop.main'),
 	buildfile.base,
 	buildfile.workerExtensionHost,
+	buildfile.workerNotebook,
 	buildfile.workbenchDesktop,
 	buildfile.code
 ]);
@@ -76,8 +77,7 @@ const vscodeResources = [
 	'out-build/vs/platform/files/**/*.md',
 	'out-build/vs/code/electron-browser/workbench/**',
 	'out-build/vs/code/electron-browser/sharedProcess/sharedProcess.js',
-	'out-build/vs/code/electron-browser/issue/issueReporter.js',
-	'out-build/sql/workbench/electron-browser/splashscreen/*', // {{SQL CARBON EDIT}} STart
+	'out-build/vs/code/electron-sandbox/issue/issueReporter.js',
 	'out-build/sql/**/*.{svg,png,cur,html}',
 	'out-build/sql/base/browser/ui/table/media/*.{gif,png,svg}',
 	'out-build/sql/base/browser/ui/checkbox/media/*.{gif,png,svg}',
@@ -97,7 +97,7 @@ const vscodeResources = [
 	'out-build/sql/workbench/parts/notebook/media/**/*.svg',
 	'out-build/sql/setup.js', // {{SQL CARBON EDIT}} end
 	'out-build/vs/code/electron-sandbox/processExplorer/processExplorer.js',
-	'out-build/vs/platform/auth/common/auth.css',
+	'out-build/vs/code/electron-sandbox/proxy/auth.js',
 	'!**/test/**'
 ];
 
@@ -261,7 +261,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			.pipe(fileLengthFilter.restore)
 			.pipe(util.skipDirectories())
 			.pipe(util.fixWin32DirectoryPermissions())
-			.pipe(electron(_.extend({}, config, { platform, arch, ffmpegChromium: true })))
+			.pipe(electron(_.extend({}, config, { platform, arch: arch === 'armhf' ? 'arm' : arch, ffmpegChromium: true })))
 			.pipe(filter(['**', '!LICENSE', '!LICENSES.chromium.html', '!version'], { dot: true }));
 
 		if (platform === 'linux') {
@@ -345,7 +345,7 @@ const BUILD_TARGETS = [
 	{ platform: 'darwin', arch: null, opts: { stats: true } },
 	{ platform: 'linux', arch: 'ia32' },
 	{ platform: 'linux', arch: 'x64' },
-	{ platform: 'linux', arch: 'arm' },
+	{ platform: 'linux', arch: 'armhf' },
 	{ platform: 'linux', arch: 'arm64' },
 ];
 BUILD_TARGETS.forEach(buildTarget => {

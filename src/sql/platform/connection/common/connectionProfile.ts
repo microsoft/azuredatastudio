@@ -13,7 +13,13 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { isString } from 'vs/base/common/types';
 import { deepClone } from 'vs/base/common/objects';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { find } from 'vs/base/common/arrays';
+import { URI } from 'vs/base/common/uri';
+
+export interface IconPath {
+	light: URI;
+	dark: URI;
+}
+
 
 // Concrete implementation of the IConnectionProfile interface
 
@@ -29,11 +35,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	public groupId?: string;
 	public saveProfile: boolean;
 
+	public iconPath?: IconPath;
+
 	public isDisconnecting: boolean = false;
 
 	public constructor(
 		capabilitiesService: ICapabilitiesService,
-		model: string | azdata.IConnectionProfile) {
+		model: string | azdata.IConnectionProfile | undefined) {
 		super(capabilitiesService, model);
 		if (model && !isString(model)) {
 			this.groupId = model.groupId;
@@ -49,7 +57,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 				let capabilities = this.capabilitiesService.getCapabilities(model.providerName);
 				if (capabilities && capabilities.connection && capabilities.connection.connectionOptions) {
 					const options = capabilities.connection.connectionOptions;
-					let appNameOption = find(options, option => option.specialValueType === interfaces.ConnectionOptionSpecialType.appName);
+					let appNameOption = options.find(option => option.specialValueType === interfaces.ConnectionOptionSpecialType.appName);
 					if (appNameOption) {
 						let appNameKey = appNameOption.name;
 						this.options[appNameKey] = Constants.applicationName;
@@ -87,9 +95,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	}
 
-	private static nullCheckEqualsIgnoreCase(a: string, b: string) {
-		let bothNull: boolean = !a && !b;
-		return bothNull ? bothNull : equalsIgnoreCase(a, b);
+	private static nullCheckEqualsIgnoreCase(a?: string, b?: string) {
+		if (a && !b || b && !a) {
+			return false;
+		} else {
+			let bothNull: boolean = !a && !b;
+			return bothNull ? bothNull : equalsIgnoreCase(a!, b!);
+		}
 	}
 
 	public generateNewId() {

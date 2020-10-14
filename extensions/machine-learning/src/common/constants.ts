@@ -56,7 +56,7 @@ export function cannotFindR(path: string): string { return localize('mls.cannotF
 export const installPackageMngDependenciesMsgTaskName = localize('mls.installPackageMngDependencies.msgTaskName', "Verifying package management dependencies");
 export const installModelMngDependenciesMsgTaskName = localize('mls.installModelMngDependencies.msgTaskName', "Verifying model management dependencies");
 export const noResultError = localize('mls.noResultError', "No Result returned");
-export const requiredPackagesNotInstalled = localize('mls.requiredPackagesNotInstalled', "The required dependencies are not installed");
+export const requiredPackagesNotInstalled = localize('mls.requiredPackagesNotInstalled', "The required packages are not installed");
 export const confirmEnableExternalScripts = localize('mls.confirmEnableExternalScripts', "External script is required for package management. Are you sure you want to enable that.");
 export const enableExternalScriptsError = localize('mls.enableExternalScriptsError', "Failed to enable External script.");
 export const externalScriptsIsRequiredError = localize('mls.externalScriptsIsRequiredError', "External script configuration is required for this action.");
@@ -64,6 +64,10 @@ export const confirmInstallPythonPackages = localize('mls.confirmInstallPythonPa
 export function confirmInstallPythonPackagesDetails(packages: string): string {
 	return localize('mls.installDependencies.confirmInstallPythonPackages'
 		, "The following Python packages are required to install: {0}", packages);
+}
+export function confirmInstallRPackagesDetails(packages: string): string {
+	return localize('mls.installDependencies.confirmInstallRPackages'
+		, "The following R packages are required to install: {0}", packages);
 }
 export function confirmDeleteModel(modelName: string): string {
 	return localize('models.confirmDeleteModel'
@@ -207,7 +211,9 @@ export const invalidModelParametersError = localize('models.invalidModelParamete
 export const invalidModelToSelectError = localize('models.invalidModelToSelectError', "Please select a valid model");
 export const invalidModelImportTargetError = localize('models.invalidModelImportTargetError', "Please select a valid table");
 export const columnDataTypeMismatchWarning = localize('models.columnDataTypeMismatchWarning', "The data type of the source table column does not match the required input field’s type.");
+export const outputColumnDataTypeNotSupportedWarning = localize('models.outputColumnDataTypeNotSupportedWarning', "The data type of output column does not match the output field’s type.");
 export const modelNameRequiredError = localize('models.modelNameRequiredError', "Model name is required.");
+export const modelsRequiredError = localize('models.modelsRequiredError', "Please select at least one model to import.");
 export const updateModelFailedError = localize('models.updateModelFailedError', "Failed to update the model");
 export const modelSchemaIsAcceptedMessage = localize('models.modelSchemaIsAcceptedMessage', "Table meets requirements!");
 export const selectModelsTableMessage = localize('models.selectModelsTableMessage', "Select models table");
@@ -219,7 +225,7 @@ export function invalidImportTableSchemaError(databaseName: string | undefined, 
 export const loadModelParameterFailedError = localize('models.loadModelParameterFailedError', "Failed to load model parameters'");
 export const unsupportedModelParameterType = localize('models.unsupportedModelParameterType', "unsupported");
 export const dashboardTitle = localize('dashboardTitle', "Machine Learning");
-export const dashboardDesc = localize('dashboardDesc', "Machine Learning for SQL Databases");
+export const dashboardDesc = localize('dashboardDesc', "Machine Learning for SQL databases");
 export const dashboardLinksTitle = localize('dashboardLinksTitle', "Useful links");
 export const dashboardVideoLinksTitle = localize('dashboardVideoLinksTitle', "Video tutorials");
 export const showMoreTitle = localize('showMoreTitle', "Show more");

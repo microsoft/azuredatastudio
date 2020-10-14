@@ -16,7 +16,6 @@ import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
 import { deepClone, deepFreeze } from 'vs/base/common/objects';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import { find } from 'vs/base/common/arrays';
 
 suite('ConnectionConfig', () => {
 	let capabilitiesService: TypeMoq.Mock<TestCapabilitiesService>;
@@ -210,7 +209,7 @@ suite('ConnectionConfig', () => {
 		}
 
 		for (let group of groups1) {
-			let g2 = find(groups2, g => g.name === group.name);
+			let g2 = groups2.find(g => g.name === group.name);
 			// if we couldn't find the group it means they must not be equal
 			if (!g2) {
 				return false;
@@ -373,12 +372,12 @@ suite('ConnectionConfig', () => {
 		let allConnections = config.getConnections(false);
 		assert.equal(allConnections.length, testConnections.length);
 		allConnections.forEach(connection => {
-			let userConnection = find(testConnections, u => u.options['serverName'] === connection.serverName);
+			let userConnection = testConnections.find(u => u.options['serverName'] === connection.serverName);
 			if (userConnection !== undefined) {
 				assert.notEqual(connection.id, connection.getOptionsKey());
 				assert.ok(!!connection.id);
 			} else {
-				let workspaceConnection = find(workspaceConnections, u => u.options['serverName'] === connection.serverName);
+				let workspaceConnection = workspaceConnections.find(u => u.options['serverName'] === connection.serverName);
 				assert.notEqual(connection.id, connection.getOptionsKey());
 				assert.equal(workspaceConnection!.id, connection.id);
 			}
@@ -394,7 +393,7 @@ suite('ConnectionConfig', () => {
 		let result: ISaveGroupResult = config.saveGroup(groups, newGroups, color, newGroups);
 		assert.ok(!!result);
 		assert.equal(result.groups.length, testGroups.length + 2, 'The result groups length is invalid');
-		let newGroup = find(result.groups, g => g.name === 'new-group2');
+		let newGroup = result.groups.find(g => g.name === 'new-group2');
 		assert.equal(result.newGroupId, newGroup!.id, 'The groups id is invalid');
 	});
 
@@ -407,7 +406,7 @@ suite('ConnectionConfig', () => {
 		let result: ISaveGroupResult = config.saveGroup(groups, newGroups, color, newGroups);
 		assert.ok(!!result);
 		assert.equal(result.groups.length, testGroups.length + 1, 'The result groups length is invalid');
-		let newGroup = find(result.groups, g => g.name === 'g2-5');
+		let newGroup = result.groups.find(g => g.name === 'g2-5');
 		assert.equal(result.newGroupId, newGroup!.id, 'The groups id is invalid');
 	});
 
@@ -420,7 +419,7 @@ suite('ConnectionConfig', () => {
 		let result: ISaveGroupResult = config.saveGroup(groups, newGroups, color, newGroups);
 		assert.ok(!!result);
 		assert.equal(result.groups.length, testGroups.length, 'The result groups length is invalid');
-		let newGroup = find(result.groups, g => g.name === 'g2-1');
+		let newGroup = result.groups.find(g => g.name === 'g2-1');
 		assert.equal(result.newGroupId, newGroup!.id, 'The groups id is invalid');
 	});
 
@@ -530,7 +529,7 @@ suite('ConnectionConfig', () => {
 		let editedGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue!;
 
 		assert.equal(editedGroups.length, testGroups.length);
-		let editedGroup = find(editedGroups, group => group.id === 'g2');
+		let editedGroup = editedGroups.find(group => group.id === 'g2');
 		assert.ok(!!editedGroup);
 		assert.equal(editedGroup!.name, 'g-renamed');
 	});
@@ -547,7 +546,7 @@ suite('ConnectionConfig', () => {
 			assert.fail();
 		} catch (e) {
 			let groups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue!;
-			let originalGroup = find(groups, g => g.id === 'g2');
+			let originalGroup = groups.find(g => g.id === 'g2');
 			assert.ok(!!originalGroup);
 			assert.equal(originalGroup!.name, 'g2');
 		}
@@ -565,7 +564,7 @@ suite('ConnectionConfig', () => {
 		let editedGroups = configurationService.inspect<IConnectionProfileGroup[]>('datasource.connectionGroups').userValue!;
 
 		assert.equal(editedGroups.length, testGroups.length);
-		let editedGroup = find(editedGroups, group => group.id === 'g2');
+		let editedGroup = editedGroups.find(group => group.id === 'g2');
 		assert.ok(!!editedGroup);
 		assert.equal(editedGroup!.parentId, 'g3');
 	});
@@ -622,7 +621,7 @@ suite('ConnectionConfig', () => {
 			let editedConnections = configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!;
 			// two
 			assert.equal(editedConnections.length, _testConnections.length);
-			let editedConnection = find(editedConnections, con => con.id === 'server3-2');
+			let editedConnection = editedConnections.find(con => con.id === 'server3-2');
 			assert.ok(!!editedConnection);
 			assert.equal(editedConnection!.groupId, 'g3');
 		}
@@ -658,7 +657,7 @@ suite('ConnectionConfig', () => {
 
 		let editedConnections = configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!;
 		assert.equal(editedConnections.length, testConnections.length);
-		let editedConnection = find(editedConnections, con => con.id === 'server3');
+		let editedConnection = editedConnections.find(con => con.id === 'server3');
 		assert.ok(!!editedConnection);
 		assert.equal(editedConnection!.groupId, 'newid');
 	});
