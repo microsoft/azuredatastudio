@@ -284,7 +284,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		}
 	}
 
-	public runCustomValidations(componentId: string): boolean | Thenable<boolean> {
+	public runCustomValidations(componentId: string): Thenable<boolean> {
 		let component = this._componentBuilders.get(componentId).componentWrapper();
 		return component.runCustomValidations();
 	}
@@ -1988,7 +1988,7 @@ class ModelViewImpl implements azdata.ModelView {
 		return this._proxy.$validate(this._handle, this._component.id);
 	}
 
-	public runCustomValidations(componentId: string): boolean | Thenable<boolean> {
+	public runCustomValidations(componentId: string): Thenable<boolean> {
 		return this._modelBuilder.runCustomValidations(componentId);
 	}
 }
@@ -2035,7 +2035,6 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	$runCustomValidations(handle: number, componentId: string): Thenable<boolean> {
 		const view = this._modelViews.get(handle);
-		const validationsResult = view.runCustomValidations(componentId);
-		return (typeof validationsResult === 'boolean') ? Promise.resolve(validationsResult) : validationsResult;
+		return view.runCustomValidations(componentId);
 	}
 }
