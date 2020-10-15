@@ -15,9 +15,9 @@ export interface IExtendedColumn<T> extends Slick.Column<T> {
 }
 
 export interface CommandEventArgs<T extends Slick.SlickData> {
-		grid: Slick.Grid<T>,
-		column: Slick.Column<T>,
-		command: string
+	grid: Slick.Grid<T>,
+	column: Slick.Column<T>,
+	command: string
 }
 
 export class HeaderFilter<T extends Slick.SlickData> {
@@ -340,11 +340,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		const seen: Set<string> = new Set();
 		dataView.getItems().forEach(items => {
 			const value = items[column.field!];
-			if (value instanceof Array) {
-				value.forEach(v => seen.add(v));
-			} else {
-				seen.add(value);
-			}
+			const valueArr = value instanceof Array ? value : [value];
+			valueArr.forEach(v => seen.add(v));
 		});
 
 		return Array.from(seen);
@@ -358,31 +355,16 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 		dataView.getItems().forEach(item => {
 			const value = item[column.field];
-			if (value instanceof Array) {
-				if (filter.length > 0) {
-					const itemValue = !value ? [] : value;
-					const lowercaseFilter = filter.toString().toLowerCase();
-					itemValue.map(v => v.toLowerCase()).forEach((lowerVal, index) => {
-						if (lowerVal.indexOf(lowercaseFilter) > -1) {
-							seen.add(value[index]);
-						}
-					});
-				} else {
-					value.forEach(v => seen.add(v));
-				}
-			} else {
-				if (filter.length > 0) {
-					const itemValue = !value ? '' : value;
-					const lowercaseFilter = filter.toString().toLowerCase();
-					const lowercaseVal = itemValue.toString().toLowerCase();
-
-					if (lowercaseVal.indexOf(lowercaseFilter) > -1) {
-						seen.add(value);
+			const valueArr = value instanceof Array ? value : [(!value ? '' : value)];
+			if (filter.length > 0) {
+				const lowercaseFilter = filter.toString().toLowerCase();
+				valueArr.map(v => v.toLowerCase()).forEach((lowerVal, index) => {
+					if (lowerVal.indexOf(lowercaseFilter) > -1) {
+						seen.add(valueArr[index]);
 					}
-
-				} else {
-					seen.add(value);
-				}
+				});
+			} else {
+				valueArr.forEach(v => seen.add(v));
 			}
 		});
 
@@ -394,11 +376,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 		data.forEach(items => {
 			const value = items[column.field!];
-			if (value instanceof Array) {
-				value.forEach(v => seen.add(v));
-			} else {
-				seen.add(value);
-			}
+			const valueArr = value instanceof Array ? value : [value];
+			valueArr.forEach(v => seen.add(v));
 		});
 
 		return Array.from(seen).sort((v) => { return v; });

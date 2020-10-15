@@ -274,7 +274,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 		Object.keys(this._checkboxColumns).forEach(col => this.registerPlugins(col, this._checkboxColumns[col]));
 		Object.keys(this._buttonsColumns).forEach(col => this.registerPlugins(col, this._buttonsColumns[col]));
-		if (this.properties['headerFilter'] === true) {
+		if (this.headerFilter === true) {
 			this.registerFilterPlugin();
 		}
 		if (this.ariaRowCount === -1) {
@@ -481,5 +481,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 	public set updateCells(newValue: azdata.TableCell[]) {
 		this.setPropertyFromUI<azdata.TableCell[]>((properties, value) => { properties.updateCells = value; }, newValue);
+	}
+
+	public get headerFilter(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.headerFilter, false);
 	}
 }
