@@ -1,5 +1,22 @@
 # Change Log
 
+## Version 1.23.0
+* Release date: October 14, 2020
+* Release status: General Availability
+* Added deployments of Azure SQL DB and VM
+* Added PowerShell kernel results streaming support
+* Added improvements to SQL Database Projects extension
+* Bug Fixes
+* Extension Updates:
+    * SQL Server Import
+    * Machine Learning
+    * Schema Compare
+    * Kusto
+    * SQL Assessment
+    * SQL Database Projects
+    * Azure Arc
+    * azdata
+
 ## Version 1.22.1
 * Release date: September 30, 2020
 * Release status: General Availability
