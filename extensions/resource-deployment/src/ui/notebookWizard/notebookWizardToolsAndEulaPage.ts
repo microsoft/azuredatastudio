@@ -33,6 +33,7 @@ export class NotebookWizardToolsAndEulaPage<W extends WizardBase<WizardPageBase<
 	private _installationInProgress: boolean = false;
 	private _tools: ITool[] = [];
 	private _eulaValidationSucceeded: boolean = false;
+	private _isInitialized = false;
 
 	public set agreementCheckboxChecked(value: boolean) {
 		this._agreementCheckboxChecked = value;
@@ -81,6 +82,10 @@ export class NotebookWizardToolsAndEulaPage<W extends WizardBase<WizardPageBase<
 	}
 
 	public initialize(): void {
+		if (this._isInitialized) {
+			return;
+		}
+
 		this.pageObject.registerContent((view: azdata.ModelView) => {
 			this.view = view;
 			const tableWidth = 1126;
@@ -197,6 +202,7 @@ export class NotebookWizardToolsAndEulaPage<W extends WizardBase<WizardPageBase<
 
 			});
 		});
+		this._isInitialized = true;
 	}
 
 
@@ -410,7 +416,12 @@ export class NotebookWizardToolsAndEulaPage<W extends WizardBase<WizardPageBase<
 			}
 			return [tool.displayName, tool.description, tool.displayStatus, tool.fullVersion || '', toolRequirement.version || '', tool.installationPathOrAdditionalInformation || ''];
 		});
-		this._installToolButton.display = (erroredOrFailedTool || minVersionCheckFailed || (toolsToAutoInstall.length === 0)) ? 'none' : 'inline';
+		this._installToolButton.updateProperties({
+			CSSStyles: {
+				'display': (erroredOrFailedTool || minVersionCheckFailed || (toolsToAutoInstall.length === 0)) ? 'none' : 'inline'
+			}
+		});
+
 		this.wizard.wizardObject.doneButton.enabled = !erroredOrFailedTool && messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0);
 		if (messages.length !== 0) {
 			if (messages.length > 1) {
@@ -459,7 +470,11 @@ export class NotebookWizardToolsAndEulaPage<W extends WizardBase<WizardPageBase<
 				text: ''
 			};
 		}
-		this._installToolButton.display = 'none';
+		this._installToolButton.updateProperties({
+			CSSStyles: {
+				'display': 'none'
+			}
+		});
 		if (this.toolRequirements.length === 0) {
 			this._toolsLoadingComponent.loading = false;
 			this.wizard.wizardObject.doneButton.enabled = true;
