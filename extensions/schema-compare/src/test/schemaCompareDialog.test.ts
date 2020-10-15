@@ -41,29 +41,29 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 		should(dialog.dialog.okButton.enabled).equal(false); // Should be false when open
 	});
 
-	it('Simulate ok button- with both endpoints set to dacpac', async function (): Promise<void> {
-		let schemaCompareResult = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, undefined, mockExtensionContext.object);
-		await schemaCompareResult.start(undefined);
-		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
-		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+	// it('Simulate ok button- with both endpoints set to dacpac', async function (): Promise<void> {
+	// 	let schemaCompareResult = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, undefined, mockExtensionContext.object);
+	// 	await schemaCompareResult.start(undefined);
+	// 	schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+	// 	schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 
-		let dialog = new SchemaCompareDialog(schemaCompareResult);
-		await dialog.openDialog();
+	// 	let dialog = new SchemaCompareDialog(schemaCompareResult);
+	// 	await dialog.openDialog();
 
-		await dialog.execute();
+	// 	await dialog.execute();
 
-		// Confirm that ok button got clicked
-		schemaCompareResult.verifyButtonsState( {
-			compareButtonState: true,
-			optionsButtonState: true,
-			switchButtonState: true,
-			openScmpButtonState: true,
-			saveScmpButtonState: true,
-			cancelCompareButtonState: false,
-			selectSourceButtonState: true,
-			selectTargetButtonState: true,
-			generateScriptButtonState: false,
-			applyButtonState: false
-		} );
-	});
+	// 	// Confirm that ok button got clicked
+	// 	schemaCompareResult.verifyButtonsState( {
+	// 		compareButtonState: true,
+	// 		optionsButtonState: true,
+	// 		switchButtonState: true,
+	// 		openScmpButtonState: true,
+	// 		saveScmpButtonState: true,
+	// 		cancelCompareButtonState: false,
+	// 		selectSourceButtonState: true,
+	// 		selectTargetButtonState: true,
+	// 		generateScriptButtonState: false,
+	// 		applyButtonState: false
+	// 	} );
+	// });
 });
