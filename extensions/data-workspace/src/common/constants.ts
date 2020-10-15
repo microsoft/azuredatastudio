@@ -25,18 +25,22 @@ export const DefaultButtonWidth = '80px';
 
 // New Project Dialog
 export const NewProjectDialogTitle = localize('dataworkspace.NewProjectDialogTitle', "Create new project");
-export const ProjectTypeSelectorTitle = localize('dataworkspace.ProjectTypeSelectorTitle', "Type");
+export const TypeTitle = localize('dataworkspace.Type', "Type");
 export const ProjectNameTitle = localize('dataworkspace.projectNameTitle', "Name");
 export const ProjectNamePlaceholder = localize('dataworkspace.projectNamePlaceholder', "Enter project name");
 export const ProjectLocationTitle = localize('dataworkspace.projectLocationTitle', "Location");
-export const ProjectLoacationPlaceholder = localize('dataworkspace.projectLocationPlaceholder', "Select folder");
+export const ProjectLocationPlaceholder = localize('dataworkspace.projectLocationPlaceholder', "Enter project location");
+export const AddProjectToCurrentWorkspace = localize('dataworkspace.AddProjectToCurrentWorkspace', "The project will be added to the currently opened workspace.");
+export const NewWorkspaceWillBeCreated = localize('dataworkspace.NewWorkspaceWillBeCreated', "New empty workspace will be created for this project.");
+export const WorkspaceLocationTitle = localize('dataworkspace.workspaceLocationTitle', "Workspace loaction");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected location: '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
 
 //Open Existing Project Dialog
-export const OpenProjectDialogTitle = localize('dataworkspace.openProjectDialogTitle', "Open existing project");
+export const OpenProjectDialogTitle = localize('dataworkspace.openProjectDialogTitle', "Open existing");
 export const ProjectFileNotExistError = (projectFilePath: string): string => { return localize('dataworkspace.projectFileNotExistError', "The selected project file: '{0}' does not exist or is not a file.", projectFilePath); };
-export const LocalFileSystem = localize('dataworkspace.localFileSystem', "Local File");
-export const LocationSelectorTitle = localize('dataworkspace.LocationSelectorTitle', "Location");
-export const ProjectFileTitle = localize('dataworkspace.projectFileTitle', "Project file");
-export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Select project file");
+export const Project = localize('dataworkspace.project', "Project");
+export const Workspace = localize('dataworkspace.workspace', "Workspace");
+export const LocationSelectorTitle = localize('dataworkspace.locationSelectorTitle', "Location");
+export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Enter project location");
+export const WorkspacePlaceholder = localize('dataworkspace.workspacePlaceholder', "Enter workspace location");
