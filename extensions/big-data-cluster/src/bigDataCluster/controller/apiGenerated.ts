@@ -10,6 +10,7 @@
 
 import localVarRequest = require('request');
 import http = require('http');
+import * as bdc from 'bdc';
 
 let defaultBasePath = 'https://localhost';
 
@@ -203,7 +204,7 @@ export class Dashboards {
     }
 }
 
-export class EndpointModel {
+export class EndpointModel implements bdc.IEndpointModel {
     'name'?: string;
     'description'?: string;
     'endpoint'?: string;
@@ -1167,7 +1168,7 @@ export class DefaultApi {
      * @param {*} [options] Override http request options.
      */
     public createMount (xRequestId: string, connection: string, remote: string, mount: string, credentials?: any, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
-        const localVarPath = this.basePath + '/api/v1/storage/mounts';
+        const localVarPath = this.basePath + '/api/v1/bdc/services/hdfs/mounts';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
         let localVarFormParams: any = {};
@@ -1315,7 +1316,7 @@ export class DefaultApi {
      * @param {*} [options] Override http request options.
      */
     public deleteMount (xRequestId: string, connection: string, mount: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
-        const localVarPath = this.basePath + '/api/v1/storage/mounts';
+        const localVarPath = this.basePath + '/api/v1/bdc/services/hdfs/mounts';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
         let localVarFormParams: any = {};
@@ -1599,7 +1600,7 @@ export class DefaultApi {
      * @param {*} [options] Override http request options.
      */
     public listMounts (xRequestId: string, connection: string, mount?: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
-        const localVarPath = this.basePath + '/api/v1/storage/mounts';
+        const localVarPath = this.basePath + '/api/v1/bdc/services/hdfs/mounts';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
         let localVarFormParams: any = {};
@@ -1668,7 +1669,7 @@ export class DefaultApi {
      * @param {*} [options] Override http request options.
      */
     public refreshMount (xRequestId: string, connection: string, mount: string, options: any = {}) : Promise<{ response: http.IncomingMessage; body: any;  }> {
-        const localVarPath = this.basePath + '/api/v1/storage/mounts/refresh';
+        const localVarPath = this.basePath + '/api/v1/bdc/services/hdfs/mounts/refresh';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
         let localVarFormParams: any = {};

@@ -19,15 +19,33 @@ import { JupyterSessionManager, JupyterSession } from '../../jupyter/jupyterSess
 import { Deferred } from '../../common/promise';
 import { SessionStub, KernelStub, FutureStub } from '../common';
 import { noBDCConnectionError, providerNotValidError } from '../../common/localizedConstants';
+import { ExtensionContextHelper } from '../../common/extensionContextHelper';
+import { AppContext } from '../../common/appContext';
+import uuid = require('uuid');
 
 export class TestClusterController implements bdc.IClusterController {
 	getClusterConfig(): Promise<any> {
-		throw new Error('Method not implemented.');
+		return Promise.resolve({});
 	}
 	getKnoxUsername(clusterUsername: string): Promise<string> {
 		return Promise.resolve('knoxUsername');
 	}
+	getEndPoints(promptConnect?: boolean): Promise<bdc.IEndPointsResponse> {
+		return Promise.resolve( {
+			response: undefined,
+			endPoints: []
+		});
+	}
+	username: string;
+	password: string;
 }
+
+before(async function(): Promise<void> {
+	// We have to reset the extension context here since the test runner unloads the files before running the tests
+	// so the static state is lost
+	const api = await vscode.extensions.getExtension('Microsoft.notebook').activate();
+	ExtensionContextHelper.setExtensionContext((api.getAppContext() as AppContext).extensionContext);
+});
 
 describe('Jupyter Session Manager', function (): void {
 	let mockJupyterManager = TypeMoq.Mock.ofType<SessionManager>();
@@ -180,7 +198,8 @@ describe('Jupyter Session', function (): void {
 
 		// When I call changeKernel on the wrapper
 		let kernel = await session.changeKernel({
-			name: 'python'
+			name: 'python',
+			display_name: 'Python'
 		});
 		// Then I expect it to have the ID, and only be called once
 		should(kernel.id).equal('id');
@@ -269,25 +288,29 @@ describe('Jupyter Session', function (): void {
 			isCloud: false,
 			azureVersion: 0,
 			osVersion: '',
-			options: {}
+			options: {
+				isBigDataCluster: true
+			}
 		};
-		const mockGatewayEndpoint: utils.IEndpoint = {
-			serviceName: 'gateway',
+		const mockGatewayEndpoint: bdc.IEndpointModel = {
+			name: 'gateway',
 			description: '',
 			endpoint: '',
 			protocol: '',
 		};
-		const mockControllerEndpoint: utils.IEndpoint = {
-			serviceName: 'controller',
+		const mockControllerEndpoint: bdc.IEndpointModel = {
+			name: 'controller',
 			description: '',
 			endpoint: '',
 			protocol: '',
 		};
 		const mockHostAndIp: utils.HostAndIp = {
-			host: 'host',
-			port: 'port'
+			host: '127.0.0.1',
+			port: '1337'
 		};
 		const mockClustercontroller = new TestClusterController();
+		mockClustercontroller.username = 'admin';
+		mockClustercontroller.password = uuid.v4();
 		let mockBdcExtension: TypeMoq.IMock<bdc.IExtension> = TypeMoq.Mock.ofType<bdc.IExtension>();
 		let mockExtension: TypeMoq.IMock<vscode.Extension<any>> = TypeMoq.Mock.ofType<vscode.Extension<any>>();
 		mockBdcExtension.setup(m => m.getClusterController(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => mockClustercontroller);
@@ -300,9 +323,8 @@ describe('Jupyter Session', function (): void {
 		sinon.stub(utils, 'getHostAndPortFromEndpoint').returns(mockHostAndIp);
 
 		await session.configureConnection(connectionProfile);
-		should(connectionProfile.options['host']).equal('host');
-		should(connectionProfile.options['knoxport']).equal('port');
-		should(connectionProfile.options['user']).equal('knoxUsername');
+		should(connectionProfile.options['host']).equal(mockHostAndIp.host);
+		should(connectionProfile.options['knoxport']).equal(mockHostAndIp.port);
 	});
 
 	it('configure connection should throw error if there is no connection to big data cluster', async function (): Promise<void> {

@@ -13,21 +13,39 @@ declare module 'azdata' {
 	 * Namespace for connection management
 	 */
 	export namespace connection {
+		/**
+		 * Supported connection event types
+		 */
 		export type ConnectionEventType =
 			| 'onConnect'
 			| 'onDisconnect'
 			| 'onConnectionChanged';
 
+		/**
+		 * Connection Event Lister
+		 */
 		export interface ConnectionEventListener {
+			/**
+			 * Connection event handler
+			 * @param type Connection event type
+			 * @param ownerUri Connection's owner uri
+			 * @param args Connection profile
+			 */
 			onConnectionEvent(type: ConnectionEventType, ownerUri: string, args: IConnectionProfile): void;
 		}
 
 		/**
 		 * Register a connection event listener
+		 * @param listener The connection event listener
 		 */
-		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): void;
+		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): vscode.Disposable;
 
-		export function getConnection(uri: string): Thenable<ConnectionProfile>;
+		/**
+		 * Get connection profile by its owner uri
+		 * @param ownerUri The owner uri of the connection
+		 * @returns Promise to return the connection profile matching the ownerUri
+		 */
+		export function getConnection(ownerUri: string): Thenable<ConnectionProfile>;
 	}
 
 	export namespace nb {
@@ -252,6 +270,7 @@ declare module 'azdata' {
 
 	export interface ModelBuilder {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent, RadioCardGroupComponentProperties>;
+		listView(): ComponentBuilder<ListViewComponent, ListViewComponentProperties>;
 		tabbedPanel(): TabbedPanelComponentBuilder;
 		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
 		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
@@ -303,6 +322,28 @@ declare module 'azdata' {
 
 		onLinkClick: vscode.Event<RadioCardLinkClickEvent>;
 
+	}
+
+	export interface ListViewComponentProperties extends ComponentProperties {
+		title?: ListViewTitle;
+		options: ListViewOption[];
+		selectedOptionId?: string;
+	}
+
+	export interface ListViewTitle {
+		text?: string;
+		style?: CssStyles;
+	}
+
+	export interface ListViewOption {
+		label: string;
+		id: string;
+	}
+
+	export type ListViewClickEvent = { id: string };
+
+	export interface ListViewComponent extends Component, ListViewComponentProperties {
+		onDidClick: vscode.Event<ListViewClickEvent>;
 	}
 
 	export interface SeparatorComponent extends Component {
@@ -695,6 +736,24 @@ declare module 'azdata' {
 		 */
 		delete?: boolean;
 	}
+
+	export interface ButtonProperties {
+		/**
+		* Specifies whether to use expanded layout or not.
+		*/
+		buttonType?: ButtonType;
+		/**
+		* Description text to display inside button element.
+		*/
+		description?: string;
+	}
+
+	export enum ButtonType {
+		File = 'File',
+		Normal = 'Normal',
+		Informational = 'Informational'
+	}
+
 	export interface DiffEditorComponent {
 		/**
 		 * Title of editor

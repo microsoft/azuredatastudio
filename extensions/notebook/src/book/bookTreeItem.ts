@@ -39,6 +39,7 @@ export class BookTreeItem extends vscode.TreeItem {
 	private _nextUri: string;
 	public readonly version: string;
 	public command: vscode.Command;
+	public resourceUri: vscode.Uri;
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, book.treeItemCollapsibleState);
@@ -74,6 +75,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		}
 		else {
 			this.tooltip = this.book.type === BookTreeItemType.Book ? (this.book.version === BookVersion.v1 ? path.join(this.book.root, content) : this.book.root) : this.book.contentPath;
+			this.resourceUri = vscode.Uri.file(this.book.root);
 		}
 	}
 

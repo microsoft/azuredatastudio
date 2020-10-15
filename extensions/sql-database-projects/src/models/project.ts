@@ -435,6 +435,12 @@ export class Project {
 	 */
 	public async addProjectReference(settings: IProjectReferenceSettings): Promise<void> {
 		const projectReferenceEntry = new SqlProjectReferenceProjectEntry(settings);
+
+		// check if reference to this database already exists
+		if (this.databaseReferenceExists(projectReferenceEntry)) {
+			throw new Error(constants.databaseReferenceAlreadyExists);
+		}
+
 		await this.addToProjFile(projectReferenceEntry);
 	}
 
@@ -621,7 +627,7 @@ export class Project {
 	}
 
 	private databaseReferenceExists(entry: IDatabaseReferenceProjectEntry): boolean {
-		const found = this.databaseReferences.find(reference => reference.fsUri.fsPath === entry.fsUri.fsPath) !== undefined;
+		const found = this.databaseReferences.find(reference => reference.pathForSqlProj() === entry.pathForSqlProj()) !== undefined;
 		return found;
 	}
 
@@ -679,7 +685,9 @@ export class Project {
 
 	public addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): void {
 		// Remove any entries with the same variable name. It'll be replaced with a new one
-		this.removeFromProjFile(entry);
+		if (Object.keys(this.sqlCmdVariables).includes(entry.variableName)) {
+			this.removeFromProjFile(entry);
+		}
 
 		const sqlCmdVariableNode = this.projFileXmlDoc.createElement(constants.SqlCmdVariable);
 		sqlCmdVariableNode.setAttribute(constants.Include, entry.variableName);

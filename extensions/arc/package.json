@@ -2,14 +2,14 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.22.0"
+    "azdata": ">=1.23.0"
   },
   "activationEvents": [
     "onCommand:arc.connectToController",
@@ -18,7 +18,8 @@
     "onView:azureArc"
   ],
   "extensionDependencies": [
-    "Microsoft.azdata"
+    "Microsoft.azdata",
+    "Microsoft.resource-deployment"
   ],
   "repository": {
     "type": "git",
@@ -139,14 +140,19 @@
           "light": "./images/data_controller.svg",
           "dark": "./images/data_controller.svg"
         },
+        "tags": ["Hybrid", "SQL Server", "PostgreSQL"],
         "providers": [
           {
             "notebookWizard": {
               "notebook": "./notebooks/arcDeployment/deploy.arc.data.controller.ipynb",
               "type": "new-arc-control-plane",
-              "runNotebook": false,
+              "doneAction": {
+                "label": "%deploy.done.action%"
+              },
+              "scriptAction": {
+                "label": "%deploy.script.action%"
+              },
               "codeCellInsertionPosition": 5,
-              "actionText": "%deploy.script.to.notebook.action%",
               "title": "%arc.data.controller.new.wizard.title%",
               "name": "arc.data.controller.new.wizard",
               "labelPosition": "left",
@@ -181,16 +187,9 @@
                           "variableName": "AZDATA_NB_VAR_ARC_PROFILE",
                           "editable": false,
                           "options": {
-                            "values": [
-                              "azure-arc-ake",
-                              "azure-arc-aks-default-storage",
-                              "azure-arc-aks-premium-storage",
-                              "azure-arc-aks-hci",
-                              "azure-arc-azure-openshift",
-                              "azure-arc-eks",
-                              "azure-arc-kubeadm",
-                              "azure-arc-openshift"
-                            ],
+                            "source": {
+                              "providerId": "arc.controller.config.profiles"
+                            },
                             "defaultValue": "azure-arc-aks-default-storage",
                             "optionsType": "radio"
                           }
@@ -517,13 +516,18 @@
           "light": "./images/miaa.svg",
           "dark": "./images/miaa.svg"
         },
+        "tags": ["Hybrid", "SQL Server"],
         "providers": [
           {
             "notebookWizard": {
               "notebook": "./notebooks/arcDeployment/deploy.sql.existing.arc.ipynb",
-              "runNotebook": false,
+              "doneAction": {
+                "label": "%deploy.done.action%"
+              },
+              "scriptAction": {
+                "label": "%deploy.script.action%"
+              },
               "codeCellInsertionPosition": 5,
-              "actionText": "%deploy.script.to.notebook.action%",
               "title": "%arc.sql.wizard.title%",
               "name": "arc.sql.wizard",
               "labelPosition": "left",
@@ -545,7 +549,7 @@
                           "required": true,
                           "options": {
                             "source": {
-                              "type": "ArcControllersOptionsSource",
+                              "providerId": "arc.controllers",
                               "variableNames": {
                                 "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
                                 "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
@@ -560,7 +564,6 @@
                           "variableName": "AZDATA_NB_VAR_SQL_INSTANCE_NAME",
                           "type": "text",
                           "defaultValue": "sqlinstance1",
-                          "description": "%arc.sql.invalid.instance.name%",
                           "required": true,
                           "textValidationRequired": true,
                           "textValidationRegex": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
@@ -570,7 +573,6 @@
                           "label": "%arc.sql.username%",
                           "variableName": "AZDATA_NB_VAR_SQL_USERNAME",
                           "type": "text",
-                          "description": "%arc.sql.invalid.username%",
                           "required": true,
                           "textValidationRequired": true,
                           "textValidationRegex": "^(?!sa$)",
@@ -678,13 +680,18 @@
           "light": "./images/postgres.svg",
           "dark": "./images/postgres.svg"
         },
+        "tags": ["Hybrid", "PostgreSQL"],
         "providers": [
           {
             "notebookWizard": {
               "notebook": "./notebooks/arcDeployment/deploy.postgres.existing.arc.ipynb",
-              "runNotebook": false,
+              "doneAction": {
+                "label": "%deploy.done.action%"
+              },
+              "scriptAction": {
+                "label": "%deploy.script.action%"
+              },
               "codeCellInsertionPosition": 5,
-              "actionText": "%deploy.script.to.notebook.action%",
               "title": "%arc.postgres.wizard.title%",
               "name": "arc.postgres.wizard",
               "labelPosition": "left",
@@ -706,7 +713,7 @@
                           "required": true,
                           "options": {
                             "source": {
-                              "type": "ArcControllersOptionsSource",
+                              "providerId": "arc.controllers",
                               "variableNames": {
                                 "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
                                 "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
@@ -755,7 +762,10 @@
                           "label": "%arc.postgres.server.group.engine.version%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_ENGINE_VERSION",
                           "type": "options",
-                          "options" : ["11","12"],
+                          "options": [
+                            "11",
+                            "12"
+                          ],
                           "defaultValue": "12"
                         },
                         {
@@ -899,5 +909,10 @@
     "sinon": "^9.0.2",
     "typemoq": "2.1.0",
     "vscodetestcover": "^1.1.0"
+  },
+  "__metadata": {
+    "id": "68",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }

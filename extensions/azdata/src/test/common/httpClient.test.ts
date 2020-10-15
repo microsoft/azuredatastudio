@@ -73,12 +73,12 @@ describe('HttpClient', function (): void {
 	});
 
 	describe('getTextContent', function (): void {
-		it.skip('Gets file contents correctly', async function (): Promise<void> {
+		it('Gets file contents correctly', async function (): Promise<void> {
 			nock('https://127.0.0.1')
 				.get('/arbitraryFile')
 				.replyWithFile(200, __filename);
 			const receivedContents = await HttpClient.getTextContent(`https://127.0.0.1/arbitraryFile`);
-			should(receivedContents).equal(await fs.promises.readFile(__filename));
+			should(receivedContents).equal((await fs.promises.readFile(__filename)).toString());
 		});
 
 		it('rejects on response error', async function (): Promise<void> {

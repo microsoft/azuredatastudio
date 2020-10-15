@@ -3179,7 +3179,13 @@ declare module 'azdata' {
 		multiline?: boolean;
 		rows?: number;
 		columns?: number;
+		/**
+		 * The minimum value allowed for the input. Only valid for number inputs.
+		 */
 		min?: number;
+		/**
+		 * The maxmimum value allowed for the input. Only valid for number inputs.
+		 */
 		max?: number;
 		/**
 		 * Whether to stop key event propagation when enter is pressed in the input box. Leaving this as false
@@ -4066,7 +4072,7 @@ declare module 'azdata' {
 		/**
 		 * Register a query event listener
 		 */
-		export function registerQueryEventListener(listener: QueryEventListener): void;
+		export function registerQueryEventListener(listener: QueryEventListener): vscode.Disposable;
 
 		/**
 		 * Get a QueryDocument object for a file URI
@@ -4647,11 +4653,14 @@ declare module 'azdata' {
 		}
 
 		export interface INotebookMetadata {
-			kernelspec: IKernelInfo;
+			kernelspec?: IKernelInfo | IKernelSpec;
 			language_info?: ILanguageInfo;
 			tags?: string[];
 		}
 
+		/**
+		* @deprecated Use IKernelSpec instead
+		*/
 		export interface IKernelInfo {
 			name: string;
 			language?: string;
@@ -5056,8 +5065,8 @@ declare module 'azdata' {
 		 * An arguments object for the kernel changed event.
 		 */
 		export interface IKernelChangedArgs {
-			oldValue: IKernel | null;
-			newValue: IKernel | null;
+			oldValue: IKernel | undefined;
+			newValue: IKernel | undefined;
 		}
 
 		/// -------- JSON objects, and objects primarily intended not to have methods -----------
@@ -5085,7 +5094,7 @@ declare module 'azdata' {
 			/**
 			 * The original outgoing message.
 			 */
-			readonly msg: IMessage;
+			readonly msg: IMessage | undefined;
 
 			/**
 			 * A Thenable that resolves when the future is done.
@@ -5180,7 +5189,7 @@ declare module 'azdata' {
 		 */
 		export interface IExecuteReply {
 			status: 'ok' | 'error' | 'abort';
-			execution_count: number | null;
+			execution_count: number | null | undefined;
 		}
 
 		/**
@@ -5196,11 +5205,11 @@ declare module 'azdata' {
 		 * **See also:** [[IMessage]]
 		 */
 		export interface IHeader {
-			username: string;
-			version: string;
-			session: string;
-			msg_id: string;
 			msg_type: string;
+			username?: string;
+			version?: string;
+			session?: string;
+			msg_id?: string;
 		}
 
 		/**
@@ -5208,10 +5217,10 @@ declare module 'azdata' {
 		 */
 		export interface IMessage {
 			type: Channel;
-			header: IHeader;
-			parent_header: IHeader | {};
-			metadata: {};
 			content: any;
+			header?: IHeader;
+			parent_header?: IHeader | {};
+			metadata?: {};
 		}
 
 		/**

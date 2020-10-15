@@ -14,7 +14,7 @@ import { IAzdataService } from '../../services/azdataService';
 import { IKubeService } from '../../services/kubeService';
 import { INotebookService } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
-import { getErrorMessage } from '../../utils';
+import { getErrorMessage } from '../../common/utils';
 import { InputComponents } from '../modelViewUtils';
 import { WizardBase } from '../wizardBase';
 import { WizardPageBase } from '../wizardPageBase';
@@ -144,7 +144,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, WizardP
 		const variableValueStatements = this.model.getCodeCellContentForNotebook(this.toolsService.toolsForCurrentProvider);
 		const insertionPosition = 5; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
 		try {
-			await this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
+			await this.notebookService.openNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
 		} catch (error) {
 			vscode.window.showErrorMessage(getErrorMessage(error));
 		}
