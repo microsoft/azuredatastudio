@@ -256,7 +256,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	//Sanitizes the content based on trusted mode of Cell Model
 	private sanitizeContent(content: string): string {
 		if (this.cellModel && !this.cellModel.trustedMode) {
-			content = this.sanitizer.sanitize(content, { allowedTags: ['a'] });
+			content = this.sanitizer.sanitize(content);
 		}
 		return content;
 	}
@@ -493,10 +493,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					path = URI.file(node.title);
 				}
 				let relativePath = this.findPathRelativeToContent(path);
+
 				if (relativePath) {
 					return `[${node.innerText}](${relativePath})`;
 				}
-				return `[${node.innerText}](${node.href})`;
+				return `[${node.innerText}](.${node.href})`;
 			}
 		});
 	}
@@ -515,6 +516,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (notebookFolder) {
 			if (absolutePathURI?.scheme === 'file') {
 				let relativePath = path.relative(notebookFolder, absolutePathURI.fsPath);
+				//if path contains whitespaces then it's not identified as a link
+				relativePath = relativePath.replace(/\s/g, '%20');
 				if (relativePath.startsWith(path.join('.', path.sep))) {
 					return relativePath;
 				} else {
