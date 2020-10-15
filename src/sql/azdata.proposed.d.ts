@@ -73,6 +73,10 @@ declare module 'azdata' {
 			resultSet: ResultSetSummary;
 			data: any;
 		}
+
+		export interface ICellOutputMetadata {
+			resultSet?: ResultSetSummary;
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'

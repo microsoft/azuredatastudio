@@ -4701,10 +4701,11 @@ declare module 'azdata' {
 
 		export interface ICellOutput {
 			output_type: OutputTypeName;
-			metadata?: {
-				azdata_chartOptions?: any;
-				resultSet?: ResultSetSummary;
-			};
+			metadata?: ICellOutputMetadata;
+		}
+
+		export interface ICellOutputMetadata {
+			azdata_chartOptions?: any;
 		}
 
 		/**
