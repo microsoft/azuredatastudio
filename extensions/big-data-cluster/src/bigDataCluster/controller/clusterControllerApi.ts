@@ -173,14 +173,14 @@ export class ClusterController implements IClusterController {
 		}
 	}
 
-	public async getKnoxUsername(sqlLogin: string): Promise<string> {
+	public async getKnoxUsername(defaultUsername: string): Promise<string> {
 		// This all is necessary because prior to CU5 BDC deployments all had the same default username for
 		// accessing the Knox gateway. But in the allowRunAsRoot setting was added and defaulted to false - so
 		// if that exists and is false then we use the username instead.
 		// Note that the SQL username may not necessarily be correct here either - but currently this is what
 		// we're requiring to run Notebooks in a BDC
 		const config = await this.getClusterConfig();
-		return config.spec?.spec?.security?.allowRunAsRoot === false ? sqlLogin : DEFAULT_KNOX_USERNAME;
+		return config.spec?.spec?.security?.allowRunAsRoot === false ? defaultUsername : DEFAULT_KNOX_USERNAME;
 	}
 
 	public async getClusterConfig(promptConnect: boolean = false): Promise<any> {
@@ -264,7 +264,7 @@ export class ClusterController implements IClusterController {
 		return await this.withConnectRetry<MountStatusResponse>(
 			this.getMountStatusImpl,
 			promptConnect,
-			localize('bdc.error.mountHdfs', "Error creating mount"),
+			localize('bdc.error.statusHdfs', "Error getting mount status"),
 			mountPath);
 	}
 

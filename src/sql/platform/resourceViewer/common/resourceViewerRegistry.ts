@@ -22,7 +22,7 @@ export interface ResourceViewerResourcesRegistry {
 	readonly onDidRegisterResource: Event<void>;
 }
 
-const resourceViewerResourceRegistery = new class implements ResourceViewerResourcesRegistry {
+const resourceViewerResourceRegistry = new class implements ResourceViewerResourcesRegistry {
 
 	private readonly resources: ResourceType[] = [];
 	private readonly _onDidRegisterResource = new Emitter<void>();
@@ -38,4 +38,4 @@ const resourceViewerResourceRegistery = new class implements ResourceViewerResou
 	}
 };
 
-Registry.add(Extensions.ResourceViewerExtension, resourceViewerResourceRegistery);
+Registry.add(Extensions.ResourceViewerExtension, resourceViewerResourceRegistry);

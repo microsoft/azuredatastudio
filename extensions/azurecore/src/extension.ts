@@ -44,6 +44,7 @@ import * as constants from './constants';
 import { AzureResourceGroupService } from './azureResource/providers/resourceGroup/resourceGroupService';
 import { Logger } from './utils/Logger';
 import { TokenCredentials } from '@azure/ms-rest-js';
+import { FlatAzureResourceTreeProvider } from './azureResource/tree/flatTreeProvider';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -84,8 +85,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
+	const flatAzureResourceTree = new FlatAzureResourceTreeProvider(appContext);
+	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', flatAzureResourceTree));
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
-	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer_dialog', azureResourceTree));
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
 	registerAzureResourceCommands(appContext, azureResourceTree);
 
@@ -228,14 +230,6 @@ function registerAzureServices(appContext: AppContext): void {
 }
 
 async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Promise<void> {
-	if (e.affectsConfiguration('azure.enableArcFeatures')) {
-		const response = await vscode.window.showInformationMessage(loc.requiresReload, loc.reload);
-		if (response === loc.reload) {
-			await vscode.commands.executeCommand('workbench.action.reloadWindow');
-		}
-		return;
-	}
-
 	if (e.affectsConfiguration('azure.piiLogging')) {
 		updatePiiLoggingLevel();
 	}

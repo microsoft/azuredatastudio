@@ -18,7 +18,7 @@ jobs:
   timeoutInMinutes: 180
 
 - job: macOS
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'))
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), ne(variables['VSCODE_QUALITY'], 'saw'))
   pool:
     vmImage: macOS-latest
   dependsOn:
@@ -28,7 +28,7 @@ jobs:
   timeoutInMinutes: 180
 
 - job: macOS_Signing
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), eq(variables['signed'], true))
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), eq(variables['signed'], true), ne(variables['VSCODE_QUALITY'], 'saw'))
   pool:
     vmImage: macOS-latest
   dependsOn:
@@ -51,7 +51,7 @@ jobs:
   timeoutInMinutes: 70
 
 - job: LinuxWeb
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_WEB'], 'true'))
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_WEB'], 'true'), ne(variables['VSCODE_QUALITY'], 'saw'))
   pool:
     vmImage: 'Ubuntu-16.04'
   container: linux-x64

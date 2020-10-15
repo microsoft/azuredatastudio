@@ -4072,7 +4072,7 @@ declare module 'azdata' {
 		/**
 		 * Register a query event listener
 		 */
-		export function registerQueryEventListener(listener: QueryEventListener): void;
+		export function registerQueryEventListener(listener: QueryEventListener): vscode.Disposable;
 
 		/**
 		 * Get a QueryDocument object for a file URI

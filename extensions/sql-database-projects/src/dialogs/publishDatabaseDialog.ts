@@ -11,7 +11,7 @@ import * as utils from '../common/utils';
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
-import { DeploymentOptions } from '../../../mssql/src/mssql';
+import { DeploymentOptions, SchemaObjectType } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 
@@ -211,9 +211,12 @@ export class PublishDatabaseDialog {
 
 	private async getDeploymentOptions(): Promise<DeploymentOptions> {
 		// eventually, database options will be configurable in this dialog
-		// but for now,  just send the default DacFx deployment options if no options were loaded from a publish profile
+		// but for now, just send the default DacFx deployment options if no options were loaded from a publish profile
 		if (!this.deploymentOptions) {
 			this.deploymentOptions = await utils.GetDefaultDeploymentOptions();
+
+			// re-include database-scoped credentials
+			this.deploymentOptions.excludeObjectTypes = this.deploymentOptions.excludeObjectTypes.filter(x => x !== SchemaObjectType.DatabaseScopedCredentials);
 
 			// this option needs to be true for same database references validation to work
 			if (this.project.databaseReferences.length > 0) {
@@ -379,6 +382,7 @@ export class PublishDatabaseDialog {
 
 	private createDatabaseRow(view: azdata.ModelView): azdata.FlexContainer {
 		this.targetDatabaseDropDown = view.modelBuilder.dropDown().withProperties({
+			values: [this.getDefaultDatabaseName()],
 			value: this.getDefaultDatabaseName(),
 			ariaLabel: constants.databaseNameLabel,
 			required: true,
@@ -553,7 +557,8 @@ export class PublishDatabaseDialog {
 				await this.updateConnectionComponents(result.connection, <string>this.connectionId);
 
 				if (result.databaseName) {
-					(<azdata.DropDownComponent>this.targetDatabaseDropDown).value = result.databaseName;
+					this.targetDatabaseDropDown!.values?.push(result.databaseName);
+					this.targetDatabaseDropDown!.value = result.databaseName;
 				}
 
 				for (let key in result.sqlCmdVariables) {
