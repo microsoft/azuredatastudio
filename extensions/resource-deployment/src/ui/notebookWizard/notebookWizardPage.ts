@@ -2,18 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as azdata from 'azdata';
-import { EOL } from 'os';
+
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import { NotebookWizardPageInfo } from '../../interfaces';
 import { initializeWizardPage, InputComponentInfo, setModelValues } from '../modelViewUtils';
-import { Validator } from '../validation/validations';
+import { getDialogMessage, Validator } from '../validation/validations';
 import { WizardPageBase } from '../wizardPageBase';
 import { WizardPageInfo } from '../wizardPageInfo';
 import { NotebookWizard } from './notebookWizard';
-
-const localize = nls.loadMessageBundle();
 
 export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 
@@ -108,17 +104,7 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 				}));
 
 				if (messages.length > 0) {
-					this.wizard.wizardObject.message = {
-						text:
-							messages.length === 1
-								? messages[0]
-								: localize(
-									"wizardPage.ValidationError",
-									"There are some errors on this page, click 'Show Details' to view the errors."
-								),
-						description: messages.length === 1 ? undefined : messages.join(EOL),
-						level: azdata.window.MessageLevel.Error,
-					};
+					this.wizard.wizardObject.message = getDialogMessage(messages);
 				}
 				return messages.length === 0;
 			}
@@ -126,3 +112,4 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 		});
 	}
 }
+
