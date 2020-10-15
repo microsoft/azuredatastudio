@@ -550,7 +550,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		}
 	}
 
-	public async handleBatchEnd(batch: BatchSummary): Promise<void> {
+	public handleBatchEnd(batch: BatchSummary): void {
 		if (this.ioHandler) {
 			for (let set of batch.resultSetSummaries) {
 				if (set.rowCount > this.configuredMaxRows) {
