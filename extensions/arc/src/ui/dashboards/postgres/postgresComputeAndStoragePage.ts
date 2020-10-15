@@ -123,7 +123,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component());
 
 		this.workerContainer = this.modelView.modelBuilder.divContainer().component();
-		this.workerContainer.addItems(this.updateUserInputSection(), { CSSStyles: { 'min-height': '30px' } });
+		this.workerContainer.addItems(this.createUserInputSection(), { CSSStyles: { 'min-height': '30px' } });
 		content.addItem(this.workerContainer, { CSSStyles: { 'min-height': '30px' } });
 
 		this.initialized = true;
@@ -287,7 +287,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	}
 
-	private updateUserInputSection(): azdata.Component[] {
+	private createUserInputSection(): azdata.Component[] {
 		if (this._postgresModel.configLastUpdated) {
 			this.editWorkerNodeCount();
 			this.editCores(loc.coresRequest);
