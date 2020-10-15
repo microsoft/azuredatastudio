@@ -7,7 +7,7 @@ import 'mocha';
 import * as TypeMoq from 'typemoq';
 import assert = require('assert');
 import { EOL } from 'os';
-import { ResourceTypeService } from '../services/resourceTypeService';
+import { ResourceTypeService, processWhenClause } from '../services/resourceTypeService';
 import { IPlatformService } from '../services/platformService';
 import { ToolsService } from '../services/toolsService';
 import { NotebookService } from '../services/notebookService';
@@ -44,5 +44,36 @@ suite('Resource Type Service Tests', function (): void {
 		const allResourceTypes = resourceTypeService.getResourceTypes(false);
 		const validationErrors = resourceTypeService.validateResourceTypes(allResourceTypes);
 		assert(validationErrors.length === 0, `Validation errors detected in the package.json: ${validationErrors.join(EOL)}.`);
+	});
+
+	test('test when clauses', () => {
+		// index 0: platform name, index 1: expected resource types
+		const whenSelectedTrue: { when: string; selectedOptions: { option: string, value: string }[] }[] = [
+			{
+				when: 'resourceType=sql-bdc && newType=sql-windows-setup', selectedOptions: [{option:'resourceType', value: 'sql-image'}, {option:'resourceType', value: 'sql-bdc'}, {option:'newType', value: 'sql-windows-setup'}]
+			},
+			{
+				when: 'TRUE', selectedOptions:[]
+			}
+		];
+		const whenSelectedFalse: { when: string; selectedOptions: { option: string, value: string }[] }[] = [
+			{
+				when: 'resourceType=sql-bdc && dneType=does-not-exist', selectedOptions: [{option:'resourceType', value: 'sql-image'}, {option:'resourceType', value: 'sql-bdc'}, {option:'newType', value: 'sql-windows-setup'}]
+			},
+			{
+				when: 'newType=empty', selectedOptions:[]
+			},
+			{
+				when: 'badWhenClause', selectedOptions:[{option:'newType', value: 'sql-windows-setup'}]
+			}
+		];
+
+		whenSelectedTrue.forEach(whenOption => {
+			assert(processWhenClause(whenOption.when, whenOption.selectedOptions));
+		});
+
+		whenSelectedFalse.forEach(whenOption => {
+			assert(!(processWhenClause(whenOption.when, whenOption.selectedOptions)));
+		});
 	});
 });
