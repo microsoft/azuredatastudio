@@ -612,6 +612,8 @@ export abstract class Modal extends Disposable implements IThemable {
 		const bodyBackground = this._dialogBodyBackground ? this._dialogBodyBackground.toString() : '';
 		const footerBorderTopWidth = border ? '1px' : '';
 		const footerBorderTopStyle = border ? 'solid' : '';
+		const calloutStyle: CSSStyleDeclaration = this._modalDialog.style;
+		const foregroundRgb: Color = Color.Format.CSS.parseHex(foreground);
 
 		if (this._closeButtonInHeader) {
 			this._closeButtonInHeader.style.color = foreground;
@@ -622,11 +624,14 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalDialog.style.borderStyle = border ? 'solid' : '';
 			this._modalDialog.style.borderColor = border;
 
-			let calloutStyle = this._modalDialog.style;
-			let foregroundRgb = Color.Format.CSS.parseHex(foreground);
 			calloutStyle.setProperty('--border', `${border}`);
 			calloutStyle.setProperty('--bodybackground', `${bodyBackground}`);
-			calloutStyle.setProperty('--foreground', `${foregroundRgb.rgba.r}, ${foregroundRgb.rgba.g}, ${foregroundRgb.rgba.b}, 0.14`);
+			calloutStyle.setProperty('--foreground', `
+				${foregroundRgb.rgba.r},
+				${foregroundRgb.rgba.g},
+				${foregroundRgb.rgba.b},
+				0.14
+			`);
 		}
 
 		if (this._modalHeaderSection) {
