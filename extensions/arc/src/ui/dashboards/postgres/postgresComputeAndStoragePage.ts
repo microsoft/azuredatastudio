@@ -16,7 +16,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	private workerContainer?: azdata.DivContainer;
 
 	private workerBox?: azdata.InputBoxComponent;
-	private coreLimitBox?: azdata.InputBoxComponent;
+	private coresLimitBox?: azdata.InputBoxComponent;
 	private coresRequestBox?: azdata.InputBoxComponent;
 	private memoryLimitBox?: azdata.InputBoxComponent;
 	private memoryRequestBox?: azdata.InputBoxComponent;
@@ -179,10 +179,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 				this.discardButton!.enabled = false;
 				try {
 					this.editWorkerNodeCount();
-					this.editCores(loc.coresRequest);
-					this.editCores(loc.coresLimit);
-					this.editMemory(loc.memoryRequest);
-					this.editMemory(loc.memoryLimit);
+					this.editCores();
+					this.editMemory();
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
@@ -214,7 +212,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			})
 		);
 
-		this.coreLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.coresLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 1,
 			validationErrorMessage: loc.coresValidationErrorMessage,
@@ -223,11 +221,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this.coreLimitBox!.onTextChanged(() => {
-				if (!(this.handleOnTextChanged(this.coreLimitBox!))) {
+			this.coresLimitBox!.onTextChanged(() => {
+				if (!(this.handleOnTextChanged(this.coresLimitBox!))) {
 					this.saveArgs.coresRequest = undefined;
 				} else {
-					this.saveArgs.coresRequest = this.coreLimitBox!.value;
+					this.saveArgs.coresRequest = this.coresLimitBox!.value;
 				}
 			})
 		);
@@ -291,17 +289,15 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	private createUserInputSection(): azdata.Component[] {
 		if (this._postgresModel.configLastUpdated) {
 			this.editWorkerNodeCount();
-			this.editCores(loc.coresRequest);
-			this.editCores(loc.coresLimit);
-			this.editMemory(loc.memoryRequest);
-			this.editMemory(loc.memoryLimit);
+			this.editCores();
+			this.editMemory();
 		}
 
 		return [
 			this.createWorkerNodesSectionContainer(),
 			this.createCoresMemorySection(),
 			this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox!, '40px'),
-			this.createConfigurationSectionContainer(loc.coresLimit, this.coreLimitBox!, '40px'),
+			this.createConfigurationSectionContainer(loc.coresLimit, this.coresLimitBox!, '40px'),
 			this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox!, '40px'),
 			this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!, '20px')
 
@@ -444,75 +440,60 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		return configurationSection;
 	}
 
-	private editCores(type: string) {
-		let currentCPUSize: string | undefined;
-		if (type === loc.coresRequest) {
-			currentCPUSize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
+	private editCores() {
+		let currentCPUSize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
 
-			if (!currentCPUSize) {
-				currentCPUSize = '';
-			}
-
-			this.coresRequestBox!.placeHolder = currentCPUSize;
-			this.coresRequestBox!.value = '';
-
-			this.saveArgs.coresRequest = undefined;
-
-		} else if (type === loc.coresLimit) {
-			currentCPUSize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
-
-			if (!currentCPUSize) {
-				currentCPUSize = '';
-			}
-
-			this.coreLimitBox!.placeHolder = currentCPUSize;
-			this.coreLimitBox!.value = '';
-
-			this.saveArgs.coresLimit = undefined;
-
+		if (!currentCPUSize) {
+			currentCPUSize = '';
 		}
+
+		this.coresRequestBox!.placeHolder = currentCPUSize;
+		this.coresRequestBox!.value = '';
+		this.saveArgs.coresRequest = undefined;
+
+		currentCPUSize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
+
+		if (!currentCPUSize) {
+			currentCPUSize = '';
+		}
+
+		this.coresLimitBox!.placeHolder = currentCPUSize;
+		this.coresLimitBox!.value = '';
+		this.saveArgs.coresLimit = undefined;
 	}
 
-	private editMemory(type: string) {
-		let currentMemorySize: string | undefined;
+	private editMemory() {
 		let currentMemSizeConversion: string;
+		let currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
 
-		if (type === loc.memoryRequest) {
-			currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
-
-			if (!currentMemorySize) {
-				currentMemSizeConversion = '';
-			} else {
-				currentMemSizeConversion = convertToGibibyteString(currentMemorySize);
-			}
-
-			this.memoryRequestBox!.placeHolder = currentMemSizeConversion!;
-			this.memoryRequestBox!.value = '';
-
-			this.saveArgs.memoryRequest = undefined;
-
-		} else if (type === loc.memoryLimit) {
-			currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
-
-			if (!currentMemorySize) {
-				currentMemSizeConversion = '';
-			} else {
-				currentMemSizeConversion = convertToGibibyteString(currentMemorySize);
-			}
-
-			this.memoryLimitBox!.placeHolder = currentMemSizeConversion!;
-			this.memoryLimitBox!.value = '';
-
-			this.saveArgs.memoryLimit = undefined;
-
+		if (!currentMemorySize) {
+			currentMemSizeConversion = '';
+		} else {
+			currentMemSizeConversion = convertToGibibyteString(currentMemorySize);
 		}
+
+		this.memoryRequestBox!.placeHolder = currentMemSizeConversion!;
+		this.memoryRequestBox!.value = '';
+
+		this.saveArgs.memoryRequest = undefined;
+
+		currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
+
+		if (!currentMemorySize) {
+			currentMemSizeConversion = '';
+		} else {
+			currentMemSizeConversion = convertToGibibyteString(currentMemorySize);
+		}
+
+		this.memoryLimitBox!.placeHolder = currentMemSizeConversion!;
+		this.memoryLimitBox!.value = '';
+
+		this.saveArgs.memoryLimit = undefined;
 	}
 
 	private handleServiceUpdated() {
 		this.editWorkerNodeCount();
-		this.editCores(loc.coresRequest);
-		this.editCores(loc.coresLimit);
-		this.editMemory(loc.memoryRequest);
-		this.editMemory(loc.memoryLimit);
+		this.editCores();
+		this.editMemory();
 	}
 }
