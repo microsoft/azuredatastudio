@@ -495,9 +495,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				let relativePath = this.findPathRelativeToContent(path);
 
 				if (relativePath) {
-					return `[${node.innerText}](${relativePath})`;
+					return `[${node.innerText}](.${relativePath})`;
 				}
-				return `[${node.innerText}](.${node.href})`;
+				return `[${node.innerText}](${node.href})`;
 			}
 		});
 	}
