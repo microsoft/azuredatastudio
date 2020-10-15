@@ -354,7 +354,7 @@ async function exists(path: string): Promise<boolean> {
 /**
  * processWhenClause takes in a when clause (either the word 'true' or a series of clauses in the format:
  * '<type_name>=<value_name>' joined by '&&').
- * If the where clause is true or undefined, return true as there is no clause to check.
+ * If the when clause is true or undefined, return true as there is no clause to check.
  * It evaluates each individual when clause by comparing the equivalent selected options (sorted in alphabetical order and formatted to match).
  * If there is any selected option that doesn't match, return false.
  * Return true if all clauses match.
@@ -368,16 +368,12 @@ function processWhenClause(when: string, selectedOptions: { option: string, valu
 		selectedOptions.forEach(option => {
 			actual.push(`${option.option}=${option.value}`);
 		});
-		actual = actual.sort();
 
-		if (actual.length === expected.length) {
-			for (let j = 0; j < actual.length; j++) {
-				if (actual[j] !== expected[j]) {
-					return false;
-				}
+		for (let i = 0; i < expected.length; i++) {
+			if (actual.length === 0 || actual.indexOf(expected[0]) === -1) {
+				return false;
 			}
-			return true;
 		}
+		return true;
 	}
-	return false;
 }
