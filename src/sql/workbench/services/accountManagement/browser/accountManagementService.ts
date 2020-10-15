@@ -20,7 +20,6 @@ import { Deferred } from 'sql/base/common/promise';
 import { localize } from 'vs/nls';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
-import { firstIndex } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -185,7 +184,7 @@ export class AccountManagementService implements IAccountManagementService {
 			}
 			if (result.accountModified) {
 				// Find the updated account and splice the updated on in
-				let indexToRemove: number = firstIndex(provider.accounts, account => {
+				let indexToRemove: number = provider.accounts.findIndex(account => {
 					return account.key.accountId === result.changedAccount!.key.accountId;
 				});
 				if (indexToRemove >= 0) {
@@ -275,7 +274,7 @@ export class AccountManagementService implements IAccountManagementService {
 				return result;
 			}
 
-			let indexToRemove: number = firstIndex(provider.accounts, account => {
+			let indexToRemove: number = provider.accounts.findIndex(account => {
 				return account.key.accountId === accountKey.accountId;
 			});
 
@@ -346,7 +345,7 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	/**
-	 * End auto OAuth Devide code closes add account dialog
+	 * End auto OAuth Device code closes add account dialog
 	 */
 	public endAutoOAuthDeviceCode(): void {
 		this.autoOAuthDialogController.closeAutoOAuthDialog();
@@ -473,7 +472,7 @@ export class AccountManagementService implements IAccountManagementService {
 
 	private spliceModifiedAccount(provider: AccountProviderWithMetadata, modifiedAccount: azdata.Account) {
 		// Find the updated account and splice the updated one in
-		let indexToRemove: number = firstIndex(provider.accounts, account => {
+		let indexToRemove: number = provider.accounts.findIndex(account => {
 			return account.key.accountId === modifiedAccount.key.accountId;
 		});
 		if (indexToRemove >= 0) {

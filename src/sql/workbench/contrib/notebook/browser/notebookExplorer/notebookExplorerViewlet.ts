@@ -270,15 +270,40 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 						if (treeView.dataProvider) {
 							let items = await treeView?.dataProvider.getChildren(treeView?.root);
 							items?.forEach(root => {
-								if (root.contextValue !== 'pinnedNotebook') {
-									this.updateViewletsState();
-									let rootFolder = URI.file(isString(root.tooltip) ? root.tooltip : root.tooltip.value);
+								this.updateViewletsState();
+								if (root.contextValue === 'providedBook' || root.contextValue === 'savedBook') {
+									let rootFolder = URI.file(root.resourceUri.path);
 									let folderToSearch = { folder: rootFolder };
+									if (root.tooltip.toString().includes('content')) {
+										let pattern = {};
+										pattern['content/**'] = true;
+										folderToSearch['includePattern'] = pattern;
+									}
+									query.folderQueries = query.folderQueries.filter((folder) => {
+										if (!!folder.includePattern && !folder.includePattern.toString().startsWith('content')) {
+											//verify if pinned notebook is not opened in Books Viewlet
+											return path.relative(folder.folder.fsPath, folderToSearch.folder.fsPath) !== '..';
+										} else {
+											return true;
+										}
+									});
 									query.folderQueries.push(folderToSearch);
 									filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-									this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
+								} else {
+									let pattern = {};
+									let rootFolder = URI.file(root.resourceUri.path);
+									let pathToNotebook = isString(root.tooltip) ? root.tooltip : root.tooltip.value;
+									let baseName = path.join('**', path.basename(pathToNotebook));
+									pattern[baseName] = true;
+									let folderToSearch = { folder: rootFolder, includePattern: pattern };
+									query.folderQueries.push(folderToSearch);
+									filesToIncludeFiltered = filesToIncludeFiltered + rootFolder + ',';
 								}
 							});
+
+							if (query.folderQueries.length > 0) {
+								this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
+							}
 						}
 					}
 				});

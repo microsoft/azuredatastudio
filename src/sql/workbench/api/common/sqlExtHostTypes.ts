@@ -174,6 +174,7 @@ export enum ModelComponentTypes {
 	Hyperlink,
 	Image,
 	RadioCardGroup,
+	ListView,
 	TabbedPanel,
 	Separator,
 	PropertiesContainer
@@ -280,6 +281,7 @@ export interface IModelViewWizardPageDetails {
 
 export interface IModelViewWizardDetails {
 	title: string;
+	name?: string;
 	pages: number[];
 	currentPage: number;
 	doneButton: number;
@@ -414,17 +416,6 @@ export enum AzureResource {
 export class TreeItem extends vsExtTypes.TreeItem {
 	payload?: IConnectionProfile;
 	providerHandle?: string;
-}
-
-export interface ServerInfoOption {
-	isBigDataCluster: boolean;
-	clusterEndpoints: ClusterEndpoint;
-}
-
-export interface ClusterEndpoint {
-	serviceName: string;
-	ipAddress: string;
-	port: number;
 }
 
 export class SqlThemeIcon {
@@ -860,4 +851,10 @@ export enum SqlAssessmentResultItemKind {
 	RealResult = 0,
 	Warning = 1,
 	Error = 2
+}
+
+export enum ButtonType {
+	File = 'File',
+	Normal = 'Normal',
+	Informational = 'Informational'
 }

@@ -271,3 +271,17 @@ export function convertToGibibyteString(value: string): string {
 
 	return String(floatValue);
 }
+
+/*
+ * Throws an Error with given {@link message} unless {@link condition} is true.
+ * This also tells the typescript compiler that the condition is 'truthy' in the remainder of the scope
+ * where this function was called.
+ *
+ * @param condition
+ * @param message
+ */
+export function throwUnless(condition: boolean, message?: string): asserts condition {
+	if (!condition) {
+		throw new Error(message);
+	}
+}

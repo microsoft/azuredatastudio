@@ -17,7 +17,7 @@ import { PostgresComputeAndStoragePage } from './postgresComputeAndStoragePage';
 
 export class PostgresDashboard extends Dashboard {
 	constructor(private _context: vscode.ExtensionContext, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
-		super(loc.postgresDashboard(_postgresModel.info.name));
+		super(loc.postgresDashboard(_postgresModel.info.name), 'ArcPgDashboard');
 	}
 
 	public async showDashboard(): Promise<void> {

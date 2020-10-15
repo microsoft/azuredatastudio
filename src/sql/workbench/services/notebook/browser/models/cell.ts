@@ -22,7 +22,6 @@ import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
-import { firstIndex, find } from 'vs/base/common/arrays';
 import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -136,7 +135,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 		let tagIndex = -1;
 		if (this._metadata.tags) {
-			tagIndex = firstIndex(this._metadata.tags, tag => tag === HideInputTag);
+			tagIndex = this._metadata.tags.findIndex(tag => tag === HideInputTag);
 		}
 
 		if (this._isCollapsed) {
@@ -408,7 +407,7 @@ export class CellModel extends Disposable implements ICellModel {
 						const future = kernel.requestExecute({
 							code: content,
 							stop_on_error: true
-						}, false, this._cellUri.toString());
+						}, false);
 						this.setFuture(future as FutureInternal);
 						this.fireExecutionStateChanged();
 						// For now, await future completion. Later we should just track and handle cancellation based on model notifications
@@ -476,14 +475,12 @@ export class CellModel extends Disposable implements ICellModel {
 			await clientSession.kernelChangeCompleted;
 		}
 		if (!clientSession.kernel) {
-			let defaultKernel = model && model.defaultKernel && model.defaultKernel.name;
+			let defaultKernel = model && model.defaultKernel;
 			if (!defaultKernel) {
 				this.sendNotification(notificationService, Severity.Error, localize('noDefaultKernel', "No kernel is available for this notebook"));
 				return undefined;
 			}
-			await clientSession.changeKernel({
-				name: defaultKernel
-			});
+			await clientSession.changeKernel(defaultKernel);
 		}
 		return clientSession.kernel;
 	}
@@ -786,7 +783,7 @@ export class CellModel extends Disposable implements ICellModel {
 			if (serverInfo) {
 				let endpoints: notebookUtils.IEndpoint[] = notebookUtils.getClusterEndpoints(serverInfo);
 				if (endpoints && endpoints.length > 0) {
-					endpoint = find(endpoints, ep => ep.serviceName.toLowerCase() === notebookUtils.hadoopEndpointNameGateway);
+					endpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === notebookUtils.hadoopEndpointNameGateway);
 				}
 			}
 		}

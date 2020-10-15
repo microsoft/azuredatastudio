@@ -36,12 +36,12 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 			}
 			await this.configurationService.updateValue('workbench.enablePreviewFeatures', false);
 
-			const enablePreviewFeaturesNotice = localize('enablePreviewFeatures.notice', "Preview features are required in order for extensions to be fully supported and for some actions to be available.  Would you like to enable preview features?");
+			const enablePreviewFeaturesNotice = localize('enablePreviewFeatures.notice', "Preview features enhance your experience in Azure Data Studio by giving you full access to new features and improvements. You can learn more about preview features [here]({0}). Would you like to enable preview features?", 'https://aka.ms/ads-preview-features');
 			this.notificationService.prompt(
 				Severity.Info,
 				enablePreviewFeaturesNotice,
 				[{
-					label: localize('enablePreviewFeatures.yes', "Yes"),
+					label: localize('enablePreviewFeatures.yes', "Yes (recommended)"),
 					run: () => {
 						this.configurationService.updateValue('workbench.enablePreviewFeatures', true).catch(e => onUnexpectedError(e));
 						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);

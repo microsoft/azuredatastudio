@@ -82,7 +82,7 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * The current kernel associated with the document.
 	 */
-	readonly kernel: nb.IKernel | null;
+	readonly kernel: nb.IKernel | undefined;
 
 	/**
 	 * The current path associated with the client session.
@@ -133,7 +133,7 @@ export interface IClientSession extends IDisposable {
 	 */
 	readonly kernelDisplayName: string;
 
-	readonly cachedKernelSpec: nb.IKernelSpec;
+	readonly cachedKernelSpec: nb.IKernelSpec | undefined;
 
 	/**
 	 * Initializes the ClientSession, by starting the server and
@@ -149,7 +149,7 @@ export interface IClientSession extends IDisposable {
 	changeKernel(
 		options: nb.IKernelSpec,
 		oldKernel?: nb.IKernel
-	): Promise<nb.IKernel>;
+	): Promise<nb.IKernel | undefined>;
 
 	/**
 	 * Configure the current kernel associated with the document.
@@ -222,7 +222,7 @@ export interface INotebookModel {
 	/**
 	 * Cell List for this model
 	 */
-	readonly cells: ReadonlyArray<ICellModel>;
+	readonly cells: ReadonlyArray<ICellModel> | undefined;
 
 	/**
 	 * The active cell for this model. May be undefined
@@ -232,7 +232,7 @@ export interface INotebookModel {
 	/**
 	 * Client Session in the notebook, used for sending requests to the notebook service
 	 */
-	readonly clientSession: IClientSession;
+	readonly clientSession: IClientSession | undefined;
 	/**
 	 * Promise indicating when client session is ready to use.
 	 */
@@ -244,7 +244,7 @@ export interface INotebookModel {
 	/**
 	 * LanguageInfo saved in the notebook
 	 */
-	readonly languageInfo: nb.ILanguageInfo;
+	readonly languageInfo: nb.ILanguageInfo | undefined;
 	/**
 	 * Current default language for the notebook
 	 */
@@ -270,7 +270,7 @@ export interface INotebookModel {
 	 * Event fired on first initialization of the kernels and
 	 * on subsequent change events
 	 */
-	readonly kernelsChanged: Event<nb.IKernelSpec>;
+	readonly kernelsChanged: Event<nb.IKernel>;
 
 	/**
 	 * Default kernel
@@ -314,7 +314,7 @@ export interface INotebookModel {
 	/**
 	 * Event fired on active cell change
 	 */
-	readonly onActiveCellChanged: Event<ICellModel>;
+	readonly onActiveCellChanged: Event<ICellModel | undefined>;
 
 	/**
 	 * Event fired on cell type change
@@ -389,7 +389,7 @@ export interface INotebookModel {
 	 * Get the standardKernelWithProvider by name
 	 * @param name The kernel name
 	 */
-	getStandardKernelFromName(name: string): IStandardKernelWithProvider;
+	getStandardKernelFromName(name: string): IStandardKernelWithProvider | undefined;
 
 	/** Event fired once we get call back from ConfigureConnection method in sqlops extension */
 	readonly onValidConnectionSelected: Event<boolean>;

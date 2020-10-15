@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { OptionsInfo, FieldInfo } from '../interfaces';
-import { getErrorMessage } from '../utils';
+import { getErrorMessage } from '../common/utils';
 
 export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilder<azdata.LoadingComponent, azdata.LoadingComponentProperties> {
 	private _optionsDivContainer!: azdata.DivContainer;

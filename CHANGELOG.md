@@ -1,5 +1,31 @@
 # Change Log
 
+## Version 1.23.0
+* Release date: October 14, 2020
+* Release status: General Availability
+* Added deployments of Azure SQL DB and VM
+* Added PowerShell kernel results streaming support
+* Added improvements to SQL Database Projects extension
+* Bug Fixes
+* Extension Updates:
+    * SQL Server Import
+    * Machine Learning
+    * Schema Compare
+    * Kusto
+    * SQL Assessment
+    * SQL Database Projects
+    * Azure Arc
+    * azdata
+
+## Version 1.22.1
+* Release date: September 30, 2020
+* Release status: General Availability
+* Fix bug #12615 Active connection filter doesn't untoggle | [#12615](https://github.com/microsoft/azuredatastudio/issues/12615)
+* Fix bug #12572 Edit Data grid doesn't escape special characters | [#12572](https://github.com/microsoft/azuredatastudio/issues/12572)
+* Fix bug #12570 Dashboard Explorer table doesn't escape special characters | [#12570](https://github.com/microsoft/azuredatastudio/issues/12570)
+* Fix bug #12582 Delete row on Edit Data fails | [#12582](https://github.com/microsoft/azuredatastudio/issues/12582)
+* Fix bug #12646 SQL Notebooks: Cells being treated isolated | [#12646](https://github.com/microsoft/azuredatastudio/issues/12646)
+
 ## Version 1.22.0
 * Release date: September 22, 2020
 * Release status: General Availability

@@ -336,6 +336,7 @@ export class SelectBox extends vsSelectBox {
 		if (selectOptions && selectOptions.labelText && selectOptions.labelText !== undefined) {
 			let outerContainer = document.createElement('div');
 			let selectContainer = document.createElement('div');
+			selectContainer.setAttribute('role', 'presentation');
 
 			outerContainer.className = selectOptions.labelOnTop ? 'labelOnTopContainer' : 'labelOnLeftContainer';
 
@@ -349,6 +350,7 @@ export class SelectBox extends vsSelectBox {
 
 			super.render(selectContainer);
 			this.selectElement.classList.add('action-item-label');
+			this.selectElement.id = selectOptions.id;
 		}
 		else {
 			super.render(container);
@@ -363,4 +365,5 @@ export class SelectBox extends vsSelectBox {
 export interface ISelectBoxOptionsWithLabel extends ISelectBoxOptions {
 	labelText?: string;
 	labelOnTop?: boolean;
+	id?: string;
 }

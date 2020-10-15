@@ -19,7 +19,7 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { createContext, TestContext, mockDacFxResult } from './testContext';
-import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry } from '../models/project';
+import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry, SystemDatabaseReferenceProjectEntry } from '../models/project';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { exists } from '../common/utils';
@@ -236,6 +236,39 @@ describe('ProjectsController', function (): void {
 				should(await exists(noneEntry.fsUri.fsPath)).equal(false, 'none entry pre-deployment script is supposed to be deleted');
 			});
 
+			it('Should delete database references', async function (): Promise<void> {
+				// setup - openProject baseline has a system db reference to master
+				const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
+
+				// add dacpac reference
+				proj.addDatabaseReference({
+					dacpacFileLocation: vscode.Uri.file('test2.dacpac'),
+					databaseName: 'test2DbName',
+					databaseVariable: 'test2Db',
+					suppressMissingDependenciesErrors: false
+				});
+				// add project reference
+				proj.addProjectReference({
+					projectName: 'project1',
+					projectGuid: '',
+					projectRelativePath: vscode.Uri.file(path.join('..', 'project1', 'project1.sqlproj')),
+					suppressMissingDependenciesErrors: false
+				});
+
+				const projTreeRoot = new ProjectRootTreeItem(proj);
+				should(proj.databaseReferences.length).equal(3, 'Should start with 3 database references');
+
+				const databaseReferenceNodeChildren = projTreeRoot.children.find(x => x.friendlyName === constants.databaseReferencesNodeName)?.children;
+				await projController.delete(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'master')!);   // system db reference
+				await projController.delete(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'test2')!);    // dacpac reference
+				await projController.delete(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'project1')!); // project reference
+
+				// confirm result
+				should(proj.databaseReferences.length).equal(0, 'All database references should have been deleted');
+			});
+
 			it('Should exclude nested ProjectEntry from node', async function (): Promise<void> {
 				let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
 				const setupResult = await setupDeleteExcludeTest(proj);
@@ -301,6 +334,24 @@ describe('ProjectsController', function (): void {
 				should(project.postDeployScripts.length).equal(0, 'There should be no post deploy scripts');
 				await projController.addItemPrompt(project, '', templates.postDeployScript);
 				should(project.postDeployScripts.length).equal(1, 'Post deploy script should be successfully added');
+			});
+
+			it('Should change target platform', async function (): Promise<void> {
+				sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.sqlAzure });
+
+				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+				const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
+				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(constants.sqlServer2019));
+				should(project.databaseReferences.length).equal(1, 'Project should have one database reference to master');
+				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlServer2019));
+				should((<SystemDatabaseReferenceProjectEntry>project.databaseReferences[0]).ssdtUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlServer2019));
+
+				await projController.changeTargetPlatform(project);
+				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(constants.sqlAzure));
+				// verify system db reference got updated too
+				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlAzure));
+				should((<SystemDatabaseReferenceProjectEntry>project.databaseReferences[0]).ssdtUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlAzure));
 			});
 		});
 
