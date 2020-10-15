@@ -359,21 +359,18 @@ async function exists(path: string): Promise<boolean> {
  * If there is any selected option that doesn't match, return false.
  * Return true if all clauses match.
  */
-export function processWhenClause(when: string, selectedOptions: { option: string, value: string }[]): boolean {
+export function processWhenClause(when: string | undefined, selectedOptions: { option: string, value: string }[]): boolean {
 	if (when === undefined || when.toString().toLowerCase() === 'true') {
 		return true;
 	} else {
 		const expected = when.replace(/\s/g, '').split('&&').sort();
-		let actual: string[] = [];
-		selectedOptions.forEach(option => {
-			actual.push(`${option.option}=${option.value}`);
-		});
-
-		for (let i = 0; i < expected.length; i++) {
-			if (actual.length === 0 || actual.indexOf(expected[0]) === -1) {
-				return false;
+		const actual = selectedOptions.map(option => `${option.option}=${option.value}`);
+		let allSatisfied = true;
+		expected.forEach(expectedOption => {
+			if (allSatisfied && actual.indexOf(expectedOption) === -1) {
+				allSatisfied = false;
 			}
-		}
-		return true;
+		});
+		return allSatisfied;
 	}
 }
