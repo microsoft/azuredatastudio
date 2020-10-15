@@ -13,7 +13,7 @@ import { DeploymentType, instanceOfNotebookWizardDeploymentProvider, NotebookWiz
 import { IPlatformService } from './../../services/platformService';
 import { NotebookWizardAutoSummaryPage } from './notebookWizardAutoSummaryPage';
 import { NotebookWizardPage } from './notebookWizardPage';
-import { NotebookWizardToolsAndEulaPage } from './notebookWizardToolsAndEulaPage';
+import { ToolsAndEulaPage } from './notebookWizardToolsAndEulaPage';
 import { IResourceTypeService } from '../../services/resourceTypeService';
 
 export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Model>, Model> {
@@ -114,7 +114,7 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 
 	private getPages(): WizardPageBase<NotebookWizard, Model>[] {
 		const pages: WizardPageBase<NotebookWizard, Model>[] = [];
-		pages.push(new NotebookWizardToolsAndEulaPage<NotebookWizard, Model>(this));
+		pages.push(new ToolsAndEulaPage<NotebookWizard, Model>(this));
 		if (!this.wizardInfo) {
 			return pages;
 		}

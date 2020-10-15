@@ -26,7 +26,7 @@ import { DeploymentProfilePage } from './pages/deploymentProfilePage';
 import { ServiceSettingsPage } from './pages/serviceSettingsPage';
 import { SummaryPage } from './pages/summaryPage';
 import { TargetClusterContextPage } from './pages/targetClusterPage';
-import { NotebookWizardToolsAndEulaPage } from '../notebookWizard/notebookWizardToolsAndEulaPage';
+import { ToolsAndEulaPage } from '../notebookWizard/notebookWizardToolsAndEulaPage';
 import { IResourceTypeService } from '../../services/resourceTypeService';
 const localize = nls.loadMessageBundle();
 
@@ -93,7 +93,7 @@ export class DeployClusterWizard extends WizardBase<WizardPageBase<DeployCluster
 
 	private getPages(): WizardPageBase<DeployClusterWizard, DeployClusterWizardModel>[] {
 		const pages: WizardPageBase<DeployClusterWizard, DeployClusterWizardModel>[] = [];
-		pages.push(new NotebookWizardToolsAndEulaPage<DeployClusterWizard, DeployClusterWizardModel>(this));
+		pages.push(new ToolsAndEulaPage<DeployClusterWizard, DeployClusterWizardModel>(this));
 		switch (this.deploymentType) {
 			case BdcDeploymentType.NewAKS:
 				pages.push(

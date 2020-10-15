@@ -20,7 +20,7 @@ import { SqlServerSettingsPage } from './pages/sqlServerSettingsPage';
 import { AzureSQLVMSummaryPage } from './pages/summaryPage';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { NotebookWizardToolsAndEulaPage } from '../notebookWizard/notebookWizardToolsAndEulaPage';
+import { ToolsAndEulaPage } from '../notebookWizard/notebookWizardToolsAndEulaPage';
 import { IResourceTypeService } from '../../services/resourceTypeService';
 const localize = nls.loadMessageBundle();
 
@@ -74,7 +74,7 @@ export class DeployAzureSQLVMWizard extends WizardBase<WizardPageBase<DeployAzur
 
 	private getPages(): WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>[] {
 		const pages: WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>[] = [];
-		pages.push(new NotebookWizardToolsAndEulaPage<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>(this));
+		pages.push(new ToolsAndEulaPage<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>(this));
 		pages.push(new AzureSettingsPage(this));
 		pages.push(new VmSettingsPage(this));
 		pages.push(new NetworkSettingsPage(this));

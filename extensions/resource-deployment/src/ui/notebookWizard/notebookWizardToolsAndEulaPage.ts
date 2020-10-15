@@ -19,7 +19,7 @@ import { Model } from '../model';
 const localize = nls.loadMessageBundle();
 
 
-export class NotebookWizardToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M extends Model> extends WizardPageBase<W, M> {
+export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M extends Model> extends WizardPageBase<W, M> {
 	private form!: azdata.FormBuilder;
 	private view!: azdata.ModelView;
 	private toolRefreshTimestamp: number = 0;

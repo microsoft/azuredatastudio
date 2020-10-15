@@ -18,7 +18,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { AzureSQLDBSummaryPage } from './pages/summaryPage';
 import { EOL } from 'os';
 import { IResourceTypeService } from '../../services/resourceTypeService';
-import { NotebookWizardToolsAndEulaPage } from '../notebookWizard/notebookWizardToolsAndEulaPage';
+import { ToolsAndEulaPage } from '../notebookWizard/notebookWizardToolsAndEulaPage';
 
 export class DeployAzureSQLDBWizard extends WizardBase<WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>, DeployAzureSQLDBWizardModel> {
 	private _wizardInfo!: AzureSQLDBWizardInfo;
@@ -71,7 +71,7 @@ export class DeployAzureSQLDBWizard extends WizardBase<WizardPageBase<DeployAzur
 
 	private getPages(): WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>[] {
 		const pages: WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>[] = [];
-		pages.push(new NotebookWizardToolsAndEulaPage<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>(this));
+		pages.push(new ToolsAndEulaPage<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>(this));
 		pages.push(new AzureSettingsPage(this));
 		pages.push(new DatabaseSettingsPage(this));
 		pages.push(new AzureSQLDBSummaryPage(this));
@@ -191,17 +191,12 @@ export class DeployAzureSQLDBWizard extends WizardBase<WizardPageBase<DeployAzur
 	}
 
 	public async refreshPages() {
-		// All the providers will be handled differently
 
-
-
-		const currentPageNumber = this.wizardObject.pages.length;
-
-		for (let i = 1; i < currentPageNumber; i++) {
+		const pageCount = this.wizardObject.pages.length;
+		for (let i = 1; i < pageCount; i++) {
 			this.wizardObject.removePage(this.wizardObject.pages.length - 1);
 			this.wizardObject.pages.pop();
 		}
-
 		if (instanceOfAzureSQLDBDeploymentProvider(this.resourceProvider)) {
 			this._wizardInfo = this.resourceProvider.azureSQLDBWizard!;
 		} else {
@@ -222,11 +217,5 @@ export class DeployAzureSQLDBWizard extends WizardBase<WizardPageBase<DeployAzur
 			newPages[i].initialize();
 			this.wizardObject.addPage(newPages[i].pageObject);
 		}
-
-
-		//this.setPages(this.getPages());
-
-		// await this.wizardObject.close();
-		// await this.wizardObject.open();
 	}
 }

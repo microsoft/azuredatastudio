@@ -29,7 +29,7 @@ export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
 	startDeployment(provider: DeploymentProvider, resourceType?: ResourceType): void;
-	startDeploymentNew(provider: DeploymentProvider, resourceType?: ResourceType): void;
+	startDeploymentFromWizard(provider: DeploymentProvider, resourceType?: ResourceType): void;
 }
 
 export class ResourceTypeService implements IResourceTypeService {
@@ -329,7 +329,7 @@ export class ResourceTypeService implements IResourceTypeService {
 		// }
 	}
 
-	public startDeploymentNew(provider: DeploymentProvider, resourceType?: ResourceType): void {
+	public startDeploymentFromWizard(provider: DeploymentProvider, resourceType?: ResourceType): void {
 		const self = this;
 
 		if (instanceOfWizardDeploymentProvider(provider)) {

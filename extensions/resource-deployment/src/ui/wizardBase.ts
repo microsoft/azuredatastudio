@@ -91,7 +91,7 @@ export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, 
 
 	protected abstract initialize(): void;
 	protected async onOk(): Promise<void> {
-		this._resourceTypeService?.startDeploymentNew(<DeploymentProvider>this.resourceProvider, this.resourceType);
+		this._resourceTypeService?.startDeploymentFromWizard(<DeploymentProvider>this.resourceProvider, this.resourceType);
 		return;
 	}
 	protected async onGenerateScript(): Promise<void> { }
