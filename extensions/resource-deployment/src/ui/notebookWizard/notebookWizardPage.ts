@@ -2,14 +2,17 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+import * as azdata from 'azdata';
+import { EOL } from 'os';
 import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
 import { NotebookWizardPageInfo } from '../../interfaces';
-import { initializeWizardPage, InputComponentInfo, setModelValues } from '../modelViewUtils';
-import { getDialogMessage, Validator } from '../validation/validations';
+import { initializeWizardPage, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
 import { WizardPageBase } from '../wizardPageBase';
 import { WizardPageInfo } from '../wizardPageInfo';
 import { NotebookWizard } from './notebookWizard';
+
+const localize = nls.loadMessageBundle();
 
 export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 
@@ -91,20 +94,30 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 			await setModelValues(this.wizard.inputComponents, this.wizard.model);
 		}
 
-		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
+		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
 			if (pcInfo.newPage > pcInfo.lastPage) {
 				const messages: string[] = [];
 
-				await Promise.all(this.validators.map(async (validator) => {
-					const result = await validator();
+				this.validators.forEach((validator) => {
+					const result = validator();
 					if (!result.valid) {
-						messages.push(result.message!);
+						messages.push(result.message);
 					}
-				}));
+				});
 
 				if (messages.length > 0) {
-					this.wizard.wizardObject.message = getDialogMessage(messages);
+					this.wizard.wizardObject.message = {
+						text:
+							messages.length === 1
+								? messages[0]
+								: localize(
+									"wizardPage.ValidationError",
+									"There are some errors on this page, click 'Show Details' to view the errors."
+								),
+						description: messages.length === 1 ? undefined : messages.join(EOL),
+						level: azdata.window.MessageLevel.Error,
+					};
 				}
 				return messages.length === 0;
 			}
@@ -112,4 +125,3 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 		});
 	}
 }
-

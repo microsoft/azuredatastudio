@@ -8,13 +8,12 @@ import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { FieldType, LabelPosition, SectionInfo } from '../../../interfaces';
-import * as localizedConstants from '../../../localizedConstants';
-import { createSection, getInputBoxComponent, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, InputComponentInfo, InputComponents, isValidSQLPassword, setModelValues } from '../../modelViewUtils';
-import { ValidationType, Validator } from '../../validation/validations';
+import { createSection, getInputBoxComponent, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, InputComponentInfo, InputComponents, isValidSQLPassword, setModelValues, Validator } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { AuthenticationMode } from '../deployClusterWizardModel';
+import * as localizedConstants from '../../../localizedConstants';
 const localize = nls.loadMessageBundle();
 
 const ConfirmPasswordName = 'ConfirmPassword';
@@ -42,11 +41,9 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					required: true,
 					variableName: VariableNames.ClusterName_VariableName,
 					defaultValue: 'mssql-cluster',
-					validations: [{
-						type: ValidationType.Regex,
-						regex: new RegExp('^[a-z0-9]$|^[a-z0-9][a-z0-9-]*[a-z0-9]$'),
-						description: clusterNameFieldDescription
-					}],
+					textValidationRequired: true,
+					textValidationRegex: '^[a-z0-9]$|^[a-z0-9][a-z0-9-]*[a-z0-9]$',
+					textValidationDescription: clusterNameFieldDescription,
 					description: clusterNameFieldDescription
 				}, {
 					type: FieldType.Text,
@@ -330,7 +327,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				};
 			}
 
-			this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
+			this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 				this.wizard.wizardObject.message = { text: '' };
 				if (pcInfo.newPage > pcInfo.lastPage) {
 					const messages: string[] = [];
@@ -343,12 +340,12 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						messages.push(getInvalidSQLPasswordMessage(localize('deployCluster.AdminPasswordField', "Password")));
 					}
 
-					await Promise.all(this.validators.map(async validator => {
-						const result = await validator();
+					this.validators.forEach(validator => {
+						const result = validator();
 						if (!result.valid) {
-							messages.push(result.message!);
+							messages.push(result.message);
 						}
-					}));
+					});
 
 					if (messages.length > 0) {
 						this.wizard.wizardObject.message = {

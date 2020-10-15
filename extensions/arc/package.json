@@ -229,11 +229,9 @@
                         {
                           "type": "text",
                           "label": "%arc.data.controller.arc.data.controller.namespace%",
-                          "validations" : [{
-                            "type": "regex_match",
-                            "regex": "^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$",
-                            "description": "%arc.data.controller.arc.data.controller.namespace.validation.description%"
-                          }],
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$",
+                          "textValidationDescription": "%arc.data.controller.arc.data.controller.namespace.validation.description%",
                           "defaultValue": "arc",
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE"
@@ -241,11 +239,9 @@
                         {
                           "type": "text",
                           "label": "%arc.data.controller.arc.data.controller.name%",
-                          "validations" : [{
-                            "type": "regex_match",
-                            "regex": "^[a-z0-9]([-.a-z0-9]{0,251}[a-z0-9])?$",
-                            "description": "%arc.data.controller.arc.data.controller.name.validation.description%"
-                          }],
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^[a-z0-9]([-.a-z0-9]{0,251}[a-z0-9])?$",
+                          "textValidationDescription": "%arc.data.controller.arc.data.controller.name.validation.description%",
                           "defaultValue": "arc-dc",
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME"
@@ -569,22 +565,18 @@
                           "type": "text",
                           "defaultValue": "sqlinstance1",
                           "required": true,
-                          "validations" : [{
-                            "type": "regex_match",
-                            "regex": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
-                            "description": "%arc.sql.invalid.instance.name%"
-                          }]
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
+                          "textValidationDescription": "%arc.sql.invalid.instance.name%"
                         },
                         {
                           "label": "%arc.sql.username%",
                           "variableName": "AZDATA_NB_VAR_SQL_USERNAME",
                           "type": "text",
                           "required": true,
-                          "validations" : [{
-                            "type": "regex_match",
-                            "regex": "^(?!sa$)",
-                            "description": "%arc.sql.invalid.username%"
-                          }]
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^(?!sa$)",
+                          "textValidationDescription": "%arc.sql.invalid.username%"
                         },
                         {
                           "label": "%arc.password%",
@@ -621,18 +613,7 @@
                           "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
                           "type": "number",
                           "min": 1,
-                          "required": false,
-                          "validations": [
-                            {
-                              "type": "<=",
-                              "target": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
-                              "description": "requested cores must be <= cores limit"
-                            },
-                            {
-                              "type": "is_integer",
-                              "description": "requested cores must be an integer"
-                            }
-                          ]
+                          "required": false
                         },
                         {
                           "label": "%arc.cores-limit.label%",
@@ -640,18 +621,7 @@
                           "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
                           "type": "number",
                           "min": 1,
-                          "required": false,
-                          "validations": [
-                            {
-                              "type": ">=",
-                              "target": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
-                              "description": "cores limit must be >= requested cores"
-                            },
-                            {
-                              "type": "is_integer",
-                              "description": "cores limit must be an integer"
-                            }
-                        ]
+                          "required": false
                         },
                         {
                           "label": "%arc.memory-request.label%",
@@ -659,12 +629,7 @@
                           "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
                           "type": "number",
                           "min": 2,
-                          "required": false,
-                          "validations": [{
-                            "type": "<=",
-                            "target": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
-                            "description": "%requested memory must be <= memory limit"
-                          }]
+                          "required": false
                         },
                         {
                           "label": "%arc.memory-limit.label%",
@@ -672,12 +637,7 @@
                           "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
                           "type": "number",
                           "min": 2,
-                          "required": false,
-                          "validations": [{
-                            "type": ">=",
-                            "target": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
-                            "description": "memory limit must be >= requested memory"
-                          }]
+                          "required": false
                         }
                       ]
                     }
@@ -768,11 +728,9 @@
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_NAME",
                           "type": "text",
                           "description": "%arc.postgres.server.group.name.validation.description%",
-                          "validations" : [{
-                            "type": "regex_match",
-                            "regex": "^[a-z]([-a-z0-9]{0,10}[a-z0-9])?$",
-                            "description": "%arc.postgres.server.group.name.validation.description%"
-                          }],
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^[a-z]([-a-z0-9]{0,10}[a-z0-9])?$",
+                          "textValidationDescription": "%arc.postgres.server.group.name.validation.description%",
                           "required": true
                         },
                         {

@@ -4,15 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { AzureRegion } from 'azurecore';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { FieldType, LabelPosition, SectionInfo } from '../../../interfaces';
-import { createSection, getDropdownComponent, InputComponentInfo, InputComponents, setModelValues } from '../../modelViewUtils';
-import { Validator } from '../../validation/validations';
+import { createSection, getDropdownComponent, InputComponentInfo, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import { AksName_VariableName, Location_VariableName, ResourceGroup_VariableName, SubscriptionId_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';
+import { AzureRegion } from 'azurecore';
 const localize = nls.loadMessageBundle();
 const MissingRequiredInformationErrorMessage = localize('deployCluster.MissingRequiredInfoError', "Please fill out the required fields marked with red asterisks.");
 

@@ -6,7 +6,6 @@
 import * as azdata from 'azdata';
 import { IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
-import { IValidation } from './ui/validation/validations';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 
@@ -285,6 +284,9 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	defaultValue?: string;
 	confirmationRequired?: boolean;
 	confirmationLabel?: string;
+	textValidationRequired?: boolean;
+	textValidationRegex?: string;
+	textValidationDescription?: string;
 	min?: number;
 	max?: number;
 	required?: boolean;
@@ -298,7 +300,8 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean;
 	isEvaluated?: boolean;
-	validations?: IValidation[];
+	valueLookup?: string; // for fetching dropdown options
+	validationLookup?: string // for fetching text field validations
 }
 
 export interface KubeClusterContextFieldInfo extends FieldInfo {

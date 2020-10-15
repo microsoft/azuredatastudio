@@ -53,14 +53,3 @@ export function throwUnless(condition: boolean, message?: string): asserts condi
 		throw new Error(message);
 	}
 }
-
-/**
- * Evaluates an string expression.
- *
- * @param expression
- */
-export function evaluateExpression(expression: string): boolean {
-	const func = new Function(expression);
-	const evaluatedValue = func();
-	return evaluatedValue;
-}

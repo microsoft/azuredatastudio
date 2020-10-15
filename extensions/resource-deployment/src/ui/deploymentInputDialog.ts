@@ -7,14 +7,13 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DialogInfo, FieldType, instanceOfNotebookBasedDialogInfo, NotebookBasedDialogInfo, NotebookPathInfo } from '../interfaces';
+import { DialogInfo, instanceOfNotebookBasedDialogInfo, NotebookBasedDialogInfo, FieldType, NotebookPathInfo } from '../interfaces';
 import { INotebookService } from '../services/notebookService';
 import { IPlatformService } from '../services/platformService';
-import { IToolsService } from '../services/toolsService';
 import { DialogBase } from './dialogBase';
 import { Model } from './model';
-import { initializeDialog, InputComponentInfo, InputComponents, setModelValues } from './modelViewUtils';
-import { Validator } from './validation/validations';
+import { initializeDialog, InputComponentInfo, InputComponents, setModelValues, Validator } from './modelViewUtils';
+import { IToolsService } from '../services/toolsService';
 
 const localize = nls.loadMessageBundle();
 
@@ -78,14 +77,14 @@ export class DeploymentInputDialog extends DialogBase {
 			},
 			toolsService: this.toolsService
 		});
-		this._dialogObject.registerCloseValidator(async () => {
+		this._dialogObject.registerCloseValidator(() => {
 			const messages: string[] = [];
-			await Promise.all(validators.map(async validator => {
-				const result = await validator();
+			validators.forEach(validator => {
+				const result = validator();
 				if (!result.valid) {
-					messages.push(result.message!);
+					messages.push(result.message);
 				}
-			}));
+			});
 			if (messages.length > 0) {
 				self._dialogObject.message = { level: azdata.window.MessageLevel.Error, text: messages.join(EOL) };
 			} else {
