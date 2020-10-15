@@ -6,7 +6,8 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeploymentProviderBase, ResourceType } from '../interfaces';
+import { DeploymentProvider, DeploymentProviderBase, ResourceType } from '../interfaces';
+import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { Model } from './model';
 import { WizardPageBase } from './wizardPageBase';
@@ -35,16 +36,18 @@ export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, 
 
 	public set resourceProvider(provider: DeploymentProviderBase) {
 		this._resourceProvider = provider;
+		this.refreshWizard();
 	}
 
 	public get resourceProvider(): DeploymentProviderBase {
 		return this._resourceProvider;
 	}
 
-	constructor(private title: string, name: string, private _model: M, public toolsService: IToolsService, private _useGenerateScriptButton: boolean = false, private _resourceType?: ResourceType) {
-		this.wizardObject = azdata.window.createWizard(title, name);
+	constructor(private title: string, name: string, private _model: M, public toolsService: IToolsService, private _useGenerateScriptButton: boolean = false, private _resourceType?: ResourceType, private _resourceTypeService?: IResourceTypeService) {
+
+		this.wizardObject = azdata.window.createWizard(title || _resourceType?.displayName!, name || '');
 		if (this.resourceType) {
-			this._resourceProvider = this.resourceType.providers[0];
+			this.resourceProvider = this.resourceType.providers[0];
 		}
 	}
 
@@ -87,7 +90,10 @@ export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, 
 	}
 
 	protected abstract initialize(): void;
-	protected abstract async onOk(): Promise<void>;
+	protected async onOk(): Promise<void> {
+		this._resourceTypeService?.startDeploymentNew(<DeploymentProvider>this.resourceProvider, this.resourceType);
+		return;
+	}
 	protected async onGenerateScript(): Promise<void> { }
 	protected abstract onCancel(): void;
 
@@ -129,6 +135,10 @@ export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, 
 	}
 
 	public async refreshPages() {
+		throw new Error('Method not implemented');
+	}
+
+	public refreshWizard() {
 		throw new Error('Method not implemented');
 	}
 }

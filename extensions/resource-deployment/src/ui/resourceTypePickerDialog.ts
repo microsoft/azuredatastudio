@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolStatus } from '../interfaces';
-import { IResourceTypeService } from '../services/resourceTypeService';
+import { IResourceTypeService, supportsNewDeployment } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { getErrorMessage } from '../common/utils';
 import * as loc from './../localizedConstants';
@@ -92,7 +92,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 				ariaLabel: localize('deploymentDialog.deploymentOptions', "Deployment options"),
 				width: '1000px',
 				height: '550px',
-				iconPosition: 'left'
+				iconPosition: 'left',
+
 			}).component();
 			this._toDispose.push(this._cardGroup.onSelectionChanged(({ cardId }) => {
 				this._dialogObject.message = { text: '' };
@@ -172,17 +173,18 @@ export class ResourceTypePickerDialog extends DialogBase {
 					{
 						component: this._view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).withItems(resourceComponents).component(),
 						title: ''
-					}, {
-						component: this._agreementContainer,
-						title: ''
-					},
-					{
-						component: this._optionsContainer,
-						title: localize('deploymentDialog.OptionsTitle', "Options")
-					}, {
-						component: this._toolsLoadingComponent,
-						title: localize('deploymentDialog.RequiredToolsTitle', "Required tools")
 					}
+					// }, {
+					// 	component: this._agreementContainer,
+					// 	title: ''
+					// },
+					// {
+					// 	component: this._optionsContainer,
+					// 	title: localize('deploymentDialog.OptionsTitle', "Options")
+					// }, {
+					// 	component: this._toolsLoadingComponent,
+					// 	title: localize('deploymentDialog.RequiredToolsTitle', "Required tools")
+					// }
 				],
 				{
 					horizontal: false
@@ -278,12 +280,25 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._selectedResourceType = resourceType;
 		this._agreementCheckboxChecked = false;
 		this._agreementContainer.clearItems();
+
+
+		this._optionsContainer.clearItems();
+		this._optionDropDownMap.clear();
+
+		if (supportsNewDeployment(resourceType)) {
+			this._agreementCheckboxChecked = true;
+			this._dialogObject.okButton.label = loc.select;
+			this._toolsLoadingComponent.loading = false;
+			this._toolsTable.data = [[]];
+			this._tools = [];
+			this._dialogObject.okButton.enabled = true;
+			return;
+		}
+
 		if (resourceType.agreement) {
 			this._agreementContainer.addItem(this.createAgreementCheckbox(resourceType.agreement));
 		}
 
-		this._optionsContainer.clearItems();
-		this._optionDropDownMap.clear();
 		if (resourceType.options) {
 			resourceType.options.forEach(option => {
 				const optionLabel = this._view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -630,5 +645,4 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._cardsCache.set(resourceType.name, newCard);
 		return newCard;
 	}
-
 }

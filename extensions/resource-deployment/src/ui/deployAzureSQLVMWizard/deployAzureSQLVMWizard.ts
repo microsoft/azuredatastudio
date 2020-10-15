@@ -11,7 +11,7 @@ import { IToolsService } from '../../services/toolsService';
 import { WizardBase } from '../wizardBase';
 import { WizardPageBase } from '../wizardPageBase';
 import { DeployAzureSQLVMWizardModel } from './deployAzureSQLVMWizardModel';
-import { AzureSQLVMWizardInfo } from '../../interfaces';
+import { AzureSQLVMWizardInfo, instanceOfAzureSQLVMDeploymentProvider, ResourceType } from '../../interfaces';
 import { AzureSettingsPage } from './pages/azureSettingsPage';
 import { VmSettingsPage } from './pages/vmSettingsPage';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -20,17 +20,23 @@ import { SqlServerSettingsPage } from './pages/sqlServerSettingsPage';
 import { AzureSQLVMSummaryPage } from './pages/summaryPage';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
+import { NotebookWizardToolsAndEulaPage } from '../notebookWizard/notebookWizardToolsAndEulaPage';
+import { IResourceTypeService } from '../../services/resourceTypeService';
 const localize = nls.loadMessageBundle();
 
 export class DeployAzureSQLVMWizard extends WizardBase<WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>, DeployAzureSQLVMWizardModel> {
 	private cache: Map<string, any> = new Map();
+	private _wizardInfo!: AzureSQLVMWizardInfo;
 
-	constructor(private wizardInfo: AzureSQLVMWizardInfo, private _notebookService: INotebookService, private _toolsService: IToolsService) {
+	constructor(private _notebookService: INotebookService, private _toolsService: IToolsService, resourceType?: ResourceType, resourceTypeService?: IResourceTypeService) {
 		super(
 			constants.WizardTitle,
 			'DeployAzureSqlVMWizard',
 			new DeployAzureSQLVMWizardModel(),
-			_toolsService
+			_toolsService,
+			false,
+			resourceType!,
+			resourceTypeService
 		);
 	}
 
@@ -49,17 +55,26 @@ export class DeployAzureSQLVMWizard extends WizardBase<WizardPageBase<DeployAzur
 		return this._toolsService;
 	}
 
-
-
 	protected async onOk(): Promise<void> {
-		await this.scriptToNotebook();
+		if (instanceOfAzureSQLVMDeploymentProvider(this.resourceProvider)) {
+			await this.scriptToNotebook();
+		} else {
+			super.onOk();
+		}
 	}
 
 	protected onCancel(): void {
 	}
 
+	public refreshWizard() {
+		if (instanceOfAzureSQLVMDeploymentProvider(this.resourceProvider)) {
+			this._wizardInfo = this.resourceProvider.azureSQLVMWizard;
+		}
+	}
+
 	private getPages(): WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>[] {
 		const pages: WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>[] = [];
+		pages.push(new NotebookWizardToolsAndEulaPage<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>(this));
 		pages.push(new AzureSettingsPage(this));
 		pages.push(new VmSettingsPage(this));
 		pages.push(new NetworkSettingsPage(this));
@@ -73,7 +88,7 @@ export class DeployAzureSQLVMWizard extends WizardBase<WizardPageBase<DeployAzur
 		const variableValueStatements = this.model.getCodeCellContentForNotebook();
 		const insertionPosition = 2; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
 		try {
-			await this.notebookService.openNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
+			await this.notebookService.openNotebookWithEdits(this._wizardInfo.notebook, variableValueStatements, insertionPosition);
 		} catch (error) {
 			vscode.window.showErrorMessage(error);
 		}

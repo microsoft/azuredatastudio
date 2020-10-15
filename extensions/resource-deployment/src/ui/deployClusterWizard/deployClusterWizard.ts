@@ -9,7 +9,7 @@ import * as os from 'os';
 import { join } from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { BdcDeploymentType, BdcWizardInfo } from '../../interfaces';
+import { BdcDeploymentType, BdcWizardInfo, instanceOfWizardDeploymentProvider, ResourceType } from '../../interfaces';
 import { IAzdataService } from '../../services/azdataService';
 import { IKubeService } from '../../services/kubeService';
 import { INotebookService } from '../../services/notebookService';
@@ -26,6 +26,8 @@ import { DeploymentProfilePage } from './pages/deploymentProfilePage';
 import { ServiceSettingsPage } from './pages/serviceSettingsPage';
 import { SummaryPage } from './pages/summaryPage';
 import { TargetClusterContextPage } from './pages/targetClusterPage';
+import { NotebookWizardToolsAndEulaPage } from '../notebookWizard/notebookWizardToolsAndEulaPage';
+import { IResourceTypeService } from '../../services/resourceTypeService';
 const localize = nls.loadMessageBundle();
 
 export class DeployClusterWizard extends WizardBase<WizardPageBase<DeployClusterWizard, DeployClusterWizardModel>, DeployClusterWizardModel> {
@@ -57,8 +59,8 @@ export class DeployClusterWizard extends WizardBase<WizardPageBase<DeployCluster
 		this._saveConfigButton.hidden = true;
 	}
 
-	constructor(private wizardInfo: BdcWizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService, private _notebookService: INotebookService, toolsService: IToolsService) {
-		super(DeployClusterWizard.getTitle(wizardInfo.type), 'DeployBdcClusterWizard', new DeployClusterWizardModel(wizardInfo.type), toolsService);
+	constructor(private wizardInfo: BdcWizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService, private _notebookService: INotebookService, toolsService: IToolsService, resourceType: ResourceType, resourceTypeService?: IResourceTypeService) {
+		super(DeployClusterWizard.getTitle(wizardInfo.type), 'DeployBdcClusterWizard', new DeployClusterWizardModel(wizardInfo.type), toolsService, false, resourceType, resourceTypeService);
 		this._saveConfigButton = azdata.window.createButton(localize('deployCluster.SaveConfigFiles', "Save config files"), 'left');
 		this._saveConfigButton.hidden = true;
 		this.addButton(this._saveConfigButton);
@@ -67,6 +69,13 @@ export class DeployClusterWizard extends WizardBase<WizardPageBase<DeployCluster
 
 	public get deploymentType(): BdcDeploymentType {
 		return this.wizardInfo.type;
+	}
+
+	public refreshWizard() {
+		if (instanceOfWizardDeploymentProvider(this.resourceProvider)) {
+			this.wizardInfo = this.resourceProvider.bdcWizard;
+			this.wizardObject.title = DeployClusterWizard.getTitle(this.resourceProvider.bdcWizard.type);
+		}
 	}
 
 	protected initialize(): void {
@@ -84,6 +93,7 @@ export class DeployClusterWizard extends WizardBase<WizardPageBase<DeployCluster
 
 	private getPages(): WizardPageBase<DeployClusterWizard, DeployClusterWizardModel>[] {
 		const pages: WizardPageBase<DeployClusterWizard, DeployClusterWizardModel>[] = [];
+		pages.push(new NotebookWizardToolsAndEulaPage<DeployClusterWizard, DeployClusterWizardModel>(this));
 		switch (this.deploymentType) {
 			case BdcDeploymentType.NewAKS:
 				pages.push(
@@ -174,5 +184,45 @@ export class DeployClusterWizard extends WizardBase<WizardPageBase<DeployCluster
 			default:
 				throw new Error(`Unknown deployment type: ${type}`);
 		}
+	}
+
+	public async refreshPages() {
+		// All the providers will be handled differently
+
+
+
+		const currentPageNumber = this.wizardObject.pages.length;
+
+		for (let i = 1; i < currentPageNumber; i++) {
+			this.wizardObject.removePage(this.wizardObject.pages.length - 1);
+			this.wizardObject.pages.pop();
+		}
+
+		if (instanceOfWizardDeploymentProvider(this.resourceProvider)) {
+			this.wizardInfo = this.resourceProvider.bdcWizard!;
+		} else {
+			return;
+		}
+
+		const newPages = this.getPages();
+
+		newPages[0] = this.pages[0];
+
+		this.pages = newPages;
+
+		for (let i = 1; i < newPages.length; i++) {
+			newPages[i].pageObject.onValidityChanged((isValid: boolean) => {
+				// generateScriptButton is enabled only when the page is valid.
+				this.wizardObject.generateScriptButton.enabled = isValid;
+			});
+			newPages[i].initialize();
+			this.wizardObject.addPage(newPages[i].pageObject);
+		}
+
+
+		//this.setPages(this.getPages());
+
+		// await this.wizardObject.close();
+		// await this.wizardObject.open();
 	}
 }
