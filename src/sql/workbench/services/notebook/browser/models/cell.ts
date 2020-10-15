@@ -583,7 +583,8 @@ export class CellModel extends Disposable implements ICellModel {
 						let newResultSet: ResultSetSummary = output.metadata.resultSet;
 						if (resultSet.batchId === newResultSet.batchId && resultSet.id === newResultSet.id) {
 							// If it does, update output with data resource and html table
-							this._outputs[i] = output;
+							(<nb.IExecuteResult>this._outputs[i]).data = (<nb.IExecuteResult>output).data;
+							this._outputs[i].metadata = output.metadata;
 							added = true;
 							break;
 						}
@@ -606,9 +607,7 @@ export class CellModel extends Disposable implements ICellModel {
 					for (let i = 0; i < this._outputs.length; i++) {
 						if (this._outputs[i].output_type === 'execute_result') {
 							this._outputs.splice(i, 0, this.rewriteOutputUrls(output));
-							// Only scroll on 1st output being added
-							let shouldScroll = this._outputs.length === 1;
-							this.fireOutputsChanged(shouldScroll);
+							this.fireOutputsChanged();
 							added = true;
 							break;
 						}
