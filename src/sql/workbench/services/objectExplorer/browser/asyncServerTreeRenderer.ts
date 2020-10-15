@@ -24,6 +24,8 @@ import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 import { withNullAsUndefined } from 'vs/base/common/types';
 
+const DefaultConnectionIconClass = 'server-page';
+
 class ConnectionProfileGroupTemplate extends Disposable {
 	private _root: HTMLElement;
 	private _nameContainer: HTMLElement;
@@ -92,7 +94,7 @@ class ConnectionProfileTemplate extends Disposable {
 		super();
 		container.parentElement!.classList.add('connection-profile');
 		this._root = dom.append(container, dom.$('.connection-tile'));
-		this._icon = dom.append(this._root, dom.$('div.icon server-page'));
+		this._icon = dom.append(this._root, dom.$('div.icon'));
 		this._connectionStatusBadge = dom.append(this._icon, dom.$('div.connection-status-badge'));
 		this._label = dom.append(this._root, dom.$('div.label'));
 	}
@@ -108,9 +110,8 @@ class ConnectionProfileTemplate extends Disposable {
 			}
 		}
 
-		let iconPath: IconPath | undefined = getIconPath(element, this._connectionManagementService);
+		const iconPath: IconPath | undefined = getIconPath(element, this._connectionManagementService);
 		renderServerIcon(this._icon, iconPath);
-
 		let label = element.title;
 		if (!element.isConnectionOptionsValid) {
 			label = localize('loading', "Loading...");
@@ -287,6 +288,13 @@ function getIconPath(connection: ConnectionProfile, connectionManagementService:
 function renderServerIcon(element: HTMLElement, iconPath?: IconPath): void {
 	if (!element) { return; }
 	if (iconPath) {
+		element.classList.remove(DefaultConnectionIconClass);
 		iconRenderer.putIcon(element, iconPath);
+	} else {
+		// use default connection icon if iconPath is not available
+		element.classList.add(DefaultConnectionIconClass);
+		// the icon css class is applied to the node by ID selector
+		// clear the id to avoid icon mismatch when drag&drop in OE tree because of element reusing by the tree component.
+		element.id = '';
 	}
 }
