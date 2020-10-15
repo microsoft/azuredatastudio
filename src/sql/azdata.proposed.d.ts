@@ -762,4 +762,11 @@ declare module 'azdata' {
 		 */
 		title: string;
 	}
+
+	export interface TableComponentProperties {
+		/**
+		 * Specifies whether to use headerFilter plugin
+		 */
+		headerFilter?: boolean,
+	}
 }
