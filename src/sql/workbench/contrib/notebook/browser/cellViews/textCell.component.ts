@@ -486,9 +486,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.turndownService.addRule('a', {
 			filter: 'a',
 			replacement: (content, node) => {
-				//On Windows, if notebook is not trusted then the href attr is removed.
-				// href contains either a hyperlink or an absolute path. (See resolveUrls method in notebookMarkdown.ts)
-				const notebookLink = node.href ? URI.parse(node.href) : (path.isAbsolute(node.title) ? URI.file(node.title) : undefined);
+				//On Windows, if notebook is not trusted then the href attr is removed for all non-web URL links
+				// href contains either a hyperlink or a URI-encoded absolute path. (See resolveUrls method in notebookMarkdown.ts)
+				const notebookLink = node.href ? URI.parse(node.href) : URI.file(node.title);
 				const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
 				let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
 				if (relativePath) {
@@ -509,7 +509,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 }
 
-export function findPathRelativeToContent(notebookFolder: string, contentPath: URI): string {
+export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined): string {
 	if (notebookFolder) {
 		if (contentPath?.scheme === 'file') {
 			let relativePath = path.relative(notebookFolder, contentPath.fsPath);
@@ -523,7 +523,6 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 			}
 		}
 	}
-	// return empty for hyperlinks
 	return '';
 }
 
