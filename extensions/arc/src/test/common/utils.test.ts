@@ -357,6 +357,13 @@ describe('convertToGibibyteString Method Tests', function () {
 
 	it('Value is empty', function (): void {
 		const value = '';
-		should(convertToGibibyteString(value)).equal(value);
+		const error = new Error(`Value provided is not a valid Kubernetes resource quantity`);
+		should(() => convertToGibibyteString(value)).throwError(error);
+	});
+
+	it('Value is not a valid Kubernetes resource quantity', function (): void {
+		const value = '1J';
+		const error = new Error(`${value} is not a valid Kubernetes resource quantity`);
+		should(() => convertToGibibyteString(value)).throwError(error);
 	});
 });
