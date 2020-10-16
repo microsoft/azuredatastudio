@@ -6,8 +6,9 @@
 import 'mocha';
 import * as TypeMoq from 'typemoq';
 import assert = require('assert');
+import should = require('should');
 import { EOL } from 'os';
-import { ResourceTypeService } from '../services/resourceTypeService';
+import { ResourceTypeService, processWhenClause } from '../services/resourceTypeService';
 import { IPlatformService } from '../services/platformService';
 import { ToolsService } from '../services/toolsService';
 import { NotebookService } from '../services/notebookService';
@@ -44,5 +45,47 @@ suite('Resource Type Service Tests', function (): void {
 		const allResourceTypes = resourceTypeService.getResourceTypes(false);
 		const validationErrors = resourceTypeService.validateResourceTypes(allResourceTypes);
 		assert(validationErrors.length === 0, `Validation errors detected in the package.json: ${validationErrors.join(EOL)}.`);
+	});
+
+	test('Selected options containing all when clauses should return true', () => {
+		const whenSelectedTrue: { when: string; selectedOptions: { option: string, value: string }[] }[] = [
+			{
+				when: 'resourceType=sql-bdc && newType=sql-windows-setup', selectedOptions: [{ option: 'resourceType', value: 'sql-image' }, { option: 'resourceType', value: 'sql-bdc' }, { option: 'newType', value: 'sql-windows-setup' }]
+			},
+			{
+				when: 'resourceType=sql-image', selectedOptions: [{ option: 'resourceType', value: 'sql-image' }, { option: 'resourceType', value: 'sql-bdc' }]
+			},
+		];
+
+		whenSelectedTrue.forEach(whenOption => {
+			should(processWhenClause(whenOption.when, whenOption.selectedOptions)).be.true(`when clause '${whenOption.when}' should return true for it's associated selectedOptions`);
+		});
+	});
+
+	test('When clause that reads "true" (ignoring case) should always return true', () => {
+		should(processWhenClause(undefined, [])).be.true('undefined when clause should always return true');
+		should(processWhenClause('TrUe', [])).be.true(`"true" when clause should always return true`);
+	});
+
+	test('No selected options returns false', () => {
+		should(processWhenClause('newType=empty', [])).be.false('No selected options should return false');
+	});
+
+	test('Unfulfilled or partially fulfilled when clauses return false', () => {
+		const whenSelectedFalse: { when: string; selectedOptions: { option: string, value: string }[] }[] = [
+			{
+				when: 'resourceType=sql-bdc && dneType=does-not-exist', selectedOptions: [{ option: 'resourceType', value: 'sql-image' }, { option: 'resourceType', value: 'sql-bdc' }, { option: 'newType', value: 'sql-windows-setup' }]
+			},
+			{
+				when: 'dneType=does-not-exist', selectedOptions: [{ option: 'resourceType', value: 'sql-image' }, { option: 'resourceType', value: 'sql-bdc' }, { option: 'newType', value: 'sql-windows-setup' }]
+			}
+		];
+		whenSelectedFalse.forEach(whenOption => {
+			should(processWhenClause(whenOption.when, whenOption.selectedOptions)).be.false(`when clause '${whenOption.when}' should return false for it's associated selectedOptions`);
+		});
+	});
+
+	test('An invalid when clause should always return false', () => {
+		should(processWhenClause('badWhenClause', [{ option: 'bad', value: 'WhenClause' }])).be.false(`invalid when clause should return false`);
 	});
 });
