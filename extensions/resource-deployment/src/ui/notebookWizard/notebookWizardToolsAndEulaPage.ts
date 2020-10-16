@@ -15,10 +15,7 @@ import { WizardPageBase } from '../wizardPageBase';
 import { WizardBase } from '../wizardBase';
 import { Model } from '../model';
 
-
 const localize = nls.loadMessageBundle();
-
-
 export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M extends Model> extends WizardPageBase<W, M> {
 	private form!: azdata.FormBuilder;
 	private view!: azdata.ModelView;
@@ -93,34 +90,34 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolNameColumnHeader', "Tool"),
+				value: loc.toolText,
 				width: 105
 			};
 			const descriptionColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolDescriptionColumnHeader', "Description"),
+				value: loc.descriptionText,
 				width: 270
 			};
 			const installStatusColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolStatusColumnHeader', "Status"),
+				value: loc.statusText,
 				width: 70
 			};
 			const versionColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolVersionColumnHeader', "Version"),
+				value: loc.versionText,
 				width: 75
 			};
 			const minVersionColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolMinimumVersionColumnHeader', "Required Version"),
+				value: loc.requiredVersionText,
 				width: 105
 			};
 			const installedPathColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolDiscoveredPathColumnHeader', "Discovered Path or Additional Information"),
+				value: loc.discoverPathOrAdditionalInfromationText,
 				width: 580
 			};
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 				data: [],
 				columns: [toolColumn, descriptionColumn, installStatusColumn, versionColumn, minVersionColumn, installedPathColumn],
 				width: tableWidth,
-				ariaLabel: localize('deploymentDialog.RequiredToolsTitle', "Required tools")
+				ariaLabel: loc.requiredToolsText
 			}).component();
 
 			const toolsTableWrapper = view.modelBuilder.divContainer().withLayout({ width: tableWidth }).component();
@@ -133,7 +130,7 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 
 
 			this._installToolButton = view.modelBuilder.button().withProps({
-				label: localize('deploymentDialog.InstallToolsButton', "Install tools"),
+				label: loc.installToolsText,
 				CSSStyles: {
 					'display': 'none',
 				},
@@ -152,10 +149,10 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 					},
 					{
 						component: this._optionsContainer,
-						title: localize('deploymentDialog.OptionsTitle', "Options")
+						title: loc.optionsText
 					}, {
 						component: this._toolsLoadingComponent,
-						title: localize('deploymentDialog.RequiredToolsTitle', "Required tools")
+						title: loc.requiredTools
 					}, {
 						component: this._installToolButton
 					}
