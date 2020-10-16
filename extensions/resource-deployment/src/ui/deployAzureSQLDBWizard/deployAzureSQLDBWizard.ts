@@ -23,7 +23,7 @@ import { ToolsAndEulaPage } from '../notebookWizard/notebookWizardToolsAndEulaPa
 export class DeployAzureSQLDBWizard extends WizardBase<WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>, DeployAzureSQLDBWizardModel> {
 	private _wizardInfo!: AzureSQLDBWizardInfo;
 
-	constructor(private _notebookService: INotebookService, private _toolsService: IToolsService, resourceType?: ResourceType, resourceTypeService?: IResourceTypeService) {
+	constructor(private _notebookService: INotebookService, private _toolsService: IToolsService, resourceType: ResourceType, resourceTypeService?: IResourceTypeService) {
 		super(
 			constants.WizardTitle,
 			'DeployAzureSqlDBWizard',
@@ -70,11 +70,13 @@ export class DeployAzureSQLDBWizard extends WizardBase<WizardPageBase<DeployAzur
 	}
 
 	private getPages(): WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>[] {
-		const pages: WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>[] = [];
-		pages.push(new ToolsAndEulaPage<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>(this));
-		pages.push(new AzureSettingsPage(this));
-		pages.push(new DatabaseSettingsPage(this));
-		pages.push(new AzureSQLDBSummaryPage(this));
+		const pages: WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>[] =
+			[
+				new ToolsAndEulaPage<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>(this),
+				new AzureSettingsPage(this),
+				new DatabaseSettingsPage(this),
+				new AzureSQLDBSummaryPage(this)
+			];
 		return pages;
 	}
 
@@ -193,6 +195,7 @@ export class DeployAzureSQLDBWizard extends WizardBase<WizardPageBase<DeployAzur
 	public async refreshPages() {
 
 		const pageCount = this.wizardObject.pages.length;
+		// Removing all pages except the tools and Eula one (first page)
 		for (let i = 1; i < pageCount; i++) {
 			this.wizardObject.removePage(this.wizardObject.pages.length - 1);
 			this.wizardObject.pages.pop();

@@ -268,7 +268,7 @@ export class ResourceTypeService implements IResourceTypeService {
 		return loc.select;
 	}
 
-	public startDeployment(resourceType?: ResourceType): void {
+	public startDeployment(resourceType: ResourceType): void {
 		const provider = <DeploymentProvider>resourceType?.providers[0];
 		if (instanceOfAzureSQLVMDeploymentProvider(provider)) {
 			const wizard = new DeployAzureSQLVMWizard(this.notebookService, this.toolsService, resourceType, this);
@@ -318,12 +318,6 @@ export class ResourceTypeService implements IResourceTypeService {
 			vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(provider.webPageUrl));
 		} else if (instanceOfCommandDeploymentProvider(provider)) {
 			vscode.commands.executeCommand(provider.command);
-		} else if (instanceOfAzureSQLVMDeploymentProvider(provider)) {
-			const wizard = new DeployAzureSQLVMWizard(this.notebookService, this.toolsService, resourceType, this);
-			wizard.open();
-		} else if (instanceOfAzureSQLDBDeploymentProvider(provider)) {
-			const wizard = new DeployAzureSQLDBWizard(this.notebookService, this.toolsService, resourceType, this);
-			wizard.open();
 		}
 	}
 

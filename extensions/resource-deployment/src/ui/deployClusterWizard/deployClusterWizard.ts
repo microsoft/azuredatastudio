@@ -187,12 +187,10 @@ export class DeployClusterWizard extends WizardBase<WizardPageBase<DeployCluster
 	}
 
 	public async refreshPages() {
-		// All the providers will be handled differently
-
-
 
 		const currentPageNumber = this.wizardObject.pages.length;
 
+		// Removing all pages except the tools and Eula one (first page)
 		for (let i = 1; i < currentPageNumber; i++) {
 			this.wizardObject.removePage(this.wizardObject.pages.length - 1);
 			this.wizardObject.pages.pop();
@@ -218,11 +216,5 @@ export class DeployClusterWizard extends WizardBase<WizardPageBase<DeployCluster
 			newPages[i].initialize();
 			this.wizardObject.addPage(newPages[i].pageObject);
 		}
-
-
-		//this.setPages(this.getPages());
-
-		// await this.wizardObject.close();
-		// await this.wizardObject.open();
 	}
 }

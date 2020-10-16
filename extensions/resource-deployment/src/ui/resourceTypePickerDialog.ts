@@ -5,7 +5,7 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { DeploymentProvider, ResourceType } from '../interfaces';
+import { ResourceType } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import * as loc from './../localizedConstants';
 import { DialogBase } from './dialogBase';

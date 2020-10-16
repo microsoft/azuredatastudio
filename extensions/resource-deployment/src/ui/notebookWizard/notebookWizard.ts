@@ -47,7 +47,7 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 		}
 	}
 
-	constructor(private _notebookService: INotebookService, private _platformService: IPlatformService, toolsService: IToolsService, resourceType?: ResourceType, resourceTypeService?: IResourceTypeService) {
+	constructor(private _notebookService: INotebookService, private _platformService: IPlatformService, toolsService: IToolsService, resourceType: ResourceType, resourceTypeService?: IResourceTypeService) {
 		super(undefined!, undefined!, new Model(), toolsService, false, resourceType, resourceTypeService);
 	}
 
@@ -131,8 +131,6 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 
 
 	public async refreshPages() {
-		// All the providers will be handled differently
-
 		if (instanceOfNotebookWizardDeploymentProvider(this.resourceProvider)) {
 			this._wizardInfo = this.resourceProvider.notebookWizard!;
 		} else {
@@ -141,7 +139,7 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 		}
 
 		const currentPageNumber = this.wizardObject.pages.length;
-
+		// Removing all pages except the tools and Eula one (first page)
 		for (let i = 1; i < currentPageNumber; i++) {
 			this.wizardObject.removePage(this.wizardObject.pages.length - 1);
 			this.wizardObject.pages.pop();
@@ -161,12 +159,6 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 			newPages[i].initialize();
 			this.wizardObject.addPage(newPages[i].pageObject);
 		}
-
-
-		//this.setPages(this.getPages());
-
-		// await this.wizardObject.close();
-		// await this.wizardObject.open();
 	}
 
 

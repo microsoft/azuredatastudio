@@ -28,14 +28,14 @@ export class DeployAzureSQLVMWizard extends WizardBase<WizardPageBase<DeployAzur
 	private cache: Map<string, any> = new Map();
 	private _wizardInfo!: AzureSQLVMWizardInfo;
 
-	constructor(private _notebookService: INotebookService, private _toolsService: IToolsService, resourceType?: ResourceType, resourceTypeService?: IResourceTypeService) {
+	constructor(private _notebookService: INotebookService, private _toolsService: IToolsService, resourceType: ResourceType, resourceTypeService?: IResourceTypeService) {
 		super(
 			constants.WizardTitle,
 			'DeployAzureSqlVMWizard',
 			new DeployAzureSQLVMWizardModel(),
 			_toolsService,
 			false,
-			resourceType!,
+			resourceType,
 			resourceTypeService
 		);
 	}
@@ -73,13 +73,15 @@ export class DeployAzureSQLVMWizard extends WizardBase<WizardPageBase<DeployAzur
 	}
 
 	private getPages(): WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>[] {
-		const pages: WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>[] = [];
-		pages.push(new ToolsAndEulaPage<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>(this));
-		pages.push(new AzureSettingsPage(this));
-		pages.push(new VmSettingsPage(this));
-		pages.push(new NetworkSettingsPage(this));
-		pages.push(new SqlServerSettingsPage(this));
-		pages.push(new AzureSQLVMSummaryPage(this));
+		const pages: WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>[] =
+			[
+				new ToolsAndEulaPage<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>(this),
+				new VmSettingsPage(this),
+				new AzureSettingsPage(this),
+				new NetworkSettingsPage(this),
+				new SqlServerSettingsPage(this),
+				new AzureSQLVMSummaryPage(this)
+			];
 		return pages;
 	}
 
