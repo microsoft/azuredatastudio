@@ -486,7 +486,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.turndownService.addRule('a', {
 			filter: 'a',
 			replacement: (content, node) => {
-				//if notebook is untrusted then the link is save on the title
+				//On Windows, if notebook is not trusted then the href attr is removed.
+				// href contains either a hyperlink or an absolute path. (See resolveUrls method in notebookMarkdown.ts)
 				const notebookLink = node.href ? URI.parse(node.href) : (path.isAbsolute(node.title) ? URI.file(node.title) : undefined);
 				const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
 				let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
@@ -517,10 +518,12 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 			if (relativePath.startsWith(path.join('..', path.sep) || path.join('.', path.sep))) {
 				return relativePath;
 			} else {
+				// if the relative path does not contain ./ at the beginning, we need to add it so it's recognized as a link
 				return `.${path.join(path.sep, relativePath)}`;
 			}
 		}
 	}
+	// return empty for hyperlinks
 	return '';
 }
 
