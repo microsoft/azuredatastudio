@@ -46,6 +46,10 @@ export class Notebook {
 		await this.toolbar.changeKernel(kernel);
 	}
 
+	async waitForKernel(kernel: string): Promise<void> {
+		await this.toolbar.waitForKernel(kernel);
+	}
+
 	async runActiveCell(): Promise<void> {
 		await this.code.dispatchKeybinding('F5');
 	}
@@ -85,5 +89,10 @@ export class NotebookToolbar {
 		const kernelDropdown = `${NotebookToolbar.toolbarSelector} select[id="kernel-dropdown"]`;
 		await this.code.waitForSetValue(kernelDropdown, kernel);
 		await this.code.dispatchKeybinding('enter');
+	}
+
+	async waitForKernel(kernel: string): Promise<void> {
+		const kernelDropdownValue = `${NotebookToolbar.toolbarSelector} select[id="kernel-dropdown"][title="${kernel}"]`;
+		await this.code.waitForElement(kernelDropdownValue);
 	}
 }
