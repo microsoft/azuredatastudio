@@ -34,6 +34,8 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 	private _tools: ITool[] = [];
 	private _eulaValidationSucceeded: boolean = false;
 	private _isInitialized = false;
+	private _isDoneButtonEnabled = false;
+
 
 	public set agreementCheckboxChecked(value: boolean) {
 		this._agreementCheckboxChecked = value;
@@ -75,6 +77,14 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 			}
 			if (!this._eulaValidationSucceeded && !(await this.acquireEulaAndProceed())) {
 				return false; // we return false so that the workflow does not proceed and user gets to either click acceptEulaAndSelect again or cancel
+			}
+
+			if (!this._isDoneButtonEnabled) {
+				this.wizard.wizardObject.message = {
+					text: localize('deploymentDialog.FailedToolsInstallation', "Some tools were still not discovered. Please make sure that they are installed, running and discoverable"),
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
 			}
 
 			return true;
@@ -314,7 +324,7 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 					level: azdata.window.MessageLevel.Information,
 					text: localize('deploymentDialog.InstalledTools', "All required tools are installed now.")
 				};
-				this.wizard.wizardObject.doneButton.enabled = true;
+				this.enableDoneButton(true);
 			} else {
 				this.wizard.wizardObject.message = {
 					level: azdata.window.MessageLevel.Information,
@@ -419,11 +429,10 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 		});
 		this._installToolButton.updateProperties({
 			CSSStyles: {
-				'display': (erroredOrFailedTool || minVersionCheckFailed || (toolsToAutoInstall.length === 0)) ? 'none' : 'inline'
+				'display': erroredOrFailedTool || minVersionCheckFailed || (toolsToAutoInstall.length === 0) ? 'none' : 'inline'
 			}
 		});
-
-		this.wizard.wizardObject.doneButton.enabled = !erroredOrFailedTool && messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0);
+		this.enableDoneButton(!erroredOrFailedTool && messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0));
 		if (messages.length !== 0) {
 			if (messages.length > 1) {
 				messages = messages.map(message => `•	${message}`);
@@ -457,6 +466,7 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 		}
 		if (!this.areToolsEulaAccepted()) {
 			this.wizard.wizardObject.doneButton.label = loc.acceptEulaAndSelect;
+			this.wizard.wizardObject.nextButton.label = loc.acceptEulaAndSelect;
 		}
 		this._toolsLoadingComponent.loading = false;
 	}
@@ -478,13 +488,13 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 		});
 		if (this.toolRequirements.length === 0) {
 			this._toolsLoadingComponent.loading = false;
-			this.wizard.wizardObject.doneButton.enabled = true;
+			this.enableDoneButton(true);
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
 			this._tools = [];
 		} else {
 			this._tools = this.toolRequirements.map(toolReq => this.toolsService.getToolByName(toolReq.name)!);
 			this._toolsLoadingComponent.loading = true;
-			this.wizard.wizardObject.doneButton.enabled = false;
+			this.enableDoneButton(false);
 			let toolsLoadingErrors: string[] = [];
 			Promise.all(
 				this._tools.map(
@@ -494,6 +504,12 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 				.then(() => this.executeToolsTableWorkflow(currentRefreshTimestamp, toolsLoadingErrors))
 				.catch(error => console.log(error));
 		}
+	}
+
+	private enableDoneButton(enable: boolean) {
+		this._isDoneButtonEnabled = enable;
+		this.wizard.wizardObject.doneButton.enabled = enable;
+		this.wizard.wizardObject.nextButton.enabled = enable;
 	}
 
 
