@@ -2,7 +2,28 @@
 	"extends": "../shared.tsconfig.json",
 	"compilerOptions": {
 		"outDir": "./out",
-		"noUnusedParameters": false
+		"noUnusedParameters": false,
+		"rootDirs": [
+			"src",
+			"../../../../src/sql",
+			"../../../../src/vs",
+			"../../../arc/src/typings",
+			"../../../azdata/src/typings",
+			"../../../azurecore/src",
+			"../../../azurecore/src/azureResource"
+		],
+		"typeRoots": [
+			"src/typings",
+			"node_modules/@types"
+		],
+		"paths": {
+			"azdata": ["../../../src/sql"],
+			"vscode": ["../../../src/vs"],
+			"arc": ["../../arc/src/typings"],
+			"azdata-ext": ["../../azdata/src/typings"],
+			"azurecore": ["../../azurecore/src"],
+			"azure-resource": ["../../azurecore/src/azureResource"]
+		}
 	},
 	"include": [
 		"src/**/*"
