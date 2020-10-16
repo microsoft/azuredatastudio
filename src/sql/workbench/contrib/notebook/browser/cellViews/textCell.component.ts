@@ -473,8 +473,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			filter: 'img',
 			replacement: (content, node) => {
 				if (node?.src) {
-					let path = URI.parse(node.src);
-					let relativePath = this.findPathRelativeToContent(path);
+					let imgPath = URI.parse(node.src);
+					const notebookFolder: string = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
+					let relativePath = findPathRelativeToContent(notebookFolder, imgPath);
 					if (relativePath) {
 						return `![${node.alt}](${relativePath})`;
 					}
@@ -486,16 +487,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			filter: 'a',
 			replacement: (content, node) => {
 				//if notebook is untrusted then the link is save on the title
-				let path: URI;
-				if (node.href) {
-					path = URI.parse(node.href);
-				} else {
-					path = URI.file(node.title);
-				}
-				let relativePath = this.findPathRelativeToContent(path);
-
+				const notebookLink = node.href ? URI.parse(node.href) : URI.file(node.title);
+				const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
+				let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
 				if (relativePath) {
-					return `[${node.innerText}](.${relativePath})`;
+					return `[${node.innerText}](${relativePath})`;
 				}
 				return `[${node.innerText}](${node.href})`;
 			}
@@ -510,23 +506,22 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.cellModel.active = true;
 		this._model.updateActiveCell(this.cellModel);
 	}
+}
 
-	private findPathRelativeToContent(absolutePathURI: URI): string {
-		let notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
-		if (notebookFolder) {
-			if (absolutePathURI?.scheme === 'file') {
-				let relativePath = path.relative(notebookFolder, absolutePathURI.fsPath);
-				//if path contains whitespaces then it's not identified as a link
-				relativePath = relativePath.replace(/\s/g, '%20');
-				if (relativePath.startsWith(path.join('.', path.sep))) {
-					return relativePath;
-				} else {
-					return path.join(path.sep, relativePath);
-				}
+export function findPathRelativeToContent(notebookFolder: string, absolutePathURI: URI): string {
+	if (notebookFolder) {
+		if (absolutePathURI?.scheme === 'file') {
+			let relativePath = path.relative(notebookFolder, absolutePathURI.fsPath);
+			//if path contains whitespaces then it's not identified as a link
+			relativePath = relativePath.replace(/\s/g, '%20');
+			if (relativePath.startsWith(path.join('.', '.', path.sep) || path.join('.', path.sep))) {
+				return relativePath;
+			} else {
+				return `.${path.join(path.sep, relativePath)}`;
 			}
 		}
-		return '';
 	}
+	return '';
 }
 
 function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {
