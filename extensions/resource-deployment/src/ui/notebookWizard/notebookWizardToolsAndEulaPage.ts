@@ -134,8 +134,9 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 			this._installToolButton = view.modelBuilder.button().withProps({
 				label: localize('deploymentDialog.InstallToolsButton', "Install tools"),
 				CSSStyles: {
-					'display': 'none'
-				}
+					'display': 'none',
+				},
+				width: '100px',
 			}).component();
 
 			this._installToolButton.onDidClick(() => {
