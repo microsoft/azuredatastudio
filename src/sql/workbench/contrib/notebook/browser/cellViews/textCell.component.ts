@@ -487,7 +487,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			filter: 'a',
 			replacement: (content, node) => {
 				//if notebook is untrusted then the link is save on the title
-				const notebookLink = node.href ? URI.parse(node.href) : URI.file(node.title);
+				const notebookLink = node.href ? URI.parse(node.href) : (path.isAbsolute(node.title) ? URI.file(node.title) : undefined);
 				const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
 				let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
 				if (relativePath) {
