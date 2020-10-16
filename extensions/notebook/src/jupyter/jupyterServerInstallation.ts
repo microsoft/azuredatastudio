@@ -720,21 +720,20 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		if (!this._runningOnSAW || this._kernelSpecsUpdated) {
 			return;
 		}
+		try {
+			let fileNames = await fs.readdir(kernelsFolder);
+			let filePaths = fileNames.map(name => path.join(kernelsFolder, name));
+			let fileStats = await Promise.all(filePaths.map(path => fs.stat(path)));
+			let folderPaths = filePaths.filter((value, index) => value && fileStats[index].isDirectory());
+			let kernelFiles = folderPaths.map(folder => path.join(folder, 'kernel.json'));
 
-		let fileNames = await fs.readdir(kernelsFolder);
-		let filePaths = fileNames.map(name => path.join(kernelsFolder, name));
-		let fileStats = await Promise.all(filePaths.map(path => fs.stat(path)));
-		let folderPaths = filePaths.filter((value, index) => value && fileStats[index].isDirectory());
+			await Promise.all(kernelFiles.map(file => this.updateKernelSpecPath(file)));
 
-		let kernelFiles = folderPaths.map(folder => path.join(folder, 'kernel.json'));
-		if (this._runningOnSAW) {
-			kernelFiles.push(path.join(kernelsFolder, 'powershell', 'kernel.json'));
-		} else {
-			kernelFiles.push(path.join(this._pythonInstallationPath, 'Lib', 'site-packages', 'share', 'jupyter', 'kernels', 'python3', 'kernel.json'));
+			this._kernelSpecsUpdated = true;
 		}
-		await Promise.all(kernelFiles.map(file => this.updateKernelSpecPath(file)));
-
-		this._kernelSpecsUpdated = true;
+		catch (error) {
+			throw error;
+		}
 	}
 
 	private async updateKernelSpecPath(kernelPath: string): Promise<void> {
