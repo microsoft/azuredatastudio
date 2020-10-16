@@ -727,18 +727,26 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let folderPaths = filePaths.filter((value, index) => value && fileStats[index].isDirectory());
 
 		let kernelFiles = folderPaths.map(folder => path.join(folder, 'kernel.json'));
-		kernelFiles.push(path.join(this._pythonInstallationPath, 'Lib', 'site-packages', 'share', 'jupyter', 'kernels', 'python3', 'kernel.json'));
-
+		if (this._runningOnSAW) {
+			kernelFiles.push(path.join(kernelsFolder, 'powershell', 'kernel.json'));
+		} else {
+			kernelFiles.push(path.join(this._pythonInstallationPath, 'Lib', 'site-packages', 'share', 'jupyter', 'kernels', 'python3', 'kernel.json'));
+		}
 		await Promise.all(kernelFiles.map(file => this.updateKernelSpecPath(file)));
 
 		this._kernelSpecsUpdated = true;
 	}
 
 	private async updateKernelSpecPath(kernelPath: string): Promise<void> {
-		let fileContents = await fs.readFile(kernelPath);
-		let kernelSpec = <IKernelInfo>JSON.parse(fileContents.toString());
-		kernelSpec.argv = kernelSpec.argv?.map(arg => arg.replace('{ADS_PYTHONDIR}', this._pythonInstallationPath));
-		await fs.writeFile(kernelPath, JSON.stringify(kernelSpec, undefined, '\t'));
+		try {
+			let fileContents = await fs.readFile(kernelPath);
+			let kernelSpec = <IKernelInfo>JSON.parse(fileContents.toString());
+			kernelSpec.argv = kernelSpec.argv?.map(arg => arg.replace('{ADS_PYTHONDIR}', this._pythonInstallationPath));
+			await fs.writeFile(kernelPath, JSON.stringify(kernelSpec, undefined, '\t'));
+		}
+		catch (error) {
+			throw error;
+		}
 	}
 }
 
