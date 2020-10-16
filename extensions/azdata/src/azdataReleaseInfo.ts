@@ -16,7 +16,7 @@ interface PlatformReleaseInfo {
 	link?: string; // "https://aka.ms/azdata-msi"
 }
 
-interface AzdataReleaseInfo {
+export interface AzdataReleaseInfo {
 	win32: PlatformReleaseInfo,
 	darwin: PlatformReleaseInfo,
 	linux: PlatformReleaseInfo
