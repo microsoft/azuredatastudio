@@ -28,22 +28,13 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 	private _toolsLoadingComponent!: azdata.LoadingComponent;
 	private _agreementContainer!: azdata.DivContainer;
-	private _agreementCheckboxChecked: boolean = false;
+	private _agreeementCheckBox!: azdata.CheckBoxComponent;
 	private _installToolButton!: azdata.ButtonComponent;
 	private _installationInProgress: boolean = false;
 	private _tools: ITool[] = [];
 	private _eulaValidationSucceeded: boolean = false;
 	private _isInitialized = false;
 	private _isDoneButtonEnabled = false;
-
-
-	public set agreementCheckboxChecked(value: boolean) {
-		this._agreementCheckboxChecked = value;
-	}
-
-	public get agreementCheckboxChecked(): boolean {
-		return this._agreementCheckboxChecked;
-	}
 
 	public get resourceType(): ResourceType {
 		return this.wizard.resourceType;
@@ -67,7 +58,7 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 				return true;
 			}
 
-			const isValid = this.resourceType && (this.resourceType.agreement === undefined || this.agreementCheckboxChecked);
+			const isValid = this.resourceType && (this.resourceType.agreement === undefined || this._agreeementCheckBox.checked);
 			if (!isValid) {
 				this.wizard.wizardObject.message = {
 					text: localize('deploymentDialog.AcceptAgreements', "You must agree to the license agreements in order to proceed."),
@@ -174,7 +165,6 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 				}
 			);
 			return view.initializeModel(this.form!.withLayout({ width: '100%' }).component()).then(() => {
-				this.agreementCheckboxChecked = false;
 				this._agreementContainer.clearItems();
 				if (this.resourceType.agreement) {
 					this._agreementContainer.addItem(this.createAgreementCheckbox(this.resourceType.agreement));
@@ -218,20 +208,17 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 
 
 	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
-		const checkbox = this.view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+		this._agreeementCheckBox = this.view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
 			ariaLabel: this.getAgreementDisplayText(agreementInfo),
 			required: true
 		}).component();
-		checkbox.checked = false;
-		checkbox.onChanged(() => {
-			this.agreementCheckboxChecked = !!checkbox.checked;
-		});
+		this._agreeementCheckBox.checked = false;
 		const text = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: agreementInfo.template,
 			links: agreementInfo.links,
 			requiredIndicator: true
 		}).component();
-		return createFlexContainer(this.view, [checkbox, text]);
+		return createFlexContainer(this.view, [this._agreeementCheckBox, text]);
 	}
 
 	private getAgreementDisplayText(agreementInfo: AgreementInfo): string {

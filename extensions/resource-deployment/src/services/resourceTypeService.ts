@@ -28,7 +28,7 @@ const localize = nls.loadMessageBundle();
 export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
-	startDeployment(provider: DeploymentProvider, resourceType?: ResourceType): void;
+	startDeployment(resourceType?: ResourceType): void;
 	startDeploymentFromWizard(provider: DeploymentProvider, resourceType?: ResourceType): void;
 }
 
@@ -268,10 +268,8 @@ export class ResourceTypeService implements IResourceTypeService {
 		return loc.select;
 	}
 
-	public startDeployment(provider: DeploymentProvider, resourceType?: ResourceType): void {
-		if (!provider) {
-			provider = <DeploymentProvider>resourceType?.providers[0];
-		}
+	public startDeployment(resourceType?: ResourceType): void {
+		const provider = <DeploymentProvider>resourceType?.providers[0];
 		if (instanceOfAzureSQLVMDeploymentProvider(provider)) {
 			const wizard = new DeployAzureSQLVMWizard(this.notebookService, this.toolsService, resourceType, this);
 			wizard.open();
@@ -285,48 +283,6 @@ export class ResourceTypeService implements IResourceTypeService {
 			const wizard = new NotebookWizard(this.notebookService, this.platformService, this.toolsService, resourceType, this);
 			wizard.open();
 		}
-
-		// const self = this;
-		// if (instanceOfWizardDeploymentProvider(provider)) {
-		// 	const wizard = new DeployClusterWizard(provider.bdcWizard, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService);
-		// 	wizard.open();
-		// } else if (instanceOfNotebookWizardDeploymentProvider(provider)) {
-		// 	const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService, this.toolsService, resourceType, this);
-		// 	wizard.open();
-		// } else if (instanceOfDialogDeploymentProvider(provider)) {
-		// 	const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, this.toolsService, provider.dialog);
-		// 	dialog.open();
-		// } else if (instanceOfNotebookDeploymentProvider(provider)) {
-		// 	this.notebookService.openNotebook(provider.notebook);
-		// } else if (instanceOfDownloadDeploymentProvider(provider)) {
-		// 	const taskName = localize('resourceDeployment.DownloadAndLaunchTaskName', "Download and launch installer, URL: {0}", provider.downloadUrl);
-		// 	azdata.tasks.startBackgroundOperation({
-		// 		displayName: taskName,
-		// 		description: taskName,
-		// 		isCancelable: false,
-		// 		operation: op => {
-		// 			op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.DownloadingText', "Downloading from: {0}", provider.downloadUrl));
-		// 			self.download(provider.downloadUrl).then(async (downloadedFile) => {
-		// 				op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.DownloadCompleteText', "Successfully downloaded: {0}", downloadedFile));
-		// 				op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.LaunchingProgramText', "Launching: {0}", downloadedFile));
-		// 				await this.platformService.runCommand(downloadedFile, { sudo: true });
-		// 				op.updateStatus(azdata.TaskStatus.Succeeded, localize('resourceDeployment.ProgramLaunchedText', "Successfully launched: {0}", downloadedFile));
-		// 			}, (error) => {
-		// 				op.updateStatus(azdata.TaskStatus.Failed, error);
-		// 			});
-		// 		}
-		// 	});
-		// } else if (instanceOfWebPageDeploymentProvider(provider)) {
-		// 	vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(provider.webPageUrl));
-		// } else if (instanceOfCommandDeploymentProvider(provider)) {
-		// 	vscode.commands.executeCommand(provider.command);
-		// } else if (instanceOfAzureSQLVMDeploymentProvider(provider)) {
-		// 	const wizard = new DeployAzureSQLVMWizard(provider.azureSQLVMWizard, this.notebookService, this.toolsService);
-		// 	wizard.open();
-		// } else if (instanceOfAzureSQLDBDeploymentProvider(provider)) {
-		// 	const wizard = new DeployAzureSQLDBWizard(provider.azureSQLDBWizard, this.notebookService, this.toolsService);
-		// 	wizard.open();
-		// }
 	}
 
 	public startDeploymentFromWizard(provider: DeploymentProvider, resourceType?: ResourceType): void {
@@ -429,15 +385,4 @@ async function exists(path: string): Promise<boolean> {
 	} catch (e) {
 		return false;
 	}
-}
-
-export function supportsNewDeployment(resourceType: ResourceType): boolean {
-	// for (let i = 0; i < resourceType.providers.length; i++) {
-	// 	const currentProvider = resourceType.providers[i];
-	// 	if (
-	// 		instanceOfWizardDeploymentProvider(currentProvider)) {
-	// 		return false;
-	// 	}
-	// }
-	return true;
 }

@@ -36,15 +36,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 	initialize() {
 		let tab = azdata.window.createTab('');
 		this._dialogObject.registerCloseValidator(async () => {
-			const isValid = this._selectedResourceType && (this._selectedResourceType.agreement === undefined);
-			if (!isValid) {
-				this._dialogObject.message = {
-					text: localize('deploymentDialog.AcceptAgreements', "You must agree to the license agreements in order to proceed."),
-					level: azdata.window.MessageLevel.Error
-				};
-				return false;
-			}
-			return true;
+			const isValid = (this._selectedResourceType !== undefined);
+			return isValid;
 		});
 		tab.registerContent((view: azdata.ModelView) => {
 			this._view = view;
@@ -196,12 +189,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._selectedResourceType = resourceType;
 	}
 
-	private getCurrentProvider(): DeploymentProvider {
-		return this._selectedResourceType.providers[0]!;
-	}
-
 	protected async onComplete(): Promise<void> {
-		this.resourceTypeService.startDeployment(this.getCurrentProvider(), this._selectedResourceType);
+		this.resourceTypeService.startDeployment(this._selectedResourceType);
 	}
 
 	private getAllResourceTags(): string[] {
