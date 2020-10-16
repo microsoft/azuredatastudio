@@ -16,6 +16,11 @@ import { WizardBase } from './wizardBase';
 import { Model } from './model';
 
 const localize = nls.loadMessageBundle();
+
+/**
+ * This page contains license agreements, deployment options and Tools table for deployment types. Should be included in all custom deployment types that opens a wizard for deployment.
+ * Earlier this was a part of the resourceTypePicker dialog
+ */
 export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M extends Model> extends WizardPageBase<W, M> {
 	private form!: azdata.FormBuilder;
 	private view!: azdata.ModelView;
