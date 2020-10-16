@@ -36,6 +36,9 @@ import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode'
 import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
 import { ConnectionProfileGroupRenderer, ConnectionProfileRenderer, TreeNodeRenderer } from 'sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer';
 import { ColorScheme } from 'vs/platform/theme/common/theme';
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 
 export type TreeElement = ConnectionProviderElement | ITreeItemFromProvider | SavedConnectionNode | ServerTreeElement;
 
@@ -48,6 +51,8 @@ export class ConnectionBrowseTab implements IPanelTab {
 
 export class ConnectionBrowserView extends Disposable implements IPanelView {
 	private tree: WorkbenchAsyncDataTree<TreeModel, TreeElement> | undefined;
+	private searchBox: InputBox | undefined;
+	private treeContainer: HTMLElement | undefined;
 	private model: TreeModel | undefined;
 	private treeLabels: ResourceLabels | undefined;
 	public onDidChangeVisibility = Event.None;
@@ -60,14 +65,28 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 
 	constructor(
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IConnectionTreeService private readonly connectionTreeService: IConnectionTreeService
+		@IConnectionTreeService private readonly connectionTreeService: IConnectionTreeService,
+		@IContextViewService private readonly contextViewService: IContextViewService,
+		@IThemeService private readonly themeService: IThemeService
 	) {
 		super();
 		this.connectionTreeService.setView(this);
 	}
 
 	render(container: HTMLElement): void {
+		this.renderSearchBox(container);
+		this.renderTree(container);
+	}
 
+	renderSearchBox(container: HTMLElement): void {
+		this.searchBox = new InputBox(container, this.contextViewService);
+		this.searchBox.element.style.margin = '5px';
+		this._register(this.searchBox);
+		this._register(attachInputBoxStyler(this.searchBox, this.themeService));
+	}
+
+	renderTree(container: HTMLElement): void {
+		this.treeContainer = container.appendChild(DOM.$('div'));
 		this.treeLabels = this._register(this.instantiationService.createInstance(ResourceLabels, this));
 		const renderers: ITreeRenderer<TreeElement, any, any>[] = [
 			new ProviderElementRenderer(),
@@ -83,7 +102,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		this.tree = this._register(this.instantiationService.createInstance(
 			WorkbenchAsyncDataTree,
 			'Browser Connections',
-			container,
+			this.treeContainer,
 			new ListDelegate(),
 			renderers,
 			new DataSource(),
@@ -116,7 +135,10 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 	}
 
 	layout(dimension: DOM.Dimension): void {
-		this.tree.layout(dimension.height, dimension.width);
+		const treeHeight = dimension.height - DOM.getTotalHeight(this.searchBox.element);
+		this.treeContainer.style.width = `${dimension.width}px`;
+		this.treeContainer.style.height = `${treeHeight}px`;
+		this.tree.layout(treeHeight, dimension.width);
 	}
 
 	focus(): void {
