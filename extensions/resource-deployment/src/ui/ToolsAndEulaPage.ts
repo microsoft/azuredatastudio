@@ -6,14 +6,14 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { AgreementInfo, DeploymentProvider, DeploymentProviderBase, ITool, ResourceType, ToolStatus } from '../../interfaces';
-import { createFlexContainer } from '../modelViewUtils';
-import * as loc from '../../localizedConstants';
-import { IToolsService } from '../../services/toolsService';
-import { getErrorMessage } from '../../common/utils';
-import { WizardPageBase } from '../wizardPageBase';
-import { WizardBase } from '../wizardBase';
-import { Model } from '../model';
+import { AgreementInfo, DeploymentProvider, DeploymentProviderBase, ITool, ResourceType, ToolStatus } from '../interfaces';
+import { createFlexContainer } from './modelViewUtils';
+import * as loc from '../localizedConstants';
+import { IToolsService } from '../services/toolsService';
+import { getErrorMessage } from '../common/utils';
+import { WizardPageBase } from './wizardPageBase';
+import { WizardBase } from './wizardBase';
+import { Model } from './model';
 
 const localize = nls.loadMessageBundle();
 export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M extends Model> extends WizardPageBase<W, M> {

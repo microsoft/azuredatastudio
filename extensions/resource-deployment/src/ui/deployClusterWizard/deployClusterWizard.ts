@@ -26,7 +26,7 @@ import { DeploymentProfilePage } from './pages/deploymentProfilePage';
 import { ServiceSettingsPage } from './pages/serviceSettingsPage';
 import { SummaryPage } from './pages/summaryPage';
 import { TargetClusterContextPage } from './pages/targetClusterPage';
-import { ToolsAndEulaPage } from '../notebookWizard/notebookWizardToolsAndEulaPage';
+import { ToolsAndEulaPage } from '../ToolsAndEulaPage';
 import { IResourceTypeService } from '../../services/resourceTypeService';
 const localize = nls.loadMessageBundle();
 

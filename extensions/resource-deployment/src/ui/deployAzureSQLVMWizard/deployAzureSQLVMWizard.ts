@@ -20,7 +20,7 @@ import { SqlServerSettingsPage } from './pages/sqlServerSettingsPage';
 import { AzureSQLVMSummaryPage } from './pages/summaryPage';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { ToolsAndEulaPage } from '../notebookWizard/notebookWizardToolsAndEulaPage';
+import { ToolsAndEulaPage } from '../ToolsAndEulaPage';
 import { IResourceTypeService } from '../../services/resourceTypeService';
 const localize = nls.loadMessageBundle();
 

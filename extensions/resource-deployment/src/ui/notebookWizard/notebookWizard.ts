@@ -13,7 +13,7 @@ import { DeploymentType, instanceOfNotebookWizardDeploymentProvider, NotebookWiz
 import { IPlatformService } from './../../services/platformService';
 import { NotebookWizardAutoSummaryPage } from './notebookWizardAutoSummaryPage';
 import { NotebookWizardPage } from './notebookWizardPage';
-import { ToolsAndEulaPage } from './notebookWizardToolsAndEulaPage';
+import { ToolsAndEulaPage } from '../ToolsAndEulaPage';
 import { IResourceTypeService } from '../../services/resourceTypeService';
 
 export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Model>, Model> {

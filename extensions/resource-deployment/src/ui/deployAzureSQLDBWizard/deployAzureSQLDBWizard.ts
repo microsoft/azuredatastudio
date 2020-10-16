@@ -18,7 +18,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { AzureSQLDBSummaryPage } from './pages/summaryPage';
 import { EOL } from 'os';
 import { IResourceTypeService } from '../../services/resourceTypeService';
-import { ToolsAndEulaPage } from '../notebookWizard/notebookWizardToolsAndEulaPage';
+import { ToolsAndEulaPage } from '../ToolsAndEulaPage';
 
 export class DeployAzureSQLDBWizard extends WizardBase<WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>, DeployAzureSQLDBWizardModel> {
 	private _wizardInfo!: AzureSQLDBWizardInfo;
