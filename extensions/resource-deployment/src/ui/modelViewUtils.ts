@@ -380,6 +380,7 @@ async function processField(context: FieldContext): Promise<void> {
 			break;
 		case FieldType.SQLPassword:
 		case FieldType.Password:
+		case FieldType.AzureVMPassword:
 			processPasswordField(context);
 			break;
 		case FieldType.Text:
@@ -584,16 +585,16 @@ function processPasswordField(context: FieldContext): void {
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: passwordInput, isPassword: true });
 	addLabelInputPairToContainer(context.view, context.components, passwordLabel, passwordInput, context.fieldInfo);
 
-	if (context.fieldInfo.type === FieldType.SQLPassword) {
-		const invalidPasswordMessage = getInvalidSQLPasswordMessage(context.fieldInfo.label);
+	if (isPredefinedPasswordType(context.fieldInfo.type)) {
+		const invalidPasswordMessage = getPredefinedPasswordErrorMessage(context.fieldInfo.type, context.fieldInfo.label);
 		context.onNewDisposableCreated(passwordInput.onTextChanged(() => {
-			if (context.fieldInfo.type === FieldType.SQLPassword && isValidSQLPassword(passwordInput.value!, context.fieldInfo.userName)) {
+			if (isValidPassword(context.fieldInfo, passwordInput.value!)) {
 				removeValidationMessage(context.container, invalidPasswordMessage);
 			}
 		}));
 
 		context.onNewValidatorCreated((): { valid: boolean, message: string } => {
-			return { valid: isValidSQLPassword(passwordInput.value!, context.fieldInfo.userName), message: invalidPasswordMessage };
+			return { valid: isValidPassword(context.fieldInfo, passwordInput.value!), message: invalidPasswordMessage };
 		});
 	}
 
@@ -625,6 +626,32 @@ function processPasswordField(context: FieldContext): void {
 		context.onNewDisposableCreated(confirmPasswordInput.onTextChanged(() => {
 			updatePasswordMismatchMessage();
 		}));
+	}
+}
+
+function isPredefinedPasswordType(fieldType: FieldType): boolean {
+	return fieldType === FieldType.AzureVMPassword || fieldType === FieldType.SQLPassword;
+}
+
+function getPredefinedPasswordErrorMessage(fieldType: FieldType, fieldLabel: string): string {
+	switch (fieldType) {
+		case FieldType.AzureVMPassword:
+			return getInvalidAzureVMPasswordMessage(fieldLabel);
+		case FieldType.SQLPassword:
+			return getInvalidSQLPasswordMessage(fieldLabel);
+		default:
+			throw new Error(loc.unknownPasswordFieldTypeError(fieldType));
+	}
+}
+
+function isValidPassword(fieldInfo: FieldInfo, password: string): boolean {
+	switch (fieldInfo.type) {
+		case FieldType.AzureVMPassword:
+			return isValidAzureVMPassword(password);
+		case FieldType.SQLPassword:
+			return isValidSQLPassword(password, fieldInfo.userName);
+		default:
+			throw new Error(loc.unknownPasswordFieldTypeError(fieldInfo.type));
 	}
 }
 
@@ -1261,6 +1288,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 }
 
 export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {
+	// SQL Server password requirement can be found here: https://docs.microsoft.com/sql/relational-databases/security/password-policy
 	// Validate SQL Server password
 	const containsUserName = password && userName !== undefined && password.toUpperCase().includes(userName.toUpperCase());
 	// Instead of using one RegEx, I am separating it to make it more readable.
@@ -1271,16 +1299,29 @@ export function isValidSQLPassword(password: string, userName: string = 'sa'): b
 	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
 }
 
+export function isValidAzureVMPassword(password: string): boolean {
+	// Azure VM password requirement can be found here: https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm
+	const hasUpperCase = /[A-Z]/.test(password);
+	const hasLowerCase = /[a-z]/.test(password);
+	const hasNumbers = /\d/.test(password);
+	const hasNonAlphas = /\W/.test(password);
+	return password.length >= 12 && password.length <= 123 && hasUpperCase && hasLowerCase && hasNumbers && hasNonAlphas;
+}
+
 export function removeValidationMessage(container: azdata.window.Dialog | azdata.window.Wizard, message: string): void {
 	if (container.message && container.message.text.includes(message)) {
-		const messageWithLineBreak = message + '\n';
+		const messageWithLineBreak = message + EOL;
 		const searchText = container.message.text.includes(messageWithLineBreak) ? messageWithLineBreak : message;
 		container.message = { text: container.message.text.replace(searchText, '') };
 	}
 }
 
 export function getInvalidSQLPasswordMessage(fieldName: string): string {
-	return localize('invalidSQLPassword', "{0} doesn't meet the password complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy", fieldName);
+	return localize('invalidSQLPassword', "{0} doesn't meet the SQL Server password complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy", fieldName);
+}
+
+export function getInvalidAzureVMPasswordMessage(fieldName: string): string {
+	return localize('invalidAzureVMPassword', "{0} doesn't meet the Azure VM password complexity requirement. For more information: https://docs.microsoft.com/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm", fieldName);
 }
 
 export function getPasswordMismatchMessage(fieldName: string): string {

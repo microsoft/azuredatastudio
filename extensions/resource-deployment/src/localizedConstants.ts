@@ -24,6 +24,7 @@ export const createNewResourceGroup = localize('azure.resourceGroup.createNewRes
 export const NewResourceGroupAriaLabel = localize('azure.resourceGroup.NewResourceGroupAriaLabel', "New resource group name");
 export const realm = localize('deployCluster.Realm', "Realm");
 export const unknownFieldTypeError = (type: FieldType) => localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", type);
+export const unknownPasswordFieldTypeError = (type: FieldType) => localize('UnknownPasswordFieldTypeError', "\"{0}\" is not a predefined password type", type);
 export const optionsSourceAlreadyDefined = (optionsSourceId: string) => localize('optionsSource.alreadyDefined', "Options Source with id:{0} is already defined", optionsSourceId);
 export const noOptionsSourceDefined = (optionsSourceId: string) => localize('optionsSource.notDefined', "No Options Source defined for id: {0}", optionsSourceId);
 export const variableValueFetchForUnsupportedVariable = (variableName: string) => localize('getVariableValue.unknownVariableName', "Attempt to get variable value for unknown variable:{0}", variableName);

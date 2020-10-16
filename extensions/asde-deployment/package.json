@@ -335,7 +335,7 @@
                         {
                           "label": "%vm_password%",
                           "variableName": "AZDATA_NB_VAR_ASDE_VM_PASSWORD",
-                          "type": "password",
+                          "type": "azurevm_password",
                           "confirmationRequired": true,
                           "confirmationLabel": "%vm_password_confirm%",
                           "required": true
