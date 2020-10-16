@@ -56,6 +56,8 @@ export class ConnectionDialogWidget extends Modal {
 	private _noRecentConnection: HTMLElement;
 	private _savedConnection: HTMLElement;
 	private _noSavedConnection: HTMLElement;
+	private _recentConnectionActionBarContainer: HTMLElement;
+	private _connectionTypeContainer: HTMLElement;
 	private _connectionDetailTitle: HTMLElement;
 	private _connectButton: Button;
 	private _closeButton: Button;
@@ -92,8 +94,6 @@ export class ConnectionDialogWidget extends Modal {
 	private browsePanel: ConnectionBrowseTab;
 
 	private _connecting = false;
-
-	private orthogonalSize = 0;
 
 	constructor(
 		private providerDisplayNameOptions: string[],
@@ -198,6 +198,7 @@ export class ConnectionDialogWidget extends Modal {
 		DOM.hide(this._savedConnection);
 
 		this._panel = new TabbedPanel(this._body);
+		this._panel.element.style.margin = '0px 10px';
 		attachTabbedPanelStyler(this._panel, this._themeService);
 		this._recentConnectionTabId = this._panel.pushTab({
 			identifier: 'recent_connection',
@@ -206,7 +207,9 @@ export class ConnectionDialogWidget extends Modal {
 				render: c => {
 					c.append(recentConnectionTab);
 				},
-				layout: () => { },
+				layout: (dimension: DOM.Dimension) => {
+					this._recentConnectionTree.layout(dimension.height - DOM.getTotalHeight(this._recentConnectionActionBarContainer));
+				},
 				focus: () => this._recentConnectionTree.domFocus()
 			}
 		});
@@ -215,7 +218,9 @@ export class ConnectionDialogWidget extends Modal {
 			identifier: 'saved_connection',
 			title: localize('savedConnectionTitle', "Saved Connections"),
 			view: {
-				layout: () => { },
+				layout: (dimension: DOM.Dimension) => {
+					this._savedConnectionTree.layout(dimension.height, dimension.width);
+				},
 				render: c => {
 					c.append(savedConnectionTab);
 				},
@@ -284,8 +289,8 @@ export class ConnectionDialogWidget extends Modal {
 
 		this._connectionDetailTitle.innerText = localize('connectionDetailsTitle', "Connection Details");
 
-		const tableContainer = DOM.append(this._body, DOM.$('.connection-type'));
-		const table = DOM.append(tableContainer, DOM.$('table.connection-table-content'));
+		this._connectionTypeContainer = DOM.append(this._body, DOM.$('.connection-type'));
+		const table = DOM.append(this._connectionTypeContainer, DOM.$('table.connection-table-content'));
 		DialogHelper.appendInputSelectBox(
 			DialogHelper.appendRow(table, connectTypeLabel, 'connection-label', 'connection-input'), this._providerTypeSelectBox);
 
@@ -379,8 +384,8 @@ export class ConnectionDialogWidget extends Modal {
 
 	private createRecentConnectionList(): void {
 		const recentConnectionContainer = DOM.append(this._recentConnection, DOM.$('.connection-recent-content'));
-		const container = DOM.append(recentConnectionContainer, DOM.$('.recent-titles-container'));
-		const actionsContainer = DOM.append(container, DOM.$('.connection-history-actions'));
+		this._recentConnectionActionBarContainer = DOM.append(recentConnectionContainer, DOM.$('.recent-titles-container'));
+		const actionsContainer = DOM.append(this._recentConnectionActionBarContainer, DOM.$('.connection-history-actions'));
 		this._actionbar = this._register(new ActionBar(actionsContainer, { animated: false }));
 		const clearAction = this.instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
 		clearAction.useConfirmationMessage = true;
@@ -506,10 +511,7 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	protected layout(height: number): void {
-		// Height is the overall height. Since we're laying out a specific component, always get its actual height
-		const width = DOM.getContentWidth(this._body);
-		this.orthogonalSize = width;
-		this._panel.layout(new DOM.Dimension(this.orthogonalSize, height - 38 - 35 - 326)); // height - connection title - connection type input - connection widget
+		this._panel.layout(new DOM.Dimension(this._panel.element.clientWidth, this._panel.element.clientHeight));
 	}
 
 	/**
