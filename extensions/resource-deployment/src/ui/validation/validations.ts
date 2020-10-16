@@ -10,20 +10,20 @@ import * as loc from '../../localizedConstants';
 import { InputComponent } from '../modelViewUtils';
 import { RadioGroupLoadingComponentBuilder } from '../radioGroupLoadingComponentBuilder';
 
-export interface ValidationState {
+export interface ValidationResult {
 	valid: boolean;
 	message?: string;
 }
 
-export type Validator = () => Promise<ValidationState>;
-export type VariableValueGetter = (variable: string) => (Promise<string | number | undefined | null> | Promise<string | undefined | null>);
-export type ValueGetter = () => (Promise<string | number | undefined | null> | Promise<string | undefined | null>);
+export type Validator = () => Promise<ValidationResult>;
+export type VariableValueGetter = (variable: string) => Promise<string | number | undefined | null>;
+export type ValueGetter = () => Promise<string | number | undefined | null>;
 
 export const enum ValidationType {
 	IsInteger = 'is_integer',
 	Regex = 'regex_match',
-	LessThanOrEquals = '<=',
-	GreaterThanOrEquals = '>='
+	LessThanOrEqualsTo = '<=',
+	GreaterThanOrEqualsTo = '>='
 }
 
 export type IValidation = IRegexValidation | IIntegerValidation | IComparisonValidation;
@@ -187,18 +187,14 @@ export function createValidation(validation: IValidation, valueGetter: ValueGett
 	switch (validation.type) {
 		case ValidationType.Regex: return new RegexValidation(<IRegexValidation>validation, valueGetter);
 		case ValidationType.IsInteger: return new IntegerValidation(<IIntegerValidation>validation, valueGetter);
-		case ValidationType.LessThanOrEquals: return new LessThanOrEqualsValidation(<IComparisonValidation>validation, valueGetter, variableValueGetter!);
-		case ValidationType.GreaterThanOrEquals: return new GreaterThanOrEqualsValidation(<IComparisonValidation>validation, valueGetter, variableValueGetter!);
+		case ValidationType.LessThanOrEqualsTo: return new LessThanOrEqualsValidation(<IComparisonValidation>validation, valueGetter, variableValueGetter!);
+		case ValidationType.GreaterThanOrEqualsTo: return new GreaterThanOrEqualsValidation(<IComparisonValidation>validation, valueGetter, variableValueGetter!);
 		default: throw new Error(`unknown validation type:${validation.type}`); //dev error
 	}
 }
 
-export interface ValidationResult extends ValidationState {
-	dialogMessage: azdata.window.DialogMessage
-}
-
-export async function validateAndUpdateValidationMessages(component: InputComponent, container: azdata.window.Dialog | azdata.window.Wizard, validations: IValidation[] = []): Promise<ValidationState> {
-	let dialogMessage = container.message; //|| { text: ''};
+export async function validateAndUpdateValidationMessages(component: InputComponent, container: azdata.window.Dialog | azdata.window.Wizard, validations: IValidation[] = []): Promise<ValidationResult> {
+	let dialogMessage = container.message;
 	const validationStates = await Promise.all(validations.map(validation => validation.getValidator!()())); // strip off validation messages corresponding to successful validations
 	validationStates.filter(state => state.valid).forEach(v => dialogMessage = removeValidationMessage(dialogMessage, v.message!));
 	const failedStates = validationStates.filter(state => !state.valid);
