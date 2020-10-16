@@ -508,10 +508,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 }
 
-export function findPathRelativeToContent(notebookFolder: string, absolutePathURI: URI): string {
+export function findPathRelativeToContent(notebookFolder: string, contentPath: URI): string {
 	if (notebookFolder) {
-		if (absolutePathURI?.scheme === 'file') {
-			let relativePath = path.relative(notebookFolder, absolutePathURI.fsPath);
+		if (contentPath?.scheme === 'file') {
+			let relativePath = path.relative(notebookFolder, contentPath.fsPath);
 			//if path contains whitespaces then it's not identified as a link
 			relativePath = relativePath.replace(/\s/g, '%20');
 			if (relativePath.startsWith(path.join('.', '.', path.sep) || path.join('.', path.sep))) {
