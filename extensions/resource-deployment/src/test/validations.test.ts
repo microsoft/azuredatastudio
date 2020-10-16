@@ -186,6 +186,10 @@ async function testAndValidate(validation: Validation, test: TestObject, validat
 }
 
 function getDisplayString(value: string | number | null | undefined) {
+<<<<<<< HEAD
 	return typeof value === 'string' ? '"' + value + '"' : value;
+=======
+	return typeof value === 'string' ? `"${value}"` : value;
+>>>>>>> bug/12082-2
 }
 

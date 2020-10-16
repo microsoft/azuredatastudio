@@ -10,47 +10,41 @@ import * as loc from '../../localizedConstants';
 import { InputComponent } from '../modelViewUtils';
 import { RadioGroupLoadingComponentBuilder } from '../radioGroupLoadingComponentBuilder';
 
-export interface ValidationState {
+export interface ValidationResult {
 	valid: boolean;
 	message?: string;
 }
 
-export type Validator = () => Promise<ValidationState>;
-export type VariableValueGetter = (variable: string) => (Promise<string | number | undefined | null> | Promise<string | undefined | null>);
-export type ValueGetter = () => (Promise<string | number | undefined | null> | Promise<string | undefined | null>);
+export type Validator = () => Promise<ValidationResult>;
+export type VariableValueGetter = (variable: string) => Promise<string | number | undefined | null>;
+export type ValueGetter = () => Promise<string | number | undefined | null>;
 
 export const enum ValidationType {
 	IsInteger = 'is_integer',
 	Regex = 'regex_match',
-	LessThanOrEquals = '<=',
-	GreaterThanOrEquals = '>='
+	LessThanOrEqualsTo = '<=',
+	GreaterThanOrEqualsTo = '>='
 }
 
-export type IValidation = IRegexValidation | IIntegerValidation | IComparisonValidation;
+export type ValidationInfo = RegexValidationInfo | IntegerValidationInfo | ComparisonValidationInfo;
 
-export interface IValidationBase {
+export interface ValidationInfoBase {
 	readonly type: ValidationType,
 	readonly description: string,
-	getValidator?(): Validator
 }
 
-export type IIntegerValidation = IValidationBase;
+export type IntegerValidationInfo = ValidationInfoBase;
 
-export interface IRegexValidation extends IValidationBase {
+export interface RegexValidationInfo extends ValidationInfoBase {
 	readonly regex: string | RegExp
 }
 
-export interface IComparisonValidation extends IValidationBase {
+export interface ComparisonValidationInfo extends ValidationInfoBase {
 	readonly target: string
 }
 
-export abstract class Validation implements IValidationBase {
-	private _type: ValidationType;
+export abstract class Validation {
 	private _description: string;
-
-	get type(): ValidationType {
-		return this._type;
-	}
 
 	get description(): string {
 		return this._description;
@@ -67,14 +61,13 @@ export abstract class Validation implements IValidationBase {
 		return this._variableValueGetter!(variable);
 	}
 
-	constructor(validation: IValidation, protected _valueGetter: ValueGetter, protected _variableValueGetter?: VariableValueGetter) {
-		this._type = validation.type;
+	constructor(validation: ValidationInfo, protected _valueGetter: ValueGetter, protected _variableValueGetter?: VariableValueGetter) {
 		this._description = validation.description;
 	}
 }
 
-export class IntegerValidation extends Validation implements IIntegerValidation {
-	constructor(validation: IValidation, valueGetter: ValueGetter) {
+export class IntegerValidation extends Validation {
+	constructor(validation: IntegerValidationInfo, valueGetter: ValueGetter) {
 		super(validation, valueGetter);
 	}
 
@@ -91,14 +84,14 @@ export class IntegerValidation extends Validation implements IIntegerValidation 
 	}
 }
 
-export class RegexValidation extends Validation implements IRegexValidation {
+export class RegexValidation extends Validation {
 	private _regex: RegExp;
 
 	get regex(): RegExp {
 		return this._regex;
 	}
 
-	constructor(validation: IRegexValidation, valueGetter: ValueGetter) {
+	constructor(validation: RegexValidationInfo, valueGetter: ValueGetter) {
 		super(validation, valueGetter);
 		throwUnless(validation.regex !== undefined);
 		this._regex = (typeof validation.regex === 'string') ? new RegExp(validation.regex) : validation.regex;
@@ -112,14 +105,14 @@ export class RegexValidation extends Validation implements IRegexValidation {
 	}
 }
 
-export abstract class Comparison extends Validation implements IComparisonValidation {
+export abstract class Comparison extends Validation {
 	private _target: string;
 
 	get target(): string {
 		return this._target;
 	}
 
-	constructor(validation: IComparisonValidation, valueGetter: ValueGetter, variableValueGetter: VariableValueGetter) {
+	constructor(validation: ComparisonValidationInfo, valueGetter: ValueGetter, variableValueGetter: VariableValueGetter) {
 		super(validation, valueGetter, variableValueGetter);
 		throwUnless(validation.target !== undefined);
 		this._target = validation.target;
@@ -183,23 +176,19 @@ function getStrippedMessage(originalMessage: string, message: string) {
 	}
 }
 
-export function createValidation(validation: IValidation, valueGetter: ValueGetter, variableValueGetter?: VariableValueGetter): Validation {
+export function createValidation(validation: ValidationInfo, valueGetter: ValueGetter, variableValueGetter?: VariableValueGetter): Validation {
 	switch (validation.type) {
-		case ValidationType.Regex: return new RegexValidation(<IRegexValidation>validation, valueGetter);
-		case ValidationType.IsInteger: return new IntegerValidation(<IIntegerValidation>validation, valueGetter);
-		case ValidationType.LessThanOrEquals: return new LessThanOrEqualsValidation(<IComparisonValidation>validation, valueGetter, variableValueGetter!);
-		case ValidationType.GreaterThanOrEquals: return new GreaterThanOrEqualsValidation(<IComparisonValidation>validation, valueGetter, variableValueGetter!);
+		case ValidationType.Regex: return new RegexValidation(<RegexValidationInfo>validation, valueGetter);
+		case ValidationType.IsInteger: return new IntegerValidation(<IntegerValidationInfo>validation, valueGetter);
+		case ValidationType.LessThanOrEqualsTo: return new LessThanOrEqualsValidation(<ComparisonValidationInfo>validation, valueGetter, variableValueGetter!);
+		case ValidationType.GreaterThanOrEqualsTo: return new GreaterThanOrEqualsValidation(<ComparisonValidationInfo>validation, valueGetter, variableValueGetter!);
 		default: throw new Error(`unknown validation type:${validation.type}`); //dev error
 	}
 }
 
-export interface ValidationResult extends ValidationState {
-	dialogMessage: azdata.window.DialogMessage
-}
-
-export async function validateAndUpdateValidationMessages(component: InputComponent, container: azdata.window.Dialog | azdata.window.Wizard, validations: IValidation[] = []): Promise<ValidationState> {
-	let dialogMessage = container.message; //|| { text: ''};
-	const validationStates = await Promise.all(validations.map(validation => validation.getValidator!()())); // strip off validation messages corresponding to successful validations
+export async function validateAndUpdateValidationMessages(component: InputComponent, container: azdata.window.Dialog | azdata.window.Wizard, validations: Validation[] = []): Promise<ValidationResult> {
+	let dialogMessage = container.message;
+	const validationStates = await Promise.all(validations.map(validation => (<Validation>validation).getValidator()())); // strip off validation messages corresponding to successful validations
 	validationStates.filter(state => state.valid).forEach(v => dialogMessage = removeValidationMessage(dialogMessage, v.message!));
 	const failedStates = validationStates.filter(state => !state.valid);
 	if (failedStates.length > 0) {
