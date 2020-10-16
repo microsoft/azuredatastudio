@@ -365,12 +365,11 @@ export function processWhenClause(when: string | undefined, selectedOptions: { o
 	} else {
 		const expected = when.replace(/\s/g, '').split('&&').sort();
 		const actual = selectedOptions.map(option => `${option.option}=${option.value}`);
-		let allSatisfied = true;
-		expected.forEach(expectedOption => {
-			if (allSatisfied && actual.indexOf(expectedOption) === -1) {
-				allSatisfied = false;
+		for (let whenClause of expected) {
+			if (actual.indexOf(whenClause) === -1) {
+				return false;
 			}
-		});
-		return allSatisfied;
+		}
+		return true;
 	}
 }
