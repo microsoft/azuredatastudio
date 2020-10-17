@@ -28,7 +28,10 @@
           "light": "./images/sqldb_edge.svg",
           "dark": "./images/sqldb_edge_inverse.svg"
         },
-        "tags": ["Hybrid", "SQL Server"],
+        "tags": [
+          "Hybrid",
+          "SQL Server"
+        ],
         "options": [
           {
             "name": "type",
@@ -338,7 +341,10 @@
                           "type": "password",
                           "confirmationRequired": true,
                           "confirmationLabel": "%vm_password_confirm%",
-                          "required": true
+                          "required": true,
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])[A-Za-z\\d\\W_]{12,123}$",
+                          "textValidationDescription": "%vm_password_validation_error_message%"
                         }
                       ]
                     },
