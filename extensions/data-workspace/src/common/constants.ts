@@ -19,6 +19,7 @@ export const CreateWorkspaceConfirmation = localize('dataworkspace.createWorkspa
 
 // UI
 export const OkButtonText = localize('dataworkspace.ok', "OK");
+export const CancelButtonText = localize('dataworkspace.cancel', "Cancel");
 export const BrowseButtonText = localize('dataworkspace.browse', "Browse");
 export const DefaultInputWidth = '400px';
 export const DefaultButtonWidth = '80px';

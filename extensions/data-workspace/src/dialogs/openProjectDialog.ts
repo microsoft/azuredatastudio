@@ -46,7 +46,10 @@ export class OpenProjectDialog extends DialogBase {
 
 	async onComplete(): Promise<void> {
 		try {
-			await this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._projectFile)]);
+			const validateWorkspace = await this.workspaceService.validateWorkspace();
+			if (validateWorkspace) {
+				await this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._projectFile)]);
+			}
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(err?.message ? err.message : err);

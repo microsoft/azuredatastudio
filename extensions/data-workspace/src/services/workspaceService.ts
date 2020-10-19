@@ -27,12 +27,14 @@ export class WorkspaceService implements IWorkspaceService {
 	 * Load any temp project that needed to be loaded before the extension host was restarted
 	 * which would happen if a workspace was created in order open or create a project
 	 */
-	async loadTempProject(): Promise<void> {
-		const tempProjectFile = this._context.globalState.get(TempProject);
+	async loadTempProjects(): Promise<void> {
+		const tempProjects: string[] | undefined = this._context.globalState.get(TempProject) ?? undefined;
 
-		if (tempProjectFile && vscode.workspace.workspaceFile) {
+		if (tempProjects && vscode.workspace.workspaceFile) {
 			// add project to workspace now that the workspace has been created and saved
-			await this.addProjectsToWorkspace([vscode.Uri.file(<string>tempProjectFile)]);
+			for (let project of tempProjects) {
+				await this.addProjectsToWorkspace([vscode.Uri.file(<string>project)]);
+			}
 			await this._context.globalState.update(TempProject, undefined);
 		}
 	}
@@ -45,7 +47,7 @@ export class WorkspaceService implements IWorkspaceService {
 	 */
 	async CreateNewWorkspaceForProject(projectFileFsPath: string): Promise<void> {
 		// save temp project
-		await this._context.globalState.update(TempProject, projectFileFsPath);
+		await this._context.globalState.update(TempProject, [projectFileFsPath]);
 
 		// create a new workspace - the workspace file will be created in the same folder as the project
 		const workspaceFileFsPath = vscode.Uri.file(path.join(path.dirname(projectFileFsPath), `${path.parse(projectFileFsPath).name}.code-workspace`)).fsPath;
@@ -63,6 +65,23 @@ export class WorkspaceService implements IWorkspaceService {
 		return false;
 	}
 
+	/**
+	 * Verify that a workspace is open or that if one isn't, it's ok to create a workspace
+	 */
+	async validateWorkspace(): Promise<boolean> {
+		if (!vscode.workspace.workspaceFile) {
+			const result = await vscode.window.showWarningMessage(constants.CreateWorkspaceConfirmation, constants.OkButtonText, constants.CancelButtonText);
+			if (result === constants.OkButtonText) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			// workspace is open
+			return true;
+		}
+	}
+
 	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
 		if (!projectFiles || projectFiles.length === 0) {
 			return;
@@ -70,12 +89,8 @@ export class WorkspaceService implements IWorkspaceService {
 
 		// a workspace needs to be open to add projects
 		if (!vscode.workspace.workspaceFile) {
-			const result = await vscode.window.showWarningMessage(constants.CreateWorkspaceConfirmation, constants.OkButtonText);
-			if (result === constants.OkButtonText) {
-				await this.CreateNewWorkspaceForProject(projectFiles[0].fsPath);
-			} else {
-				return;
-			}
+			await this.CreateNewWorkspaceForProject(projectFiles[0].fsPath);
+			return;
 		}
 
 		const currentProjects: vscode.Uri[] = this.getProjectsInWorkspace();
