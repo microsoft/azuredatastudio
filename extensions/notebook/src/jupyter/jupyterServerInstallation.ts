@@ -732,15 +732,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	private async updateKernelSpecPath(kernelPath: string): Promise<void> {
-		try {
-			let fileContents = await fs.readFile(kernelPath);
-			let kernelSpec = <IKernelInfo>JSON.parse(fileContents.toString());
-			kernelSpec.argv = kernelSpec.argv?.map(arg => arg.replace('{ADS_PYTHONDIR}', this._pythonInstallationPath));
-			await fs.writeFile(kernelPath, JSON.stringify(kernelSpec, undefined, '\t'));
-		}
-		catch (error) {
-			throw error;
-		}
+		let fileContents = await fs.readFile(kernelPath);
+		let kernelSpec = <IKernelInfo>JSON.parse(fileContents.toString());
+		kernelSpec.argv = kernelSpec.argv?.map(arg => arg.replace('{ADS_PYTHONDIR}', this._pythonInstallationPath));
+		await fs.writeFile(kernelPath, JSON.stringify(kernelSpec, undefined, '\t'));
 	}
 }
 
