@@ -87,7 +87,7 @@ export interface IWorkspaceService {
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void>;
 
 	/**
-	 * Verify that a workspace is open or it is ok to create a workspace if one needs to be created
+	 * Verify that a workspace is open or if one isn't, ask user to pick whether a workspace should be automatically created
 	 */
 	validateWorkspace(): Promise<boolean>;
 }
