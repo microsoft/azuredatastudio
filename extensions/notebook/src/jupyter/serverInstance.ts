@@ -174,25 +174,19 @@ export class PerFolderServerInstance implements IServerInstance {
 	}
 
 	private async copyKernelsToSystemJupyterDirs(): Promise<void> {
-
-		try {
-			let kernelsExtensionSource: string;
-			if (this.options.install.runningOnSaw) {
-				kernelsExtensionSource = path.join(this.options.install.extensionPath, 'saw-kernels');
-			} else {
-				kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
-			}
-			this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
-			if (!(await utils.exists(this._systemJupyterDir))) {
-				await utils.mkDir(this._systemJupyterDir, this.options.install.outputChannel);
-			}
-			await fs.copy(kernelsExtensionSource, this._systemJupyterDir);
-			if (this.options.install.runningOnSaw) {
-				await this.options.install.updateKernelSpecPaths(this._systemJupyterDir);
-			}
+		let kernelsExtensionSource: string;
+		if (this.options.install.runningOnSaw) {
+			kernelsExtensionSource = path.join(this.options.install.extensionPath, 'saw-kernels');
+		} else {
+			kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
 		}
-		catch (error) {
-			throw error;
+		this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
+		if (!(await utils.exists(this._systemJupyterDir))) {
+			await utils.mkDir(this._systemJupyterDir, this.options.install.outputChannel);
+		}
+		await fs.copy(kernelsExtensionSource, this._systemJupyterDir);
+		if (this.options.install.runningOnSaw) {
+			await this.options.install.updateKernelSpecPaths(this._systemJupyterDir);
 		}
 	}
 
