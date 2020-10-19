@@ -7,13 +7,14 @@ import * as mssql from '../../mssql';
 import * as azdata from 'azdata';
 import { createHistoryFileName, readHistoryFileNames, getAssessmentDate, TargetWithChildren } from './utils';
 import { promises as fs } from 'fs';
+import { TelemetryReporter, SqlAssessmentTelemetryView, SqlTelemetryActions } from './telemetry';
 
 export enum AssessmentType {
 	AvailableRules = 1,
 	InvokeAssessment = 2
 }
 
-export type OnResultCallback = (result: azdata.SqlAssessmentResult, assessmentType: AssessmentType, append: boolean) => any;
+export type OnResultCallback = (result: azdata.SqlAssessmentResult, assessmentType: AssessmentType, append: boolean) => void;
 
 export interface SqlAssessmentRecord {
 	result: azdata.SqlAssessmentResult;
@@ -62,8 +63,10 @@ export class AssessmentEngine {
 			await this.performServerAssessment(asmtType, onResult);
 		} else {
 			if (asmtType === AssessmentType.AvailableRules) {
+				TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.GetDatabaseAssessmentRules);
 				await onResult(await this.sqlAssessment.getAssessmentItems(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Database), asmtType, false);
 			} else {
+				TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.InvokeDatabaseAssessment);
 				const result = await this.sqlAssessment.assessmentInvoke(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Database);
 
 				this.lastInvokedResults = {
@@ -73,9 +76,8 @@ export class AssessmentEngine {
 				};
 
 				await onResult(result, asmtType, false);
-				if (asmtType === AssessmentType.InvokeAssessment) {
-					this.saveAssessment(this.databaseName, result);
-				}
+
+				this.saveAssessment(this.databaseName, result);
 			}
 		}
 
@@ -88,7 +90,7 @@ export class AssessmentEngine {
 	}
 
 	public generateAssessmentScript(): Promise<azdata.ResultStatus> {
-		//TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.ExportAssessmentResults);
+		TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.ExportAssessmentResults);
 		return this.sqlAssessment.generateAssessmentScript(this.lastInvokedResults.result.items, '', '', azdata.TaskExecutionMode.script);
 	}
 
@@ -100,8 +102,6 @@ export class AssessmentEngine {
 		return this.historicalRecords;
 	}
 
-
-
 	private async loadHistory(): Promise<void> {
 		this.historicalRecords = [];
 		const files: TargetWithChildren[] = await readHistoryFileNames(this.targetName);
@@ -111,9 +111,11 @@ export class AssessmentEngine {
 			const content: string = await fs.readFile(file.target, 'utf8');
 			const result: azdata.SqlAssessmentResult = JSON.parse(content);
 
-			for (let nChild = 0; nChild < file.children.length && this.isServerConnection; nChild++) {
-				const childResult: azdata.SqlAssessmentResult = JSON.parse(await fs.readFile(file.children[nChild], 'utf8'));
-				result.items.push(...childResult.items);
+			if (this.isServerConnection) {
+				for (let nChild = 0; nChild < file.children.length; nChild++) {
+					const childResult: azdata.SqlAssessmentResult = JSON.parse(await fs.readFile(file.children[nChild], 'utf8'));
+					result.items.push(...childResult.items);
+				}
 			}
 
 			const date = getAssessmentDate(file.target);
@@ -122,24 +124,26 @@ export class AssessmentEngine {
 				dateUpdated: date,
 				result: result
 			});
-
 		}
 	}
 
 	private async performServerAssessment(asmtType: AssessmentType, onResult: OnResultCallback): Promise<void> {
 		let databaseListRequest = azdata.connection.listDatabases(this.connectionProfile.connectionId);
 
-		let assessmentResult = asmtType === AssessmentType.InvokeAssessment
-			? await this.sqlAssessment.assessmentInvoke(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Server)
-			: await this.sqlAssessment.getAssessmentItems(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Server);
+		let assessmentResult: azdata.SqlAssessmentResult;
+		if (AssessmentType.InvokeAssessment) {
+			TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.InvokeServerAssessment);
+			assessmentResult = await this.sqlAssessment.assessmentInvoke(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Server);
 
-		if (asmtType === AssessmentType.InvokeAssessment) {
 			this.lastInvokedResults = {
 				connectionInfo: this.connectionProfile,
 				dateUpdated: Date.now(),
 				result: assessmentResult
 			};
 			this.saveAssessment(this.connectionProfile.serverName, assessmentResult);
+		} else {
+			TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.GetServerAssessmentRules);
+			assessmentResult = await this.sqlAssessment.getAssessmentItems(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Server);
 		}
 
 		await onResult(assessmentResult, asmtType, false);
@@ -169,7 +173,12 @@ export class AssessmentEngine {
 	}
 
 	private async saveAssessment(target: string, assessment: azdata.SqlAssessmentResult): Promise<void> {
-		const fileName = await createHistoryFileName(target, this.lastInvokedResults.dateUpdated);
-		return fs.writeFile(fileName, JSON.stringify(assessment));
+		try {
+			const fileName = await createHistoryFileName(target, this.lastInvokedResults.dateUpdated);
+			return fs.writeFile(fileName, JSON.stringify(assessment));
+		}
+		catch (err) {
+			console.error(`error saving sql assessment history file: ${err}`);
+		}
 	}
 }

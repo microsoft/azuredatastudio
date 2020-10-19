@@ -10,6 +10,7 @@ import { SqlAssessmentTab } from './sqlAssessmentTab';
 import { AssessmentEngine, AssessmentType } from '../engine';
 import { AssessmentResultGrid } from '../assessmentResultGrid';
 import { LocalizedStrings } from '../localized';
+import { TelemetryReporter, SqlAssessmentTelemetryView, SqlTelemetryActions } from '../telemetry';
 
 const localize = nls.loadMessageBundle();
 
@@ -33,6 +34,7 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 	}
 
 	async tabContent(view: azdata.ModelView): Promise<azdata.Component> {
+		TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.OpenHistory);
 		this.summaryTable = await this.createHistorySummaryTable(view);
 
 		const root = view.modelBuilder.flexContainer()
@@ -62,8 +64,7 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 
 		const infoPanel = view.modelBuilder.flexContainer()
 			.withLayout({
-				flexFlow: 'row',
-				//width: '100%',
+				flexFlow: 'row'
 			}).withProperties<azdata.ComponentProperties>({
 				CSSStyles: {
 					'padding-left': '15px'
@@ -71,7 +72,6 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 			}).component();
 		infoPanel.addItem(backLink, { flex: '0 0 auto' });
 		infoPanel.addItem(title);
-
 
 		this.toDispose.push(this.summaryTable.onRowSelected(async () => {
 			if (this.summaryTable.selectedRows?.length === 1) {
@@ -94,7 +94,6 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 
 		}));
 
-
 		return root;
 	}
 
@@ -107,7 +106,6 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 			item.result.items.filter(i => i.level === 'Information')?.length
 		]);
 	}
-
 
 	private async createHistorySummaryTable(view: azdata.ModelView): Promise<azdata.TableComponent> {
 		const cssHeader = 'no-borders align-with-header';
@@ -124,5 +122,4 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 				width: '100%'
 			}).component();
 	}
-
 }

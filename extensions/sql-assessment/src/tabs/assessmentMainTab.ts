@@ -13,6 +13,7 @@ import { suggestReportFile } from '../utils';
 import { HTMLReportBuilder } from '../htmlReportGenerator';
 import { AssessmentResultGrid } from '../assessmentResultGrid';
 import { LocalizedStrings } from '../localized';
+import { TelemetryReporter, SqlAssessmentTelemetryView, SqlTelemetryActions } from '../telemetry';
 
 const localize = nls.loadMessageBundle();
 
@@ -242,7 +243,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 			}).component();
 
 		this.toDispose.push(this.btnHTMLExport.onDidClick(async () => {
-
+			TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.CreateHTMLReport);
 			const options: vscode.SaveDialogOptions = {
 				defaultUri: vscode.Uri.file(suggestReportFile(Date.now())),
 				filters: { 'HTML File': ['html'] }
@@ -274,7 +275,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 			}).component();
 
 		this.toDispose.push(btnViewSamples.onDidClick(() => {
-			//TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.LearnMoreAssessmentLink);
+			TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.LearnMoreAssessmentLink);
 			vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/sql-assessment-api'));
 		}));
 

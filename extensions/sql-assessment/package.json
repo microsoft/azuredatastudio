@@ -24,16 +24,18 @@
     "Microsoft.mssql"
   ],
   "contributes": {
-    "dashboard.tabs": [{
-      "id": "data-management-asmt",
-      "description": "%dashboard.tabName%",
-      "provider": "MSSQL",
-      "title": "%displayName%",
-      "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11",
-      "container": {
-        "modelview-container": null
+    "dashboard.tabs": [
+      {
+        "id": "data-management-asmt",
+        "description": "%dashboard.tabName%",
+        "provider": "MSSQL",
+        "title": "%displayName%",
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud && mssql:engineedition != 11",
+        "container": {
+          "modelview-container": null
+        }
       }
-    }]
+    ]
   },
   "dependencies": {
     "vscode-nls": "^3.2.1",

@@ -5,7 +5,7 @@
 import { LocalizedStrings } from './localized';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { escape } from './utils';
+import { htmlEscape } from './utils';
 
 export class HTMLReportBuilder {
 	constructor(
@@ -40,7 +40,7 @@ export class HTMLReportBuilder {
 
 	private instanceName(serverInfo: azdata.ServerInfo): string {
 		const serverName = this._connectionInfo.serverName;
-		if (['local', '(local)', '(local);'].indexOf(serverName.toLowerCase()) >= 0) {
+		if (['local', '(local)'].indexOf(serverName.toLowerCase()) >= 0) {
 
 			return serverInfo !== undefined
 				? (<any>serverInfo)['machineName']
@@ -120,7 +120,7 @@ export class HTMLReportBuilder {
 		let content = '';
 		items.forEach(item => {
 			content += `<tr>
-					<td>${escape(item.message)}</td>
+					<td>${htmlEscape(item.message)}</td>
 					<td><a href='${item.helpLink}' target='_blank;'>${LocalizedStrings.LEARN_MORE_LINK}</a></td>
 					<td>${this.formatTags(item.tags)}</td>
 					<td>${item.checkId}</td>

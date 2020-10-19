@@ -9,6 +9,7 @@ import * as mssql from '../../mssql';
 import { SqlAssessmentMainTab } from './tabs/assessmentMainTab';
 import { SqlAssessmentHistoryTab } from './tabs/historyTab';
 import { AssessmentEngine } from './engine';
+import { TelemetryReporter, SqlAssessmentTelemetryView } from './telemetry';
 
 const tabName = 'data-management-asmt';
 
@@ -33,14 +34,12 @@ export default class MainController {
 
 		this.sqlAssessment = ((await vscode.extensions.getExtension(mssql.extension.name)?.activate() as mssql.IExtension)).sqlAssessment;
 		this.engine = new AssessmentEngine(this.sqlAssessment);
-		this.registerModelView();
-		//TelemetryReporter.sendViewEvent(SqlAssessmentTelemetryView);
+		this.registerModelViewProvider();
+		TelemetryReporter.sendViewEvent(SqlAssessmentTelemetryView);
 		return true;
 	}
 
-
-
-	private registerModelView(): void {
+	private registerModelViewProvider(): void {
 		azdata.ui.registerModelViewProvider(tabName, async (view) => {
 			await this.engine.initialize(view.connection.connectionId);
 			const mainTab = await new SqlAssessmentMainTab(this.extensionContext, this.engine).Create(view);
@@ -59,7 +58,5 @@ export default class MainController {
 			await view.initializeModel(tabbedPanel);
 		});
 	}
-
-
 }
 

@@ -7,7 +7,7 @@ import * as path from 'path';
 import * as os from 'os';
 import { promises as fs, existsSync, readdirSync } from 'fs';
 
-
+export type TargetWithChildren = { target: string, children: string[] };
 
 export function suggestFileName(prefix: string, ext: string, date: number): string {
 	const fileName = `${prefix}${generateDefaultFileName(new Date(date))}${ext}`;
@@ -30,8 +30,6 @@ export async function createHistoryFileName(targetName: string, date: number): P
 	return path.join(dirPath, escapeFileName(fileName));
 }
 
-export type TargetWithChildren = { target: string, children: string[] };
-
 export async function readHistoryFileNames(targetName: string): Promise<TargetWithChildren[]> {
 	const dirPath = path.join(os.homedir(), 'SqlAssessmentHistory');
 
@@ -48,7 +46,6 @@ export async function readHistoryFileNames(targetName: string): Promise<TargetWi
 				children: []
 			};
 
-
 			const datePart = `_${targetFile.split('_')[1]}`;
 			result.children.push(...files.filter(f => f.endsWith(datePart)));
 			result.children = result.children.map(c => path.join(dirPath, c));
@@ -56,10 +53,6 @@ export async function readHistoryFileNames(targetName: string): Promise<TargetWi
 			return result;
 		});
 }
-
-
-
-
 
 export function readHistoryFileName(fileName: string): string {
 	return path.join(os.homedir(), 'SqlAssessmentHistory', `${fileName}`);
@@ -74,7 +67,7 @@ function extractDate(fileName: string): number {
 	const strDate: string = fileName.split('_')[1].split('.')[0];
 	const date = new Date(
 		Number(strDate.substr(0, 4)), // y
-		Number(strDate.substr(4, 2)), // m
+		Number(strDate.substr(4, 2)) - 1, // m
 		Number(strDate.substr(6, 2)), // d
 		Number(strDate.substr(8, 2)), // h
 		Number(strDate.substr(10, 2)), // m
@@ -87,7 +80,7 @@ function generateDefaultFileName(resultDate: Date): string {
 	return `${resultDate.toISOString().replace(/-/g, '').replace('T', '').replace(/:/g, '').split('.')[0]}`;
 }
 
-export function escape(html: string): string {
+export function htmlEscape(html: string): string {
 	return html.replace(/[<|>|&|"]/g, function (match) {
 		switch (match) {
 			case '<': return '&lt;';
