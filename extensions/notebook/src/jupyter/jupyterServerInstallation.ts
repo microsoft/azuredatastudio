@@ -320,6 +320,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			}
 		}
 
+		// Delete existing Python variables in ADS to prevent conflict with other installs
+		delete process.env['PYTHONPATH'];
+		delete process.env['PYTHONSTARTUP'];
+		delete process.env['PYTHONHOME'];
+
 		// Skip adding user package directory on SAWs, since packages will already be included with ADS
 		if (!this._runningOnSAW && await utils.exists(this._pythonExecutable)) {
 			let pythonUserDir = await this.getPythonUserDir(this._pythonExecutable);
@@ -327,11 +332,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
 			}
 		}
-
-		// Delete existing Python variables in ADS to prevent conflict with other installs
-		delete process.env['PYTHONPATH'];
-		delete process.env['PYTHONSTARTUP'];
-		delete process.env['PYTHONHOME'];
 
 		// Store the executable options to run child processes with env var without interfering parent env var.
 		let env = Object.assign({}, process.env);
