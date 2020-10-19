@@ -50,9 +50,9 @@ export class WorkspaceService implements IWorkspaceService {
 		await this._context.globalState.update(TempProject, [projectFileFsPath]);
 
 		// create a new workspace - the workspace file will be created in the same folder as the project
-		const workspaceFileFsPath = vscode.Uri.file(path.join(path.dirname(projectFileFsPath), `${path.parse(projectFileFsPath).name}.code-workspace`)).fsPath;
+		const workspaceFile = vscode.Uri.file(path.join(path.dirname(projectFileFsPath), `${path.parse(projectFileFsPath).name}.code-workspace`));
 		const projectFolder = vscode.Uri.file(path.dirname(projectFileFsPath));
-		await azdata.workspace.createWorkspace(projectFolder, workspaceFileFsPath);
+		await azdata.workspace.createWorkspace(projectFolder, workspaceFile);
 	}
 
 	get isProjectProviderAvailable(): boolean {

@@ -17,7 +17,7 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadWorkspace);
 	}
 
-	$createWorkspace(folder: URI, path: string): Promise<void> {
-		return this._proxy.$createWorkspace(folder, path);
+	$createWorkspace(folder: URI, workspaceFile: URI): Promise<void> {
+		return this._proxy.$createWorkspace(folder, workspaceFile);
 	}
 }
