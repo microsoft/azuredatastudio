@@ -274,8 +274,10 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 		Object.keys(this._checkboxColumns).forEach(col => this.registerPlugins(col, this._checkboxColumns[col]));
 		Object.keys(this._buttonsColumns).forEach(col => this.registerPlugins(col, this._buttonsColumns[col]));
+
 		if (this.headerFilter === true) {
 			this.registerFilterPlugin();
+			this._tableData.clearFilter();
 		}
 		if (this.ariaRowCount === -1) {
 			this._table.removeAriaRowCount();
@@ -393,6 +395,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			if (filterValues) {
 				this._tableData.filter();
 				this._table.grid.resetActiveCell();
+				this.data = this._tableData.getItems().map(dataObject => Object.values(dataObject));
 				this.layoutTable();
 			} else {
 				this._tableData.clearFilter();
