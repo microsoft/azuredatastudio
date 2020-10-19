@@ -154,7 +154,6 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 					},
 					{
 						component: this._optionsContainer,
-						title: loc.optionsText
 					}, {
 						component: this._toolsLoadingComponent,
 						title: loc.requiredTools
@@ -170,11 +169,23 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 				this._agreementContainer.clearItems();
 				if (this.resourceType.agreement) {
 					this._agreementContainer.addItem(this.createAgreementCheckbox(this.resourceType.agreement));
+				} else {
+					this._agreementContainer.updateCssStyles({
+						'display': 'none'
+					});
 				}
 
 				this._optionsContainer.clearItems();
 				this._optionDropDownMap.clear();
 				if (this.resourceType.options) {
+					const optionTitle = this.view.modelBuilder.text().withProps({
+						value: loc.optionsText,
+						CSSStyles: {
+							'font-size': '14px',
+							'padding': '0'
+						}
+					}).component();
+					this._optionsContainer.addItem(optionTitle);
 					this.resourceType.options.forEach(option => {
 						const optionLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 							value: option.displayName
@@ -197,6 +208,10 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 						this._optionDropDownMap.set(option.name, optionSelectBox);
 						const row = this.view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 						this._optionsContainer.addItem(row);
+					});
+				} else {
+					this._optionsContainer.updateCssStyles({
+						'display': 'none'
 					});
 				}
 
