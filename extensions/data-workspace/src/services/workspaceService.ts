@@ -90,6 +90,8 @@ export class WorkspaceService implements IWorkspaceService {
 		// a workspace needs to be open to add projects
 		if (!vscode.workspace.workspaceFile) {
 			await this.CreateNewWorkspaceForProject(projectFiles[0].fsPath);
+
+			// this won't get hit since the extension host will get restarted, but helps with testing
 			return;
 		}
 

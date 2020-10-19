@@ -9,10 +9,10 @@ import * as sinon from 'sinon';
 import * as should from 'should';
 import * as path from 'path';
 import * as TypeMoq from 'typemoq';
-import * as constants from '../common/constants';
 import { WorkspaceService } from '../services/workspaceService';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import { createProjectProvider } from './projectProviderRegistry.test';
+import { workspace } from 'azdata';
 
 const DefaultWorkspaceFilePath = '/test/folder/ws.code-workspace';
 
@@ -233,10 +233,26 @@ suite('WorkspaceService Tests', function (): void {
 	});
 
 	test('test addProjectsToWorkspace when no workspace open', async () => {
+		stubWorkspaceFile(undefined);
+		const onWorkspaceProjectsChangedStub = sinon.stub();
+		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
+			onWorkspaceProjectsChangedStub();
+		});
+		sinon.stub(workspace, 'createWorkspace').resolves(undefined);
+
+		await service.addProjectsToWorkspace([
+			vscode.Uri.file('/test/folder/proj1.sqlproj')
+		]);
+
+		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, false, 'the onDidWorkspaceProjectsChange event should not have been fired');
+		onWorkspaceProjectsChangedDisposable.dispose();
+	});
+
+	test('test loadTempProjects', async () => {
 		const processPath = (original: string): string => {
 			return original.replace(/\//g, path.sep);
 		};
-		stubWorkspaceFile(undefined);
+		stubWorkspaceFile('/test/folder/proj1.code-workspace');
 		const updateConfigurationStub = sinon.stub();
 		const getConfigurationStub = sinon.stub().returns([processPath('folder1/proj2.sqlproj')]);
 		const onWorkspaceProjectsChangedStub = sinon.stub();
@@ -244,15 +260,13 @@ suite('WorkspaceService Tests', function (): void {
 			onWorkspaceProjectsChangedStub();
 		});
 		stubGetConfigurationValue(getConfigurationStub, updateConfigurationStub);
-		const showWarningMessage = sinon.stub(vscode.window, 'showWarningMessage').resolves(undefined);
+		sinon.stub(workspace, 'createWorkspace').resolves(undefined);
+		sinon.stub(vscode.workspace, 'workspaceFolders').value(['folder1']);
+		mockGlobalState.setup(x => x.get(TypeMoq.It.isAny())).returns(() => [processPath('folder1/proj2.sqlproj')]);
 
-		await service.addProjectsToWorkspace([
-			vscode.Uri.file('/test/folder/proj1.sqlproj')
-		]);
+		await service.loadTempProjects();
 
-		should(showWarningMessage.calledOnce).be.true('showWarningMessage should have been called');
-		should(showWarningMessage.calledWith(constants.CreateWorkspaceConfirmation)).be.true(`showInfoMessage not called with expected message '${constants.CreateWorkspaceConfirmation}' Actual '${showWarningMessage.getCall(0).args[0]}'`);
-		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, false, 'the onDidWorkspaceProjectsChange event should not have been fired');
+		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, true, 'the onDidWorkspaceProjectsChange event should have been fired');
 		onWorkspaceProjectsChangedDisposable.dispose();
 	});
 
