@@ -7,8 +7,8 @@ import 'mocha';
 import * as should from 'should';
 import { GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, Validation, ValidationType } from '../ui/validation/validations';
 
-describe('Validation', () => {
-	describe('IntegerValidation', () => {
+suite('Validation', () => {
+	suite('IntegerValidation', () => {
 		// all the below test values are arbitrary representative values or sentinel values for integer validation
 		[
 			{ value: '342520596781', expected: true },
@@ -20,20 +20,20 @@ describe('Validation', () => {
 			{ value: undefined, expected: false },
 			{ value: NaN, expected: false },
 			{ value: null, expected: false },
-		].forEach(test => {
-			const displayTestValue = getDisplayString(test.value);
-			it(`testValue:${displayTestValue}`, async () => {
+		].forEach(testObj => {
+			const displayTestValue = getDisplayString(testObj.value);
+			test(`testValue:${displayTestValue}`, async () => {
 				const validationDescription = `value: ${displayTestValue} was not an integer`;
 				const validation = new IntegerValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription },
-					async () => test.value
+					async () => testObj.value
 				);
-				await testAndValidate(validation, test, validationDescription);
+				await testAndValidate(validation, testObj, validationDescription);
 			});
 		});
 	});
 
-	describe('RegexValidation', () => {
+	suite('RegexValidation', () => {
 		const testRegex = '^[0-9]+$';
 		// tests
 		[
@@ -46,20 +46,20 @@ describe('Validation', () => {
 			{ value: 'arbitraryString', expected: false },
 			{ value: undefined, expected: false },
 			{ value: null, expected: false }
-		].forEach(test => {
-			const displayTestValue = getDisplayString(test.value);
-			it(`regex: /${testRegex}/, testValue:${displayTestValue}, expect result: ${test.expected}`, async () => {
+		].forEach(testOb => {
+			const displayTestValue = getDisplayString(testOb.value);
+			test(`regex: /${testRegex}/, testValue:${displayTestValue}, expect result: ${testOb.expected}`, async () => {
 				const validationDescription = `value:${displayTestValue} did not match the regex:/${testRegex}/`;
 				const validation = new RegexValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription, regex: testRegex },
-					async () => test.value
+					async () => testOb.value
 				);
-				await testAndValidate(validation, test, validationDescription);
+				await testAndValidate(validation, testOb, validationDescription);
 			});
 		});
 	});
 
-	describe('LessThanOrEqualsValidation', () => {
+	suite('LessThanOrEqualsValidation', () => {
 		const targetVariableName = 'comparisonTarget';
 		// tests - when operands are mix of string and number then number comparison is performed
 		[
@@ -103,22 +103,22 @@ describe('Validation', () => {
 			{ value: 42, targetValue: null, expected: false },
 			{ value: null, targetValue: undefined, expected: false },
 			{ value: null, targetValue: null, expected: true },
-		].forEach(test => {
-			const displayTestValue = getDisplayString(test.value);
-			const displayTargetValue = getDisplayString(test.targetValue);
-			it(`testValue:${displayTestValue}, targetValue:${displayTargetValue}`, async () => {
+		].forEach(testObj => {
+			const displayTestValue = getDisplayString(testObj.value);
+			const displayTargetValue = getDisplayString(testObj.targetValue);
+			test(`testValue:${displayTestValue}, targetValue:${displayTargetValue}`, async () => {
 				const validationDescription = `${displayTestValue} did not test as <= ${displayTargetValue}`;
 				const validation = new LessThanOrEqualsValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription, target: targetVariableName },
-					async () => test.value,
-					async (_variableName: string) => test.targetValue
+					async () => testObj.value,
+					async (_variableName: string) => testObj.targetValue
 				);
-				await testAndValidate(validation, test, validationDescription);
+				await testAndValidate(validation, testObj, validationDescription);
 			});
 		});
 	});
 
-	describe('GreaterThanOrEqualsValidation', () => {
+	suite('GreaterThanOrEqualsValidation', () => {
 		const targetVariableName = 'comparisonTarget';
 		// tests - when operands are mix of string and number then number comparison is performed
 		[
@@ -155,17 +155,17 @@ describe('Validation', () => {
 			{ value: 42, targetValue: null, expected: true },
 			{ value: null, targetValue: undefined, expected: false },
 			{ value: null, targetValue: null, expected: true },
-		].forEach(test => {
-			const displayTestValue = getDisplayString(test.value);
-			const displayTargetValue = getDisplayString(test.targetValue);
-			it(`testValue:${displayTestValue}, targetValue:${displayTargetValue}`, async () => {
+		].forEach(testObj => {
+			const displayTestValue = getDisplayString(testObj.value);
+			const displayTargetValue = getDisplayString(testObj.targetValue);
+			test(`testValue:${displayTestValue}, targetValue:${displayTargetValue}`, async () => {
 				const validationDescription = `${displayTestValue} did not test as >= ${displayTargetValue}`;
 				const validation = new GreaterThanOrEqualsValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription, target: targetVariableName },
-					async () => test.value,
-					async (_variableName: string) => test.targetValue
+					async () => testObj.value,
+					async (_variableName: string) => testObj.targetValue
 				);
-				await testAndValidate(validation, test, validationDescription);
+				await testAndValidate(validation, testObj, validationDescription);
 			});
 		});
 	});
