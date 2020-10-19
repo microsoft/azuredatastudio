@@ -57,11 +57,11 @@ export interface IModalDialogStyles {
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 export type DialogStyle = 'Normal' | 'Flyout' | 'Callout';
-export type CalloutPosition = 'left' | 'right' | 'above' | 'below' | null;
+export type DialogPosition = 'left' | 'right' | 'above' | 'below' | undefined;
 
 export interface IModalOptions {
 	dialogStyle?: DialogStyle;
-	dialogPosition?: CalloutPosition;
+	dialogPosition?: DialogPosition;
 	width?: DialogWidth;
 	isAngular?: boolean;
 	hasBackButton?: boolean;
@@ -73,7 +73,7 @@ export interface IModalOptions {
 
 const defaultOptions: IModalOptions = {
 	dialogStyle: 'Flyout',
-	dialogPosition: null,
+	dialogPosition: undefined,
 	width: 'narrow',
 	isAngular: false,
 	hasBackButton: false,

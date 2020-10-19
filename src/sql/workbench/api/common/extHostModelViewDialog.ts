@@ -13,7 +13,7 @@ import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { TabOrientation, DialogWidth, DialogStyle } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { TabOrientation, DialogWidth, DialogStyle, DialogPosition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', "Done");
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', "Cancel");
@@ -716,7 +716,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._onClickCallbacks.set(handle, callback);
 	}
 
-	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, width?: azdata.window.DialogWidth, dialogStyle?: DialogStyle): azdata.window.Dialog {
+	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition): azdata.window.Dialog {
 		let dialog = new DialogImpl(this, this._extHostModelView, this._extHostTaskManagement, extension);
 		if (dialogName) {
 			dialog.dialogName = dialogName;

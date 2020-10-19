@@ -299,6 +299,9 @@ export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
 export type DialogStyle = 'Normal' | 'Flyout' | 'Callout';
 
+export type DialogPosition = 'left' | 'right' | 'above' | 'below' | undefined;
+
+
 export enum MessageLevel {
 	Error = 0,
 	Warning = 1,
