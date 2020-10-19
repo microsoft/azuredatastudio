@@ -51,7 +51,7 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 	}
 
 	constructor(wizard: W, _pageIndex: number = 0) {
-		super('', localize('notebookWizard.toolsAndEulaPageTitle', "Deployment Pre-Requisite"), wizard);
+		super('', localize('notebookWizard.toolsAndEulaPageTitle', "Deployment pre-requisites"), wizard);
 	}
 
 	public async onEnter(): Promise<void> {
@@ -148,12 +148,11 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 
 			this.form = view.modelBuilder.formContainer().withFormItems(
 				[
-					{
-						component: this._agreementContainer,
-						title: ''
-					},
+
 					{
 						component: this._optionsContainer,
+					}, {
+						component: this._agreementContainer,
 					}, {
 						component: this._toolsLoadingComponent,
 						title: loc.requiredTools
@@ -168,6 +167,14 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 			return view.initializeModel(this.form!.withLayout({ width: '100%' }).component()).then(() => {
 				this._agreementContainer.clearItems();
 				if (this.resourceType.agreement) {
+					const agreementTitle = this.view.modelBuilder.text().withProps({
+						value: localize('resourceDeployment.AgreementTitle', "Accept terms of use"),
+						CSSStyles: {
+							'font-size': '14px',
+							'padding': '0'
+						}
+					}).component();
+					this._agreementContainer.addItem(agreementTitle);
 					this._agreementContainer.addItem(this.createAgreementCheckbox(this.resourceType.agreement));
 				} else {
 					this._agreementContainer.updateCssStyles({
