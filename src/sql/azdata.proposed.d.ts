@@ -69,6 +69,10 @@ declare module 'azdata' {
 			batchId?: number;
 			id?: number;
 		}
+
+		export interface INotebookMetadata {
+			connectionName?: string;
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'

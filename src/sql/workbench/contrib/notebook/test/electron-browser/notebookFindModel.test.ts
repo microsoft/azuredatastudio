@@ -433,7 +433,7 @@ suite('Notebook Find Model', function (): void {
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(contents));
 		defaultModelOptions.contentManager = mockContentManager.object;
 		// Initialize the model
-		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
+		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object);
 		await model.loadContents();
 		await model.requestModelLoad();
 	}
