@@ -725,10 +725,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let fileStats = await Promise.all(filePaths.map(path => fs.stat(path)));
 		let folderPaths = filePaths.filter((value, index) => value && fileStats[index].isDirectory());
 		let kernelFiles = folderPaths.map(folder => path.join(folder, 'kernel.json'));
-
 		await Promise.all(kernelFiles.map(file => this.updateKernelSpecPath(file)));
 		this._kernelSpecsUpdated = true;
-
 	}
 
 	private async updateKernelSpecPath(kernelPath: string): Promise<void> {
