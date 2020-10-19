@@ -11,6 +11,9 @@ import * as childProcess from '../common/childProcess';
 import { HttpClient } from '../common/httpClient';
 import * as utils from '../common/utils';
 import * as loc from '../localizedConstants';
+import * as os from 'os';
+import * as fs from 'fs';
+import { AzdataReleaseInfo } from '../azdataReleaseInfo';
 
 const oldAzdataMock = new azdata.AzdataTool('/path/to/azdata', '0.0.0');
 
@@ -18,7 +21,7 @@ const oldAzdataMock = new azdata.AzdataTool('/path/to/azdata', '0.0.0');
  * This matches the schema of the JSON file used to determine the current version of
  * azdata - do not modify unless also updating the corresponding JSON file
  */
-const releaseJson = {
+const releaseJson: AzdataReleaseInfo = {
 	win32: {
 		'version': '9999.999.999',
 		'link': 'https://download.com/azdata-20.0.1.msi'
@@ -36,8 +39,181 @@ describe('azdata', function () {
 	afterEach(function (): void {
 		sinon.restore();
 	});
+	describe('azdataTool', function (): void {
+		const azdataTool = new azdata.AzdataTool(os.tmpdir(), '1.0.0');
+		let executeCommandStub: sinon.SinonStub;
+		const namespace = 'myNamespace';
+		const name = 'myName';
+		const connectivityMode = 'myConnectivityMode';
+		const resourceGroup = 'myResourceGroup';
+		const location = 'myLocation';
+		const subscription = 'mySubscription';
+		const profileName = 'myProfileName';
+		const storageClass = 'myStorageClass';
 
-	describe('findAzdata', function () {
+		beforeEach(function (): void {
+			executeCommandStub = sinon.stub(childProcess, 'executeCommand').resolves({ stdout: '{}', stderr: '' });
+		});
+
+		describe('arc', function (): void {
+			describe('dc', function (): void {
+				it('create', async function (): Promise<void> {
+					await azdataTool.arc.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass);
+					verifyExecuteCommandCalledWithArgs([
+						'arc', 'dc', 'create',
+						namespace,
+						name,
+						connectivityMode,
+						resourceGroup,
+						location,
+						subscription,
+						profileName,
+						storageClass]);
+				});
+				describe('endpoint', async function (): Promise<void> {
+					it('list', async function (): Promise<void> {
+						await azdataTool.arc.dc.endpoint.list();
+						verifyExecuteCommandCalledWithArgs(['arc', 'dc', 'endpoint', 'list']);
+					});
+				});
+				describe('config', async function (): Promise<void> {
+					it('list', async function (): Promise<void> {
+						await azdataTool.arc.dc.config.list();
+						verifyExecuteCommandCalledWithArgs(['arc', 'dc', 'config', 'list']);
+					});
+					it('show', async function (): Promise<void> {
+						await azdataTool.arc.dc.config.show();
+						verifyExecuteCommandCalledWithArgs(['arc', 'dc', 'config', 'show']);
+					});
+				});
+			});
+			describe('postgres', function (): void {
+				describe('server', function (): void {
+					it('delete', async function (): Promise<void> {
+						await azdataTool.arc.postgres.server.delete(name);
+						verifyExecuteCommandCalledWithArgs(['arc', 'postgres', 'server', 'delete', name]);
+					});
+					it('list', async function (): Promise<void> {
+						await azdataTool.arc.postgres.server.list();
+						verifyExecuteCommandCalledWithArgs(['arc', 'postgres', 'server', 'list']);
+					});
+					it('show', async function (): Promise<void> {
+						await azdataTool.arc.postgres.server.show(name);
+						verifyExecuteCommandCalledWithArgs(['arc', 'postgres', 'server', 'show', name]);
+					});
+					it('edit', async function (): Promise<void> {
+						const args = {
+							adminPassword: true,
+							coresLimit: 'myCoresLimit',
+							coresRequest: 'myCoresRequest',
+							engineSettings: 'myEngineSettings',
+							extensions: 'myExtensions',
+							memoryLimit: 'myMemoryLimit',
+							memoryRequest: 'myMemoryRequest',
+							noWait: true,
+							port: 1337,
+							replaceEngineSettings: true,
+							workers: 2
+						};
+						await azdataTool.arc.postgres.server.edit(name, args);
+						verifyExecuteCommandCalledWithArgs([
+							'arc', 'postgres', 'server', 'edit',
+							name,
+							'--admin-password',
+							args.coresLimit,
+							args.coresRequest,
+							args.engineSettings,
+							args.extensions,
+							args.memoryLimit,
+							args.memoryRequest,
+							'--no-wait',
+							args.port.toString(),
+							'--replace-engine-settings',
+							args.workers.toString()]);
+					});
+				});
+			});
+			describe('sql', function (): void {
+				describe('mi', function (): void {
+					it('delete', async function (): Promise<void> {
+						await azdataTool.arc.sql.mi.delete(name);
+						verifyExecuteCommandCalledWithArgs(['arc', 'sql', 'mi', 'delete', name]);
+					});
+					it('list', async function (): Promise<void> {
+						await azdataTool.arc.sql.mi.list();
+						verifyExecuteCommandCalledWithArgs(['arc', 'sql', 'mi', 'list']);
+					});
+					it('show', async function (): Promise<void> {
+						await azdataTool.arc.sql.mi.show(name);
+						verifyExecuteCommandCalledWithArgs(['arc', 'sql', 'mi', 'show', name]);
+					});
+				});
+			});
+			it('login', async function (): Promise<void> {
+				const endpoint = 'myEndpoint';
+				const username = 'myUsername';
+				const password = 'myPassword';
+				await azdataTool.login(endpoint, username, password);
+				verifyExecuteCommandCalledWithArgs(['login', endpoint, username]);
+			});
+			it('version', async function (): Promise<void> {
+				executeCommandStub.resolves({ stdout: '1.0.0', stderr: '' });
+				await azdataTool.version();
+				verifyExecuteCommandCalledWithArgs(['--version']);
+			});
+			it('general error throws', async function (): Promise<void> {
+				const err = new Error();
+				executeCommandStub.throws(err);
+				try {
+					await azdataTool.arc.dc.endpoint.list();
+					throw new Error('command should have failed');
+				} catch (error) {
+					should(error).equal(err);
+				}
+			});
+			it('ExitCodeError handled and parsed correctly', async function (): Promise<void> {
+				const errorInnerText = 'my error text';
+				const err = new childProcess.ExitCodeError(1, `ERROR { "stderr": "${errorInnerText}"}`);
+				executeCommandStub.throws(err);
+				try {
+					await azdataTool.arc.dc.endpoint.list();
+					throw new Error('command should have failed');
+				} catch (error) {
+					should(error).equal(err);
+					should((error as childProcess.ExitCodeError).stderr).equal(errorInnerText);
+				}
+			});
+			it('ExitCodeError general error with azdata tool existing rethrows original error', async function (): Promise<void> {
+				sinon.stub(fs.promises, 'access').resolves();
+				const err = new childProcess.ExitCodeError(1, 'some other error');
+				executeCommandStub.throws(err);
+				try {
+					await azdataTool.arc.dc.endpoint.list();
+					throw new Error('command should have failed');
+				} catch (error) {
+					should(error).equal(err);
+				}
+			});
+			it('ExitCodeError general error with azdata tool not existing throws NoAzdataError', async function (): Promise<void> {
+				sinon.stub(fs.promises, 'access').throws(new Error('not found'));
+				const err = new childProcess.ExitCodeError(1, 'some other error');
+				executeCommandStub.throws(err);
+				try {
+					await azdataTool.arc.dc.endpoint.list();
+					throw new Error('command should have failed');
+				} catch (error) {
+					should(error instanceof utils.NoAzdataError).be.true('error should have been instance of NoAzdataError');
+				}
+			});
+		});
+
+		function verifyExecuteCommandCalledWithArgs(args: string[]): void {
+			const commandArgs = executeCommandStub.args[0][1] as string[];
+			args.forEach(arg => should(commandArgs).containEql(arg));
+		}
+	});
+
+	describe('findAzdata', function (): void {
 		it('successful', async function (): Promise<void> {
 			// Mock searchForCmd to return a path to azdata.cmd
 			sinon.stub(utils, 'searchForCmd').returns(Promise.resolve('/path/to/azdata'));

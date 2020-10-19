@@ -218,6 +218,63 @@ export function createCredentialId(controllerId: string, resourceType: string, i
 }
 
 /**
+ * Calculates the gibibyte (GiB) conversion of a quantity that could currently be represented by a range
+ * of SI suffixes (E, P, T, G, M, K, m) or their power-of-two equivalents (Ei, Pi, Ti, Gi, Mi, Ki)
+ * @param value The string of a quantity to be converted
+ * @returns String of GiB conversion
+ */
+export function convertToGibibyteString(value: string): string {
+	if (!value) {
+		throw new Error(`Value provided is not a valid Kubernetes resource quantity`);
+	}
+
+	let base10ToBase2Multiplier;
+	let floatValue = parseFloat(value);
+	let splitValue = value.split(String(floatValue));
+	let unit = splitValue[1];
+
+	if (unit === 'K') {
+		base10ToBase2Multiplier = 1000 / 1024;
+		floatValue = (floatValue * base10ToBase2Multiplier) / Math.pow(1024, 2);
+	} else if (unit === 'M') {
+		base10ToBase2Multiplier = Math.pow(1000, 2) / Math.pow(1024, 2);
+		floatValue = (floatValue * base10ToBase2Multiplier) / 1024;
+	} else if (unit === 'G') {
+		base10ToBase2Multiplier = Math.pow(1000, 3) / Math.pow(1024, 3);
+		floatValue = floatValue * base10ToBase2Multiplier;
+	} else if (unit === 'T') {
+		base10ToBase2Multiplier = Math.pow(1000, 4) / Math.pow(1024, 4);
+		floatValue = (floatValue * base10ToBase2Multiplier) * 1024;
+	} else if (unit === 'P') {
+		base10ToBase2Multiplier = Math.pow(1000, 5) / Math.pow(1024, 5);
+		floatValue = (floatValue * base10ToBase2Multiplier) * Math.pow(1024, 2);
+	} else if (unit === 'E') {
+		base10ToBase2Multiplier = Math.pow(1000, 6) / Math.pow(1024, 6);
+		floatValue = (floatValue * base10ToBase2Multiplier) * Math.pow(1024, 3);
+	} else if (unit === 'm') {
+		floatValue = (floatValue / 1000) / Math.pow(1024, 3);
+	} else if (unit === '') {
+		floatValue = floatValue / Math.pow(1024, 3);
+	} else if (unit === 'Ki') {
+		floatValue = floatValue / Math.pow(1024, 2);
+	} else if (unit === 'Mi') {
+		floatValue = floatValue / 1024;
+	} else if (unit === 'Gi') {
+		floatValue = floatValue;
+	} else if (unit === 'Ti') {
+		floatValue = floatValue * 1024;
+	} else if (unit === 'Pi') {
+		floatValue = floatValue * Math.pow(1024, 2);
+	} else if (unit === 'Ei') {
+		floatValue = floatValue * Math.pow(1024, 3);
+	} else {
+		throw new Error(`${value} is not a valid Kubernetes resource quantity`);
+	}
+
+	return String(floatValue);
+}
+
+/*
  * Throws an Error with given {@link message} unless {@link condition} is true.
  * This also tells the typescript compiler that the condition is 'truthy' in the remainder of the scope
  * where this function was called.
