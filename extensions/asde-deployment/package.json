@@ -387,7 +387,7 @@
             "requiredTools": [
               {
                 "name": "azure-cli",
-                "version": "2.9.1"
+                "version": "2.13.0"
               }
             ],
             "when": "type=azure-create-new"
@@ -477,7 +477,7 @@
             "requiredTools": [
               {
                 "name": "azure-cli",
-                "version": "2.9.1"
+                "version": "2.13.0"
               }
             ],
             "when": "type=azure-single-device"
@@ -570,7 +570,7 @@
             "requiredTools": [
               {
                 "name": "azure-cli",
-                "version": "2.9.1"
+                "version": "2.13.0"
               }
             ],
             "when": "type=azure-multi-device"

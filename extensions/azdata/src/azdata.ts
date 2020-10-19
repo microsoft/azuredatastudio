@@ -62,7 +62,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 
 	public arc = {
 		dc: {
-			create: async (namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string): Promise<azdataExt.AzdataOutput<void>> => {
+			create: (namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string): Promise<azdataExt.AzdataOutput<void>> => {
 				const args = ['arc', 'dc', 'create',
 					'--namespace', namespace,
 					'--name', name,
@@ -79,31 +79,31 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 				return this.executeCommand<void>(args);
 			},
 			endpoint: {
-				list: async () => {
+				list: (): Promise<azdataExt.AzdataOutput<azdataExt.DcEndpointListResult[]>> => {
 					return this.executeCommand<azdataExt.DcEndpointListResult[]>(['arc', 'dc', 'endpoint', 'list']);
 				}
 			},
 			config: {
-				list: async () => {
+				list: (): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigListResult[]>> => {
 					return this.executeCommand<azdataExt.DcConfigListResult[]>(['arc', 'dc', 'config', 'list']);
 				},
-				show: async () => {
+				show: (): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigShowResult>> => {
 					return this.executeCommand<azdataExt.DcConfigShowResult>(['arc', 'dc', 'config', 'show']);
 				}
 			}
 		},
 		postgres: {
 			server: {
-				delete: async (name: string) => {
+				delete: (name: string): Promise<azdataExt.AzdataOutput<void>> => {
 					return this.executeCommand<void>(['arc', 'postgres', 'server', 'delete', '-n', name]);
 				},
-				list: async () => {
+				list: (): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerListResult[]>> => {
 					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list']);
 				},
-				show: async (name: string) => {
+				show: (name: string): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult>> => {
 					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name]);
 				},
-				edit: async (
+				edit: (
 					name: string,
 					args: {
 						adminPassword?: boolean,
@@ -118,7 +118,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 						replaceEngineSettings?: boolean,
 						workers?: number
 					},
-					additionalEnvVars?: { [key: string]: string }) => {
+					additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<void>> => {
 					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', name];
 					if (args.adminPassword) { argsArray.push('--admin-password'); }
 					if (args.coresLimit !== undefined) { argsArray.push('--cores-limit', args.coresLimit); }
@@ -137,20 +137,20 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 		},
 		sql: {
 			mi: {
-				delete: async (name: string) => {
+				delete: (name: string): Promise<azdataExt.AzdataOutput<void>> => {
 					return this.executeCommand<void>(['arc', 'sql', 'mi', 'delete', '-n', name]);
 				},
-				list: async () => {
+				list: (): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiListResult[]>> => {
 					return this.executeCommand<azdataExt.SqlMiListResult[]>(['arc', 'sql', 'mi', 'list']);
 				},
-				show: async (name: string) => {
+				show: (name: string): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiShowResult>> => {
 					return this.executeCommand<azdataExt.SqlMiShowResult>(['arc', 'sql', 'mi', 'show', '-n', name]);
 				}
 			}
 		}
 	};
 
-	public async login(endpoint: string, username: string, password: string): Promise<azdataExt.AzdataOutput<void>> {
+	public login(endpoint: string, username: string, password: string): Promise<azdataExt.AzdataOutput<void>> {
 		return this.executeCommand<void>(['login', '-e', endpoint, '-u', username], { 'AZDATA_PASSWORD': password });
 	}
 
