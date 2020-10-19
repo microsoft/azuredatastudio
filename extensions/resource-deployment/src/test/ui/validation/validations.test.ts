@@ -5,7 +5,7 @@
 
 import 'mocha';
 import * as should from 'should';
-import { GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, Validation, ValidationType } from '../ui/validation/validations';
+import { GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, Validation, ValidationType } from '../../../ui/validation/validations';
 
 suite('Validation', () => {
 	suite('IntegerValidation', () => {
