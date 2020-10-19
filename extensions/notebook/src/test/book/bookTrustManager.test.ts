@@ -263,6 +263,7 @@ describe('BookTrustManagerTests', function () {
 		runs.forEach(function (run){
 			describe('Trusting in Workspaces on ' + run.it, function (): void {
 				beforeEach(() => {
+					trustedFolders = [];
 					// Mock Workspace Configuration
 					let workspaceConfigurtionMock: TypeMoq.IMock<vscode.WorkspaceConfiguration> = TypeMoq.Mock.ofType<vscode.WorkspaceConfiguration>();
 					workspaceConfigurtionMock.setup(config => config.get(TypeMoq.It.isValue(constants.trustedBooksConfigKey))).returns(() => [].concat(trustedFolders));
@@ -343,10 +344,13 @@ describe('BookTrustManagerTests', function () {
 				});
 
 				it('should NOT trust a notebook in an untrusted book in a folder', async () => {
+					//Set book as not trusted before running test
+					bookTrustManager.setBookAsUnTrusted('/temp/SubFolder2/');
+
 					let notebookUri = run.book2.notebook1;
 					let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
-					should(isNotebookTrusted).be.false('Notebook should be trusted');
+					should(isNotebookTrusted).be.false('Notebook not should be trusted');
 				});
 
 				it('should trust notebook after book has been added to a folder', async () => {
@@ -362,18 +366,24 @@ describe('BookTrustManagerTests', function () {
 					should(isNotebookTrustedAfterChange).be.true('Notebook should be trusted');
 				});
 
-				it('should NOT trust a notebook when untrusting a book in folder', async () => {
+				it('should NOT trust a notebook when removing all books from folders', async () => {
 					bookTrustManager.setBookAsTrusted('/temp/SubFolder/');
+					bookTrustManager.setBookAsTrusted('/temp/SubFolder2/');
 					let notebookUri = run.book1.notebook1;
 					let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
+					let notebook2Uri = run.book2.notebook1;
+					let isNotebook2Trusted = bookTrustManager.isNotebookTrustedByDefault(notebook2Uri);
 
 					should(isNotebookTrusted).be.true('Notebook should be trusted');
+					should(isNotebook2Trusted).be.true('Notebook2 should be trusted');
 
 					trustedFolders = [];
 
 					let isNotebookTrustedAfterChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
+					let isNotebook2TrustedAfterChange = bookTrustManager.isNotebookTrustedByDefault(notebook2Uri);
 
 					should(isNotebookTrustedAfterChange).be.false('Notebook should not be trusted after book removal');
+					should(isNotebook2TrustedAfterChange).be.false('Notebook2 should not be trusted after book removal');
 				});
 
 				it('should NOT trust an unknown book', async () => {
