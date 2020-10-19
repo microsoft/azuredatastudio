@@ -720,20 +720,15 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		if (!this._runningOnSAW || this._kernelSpecsUpdated) {
 			return;
 		}
-		try {
-			let fileNames = await fs.readdir(kernelsFolder);
-			let filePaths = fileNames.map(name => path.join(kernelsFolder, name));
-			let fileStats = await Promise.all(filePaths.map(path => fs.stat(path)));
-			let folderPaths = filePaths.filter((value, index) => value && fileStats[index].isDirectory());
-			let kernelFiles = folderPaths.map(folder => path.join(folder, 'kernel.json'));
+		let fileNames = await fs.readdir(kernelsFolder);
+		let filePaths = fileNames.map(name => path.join(kernelsFolder, name));
+		let fileStats = await Promise.all(filePaths.map(path => fs.stat(path)));
+		let folderPaths = filePaths.filter((value, index) => value && fileStats[index].isDirectory());
+		let kernelFiles = folderPaths.map(folder => path.join(folder, 'kernel.json'));
 
-			await Promise.all(kernelFiles.map(file => this.updateKernelSpecPath(file)));
+		await Promise.all(kernelFiles.map(file => this.updateKernelSpecPath(file)));
+		this._kernelSpecsUpdated = true;
 
-			this._kernelSpecsUpdated = true;
-		}
-		catch (error) {
-			throw error;
-		}
 	}
 
 	private async updateKernelSpecPath(kernelPath: string): Promise<void> {
