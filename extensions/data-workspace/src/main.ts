@@ -15,6 +15,7 @@ import { IconPathHelper } from './common/iconHelper';
 
 export function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const workspaceService = new WorkspaceService(context);
+	workspaceService.loadTempProject();
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
 	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));

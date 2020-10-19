@@ -21,14 +21,13 @@ export class WorkspaceService implements IWorkspaceService {
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void> = this._onDidWorkspaceProjectsChange?.event;
 
 	constructor(private _context: vscode.ExtensionContext) {
-		this.loadProject();
 	}
 
 	/**
-	 * Load any projects that needed to be loaded before the extension host was restarted
+	 * Load any temp project that needed to be loaded before the extension host was restarted
 	 * which would happen if a workspace was created in order open or create a project
 	 */
-	private async loadProject(): Promise<void> {
+	async loadTempProject(): Promise<void> {
 		const tempProjectFile = this._context.globalState.get(TempProject);
 
 		if (tempProjectFile && vscode.workspace.workspaceFile) {
@@ -36,6 +35,22 @@ export class WorkspaceService implements IWorkspaceService {
 			await this.addProjectsToWorkspace([vscode.Uri.file(<string>tempProjectFile)]);
 			await this._context.globalState.update(TempProject, undefined);
 		}
+	}
+
+	/**
+	 * Creates a new workspace in the same folder as the project. Because the extension host gets restared when
+	 * a new workspace is created and opened, the project needs to be saved as the temp project that will be loaded
+	 * when the extension gets restarted
+	 * @param projectFileFsPath project to add to the workspace
+	 */
+	async CreateNewWorkspaceForProject(projectFileFsPath: string): Promise<void> {
+		// save temp project
+		await this._context.globalState.update(TempProject, projectFileFsPath);
+
+		// create a new workspace - the workspace file will be created in the same folder as the project
+		const workspaceFileFsPath = vscode.Uri.file(path.join(path.dirname(projectFileFsPath), `${path.parse(projectFileFsPath).name}.code-workspace`)).fsPath;
+		const projectFolder = vscode.Uri.file(path.dirname(projectFileFsPath));
+		await azdata.workspace.createWorkspace(projectFolder, workspaceFileFsPath);
 	}
 
 	get isProjectProviderAvailable(): boolean {
@@ -57,13 +72,7 @@ export class WorkspaceService implements IWorkspaceService {
 		if (!vscode.workspace.workspaceFile) {
 			const result = await vscode.window.showWarningMessage(constants.CreateWorkspaceConfirmation, constants.OkButtonText);
 			if (result === constants.OkButtonText) {
-				const projectFileFsPath = projectFiles[0].fsPath;
-				const projectFolder = vscode.Uri.file(path.dirname(projectFileFsPath));
-				await this._context.globalState.update(TempProject, projectFiles[0].fsPath);
-
-				// create a new workspace - the workspace file will be  created in the same folder as the project
-				const workspaceFileFsPath = vscode.Uri.file(path.join(path.dirname(projectFileFsPath), `${path.parse(projectFileFsPath).name}.code-workspace`)).fsPath;
-				await azdata.workspace.createWorkspace(projectFolder, workspaceFileFsPath);
+				await this.CreateNewWorkspaceForProject(projectFiles[0].fsPath);
 			} else {
 				return;
 			}
