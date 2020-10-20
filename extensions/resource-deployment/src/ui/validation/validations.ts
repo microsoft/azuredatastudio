@@ -194,16 +194,16 @@ export function createValidation(validation: ValidationInfo, valueGetter: ValueG
 
 export async function validateAndUpdateValidationMessages(component: InputComponent, container: DialogMessageContainer, validations: Validation[] = []): Promise<ValidationResult> {
 	let dialogMessage = container.message ?? { text: ''};
-	const validationStates = await Promise.all(validations.map(validation => validation.validate()));
-	validationStates.filter(state => state.valid).forEach(v => dialogMessage = removeValidationMessage(dialogMessage, v.message!)); // strip off validation messages corresponding to all successful validations
-	const failedStates = validationStates.filter(state => !state.valid);
-	if (failedStates.length > 0) {
-		container.message = getDialogMessage([dialogMessage?.description ?? dialogMessage?.text, failedStates[0].message!]);
+	const allValidationResults = await Promise.all(validations.map(validation => validation.validate()));
+	allValidationResults.filter(state => state.valid).forEach(v => dialogMessage = removeValidationMessage(dialogMessage, v.message!)); // strip off validation messages corresponding to all successful validations
+	const failedValidationResults = allValidationResults.filter(state => !state.valid);
+	if (failedValidationResults.length > 0) {
+		container.message = getDialogMessage([dialogMessage?.description ?? dialogMessage?.text, failedValidationResults[0].message!]);
 		if (component instanceof RadioGroupLoadingComponentBuilder) {
 			component = component.component();
 		}
-		await component.updateProperty('validationErrorMessage', failedStates[0].message);
-		return failedStates[0];
+		await component.updateProperty('validationErrorMessage', failedValidationResults[0].message);
+		return failedValidationResults[0]; // we just return the first validation failure for this inputComponent. TODO - should we be returning them all?
 	} else {
 		container.message = dialogMessage;
 		return { valid: true };
