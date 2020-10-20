@@ -47,7 +47,7 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 	}
 
 	constructor(wizard: W, private _resourceType: ResourceType) {
-		super('', localize('notebookWizard.toolsAndEulaPageTitle', "Deployment pre-requisites"), wizard);
+		super(localize('notebookWizard.toolsAndEulaPageTitle', "Deployment pre-requisites"), '', wizard);
 	}
 
 	public async onEnter(): Promise<void> {
@@ -183,12 +183,15 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 				if (this._resourceType.options) {
 					const optionsTitle = this.view.modelBuilder.text().withProps({
 						value: 'Options',
-
+						CSSStyles: {
+							'font-size': '14px',
+							'padding': '0'
+						}
 					}).component();
 					this._optionsContainer.addItem(optionsTitle);
 					this._resourceType.options.forEach(option => {
 						const optionLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-							value: option.displayName
+							value: option.displayName,
 						}).component();
 						optionLabel.width = '150px';
 
