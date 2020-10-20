@@ -84,10 +84,10 @@ export class IntegerValidation extends Validation {
 
 	validate: Validator = async () => {
 		const isValid = await this.isInteger();
-		return Promise.resolve({
+		return {
 			valid: isValid,
 			message: isValid ? undefined: this.description
-		});
+		};
 	};
 }
 
@@ -106,10 +106,10 @@ export class RegexValidation extends Validation {
 
 	validate: Validator = async () => {
 		const isValid = this.regex.test((await this.getValue())?.toString()!);
-		return Promise.resolve({
+		return {
 			valid: isValid,
 			message: isValid ? undefined: this.description
-		});
+		};
 	};
 }
 
@@ -129,10 +129,10 @@ export abstract class Comparison extends Validation {
 	abstract isComparisonSuccessful(): Promise<boolean>;
 	validate: Validator = async () => {
 		const isValid = await this.isComparisonSuccessful();
-		return Promise.resolve({
+		return {
 			valid: isValid,
 			message:  isValid ? undefined: this.description
-		});
+		};
 	};
 }
 
