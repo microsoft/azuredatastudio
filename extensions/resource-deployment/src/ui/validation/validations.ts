@@ -16,8 +16,10 @@ export interface ValidationResult {
 }
 
 export type Validator = () => Promise<ValidationResult>;
-export type VariableValueGetter = (variable: string) => Promise<string | number | undefined | null>;
-export type ValueGetter = () => Promise<string | number | undefined | null>;
+export type ValidationValueType = string | number | undefined;
+
+export type VariableValueGetter = (variable: string) => Promise<ValidationValueType>;
+export type ValueGetter = () => Promise<ValidationValueType>;
 
 export const enum ValidationType {
 	IsInteger = 'is_integer',
@@ -53,11 +55,11 @@ export abstract class Validation {
 	// gets the validator for this validation object
 	abstract getValidator(): Validator;
 
-	protected getValue(): Promise<string | number | undefined | null> {
+	protected getValue(): Promise<ValidationValueType> {
 		return this._valueGetter();
 	}
 
-	protected getVariableValue(variable: string): Promise<string | number | undefined | null> {
+	protected getVariableValue(variable: string): Promise<ValidationValueType> {
 		return this._variableValueGetter!(variable);
 	}
 
