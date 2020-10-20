@@ -5,7 +5,10 @@
 
 import 'mocha';
 import * as should from 'should';
+import { InputComponents } from '../../../ui/modelViewUtils';
 import { GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, Validation, ValidationType, ValidationValueType } from '../../../ui/validation/validations';
+import * as sinon from 'sinon';
+import * as azdata from 'azdata';
 
 suite('Validation', () => {
 	suite('IntegerValidation', () => {
@@ -27,7 +30,7 @@ suite('Validation', () => {
 					{ type: ValidationType.IsInteger, description: validationDescription },
 					async () => testObj.value
 				);
-				await testAndValidate(validation, testObj, validationDescription);
+				await testValidation(validation, testObj, validationDescription);
 			});
 		});
 	});
@@ -52,7 +55,7 @@ suite('Validation', () => {
 					{ type: ValidationType.IsInteger, description: validationDescription, regex: testRegex },
 					async () => testOb.value
 				);
-				await testAndValidate(validation, testOb, validationDescription);
+				await testValidation(validation, testOb, validationDescription);
 			});
 		});
 	});
@@ -103,7 +106,7 @@ suite('Validation', () => {
 					async () => testObj.value,
 					async (_variableName: string) => testObj.targetValue
 				);
-				await testAndValidate(validation, testObj, validationDescription);
+				await testValidation(validation, testObj, validationDescription);
 			});
 		});
 	});
@@ -146,8 +149,32 @@ suite('Validation', () => {
 					async () => testObj.value,
 					async (_variableName: string) => testObj.targetValue
 				);
-				await testAndValidate(validation, testObj, validationDescription);
+				await testValidation(validation, testObj, validationDescription);
 			});
+		});
+	});
+
+	suite('validation functions', () => {
+		suite('validateAndUpdateValidationMessages', () => {
+			beforeEach(() => {
+				const testComponents: InputComponents = {
+					'text': sinon.stub(azdata.)
+				}
+				const container = {
+					message: {
+						text: 'message1'
+					}
+				}
+				console.log(container);
+			});
+
+
+			afterEach(()=>{
+				sinon.reset();
+			});
+
+			test('empty dialogMessage, 2 validation failures')
+
 		});
 	});
 });
@@ -158,7 +185,7 @@ interface TestObject {
 	expected: boolean;
 }
 
-async function testAndValidate(validation: Validation, test: TestObject, validationDescription: string) {
+async function testValidation(validation: Validation, test: TestObject, validationDescription: string) {
 	const validationResult = await validation.validate();
 	should(validationResult.valid).be.equal(test.expected, validationDescription);
 	validationResult.valid

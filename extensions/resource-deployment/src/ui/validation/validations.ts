@@ -150,15 +150,12 @@ export class GreaterThanOrEqualsValidation extends Comparison {
 
 
 /**
- *	removes validation message corresponding to this validator from the @see dialogMessage string.
+ * removes validation message corresponding to this validator from the @see dialogMessage string.
  *
  * @param dialogMessage
  * @param message
 */
 export function removeValidationMessage(dialogMessage: azdata.window.DialogMessage, message: string): azdata.window.DialogMessage {
-	if (dialogMessage === undefined) {
-		return dialogMessage;
-	}
 	if (dialogMessage.description) {
 		return {
 			text: dialogMessage.text,
@@ -214,7 +211,7 @@ export async function validateAndUpdateValidationMessages(component: InputCompon
 }
 
 export function getDialogMessage(messages: string[], messageLevel: azdata.window.MessageLevel = azdata.window.MessageLevel.Error): azdata.window.DialogMessage {
-	messages = messages.filter(m => !!m);
+	messages = messages.filter(m => m !== undefined && m.length !== 0);
 	return {
 		text: messages.length === 1
 			? messages[0]
