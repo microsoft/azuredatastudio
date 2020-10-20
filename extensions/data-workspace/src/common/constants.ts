@@ -15,10 +15,11 @@ export const AllProjectTypes = localize('AllProjectTypes', "All Project Types");
 export const ProviderNotFoundForProjectTypeError = (projectType: string): string => { return localize('UnknownProjectTypeError', "No provider was found for project type with id: '{0}'", projectType); };
 export const WorkspaceRequiredMessage = localize('dataworkspace.workspaceRequiredMessage', "A workspace is required in order to use the project feature.");
 export const OpenWorkspace = localize('dataworkspace.openWorkspace', "Open Workspace…");
-export const CreateWorkspace = localize('dataworkspace.createWorkspace', "Create Workspace…");
+export const CreateWorkspaceConfirmation = localize('dataworkspace.createWorkspaceConfirmation', "A new workspace will be created and opened in order to open project. The Extension Host will restart and if there is a folder currently open, it will be closed.");
 
 // UI
 export const OkButtonText = localize('dataworkspace.ok', "OK");
+export const CancelButtonText = localize('dataworkspace.cancel', "Cancel");
 export const BrowseButtonText = localize('dataworkspace.browse', "Browse");
 export const DefaultInputWidth = '400px';
 export const DefaultButtonWidth = '80px';
@@ -40,7 +41,3 @@ export const LocalFileSystem = localize('dataworkspace.localFileSystem', "Local 
 export const LocationSelectorTitle = localize('dataworkspace.LocationSelectorTitle', "Location");
 export const ProjectFileTitle = localize('dataworkspace.projectFileTitle', "Project file");
 export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Select project file");
-
-
-
-

@@ -28,11 +28,6 @@ declare module 'dataworkspace' {
 		 * Change focus to Projects view
 		 */
 		showProjectsView(): void;
-
-		/**
-		 * Show the workspace required notification
-		 */
-		showWorkspaceRequiredNotification(): void;
 	}
 
 	/**

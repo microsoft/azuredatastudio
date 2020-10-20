@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
@@ -13,10 +14,46 @@ import * as constants from '../common/constants';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
+const TempProject = 'tempProject';
 
 export class WorkspaceService implements IWorkspaceService {
 	private _onDidWorkspaceProjectsChange: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void> = this._onDidWorkspaceProjectsChange?.event;
+
+	constructor(private _context: vscode.ExtensionContext) {
+	}
+
+	/**
+	 * Load any temp project that needed to be loaded before the extension host was restarted
+	 * which would happen if a workspace was created in order open or create a project
+	 */
+	async loadTempProjects(): Promise<void> {
+		const tempProjects: string[] | undefined = this._context.globalState.get(TempProject) ?? undefined;
+
+		if (tempProjects && vscode.workspace.workspaceFile) {
+			// add project to workspace now that the workspace has been created and saved
+			for (let project of tempProjects) {
+				await this.addProjectsToWorkspace([vscode.Uri.file(<string>project)]);
+			}
+			await this._context.globalState.update(TempProject, undefined);
+		}
+	}
+
+	/**
+	 * Creates a new workspace in the same folder as the project. Because the extension host gets restared when
+	 * a new workspace is created and opened, the project needs to be saved as the temp project that will be loaded
+	 * when the extension gets restarted
+	 * @param projectFileFsPath project to add to the workspace
+	 */
+	async CreateNewWorkspaceForProject(projectFileFsPath: string): Promise<void> {
+		// save temp project
+		await this._context.globalState.update(TempProject, [projectFileFsPath]);
+
+		// create a new workspace - the workspace file will be created in the same folder as the project
+		const workspaceFile = vscode.Uri.file(path.join(path.dirname(projectFileFsPath), `${path.parse(projectFileFsPath).name}.code-workspace`));
+		const projectFolder = vscode.Uri.file(path.dirname(projectFileFsPath));
+		await azdata.workspace.createWorkspace(projectFolder, workspaceFile);
+	}
 
 	get isProjectProviderAvailable(): boolean {
 		for (const extension of vscode.extensions.all) {
@@ -28,35 +65,62 @@ export class WorkspaceService implements IWorkspaceService {
 		return false;
 	}
 
-	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
-		if (vscode.workspace.workspaceFile) {
-			const currentProjects: vscode.Uri[] = this.getProjectsInWorkspace();
-			const newWorkspaceFolders: string[] = [];
-			let newProjectFileAdded = false;
-			for (const projectFile of projectFiles) {
-				if (currentProjects.findIndex((p: vscode.Uri) => p.fsPath === projectFile.fsPath) === -1) {
-					currentProjects.push(projectFile);
-					newProjectFileAdded = true;
+	/**
+	 * Verify that a workspace is open or that if one isn't, it's ok to create a workspace
+	 */
+	async validateWorkspace(): Promise<boolean> {
+		if (!vscode.workspace.workspaceFile) {
+			const result = await vscode.window.showWarningMessage(constants.CreateWorkspaceConfirmation, constants.OkButtonText, constants.CancelButtonText);
+			if (result === constants.OkButtonText) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			// workspace is open
+			return true;
+		}
+	}
 
-					// if the relativePath and the original path is the same, that means the project file is not under
-					// any workspace folders, we should add the parent folder of the project file to the workspace
-					const relativePath = vscode.workspace.asRelativePath(projectFile, false);
-					if (vscode.Uri.file(relativePath).fsPath === projectFile.fsPath) {
-						newWorkspaceFolders.push(path.dirname(projectFile.path));
-					}
+	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
+		if (!projectFiles || projectFiles.length === 0) {
+			return;
+		}
+
+		// a workspace needs to be open to add projects
+		if (!vscode.workspace.workspaceFile) {
+			await this.CreateNewWorkspaceForProject(projectFiles[0].fsPath);
+
+			// this won't get hit since the extension host will get restarted, but helps with testing
+			return;
+		}
+
+		const currentProjects: vscode.Uri[] = this.getProjectsInWorkspace();
+		const newWorkspaceFolders: string[] = [];
+		let newProjectFileAdded = false;
+		for (const projectFile of projectFiles) {
+			if (currentProjects.findIndex((p: vscode.Uri) => p.fsPath === projectFile.fsPath) === -1) {
+				currentProjects.push(projectFile);
+				newProjectFileAdded = true;
+
+				// if the relativePath and the original path is the same, that means the project file is not under
+				// any workspace folders, we should add the parent folder of the project file to the workspace
+				const relativePath = vscode.workspace.asRelativePath(projectFile, false);
+				if (vscode.Uri.file(relativePath).fsPath === projectFile.fsPath) {
+					newWorkspaceFolders.push(path.dirname(projectFile.path));
 				}
 			}
+		}
 
-			if (newProjectFileAdded) {
-				// Save the new set of projects to the workspace configuration.
-				await this.setWorkspaceConfigurationValue(ProjectsConfigurationName, currentProjects.map(project => this.toRelativePath(project)));
-				this._onDidWorkspaceProjectsChange.fire();
-			}
+		if (newProjectFileAdded) {
+			// Save the new set of projects to the workspace configuration.
+			await this.setWorkspaceConfigurationValue(ProjectsConfigurationName, currentProjects.map(project => this.toRelativePath(project)));
+			this._onDidWorkspaceProjectsChange.fire();
+		}
 
-			if (newWorkspaceFolders.length > 0) {
-				// second parameter is null means don't remove any workspace folders
-				vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length, null, ...(newWorkspaceFolders.map(folder => ({ uri: vscode.Uri.file(folder) }))));
-			}
+		if (newWorkspaceFolders.length > 0) {
+			// second parameter is null means don't remove any workspace folders
+			vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length, null, ...(newWorkspaceFolders.map(folder => ({ uri: vscode.Uri.file(folder) }))));
 		}
 	}
 

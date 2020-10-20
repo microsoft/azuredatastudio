@@ -715,4 +715,11 @@ declare module 'azdata' {
 		 */
 		title: string;
 	}
+
+	export namespace workspace {
+		/**
+		 * Creates and opens a workspace at the specified location
+		 */
+		export function createWorkspace(location: vscode.Uri, workspaceFile?: vscode.Uri): Promise<void>;
+	}
 }

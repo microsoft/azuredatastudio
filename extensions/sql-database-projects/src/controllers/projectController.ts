@@ -508,10 +508,6 @@ export class ProjectsController {
 		try {
 			const workspaceApi = utils.getDataWorkspaceExtensionApi();
 
-			if (!vscode.workspace.workspaceFile) {
-				workspaceApi.showWorkspaceRequiredNotification();
-				return;
-			}
 			const model: ImportDataModel | undefined = await this.getModelFromContext(context);
 
 			if (!model) {
@@ -538,8 +534,8 @@ export class ProjectsController {
 			await project.addToProject(fileFolderList); // Add generated file structure to the project
 
 			// add project to workspace
-			await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
 			workspaceApi.showProjectsView();
+			await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
