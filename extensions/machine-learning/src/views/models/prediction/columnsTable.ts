@@ -385,7 +385,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		}).component();
 
 		warningButton.onDidClick(() => {
-			//this.openDialog(message, 'am a name', 'narrow', 'Callout', 'left');
+			this.openDialog(message, 'am a name', 'narrow', 'Callout', 'left');
 		});
 
 		return warningButton;
@@ -404,11 +404,6 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				warningContent.addItem(view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 					value: 'hello world!'
 				}).component());
-
-				// content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-				// 	value: loc.connectionStrings,
-				// 	CSSStyles: { ...cssStyles.title }
-				// }).component());
 			});
 			// set tab as content
 			dialog.content = [warningTab];
