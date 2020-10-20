@@ -16,6 +16,7 @@ export const ProviderNotFoundForProjectTypeError = (projectType: string): string
 export const WorkspaceRequiredMessage = localize('dataworkspace.workspaceRequiredMessage', "A workspace is required in order to use the project feature.");
 export const OpenWorkspace = localize('dataworkspace.openWorkspace', "Open Workspace…");
 export const CreateWorkspaceConfirmation = localize('dataworkspace.createWorkspaceConfirmation', "A new workspace will be created and opened in order to open project. The Extension Host will restart and if there is a folder currently open, it will be closed.");
+export const EnterWorkspaceConfirmation = localize('dataworkspace.enterWorkspaceConfirmation', "To open this workspace, the Extension Host will restart and if there is a folder currently open, it will be closed.");
 
 // UI
 export const OkButtonText = localize('dataworkspace.ok', "OK");

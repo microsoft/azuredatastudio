@@ -69,8 +69,7 @@ export class OpenProjectDialog extends DialogBase {
 	async onComplete(): Promise<void> {
 		try {
 			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
-				// TODO: open workspace - looks like have to pipe that through
-				await azdata.workspace.enterWorkspace(vscode.Uri.file(this._workspaceFile));
+				await this.workspaceService.enterWorkspace(vscode.Uri.file(this._workspaceFile));
 			} else {
 				const validateWorkspace = await this.workspaceService.validateWorkspace();
 				if (validateWorkspace) {

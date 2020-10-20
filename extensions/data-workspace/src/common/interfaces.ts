@@ -90,4 +90,9 @@ export interface IWorkspaceService {
 	 * Verify that a workspace is open or it is ok to create a workspace if one needs to be created
 	 */
 	validateWorkspace(): Promise<boolean>;
+
+	/**
+	 * Enters the workspace with the provided path
+	 */
+	enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 }

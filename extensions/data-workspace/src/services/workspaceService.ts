@@ -82,6 +82,19 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 	}
 
+	/**
+	 * Enters the specified workspace. Restarts the extension host
+	 * @param workspaceFile
+	 */
+	async enterWorkspace(workspaceFile: vscode.Uri): Promise<void> {
+		const result = await vscode.window.showWarningMessage(constants.EnterWorkspaceConfirmation, constants.OkButtonText, constants.CancelButtonText);
+		if (result === constants.OkButtonText) {
+			await azdata.workspace.enterWorkspace(workspaceFile);
+		} else {
+			return;
+		}
+	}
+
 	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
 		if (!projectFiles || projectFiles.length === 0) {
 			return;
