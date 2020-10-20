@@ -177,8 +177,8 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 					this._agreementContainer.addItem(agreementTitle);
 					this._agreementContainer.addItem(this.createAgreementCheckbox(this.resourceType.agreement));
 				} else {
-					this._agreementContainer.updateCssStyles({
-						'display': 'none'
+					this.form.removeFormItem({
+						component: this._agreementContainer
 					});
 				}
 
@@ -214,8 +214,8 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 						this._optionsContainer.addItem(row);
 					});
 				} else {
-					this._optionsContainer.updateCssStyles({
-						'display': 'none'
+					this.form.removeFormItem({
+						component: this._optionsContainer
 					});
 				}
 

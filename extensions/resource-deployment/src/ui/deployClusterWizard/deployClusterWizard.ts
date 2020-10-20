@@ -60,7 +60,7 @@ export class DeployClusterWizard extends WizardBase<WizardPageBase<DeployCluster
 	}
 
 	constructor(private wizardInfo: BdcWizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService, private _notebookService: INotebookService, toolsService: IToolsService, resourceType: ResourceType, resourceTypeService?: IResourceTypeService) {
-		super(DeployClusterWizard.getTitle(wizardInfo.type), 'DeployBdcClusterWizard', new DeployClusterWizardModel(wizardInfo.type), toolsService, false, resourceType, resourceTypeService);
+		super(resourceType.displayName, 'DeployBdcClusterWizard', new DeployClusterWizardModel(wizardInfo.type), toolsService, false, resourceType, resourceTypeService);
 		this._saveConfigButton = azdata.window.createButton(localize('deployCluster.SaveConfigFiles', "Save config files"), 'left');
 		this._saveConfigButton.hidden = true;
 		this.addButton(this._saveConfigButton);
