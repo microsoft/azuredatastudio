@@ -759,9 +759,15 @@ declare module 'azdata' {
 
 	export namespace workspace {
 		/**
-		 * Creates and opens a workspace at the specified location
+		 * Creates and enters a workspace at the specified location
 		 */
 		export function createWorkspace(location: vscode.Uri, workspaceFile?: vscode.Uri): Promise<void>;
+
+		/**
+		 * Enters the workspace with the provided path
+		 * @param workspacefile
+		 */
+		export function enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 	}
 
 	export interface TableComponentProperties {
