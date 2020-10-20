@@ -30,10 +30,6 @@ export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, 
 		return this._useGenerateScriptButton;
 	}
 
-	public get resourceType(): ResourceType {
-		return this._resourceType!;
-	}
-
 	public set resourceProvider(provider: DeploymentProviderBase) {
 		this._resourceProvider = provider;
 		this.refreshWizard();
@@ -43,11 +39,11 @@ export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, 
 		return this._resourceProvider;
 	}
 
-	constructor(private title: string, name: string, private _model: M, public toolsService: IToolsService, private _useGenerateScriptButton: boolean = false, private _resourceType?: ResourceType, private _resourceTypeService?: IResourceTypeService) {
+	constructor(private title: string, name: string, private _model: M, public toolsService: IToolsService, private _useGenerateScriptButton: boolean = false, protected _resourceType: ResourceType, private _resourceTypeService?: IResourceTypeService) {
 
 		this.wizardObject = azdata.window.createWizard(title || _resourceType?.displayName!, name || '');
-		if (this.resourceType) {
-			this.resourceProvider = this.resourceType.providers[0];
+		if (this._resourceType) {
+			this.resourceProvider = this._resourceType.providers[0];
 		}
 	}
 
@@ -91,7 +87,7 @@ export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, 
 
 	protected abstract initialize(): void;
 	protected async onOk(): Promise<void> {
-		this._resourceTypeService?.startDeploymentFromWizard(<DeploymentProvider>this.resourceProvider, this.resourceType);
+		this._resourceTypeService?.startDeploymentFromWizard(<DeploymentProvider>this.resourceProvider, this._resourceType);
 		return;
 	}
 	protected async onGenerateScript(): Promise<void> { }

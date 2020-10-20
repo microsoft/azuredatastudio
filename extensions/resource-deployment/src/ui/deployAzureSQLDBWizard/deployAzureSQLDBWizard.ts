@@ -72,7 +72,7 @@ export class DeployAzureSQLDBWizard extends WizardBase<WizardPageBase<DeployAzur
 	private getPages(): WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>[] {
 		const pages: WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>[] =
 			[
-				new ToolsAndEulaPage<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>(this),
+				new ToolsAndEulaPage<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>(this, this._resourceType!),
 				new AzureSettingsPage(this),
 				new DatabaseSettingsPage(this),
 				new AzureSQLDBSummaryPage(this)

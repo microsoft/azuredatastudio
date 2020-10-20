@@ -75,7 +75,7 @@ export class DeployAzureSQLVMWizard extends WizardBase<WizardPageBase<DeployAzur
 	private getPages(): WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>[] {
 		const pages: WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>[] =
 			[
-				new ToolsAndEulaPage<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>(this),
+				new ToolsAndEulaPage<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>(this, this._resourceType),
 				new VmSettingsPage(this),
 				new AzureSettingsPage(this),
 				new NetworkSettingsPage(this),

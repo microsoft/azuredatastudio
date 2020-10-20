@@ -92,7 +92,7 @@ export class DeployClusterWizard extends WizardBase<WizardPageBase<DeployCluster
 	}
 
 	private getPages(): WizardPageBase<DeployClusterWizard, DeployClusterWizardModel>[] {
-		const pages: WizardPageBase<DeployClusterWizard, DeployClusterWizardModel>[] = [new ToolsAndEulaPage<DeployClusterWizard, DeployClusterWizardModel>(this)];
+		const pages: WizardPageBase<DeployClusterWizard, DeployClusterWizardModel>[] = [new ToolsAndEulaPage<DeployClusterWizard, DeployClusterWizardModel>(this, this._resourceType)];
 		switch (this.deploymentType) {
 			case BdcDeploymentType.NewAKS:
 				pages.push(

@@ -114,7 +114,7 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 
 	private getPages(): WizardPageBase<NotebookWizard, Model>[] {
 		const pages: WizardPageBase<NotebookWizard, Model>[] = [];
-		pages.push(new ToolsAndEulaPage<NotebookWizard, Model>(this));
+		pages.push(new ToolsAndEulaPage<NotebookWizard, Model>(this, this._resourceType!));
 		if (!this.wizardInfo) {
 			return pages;
 		}

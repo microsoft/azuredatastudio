@@ -38,10 +38,6 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 	private _isInitialized = false;
 	private _isDoneButtonEnabled = false;
 
-	public get resourceType(): ResourceType {
-		return this.wizard.resourceType;
-	}
-
 	public set resourceProvider(provider: DeploymentProviderBase) {
 		this.wizard.resourceProvider = provider;
 	}
@@ -50,7 +46,7 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 		return this.wizard.toolsService;
 	}
 
-	constructor(wizard: W, _pageIndex: number = 0) {
+	constructor(wizard: W, private _resourceType: ResourceType) {
 		super('', localize('notebookWizard.toolsAndEulaPageTitle', "Deployment pre-requisites"), wizard);
 	}
 
@@ -60,7 +56,7 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 				return true;
 			}
 
-			const isValid = this.resourceType && (this.resourceType.agreement === undefined || this._agreeementCheckBox.checked);
+			const isValid = this._resourceType && (this._resourceType.agreement === undefined || this._agreeementCheckBox.checked);
 			if (!isValid) {
 				this.wizard.wizardObject.message = {
 					text: localize('deploymentDialog.AcceptAgreements', "You must agree to the license agreements in order to proceed."),
@@ -166,7 +162,7 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 			);
 			return view.initializeModel(this.form!.withLayout({ width: '100%' }).component()).then(() => {
 				this._agreementContainer.clearItems();
-				if (this.resourceType.agreement) {
+				if (this._resourceType.agreement) {
 					const agreementTitle = this.view.modelBuilder.text().withProps({
 						value: localize('resourceDeployment.AgreementTitle', "Accept terms of use"),
 						CSSStyles: {
@@ -175,7 +171,7 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 						}
 					}).component();
 					this._agreementContainer.addItem(agreementTitle);
-					this._agreementContainer.addItem(this.createAgreementCheckbox(this.resourceType.agreement));
+					this._agreementContainer.addItem(this.createAgreementCheckbox(this._resourceType.agreement));
 				} else {
 					this.form.removeFormItem({
 						component: this._agreementContainer
@@ -184,13 +180,13 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 
 				this._optionsContainer.clearItems();
 				this._optionDropDownMap.clear();
-				if (this.resourceType.options) {
+				if (this._resourceType.options) {
 					const optionsTitle = this.view.modelBuilder.text().withProps({
 						value: 'Options',
 
 					}).component();
 					this._optionsContainer.addItem(optionsTitle);
-					this.resourceType.options.forEach(option => {
+					this._resourceType.options.forEach(option => {
 						const optionLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 							value: option.displayName
 						}).component();
@@ -276,8 +272,8 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 			options.push({ option: option, value: selectedValue.name });
 		});
 
-		this.resourceProvider = this.resourceType.getProvider(options)!;
-		return this.resourceType.getProvider(options)!;
+		this.resourceProvider = this._resourceType.getProvider(options)!;
+		return this._resourceType.getProvider(options)!;
 	}
 
 	private getCurrentOkText(): string {
@@ -288,7 +284,7 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 			options.push({ option: option, value: selectedValue.name });
 		});
 
-		return this.resourceType.getOkButtonText(options)!;
+		return this._resourceType.getOkButtonText(options)!;
 	}
 
 	private updateOkButtonText(): void {
