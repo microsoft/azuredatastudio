@@ -2,14 +2,14 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.22.0"
+    "azdata": ">=1.23.0"
   },
   "activationEvents": [
     "onCommand:arc.connectToController",
@@ -140,6 +140,7 @@
           "light": "./images/data_controller.svg",
           "dark": "./images/data_controller.svg"
         },
+        "tags": ["Hybrid", "SQL Server", "PostgreSQL"],
         "providers": [
           {
             "notebookWizard": {
@@ -515,6 +516,7 @@
           "light": "./images/miaa.svg",
           "dark": "./images/miaa.svg"
         },
+        "tags": ["Hybrid", "SQL Server"],
         "providers": [
           {
             "notebookWizard": {
@@ -562,7 +564,6 @@
                           "variableName": "AZDATA_NB_VAR_SQL_INSTANCE_NAME",
                           "type": "text",
                           "defaultValue": "sqlinstance1",
-                          "description": "%arc.sql.invalid.instance.name%",
                           "required": true,
                           "textValidationRequired": true,
                           "textValidationRegex": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
@@ -572,7 +573,6 @@
                           "label": "%arc.sql.username%",
                           "variableName": "AZDATA_NB_VAR_SQL_USERNAME",
                           "type": "text",
-                          "description": "%arc.sql.invalid.username%",
                           "required": true,
                           "textValidationRequired": true,
                           "textValidationRegex": "^(?!sa$)",
@@ -680,6 +680,7 @@
           "light": "./images/postgres.svg",
           "dark": "./images/postgres.svg"
         },
+        "tags": ["Hybrid", "PostgreSQL"],
         "providers": [
           {
             "notebookWizard": {

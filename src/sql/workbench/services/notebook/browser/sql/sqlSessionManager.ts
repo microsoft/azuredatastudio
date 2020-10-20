@@ -51,6 +51,26 @@ export interface SQLData {
 	rows: Array<Array<string>>;
 }
 
+export interface NotebookConfig {
+	cellToolbarLocation: string;
+	collapseBookItems: boolean;
+	diff: { enablePreview: boolean };
+	displayOrder: Array<string>;
+	kernelProviderAssociations: Array<string>;
+	maxBookSearchDepth: number;
+	maxTableRows: number;
+	overrideEditorTheming: boolean;
+	pinnedNotebooks: Array<string>;
+	pythonPath: string;
+	remoteBookDownloadTimeout: number;
+	showAllKernels: boolean;
+	showCellStatusBar: boolean;
+	showNotebookConvertActions: boolean;
+	sqlStopOnError: boolean;
+	trustedBooks: Array<string>;
+	useExistingPython: boolean;
+}
+
 export class SqlSessionManager implements nb.SessionManager {
 	private static _sessions: nb.ISession[] = [];
 
@@ -162,8 +182,8 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _currentConnectionProfile: ConnectionProfile;
 	static kernelId: number = 0;
 
-	private _id: string;
-	private _future: SQLFuture;
+	private _id: string | undefined;
+	private _future: SQLFuture | undefined;
 	private _executionCount: number = 0;
 	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
 	private _connectionPath: string;
@@ -301,7 +321,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		}
 
 		// TODO should we  cleanup old future? I don't think we need to
-		return this._future;
+		return <nb.IFuture>this._future;
 	}
 
 	private getCodeWithoutCellMagic(content: nb.IExecuteRequest): string {
@@ -377,9 +397,9 @@ class SqlKernel extends Disposable implements nb.IKernel {
 }
 
 export class SQLFuture extends Disposable implements FutureInternal {
-	private _msg: nb.IMessage = undefined;
-	private ioHandler: nb.MessageHandler<nb.IIOPubMessage>;
-	private doneHandler: nb.MessageHandler<nb.IShellMessage>;
+	private _msg: nb.IMessage | undefined;
+	private ioHandler: nb.MessageHandler<nb.IIOPubMessage> | undefined;
+	private doneHandler: nb.MessageHandler<nb.IShellMessage> | undefined;
 	private doneDeferred = new Deferred<nb.IShellMessage>();
 	private configuredMaxRows: number = MAX_ROWS;
 	private _outputAddedPromises: Promise<void>[] = [];
@@ -387,13 +407,13 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private _errorOccurred: boolean = false;
 	private _stopOnError: boolean = true;
 	constructor(
-		private _queryRunner: QueryRunner,
+		private _queryRunner: QueryRunner | undefined,
 		private _executionCount: number | undefined,
 		configurationService: IConfigurationService,
 		private readonly logService: ILogService
 	) {
 		super();
-		let config = configurationService.getValue(NotebookConfigSectionName);
+		let config: NotebookConfig = configurationService.getValue(NotebookConfigSectionName);
 		if (config) {
 			let maxRows = config[MaxTableRowsConfigName] ? config[MaxTableRowsConfigName] : undefined;
 			if (maxRows && maxRows > 0) {
@@ -404,14 +424,16 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	}
 
 	get inProgress(): boolean {
-		return this._queryRunner && !this._queryRunner.hasCompleted;
+		return this._queryRunner ? !this._queryRunner.hasCompleted : false;
 	}
+
 	set inProgress(val: boolean) {
 		if (this._queryRunner && !val) {
 			this._queryRunner.cancelQuery().catch(err => onUnexpectedError(err));
 		}
 	}
-	get msg(): nb.IMessage {
+
+	get msg(): nb.IMessage | undefined {
 		return this._msg;
 	}
 
@@ -468,7 +490,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 					message = this.convertToDisplayMessage(msg);
 				}
 			}
-			this.ioHandler.handle(message);
+			if (message) {
+				this.ioHandler.handle(message);
+			}
 		}
 	}
 
@@ -545,7 +569,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			metadata: undefined,
 			parent_header: undefined
 		};
-		this.ioHandler.handle(msg);
+		this.ioHandler?.handle(msg);
 		this._querySubsetResultMap.delete(resultSet.id);
 	}
 
@@ -605,7 +629,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		return htmlStringArr;
 	}
 
-	private convertToDisplayMessage(msg: IResultMessage | string): nb.IIOPubMessage {
+	private convertToDisplayMessage(msg: IResultMessage | string): nb.IIOPubMessage | undefined {
 		if (msg) {
 			let msgData = typeof msg === 'string' ? msg : msg.message;
 			return {
@@ -627,7 +651,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		return undefined;
 	}
 
-	private convertToError(msg: IResultMessage | string): nb.IIOPubMessage {
+	private convertToError(msg: IResultMessage | string): nb.IIOPubMessage | undefined {
 		this._errorOccurred = true;
 
 		if (msg) {

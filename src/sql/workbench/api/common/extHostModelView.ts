@@ -249,6 +249,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	listView(): azdata.ComponentBuilder<azdata.ListViewComponent, azdata.ListViewComponentProperties> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.ListViewComponent, azdata.ListViewComponentProperties> = this.getComponentBuilder(new ListViewComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	tabbedPanel(): azdata.TabbedPanelComponentBuilder {
 		let id = this.getNextComponentId();
 		let builder = new TabbedPanelComponentBuilder(new TabbedPanelComponentWrapper(this._proxy, this._handle, id));
@@ -277,7 +284,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		}
 	}
 
-	public runCustomValidations(componentId: string): boolean {
+	public runCustomValidations(componentId: string): Thenable<boolean> {
 		let component = this._componentBuilders.get(componentId).componentWrapper();
 		return component.runCustomValidations();
 	}
@@ -316,7 +323,7 @@ class ComponentBuilderImpl<T extends azdata.Component, TPropertyBag extends azda
 		return this;
 	}
 
-	withValidation(validation: (component: T) => boolean): azdata.ComponentBuilder<T, TPropertyBag> {
+	withValidation(validation: (component: T) => boolean | Thenable<boolean>): azdata.ComponentBuilder<T, TPropertyBag> {
 		this._component.customValidations.push(validation);
 		return this;
 	}
@@ -567,7 +574,7 @@ class ComponentWrapper implements azdata.Component {
 	public properties: { [key: string]: any } = {};
 	public layout: any;
 	public itemConfigs: InternalItemConfig[];
-	public customValidations: ((component: ThisType<ComponentWrapper>) => boolean)[] = [];
+	public customValidations: ((component: ThisType<ComponentWrapper>) => boolean | Thenable<boolean>)[] = [];
 	private _valid: boolean = true;
 	private _onValidityChangedEmitter = new Emitter<boolean>();
 	public readonly onValidityChanged = this._onValidityChangedEmitter.event;
@@ -801,14 +808,14 @@ class ComponentWrapper implements azdata.Component {
 		this._onErrorEmitter.fire(err);
 	}
 
-	public runCustomValidations(): boolean {
+	public async runCustomValidations(): Promise<boolean> {
 		let isValid = true;
 		try {
-			this.customValidations.forEach(validation => {
-				if (!validation(this)) {
+			await Promise.all(this.customValidations.map(async validation => {
+				if (!await validation(this)) {
 					isValid = false;
 				}
-			});
+			}));
 		} catch (e) {
 			isValid = false;
 		}
@@ -1819,6 +1826,43 @@ class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.
 	}
 }
 
+class ListViewComponentWrapper extends ComponentWrapper implements azdata.ListViewComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.ListView, id);
+		this.properties = {};
+
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<azdata.ListViewClickEvent>());
+	}
+
+	public get title(): azdata.ListViewTitle {
+		return this.properties['title'];
+	}
+
+	public set title(v: azdata.ListViewTitle) {
+		this.setProperty('title', v);
+	}
+
+	public get options(): azdata.ListViewOption[] {
+		return this.properties['options'];
+	}
+	public set options(v: azdata.ListViewOption[]) {
+		this.setProperty('options', v);
+	}
+
+	public get selectedOptionId(): string | undefined {
+		return this.properties['selectedOptionId'];
+	}
+
+	public set selectedOptionId(v: string | undefined) {
+		this.setProperty('selectedOptionId', v);
+	}
+
+	public get onDidClick(): vscode.Event<azdata.ListViewClickEvent> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+}
+
 class TabbedPanelComponentWrapper extends ComponentWrapper implements azdata.TabbedPanelComponent {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.TabbedPanel, id);
@@ -1944,7 +1988,7 @@ class ModelViewImpl implements azdata.ModelView {
 		return this._proxy.$validate(this._handle, this._component.id);
 	}
 
-	public runCustomValidations(componentId: string): boolean {
+	public runCustomValidations(componentId: string): Thenable<boolean> {
 		return this._modelBuilder.runCustomValidations(componentId);
 	}
 }
@@ -1991,6 +2035,6 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	$runCustomValidations(handle: number, componentId: string): Thenable<boolean> {
 		const view = this._modelViews.get(handle);
-		return Promise.resolve(view.runCustomValidations(componentId));
+		return view.runCustomValidations(componentId);
 	}
 }

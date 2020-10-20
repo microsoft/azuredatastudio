@@ -119,6 +119,7 @@ interface ContextBase {
 }
 
 export function createTextInput(view: azdata.ModelView, inputInfo: {
+	type?: azdata.InputBoxInputType,
 	defaultValue?: string,
 	ariaLabel: string,
 	required?: boolean,
@@ -131,7 +132,7 @@ export function createTextInput(view: azdata.ModelView, inputInfo: {
 	return view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		value: inputInfo.defaultValue,
 		ariaLabel: inputInfo.ariaLabel,
-		inputType: 'text',
+		inputType: inputInfo.type || 'text',
 		required: inputInfo.required,
 		placeHolder: inputInfo.placeHolder,
 		width: inputInfo.width,
@@ -415,6 +416,7 @@ function disableControlButtons(container: azdata.window.Dialog | azdata.window.W
 	if ('okButton' in container) {
 		container.okButton.enabled = false;
 	} else {
+		container.generateScriptButton.enabled = false;
 		container.doneButton.enabled = false;
 		container.nextButton.enabled = false;
 		container.backButton.enabled = false;
@@ -445,7 +447,7 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 				description: '',
 				level: azdata.window.MessageLevel.Error
 			};
-			context.fieldInfo.options.values = [];
+			throw e;
 		}
 		context.fieldInfo.subFields = context.fieldInfo.subFields || [];
 	}
@@ -482,7 +484,7 @@ async function configureOptionsSourceSubfields(context: FieldContext, optionsSou
 					description: '',
 					level: azdata.window.MessageLevel.Error
 				};
-				return '';
+				throw e;
 			}
 		},
 		isPassword: await optionsSourceProvider.getIsPassword!(variableKey)
@@ -537,9 +539,11 @@ function processNumberField(context: FieldContext): void {
 }
 
 function processTextField(context: FieldContext): void {
+	const isPasswordField = context.fieldInfo.type === FieldType.Password || context.fieldInfo.type === FieldType.SQLPassword;
 	let validationRegex: RegExp | undefined = context.fieldInfo.textValidationRequired ? new RegExp(context.fieldInfo.textValidationRegex!) : undefined;
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const input = createTextInput(context.view, {
+		type: isPasswordField ? 'password' : 'text',
 		defaultValue: context.fieldInfo.defaultValue,
 		ariaLabel: context.fieldInfo.label,
 		required: context.fieldInfo.required,
@@ -549,7 +553,7 @@ function processTextField(context: FieldContext): void {
 		validationRegex: validationRegex,
 		validationErrorMessage: context.fieldInfo.textValidationDescription
 	});
-	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: input });
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: input, isPassword: isPasswordField });
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo);
 
 	if (context.fieldInfo.textValidationRequired) {
@@ -572,16 +576,8 @@ function processTextField(context: FieldContext): void {
 }
 
 function processPasswordField(context: FieldContext): void {
-	const passwordLabel = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
-	const passwordInput = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-		ariaLabel: context.fieldInfo.label,
-		inputType: 'password',
-		required: context.fieldInfo.required,
-		placeHolder: context.fieldInfo.placeHolder,
-		width: context.fieldInfo.inputWidth
-	}).component();
-	context.onNewInputComponentCreated(context.fieldInfo.variableName!, { component: passwordInput, isPassword: true });
-	addLabelInputPairToContainer(context.view, context.components, passwordLabel, passwordInput, context.fieldInfo);
+	processTextField(context);
+	const passwordInput = context.inputComponents[context.fieldInfo.variableName!].component as azdata.InputBoxComponent;
 
 	if (context.fieldInfo.type === FieldType.SQLPassword) {
 		const invalidPasswordMessage = getInvalidSQLPasswordMessage(context.fieldInfo.label);

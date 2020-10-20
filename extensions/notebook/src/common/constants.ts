@@ -81,3 +81,12 @@ export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2128
 export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110524';
 
 export const notebookLanguages = ['notebook', 'ipynb'];
+
+export const KNOX_ENDPOINT_SERVER = 'host';
+export const KNOX_ENDPOINT_PORT = 'knoxport';
+export const KNOX_ENDPOINT_GATEWAY = 'gateway';
+export const CONTROLLER_ENDPOINT = 'controller';
+export const SQL_PROVIDER = 'MSSQL';
+export const USER = 'user';
+export const AUTHTYPE = 'authenticationType';
+export const INTEGRATED_AUTH = 'integrated';
