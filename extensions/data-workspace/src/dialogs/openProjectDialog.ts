@@ -11,9 +11,15 @@ import { IWorkspaceService } from '../common/interfaces';
 import { fileExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
 
+enum selectedType {
+	Project,
+	Workspace
+}
+
 export class OpenProjectDialog extends DialogBase {
 	private _projectFile: string = '';
 	private _workspaceFile: string = '';
+	private _selectedType: selectedType = selectedType.Project;
 	private _targetTypeRadioCardGroup: azdata.RadioCardGroupComponent | undefined;
 	private _targetTypes = [
 		{
@@ -25,7 +31,7 @@ export class OpenProjectDialog extends DialogBase {
 		}, {
 			name: constants.Workspace,
 			icon: {
-				dark: this.extensionContext.asAbsolutePath('images/file_inverse.svg'),
+				dark: this.extensionContext.asAbsolutePath('images/file_inverse.svg'), // temporary - still waiting for real icon from UX
 				light: this.extensionContext.asAbsolutePath('images/file.svg')
 			}
 		}
@@ -38,10 +44,18 @@ export class OpenProjectDialog extends DialogBase {
 	async validate(): Promise<boolean> {
 		try {
 			// the selected location should be an existing directory
-			const projectFileExist = await fileExist(this._projectFile);
-			if (!projectFileExist) {
-				this.showErrorMessage(constants.ProjectFileNotExistError(this._projectFile));
-				return false;
+			if (this._selectedType === selectedType.Project) {
+				const fileExists = await fileExist(this._projectFile);
+				if (!fileExists) {
+					this.showErrorMessage(constants.ProjectFileNotExistError(this._projectFile));
+					return false;
+				}
+			} else if (this._selectedType === selectedType.Workspace) {
+				const fileExists = await fileExist(this._workspaceFile);
+				if (!fileExists) {
+					this.showErrorMessage(constants.WorkspaceFileNotExistError(this._workspaceFile));
+					return false;
+				}
 			}
 
 			return true;
@@ -152,8 +166,10 @@ export class OpenProjectDialog extends DialogBase {
 
 		this.register(this._targetTypeRadioCardGroup.onSelectionChanged(({ cardId }) => {
 			if (cardId === constants.Project) {
+				this._selectedType = selectedType.Project;
 				projectFilePathTextBox.placeHolder = constants.ProjectFilePlaceholder;
 			} else if (cardId === constants.Workspace) {
+				this._selectedType = selectedType.Workspace;
 				projectFilePathTextBox.placeHolder = constants.WorkspacePlaceholder;
 			}
 
