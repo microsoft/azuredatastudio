@@ -169,7 +169,7 @@ export function removeValidationMessage(dialogMessage: azdata.window.DialogMessa
 
 function getStrippedMessage(originalMessage: string, message: string) {
 	if (originalMessage.includes(message)) {
-		const messageWithLineBreak = message + '\n';
+		const messageWithLineBreak = message + EOL;
 		const searchText = originalMessage.includes(messageWithLineBreak) ? messageWithLineBreak : message;
 		const newMessage = originalMessage.replace(searchText, '');
 		return newMessage;
