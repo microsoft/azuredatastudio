@@ -31,7 +31,7 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 			.withProperties<azdata.DeclarativeTableProperties>(
 				{
 					columns: [
-						{ // Name
+						{ // File Name
 							displayName: constants.modelFileName,
 							ariaLabel: constants.modelFileName,
 							valueType: azdata.DeclarativeDataType.string,
@@ -57,7 +57,7 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 								...constants.cssStyles.tableRow
 							},
 						},
-						{ // Created
+						{ // Description
 							displayName: constants.modelDescription,
 							ariaLabel: constants.modelDescription,
 							valueType: azdata.DeclarativeDataType.component,
@@ -121,6 +121,9 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 			let tableData: any[][] = [];
 			tableData = tableData.concat(models.map(model => this.createTableRow(model)));
 			this._table.data = tableData;
+			if (tableData.length === 0) {
+				this._table.dataValues = tableData;
+			}
 		}
 	}
 

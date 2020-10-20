@@ -57,7 +57,10 @@ export class OpenProjectDialog extends DialogBase {
 			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
 				// TODO: open workspace - looks like have to pipe that through
 			} else {
-				await this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._projectFile)]);
+				const validateWorkspace = await this.workspaceService.validateWorkspace();
+				if (validateWorkspace) {
+					await this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._projectFile)]);
+				}
 			}
 		}
 		catch (err) {

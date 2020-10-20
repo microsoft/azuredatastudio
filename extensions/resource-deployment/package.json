@@ -74,6 +74,7 @@
           "light": "./images/sql_server_container.svg",
           "dark": "./images/sql_server_container_inverse.svg"
         },
+        "tags": ["On-premises", "SQL Server"],
         "options": [
           {
             "name": "version",
@@ -205,6 +206,7 @@
           "light": "./images/sql_bdc.svg",
           "dark": "./images/sql_bdc_inverse.svg"
         },
+        "tags": ["On-premises", "SQL Server"],
         "options": [
           {
             "name": "version",
@@ -363,6 +365,7 @@
           "light": "./images/sql_server_on_windows.svg",
           "dark": "./images/sql_server_on_windows_inverse.svg"
         },
+        "tags": ["On-premises", "SQL Server"],
         "options": [
           {
             "name": "version",
@@ -401,7 +404,21 @@
           "light": "./images/azure-sql-db.svg",
           "dark": "./images/azure-sql-db.svg"
         },
-        "okButtonText": "%azure-sqldb-ok-button-text%",
+        "tags": ["SQL Server", "Cloud"],
+        "okButtonText": [
+          {
+            "value": "%azure-sqldb-notebook-ok-button-text%",
+            "when": "resource-type=single-database"
+          },
+          {
+            "value": "%azure-sqldb-portal-ok-button-text%",
+            "when": "resource-type=elastic-pool"
+          },
+          {
+            "value": "%azure-sqldb-portal-ok-button-text%",
+            "when": "resource-type=database-server"
+          }
+        ],
         "options": [
           {
             "name": "resource-type",
@@ -424,8 +441,14 @@
         ],
         "providers": [
           {
-            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLDatabase",
-            "requiredTools": [],
+            "azureSQLDBWizard":{
+              "notebook": "./notebooks/azuredb/create-sqldb.ipynb"
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli"
+              }
+            ],
             "when": "resource-type=single-database"
           },
           {
@@ -466,6 +489,7 @@
           "light": "./images/azure-sql-vm.svg",
           "dark": "./images/azure-sql-vm.svg"
         },
+        "tags": ["SQL Server", "Cloud"],
         "providers": [
           {
             "azureSQLVMWizard":{

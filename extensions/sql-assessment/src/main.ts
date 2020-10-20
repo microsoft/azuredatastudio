@@ -5,9 +5,16 @@
 
 import * as vscode from 'vscode';
 
-export function activate(_context: vscode.ExtensionContext) {
+import MainController from './maincontroller';
+
+let mainController: MainController;
+
+export function activate(context: vscode.ExtensionContext) {
+	mainController = new MainController(context);
+	mainController.activate();
 }
 
 // this method is called when your extension is deactivated
 export function deactivate(): void {
+	mainController?.deactivate();
 }

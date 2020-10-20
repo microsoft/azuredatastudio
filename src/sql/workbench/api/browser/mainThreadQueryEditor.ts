@@ -9,7 +9,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import * as azdata from 'azdata';
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
@@ -21,6 +21,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 export class MainThreadQueryEditor extends Disposable implements MainThreadQueryEditorShape {
 
 	private _proxy: ExtHostQueryEditorShape;
+	private _queryEventListenerDisposables = new Map<number, IDisposable>();
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -112,10 +113,19 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 	}
 
 	public $registerQueryInfoListener(handle: number): void {
-		this._register(this._queryModelService.onQueryEvent(event => {
+		const disposable = this._queryModelService.onQueryEvent(event => {
 			let connectionProfile = this._connectionManagementService.getConnectionProfile(event.uri);
 			this._proxy.$onQueryEvent(connectionProfile?.providerName, handle, event.uri, event);
-		}));
+		});
+		this._queryEventListenerDisposables.set(handle, disposable);
+	}
+
+	public $unregisterQueryInfoListener(handle: number): void {
+		const disposable = this._queryEventListenerDisposables.get(handle);
+		if (disposable) {
+			disposable.dispose();
+			this._queryEventListenerDisposables.delete(handle);
+		}
 	}
 
 	public $createQueryTab(fileUri: string, title: string, componentId: string): void {

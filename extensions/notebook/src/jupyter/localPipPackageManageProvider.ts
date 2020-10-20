@@ -94,6 +94,14 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 		let versionNums: string[] = [];
 		let packageSummary = '';
 		if (packagesJson) {
+			let currentRelease: string;
+			if (packagesJson.info) {
+				if (packagesJson.info.summary) {
+					packageSummary = packagesJson.info.summary;
+				}
+				currentRelease = packagesJson.info.version?.toString();
+			}
+
 			if (packagesJson.releases) {
 				let versionKeys = Object.keys(packagesJson.releases);
 				versionKeys = versionKeys.filter(versionKey => {
@@ -101,10 +109,15 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 					return Array.isArray(releaseInfo) && releaseInfo.length > 0;
 				});
 				versionNums = utils.sortPackageVersions(versionKeys, false);
-			}
 
-			if (packagesJson.info && packagesJson.info.summary) {
-				packageSummary = packagesJson.info.summary;
+				// Place current stable release at the front of the list
+				if (currentRelease) {
+					let releaseIndex = versionNums.findIndex(value => value === currentRelease);
+					if (releaseIndex > 0) {
+						versionNums.splice(releaseIndex, 1);
+						versionNums.unshift(currentRelease);
+					}
+				}
 			}
 		}
 

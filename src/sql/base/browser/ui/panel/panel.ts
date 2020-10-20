@@ -107,6 +107,10 @@ export class TabbedPanel extends Disposable {
 		this._register(DOM.addDisposableListener(this.header, DOM.EventType.FOCUS, e => this.focusCurrentTab()));
 	}
 
+	public get element(): HTMLElement {
+		return this.parent;
+	}
+
 	public dispose() {
 		this.header.remove();
 		this.tabList.remove();
@@ -250,7 +254,8 @@ export class TabbedPanel extends Disposable {
 			tab.tab.view.onShow();
 		}
 		if (this._currentDimensions) {
-			this._layoutCurrentTab(new DOM.Dimension(this._currentDimensions.width, this._currentDimensions.height - this.headersize));
+			const tabHeight = this._currentDimensions.height - (this._headerVisible ? this.headersize : 0);
+			this._layoutCurrentTab(new DOM.Dimension(this._currentDimensions.width, tabHeight));
 		}
 	}
 
@@ -317,6 +322,13 @@ export class TabbedPanel extends Disposable {
 
 	public style(styles: ITabbedPanelStyles): void {
 		const content: string[] = [];
+
+		if (styles.border) {
+			content.push(`
+			.tabbedPanel {
+				border-color: ${styles.border};
+			}`);
+		}
 
 		if (styles.titleActiveForeground && styles.titleActiveBorder) {
 			content.push(`

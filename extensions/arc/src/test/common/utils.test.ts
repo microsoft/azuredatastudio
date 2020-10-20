@@ -7,7 +7,7 @@ import { ResourceType } from 'arc';
 import 'mocha';
 import * as should from 'should';
 import * as vscode from 'vscode';
-import { getAzurecoreApi, getConnectionModeDisplayText, getDatabaseStateDisplayText, getErrorMessage, getResourceTypeIcon, parseEndpoint, parseIpAndPort, promptAndConfirmPassword, promptForInstanceDeletion, resourceTypeToDisplayName } from '../../common/utils';
+import { getAzurecoreApi, getConnectionModeDisplayText, getDatabaseStateDisplayText, getErrorMessage, getResourceTypeIcon, parseEndpoint, parseIpAndPort, promptAndConfirmPassword, promptForInstanceDeletion, resourceTypeToDisplayName, convertToGibibyteString } from '../../common/utils';
 import { ConnectionMode as ConnectionMode, IconPathHelper } from '../../constants';
 import * as loc from '../../localizedConstants';
 import { MockInputBox } from '../stubs';
@@ -252,5 +252,118 @@ describe('parseIpAndPort', function (): void {
 	it('invalid address - no port', function (): void {
 		const ip = '127.0.0.1';
 		should(() => parseIpAndPort(ip)).throwError();
+	});
+});
+
+describe('convertToGibibyteString Method Tests', function () {
+	const tolerance = 0.001;
+	it('Value is in KB', function (): void {
+		const value = '44000K';
+		const conversion = 0.04097819;
+		const check = Math.abs(conversion - parseFloat(convertToGibibyteString(value)));
+		should(check).lessThanOrEqual(tolerance);
+	});
+
+	it('Value is in MB', function (): void {
+		const value = '1100M';
+		const conversion = 1.02445483;
+		const check = Math.abs(conversion - parseFloat(convertToGibibyteString(value)));
+		should(check).lessThanOrEqual(tolerance);
+	});
+
+	it('Value is in GB', function (): void {
+		const value = '1G';
+		const conversion = 0.931322575;
+		const check = Math.abs(conversion - parseFloat(convertToGibibyteString(value)));
+		should(check).lessThanOrEqual(tolerance);
+	});
+
+	it('Value is in TB', function (): void {
+		const value = '1T';
+		const conversion = 931.32257;
+		const check = Math.abs(conversion - parseFloat(convertToGibibyteString(value)));
+		should(check).lessThanOrEqual(tolerance);
+	});
+
+	it('Value is in PB', function (): void {
+		const value = '0.1P';
+		const conversion = 93132.25746;
+		const check = Math.abs(conversion - parseFloat(convertToGibibyteString(value)));
+		should(check).lessThanOrEqual(tolerance);
+	});
+
+	it('Value is in EB', function (): void {
+		const value = '1E';
+		const conversion = 931322574.6154;
+		const check = Math.abs(conversion - parseFloat(convertToGibibyteString(value)));
+		should(check).lessThanOrEqual(tolerance);
+	});
+
+	it('Value is in mB', function (): void {
+		const value = '1073741824000m';
+		const conversion = 1;
+		const check = Math.abs(conversion - parseFloat(convertToGibibyteString(value)));
+		should(check).lessThanOrEqual(tolerance);
+	});
+
+	it('Value is in B', function (): void {
+		const value = '1073741824';
+		const conversion = 1;
+		const check = Math.abs(conversion - parseFloat(convertToGibibyteString(value)));
+		should(check).lessThanOrEqual(tolerance);
+	});
+
+	it('Value is in KiB', function (): void {
+		const value = '1048576Ki';
+		const conversion = 1;
+		const check = Math.abs(conversion - parseFloat(convertToGibibyteString(value)));
+		should(check).lessThanOrEqual(tolerance);
+	});
+
+	it('Value is in MiB', function (): void {
+		const value = '256Mi';
+		const conversion = 0.25;
+		const check = Math.abs(conversion - parseFloat(convertToGibibyteString(value)));
+		should(check).lessThanOrEqual(tolerance);
+	});
+
+	it('Value is in GiB', function (): void {
+		const value = '1000Gi';
+		const conversion = 1000;
+		const check = Math.abs(conversion - parseFloat(convertToGibibyteString(value)));
+		should(check).lessThanOrEqual(tolerance);
+	});
+
+	it('Value is in TiB', function (): void {
+		const value = '1Ti';
+		const conversion = 1024;
+		const check = Math.abs(conversion - parseFloat(convertToGibibyteString(value)));
+		should(check).lessThanOrEqual(tolerance);
+	});
+
+	it('Value is in PiB', function (): void {
+		const value = '1Pi';
+		const conversion = 1048576;
+		const check = Math.abs(conversion - parseFloat(convertToGibibyteString(value)));
+		should(check).lessThanOrEqual(tolerance);
+	});
+
+	it('Value is in EiB', function (): void {
+		const value = '1Ei';
+		const conversion = 1073741824;
+		const check = Math.abs(conversion - parseFloat(convertToGibibyteString(value)));
+		should(check).lessThanOrEqual(tolerance);
+	});
+
+	it('Value is empty', function (): void {
+		const value = '';
+		const error = new Error(`Value provided is not a valid Kubernetes resource quantity`);
+		should(() => convertToGibibyteString(value)).throwError(error);
+	});
+
+	it('Value is not a valid Kubernetes resource quantity', function (): void {
+		const value = '1J';
+		const error = new Error(`${value} is not a valid Kubernetes resource quantity`);
+		should(() => convertToGibibyteString(value)).throwError(error);
 	});
 });

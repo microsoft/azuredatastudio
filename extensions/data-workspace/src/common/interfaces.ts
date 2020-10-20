@@ -85,4 +85,9 @@ export interface IWorkspaceService {
 	 * Event fires when projects in workspace changes
 	 */
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void>;
+
+	/**
+	 * Verify that a workspace is open or it is ok to create a workspace if one needs to be created
+	 */
+	validateWorkspace(): Promise<boolean>;
 }

@@ -51,7 +51,10 @@ export class NewProjectDialog extends DialogBase {
 
 	async onComplete(): Promise<void> {
 		try {
-			await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId);
+			const validateWorkspace = await this.workspaceService.validateWorkspace();
+			if (validateWorkspace) {
+				await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId);
+			}
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(err?.message ? err.message : err);

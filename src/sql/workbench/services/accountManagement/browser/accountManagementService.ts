@@ -345,7 +345,7 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	/**
-	 * End auto OAuth Devide code closes add account dialog
+	 * End auto OAuth Device code closes add account dialog
 	 */
 	public endAutoOAuthDeviceCode(): void {
 		this.autoOAuthDialogController.closeAutoOAuthDialog();
