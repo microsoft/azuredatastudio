@@ -71,4 +71,3 @@ export const discoverPathOrAdditionalInfromationText = localize('resourceDeploym
 export const requiredToolsText = localize('resourceDeployment.requiredTools', "Required tools");
 export const installToolsText = localize('resourceDeployment.InstallTools', "Install tools");
 export const optionsText = localize('resourceDeployment.Options', "Options");
-export const requiredTools = localize('resourceDeployment.requiredTools', "Required tools");

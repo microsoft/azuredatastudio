@@ -155,7 +155,7 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 						component: this._agreementContainer,
 					}, {
 						component: this._toolsLoadingComponent,
-						title: loc.requiredTools
+						title: loc.requiredToolsText
 					}, {
 						component: this._installToolButton
 					}
