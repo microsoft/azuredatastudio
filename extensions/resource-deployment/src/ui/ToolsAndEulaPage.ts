@@ -185,14 +185,11 @@ export class ToolsAndEulaPage<W extends WizardBase<WizardPageBase<W, M>, M>, M e
 				this._optionsContainer.clearItems();
 				this._optionDropDownMap.clear();
 				if (this.resourceType.options) {
-					const optionTitle = this.view.modelBuilder.text().withProps({
-						value: loc.optionsText,
-						CSSStyles: {
-							'font-size': '14px',
-							'padding': '0'
-						}
+					const optionsTitle = this.view.modelBuilder.text().withProps({
+						value: 'Options',
+
 					}).component();
-					this._optionsContainer.addItem(optionTitle);
+					this._optionsContainer.addItem(optionsTitle);
 					this.resourceType.options.forEach(option => {
 						const optionLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 							value: option.displayName
