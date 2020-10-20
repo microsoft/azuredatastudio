@@ -125,8 +125,7 @@ export interface DeploymentProviderBase {
 
 export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider | AzureSQLVMDeploymentProvider | AzureSQLDBDeploymentProvider;
 
-export interface BdcWizardInfo {
-	notebook: string | NotebookPathInfo;
+export interface BdcWizardInfo extends NotebookWizardInfo {
 	type: BdcDeploymentType;
 }
 /**
@@ -192,12 +191,10 @@ export interface CommandBasedDialogInfo extends DialogInfoBase {
 	command: string;
 }
 
-export interface AzureSQLVMWizardInfo {
-	notebook: string | NotebookPathInfo;
+export interface AzureSQLVMWizardInfo extends NotebookWizardInfo {
 }
 
-export interface AzureSQLDBWizardInfo {
-	notebook: string | NotebookPathInfo;
+export interface AzureSQLDBWizardInfo extends NotebookWizardInfo {
 }
 
 export type DialogInfo = NotebookBasedDialogInfo | CommandBasedDialogInfo;

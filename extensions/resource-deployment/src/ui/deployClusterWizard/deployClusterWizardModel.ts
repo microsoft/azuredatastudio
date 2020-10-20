@@ -13,7 +13,8 @@ import { ToolsInstallPath } from './../../constants';
 import * as VariableNames from './constants';
 
 export class DeployClusterWizardModel extends Model {
-	constructor(public deploymentTarget: BdcDeploymentType) {
+	public deploymentTarget!: BdcDeploymentType;
+	constructor() {
 		super();
 	}
 	public adAuthSupported: boolean = false;

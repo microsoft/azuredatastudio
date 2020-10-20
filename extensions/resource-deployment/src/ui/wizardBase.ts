@@ -6,18 +6,21 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeploymentProvider, DeploymentProviderBase, ResourceType } from '../interfaces';
+import { DeploymentProvider, DeploymentProviderBase, instanceOfAzureSQLDBDeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookWizardInfo, ResourceType } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
+import { DeployClusterWizardModel } from './deployClusterWizard/deployClusterWizardModel';
 import { Model } from './model';
 import { WizardPageBase } from './wizardPageBase';
 import { WizardPageInfo } from './wizardPageInfo';
 const localize = nls.loadMessageBundle();
+import * as loc from '../localizedConstants';
 
 export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, M extends Model> {
 	private customButtons: azdata.window.Button[] = [];
 	public pages: P[] = [];
 	private _resourceProvider!: DeploymentProviderBase;
+	protected _wizardInfo!: NotebookWizardInfo;
 
 
 	public wizardObject: azdata.window.Wizard;
@@ -32,14 +35,39 @@ export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, 
 
 	public set resourceProvider(provider: DeploymentProviderBase) {
 		this._resourceProvider = provider;
-		this.refreshWizard();
+		if (instanceOfAzureSQLDBDeploymentProvider(this.resourceProvider)) {
+			this._wizardInfo = this.resourceProvider.azureSQLDBWizard;
+		} else if (instanceOfAzureSQLVMDeploymentProvider(this.resourceProvider)) {
+			this._wizardInfo = this.resourceProvider.azureSQLVMWizard;
+		} else if (instanceOfNotebookWizardDeploymentProvider(this.resourceProvider)) {
+			this._wizardInfo = this.resourceProvider.notebookWizard;
+			if (this._wizardInfo?.codeCellInsertionPosition === undefined) {
+				this._wizardInfo!.codeCellInsertionPosition = 0;
+			}
+			this.wizardObject.doneButton.label = this._wizardInfo!.doneAction?.label || loc.deployNotebook;
+			this.wizardObject.generateScriptButton.label = this._wizardInfo!.scriptAction?.label || loc.scriptToNotebook;
+		} else if (instanceOfWizardDeploymentProvider(this.resourceProvider)) {
+			this._wizardInfo = this.resourceProvider.bdcWizard;
+			if (this._model instanceof DeployClusterWizardModel) {
+				this._model.deploymentTarget = this.resourceProvider.bdcWizard.type;
+			}
+		} else {
+			this._wizardInfo = undefined!;
+		}
 	}
 
 	public get resourceProvider(): DeploymentProviderBase {
 		return this._resourceProvider;
 	}
 
-	constructor(private title: string, name: string, private _model: M, public toolsService: IToolsService, private _useGenerateScriptButton: boolean = false, protected _resourceType: ResourceType, private _resourceTypeService?: IResourceTypeService) {
+	constructor(
+		private title: string,
+		name: string,
+		protected _model: M,
+		public toolsService: IToolsService,
+		private _useGenerateScriptButton: boolean = false,
+		protected _resourceType: ResourceType,
+		private _resourceTypeService?: IResourceTypeService) {
 
 		this.wizardObject = azdata.window.createWizard(title || _resourceType?.displayName!, name || '');
 		if (this._resourceType) {
@@ -109,6 +137,11 @@ export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, 
 		});
 	}
 
+	// All custom wizard types have to implement this method to supply pages to the wizardbase.
+	protected getPages(): P[] {
+		throw new Error('Method not implemented');
+	}
+
 	protected dispose() {
 		let errorOccurred = false;
 		this.toDispose.forEach((disposable: vscode.Disposable) => {
@@ -130,11 +163,32 @@ export abstract class WizardBase<P extends WizardPageBase<WizardBase<P, M>, M>, 
 		this.toDispose.push(disposable);
 	}
 
-	public async refreshPages() {
-		throw new Error('Method not implemented');
-	}
 
-	public refreshWizard() {
-		throw new Error('Method not implemented');
+
+	public async refreshPages() {
+		const pageCount = this.wizardObject.pages.length;
+		// Removing all pages except the tools and Eula one (first page)
+		for (let i = 1; i < pageCount; i++) {
+			this.wizardObject.removePage(this.wizardObject.pages.length - 1);
+			this.wizardObject.pages.pop();
+		}
+		// If the wizard has no pages then just removing pages is enough.
+		if (!this._wizardInfo) {
+			return;
+		}
+
+		const newPages = this.getPages();
+		newPages[0] = this.pages[0];
+
+		this.pages = newPages;
+
+		for (let i = 1; i < newPages.length; i++) {
+			newPages[i].pageObject.onValidityChanged((isValid: boolean) => {
+				// generateScriptButton is enabled only when the page is valid.
+				this.wizardObject.generateScriptButton.enabled = isValid;
+			});
+			newPages[i].initialize();
+			this.wizardObject.addPage(newPages[i].pageObject);
+		}
 	}
 }

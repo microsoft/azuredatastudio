@@ -11,7 +11,7 @@ import { IToolsService } from '../../services/toolsService';
 import { WizardBase } from '../wizardBase';
 import { WizardPageBase } from '../wizardPageBase';
 import { DeployAzureSQLVMWizardModel } from './deployAzureSQLVMWizardModel';
-import { AzureSQLVMWizardInfo, instanceOfAzureSQLVMDeploymentProvider, ResourceType } from '../../interfaces';
+import { instanceOfAzureSQLVMDeploymentProvider, ResourceType } from '../../interfaces';
 import { AzureSettingsPage } from './pages/azureSettingsPage';
 import { VmSettingsPage } from './pages/vmSettingsPage';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -26,7 +26,6 @@ const localize = nls.loadMessageBundle();
 
 export class DeployAzureSQLVMWizard extends WizardBase<WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>, DeployAzureSQLVMWizardModel> {
 	private cache: Map<string, any> = new Map();
-	private _wizardInfo!: AzureSQLVMWizardInfo;
 
 	constructor(private _notebookService: INotebookService, private _toolsService: IToolsService, resourceType: ResourceType, resourceTypeService?: IResourceTypeService) {
 		super(
@@ -66,13 +65,7 @@ export class DeployAzureSQLVMWizard extends WizardBase<WizardPageBase<DeployAzur
 	protected onCancel(): void {
 	}
 
-	public refreshWizard() {
-		if (instanceOfAzureSQLVMDeploymentProvider(this.resourceProvider)) {
-			this._wizardInfo = this.resourceProvider.azureSQLVMWizard;
-		}
-	}
-
-	private getPages(): WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>[] {
+	protected getPages(): WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>[] {
 		const pages: WizardPageBase<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>[] =
 			[
 				new ToolsAndEulaPage<DeployAzureSQLVMWizard, DeployAzureSQLVMWizardModel>(this, this._resourceType),
@@ -90,7 +83,7 @@ export class DeployAzureSQLVMWizard extends WizardBase<WizardPageBase<DeployAzur
 		const variableValueStatements = this.model.getCodeCellContentForNotebook();
 		const insertionPosition = 2; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
 		try {
-			await this.notebookService.openNotebookWithEdits(this._wizardInfo.notebook, variableValueStatements, insertionPosition);
+			await this.notebookService.openNotebookWithEdits(this._wizardInfo!.notebook, variableValueStatements, insertionPosition);
 		} catch (error) {
 			vscode.window.showErrorMessage(error);
 		}

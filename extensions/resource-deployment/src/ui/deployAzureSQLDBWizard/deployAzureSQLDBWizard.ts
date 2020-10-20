@@ -11,7 +11,7 @@ import { IToolsService } from '../../services/toolsService';
 import { WizardBase } from '../wizardBase';
 import { WizardPageBase } from '../wizardPageBase';
 import { DeployAzureSQLDBWizardModel } from './deployAzureSQLDBWizardModel';
-import { AzureSQLDBWizardInfo, instanceOfAzureSQLDBDeploymentProvider, ResourceType } from '../../interfaces';
+import { instanceOfAzureSQLDBDeploymentProvider, ResourceType } from '../../interfaces';
 import { AzureSettingsPage } from './pages/azureSettingsPage';
 import { DatabaseSettingsPage } from './pages/databaseSettingsPage';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -21,7 +21,6 @@ import { IResourceTypeService } from '../../services/resourceTypeService';
 import { ToolsAndEulaPage } from '../ToolsAndEulaPage';
 
 export class DeployAzureSQLDBWizard extends WizardBase<WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>, DeployAzureSQLDBWizardModel> {
-	private _wizardInfo!: AzureSQLDBWizardInfo;
 
 	constructor(private _notebookService: INotebookService, private _toolsService: IToolsService, resourceType: ResourceType, resourceTypeService?: IResourceTypeService) {
 		super(
@@ -60,16 +59,10 @@ export class DeployAzureSQLDBWizard extends WizardBase<WizardPageBase<DeployAzur
 		}
 	}
 
-	public refreshWizard() {
-		if (instanceOfAzureSQLDBDeploymentProvider(this.resourceProvider)) {
-			this._wizardInfo = this.resourceProvider.azureSQLDBWizard;
-		}
-	}
-
 	protected onCancel(): void {
 	}
 
-	private getPages(): WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>[] {
+	protected getPages(): WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>[] {
 		const pages: WizardPageBase<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>[] =
 			[
 				new ToolsAndEulaPage<DeployAzureSQLDBWizard, DeployAzureSQLDBWizardModel>(this, this._resourceType!),
@@ -84,7 +77,7 @@ export class DeployAzureSQLDBWizard extends WizardBase<WizardPageBase<DeployAzur
 		const variableValueStatements = this.model.getCodeCellContentForNotebook();
 		const insertionPosition = 2; // Cell number 2 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
 		try {
-			await this.notebookService.openNotebookWithEdits(this._wizardInfo.notebook, variableValueStatements, insertionPosition);
+			await this.notebookService.openNotebookWithEdits(this._wizardInfo!.notebook, variableValueStatements, insertionPosition);
 		} catch (error) {
 			vscode.window.showErrorMessage(error);
 		}
@@ -190,35 +183,5 @@ export class DeployAzureSQLDBWizard extends WizardBase<WizardPageBase<DeployAzur
 			text: message,
 			level: azdata.window.MessageLevel.Error
 		};
-	}
-
-	public async refreshPages() {
-
-		const pageCount = this.wizardObject.pages.length;
-		// Removing all pages except the tools and Eula one (first page)
-		for (let i = 1; i < pageCount; i++) {
-			this.wizardObject.removePage(this.wizardObject.pages.length - 1);
-			this.wizardObject.pages.pop();
-		}
-		if (instanceOfAzureSQLDBDeploymentProvider(this.resourceProvider)) {
-			this._wizardInfo = this.resourceProvider.azureSQLDBWizard!;
-		} else {
-			return;
-		}
-
-		const newPages = this.getPages();
-
-		newPages[0] = this.pages[0];
-
-		this.pages = newPages;
-
-		for (let i = 1; i < newPages.length; i++) {
-			newPages[i].pageObject.onValidityChanged((isValid: boolean) => {
-				// generateScriptButton is enabled only when the page is valid.
-				this.wizardObject.generateScriptButton.enabled = isValid;
-			});
-			newPages[i].initialize();
-			this.wizardObject.addPage(newPages[i].pageObject);
-		}
 	}
 }

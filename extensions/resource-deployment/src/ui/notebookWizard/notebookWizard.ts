@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as loc from '../../localizedConstants';
 import { INotebookService, Notebook } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
 import { Model } from '../model';
@@ -18,7 +17,6 @@ import { IResourceTypeService } from '../../services/resourceTypeService';
 
 export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Model>, Model> {
 	private _inputComponents: InputComponents = {};
-	private _wizardInfo!: NotebookWizardInfo;
 
 	public get notebookService(): INotebookService {
 		return this._notebookService;
@@ -36,23 +34,12 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 		return this._inputComponents;
 	}
 
-	public refreshWizard() {
-		if (instanceOfNotebookWizardDeploymentProvider(this.resourceProvider)) {
-			this._wizardInfo = this.resourceProvider.notebookWizard;
-			if (this._wizardInfo.codeCellInsertionPosition === undefined) {
-				this._wizardInfo.codeCellInsertionPosition = 0;
-			}
-			this.wizardObject.doneButton.label = this._wizardInfo.doneAction?.label || loc.deployNotebook;
-			this.wizardObject.generateScriptButton.label = this._wizardInfo.scriptAction?.label || loc.scriptToNotebook;
-		}
-	}
-
 	constructor(private _notebookService: INotebookService, private _platformService: IPlatformService, toolsService: IToolsService, resourceType: ResourceType, resourceTypeService?: IResourceTypeService) {
 		super(undefined!, undefined!, new Model(), toolsService, false, resourceType, resourceTypeService);
 	}
 
 	public get deploymentType(): DeploymentType | undefined {
-		return this._wizardInfo.type;
+		return this._wizardInfo!.type;
 	}
 
 	protected initialize(): void {
@@ -112,7 +99,7 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 		return notebook;
 	}
 
-	private getPages(): WizardPageBase<NotebookWizard, Model>[] {
+	protected getPages(): WizardPageBase<NotebookWizard, Model>[] {
 		const pages: WizardPageBase<NotebookWizard, Model>[] = [];
 		pages.push(new ToolsAndEulaPage<NotebookWizard, Model>(this, this._resourceType!));
 		if (!this.wizardInfo) {
@@ -128,38 +115,4 @@ export class NotebookWizard extends WizardBase<WizardPageBase<NotebookWizard, Mo
 		}
 		return pages;
 	}
-
-
-	public async refreshPages() {
-		if (instanceOfNotebookWizardDeploymentProvider(this.resourceProvider)) {
-			this._wizardInfo = this.resourceProvider.notebookWizard!;
-		} else {
-
-			return;
-		}
-
-		const currentPageNumber = this.wizardObject.pages.length;
-		// Removing all pages except the tools and Eula one (first page)
-		for (let i = 1; i < currentPageNumber; i++) {
-			this.wizardObject.removePage(this.wizardObject.pages.length - 1);
-			this.wizardObject.pages.pop();
-		}
-
-		const newPages = this.getPages();
-
-		newPages[0] = this.pages[0];
-
-		this.pages = newPages;
-
-		for (let i = 1; i < newPages.length; i++) {
-			newPages[i].pageObject.onValidityChanged((isValid: boolean) => {
-				// generateScriptButton is enabled only when the page is valid.
-				this.wizardObject.generateScriptButton.enabled = isValid;
-			});
-			newPages[i].initialize();
-			this.wizardObject.addPage(newPages[i].pageObject);
-		}
-	}
-
-
 }
