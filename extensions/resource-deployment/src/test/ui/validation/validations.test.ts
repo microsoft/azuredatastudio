@@ -5,10 +5,7 @@
 
 import 'mocha';
 import * as should from 'should';
-import { InputComponents } from '../../../ui/modelViewUtils';
 import { GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, Validation, ValidationType, ValidationValueType } from '../../../ui/validation/validations';
-import * as sinon from 'sinon';
-import * as azdata from 'azdata';
 
 suite('Validation', () => {
 	suite('IntegerValidation', () => {
@@ -153,30 +150,6 @@ suite('Validation', () => {
 			});
 		});
 	});
-
-	suite('validation functions', () => {
-		suite('validateAndUpdateValidationMessages', () => {
-			beforeEach(() => {
-				const testComponents: InputComponents = {
-					'text': sinon.stub(azdata.)
-				}
-				const container = {
-					message: {
-						text: 'message1'
-					}
-				}
-				console.log(container);
-			});
-
-
-			afterEach(()=>{
-				sinon.reset();
-			});
-
-			test('empty dialogMessage, 2 validation failures')
-
-		});
-	});
 });
 
 interface TestObject {
@@ -193,7 +166,7 @@ async function testValidation(validation: Validation, test: TestObject, validati
 		:	should(validationResult.message).be.equal(validationDescription);
 }
 
-function getDisplayString(value: string | number | null | undefined) {
+function getDisplayString(value: ValidationValueType) {
 	return typeof value === 'string' ? `"${value}"` : value;
 }
 
