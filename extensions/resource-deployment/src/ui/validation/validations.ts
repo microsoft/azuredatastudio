@@ -194,8 +194,8 @@ export function createValidation(validation: ValidationInfo, valueGetter: ValueG
 
 export async function validateAndUpdateValidationMessages(component: InputComponent, container: DialogMessageContainer, validations: Validation[] = []): Promise<ValidationResult> {
 	let dialogMessage = container.message ?? { text: ''};
-	const validationStates = await Promise.all(validations.map(validation => validation.validate())); // strip off validation messages corresponding to successful validations
-	validationStates.filter(state => state.valid).forEach(v => dialogMessage = removeValidationMessage(dialogMessage, v.message!));
+	const validationStates = await Promise.all(validations.map(validation => validation.validate()));
+	validationStates.filter(state => state.valid).forEach(v => dialogMessage = removeValidationMessage(dialogMessage, v.message!)); // strip off validation messages corresponding to all successful validations
 	const failedStates = validationStates.filter(state => !state.valid);
 	if (failedStates.length > 0) {
 		container.message = getDialogMessage([dialogMessage?.description ?? dialogMessage?.text, failedStates[0].message!]);
