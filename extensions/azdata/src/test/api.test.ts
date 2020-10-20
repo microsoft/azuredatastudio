@@ -42,7 +42,6 @@ describe('api', function (): void {
 			await assertRejected(api.azdata.arc.postgres.server.show(''), 'arc sql postgres server show');
 			await assertRejected(api.azdata.arc.postgres.server.edit('', { }), 'arc sql postgres server edit');
 		});
-	}
-
+	});
 });
 
