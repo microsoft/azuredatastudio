@@ -121,6 +121,7 @@ interface ContextBase {
 }
 
 export function createTextInput(view: azdata.ModelView, info: {
+	type?: azdata.InputBoxInputType,
 	defaultValue?: string,
 	ariaLabel: string,
 	required?: boolean,
@@ -133,7 +134,7 @@ export function createTextInput(view: azdata.ModelView, info: {
 	return view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		value: info.defaultValue,
 		ariaLabel: info.ariaLabel,
-		inputType: 'text',
+		inputType: info.type ?? 'text',
 		required: info.required,
 		placeHolder: info.placeHolder,
 		width: info.width,
@@ -549,8 +550,10 @@ function processNumberField(context: FieldContext): void {
 }
 
 function processTextField(context: FieldContext): void {
+	const isPasswordField = context.fieldInfo.type === FieldType.Password || context.fieldInfo.type === FieldType.SQLPassword;
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const input = createTextInput(context.view, {
+		type: isPasswordField ? 'password' : 'text',
 		defaultValue: context.fieldInfo.defaultValue,
 		ariaLabel: context.fieldInfo.label,
 		required: context.fieldInfo.required,
@@ -560,22 +563,15 @@ function processTextField(context: FieldContext): void {
 		container: context.container,
 		validations: context.fieldValidations
 	});
-	context.onNewInputComponentCreated(context.fieldInfo.variableName ?? context.fieldInfo.label, context.inputComponentInfo = { component: input });
+
+	context.onNewInputComponentCreated(context.fieldInfo.variableName ?? context.fieldInfo.label, context.inputComponentInfo = { component: input, isPassword: isPasswordField });
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo);
 	context.onNewDisposableCreated(input.onTextChanged(() => input.validate()));
 }
 
 function processPasswordField(context: FieldContext): void {
-	const passwordLabel = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
-	const passwordInput = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-		ariaLabel: context.fieldInfo.label,
-		inputType: 'password',
-		required: context.fieldInfo.required,
-		placeHolder: context.fieldInfo.placeHolder,
-		width: context.fieldInfo.inputWidth
-	}).withValidation(async (component) => !!context.fieldInfo.validations && (await validateAndUpdateValidationMessages(component, context.container, context.fieldValidations)).valid).component();
-	context.onNewInputComponentCreated(context.fieldInfo.variableName ?? context.fieldInfo.label, context.inputComponentInfo = { component: passwordInput, isPassword: true });
-	addLabelInputPairToContainer(context.view, context.components, passwordLabel, passwordInput, context.fieldInfo);
+	processTextField(context);
+	const passwordInput = context.inputComponents[context.fieldInfo.variableName!].component as azdata.InputBoxComponent;
 
 	if (context.fieldInfo.type === FieldType.SQLPassword) {
 		const invalidPasswordMessage = getInvalidSQLPasswordMessage(context.fieldInfo.label);

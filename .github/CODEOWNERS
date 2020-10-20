@@ -2,4 +2,8 @@
 # Each line is a file pattern followed by one or more owners.
 # Syntax can be found here: https://docs.github.com/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-code-owners#codeowners-syntax
 
-/src/sql/*.d.ts @alanrenmsft @Charles-Gagnon
+/src/sql/*.d.ts @alanrenmsft @Charles-Gagnon @ranasaria
+/src/extensions/resource-deployment/ @ranasaria
+/src/extensions/arc/ @ranasaria
+/src/extensions/azdata/ @ranasaria
+

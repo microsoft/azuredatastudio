@@ -30,8 +30,8 @@ import { convertSize, convertSizeToNumber } from 'sql/base/browser/dom';
 @Component({
 	selector: 'modelview-inputBox',
 	template: `
-			<div [style.display]="getInputBoxDisplay()" #input style="width: 100%"></div>
-			<div [style.display]="getTextAreaDisplay()" #textarea style="width: 100%"></div>
+			<div [style.display]="getInputBoxDisplay()" #input [style.width]="width" ></div>
+			<div [style.display]="getTextAreaDisplay()" #textarea [style.width]="width" ></div>
 	`
 })
 export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProperties> implements IComponent, OnDestroy, AfterViewInit {
