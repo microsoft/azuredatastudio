@@ -36,6 +36,8 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -87,6 +89,7 @@ let mockModelFactory: TypeMoq.Mock<ModelFactory>;
 let notificationService: TypeMoq.Mock<INotificationService>;
 let capabilitiesService: ICapabilitiesService;
 let instantiationService: IInstantiationService;
+let configurationService: IConfigurationService;
 
 suite('notebook model', function (): void {
 	let notebookManagers = [new NotebookManagerStub()];
@@ -107,6 +110,7 @@ suite('notebook model', function (): void {
 		queryConnectionService.callBase = true;
 		let serviceCollection = new ServiceCollection();
 		instantiationService = new InstantiationService(serviceCollection, true);
+		configurationService = new TestConfigurationService();
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
@@ -154,7 +158,7 @@ suite('notebook model', function (): void {
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(emptyNotebook));
 		defaultModelOptions.contentManager = mockContentManager.object;
 		// When I initialize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
 
 		// Then I expect to have 0 code cell as the contents
@@ -170,7 +174,7 @@ suite('notebook model', function (): void {
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
 		defaultModelOptions.contentManager = mockContentManager.object;
 		// When I initialize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents(true);
 		await model.requestModelLoad();
 
@@ -187,7 +191,7 @@ suite('notebook model', function (): void {
 
 		// When I initalize the model
 		// Then it should throw
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		assert.equal(model.inErrorState, false);
 		await assert.rejects(async () => { await model.loadContents(); });
 		assert.equal(model.inErrorState, true);
@@ -200,7 +204,7 @@ suite('notebook model', function (): void {
 		defaultModelOptions.contentManager = mockContentManager.object;
 
 		// When I initalize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
 
 		// Then I expect all cells to be in the model
@@ -228,7 +232,7 @@ suite('notebook model', function (): void {
 		defaultModelOptions.providerId = 'jupyter';
 
 		// When I initalize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
 
 		// I expect the default provider to be jupyter
@@ -238,7 +242,7 @@ suite('notebook model', function (): void {
 		defaultModelOptions.providerId = 'SQL';
 
 		// When I initalize the model
-		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object);
+		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
 
 		// I expect the default provider to be SQL
@@ -263,7 +267,7 @@ suite('notebook model', function (): void {
 		defaultModelOptions.contentManager = mockContentManager.object;
 
 		// When I initalize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
 
 		let activeCellChangeCount = 0;
@@ -320,7 +324,7 @@ suite('notebook model', function (): void {
 		defaultModelOptions.contentManager = mockContentManager.object;
 
 		// When I initalize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
 
 		// Count number of times onError event is fired
@@ -375,7 +379,7 @@ suite('notebook model', function (): void {
 		sessionReady.resolve();
 		let sessionFired = false;
 
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		model.onClientSessionReady((session) => sessionFired = true);
 		await model.loadContents();
 		await model.requestModelLoad();
@@ -405,7 +409,7 @@ suite('notebook model', function (): void {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
 		defaultModelOptions.contentManager = mockContentManager.object;
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.requestModelLoad();
 
 		let actualChanged: NotebookContentChange;
@@ -474,7 +478,7 @@ suite('notebook model', function (): void {
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
 		defaultModelOptions.contentManager = mockContentManager.object;
 		// When I initialize the model
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined, queryConnectionService.object);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined, queryConnectionService.object, configurationService);
 		await model.loadContents();
 
 		let output = model.toJSON();
@@ -583,7 +587,7 @@ suite('notebook model', function (): void {
 		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
 			factory: mockModelFactory.object
 		});
-		let model = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, capabilitiesService);
+		let model = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, capabilitiesService);
 		model.onClientSessionReady((session) => actualSession = session);
 		await model.requestModelLoad();
 

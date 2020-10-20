@@ -31,6 +31,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { values } from 'vs/base/common/collections';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -97,6 +98,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@INotificationService private readonly notificationService: INotificationService,
 		@IAdsTelemetryService private readonly adstelemetryService: IAdsTelemetryService,
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
+		@IConfigurationService private configurationService: IConfigurationService,
 		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService
 
 	) {
@@ -1159,7 +1161,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		metadata.kernelspec = this._savedKernelInfo;
 		metadata.language_info = this.languageInfo;
 		metadata.tags = this._tags;
-		metadata.connectionName = this._savedConnectionName;
+		if (this.configurationService.getValue('notebook.saveConnectionName')) {
+			metadata.connectionName = this._savedConnectionName;
+		}
 		Object.keys(this._existingMetadata).forEach(key => {
 			metadata[key] = this._existingMetadata[key];
 		});
