@@ -203,6 +203,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._activeConnection;
 	}
 
+	public get savedConnectionName(): string | undefined {
+		return this._savedConnectionName;
+	}
+
 	public get specs(): nb.IAllKernels | undefined {
 		let specs: nb.IAllKernels = {
 			defaultKernel: '',
@@ -341,8 +345,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._defaultLanguageInfo = contents.metadata?.language_info;
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
 				this._savedConnectionName = this.getSavedConnectionName(contents);
-				let profile = this.getConnectionProfileFromName(this._savedConnectionName);
-				this.changeContext(this._savedConnectionName, profile);
 				if (contents.metadata) {
 					//Telemetry of loading notebook
 					let metadata: any = contents.metadata;
@@ -395,6 +397,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public async requestConnection(): Promise<boolean> {
+		// If there is a saved connection name with a corresponding connection profile, use that one,
+		// otherwise show connection dialog
+		if (this._savedConnectionName) {
+			let profile: ConnectionProfile | undefined = this.getConnectionProfileFromName(this._savedConnectionName);
+			if (profile) {
+				await this.changeContext(this._savedConnectionName, profile);
+				return true;
+			} // TODO: No matching connection profile for saved connection name
+		}
 		if (this.requestConnectionHandler) {
 			return this.requestConnectionHandler();
 		} else if (this.notificationService) {
@@ -901,7 +912,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	private getConnectionProfileFromName(connectionName: string): ConnectionProfile {
+	private getConnectionProfileFromName(connectionName: string): ConnectionProfile | undefined {
 		let connections: ConnectionProfile[] = this.connectionManagementService.getConnections();
 		return values(connections).find(connection => connection.connectionName === connectionName);
 	}

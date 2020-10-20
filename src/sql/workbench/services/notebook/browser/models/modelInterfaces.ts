@@ -301,6 +301,11 @@ export interface INotebookModel {
 	readonly context: ConnectionProfile | undefined;
 
 	/**
+	 * The connection name (alias) saved in the notebook metadata,
+	 * or undefined if none.
+	 */
+	readonly savedConnectionName: string | undefined;
+	/**
 	 * Event fired on first initialization of the cells and
 	 * on subsequent change events
 	 */
