@@ -5,7 +5,7 @@
 
 import 'mocha';
 import * as should from 'should';
-import { GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, Validation, ValidationType } from '../../../ui/validation/validations';
+import { GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, Validation, ValidationType, ValidationValueType } from '../../../ui/validation/validations';
 
 suite('Validation', () => {
 	suite('IntegerValidation', () => {
@@ -19,8 +19,7 @@ suite('Validation', () => {
 			{ value: 3.14e2, expected: true },
 			{ value: undefined, expected: false },
 			{ value: NaN, expected: false },
-			{ value: null, expected: false },
-		].forEach(testObj => {
+		].forEach((testObj) => {
 			const displayTestValue = getDisplayString(testObj.value);
 			test(`testValue:${displayTestValue}`, async () => {
 				const validationDescription = `value: ${displayTestValue} was not an integer`;
@@ -28,7 +27,7 @@ suite('Validation', () => {
 					{ type: ValidationType.IsInteger, description: validationDescription },
 					async () => testObj.value
 				);
-				await testAndValidate(validation, testObj, validationDescription);
+				await testValidation(validation, testObj, validationDescription);
 			});
 		});
 	});
@@ -45,7 +44,6 @@ suite('Validation', () => {
 			{ value: 3.14e2, expected: true }, // value of 3.14e2 literal is 342 which in string matches the testRegex
 			{ value: 'arbitraryString', expected: false },
 			{ value: undefined, expected: false },
-			{ value: null, expected: false }
 		].forEach(testOb => {
 			const displayTestValue = getDisplayString(testOb.value);
 			test(`regex: /${testRegex}/, testValue:${displayTestValue}, expect result: ${testOb.expected}`, async () => {
@@ -54,7 +52,7 @@ suite('Validation', () => {
 					{ type: ValidationType.IsInteger, description: validationDescription, regex: testRegex },
 					async () => testOb.value
 				);
-				await testAndValidate(validation, testOb, validationDescription);
+				await testValidation(validation, testOb, validationDescription);
 			});
 		});
 	});
@@ -93,16 +91,8 @@ suite('Validation', () => {
 			{ value: undefined, targetValue: 42, expected: false },
 			{ value: '42', targetValue: undefined, expected: false },
 			{ value: 42, targetValue: undefined, expected: false },
-			{ value: undefined, targetValue: null, expected: false },
 			{ value: undefined, targetValue: undefined, expected: false },
 
-			// null values - null is a low value so always smaller than any other number, but not comparable to undefined
-			{ value: null, targetValue: '42', expected: true },
-			{ value: null, targetValue: 42, expected: true },
-			{ value: '42', targetValue: null, expected: false },
-			{ value: 42, targetValue: null, expected: false },
-			{ value: null, targetValue: undefined, expected: false },
-			{ value: null, targetValue: null, expected: true },
 		].forEach(testObj => {
 			const displayTestValue = getDisplayString(testObj.value);
 			const displayTargetValue = getDisplayString(testObj.targetValue);
@@ -113,7 +103,7 @@ suite('Validation', () => {
 					async () => testObj.value,
 					async (_variableName: string) => testObj.targetValue
 				);
-				await testAndValidate(validation, testObj, validationDescription);
+				await testValidation(validation, testObj, validationDescription);
 			});
 		});
 	});
@@ -145,16 +135,7 @@ suite('Validation', () => {
 			{ value: undefined, targetValue: 42, expected: false },
 			{ value: '42', targetValue: undefined, expected: false },
 			{ value: 42, targetValue: undefined, expected: false },
-			{ value: undefined, targetValue: null, expected: false },
 			{ value: undefined, targetValue: undefined, expected: false },
-
-			// null values - null is a low value so always smaller than any other number, but not comparable to undefined
-			{ value: null, targetValue: '42', expected: false },
-			{ value: null, targetValue: 42, expected: false },
-			{ value: '42', targetValue: null, expected: true },
-			{ value: 42, targetValue: null, expected: true },
-			{ value: null, targetValue: undefined, expected: false },
-			{ value: null, targetValue: null, expected: true },
 		].forEach(testObj => {
 			const displayTestValue = getDisplayString(testObj.value);
 			const displayTargetValue = getDisplayString(testObj.targetValue);
@@ -165,27 +146,27 @@ suite('Validation', () => {
 					async () => testObj.value,
 					async (_variableName: string) => testObj.targetValue
 				);
-				await testAndValidate(validation, testObj, validationDescription);
+				await testValidation(validation, testObj, validationDescription);
 			});
 		});
 	});
 });
 
 interface TestObject {
-	value: string | number | undefined | null;
-	targetValue?: string | number | undefined | null;
+	value: ValidationValueType;
+	targetValue?: ValidationValueType;
 	expected: boolean;
 }
 
-async function testAndValidate(validation: Validation, test: TestObject, validationDescription: string) {
-	const validator = validation.getValidator();
-	should(validator).not.be.undefined();
-	const validationState = await validator();
-	should(validationState.valid).be.equal(test.expected, validationDescription);
-	should(validationState.message).be.equal(validationDescription);
+async function testValidation(validation: Validation, test: TestObject, validationDescription: string) {
+	const validationResult = await validation.validate();
+	should(validationResult.valid).be.equal(test.expected, validationDescription);
+	validationResult.valid
+		?	should(validationResult.message).be.undefined()
+		:	should(validationResult.message).be.equal(validationDescription);
 }
 
-function getDisplayString(value: string | number | null | undefined) {
+function getDisplayString(value: ValidationValueType) {
 	return typeof value === 'string' ? `"${value}"` : value;
 }
 

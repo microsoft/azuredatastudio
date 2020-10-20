@@ -16,8 +16,10 @@ export interface ValidationResult {
 }
 
 export type Validator = () => Promise<ValidationResult>;
-export type VariableValueGetter = (variable: string) => Promise<string | number | undefined | null>;
-export type ValueGetter = () => Promise<string | number | undefined | null>;
+export type ValidationValueType = string | number | undefined;
+
+export type VariableValueGetter = (variable: string) => Promise<ValidationValueType>;
+export type ValueGetter = () => Promise<ValidationValueType>;
 
 export const enum ValidationType {
 	IsInteger = 'is_integer',
@@ -43,6 +45,10 @@ export interface ComparisonValidationInfo extends ValidationInfoBase {
 	readonly target: string
 }
 
+type DialogMessageContainer = {
+	message: azdata.window.DialogMessage
+};
+
 export abstract class Validation {
 	private _description: string;
 
@@ -51,13 +57,13 @@ export abstract class Validation {
 	}
 
 	// gets the validator for this validation object
-	abstract getValidator(): Validator;
+	abstract validate: Validator;
 
-	protected getValue(): Promise<string | number | undefined | null> {
+	protected getValue(): Promise<ValidationValueType> {
 		return this._valueGetter();
 	}
 
-	protected getVariableValue(variable: string): Promise<string | number | undefined | null> {
+	protected getVariableValue(variable: string): Promise<ValidationValueType> {
 		return this._variableValueGetter!(variable);
 	}
 
@@ -76,12 +82,13 @@ export class IntegerValidation extends Validation {
 		return (typeof value === 'string') ? Number.isInteger(parseFloat(value)) : Number.isInteger(value);
 	}
 
-	getValidator(): Validator {
-		return async () => Promise.resolve({
-			valid: await this.isInteger(),
-			message: this.description
-		});
-	}
+	validate: Validator = async () => {
+		const isValid = await this.isInteger();
+		return {
+			valid: isValid,
+			message: isValid ? undefined: this.description
+		};
+	};
 }
 
 export class RegexValidation extends Validation {
@@ -97,12 +104,13 @@ export class RegexValidation extends Validation {
 		this._regex = (typeof validation.regex === 'string') ? new RegExp(validation.regex) : validation.regex;
 	}
 
-	getValidator(): Validator {
-		return async () => Promise.resolve({
-			valid: this.regex.test((await this.getValue())?.toString()!),
-			message: this.description
-		});
-	}
+	validate: Validator = async () => {
+		const isValid = this.regex.test((await this.getValue())?.toString()!);
+		return {
+			valid: isValid,
+			message: isValid ? undefined: this.description
+		};
+	};
 }
 
 export abstract class Comparison extends Validation {
@@ -119,12 +127,13 @@ export abstract class Comparison extends Validation {
 	}
 
 	abstract isComparisonSuccessful(): Promise<boolean>;
-	getValidator(): Validator {
-		return async () => Promise.resolve({
-			valid: await this.isComparisonSuccessful(),
-			message: this.description
-		});
-	}
+	validate: Validator = async () => {
+		const isValid = await this.isComparisonSuccessful();
+		return {
+			valid: isValid,
+			message:  isValid ? undefined: this.description
+		};
+	};
 }
 
 export class LessThanOrEqualsValidation extends Comparison {
@@ -141,15 +150,12 @@ export class GreaterThanOrEqualsValidation extends Comparison {
 
 
 /**
- *	removes validation message corresponding to this validator from the @see dialogMessage string.
+ * removes validation message corresponding to this validator from the @see dialogMessage string.
  *
  * @param dialogMessage
  * @param message
 */
 export function removeValidationMessage(dialogMessage: azdata.window.DialogMessage, message: string): azdata.window.DialogMessage {
-	if (dialogMessage === undefined) {
-		return dialogMessage;
-	}
 	if (dialogMessage.description) {
 		return {
 			text: dialogMessage.text,
@@ -167,7 +173,7 @@ export function removeValidationMessage(dialogMessage: azdata.window.DialogMessa
 
 function getStrippedMessage(originalMessage: string, message: string) {
 	if (originalMessage.includes(message)) {
-		const messageWithLineBreak = message + '\n';
+		const messageWithLineBreak = message + EOL;
 		const searchText = originalMessage.includes(messageWithLineBreak) ? messageWithLineBreak : message;
 		const newMessage = originalMessage.replace(searchText, '');
 		return newMessage;
@@ -186,18 +192,18 @@ export function createValidation(validation: ValidationInfo, valueGetter: ValueG
 	}
 }
 
-export async function validateAndUpdateValidationMessages(component: InputComponent, container: azdata.window.Dialog | azdata.window.Wizard, validations: Validation[] = []): Promise<ValidationResult> {
-	let dialogMessage = container.message;
-	const validationStates = await Promise.all(validations.map(validation => (<Validation>validation).getValidator()())); // strip off validation messages corresponding to successful validations
-	validationStates.filter(state => state.valid).forEach(v => dialogMessage = removeValidationMessage(dialogMessage, v.message!));
-	const failedStates = validationStates.filter(state => !state.valid);
-	if (failedStates.length > 0) {
-		container.message = getDialogMessage([dialogMessage?.description ?? dialogMessage?.text, failedStates[0].message!]);
+export async function validateAndUpdateValidationMessages(component: InputComponent, container: DialogMessageContainer, validations: Validation[] = []): Promise<ValidationResult> {
+	let dialogMessage = container.message ?? { text: ''};
+	const allValidationResults = await Promise.all(validations.map(validation => validation.validate()));
+	allValidationResults.filter(state => state.valid).forEach(v => dialogMessage = removeValidationMessage(dialogMessage, v.message!)); // strip off validation messages corresponding to all successful validations
+	const failedValidationResults = allValidationResults.filter(state => !state.valid);
+	if (failedValidationResults.length > 0) {
+		container.message = getDialogMessage([dialogMessage?.description ?? dialogMessage?.text, failedValidationResults[0].message!]);
 		if (component instanceof RadioGroupLoadingComponentBuilder) {
 			component = component.component();
 		}
-		await component.updateProperty('validationErrorMessage', failedStates[0].message);
-		return failedStates[0];
+		await component.updateProperty('validationErrorMessage', failedValidationResults[0].message);
+		return failedValidationResults[0]; // we just return the first validation failure for this inputComponent. TODO - should we be returning them all?
 	} else {
 		container.message = dialogMessage;
 		return { valid: true };
@@ -205,7 +211,7 @@ export async function validateAndUpdateValidationMessages(component: InputCompon
 }
 
 export function getDialogMessage(messages: string[], messageLevel: azdata.window.MessageLevel = azdata.window.MessageLevel.Error): azdata.window.DialogMessage {
-	messages = messages.filter(m => !!m);
+	messages = messages.filter(m => m !== undefined && m.length !== 0);
 	return {
 		text: messages.length === 1
 			? messages[0]
