@@ -52,7 +52,7 @@ export class NotebookModelStub implements INotebookModel {
 	get kernelChanged(): vsEvent.Event<nb.IKernelChangedArgs> {
 		throw new Error('method not implemented.');
 	}
-	get kernelsChanged(): vsEvent.Event<nb.IKernelSpec> {
+	get kernelsChanged(): vsEvent.Event<nb.IKernel> {
 		throw new Error('method not implemented.');
 	}
 	get layoutChanged(): vsEvent.Event<void> {

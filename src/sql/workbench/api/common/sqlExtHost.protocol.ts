@@ -615,7 +615,8 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 }
 
 export interface MainThreadConnectionManagementShape extends IDisposable {
-	$registerConnectionEventListener(handle: number, providerId: string): void;
+	$registerConnectionEventListener(handle: number): void;
+	$unregisterConnectionEventListener(handle: number): void;
 	$getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]>;
 	$getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile>;
 	$getActiveConnections(): Thenable<azdata.connection.Connection[]>;
@@ -840,6 +841,7 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 	$createQueryTab(fileUri: string, title: string, content: string): void;
 	$setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
 	$registerQueryInfoListener(handle: number): void;
+	$unregisterQueryInfoListener(handle: number): void;
 }
 
 export interface ExtHostNotebookShape {
@@ -946,7 +948,7 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$runAllCells(id: string, startCellUri?: UriComponents, endCellUri?: UriComponents): Promise<boolean>;
 	$clearOutput(id: string, cellUri: UriComponents): Promise<boolean>;
 	$clearAllOutputs(id: string): Promise<boolean>;
-	$changeKernel(id: string, kernel: azdata.nb.IKernelInfo): Promise<boolean>;
+	$changeKernel(id: string, kernel: azdata.nb.IKernelSpec): Promise<boolean>;
 	$registerNavigationProvider(providerId: string, handle: number);
 }
 
