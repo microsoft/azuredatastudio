@@ -83,7 +83,7 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	/**
-	 * Enters the specified workspace. Restarts the extension host
+	 * Shows confirmation message that the extension host will be restarted and current workspace/file will be closed. If confirmed, the specified workspace will be entered.
 	 * @param workspaceFile
 	 */
 	async enterWorkspace(workspaceFile: vscode.Uri): Promise<void> {
@@ -123,17 +123,6 @@ export class WorkspaceService implements IWorkspaceService {
 					newWorkspaceFolders.push(path.dirname(projectFile.path));
 				}
 			}
-		}
-
-		if (newProjectFileAdded) {
-			// Save the new set of projects to the workspace configuration.
-			await this.setWorkspaceConfigurationValue(ProjectsConfigurationName, currentProjects.map(project => this.toRelativePath(project)));
-			this._onDidWorkspaceProjectsChange.fire();
-		}
-
-		if (newWorkspaceFolders.length > 0) {
-			// second parameter is null means don't remove any workspace folders
-			vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length, null, ...(newWorkspaceFolders.map(folder => ({ uri: vscode.Uri.file(folder) }))));
 		}
 
 		if (newProjectFileAdded) {

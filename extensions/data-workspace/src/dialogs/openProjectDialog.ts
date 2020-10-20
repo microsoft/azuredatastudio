@@ -11,15 +11,9 @@ import { IWorkspaceService } from '../common/interfaces';
 import { fileExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
 
-enum selectedType {
-	Project,
-	Workspace
-}
-
 export class OpenProjectDialog extends DialogBase {
 	private _projectFile: string = '';
 	private _workspaceFile: string = '';
-	private _selectedType: selectedType = selectedType.Project;
 	private _targetTypeRadioCardGroup: azdata.RadioCardGroupComponent | undefined;
 	private _targetTypes = [
 		{
@@ -44,13 +38,13 @@ export class OpenProjectDialog extends DialogBase {
 	async validate(): Promise<boolean> {
 		try {
 			// the selected location should be an existing directory
-			if (this._selectedType === selectedType.Project) {
+			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Project) {
 				const fileExists = await fileExist(this._projectFile);
 				if (!fileExists) {
 					this.showErrorMessage(constants.ProjectFileNotExistError(this._projectFile));
 					return false;
 				}
-			} else if (this._selectedType === selectedType.Workspace) {
+			} else if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
 				const fileExists = await fileExist(this._workspaceFile);
 				if (!fileExists) {
 					this.showErrorMessage(constants.WorkspaceFileNotExistError(this._workspaceFile));
@@ -116,7 +110,7 @@ export class OpenProjectDialog extends DialogBase {
 			width: constants.DefaultInputWidth
 		}).component();
 		this.register(projectFilePathTextBox.onTextChanged(() => {
-			this._projectFile = projectFilePathTextBox?.value!;
+			this._projectFile = projectFilePathTextBox.value!;
 		}));
 
 		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -126,50 +120,17 @@ export class OpenProjectDialog extends DialogBase {
 			height: '16px',
 		}).component();
 		this.register(browseFolderButton.onDidClick(async () => {
-			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
-				const filters: { [name: string]: string[] } = { ['workspace']: ['.code-workspace'] };
-				let fileUris = await vscode.window.showOpenDialog({
-					canSelectFiles: true,
-					canSelectFolders: false,
-					canSelectMany: false,
-					openLabel: constants.SelectProjectFileActionName,
-					filters: filters
-				});
-				if (!fileUris || fileUris.length === 0) {
-					return;
-				}
-				const workspaceFilePath = fileUris[0].fsPath;
-				projectFilePathTextBox.value = workspaceFilePath;
-				this._workspaceFile = workspaceFilePath;
-			} else {
-				const filters: { [name: string]: string[] } = {};
-				const projectTypes = await this.workspaceService.getAllProjectTypes();
-				filters[constants.AllProjectTypes] = projectTypes.map(type => type.projectFileExtension);
-				projectTypes.forEach(type => {
-					filters[type.displayName] = [type.projectFileExtension];
-				});
-				let fileUris = await vscode.window.showOpenDialog({
-					canSelectFiles: true,
-					canSelectFolders: false,
-					canSelectMany: false,
-					openLabel: constants.SelectProjectFileActionName,
-					filters: filters
-				});
-				if (!fileUris || fileUris.length === 0) {
-					return;
-				}
-				const projectFilePath = fileUris[0].fsPath;
-				projectFilePathTextBox.value = projectFilePath;
-				this._projectFile = projectFilePath;
+			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Project) {
+				await this.projectBrowse(projectFilePathTextBox);
+			} else if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
+				await this.workspaceBrowse(projectFilePathTextBox);
 			}
 		}));
 
 		this.register(this._targetTypeRadioCardGroup.onSelectionChanged(({ cardId }) => {
 			if (cardId === constants.Project) {
-				this._selectedType = selectedType.Project;
 				projectFilePathTextBox.placeHolder = constants.ProjectFilePlaceholder;
 			} else if (cardId === constants.Workspace) {
-				this._selectedType = selectedType.Workspace;
 				projectFilePathTextBox.placeHolder = constants.WorkspacePlaceholder;
 			}
 
@@ -189,5 +150,49 @@ export class OpenProjectDialog extends DialogBase {
 			}
 		]).component();
 		await view.initializeModel(form);
+	}
+
+	private async workspaceBrowse(projectFilePathTextBox: azdata.InputBoxComponent): Promise<void> {
+		const filters: { [name: string]: string[] } = { [constants.Workspace]: [constants.WorkspaceFileExtension] };
+		const fileUris = await vscode.window.showOpenDialog({
+			canSelectFiles: true,
+			canSelectFolders: false,
+			canSelectMany: false,
+			openLabel: constants.SelectProjectFileActionName,
+			filters: filters
+		});
+
+		if (!fileUris || fileUris.length === 0) {
+			return;
+		}
+
+		const workspaceFilePath = fileUris[0].fsPath;
+		projectFilePathTextBox.value = workspaceFilePath;
+		this._workspaceFile = workspaceFilePath;
+	}
+
+	private async projectBrowse(projectFilePathTextBox: azdata.InputBoxComponent): Promise<void> {
+		const filters: { [name: string]: string[] } = {};
+		const projectTypes = await this.workspaceService.getAllProjectTypes();
+		filters[constants.AllProjectTypes] = projectTypes.map(type => type.projectFileExtension);
+		projectTypes.forEach(type => {
+			filters[type.displayName] = [type.projectFileExtension];
+		});
+
+		const fileUris = await vscode.window.showOpenDialog({
+			canSelectFiles: true,
+			canSelectFolders: false,
+			canSelectMany: false,
+			openLabel: constants.SelectProjectFileActionName,
+			filters: filters
+		});
+
+		if (!fileUris || fileUris.length === 0) {
+			return;
+		}
+
+		const projectFilePath = fileUris[0].fsPath;
+		projectFilePathTextBox.value = projectFilePath;
+		this._projectFile = projectFilePath;
 	}
 }

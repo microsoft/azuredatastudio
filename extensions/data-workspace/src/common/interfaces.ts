@@ -92,7 +92,7 @@ export interface IWorkspaceService {
 	validateWorkspace(): Promise<boolean>;
 
 	/**
-	 * Enters the workspace with the provided path
+	 * Shows confirmation message that the extension host will be restarted and current workspace/file will be closed. If confirmed, the specified workspace will be entered.
 	 */
 	enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 }
