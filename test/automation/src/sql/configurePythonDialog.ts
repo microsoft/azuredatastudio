@@ -33,7 +33,13 @@ export class ConfigurePythonDialog extends Dialog {
 		await this.code.waitForElement(installButton);
 		await this.code.dispatchKeybinding('enter');
 
-		return this.waitForDialogGone();
+		await this.waitForDialogGone();
+		return this._waitForInstallationComplete();
+	}
+
+	private async _waitForInstallationComplete(): Promise<void> {
+		const installationCompleteNotification = '.notifications-toasts div[aria-label="Notebook dependencies installation is complete, source: Notebook Core Extensions (Extension), notification"]';
+		await this.code.waitForElement(installationCompleteNotification, undefined, 600); // wait up to 1 minute for python installation
 	}
 
 }

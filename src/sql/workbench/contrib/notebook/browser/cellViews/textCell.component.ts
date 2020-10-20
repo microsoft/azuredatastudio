@@ -473,7 +473,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			filter: 'img',
 			replacement: (content, node) => {
 				if (node?.src) {
-					let relativePath = this.findPathRelativeToContent(node.src);
+					let imgPath = URI.parse(node.src);
+					const notebookFolder: string = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
+					let relativePath = findPathRelativeToContent(notebookFolder, imgPath);
 					if (relativePath) {
 						return `![${node.alt}](${relativePath})`;
 					}
@@ -484,11 +486,13 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.turndownService.addRule('a', {
 			filter: 'a',
 			replacement: (content, node) => {
-				if (node?.href) {
-					let relativePath = this.findPathRelativeToContent(node.href);
-					if (relativePath) {
-						return `[${node.innerText}](${relativePath})`;
-					}
+				//On Windows, if notebook is not trusted then the href attr is removed for all non-web URL links
+				// href contains either a hyperlink or a URI-encoded absolute path. (See resolveUrls method in notebookMarkdown.ts)
+				const notebookLink = node.href ? URI.parse(node.href) : URI.file(node.title);
+				const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
+				let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
+				if (relativePath) {
+					return `[${node.innerText}](${relativePath})`;
 				}
 				return `[${node.innerText}](${node.href})`;
 			}
@@ -503,18 +507,23 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.cellModel.active = true;
 		this._model.updateActiveCell(this.cellModel);
 	}
+}
 
-	private findPathRelativeToContent(elementContent: string): string {
-		let notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
-		if (notebookFolder) {
-			let absolutePathURI = URI.parse(elementContent);
-			if (absolutePathURI?.scheme === 'file') {
-				let relativePath = path.relative(notebookFolder, absolutePathURI.fsPath);
-				return relativePath ? relativePath : '';
+export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined): string {
+	if (notebookFolder) {
+		if (contentPath?.scheme === 'file') {
+			let relativePath = path.relative(notebookFolder, contentPath.fsPath);
+			//if path contains whitespaces then it's not identified as a link
+			relativePath = relativePath.replace(/\s/g, '%20');
+			if (relativePath.startsWith(path.join('..', path.sep) || path.join('.', path.sep))) {
+				return relativePath;
+			} else {
+				// if the relative path does not contain ./ at the beginning, we need to add it so it's recognized as a link
+				return `.${path.join(path.sep, relativePath)}`;
 			}
 		}
-		return '';
 	}
+	return '';
 }
 
 function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {

@@ -6,7 +6,7 @@
 import { Application } from '../../../../../automation';
 
 export function setup() {
-	describe('Notebook', () => {
+	describe.skip('Notebook', () => {
 
 
 		it('can open new notebook, configure Python, and execute one cell', async function () {
@@ -18,6 +18,7 @@ export function setup() {
 			await app.workbench.sqlNotebook.changeKernel('Python 3');
 			await app.workbench.configurePythonDialog.waitForConfigurePythonDialog();
 			await app.workbench.configurePythonDialog.installPython();
+			await app.workbench.sqlNotebook.waitForKernel('Python 3');
 
 			await app.workbench.sqlNotebook.runActiveCell();
 			await app.workbench.sqlNotebook.waitForResults();
