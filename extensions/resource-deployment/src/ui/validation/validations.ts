@@ -53,7 +53,7 @@ export abstract class Validation {
 	}
 
 	// gets the validator for this validation object
-	abstract getValidator(): Validator;
+	abstract validate: Validator;
 
 	protected getValue(): Promise<ValidationValueType> {
 		return this._valueGetter();
@@ -78,12 +78,13 @@ export class IntegerValidation extends Validation {
 		return (typeof value === 'string') ? Number.isInteger(parseFloat(value)) : Number.isInteger(value);
 	}
 
-	getValidator(): Validator {
-		return async () => Promise.resolve({
-			valid: await this.isInteger(),
-			message: this.description
+	validate: Validator = async () => {
+		const isValid = await this.isInteger();
+		return Promise.resolve({
+			valid: isValid,
+			message: isValid ? undefined: this.description
 		});
-	}
+	};
 }
 
 export class RegexValidation extends Validation {
@@ -99,12 +100,13 @@ export class RegexValidation extends Validation {
 		this._regex = (typeof validation.regex === 'string') ? new RegExp(validation.regex) : validation.regex;
 	}
 
-	getValidator(): Validator {
-		return async () => Promise.resolve({
-			valid: this.regex.test((await this.getValue())?.toString()!),
-			message: this.description
+	validate: Validator = async () => {
+		const isValid = this.regex.test((await this.getValue())?.toString()!);
+		return Promise.resolve({
+			valid: isValid,
+			message: isValid ? undefined: this.description
 		});
-	}
+	};
 }
 
 export abstract class Comparison extends Validation {
@@ -121,12 +123,13 @@ export abstract class Comparison extends Validation {
 	}
 
 	abstract isComparisonSuccessful(): Promise<boolean>;
-	getValidator(): Validator {
-		return async () => Promise.resolve({
-			valid: await this.isComparisonSuccessful(),
-			message: this.description
+	validate: Validator = async () => {
+		const isValid = await this.isComparisonSuccessful();
+		return Promise.resolve({
+			valid: isValid,
+			message:  isValid ? undefined: this.description
 		});
-	}
+	};
 }
 
 export class LessThanOrEqualsValidation extends Comparison {
@@ -190,7 +193,7 @@ export function createValidation(validation: ValidationInfo, valueGetter: ValueG
 
 export async function validateAndUpdateValidationMessages(component: InputComponent, container: azdata.window.Dialog | azdata.window.Wizard, validations: Validation[] = []): Promise<ValidationResult> {
 	let dialogMessage = container.message;
-	const validationStates = await Promise.all(validations.map(validation => (<Validation>validation).getValidator()())); // strip off validation messages corresponding to successful validations
+	const validationStates = await Promise.all(validations.map(validation => validation.validate())); // strip off validation messages corresponding to successful validations
 	validationStates.filter(state => state.valid).forEach(v => dialogMessage = removeValidationMessage(dialogMessage, v.message!));
 	const failedStates = validationStates.filter(state => !state.valid);
 	if (failedStates.length > 0) {

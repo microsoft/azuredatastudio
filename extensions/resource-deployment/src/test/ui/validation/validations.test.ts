@@ -159,11 +159,11 @@ interface TestObject {
 }
 
 async function testAndValidate(validation: Validation, test: TestObject, validationDescription: string) {
-	const validator = validation.getValidator();
-	should(validator).not.be.undefined();
-	const validationState = await validator();
-	should(validationState.valid).be.equal(test.expected, validationDescription);
-	should(validationState.message).be.equal(validationDescription);
+	const validationResult = await validation.validate();
+	should(validationResult.valid).be.equal(test.expected, validationDescription);
+	validationResult.valid
+		?	should(validationResult.message).be.undefined()
+		:	should(validationResult.message).be.equal(validationDescription);
 }
 
 function getDisplayString(value: string | number | null | undefined) {
