@@ -45,6 +45,10 @@ export interface ComparisonValidationInfo extends ValidationInfoBase {
 	readonly target: string
 }
 
+type DialogMessageContainer = {
+	message: azdata.window.DialogMessage
+};
+
 export abstract class Validation {
 	private _description: string;
 
@@ -191,8 +195,8 @@ export function createValidation(validation: ValidationInfo, valueGetter: ValueG
 	}
 }
 
-export async function validateAndUpdateValidationMessages(component: InputComponent, container: azdata.window.Dialog | azdata.window.Wizard, validations: Validation[] = []): Promise<ValidationResult> {
-	let dialogMessage = container.message;
+export async function validateAndUpdateValidationMessages(component: InputComponent, container: DialogMessageContainer, validations: Validation[] = []): Promise<ValidationResult> {
+	let dialogMessage = container.message ?? { text: ''};
 	const validationStates = await Promise.all(validations.map(validation => validation.validate())); // strip off validation messages corresponding to successful validations
 	validationStates.filter(state => state.valid).forEach(v => dialogMessage = removeValidationMessage(dialogMessage, v.message!));
 	const failedStates = validationStates.filter(state => !state.valid);
