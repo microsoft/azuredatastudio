@@ -375,7 +375,6 @@ import 'vs/workbench/contrib/surveys/browser/languageSurveys.contribution';
 // Welcome
 import 'vs/workbench/contrib/welcome/overlay/browser/welcomeOverlay';
 import 'vs/workbench/contrib/welcome/page/browser/welcomePage.contribution';
-import 'sql/workbench/contrib/welcome/page/browser/welcomePage.contribution';
 import 'vs/workbench/contrib/welcome/walkThrough/browser/walkThrough.contribution';
 
 // Call Hierarchy
@@ -405,6 +404,9 @@ import 'vs/workbench/contrib/timeline/browser/timeline.contribution';
 //#endregion
 
 //#region -- contributions
+
+// welcome Page
+import 'sql/workbench/contrib/welcome/page/browser/welcomePage.contribution';
 
 // query
 import 'sql/workbench/contrib/query/browser/query.contribution';

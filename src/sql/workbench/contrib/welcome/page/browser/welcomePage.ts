@@ -316,7 +316,6 @@ class WelcomePage extends Disposable {
 			prodName.innerHTML = this.productService.nameLong;
 		}
 
-
 		const welcomeContainerContainer = document.querySelector('.welcomePageContainer').parentElement as HTMLElement;
 		const adsHomepage = document.querySelector('.ads-homepage') as HTMLElement;
 		adsHomepage.classList.add('responsive-container');

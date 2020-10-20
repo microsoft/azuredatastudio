@@ -20,7 +20,6 @@ export const gradientTwoColorOne = new Color(new RGBA(156, 48, 48, 0));
 export const gradientTwoColorTwo = new Color(new RGBA(255, 255, 255, 0.1));
 export const overlayColor = new Color(new RGBA(255, 255, 255, 0.65));
 
-
 // - Initial Setup Wizard Colors
 export const contentSeperatorLine = registerColor('contentSeperatorLine', { light: '#edebe9', dark: '#edebe9', hc: '#fff' }, nls.localize('setupWizard.contentSeperatorLine', "The color used for either a top border or hr element to visually seperate content"));
 export const setupModalShadowOne = registerColor('setupModalShadowOne', { light: modalShadowOne, dark: modalShadowOne, hc: modalShadowOne }, nls.localize('setupWizard.setupModalShadowOne', "The first color used for the box shadow of the inital setup wizard modal"));

@@ -132,7 +132,6 @@ function isWelcomePageEnabled(configurationService: IConfigurationService, conte
 			return welcomeEnabled.value;
 		}
 	}
-	// {{SQL CARBON EDIT}} - remove welcomePageWithTour
 	return startupEditor.value === 'welcomePage' || startupEditor.value === 'readme' || startupEditor.value === 'welcomePageInEmptyWorkbench' && contextService.getWorkbenchState() === WorkbenchState.EMPTY;
 }
 
@@ -338,11 +337,10 @@ class WelcomePage extends Disposable {
 			showOnStartup.setAttribute('checked', 'checked');
 		}
 		// {{SQL CARBON EDIT}} - check if the initial setup wizard should be initialized
-		const wizardEnabled = isInitialSetupWizardEnabled(this.configurationService); // {{SQL CARBON EDIT}} - is the initial setup wizard enabled boolean
+		const wizardEnabled = isInitialSetupWizardEnabled(this.configurationService);
 		if (wizardEnabled) {
 			const context = this;
 			const initializeSetupWizard = () => {
-				console.log('1');
 				context.enableInitialSetupWizard();
 			};
 			setTimeout(initializeSetupWizard, 1000);
@@ -399,11 +397,8 @@ class WelcomePage extends Disposable {
 	// {{SQL CARBON EDIT}} - function to initialize the initial setup wizard
 	private enableInitialSetupWizard(): void {
 		const gettingStartedSetupWizard = this.instantiationService.createInstance(GettingStartedSetupWizard);
-		console.log('2');
 		gettingStartedSetupWizard.create();
 	}
-
-
 
 	private createListEntries(recents: (IRecentWorkspace | IRecentFolder)[]) {
 		return recents.map(recent => {
