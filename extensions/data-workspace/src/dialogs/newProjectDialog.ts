@@ -136,7 +136,7 @@ export class NewProjectDialog extends DialogBase {
 			locationTextBox.value = selectedFolder;
 			this.model.location = selectedFolder;
 
-			// set default workspace filepath
+			// update hover text if a new workspace will be created for this project
 			if (!vscode.workspace.workspaceFile) {
 				workspaceTextBox.placeHolder = path.join(this.model.location, `${this.model.name}.code-workspace`);
 			}
@@ -144,18 +144,24 @@ export class NewProjectDialog extends DialogBase {
 
 		this.register(projectNameTextBox.onTextChanged(() => {
 			this.model.name = projectNameTextBox.value!;
-			workspaceTextBox.placeHolder = path.join(this.model.location, this.model.name, `${this.model.name}.code-workspace`);
+
+			// update hover text if a new workspace will be created for this project
+			if (!vscode.workspace.workspaceFile) {
+				workspaceTextBox.placeHolder = path.join(this.model.location, this.model.name, `${this.model.name}.code-workspace`);
+			}
 		}));
 
 		const workspaceDescription = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: vscode.workspace.workspaceFile ? constants.AddProjectToCurrentWorkspace : constants.NewWorkspaceWillBeCreated
+			value: vscode.workspace.workspaceFile ? constants.AddProjectToCurrentWorkspace : constants.NewWorkspaceWillBeCreated,
+			CSSStyles: { 'margin-top': '3px', 'margin-bottom': '10px' }
 		}).component();
 
 		const workspaceTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.WorkspaceLocationTitle,
 			width: constants.DefaultInputWidth,
-			enabled: !vscode.workspace.workspaceFile, // workspace file can be changed if creating a new one, otherwise this is just an fyi
-			value: vscode.workspace.workspaceFile?.fsPath ?? ''
+			enabled: false,
+			value: vscode.workspace.workspaceFile?.fsPath ?? '',
+			placeHolder: vscode.workspace.workspaceFile?.fsPath ?? '' // hovertext for if file path is too long to be seen in textbox
 		}).component();
 
 		const workspaceFlexContainer = view.modelBuilder.flexContainer()
@@ -179,7 +185,6 @@ export class NewProjectDialog extends DialogBase {
 				component: this.createHorizontalContainer(view, [locationTextBox, browseFolderButton])
 			}, {
 				title: constants.Workspace,
-				required: true,
 				component: workspaceFlexContainer
 			}
 		]).component();
