@@ -15,7 +15,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { IWorkbenchDataTreeOptions, WorkbenchDataTree } from 'vs/platform/list/browser/listService';
+import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -56,9 +56,6 @@ export class ResourceViewerView extends ViewPane {
 
 		this.model = new TreeModel();
 
-		const options: IWorkbenchDataTreeOptions<TreeModel, void> = {
-			hideTwistiesOfChildlessElements: true
-		};
 		this.tree = this.instantiationService.createInstance(
 			WorkbenchDataTree,
 			'Resource View',
@@ -71,8 +68,7 @@ export class ResourceViewerView extends ViewPane {
 				horizontalScrolling: false,
 				setRowLineHeight: false,
 				transformOptimization: false,
-				accessibilityProvider: new ListAccessibilityProvider(),
-				hideTwistiesOfChildlessElements: true
+				accessibilityProvider: new ListAccessibilityProvider()
 			}) as WorkbenchDataTree<TreeModel, TreeElement>;
 
 		this.tree.setInput(this.model);
