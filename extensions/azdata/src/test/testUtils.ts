@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 /**
- * Asserts that the specified promise was rejected
+ * Asserts that the specified promise was rejected. This is similar to should(..).be.rejected but
+ * allows specifying a message in the thrown Error to add more information to the failure.
  * @param promise The promise to verify was rejected
  * @param message The message to include in the error if the promise isn't rejected
  */
