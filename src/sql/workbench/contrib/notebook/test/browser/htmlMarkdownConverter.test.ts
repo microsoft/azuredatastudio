@@ -60,24 +60,24 @@ suite('HTML Markdown Converter', function (): void {
 	test('Should transform <span> tag', () => {
 		htmlString = '<span>Hello test</span>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Hello test', 'Basic span test failed');
-		htmlString = '<span style="background-color: yellow">Hello test</span>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark>Hello test</mark>', 'Basic yellow highlight span failed');
-		htmlString = '<span style="background-color:yellow">Hello test</span>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark>Hello test</mark>', 'Basic yellow highlight span no space failed');
-		htmlString = '<span style="font-weight: bold">Hello test</span>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '**Hello test**', 'Basic bold span failed');
-		htmlString = '<span style="font-weight:bold">Hello test</span>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '**Hello test**', 'Basic bold span no space failed');
-		htmlString = '<span style="font-style: italic">Hello test</span>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '_Hello test_', 'Basic italic span failed');
-		htmlString = '<span style="font-style:italic">Hello test</span>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '_Hello test_', 'Basic italic span no space failed');
-		htmlString = '<span style="text-decoration-line: underline">Hello test</span>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<u>Hello test</u>', 'Basic underline span failed');
-		htmlString = '<span style="text-decoration-line:underline">Hello test</span>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<u>Hello test</u>', 'Basic underline span no space failed');
-		htmlString = '<span style="text-decoration-line:underline; font-style:italic; font-weight:bold; background-color: yellow">Hello test</span>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<u>_**<mark>Hello test</mark>**_</u>', 'Basic underline span no space failed');
+		htmlString = 'Yes<span style="background-color: yellow">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Yes<mark>Hello test</mark>', 'Basic yellow highlight span failed');
+		htmlString = 'Yes<span style="background-color:yellow">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Yes<mark>Hello test</mark>', 'Basic yellow highlight span no space failed');
+		htmlString = 'Yes<span style="font-weight: bold">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Yes**Hello test**', 'Basic bold span failed');
+		htmlString = 'Yes<span style="font-weight:bold">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Yes**Hello test**', 'Basic bold span no space failed');
+		htmlString = 'Yes<span style="font-style: italic">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Yes_Hello test_', 'Basic italic span failed');
+		htmlString = 'Yes<span style="font-style:italic">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Yes_Hello test_', 'Basic italic span no space failed');
+		htmlString = 'Yes<span style="text-decoration-line: underline">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Yes<u>Hello test</u>', 'Basic underline span failed');
+		htmlString = 'Yes<span style="text-decoration-line:underline">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Yes<u>Hello test</u>', 'Basic underline span no space failed');
+		htmlString = '<h1>Yes<span style="text-decoration-line:underline; font-style:italic; font-weight:bold; background-color: yellow">Hello test</span></h1>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '# Yes<u>_**<mark>Hello test</mark>**_</u>', 'Compound elements span failed');
 	});
 
 	test('Should transform <img> tag', () => {
