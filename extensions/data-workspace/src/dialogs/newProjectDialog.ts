@@ -110,7 +110,7 @@ export class NewProjectDialog extends DialogBase {
 
 		const locationTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.ProjectLocationTitle,
-			placeHolder: constants.ProjectLoacationPlaceholder,
+			placeHolder: constants.ProjectLocationPlaceholder,
 			required: true,
 			width: constants.DefaultInputWidth
 		}).component();
