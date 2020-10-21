@@ -80,8 +80,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	private readonly _runningOnSAW: boolean;
 
-	private _kernelSpecsUpdated = false;
-
 	constructor(extensionPath: string, outputChannel: vscode.OutputChannel) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
@@ -717,7 +715,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public async updateKernelSpecPaths(kernelsFolder: string): Promise<void> {
-		if (!this._runningOnSAW || this._kernelSpecsUpdated) {
+		if (!this._runningOnSAW) {
 			return;
 		}
 		let fileNames = await fs.readdir(kernelsFolder);
@@ -726,7 +724,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let folderPaths = filePaths.filter((value, index) => value && fileStats[index].isDirectory());
 		let kernelFiles = folderPaths.map(folder => path.join(folder, 'kernel.json'));
 		await Promise.all(kernelFiles.map(file => this.updateKernelSpecPath(file)));
-		this._kernelSpecsUpdated = true;
 	}
 
 	private async updateKernelSpecPath(kernelPath: string): Promise<void> {
