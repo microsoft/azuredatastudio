@@ -21,10 +21,10 @@ import { IToolsService } from '../services/toolsService';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
-import { createValidation, removeValidationMessage, validateAndUpdateValidationMessages, Validation, ValidationResult, Validator } from './validation/validations';
+import { createValidation, validateInputBoxComponent, Validation } from './validation/validations';
 
 const localize = nls.loadMessageBundle();
-
+export type Validator = () => { valid: boolean, message: string };
 export type InputValueTransformer = (inputValue: string) => string | number | Promise<string | number>;
 export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder;
 export type InputComponentInfo = {
@@ -120,7 +120,7 @@ interface ContextBase {
 	onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo) => void;
 }
 
-export function createTextInput(view: azdata.ModelView, info: {
+export function createTextInput(view: azdata.ModelView, inputInfo: {
 	type?: azdata.InputBoxInputType,
 	defaultValue?: string,
 	ariaLabel: string,
@@ -128,18 +128,17 @@ export function createTextInput(view: azdata.ModelView, info: {
 	placeHolder?: string,
 	width?: string,
 	enabled?: boolean,
-	container?: azdata.window.Dialog | azdata.window.Wizard,
 	validations?: Validation[]
 }): azdata.InputBoxComponent {
 	return view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-		value: info.defaultValue,
-		ariaLabel: info.ariaLabel,
-		inputType: info.type ?? 'text',
-		required: info.required,
-		placeHolder: info.placeHolder,
-		width: info.width,
-		enabled: info.enabled
-	}).withValidation(async (component) => !!info.validations && !!info.container && (await validateAndUpdateValidationMessages(component, info.container, info.validations)).valid).component();
+		value: inputInfo.defaultValue,
+		ariaLabel: inputInfo.ariaLabel,
+		inputType: inputInfo.type ?? 'text',
+		required: inputInfo.required,
+		placeHolder: inputInfo.placeHolder,
+		width: inputInfo.width,
+		enabled: inputInfo.enabled
+	}).withValidation(async (component) => await validateInputBoxComponent(component, inputInfo.validations)).component();
 }
 
 export function createLabel(view: azdata.ModelView, info: { text: string, description?: string, required?: boolean, width?: string, links?: azdata.LinkArea[], cssStyles?: TextCSSStyles }): azdata.TextComponent {
@@ -151,38 +150,41 @@ export function createLabel(view: azdata.ModelView, info: { text: string, descri
 		}
 	}
 
-	return view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+	const text = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 		value: info.text,
 		description: info.description,
 		requiredIndicator: info.required,
 		CSSStyles: cssStyles,
-		links: info.links,
-		width: info.width
+		links: info.links
 	}).component();
+	text.width = info.width;
+	return text;
 }
 
-export function createNumberInput(view: azdata.ModelView, info: { defaultValue?: string, ariaLabel?: string, min?: number, max?: number, required?: boolean, width?: string, placeHolder?: string, container?: azdata.window.Dialog | azdata.window.Wizard, validations?: Validation[] }): azdata.InputBoxComponent {
-	return view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-		value: info.defaultValue,
-		ariaLabel: info.ariaLabel,
-		inputType: 'number',
-		min: info.min,
-		max: info.max,
+export function createNumberInput(view: azdata.ModelView, info: { defaultValue?: string, ariaLabel?: string, min?: number, max?: number, required?: boolean, width?: string, placeHolder?: string, enabled?: boolean, container?: azdata.window.Dialog | azdata.window.Wizard, validations?: Validation[] }): azdata.InputBoxComponent {
+	const input = createTextInput(view, {
+		defaultValue: info.defaultValue || '0',
+		ariaLabel: info.ariaLabel!,
+		type: 'number',
 		required: info.required,
 		width: info.width,
-		placeHolder: info.placeHolder
-	}).withValidation(async (component) => !!info.validations && !!info.container && (await validateAndUpdateValidationMessages(component, info.container, info.validations)).valid).component();
+		placeHolder: info.placeHolder,
+		enabled: info.enabled,
+		validations: info.validations
+	});
+	input.updateProperties({ min: info.min, max: info.max });
+	return input;
 }
 
-export function createCheckbox(view: azdata.ModelView, info: { initialValue: boolean, label: string, required?: boolean, container?: azdata.window.Dialog | azdata.window.Wizard, validations?: Validation[] }): azdata.CheckBoxComponent {
+export function createCheckbox(view: azdata.ModelView, info: { initialValue: boolean, label: string, required?: boolean }): azdata.CheckBoxComponent {
 	return view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
 		checked: info.initialValue,
 		required: info.required,
 		label: info.label
-	}).withValidation(async (component) => !!info.validations && !!info.container && (await validateAndUpdateValidationMessages(component, info.container, info.validations)).valid).component();
+	}).component();
 }
 
-export function createDropdown(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string, editable?: boolean, required?: boolean, label: string, container?: azdata.window.Dialog | azdata.window.Wizard, validations?: Validation[] }): azdata.DropDownComponent {
+export function createDropdown(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string, editable?: boolean, required?: boolean, label: string }): azdata.DropDownComponent {
 	return view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 		values: info.values,
 		value: info.defaultValue,
@@ -191,7 +193,7 @@ export function createDropdown(view: azdata.ModelView, info: { defaultValue?: st
 		fireOnTextChange: true,
 		required: info.required,
 		ariaLabel: info.label
-	}).withValidation(async (component) => !!info.validations && !!info.container && (await validateAndUpdateValidationMessages(component, info.container, info.validations)).valid).component();
+	}).component();
 }
 
 export function initializeDialog(dialogContext: DialogContext): void {
@@ -369,9 +371,6 @@ async function processField(context: FieldContext): Promise<void> {
 		() => getInputComponentValue(context.inputComponentInfo!),	// callback to fetch the value of this field
 		(variable) => getInputComponentValue(context.inputComponents[variable])	// callback to fetch the value of a variable corresponding to any field already defined.
 	)));
-	context.onNewValidatorCreated(() => (!!context.inputComponentInfo?.component && !!context.fieldInfo.validations)
-		? validateAndUpdateValidationMessages(context.inputComponentInfo.component, context.container, context.fieldValidations)
-		: Promise.resolve({ valid: true }));
 	switch (context.fieldInfo.type) {
 		case FieldType.Options:
 			await processOptionsTypeField(context);
@@ -475,7 +474,7 @@ async function configureOptionsSourceSubfields(context: FieldContext, optionsSou
 		label: context.fieldInfo.label,
 		variableName: optionsSource.variableNames![variableKey]
 	});
-	context.inputComponentInfo = {
+	context.onNewInputComponentCreated(optionsSource.variableNames![variableKey], context.inputComponentInfo = {
 		component: optionsComponent,
 		inputValueTransformer: async (optionValue: string) => {
 			try {
@@ -491,8 +490,7 @@ async function configureOptionsSourceSubfields(context: FieldContext, optionsSou
 			}
 		},
 		isPassword: await optionsSourceProvider.getIsPassword!(variableKey)
-	};
-	context.onNewInputComponentCreated(optionsSource.variableNames?.[variableKey] ?? context.fieldInfo.label, context.inputComponentInfo);
+	});
 }
 
 function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDownComponent {
@@ -504,9 +502,7 @@ function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDown
 		width: context.fieldInfo.inputWidth,
 		editable: context.fieldInfo.editable,
 		required: context.fieldInfo.required,
-		label: context.fieldInfo.label,
-		container: context.container,
-		validations: context.fieldValidations
+		label: context.fieldInfo.label
 	});
 	dropdown.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName ?? context.fieldInfo.label, context.inputComponentInfo = { component: dropdown });
@@ -516,14 +512,15 @@ function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDown
 
 function processDateTimeTextField(context: FieldContext): void {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
-	const defaultValue = context.fieldInfo.defaultValue + getDateTimeString();
-	const input = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-		value: defaultValue,
+	const defaultValue = context.fieldInfo.defaultValue ?? getDateTimeString();
+	const input = createTextInput(context.view, {
+		defaultValue: defaultValue,
 		ariaLabel: context.fieldInfo.label,
-		inputType: 'text',
+		type: 'text',
 		required: context.fieldInfo.required,
-		placeHolder: context.fieldInfo.placeHolder
-	}).withValidation(async (component) => !!context.fieldInfo.validations && (await validateAndUpdateValidationMessages(component, context.container, context.fieldValidations)).valid).component();
+		placeHolder: context.fieldInfo.placeHolder,
+		enabled: context.fieldInfo.enabled
+	});
 	input.width = context.fieldInfo.inputWidth;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName ?? context.fieldInfo.label, context.inputComponentInfo = { component: input });
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo);
@@ -549,7 +546,7 @@ function processNumberField(context: FieldContext): void {
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo);
 }
 
-function processTextField(context: FieldContext): void {
+function processTextField(context: FieldContext): void  {
 	const isPasswordField = context.fieldInfo.type === FieldType.Password || context.fieldInfo.type === FieldType.SQLPassword;
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const input = createTextInput(context.view, {
@@ -560,7 +557,6 @@ function processTextField(context: FieldContext): void {
 		placeHolder: context.fieldInfo.placeHolder,
 		width: context.fieldInfo.inputWidth,
 		enabled: context.fieldInfo.enabled,
-		container: context.container,
 		validations: context.fieldValidations
 	});
 
@@ -577,11 +573,11 @@ function processPasswordField(context: FieldContext): void {
 		const invalidPasswordMessage = getInvalidSQLPasswordMessage(context.fieldInfo.label);
 		context.onNewDisposableCreated(passwordInput.onTextChanged(() => {
 			if (context.fieldInfo.type === FieldType.SQLPassword && isValidSQLPassword(passwordInput.value!, context.fieldInfo.userName)) {
-				removeValidationMessage(context.container.message, invalidPasswordMessage);
+				removeValidationMessage(context.container, invalidPasswordMessage);
 			}
 		}));
 
-		context.onNewValidatorCreated(async (): Promise<ValidationResult> => {
+		context.onNewValidatorCreated(() => {
 			return { valid: isValidSQLPassword(passwordInput.value!, context.fieldInfo.userName), message: invalidPasswordMessage };
 		});
 	}
@@ -597,14 +593,14 @@ function processPasswordField(context: FieldContext): void {
 		}).component();
 
 		addLabelInputPairToContainer(context.view, context.components, confirmPasswordLabel, confirmPasswordInput, context.fieldInfo);
-		context.onNewValidatorCreated(async (): Promise<ValidationResult> => {
+		context.onNewValidatorCreated(() => {
 			const passwordMatches = passwordInput.value === confirmPasswordInput.value;
 			return { valid: passwordMatches, message: passwordNotMatchMessage };
 		});
 
 		const updatePasswordMismatchMessage = () => {
 			if (passwordInput.value === confirmPasswordInput.value) {
-				removeValidationMessage(context.container.message, passwordNotMatchMessage);
+				removeValidationMessage(context.container, passwordNotMatchMessage);
 			}
 		};
 
@@ -677,7 +673,7 @@ async function substituteVariableValues(inputComponents: InputComponents, inputV
 }
 
 function processCheckboxField(context: FieldContext): void {
-	const checkbox = createCheckbox(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: context.fieldInfo.label, required: context.fieldInfo.required, container: context.container, validations: context.fieldValidations });
+	const checkbox = createCheckbox(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: context.fieldInfo.label, required: context.fieldInfo.required });
 	context.components.push(checkbox);
 	context.onNewInputComponentCreated(context.fieldInfo.variableName ?? context.fieldInfo.label, context.inputComponentInfo = { component: checkbox });
 }
@@ -698,7 +694,6 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 		placeHolder: context.fieldInfo.placeHolder,
 		width: `${inputWidth - buttonWidth}px`,
 		enabled: context.fieldInfo.enabled,
-		container: context.container,
 		validations: context.fieldValidations
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName ?? context.fieldInfo.label, context.inputComponentInfo = { component: input });
@@ -1263,7 +1258,13 @@ export function isValidSQLPassword(password: string, userName: string = 'sa'): b
 	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
 }
 
-
+export function removeValidationMessage(container: azdata.window.Dialog | azdata.window.Wizard, message: string): void {
+	if (container.message && container.message.text.includes(message)) {
+		const messageWithLineBreak = message + '\n';
+		const searchText = container.message.text.includes(messageWithLineBreak) ? messageWithLineBreak : message;
+		container.message = { text: container.message.text.replace(searchText, '') };
+	}
+}
 
 export function getInvalidSQLPasswordMessage(fieldName: string): string {
 	return localize('invalidSQLPassword', "{0} doesn't meet the password complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy", fieldName);
@@ -1285,7 +1286,7 @@ async function getInputComponentValue(inputComponentInfo: InputComponentInfo): P
 	if (input === undefined) {
 		return undefined;
 	}
-	let value: string | undefined;
+	let value: string | number | undefined;
 	if (input instanceof RadioGroupLoadingComponentBuilder) {
 		value = input.value;
 	} else if ('checked' in input) { // CheckBoxComponent
@@ -1300,7 +1301,8 @@ async function getInputComponentValue(inputComponentInfo: InputComponentInfo): P
 	} else {
 		throw new Error(`Unknown input type with ID ${input.id}`);
 	}
-	return inputComponentInfo.inputValueTransformer ? await inputComponentInfo.inputValueTransformer(value ?? '') : value;
+	value = inputComponentInfo.inputValueTransformer ? await inputComponentInfo.inputValueTransformer(value ?? '') : value;
+	return value;
 }
 
 export function isInputBoxEmpty(input: azdata.InputBoxComponent): boolean {

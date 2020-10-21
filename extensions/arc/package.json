@@ -621,16 +621,17 @@
                           "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
                           "type": "number",
                           "min": 1,
+                          "defaultValue": 1,
                           "required": false,
                           "validations": [
+                            {
+                              "type": "is_integer",
+                              "description": "requested cores must be an integer"
+                            },
                             {
                               "type": "<=",
                               "target": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
                               "description": "requested cores must be <= cores limit"
-                            },
-                            {
-                              "type": "is_integer",
-                              "description": "requested cores must be an integer"
                             }
                           ]
                         },
@@ -640,16 +641,17 @@
                           "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
                           "type": "number",
                           "min": 1,
+                          "defaultValue": 1,
                           "required": false,
                           "validations": [
+                            {
+                              "type": "is_integer",
+                              "description": "cores limit must be an integer"
+                            },
                             {
                               "type": ">=",
                               "target": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
                               "description": "cores limit must be >= requested cores"
-                            },
-                            {
-                              "type": "is_integer",
-                              "description": "cores limit must be an integer"
                             }
                         ]
                         },
@@ -660,10 +662,11 @@
                           "type": "number",
                           "min": 2,
                           "required": false,
+                          "defaultValue": 2,
                           "validations": [{
                             "type": "<=",
                             "target": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
-                            "description": "%requested memory must be <= memory limit"
+                            "description": "requested memory must be <= memory limit"
                           }]
                         },
                         {
@@ -672,6 +675,7 @@
                           "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
                           "type": "number",
                           "min": 2,
+                          "defaultValue": 2,
                           "required": false,
                           "validations": [{
                             "type": ">=",

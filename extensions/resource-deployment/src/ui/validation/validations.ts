@@ -4,11 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { EOL } from 'os';
 import { throwUnless } from '../../common/utils';
-import * as loc from '../../localizedConstants';
-import { InputComponent } from '../modelViewUtils';
-import { RadioGroupLoadingComponentBuilder } from '../radioGroupLoadingComponentBuilder';
 
 export interface ValidationResult {
 	valid: boolean;
@@ -45,19 +41,16 @@ export interface ComparisonValidationInfo extends ValidationInfoBase {
 	readonly target: string
 }
 
-type DialogMessageContainer = {
-	message: azdata.window.DialogMessage
-};
-
 export abstract class Validation {
 	private _description: string;
+	protected readonly _target?: string;
 
 	get description(): string {
 		return this._description;
 	}
 
-	// gets the validator for this validation object
-	abstract validate: Validator;
+	// gets the validation result for this validation object
+	abstract validate(): Promise<ValidationResult>;
 
 	protected getValue(): Promise<ValidationValueType> {
 		return this._valueGetter();
@@ -82,13 +75,13 @@ export class IntegerValidation extends Validation {
 		return (typeof value === 'string') ? Number.isInteger(parseFloat(value)) : Number.isInteger(value);
 	}
 
-	validate: Validator = async () => {
+	async validate(): Promise<ValidationResult> {
 		const isValid = await this.isInteger();
 		return {
 			valid: isValid,
 			message: isValid ? undefined: this.description
 		};
-	};
+	}
 }
 
 export class RegexValidation extends Validation {
@@ -104,17 +97,17 @@ export class RegexValidation extends Validation {
 		this._regex = (typeof validation.regex === 'string') ? new RegExp(validation.regex) : validation.regex;
 	}
 
-	validate: Validator = async () => {
+	async validate(): Promise<ValidationResult> {
 		const isValid = this.regex.test((await this.getValue())?.toString()!);
 		return {
 			valid: isValid,
 			message: isValid ? undefined: this.description
 		};
-	};
+	}
 }
 
 export abstract class Comparison extends Validation {
-	private _target: string;
+	protected _target: string;
 
 	get target(): string {
 		return this._target;
@@ -127,13 +120,13 @@ export abstract class Comparison extends Validation {
 	}
 
 	abstract isComparisonSuccessful(): Promise<boolean>;
-	validate: Validator = async () => {
+	async validate(): Promise<ValidationResult> {
 		const isValid = await this.isComparisonSuccessful();
 		return {
 			valid: isValid,
 			message:  isValid ? undefined: this.description
 		};
-	};
+	}
 }
 
 export class LessThanOrEqualsValidation extends Comparison {
@@ -148,40 +141,6 @@ export class GreaterThanOrEqualsValidation extends Comparison {
 	}
 }
 
-
-/**
- * removes validation message corresponding to this validator from the @see dialogMessage string.
- *
- * @param dialogMessage
- * @param message
-*/
-export function removeValidationMessage(dialogMessage: azdata.window.DialogMessage, message: string): azdata.window.DialogMessage {
-	if (dialogMessage.description) {
-		return {
-			text: dialogMessage.text,
-			level: dialogMessage.level,
-			description: getStrippedMessage(dialogMessage.description, message)
-		};
-	} else {
-		return {
-			text: getStrippedMessage(dialogMessage.text, message),
-			level: dialogMessage.level,
-			description: dialogMessage.description
-		};
-	}
-}
-
-function getStrippedMessage(originalMessage: string, message: string) {
-	if (originalMessage.includes(message)) {
-		const messageWithLineBreak = message + EOL;
-		const searchText = originalMessage.includes(messageWithLineBreak) ? messageWithLineBreak : message;
-		const newMessage = originalMessage.replace(searchText, '');
-		return newMessage;
-	} else {
-		return originalMessage;
-	}
-}
-
 export function createValidation(validation: ValidationInfo, valueGetter: ValueGetter, variableValueGetter?: VariableValueGetter): Validation {
 	switch (validation.type) {
 		case ValidationType.Regex: return new RegexValidation(<RegexValidationInfo>validation, valueGetter);
@@ -192,31 +151,13 @@ export function createValidation(validation: ValidationInfo, valueGetter: ValueG
 	}
 }
 
-export async function validateAndUpdateValidationMessages(component: InputComponent, container: DialogMessageContainer, validations: Validation[] = []): Promise<ValidationResult> {
-	let dialogMessage = container.message ?? { text: ''};
-	const allValidationResults = await Promise.all(validations.map(validation => validation.validate()));
-	allValidationResults.filter(state => state.valid).forEach(v => dialogMessage = removeValidationMessage(dialogMessage, v.message!)); // strip off validation messages corresponding to all successful validations
-	const failedValidationResults = allValidationResults.filter(state => !state.valid);
-	if (failedValidationResults.length > 0) {
-		container.message = getDialogMessage([dialogMessage?.description ?? dialogMessage?.text, failedValidationResults[0].message!]);
-		if (component instanceof RadioGroupLoadingComponentBuilder) {
-			component = component.component();
+export async function validateInputBoxComponent(component: azdata.InputBoxComponent, validations: Validation[] = []): Promise<boolean> {
+	for (const validation of validations) {
+		const result = await validation.validate();
+		if (!result.valid) {
+			component.updateProperty('validationErrorMessage', result.message);
+			return false;
 		}
-		await component.updateProperty('validationErrorMessage', failedValidationResults[0].message);
-		return failedValidationResults[0]; // we just return the first validation failure for this inputComponent. TODO - should we be returning them all?
-	} else {
-		container.message = dialogMessage;
-		return { valid: true };
 	}
-}
-
-export function getDialogMessage(messages: string[], messageLevel: azdata.window.MessageLevel = azdata.window.MessageLevel.Error): azdata.window.DialogMessage {
-	messages = messages.filter(m => m !== undefined && m.length !== 0);
-	return {
-		text: messages.length === 1
-			? messages[0]
-			: loc.multipleValidationErrors,
-		description: messages.length === 1 ? undefined : messages.join(EOL),
-		level: messageLevel,
-	};
+	return true;
 }
