@@ -101,6 +101,10 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 			if (relativePath.startsWith(path.join('..', path.sep) || path.join('.', path.sep))) {
 				return relativePath;
 			} else {
+				// Case for different drive
+				if (path.isAbsolute(relativePath)) {
+					return relativePath;
+				}
 				// if the relative path does not contain ./ at the beginning, we need to add it so it's recognized as a link
 				return `.${path.join(path.sep, relativePath)}`;
 			}

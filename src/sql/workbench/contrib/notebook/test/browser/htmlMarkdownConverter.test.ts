@@ -5,6 +5,7 @@
 
 import * as assert from 'assert';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
+import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 
 
@@ -13,7 +14,13 @@ suite('HTML Markdown Converter', function (): void {
 	let htmlString: string;
 
 	suiteSetup(() => {
-		htmlMarkdownConverter = new HTMLMarkdownConverter(URI.file('/tmp/notebook.ipynb'));
+		let notebookUri: URI;
+		if (process.platform === 'win32') {
+			notebookUri = URI.file('C:\\tmp\\notebook.ipynb');
+		} else {
+			notebookUri = URI.file('/tmp/notebook.ipynb');
+		}
+		htmlMarkdownConverter = new HTMLMarkdownConverter(notebookUri);
 		htmlString = '';
 	});
 
@@ -82,17 +89,17 @@ suite('HTML Markdown Converter', function (): void {
 
 	test('Should transform <img> tag', () => {
 		htmlString = '<img src="/tmp/stuff.png" alt="stuff">';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '![stuff](./stuff.png)', 'Basic img test failed');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `![stuff](.${path.sep}stuff.png)`, 'Basic img test failed');
 		htmlString = '<img src="/tmp/stuff.png">';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '![](./stuff.png)', 'Basic img test no alt failed');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `![](.${path.sep}stuff.png)`, 'Basic img test no alt failed');
 		htmlString = '<img src="/tmp/my stuff.png">';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '![](./my%20stuff.png)', 'Basic img test no alt space filename failed');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `![](.${path.sep}my%20stuff.png)`, 'Basic img test no alt space filename failed');
 		htmlString = '<img src="/tmp/inner/stuff.png" alt="stuff">';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '![stuff](./inner/stuff.png)', 'Basic img test below folder failed');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `![stuff](.${path.sep}inner${path.sep}stuff.png)`, 'Basic img test below folder failed');
 		htmlString = '<img src="/stuff.png" alt="stuff">';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '![stuff](../stuff.png)', 'Basic img test above folder failed');
-		htmlString = '<img src="e:\some\other\path.png">';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '![](e:\some\other\path.png)', 'img test different drive failed');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `![stuff](..${path.sep}stuff.png)`, 'Basic img test above folder failed');
+		htmlString = '<img src="e:\\some\\other\\path.png">';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '![](e:\\some\\other\\path.png)', 'img test different drive failed');
 		htmlString = '<img src="https://www.microsoft.com/images/msft.png" alt="msft">';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '![msft](https://www.microsoft.com/images/msft.png)', 'Basic https img test failed');
 		htmlString = '<img src="http://www.microsoft.com/images/msft.png" alt="msft">';
@@ -101,17 +108,17 @@ suite('HTML Markdown Converter', function (): void {
 
 	test('Should transform <a> tag', () => {
 		htmlString = '<a href="/tmp/stuff.png">stuff</a>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '[stuff](./stuff.png)', 'Basic link test failed');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `[stuff](.${path.sep}stuff.png)`, 'Basic link test failed');
 		htmlString = '<a href="/tmp/stuff.png"/>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '[](./stuff.png)', 'Basic link test no label failed');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `[](.${path.sep}stuff.png)`, 'Basic link test no label failed');
 		htmlString = '<a href="/tmp/my stuff.png"/>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '[](./my%20stuff.png)', 'Basic link test no label space filename failed');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `[](.${path.sep}my%20stuff.png)`, 'Basic link test no label space filename failed');
 		htmlString = '<a href="/stuff.png">stuff</a.';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '[stuff](../stuff.png)', 'Basic link test above folder failed');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `[stuff](..${path.sep}stuff.png)`, 'Basic link test above folder failed');
 		htmlString = '<a href="/tmp/inner/stuff.png">stuff</a>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '[stuff](./inner/stuff.png)', 'Basic link test below folder failed');
-		htmlString = '<a href="e:\some\other\path.png"/>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '[](e:\some\other\path.png)', 'link test different drive failed');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `[stuff](.${path.sep}inner${path.sep}stuff.png)`, 'Basic link test below folder failed');
+		htmlString = '<a href="e:\\some\\other\\path.png"/>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '[](e:\\some\\other\\path.png)', 'link test different drive failed');
 		htmlString = '<a href="https://www.microsoft.com/images/msft.png">msft</a>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '[msft](https://www.microsoft.com/images/msft.png)', 'Basic https link test failed');
 		htmlString = '<a href="http://www.microsoft.com/images/msft.png">msft</a>';
