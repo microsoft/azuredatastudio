@@ -10,7 +10,6 @@ import * as path from 'path';
 import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
-import * as newProjectTool from '../tools/newProjectTool';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as dataworkspace from 'dataworkspace';
@@ -518,8 +517,6 @@ export class ProjectsController {
 			model.extractTarget = await this.getExtractTarget();
 			model.version = '1.0.0.0';
 
-			newProjectTool.updateSaveLocationSetting();
-
 			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
 			model.filePath = path.dirname(newProjFilePath);
 
@@ -690,7 +687,7 @@ export class ProjectsController {
 	private async getProjectName(dbName: string): Promise<string> {
 		let projName = await vscode.window.showInputBox({
 			prompt: constants.newDatabaseProjectName,
-			value: newProjectTool.defaultProjectNameFromDb(dbName)
+			value: `${constants.defaultProjectNameStarter}${dbName}`
 		});
 
 		projName = projName?.trim();
@@ -748,7 +745,7 @@ export class ProjectsController {
 			canSelectFolders: true,
 			canSelectMany: false,
 			openLabel: constants.selectString,
-			defaultUri: newProjectTool.defaultProjectSaveLocation()
+			defaultUri: vscode.Uri.file(os.homedir())
 		});
 
 		if (selectionResult) {
