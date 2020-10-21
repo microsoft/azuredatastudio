@@ -25,4 +25,9 @@ export class MainThreadWorkspace extends Disposable implements MainThreadWorkspa
 		workspaceFile = URI.revive(workspaceFile);
 		return this.workspaceEditingService.createAndEnterWorkspace([{ uri: folder }], workspaceFile);
 	}
+
+	$enterWorkspace(workspaceFile: URI): Promise<void> {
+		workspaceFile = URI.revive(workspaceFile);
+		return this.workspaceEditingService.enterWorkspace(workspaceFile);
+	}
 }

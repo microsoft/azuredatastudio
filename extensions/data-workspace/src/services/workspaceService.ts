@@ -7,10 +7,10 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
+import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
-import * as constants from '../common/constants';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
@@ -79,6 +79,19 @@ export class WorkspaceService implements IWorkspaceService {
 		} else {
 			// workspace is open
 			return true;
+		}
+	}
+
+	/**
+	 * Shows confirmation message that the extension host will be restarted and current workspace/file will be closed. If confirmed, the specified workspace will be entered.
+	 * @param workspaceFile
+	 */
+	async enterWorkspace(workspaceFile: vscode.Uri): Promise<void> {
+		const result = await vscode.window.showWarningMessage(constants.EnterWorkspaceConfirmation, constants.OkButtonText, constants.CancelButtonText);
+		if (result === constants.OkButtonText) {
+			await azdata.workspace.enterWorkspace(workspaceFile);
+		} else {
+			return;
 		}
 	}
 

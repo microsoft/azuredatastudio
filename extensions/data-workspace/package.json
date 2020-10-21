@@ -36,14 +36,14 @@
     ],
     "commands": [
       {
-        "command": "projects.newProject",
-        "title": "%new-project-command%",
+        "command": "projects.new",
+        "title": "%new-command%",
         "category": "",
         "icon": "$(add)"
       },
       {
-        "command": "projects.openProject",
-        "title": "%open-project-command%",
+        "command": "projects.openExisting",
+        "title": "%open-existing-command%",
         "category": "",
         "icon": "$(folder-opened)"
       },
@@ -66,12 +66,12 @@
           "group": "secondary"
         },
         {
-          "command": "projects.newProject",
+          "command": "projects.new",
           "when": "view == dataworkspace.views.main",
           "group": "navigation"
         },
         {
-          "command": "projects.openProject",
+          "command": "projects.openExisting",
           "when": "view == dataworkspace.views.main",
           "group": "navigation"
         }
@@ -90,7 +90,7 @@
           "when": "false"
         },
         {
-          "command": "projects.openProject",
+          "command": "projects.openExisting",
           "when": "false"
         }
       ],

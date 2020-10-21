@@ -23,11 +23,11 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 		setProjectProviderContextValue(workspaceService);
 	}));
 	setProjectProviderContextValue(workspaceService);
-	context.subscriptions.push(vscode.commands.registerCommand('projects.newProject', async () => {
+	context.subscriptions.push(vscode.commands.registerCommand('projects.new', async () => {
 		const dialog = new NewProjectDialog(workspaceService);
 		dialog.open();
 	}));
-	context.subscriptions.push(vscode.commands.registerCommand('projects.openProject', async () => {
+	context.subscriptions.push(vscode.commands.registerCommand('projects.openExisting', async () => {
 		const dialog = new OpenProjectDialog(workspaceService, context);
 		dialog.open();
 

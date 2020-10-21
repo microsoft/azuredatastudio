@@ -20,4 +20,8 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape {
 	$createWorkspace(folder: URI, workspaceFile: URI): Promise<void> {
 		return this._proxy.$createWorkspace(folder, workspaceFile);
 	}
+
+	$enterWorkspace(workspaceFile: URI): Promise<void> {
+		return this._proxy.$enterWorkspace(workspaceFile);
+	}
 }
