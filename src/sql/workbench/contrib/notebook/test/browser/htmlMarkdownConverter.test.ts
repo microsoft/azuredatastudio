@@ -14,13 +14,7 @@ suite('HTML Markdown Converter', function (): void {
 	let htmlString: string;
 
 	suiteSetup(() => {
-		let notebookUri: URI;
-		if (process.platform === 'win32') {
-			notebookUri = URI.file('C:\\tmp\\notebook.ipynb');
-		} else {
-			notebookUri = URI.file('/tmp/notebook.ipynb');
-		}
-		htmlMarkdownConverter = new HTMLMarkdownConverter(notebookUri);
+		htmlMarkdownConverter = new HTMLMarkdownConverter(URI.file('/tmp/notebook.ipynb'));
 		htmlString = '';
 	});
 
