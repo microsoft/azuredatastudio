@@ -38,6 +38,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _cellType: nb.CellType;
 	private _source: string | string[];
 	private _language: string;
+	private _connectionName: string | undefined;
 	private _cellGuid: string;
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
@@ -56,7 +57,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; };
+	private _metadata: nb.ICellMetadata;
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
@@ -262,6 +263,14 @@ export class CellModel extends Disposable implements ICellModel {
 			return this._language;
 		}
 		return this._options.notebook.language;
+	}
+
+	public get connectionName(): string | undefined {
+		return this._connectionName;
+	}
+
+	public set connectionName(name: string) {
+		this._connectionName = name;
 	}
 
 	public get cellGuid(): string {
@@ -714,6 +723,9 @@ export class CellModel extends Disposable implements ICellModel {
 			cellJson.metadata.tags = metadata.tags;
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount ? this.executionCount : null;
+			if (this._configurationService.getValue('notebook.saveConnectionName')) {
+				metadata.connectionName = this._connectionName;
+			}
 		}
 		return cellJson as nb.ICellContents;
 	}
@@ -735,6 +747,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
+		this.connectionName = this._metadata.connectionName;
 		if (cell.outputs) {
 			for (let output of cell.outputs) {
 				// For now, we're assuming it's OK to save these as-is with no modification
