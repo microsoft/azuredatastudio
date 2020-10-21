@@ -277,6 +277,8 @@ export class ProjectsController {
 			// check that dacpac exists
 			if (await utils.exists(dacpacPath)) {
 				await vscode.commands.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
+			} else {
+				vscode.window.showErrorMessage(constants.buildFailedCannotStartSchemaCompare);
 			}
 		} else {
 			vscode.window.showErrorMessage(constants.schemaCompareNotInstalled);
