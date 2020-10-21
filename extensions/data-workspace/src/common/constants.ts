@@ -16,6 +16,7 @@ export const ProviderNotFoundForProjectTypeError = (projectType: string): string
 export const WorkspaceRequiredMessage = localize('dataworkspace.workspaceRequiredMessage', "A workspace is required in order to use the project feature.");
 export const OpenWorkspace = localize('dataworkspace.openWorkspace', "Open Workspace…");
 export const CreateWorkspaceConfirmation = localize('dataworkspace.createWorkspaceConfirmation', "A new workspace will be created and opened in order to open project. The Extension Host will restart and if there is a folder currently open, it will be closed.");
+export const EnterWorkspaceConfirmation = localize('dataworkspace.enterWorkspaceConfirmation', "To open this workspace, the Extension Host will restart and if there is a workspace or folder currently open, it will be closed.");
 
 // UI
 export const OkButtonText = localize('dataworkspace.ok', "OK");
@@ -26,21 +27,27 @@ export const DefaultButtonWidth = '80px';
 
 // New Project Dialog
 export const NewProjectDialogTitle = localize('dataworkspace.NewProjectDialogTitle', "Create new project");
-export const ProjectTypeSelectorTitle = localize('dataworkspace.ProjectTypeSelectorTitle', "Type");
+export const TypeTitle = localize('dataworkspace.Type', "Type");
 export const ProjectNameTitle = localize('dataworkspace.projectNameTitle', "Name");
 export const ProjectNamePlaceholder = localize('dataworkspace.projectNamePlaceholder', "Enter project name");
 export const ProjectLocationTitle = localize('dataworkspace.projectLocationTitle', "Location");
-export const ProjectLocationPlaceholder = localize('dataworkspace.projectLocationPlaceholder', "Select folder");
+export const ProjectLocationPlaceholder = localize('dataworkspace.projectLocationPlaceholder', "Enter project location");
+export const AddProjectToCurrentWorkspace = localize('dataworkspace.AddProjectToCurrentWorkspace', "This project will be added to the currently open workspace.");
+export const NewWorkspaceWillBeCreated = localize('dataworkspace.NewWorkspaceWillBeCreated', "New workspace will be created for this project.");
+export const WorkspaceLocationTitle = localize('dataworkspace.workspaceLocationTitle', "Workspace location");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected location: '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
 
 //Open Existing Project Dialog
-export const OpenProjectDialogTitle = localize('dataworkspace.openProjectDialogTitle', "Open existing project");
+export const OpenProjectDialogTitle = localize('dataworkspace.openProjectDialogTitle', "Open existing");
 export const ProjectFileNotExistError = (projectFilePath: string): string => { return localize('dataworkspace.projectFileNotExistError', "The selected project file: '{0}' does not exist or is not a file.", projectFilePath); };
-export const LocalFileSystem = localize('dataworkspace.localFileSystem', "Local File");
-export const LocationSelectorTitle = localize('dataworkspace.LocationSelectorTitle', "Location");
-export const ProjectFileTitle = localize('dataworkspace.projectFileTitle', "Project file");
-export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Select project file");
+export const WorkspaceFileNotExistError = (workspaceFilePath: string): string => { return localize('dataworkspace.workspaceFileNotExistError', "The selected workspace file: '{0}' does not exist or is not a file.", workspaceFilePath); };
+export const Project = localize('dataworkspace.project', "Project");
+export const Workspace = localize('dataworkspace.workspace', "Workspace");
+export const LocationSelectorTitle = localize('dataworkspace.locationSelectorTitle', "Location");
+export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Enter project location");
+export const WorkspacePlaceholder = localize('dataworkspace.workspacePlaceholder', "Enter workspace location");
+export const WorkspaceFileExtension = 'code-workspace';
 
 // Workspace settings for saving new projects
 export const ProjectConfigurationKey = 'projects';

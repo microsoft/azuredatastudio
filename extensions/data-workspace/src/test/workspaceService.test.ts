@@ -5,6 +5,7 @@
 
 import 'mocha';
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import * as sinon from 'sinon';
 import * as should from 'should';
 import * as path from 'path';
@@ -238,13 +239,14 @@ suite('WorkspaceService Tests', function (): void {
 		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
 			onWorkspaceProjectsChangedStub();
 		});
-		sinon.stub(workspace, 'createWorkspace').resolves(undefined);
+		const createWorkspaceStub = sinon.stub(azdata.workspace, 'createWorkspace').resolves(undefined);
 
 		await service.addProjectsToWorkspace([
 			vscode.Uri.file('/test/folder/proj1.sqlproj')
 		]);
 
-		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, false, 'the onDidWorkspaceProjectsChange event should not have been fired');
+		should.strictEqual(createWorkspaceStub.calledOnce, true, 'createWorkspace should have been called once');
+		should.strictEqual(onWorkspaceProjectsChangedStub.notCalled, true, 'the onDidWorkspaceProjectsChange event should not have been fired');
 		onWorkspaceProjectsChangedDisposable.dispose();
 	});
 
@@ -260,7 +262,7 @@ suite('WorkspaceService Tests', function (): void {
 			onWorkspaceProjectsChangedStub();
 		});
 		stubGetConfigurationValue(getConfigurationStub, updateConfigurationStub);
-		sinon.stub(workspace, 'createWorkspace').resolves(undefined);
+		sinon.stub(azdata.workspace, 'createWorkspace').resolves(undefined);
 		sinon.stub(vscode.workspace, 'workspaceFolders').value(['folder1']);
 		mockGlobalState.setup(x => x.get(TypeMoq.It.isAny())).returns(() => [processPath('folder1/proj2.sqlproj')]);
 

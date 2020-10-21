@@ -87,7 +87,7 @@ export class NewProjectDialog extends DialogBase {
 			iconWidth: '50px',
 			cardWidth: '170px',
 			cardHeight: '170px',
-			ariaLabel: constants.ProjectTypeSelectorTitle,
+			ariaLabel: constants.TypeTitle,
 			width: '500px',
 			iconPosition: 'top',
 			selectedCardId: allProjectTypes.length > 0 ? allProjectTypes[0].id : undefined
@@ -137,15 +137,43 @@ export class NewProjectDialog extends DialogBase {
 			const selectedFolder = folderUris[0].fsPath;
 			locationTextBox.value = selectedFolder;
 			this.model.location = selectedFolder;
+
+			// update hover text if a new workspace will be created for this project
+			if (!vscode.workspace.workspaceFile) {
+				workspaceTextBox.placeHolder = path.join(this.model.location, `${this.model.name}.code-workspace`);
+			}
 		}));
 
 		this.register(projectNameTextBox.onTextChanged(() => {
 			this.model.name = projectNameTextBox.value!;
+
+			// update hover text if a new workspace will be created for this project
+			if (!vscode.workspace.workspaceFile) {
+				workspaceTextBox.placeHolder = path.join(this.model.location, this.model.name, `${this.model.name}.code-workspace`);
+			}
 		}));
+
+		const workspaceDescription = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: vscode.workspace.workspaceFile ? constants.AddProjectToCurrentWorkspace : constants.NewWorkspaceWillBeCreated,
+			CSSStyles: { 'margin-top': '3px', 'margin-bottom': '10px' }
+		}).component();
+
+		const workspaceTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			ariaLabel: constants.WorkspaceLocationTitle,
+			width: constants.DefaultInputWidth,
+			enabled: false,
+			value: vscode.workspace.workspaceFile?.fsPath ?? '',
+			placeHolder: vscode.workspace.workspaceFile?.fsPath ?? '' // hovertext for if file path is too long to be seen in textbox
+		}).component();
+
+		const workspaceFlexContainer = view.modelBuilder.flexContainer()
+			.withItems([workspaceDescription, workspaceTextBox])
+			.withLayout({ flexFlow: 'column' })
+			.component();
 
 		const form = view.modelBuilder.formContainer().withFormItems([
 			{
-				title: constants.ProjectTypeSelectorTitle,
+				title: constants.TypeTitle,
 				required: true,
 				component: projectTypeRadioCardGroup
 			},
@@ -157,6 +185,9 @@ export class NewProjectDialog extends DialogBase {
 				title: constants.ProjectLocationTitle,
 				required: true,
 				component: this.createHorizontalContainer(view, [locationTextBox, browseFolderButton])
+			}, {
+				title: constants.Workspace,
+				component: workspaceFlexContainer
 			}
 		]).component();
 		await view.initializeModel(form);
