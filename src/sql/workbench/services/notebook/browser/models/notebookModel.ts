@@ -48,6 +48,8 @@ export class ErrorInfo {
 	}
 }
 
+const saveConnectionNameConfigName = 'notebook.saveConnectionName';
+
 export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
 	private _contextsLoadingEmitter = new Emitter<void>();
@@ -401,7 +403,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public async requestConnection(): Promise<boolean> {
 		// If there is a saved connection name with a corresponding connection profile, use that one,
 		// otherwise show connection dialog
-		if (this._savedConnectionName) {
+		if (this.configurationService.getValue(saveConnectionNameConfigName) && this._savedConnectionName) {
 			let profile: ConnectionProfile | undefined = this.getConnectionProfileFromName(this._savedConnectionName);
 			if (profile) {
 				await this.changeContext(this._savedConnectionName, profile);
@@ -1161,7 +1163,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		metadata.kernelspec = this._savedKernelInfo;
 		metadata.language_info = this.languageInfo;
 		metadata.tags = this._tags;
-		if (this.configurationService.getValue('notebook.saveConnectionName')) {
+		if (this.configurationService.getValue(saveConnectionNameConfigName)) {
 			metadata.connectionName = this._savedConnectionName;
 		}
 		Object.keys(this._existingMetadata).forEach(key => {
