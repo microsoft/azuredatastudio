@@ -133,7 +133,8 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.wizard.registerDisposable(disposable);
 				},
 				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
-					this.inputComponents[name] = { component: inputComponentInfo.component };
+					this.inputComponents[name] = inputComponentInfo;
+					this.wizard.inputComponents[name] = inputComponentInfo;
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -181,6 +182,5 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			return true;
 		});
 		await setModelValues(this.inputComponents, this.wizard.model);
-		Object.assign(this.wizard.inputComponents, this.inputComponents);
 	}
 }
