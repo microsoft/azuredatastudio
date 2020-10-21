@@ -194,7 +194,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.gatewayPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.GatewayPortName', "Gateway port"), required: true, width: NumberInputWidth, min: 1 });
 		this.gatewayEndpointRow = createFlexContainer(view, [this.gatewayNameLabel, this.gatewayDNSInput, this.gatewayPortInput]);
 		this.onNewInputComponentCreated(VariableNames.GatewayDNSName_VariableName, { component: this.gatewayDNSInput });
-			this.onNewInputComponentCreated(VariableNames.GateWayPort_VariableName, { component: this.gatewayPortInput });
+		this.onNewInputComponentCreated(VariableNames.GateWayPort_VariableName, { component: this.gatewayPortInput });
 
 		this.serviceProxyNameLabel = createLabel(view, { text: localize('deployCluster.ServiceProxyText', "Management proxy"), width: labelWidth, required: true });
 		this.serviceProxyDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ServiceProxyDNSName', "Management proxy DNS name"), required: false, width: inputWidth });
