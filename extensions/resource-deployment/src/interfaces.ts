@@ -298,6 +298,8 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean;
 	isEvaluated?: boolean;
+	valueLookup?: string; // for fetching dropdown options
+	validationLookup?: string // for fetching text field validations
 	validations?: ValidationInfo[];
 }
 
