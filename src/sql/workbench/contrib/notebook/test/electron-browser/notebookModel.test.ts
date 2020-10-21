@@ -38,6 +38,7 @@ import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -572,6 +573,56 @@ suite('notebook model', function (): void {
 
 		// Ensure disconnect is called once
 		queryConnectionService.verify((c) => c.disconnect(TypeMoq.It.isAny()), TypeMoq.Times.once());
+	});
+
+	test('Should read connection name from notebook metadata and use its corresponding connection profile', async function () {
+		const connectionName = 'connectionName';
+		// Given a notebook with a connection name in metadata
+		let notebook: nb.INotebookContents = {
+			cells: [],
+			metadata: {
+				connectionName: connectionName
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebook));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// And a matching connection profile
+		let expectedConnectionProfile: IConnectionProfile = {
+			connectionName: connectionName,
+			serverName: '',
+			databaseName: '',
+			userName: '',
+			password: '',
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: '',
+			groupId: '',
+			getOptionsKey: () => '',
+			matches: undefined,
+			providerName: '',
+			saveProfile: true,
+			id: '',
+			options: {}
+		};
+		sinon.stub(queryConnectionService, 'getConnections').returns(expectedConnectionProfile);
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		// I expect the saved connection name to be read
+		assert.equal(model.savedConnectionName, connectionName);
+
+		// When I request a connection
+		let spy = sinon.stub(model, 'changeContext').returns(Promise.resolve());
+		model.requestConnection();
+
+		// I expect the connection profile matching the saved connection name to be used
+		assert.ok(spy.calledWith(connectionName, expectedConnectionProfile));
 	});
 
 	async function loadModelAndStartClientSession(): Promise<NotebookModel> {
