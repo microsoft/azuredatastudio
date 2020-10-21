@@ -44,11 +44,28 @@ export const registeredModelsTableName = 'registeredModelsTableName';
 export const rPathConfigKey = 'rPath';
 export const adsPythonBundleVersion = '0.0.1';
 
+// TSQL
+//
+
+// The data types that are supported to convert model's parameters to SQL data
+export const supportedDataTypes = [
+	'BIGINT',
+	'INT',
+	'SMALLINT',
+	'REAL',
+	'FLOAT',
+	'VARCHAR(MAX)',
+	'BIT'
+];
+export const varcharMax = 'VARCHAR(MAX)';
+export const varcharDefaultLength = 100;
+
 // Localized texts
 //
 export const msgYes = localize('msgYes', "Yes");
 export const msgNo = localize('msgNo', "No");
 export const managePackageCommandError = localize('mls.managePackages.error', "Package management is not supported for the server. Make sure you have Python or R installed.");
+export const notebookExtensionFailedError = localize('notebookExtensionFailedError', "The extension failed to load because of it's dependency to Notebook extension. Please check the output log for Notebook extension to get more details");
 export const verifyOdbcDriverError = localize('mls.verifyOdbcDriverError.error', "'{0}' is required  for package management. Please make sure it is installed and set up correctly.", supportedODBCDriver);
 export function taskFailedError(taskName: string, err: string): string { return localize('mls.taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
 export function cannotFindPython(path: string): string { return localize('mls.cannotFindPython.error', "Cannot find Python executable '{0}'. Please make sure Python is installed and configured correctly", path); }
