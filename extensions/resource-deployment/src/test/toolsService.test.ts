@@ -8,6 +8,7 @@ import assert = require('assert');
 import * as TypeMoq from 'typemoq';
 import { ToolsService } from '../services/toolsService';
 import { ToolType } from '../interfaces';
+import { isNumber } from 'util';
 import { IPlatformService } from '../services/platformService';
 
 suite('Tools Service Tests', function (): void {
@@ -26,7 +27,7 @@ suite('Tools Service Tests', function (): void {
 
 		// Make sure all the enum values are covered
 		for (const type in ToolType) {
-			if (typeof (ToolType[type]) === 'number') {
+			if (isNumber(ToolType[type])) {
 				if (tools.findIndex(element => element.type === parseInt(ToolType[type])) === -1) {
 					missingTypes.push(type);
 				}
