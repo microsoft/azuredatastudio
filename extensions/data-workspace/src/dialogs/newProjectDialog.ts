@@ -12,6 +12,7 @@ import * as constants from '../common/constants';
 import { IProjectType } from 'dataworkspace';
 import { directoryExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
+import { defaultProjectSaveLocation } from '../common/projectLocationHelper';
 
 class NewProjectDialogModel {
 	projectTypeId: string = '';
@@ -127,7 +128,8 @@ export class NewProjectDialog extends DialogBase {
 			let folderUris = await vscode.window.showOpenDialog({
 				canSelectFiles: false,
 				canSelectFolders: true,
-				canSelectMany: false
+				canSelectMany: false,
+				defaultUri: defaultProjectSaveLocation()
 			});
 			if (!folderUris || folderUris.length === 0) {
 				return;

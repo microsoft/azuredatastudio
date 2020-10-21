@@ -41,3 +41,7 @@ export const LocalFileSystem = localize('dataworkspace.localFileSystem', "Local 
 export const LocationSelectorTitle = localize('dataworkspace.LocationSelectorTitle', "Location");
 export const ProjectFileTitle = localize('dataworkspace.projectFileTitle', "Project file");
 export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Select project file");
+
+// Workspace settings for saving new database projects
+export const ProjectConfigurationKey = 'projects';
+export const ProjectSaveLocationKey = 'defaultProjectSaveLocation';

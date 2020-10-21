@@ -8,5 +8,6 @@
 	"remove-project-command": "Remove Project",
 	"projects-view-no-workspace-content": "[Create new](command:projects.newProject)\n[Open existing](command:projects.openProject)\n",
 	"projects-view-no-project-content": "No projects found in current workspace.\n[Open Project…](command:projects.openProject)\n[New Project…](command:projects.newProject)\n",
-	"open-project-command": "Open Project"
+	"open-project-command": "Open Project",
+	"projects.defaultProjectSaveLocation": "Full path to folder where new projects are saved by default."
 }

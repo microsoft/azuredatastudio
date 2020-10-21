@@ -30,6 +30,10 @@
             "type": "array",
             "default": [],
             "description": ""
+          },
+          "projects.defaultProjectSaveLocation": {
+            "type": "string",
+            "description": "%projects.defaultProjectSaveLocation%"
           }
         }
       }
