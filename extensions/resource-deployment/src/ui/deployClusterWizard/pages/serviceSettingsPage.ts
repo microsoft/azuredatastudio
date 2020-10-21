@@ -53,6 +53,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		super(localize('deployCluster.ServiceSettingsPageTitle', "Service settings"), '', wizard);
 	}
 	public initialize(): void {
+		const self = this;
 		const scaleSectionInfo: SectionInfo = {
 			title: localize('deployCluster.scaleSectionTitle', "Scale settings"),
 			labelWidth: labelWidth,
@@ -122,10 +123,10 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					inputComponents: this.wizard.inputComponents,
 					sectionInfo: sectionInfo,
 					onNewDisposableCreated: (disposable: vscode.Disposable): void => {
-						this.wizard.registerDisposable(disposable);
+						self.wizard.registerDisposable(disposable);
 					},
 					onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
-						this.onNewInputComponentCreated(name, inputComponentInfo);
+						self.onNewInputComponentCreated(name, inputComponentInfo);
 					},
 					onNewValidatorCreated: (validator: Validator): void => {
 					},

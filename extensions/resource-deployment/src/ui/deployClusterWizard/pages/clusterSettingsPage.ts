@@ -235,8 +235,8 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.wizard.registerDisposable(disposable);
 				},
 				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
-					this.inputComponents[name] = inputComponentInfo;
-					this.wizard.inputComponents[name] = inputComponentInfo;
+					self.inputComponents[name] = inputComponentInfo;
+					self.wizard.inputComponents[name] = inputComponentInfo;
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -252,8 +252,8 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.wizard.registerDisposable(disposable);
 				},
 				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
-					this.inputComponents[name] = inputComponentInfo;
-					this.wizard.inputComponents[name] = inputComponentInfo;
+					self.inputComponents[name] = inputComponentInfo;
+					self.wizard.inputComponents[name] = inputComponentInfo;
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
