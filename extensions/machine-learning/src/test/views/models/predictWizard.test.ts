@@ -18,7 +18,6 @@ import { Workspace } from '@azure/arm-machinelearningservices/esm/models';
 import { ViewBase } from '../../../views/viewBase';
 import { PredictWizard } from '../../../views/models/prediction/predictWizard';
 import { DatabaseTable, TableColumn } from '../../../prediction/interfaces';
-import { tableName } from '../../../common/constants';
 
 describe('Predict Wizard', () => {
 	it('Should create view components successfully ', async function (): Promise<void> {
