@@ -38,7 +38,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _cellType: nb.CellType;
 	private _source: string | string[];
 	private _language: string;
-	private _connectionName: string | undefined;
+	private _savedConnectionName: string | undefined;
 	private _cellGuid: string;
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
@@ -266,11 +266,7 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public get connectionName(): string | undefined {
-		return this._connectionName;
-	}
-
-	public set connectionName(name: string) {
-		this._connectionName = name;
+		return this._savedConnectionName;
 	}
 
 	public get cellGuid(): string {
@@ -724,7 +720,7 @@ export class CellModel extends Disposable implements ICellModel {
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount ? this.executionCount : null;
 			if (this._configurationService.getValue('notebook.saveConnectionName')) {
-				metadata.connectionName = this._connectionName;
+				metadata.connectionName = this._savedConnectionName;
 			}
 		}
 		return cellJson as nb.ICellContents;
@@ -747,7 +743,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
-		this.connectionName = this._metadata.connectionName;
+		this._savedConnectionName = this._metadata.connectionName;
 		if (cell.outputs) {
 			for (let output of cell.outputs) {
 				// For now, we're assuming it's OK to save these as-is with no modification
