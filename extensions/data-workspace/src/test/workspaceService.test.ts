@@ -13,7 +13,6 @@ import * as TypeMoq from 'typemoq';
 import { WorkspaceService } from '../services/workspaceService';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import { createProjectProvider } from './projectProviderRegistry.test';
-import { workspace } from 'azdata';
 
 const DefaultWorkspaceFilePath = '/test/folder/ws.code-workspace';
 

@@ -10,7 +10,6 @@ import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
 import { fileExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
-import { defaultProjectSaveLocation } from '../common/projectLocationHelper';
 
 export class OpenProjectDialog extends DialogBase {
 	private _projectFile: string = '';
