@@ -44,6 +44,8 @@ import * as constants from './constants';
 import { AzureResourceGroupService } from './azureResource/providers/resourceGroup/resourceGroupService';
 import { Logger } from './utils/Logger';
 import { TokenCredentials } from '@azure/ms-rest-js';
+import { FlatAzureResourceTreeProvider } from './azureResource/tree/flatTreeProvider';
+
 let extensionContext: vscode.ExtensionContext;
 
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
@@ -83,7 +85,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
-	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', azureResourceTree));
+	const flatAzureResourceTree = new FlatAzureResourceTreeProvider(appContext);
+	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', flatAzureResourceTree));
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
 	registerAzureResourceCommands(appContext, azureResourceTree);
