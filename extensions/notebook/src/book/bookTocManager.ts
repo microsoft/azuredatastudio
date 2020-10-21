@@ -38,26 +38,29 @@ export class BookTocManager implements IBookTocManager {
 					sections: []
 				};
 				let files = await fs.promises.readdir(path.join(directory, file));
-				toc[0].sections.push(jupyterSection);
+				toc.push(jupyterSection);
 				await this.getAllFiles(toc, path.join(directory, file), files);
 			} else if (allowedFileExtensions.includes(path.extname(file))) {
 				const addFile: IJupyterBookSectionV2 = {
 					title: path.parse(file).name,
 					file: path.join(path.basename(directory), path.parse(file).name)
 				};
-				if (toc[0].sections.length > 0) {
-					let indexToc = toc[0].sections.findIndex(parent => parent.title === path.dirname(addFile.file));
+				if (toc.length > 0) {
+					let indexToc = toc.findIndex(parent => parent.title === path.dirname(addFile.file));
 					if (indexToc !== -1) {
 						//TODO : Add other types such as Intro, Introduction, start Init etc etc
 						if (file === 'readme.md') {
-							toc[0].sections[indexToc].file = addFile.file;
+							toc[indexToc].file = addFile.file;
 						} else {
-							toc[0].sections[indexToc].sections.push(addFile);
+							toc[indexToc].sections.push(addFile);
 						}
 					}
 				} else if (path.parse(file).ext === '.md') {
-					toc[0].file = path.parse(file).name;
-					toc[0].title = 'Welcome';
+					let welcome: IJupyterBookSectionV2 = {
+						title: 'Welcome',
+						file: path.parse(file).name
+					};
+					toc.push(welcome);
 				}
 			}
 		}));
@@ -66,7 +69,7 @@ export class BookTocManager implements IBookTocManager {
 
 	async createToc(bookContentPath: string, contentFolder: string): Promise<void> {
 		let filesinDir = await fs.promises.readdir(contentFolder);
-		let toc: IJupyterBookSectionV2[] = await this.getAllFiles([{ sections: [] }], contentFolder, filesinDir);
+		let toc: IJupyterBookSectionV2[] = await this.getAllFiles([], contentFolder, filesinDir);
 		await fs.promises.writeFile(path.join(bookContentPath, '_toc.yml'), yaml.safeDump(toc, { lineWidth: Infinity }));
 	}
 
