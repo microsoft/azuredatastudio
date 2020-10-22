@@ -494,6 +494,7 @@ export interface ICellModel {
 	gridDataConversionComplete: Promise<void>;
 	addGridDataConversionPromise(complete: Promise<void>): void;
 	updateOutputData(batchId: number, id: number, data: any): void;
+	metadata: { language?: string; tags?: string[]; cellGuid?: string; };
 }
 
 export interface IModelFactory {

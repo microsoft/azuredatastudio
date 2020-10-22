@@ -34,6 +34,7 @@ const ads_execute_command = 'ads_execute_command';
 
 export class CellModel extends Disposable implements ICellModel {
 	public id: string;
+	public metadata: { language?: string; tags?: string[]; cellGuid?: string; };
 
 	private _cellType: nb.CellType;
 	private _source: string | string[];
@@ -56,7 +57,6 @@ export class CellModel extends Disposable implements ICellModel {
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; };
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
@@ -137,20 +137,20 @@ export class CellModel extends Disposable implements ICellModel {
 		this._isCollapsed = value;
 
 		let tagIndex = -1;
-		if (this._metadata.tags) {
-			tagIndex = this._metadata.tags.findIndex(tag => tag === HideInputTag);
+		if (this.metadata.tags) {
+			tagIndex = this.metadata.tags.findIndex(tag => tag === HideInputTag);
 		}
 
 		if (this._isCollapsed) {
 			if (tagIndex === -1) {
-				if (!this._metadata.tags) {
-					this._metadata.tags = [];
+				if (!this.metadata.tags) {
+					this.metadata.tags = [];
 				}
-				this._metadata.tags.push(HideInputTag);
+				this.metadata.tags.push(HideInputTag);
 			}
 		} else {
 			if (tagIndex > -1) {
-				this._metadata.tags.splice(tagIndex, 1);
+				this.metadata.tags.splice(tagIndex, 1);
 			}
 		}
 
@@ -358,21 +358,28 @@ export class CellModel extends Disposable implements ICellModel {
 		let stateChanged = this._isParameter !== value;
 		this._isParameter = value;
 
+		// There can only be one tagged parameters cell in the Notebook
+		for (let cell of this.notebookModel.cells) {
+			if (cell.metadata.tags?.includes('parameters')) {
+				this._isParameter = false;
+			}
+		}
+
 		let tagIndex = -1;
-		if (this._metadata.tags) {
-			tagIndex = this._metadata.tags.findIndex(tag => tag === ParametersTag);
+		if (this.metadata.tags) {
+			tagIndex = this.metadata.tags.findIndex(tag => tag === ParametersTag);
 		}
 
 		if (this._isParameter) {
 			if (tagIndex === -1) {
-				if (!this._metadata.tags) {
-					this._metadata.tags = [];
+				if (!this.metadata.tags) {
+					this.metadata.tags = [];
 				}
-				this._metadata.tags.push(ParametersTag);
+				this.metadata.tags.push(ParametersTag);
 			}
 		} else {
 			if (tagIndex > -1) {
-				this._metadata.tags.splice(tagIndex, 1);
+				this.metadata.tags.splice(tagIndex, 1);
 			}
 		}
 
@@ -397,20 +404,20 @@ export class CellModel extends Disposable implements ICellModel {
 		this._isInjectedParameter = value;
 
 		let tagIndex = -1;
-		if (this._metadata.tags) {
-			tagIndex = this._metadata.tags.findIndex(tag => tag === InjectedParametersTag);
+		if (this.metadata.tags) {
+			tagIndex = this.metadata.tags.findIndex(tag => tag === InjectedParametersTag);
 		}
 
 		if (this._isInjectedParameter) {
 			if (tagIndex === -1) {
-				if (!this._metadata.tags) {
-					this._metadata.tags = [];
+				if (!this.metadata.tags) {
+					this.metadata.tags = [];
 				}
-				this._metadata.tags.push(InjectedParametersTag);
+				this.metadata.tags.push(InjectedParametersTag);
 			}
 		} else {
 			if (tagIndex > -1) {
-				this._metadata.tags.splice(tagIndex, 1);
+				this.metadata.tags.splice(tagIndex, 1);
 			}
 		}
 	}
@@ -777,7 +784,7 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public toJSON(): nb.ICellContents {
-		let metadata = this._metadata || {};
+		let metadata = this.metadata || {};
 		let cellJson: Partial<nb.ICellContents> = {
 			cell_type: this._cellType,
 			source: this._source,
@@ -800,11 +807,13 @@ export class CellModel extends Disposable implements ICellModel {
 		this._cellType = cell.cell_type;
 		this.executionCount = cell.execution_count;
 		this._source = this.getMultilineSource(cell.source);
-		this._metadata = cell.metadata || {};
+		this.metadata = cell.metadata || {};
 
-		if (this._metadata.tags && this._metadata.tags.some(x => x === HideInputTag || x === ParametersTag || x === InjectedParametersTag) && this._cellType === CellTypes.Code) {
+		if (this.metadata.tags && this.metadata.tags.some(x => x === HideInputTag) && this._cellType === CellTypes.Code) {
 			this._isCollapsed = true;
+		} else if (this.metadata.tags && this.metadata.tags.some(x => x === ParametersTag) && this._cellType === CellTypes.Code) {
 			this._isParameter = true;
+		} else if (this.metadata.tags && this.metadata.tags.some(x => x === InjectedParametersTag) && this._cellType === CellTypes.Code) {
 			this._isInjectedParameter = true;
 		} else {
 			this._isCollapsed = false;
