@@ -39,7 +39,7 @@ declare module 'azureResource' {
 			name: string;
 			id: string;
 			subscriptionId: string;
-			resourceGroup: string;
+			resourceGroup?: string;
 			tenant?: string;
 		}
 
