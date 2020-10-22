@@ -418,7 +418,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private _lastRowCountMap: Map<string, number> = new Map<string, number>();
 	// Map containing data resource and html table to be saved in notebook
 	private _dataToSaveMap: Map<string, any> = new Map<string, any>();
-	// Map containing row data returned from STS and used for table rendering
+	// Map containing row data returned from SQL Tools Service and used for table rendering
 	private _rowsMap: Map<string, any> = new Map<string, any>();
 
 	constructor(
