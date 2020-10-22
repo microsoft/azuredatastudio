@@ -343,6 +343,7 @@ class WelcomePage extends Disposable {
 			const initializeSetupWizard = () => {
 				context.enableInitialSetupWizard();
 			};
+			// The timer is a UX call to give the user the feeling that they are being prompted
 			setTimeout(initializeSetupWizard, 1000);
 		}
 		showOnStartup.addEventListener('click', e => {
