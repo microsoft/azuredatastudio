@@ -87,7 +87,7 @@ export async function executeCommand(command: string, args: string[], additional
 export async function executeSudoCommand(command: string): Promise<ProcessOutput> {
 	return new Promise((resolve, reject) => {
 		Logger.log(loc.executingCommand(`sudo ${command}`, []));
-		sudo.exec(command, { name: vscode.env.appName }, (error, stdout, stderr) => {
+		sudo.exec(command, { name: 'Azure Data Studio' }, (error, stdout, stderr) => {
 			stdout = stdout?.toString() ?? '';
 			stderr = stderr?.toString() ?? '';
 			if (stdout) {
