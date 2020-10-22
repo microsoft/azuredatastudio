@@ -874,7 +874,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			return;
 		}
 
-		if (isMultiConnection && this._activeConnection) {
+		if (isMultiConnection) {
 			this._cells.forEach(c => {
 				if (c.cellType === CellTypes.Code) {
 					c.activeConnection = this._activeConnection;

@@ -305,6 +305,7 @@ export interface INotebookModel {
 	 * or undefined if none.
 	 */
 	readonly savedConnectionName: string | undefined;
+
 	/**
 	 * Event fired on first initialization of the cells and
 	 * on subsequent change events
@@ -330,6 +331,11 @@ export interface INotebookModel {
 	 * The trusted mode of the Notebook
 	 */
 	trustedMode: boolean;
+
+	/**
+	 * The connection mode of the notebook
+	 */
+	multiConnectionMode: boolean;
 
 	/**
 	 * Current notebook provider id

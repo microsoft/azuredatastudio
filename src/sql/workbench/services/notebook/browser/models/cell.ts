@@ -277,6 +277,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set activeConnection(connection: ConnectionProfile) {
 		this._activeConnection = connection;
+		this._savedConnectionName = connection.connectionName;
 	}
 
 	public get cellGuid(): string {

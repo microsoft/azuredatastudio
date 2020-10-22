@@ -208,6 +208,50 @@ export class TrustedAction extends ToggleableAction {
 	}
 }
 
+export class MultiConnectionAction extends ToggleableAction {
+	// Constants
+	private static readonly multiConnectionLabel = localize('multiConnectionLabel', "Multiple Connections");
+	private static readonly singleConnectionLabel = localize('singleConnectionLabel', "Single Conection");
+	// TODO: Update icons
+	private static readonly baseClass = 'notebook-button';
+	private static readonly previewTrustedCssClass = 'icon-shield';
+	private static readonly trustedCssClass = 'icon-trusted';
+	private static readonly previewNotTrustedCssClass = 'icon-shield-x';
+	private static readonly notTrustedCssClass = 'icon-notTrusted';
+	private static readonly maskedIconClass = 'masked-icon';
+
+
+	constructor(
+		id: string, toggleTooltip: boolean,
+		@INotebookService private _notebookService: INotebookService
+	) {
+		super(id, {
+			baseClass: MultiConnectionAction.baseClass,
+			toggleOnLabel: MultiConnectionAction.multiConnectionLabel,
+			toggleOnClass: toggleTooltip === true ? MultiConnectionAction.previewTrustedCssClass : MultiConnectionAction.trustedCssClass,
+			toggleOffLabel: MultiConnectionAction.singleConnectionLabel,
+			toggleOffClass: toggleTooltip === true ? MultiConnectionAction.previewNotTrustedCssClass : MultiConnectionAction.notTrustedCssClass,
+			maskedIconClass: MultiConnectionAction.maskedIconClass,
+			shouldToggleTooltip: toggleTooltip,
+			isOn: false
+		});
+	}
+
+	public get multiConnection(): boolean {
+		return this.state.isOn;
+	}
+	public set multiConnection(value: boolean) {
+		this.toggle(value);
+	}
+
+	public async run(context: URI): Promise<boolean> {
+		const editor = this._notebookService.findNotebookEditor(context);
+		this.multiConnection = !this.multiConnection;
+		editor.model.multiConnectionMode = this.multiConnection;
+		return true;
+	}
+}
+
 // Action to run all code cells in a notebook.
 export class RunAllCellsAction extends Action {
 	constructor(
