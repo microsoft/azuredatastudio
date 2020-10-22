@@ -24,7 +24,7 @@ export class DataWorkspaceExtension implements IExtension {
 		vscode.commands.executeCommand('dataworkspace.views.main.focus');
 	}
 
-	get defaultProjectSaveLocation(): vscode.Uri {
+	get defaultProjectSaveLocation(): vscode.Uri | undefined {
 		return defaultProjectSaveLocation();
 	}
 }

@@ -5,14 +5,13 @@
 
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import * as os from 'os';
 import * as constants from '../common/constants';
 
 /**
  * Returns the default location to save a new database project
  */
-export function defaultProjectSaveLocation(): vscode.Uri {
-	return projectSaveLocationSettingIsValid() ? vscode.Uri.file(projectSaveLocationSetting()) : vscode.Uri.file(os.homedir());
+export function defaultProjectSaveLocation(): vscode.Uri | undefined {
+	return projectSaveLocationSettingIsValid() ? vscode.Uri.file(projectSaveLocationSetting()) : undefined;
 }
 
 /**

@@ -32,7 +32,7 @@ declare module 'dataworkspace' {
 		/**
 		 * Returns the default location to save projects
 		 */
-		defaultProjectSaveLocation: vscode.Uri;
+		defaultProjectSaveLocation: vscode.Uri | undefined;
 	}
 
 	/**
