@@ -278,9 +278,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public set multiConnectionMode(isMultiConnection: boolean) {
-		this.toggleMultiConnectionMode(isMultiConnection);
+		this.updateCellConnections(isMultiConnection);
 		this._multiConnectionMode = isMultiConnection;
-
 	}
 
 	/**
@@ -869,27 +868,26 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return spec;
 	}
 
-	public toggleMultiConnectionMode(isMultiConnection: boolean): void {
+	private updateCellConnections(isMultiConnection: boolean): void {
 		// No change
 		if (isMultiConnection === this._multiConnectionMode) {
 			return;
 		}
-		// Toggle on multi-connection mode
-		if (this._activeConnection) {
-			if (this._cells) {
-				this._cells.forEach(c => {
-					if (c.cellType === CellTypes.Code) {
-						// c.activeConnection = this._activeConnection;
-					}
-				});
-			}
-			this._activeConnection = undefined;
-		}
-		this._contentChangedEmitter.fire({
-			// changeType: NotebookChangeType.MultiConnectionChanged;
-		});
 
-		// Toggle off multi-connection mode
+		if (isMultiConnection && this._activeConnection) {
+			this._cells.forEach(c => {
+				if (c.cellType === CellTypes.Code) {
+					c.activeConnection = this._activeConnection;
+				}
+			});
+			this._activeConnection = undefined;
+		} else {
+			this._cells.forEach(c => {
+				if (c.cellType === CellTypes.Code) {
+					c.activeConnection = undefined;
+				}
+			});
+		}
 	}
 
 	public async changeContext(title: string, newConnection?: ConnectionProfile, hideErrorMessage?: boolean): Promise<void> {

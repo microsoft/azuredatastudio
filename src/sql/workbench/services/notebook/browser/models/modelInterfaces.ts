@@ -496,6 +496,7 @@ export interface ICellModel {
 	gridDataConversionComplete: Promise<void>;
 	addGridDataConversionPromise(complete: Promise<void>): void;
 	updateOutputData(batchId: number, id: number, data: any): void;
+	activeConnection: ConnectionProfile | undefined;
 }
 
 export interface IModelFactory {

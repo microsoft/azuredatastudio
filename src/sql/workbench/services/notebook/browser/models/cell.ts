@@ -28,6 +28,7 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -69,6 +70,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _cellSourceChanged: boolean = false;
 	private _gridDataConversionComplete: Promise<void>[] = [];
 	private _defaultToWYSIWYG: boolean;
+	private _activeConnection: ConnectionProfile | undefined;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -267,6 +269,14 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get connectionName(): string | undefined {
 		return this._savedConnectionName;
+	}
+
+	public get activeConnection(): ConnectionProfile | undefined {
+		return this._activeConnection;
+	}
+
+	public set activeConnection(connection: ConnectionProfile) {
+		this._activeConnection = connection;
 	}
 
 	public get cellGuid(): string {
