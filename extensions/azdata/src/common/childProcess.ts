@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import * as sudo from 'sudo-prompt';
 import * as loc from '../localizedConstants';
