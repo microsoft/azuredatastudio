@@ -79,6 +79,26 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Yes<u>Hello test</u>', 'Basic underline span no space failed');
 		htmlString = '<h1>Yes<span style="text-decoration-line:underline; font-style:italic; font-weight:bold; background-color: yellow">Hello test</span></h1>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '# Yes<u>_**<mark>Hello test</mark>**_</u>', 'Compound elements span failed');
+		htmlString = '<span style="color: orangered">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Span with color style should not be altered');
+		htmlString = '<span style="font-size: 10.0pt">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Span with font size style should not be altered');
+		htmlString = '<span style="font-size: 10.0pt">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Span with font size style should not be altered');
+		htmlString = '<span style="background-color: green">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Span with background color (non yellow) style should not be altered');
+		htmlString = '<span style="background: green">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Span with background (non yellow) style should not be altered');
+		htmlString = '<span style="line-height: 12.0pt">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Span with line height style should not be altered');
+		htmlString = '<span style="margin-left: 12.0pt">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Span with margin left style should not be altered');
+		htmlString = '<span style="margin-bottom: 12.0pt">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Span with margin bottom style should not be altered');
+		htmlString = '<span style="text-align: center">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Span with text align style should not be altered');
+		htmlString = '<span style="list-style-type: circle">Hello test</span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Hello test', 'Span with style that is not included in allowlist should be altered');
 	});
 
 	test('Should transform <img> tag', () => {
