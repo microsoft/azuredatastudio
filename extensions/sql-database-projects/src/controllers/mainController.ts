@@ -6,14 +6,10 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as templates from '../templates/templates';
-import * as constants from '../common/constants';
 import * as path from 'path';
-import * as newProjectTool from '../tools/newProjectTool';
 
-import { getErrorMessage } from '../common/utils';
 import { ProjectsController } from './projectController';
 import { NetCoreTool } from '../tools/netcoreTool';
-import { Project } from '../models/project';
 import { IconPathHelper } from '../common/iconHelper';
 import { IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
@@ -77,55 +73,6 @@ export default class MainController implements vscode.Disposable {
 
 		// ensure .net core is installed
 		await this.netcoreTool.findOrInstallNetCore();
-
-		// set the user settings around saving new projects to default value
-		await newProjectTool.initializeSaveLocationSetting();
-	}
-
-	/**
-	 * Creates a new SQL database project from a template, prompting the user for a name and location
-	 */
-	public async createNewProject(): Promise<Project | undefined> {
-		try {
-			let newProjName = await vscode.window.showInputBox({
-				prompt: constants.newDatabaseProjectName,
-				value: newProjectTool.defaultProjectNameNewProj()
-			});
-
-			newProjName = newProjName?.trim();
-
-			if (!newProjName) {
-				// TODO: is this case considered an intentional cancellation (shouldn't warn) or an error case (should warn)?
-				vscode.window.showErrorMessage(constants.projectNameRequired);
-				return undefined;
-			}
-
-			let selectionResult = await vscode.window.showOpenDialog({
-				canSelectFiles: false,
-				canSelectFolders: true,
-				canSelectMany: false,
-				defaultUri: newProjectTool.defaultProjectSaveLocation()
-			});
-
-			if (!selectionResult) {
-				vscode.window.showErrorMessage(constants.projectLocationRequired);
-				return undefined;
-			}
-
-			// TODO: what if the selected folder is outside the workspace?
-
-			const newProjFolderUri = (selectionResult as vscode.Uri[])[0];
-			const newProjFilePath = await this.projectsController.createNewProject(<string>newProjName, newProjFolderUri, true);
-			const proj = await Project.openProject(vscode.Uri.file(newProjFilePath).fsPath);
-
-			newProjectTool.updateSaveLocationSetting();
-
-			return proj;
-		}
-		catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
-			return undefined;
-		}
 	}
 
 	public dispose(): void {

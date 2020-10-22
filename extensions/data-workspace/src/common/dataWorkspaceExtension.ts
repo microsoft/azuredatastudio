@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import { IExtension } from 'dataworkspace';
 import { WorkspaceService } from '../services/workspaceService';
+import { defaultProjectSaveLocation } from './projectLocationHelper';
 
 export class DataWorkspaceExtension implements IExtension {
 	constructor(private workspaceService: WorkspaceService) {
@@ -21,5 +22,9 @@ export class DataWorkspaceExtension implements IExtension {
 
 	showProjectsView(): void {
 		vscode.commands.executeCommand('dataworkspace.views.main.focus');
+	}
+
+	get defaultProjectSaveLocation(): vscode.Uri | undefined {
+		return defaultProjectSaveLocation();
 	}
 }

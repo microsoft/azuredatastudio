@@ -518,8 +518,6 @@ export class ProjectsController {
 			model.extractTarget = await this.getExtractTarget();
 			model.version = '1.0.0.0';
 
-			newProjectTool.updateSaveLocationSetting();
-
 			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
 			model.filePath = path.dirname(newProjFilePath);
 

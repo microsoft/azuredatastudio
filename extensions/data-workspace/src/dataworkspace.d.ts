@@ -28,6 +28,11 @@ declare module 'dataworkspace' {
 		 * Change focus to Projects view
 		 */
 		showProjectsView(): void;
+
+		/**
+		 * Returns the default location to save projects
+		 */
+		defaultProjectSaveLocation: vscode.Uri | undefined;
 	}
 
 	/**

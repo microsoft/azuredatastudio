@@ -433,6 +433,7 @@ describe('ProjectsController', function (): void {
 			for (const name of ['', '    ', undefined]) {
 				const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
 				dataWorkspaceMock.setup(x => x.getProjectsInWorkspace()).returns(() => []);
+				dataWorkspaceMock.setup(x => x.defaultProjectSaveLocation).returns(() => vscode.Uri.file('/test/folder'));
 				sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object});
 				sinon.stub(vscode.workspace, 'workspaceFile').value(vscode.Uri.file('/test/folder/ws.code-workspace'));
 				sinon.stub(vscode.window, 'showInputBox').resolves(name);
@@ -449,6 +450,7 @@ describe('ProjectsController', function (): void {
 		it('Should show error when no target information provided', async function (): Promise<void> {
 			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
 			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace()).returns(() => []);
+			dataWorkspaceMock.setup(x => x.defaultProjectSaveLocation).returns(() => vscode.Uri.file('/test/folder'));
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object});
 			sinon.stub(vscode.workspace, 'workspaceFile').value(vscode.Uri.file('/test/folder/ws.code-workspace'));
 			sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
@@ -465,6 +467,7 @@ describe('ProjectsController', function (): void {
 		it('Should show error when no location provided with ExtractTarget = File', async function (): Promise<void> {
 			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
 			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace()).returns(() => []);
+			dataWorkspaceMock.setup(x => x.defaultProjectSaveLocation).returns(() => vscode.Uri.file('/test/folder'));
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object});
 			sinon.stub(vscode.workspace, 'workspaceFile').value(vscode.Uri.file('/test/folder/ws.code-workspace'));
 			sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
@@ -481,6 +484,7 @@ describe('ProjectsController', function (): void {
 		it('Should show error when no location provided with ExtractTarget = SchemaObjectType', async function (): Promise<void> {
 			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
 			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace()).returns(() => []);
+			dataWorkspaceMock.setup(x => x.defaultProjectSaveLocation).returns(() => vscode.Uri.file('/test/folder'));
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object});
 			sinon.stub(vscode.workspace, 'workspaceFile').value(vscode.Uri.file('/test/folder/ws.code-workspace'));
 			sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
@@ -499,6 +503,7 @@ describe('ProjectsController', function (): void {
 			let folderPath = await testUtils.generateTestFolderPath();
 
 			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
+			dataWorkspaceMock.setup(x => x.defaultProjectSaveLocation).returns(() => vscode.Uri.file('/test/folder'));
 			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace()).returns(() => []);
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object});
 			sinon.stub(vscode.workspace, 'workspaceFile').value(vscode.Uri.file('/test/folder/ws.code-workspace'));

@@ -55,10 +55,6 @@ export const objectType = localize('objectType', "Object Type");
 export const schema = localize('schema', "Schema");
 export const schemaObjectType = localize('schemaObjectType', "Schema/Object Type");
 export const defaultProjectNameStarter = localize('defaultProjectNameStarter', "DatabaseProject");
-export const newDefaultProjectSaveLocation = localize('newDefaultProjectSaveLocation', "Would you like to update the default location to save new database projects?");
-export const invalidDefaultProjectSaveLocation = localize('invalidDefaultProjectSaveLocation', "Default location to save new database projects is invalid. Would you like to update it?");
-export const openWorkspaceSettings = localize('openWorkspaceSettings', "Yes, open Settings");
-export const doNotPromptAgain = localize('doNotPromptAgain', "Don't ask again");
 export const reloadProject = localize('reloadProject', "Would you like to reload your database project?");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
@@ -255,11 +251,6 @@ export const authenticationSetting = 'Authentication';
 export const activeDirectoryInteractive = 'active directory interactive';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
-
-// Workspace settings for saving new database projects
-export const dbProjectConfigurationKey = 'sqlDatabaseProjects';
-export const projectSaveLocationKey = 'defaultProjectSaveLocation';
-export const showUpdatePromptKey = 'showUpdateSaveLocationPrompt';
 
 // Authentication types
 export const integratedAuth = 'Integrated';
