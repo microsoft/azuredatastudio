@@ -3,7 +3,7 @@
 		"requiredPythonPackages": [
 			{
 				"name": "sqlmlutils",
-				"version": "1.0.1"
+				"version": "1.0.3"
 			}
 		],
 		"requiredRPackages": [
