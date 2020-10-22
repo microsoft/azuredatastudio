@@ -79,6 +79,10 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Yes<u>Hello test</u>', 'Basic underline span no space failed');
 		htmlString = '<h1>Yes<span style="text-decoration-line:underline; font-style:italic; font-weight:bold; background-color: yellow">Hello test</span></h1>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '# Yes<u>_**<mark>Hello test</mark>**_</u>', 'Compound elements span failed');
+		htmlString = '<span style="background-color: yellow;"><b>Hello test</b></span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark>**Hello test**</mark>', 'Span with inner html not parsed correctly');
+		htmlString = '<b><span style="background-color: yellow;">Hello test</span></b>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**<mark>Hello test</mark>**', 'Span inside bold tag parsed correctly');
 	});
 
 	test('Should transform <img> tag', () => {
@@ -117,5 +121,47 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '[msft](https://www.microsoft.com/images/msft.png)', 'Basic https link test failed');
 		htmlString = '<a href="http://www.microsoft.com/images/msft.png">msft</a>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '[msft](http://www.microsoft.com/images/msft.png)', 'Basic http link test failed');
+	});
+	test('Should transform <b> and <strong> tags', () => {
+		htmlString = '<b>test string</b>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**test string**', 'Basic bold test failed');
+		htmlString = '<b style="background-color: yellow">test string</b>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**<mark>test string</mark>**', 'Highlight bold test failed');
+		htmlString = '<b style="background-color: yellow"><i>test string</i></b>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**<mark>_test string_</mark>**', 'Highlight bold italic test failed');
+		htmlString = '<b style="blah: nothing">test string</b>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**test string**', 'Incorrect style bold test failed');
+		htmlString = '<strong>test string</strong>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**test string**', 'Basic strong test failed');
+		htmlString = '<strong style="background-color: yellow">test string</strong>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**<mark>test string</mark>**', 'Highlight strong test failed');
+		htmlString = '<strong style="blah: nothing">test string</strong>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**test string**', 'Incorrect style strong test failed');
+	});
+	test('Should transform <i> and <em> tags', () => {
+		htmlString = '<i>test string</i>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_test string_', 'Basic italic test failed');
+		htmlString = '<i style="background-color: yellow">test string</i>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_<mark>test string</mark>_', 'Highlight italic test failed');
+		htmlString = '<i style="background-color: yellow"><b>test string</b></i>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_<mark>**test string**</mark>_', 'Highlight italic bold test failed');
+		htmlString = '<i style="blah: nothing">test string</i>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_test string_', 'Incorrect style italic test failed');
+		htmlString = '<em>test string</em>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_test string_', 'Basic em test failed');
+		htmlString = '<em style="background-color: yellow">test string</em>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_<mark>test string</mark>_', 'Highlight em test failed');
+		htmlString = '<em style="blah: nothing">test string</em>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_test string_', 'Incorrect style em test failed');
+		htmlString = '<em style="background-color: yellow"><b>test string</b></em>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_<mark>**test string**</mark>_', 'Highlight em bold test failed');
+	});
+	test('Should transform <u> when necessary', () => {
+		htmlString = '<u>test string</u>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Basic underline test failed');
+		htmlString = '<u style="background-color: yellow">test string</u>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '<u><mark>test string</mark></u>', 'Highlight underline test failed');
+		htmlString = '<b><u style="background-color: yellow">test string</u></b>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**<u><mark>test string</mark></u>**', 'Underline as inner element failed');
 	});
 });

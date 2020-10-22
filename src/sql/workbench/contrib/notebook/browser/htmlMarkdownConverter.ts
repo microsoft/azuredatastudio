@@ -21,12 +21,47 @@ export class HTMLMarkdownConverter {
 	}
 
 	private setTurndownOptions() {
-		this.turndownService.keep(['u', 'mark']);
 		this.turndownService.use(turndownPluginGfm.gfm);
 		this.turndownService.addRule('pre', {
 			filter: 'pre',
 			replacement: function (content, node) {
 				return '\n```\n' + node.textContent + '\n```\n';
+			}
+		});
+		this.turndownService.addRule('mark', {
+			filter: 'mark',
+			replacement: (content, node) => {
+				return '<mark>' + content + '</mark>';
+			}
+		});
+		this.turndownService.addRule('strong', {
+			filter: ['strong', 'b'],
+			replacement: function (content, node, options) {
+				if (!content.trim()) {
+					return '';
+				}
+				content = addHighlightIfYellowBgExists(node, content);
+				return options.strongDelimiter + content + options.strongDelimiter;
+			}
+		});
+		this.turndownService.addRule('emphasis', {
+			filter: ['em', 'i'],
+			replacement: function (content, node, options) {
+				if (!content.trim()) {
+					return '';
+				}
+				content = addHighlightIfYellowBgExists(node, content);
+				return options.emDelimiter + content + options.emDelimiter;
+			}
+		});
+		this.turndownService.addRule('underline', {
+			filter: ['u'],
+			replacement: (content, node, options) => {
+				if (!content.trim()) {
+					return '';
+				}
+				content = addHighlightIfYellowBgExists(node, content);
+				return '<u>' + content + '</u>';
 			}
 		});
 		this.turndownService.addRule('caption', {
@@ -38,7 +73,7 @@ export class HTMLMarkdownConverter {
 		});
 		this.turndownService.addRule('span', {
 			filter: 'span',
-			replacement: function (content, node) {
+			replacement: (content, node) => {
 				let beginString = '';
 				let endString = '';
 				// TODO: handle other background colors and more styles
@@ -58,7 +93,7 @@ export class HTMLMarkdownConverter {
 					beginString = '<u>' + beginString;
 					endString += '</u>';
 				}
-				return beginString + node.textContent + endString;
+				return beginString + content + endString;
 			}
 		});
 		this.turndownService.addRule('img', {
@@ -107,4 +142,11 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 		}
 	}
 	return '';
+}
+
+export function addHighlightIfYellowBgExists(node, content: string): string {
+	if (node?.style?.backgroundColor === 'yellow') {
+		return '<mark>' + content + '</mark>';
+	}
+	return content;
 }

@@ -65,7 +65,20 @@ export class TransformMarkdownAction extends Action {
 				document.execCommand('formatBlock', false, 'H3');
 				break;
 			case MarkdownButtonType.HIGHLIGHT:
-				document.execCommand('hiliteColor', false, 'Yellow');
+				let selectionFocusNode = document.getSelection()?.focusNode;
+				// Find if element is wrapped in <mark></mark>
+				while (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() && selectionFocusNode?.parentNode?.nodeName?.toLowerCase() !== 'mark') {
+					selectionFocusNode = selectionFocusNode.parentNode;
+				}
+				if (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() === 'mark') {
+					// If the parent node is mark, remove that mark node and replace it with its child
+					selectionFocusNode.parentNode.parentNode.replaceChild(selectionFocusNode, selectionFocusNode.parentNode);
+					// Empty span required to force an input so that HTML change is seen from text cell component
+					// This span doesn't have any effect on the markdown generated.
+					document.execCommand('formatBlock', false, 'span');
+				} else {
+					document.execCommand('hiliteColor', false, 'Yellow');
+				}
 				break;
 			case MarkdownButtonType.IMAGE:
 				// TODO
