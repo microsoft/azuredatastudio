@@ -171,7 +171,6 @@ export class GuidedTour extends Disposable {
 			bodyTag.innerText = body;
 			stepText.innerText = `${step} of ${tourData.length}`;
 			let button = new Button(btnContainer);
-			button.icon = '';
 			button.label = btnText;
 			btnContainer.appendChild(stepText);
 			flexContainer.appendChild(img);

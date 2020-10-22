@@ -130,13 +130,9 @@ function isWelcomePageEnabled(configurationService: IConfigurationService, conte
 
 
 function isGuidedTourEnabled(configurationService: IConfigurationService): boolean {
-	const tourEnabled = configurationService.inspect(configurationKey);
-	if (tourEnabled.value === 'welcomePageWithTour') {
-		const tourEnabled = configurationService.inspect(guidedTourKey);
-		if (tourEnabled.value) {
-			return true;
-		}
-		return false;
+	const tourEnabled = configurationService.inspect(guidedTourKey);
+	if (tourEnabled.value) {
+		return true;
 	}
 	return false;
 }
