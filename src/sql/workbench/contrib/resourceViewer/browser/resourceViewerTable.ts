@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/resourceViewerTable';
+import * as vscode from 'vscode';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
@@ -17,6 +18,7 @@ import { ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { isString } from 'vs/base/common/types';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { localize } from 'vs/nls';
 
 export class ResourceViewerTable extends Disposable {
 
@@ -110,9 +112,18 @@ export class ResourceViewerTable extends Disposable {
 			const value = row[column.field];
 			if (isHyperlinkCellValue(value)) {
 				if (isString(value.linkOrCommand)) {
-					await this._openerService.open(value.linkOrCommand);
+					try {
+						await this._openerService.open(value.linkOrCommand);
+					} catch (err) {
+						vscode.window.showErrorMessage(localize('resourceViewerTable.openError', "Error opening link : {0}", err));
+					}
+
 				} else {
-					await this._commandService.executeCommand(value.linkOrCommand.id, ...(value.linkOrCommand.args ?? []));
+					try {
+						await this._commandService.executeCommand(value.linkOrCommand.id, ...(value.linkOrCommand.args ?? []));
+					} catch (err) {
+						vscode.window.showErrorMessage(localize('resourceViewerTable.commandError', "Error executing command '{0}' : {1}", value.linkOrCommand.id, err));
+					}
 				}
 			}
 		}
