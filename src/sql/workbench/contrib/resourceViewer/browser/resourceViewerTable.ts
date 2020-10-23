@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/resourceViewerTable';
-import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
@@ -19,6 +19,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { isString } from 'vs/base/common/types';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { localize } from 'vs/nls';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class ResourceViewerTable extends Disposable {
 
@@ -28,7 +29,8 @@ export class ResourceViewerTable extends Disposable {
 	constructor(parent: HTMLElement,
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
 		@IOpenerService private _openerService: IOpenerService,
-		@ICommandService private _commandService: ICommandService) {
+		@ICommandService private _commandService: ICommandService,
+		@INotificationService private _notificationService: INotificationService) {
 		super();
 		let filterFn = (data: Array<Slick.SlickData>): Array<Slick.SlickData> => {
 			return data.filter(item => this.filter(item));
@@ -115,14 +117,14 @@ export class ResourceViewerTable extends Disposable {
 					try {
 						await this._openerService.open(value.linkOrCommand);
 					} catch (err) {
-						vscode.window.showErrorMessage(localize('resourceViewerTable.openError', "Error opening link : {0}", err));
+						this._notificationService.error(localize('resourceViewerTable.openError', "Error opening link : {0}", err.message ?? err));
 					}
 
 				} else {
 					try {
 						await this._commandService.executeCommand(value.linkOrCommand.id, ...(value.linkOrCommand.args ?? []));
 					} catch (err) {
-						vscode.window.showErrorMessage(localize('resourceViewerTable.commandError', "Error executing command '{0}' : {1}", value.linkOrCommand.id, err));
+						this._notificationService.error(localize('resourceViewerTable.commandError', "Error executing command '{0}' : {1}", value.linkOrCommand.id, err.message ?? err));
 					}
 				}
 			}
