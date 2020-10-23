@@ -356,7 +356,9 @@ export class CellModel extends Disposable implements ICellModel {
 			return;
 		}
 
-		// There can only be one tagged parameters cell in the Notebook
+		/**
+		 * The value will not be updated if there is already a parameter cell in the Notebook.
+		**/
 		value = this.notebookModel?.cells?.find(cell => cell.isParameter) ? false : value;
 
 		let stateChanged = this._isParameter !== value;
