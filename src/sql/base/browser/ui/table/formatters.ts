@@ -98,6 +98,11 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 		valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 		titleValue = valueToDisplay;
 	}
+	if (columnDef?.iconCssClassField) {
+		// we have icon to display
+		cellClasses += ` icon codicon slick-icon-cell-content ${dataContext[columnDef?.iconCssClassField]}`;
+		//return `<span title="${titleValue}" class="icon codicon slick-icon-cell-content ${dataContext[columnDef?.iconCssClassField]}">${valueToDisplay}</span>`;
+	}
 
 	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
 }

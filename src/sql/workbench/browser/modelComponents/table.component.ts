@@ -30,6 +30,7 @@ import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
+import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -71,11 +72,28 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 	}
 
+	private findIconProviders(columns: azdata.TableColumn[]): Set<string> | undefined {
+		if (!columns) {
+			return undefined;
+		}
+		return new Set<string>(
+			columns.map(col => {
+				const textColOptions = col.options as azdata.TextColumnOption;
+				if (textColOptions && textColOptions.iconCssClassColumn) {
+					return textColOptions.iconCssClassColumn;
+				}
+				return '';
+			}));
+	}
+
 	transformColumns(columns: string[] | azdata.TableColumn[]): Slick.Column<any>[] {
 		let tableColumns: any[] = <any[]>columns;
 		if (tableColumns) {
 			let mycolumns: Slick.Column<any>[] = [];
 			let index: number = 0;
+			// get columns that will be used as icon providers
+			const iconProviderColumns = this.findIconProviders(columns as azdata.TableColumn[]);
+
 			(<any[]>columns).map(col => {
 				if (col.type && col.type === 1) {
 					this.createCheckBoxPlugin(col, index);
@@ -84,16 +102,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 					this.createButtonPlugin(col);
 				}
 				else if (col.value) {
-					mycolumns.push(<Slick.Column<any>>{
-						name: col.value,
-						id: col.value,
-						field: col.value,
-						width: col.width,
-						cssClass: col.cssClass,
-						headerCssClass: col.headerCssClass,
-						toolTip: col.toolTip,
-						formatter: textFormatter,
-					});
+					if (!iconProviderColumns?.has(col.value)) {
+						mycolumns.push(TableComponent.createTextColumn(col as azdata.TableColumn));
+					}
 				} else {
 					mycolumns.push(<Slick.Column<any>>{
 						name: <string>col,
@@ -114,6 +125,31 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				};
 			});
 		}
+	}
+
+	private static createTextColumn(col: azdata.TableColumn): Slick.Column<any> {
+		if ((col.options as azdata.TextColumnOption)?.iconCssClassColumn) {
+			const textWithIconColumn = new TextWithIconColumn({
+				name: col.value,
+				id: col.value,
+				field: col.value,
+				width: col.width,
+				headerCssClass: col.headerCssClass,
+				formatter: textFormatter,
+				iconCssClassField: (<azdata.TextColumnOption>col.options).iconCssClassColumn
+			});
+			return textWithIconColumn.definition;
+		}
+		return <Slick.Column<any>>{
+			name: col.value,
+			id: col.value,
+			field: col.value,
+			width: col.width,
+			cssClass: col.cssClass,
+			headerCssClass: col.headerCssClass,
+			toolTip: col.toolTip,
+			formatter: textFormatter,
+		};
 	}
 
 	public static transformData(rows: string[][], columns: any[]): { [key: string]: string }[] {

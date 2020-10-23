@@ -19,6 +19,8 @@ export interface TextWithIconColumnOptions {
 	id?: string;
 	resizable?: boolean;
 	name?: string;
+	headerCssClass?: string;
+	formatter?: Slick.Formatter<any>
 }
 
 export class TextWithIconColumn<T extends Slick.SlickData> {
@@ -30,11 +32,12 @@ export class TextWithIconColumn<T extends Slick.SlickData> {
 			id: options.id,
 			field: options.field,
 			resizable: options.resizable,
-			formatter: this.formatter,
+			formatter: options.formatter ?? this.formatter,
 			width: options.width,
 			name: options.name,
 			iconCssClassField: options.iconCssClassField,
-			cssClass: 'slick-icon-cell'
+			cssClass: 'slick-icon-cell',
+			headerCssClass: options.headerCssClass
 		};
 	}
 	private formatter(row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string {

@@ -29,7 +29,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 
 	private asmtType!: AssessmentType;
 
-	private readonly checkIdColOrder = 4;
+	private readonly checkIdColOrder = 5;
 	private readonly targetColOrder = 0;
 
 	public get component(): azdata.Component {
@@ -42,7 +42,15 @@ export class AssessmentResultGrid implements vscode.Disposable {
 			.withProperties<azdata.TableComponentProperties>({
 				data: [],
 				columns: [
-					{ value: LocalizedStrings.TARGET_COLUMN_NAME, headerCssClass: headerCssClass, width: 125 },
+					{
+						value: LocalizedStrings.TARGET_COLUMN_NAME, headerCssClass: headerCssClass, width: 125,
+						options: {
+							iconCssClassColumn: 'targetImage'
+						}
+					},
+					{
+						value: 'targetImage'
+					},
 					{ value: LocalizedStrings.SEVERITY_COLUMN_NAME, headerCssClass: headerCssClass, width: 100 },
 					{ value: LocalizedStrings.MESSAGE_COLUMN_NAME, headerCssClass: headerCssClass, width: 900 },
 					{ value: LocalizedStrings.TAGS_COLUMN_NAME, headerCssClass: headerCssClass, width: 200 },
@@ -251,6 +259,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 	private convertToDataView(asmtResult: azdata.SqlAssessmentResultItem): any[] {
 		return [
 			asmtResult.targetName,
+			asmtResult.targetType === azdata.sqlAssessment.SqlAssessmentTargetType.Database ? 'database' : 'server',
 			asmtResult.level,
 			this.asmtType === AssessmentType.InvokeAssessment ? asmtResult.message : asmtResult.displayName,
 			this.clearOutDefaultRuleset(asmtResult.tags),

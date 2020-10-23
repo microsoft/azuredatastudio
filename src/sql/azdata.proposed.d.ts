@@ -809,11 +809,20 @@ declare module 'azdata' {
 		headerFilter?: boolean,
 	}
 
+<<<<<<< HEAD
 	export interface TableComponent {
 
 		/**
 		 * Append data to an exsiting table data.
 		 */
 		appendData(data: any[][]);
+=======
+	export interface TextColumnOption {
+		/**
+		 * Specifies column that will provide icon css value.
+		 * iconCssClassColumn will not be displayed as a separate column, instead its value will be interpreted as a icon css value for the text column.
+		 */
+		iconCssClassColumn?: string
+>>>>>>> 0da6138f4a... Grid with icon in text column
 	}
 }
