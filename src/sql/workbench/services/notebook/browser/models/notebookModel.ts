@@ -360,10 +360,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					this._cells = contents.cells.map(c => {
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
 						/*
-						In a parameterized notebook there will be a injected parameter cell.
+						In a parameterized notebook there will be an injected parameter cell.
 						We need to indicate to the user the difference between this cell and the parameters cell.
 						*/
-						if (cellModel.metadata?.tags?.includes('injected-parameters')) {
+						if (cellModel.isInjectedParameter) {
 							cellModel.source = cellModel.source.slice(1);
 							cellModel.source = '# Injected-Parameters\n' + cellModel.source;
 						}
