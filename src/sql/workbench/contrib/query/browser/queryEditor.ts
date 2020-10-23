@@ -134,7 +134,7 @@ export class QueryEditor extends EditorPane {
 	 * Called to create the editor in the parent element.
 	 */
 	public createEditor(parent: HTMLElement): void {
-		DOM.addClass(parent, 'query-editor');
+		parent.classList.add('query-editor');
 
 		this.splitviewContainer = DOM.$('.query-editor-view');
 
