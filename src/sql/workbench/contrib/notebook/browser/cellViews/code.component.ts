@@ -56,7 +56,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._cellModel = value;
 		if (this.toolbarElement && value && value.cellType === CellTypes.Markdown) {
 			let nativeToolbar = <HTMLElement>this.toolbarElement.nativeElement;
-			DOM.addClass(nativeToolbar, MARKDOWN_CLASS);
+			nativeToolbar.classList.add(MARKDOWN_CLASS);
 		}
 	}
 

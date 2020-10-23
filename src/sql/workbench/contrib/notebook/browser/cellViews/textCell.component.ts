@@ -15,7 +15,6 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import * as DOM from 'vs/base/browser/dom';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { toDisposable } from 'vs/base/common/lifecycle';
@@ -317,9 +316,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			return;
 		}
 		if (userSelect) {
-			DOM.addClass(this.output.nativeElement, USER_SELECT_CLASS);
+			this.output.nativeElement.classList.add(USER_SELECT_CLASS);
 		} else {
-			DOM.removeClass(this.output.nativeElement, USER_SELECT_CLASS);
+			this.output.nativeElement.classList.remove(USER_SELECT_CLASS);
 		}
 	}
 
