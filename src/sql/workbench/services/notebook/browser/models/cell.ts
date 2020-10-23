@@ -357,11 +357,7 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 
 		// There can only be one tagged parameters cell in the Notebook
-		for (let cell of this.notebookModel.cells) {
-			if (cell.isParameter) {
-				value = false;
-			}
-		}
+		value = this.notebookModel?.cells?.find(cell => cell.isParameter) ? false : value;
 
 		let stateChanged = this._isParameter !== value;
 		this._isParameter = value;
@@ -809,13 +805,10 @@ export class CellModel extends Disposable implements ICellModel {
 		this.executionCount = cell.execution_count;
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata || {};
-
-		if (this._metadata.tags && this._metadata.tags.some(x => x === HideInputTag) && this._cellType === CellTypes.Code) {
-			this._isCollapsed = true;
-		} else if (this._metadata.tags && this._metadata.tags.some(x => x === ParametersTag) && this._cellType === CellTypes.Code) {
-			this._isParameter = true;
-		} else if (this._metadata.tags && this._metadata.tags.some(x => x === InjectedParametersTag) && this._cellType === CellTypes.Code) {
-			this._isInjectedParameter = true;
+		if (this._metadata.tags && this._cellType === CellTypes.Code) {
+			this._isCollapsed = this._metadata.tags.some(x => x === HideInputTag);
+			this._isParameter = this._metadata.tags.some(x => x === ParametersTag);
+			this._isInjectedParameter = this._metadata.tags.some(x => x === InjectedParametersTag);
 		} else {
 			this._isCollapsed = false;
 			this._isParameter = false;
