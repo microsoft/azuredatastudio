@@ -9,17 +9,24 @@ import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { slickGridDataItemColumnValueExtractor } from 'sql/base/browser/ui/table/formatters';
+import { isHyperlinkCellValue, slickGridDataItemColumnValueExtractor } from 'sql/base/browser/ui/table/formatters';
 import { HeaderFilter, CommandEventArgs, IExtendedColumn } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
+import { ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { isString } from 'vs/base/common/types';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 export class ResourceViewerTable extends Disposable {
 
 	private _resourceViewerTable!: Table<Slick.SlickData>;
 	private _dataView: TableDataView<Slick.SlickData>;
 
-	constructor(parent: HTMLElement, @IWorkbenchThemeService private _themeService: IWorkbenchThemeService) {
+	constructor(parent: HTMLElement,
+		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
+		@IOpenerService private _openerService: IOpenerService,
+		@ICommandService private _commandService: ICommandService) {
 		super();
 		let filterFn = (data: Array<Slick.SlickData>): Array<Slick.SlickData> => {
 			return data.filter(item => this.filter(item));
@@ -38,6 +45,8 @@ export class ResourceViewerTable extends Disposable {
 		let filterPlugin = new HeaderFilter<Slick.SlickData>();
 		this._register(attachButtonStyler(filterPlugin, this._themeService));
 		this._register(attachTableStyler(this._resourceViewerTable, this._themeService));
+		this._register(this._resourceViewerTable.onClick(this.onTableClick, this));
+
 		filterPlugin.onFilterApplied.subscribe(() => {
 			this._dataView.filter();
 			this._resourceViewerTable.grid.invalidate();
@@ -92,5 +101,20 @@ export class ResourceViewerTable extends Disposable {
 			}
 		}
 		return value;
+	}
+
+	private async onTableClick(event: ITableMouseEvent): Promise<void> {
+		const column = this._resourceViewerTable.columns[event.cell.cell];
+		if (column) {
+			const row = this._dataView.getItem(event.cell.row);
+			const value = row[column.field];
+			if (isHyperlinkCellValue(value)) {
+				if (isString(value.linkOrCommand)) {
+					await this._openerService.open(value.linkOrCommand);
+				} else {
+					await this._commandService.executeCommand(value.linkOrCommand.id, ...(value.linkOrCommand.args ?? []));
+				}
+			}
+		}
 	}
 }
