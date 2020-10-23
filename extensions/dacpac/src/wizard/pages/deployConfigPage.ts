@@ -16,6 +16,10 @@ export class DeployConfigPage extends DacFxConfigPage {
 	private databaseComponent: azdata.FormComponent;
 	private formBuilder: azdata.FormBuilder;
 	private form: azdata.FormContainer;
+	// variables for radio buttons to update them if no databases exist.
+	private upgradeRadioButton = this.view.modelBuilder.radioButton().withProperties({}).component();
+	private newRadioButton = this.view.modelBuilder.radioButton().withProperties({}).component();
+
 
 	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
 		super(instance, wizardPage, model, view);
@@ -48,6 +52,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
+
 		let r1 = await this.populateServerDropdown();
 		let r2 = await this.populateDeployDatabaseDropdown();
 		// get existing database values to verify if new database name is valid
@@ -97,6 +102,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 	}
 
 	private async createRadiobuttons(): Promise<azdata.FormComponent> {
+
 		let upgradeRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'updateExistingOrCreateNew',
@@ -137,6 +143,10 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.instance.wizard.addPage(summaryPage.wizardPage, DeployNewOperationPath.summary);
 		});
 
+		// Saving instances of the radio buttons to update if databases don't exist
+		this.upgradeRadioButton = upgradeRadioButton;
+		this.newRadioButton = newRadioButton;
+
 		//Initialize with upgrade existing true
 		upgradeRadioButton.checked = true;
 		this.model.upgradeExisting = true;
@@ -164,7 +174,6 @@ export class DeployConfigPage extends DacFxConfigPage {
 		this.databaseDropdown.onValueChanged(async () => {
 			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 		});
-
 		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProperties({
 			required: true
 		}).component();
@@ -183,16 +192,50 @@ export class DeployConfigPage extends DacFxConfigPage {
 			return false;
 		}
 		let values = await this.getDatabaseValues();
-
-		//set the database to the first dropdown value if upgrading, otherwise it should get set to the textbox value
+		// If there are no databases, call the disableUpgradeRadioButton function.
+		if (values[0] === undefined) {
+			this.disableUpgradeRadioButton(this.upgradeRadioButton, this.newRadioButton);
+		}
 		if (this.model.upgradeExisting) {
 			this.model.database = values[0];
 		}
-
 		this.databaseDropdown.updateProperties({
 			values: values
 		});
 		this.databaseLoader.loading = false;
 		return true;
+	}
+	/*
+	Function that is used to change the radio button DOM based on whether databases exist or not.
+	*/
+	private async disableUpgradeRadioButton(upgradeRadioButton: azdata.RadioButtonComponent, newRadioButton: azdata.RadioButtonComponent): Promise<azdata.FormComponent> {
+		// Set the upgrade radio button to be disabled as well and set the default options for the
+		// new databases radio button as defined in the createRadiobuttons function.
+		upgradeRadioButton.enabled = false;
+		newRadioButton.checked = true;
+		this.model.upgradeExisting = false;
+
+		this.formBuilder.removeFormItem(this.databaseDropdownComponent);
+		this.formBuilder.addFormItem(this.databaseComponent, { horizontal: true, componentWidth: 400 });
+		this.model.database = this.databaseTextBox.value;
+		this.instance.setDoneButton(Operation.deploy);
+
+		// remove deploy plan page and readd summary page so that it has the correct page number
+		this.instance.wizard.removePage(DeployOperationPath.summary);
+		this.instance.wizard.removePage(DeployOperationPath.deployPlan);
+		let summaryPage = this.instance.pages.get(PageName.summary);
+		this.instance.wizard.addPage(summaryPage.wizardPage, DeployNewOperationPath.summary);
+
+		let flexRadioButtonsModel = this.view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'row',
+			}).withItems([
+				upgradeRadioButton, newRadioButton]
+			).component();
+
+		return {
+			component: flexRadioButtonsModel,
+			title: loc.targetDatabase
+		};
 	}
 }
