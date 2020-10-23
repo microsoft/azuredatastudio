@@ -33,7 +33,6 @@ export interface TextCellValue {
 export interface HyperlinkCellValue {
 	displayText: string;
 	linkOrCommand: string | ExecuteCommandInfo;
-	ariaLabel: string;
 }
 
 export namespace DBCellValue {
@@ -116,8 +115,7 @@ export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any
 	if (columnDef.type === 'hyperlink') {
 		return <HyperlinkCellValue>{
 			displayText: fieldValue.displayText,
-			linkOrCommand: fieldValue.linkOrCommand,
-			ariaLabel: ''
+			linkOrCommand: fieldValue.linkOrCommand
 		};
 	} else {
 		return <TextCellValue>{
