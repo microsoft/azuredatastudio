@@ -3721,14 +3721,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.0",
-							"lastUpdated": "10/5/2020",
+							"version": "0.3.0",
+							"lastUpdated": "10/22/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/asde-deployment/asde-deployment-0.2.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/asde-deployment/asde-deployment-0.3.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
