@@ -25,11 +25,11 @@
 .modal.callout-dialog .modal-dialog {
 	border-radius: 2px;
 	box-shadow: 0px 3px 8px rgba(var(--foreground));
-	height: auto;
+	max-height: 300px;
 	margin: 0 auto;
 	top: 50%;
 	transform: translateY(50%);
-	width: 500px;
+	width: 452px;
 }
 .modal.callout-dialog .modal-content.arrow:before {
 	content: "";
@@ -373,4 +373,19 @@
 
 .dialog-message.error .dialog-message-icon {
 	background: url("error_notification_inverse.svg") center center no-repeat;
+}
+
+.codicon.masked-icon.browse-local {
+	display: inline-block;
+	height: 25px;
+	width: 25px;
+}
+.codicon.masked-icon.browse-local:before {
+	height: 25px;
+	width: 25px;
+	background-image: none;
+	-webkit-mask-image: url('browse-local.svg');
+	mask-image: url('browse-local.svg');
+	-webkit-mask-size: 100%;
+	mask-size: 100%;
 }

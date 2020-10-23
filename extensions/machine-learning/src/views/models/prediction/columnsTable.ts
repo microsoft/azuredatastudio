@@ -384,32 +384,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			iconWidth: '10px'
 		}).component();
 
-		warningButton.onDidClick(() => {
-			this.openDialog(message, 'am a name', 'narrow', 'Callout', 'left');
-		});
-
 		return warningButton;
-	}
-
-	public async openDialog(title: string, dialogName?: string, width?: azdata.window.DialogWidth, dialogStyle?: azdata.window.DialogStyle, dialogPosition?: azdata.window.DialogPosition) {
-		if (!this._isOpen) {
-			this._isOpen = true;
-			let dialog = azdata.window.createModelViewDialog(title, dialogName, width, dialogStyle, dialogPosition);
-
-			let warningTab: azdata.window.DialogTab = azdata.window.createTab('foop');
-			// init tab
-			// create layout
-			warningTab.registerContent(async view => {
-				let warningContent = view.modelBuilder.divContainer().component();
-				warningContent.addItem(view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: 'hello world!'
-				}).component());
-			});
-			// set tab as content
-			dialog.content = [warningTab];
-
-			azdata.window.openDialog(dialog);
-		}
 	}
 
 	/**
