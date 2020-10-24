@@ -53,10 +53,10 @@ export class CellModel extends Disposable implements ICellModel {
 	private _cellUri: URI;
 	private _connectionManagementService: IConnectionManagementService;
 	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
+	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; };
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; };
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
@@ -355,6 +355,12 @@ export class CellModel extends Disposable implements ICellModel {
 		if (this.cellType !== CellTypes.Code) {
 			return;
 		}
+
+		/**
+		 * The value will not be updated if there is already a parameter cell in the Notebook.
+		**/
+		value = this.notebookModel?.cells?.find(cell => cell.isParameter) ? false : value;
+
 		let stateChanged = this._isParameter !== value;
 		this._isParameter = value;
 
@@ -801,11 +807,10 @@ export class CellModel extends Disposable implements ICellModel {
 		this.executionCount = cell.execution_count;
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata || {};
-
-		if (this._metadata.tags && this._metadata.tags.some(x => x === HideInputTag || x === ParametersTag || x === InjectedParametersTag) && this._cellType === CellTypes.Code) {
-			this._isCollapsed = true;
-			this._isParameter = true;
-			this._isInjectedParameter = true;
+		if (this._metadata.tags && this._cellType === CellTypes.Code) {
+			this._isCollapsed = this._metadata.tags.some(x => x === HideInputTag);
+			this._isParameter = this._metadata.tags.some(x => x === ParametersTag);
+			this._isInjectedParameter = this._metadata.tags.some(x => x === InjectedParametersTag);
 		} else {
 			this._isCollapsed = false;
 			this._isParameter = false;
