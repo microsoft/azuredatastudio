@@ -105,6 +105,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 	async expandAll(): Promise<void> {
 		const expandedTreeItems: TreeElement[] = [];
 		let treeItemsToExpand: TreeElement[] = this.treeDataSource.expandableTreeNodes;
+		// expand the nodes one by one here to avoid the possible azure api traffic throttling.
 		while (treeItemsToExpand.length !== 0) {
 			for (const treeItem of treeItemsToExpand) {
 				await this.tree.expand(treeItem);
