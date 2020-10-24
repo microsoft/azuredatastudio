@@ -15,6 +15,8 @@ export const script: string = 'script';
 export const table: string = 'table';
 export const view: string = 'view';
 export const storedProcedure: string = 'storedProcedure';
+export const externalStreamingJob: string = 'externalStreamingJob';
+
 export const folder: string = 'folder';
 export const preDeployScript: string = 'preDeployScript';
 export const postDeployScript: string = 'postDeployScript';
@@ -49,7 +51,8 @@ export async function loadTemplates(templateFolderPath: string) {
 		loadObjectTypeInfo(view, constants.viewFriendlyName, templateFolderPath, 'newTsqlViewTemplate.sql'),
 		loadObjectTypeInfo(storedProcedure, constants.storedProcedureFriendlyName, templateFolderPath, 'newTsqlStoredProcedureTemplate.sql'),
 		loadObjectTypeInfo(preDeployScript, constants.preDeployScriptFriendlyName, templateFolderPath, 'newTsqlPreDeployScriptTemplate.sql'),
-		loadObjectTypeInfo(postDeployScript, constants.postDeployScriptFriendlyName, templateFolderPath, 'newTsqlPostDeployScriptTemplate.sql')
+		loadObjectTypeInfo(postDeployScript, constants.postDeployScriptFriendlyName, templateFolderPath, 'newTsqlPostDeployScriptTemplate.sql'),
+		loadObjectTypeInfo(externalStreamingJob, constants.externalStreamingJobFriendlyName, templateFolderPath, 'newTsqlexternalStreamingJobTemplate.sql')
 	]);
 
 	for (const scriptType of scriptTypes) {

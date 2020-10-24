@@ -71,6 +71,7 @@ export class Project {
 
 			const buildElements = itemGroup.getElementsByTagName(constants.Build);
 			for (let b = 0; b < buildElements.length; b++) {
+				buildElements[b].getAttributes();
 				this.files.push(this.createFileProjectEntry(buildElements[b].getAttribute(constants.Include), EntryType.File));
 			}
 
@@ -291,7 +292,13 @@ export class Project {
 				this.files.push(fileEntry);
 		}
 
-		await this.addToProjFile(fileEntry, xmlTag);
+		const attributes = new Map<string, string>();
+
+		if (itemType === templates.externalStreamingJob) {
+			attributes.set('type', itemType);
+		}
+
+		await this.addToProjFile(fileEntry, xmlTag, attributes);
 
 		return fileEntry;
 	}
@@ -488,7 +495,7 @@ export class Project {
 		return outputItemGroup;
 	}
 
-	private addFileToProjFile(path: string, xmlTag: string): void {
+	private addFileToProjFile(path: string, xmlTag: string, attributes?: Map<string, string>): void {
 		let itemGroup;
 
 		if (xmlTag === constants.PreDeploy || xmlTag === constants.PostDeploy) {
@@ -504,7 +511,15 @@ export class Project {
 		}
 
 		const newFileNode = this.projFileXmlDoc.createElement(xmlTag);
+
+		if (attributes) {
+			for (const key of attributes.keys()) {
+				newFileNode.setAttribute(key, attributes.get(key));
+			}
+		}
+
 		newFileNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(path));
+
 		itemGroup.appendChild(newFileNode);
 	}
 
@@ -809,10 +824,10 @@ export class Project {
 		}
 	}
 
-	private async addToProjFile(entry: ProjectEntry, xmlTag?: string): Promise<void> {
+	private async addToProjFile(entry: ProjectEntry, xmlTag?: string, attributes?: Map<string, string>): Promise<void> {
 		switch (entry.type) {
 			case EntryType.File:
-				this.addFileToProjFile((<FileProjectEntry>entry).relativePath, xmlTag ? xmlTag : constants.Build);
+				this.addFileToProjFile((<FileProjectEntry>entry).relativePath, xmlTag ? xmlTag : constants.Build, attributes);
 				break;
 			case EntryType.Folder:
 				this.addFolderToProjFile((<FileProjectEntry>entry).relativePath);
