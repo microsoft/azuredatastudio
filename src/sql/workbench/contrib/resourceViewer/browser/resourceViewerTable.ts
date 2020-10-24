@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/resourceViewerTable';
-import * as azdata from 'azdata';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
