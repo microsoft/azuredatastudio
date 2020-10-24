@@ -35,6 +35,7 @@ import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { localize } from 'vs/nls';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -142,6 +143,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
+	}
+
+	get parametersText(): string {
+		return localize('parametersText', "Parameters");
 	}
 
 	private updateConnectionState(shouldConnect: boolean) {
