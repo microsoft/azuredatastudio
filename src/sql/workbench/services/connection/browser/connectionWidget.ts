@@ -489,9 +489,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				this._azureTenantDropdown.enable();
 			}).catch(err => this._logService.error(`Unexpected error populating Azure Account dropdown : ${err}`));
 			// Immediately show/hide appropriate elements though so user gets immediate feedback while we load accounts
-			DOM.addClass(this._tableContainer, 'hide-username');
-			DOM.addClass(this._tableContainer, 'hide-password');
-			DOM.removeClass(this._tableContainer, 'hide-azure-accounts');
+			this._tableContainer.classList.add('hide-username');
+			this._tableContainer.classList.add('hide-password');
+			this._tableContainer.classList.remove('hide-azure-accounts');
 		} else if (currentAuthType === AuthenticationType.AzureMFAAndUser) {
 			this.fillInAzureAccountOptions().then(async () => {
 				// Don't enable the control until we've populated it
@@ -501,17 +501,17 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				this._azureTenantDropdown.enable();
 			}).catch(err => this._logService.error(`Unexpected error populating Azure Account dropdown : ${err}`));
 			// Immediately show/hide appropriate elements though so user gets immediate feedback while we load accounts
-			DOM.removeClass(this._tableContainer, 'hide-username');
-			DOM.addClass(this._tableContainer, 'hide-password');
-			DOM.removeClass(this._tableContainer, 'hide-azure-accounts');
+			this._tableContainer.classList.remove('hide-username');
+			this._tableContainer.classList.add('hide-password');
+			this._tableContainer.classList.remove('hide-azure-accounts');
 		} else {
 			this._azureAccountDropdown.disable();
 			this._azureAccountDropdown.hideMessage();
 			this._azureTenantDropdown.disable();
 			this._azureTenantDropdown.hideMessage();
-			DOM.removeClass(this._tableContainer, 'hide-username');
-			DOM.removeClass(this._tableContainer, 'hide-password');
-			DOM.addClass(this._tableContainer, 'hide-azure-accounts');
+			this._tableContainer.classList.remove('hide-username');
+			this._tableContainer.classList.remove('hide-password');
+			this._tableContainer.classList.add('hide-azure-accounts');
 		}
 	}
 
@@ -538,9 +538,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private updateRefreshCredentialsLink(): void {
 		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (chosenAccount && chosenAccount.isStale) {
-			DOM.removeClass(this._tableContainer, 'hide-refresh-link');
+			this._tableContainer.classList.remove('hide-refresh-link');
 		} else {
-			DOM.addClass(this._tableContainer, 'hide-refresh-link');
+			this._tableContainer.classList.add('hide-refresh-link');
 		}
 	}
 
@@ -574,7 +574,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			// There are multiple tenants available so let the user select one
 			let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
 			this._azureTenantDropdown.setOptions(options);
-			DOM.removeClass(this._tableContainer, hideTenantsClassName);
+			this._tableContainer.classList.remove(hideTenantsClassName);
 			this.onAzureTenantSelected(0);
 		} else {
 			if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length === 1) {
@@ -582,7 +582,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			} else {
 				this._azureTenantId = undefined;
 			}
-			DOM.addClass(this._tableContainer, hideTenantsClassName);
+			this._tableContainer.classList.add(hideTenantsClassName);
 		}
 	}
 
@@ -695,9 +695,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			if (this._authTypeSelectBox) {
 				this.onAuthTypeSelected(this._authTypeSelectBox.value);
 			} else {
-				DOM.removeClass(this._tableContainer, 'hide-username');
-				DOM.removeClass(this._tableContainer, 'hide-password');
-				DOM.addClass(this._tableContainer, 'hide-azure-accounts');
+				this._tableContainer.classList.remove('hide-username');
+				this._tableContainer.classList.remove('hide-password');
+				this._tableContainer.classList.add('hide-azure-accounts');
 			}
 
 			if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
