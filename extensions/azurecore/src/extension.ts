@@ -44,7 +44,7 @@ import * as constants from './constants';
 import { AzureResourceGroupService } from './azureResource/providers/resourceGroup/resourceGroupService';
 import { Logger } from './utils/Logger';
 import { TokenCredentials } from '@azure/ms-rest-js';
-import { FlatAzureResourceTreeProvider } from './azureResource/tree/flatTreeProvider';
+import { ConnectionDialogTreeProvider } from './azureResource/tree/connectionDialogTreeProvider';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -85,8 +85,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
-	const flatAzureResourceTree = new FlatAzureResourceTreeProvider(appContext);
-	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', flatAzureResourceTree));
+	const connectionDialogTree = new ConnectionDialogTreeProvider(appContext);
+	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
 	registerAzureResourceCommands(appContext, azureResourceTree);
