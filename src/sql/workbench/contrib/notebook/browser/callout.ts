@@ -36,6 +36,9 @@ export interface ICalloutOptions {
 
 export class Callout extends Modal {
 	private _calloutStyle: CalloutStyle;
+	private _triggerCssSelector: string;
+	private _container?: HTMLElement;
+
 	private _selectionComplete: Deferred<ICalloutOptions>;
 	private _insertButton: Button;
 	private _cancelButton: Button;
@@ -73,6 +76,7 @@ export class Callout extends Modal {
 	constructor(
 		calloutInstance: CalloutStyle,
 		title: string,
+		triggerCssSelector: string,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
@@ -98,6 +102,7 @@ export class Callout extends Modal {
 			});
 		this._selectionComplete = new Deferred<ICalloutOptions>();
 		this._calloutStyle = calloutInstance;
+		this._triggerCssSelector = triggerCssSelector;
 	}
 
 	/**
@@ -123,6 +128,7 @@ export class Callout extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
+		this._container = container;
 		let description = DOM.$('.row');
 		DOM.append(container, description);
 
@@ -165,7 +171,9 @@ export class Callout extends Modal {
 			this._imageBrowseButton.title = this.browseAltText;
 			DOM.append(inputContainer, browseButtonContainer);
 			DOM.append(browseButtonContainer, this._imageBrowseButton);
+
 			// this._imageBrowseButton.onclick(() => this.handleBrowse());
+
 			DOM.append(description, inputContainer);
 
 			this._imageEmbedLabel = DOM.append(description, DOM.$('.row'));
@@ -209,6 +217,12 @@ export class Callout extends Modal {
 				});
 			DOM.append(description, linkAddressInputContainer);
 		}
+
+		// These are the values I need, but they need to be set somewhere else:
+		let elTrigger = document.querySelector(this._triggerCssSelector).getBoundingClientRect();
+		// this._container.style.position = 'absolute';
+		// this._container.style.left = `${Math.round(elTrigger.x)}px`;
+		// this._container.style.top = `${Math.round(elTrigger.top)}px`;
 	}
 
 	private registerListeners(): void {

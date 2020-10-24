@@ -19,7 +19,6 @@ import { Callout, CalloutStyle } from 'sql/workbench/contrib/notebook/browser/ca
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class TransformMarkdownAction extends Action {
-
 	constructor(
 		id: string,
 		label: string,
@@ -40,7 +39,7 @@ export class TransformMarkdownAction extends Action {
 					this.transformDocumentCommand();
 				} else {
 					let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel, this._instantiationService);
-					await markdownTextTransformer.transformText(this._type);
+					await markdownTextTransformer.transformText(this._type, this._cssClass);
 				}
 				resolve(true);
 			} catch (e) {
@@ -107,7 +106,7 @@ export class MarkdownTextTransformer {
 		return this._notebookEditor;
 	}
 
-	public async transformText(type: MarkdownButtonType): Promise<void> {
+	public async transformText(type: MarkdownButtonType, triggerClassList?: string): Promise<void> {
 		let editorControl = this.getEditorControl();
 		if (editorControl) {
 			let selections = editorControl.getSelections();
@@ -125,8 +124,10 @@ export class MarkdownTextTransformer {
 			let endInsertedText: string;
 
 			if (type === MarkdownButtonType.IMAGE || type === MarkdownButtonType.LINK) {
+				let buttonElementSelector = triggerClassList.replace(/^/, '.').replace(/\s/g, '.');
+				let triggerelector = (`.notebook-cell.active ${buttonElementSelector}`);
 				let calloutStyle = MarkdownButtonType[type].toString() as CalloutStyle;
-				beginInsertedText = await this.createCallout(calloutStyle);
+				beginInsertedText = await this.createCallout(calloutStyle, triggerelector);
 			} else {
 				beginInsertedText = getStartTextToInsert(type);
 				endInsertedText = getEndTextToInsert(type);
@@ -166,11 +167,11 @@ export class MarkdownTextTransformer {
 	 * Instantiate modal for use as callout when inserting Link or Image into markdown.
 	 * @param calloutStyle Style of callout passed in to determine which callout is rendered
 	 */
-	private async createCallout(calloutStyle: CalloutStyle) {
+	private async createCallout(calloutStyle: CalloutStyle, triggerCssSelector?: string) {
 		let title = calloutStyle.toString().toLowerCase();
 
 		if (!this._callout) {
-			this._callout = this._instantiationService.createInstance(Callout, calloutStyle, title);
+			this._callout = this._instantiationService.createInstance(Callout, calloutStyle, title, triggerCssSelector);
 			this._callout.render();
 		}
 		let calloutOptions = await this._callout.open();
