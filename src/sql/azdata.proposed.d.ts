@@ -531,6 +531,10 @@ declare module 'azdata' {
 	export interface InputBoxProperties extends ComponentProperties {
 		validationErrorMessage?: string;
 		readOnly?: boolean;
+		/**
+		* This title will show when hovered over
+		*/
+		title?: string;
 	}
 
 	export interface CheckBoxProperties {
