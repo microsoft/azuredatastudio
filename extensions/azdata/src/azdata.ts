@@ -17,7 +17,7 @@ import { getErrorMessage, NoAzdataError, searchForCmd } from './common/utils';
 import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
 
-const enum AzdataDeployOption {
+export const enum AzdataDeployOption {
 	dontPrompt = 'dontPrompt',
 	prompt = 'prompt'
 }

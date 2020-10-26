@@ -64,8 +64,12 @@ export class ResourceTypeService implements IResourceTypeService {
 	}
 
 	private updatePathProperties(resourceType: ResourceType, extensionPath: string): void {
-		resourceType.icon.dark = path.join(extensionPath, resourceType.icon.dark);
-		resourceType.icon.light = path.join(extensionPath, resourceType.icon.light);
+		if (typeof resourceType.icon === 'string') {
+			resourceType.icon = path.join(extensionPath, resourceType.icon);
+		} else {
+			resourceType.icon.dark = path.join(extensionPath, resourceType.icon.dark);
+			resourceType.icon.light = path.join(extensionPath, resourceType.icon.light);
+		}
 		resourceType.providers.forEach((provider) => {
 			if (instanceOfNotebookDeploymentProvider(provider)) {
 				this.updateNotebookPath(provider, extensionPath);
@@ -131,7 +135,7 @@ export class ResourceTypeService implements IResourceTypeService {
 
 	private validateResourceType(resourceType: ResourceType, positionInfo: string, errorMessages: string[]): void {
 		this.validateNameDisplayName(resourceType, 'resource type', positionInfo, errorMessages);
-		if (!resourceType.icon || !resourceType.icon.dark || !resourceType.icon.light) {
+		if (!resourceType.icon || (typeof resourceType.icon === 'object' && (!resourceType.icon.dark || !resourceType.icon.light))) {
 			errorMessages.push(`Icon for resource type is not specified properly. ${positionInfo} `);
 		}
 

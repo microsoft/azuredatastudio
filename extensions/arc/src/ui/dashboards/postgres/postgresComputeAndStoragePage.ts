@@ -296,10 +296,10 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		return [
 			this.createWorkerNodesSectionContainer(),
 			this.createCoresMemorySection(),
-			this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox!, '40px'),
-			this.createConfigurationSectionContainer(loc.coresLimit, this.coresLimitBox!, '40px'),
-			this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox!, '40px'),
-			this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!, '20px')
+			this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox!),
+			this.createConfigurationSectionContainer(loc.coresLimit, this.coresLimitBox!),
+			this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox!),
+			this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!)
 
 		];
 	}
@@ -340,37 +340,26 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		return flexContainer;
 	}
 
-	private createConfigurationSectionContainer(key: string, input: azdata.Component, nestingLineHeight: string): azdata.FlexContainer {
+	private createConfigurationSectionContainer(key: string, input: azdata.Component): azdata.FlexContainer {
 		const inputFlex = { flex: '0 1 150px' };
-		const keyFlex = { flex: `0 1 200px` };
-		const bottomLineFlex = { flex: `0 1 45px` };
+		const keyFlex = { flex: `0 1 250px` };
 
 		const flexContainer = this.modelView.modelBuilder.flexContainer().withLayout({
-			flexWrap: 'nowrap',
+			flexWrap: 'wrap',
 			alignItems: 'center'
 		}).component();
 
-		const leftLine = this.modelView.modelBuilder.divContainer().withProperties({
-			CSSStyles: { 'max-height': nestingLineHeight, 'min-height': nestingLineHeight, 'max-width': '1px', 'border-left-style': 'solid', 'border-left-color': '#ccc' }
-		}).component();
-
-		flexContainer.addItem(leftLine, { CSSStyles: { 'align-self': 'flex-start' } });
-
-		const bottomLine = this.modelView.modelBuilder.divContainer().withProperties({
-			CSSStyles: { 'margin-right': '5px', 'min-width': '5px', 'border-bottom-style': 'solid', 'border-bottom-color': '#ccc' }
-		}).component();
-
-		flexContainer.addItem(bottomLine, bottomLineFlex);
-
 		const keyComponent = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: key,
-			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'min-width': '100px', 'margin-bottom': '10px', 'margin-block-start': '0px', 'margin-block-end': '0px' }
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		flexContainer.addItem(keyComponent, keyFlex);
+		const keyContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
+		keyContainer.addItem(keyComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
+		flexContainer.addItem(keyContainer, keyFlex);
 
 		const inputContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		inputContainer.addItem(input, { CSSStyles: { 'margin-bottom': '10px', 'min-width': '50px', 'max-width': '225px' } });
+		inputContainer.addItem(input, { CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '225px' } });
 
 		flexContainer.addItem(inputContainer, inputFlex);
 

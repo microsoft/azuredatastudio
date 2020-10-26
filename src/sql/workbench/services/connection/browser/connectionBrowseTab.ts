@@ -345,7 +345,7 @@ class TreeItemRenderer extends Disposable implements ITreeRenderer<ITreeItemFrom
 	// }
 
 	renderTemplate(container: HTMLElement): ITreeExplorerTemplateData {
-		DOM.addClass(container, 'custom-view-tree-node-item');
+		container.classList.add('custom-view-tree-node-item');
 
 		const icon = DOM.append(container, DOM.$('.custom-view-tree-node-item-icon'));
 
