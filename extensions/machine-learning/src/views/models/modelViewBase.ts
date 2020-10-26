@@ -33,6 +33,11 @@ export enum ModelSourceType {
 	RegisteredModels
 }
 
+export enum ModelActionType {
+	Import,
+	Predict
+}
+
 export interface ModelViewData {
 	modelFile?: string;
 	modelData: AzureModelResource | string | ImportedModel;
@@ -74,6 +79,7 @@ export abstract class ModelViewBase extends ViewBase {
 	private _modelSourceType: ModelSourceType = ModelSourceType.Local;
 	private _modelsViewData: ModelViewData[] = [];
 	private _importTable: DatabaseTable | undefined;
+	private _modelActionType: ModelActionType = ModelActionType.Import;
 
 	constructor(apiWrapper: ApiWrapper, root?: string, parent?: ModelViewBase) {
 		super(apiWrapper, root, parent);
@@ -243,6 +249,28 @@ export abstract class ModelViewBase extends ViewBase {
 			subscription: subscription
 		};
 		return await this.sendDataRequest(ListGroupsEventName, args);
+	}
+
+	/**
+	 * Sets model action type
+	 */
+	public set modelActionType(value: ModelActionType) {
+		if (this.parent) {
+			this.parent.modelActionType = value;
+		} else {
+			this._modelActionType = value;
+		}
+	}
+
+	/**
+	 * Returns model action type
+	 */
+	public get modelActionType(): ModelActionType {
+		if (this.parent) {
+			return this.parent.modelActionType;
+		} else {
+			return this._modelActionType;
+		}
 	}
 
 	/**
