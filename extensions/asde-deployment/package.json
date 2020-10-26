@@ -26,7 +26,7 @@
         "platforms": "*",
         "icon": {
           "light": "./images/sqldb_edge.svg",
-          "dark": "./images/sqldb_edge_inverse.svg"
+          "dark": "./images/sqldb_edge.svg"
         },
         "tags": [
           "Hybrid",
