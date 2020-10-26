@@ -196,6 +196,9 @@ export class QueryEditor extends EditorPane {
 				this.setTaskbarContent();
 			}
 		}));
+		this._register(this.connectionManagementService.onLanguageFlavorChanged(() => {
+			this.setTaskbarContent();
+		}));
 	}
 
 	/**
@@ -265,9 +268,11 @@ export class QueryEditor extends EditorPane {
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
 		let fileExtension = path.extname(this.input?.uri || '');
-
+		const providerId = connectionProfile?.providerName ||
+			this.connectionManagementService.getProviderIdFromUri(this.input?.uri) ||
+			this.connectionManagementService.getDefaultProviderId();
 		// TODO: Make it more generic, some way for extensions to register the commands it supports
-		if ((!fileExtension && connectionProfile?.providerName === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
+		if ((providerId === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
 			if (this.input instanceof UntitledQueryEditorInput) {		// Sets proper language mode for untitled query editor based on the connection selected by user.
 				this.input.setMode('kusto');
 			}
@@ -282,7 +287,6 @@ export class QueryEditor extends EditorPane {
 			];
 		}
 		else {
-			const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['showNotebookConvertActions'];
 			if (previewFeaturesEnabled) {
 				content = [
 					{ action: this._runQueryAction },
@@ -291,13 +295,18 @@ export class QueryEditor extends EditorPane {
 					{ action: this._toggleConnectDatabaseAction },
 					{ action: this._changeConnectionAction },
 					{ action: this._listDatabasesAction },
-					{ element: separator },
-					{ action: this._estimatedQueryPlanAction }, // Preview
-					{ action: this._toggleSqlcmdMode }, // Preview
 				];
 
-				if (notebookConvertActionsEnabled) {
-					content.push({ action: this._exportAsNotebookAction });
+				if (providerId === 'MSSQL') {
+					content.push({ element: separator },
+						{ action: this._estimatedQueryPlanAction }, // Preview
+						{ action: this._toggleSqlcmdMode } // Preview)
+					);
+
+					const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['showNotebookConvertActions'];
+					if (notebookConvertActionsEnabled) {
+						content.push({ action: this._exportAsNotebookAction });
+					}
 				}
 			} else {
 				content = [
@@ -308,11 +317,14 @@ export class QueryEditor extends EditorPane {
 					{ action: this._changeConnectionAction },
 					{ action: this._listDatabasesAction }
 				];
-				const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['notebook.showNotebookConvertActions'];
-				if (notebookConvertActionsEnabled) {
-					content.push(
-						{ element: separator },
-						{ action: this._exportAsNotebookAction });
+
+				if (providerId === 'MSSQL') {
+					const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['notebook.showNotebookConvertActions'];
+					if (notebookConvertActionsEnabled) {
+						content.push(
+							{ element: separator },
+							{ action: this._exportAsNotebookAction });
+					}
 				}
 			}
 		}
