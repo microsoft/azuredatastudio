@@ -4324,10 +4324,10 @@ graceful-fs@^4.1.15:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.4.tgz#2256bde14d3632958c465ebc96dc467ca07a29fb"
   integrity sha512-WjKPNJF79dtJAVniUlGGWHYGz2jWxT6VhN/4m1NdkbZ2nOsEF+cI1Edgql5zCRhs/VsQYRvrXctxktVXZUkixw==
 
-gridstack@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/gridstack/-/gridstack-1.1.2.tgz#1f39e420d7e4c096047adb53ead082c46926998f"
-  integrity sha512-orfS5X58XSbsQMCuiz0+oxU7OGJMO2p1NVfTGJF6zcS5cDNtdX7JlY1ulM0yUnEzkkbcr02uO6txCd48zZariA==
+gridstack@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/gridstack/-/gridstack-2.0.2.tgz#e5be0e137f11ef1ecde8c30fd3db531f9631838b"
+  integrity sha512-sRqfiVa/5vsVVTzKNBV9DutUHosMQxQr2nvBSfNKbe9fJw5X61AI1+MlfP647s61h8KEIqD+Z1FSDtNJ983PLA==
 
 growl@1.9.2:
   version "1.9.2"

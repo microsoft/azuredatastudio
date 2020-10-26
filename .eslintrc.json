@@ -733,7 +733,7 @@
 					"angular2-grid",
 					"html-query-plan",
 					"html2canvas",
-					"gridstack/**",
+					"gridstack",
 					"lodash",
 					"turndown",
 					"mark.js"

@@ -8,14 +8,12 @@ import { GridStackItemComponent } from 'sql/workbench/contrib/notebook/browser/n
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 
 import 'vs/css!./gridstack';
-import 'gridstack/dist/gridstack';
-import 'gridstack/dist/jquery';
-import 'gridstack/dist/jquery-ui';
-import 'gridstack/dist/gridstack.jQueryUI';
 
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { NotebookViewExtension, INotebookViewCell, CellChangeEvent } from 'sql/workbench/services/notebook/browser/models/notebookView';
 //declare var $: any; // JQuery
+
+import { GridStack } from 'gridstack';
 
 @Component({
 	selector: 'gridstack',
@@ -55,9 +53,9 @@ export class GridStackComponent implements OnInit {
 		}
 
 		setTimeout(() => {
-			self._grid = window.GridStack.init({
+			self._grid = GridStack.init({
 				alwaysShowResizeHandle: true,
-				verticalMargin: 5
+				//verticalMargin: 5
 			});
 
 			this.cells.forEach((cell) => self._grid);
@@ -80,7 +78,7 @@ export class GridStackComponent implements OnInit {
 	onCellChanged(e: CellChangeEvent) {
 		const currentView = this.extension.getActiveView();
 		if (this._grid && currentView) {
-			const results = this._grid.$el.find(`[data-cell-id='${e.cell.cellGuid}']`);
+			const results = this._grid.el.querySelector(`[data-cell-id='${e.cell.cellGuid}']`);
 			if (results.length === 1 && e.event === 'hide') {
 				this._grid.removeWidget(results[0]);
 				currentView.hideCell(e.cell);
