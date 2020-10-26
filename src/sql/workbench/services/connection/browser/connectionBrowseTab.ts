@@ -152,7 +152,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 				transformOptimization: false,
 				accessibilityProvider: new ListAccessibilityProvider()
 			}) as WorkbenchAsyncDataTree<TreeModel, TreeElement>);
-		this.tree.onContextMenu(e => {
+		this._register(this.tree.onContextMenu(e => {
 			const context = e.element as ITreeItemFromProvider;
 			if (context?.element) {
 				this.contextKey.set(context.element);
@@ -168,10 +168,10 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 					getActionsContext: () => (<TreeViewItemHandleArg>{ $treeViewId: context.treeId, $treeItemHandle: context.element.handle, $treeItem: context.element })
 				});
 			}
-		});
-		this.tree.onMouseDblClick(e => this._onDblClick.fire(e));
-		this.tree.onMouseClick(e => this._onSelect.fire(e));
-		this.tree.onDidOpen((e) => {
+		}));
+		this._register(this.tree.onMouseDblClick(e => this._onDblClick.fire(e)));
+		this._register(this.tree.onMouseClick(e => this._onSelect.fire(e)));
+		this._register(this.tree.onDidOpen((e) => {
 			if (!e.browserEvent) {
 				return;
 			}
@@ -182,7 +182,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 					this.commandService.executeCommand(selectedNode.element.command.id, ...(selectedNode.element.command.arguments || []));
 				}
 			}
-		});
+		}));
 
 		this.tree.setInput(this.model);
 
