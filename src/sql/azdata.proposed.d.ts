@@ -183,6 +183,34 @@ declare module 'azdata' {
 	}
 
 	/**
+	 * Info for a command to execute
+	 */
+	export interface ExecuteCommandInfo {
+		/**
+		 * The ID of the command to execute
+		 */
+		id: string;
+		/**
+		 * The optional args to pass to the command
+		 */
+		args?: string[];
+	}
+
+	/**
+	 * Info for displaying a hyperlink value in a Data Grid table
+	 */
+	export interface DataGridHyperlinkInfo {
+		/**
+		 * The text to display for the link
+		 */
+		displayText: string;
+		/**
+		 * The URL to open or command to execute
+		 */
+		linkOrCommand: string | ExecuteCommandInfo;
+	}
+
+	/**
 	 * An item for displaying in a data grid
 	 */
 	export interface DataGridItem {
@@ -197,7 +225,7 @@ declare module 'azdata' {
 		/**
 		 * The other properties that will be displayed in the grid
 		 */
-		[key: string]: any;
+		[key: string]: string | DataGridHyperlinkInfo;
 	}
 
 	/**
