@@ -492,7 +492,7 @@
         "tags": ["SQL Server", "Cloud"],
         "providers": [
           {
-            "azureSQLVMWizard": {
+            "azureSQLVMWizard":{
               "notebook": "./notebooks/azurevm/create-sqlvm.ipynb"
             },
             "requiredTools": [
@@ -534,13 +534,11 @@
   "devDependencies": {
     "@types/mocha": "^5.2.5",
     "@types/semver": "^7.3.1",
-    "@types/sinon": "^9.0.8",
     "@types/yamljs": "0.2.30",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
-    "sinon": "^9.2.0",
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.1.0"
   }

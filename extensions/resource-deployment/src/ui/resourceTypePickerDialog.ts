@@ -218,7 +218,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		});
 		const listView = this._view.modelBuilder.listView().withProps({
 			title: {
-				text: loc.resourceTypeCategoryListViewTitle
+				text: loc.resoucrceTypeCategoryListViewTitle
 			},
 			CSSStyles: {
 				'width': '140px',
