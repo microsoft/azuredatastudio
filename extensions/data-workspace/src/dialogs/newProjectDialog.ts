@@ -106,6 +106,11 @@ export class NewProjectDialog extends DialogBase {
 
 		this.register(projectNameTextBox.onTextChanged(() => {
 			this.model.name = projectNameTextBox.value!;
+
+			// update hover text if a new workspace will be created for this project
+			if (!vscode.workspace.workspaceFile) {
+				workspaceTextBox.placeHolder = path.join(this.model.location, this.model.name, `${this.model.name}.code-workspace`);
+			}
 		}));
 
 		const locationTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
@@ -114,6 +119,7 @@ export class NewProjectDialog extends DialogBase {
 			required: true,
 			width: constants.DefaultInputWidth
 		}).component();
+
 		this.register(locationTextBox.onTextChanged(() => {
 			this.model.location = locationTextBox.value!;
 		}));
@@ -141,15 +147,6 @@ export class NewProjectDialog extends DialogBase {
 			// update hover text if a new workspace will be created for this project
 			if (!vscode.workspace.workspaceFile) {
 				workspaceTextBox.placeHolder = path.join(this.model.location, `${this.model.name}.code-workspace`);
-			}
-		}));
-
-		this.register(projectNameTextBox.onTextChanged(() => {
-			this.model.name = projectNameTextBox.value!;
-
-			// update hover text if a new workspace will be created for this project
-			if (!vscode.workspace.workspaceFile) {
-				workspaceTextBox.placeHolder = path.join(this.model.location, this.model.name, `${this.model.name}.code-workspace`);
 			}
 		}));
 
