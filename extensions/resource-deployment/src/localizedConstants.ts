@@ -38,7 +38,8 @@ export const acceptEulaAndSelect = localize('deploymentDialog.RecheckEulaButton'
 
 export const resourceTypePickerDialogTitle = localize('resourceTypePickerDialog.title', "Select the deployment options");
 export const resourceTypeSearchBoxDescription = localize('resourceTypePickerDialog.resourceSearchPlaceholder', "Filter resources...");
-export const resoucrceTypeCategoryListViewTitle = localize('resourceTypePickerDialog.tagsListViewTitle', 'Categories');
+export const resourceTypeCategoryListViewTitle = localize('resourceTypePickerDialog.tagsListViewTitle', "Categories");
+export const multipleValidationErrors = localize("validation.multipleValidationErrors", "There are some errors on this page, click 'Show Details' to view the errors.");
 
 export const scriptToNotebook = localize('ui.ScriptToNotebookButton', "Script");
 export const deployNotebook = localize('ui.DeployButton', "Run");
