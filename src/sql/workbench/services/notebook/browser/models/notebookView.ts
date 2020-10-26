@@ -7,6 +7,7 @@ import { INotebookModel, ICellModel } from 'sql/workbench/services/notebook/brow
 import { generateUuid } from 'vs/base/common/uuid';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { Emitter, Event } from 'vs/base/common/event';
+import { localize } from 'vs/nls';
 
 export type CellChangeEventType = 'hide' | 'active';
 
@@ -14,6 +15,8 @@ export type CellChangeEvent = {
 	cell: ICellModel,
 	event: CellChangeEventType;
 };
+
+export class ViewNameTakenError extends Error { }
 
 /*
  * Represents the metadata that will be stored for the
@@ -33,6 +36,7 @@ export interface INotebookView {
 	name: string;
 
 	initialize(): void;
+	nameAvailable(name: string): boolean;
 	hideCell(cell: ICellModel): void;
 	getCell(guid: string): Readonly<ICellModel>;
 	insertCellAt(cell: ICellModel, x: number, y: number, height?: number, width?: number): void;
@@ -88,6 +92,8 @@ export class NotebookExtension {
 }
 
 export class NotebookViewExtension extends NotebookExtension {
+	readonly maxNameIterationAttempts = 100;
+	readonly defaultViewName = localize('notebookView.untitledView', "Untitled View");
 	readonly extension = 'azuredatastudio';
 	readonly version = 1;
 	protected _extensionMeta: INotebookViewMetadata;
@@ -134,10 +140,13 @@ export class NotebookViewExtension extends NotebookExtension {
 		this._extensionMeta.activeView = view.guid;
 	}
 
-	public createNewView(name: string): INotebookView {
+	public createNewView(name?: string): INotebookView {
+		const viewGuid = generateUuid();
+		const viewName = name || this.generateDefaultNameView(viewGuid);
+
 		const view = new NotebookView(
-			generateUuid(),
-			name,
+			viewGuid,
+			viewName,
 			this._notebook,
 			this
 		);
@@ -146,6 +155,23 @@ export class NotebookViewExtension extends NotebookExtension {
 		view.initialize();
 
 		return view;
+	}
+
+	public generateDefaultNameView(failsafeValue: string): string {
+		let name = this.defaultViewName;
+
+		if (!this.viewNameIsTaken(name)) {
+			return name;
+		}
+
+		for (let i = 1; i <= this.maxNameIterationAttempts; i++) {
+			name = `${this.defaultViewName} ${i}`;
+			if (!this.viewNameIsTaken(name)) {
+				return name;
+			}
+		}
+
+		return failsafeValue;
 	}
 
 	public removeView(guid: string) {
@@ -211,6 +237,10 @@ export class NotebookViewExtension extends NotebookExtension {
 		}
 	}
 
+	public viewNameIsTaken(name: string): boolean {
+		return !!this.getViews().find(v => v.name.toLowerCase() === name.toLowerCase());
+	}
+
 	public get onViewDeleted(): Event<void> {
 		return this._onViewDeleted.event;
 	}
@@ -232,14 +262,6 @@ class NotebookView implements INotebookView {
 		this.guid = guid;
 	}
 
-	public get name(): string {
-		return this._name;
-	}
-
-	public set name(name: string) {
-		this._name = name;
-	}
-
 	public initialize() {
 		const cells = this._notebook.cells;
 		cells.forEach((cell, idx) => {
@@ -253,13 +275,29 @@ class NotebookView implements INotebookView {
 			meta.views.push({
 				guid: this.guid,
 				hidden: false,
-				y: idx,
+				y: idx * 4,
 				x: 0,
 				width: 0,
 				height: 0
 			});
 
 		});
+	}
+
+	public get name(): string {
+		return this._name;
+	}
+
+	public set name(name: string) {
+		if (this._notebookViewExtension.viewNameIsTaken(name)) {
+			throw new ViewNameTakenError(localize('notebookView.nameTaken', 'A view with the name {0} already exists in this notebook.', name));
+		}
+
+		this._name = name;
+	}
+
+	public nameAvailable(name: string): boolean {
+		return !this._notebookViewExtension.viewNameIsTaken(name) || name === this.name;
 	}
 
 	public getCellMetadata(cell: ICellModel): INotebookViewCell {

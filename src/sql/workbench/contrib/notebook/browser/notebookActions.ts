@@ -286,7 +286,7 @@ export class CreateNotebookView extends Action {
 			const editor = this._notebookService.findNotebookEditor(context);
 			const extension = new NotebookViewExtension(editor.model);
 
-			const newView = extension.createNewView('Untitled View');
+			const newView = extension.createNewView();
 			extension.setActiveView(newView);
 
 			editor.model.viewMode = ViewMode.Views;

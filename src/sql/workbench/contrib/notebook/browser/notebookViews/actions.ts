@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Action } from 'vs/base/common/actions';
-import { OptionsModal } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal';
+import { ViewOptionsModal } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotebookView, NotebookViewExtension } from 'sql/workbench/services/notebook/browser/models/notebookView';
 import { localize } from 'vs/nls';
@@ -36,8 +36,10 @@ export class ViewSettingsAction extends Action {
 
 	run(): Promise<boolean> {
 		try {
-			const optionsModal = this._instantiationService.createInstance(OptionsModal);
-			optionsModal.open(this._context);
+			const optionsModal = this._instantiationService.createInstance(ViewOptionsModal, this._context.getActiveView());
+			optionsModal.render();
+			optionsModal.open();
+
 			return Promise.resolve(true);
 		} catch (e) {
 			return Promise.resolve(false);
