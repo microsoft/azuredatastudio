@@ -478,6 +478,9 @@ import 'sql/workbench/browser/modelComponents/modelViewEditor.contribution';
 // notebooks
 import 'sql/workbench/contrib/notebook/browser/notebook.contribution';
 
+// Notebook Views
+import 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.contribution';
+
 // backup
 import 'sql/workbench/contrib/backup/browser/backup.contribution';
 

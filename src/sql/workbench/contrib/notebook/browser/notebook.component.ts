@@ -54,6 +54,7 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
+import { NOTEBOOK_VIEWS_ENABLED_PROPERTY } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.contribution';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -477,25 +478,27 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			dropdownMenuActionViewItem.render(buttonDropdownContainer);
 			dropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
 
-
-			let viewsContainer = document.createElement('li');
-			let viewsActionsProvider = new NotebookViewsOptions(viewsContainer, this.contextViewService, this.modelReady, this.notebookService, this.instantiationService);
-			let viewsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.OpenViews', localize('views', "Views"), 'notebook-button masked-pseudo code');
-			let viewsDropdownContainer = DOM.$('li.action-item');
-			viewsDropdownContainer.setAttribute('role', 'presentation');
-			let viewsDropdownMenuActionViewItem = new DropdownMenuActionViewItem(
-				viewsButton,
-				viewsActionsProvider,
-				this.contextMenuService,
-				undefined,
-				this._actionBar.actionRunner,
-				undefined,
-				'codicon notebook-button masked-pseudo masked-pseudo-after icon-dashboard-view dropdown-arrow',
-				localize('editor', "Editor"),
-				undefined
-			);
-			viewsDropdownMenuActionViewItem.render(viewsDropdownContainer);
-			viewsDropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
+			let viewsDropdownContainer;
+			if (this._configurationService.getValue<boolean>(NOTEBOOK_VIEWS_ENABLED_PROPERTY)) {
+				let viewsContainer = document.createElement('li');
+				let viewsActionsProvider = new NotebookViewsOptions(viewsContainer, this.contextViewService, this.modelReady, this.notebookService, this.instantiationService);
+				let viewsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.OpenViews', localize('views', "Views"), 'notebook-button masked-pseudo code');
+				viewsDropdownContainer = DOM.$('li.action-item');
+				viewsDropdownContainer.setAttribute('role', 'presentation');
+				let viewsDropdownMenuActionViewItem = new DropdownMenuActionViewItem(
+					viewsButton,
+					viewsActionsProvider,
+					this.contextMenuService,
+					undefined,
+					this._actionBar.actionRunner,
+					undefined,
+					'codicon notebook-button masked-pseudo masked-pseudo-after icon-dashboard-view dropdown-arrow',
+					localize('editor', "Editor"),
+					undefined
+				);
+				viewsDropdownMenuActionViewItem.render(viewsDropdownContainer);
+				viewsDropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
+			}
 
 
 			this._actionBar.setContent([

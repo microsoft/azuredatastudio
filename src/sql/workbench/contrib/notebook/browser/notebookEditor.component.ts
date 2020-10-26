@@ -26,6 +26,8 @@ import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common
 import { IAction } from 'vs/base/common/actions';
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { NOTEBOOK_VIEWS_ENABLED_PROPERTY } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.contribution';
 
 export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 
@@ -34,6 +36,7 @@ export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 	templateUrl: decodeURI(require.toUrl('./notebookEditor.component.html'))
 })
 export class NotebookEditorComponent extends AngularDisposable {
+	private readonly defaultViewMode = ViewMode.Notebook;
 	private profile: IConnectionProfile;
 	private notebookManagers: INotebookManager[] = [];
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
@@ -47,6 +50,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 		@Inject(ILogService) private readonly logService: ILogService,
 		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
 		@Inject(INotebookService) private notebookService: INotebookService,
+		@Inject(IConfigurationService) private configurationService: IConfigurationService,
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(IContextKeyService) private contextKeyService: IContextKeyService,
 		@Inject(IMenuService) private menuService: IMenuService,
@@ -110,7 +114,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 		await this.model.loadContents(trusted);
 
 		this.extension = new NotebookViewExtension(this.model);
-		this.viewMode = this.model.viewMode || ViewMode.Notebook;
+		this.viewMode = this.getViewMode();
 
 		this._register(model.viewModeChanged((mode) => this.onViewModeChanged()));
 		this._register(model.contentChanged((change) => this.handleContentChanged(change)));
@@ -188,7 +192,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 	}
 
 	private handleViewDeleted() {
-		this.viewMode = ViewMode.Notebook;
+		this.viewMode = this.defaultViewMode;
 		this.detectChanges();
 	}
 
@@ -203,5 +207,14 @@ export class NotebookEditorComponent extends AngularDisposable {
 		let activeView = this.extension.getActiveView() ?? views[0];
 
 		this.activeView = activeView;
+	}
+
+	public getViewMode(): ViewMode {
+		// Check if views are enabled, otherwise default to notebook mode
+		if (!this.configurationService.getValue<boolean>(NOTEBOOK_VIEWS_ENABLED_PROPERTY)) {
+			return this.defaultViewMode;
+		}
+
+		return this.viewMode || this.defaultViewMode;
 	}
 }
