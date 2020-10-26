@@ -70,10 +70,7 @@
         "displayName": "%resource-type-sql-image-display-name%",
         "description": "%resource-type-sql-image-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/sql_server_container.svg",
-          "dark": "./images/sql_server_container_inverse.svg"
-        },
+        "icon": "./images/sql_server_container.svg",
         "tags": ["On-premises", "SQL Server"],
         "options": [
           {
@@ -202,10 +199,7 @@
         "displayName": "%resource-type-sql-bdc-display-name%",
         "description": "%resource-type-sql-bdc-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/sql_bdc.svg",
-          "dark": "./images/sql_bdc_inverse.svg"
-        },
+        "icon": "./images/sql_bdc.svg",
         "tags": ["On-premises", "SQL Server"],
         "options": [
           {
@@ -400,10 +394,7 @@
         "displayName": "%azure-sqldb-display-name%",
         "description": "%azure-sqldb-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/azure-sql-db.svg",
-          "dark": "./images/azure-sql-db.svg"
-        },
+        "icon": "./images/azure-sql-db.svg",
         "tags": ["SQL Server", "Cloud"],
         "okButtonText": [
           {
@@ -485,10 +476,7 @@
         "displayName": "%azure-sqlvm-display-name%",
         "description": "%azure-sqlvm-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/azure-sql-vm.svg",
-          "dark": "./images/azure-sql-vm.svg"
-        },
+        "icon": "./images/azure-sql-vm.svg",
         "tags": ["SQL Server", "Cloud"],
         "providers": [
           {
