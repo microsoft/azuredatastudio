@@ -45,6 +45,9 @@ export abstract class Validation {
 	private _description: string;
 	protected readonly _target?: string;
 
+	get target(): string | undefined {
+		return this._target;
+	}
 	get description(): string {
 		return this._description;
 	}
@@ -107,7 +110,7 @@ export class RegexValidation extends Validation {
 }
 
 export abstract class Comparison extends Validation {
-	protected _target: string;
+	protected _target: string; // comparison object require a target so override the base optional setting.
 
 	get target(): string {
 		return this._target;

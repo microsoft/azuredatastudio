@@ -59,7 +59,7 @@
 			"type": "node",
 			"request": "attach",
 			"name": "Attach to Main Process",
-			"timeout": 30000,
+			"timeout": 300000,
 			"port": 5875,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -72,7 +72,8 @@
 			"type": "chrome",
 			"request": "attach",
 			"name": "Attach to azuredatastudio",
-			"port": 9222
+			"port": 9222,
+			"timeout": 2000000
 		},
 		{
 			"type": "pwa-chrome",
@@ -88,7 +89,7 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
 			},
 			"port": 9222,
-			"timeout": 20000,
+			"timeout": 200000,
 			"env": {
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null,
 				"VSCODE_SKIP_PRELAUNCH": "1"

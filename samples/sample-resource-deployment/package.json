@@ -24,6 +24,98 @@
   "contributes": {
     "resourceDeploymentTypes": [
       {
+				"name": "validations-wizard",
+				"displayName": "%resource.type.wizard.display.name%",
+				"description": "%resource.type.wizard.description%",
+				"platforms": "*",
+        "icon": {
+          "light": "./images/book.svg",
+          "dark": "./images/book_inverse.svg"
+        },
+				"providers": [
+					{
+						"notebookWizard": {
+              "notebook": "%deployment-notebook-1%",
+							"runNotebook": false,
+							"codeCellInsertionPosition": 1,
+							"actionText": "%deploy.wizard.action%",
+							"title": "%wizard.new.wizard.title%",
+							"name": "wizard.new.wizard",
+							"labelPosition": "left",
+							"generateSummaryPage": false,
+							"pages": [
+								{
+									"title": "%wizard.select.cluster.title%",
+									"sections": [
+										{
+											"fields": [
+                        {
+                          "label": "%arc.cores-limit.label%",
+                          "description": "%arc.sql.cores-limit.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                          "type": "number",
+                          "min": 1,
+                          "required": false,
+                          "validations": [
+                            {
+                              "type": "is_integer",
+                              "description": "%cores.limit.should.be.integer%"
+                            },
+                            {
+                              "type": ">=",
+                              "target": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
+                              "description": "%cores.limit.greater.than.or.equal.to.requested.cores%"
+                            }
+                          ]
+                        },
+                        {
+                          "label": "%arc.cores-request.label%",
+                          "description": "%arc.sql.cores-request.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
+                          "type": "number",
+                          "min": 1,
+                          "required": false,
+                          "validations": [
+                            {
+                              "type": "is_integer",
+                              "description": "%requested.cores.should.be.integer%"
+                            },
+                            {
+                              "type": "<=",
+                              "target": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                              "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
+                            }
+                          ]
+                        }
+											]
+										}
+									]
+								}
+							]
+						},
+						"requiredTools": [
+							{
+								"name": "kubectl"
+							}
+						],
+						"when": true
+					}
+				],
+				"agreement": {
+					"template": "%wizard.data.controller.agreement%",
+					"links": [
+						{
+							"text": "%contoso.agreement.privacy.statement%",
+							"url": "https://go.contoso.com/fwlink/?LinkId=853010"
+						},
+						{
+							"text": "%wizard.agreement.contosoCmd.eula%",
+							"url": "https://aka.ms/eula-contosoCmd-en"
+						}
+					]
+				}
+			},
+      {
 				"name": "test-wizard",
 				"displayName": "%resource.type.wizard.display.name%",
 				"description": "%resource.type.wizard.description%",
