@@ -3,11 +3,62 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import 'mocha';
 import * as should from 'should';
-import { GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, Validation, ValidationType, ValidationValueType } from '../../../ui/validation/validations';
+import * as sinon from 'sinon';
+import { createValidation, GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, validateInputBoxComponent, Validation, ValidationType, ValidationValueType } from '../../../ui/validation/validations';
+
+const inputBox = <azdata.InputBoxComponent>{
+	updateProperty(key: string, value: any) {}
+};
+let inputBoxStub: sinon.SinonStub;
+const testValidations = [
+	{
+		type: ValidationType.IsInteger,
+		description: 'field was not an integer'
+	},
+	{
+		type: ValidationType.Regex,
+		description: 'field must contain only alphabetic characters',
+		regex: '^[a-z]+$'
+	},
+	{
+		type: ValidationType.LessThanOrEqualsTo,
+		description: 'field value must be <= field2\'s value',
+		target: 'field2'
+	},
+	{
+		type: ValidationType.GreaterThanOrEqualsTo,
+		description: 'field value must be >= field1\'s value',
+		target: 'field1'
+	}
+];
 
 suite('Validation', () => {
+	suite('createValidation and validate input Box', () => {
+		setup(() => {
+			sinon.restore(); //cleanup all previously defined sinon mocks
+			inputBoxStub = sinon.stub(inputBox, 'updateProperty' ).resolves();
+		});
+		testValidations.forEach(testObj => {
+			test(`validationType: ${testObj.type}`, async () => {
+				const validation = createValidation(testObj, async () => undefined, async (_varName: string) => undefined);
+				switch(testObj.type) {
+					case ValidationType.IsInteger: should(validation).be.instanceOf(IntegerValidation); break;
+					case ValidationType.Regex: should(validation).be.instanceOf(RegexValidation); break;
+					case ValidationType.LessThanOrEqualsTo: should(validation).be.instanceOf(LessThanOrEqualsValidation); break;
+					case ValidationType.GreaterThanOrEqualsTo: should(validation).be.instanceOf(GreaterThanOrEqualsValidation); break;
+					default: console.log(`unexpected validation type: ${testObj.type}`); break;
+				}
+				should(await validateInputBoxComponent(inputBox, [validation])).be.false();
+				should(inputBoxStub.calledOnce).be.true();
+				should(inputBoxStub.getCall(0).args[0]).equal('validationErrorMessage');
+				should(inputBoxStub.getCall(0).args[1]).equal(testObj.description);
+			});
+		});
+	});
+	
 	suite('IntegerValidation', () => {
 		// all the below test values are arbitrary representative values or sentinel values for integer validation
 		[
@@ -162,8 +213,8 @@ async function testValidation(validation: Validation, test: TestObject, validati
 	const validationResult = await validation.validate();
 	should(validationResult.valid).be.equal(test.expected, validationDescription);
 	validationResult.valid
-		?	should(validationResult.message).be.undefined()
-		:	should(validationResult.message).be.equal(validationDescription);
+		? should(validationResult.message).be.undefined()
+		: should(validationResult.message).be.equal(validationDescription);
 }
 
 function getDisplayString(value: ValidationValueType) {
