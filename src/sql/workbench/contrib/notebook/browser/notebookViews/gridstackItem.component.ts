@@ -11,6 +11,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { HideCellAction, RunCellAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/actions';
 import { NotebookViewExtension, INotebookViewCellMetadata, INotebookView, CellChangeEventType } from 'sql/workbench/services/notebook/browser/models/notebookView';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
+import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 
 
 //declare var $: any; // JQuery
@@ -68,15 +69,16 @@ export class GridStackItemComponent implements OnInit {
 		//this._actions = new Array<Action>();
 		if (this._actionbarRef) {
 			let context = new CellContext(this.model, this.cell);
-			let runCellAction = this._instantiationService.createInstance(RunCellAction, context);
-
-			let hideButton = new HideCellAction(this.hide, this);
 
 			this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
 			this._actionbar.context = { target: this._actionbarRef.nativeElement };
 
-			//this._actionbar.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, this._actions as Array<IAction>, new CellContext(this.model, this.cell)), { icon: true, label: false });
-			this._actionbar.push(runCellAction, { icon: true });
+			if (this.cell.cellType === CellTypes.Code) {
+				let runCellAction = this._instantiationService.createInstance(RunCellAction, context);
+				this._actionbar.push(runCellAction, { icon: true });
+			}
+
+			let hideButton = new HideCellAction(this.hide, this);
 			this._actionbar.push(hideButton, { icon: true });
 		}
 	}
