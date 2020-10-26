@@ -229,7 +229,6 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		input.setAriaLabel(this.ariaLabel);
 		input.setPlaceHolder(this.placeHolder);
 		input.setEnabled(this.enabled);
-		input.inputElement.title = this.title;
 		this.layoutInputBox();
 		if (this.multiline) {
 			if (isNumber(this.rows)) {
@@ -246,6 +245,11 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 
 		input.inputElement.required = this.required;
 		input.inputElement.readOnly = this.readOnly;
+
+		// only update title if there's a value, otherwise title gets set to placeholder above
+		if (this.title) {
+			input.inputElement.title = this.title;
+		}
 	}
 
 	// CSS-bound properties
