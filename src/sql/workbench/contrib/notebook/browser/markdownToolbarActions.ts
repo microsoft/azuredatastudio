@@ -15,7 +15,8 @@ import { Selection } from 'vs/editor/common/core/selection';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
-
+import { Callout, CalloutStyle } from 'sql/workbench/contrib/notebook/browser/callout';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class TransformMarkdownAction extends Action {
 
@@ -26,19 +27,20 @@ export class TransformMarkdownAction extends Action {
 		tooltip: string,
 		private _cellModel: ICellModel,
 		private _type: MarkdownButtonType,
-		@INotebookService private _notebookService: INotebookService
+		@INotebookService private _notebookService: INotebookService,
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
 	}
 	public run(context: any): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
+		return new Promise<boolean>(async (resolve, reject) => {
 			try {
 				if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
 					this.transformDocumentCommand();
 				} else {
-					let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel);
-					markdownTextTransformer.transformText(this._type);
+					let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel, this._instantiationService);
+					await markdownTextTransformer.transformText(this._type, this._cssClass);
 				}
 				resolve(true);
 			} catch (e) {
@@ -93,17 +95,19 @@ export class TransformMarkdownAction extends Action {
 }
 
 export class MarkdownTextTransformer {
+	private _callout: Callout;
 
 	constructor(
 		private _notebookService: INotebookService,
 		private _cellModel: ICellModel,
+		private _instantiationService: IInstantiationService,
 		private _notebookEditor?: INotebookEditor) { }
 
 	public get notebookEditor(): INotebookEditor {
 		return this._notebookEditor;
 	}
 
-	public transformText(type: MarkdownButtonType): void {
+	public async transformText(type: MarkdownButtonType, triggerClassList?: string): Promise<void> {
 		let editorControl = this.getEditorControl();
 		if (editorControl) {
 			let selections = editorControl.getSelections();
@@ -117,8 +121,18 @@ export class MarkdownTextTransformer {
 				endLineNumber: selection.startLineNumber
 			};
 
-			let beginInsertedText = getStartTextToInsert(type);
-			let endInsertedText = getEndTextToInsert(type);
+			let beginInsertedText: string;
+			let endInsertedText: string;
+
+			if (type === MarkdownButtonType.IMAGE || type === MarkdownButtonType.LINK) {
+				let buttonElementSelector = triggerClassList.replace(/^/, '.').replace(/\s/g, '.');
+				let triggerelector = (`.notebook-cell.active ${buttonElementSelector}`);
+				let calloutStyle = MarkdownButtonType[type].toString() as CalloutStyle;
+				beginInsertedText = await this.createCallout(calloutStyle, triggerelector);
+			} else {
+				beginInsertedText = getStartTextToInsert(type);
+				endInsertedText = getEndTextToInsert(type);
+			}
 
 			let endRange: IRange = {
 				startColumn: selection.endColumn,
@@ -148,6 +162,24 @@ export class MarkdownTextTransformer {
 			// Always give focus back to the editor after pressing the button
 			editorControl.focus();
 		}
+	}
+
+	/**
+	 * Instantiate modal for use as callout when inserting Link or Image into markdown.
+	 * @param calloutStyle Style of callout passed in to determine which callout is rendered
+	 */
+	private async createCallout(calloutStyle: CalloutStyle, triggerCssSelector?: string) {
+		let title = calloutStyle.toString().toLowerCase();
+
+		if (!this._callout) {
+			this._callout = this._instantiationService.createInstance(Callout, calloutStyle, title, triggerCssSelector);
+			this._callout.render();
+		}
+		let calloutOptions = await this._callout.open();
+		calloutOptions.insertTtitle = calloutStyle.toString().toLowerCase();
+		calloutOptions.calloutStyle = calloutStyle;
+
+		return calloutOptions.insertMarkup;
 	}
 
 	private getEditorControl(): CodeEditorWidget | undefined {
