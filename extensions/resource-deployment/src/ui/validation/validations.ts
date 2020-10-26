@@ -82,7 +82,7 @@ export class IntegerValidation extends Validation {
 		const isValid = await this.isInteger();
 		return {
 			valid: isValid,
-			message: isValid ? undefined: this.description
+			message: isValid ? undefined : this.description
 		};
 	}
 }
@@ -107,7 +107,7 @@ export class RegexValidation extends Validation {
 			: this.regex.test(value.toString());
 		return {
 			valid: isValid,
-			message: isValid ? undefined: this.description
+			message: isValid ? undefined : this.description
 		};
 	}
 }
@@ -130,7 +130,7 @@ export abstract class Comparison extends Validation {
 		const isValid = await this.isComparisonSuccessful();
 		return {
 			valid: isValid,
-			message:  isValid ? undefined: this.description
+			message: isValid ? undefined : this.description
 		};
 	}
 }
