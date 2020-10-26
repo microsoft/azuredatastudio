@@ -10,7 +10,7 @@ import * as sinon from 'sinon';
 import { createValidation, GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, validateInputBoxComponent, Validation, ValidationType, ValidationValueType } from '../../../ui/validation/validations';
 
 const inputBox = <azdata.InputBoxComponent>{
-	updateProperty(key: string, value: any) {}
+	updateProperty(key: string, value: any) { }
 };
 let inputBoxStub: sinon.SinonStub;
 const testValidations = [
@@ -39,12 +39,12 @@ suite('Validation', () => {
 	suite('createValidation and validate input Box', () => {
 		setup(() => {
 			sinon.restore(); //cleanup all previously defined sinon mocks
-			inputBoxStub = sinon.stub(inputBox, 'updateProperty' ).resolves();
+			inputBoxStub = sinon.stub(inputBox, 'updateProperty').resolves();
 		});
 		testValidations.forEach(testObj => {
 			test(`validationType: ${testObj.type}`, async () => {
 				const validation = createValidation(testObj, async () => undefined, async (_varName: string) => undefined);
-				switch(testObj.type) {
+				switch (testObj.type) {
 					case ValidationType.IsInteger: should(validation).be.instanceOf(IntegerValidation); break;
 					case ValidationType.Regex: should(validation).be.instanceOf(RegexValidation); break;
 					case ValidationType.LessThanOrEqualsTo: should(validation).be.instanceOf(LessThanOrEqualsValidation); break;
@@ -58,7 +58,7 @@ suite('Validation', () => {
 			});
 		});
 	});
-	
+
 	suite('IntegerValidation', () => {
 		// all the below test values are arbitrary representative values or sentinel values for integer validation
 		[
