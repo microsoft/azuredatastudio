@@ -28,6 +28,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { TestTreeView } from 'sql/workbench/services/connection/test/browser/testTreeView';
 import { ConnectionTreeService, IConnectionTreeService } from 'sql/workbench/services/connection/common/connectionTreeService';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 suite('ConnectionDialogWidget tests', () => {
 	const testTreeViewId = 'testTreeView';
 	const ViewsRegistry = Registry.as<IViewsRegistry>(Extensions.ViewsRegistry);
@@ -53,6 +54,8 @@ suite('ConnectionDialogWidget tests', () => {
 		cmInstantiationService = new TestInstantiationService();
 		cmInstantiationService.stub(IStorageService, new TestStorageService());
 		cmInstantiationService.stub(IConnectionTreeService, new ConnectionTreeService());
+		cmInstantiationService.stub(IContextKeyService, new MockContextKeyService());
+
 		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
 			undefined, // connection store
 			undefined, // connection status manager
