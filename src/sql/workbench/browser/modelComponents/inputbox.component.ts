@@ -229,6 +229,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		input.setAriaLabel(this.ariaLabel);
 		input.setPlaceHolder(this.placeHolder);
 		input.setEnabled(this.enabled);
+		input.inputElement.title = this.title;
 		this.layoutInputBox();
 		if (this.multiline) {
 			if (isNumber(this.rows)) {
@@ -267,6 +268,14 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 
 	public set placeHolder(newValue: string) {
 		this.setPropertyFromUI<string>((props, value) => props.placeHolder = value, newValue);
+	}
+
+	public get title(): string {
+		return this.getPropertyOrDefault<string>((props) => props.title, '');
+	}
+
+	public set title(newValue: string) {
+		this.setPropertyFromUI<string>((props, value) => props.title = value, newValue);
 	}
 
 	public set columns(newValue: number) {
