@@ -72,7 +72,7 @@
         "platforms": "*",
         "icon": {
           "light": "./images/sql_server_container.svg",
-          "dark": "./images/sql_server_container_inverse.svg"
+          "dark": "./images/sql_server_container.svg"
         },
         "tags": ["On-premises", "SQL Server"],
         "options": [
@@ -204,7 +204,7 @@
         "platforms": "*",
         "icon": {
           "light": "./images/sql_bdc.svg",
-          "dark": "./images/sql_bdc_inverse.svg"
+          "dark": "./images/sql_bdc.svg"
         },
         "tags": ["On-premises", "SQL Server"],
         "options": [
