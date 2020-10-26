@@ -24,7 +24,7 @@ import { ILabelService } from 'vs/platform/label/common/label';
 import { WorkbenchAsyncDataTree } from 'vs/platform/list/browser/listService';
 import { FileThemeIcon, FolderThemeIcon, IThemeService, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { IResourceLabel, ResourceLabels } from 'vs/workbench/browser/labels';
-import { ITreeItemLabel, ITreeViewDataProvider, TreeItemCollapsibleState } from 'vs/workbench/common/views';
+import { ITreeItemLabel, ITreeViewDataProvider, TreeItemCollapsibleState, TreeViewItemHandleArg } from 'vs/workbench/common/views';
 import { Emitter, Event } from 'vs/base/common/event';
 import { AsyncRecentConnectionTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/asyncRecentConnectionTreeDataSource';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -37,10 +37,14 @@ import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browse
 import { ConnectionProfileGroupRenderer, ConnectionProfileRenderer, TreeNodeRenderer } from 'sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer';
 import { ColorScheme } from 'vs/platform/theme/common/theme';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { debounce } from 'vs/base/common/decorators';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
+import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IAction } from 'vs/base/common/actions';
+import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 
 export type TreeElement = ConnectionProviderElement | ITreeItemFromProvider | SavedConnectionNode | ServerTreeElement;
 
@@ -58,6 +62,8 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 	private model: TreeModel | undefined;
 	private treeLabels: ResourceLabels | undefined;
 	private treeDataSource: DataSource | undefined;
+	private readonly contextKey = new ContextKey(this.contextKeyService);
+
 	public onDidChangeVisibility = Event.None;
 
 	private readonly _onSelect = this._register(new Emitter<ITreeMouseEvent<TreeElement>>());
@@ -71,7 +77,10 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		@IConnectionTreeService private readonly connectionTreeService: IConnectionTreeService,
 		@IContextViewService private readonly contextViewService: IContextViewService,
 		@IThemeService private readonly themeService: IThemeService,
-		@ICommandService private readonly commandService: ICommandService
+		@ICommandService private readonly commandService: ICommandService,
+		@IMenuService private readonly menuService: IMenuService,
+		@IContextKeyService private readonly contextKeyService: IContextKeyService,
+		@IContextMenuService private readonly contextMenuService: IContextMenuService
 	) {
 		super();
 		this.connectionTreeService.setView(this);
@@ -143,7 +152,23 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 				transformOptimization: false,
 				accessibilityProvider: new ListAccessibilityProvider()
 			}) as WorkbenchAsyncDataTree<TreeModel, TreeElement>);
+		this.tree.onContextMenu(e => {
+			const context = e.element as ITreeItemFromProvider;
+			if (context?.element) {
+				this.contextKey.set(context.element);
+				const menu = this.menuService.createMenu(MenuId.ConnectionDialogBrowseTreeContext, this.contextKeyService);
+				const primary: IAction[] = [];
+				const secondary: IAction[] = [];
+				const result = { primary, secondary };
+				createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService);
 
+				this.contextMenuService.showContextMenu({
+					getAnchor: () => e.anchor,
+					getActions: () => result.primary,
+					getActionsContext: () => (<TreeViewItemHandleArg>{ $treeViewId: context.treeId, $treeItemHandle: context.element.handle, $treeItem: context.element })
+				});
+			}
+		});
 		this.tree.onMouseDblClick(e => this._onDblClick.fire(e));
 		this.tree.onMouseClick(e => this._onSelect.fire(e));
 		this.tree.onDidOpen((e) => {
@@ -166,13 +191,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 
 	async refresh(items?: ITreeItem[]): Promise<void> {
 		if (this.tree) {
-			if (items) {
-				for (const item of items) {
-					await this.tree.updateChildren({ element: item });
-				}
-			} else {
-				return this.tree.updateChildren();
-			}
+			return this.tree.updateChildren();
 		}
 	}
 
@@ -190,6 +209,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 
 export interface ITreeItemFromProvider {
 	readonly element: ITreeItem;
+	readonly treeId?: string;
 	getChildren?(): Promise<ITreeItemFromProvider[]>
 }
 
@@ -204,6 +224,7 @@ class ConnectionProviderElement {
 		const children = await this.provider.getChildren(element);
 		return children.map(v => ({
 			element: v,
+			treeId: this.descriptor.id,
 			getChildren: () => this.getChildren(v)
 		}));
 	}
@@ -543,5 +564,29 @@ class TreeItemRenderer extends Disposable implements ITreeRenderer<ITreeItemFrom
 		// templateData.resourceLabel.dispose();
 		// templateData.actionBar.dispose();
 		templateData.elementDisposable.dispose();
+	}
+}
+
+class ContextKey extends Disposable implements IContextKey<ITreeItem> {
+	static readonly ContextValue = new RawContextKey<string>('contextValue', undefined);
+	static readonly Item = new RawContextKey<ITreeItem>('item', undefined);
+	private _contextValueKey: IContextKey<string>;
+	private _itemKey: IContextKey<ITreeItem>;
+
+	constructor(
+		@IContextKeyService contextKeyService: IContextKeyService
+	) {
+		super();
+		this._contextValueKey = ContextKey.ContextValue.bindTo(contextKeyService);
+		this._itemKey = ContextKey.Item.bindTo(contextKeyService);
+	}
+	set(value: ITreeItem): void {
+		this._contextValueKey.set(value.contextValue);
+	}
+	reset(): void {
+		this._contextValueKey.reset();
+	}
+	get(): ITreeItem {
+		return this._itemKey.get();
 	}
 }
