@@ -187,7 +187,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 	/*
 	Function that is used to change the radio button DOM based on whether databases exist or not.
 	*/
-	private async disableUpgradeRadioButton(): Promise<azdata.FormComponent> {
+	private disableUpgradeRadioButton(): azdata.FormComponent {
 		/* Set the upgrade radio button to be disabled and call the updateNewRadioButton function
 		to update the new radio button accordingly.
 		*/
@@ -208,7 +208,6 @@ export class DeployConfigPage extends DacFxConfigPage {
 		upgrade radio button accordingly.
 		*/
 		this.upgradeRadioButton.enabled = true;
-		this.upgradeRadioButton.checked = true;
 
 		this.updateUpgradeRadioButton();
 
