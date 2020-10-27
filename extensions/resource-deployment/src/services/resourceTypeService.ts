@@ -64,8 +64,12 @@ export class ResourceTypeService implements IResourceTypeService {
 	}
 
 	private updatePathProperties(resourceType: ResourceType, extensionPath: string): void {
-		resourceType.icon.dark = path.join(extensionPath, resourceType.icon.dark);
-		resourceType.icon.light = path.join(extensionPath, resourceType.icon.light);
+		if (typeof resourceType.icon === 'string') {
+			resourceType.icon = path.join(extensionPath, resourceType.icon);
+		} else {
+			resourceType.icon.dark = path.join(extensionPath, resourceType.icon.dark);
+			resourceType.icon.light = path.join(extensionPath, resourceType.icon.light);
+		}
 		resourceType.providers.forEach((provider) => {
 			if (instanceOfNotebookDeploymentProvider(provider)) {
 				this.updateNotebookPath(provider, extensionPath);
@@ -131,7 +135,7 @@ export class ResourceTypeService implements IResourceTypeService {
 
 	private validateResourceType(resourceType: ResourceType, positionInfo: string, errorMessages: string[]): void {
 		this.validateNameDisplayName(resourceType, 'resource type', positionInfo, errorMessages);
-		if (!resourceType.icon || !resourceType.icon.dark || !resourceType.icon.light) {
+		if (!resourceType.icon || (typeof resourceType.icon === 'object' && (!resourceType.icon.dark || !resourceType.icon.light))) {
 			errorMessages.push(`Icon for resource type is not specified properly. ${positionInfo} `);
 		}
 
@@ -225,28 +229,8 @@ export class ResourceTypeService implements IResourceTypeService {
 	private getProvider(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined {
 		for (let i = 0; i < resourceType.providers.length; i++) {
 			const provider = resourceType.providers[i];
-			if (provider.when === undefined || provider.when.toString().toLowerCase() === 'true') {
+			if (processWhenClause(provider.when, selectedOptions)) {
 				return provider;
-			} else {
-				const expected = provider.when.replace(' ', '').split('&&').sort();
-				let actual: string[] = [];
-				selectedOptions.forEach(option => {
-					actual.push(`${option.option}=${option.value}`);
-				});
-				actual = actual.sort();
-
-				if (actual.length === expected.length) {
-					let matches = true;
-					for (let j = 0; j < actual.length; j++) {
-						if (actual[j] !== expected[j]) {
-							matches = false;
-							break;
-						}
-					}
-					if (matches) {
-						return provider;
-					}
-				}
 			}
 		}
 		return undefined;
@@ -256,16 +240,16 @@ export class ResourceTypeService implements IResourceTypeService {
 	 * Get the ok button text based on the selected options
 	 */
 	private getOkButtonText(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): string | undefined {
-		if (resourceType.okButtonText && selectedOptions.length === 1) {
-			const optionGiven = `${selectedOptions[0].option}=${selectedOptions[0].value}`;
+		if (resourceType.okButtonText) {
 			for (const possibleOption of resourceType.okButtonText) {
-				if (possibleOption.when === optionGiven || possibleOption.when === undefined || possibleOption.when.toString().toLowerCase() === 'true') {
+				if (processWhenClause(possibleOption.when, selectedOptions)) {
 					return possibleOption.value;
 				}
 			}
 		}
 		return loc.select;
 	}
+
 
 	public startDeployment(provider: DeploymentProvider): void {
 		const self = this;
@@ -368,5 +352,28 @@ async function exists(path: string): Promise<boolean> {
 		return true;
 	} catch (e) {
 		return false;
+	}
+}
+
+/**
+ * processWhenClause takes in a when clause (either the word 'true' or a series of clauses in the format:
+ * '<type_name>=<value_name>' joined by '&&').
+ * If the when clause is true or undefined, return true as there is no clause to check.
+ * It evaluates each individual when clause by comparing the equivalent selected options (sorted in alphabetical order and formatted to match).
+ * If there is any selected option that doesn't match, return false.
+ * Return true if all clauses match.
+ */
+export function processWhenClause(when: string | undefined, selectedOptions: { option: string, value: string }[]): boolean {
+	if (when === undefined || when.toString().toLowerCase() === 'true') {
+		return true;
+	} else {
+		const expected = when.replace(/\s/g, '').split('&&').sort();
+		const actual = selectedOptions.map(option => `${option.option}=${option.value}`);
+		for (let whenClause of expected) {
+			if (actual.indexOf(whenClause) === -1) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

@@ -246,6 +246,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('test2.dacpac');
 		should(projFileText).containEql('<DatabaseSqlCmdVariable>test2Db</DatabaseSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="test2Db">');
+		should(projFileText).containEql('<DefaultValue>test2DbName</DefaultValue>');
 	});
 
 	it('Should add a dacpac reference to a different database in a different server correctly', async function (): Promise<void> {
@@ -270,8 +271,10 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('test3.dacpac');
 		should(projFileText).containEql('<DatabaseSqlCmdVariable>test3Db</DatabaseSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="test3Db">');
+		should(projFileText).containEql('<DefaultValue>test3DbName</DefaultValue>');
 		should(projFileText).containEql('<ServerSqlCmdVariable>otherServer</ServerSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="otherServer">');
+		should(projFileText).containEql('<DefaultValue>otherServerName</DefaultValue>');
 	});
 
 	it('Should add a project reference to the same database correctly', async function (): Promise<void> {
@@ -322,6 +325,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('project1');
 		should(projFileText).containEql('<DatabaseSqlCmdVariable>testdb</DatabaseSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="testdb">');
+		should(projFileText).containEql('<DefaultValue>testdbName</DefaultValue>');
 	});
 
 	it('Should add a project reference to a different database in a different server correctly', async function (): Promise<void> {
@@ -351,8 +355,10 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('project1');
 		should(projFileText).containEql('<DatabaseSqlCmdVariable>testdb</DatabaseSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="testdb">');
+		should(projFileText).containEql('<DefaultValue>testdbName</DefaultValue>');
 		should(projFileText).containEql('<ServerSqlCmdVariable>otherServer</ServerSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="otherServer">');
+		should(projFileText).containEql('<DefaultValue>otherServerName</DefaultValue>');
 	});
 
 	it('Should not allow adding duplicate database references', async function (): Promise<void> {
@@ -375,6 +381,57 @@ describe('Project: sqlproj content operations', function (): void {
 		// try to add reference to test.dacpac again
 		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), suppressMissingDependenciesErrors: false }), constants.databaseReferenceAlreadyExists);
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after trying to add a reference to test.dacpac again');
+	});
+
+	it('Should update sqlcmd variable values if value changes', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+		const databaseVariable = 'test3Db';
+		const serverVariable = 'otherServer';
+
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+		await project.addDatabaseReference({
+			dacpacFileLocation: Uri.file('test3.dacpac'),
+			databaseName: 'test3DbName',
+			databaseVariable: databaseVariable,
+			serverName: 'otherServerName',
+			serverVariable: serverVariable,
+			suppressMissingDependenciesErrors: false
+		});
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test3');
+		should(project.databaseReferences[0].databaseName).equal('test3', 'The database reference should be test3');
+		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'There should be 2 sqlcmdvars after adding the dacpac reference');
+
+		// make sure reference to test3.dacpac and SQLCMD variables were added
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).containEql('<SqlCmdVariable Include="test3Db">');
+		should(projFileText).containEql('<DefaultValue>test3DbName</DefaultValue>');
+		should(projFileText).containEql('<SqlCmdVariable Include="otherServer">');
+		should(projFileText).containEql('<DefaultValue>otherServerName</DefaultValue>');
+
+		// delete reference
+		await project.deleteDatabaseReference(project.databaseReferences[0]);
+		should(project.databaseReferences.length).equal(0, 'There should be no database references after deleting');
+		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'There should still be 2 sqlcmdvars after deleting the dacpac reference');
+
+		// add reference to the same dacpac again but with different values for the sqlcmd variables
+		await project.addDatabaseReference({
+			dacpacFileLocation: Uri.file('test3.dacpac'),
+			databaseName: 'newDbName',
+			databaseVariable: databaseVariable,
+			serverName: 'newServerName',
+			serverVariable: serverVariable,
+			suppressMissingDependenciesErrors: false
+		});
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test3');
+		should(project.databaseReferences[0].databaseName).equal('test3', 'The database reference should be test3');
+		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'There should still be 2 sqlcmdvars after adding the dacpac reference again with different sqlcmdvar values');
+
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).containEql('<SqlCmdVariable Include="test3Db">');
+		should(projFileText).containEql('<DefaultValue>newDbName</DefaultValue>');
+		should(projFileText).containEql('<SqlCmdVariable Include="otherServer">');
+		should(projFileText).containEql('<DefaultValue>newServerName</DefaultValue>');
 	});
 
 	it('Should add pre and post deployment scripts as entries to sqlproj', async function (): Promise<void> {

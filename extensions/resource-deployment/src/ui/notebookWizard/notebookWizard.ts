@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as vscode from 'vscode';
 import * as loc from '../../localizedConstants';
 import { INotebookService, Notebook } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
@@ -54,21 +53,13 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 	}
 
 	protected async onGenerateScript(): Promise<void> {
-		try {
-			const notebook = await this.prepareNotebookAndEnvironment();
-			await this.openNotebook(notebook);
-		} catch (error) {
-			vscode.window.showErrorMessage(error);
-		}
+		const notebook = await this.prepareNotebookAndEnvironment();
+		await this.openNotebook(notebook);
 	}
 	protected async onOk(): Promise<void> {
-		try {
-			const notebook = await this.prepareNotebookAndEnvironment();
-			const openedNotebook = await this.openNotebook(notebook);
-			openedNotebook.runAllCells();
-		} catch (error) {
-			vscode.window.showErrorMessage(error);
-		}
+		const notebook = await this.prepareNotebookAndEnvironment();
+		const openedNotebook = await this.openNotebook(notebook);
+		openedNotebook.runAllCells();
 	}
 
 	private async openNotebook(notebook: Notebook) {

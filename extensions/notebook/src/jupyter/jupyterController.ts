@@ -14,7 +14,7 @@ import * as constants from '../common/constants';
 import * as localizedConstants from '../common/localizedConstants';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
-import { IPrompter, IQuestion, confirm } from '../prompts/question';
+import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 
 import { AppContext } from '../common/appContext';
 import { LocalJupyterServerManager, ServerInstanceFactory } from './jupyterServerManager';
@@ -28,7 +28,6 @@ import { LocalPipPackageManageProvider } from './localPipPackageManageProvider';
 import { LocalCondaPackageManageProvider } from './localCondaPackageManageProvider';
 import { ManagePackagesDialogModel, ManagePackageDialogOptions } from '../dialog/managePackages/managePackagesDialogModel';
 import { PyPiClient } from './pypiClient';
-import { IconPathHelper } from '../common/iconHelper';
 
 let untitledCounter = 0;
 
@@ -58,7 +57,6 @@ export class JupyterController {
 			this.extensionContext.extensionPath,
 			this.appContext.outputChannel);
 		await this._jupyterInstallation.configurePackagePaths();
-		IconPathHelper.setExtensionContext(this.extensionContext);
 
 		// Add command/task handlers
 		azdata.tasks.registerTask(constants.jupyterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
@@ -183,7 +181,7 @@ export class JupyterController {
 	//Confirmation message dialog
 	private async confirmReinstall(): Promise<boolean> {
 		return await this.prompter.promptSingle<boolean>(<IQuestion>{
-			type: confirm,
+			type: QuestionTypes.confirm,
 			message: localize('confirmReinstall', "Are you sure you want to reinstall?"),
 			default: true
 		});
