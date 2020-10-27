@@ -96,10 +96,8 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 				cards: components,
 				iconHeight: '100px',
 				iconWidth: '100px',
-				cardWidth: '200px',
-				cardHeight: '200px',
-				width: '1000px',
-				height: '250px',
+				cardWidth: '170px',
+				cardHeight: '170px',
 				ariaLabel: 'test',
 				selectedCardId: selectedCardId
 			}).component();
@@ -107,7 +105,12 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 			flexFlow: 'column'
 		}).withItems([radioCardGroup]).component();
 		this._selectedSourceLabel = modelBuilder.text().withProperties({
-			value: this.getSourceTypeDescription(this._sourceType)
+			value: this.getSourceTypeDescription(this._sourceType),
+			CSSStyles: {
+				'font-size': '14px',
+				'margin': '0',
+				'width': '438px'
+			}
 		}).component();
 
 		this._toDispose.push(radioCardGroup.onSelectionChanged(({ cardId }) => {
