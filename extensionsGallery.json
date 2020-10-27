@@ -3789,7 +3789,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://github.com/tanyogeorgiev/Pastelin/blob/main/assets/logo.png"
+									"source": "https://raw.githubusercontent.com/tanyogeorgiev/Pastelin/main/assets/logo.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
@@ -3821,7 +3821,7 @@
 						}
 					],
 					"statistics": [],
-					"flags": "preview"
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -3830,7 +3830,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 64
+							"count": 65
 						}
 					]
 				}
