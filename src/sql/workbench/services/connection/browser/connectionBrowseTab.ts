@@ -24,7 +24,7 @@ import { ILabelService } from 'vs/platform/label/common/label';
 import { WorkbenchAsyncDataTree } from 'vs/platform/list/browser/listService';
 import { FileThemeIcon, FolderThemeIcon, IThemeService, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { IResourceLabel, ResourceLabels } from 'vs/workbench/browser/labels';
-import { ITreeItemLabel, ITreeViewDataProvider, TreeItemCollapsibleState } from 'vs/workbench/common/views';
+import { ITreeItemLabel, ITreeViewDataProvider, TreeItemCollapsibleState, TreeViewItemHandleArg } from 'vs/workbench/common/views';
 import { Emitter, Event } from 'vs/base/common/event';
 import { AsyncRecentConnectionTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/asyncRecentConnectionTreeDataSource';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -36,6 +36,15 @@ import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode'
 import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
 import { ConnectionProfileGroupRenderer, ConnectionProfileRenderer, TreeNodeRenderer } from 'sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer';
 import { ColorScheme } from 'vs/platform/theme/common/theme';
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
+import { debounce } from 'vs/base/common/decorators';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
+import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IAction } from 'vs/base/common/actions';
+import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 
 export type TreeElement = ConnectionProviderElement | ITreeItemFromProvider | SavedConnectionNode | ServerTreeElement;
 
@@ -48,8 +57,13 @@ export class ConnectionBrowseTab implements IPanelTab {
 
 export class ConnectionBrowserView extends Disposable implements IPanelView {
 	private tree: WorkbenchAsyncDataTree<TreeModel, TreeElement> | undefined;
+	private filterInput: InputBox | undefined;
+	private treeContainer: HTMLElement | undefined;
 	private model: TreeModel | undefined;
 	private treeLabels: ResourceLabels | undefined;
+	private treeDataSource: DataSource | undefined;
+	private readonly contextKey = new ContextKey(this.contextKeyService);
+
 	public onDidChangeVisibility = Event.None;
 
 	private readonly _onSelect = this._register(new Emitter<ITreeMouseEvent<TreeElement>>());
@@ -60,14 +74,58 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 
 	constructor(
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IConnectionTreeService private readonly connectionTreeService: IConnectionTreeService
+		@IConnectionTreeService private readonly connectionTreeService: IConnectionTreeService,
+		@IContextViewService private readonly contextViewService: IContextViewService,
+		@IThemeService private readonly themeService: IThemeService,
+		@ICommandService private readonly commandService: ICommandService,
+		@IMenuService private readonly menuService: IMenuService,
+		@IContextKeyService private readonly contextKeyService: IContextKeyService,
+		@IContextMenuService private readonly contextMenuService: IContextMenuService
 	) {
 		super();
 		this.connectionTreeService.setView(this);
 	}
 
 	render(container: HTMLElement): void {
+		this.renderFilterBox(container);
+		this.renderTree(container);
+	}
 
+	renderFilterBox(container: HTMLElement): void {
+		this.filterInput = new InputBox(container, this.contextViewService, {
+			placeholder: localize('connectionDialog.FilterPlaceHolder', "Type here to filter the list"),
+			ariaLabel: localize('connectionDialog.FilterInputTitle', "Filter connections")
+		});
+		this.filterInput.element.style.margin = '5px';
+		this._register(this.filterInput);
+		this._register(attachInputBoxStyler(this.filterInput, this.themeService));
+		this._register(this.filterInput.onDidChange(async () => {
+			await this.applyFilter();
+		}));
+	}
+
+	@debounce(500)
+	async applyFilter(): Promise<void> {
+		this.treeDataSource.setFilter(this.filterInput.value);
+		await this.refresh();
+		await this.expandAll();
+	}
+
+	async expandAll(): Promise<void> {
+		const expandedTreeItems: TreeElement[] = [];
+		let treeItemsToExpand: TreeElement[] = this.treeDataSource.expandableTreeNodes;
+		// expand the nodes one by one here to avoid the possible azure api traffic throttling.
+		while (treeItemsToExpand.length !== 0) {
+			for (const treeItem of treeItemsToExpand) {
+				await this.tree.expand(treeItem);
+			}
+			expandedTreeItems.push(...treeItemsToExpand);
+			treeItemsToExpand = this.treeDataSource.expandableTreeNodes.filter(el => expandedTreeItems.indexOf(el) === -1);
+		}
+	}
+
+	renderTree(container: HTMLElement): void {
+		this.treeContainer = container.appendChild(DOM.$('div'));
 		this.treeLabels = this._register(this.instantiationService.createInstance(ResourceLabels, this));
 		const renderers: ITreeRenderer<TreeElement, any, any>[] = [
 			new ProviderElementRenderer(),
@@ -79,14 +137,14 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		];
 
 		this.model = this.instantiationService.createInstance(TreeModel);
-
+		this.treeDataSource = new DataSource();
 		this.tree = this._register(this.instantiationService.createInstance(
 			WorkbenchAsyncDataTree,
 			'Browser Connections',
-			container,
+			this.treeContainer,
 			new ListDelegate(),
 			renderers,
-			new DataSource(),
+			this.treeDataSource,
 			{
 				identityProvider: new IdentityProvider(),
 				horizontalScrolling: false,
@@ -94,9 +152,37 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 				transformOptimization: false,
 				accessibilityProvider: new ListAccessibilityProvider()
 			}) as WorkbenchAsyncDataTree<TreeModel, TreeElement>);
+		this._register(this.tree.onContextMenu(e => {
+			const context = e.element as ITreeItemFromProvider;
+			if (context?.element) {
+				this.contextKey.set(context.element);
+				const menu = this.menuService.createMenu(MenuId.ConnectionDialogBrowseTreeContext, this.contextKeyService);
+				const primary: IAction[] = [];
+				const secondary: IAction[] = [];
+				const result = { primary, secondary };
+				createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService);
 
-		this.tree.onMouseDblClick(e => this._onDblClick.fire(e));
-		this.tree.onMouseClick(e => this._onSelect.fire(e));
+				this.contextMenuService.showContextMenu({
+					getAnchor: () => e.anchor,
+					getActions: () => result.primary,
+					getActionsContext: () => (<TreeViewItemHandleArg>{ $treeViewId: context.treeId, $treeItemHandle: context.element.handle, $treeItem: context.element })
+				});
+			}
+		}));
+		this._register(this.tree.onMouseDblClick(e => this._onDblClick.fire(e)));
+		this._register(this.tree.onMouseClick(e => this._onSelect.fire(e)));
+		this._register(this.tree.onDidOpen((e) => {
+			if (!e.browserEvent) {
+				return;
+			}
+			const selection = this.tree.getSelection();
+			if (selection.length === 1) {
+				const selectedNode = selection[0];
+				if ('element' in selectedNode && selectedNode.element.command) {
+					this.commandService.executeCommand(selectedNode.element.command.id, ...(selectedNode.element.command.arguments || []));
+				}
+			}
+		}));
 
 		this.tree.setInput(this.model);
 
@@ -105,18 +191,15 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 
 	async refresh(items?: ITreeItem[]): Promise<void> {
 		if (this.tree) {
-			if (items) {
-				for (const item of items) {
-					await this.tree.updateChildren({ element: item });
-				}
-			} else {
-				return this.tree.updateChildren();
-			}
+			return this.tree.updateChildren();
 		}
 	}
 
 	layout(dimension: DOM.Dimension): void {
-		this.tree.layout(dimension.height, dimension.width);
+		const treeHeight = dimension.height - DOM.getTotalHeight(this.filterInput.element);
+		this.treeContainer.style.width = `${dimension.width}px`;
+		this.treeContainer.style.height = `${treeHeight}px`;
+		this.tree.layout(treeHeight, dimension.width);
 	}
 
 	focus(): void {
@@ -126,6 +209,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 
 export interface ITreeItemFromProvider {
 	readonly element: ITreeItem;
+	readonly treeId?: string;
 	getChildren?(): Promise<ITreeItemFromProvider[]>
 }
 
@@ -140,6 +224,7 @@ class ConnectionProviderElement {
 		const children = await this.provider.getChildren(element);
 		return children.map(v => ({
 			element: v,
+			treeId: this.descriptor.id,
 			getChildren: () => this.getChildren(v)
 		}));
 	}
@@ -267,6 +352,13 @@ class ListAccessibilityProvider implements IListAccessibilityProvider<TreeElemen
 }
 
 class DataSource implements IAsyncDataSource<TreeModel, TreeElement> {
+	private _filter: string | undefined;
+	private _filterRegex: RegExp | undefined;
+	public setFilter(filter: string): void {
+		this._filter = filter;
+		this._filterRegex = new RegExp(filter, 'i');
+	}
+
 	hasChildren(element: TreeModel | TreeElement): boolean {
 		if (element instanceof TreeModel) {
 			return true;
@@ -285,9 +377,42 @@ class DataSource implements IAsyncDataSource<TreeModel, TreeElement> {
 		}
 	}
 
-	getChildren(element: TreeModel | TreeElement): Iterable<TreeElement> | Promise<Iterable<TreeElement>> {
+	public treeNodes: TreeElement[] = [];
+
+	public get expandableTreeNodes(): TreeElement[] {
+		return this.treeNodes.filter(node => {
+			return node instanceof TreeModel
+				|| node instanceof SavedConnectionNode
+				|| node instanceof ConnectionProfileGroup
+				|| node instanceof TreeNode
+				|| node instanceof ConnectionProviderElement
+				|| (!(node instanceof ConnectionProfile) && node.element.collapsibleState !== TreeItemCollapsibleState.None);
+		});
+	}
+
+	async getChildren(element: TreeModel | TreeElement): Promise<Iterable<TreeElement>> {
+		if (element instanceof TreeModel) {
+			this.treeNodes = [];
+		}
 		if (!(element instanceof ConnectionProfile)) {
-			return element.getChildren();
+			let children = await element.getChildren();
+			if (this._filter) {
+				if ((element instanceof SavedConnectionNode) || (element instanceof ConnectionProfileGroup)) {
+					children = (children as (ConnectionProfile | ConnectionProfileGroup)[]).filter(item => {
+						return (item instanceof ConnectionProfileGroup) || this._filterRegex.test(item.title);
+					});
+				} else if (
+					!(element instanceof TreeModel) &&
+					!(element instanceof TreeNode) &&
+					!(element instanceof ConnectionProviderElement)
+				) {
+					children = (children as ITreeItemFromProvider[]).filter(item => {
+						return item.element.collapsibleState !== TreeItemCollapsibleState.None || this._filterRegex.test(item.element.label.label);
+					});
+				}
+			}
+			this.treeNodes.push(...children);
+			return children;
 		}
 		return [];
 	}
@@ -439,5 +564,29 @@ class TreeItemRenderer extends Disposable implements ITreeRenderer<ITreeItemFrom
 		// templateData.resourceLabel.dispose();
 		// templateData.actionBar.dispose();
 		templateData.elementDisposable.dispose();
+	}
+}
+
+class ContextKey extends Disposable implements IContextKey<ITreeItem> {
+	static readonly ContextValue = new RawContextKey<string>('contextValue', undefined);
+	static readonly Item = new RawContextKey<ITreeItem>('item', undefined);
+	private _contextValueKey: IContextKey<string>;
+	private _itemKey: IContextKey<ITreeItem>;
+
+	constructor(
+		@IContextKeyService contextKeyService: IContextKeyService
+	) {
+		super();
+		this._contextValueKey = ContextKey.ContextValue.bindTo(contextKeyService);
+		this._itemKey = ContextKey.Item.bindTo(contextKeyService);
+	}
+	set(value: ITreeItem): void {
+		this._contextValueKey.set(value.contextValue);
+	}
+	reset(): void {
+		this._contextValueKey.reset();
+	}
+	get(): ITreeItem {
+		return this._itemKey.get();
 	}
 }
