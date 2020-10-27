@@ -14,7 +14,7 @@ export interface IBookTocManager {
 	updateBook(section: BookTreeItem, updatedBook: BookTreeItem): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>
 }
-const allowedFileExtensions: string[] = ['.md', '.ipynb', '.ps1', '.sql', '.kusto', '.scala', '.r'];
+const allowedFileExtensions: string[] = ['.md', '.ipynb'];
 
 export enum tocSectionOperation {
 	Remove,
