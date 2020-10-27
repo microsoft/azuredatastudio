@@ -52,20 +52,20 @@ function execFolderListBufferedCommand(context: TestContext, service: ProcessSer
 }
 
 describe('Process Service', () => {
-	it('Executing a valid script should return successfully', async function (): Promise<void> {
+	it('execScripts should return successfully', async function (): Promise<void> {
 		const context = createContext();
 		let service = new ProcessService();
-		await should(execFolderListCommand(context, service, )).resolved();
+		await should(execFolderListCommand(context, service)).resolved();
 	});
 
-	it('execFolderListCommand should reject if command times out', async function (): Promise<void> {
+	it('execScripts should reject if command times out', async function (): Promise<void> {
 		const context = createContext();
 		let service = new ProcessService();
 		service.timeout = 10;
 		await should(execGetCharacterCommand(context, service)).rejected();
 	});
 
-	it('executeBufferedCommand should resolve give valid script', async function (): Promise<void> {
+	it('execScripts should resolve give valid script', async function (): Promise<void> {
 		const context = createContext();
 		let service = new ProcessService();
 		service.timeout = 2000;
