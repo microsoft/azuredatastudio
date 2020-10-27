@@ -40,6 +40,8 @@ export class BookTreeItem extends vscode.TreeItem {
 	public readonly version: string;
 	public command: vscode.Command;
 	public resourceUri: vscode.Uri;
+	private _rootContentPath: string;
+	private _tableOfContentsPath: string;
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, book.treeItemCollapsibleState);
@@ -74,7 +76,9 @@ export class BookTreeItem extends vscode.TreeItem {
 			this.tooltip = `${this._uri}`;
 		}
 		else {
-			this.tooltip = this.book.type === BookTreeItemType.Book ? (this.book.version === BookVersion.v1 ? path.join(this.book.root, content) : this.book.root) : this.book.contentPath;
+			this._tableOfContentsPath = this.book.type === BookTreeItemType.Book || this.contextValue === 'section' ? (this.book.version === BookVersion.v1 ? path.join(this.book.root, '_data', 'toc.yml') : path.join(this.book.root, '_toc.yml')) : undefined;
+			this._rootContentPath = this.book.version === BookVersion.v1 ? path.join(this.book.root, content) : this.book.root;
+			this.tooltip = this.book.type === BookTreeItemType.Book ? this._rootContentPath : this.book.contentPath;
 			this.resourceUri = vscode.Uri.file(this.book.root);
 		}
 	}
@@ -112,9 +116,9 @@ export class BookTreeItem extends vscode.TreeItem {
 			let pathToNotebook: string;
 			if (this.book.version === BookVersion.v2 && (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file) {
 				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				pathToNotebook = path.posix.join(this.book.root, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
+				pathToNotebook = path.posix.join(this.rootContentPath, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
 			} else if ((this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url) {
-				pathToNotebook = path.posix.join(this.book.root, content, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
+				pathToNotebook = path.posix.join(this.rootContentPath, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
 			}
 
 			// eslint-disable-next-line no-sync
@@ -132,9 +136,9 @@ export class BookTreeItem extends vscode.TreeItem {
 			let pathToNotebook: string;
 			if (this.book.version === BookVersion.v2 && (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file) {
 				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				pathToNotebook = path.posix.join(this.book.root, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
+				pathToNotebook = path.posix.join(this.rootContentPath, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
 			} else if ((this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url) {
-				pathToNotebook = path.posix.join(this.book.root, content, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
+				pathToNotebook = path.posix.join(this.rootContentPath, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
 			}
 
 			// eslint-disable-next-line no-sync
@@ -156,6 +160,14 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	public get root(): string {
 		return this.book.root;
+	}
+
+	public get rootContentPath(): string {
+		return this._rootContentPath;
+	}
+
+	public get tableOfContentsPath(): string {
+		return this._tableOfContentsPath;
 	}
 
 	public get tableOfContents(): IJupyterBookToc {

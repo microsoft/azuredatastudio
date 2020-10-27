@@ -19,7 +19,7 @@ import * as glob from 'fast-glob';
 import { IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
 import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
-import { BookTocManager, IBookTocManager, tocBookOperation } from './bookTocManager';
+import { BookTocManager, IBookTocManager } from './bookTocManager';
 
 const content = 'content';
 
@@ -134,12 +134,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async createBook(): Promise<void> {
-
+	async createBook(bookPath: string, contentPath: string): Promise<void> {
+		bookPath = path.normalize(bookPath);
+		contentPath = path.normalize(contentPath);
+		this.bookTocManager.createBook(bookPath, contentPath);
 	}
 
 	async editBook(book: BookTreeItem, section: BookTreeItem, sectionParent: BookTreeItem): Promise<void> {
-		this.bookTocManager.updateToc(tocBookOperation.Edit, section, book);
+		this.bookTocManager.updateBook(section, book);
 	}
 
 	async openBook(bookPath: string, urlToOpen?: string, showPreview?: boolean, isNotebook?: boolean): Promise<void> {

@@ -3,18 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as path from 'path';
-//import * as vscode from 'vscode';
-//import * as constants from './../common/constants';
 import { BookTreeItem } from './bookTreeItem';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
+import { IJupyterBookSectionV1, IJupyterBookSectionV2, JupyterBookSection } from '../contracts/content';
 import { BookVersion } from './bookModel';
-import { IJupyterBookSectionV2, IJupyterBookToc } from '../contracts/content';
+import * as vscode from 'vscode';
 
 export interface IBookTocManager {
-	updateToc(operation: tocSectionOperation, section: BookTreeItem, updatedBook: BookTreeItem): boolean;
+	updateBook(section: BookTreeItem, updatedBook: BookTreeItem): Promise<void>;
+	createBook(bookContentPath: string, contentFolder: string): Promise<void>
 }
-const allowedFileExtensions: string[] = ['.md', '.ipynb', '.ps'];
+const allowedFileExtensions: string[] = ['.md', '.ipynb', '.ps1', '.sql', '.kusto', '.scala', '.r'];
 
 export enum tocSectionOperation {
 	Remove,
@@ -48,52 +48,89 @@ export class BookTocManager implements IBookTocManager {
 				if (toc.length > 0) {
 					let indexToc = toc.findIndex(parent => parent.title === path.dirname(addFile.file));
 					if (indexToc !== -1) {
-						//TODO : Add other types such as Intro, Introduction, start Init etc etc
-						if (file === 'readme.md') {
+						if (path.parse(addFile.file).ext === '.md') {
 							toc[indexToc].file = addFile.file;
 						} else {
 							toc[indexToc].sections.push(addFile);
 						}
 					}
 				} else if (path.parse(file).ext === '.md') {
-					let welcome: IJupyterBookSectionV2 = {
-						title: 'Welcome',
+					//TODO : Add other types such as Intro, Introduction, Index etc etc
+					// what about two files named as Intro and then other as readme ?
+					let index: IJupyterBookSectionV2 = {
+						title: path.parse(file).name,
 						file: path.parse(file).name
 					};
-					toc.push(welcome);
+					toc.push(index);
 				}
 			}
 		}));
 		return toc;
 	}
 
-	async createToc(bookContentPath: string, contentFolder: string): Promise<void> {
+	hasSections(node: JupyterBookSection): boolean {
+		return (typeof node === 'object') && node.sections.length > 0 && (typeof node.sections !== 'undefined');
+	}
+
+	updateToc(tableOfContents: JupyterBookSection[], newToc: JupyterBookSection, findSection: JupyterBookSection[]): boolean {
+		if (tableOfContents === findSection) {
+			if (newToc !== undefined) {
+				tableOfContents.push(newToc);
+			} else {
+				//remove section
+				tableOfContents = [];
+			}
+			return true;
+		} else {
+			tableOfContents.forEach(t => this.hasSections(t) ? this.updateToc(t.sections, newToc, findSection) : undefined);
+		}
+		return false;
+	}
+
+	async createBook(bookContentPath: string, contentFolder: string): Promise<void> {
 		let filesinDir = await fs.promises.readdir(contentFolder);
 		let toc: IJupyterBookSectionV2[] = await this.getAllFiles([], contentFolder, filesinDir);
+		await fs.promises.mkdir(bookContentPath);
+		await fs.promises.writeFile(path.join(bookContentPath, '_config.yml'), yaml.safeDump({ title: path.basename(bookContentPath) }));
 		await fs.promises.writeFile(path.join(bookContentPath, '_toc.yml'), yaml.safeDump(toc, { lineWidth: Infinity }));
+		vscode.commands.executeCommand('notebook.command.openBook', bookContentPath, false);
 	}
 
-	updateToc(operation: tocSectionOperation, section: BookTreeItem, updatedBook?: BookTreeItem): boolean {
-		if (operation === tocSectionOperation.Add) {
-			//create table of contents
-
-
-		} else {
-			// identify version of the updatedBook
-			if (updatedBook.book.version === BookVersion.v1) {
-				if (updatedBook.book.type === 'Book') {
-					updatedBook.book.page.push(section.sections);
-					updatedBook.sections.push(section.sections);
-
-
+	async updateBook(element: BookTreeItem, updatedBook?: BookTreeItem): Promise<void> {
+		if (updatedBook) {
+			//  Adding a new section in book, they must be the same version
+			let newTOC: JupyterBookSection = {};
+			const rootContentPath = updatedBook.contextValue === 'section' ? path.dirname(updatedBook.book.contentPath) : updatedBook.rootContentPath;
+			if (element.contextValue === 'section' && updatedBook.book.version === element.book.version) {
+				newTOC.title = element.title;
+				if (element.book.version === BookVersion.v1) {
+					const files = element.sections as IJupyterBookSectionV1[];
+					files.forEach(async elem => {
+						await fs.promises.rename(path.join(element.rootContentPath, elem.url), path.join(rootContentPath, elem.url));
+						newTOC.url = element.uri;
+						newTOC.sections.push({ url: elem.url, title: elem.title });
+					});
+				} else if (element.book.version === BookVersion.v2) {
+					const files = element.sections as IJupyterBookSectionV2[];
+					files.forEach(async elem => {
+						await fs.promises.rename(path.join(element.rootContentPath, elem.file), path.join(rootContentPath, elem.file));
+						(newTOC as IJupyterBookSectionV2).file = element.uri;
+						newTOC.sections.push({ file: elem.file, title: elem.title });
+					});
 				}
-
+				this.updateToc(element.tableOfContents.sections, undefined, element.sections);
+				await fs.promises.writeFile(element.tableOfContentsPath, yaml.safeDump(element.tableOfContents, { lineWidth: Infinity }));
 			}
+			else if (element.contextValue === 'savedNotebook') {
+				let notebookName = path.relative(element.book.root, element.book.contentPath);
+				await fs.promises.rename(element.book.contentPath, path.join(rootContentPath, notebookName));
+				newTOC.sections.push({ file: notebookName, title: notebookName });
+			}
+			const isUpdated: boolean = this.updateToc(updatedBook.tableOfContents.sections, newTOC, updatedBook.sections);
+			if (!isUpdated) {
+				updatedBook.tableOfContents.sections.push(newTOC);
+			}
+			await fs.promises.writeFile(updatedBook.tableOfContentsPath, yaml.safeDump(updatedBook.tableOfContents, { lineWidth: Infinity }));
 		}
-		return true;
-	}
-
-	updateSection(sectionToAdd: IJupyterBookToc, page: IJupyterBookToc[]) {
-		page.push(sectionToAdd);
 	}
 }
