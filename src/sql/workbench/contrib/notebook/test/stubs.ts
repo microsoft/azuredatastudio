@@ -19,7 +19,7 @@ import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryText
 import { IContextViewProvider, IDelegate } from 'vs/base/browser/ui/contextview/contextview';
 
 export class NotebookModelStub implements INotebookModel {
-	constructor(private _languageInfo?: nb.ILanguageInfo) {
+	constructor(private _languageInfo?: nb.ILanguageInfo, private _cells?: ICellModel[]) {
 	}
 	trustedMode: boolean;
 	language: string;
@@ -31,8 +31,8 @@ export class NotebookModelStub implements INotebookModel {
 	onCellChange(cell: ICellModel, change: NotebookChangeType): void {
 		// Default: do nothing
 	}
-	get cells(): ReadonlyArray<ICellModel> {
-		throw new Error('method not implemented.');
+	get cells(): ICellModel[] | undefined {
+		return this._cells;
 	}
 	get activeCell(): ICellModel {
 		throw new Error('method not implemented.');

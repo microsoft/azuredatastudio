@@ -11,7 +11,6 @@ import { nb } from 'azdata';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import * as outputProcessor from 'sql/workbench/contrib/notebook/browser/models/outputProcessor';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
-import * as DOM from 'vs/base/browser/dom';
 import { ComponentHostDirective } from 'sql/base/browser/componentHost.directive';
 import { Extensions, IMimeComponent, IMimeComponentRegistry } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
@@ -82,9 +81,9 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			return;
 		}
 		if (userSelect) {
-			DOM.addClass(this.nativeOutputElement, USER_SELECT_CLASS);
+			this.nativeOutputElement.classList.add(USER_SELECT_CLASS);
 		} else {
-			DOM.removeClass(this.nativeOutputElement, USER_SELECT_CLASS);
+			this.nativeOutputElement.classList.remove(USER_SELECT_CLASS);
 		}
 	}
 

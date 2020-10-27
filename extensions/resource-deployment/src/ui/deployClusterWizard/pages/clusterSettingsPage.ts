@@ -217,8 +217,9 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, inputComponent: InputComponentInfo): void => {
-					self.inputComponents[name] = { component: inputComponent.component };
+				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+					self.inputComponents[name] = inputComponentInfo;
+					self.wizard.inputComponents[name] = inputComponentInfo;
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -234,7 +235,8 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.wizard.registerDisposable(disposable);
 				},
 				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
-					this.inputComponents[name] = { component: inputComponentInfo.component };
+					self.inputComponents[name] = inputComponentInfo;
+					self.wizard.inputComponents[name] = inputComponentInfo;
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -250,7 +252,8 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					self.wizard.registerDisposable(disposable);
 				},
 				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
-					this.inputComponents[name] = { component: inputComponentInfo.component };
+					self.inputComponents[name] = inputComponentInfo;
+					self.wizard.inputComponents[name] = inputComponentInfo;
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
@@ -291,7 +294,6 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	public async onLeave(): Promise<void> {
 		await setModelValues(this.inputComponents, this.wizard.model);
-		Object.assign(this.wizard.inputComponents, this.inputComponents);
 		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			const variableDNSPrefixMapping: { [s: string]: string } = {};
 			variableDNSPrefixMapping[VariableNames.AppServiceProxyDNSName_VariableName] = 'bdc-appproxy';

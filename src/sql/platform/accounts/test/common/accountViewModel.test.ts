@@ -11,6 +11,7 @@ import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel'
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
 import { EventVerifierSingle } from 'sql/base/test/common/event';
+import { NullLogService } from 'vs/platform/log/common/log';
 
 // SUITE STATE /////////////////////////////////////////////////////////////
 let mockAddProviderEmitter: Emitter<AccountProviderAddedEventParams>;
@@ -63,7 +64,7 @@ suite('Account Management Dialog ViewModel Tests', () => {
 	test('Construction - Events are properly defined', () => {
 		// If: I create an account viewmodel
 		let mockAccountManagementService = getMockAccountManagementService(false, false);
-		let vm = new AccountViewModel(mockAccountManagementService.object);
+		let vm = new AccountViewModel(mockAccountManagementService.object, new NullLogService());
 
 		// Then:
 		// ... All the events for the view models should be properly initialized
@@ -195,7 +196,7 @@ function getViewModel(
 	evRemove: EventVerifierSingle<azdata.AccountProviderMetadata>,
 	evUpdate: EventVerifierSingle<UpdateAccountListEventParams>
 ): AccountViewModel {
-	let vm = new AccountViewModel(ams);
+	let vm = new AccountViewModel(ams, new NullLogService());
 	vm.addProviderEvent(evAdd.eventHandler);
 	vm.removeProviderEvent(evRemove.eventHandler);
 	vm.updateAccountListEvent(evUpdate.eventHandler);

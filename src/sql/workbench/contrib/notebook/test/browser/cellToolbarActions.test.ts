@@ -125,7 +125,7 @@ suite('CellToolbarActions', function (): void {
 			cellModelMock.setup(x => x.cellType).returns(() => 'code');
 			const action = new CellToggleMoreActions(instantiationService);
 			action.onInit(testContainer, contextMock.object);
-			assert.equal(action['_moreActions']['viewItems'][0]['_action']['_actions'].length, 15, 'Unexpected number of valid elements');
+			assert.equal(action['_moreActions']['viewItems'][0]['_action']['_actions'].length, 18, 'Unexpected number of valid elements');
 		});
 
 		test('CellToggleMoreActions with Markdown CellType', function (): void {

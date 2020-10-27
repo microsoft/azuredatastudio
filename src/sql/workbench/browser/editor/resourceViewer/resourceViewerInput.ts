@@ -13,6 +13,7 @@ import { getDataGridFormatter } from 'sql/workbench/services/dataGridProvider/br
 
 export interface ColumnDefinition extends Slick.Column<Slick.SlickData> {
 	name: string;
+	type: string;
 	filterable?: boolean;
 }
 
@@ -69,28 +70,27 @@ export class ResourceViewerInput extends EditorInput {
 		]);
 	}
 
-	private fetchColumns(): void {
-		this._dataGridProvider.getDataGridColumns(this._providerId).then(columns => {
-			this.columns = columns.map(col => {
-				return {
-					name: col.name,
-					field: col.field,
-					id: col.id,
-					formatter: getDataGridFormatter(col.type),
-					sortable: col.sortable ?? true,
-					filterable: col.filterable ?? true,
-					resizable: col.resizable ?? true,
-					tooltip: col.tooltip,
-					width: col.width
-				};
-			});
-		}).catch(err => onUnexpectedError(err));
+	private async fetchColumns(): Promise<void> {
+		const columns = await this._dataGridProvider.getDataGridColumns(this._providerId);
+		this.columns = columns.map(col => {
+			return {
+				name: col.name,
+				field: col.field,
+				id: col.id,
+				formatter: getDataGridFormatter(col.type),
+				sortable: col.sortable ?? true,
+				filterable: col.filterable ?? true,
+				resizable: col.resizable ?? true,
+				tooltip: col.tooltip,
+				width: col.width,
+				type: col.type
+			};
+		});
 	}
 
-	private fetchItems(): void {
-		this._dataGridProvider.getDataGridItems(this._providerId).then(items => {
-			this._data = items;
-			this._onDataChanged.fire();
-		}).catch(err => onUnexpectedError(err));
+	private async fetchItems(): Promise<void> {
+		const items = await this._dataGridProvider.getDataGridItems(this._providerId);
+		this._data = items;
+		this._onDataChanged.fire();
 	}
 }
