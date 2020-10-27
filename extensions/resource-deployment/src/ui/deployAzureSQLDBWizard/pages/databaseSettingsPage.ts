@@ -113,7 +113,7 @@ export class DatabaseSettingsPage extends BasePage {
 			this.wizard.model.startIpAddress = value;
 		});
 
-		this._startIpAddressTextRow = this.wizard.createFormRowComponent(view, constants.StartIpAddressLabel, '', this._startIpAddressTextbox, true);
+		this._startIpAddressTextRow = this.wizard.createFormRowComponent(view, constants.StartIpAddressLabel, '', this._startIpAddressTextbox, false);
 
 		//End IP Address Section:
 
@@ -125,14 +125,14 @@ export class DatabaseSettingsPage extends BasePage {
 			this.wizard.model.endIpAddress = value;
 		});
 
-		this._endIpAddressTextRow = this.wizard.createFormRowComponent(view, constants.EndIpAddressLabel, '', this._endIpAddressTextbox, true);
+		this._endIpAddressTextRow = this.wizard.createFormRowComponent(view, constants.EndIpAddressLabel, '', this._endIpAddressTextbox, false);
 	}
 
 	private createFirewallNameText(view: azdata.ModelView) {
 
 		this._firewallRuleNameTextbox = view.modelBuilder.inputBox().component();
 
-		this._firewallRuleNameTextRow = this.wizard.createFormRowComponent(view, constants.FirewallRuleNameLabel, '', this._firewallRuleNameTextbox, true);
+		this._firewallRuleNameTextRow = this.wizard.createFormRowComponent(view, constants.FirewallRuleNameLabel, constants.FirewallRuleDescription, this._firewallRuleNameTextbox, false);
 
 		this._firewallRuleNameTextbox.onTextChanged((value) => {
 			this.wizard.model.firewallRuleName = value;
