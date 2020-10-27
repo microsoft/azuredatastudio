@@ -106,10 +106,11 @@ export class NewProjectDialog extends DialogBase {
 
 		this.register(projectNameTextBox.onTextChanged(() => {
 			this.model.name = projectNameTextBox.value!;
+			projectNameTextBox.updateProperty('title', projectNameTextBox.value);
 
 			// update hover text if a new workspace will be created for this project
 			if (!vscode.workspace.workspaceFile) {
-				workspaceTextBox.placeHolder = path.join(this.model.location, this.model.name, `${this.model.name}.code-workspace`);
+				workspaceTextBox.updateProperty('title', path.join(this.model.location, this.model.name, `${this.model.name}.code-workspace`));
 			}
 		}));
 
@@ -122,6 +123,7 @@ export class NewProjectDialog extends DialogBase {
 
 		this.register(locationTextBox.onTextChanged(() => {
 			this.model.location = locationTextBox.value!;
+			locationTextBox.updateProperty('title', locationTextBox.value);
 		}));
 
 		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -146,7 +148,7 @@ export class NewProjectDialog extends DialogBase {
 
 			// update hover text if a new workspace will be created for this project
 			if (!vscode.workspace.workspaceFile) {
-				workspaceTextBox.placeHolder = path.join(this.model.location, `${this.model.name}.code-workspace`);
+				workspaceTextBox.updateProperty('title', path.join(this.model.location, `${this.model.name}.code-workspace`));
 			}
 		}));
 
@@ -160,7 +162,7 @@ export class NewProjectDialog extends DialogBase {
 			width: constants.DefaultInputWidth,
 			enabled: false,
 			value: vscode.workspace.workspaceFile?.fsPath ?? '',
-			placeHolder: vscode.workspace.workspaceFile?.fsPath ?? '' // hovertext for if file path is too long to be seen in textbox
+			title: vscode.workspace.workspaceFile?.fsPath ?? '' // hovertext for if file path is too long to be seen in textbox
 		}).component();
 
 		const workspaceFlexContainer = view.modelBuilder.flexContainer()
