@@ -134,10 +134,10 @@ export const extLangUpdateFailedError = localize('extLang.updateFailedError', "F
 export const modelUpdateFailedError = localize('models.modelUpdateFailedError', "Failed to update the model");
 export const modelsListEmptyMessage = localize('models.modelsListEmptyMessage', "No models yet");
 export const modelsListEmptyDescription = localize('models.modelsListEmptyDescription', "Use import wizard to add models to this table");
-export const databaseName = localize('databaseName', "Models database");
+export const databaseName = localize('databaseName', "Database");
 export const databaseToStoreInfo = localize('databaseToStoreInfo', "Select a database to store the new model.");
 export const tableToStoreInfo = localize('tableToStoreInfo', "Select an existing table that conforms the model schema or create a new one to store the imported model.");
-export const tableName = localize('tableName', "Models table");
+export const tableName = localize('tableName', "Table");
 export const modelTableInfo = localize('modelTableInfo', "Select a model table to view the list of existing / imported models.");
 export const modelDatabaseInfo = localize('modelDatabaseInfo', "Select a database where existing / imported models are stored.");
 export const existingTableName = localize('existingTableName', "Existing table");
@@ -164,8 +164,8 @@ export const dataTypeName = localize('predict.dataTypeName', "Type");
 export const displayName = localize('predict.displayName', "Display  name");
 export const inputName = localize('predict.inputName', "Model input");
 export const selectColumnTitle = localize('predict.selectColumnTitle', "Select column...");
-export const selectDatabaseTitle = localize('predict.selectDatabaseTitle', "Select database");
-export const selectTableTitle = localize('predict.selectTableTitle', "Select table");
+export const selectDatabaseTitle = localize('predict.selectDatabaseTitle', "Select database with models");
+export const selectTableTitle = localize('predict.selectTableTitle', "Select table with models");
 export const outputName = localize('predict.outputName', "Name");
 export const azureSubscription = localize('models.azureSubscription', "Azure subscription");
 export const azureGroup = localize('models.azureGroup', "Azure resource group");
@@ -186,7 +186,11 @@ export const currentModelsTitle = localize('models.currentModelsTitle', "Models"
 export const azureRegisterModel = localize('models.azureRegisterModel', "Deploy");
 export const predictModel = localize('models.predictModel', "Predict");
 export const registerModelTitle = localize('models.RegisterWizard', "Import models");
-export const importedModelTitle = localize('models.importedModelTitle', "Imported models");
+export const viewImportModelsTitle = localize('models.viewImportModelsTitle', "View and import models");
+export const viewImportModelsDesc = localize('models.viewImportModelsDesc',
+	"Machine Learning models can be stored in one or more databases and tables. Select the model database and table to view the models within them.");
+export const learnMoreLink = localize('models.learnMoreLink', "Learn more.");
+
 export const importModelTitle = localize('models.importModelTitle', "Import or view models");
 export const editModelTitle = localize('models.editModelTitle', "Edit model");
 export const importModelDesc = localize('models.importModelDesc', "Import or view machine learning models stored in database");
@@ -258,7 +262,7 @@ export const managePackagesDocs = 'https://go.microsoft.com/fwlink/?linkid=21299
 //
 export namespace cssStyles {
 	export const title = { 'font-size': '14px', 'font-weight': '600' };
-	export const tableHeader = { 'text-align': 'left', 'font-weight': 'bold', 'text-transform': 'uppercase', 'font-size': '10px', 'user-select': 'text', 'border': 'none' };
+	export const tableHeader = { 'text-align': 'left', 'font-weight': 'bold', 'text-transform': 'capitalize', 'font-size': '10px', 'user-select': 'text', 'border': 'none', 'border-bottom': '1px solid #ccc' };
 	export const tableRow = { 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none' };
 	export const hyperlink = { 'user-select': 'text', 'color': '#0078d4', 'text-decoration': 'underline', 'cursor': 'pointer' };
 	export const text = { 'margin-block-start': '0px', 'margin-block-end': '0px' };

@@ -20,7 +20,11 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 	private _dataTable: CurrentModelsTable | undefined;
 	private _loader: azdata.LoadingComponent | undefined;
 	private _tableSelectionComponent: TableSelectionComponent | undefined;
+	private _subheadingContainer: azdata.FlexContainer | undefined;
+	private _subheadingTextComponent: azdata.TextComponent | undefined;
+	private _subheadingLinkComponent: azdata.HyperlinkComponent | undefined;
 	private _labelComponent: azdata.TextComponent | undefined;
+	private _dataStateImageComponent: azdata.ImageComponent | undefined;
 	private _descriptionComponent: azdata.TextComponent | undefined;
 	private _labelContainer: azdata.FlexContainer | undefined;
 	private _formBuilder: azdata.FormBuilder | undefined;
@@ -45,7 +49,8 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 			databaseTitle: constants.databaseName,
 			tableTitle: constants.tableName,
 			databaseInfo: constants.modelDatabaseInfo,
-			tableInfo: constants.modelTableInfo
+			tableInfo: constants.modelTableInfo,
+			layout: 'vertical'
 		});
 		this._tableSelectionComponent.registerComponent(modelBuilder);
 		this._tableSelectionComponent.onSelectedChanged(async () => {
@@ -58,30 +63,58 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 		this._loader = modelBuilder.loadingComponent()
 			.withItem(formModelBuilder.component())
 			.withProperties({
-				loading: true
+				loading: true,
 			}).component();
+		this._dataStateImageComponent = modelBuilder.image().withProperties({
+			iconPath: this.asAbsolutePath('images/emptyState.svg'),
+			iconHeight: '128px',
+			iconWidth: '128px',
+			height: '128px'
+		}).component();
 		this._labelComponent = modelBuilder.text().withProperties({
-			width: 200,
 			value: constants.modelsListEmptyMessage
 		}).component();
 		this._descriptionComponent = modelBuilder.text().withProperties({
-			width: 200,
 			value: constants.modelsListEmptyDescription
 		}).component();
 		this._labelContainer = modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			width: 800,
+			width: '750px',
 			height: '400px',
-			justifyContent: 'center'
+			justifyContent: 'flex-start',
+			textAlign: 'center'
 		}).component();
-
+		this._subheadingContainer = modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+			width: '452px'
+		}).component();
+		this._subheadingTextComponent = modelBuilder.text().withProperties(<azdata.CheckBoxProperties>{
+			value: constants.viewImportModelsDesc,
+			CSSStyles: {
+				'font-size': '13px'
+			}
+		}).component();
+		this._subheadingLinkComponent = modelBuilder.hyperlink().withProperties({
+			label: constants.learnMoreLink,
+			url: 'https://www.microsoft.com/',
+			CSSStyles: {
+				'font-size': '13px'
+			}
+		}).component();
+		this._labelContainer.addItem(
+			this._dataStateImageComponent
+			, {
+				CSSStyles: {
+					'height': '128px',
+					'width': '128px',
+					'margin': '0 auto',
+					'padding-top': '30px'
+				}
+			});
 		this._labelContainer.addItem(
 			this._labelComponent
 			, {
 				CSSStyles: {
-					'align-items': 'center',
-					'padding-top': '30px',
-					'padding-left': `${this.componentMaxLength}px`,
 					'font-size': '16px'
 				}
 			});
@@ -89,12 +122,12 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 			this._descriptionComponent
 			, {
 				CSSStyles: {
-					'align-items': 'center',
-					'padding-top': '10px',
-					'padding-left': `${this.componentMaxLength - 50}px`,
 					'font-size': '13px'
 				}
 			});
+		this._subheadingContainer.addItems(
+			[this._subheadingTextComponent, this._subheadingLinkComponent]
+		);
 
 		this.addComponents(formModelBuilder);
 		return this._loader;
@@ -102,9 +135,12 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
 		this._formBuilder = formBuilder;
-		if (this._tableSelectionComponent && this._dataTable && this._labelContainer) {
+		if (this._tableSelectionComponent && this._dataTable && this._labelContainer && this._subheadingContainer) {
 			this._tableSelectionComponent.addComponents(formBuilder);
 			this._dataTable.addComponents(formBuilder);
+
+			formBuilder.addFormItem({ title: '', component: this._subheadingContainer });
+
 			if (this._dataTable.isEmpty) {
 				formBuilder.addFormItem({ title: '', component: this._labelContainer });
 			}

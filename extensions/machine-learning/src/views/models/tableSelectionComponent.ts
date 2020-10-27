@@ -17,7 +17,8 @@ export interface ITableSelectionSettings {
 	databaseTitle: string,
 	tableTitle: string,
 	databaseInfo: string,
-	tableInfo: string
+	tableInfo: string,
+	layout?: string,
 }
 /**
  * View to render filters to pick an azure resource
@@ -53,10 +54,10 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._databases = modelBuilder.dropDown().withProperties({
-			width: this.componentMaxLength,
+			width: '221px'//this.componentMaxLength,
 		}).component();
 		this._tables = modelBuilder.dropDown().withProperties({
-			width: this.componentMaxLength - 10,
+			width: '221px'//this.componentMaxLength - 10,
 		}).component();
 
 		this._databases.onValueChanged(async () => {
@@ -142,10 +143,10 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 		], {
 			flex: '0 0 auto',
 			CSSStyles: {
-				'align-items': 'flex-start'
+				'align-items': 'flex-start',
 			}
 		}).withLayout({
-			flexFlow: this._settings.editable ? 'column' : 'row',
+			flexFlow: this._settings.layout === 'horizontal' ? 'row' : 'column',
 			justifyContent: 'space-between',
 			width: this.tableMaxLength
 		}).component();
