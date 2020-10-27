@@ -241,6 +241,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.registerPlugin(plugin);
 	}
 
+	unregisterPlugin(plugin: Slick.Plugin<T>): void {
+		this._grid.unregisterPlugin(plugin);
+	}
+
 	/**
 	 * This function needs to be called if the table is drawn off dom.
 	 */

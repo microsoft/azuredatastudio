@@ -15,6 +15,7 @@ export interface ButtonColumnOptions {
 	iconCssClass?: string;
 	title?: string;
 	id?: string;
+	sortable?: boolean;
 }
 
 export interface ButtonClickEventArgs<T extends Slick.SlickData> {
@@ -41,7 +42,8 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 			},
 			width: 30,
 			selectable: false,
-			iconCssClassField: options.iconCssClass
+			iconCssClassField: options.iconCssClass,
+			sortable: options.sortable
 		};
 	}
 

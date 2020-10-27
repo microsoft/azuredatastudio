@@ -82,6 +82,16 @@ export class ResourceViewerEditor extends EditorPane {
 		this._inputDisposables.clear();
 
 		this._resourceViewerTable.data = input.data;
+
+		input.plugins.forEach(plugin => {
+			this._resourceViewerTable.registerPlugin(plugin);
+			this._inputDisposables.add({
+				dispose: () => {
+					this._resourceViewerTable.unregisterPlugin(plugin);
+				}
+			});
+		});
+
 		this._resourceViewerTable.columns = input.columns;
 		this._inputDisposables.add(input.onColumnsChanged(columns => {
 			this._resourceViewerTable.columns = columns;
