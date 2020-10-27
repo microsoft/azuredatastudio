@@ -129,7 +129,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 		this.model.upgradeExisting = true;
 
 		// Display the radio buttons on the window
-		return this.displayRadioButtons(upgradeRadioButton, newRadioButton);
+		return this.createRadioButtonFlexContainer(upgradeRadioButton, newRadioButton);
 	}
 
 	protected async createDeployDatabaseDropdown(): Promise<azdata.FormComponent> {
@@ -161,9 +161,15 @@ export class DeployConfigPage extends DacFxConfigPage {
 			return false;
 		}
 		let values = await this.getDatabaseValues();
-		// If there are no databases, call the disableUpgradeRadioButton function.
+		/*
+		If there are no databases, call the disableUpgradeRadioButton function. Else, enable the
+		upgrade radio button.
+		*/
 		if (values.length === 0) {
 			this.disableUpgradeRadioButton();
+		}
+		else {
+			this.enableUpgradeRadioButton();
 		}
 
 		//set the database to the first dropdown value if upgrading, otherwise it should get set to the textbox value
@@ -190,13 +196,29 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		this.updateNewRadioButton();
 
-		return this.displayRadioButtons(this.upgradeRadioButton, this.newRadioButton);
+		return this.createRadioButtonFlexContainer(this.upgradeRadioButton, this.newRadioButton);
+	}
+
+	/*
+	Function that enables the upgrade radio button if databases exist.
+	*/
+	private async enableUpgradeRadioButton(): Promise<azdata.FormComponent> {
+		/*
+		Enable the upgrade radio button and call the updateUpgradeRadioButton function to update the
+		upgrade radio button accordingly.
+		*/
+		this.upgradeRadioButton.enabled = true;
+		this.upgradeRadioButton.checked = true;
+
+		this.updateUpgradeRadioButton();
+
+		return this.createRadioButtonFlexContainer(this.upgradeRadioButton, this.newRadioButton);
 	}
 
 	/*
 	Function that is used to update the window if upgrade radio button is selected.
 	*/
-	private async updateUpgradeRadioButton(): Promise<void> {
+	private updateUpgradeRadioButton(): void {
 		this.model.upgradeExisting = true;
 		this.formBuilder.removeFormItem(this.databaseComponent);
 		this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
@@ -213,7 +235,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 	/*
 	Function that is used to update the window if new radio button is selected.
 	*/
-	private async updateNewRadioButton(): Promise<void> {
+	private updateNewRadioButton(): void {
 		this.model.upgradeExisting = false;
 		this.formBuilder.removeFormItem(this.databaseDropdownComponent);
 		this.formBuilder.addFormItem(this.databaseComponent, { horizontal: true, componentWidth: 400 });
@@ -228,9 +250,9 @@ export class DeployConfigPage extends DacFxConfigPage {
 	}
 
 	/*
-	Function to display the radio buttons on the window.
+	Function to create the radio button flex container on the window.
 	*/
-	private async displayRadioButtons(upgradeRadioButton: azdata.RadioButtonComponent, newRadioButton: azdata.RadioButtonComponent): Promise<azdata.FormComponent> {
+	private createRadioButtonFlexContainer(upgradeRadioButton: azdata.RadioButtonComponent, newRadioButton: azdata.RadioButtonComponent): azdata.FormComponent {
 		let flexRadioButtonsModel = this.view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'row',
