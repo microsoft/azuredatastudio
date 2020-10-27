@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { AppContext } from './appContext';
 import { AzureResourceServiceNames } from './azureResource/constants';
 import { IAzureResourceSubscriptionService } from './azureResource/interfaces';
@@ -45,12 +46,15 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 							.map(item => {
 								return <azdata.DataGridItem>{
 									id: item.id,
-									// nameLink: <azdata.DataGridHyperlinkInfo>{ displayText: item.name, linkOrCommand: ''},
-									resourceGroup: item.resourceGroup,
-									subscriptionName: subscriptions.find(subscription => subscription.id === item.subscriptionId)?.name ?? item.subscriptionId,
-									locationDisplayName: utils.getRegionDisplayName(item.location),
-									typeDisplayName: utils.getResourceTypeDisplayName(item.type),
-									iconPath: utils.getResourceTypeIcon(this._appContext, item.type)
+									actions: [{ id: 'vscode.open', args: ['https://microsoft.com'], displayText: loc.openInAzurePortal }],
+									fieldValues: {
+										nameLink: <azdata.DataGridHyperlinkInfo>{ displayText: item.name, linkOrCommand: 'https://microsoft.com' },
+										resourceGroup: item.resourceGroup,
+										subscriptionName: subscriptions.find(subscription => subscription.id === item.subscriptionId)?.name ?? item.subscriptionId,
+										locationDisplayName: utils.getRegionDisplayName(item.location),
+										typeDisplayName: utils.getResourceTypeDisplayName(item.type),
+										iconPath: utils.getResourceTypeIcon(this._appContext, item.type),
+									}
 								};
 							});
 						items.push(...newItems);
@@ -72,7 +76,8 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 			{ id: 'type', type: 'text', field: 'typeDisplayName', name: loc.resourceType, width: 150 },
 			{ id: 'type', type: 'text', field: 'resourceGroup', name: loc.resourceGroup, width: 150 },
 			{ id: 'location', type: 'text', field: 'locationDisplayName', name: loc.location, width: 150 },
-			{ id: 'subscriptionId', type: 'text', field: 'subscriptionName', name: loc.subscription, width: 150 }
+			{ id: 'subscriptionId', type: 'text', field: 'subscriptionName', name: loc.subscription, width: 150 },
+			{ id: 'actions', type: 'actions', field: '', name: '' }
 		];
 	}
 }
