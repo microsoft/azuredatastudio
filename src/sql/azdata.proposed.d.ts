@@ -819,10 +819,16 @@ declare module 'azdata' {
 =======
 	export interface TextColumnOption {
 		/**
-		 * Specifies column that will provide icon css value.
-		 * iconCssClassColumn will not be displayed as a separate column, instead its value will be interpreted as a icon css value for the text column.
+		 * Specifies images collection and column that will provide an index of images collection to display. iconProviderColumn will not be displayed in this case as a separate column.
 		 */
+<<<<<<< HEAD
 		iconCssClassColumn?: string
 >>>>>>> 0da6138f4a... Grid with icon in text column
+=======
+		imageCollection?: Array<string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri }>,
+		iconProviderColumn?: string,
+
+
+>>>>>>> 2cec81ed5f... image collection and image index
 	}
 }

@@ -80,7 +80,7 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 
 				root.clearItems();
 
-				this.resultGrid = new AssessmentResultGrid(view);
+				this.resultGrid = new AssessmentResultGrid(view, this.extensionContext);
 				this.toDispose.push(this.resultGrid);
 				await view.initializeModel(title);
 

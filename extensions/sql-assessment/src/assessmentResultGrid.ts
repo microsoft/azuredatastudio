@@ -36,7 +36,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 		return this.rootContainer;
 	}
 
-	public constructor(view: azdata.ModelView) {
+	public constructor(view: azdata.ModelView, extensionContext: vscode.ExtensionContext) {
 		const headerCssClass = 'no-borders align-with-header';
 		this.table = view.modelBuilder.table()
 			.withProperties<azdata.TableComponentProperties>({
@@ -45,7 +45,14 @@ export class AssessmentResultGrid implements vscode.Disposable {
 					{
 						value: LocalizedStrings.TARGET_COLUMN_NAME, headerCssClass: headerCssClass, width: 125,
 						options: {
-							iconCssClassColumn: 'targetImage'
+							iconProviderColumn: 'targetImage',
+							imageCollection: [{
+								dark: extensionContext.asAbsolutePath('resources/dark/server.svg'),
+								light: extensionContext.asAbsolutePath('resources/light/server.svg')
+							}, {
+								dark: extensionContext.asAbsolutePath('resources/dark/database.svg'),
+								light: extensionContext.asAbsolutePath('resources/light/database.svg')
+							}]
 						}
 					},
 					{
@@ -259,7 +266,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 	private convertToDataView(asmtResult: azdata.SqlAssessmentResultItem): any[] {
 		return [
 			asmtResult.targetName,
-			asmtResult.targetType === azdata.sqlAssessment.SqlAssessmentTargetType.Database ? 'database' : 'server',
+			asmtResult.targetType === azdata.sqlAssessment.SqlAssessmentTargetType.Database ? 1 : 0,
 			asmtResult.level,
 			this.asmtType === AssessmentType.InvokeAssessment ? asmtResult.message : asmtResult.displayName,
 			this.clearOutDefaultRuleset(asmtResult.tags),

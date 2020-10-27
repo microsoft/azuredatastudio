@@ -30,7 +30,7 @@ import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
-import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
+import { TextWithIconCollectionColumn } from 'sql/base/browser/ui/table/plugins/textWithIconCollectionColumn';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -79,8 +79,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		return new Set<string>(
 			columns.map(col => {
 				const textColOptions = col.options as azdata.TextColumnOption;
-				if (textColOptions && textColOptions.iconCssClassColumn) {
-					return textColOptions.iconCssClassColumn;
+				if (textColOptions?.iconProviderColumn) {
+					return textColOptions.iconProviderColumn;
 				}
 				return '';
 			}));
@@ -128,15 +128,17 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	}
 
 	private static createTextColumn(col: azdata.TableColumn): Slick.Column<any> {
-		if ((col.options as azdata.TextColumnOption)?.iconCssClassColumn) {
-			const textWithIconColumn = new TextWithIconColumn({
+		if ((col.options as azdata.TextColumnOption)?.imageCollection?.length) {
+			const textColOptions = <azdata.TextColumnOption>col.options;
+			const textWithIconColumn = new TextWithIconCollectionColumn({
 				name: col.value,
 				id: col.value,
 				field: col.value,
 				width: col.width,
 				headerCssClass: col.headerCssClass,
 				formatter: textFormatter,
-				iconCssClassField: (<azdata.TextColumnOption>col.options).iconCssClassColumn
+				iconCssCollection: textColOptions.imageCollection.map(icon => createIconCssClass(icon)),
+				iconCssIndexField: textColOptions.iconProviderColumn
 			});
 			return textWithIconColumn.definition;
 		}
