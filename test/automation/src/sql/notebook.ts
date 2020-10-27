@@ -58,6 +58,12 @@ export class Notebook {
 		await this.code.dispatchKeybinding(winOrCtrl + '+shift+F5');
 	}
 
+	async clearResults(): Promise<void> {
+		await this.code.waitAndClick('.notebookEditor');
+		const clearResultsButton = '.editor-toolbar a[class="action-label codicon notebook-button icon-clear-results masked-icon"]';
+		await this.code.waitAndClick(clearResultsButton);
+	}
+
 	async waitForTypeInEditor(text: string) {
 		const editor = '.notebook-cell.active .monaco-editor';
 		await this.code.waitAndClick(editor);
@@ -77,6 +83,23 @@ export class Notebook {
 	async waitForResults(): Promise<void> {
 		const outputComponent = '.notebook-cell.active .notebook-output';
 		await this.code.waitForElement(outputComponent);
+	}
+
+	async waitForAllResults(cellIds: number[]): Promise<void> {
+		for (let i of cellIds) {
+			await this.code.waitForElement(`div.notebook-cell[id="${i}"] .notebook-output`);
+		}
+	}
+
+	async waitForResultsGone(): Promise<void> {
+		const outputComponent = '.notebook-cell.active .notebook-output';
+		await this.code.waitForElementGone(outputComponent);
+	}
+
+	async waitForAllResultsGone(cellIds: number[]): Promise<void> {
+		for (let i of cellIds) {
+			await this.code.waitForElementGone(`div.notebook-cell[id="${i}"] .notebook-output`);
+		}
 	}
 }
 
