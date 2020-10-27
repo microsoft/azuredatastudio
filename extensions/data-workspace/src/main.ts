@@ -9,7 +9,7 @@ import { WorkspaceService } from './services/workspaceService';
 import { WorkspaceTreeItem, IExtension } from 'dataworkspace';
 import { DataWorkspaceExtension } from './common/dataWorkspaceExtension';
 import { NewProjectDialog } from './dialogs/newProjectDialog';
-import { OpenProjectDialog } from './dialogs/openProjectDialog';
+import { OpenExistingDialog } from './dialogs/openExistingDialog';
 import { IWorkspaceService } from './common/interfaces';
 import { IconPathHelper } from './common/iconHelper';
 
@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 		dialog.open();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openExisting', async () => {
-		const dialog = new OpenProjectDialog(workspaceService, context);
+		const dialog = new OpenExistingDialog(workspaceService, context);
 		dialog.open();
 
 	}));
