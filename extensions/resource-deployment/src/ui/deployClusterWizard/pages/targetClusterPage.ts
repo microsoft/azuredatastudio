@@ -7,15 +7,15 @@ import * as azdata from 'azdata';
 import * as os from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeployClusterWizard } from '../deployClusterWizard';
-import { WizardPageBase } from '../../wizardPageBase';
 import { KubeClusterContext } from '../../../services/kubeService';
 import { ClusterContext_VariableName, KubeConfigPath_VariableName } from '../constants';
+import { ResourceTypePage } from '../../resourceTypeWizard';
+import { DeployClusterWizardModel } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
 const ClusterRadioButtonGroupName = 'ClusterRadioGroup';
 
-export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard> {
+export class TargetClusterContextPage extends ResourceTypePage {
 	private existingClusterControl: azdata.FlexContainer | undefined;
 	private clusterContextsLabel: azdata.TextComponent | undefined;
 	private errorLoadingClustersLabel: azdata.TextComponent | undefined;
@@ -26,9 +26,9 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 	private loadDefaultKubeConfigFile: boolean = true;
 	private view: azdata.ModelView | undefined;
 
-	constructor(wizard: DeployClusterWizard) {
+	constructor(private _model: DeployClusterWizardModel) {
 		super(localize('deployCluster.TargetClusterContextPageTitle', "Target cluster context"),
-			localize('deployCluster.TargetClusterContextPageDescription', "Select the kube config file and then select a cluster context from the list"), wizard);
+			localize('deployCluster.TargetClusterContextPageDescription', "Select the kube config file and then select a cluster context from the list"), _model.wizard);
 	}
 
 	public initialize(): void {
@@ -53,7 +53,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 
 	public async onEnter(): Promise<void> {
 		if (this.loadDefaultKubeConfigFile) {
-			let defaultKubeConfigPath = this.wizard.kubeService.getDefaultConfigPath();
+			let defaultKubeConfigPath = this._model.kubeService.getDefaultConfigPath();
 			this.loadClusterContexts(defaultKubeConfigPath);
 			this.loadDefaultKubeConfigFile = false;
 		}
@@ -140,7 +140,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 
 		let clusterContexts: KubeClusterContext[] = [];
 		try {
-			clusterContexts = await this.wizard.kubeService.getClusterContexts(configPath);
+			clusterContexts = await this._model.kubeService.getClusterContexts(configPath);
 		} catch (error) {
 			this.wizard.wizardObject.message = {
 				text: localize('deployCluster.ConfigParseError', "Failed to load the config file"),
