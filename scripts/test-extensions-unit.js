@@ -35,7 +35,13 @@ let argv = require('yargs')
 
 // set up environment
 
-const VSCODEUSERDATADIR = tmp.dirSync({ prefix: 'adsuser' }).name;
+let VSCODEUSERDATADIR;
+
+if (process.env.VSCODEUSERDATAROOT) {
+	VSCODEUSERDATADIR = path.join(process.env.VSCODEUSERDATAROOT, tmp.tmpNameSync({ prefix: 'adsuser' }));
+} else {
+	VSCODEUSERDATADIR = tmp.dirSync({ prefix: 'adsuser' }).name;
+}
 const VSCODEEXTENSIONSDIR = tmp.dirSync({ prefix: 'adsext' }).name;
 
 console.log(VSCODEUSERDATADIR);
@@ -74,5 +80,7 @@ for (const ext of argv.extensions) {
 
 // clean up
 
-fs.remove(VSCODEUSERDATADIR, { recursive: true }).catch(console.error);
-fs.remove(VSCODEEXTENSIONSDIR, { recursive: true }).catch(console.error);
+if (!process.env.NO_CLEANUP) {
+	fs.remove(VSCODEUSERDATADIR, { recursive: true }).catch(console.error);
+	fs.remove(VSCODEEXTENSIONSDIR, { recursive: true }).catch(console.error);
+}
