@@ -66,8 +66,16 @@ declare module 'azdata' {
 
 		export interface IExecuteResult {
 			data: any;
-			batchId?: number;
-			id?: number;
+		}
+
+		export interface IExecuteResultUpdate {
+			output_type: string;
+			resultSet: ResultSetSummary;
+			data: any;
+		}
+
+		export interface ICellOutputMetadata {
+			resultSet?: ResultSetSummary;
 		}
 	}
 

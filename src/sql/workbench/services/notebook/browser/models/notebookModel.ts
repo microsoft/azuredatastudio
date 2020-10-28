@@ -271,17 +271,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	/**
-	 * Indicates all result grid output has been converted to mimeType and html.
-	 */
-	public get gridDataConversionComplete(): Promise<any> {
-		let promises = [];
-		for (let cell of this._cells) {
-			promises.push(cell.gridDataConversionComplete);
-		}
-		return Promise.all(promises);
-	}
-
-	/**
 	 * Notifies when the client session is ready for use
 	 */
 	public get onClientSessionReady(): Event<IClientSession> {
