@@ -66,7 +66,7 @@ export default () => `
 							<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:azdata.resource.deploy">
 								<div class="header-bottom-nav-tile tile tile-server">
 									<h3>${escape(localize('welcomePage.deployServer', "Deploy a server"))}</h3>
-									<p>${escape(localize('welcomePage.deployServerBody', "Create a new instance of SQL Server on the platform of your choice."))}</p>
+									<p>${escape(localize('welcomePage.deployServerBody', "Create a new instance of a relational data service on the platform of your choice."))}</p>
 									<div class="icon server"></div>
 								</div>
 							</a>

@@ -206,6 +206,11 @@ const apiMenus: IAPIMenu[] = [
 		id: MenuId.ObjectExplorerItemContext,
 		description: localize('objectExplorer.context', "The object explorer item context menu")
 	},
+	{
+		key: 'connectionDialog/browseTree',
+		id: MenuId.ConnectionDialogBrowseTreeContext,
+		description: localize('connectionDialogBrowseTree.context', "The connection dialog's browse tree context menu")
+	}
 	// {{SQL CARBON EDIT}} end menu entries
 ];
 

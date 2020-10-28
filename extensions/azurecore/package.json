@@ -37,7 +37,7 @@
             "description": "%azure.resource.config.filter.description%"
           },
           "azure.tenant.config.filter": {
-            "type":"array",
+            "type": "array",
             "default": [],
             "description": "%azure.tenant.config.filter.description%"
           }
@@ -270,6 +270,18 @@
           "command": "azure.resource.startterminal",
           "when": "viewItem == azure.resource.itemType.account",
           "group": "azurecore"
+        }
+      ],
+      "connectionDialog/browseTree": [
+        {
+          "command": "azure.resource.selectsubscriptions",
+          "when": "contextValue == azure.resource.itemType.account",
+          "group": "navigation"
+        },
+        {
+          "command": "azure.resource.refresh",
+          "when": "contextValue == azure.resource.itemType.account",
+          "group": "navigation"
         }
       ]
     },
