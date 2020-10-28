@@ -282,6 +282,16 @@
           "command": "azure.resource.refresh",
           "when": "contextValue == azure.resource.itemType.account",
           "group": "navigation"
+        },
+        {
+          "command": "azure.resource.signin",
+          "when": "treeId == connectionDialog/azureResourceExplorer",
+          "group": "navigation"
+        },
+        {
+          "command": "azure.resource.refreshall",
+          "when": "treeId == connectionDialog/azureResourceExplorer",
+          "group": "navigation"
         }
       ]
     },
