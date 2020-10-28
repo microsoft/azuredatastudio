@@ -150,6 +150,8 @@ export const extLangUpdateFailedError = localize('extLang.updateFailedError', "F
 
 export const modelUpdateFailedError = localize('models.modelUpdateFailedError', "Failed to update the model");
 export const modelsListEmptyMessage = localize('models.modelsListEmptyMessage', "No models yet");
+export const azureModelsListEmptyTitle = localize('models.azureModelsListEmptyTitle', "No models found");
+export const azureModelsListEmptyDescription = localize('models.azureModelsListEmptyDescription', "Select another Azure ML workspace");
 export const modelsListEmptyDescription = localize('models.modelsListEmptyDescription', "Use import wizard to add models to this table");
 export const databaseName = localize('databaseName', "Models database");
 export const databaseToStoreInfo = localize('databaseToStoreInfo', "Select a database to store the new model.");
@@ -234,7 +236,7 @@ export const modelsRequiredError = localize('models.modelsRequiredError', "Pleas
 export const updateModelFailedError = localize('models.updateModelFailedError', "Failed to update the model");
 export const modelSchemaIsAcceptedMessage = localize('models.modelSchemaIsAcceptedMessage', "Table meets requirements!");
 export const selectModelsTableMessage = localize('models.selectModelsTableMessage', "Select models table");
-export const modelSchemaIsNotAcceptedMessage = localize('models.modelSchemaIsNotAcceptedMessage', "Invalid table structure");
+export const modelSchemaIsNotAcceptedMessage = localize('models.modelSchemaIsNotAcceptedMessage', "Invalid table structure!");
 export function importModelFailedError(modelName: string | undefined, filePath: string | undefined): string { return localize('models.importModelFailedError', "Failed to register the model: {0} ,file: {1}", modelName || '', filePath || ''); }
 export function invalidImportTableError(databaseName: string | undefined, tableName: string | undefined): string { return localize('models.invalidImportTableError', "Invalid table for importing models. database name: {0} ,table name: {1}", databaseName || '', tableName || ''); }
 export function invalidImportTableSchemaError(databaseName: string | undefined, tableName: string | undefined): string { return localize('models.invalidImportTableSchemaError', "Table schema is not supported for model import. Database name: {0}, table name: {1}.", databaseName || '', tableName || ''); }
