@@ -5,7 +5,7 @@
 
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { INotificationActions, INotificationService } from 'vs/platform/notification/common/notification';
 import { Action, IAction, Separator } from 'vs/base/common/actions';
 import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { CellActionBase, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
@@ -20,10 +20,11 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ICellModel, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ISelectBoxOptionsWithLabel, SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionType, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 const moreActionsLabel = localize('moreActionsLabel', "More");
 
@@ -395,9 +396,9 @@ export class CellAttachToDropdown extends SelectBox {
 					// No-op for now
 				});
 		}
-		// this.onDidSelect(e => {
-		// 	this.doChangeContext();
-		// });
+		this.onDidSelect(e => {
+			this.doChangeContext();
+		});
 	}
 
 	public updateModel(model: ICellModel): void {
@@ -465,13 +466,13 @@ export class CellAttachToDropdown extends SelectBox {
 		}
 	}
 
-	// public doChangeContext(connection?: ConnectionProfile, hideErrorMessage?: boolean): void {
-	// 	if (this.value === msgChangeConnection || this.value === msgSelectConnection) {
-	// 		this.openConnectionDialog().catch(err => this._notificationService.error(getErrorMessage(err)));
-	// 	} else {
-	// 		this.model.changeContext(this.value, connection, hideErrorMessage).catch(err => this._notificationService.error(getErrorMessage(err)));
-	// 	}
-	// }
+	public doChangeContext(connection?: ConnectionProfile, hideErrorMessage?: boolean): void {
+		if (this.value === msgChangeConnection || this.value === msgSelectConnection) {
+			this.openConnectionDialog().catch(err => this._notificationService.error(getErrorMessage(err)));
+		} else {
+			this.cellModel.changeContext(this.value, connection).catch(err => this._notificationService.error(getErrorMessage(err)));
+		}
+	}
 
 	// /**
 	//  * Open connection dialog
@@ -479,74 +480,74 @@ export class CellAttachToDropdown extends SelectBox {
 	//  * Bind the server value to 'Attach To' drop down
 	//  * Connected server is displayed at the top of drop down
 	//  **/
-	// public async openConnectionDialog(useProfile: boolean = false): Promise<boolean> {
-	// 	try {
-	// 		// Get all providers to show all available connections in connection dialog
-	// 		let providers = this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name);
-	// 		// Spark kernels are unable to get providers from above, therefore ensure that we get the
-	// 		// correct providers for the selected kernel and load the proper connections for the connection dialog
-	// 		// Example Scenario: Spark Kernels should only have MSSQL connections in connection dialog
-	// 		if (!this.model.kernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.clientSession.kernel.name !== 'SQL') {
-	// 			providers = providers.concat(this.model.getApplicableConnectionProviderIds(this.model.selectedKernelDisplayName));
-	// 		} else {
-	// 			for (let alias of this.model.kernelAliases) {
-	// 				providers = providers.concat(this.model.getApplicableConnectionProviderIds(alias));
-	// 			}
-	// 		}
-	// 		let connection = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
-	// 			{
-	// 				connectionType: ConnectionType.temporary,
-	// 				providers: providers
-	// 			},
-	// 			useProfile ? this.model.connectionProfile : undefined);
+	public async openConnectionDialog(useProfile: boolean = false): Promise<boolean> {
+		try {
+			// Get all providers to show all available connections in connection dialog
+			let providers = this.notebookModel.getApplicableConnectionProviderIds(this.notebookModel.clientSession.kernel.name);
+			// Spark kernels are unable to get providers from above, therefore ensure that we get the
+			// correct providers for the selected kernel and load the proper connections for the connection dialog
+			// Example Scenario: Spark Kernels should only have MSSQL connections in connection dialog
+			if (!this.notebookModel.kernelAliases.includes(this.notebookModel.selectedKernelDisplayName) && this.notebookModel.clientSession.kernel.name !== 'SQL') {
+				providers = providers.concat(this.notebookModel.getApplicableConnectionProviderIds(this.notebookModel.selectedKernelDisplayName));
+			} else {
+				for (let alias of this.notebookModel.kernelAliases) {
+					providers = providers.concat(this.notebookModel.getApplicableConnectionProviderIds(alias));
+				}
+			}
+			let connection = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
+				{
+					connectionType: ConnectionType.temporary,
+					providers: providers
+				},
+				useProfile ? this.notebookModel.connectionProfile : undefined);
 
-	// 		let attachToConnections = this.values;
-	// 		if (!connection) {
-	// 			// If there is no connection, we should choose the previous connection,
-	// 			// which will always be the first item in the list. Either "Select Connection"
-	// 			// or a real connection name
-	// 			this.select(0);
-	// 			return false;
-	// 		}
-	// 		let connectionUri = this._connectionManagementService.getConnectionUri(connection);
-	// 		let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
-	// 		let connectedServer = connectionProfile.title ? connectionProfile.title : connectionProfile.serverName;
-	// 		//Check to see if the same server is already there in dropdown. We only have server names in dropdown
-	// 		if (attachToConnections.some(val => val === connectedServer)) {
-	// 			this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
-	// 			this.doChangeContext();
-	// 			return true;
-	// 		}
-	// 		else {
-	// 			attachToConnections.unshift(connectedServer);
-	// 		}
-	// 		//To ignore n/a after we have at least one valid connection
-	// 		attachToConnections = attachToConnections.filter(val => val !== msgSelectConnection);
+			let attachToConnections = this.values;
+			if (!connection) {
+				// If there is no connection, we should choose the previous connection,
+				// which will always be the first item in the list. Either "Select Connection"
+				// or a real connection name
+				this.select(0);
+				return false;
+			}
+			let connectionUri = this._connectionManagementService.getConnectionUri(connection);
+			let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
+			let connectedServer = connectionProfile.title ? connectionProfile.title : connectionProfile.serverName;
+			//Check to see if the same server is already there in dropdown. We only have server names in dropdown
+			if (attachToConnections.some(val => val === connectedServer)) {
+				this.loadAttachToDropdown(this.cellModel, this.getKernelDisplayName());
+				this.doChangeContext();
+				return true;
+			}
+			else {
+				attachToConnections.unshift(connectedServer);
+			}
+			//To ignore n/a after we have at least one valid connection
+			attachToConnections = attachToConnections.filter(val => val !== msgSelectConnection);
 
-	// 		let index = attachToConnections.findIndex(connection => connection === connectedServer);
-	// 		this.setOptions([]);
-	// 		this.setOptions(attachToConnections);
-	// 		if (!index || index < 0 || index >= attachToConnections.length) {
-	// 			index = 0;
-	// 		}
-	// 		this.select(index);
+			let index = attachToConnections.findIndex(connection => connection === connectedServer);
+			this.setOptions([]);
+			this.setOptions(attachToConnections);
+			if (!index || index < 0 || index >= attachToConnections.length) {
+				index = 0;
+			}
+			this.select(index);
 
-	// 		this.model.addAttachToConnectionsToBeDisposed(connectionUri);
-	// 		// Call doChangeContext to set the newly chosen connection in the model
-	// 		this.doChangeContext(connectionProfile);
+			this.notebookModel.addAttachToConnectionsToBeDisposed(connectionUri);
+			// Call doChangeContext to set the newly chosen connection in the model
+			this.doChangeContext(connectionProfile);
 
-	// 		//Changes kernel based on connection attached to
-	// 		if (this.model.kernelAliases.includes(connectionProfile.serverCapabilities.notebookKernelAlias)) {
-	// 			this.model.changeKernel(connectionProfile.serverCapabilities.notebookKernelAlias);
-	// 		} else if (this.model.clientSession.kernel.name === 'SQL') {
-	// 			this.model.changeKernel('SQL');
-	// 		}
-	// 		return true;
-	// 	}
-	// 	catch (error) {
-	// 		const actions: INotificationActions = { primary: [] };
-	// 		this._notificationService.notify({ severity: Severity.Error, message: getErrorMessage(error), actions });
-	// 		return false;
-	// 	}
-	// }
+			//Changes kernel based on connection attached to
+			if (this.notebookModel.kernelAliases.includes(connectionProfile.serverCapabilities.notebookKernelAlias)) {
+				this.notebookModel.changeKernel(connectionProfile.serverCapabilities.notebookKernelAlias);
+			} else if (this.notebookModel.clientSession.kernel.name === 'SQL') {
+				this.notebookModel.changeKernel('SQL');
+			}
+			return true;
+		}
+		catch (error) {
+			const actions: INotificationActions = { primary: [] };
+			this._notificationService.notify({ severity: Severity.Error, message: getErrorMessage(error), actions });
+			return false;
+		}
+	}
 }

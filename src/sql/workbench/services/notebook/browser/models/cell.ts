@@ -29,6 +29,7 @@ import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbenc
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { values } from 'vs/base/common/collections';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -290,9 +291,25 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._activeConnection;
 	}
 
-	public async changeContext(newConnection?: ConnectionProfile): Promise<void> {
-		this._activeConnection = newConnection ? newConnection : undefined;
-		this._contextsChangedEmitter.fire();
+	public async changeContext(connectionName: string, newConnection?: ConnectionProfile): Promise<void> {
+		// Remove cell's connection
+		if (!connectionName) {
+			this.activeConnection = undefined;
+			this._contextsChangedEmitter.fire();
+		} else {
+			// Set new connection for cell
+			let connection;
+			if (!newConnection) {
+				let connection = this.getConnectionProfileFromName(connectionName);
+				if (!connection) {
+					// TODO: show connection dialog for alias that doesn't have a connection?
+				}
+			} else {
+				connection = newConnection;
+			}
+			this.activeConnection = connection;
+			this._contextsChangedEmitter.fire();
+		}
 	}
 
 	public set activeConnection(connection: ConnectionProfile) {
@@ -908,5 +925,10 @@ export class CellModel extends Disposable implements ICellModel {
 				}
 			}));
 		}
+	}
+
+	private getConnectionProfileFromName(connectionName: string): ConnectionProfile | undefined {
+		let connections: ConnectionProfile[] = this._connectionManagementService.getConnections();
+		return values(connections).find(connection => connection.connectionName === connectionName);
 	}
 }

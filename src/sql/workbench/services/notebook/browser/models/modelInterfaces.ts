@@ -504,7 +504,7 @@ export interface ICellModel {
 	updateOutputData(batchId: number, id: number, data: any): void;
 	readonly context: ConnectionProfile | undefined;
 	readonly savedConnectionName: string | undefined;
-	changeContext(newConnection?: ConnectionProfile): Promise<void>;
+	changeContext(connectionName: string, newConnection?: ConnectionProfile): Promise<void>;
 	readonly onValidConnectionSelected: Event<boolean>;
 }
 
