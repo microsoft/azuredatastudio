@@ -150,6 +150,21 @@ steps:
 
   - script: |
       set -e
+      mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
+      cd ~/.config/azuredatastudio
+      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/logs-linux-x64.tar.gz logs
+    displayName: Archive Logs
+    continueOnError: true
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: logs-linux-x64.tar.gz
+      targetPath: $(Build.ArtifactStagingDirectory)/logs/linux-x64
+    displayName: Publish Logs
+    continueOnError: true
+
+  - script: |
+      set -e
       yarn gulp vscode-linux-x64-build-deb
     displayName: Build Deb
 
