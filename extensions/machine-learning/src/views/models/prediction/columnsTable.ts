@@ -19,15 +19,6 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 	private _table: azdata.DeclarativeTableComponent | undefined;
 	private _parameters: PredictColumn[] = [];
 	private _loader: azdata.LoadingComponent;
-	private _dataTypes: string[] = [
-		'BIGINT',
-		'INT',
-		'SMALLINT',
-		'REAL',
-		'FLOAT',
-		'VARCHAR(MAX)',
-		'BIT'
-	];
 
 
 	/**
@@ -171,7 +162,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		this._parameters = [];
 		let tableData: any[][] = [];
 
-		if (this._table) {
+		if (this._table && table && table.tableName !== constants.selectTableTitle) {
 			if (this._forInput) {
 				let columns: TableColumn[];
 				try {
@@ -196,8 +187,8 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 
 		if (this._table) {
 			if (!this._forInput) {
-				if (modelParameters?.outputs && this._dataTypes) {
-					tableData = tableData.concat(modelParameters.outputs.map(output => this.createOutputTableRow(output, this._dataTypes)));
+				if (modelParameters?.outputs && constants.supportedDataTypes) {
+					tableData = tableData.concat(modelParameters.outputs.map(output => this.createOutputTableRow(output, constants.supportedDataTypes)));
 				}
 			}
 
@@ -299,7 +290,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			nameInput.value = column;
 
 			if (column) {
-				this._parameters.push({ columnName: column.name, paramName: name, paramType: modelParameter.type });
+				this._parameters.push({ columnName: column.name, paramName: name, paramType: modelParameter.type, maxLength: currentColumn?.maxLength });
 			}
 			const inputContainer = this._modelBuilder.flexContainer().withLayout({
 				flexFlow: 'row',
@@ -323,6 +314,10 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				let selectedRow = this._parameters.find(x => x.paramName === name);
 				if (selectedRow) {
 					selectedRow.columnName = value || '';
+					let tableColumn = columns.find(x => x.columnName === value);
+					if (tableColumn) {
+						selectedRow.maxLength = tableColumn.maxLength;
+					}
 				}
 
 				const currentColumn = columns.find(x => x.columnName === value);

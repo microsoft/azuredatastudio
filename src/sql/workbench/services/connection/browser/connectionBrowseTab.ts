@@ -45,8 +45,9 @@ import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IAction } from 'vs/base/common/actions';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
-export type TreeElement = ConnectionProviderElement | ITreeItemFromProvider | SavedConnectionNode | ServerTreeElement;
+export type TreeElement = ConnectionDialogTreeProviderElement | ITreeItemFromProvider | SavedConnectionNode | ServerTreeElement;
 
 export class ConnectionBrowseTab implements IPanelTab {
 	public readonly title = localize('connectionDialog.browser', "Browse");
@@ -80,7 +81,9 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		@ICommandService private readonly commandService: ICommandService,
 		@IMenuService private readonly menuService: IMenuService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
-		@IContextMenuService private readonly contextMenuService: IContextMenuService
+		@IContextMenuService private readonly contextMenuService: IContextMenuService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
 	) {
 		super();
 		this.connectionTreeService.setView(this);
@@ -153,9 +156,17 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 				accessibilityProvider: new ListAccessibilityProvider()
 			}) as WorkbenchAsyncDataTree<TreeModel, TreeElement>);
 		this._register(this.tree.onContextMenu(e => {
-			const context = e.element as ITreeItemFromProvider;
-			if (context?.element) {
-				this.contextKey.set(context.element);
+			let context: ITreeItem | ConnectionDialogTreeProviderElement | undefined;
+			let actionContext: TreeViewItemHandleArg | ConnectionDialogTreeProviderElement | undefined;
+			if (instanceOfITreeItemFromProvider(e.element)) {
+				context = e.element.element;
+				actionContext = <TreeViewItemHandleArg>{ $treeViewId: e.element.treeId, $treeItemHandle: context.handle, $treeItem: context };
+			} else if (e.element instanceof ConnectionDialogTreeProviderElement) {
+				context = e.element;
+				actionContext = e.element;
+			}
+			if (context) {
+				this.contextKey.set(context);
 				const menu = this.menuService.createMenu(MenuId.ConnectionDialogBrowseTreeContext, this.contextKeyService);
 				const primary: IAction[] = [];
 				const secondary: IAction[] = [];
@@ -165,7 +176,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 				this.contextMenuService.showContextMenu({
 					getAnchor: () => e.anchor,
 					getActions: () => result.primary,
-					getActionsContext: () => (<TreeViewItemHandleArg>{ $treeViewId: context.treeId, $treeItemHandle: context.element.handle, $treeItem: context.element })
+					getActionsContext: () => actionContext
 				});
 			}
 		}));
@@ -187,6 +198,29 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		this.tree.setInput(this.model);
 
 		this._register(this.connectionTreeService.onDidAddProvider(() => this.tree.updateChildren(this.model)));
+
+		// this event will be fired when connections/connection groups are created/edited
+		this._register(this.connectionManagementService.onAddConnectionProfile(() => {
+			this.updateSavedConnectionsNode();
+		}));
+
+		// this event will be fired when connections/connection groups are deleted
+		this._register(this.connectionManagementService.onDeleteConnectionProfile(() => {
+			this.updateSavedConnectionsNode();
+		}));
+
+		// this event will be fired when connection provider is registered
+		// when a connection's provider is not registered (e.g. the extensions are not fully loaded or the provider extension has been uninstalled)
+		// it will be displayed as 'loading...', this event will be fired when a connection's provider becomes available.
+		this._register(this.capabilitiesService.onCapabilitiesRegistered(() => {
+			this.updateSavedConnectionsNode();
+		}));
+	}
+
+	private updateSavedConnectionsNode(): void {
+		if (this.model.savedConnectionNode) {
+			this.tree.updateChildren(this.model.savedConnectionNode);
+		}
 	}
 
 	async refresh(items?: ITreeItem[]): Promise<void> {
@@ -213,7 +247,11 @@ export interface ITreeItemFromProvider {
 	getChildren?(): Promise<ITreeItemFromProvider[]>
 }
 
-class ConnectionProviderElement {
+export function instanceOfITreeItemFromProvider(obj: any): obj is ITreeItemFromProvider {
+	return !!(<ITreeItemFromProvider>obj)?.element;
+}
+
+class ConnectionDialogTreeProviderElement {
 	public readonly id = this.descriptor.id;
 	public readonly name = this.descriptor.name;
 
@@ -236,7 +274,7 @@ class ListDelegate implements IListVirtualDelegate<TreeElement> {
 	}
 
 	getTemplateId(element: TreeElement): string {
-		if (element instanceof ConnectionProviderElement) {
+		if (element instanceof ConnectionDialogTreeProviderElement) {
 			return ProviderElementRenderer.TEMPLATE_ID;
 		} else if (element instanceof ConnectionProfile) {
 			return ServerTreeRenderer.CONNECTION_TEMPLATE_ID;
@@ -257,7 +295,7 @@ interface ProviderElementTemplate {
 	readonly name: HTMLElement;
 }
 
-class ProviderElementRenderer implements ITreeRenderer<ConnectionProviderElement, void, ProviderElementTemplate> {
+class ProviderElementRenderer implements ITreeRenderer<ConnectionDialogTreeProviderElement, void, ProviderElementTemplate> {
 	public static readonly TEMPLATE_ID = 'ProviderElementTemplate';
 	public readonly templateId = ProviderElementRenderer.TEMPLATE_ID;
 
@@ -267,7 +305,7 @@ class ProviderElementRenderer implements ITreeRenderer<ConnectionProviderElement
 		return { name, icon };
 	}
 
-	renderElement(element: ITreeNode<ConnectionProviderElement, void>, index: number, templateData: ProviderElementTemplate, height: number): void {
+	renderElement(element: ITreeNode<ConnectionDialogTreeProviderElement, void>, index: number, templateData: ProviderElementTemplate, height: number): void {
 		templateData.name.innerText = element.element.name;
 	}
 
@@ -280,7 +318,7 @@ interface SavedConnectionNodeElementTemplate {
 	readonly name: HTMLElement;
 }
 
-class SavedConnectionsNodeRenderer implements ITreeRenderer<ConnectionProviderElement, void, SavedConnectionNodeElementTemplate> {
+class SavedConnectionsNodeRenderer implements ITreeRenderer<ConnectionDialogTreeProviderElement, void, SavedConnectionNodeElementTemplate> {
 	public static readonly TEMPLATE_ID = 'savedConnectionNode';
 	public readonly templateId = SavedConnectionsNodeRenderer.TEMPLATE_ID;
 
@@ -290,7 +328,7 @@ class SavedConnectionsNodeRenderer implements ITreeRenderer<ConnectionProviderEl
 		return { name, icon };
 	}
 
-	renderElement(element: ITreeNode<ConnectionProviderElement, void>, index: number, templateData: SavedConnectionNodeElementTemplate, height: number): void {
+	renderElement(element: ITreeNode<ConnectionDialogTreeProviderElement, void>, index: number, templateData: SavedConnectionNodeElementTemplate, height: number): void {
 		templateData.name.innerText = localize('savedConnections', "Saved Connections");
 	}
 
@@ -300,7 +338,7 @@ class SavedConnectionsNodeRenderer implements ITreeRenderer<ConnectionProviderEl
 
 class IdentityProvider implements IIdentityProvider<TreeElement> {
 	getId(element: TreeElement): string {
-		if (element instanceof ConnectionProviderElement) {
+		if (element instanceof ConnectionDialogTreeProviderElement) {
 			return element.id;
 		} else if (element instanceof ConnectionProfile) {
 			return element.id;
@@ -317,6 +355,7 @@ class IdentityProvider implements IIdentityProvider<TreeElement> {
 }
 
 class TreeModel {
+	private _savedConnectionNode: SavedConnectionNode | undefined;
 
 	constructor(
 		@IConnectionTreeService private readonly connectionTreeService: IConnectionTreeService,
@@ -324,14 +363,19 @@ class TreeModel {
 	) { }
 
 	getChildren(): TreeElement[] {
+		this._savedConnectionNode = this.instantiationService.createInstance(SavedConnectionNode);
 		const descriptors = Array.from(this.connectionTreeService.descriptors);
-		return [this.instantiationService.createInstance(SavedConnectionNode), ...Iterable.map(this.connectionTreeService.providers, ([id, provider]) => new ConnectionProviderElement(provider, descriptors.find(i => i.id === id)))];
+		return [this._savedConnectionNode, ...Iterable.map(this.connectionTreeService.providers, ([id, provider]) => new ConnectionDialogTreeProviderElement(provider, descriptors.find(i => i.id === id)))];
+	}
+
+	public get savedConnectionNode(): SavedConnectionNode | undefined {
+		return this._savedConnectionNode;
 	}
 }
 
 class ListAccessibilityProvider implements IListAccessibilityProvider<TreeElement> {
 	getAriaLabel(element: TreeElement): string {
-		if (element instanceof ConnectionProviderElement) {
+		if (element instanceof ConnectionDialogTreeProviderElement) {
 			return element.name;
 		} else if (element instanceof ConnectionProfile) {
 			return element.serverName;
@@ -362,7 +406,7 @@ class DataSource implements IAsyncDataSource<TreeModel, TreeElement> {
 	hasChildren(element: TreeModel | TreeElement): boolean {
 		if (element instanceof TreeModel) {
 			return true;
-		} else if (element instanceof ConnectionProviderElement) {
+		} else if (element instanceof ConnectionDialogTreeProviderElement) {
 			return true;
 		} else if (element instanceof ConnectionProfile) {
 			return false;
@@ -381,12 +425,7 @@ class DataSource implements IAsyncDataSource<TreeModel, TreeElement> {
 
 	public get expandableTreeNodes(): TreeElement[] {
 		return this.treeNodes.filter(node => {
-			return node instanceof TreeModel
-				|| node instanceof SavedConnectionNode
-				|| node instanceof ConnectionProfileGroup
-				|| node instanceof TreeNode
-				|| node instanceof ConnectionProviderElement
-				|| (!(node instanceof ConnectionProfile) && node.element.collapsibleState !== TreeItemCollapsibleState.None);
+			return instanceOfITreeItemFromProvider(node) && node.element.collapsibleState !== TreeItemCollapsibleState.None;
 		});
 	}
 
@@ -404,7 +443,7 @@ class DataSource implements IAsyncDataSource<TreeModel, TreeElement> {
 				} else if (
 					!(element instanceof TreeModel) &&
 					!(element instanceof TreeNode) &&
-					!(element instanceof ConnectionProviderElement)
+					!(element instanceof ConnectionDialogTreeProviderElement)
 				) {
 					children = (children as ITreeItemFromProvider[]).filter(item => {
 						return item.element.collapsibleState !== TreeItemCollapsibleState.None || this._filterRegex.test(item.element.label.label);
@@ -567,26 +606,36 @@ class TreeItemRenderer extends Disposable implements ITreeRenderer<ITreeItemFrom
 	}
 }
 
-class ContextKey extends Disposable implements IContextKey<ITreeItem> {
-	static readonly ContextValue = new RawContextKey<string>('contextValue', undefined);
-	static readonly Item = new RawContextKey<ITreeItem>('item', undefined);
-	private _contextValueKey: IContextKey<string>;
-	private _itemKey: IContextKey<ITreeItem>;
+type ContextValueType = ITreeItem | ConnectionDialogTreeProviderElement;
+
+class ContextKey extends Disposable implements IContextKey<ContextValueType> {
+	static readonly ContextValue = new RawContextKey<string | undefined>('contextValue', undefined);
+	static readonly TreeId = new RawContextKey<string | undefined>('treeId', undefined);
+	private _contextValueKey: IContextKey<string | undefined>;
+	private _treeIdKey: IContextKey<string | undefined>;
+	private _item: ContextValueType;
 
 	constructor(
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		super();
 		this._contextValueKey = ContextKey.ContextValue.bindTo(contextKeyService);
-		this._itemKey = ContextKey.Item.bindTo(contextKeyService);
+		this._treeIdKey = ContextKey.TreeId.bindTo(contextKeyService);
 	}
-	set(value: ITreeItem): void {
-		this._contextValueKey.set(value.contextValue);
+	set(value: ContextValueType): void {
+		this.reset();
+		this._item = value;
+		if (value instanceof ConnectionDialogTreeProviderElement) {
+			this._treeIdKey.set(value.id);
+		} else {
+			this._contextValueKey.set(value.contextValue);
+		}
 	}
 	reset(): void {
 		this._contextValueKey.reset();
+		this._treeIdKey.reset();
 	}
-	get(): ITreeItem {
-		return this._itemKey.get();
+	get(): ContextValueType {
+		return this._item;
 	}
 }
