@@ -160,10 +160,10 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 
+					this.discardButton!.enabled = false;
+
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
-				} finally {
-					this.discardButton!.enabled = false;
 				}
 			}));
 
@@ -223,9 +223,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.disposables.push(
 			this.coresLimitBox!.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.coresLimitBox!))) {
-					this.saveArgs.coresRequest = undefined;
+					this.saveArgs.coresLimit = undefined;
 				} else {
-					this.saveArgs.coresRequest = this.coresLimitBox!.value;
+					this.saveArgs.coresLimit = this.coresLimitBox!.value;
 				}
 			})
 		);
@@ -241,9 +241,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.disposables.push(
 			this.coresRequestBox!.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.coresRequestBox!))) {
-					this.saveArgs.coresLimit = undefined;
+					this.saveArgs.coresRequest = undefined;
 				} else {
-					this.saveArgs.coresLimit = this.coresRequestBox!.value;
+					this.saveArgs.coresRequest = this.coresRequestBox!.value;
 				}
 			})
 		);
@@ -259,9 +259,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.disposables.push(
 			this.memoryLimitBox!.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.memoryLimitBox!))) {
-					this.saveArgs.memoryRequest = undefined;
+					this.saveArgs.memoryLimit = undefined;
 				} else {
-					this.saveArgs.memoryRequest = this.memoryLimitBox!.value + 'Gi';
+					this.saveArgs.memoryLimit = this.memoryLimitBox!.value + 'Gi';
 				}
 			})
 		);
@@ -277,9 +277,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.disposables.push(
 			this.memoryRequestBox!.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.memoryRequestBox!))) {
-					this.saveArgs.memoryLimit = undefined;
+					this.saveArgs.memoryRequest = undefined;
 				} else {
-					this.saveArgs.memoryLimit = this.memoryRequestBox!.value + 'Gi';
+					this.saveArgs.memoryRequest = this.memoryRequestBox!.value + 'Gi';
 				}
 			})
 		);
@@ -385,7 +385,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}
 
 	}
-
 	private editWorkerNodeCount() {
 		// scale.shards was renamed to scale.workers. Check both for backwards compatibility.
 		let scale = this._postgresModel.config?.spec.scale;
