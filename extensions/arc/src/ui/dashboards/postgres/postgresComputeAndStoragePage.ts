@@ -387,10 +387,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private editWorkerNodeCount() {
-		let currentShards = this._postgresModel.config?.spec.scale.shards;
+		// scale.shards was renamed to scale.workers. Check both for backwards compatibility.
+		let scale = this._postgresModel.config?.spec.scale;
+		let currentWorkers = scale?.workers ?? scale?.shards ?? 0;
 
-		this.workerBox!.min = currentShards;
-		this.workerBox!.placeHolder = currentShards!.toString();
+		this.workerBox!.min = currentWorkers;
+		this.workerBox!.placeHolder = currentWorkers!.toString();
 		this.workerBox!.value = '';
 
 		this.saveArgs.workers = undefined;
