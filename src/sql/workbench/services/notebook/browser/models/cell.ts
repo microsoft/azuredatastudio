@@ -71,6 +71,9 @@ export class CellModel extends Disposable implements ICellModel {
 	private _gridDataConversionComplete: Promise<void>[] = [];
 	private _defaultToWYSIWYG: boolean;
 	private _activeConnection: ConnectionProfile | undefined;
+	private _onValidConnectionSelected = new Emitter<boolean>();
+	private _contextsChangedEmitter = new Emitter<void>();
+	private _contextsLoadingEmitter = new Emitter<void>();
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -267,17 +270,34 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._options.notebook.language;
 	}
 
-	public get connectionName(): string | undefined {
+	public get contextsChanged(): Event<void> {
+		return this._contextsChangedEmitter.event;
+	}
+
+	public get contextsLoading(): Event<void> {
+		return this._contextsLoadingEmitter.event;
+	}
+
+	public get onValidConnectionSelected(): Event<boolean> {
+		return this._onValidConnectionSelected.event;
+	}
+
+	public get savedConnectionName(): string | undefined {
 		return this._savedConnectionName;
 	}
 
-	public get activeConnection(): ConnectionProfile | undefined {
+	public get context(): ConnectionProfile | undefined {
 		return this._activeConnection;
+	}
+
+	public async changeContext(newConnection?: ConnectionProfile): Promise<void> {
+		this._activeConnection = newConnection ? newConnection : undefined;
+		this._contextsChangedEmitter.fire();
 	}
 
 	public set activeConnection(connection: ConnectionProfile) {
 		this._activeConnection = connection;
-		this._savedConnectionName = connection.connectionName;
+		this._savedConnectionName = connection?.connectionName;
 	}
 
 	public get cellGuid(): string {
@@ -407,7 +427,8 @@ export class CellModel extends Disposable implements ICellModel {
 				this.sendNotification(notificationService, Severity.Info, localize('runCellCancelled', "Cell execution cancelled"));
 			} else {
 				// TODO update source based on editor component contents
-				if (kernel.requiresConnection && !this.notebookModel.context) {
+				if (kernel.requiresConnection && (!this.notebookModel.multiConnectionMode && !this.notebookModel.context)
+					|| (this.notebookModel.multiConnectionMode && !this.activeConnection)) {
 					let connected = await this.notebookModel.requestConnection();
 					if (!connected) {
 						return false;

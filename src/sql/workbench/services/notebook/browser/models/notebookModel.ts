@@ -877,14 +877,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (isMultiConnection) {
 			this._cells.forEach(c => {
 				if (c.cellType === CellTypes.Code) {
-					c.activeConnection = this._activeConnection;
+					c.changeContext(this._activeConnection);
 				}
 			});
 			this._activeConnection = undefined;
 		} else {
 			this._cells.forEach(c => {
 				if (c.cellType === CellTypes.Code) {
-					c.activeConnection = undefined;
+					c.changeContext(undefined);
 				}
 			});
 		}

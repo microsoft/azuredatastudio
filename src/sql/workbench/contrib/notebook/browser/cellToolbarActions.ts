@@ -11,13 +11,19 @@ import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/acti
 import { CellActionBase, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { CellTypes, CellType } from 'sql/workbench/services/notebook/common/contracts';
-import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { attachToDropdownElementId, attachToLabel, msgChangeConnection, msgLoadingContexts, msgLocalHost, msgSelectConnection, noKernel, ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { getErrorMessage } from 'vs/base/common/errors';
 import Severity from 'vs/base/common/severity';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ISelectBoxOptionsWithLabel, SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
+import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
+import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 
 const moreActionsLabel = localize('moreActionsLabel', "More");
 
@@ -363,4 +369,184 @@ export class ToggleMoreActions extends Action {
 		});
 		return Promise.resolve(true);
 	}
+}
+
+export class CellAttachToDropdown extends SelectBox {
+	private cellModel: CellModel;
+	private notebookModel: NotebookModel;
+
+	constructor(
+		container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<ICellModel>,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
+		@INotificationService private _notificationService: INotificationService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+	) {
+		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false, ariaLabel: attachToLabel, id: attachToDropdownElementId } as ISelectBoxOptionsWithLabel);
+		if (modelReady) {
+			modelReady
+				.then(model => {
+					this.updateModel(model);
+					this._register(model.onValidConnectionSelected(validConnection => {
+						this.handleContextsChanged(!validConnection);
+					}));
+				})
+				.catch(err => {
+					// No-op for now
+				});
+		}
+		// this.onDidSelect(e => {
+		// 	this.doChangeContext();
+		// });
+	}
+
+	public updateModel(model: ICellModel): void {
+		this.cellModel = model as CellModel;
+		this.notebookModel = model.notebookModel as NotebookModel;
+		this._register(this.cellModel.contextsChanged(() => {
+			this.handleContextsChanged();
+		}));
+		// this._register(this.cell.contextsLoading(() => { // TODO: cell contextsLoading()
+		// 	this.setOptions([msgLoadingContexts], 0);
+		// }));
+		// this.cellModel.requestConnectionHandler = () => this.openConnectionDialog(true); // TODO: cell requestConnectionHandler
+		this.handleContextsChanged();
+	}
+
+	private handleContextsChanged(showSelectConnection?: boolean) {
+		let kernelDisplayName: string = this.getKernelDisplayName();
+		if (kernelDisplayName) {
+			this.loadAttachToDropdown(this.cellModel, kernelDisplayName, showSelectConnection);
+		} else if (this.notebookModel.clientSession.isInErrorState) {
+			this.setOptions([localize('noContextAvailable', "None")], 0);
+		}
+	}
+
+	private getKernelDisplayName(): string {
+		let kernelDisplayName: string;
+		if (this.notebookModel.clientSession && this.notebookModel.clientSession.kernel && this.notebookModel.clientSession.kernel.name) {
+			let currentKernelName = this.notebookModel.clientSession.kernel.name.toLowerCase();
+			let currentKernelSpec = this.notebookModel.specs.kernels.find(kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
+			if (currentKernelSpec) {
+				//KernelDisplayName should be Kusto when connecting to Kusto connection
+				if ((this.notebookModel.context?.serverCapabilities.notebookKernelAlias && this.notebookModel.currentKernelAlias === this.notebookModel.context?.serverCapabilities.notebookKernelAlias) || (this.notebookModel.kernelAliases.includes(this.notebookModel.selectedKernelDisplayName) && this.notebookModel.selectedKernelDisplayName)) {
+					kernelDisplayName = this.notebookModel.context?.serverCapabilities.notebookKernelAlias || this.notebookModel.selectedKernelDisplayName;
+				} else {
+					kernelDisplayName = currentKernelSpec.display_name;
+				}
+			}
+		}
+		return kernelDisplayName;
+	}
+
+	// // Load "Attach To" dropdown with the values corresponding to Kernel dropdown
+	public loadAttachToDropdown(model: ICellModel, currentKernel: string, showSelectConnection?: boolean): void {
+		let connProviderIds = this.notebookModel.getApplicableConnectionProviderIds(currentKernel);
+		if ((connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
+			this.setOptions([msgLocalHost]);
+		} else {
+			let connections: string[] = [];
+			if (model.context && model.context.title && (connProviderIds.includes(this.notebookModel.context.providerName))) {
+				connections.push(model.context.title);
+			} else if (model.savedConnectionName) {
+				connections.push(model.savedConnectionName);
+			} else {
+				connections.push(msgSelectConnection);
+			}
+			if (!connections.find(x => x === msgChangeConnection)) {
+				connections.push(msgChangeConnection);
+			}
+			this.setOptions(connections, 0);
+			this.enable();
+
+			if (this.notebookModel.kernelAliases.includes(currentKernel) && this.notebookModel.selectedKernelDisplayName !== currentKernel) {
+				this.notebookModel.changeKernel(currentKernel);
+			}
+		}
+	}
+
+	// public doChangeContext(connection?: ConnectionProfile, hideErrorMessage?: boolean): void {
+	// 	if (this.value === msgChangeConnection || this.value === msgSelectConnection) {
+	// 		this.openConnectionDialog().catch(err => this._notificationService.error(getErrorMessage(err)));
+	// 	} else {
+	// 		this.model.changeContext(this.value, connection, hideErrorMessage).catch(err => this._notificationService.error(getErrorMessage(err)));
+	// 	}
+	// }
+
+	// /**
+	//  * Open connection dialog
+	//  * Enter server details and connect to a server from the dialog
+	//  * Bind the server value to 'Attach To' drop down
+	//  * Connected server is displayed at the top of drop down
+	//  **/
+	// public async openConnectionDialog(useProfile: boolean = false): Promise<boolean> {
+	// 	try {
+	// 		// Get all providers to show all available connections in connection dialog
+	// 		let providers = this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name);
+	// 		// Spark kernels are unable to get providers from above, therefore ensure that we get the
+	// 		// correct providers for the selected kernel and load the proper connections for the connection dialog
+	// 		// Example Scenario: Spark Kernels should only have MSSQL connections in connection dialog
+	// 		if (!this.model.kernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.clientSession.kernel.name !== 'SQL') {
+	// 			providers = providers.concat(this.model.getApplicableConnectionProviderIds(this.model.selectedKernelDisplayName));
+	// 		} else {
+	// 			for (let alias of this.model.kernelAliases) {
+	// 				providers = providers.concat(this.model.getApplicableConnectionProviderIds(alias));
+	// 			}
+	// 		}
+	// 		let connection = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
+	// 			{
+	// 				connectionType: ConnectionType.temporary,
+	// 				providers: providers
+	// 			},
+	// 			useProfile ? this.model.connectionProfile : undefined);
+
+	// 		let attachToConnections = this.values;
+	// 		if (!connection) {
+	// 			// If there is no connection, we should choose the previous connection,
+	// 			// which will always be the first item in the list. Either "Select Connection"
+	// 			// or a real connection name
+	// 			this.select(0);
+	// 			return false;
+	// 		}
+	// 		let connectionUri = this._connectionManagementService.getConnectionUri(connection);
+	// 		let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
+	// 		let connectedServer = connectionProfile.title ? connectionProfile.title : connectionProfile.serverName;
+	// 		//Check to see if the same server is already there in dropdown. We only have server names in dropdown
+	// 		if (attachToConnections.some(val => val === connectedServer)) {
+	// 			this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
+	// 			this.doChangeContext();
+	// 			return true;
+	// 		}
+	// 		else {
+	// 			attachToConnections.unshift(connectedServer);
+	// 		}
+	// 		//To ignore n/a after we have at least one valid connection
+	// 		attachToConnections = attachToConnections.filter(val => val !== msgSelectConnection);
+
+	// 		let index = attachToConnections.findIndex(connection => connection === connectedServer);
+	// 		this.setOptions([]);
+	// 		this.setOptions(attachToConnections);
+	// 		if (!index || index < 0 || index >= attachToConnections.length) {
+	// 			index = 0;
+	// 		}
+	// 		this.select(index);
+
+	// 		this.model.addAttachToConnectionsToBeDisposed(connectionUri);
+	// 		// Call doChangeContext to set the newly chosen connection in the model
+	// 		this.doChangeContext(connectionProfile);
+
+	// 		//Changes kernel based on connection attached to
+	// 		if (this.model.kernelAliases.includes(connectionProfile.serverCapabilities.notebookKernelAlias)) {
+	// 			this.model.changeKernel(connectionProfile.serverCapabilities.notebookKernelAlias);
+	// 		} else if (this.model.clientSession.kernel.name === 'SQL') {
+	// 			this.model.changeKernel('SQL');
+	// 		}
+	// 		return true;
+	// 	}
+	// 	catch (error) {
+	// 		const actions: INotificationActions = { primary: [] };
+	// 		this._notificationService.notify({ severity: Severity.Error, message: getErrorMessage(error), actions });
+	// 		return false;
+	// 	}
+	// }
 }

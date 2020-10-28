@@ -8,15 +8,21 @@ import * as DOM from 'vs/base/browser/dom';
 import { Component, Inject, ViewChild, ElementRef, Input } from '@angular/core';
 import { localize } from 'vs/nls';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { DeleteCellAction, EditCellAction, CellToggleMoreActions, MoveCellAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
+import { DeleteCellAction, EditCellAction, CellToggleMoreActions, MoveCellAction, CellAttachToDropdown } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
 import { AddCellAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 
 export const CELL_TOOLBAR_SELECTOR: string = 'cell-toolbar-component';
 
@@ -43,7 +49,13 @@ export class CellToolbarComponent {
 
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IContextMenuService) private contextMenuService: IContextMenuService
+		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
+		@Inject(IContextViewService) private contextViewService: IContextViewService,
+		@Inject(INotificationService) private notificationService: INotificationService,
+		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService,
+		@Inject(IConnectionDialogService) private connectionDialogService: IConnectionDialogService,
+		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 	) {
 		this._cellToggleMoreActions = this.instantiationService.createInstance(CellToggleMoreActions);
 	}
@@ -94,6 +106,12 @@ export class CellToolbarComponent {
 		dropdownMenuActionViewItem.render(addCellDropdownContainer);
 		dropdownMenuActionViewItem.setActionContext(context);
 
+		let attachToContainer = document.createElement('li');
+		let attachToDropdown = new CellAttachToDropdown(attachToContainer, this.contextViewService, Promise.resolve(this.cellModel),
+			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
+		attachToDropdown.render(attachToContainer);
+		attachSelectBoxStyler(attachToDropdown, this.themeService);
+
 		let taskbarContent: ITaskbarContent[] = [];
 		if (this.cellModel?.cellType === CellTypes.Markdown) {
 			taskbarContent.push({ action: this._editCellAction });
@@ -103,7 +121,8 @@ export class CellToolbarComponent {
 			{ action: moveCellDownButton },
 			{ action: moveCellUpButton },
 			{ action: deleteButton },
-			{ element: moreActionsContainer });
+			{ element: moreActionsContainer },
+			{ element: attachToContainer });
 
 		this._actionBar.setContent(taskbarContent);
 	}

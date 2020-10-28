@@ -502,7 +502,10 @@ export interface ICellModel {
 	gridDataConversionComplete: Promise<void>;
 	addGridDataConversionPromise(complete: Promise<void>): void;
 	updateOutputData(batchId: number, id: number, data: any): void;
-	activeConnection: ConnectionProfile | undefined;
+	readonly context: ConnectionProfile | undefined;
+	readonly savedConnectionName: string | undefined;
+	changeContext(newConnection?: ConnectionProfile): Promise<void>;
+	readonly onValidConnectionSelected: Event<boolean>;
 }
 
 export interface IModelFactory {

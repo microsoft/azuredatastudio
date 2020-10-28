@@ -31,12 +31,12 @@ import { URI } from 'vs/base/common/uri';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
-const attachToLabel: string = localize('AttachTo', "Attach to ");
+export const attachToLabel: string = localize('AttachTo', "Attach to ");
 const kernelLabel: string = localize('Kernel', "Kernel ");
-const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
-const msgChangeConnection = localize('changeConnection', "Change Connection");
-const msgSelectConnection = localize('selectConnection', "Select Connection");
-const msgLocalHost = localize('localhost', "localhost");
+export const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
+export const msgChangeConnection = localize('changeConnection', "Change Connection");
+export const msgSelectConnection = localize('selectConnection', "Select Connection");
+export const msgLocalHost = localize('localhost', "localhost");
 
 export const noKernel: string = localize('noKernel', "No Kernel");
 
@@ -398,7 +398,7 @@ export class KernelsDropdown extends SelectBox {
 	}
 }
 
-const attachToDropdownElementId = 'attach-to-dropdown';
+export const attachToDropdownElementId = 'attach-to-dropdown';
 
 export class AttachToDropdown extends SelectBox {
 	private model: NotebookModel;
