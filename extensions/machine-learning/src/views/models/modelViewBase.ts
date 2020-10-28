@@ -28,9 +28,9 @@ export interface PredictModelEventArgs extends PredictParameters {
 
 
 export enum ModelSourceType {
-	Local,
-	Azure,
-	RegisteredModels
+	Local = 'Local',
+	Azure = 'Azure',
+	RegisteredModels = 'RegisteredModels'
 }
 
 export enum ModelActionType {

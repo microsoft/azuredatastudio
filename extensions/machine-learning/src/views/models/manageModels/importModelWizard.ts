@@ -50,7 +50,7 @@ export class ImportModelWizard extends ModelViewBase {
 		let wizard = this.wizardView.createWizard(constants.registerModelTitle, [this.modelSourcePage, this.modelBrowsePage, this.modelDetailsPage, this.modelImportTargetPage]);
 
 		this.mainViewPanel = wizard;
-		wizard.doneButton.label = constants.azureRegisterModel;
+		wizard.doneButton.label = constants.importModelDoneButton;
 		wizard.generateScriptButton.hidden = true;
 		wizard.displayPageTitles = true;
 		wizard.registerNavigationValidator(async (pageInfo: azdata.window.WizardPageChangeInfo) => {

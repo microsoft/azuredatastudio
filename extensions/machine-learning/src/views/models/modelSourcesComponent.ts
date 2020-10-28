@@ -133,23 +133,16 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 	}
 
 	private convertSourceIdToString(sourceId: ModelSourceType): string {
-		switch (sourceId) {
-			case ModelSourceType.Local:
-				return 'local';
-			case ModelSourceType.Azure:
-				return 'aml';
-			case ModelSourceType.RegisteredModels:
-				return 'registered';
-		}
+		return sourceId.toString();
 	}
 
 	private convertSourceIdToEnum(sourceId: string): ModelSourceType {
 		switch (sourceId) {
-			case 'local':
+			case ModelSourceType.Local.toString():
 				return ModelSourceType.Local;
-			case 'aml':
+			case ModelSourceType.Azure.toString():
 				return ModelSourceType.Azure;
-			case 'registered':
+			case ModelSourceType.RegisteredModels.toString():
 				return ModelSourceType.RegisteredModels;
 		}
 		return this._defaultSourceType;
