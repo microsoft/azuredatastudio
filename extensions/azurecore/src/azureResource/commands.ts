@@ -37,7 +37,7 @@ export function registerAzureResourceCommands(appContext: AppContext, trees: (Az
 				let accounts = await azdata.accounts.getAllAccounts();
 				accounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 				if (accounts.length === 0) {
-					const signin = localize('azure.signIn', "Sign In");
+					const signin = localize('azure.signIn', "Sign in");
 					const action = await vscode.window.showErrorMessage(localize('azure.noAccountError', "You are not currently signed into any Azure accounts, Please sign in and then try again."),
 						signin);
 					if (action === signin) {
