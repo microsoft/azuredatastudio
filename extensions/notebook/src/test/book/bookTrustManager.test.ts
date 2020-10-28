@@ -21,7 +21,7 @@ describe('BookTrustManagerTests', function () {
 		let books: BookModel[];
 		let runs = [
 			{
-				it: 'Legacy version of Jupyter Books',
+				it: 'using the jupyter-book legacy version < 0.7.0',
 				book1: {
 					'notebook1': path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook.ipynb'),
 					'notebook2': path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook2.ipynb'),
@@ -35,7 +35,7 @@ describe('BookTrustManagerTests', function () {
 					'unknownNotebook': path.join(path.sep, 'randomfolder', 'randomsubfolder', 'content', 'randomnotebook.ipynb')
 				}
 			}, {
-				it: 'New version of Jupyter Books',
+				it: 'using jupyter-book versions >= 0.7.0',
 				book1: {
 					'notebook1': path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notebook.ipynb'),
 					'notebook2': path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notebook2.ipynb'),
@@ -51,7 +51,7 @@ describe('BookTrustManagerTests', function () {
 			}
 		];
 		runs.forEach(function (run) {
-			describe('Trusting in Workspaces on ' + run.it, function (): void {
+			describe('Trusting in Workspaces ' + run.it, function (): void {
 
 				afterEach(function (): void {
 					sinon.restore();
@@ -231,7 +231,7 @@ describe('BookTrustManagerTests', function () {
 
 		let runs = [
 			{
-				it: 'Legacy version of Jupyter Books',
+				it: 'using the jupyter-book legacy version < 0.7.0',
 				book1: {
 					'notebook1': path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook.ipynb'),
 					'notebook2': path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook2.ipynb'),
@@ -245,7 +245,7 @@ describe('BookTrustManagerTests', function () {
 					'unknownNotebook': path.join(path.sep, 'randomfolder', 'randomsubfolder', 'content', 'randomnotebook.ipynb')
 				}
 			}, {
-				it: 'New version of Jupyter Books',
+				it: 'using jupyter-book versions >= 0.7.0',
 				book1: {
 					'notebook1': path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notebook.ipynb'),
 					'notebook2': path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notebook2.ipynb'),
@@ -261,7 +261,7 @@ describe('BookTrustManagerTests', function () {
 			}
 		];
 		runs.forEach(function (run) {
-			describe('Trusting in Workspaces on ' + run.it, function (): void {
+			describe('Trusting in Workspaces ' + run.it, function (): void {
 				beforeEach(() => {
 					trustedFolders = [];
 					// Mock Workspace Configuration
