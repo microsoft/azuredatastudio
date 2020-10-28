@@ -15,7 +15,6 @@ import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookE
 import { NBTestQueryManagementService } from 'sql/workbench/contrib/notebook/test/nbTestQueryManagementService';
 import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
-import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookEditor, INotebookParams, INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
@@ -61,13 +60,12 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 class NotebookModelStub extends stubs.NotebookModelStub {
-	private _cells: Array<ICellModel> = [new CellModel(undefined, undefined)];
 	public contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
 	private _onActiveCellChanged = new Emitter<ICellModel>();
 
-	get cells(): ReadonlyArray<ICellModel> {
-		return this._cells;
+	get cells(): ICellModel[] {
+		return this.cells;
 	}
 	public get contentChanged(): Event<NotebookContentChange> {
 		return this.contentChangedEmitter.event;

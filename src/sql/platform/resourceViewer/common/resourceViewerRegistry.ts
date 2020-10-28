@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Emitter, Event } from 'vs/base/common/event';
+import { URI } from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 export const Extensions = {
@@ -12,7 +13,7 @@ export const Extensions = {
 
 export interface ResourceType {
 	readonly id: string;
-	readonly icon: string;
+	readonly icon: URI;
 	readonly name: string;
 }
 

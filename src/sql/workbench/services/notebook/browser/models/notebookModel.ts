@@ -359,6 +359,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
+						/*
+						In a parameterized notebook there will be an injected parameter cell.
+						Papermill originally inserts the injected parameter with the comment "# Parameters"
+						which would make it confusing to the user between the difference between this cell and the tagged parameters cell.
+						So to make it clear we edit the injected parameters comment to indicate it is the Injected-Parameters cell.
+						*/
+						if (cellModel.isInjectedParameter) {
+							cellModel.source = cellModel.source.slice(1);
+							cellModel.source = '# Injected-Parameters\n' + cellModel.source;
+						}
 						this.trackMarkdownTelemetry(<nb.ICellContents>c, cellModel);
 						return cellModel;
 					});

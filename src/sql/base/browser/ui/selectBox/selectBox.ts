@@ -234,11 +234,11 @@ export class SelectBox extends vsSelectBox {
 		this.message = message;
 
 		if (this.element) {
-			dom.removeClass(this.element, 'idle');
-			dom.removeClass(this.element, 'info');
-			dom.removeClass(this.element, 'warning');
-			dom.removeClass(this.element, 'error');
-			dom.addClass(this.element, this.classForType(message.type));
+			this.element.classList.remove('idle');
+			this.element.classList.remove('info');
+			this.element.classList.remove('warning');
+			this.element.classList.remove('error');
+			this.element.classList.add(this.classForType(message.type));
 		}
 
 		// ARIA Support
@@ -279,7 +279,7 @@ export class SelectBox extends vsSelectBox {
 					let spanElement: HTMLElement = (message.formatContent
 						? renderFormattedText(message.content, renderOptions)
 						: renderText(message.content, renderOptions)) as any;
-					dom.addClass(spanElement, this.classForType(message.type));
+					spanElement.classList.add(this.classForType(message.type));
 
 					const styles = this.stylesForType(message.type);
 					spanElement.style.backgroundColor = styles.background ? styles.background.toString() : '';
@@ -296,10 +296,10 @@ export class SelectBox extends vsSelectBox {
 
 	public hideMessage(): void {
 		if (this.element) {
-			dom.removeClass(this.element, 'info');
-			dom.removeClass(this.element, 'warning');
-			dom.removeClass(this.element, 'error');
-			dom.addClass(this.element, 'idle');
+			this.element.classList.remove('info');
+			this.element.classList.remove('warning');
+			this.element.classList.remove('error');
+			this.element.classList.add('idle');
 		}
 
 		this._hideMessage();

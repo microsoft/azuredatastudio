@@ -30,7 +30,8 @@ export class KustoResourceService extends ResourceServiceBase<KustoGraphData, az
 			loginName: '',
 			defaultDatabaseName: '',
 			subscriptionId: resource.subscriptionId,
-			tenant: resource.tenantId
+			tenant: resource.tenantId,
+			resourceGroup: resource.resourceGroup
 		};
 	}
 }

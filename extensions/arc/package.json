@@ -136,10 +136,7 @@
         "displayName": "%resource.type.azure.arc.display.name%",
         "description": "%resource.type.azure.arc.description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/data_controller.svg",
-          "dark": "./images/data_controller.svg"
-        },
+        "icon": "./images/data_controller.svg",
         "tags": ["Hybrid", "SQL Server", "PostgreSQL"],
         "providers": [
           {
@@ -512,10 +509,7 @@
         "displayName": "%resource.type.arc.sql.display.name%",
         "description": "%resource.type.arc.sql.description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/miaa.svg",
-          "dark": "./images/miaa.svg"
-        },
+        "icon": "./images/miaa.svg",
         "tags": ["Hybrid", "SQL Server"],
         "providers": [
           {
@@ -676,10 +670,7 @@
         "displayName": "%resource.type.arc.postgres.display.name%",
         "description": "%resource.type.arc.postgres.description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/postgres.svg",
-          "dark": "./images/postgres.svg"
-        },
+        "icon": "./images/postgres.svg",
         "tags": ["Hybrid", "PostgreSQL"],
         "providers": [
           {
