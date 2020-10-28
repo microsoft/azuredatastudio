@@ -55,7 +55,10 @@ export class PostgresModel extends ResourceModel {
 		const cpuRequest = this._config.spec.scheduling?.default?.resources?.requests?.cpu;
 		const ramRequest = this._config.spec.scheduling?.default?.resources?.requests?.memory;
 		const storage = this._config.spec.storage?.data?.size;
-		const nodes = (this._config.spec.scale?.shards ?? 0) + 1; // An extra node for the coordinator
+
+		// scale.shards was renamed to scale.workers. Check both for backwards compatibility.
+		const scale = this._config.spec.scale;
+		const nodes = (scale?.workers ?? scale?.shards ?? 0) + 1; // An extra node for the coordinator
 
 		let configuration: string[] = [];
 		configuration.push(`${nodes} ${nodes > 1 ? loc.nodes : loc.node}`);
