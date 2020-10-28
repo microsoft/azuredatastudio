@@ -123,7 +123,6 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 		this._azureAccounts = await this.listAzureAccounts();
 		if (this._azureAccounts && this._azureAccounts.length > 0) {
 			let values = this._azureAccounts.map(a => { return { displayName: a.displayInfo.displayName, name: a.key.accountId }; });
-			//values = [{ displayName: 'Select account ...', name: '' }].push(values);
 			this._accounts.values = values;
 			this._accounts.value = values[0];
 		} else {
