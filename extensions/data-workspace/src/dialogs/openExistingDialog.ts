@@ -11,7 +11,7 @@ import { IWorkspaceService } from '../common/interfaces';
 import { fileExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
 
-export class OpenProjectDialog extends DialogBase {
+export class OpenExistingDialog extends DialogBase {
 	private _projectFile: string = '';
 	private _workspaceFile: string = '';
 	private _targetTypeRadioCardGroup: azdata.RadioCardGroupComponent | undefined;
@@ -32,7 +32,7 @@ export class OpenProjectDialog extends DialogBase {
 	];
 
 	constructor(private workspaceService: IWorkspaceService, private extensionContext: vscode.ExtensionContext) {
-		super(constants.OpenProjectDialogTitle, 'OpenProject');
+		super(constants.OpenExistingDialogTitle, 'OpenProject');
 	}
 
 	async validate(): Promise<boolean> {
@@ -111,6 +111,7 @@ export class OpenProjectDialog extends DialogBase {
 		}).component();
 		this.register(projectFilePathTextBox.onTextChanged(() => {
 			this._projectFile = projectFilePathTextBox.value!;
+			projectFilePathTextBox.updateProperty('title', this._projectFile);
 		}));
 
 		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({

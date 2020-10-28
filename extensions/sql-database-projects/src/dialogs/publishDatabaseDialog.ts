@@ -511,7 +511,7 @@ export class PublishDatabaseDialog {
 
 	private async updateConnectionComponents(connectionTextboxValue: string, connectionId: string) {
 		this.targetConnectionTextBox!.value = connectionTextboxValue;
-		this.targetConnectionTextBox!.placeHolder = connectionTextboxValue;
+		this.targetConnectionTextBox!.updateProperty('title', connectionTextboxValue);
 
 		// populate database dropdown with the databases for this connection
 		if (connectionId) {
@@ -584,7 +584,7 @@ export class PublishDatabaseDialog {
 
 				// show file path in text box and hover text
 				this.loadProfileTextBox!.value = fileUris[0].fsPath;
-				this.loadProfileTextBox!.placeHolder = fileUris[0].fsPath;
+				this.loadProfileTextBox!.updateProperty('title', fileUris[0].fsPath);
 			}
 		});
 
