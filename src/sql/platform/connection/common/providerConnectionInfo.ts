@@ -198,7 +198,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		}
 
 		if (this.providerName === 'KUSTO') {
-			return false;
+			return this.authenticationType !== 'AzureMFA';
 		}
 		let optionMetadata = this._serverCapabilities.connectionOptions.find(
 			option => option.specialValueType === ConnectionOptionSpecialType.password)!; // i guess we are going to assume there is a password field
