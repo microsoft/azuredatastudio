@@ -10,8 +10,7 @@ import { BookModel, BookVersion } from './bookModel';
 
 export interface IBookTrustManager {
 	isNotebookTrustedByDefault(notebookUri: string): boolean;
-	setBookAsTrusted(bookRootPath: string): boolean;
-	setBookAsUnTrusted(bookRootPath: string): boolean;
+	setBookAsTrusted(bookRootPath: string, isTrusted: boolean): boolean;
 }
 
 enum TrustBookOperation {
@@ -58,11 +57,10 @@ export class BookTrustManager implements IBookTrustManager {
 			.reduce((accumulator, currentBookItemList) => accumulator.concat(currentBookItemList), []);
 	}
 
-	setBookAsTrusted(bookRootPath: string): boolean {
-		return this.updateTrustedBooks(bookRootPath, TrustBookOperation.Add);
-	}
-
-	setBookAsUnTrusted(bookRootPath: string): boolean {
+	setBookAsTrusted(bookRootPath: string, isTrusted: boolean): boolean {
+		if (isTrusted) {
+			return this.updateTrustedBooks(bookRootPath, TrustBookOperation.Add);
+		}
 		return this.updateTrustedBooks(bookRootPath, TrustBookOperation.Remove);
 	}
 

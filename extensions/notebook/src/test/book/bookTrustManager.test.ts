@@ -22,35 +22,35 @@ describe('BookTrustManagerTests', function () {
 		let runs = [
 			{
 				it: 'Legacy version of Jupyter Books',
-				book1 : {
-					'notebook1' : path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook.ipynb'),
-					'notebook2' : path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook2.ipynb'),
-					'notebook3' : path.join(path.sep, 'temp', 'SubFolder2', 'content', 'sample', 'notebook.ipynb'),
-					'notInTocNb' : 	path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notInToc.ipynb')
+				book1: {
+					'notebook1': path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook.ipynb'),
+					'notebook2': path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook2.ipynb'),
+					'notebook3': path.join(path.sep, 'temp', 'SubFolder2', 'content', 'sample', 'notebook.ipynb'),
+					'notInTocNb': path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notInToc.ipynb')
 				},
-				book2 : {
-					'notebook1' : path.join(path.sep, 'temp2', 'SubFolder', 'content', 'sample', 'notebook.ipynb')
+				book2: {
+					'notebook1': path.join(path.sep, 'temp2', 'SubFolder', 'content', 'sample', 'notebook.ipynb')
 				},
-				unknownBook : {
-					'unknownNotebook' : path.join(path.sep, 'randomfolder', 'randomsubfolder', 'content', 'randomnotebook.ipynb')
+				unknownBook: {
+					'unknownNotebook': path.join(path.sep, 'randomfolder', 'randomsubfolder', 'content', 'randomnotebook.ipynb')
 				}
-			},{
+			}, {
 				it: 'New version of Jupyter Books',
-				book1 : {
-					'notebook1' : path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notebook.ipynb'),
-					'notebook2' : path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notebook2.ipynb'),
-					'notebook3' : path.join(path.sep, 'temp', 'SubFolder2', 'sample', 'notebook.ipynb'),
-					'notInTocNb' : 	path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notInToc.ipynb')
+				book1: {
+					'notebook1': path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notebook.ipynb'),
+					'notebook2': path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notebook2.ipynb'),
+					'notebook3': path.join(path.sep, 'temp', 'SubFolder2', 'sample', 'notebook.ipynb'),
+					'notInTocNb': path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notInToc.ipynb')
 				},
-				book2 : {
-					'notebook1' : path.join(path.sep, 'temp2', 'SubFolder', 'sample', 'notebook.ipynb')
+				book2: {
+					'notebook1': path.join(path.sep, 'temp2', 'SubFolder', 'sample', 'notebook.ipynb')
 				},
-				unknownBook : {
-					'unknownNotebook' : path.join(path.sep, 'randomfolder', 'randomsubfolder', 'randomnotebook.ipynb')
+				unknownBook: {
+					'unknownNotebook': path.join(path.sep, 'randomfolder', 'randomsubfolder', 'randomnotebook.ipynb')
 				}
 			}
 		];
-		runs.forEach(function (run){
+		runs.forEach(function (run) {
 			describe('Trusting in Workspaces on ' + run.it, function (): void {
 
 				afterEach(function (): void {
@@ -181,7 +181,7 @@ describe('BookTrustManagerTests', function () {
 					should(isNotebookTrustedBeforeChange).be.false('Notebook should NOT be trusted');
 
 					// add another book subfolder
-					bookTrustManager.setBookAsTrusted('/SubFolder2/');
+					bookTrustManager.setBookAsTrusted('/SubFolder2/', true);
 
 					let isNotebookTrustedAfterChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
@@ -210,7 +210,7 @@ describe('BookTrustManagerTests', function () {
 				});
 
 				it('should NOT trust notebook inside trusted subfolder when absent in table of contents ', async () => {
-					bookTrustManager.setBookAsTrusted('/temp/SubFolder/');
+					bookTrustManager.setBookAsTrusted('/temp/SubFolder/', true);
 
 					let notebookUri = run.book1.notInTocNb;
 					let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
@@ -232,35 +232,35 @@ describe('BookTrustManagerTests', function () {
 		let runs = [
 			{
 				it: 'Legacy version of Jupyter Books',
-				book1 : {
-					'notebook1' : path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook.ipynb'),
-					'notebook2' : path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook2.ipynb'),
+				book1: {
+					'notebook1': path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook.ipynb'),
+					'notebook2': path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook2.ipynb'),
 					'notInTocNb': path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notInToc.ipynb')
 				},
-				book2 : {
-					'notebook1' : path.join(path.sep, 'temp', 'SubFolder2', 'content', 'sample', 'notebook.ipynb'),
-					'notebook2' : path.join(path.sep, 'temp', 'SubFolder2', 'content', 'sample', 'notebook2.ipynb')
+				book2: {
+					'notebook1': path.join(path.sep, 'temp', 'SubFolder2', 'content', 'sample', 'notebook.ipynb'),
+					'notebook2': path.join(path.sep, 'temp', 'SubFolder2', 'content', 'sample', 'notebook2.ipynb')
 				},
-				unknownBook : {
-					'unknownNotebook' : path.join(path.sep, 'randomfolder', 'randomsubfolder', 'content', 'randomnotebook.ipynb')
+				unknownBook: {
+					'unknownNotebook': path.join(path.sep, 'randomfolder', 'randomsubfolder', 'content', 'randomnotebook.ipynb')
 				}
-			},{
+			}, {
 				it: 'New version of Jupyter Books',
-				book1 : {
-					'notebook1' : path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notebook.ipynb'),
-					'notebook2' : path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notebook2.ipynb'),
+				book1: {
+					'notebook1': path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notebook.ipynb'),
+					'notebook2': path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notebook2.ipynb'),
 					'notInTocNb': path.join(path.sep, 'temp', 'SubFolder', 'sample', 'notInToc.ipynb')
 				},
-				book2 : {
-					'notebook1' : path.join(path.sep, 'temp', 'SubFolder2', 'sample', 'notebook.ipynb'),
-					'notebook2' : path.join(path.sep, 'temp', 'SubFolder2', 'sample', 'notebook2.ipynb')
+				book2: {
+					'notebook1': path.join(path.sep, 'temp', 'SubFolder2', 'sample', 'notebook.ipynb'),
+					'notebook2': path.join(path.sep, 'temp', 'SubFolder2', 'sample', 'notebook2.ipynb')
 				},
-				unknownBook : {
-					'unknownNotebook' : path.join(path.sep, 'randomfolder', 'randomsubfolder', 'randomnotebook.ipynb')
+				unknownBook: {
+					'unknownNotebook': path.join(path.sep, 'randomfolder', 'randomsubfolder', 'randomnotebook.ipynb')
 				}
 			}
 		];
-		runs.forEach(function (run){
+		runs.forEach(function (run) {
 			describe('Trusting in Workspaces on ' + run.it, function (): void {
 				beforeEach(() => {
 					trustedFolders = [];
@@ -330,7 +330,7 @@ describe('BookTrustManagerTests', function () {
 				});
 
 				it('should trust notebooks in a trusted book in a folder', async () => {
-					bookTrustManager.setBookAsTrusted('/temp/SubFolder/');
+					bookTrustManager.setBookAsTrusted('/temp/SubFolder/', true);
 
 					let notebookUri1 = run.book1.notebook1;
 					let notebookUri2 = run.book1.notebook2;
@@ -345,7 +345,7 @@ describe('BookTrustManagerTests', function () {
 
 				it('should NOT trust a notebook in an untrusted book in a folder', async () => {
 					//Set book as not trusted before running test
-					bookTrustManager.setBookAsUnTrusted('/temp/SubFolder2/');
+					bookTrustManager.setBookAsTrusted('/temp/SubFolder2/', false);
 
 					let notebookUri = run.book2.notebook1;
 					let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
@@ -359,7 +359,7 @@ describe('BookTrustManagerTests', function () {
 
 					should(isNotebookTrustedBeforeChange).be.false('Notebook should NOT be trusted');
 
-					bookTrustManager.setBookAsTrusted('/temp/SubFolder2/');
+					bookTrustManager.setBookAsTrusted('/temp/SubFolder2/', true);
 
 					let isNotebookTrustedAfterChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
@@ -367,8 +367,8 @@ describe('BookTrustManagerTests', function () {
 				});
 
 				it('should NOT trust a notebook when removing all books from folders', async () => {
-					bookTrustManager.setBookAsTrusted('/temp/SubFolder/');
-					bookTrustManager.setBookAsTrusted('/temp/SubFolder2/');
+					bookTrustManager.setBookAsTrusted('/temp/SubFolder/', true);
+					bookTrustManager.setBookAsTrusted('/temp/SubFolder2/', true);
 					let notebookUri = run.book1.notebook1;
 					let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 					let notebook2Uri = run.book2.notebook1;
@@ -394,7 +394,7 @@ describe('BookTrustManagerTests', function () {
 				});
 
 				it('should NOT trust notebook inside trusted subfolder when absent in table of contents ', async () => {
-					bookTrustManager.setBookAsTrusted('/temp/SubFolder/');
+					bookTrustManager.setBookAsTrusted('/temp/SubFolder/', true);
 
 					let notebookUri = run.book1.notInTocNb;
 					let isNotebookTrusted = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
