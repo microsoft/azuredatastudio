@@ -29,6 +29,7 @@ import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbenc
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { values } from 'vs/base/common/collections';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -71,6 +72,9 @@ export class CellModel extends Disposable implements ICellModel {
 	private _gridDataConversionComplete: Promise<void>[] = [];
 	private _defaultToWYSIWYG: boolean;
 	private _activeConnection: ConnectionProfile | undefined;
+	private _onValidConnectionSelected = new Emitter<boolean>();
+	private _contextsChangedEmitter = new Emitter<void>();
+	private _contextsLoadingEmitter = new Emitter<void>();
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -267,16 +271,47 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._options.notebook.language;
 	}
 
-	public get connectionName(): string | undefined {
+	public get contextsChanged(): Event<void> {
+		return this._contextsChangedEmitter.event;
+	}
+
+	public get contextsLoading(): Event<void> {
+		return this._contextsLoadingEmitter.event;
+	}
+
+	public get onValidConnectionSelected(): Event<boolean> {
+		return this._onValidConnectionSelected.event;
+	}
+
+	public get savedConnectionName(): string | undefined {
 		return this._savedConnectionName;
 	}
 
-	public get activeConnection(): ConnectionProfile | undefined {
+	public get context(): ConnectionProfile | undefined {
 		return this._activeConnection;
 	}
 
-	public set activeConnection(connection: ConnectionProfile) {
-		this._activeConnection = connection;
+	public async changeContext(connectionName: string, newConnection?: ConnectionProfile): Promise<void> {
+		// Remove cell's connection
+		if (!connectionName) {
+			this._activeConnection = undefined;
+			this._savedConnectionName = undefined;
+			this._contextsChangedEmitter.fire();
+		} else {
+			// Set new connection for cell
+			let connection;
+			if (!newConnection) {
+				let connection = this.getConnectionProfileFromName(connectionName);
+				if (!connection) {
+					// TODO: show connection dialog for alias that doesn't have a connection?
+				}
+			} else {
+				connection = newConnection;
+			}
+			this._activeConnection = connection;
+			this._savedConnectionName = connectionName;
+			this._contextsChangedEmitter.fire();
+		}
 	}
 
 	public get cellGuid(): string {
@@ -406,7 +441,8 @@ export class CellModel extends Disposable implements ICellModel {
 				this.sendNotification(notificationService, Severity.Info, localize('runCellCancelled', "Cell execution cancelled"));
 			} else {
 				// TODO update source based on editor component contents
-				if (kernel.requiresConnection && !this.notebookModel.context) {
+				if (kernel.requiresConnection && (!this.notebookModel.multiConnectionMode && !this.notebookModel.context)
+					|| (this.notebookModel.multiConnectionMode && !this.context)) {
 					let connected = await this.notebookModel.requestConnection();
 					if (!connected) {
 						return false;
@@ -886,5 +922,10 @@ export class CellModel extends Disposable implements ICellModel {
 				}
 			}));
 		}
+	}
+
+	private getConnectionProfileFromName(connectionName: string): ConnectionProfile | undefined {
+		let connections: ConnectionProfile[] = this._connectionManagementService.getConnections();
+		return values(connections).find(connection => connection.connectionName === connectionName);
 	}
 }
