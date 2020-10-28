@@ -105,6 +105,31 @@ export class HTMLMarkdownConverter {
 				return `[${node.innerText}](${node.href})`;
 			}
 		});
+
+		this.turndownService.addRule('escapeAngleBrackets', {
+			filter: ['span', 'p', 'h1', 'h2', 'h3'],
+			replacement: function (content, node) {
+				let text = content;
+				// check if text inside tag is of filter, if it is dont return tag
+				// if text in tag doesnt exist then return outerHTML
+				let htmlTags = ['<span>', '<p>', '<h1>', '<h2>', '<h3>', '<u>', '<mark>'];
+				let indexTag = text.indexOf('<');
+				for (let tag of htmlTags) {
+					if (text.includes(tag)) {
+						let textSubstring = text.substring(text.index('<', tag.length));
+						let firstTagReplace = textSubstring.replace('<', '\\<');
+						let modifiedText = firstTagReplace.replace('>', '\\>');
+						return tag + modifiedText;
+					}
+				}
+				if (indexTag > -1) {
+					let firstTag = text.replace('<', '\\<');
+					let textWithTag = firstTag.replace('>', '\\>');
+					return textWithTag;
+				}
+				return node.outerHTML;
+			}
+		});
 	}
 }
 

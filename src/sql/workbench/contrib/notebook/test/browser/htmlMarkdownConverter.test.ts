@@ -131,11 +131,26 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `[stuff](..${path.sep}stuff.png)`, 'Basic link test above folder failed');
 		htmlString = '<a href="/tmp/inner/stuff.png">stuff</a>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `[stuff](.${path.sep}inner${path.sep}stuff.png)`, 'Basic link test below folder failed');
-		// htmlString = '<a href="e:\\some\\other\\path.png"/>';
-		// assert.equal(htmlMarkdownConverter.convert(htmlString), '[](e:\\some\\other\\path.png)', 'link test different drive failed');
+		htmlString = '<a href="e:\\some\\other\\path.png"/>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '[](e:\\some\\other\\path.png)', 'link test different drive failed');
 		htmlString = '<a href="https://www.microsoft.com/images/msft.png">msft</a>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '[msft](https://www.microsoft.com/images/msft.png)', 'Basic https link test failed');
 		htmlString = '<a href="http://www.microsoft.com/images/msft.png">msft</a>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '[msft](http://www.microsoft.com/images/msft.png)', 'Basic http link test failed');
+	});
+
+	test('Should keep < > tag', () => {
+		htmlString = '<testing>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Basic tag escape test failed');
+		htmlString = '<h1><test></h1>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Tag inside HTML tag test failed to escape');
+		htmlString = '<p><test></p>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Tag inside HTML tag test failed to escape');
+		htmlString = '<span><test></span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Tag inside HTML tag test failed to escape');
+		htmlString = '<h2><test></h2>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Tag inside HTML tag test failed to escape');
+		htmlString = '<h3><test></h3>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Tag inside HTML tag test failed to escape');
 	});
 });
