@@ -45,6 +45,7 @@ import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IAction } from 'vs/base/common/actions';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export type TreeElement = ConnectionProviderElement | ITreeItemFromProvider | SavedConnectionNode | ServerTreeElement;
 
@@ -80,7 +81,9 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		@ICommandService private readonly commandService: ICommandService,
 		@IMenuService private readonly menuService: IMenuService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
-		@IContextMenuService private readonly contextMenuService: IContextMenuService
+		@IContextMenuService private readonly contextMenuService: IContextMenuService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
 	) {
 		super();
 		this.connectionTreeService.setView(this);
@@ -187,6 +190,29 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		this.tree.setInput(this.model);
 
 		this._register(this.connectionTreeService.onDidAddProvider(() => this.tree.updateChildren(this.model)));
+
+		// this event will be fired when connections/connection groups are created/edited
+		this._register(this.connectionManagementService.onAddConnectionProfile(() => {
+			this.updateSavedConnectionsNode();
+		}));
+
+		// this event will be fired when connections/connection groups are deleted
+		this._register(this.connectionManagementService.onDeleteConnectionProfile(() => {
+			this.updateSavedConnectionsNode();
+		}));
+
+		// this event will be fired when connection provider is registered
+		// when a connection's provider is not registered (e.g. the extensions are not fully loaded or the provider extension has been uninstalled)
+		// it will be displayed as 'loading...', this event will be fired when a connection's provider becomes available.
+		this._register(this.capabilitiesService.onCapabilitiesRegistered(() => {
+			this.updateSavedConnectionsNode();
+		}));
+	}
+
+	private updateSavedConnectionsNode(): void {
+		if (this.model.savedConnectionNode) {
+			this.tree.updateChildren(this.model.savedConnectionNode);
+		}
 	}
 
 	async refresh(items?: ITreeItem[]): Promise<void> {
@@ -317,6 +343,7 @@ class IdentityProvider implements IIdentityProvider<TreeElement> {
 }
 
 class TreeModel {
+	private _savedConnectionNode: SavedConnectionNode | undefined;
 
 	constructor(
 		@IConnectionTreeService private readonly connectionTreeService: IConnectionTreeService,
@@ -324,8 +351,13 @@ class TreeModel {
 	) { }
 
 	getChildren(): TreeElement[] {
+		this._savedConnectionNode = this.instantiationService.createInstance(SavedConnectionNode);
 		const descriptors = Array.from(this.connectionTreeService.descriptors);
-		return [this.instantiationService.createInstance(SavedConnectionNode), ...Iterable.map(this.connectionTreeService.providers, ([id, provider]) => new ConnectionProviderElement(provider, descriptors.find(i => i.id === id)))];
+		return [this._savedConnectionNode, ...Iterable.map(this.connectionTreeService.providers, ([id, provider]) => new ConnectionProviderElement(provider, descriptors.find(i => i.id === id)))];
+	}
+
+	public get savedConnectionNode(): SavedConnectionNode | undefined {
+		return this._savedConnectionNode;
 	}
 }
 
