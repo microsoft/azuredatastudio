@@ -82,6 +82,7 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 			PlotlyOutputComponent.Plotly = import('plotly.js-dist-min');
 		}
 		this._plotDiv = this.output.nativeElement;
+		this._plotDiv.style.maxWidth = '700px';
 		this.renderPlotly();
 		this._initialized = true;
 	}
@@ -103,13 +104,9 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 		this.errorText = undefined;
 		const figure = this.getFigure(true);
 		if (figure) {
-			figure.layout = figure.layout || {};
-			if (!figure.layout.width && !figure.layout.autosize) {
-				// Workaround: to avoid filling up the entire cell, use plotly's default
-				figure.layout.width = Math.min(700, this._plotDiv.clientWidth);
-			}
+			let config = { responsive: true };
 			PlotlyOutputComponent.Plotly.then(plotly => {
-				return plotly.newPlot(this._plotDiv, figure.data, figure.layout);
+				return plotly.newPlot(this._plotDiv, figure.data, figure.layout, config);
 			}).catch(e => this.displayError(e));
 		}
 		this._rendered = true;
