@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import { DeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType } from '../interfaces';
 import { Model } from './model';
 import { WizardPageBase } from './wizardPageBase';
-import * as nls from 'vscode-nls';
 import { DeployClusterWizardModel } from './deployClusterWizard/deployClusterWizardModel';
 import { WizardPageInfo } from './wizardPageInfo';
 import { IKubeService } from '../services/kubeService';
@@ -16,8 +15,6 @@ import { IAzdataService } from '../services/azdataService';
 import { INotebookService } from '../services/notebookService';
 import { IToolsService } from '../services/toolsService';
 import { IPlatformService } from '../services/platformService';
-const localize = nls.loadMessageBundle();
-
 
 export class ResourceTypeWizard {
 	private customButtons: azdata.window.Button[] = [];
@@ -112,20 +109,9 @@ export class ResourceTypeWizard {
 	}
 
 	protected dispose() {
-		let errorOccurred = false;
 		this.toDispose.forEach((disposable: vscode.Disposable) => {
-			try {
-				disposable.dispose();
-			}
-			catch (error) {
-				errorOccurred = true;
-				console.error(error);
-			}
+			disposable.dispose();
 		});
-
-		if (errorOccurred) {
-			vscode.window.showErrorMessage(localize('resourceDeployment.DisposableError', "Error occurred while closing the wizard: {0}, open 'Debugger Console' for more information."), this.wizardObject.title);
-		}
 	}
 
 	public registerDisposable(disposable: vscode.Disposable): void {
@@ -136,11 +122,8 @@ export class ResourceTypeWizard {
 
 
 
-export class ResourceTypePage extends WizardPageBase<ResourceTypeWizard>{
-	public initialize(): void {
-		throw new Error('Method not implemented.');
-	}
-
+export abstract class ResourceTypePage extends WizardPageBase<ResourceTypeWizard>{
+	abstract initialize(): void;
 }
 
 export abstract class ResourceTypeModel extends Model {

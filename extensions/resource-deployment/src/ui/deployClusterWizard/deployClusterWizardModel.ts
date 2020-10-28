@@ -66,18 +66,18 @@ export class DeployClusterWizardModel extends ResourceTypeModel {
 		return this.bdcProvider.bdcWizard.type;
 	}
 
-
 	initialize(): void {
 		this.wizard.setPages(this.getPages());
 		this.wizard.wizardObject.generateScriptButton.hidden = true;
 		this.wizard.wizardObject.doneButton.label = localize('deployCluster.ScriptToNotebook', "Script to Notebook");
 	}
+
 	async onOk(): Promise<void> {
 		await this.scriptToNotebook();
 	}
-	onCancel(): void {
-		throw new Error('Method not implemented.');
-	}
+
+	onCancel(): void { }
+
 	constructor(public bdcProvider: BdcWizardDeploymentProvider, wizard: ResourceTypeWizard) {
 		super(bdcProvider, wizard);
 		this._kubeService = this.wizard._kubeService;
