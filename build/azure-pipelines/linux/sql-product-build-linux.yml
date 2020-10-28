@@ -136,8 +136,8 @@ steps:
         INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
         DISPLAY=:10 node ./scripts/test-extensions-unit.js ${{ extension }}
         NO_CLEANUP=1
-        VSCODEUSERDATAROOT=$TMPDIR/adsuser
-        displayName: 'Run ${{ extension }} Stable Extension Unit Tests'
+        VSCODEUSERDATAROOT="$TMPDIR/adsuser"
+      displayName: 'Run ${{ extension }} Stable Extension Unit Tests'
       condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
