@@ -116,9 +116,9 @@ export class BookTreeItem extends vscode.TreeItem {
 			let pathToNotebook: string;
 			if (this.book.version === BookVersion.v2 && (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file) {
 				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				pathToNotebook = path.posix.join(this.rootContentPath, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
+				pathToNotebook = path.posix.join(this.book.root, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
 			} else if ((this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url) {
-				pathToNotebook = path.posix.join(this.rootContentPath, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
+				pathToNotebook = path.posix.join(this.book.root, content, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
 			}
 
 			// eslint-disable-next-line no-sync
@@ -136,9 +136,9 @@ export class BookTreeItem extends vscode.TreeItem {
 			let pathToNotebook: string;
 			if (this.book.version === BookVersion.v2 && (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file) {
 				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				pathToNotebook = path.posix.join(this.rootContentPath, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
+				pathToNotebook = path.posix.join(this.book.root, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
 			} else if ((this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url) {
-				pathToNotebook = path.posix.join(this.rootContentPath, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
+				pathToNotebook = path.posix.join(this.book.root, content, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
 			}
 
 			// eslint-disable-next-line no-sync

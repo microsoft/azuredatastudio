@@ -5,7 +5,7 @@
 import * as path from 'path';
 import { BookTreeItem } from './bookTreeItem';
 import * as yaml from 'js-yaml';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import { IJupyterBookSectionV1, IJupyterBookSectionV2, JupyterBookSection } from '../contracts/content';
 import { BookVersion } from './bookModel';
 import * as vscode from 'vscode';
@@ -87,16 +87,16 @@ export class BookTocManager implements IBookTocManager {
 		return false;
 	}
 
-	async createBook(bookContentPath: string, contentFolder: string): Promise<void> {
-		let filesinDir = await fs.promises.readdir(contentFolder);
+	public async createBook(bookContentPath: string, contentFolder: string): Promise<void> {
+		let filesinDir = await fs.readdir(contentFolder);
 		let toc: IJupyterBookSectionV2[] = await this.getAllFiles([], contentFolder, filesinDir);
-		await fs.promises.mkdir(bookContentPath);
-		await fs.promises.writeFile(path.join(bookContentPath, '_config.yml'), yaml.safeDump({ title: path.basename(bookContentPath) }));
-		await fs.promises.writeFile(path.join(bookContentPath, '_toc.yml'), yaml.safeDump(toc, { lineWidth: Infinity }));
+		//await fs.promises.mkdir(bookContentPath);
+		await fs.outputFile(path.join(bookContentPath, '_config.yml'), yaml.safeDump({ title: path.basename(bookContentPath) }));
+		await fs.outputFile(path.join(bookContentPath, '_toc.yml'), yaml.safeDump(toc, { lineWidth: Infinity }));
 		vscode.commands.executeCommand('notebook.command.openBook', bookContentPath, false);
 	}
 
-	async updateBook(element: BookTreeItem, updatedBook?: BookTreeItem): Promise<void> {
+	public async updateBook(element: BookTreeItem, updatedBook?: BookTreeItem): Promise<void> {
 		if (updatedBook) {
 			//  Adding a new section in book, they must be the same version
 			let newTOC: JupyterBookSection = {};
@@ -119,7 +119,7 @@ export class BookTocManager implements IBookTocManager {
 					});
 				}
 				this.updateToc(element.tableOfContents.sections, undefined, element.sections);
-				await fs.promises.writeFile(element.tableOfContentsPath, yaml.safeDump(element.tableOfContents, { lineWidth: Infinity }));
+				await fs.outputFile(element.tableOfContentsPath, yaml.safeDump(element.tableOfContents, { lineWidth: Infinity }));
 			}
 			else if (element.contextValue === 'savedNotebook') {
 				let notebookName = path.relative(element.book.root, element.book.contentPath);
@@ -130,7 +130,7 @@ export class BookTocManager implements IBookTocManager {
 			if (!isUpdated) {
 				updatedBook.tableOfContents.sections.push(newTOC);
 			}
-			await fs.promises.writeFile(updatedBook.tableOfContentsPath, yaml.safeDump(updatedBook.tableOfContents, { lineWidth: Infinity }));
+			await fs.outputFile(updatedBook.tableOfContentsPath, yaml.safeDump(updatedBook.tableOfContents, { lineWidth: Infinity }));
 		}
 	}
 }
