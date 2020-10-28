@@ -38,8 +38,11 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 			width: this.componentMaxLength - this.browseButtonMaxLength - this.spaceBetweenComponentsLength
 		}).component();
 		this._localBrowse = modelBuilder.button().withProperties({
-			label: constants.browseModels,
-			width: this.browseButtonMaxLength
+			iconPath: this.asAbsolutePath('images/browseLocal.svg'),
+			iconHeight: '24px',
+			iconWidth: '24px',
+			width: '24px',
+			height: '24px'
 		}).component();
 		this._localBrowse.onDidClick(async () => {
 
