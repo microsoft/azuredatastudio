@@ -223,11 +223,14 @@
 			"type": "chrome",
 			"request": "launch",
 			"name": "Run Extension Unit Tests",
+			"env": {
+				"ADS_TEST_GREP": "runCommand"
+			},
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.bat"
 			},
 			"osx": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
+				"runtimeExecutable": "${workspaceFolder}/../rdt.sh"
 			},
 			"linux": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"

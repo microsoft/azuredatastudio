@@ -13,7 +13,7 @@ import { OsDistribution, OsRelease } from '../interfaces';
 import { getErrorMessage } from '../common/utils';
 
 const localize = nls.loadMessageBundle();
-const extensionOutputChannel = localize('resourceDeployment.outputChannel', "Deployments");
+export const extensionOutputChannel = localize('resourceDeployment.outputChannel', "Deployments");
 const sudoPromptTitle = 'AzureDataStudio';
 /**
  * Abstract of platform dependencies
@@ -221,10 +221,13 @@ export class PlatformService implements IPlatformService {
 
 		try {
 			const { stdout, stderr } = await this.sudoExec(command, sudoOptions);
+			console.log(`TCL::: runSudoCommand - stderr`, stderr);
+			console.log(`TCL::: runSudoCommand - stdout`, stdout);
 			this.outputDataChunk(stdout, outputChannel, localize('platformService.RunCommand.stdout', "    stdout: "));
 			this.outputDataChunk(stderr, outputChannel, localize('platformService.RunCommand.stderr', "    stderr: "));
 			return stdout;
 		} catch (error) {
+			console.log(`TCL::: runSudoCommand - error`, error);
 			this.outputDataChunk(error, outputChannel, localize('platformService.RunCommand.stderr', "    stderr: "));
 			throw error;
 		}
@@ -244,7 +247,6 @@ export class PlatformService implements IPlatformService {
 			windowsHide: true
 		};
 		const child = cp.spawn(command, [], spawnOptions);
-
 		// Add listeners to print stdout and stderr and exit code
 		child.on('exit', (code: number | null, signal: string | null) => {
 			if (code !== null) {
@@ -258,7 +260,6 @@ export class PlatformService implements IPlatformService {
 			this.outputDataChunk(data, outputChannel, localize('platformService.RunCommand.stdout', "    stdout: "));
 		});
 		child.stderr!.on('data', (data: string | Buffer) => { this.outputDataChunk(data, outputChannel, localize('platformService.RunCommand.stderr', "    stderr: ")); });
-
 		await child;
 		return stdoutData.join('');
 	}
