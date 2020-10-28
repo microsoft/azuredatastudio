@@ -5,7 +5,6 @@
 
 import 'vs/css!./infoButton';
 import { Button as sqlButton } from 'sql/base/browser/ui/button/button';
-import * as DOM from 'vs/base/browser/dom';
 import { IButtonOptions } from 'vs/base/browser/ui/button/button';
 
 export interface IInfoButtonOptions extends IButtonOptions {
@@ -39,28 +38,28 @@ export class InfoButton extends sqlButton {
 		super(container, options);
 		this._container = container;
 
-		DOM.addClass(this._container, 'info-button-container');
+		this._container.classList.add('info-button-container');
 
 		this._main = document.createElement('div');
-		DOM.addClass(this._main, 'flexContainer');
-		DOM.addClass(this._main, 'info-main');
+		this._main.classList.add('flexContainer');
+		this._main.classList.add('info-main');
 
 		this._iconContainer = document.createElement('div');
-		DOM.addClass(this._iconContainer, 'info-icon');
+		this._iconContainer.classList.add('info-icon');
 		this._iconContainer.style.alignItems = 'flex-start';
 
 		this._iconElement = document.createElement('div');
-		DOM.addClass(this._iconElement, 'icon');
+		this._iconElement.classList.add('icon');
 
 		this._textContainer = document.createElement('div');
-		DOM.addClass(this._textContainer, 'info-text');
+		this._textContainer.classList.add('info-text');
 
 		this._pTitle = document.createElement('p');
-		DOM.addClass(this._pTitle, 'info-title');
+		this._pTitle.classList.add('info-title');
 		this._pTitle.setAttribute('aria-hidden', 'false');
 
 		this._pDesc = document.createElement('p');
-		DOM.addClass(this._pDesc, 'info-desc');
+		this._pDesc.classList.add('info-desc');
 		this._pDesc.setAttribute('aria-hidden', 'false');
 
 		this._textContainer.appendChild(this._pTitle);
@@ -71,7 +70,7 @@ export class InfoButton extends sqlButton {
 		this._main.appendChild(this._iconContainer);
 		this._main.appendChild(this._textContainer);
 
-		DOM.addClass(this.element, 'info-button');
+		this.element.classList.add('info-button');
 		this.element.appendChild(this._main);
 		this.element.style.background = 'none';
 
@@ -135,7 +134,7 @@ export class InfoButton extends sqlButton {
 	}
 	public set iconClass(value: string) {
 		this._iconClass! = value;
-		DOM.addClass(this._iconElement, this._iconClass!);
+		this._iconElement.classList.add(this._iconClass!);
 	}
 
 	public set infoButtonOptions(options: IInfoButtonOptions | undefined) {

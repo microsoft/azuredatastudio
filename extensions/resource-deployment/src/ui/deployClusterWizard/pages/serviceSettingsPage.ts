@@ -53,6 +53,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		super(localize('deployCluster.ServiceSettingsPageTitle', "Service settings"), '', wizard);
 	}
 	public initialize(): void {
+		const self = this;
 		const scaleSectionInfo: SectionInfo = {
 			title: localize('deployCluster.scaleSectionTitle', "Scale settings"),
 			labelWidth: labelWidth,
@@ -119,13 +120,13 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				return await createSection({
 					view: view,
 					container: this.wizard.wizardObject,
-					inputComponents: this.inputComponents,
+					inputComponents: this.wizard.inputComponents,
 					sectionInfo: sectionInfo,
 					onNewDisposableCreated: (disposable: vscode.Disposable): void => {
-						this.wizard.registerDisposable(disposable);
+						self.wizard.registerDisposable(disposable);
 					},
 					onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
-						this.inputComponents[name] = { component: inputComponentInfo.component };
+						self.onNewInputComponentCreated(name, inputComponentInfo);
 					},
 					onNewValidatorCreated: (validator: Validator): void => {
 					},
@@ -153,6 +154,11 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		});
 	}
 
+	private onNewInputComponentCreated(name: string, inputComponentInfo: InputComponentInfo) {
+		this.inputComponents[name] = inputComponentInfo;
+		this.wizard.inputComponents[name] = inputComponentInfo;
+	}
+
 	private handleSparkSettingEvents(): void {
 		const sparkInstanceInput = getInputBoxComponent(VariableNames.SparkPoolScale_VariableName, this.inputComponents);
 		const includeSparkCheckbox = getCheckboxComponent(VariableNames.IncludeSpark_VariableName, this.inputComponents);
@@ -173,43 +179,43 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.controllerDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ControllerDNSName', "Controller DNS name"), required: false, width: inputWidth });
 		this.controllerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ControllerPortName', "Controller port"), required: true, width: NumberInputWidth, min: 1 });
 		this.controllerEndpointRow = createFlexContainer(view, [this.controllerNameLabel, this.controllerDNSInput, this.controllerPortInput]);
-		this.inputComponents[VariableNames.ControllerDNSName_VariableName] = { component: this.controllerDNSInput };
-		this.inputComponents[VariableNames.ControllerPort_VariableName] = { component: this.controllerPortInput };
+		this.onNewInputComponentCreated(VariableNames.ControllerDNSName_VariableName, { component: this.controllerDNSInput });
+		this.onNewInputComponentCreated(VariableNames.ControllerPort_VariableName, { component: this.controllerPortInput });
 
 		this.SqlServerNameLabel = createLabel(view, { text: localize('deployCluster.MasterSqlText', "SQL Server Master"), width: labelWidth, required: true });
 		this.sqlServerDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerDNSName', "SQL Server Master DNS name"), required: false, width: inputWidth });
 		this.sqlServerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerPortName', "SQL Server Master port"), required: true, width: NumberInputWidth, min: 1 });
 		this.sqlServerEndpointRow = createFlexContainer(view, [this.SqlServerNameLabel, this.sqlServerDNSInput, this.sqlServerPortInput]);
-		this.inputComponents[VariableNames.SQLServerDNSName_VariableName] = { component: this.sqlServerDNSInput };
-		this.inputComponents[VariableNames.SQLServerPort_VariableName] = { component: this.sqlServerPortInput };
+		this.onNewInputComponentCreated(VariableNames.SQLServerDNSName_VariableName, { component: this.sqlServerDNSInput });
+		this.onNewInputComponentCreated(VariableNames.SQLServerPort_VariableName, { component: this.sqlServerPortInput });
 
 		this.gatewayNameLabel = createLabel(view, { text: localize('deployCluster.GatewayText', "Gateway"), width: labelWidth, required: true });
 		this.gatewayDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.GatewayDNSName', "Gateway DNS name"), required: false, width: inputWidth });
 		this.gatewayPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.GatewayPortName', "Gateway port"), required: true, width: NumberInputWidth, min: 1 });
 		this.gatewayEndpointRow = createFlexContainer(view, [this.gatewayNameLabel, this.gatewayDNSInput, this.gatewayPortInput]);
-		this.inputComponents[VariableNames.GatewayDNSName_VariableName] = { component: this.gatewayDNSInput };
-		this.inputComponents[VariableNames.GateWayPort_VariableName] = { component: this.gatewayPortInput };
+		this.onNewInputComponentCreated(VariableNames.GatewayDNSName_VariableName, { component: this.gatewayDNSInput });
+		this.onNewInputComponentCreated(VariableNames.GateWayPort_VariableName, { component: this.gatewayPortInput });
 
 		this.serviceProxyNameLabel = createLabel(view, { text: localize('deployCluster.ServiceProxyText', "Management proxy"), width: labelWidth, required: true });
 		this.serviceProxyDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ServiceProxyDNSName', "Management proxy DNS name"), required: false, width: inputWidth });
 		this.serviceProxyPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ServiceProxyPortName', "Management proxy port"), required: true, width: NumberInputWidth, min: 1 });
 		this.serviceProxyEndpointRow = createFlexContainer(view, [this.serviceProxyNameLabel, this.serviceProxyDNSInput, this.serviceProxyPortInput]);
-		this.inputComponents[VariableNames.ServiceProxyDNSName_VariableName] = { component: this.serviceProxyDNSInput };
-		this.inputComponents[VariableNames.ServiceProxyPort_VariableName] = { component: this.serviceProxyPortInput };
+		this.onNewInputComponentCreated(VariableNames.ServiceProxyDNSName_VariableName, { component: this.serviceProxyDNSInput });
+		this.onNewInputComponentCreated(VariableNames.ServiceProxyPort_VariableName, { component: this.serviceProxyPortInput });
 
 		this.appServiceProxyNameLabel = createLabel(view, { text: localize('deployCluster.AppServiceProxyText', "Application proxy"), width: labelWidth, required: true });
 		this.appServiceProxyDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.AppServiceProxyDNSName', "Application proxy DNS name"), required: false, width: inputWidth });
 		this.appServiceProxyPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.AppServiceProxyPortName', "Application proxy port"), required: true, width: NumberInputWidth, min: 1 });
 		this.appServiceProxyEndpointRow = createFlexContainer(view, [this.appServiceProxyNameLabel, this.appServiceProxyDNSInput, this.appServiceProxyPortInput]);
-		this.inputComponents[VariableNames.AppServiceProxyDNSName_VariableName] = { component: this.appServiceProxyDNSInput };
-		this.inputComponents[VariableNames.AppServiceProxyPort_VariableName] = { component: this.appServiceProxyPortInput };
+		this.onNewInputComponentCreated(VariableNames.AppServiceProxyDNSName_VariableName, { component: this.appServiceProxyDNSInput });
+		this.onNewInputComponentCreated(VariableNames.AppServiceProxyPort_VariableName, { component: this.appServiceProxyPortInput });
 
 		this.readableSecondaryNameLabel = createLabel(view, { text: localize('deployCluster.ReadableSecondaryText', "Readable secondary"), width: labelWidth, required: true });
 		this.readableSecondaryDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryDNSName', "Readable secondary DNS name"), required: false, width: inputWidth });
 		this.readableSecondaryPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryPortName', "Readable secondary port"), required: false, width: NumberInputWidth, min: 1 });
 		this.readableSecondaryEndpointRow = createFlexContainer(view, [this.readableSecondaryNameLabel, this.readableSecondaryDNSInput, this.readableSecondaryPortInput]);
-		this.inputComponents[VariableNames.ReadableSecondaryDNSName_VariableName] = { component: this.readableSecondaryDNSInput };
-		this.inputComponents[VariableNames.ReadableSecondaryPort_VariableName] = { component: this.readableSecondaryPortInput };
+		this.onNewInputComponentCreated(VariableNames.ReadableSecondaryDNSName_VariableName, { component: this.readableSecondaryDNSInput });
+		this.onNewInputComponentCreated(VariableNames.ReadableSecondaryPort_VariableName, { component: this.readableSecondaryPortInput });
 
 		return createGroupContainer(view, [this.endpointHeaderRow, this.controllerEndpointRow, this.sqlServerEndpointRow, this.gatewayEndpointRow, this.serviceProxyEndpointRow, this.appServiceProxyEndpointRow, this.readableSecondaryEndpointRow], {
 			header: localize('deployCluster.EndpointSettings', "Endpoint settings"),
@@ -265,22 +271,22 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		const sqlServerMasterLogsStorageClassInput = createTextInput(view, { ariaLabel: localize('deployCluster.sqlServerMasterLogsStorageClass', "SQL Server master's logs storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
 		const sqlServerMasterLogsStorageClaimSizeInput = createNumberInput(view, { ariaLabel: localize('deployCluster.sqlServerMasterLogsStorageClaimSize', "SQL Server master's logs storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
 
-		this.inputComponents[VariableNames.ControllerDataStorageClassName_VariableName] = { component: controllerDataStorageClassInput };
-		this.inputComponents[VariableNames.ControllerDataStorageSize_VariableName] = { component: controllerDataStorageClaimSizeInput };
-		this.inputComponents[VariableNames.ControllerLogsStorageClassName_VariableName] = { component: controllerLogsStorageClassInput };
-		this.inputComponents[VariableNames.ControllerLogsStorageSize_VariableName] = { component: controllerLogsStorageClaimSizeInput };
-		this.inputComponents[VariableNames.HDFSDataStorageClassName_VariableName] = { component: storagePoolDataStorageClassInput };
-		this.inputComponents[VariableNames.HDFSDataStorageSize_VariableName] = { component: storagePoolDataStorageClaimSizeInput };
-		this.inputComponents[VariableNames.HDFSLogsStorageClassName_VariableName] = { component: storagePoolLogsStorageClassInput };
-		this.inputComponents[VariableNames.HDFSLogsStorageSize_VariableName] = { component: storagePoolLogsStorageClaimSizeInput };
-		this.inputComponents[VariableNames.DataPoolDataStorageClassName_VariableName] = { component: dataPoolDataStorageClassInput };
-		this.inputComponents[VariableNames.DataPoolDataStorageSize_VariableName] = { component: dataPoolDataStorageClaimSizeInput };
-		this.inputComponents[VariableNames.DataPoolLogsStorageClassName_VariableName] = { component: dataPoolLogsStorageClassInput };
-		this.inputComponents[VariableNames.DataPoolLogsStorageSize_VariableName] = { component: dataPoolLogsStorageClaimSizeInput };
-		this.inputComponents[VariableNames.SQLServerDataStorageClassName_VariableName] = { component: sqlServerMasterDataStorageClassInput };
-		this.inputComponents[VariableNames.SQLServerDataStorageSize_VariableName] = { component: sqlServerMasterDataStorageClaimSizeInput };
-		this.inputComponents[VariableNames.SQLServerLogsStorageClassName_VariableName] = { component: sqlServerMasterLogsStorageClassInput };
-		this.inputComponents[VariableNames.SQLServerLogsStorageSize_VariableName] = { component: sqlServerMasterLogsStorageClaimSizeInput };
+		this.onNewInputComponentCreated(VariableNames.ControllerDataStorageClassName_VariableName, { component: controllerDataStorageClassInput });
+		this.onNewInputComponentCreated(VariableNames.ControllerDataStorageSize_VariableName, { component: controllerDataStorageClaimSizeInput });
+		this.onNewInputComponentCreated(VariableNames.ControllerLogsStorageClassName_VariableName, { component: controllerLogsStorageClassInput });
+		this.onNewInputComponentCreated(VariableNames.ControllerLogsStorageSize_VariableName, { component: controllerLogsStorageClaimSizeInput });
+		this.onNewInputComponentCreated(VariableNames.HDFSDataStorageClassName_VariableName, { component: storagePoolDataStorageClassInput });
+		this.onNewInputComponentCreated(VariableNames.HDFSDataStorageSize_VariableName, { component: storagePoolDataStorageClaimSizeInput });
+		this.onNewInputComponentCreated(VariableNames.HDFSLogsStorageClassName_VariableName, { component: storagePoolLogsStorageClassInput });
+		this.onNewInputComponentCreated(VariableNames.HDFSLogsStorageSize_VariableName, { component: storagePoolLogsStorageClaimSizeInput });
+		this.onNewInputComponentCreated(VariableNames.DataPoolDataStorageClassName_VariableName, { component: dataPoolDataStorageClassInput });
+		this.onNewInputComponentCreated(VariableNames.DataPoolDataStorageSize_VariableName, { component: dataPoolDataStorageClaimSizeInput });
+		this.onNewInputComponentCreated(VariableNames.DataPoolLogsStorageClassName_VariableName, { component: dataPoolLogsStorageClassInput });
+		this.onNewInputComponentCreated(VariableNames.DataPoolLogsStorageSize_VariableName, { component: dataPoolLogsStorageClaimSizeInput });
+		this.onNewInputComponentCreated(VariableNames.SQLServerDataStorageClassName_VariableName, { component: sqlServerMasterDataStorageClassInput });
+		this.onNewInputComponentCreated(VariableNames.SQLServerDataStorageSize_VariableName, { component: sqlServerMasterDataStorageClaimSizeInput });
+		this.onNewInputComponentCreated(VariableNames.SQLServerLogsStorageClassName_VariableName, { component: sqlServerMasterLogsStorageClassInput });
+		this.onNewInputComponentCreated(VariableNames.SQLServerLogsStorageSize_VariableName, { component: sqlServerMasterLogsStorageClaimSizeInput });
 
 		const storageSettingTable = view.modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
@@ -402,7 +408,6 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	public async onLeave(): Promise<void> {
 		await setModelValues(this.inputComponents, this.wizard.model);
-		Object.assign(this.wizard.inputComponents, this.inputComponents);
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});

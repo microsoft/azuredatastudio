@@ -132,7 +132,11 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 	}
 
 	private async onTableSelected(): Promise<void> {
-		this._columns?.loadInputs(this._modelParameters, this.databaseTable);
+		await this.loadWithTable(this.databaseTable);
+	}
+
+	public async loadWithTable(table: DatabaseTable): Promise<void> {
+		await this._columns?.loadInputs(this._modelParameters, table);
 	}
 
 	private get databaseTable(): DatabaseTable {

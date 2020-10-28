@@ -31,7 +31,8 @@ export class PostgresServerService extends ResourceServiceBase<DbServerGraphData
 			loginName: resource.properties.administratorLogin,
 			defaultDatabaseName: 'postgres',
 			subscriptionId: resource.subscriptionId,
-			tenant: resource.tenantId
+			tenant: resource.tenantId,
+			resourceGroup: resource.resourceGroup
 		};
 	}
 }

@@ -275,12 +275,13 @@ export class CollapseCellsAction extends ToggleableAction {
 const showAllKernelsConfigName = 'notebook.showAllKernels';
 const workbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
 export const noKernelName = localize('noKernel', "No Kernel");
+const kernelDropdownElementId = 'kernel-dropdown';
 
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService) {
-		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel } as ISelectBoxOptionsWithLabel);
+		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel, id: kernelDropdownElementId } as ISelectBoxOptionsWithLabel);
 
 		if (modelReady) {
 			modelReady
@@ -353,6 +354,8 @@ export class KernelsDropdown extends SelectBox {
 	}
 }
 
+const attachToDropdownElementId = 'attach-to-dropdown';
+
 export class AttachToDropdown extends SelectBox {
 	private model: NotebookModel;
 
@@ -363,7 +366,7 @@ export class AttachToDropdown extends SelectBox {
 		@INotificationService private _notificationService: INotificationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 	) {
-		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false, ariaLabel: attachToLabel } as ISelectBoxOptionsWithLabel);
+		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false, ariaLabel: attachToLabel, id: attachToDropdownElementId } as ISelectBoxOptionsWithLabel);
 		if (modelReady) {
 			modelReady
 				.then(model => {

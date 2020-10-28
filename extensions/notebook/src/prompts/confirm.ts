@@ -8,8 +8,8 @@ import * as vscode from 'vscode';
 
 export default class ConfirmPrompt extends Prompt {
 
-	constructor(question: any) {
-		super(question);
+	constructor(question: any, ignoreFocusOut?: boolean) {
+		super(question, ignoreFocusOut);
 	}
 
 	public render(): any {

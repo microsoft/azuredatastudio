@@ -435,6 +435,12 @@ export class Project {
 	 */
 	public async addProjectReference(settings: IProjectReferenceSettings): Promise<void> {
 		const projectReferenceEntry = new SqlProjectReferenceProjectEntry(settings);
+
+		// check if reference to this database already exists
+		if (this.databaseReferenceExists(projectReferenceEntry)) {
+			throw new Error(constants.databaseReferenceAlreadyExists);
+		}
+
 		await this.addToProjFile(projectReferenceEntry);
 	}
 
@@ -621,7 +627,7 @@ export class Project {
 	}
 
 	private databaseReferenceExists(entry: IDatabaseReferenceProjectEntry): boolean {
-		const found = this.databaseReferences.find(reference => reference.fsUri.fsPath === entry.fsUri.fsPath) !== undefined;
+		const found = this.databaseReferences.find(reference => reference.pathForSqlProj() === entry.pathForSqlProj()) !== undefined;
 		return found;
 	}
 
@@ -638,7 +644,7 @@ export class Project {
 			referenceNode.appendChild(databaseSqlCmdVariableElement);
 
 			// add SQLCMD variable
-			this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).databaseName);
+			this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).databaseVariableLiteralValue!);
 		} else if (entry.databaseVariableLiteralValue) {
 			const databaseVariableLiteralValueElement = this.projFileXmlDoc.createElement(constants.DatabaseVariableLiteralValue);
 			const databaseTextNode = this.projFileXmlDoc.createTextNode(entry.databaseVariableLiteralValue);
