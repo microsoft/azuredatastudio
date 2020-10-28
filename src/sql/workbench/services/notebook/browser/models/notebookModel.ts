@@ -271,17 +271,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	/**
-	 * Indicates all result grid output has been converted to mimeType and html.
-	 */
-	public get gridDataConversionComplete(): Promise<any> {
-		let promises = [];
-		for (let cell of this._cells) {
-			promises.push(cell.gridDataConversionComplete);
-		}
-		return Promise.all(promises);
-	}
-
-	/**
 	 * Notifies when the client session is ready for use
 	 */
 	public get onClientSessionReady(): Event<IClientSession> {
@@ -359,6 +348,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
+						/*
+						In a parameterized notebook there will be an injected parameter cell.
+						Papermill originally inserts the injected parameter with the comment "# Parameters"
+						which would make it confusing to the user between the difference between this cell and the tagged parameters cell.
+						So to make it clear we edit the injected parameters comment to indicate it is the Injected-Parameters cell.
+						*/
+						if (cellModel.isInjectedParameter) {
+							cellModel.source = cellModel.source.slice(1);
+							cellModel.source = '# Injected-Parameters\n' + cellModel.source;
+						}
 						this.trackMarkdownTelemetry(<nb.ICellContents>c, cellModel);
 						return cellModel;
 					});
@@ -845,6 +844,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (newConnection) {
 				if (newConnection.serverCapabilities?.notebookKernelAlias) {
 					this._currentKernelAlias = newConnection.serverCapabilities.notebookKernelAlias;
+					// Removes SQL kernel to Kernel Alias Connection Provider map
+					let sqlConnectionProvider = this._kernelDisplayNameToConnectionProviderIds.get('SQL');
+					if (sqlConnectionProvider) {
+						let index = sqlConnectionProvider.indexOf(newConnection.serverCapabilities.notebookKernelAlias.toUpperCase());
+						if (index > -1) {
+							sqlConnectionProvider.splice(index, 1);
+						}
+						this._kernelDisplayNameToConnectionProviderIds.set('SQL', sqlConnectionProvider);
+					}
 					this._kernelDisplayNameToConnectionProviderIds.set(newConnection.serverCapabilities.notebookKernelAlias, [newConnection.providerName]);
 				}
 				this._activeConnection = newConnection;
@@ -971,6 +979,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private async loadActiveContexts(kernelChangedArgs: nb.IKernelChangedArgs): Promise<void> {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name) {
 			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue);
+			if (this.context?.serverCapabilities?.notebookKernelAlias && this.selectedKernelDisplayName === this.context?.serverCapabilities?.notebookKernelAlias) {
+				kernelDisplayName = this.context.serverCapabilities?.notebookKernelAlias;
+			}
 			let context;
 			if (this._activeConnection) {
 				context = NotebookContexts.getContextForKernel(this._activeConnection, this.getApplicableConnectionProviderIds(kernelDisplayName));

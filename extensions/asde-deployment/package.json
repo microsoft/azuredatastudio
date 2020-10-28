@@ -2,7 +2,7 @@
   "name": "asde-deployment",
   "displayName": "%extension-displayName%",
   "description": "%extension-description%",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -24,11 +24,11 @@
         "displayName": "%resource-type-sql-edge-display-name%",
         "description": "%resource-type-sql-edge-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/sqldb_edge.svg",
-          "dark": "./images/sqldb_edge_inverse.svg"
-        },
-        "tags": ["Hybrid", "SQL Server"],
+        "icon": "./images/sqldb_edge.svg",
+        "tags": [
+          "Hybrid",
+          "SQL Server"
+        ],
         "options": [
           {
             "name": "type",
@@ -338,7 +338,10 @@
                           "type": "password",
                           "confirmationRequired": true,
                           "confirmationLabel": "%vm_password_confirm%",
-                          "required": true
+                          "required": true,
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])[A-Za-z\\d\\W_]{12,123}$",
+                          "textValidationDescription": "%vm_password_validation_error_message%"
                         }
                       ]
                     },
@@ -387,7 +390,7 @@
             "requiredTools": [
               {
                 "name": "azure-cli",
-                "version": "2.9.1"
+                "version": "2.13.0"
               }
             ],
             "when": "type=azure-create-new"
@@ -477,7 +480,7 @@
             "requiredTools": [
               {
                 "name": "azure-cli",
-                "version": "2.9.1"
+                "version": "2.13.0"
               }
             ],
             "when": "type=azure-single-device"
@@ -570,7 +573,7 @@
             "requiredTools": [
               {
                 "name": "azure-cli",
-                "version": "2.9.1"
+                "version": "2.13.0"
               }
             ],
             "when": "type=azure-multi-device"

@@ -9,7 +9,6 @@ import { FileBrowserRenderer } from 'sql/workbench/services/fileBrowser/browser/
 import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/interfaces';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
-import * as DOM from 'vs/base/browser/dom';
 import nls = require('vs/nls');
 import { DefaultFilter, DefaultAccessibilityProvider, DefaultDragAndDrop } from 'vs/base/parts/tree/browser/treeDefaults';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
@@ -38,7 +37,7 @@ export class FileBrowserTreeView extends Disposable implements IDisposable {
 	 */
 	public async renderBody(container: HTMLElement, rootNode: FileNode, selectedNode: FileNode, expandedNodes: FileNode[]): Promise<void> {
 		if (!this._tree) {
-			DOM.addClass(container, 'show-file-icons');
+			container.classList.add('show-file-icons');
 			this._tree = this._register(this.createFileBrowserTree(container, this._instantiationService));
 			this._register(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
 			this._register(this._fileBrowserService.onExpandFolder(fileNode => this._tree.refresh(fileNode)));

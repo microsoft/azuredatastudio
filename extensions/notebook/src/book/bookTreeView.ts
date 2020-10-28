@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as constants from '../common/constants';
-import { IPrompter, IQuestion, confirm } from '../prompts/question';
+import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import { BookModel, BookVersion } from './bookModel';
@@ -92,7 +92,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	trustBook(bookTreeItem?: BookTreeItem): void {
 		let bookPathToTrust: string = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
 		if (bookPathToTrust) {
-			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust);
+			let trustChanged = this._bookTrustManager.setBookAsTrusted(bookPathToTrust, true);
 			if (trustChanged) {
 				let notebookDocuments = azdata.nb.notebookDocuments;
 				if (notebookDocuments) {
@@ -580,7 +580,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	//Confirmation message dialog
 	private async confirmReplace(): Promise<boolean> {
 		return await this.prompter.promptSingle<boolean>(<IQuestion>{
-			type: confirm,
+			type: QuestionTypes.confirm,
 			message: loc.confirmReplace,
 			default: false
 		});

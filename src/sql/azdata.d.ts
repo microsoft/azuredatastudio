@@ -2612,7 +2612,7 @@ declare module 'azdata' {
 	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
 		component(): TComponent;
 		withProperties<U>(properties: U): ComponentBuilder<TComponent, TPropertyBag>;
-		withValidation(validation: (component: TComponent) => boolean): ComponentBuilder<TComponent, TPropertyBag>;
+		withValidation(validation: (component: TComponent) => boolean | Thenable<boolean>): ComponentBuilder<TComponent, TPropertyBag>;
 	}
 	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ComponentProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
 		withLayout(layout: TLayout): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
@@ -4072,7 +4072,7 @@ declare module 'azdata' {
 		/**
 		 * Register a query event listener
 		 */
-		export function registerQueryEventListener(listener: QueryEventListener): void;
+		export function registerQueryEventListener(listener: QueryEventListener): vscode.Disposable;
 
 		/**
 		 * Get a QueryDocument object for a file URI
@@ -4701,9 +4701,11 @@ declare module 'azdata' {
 
 		export interface ICellOutput {
 			output_type: OutputTypeName;
-			metadata?: {
-				azdata_chartOptions?: any;
-			};
+			metadata?: ICellOutputMetadata;
+		}
+
+		export interface ICellOutputMetadata {
+			azdata_chartOptions?: any;
 		}
 
 		/**
@@ -4736,7 +4738,9 @@ declare module 'azdata' {
 			/**
 			 * Optional metadata, also a mime bundle
 			 */
-			metadata?: {};
+			metadata?: {
+				resultSet?: ResultSetSummary;
+			};
 		}
 		export interface IDisplayData extends IDisplayResult {
 			output_type: 'display_data';
