@@ -313,7 +313,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			let tokenFillSuccess = await this.fillInOrClearAzureToken(newConnection);
 
 			// If the password is required and still not loaded show the dialog
-			if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
+			if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) && !tokenFillSuccess) {
 				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options);
 			} else {
 				// Try to connect
