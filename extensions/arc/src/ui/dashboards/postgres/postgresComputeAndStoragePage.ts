@@ -160,10 +160,10 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 
+					this.discardButton!.enabled = false;
+
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
-				} finally {
-					this.discardButton!.enabled = false;
 				}
 			}));
 
