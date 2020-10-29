@@ -3,19 +3,33 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as TypeMoq from 'typemoq';
+import * as azdata from 'azdata';
 import 'mocha';
-import { NotebookService } from '../../services/notebookService';
-import assert = require('assert');
+import * as should from 'should';
+import * as sinon from 'sinon';
+import * as TypeMoq from 'typemoq';
+import * as vscode from 'vscode';
 import { NotebookPathInfo } from '../../interfaces';
+import { NotebookService } from '../../services/notebookService';
 import { IPlatformService } from '../../services/platformService';
+import assert = require('assert');
+
 
 describe('Notebook Service Tests', function (): void {
+	const notebookInput = 'test-notebook.ipynb';
+	const notebookFileName = 'mynotebook.ipynb';
+	const sourceNotebookPath = `./notebooks/${notebookFileName}`;
+	const notebookWin32 = 'test-notebook-win32.ipynb';
+	const notebookDarwin = 'test-notebook-darwin.ipynb';
+	const notebookLinux = 'test-notebook-linux.ipynb';
+	let mockPlatformService: TypeMoq.IMock<IPlatformService>, notebookService: NotebookService;
+
+	beforeEach('Notebook Service Setup', () => {
+		mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
+		notebookService = new NotebookService(mockPlatformService.object, '');
+	});
 
 	it('getNotebook with string parameter', () => {
-		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
-		const notebookService = new NotebookService(mockPlatformService.object, '');
-		const notebookInput = 'test-notebook.ipynb';
 		mockPlatformService.setup((service) => service.platform()).returns(() => { return 'win32'; });
 		let returnValue = notebookService.getNotebookPath(notebookInput);
 		assert.equal(returnValue, notebookInput, 'returned notebook name does not match expected value');
@@ -29,12 +43,6 @@ describe('Notebook Service Tests', function (): void {
 	});
 
 	it('getNotebook with NotebookInfo parameter', () => {
-		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
-		const notebookService = new NotebookService(mockPlatformService.object, '');
-		const notebookWin32 = 'test-notebook-win32.ipynb';
-		const notebookDarwin = 'test-notebook-darwin.ipynb';
-		const notebookLinux = 'test-notebook-linux.ipynb';
-
 		const notebookInput: NotebookPathInfo = {
 			darwin: notebookDarwin,
 			win32: notebookWin32,
@@ -59,11 +67,6 @@ describe('Notebook Service Tests', function (): void {
 	});
 
 	it('findNextUntitledEditorName with no name conflict', () => {
-		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
-		const notebookService = new NotebookService(mockPlatformService.object, '');
-		const notebookFileName = 'mynotebook.ipynb';
-		const sourceNotebookPath = `./notebooks/${notebookFileName}`;
-
 		const expectedTargetFile = 'mynotebook';
 		mockPlatformService.setup((service) => service.isNotebookNameUsed(TypeMoq.It.isAnyString()))
 			.returns((path) => { return false; });
@@ -73,12 +76,7 @@ describe('Notebook Service Tests', function (): void {
 	});
 
 	it('findNextUntitledEditorName with name conflicts', () => {
-		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
-		const notebookService = new NotebookService(mockPlatformService.object, '');
-		const notebookFileName = 'mynotebook.ipynb';
-		const sourceNotebookPath = `./notebooks/${notebookFileName}`;
 		const expectedFileName = 'mynotebook-2';
-
 		const expected1stAttemptTargetFile = 'mynotebook';
 		const expected2ndAttemptTargetFile = 'mynotebook-1';
 		mockPlatformService.setup((service) => service.isNotebookNameUsed(TypeMoq.It.isAnyString()))
@@ -93,5 +91,21 @@ describe('Notebook Service Tests', function (): void {
 		const actualFileName = notebookService.findNextUntitledEditorName(sourceNotebookPath);
 		mockPlatformService.verify((service) => service.isNotebookNameUsed(TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(3));
 		assert.equal(actualFileName, expectedFileName, 'target file name is not correct');
+	});
+
+	it('showNotebookAsUntitled', async () => {
+		const documentContent = 'documentContent';
+		const openDocStub = sinon.stub(vscode.workspace, 'openTextDocument').resolves(<vscode.TextDocument>{ getText: () => documentContent });
+		const showDocStub = sinon.stub(azdata.nb, 'showNotebookDocument').resolves();
+		const result = await notebookService.showNotebookAsUntitled(sourceNotebookPath);
+		openDocStub.callCount.should.equal(1);
+		openDocStub.getCall(0).args[0]!.should.equal(sourceNotebookPath);
+		showDocStub.callCount.should.equal(1);
+		const untitledFileName = showDocStub.getCall(0).args[0]!;
+		untitledFileName.scheme.should.equal('untitled');
+		untitledFileName.path.should.equal(sourceNotebookPath);
+		const options = showDocStub.getCall(0).args[1]!;
+		options.initialContent!.should.equal(documentContent);
+		should(result).not.be.undefined();
 	});
 });
