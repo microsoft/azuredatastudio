@@ -13,16 +13,12 @@ import { Project, SystemDatabase } from '../models/project';
 import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { Deferred } from '../common/promise';
 
 export enum ReferenceType {
 	project,
 	systemDb,
 	dacpac
-}
-
-interface Deferred<T> {
-	resolve: (result: T | Promise<T>) => void;
-	reject: (reason: any) => void;
 }
 
 export class AddDatabaseReferenceDialog {

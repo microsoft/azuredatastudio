@@ -119,6 +119,21 @@ export const otherServer = 'OtherServer';
 export const otherSeverVariable = 'OtherServer';
 export const databaseProject = localize('databaseProject', "Database project");
 
+// Import Database Project dialog strings
+
+export const createProjectFromDatabaseDialogName = localize('createProjectFromDatabaseDialogName', "Import project");
+export const importDialogOkButtonText = localize('importDialogOkButtonText', "Import");
+export const sourceDatabase = localize('sourceDatabase', "Source database");
+export const targetProject = localize('targetProject', "Target project");
+export const importSettings = localize('importSettings', "Import settings");
+export const projectNameLabel = localize('projectNameLabel', "Name");
+export const projectNamePlaceholderText = localize('projectNamePlaceholderText', "Enter project name");
+export const projectLocationLabel = localize('projectLocationLabel', "Location");
+export const projectLocationPlaceholderText = localize('projectLocationPlaceholderText', "Enter project location");
+export const browseButtonText = localize('browseButtonText', "Browse folder");
+export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
+
+
 // Error messages
 
 export const multipleSqlProjFiles = localize('multipleSqlProjFilesSelected', "Multiple .sqlproj files selected; please select only one.");
@@ -130,7 +145,6 @@ export const unknownDataSourceType = localize('unknownDataSourceType', "Unknown 
 export const invalidSqlConnectionString = localize('invalidSqlConnectionString', "Invalid SQL connection string");
 export const projectNameRequired = localize('projectNameRequired', "Name is required to create a new database project.");
 export const projectLocationRequired = localize('projectLocationRequired', "Location is required to create a new database project.");
-export const projectLocationNotEmpty = localize('projectLocationNotEmpty', "Current project location is not empty. Select an empty folder for precise extraction.");
 export const extractTargetRequired = localize('extractTargetRequired', "Target information for extract is required to create database project.");
 export const schemaCompareNotInstalled = localize('schemaCompareNotInstalled', "Schema compare extension installation is required to run schema compare");
 export const buildFailedCannotStartSchemaCompare = localize('buildFailedCannotStartSchemaCompare', "Schema compare could not start because build failed");

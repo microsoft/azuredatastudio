@@ -31,6 +31,7 @@ import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialo
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 import { WorkspaceTreeItem } from 'dataworkspace';
+import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 
 /**
  * Controller for managing project lifecycle
@@ -671,18 +672,28 @@ export class ProjectsController {
 	 * Imports a new SQL database project from the existing database,
 	 * prompting the user for a name, file path location and extract target
 	 */
-	public async importNewDatabaseProject(context: azdata.IConnectionProfile | any): Promise<void> {
+	public importNewDatabaseProject(context: azdata.IConnectionProfile | any): CreateProjectFromDatabaseDialog {
+		//public async importNewDatabaseProject(context: azdata.IConnectionProfile | any): Promise<void> {
+		let profile = this.getConnectionProfileFromContext(context);
+		let createProjectFromDatabaseDialog = this.getCreateProjectFromDatabaseDialog(profile);
+
+		createProjectFromDatabaseDialog.createNewProjectCallBack = async (model) => await this.createNewProjectCallBack(model);
+		createProjectFromDatabaseDialog.mapExtractTargetEnum = (inputTarget) => this.mapExtractTargetEnum(inputTarget);
+
+		createProjectFromDatabaseDialog.openDialog();
+
+		return createProjectFromDatabaseDialog;
 
 		// TODO: Refactor code
-		try {
+		/*try {
 			const model: ImportDataModel | undefined = await this.getModelFromContext(context);
 
 			if (!model) {
 				return; // cancelled by user
 			}
-			model.projName = await this.getProjectName(model.database);
-			let newProjFolderUri = (await this.getFolderLocation()).fsPath;
-			model.extractTarget = await this.getExtractTarget();
+			//model.projName = await this.getProjectName(model.database);
+			//let newProjFolderUri = (await this.getFolderLocation()).fsPath;
+			/*model.extractTarget = await this.getExtractTarget();
 			model.version = '1.0.0.0';
 
 			newProjectTool.updateSaveLocationSetting();
@@ -700,6 +711,34 @@ export class ProjectsController {
 
 			await project.addToProject(fileFolderList); // Add generated file structure to the project
 			await this.openProject(vscode.Uri.file(newProjFilePath));
+		}
+		catch (err) {
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+		}*/
+	}
+
+	public getCreateProjectFromDatabaseDialog(profile: azdata.IConnectionProfile | undefined): CreateProjectFromDatabaseDialog {
+		return new CreateProjectFromDatabaseDialog(profile);
+	}
+
+	private async createNewProjectCallBack(model: ImportDataModel) {
+		try {
+			let newProjFolderUri = model.filePath;
+
+			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
+			model.filePath = path.dirname(newProjFilePath);
+
+			if (model.extractTarget === mssql.ExtractTarget.file) {
+				model.filePath = path.join(model.filePath, model.projName + '.sql'); // File extractTarget specifies the exact file rather than the containing folder
+			}
+
+			newProjectTool.updateSaveLocationSetting();
+
+			const project = await Project.openProject(newProjFilePath);
+			await this.importApiCall(model); // Call ExtractAPI in DacFx Service
+			let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
+
+			await project.addToProject(fileFolderList); // Add generated file structure to the project
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
@@ -762,7 +801,7 @@ export class ProjectsController {
 		return (<any>context).connectionProfile ? (<any>context).connectionProfile : context;
 	}
 
-	private async getProjectName(dbName: string): Promise<string> {
+	/*private async getProjectName(dbName: string): Promise<string> {
 		let projName = await vscode.window.showInputBox({
 			prompt: constants.newDatabaseProjectName,
 			value: newProjectTool.defaultProjectNameFromDb(dbName)
@@ -775,7 +814,7 @@ export class ProjectsController {
 		}
 
 		return projName;
-	}
+	}*/
 
 	private mapExtractTargetEnum(inputTarget: any): mssql.ExtractTarget {
 		if (inputTarget) {
@@ -792,7 +831,7 @@ export class ProjectsController {
 		}
 	}
 
-	private async getExtractTarget(): Promise<mssql.ExtractTarget> {
+	/*private async getExtractTarget(): Promise<mssql.ExtractTarget> {
 		let extractTarget: mssql.ExtractTarget;
 
 		let extractTargetOptions: vscode.QuickPickItem[] = [];
@@ -834,7 +873,7 @@ export class ProjectsController {
 		}
 
 		return projUri;
-	}
+	}*/
 
 	public async importApiCall(model: ImportDataModel): Promise<void> {
 		let ext = vscode.extensions.getExtension(mssql.extension.name)!;

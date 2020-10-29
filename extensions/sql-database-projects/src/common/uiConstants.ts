@@ -16,9 +16,14 @@ export namespace cssStyles {
 	export const addDatabaseReferenceDialogLabelWidth = '215px';
 	export const addDatabaseReferenceInputboxWidth = '220px';
 
+	export const importDialogLabelWidth = '205px';
+	export const importDialogTextboxWidth = '190px';
+	export const importDialogProjectInfoTextboxWidth = '390px';
+
 	// font-styles
 	export namespace fontStyle {
 		export const normal = 'normal';
 		export const italics = 'italic';
+		export const bold = 'bold';
 	}
 }
