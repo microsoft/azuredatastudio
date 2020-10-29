@@ -17,11 +17,6 @@ export interface IBookTocManager {
 const allowedFileExtensions: string[] = ['.md', '.ipynb'];
 const initMarkdown: string[] = ['index.md', 'introduction.md', 'intro.md', 'readme.md'];
 
-export enum tocSectionOperation {
-	Remove,
-	Add
-}
-
 export class BookTocManager implements IBookTocManager {
 	public tableofContents: IJupyterBookSectionV2[];
 	public newSection: JupyterBookSection = {};
@@ -74,21 +69,6 @@ export class BookTocManager implements IBookTocManager {
 
 	hasSections(node: JupyterBookSection): boolean {
 		return node.sections !== undefined && node.sections.length > 0;
-	}
-
-	updateToc(tableOfContents: JupyterBookSection[], newToc: JupyterBookSection, findSection: JupyterBookSection[]): boolean {
-		if (tableOfContents === findSection) {
-			if (newToc !== undefined) {
-				tableOfContents.push(newToc);
-			} else {
-				//remove section
-				tableOfContents = [];
-			}
-			return true;
-		} else {
-			tableOfContents.forEach(t => this.hasSections(t) ? this.updateToc(t.sections, newToc, findSection) : undefined);
-		}
-		return false;
 	}
 
 	public async createBook(bookContentPath: string, contentFolder: string): Promise<void> {
