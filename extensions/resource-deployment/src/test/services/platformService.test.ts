@@ -208,19 +208,17 @@ describe('PlatformService', () => {
 				});
 			});
 			[true, false].forEach(async ignoreError => {
-				await Promise.all([true, false].map(async (ignoreError) => {
-					it(`throws with ignoreError: ${ignoreError}`, async () => {
-						const stub = sinon.stub(fs.promises, 'unlink').throws();
-						const { error } = await tryExecuteAction(() => platformService.deleteFile(filePath, ignoreError));
-						stub.callCount.should.equal(1);
-						stub.getCall(0).args[0].should.equal(filePath);
-						if (ignoreError) {
-							should(error).be.undefined();
-						} else {
-							should(error).not.be.undefined();
-						}
-					});
-				}));
+				it(`throws with ignoreError: ${ignoreError}`, async () => {
+					const stub = sinon.stub(fs.promises, 'unlink').throws();
+					const { error } = await tryExecuteAction(() => platformService.deleteFile(filePath, ignoreError));
+					stub.callCount.should.equal(1);
+					stub.getCall(0).args[0].should.equal(filePath);
+					if (ignoreError) {
+						should(error).be.undefined();
+					} else {
+						should(error).not.be.undefined();
+					}
+				});
 			});
 		});
 		it('openFile', () => {
