@@ -3,34 +3,44 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { getDataGridFormatter } from 'sql/workbench/services/dataGridProvider/browser/dataGridProviderUtils';
 
-export interface ColumnDefinition extends Slick.Column<Slick.SlickData> {
+export interface ColumnDefinition extends Slick.Column<azdata.DataGridItem> {
 	name: string;
-	type: string;
+	// actions is a special internal type for the More Actions column
+	type: azdata.DataGridColumnType | 'actions';
 	filterable?: boolean;
 }
 
 export class ResourceViewerInput extends EditorInput {
 
 	public static ID: string = 'workbench.editorInput.resourceViewerInput';
-	private _data: Slick.SlickData[] = [];
+	private _data: azdata.DataGridItem[] = [];
 	private _columns: ColumnDefinition[] = [];
-
-	private _onColumnsChanged = new Emitter<Slick.Column<Slick.SlickData>[]>();
-	public onColumnsChanged: Event<Slick.Column<Slick.SlickData>[]> = this._onColumnsChanged.event;
+	private _onColumnsChanged = new Emitter<Slick.Column<azdata.DataGridItem>[]>();
+	public actionsColumn: ButtonColumn<azdata.DataGridItem>;
+	public onColumnsChanged: Event<Slick.Column<azdata.DataGridItem>[]> = this._onColumnsChanged.event;
 
 	private _onDataChanged = new Emitter<void>();
 	public onDataChanged: Event<void> = this._onDataChanged.event;
 
-	constructor(private _providerId: string, @IDataGridProviderService private _dataGridProvider: IDataGridProviderService) {
+	constructor(private _providerId: string,
+		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService) {
 		super();
+		this.actionsColumn = new ButtonColumn<azdata.DataGridItem>({
+			id: 'actions',
+			iconCssClass: 'toggle-more',
+			title: nls.localize('resourceViewer.showActions', "Show Actions"),
+			sortable: false
+		});
 		this.refresh().catch(err => onUnexpectedError(err));
 	}
 
@@ -42,7 +52,7 @@ export class ResourceViewerInput extends EditorInput {
 		return nls.localize('resourceViewerInput.resourceViewer', "Resource Viewer");
 	}
 
-	public get data(): Slick.SlickData[] {
+	public get data(): azdata.DataGridItem[] {
 		return this._data;
 	}
 
@@ -70,9 +80,13 @@ export class ResourceViewerInput extends EditorInput {
 		]);
 	}
 
+	public get plugins(): Slick.Plugin<azdata.DataGridItem>[] {
+		return [this.actionsColumn];
+	}
+
 	private async fetchColumns(): Promise<void> {
-		const columns = await this._dataGridProvider.getDataGridColumns(this._providerId);
-		this.columns = columns.map(col => {
+		const columns = await this._dataGridProviderService.getDataGridColumns(this._providerId);
+		const columnDefinitions: ColumnDefinition[] = columns.map(col => {
 			return {
 				name: col.name,
 				field: col.field,
@@ -86,10 +100,15 @@ export class ResourceViewerInput extends EditorInput {
 				type: col.type
 			};
 		});
+
+		// Now add in the actions column definition at the end
+		const actionsColumnDef: ColumnDefinition = Object.assign({}, this.actionsColumn.definition, { type: 'actions', filterable: false }) as ColumnDefinition;
+		columnDefinitions.push(actionsColumnDef);
+		this.columns = columnDefinitions;
 	}
 
 	private async fetchItems(): Promise<void> {
-		const items = await this._dataGridProvider.getDataGridItems(this._providerId);
+		const items = await this._dataGridProviderService.getDataGridItems(this._providerId);
 		this._data = items;
 		this._onDataChanged.fire();
 	}
