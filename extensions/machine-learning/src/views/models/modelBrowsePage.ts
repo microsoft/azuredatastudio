@@ -51,7 +51,7 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 
 		// Mark a model in the list as selected
 		if (this._selectedModels && this.registeredModelsComponent.modelTable) {
-			this.registeredModelsComponent.modelTable.selectedModel = this._selectedModels;
+			this.registeredModelsComponent.modelTable.selectedModels = this._selectedModels;
 		}
 		this._form = this._formBuilder.component();
 		return this._form;

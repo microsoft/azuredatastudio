@@ -171,7 +171,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		return this._loader;
 	}
 
-	public set selectedModel(value: ImportedModel[]) {
+	public set selectedModels(value: ImportedModel[]) {
 		this._selectedModels = value;
 	}
 
@@ -285,8 +285,8 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					dark: this.asAbsolutePath('images/dark/delete_inverse.svg'),
 					light: this.asAbsolutePath('images/light/delete.svg')
 				},
-				width: 15,
-				height: 15
+				width: 16,
+				height: 16
 			}).component();
 			dropButton.onDidClick(async () => {
 				try {
@@ -305,11 +305,11 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				label: '',
 				title: constants.predictModel,
 				iconPath: {
-					dark: this.asAbsolutePath('images/makePredictionsSmall.svg'),
-					light: this.asAbsolutePath('images/makePredictionsSmall.svg')
+					dark: this.asAbsolutePath('images/dark/predict_inverse.svg'),
+					light: this.asAbsolutePath('images/light/predict.svg')
 				},
-				width: 15,
-				height: 15
+				width: 16,
+				height: 16
 			}).component();
 			predictButton.onDidClick(async () => {
 				await this.sendDataRequest(PredictWizardEventName, [model]);
@@ -322,8 +322,8 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					dark: this.asAbsolutePath('images/dark/edit_inverse.svg'),
 					light: this.asAbsolutePath('images/light/edit.svg')
 				},
-				width: 15,
-				height: 15
+				width: 16,
+				height: 16
 			}).component();
 			editButton.onDidClick(async () => {
 				await this.sendDataRequest(EditModelEventName, model);
