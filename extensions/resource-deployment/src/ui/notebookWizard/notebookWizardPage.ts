@@ -8,28 +8,28 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { NotebookWizardPageInfo } from '../../interfaces';
 import { initializeWizardPage, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
-import { WizardPageBase } from '../wizardPageBase';
+import { ResourceTypePage } from '../resourceTypePage';
 import { WizardPageInfo } from '../wizardPageInfo';
-import { NotebookWizard } from './notebookWizard';
+import { NotebookWizardModel } from './notebookWizard';
 
 const localize = nls.loadMessageBundle();
 
-export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
+export class NotebookWizardPage extends ResourceTypePage {
 
 	protected get pageInfo(): NotebookWizardPageInfo {
-		return this.wizard.wizardInfo.pages[this._pageIndex];
+		return this._model.wizardInfo.pages[this._pageIndex];
 	}
 
 	constructor(
-		wizard: NotebookWizard,
+		protected _model: NotebookWizardModel,
 		protected _pageIndex: number,
 		title?: string,
 		description?: string
 	) {
 		super(
-			wizard.wizardInfo.pages[_pageIndex].title || title || '',
-			wizard.wizardInfo.pages[_pageIndex].description || description || '',
-			wizard
+			_model.wizardInfo.pages[_pageIndex].title || title || '',
+			_model.wizardInfo.pages[_pageIndex].description || description || '',
+			_model.wizard
 		);
 	}
 
@@ -37,21 +37,21 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 	 * If the return value is true then done button should be visible to the user
 	 */
 	private get isDoneButtonVisible(): boolean {
-		return !!this.wizard.wizardInfo.doneAction;
+		return !!this._model.wizardInfo.doneAction;
 	}
 
 	/**
 	 * If the return value is true then generateScript button should be visible to the user
 	 */
 	private get isGenerateScriptButtonVisible(): boolean {
-		return !!this.wizard.wizardInfo.scriptAction;
+		return !!this._model.wizardInfo.scriptAction;
 	}
 
 	public initialize(): void {
 		initializeWizardPage({
 			container: this.wizard.wizardObject,
-			inputComponents: this.wizard.inputComponents,
-			wizardInfo: this.wizard.wizardInfo,
+			inputComponents: this._model.inputComponents,
+			wizardInfo: this._model.wizardInfo,
 			pageInfo: this.pageInfo,
 			page: this.pageObject,
 			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
@@ -62,7 +62,7 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 				inputComponentInfo: InputComponentInfo
 			): void => {
 				if (name) {
-					this.wizard.inputComponents[name] = inputComponentInfo;
+					this._model.inputComponents[name] = inputComponentInfo;
 				}
 			},
 			onNewValidatorCreated: (validator: Validator): void => {
@@ -91,7 +91,7 @@ export class NotebookWizardPage extends WizardPageBase<NotebookWizard> {
 		}
 
 		if (this.pageInfo.isSummaryPage) {
-			await setModelValues(this.wizard.inputComponents, this.wizard.model);
+			await setModelValues(this._model.inputComponents, this.wizard.model);
 		}
 
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {

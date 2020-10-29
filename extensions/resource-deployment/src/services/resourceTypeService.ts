@@ -14,7 +14,6 @@ import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfA
 import { DeployAzureSQLVMWizard } from '../ui/deployAzureSQLVMWizard/deployAzureSQLVMWizard';
 import { DeployAzureSQLDBWizard } from '../ui/deployAzureSQLDBWizard/deployAzureSQLDBWizard';
 import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
-import { NotebookWizard } from '../ui/notebookWizard/notebookWizard';
 import { AzdataService } from './azdataService';
 import { KubeService } from './kubeService';
 import { INotebookService } from './notebookService';
@@ -253,11 +252,8 @@ export class ResourceTypeService implements IResourceTypeService {
 
 	public startDeployment(resourceType: ResourceType, provider: DeploymentProvider): void {
 		const self = this;
-		if (instanceOfWizardDeploymentProvider(provider)) {
+		if (instanceOfWizardDeploymentProvider(provider) || instanceOfNotebookWizardDeploymentProvider(provider)) {
 			const wizard = new ResourceTypeWizard(resourceType, provider, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService);
-			wizard.open();
-		} else if (instanceOfNotebookWizardDeploymentProvider(provider)) {
-			const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService, this.toolsService);
 			wizard.open();
 		} else if (instanceOfDialogDeploymentProvider(provider)) {
 			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, this.toolsService, provider.dialog);

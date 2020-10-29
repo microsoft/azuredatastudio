@@ -5,9 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType } from '../interfaces';
-import { Model } from './model';
-import { WizardPageBase } from './wizardPageBase';
+import { DeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType } from '../interfaces';
 import { DeployClusterWizardModel } from './deployClusterWizard/deployClusterWizardModel';
 import { WizardPageInfo } from './wizardPageInfo';
 import { IKubeService } from '../services/kubeService';
@@ -15,6 +13,9 @@ import { IAzdataService } from '../services/azdataService';
 import { INotebookService } from '../services/notebookService';
 import { IToolsService } from '../services/toolsService';
 import { IPlatformService } from '../services/platformService';
+import { ResourceTypeModel } from './resourceTypeModel';
+import { ResourceTypePage } from './resourceTypePage';
+import { NotebookWizardModel } from './notebookWizard/notebookWizard';
 
 export class ResourceTypeWizard {
 	private customButtons: azdata.window.Button[] = [];
@@ -49,6 +50,9 @@ export class ResourceTypeWizard {
 	public getResourceProviderModel(): ResourceTypeModel | undefined {
 		if (instanceOfWizardDeploymentProvider(this.provider)) {
 			return new DeployClusterWizardModel(this.provider, this);
+		}
+		else if (instanceOfNotebookWizardDeploymentProvider(this.provider)) {
+			return new NotebookWizardModel(this.provider, this);
 		}
 		// other types are undefined for now.
 		return undefined;
@@ -117,24 +121,5 @@ export class ResourceTypeWizard {
 	public registerDisposable(disposable: vscode.Disposable): void {
 		this.toDispose.push(disposable);
 	}
-
-}
-
-
-
-export abstract class ResourceTypePage extends WizardPageBase<ResourceTypeWizard>{
-	abstract initialize(): void;
-}
-
-export abstract class ResourceTypeModel extends Model {
-
-	constructor(public provider: DeploymentProvider, public wizard: ResourceTypeWizard) {
-		super();
-	}
-
-	abstract initialize(): void;
-	abstract async onOk(): Promise<void>;
-	abstract onCancel(): void;
-	async onGenerateScript(): Promise<void> { }
 
 }

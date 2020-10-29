@@ -5,58 +5,64 @@
 import * as loc from '../../localizedConstants';
 import { INotebookService, Notebook } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
-import { Model } from '../model';
 import { InputComponents, setModelValues } from '../modelViewUtils';
-import { WizardBase } from '../wizardBase';
-import { DeploymentType, NotebookWizardInfo } from './../../interfaces';
+import { ResourceTypeModel } from '../resourceTypeModel';
+import { ResourceTypePage } from '../resourceTypePage';
+import { ResourceTypeWizard } from '../resourceTypeWizard';
+import { DeploymentType, NotebookWizardDeploymentProvider, NotebookWizardInfo } from './../../interfaces';
 import { IPlatformService } from './../../services/platformService';
 import { NotebookWizardAutoSummaryPage } from './notebookWizardAutoSummaryPage';
 import { NotebookWizardPage } from './notebookWizardPage';
 
-export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPage, Model> {
+export class NotebookWizardModel extends ResourceTypeModel {
 	private _inputComponents: InputComponents = {};
 
 	public get notebookService(): INotebookService {
-		return this._notebookService;
+		return this.wizard.notebookService;
 	}
 
 	public get platformService(): IPlatformService {
-		return this._platformService;
+		return this.wizard.platformService;
+	}
+
+	public get toolsService(): IToolsService {
+		return this.wizard.toolsService;
 	}
 
 	public get wizardInfo(): NotebookWizardInfo {
-		return this._wizardInfo;
+		return this.notebookProvider.notebookWizard;
 	}
 
 	public get inputComponents(): InputComponents {
 		return this._inputComponents;
 	}
 
-	constructor(private _wizardInfo: NotebookWizardInfo, private _notebookService: INotebookService, private _platformService: IPlatformService, toolsService: IToolsService) {
-		super(_wizardInfo.title, _wizardInfo.name || '', new Model(), toolsService);
-		if (this._wizardInfo.codeCellInsertionPosition === undefined) {
-			this._wizardInfo.codeCellInsertionPosition = 0;
+	constructor(public notebookProvider: NotebookWizardDeploymentProvider, wizard: ResourceTypeWizard) {
+		super(notebookProvider, wizard);
+		if (this.notebookProvider.notebookWizard.codeCellInsertionPosition === undefined) {
+			this.notebookProvider.notebookWizard.codeCellInsertionPosition = 0;
 		}
-		this.wizardObject.doneButton.label = _wizardInfo.doneAction?.label || loc.deployNotebook;
-		this.wizardObject.generateScriptButton.label = _wizardInfo.scriptAction?.label || loc.scriptToNotebook;
+		this.wizard.wizardObject.title = this.notebookProvider.notebookWizard.title;
+		this.wizard.wizardObject.doneButton.label = this.notebookProvider.notebookWizard.doneAction?.label || loc.deployNotebook;
+		this.wizard.wizardObject.generateScriptButton.label = this.notebookProvider.notebookWizard.scriptAction?.label || loc.scriptToNotebook;
 	}
 
 	public get deploymentType(): DeploymentType | undefined {
-		return this._wizardInfo.type;
+		return this.notebookProvider.notebookWizard.type;
 	}
 
-	protected initialize(): void {
-		this.setPages(this.getPages());
+	public initialize(): void {
+		this.wizard.setPages(this.getPages());
 	}
 
-	protected onCancel(): void {
+	public onCancel(): void {
 	}
 
-	protected async onGenerateScript(): Promise<void> {
+	public async onGenerateScript(): Promise<void> {
 		const notebook = await this.prepareNotebookAndEnvironment();
 		await this.openNotebook(notebook);
 	}
-	protected async onOk(): Promise<void> {
+	public async onOk(): Promise<void> {
 		const notebook = await this.prepareNotebookAndEnvironment();
 		const openedNotebook = await this.openNotebook(notebook);
 		openedNotebook.runAllCells();
@@ -68,15 +74,15 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 	}
 
 	private async prepareNotebookAndEnvironment() {
-		await setModelValues(this.inputComponents, this.model);
+		await setModelValues(this.inputComponents, this);
 		const env: NodeJS.ProcessEnv = process.env;
-		this.model.setEnvironmentVariables(env, (varName) => {
+		this.setEnvironmentVariables(env, (varName) => {
 			const isPassword = !!this.inputComponents[varName]?.isPassword;
 			return isPassword;
 		});
 		const notebook: Notebook = await this.notebookService.getNotebook(this.wizardInfo.notebook);
 		// generate python code statements for all variables captured by the wizard
-		const statements = this.model.getCodeCellContentForNotebook(
+		const statements = this.getCodeCellContentForNotebook(
 			this.toolsService.toolsForCurrentProvider,
 			(varName) => {
 				const isPassword = !!this.inputComponents[varName]?.isPassword;
@@ -98,8 +104,8 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 		return notebook;
 	}
 
-	private getPages(): NotebookWizardPage[] {
-		const pages: NotebookWizardPage[] = [];
+	private getPages(): ResourceTypePage[] {
+		const pages: ResourceTypePage[] = [];
 		for (let pageIndex: number = 0; pageIndex < this.wizardInfo.pages.length; pageIndex++) {
 			if (this.wizardInfo.pages[pageIndex].isSummaryPage && this.wizardInfo.isSummaryPageAutoGenerated) {
 				// If we are auto-generating the summary page
