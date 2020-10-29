@@ -381,7 +381,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		newProfile.saveProfile = true;
 		newProfile.generateNewId();
 		// If connecting from a query editor set "save connection" to false
-		if (this._params && this._params.connectionType === ConnectionType.editor) {
+		if (this._params?.connectionType === ConnectionType.editor) {
 			newProfile.saveProfile = false;
 		}
 		return newProfile;
