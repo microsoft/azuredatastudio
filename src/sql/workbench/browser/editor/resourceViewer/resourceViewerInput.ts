@@ -11,13 +11,9 @@ import { URI } from 'vs/base/common/uri';
 import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { getDataGridFormatter } from 'sql/workbench/services/dataGridProvider/browser/dataGridProviderUtils';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IAction } from 'vs/base/common/actions';
-import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+
+export type ContextMenuAnchor = HTMLElement | { x: number; y: number; width?: number; height?: number; };
 
 export interface ColumnDefinition extends Slick.Column<azdata.DataGridItem> {
 	name: string;
@@ -31,42 +27,22 @@ export class ResourceViewerInput extends EditorInput {
 	public static ID: string = 'workbench.editorInput.resourceViewerInput';
 	private _data: azdata.DataGridItem[] = [];
 	private _columns: ColumnDefinition[] = [];
-	private _actionsColumn: ButtonColumn<azdata.DataGridItem>;
 	private _onColumnsChanged = new Emitter<Slick.Column<azdata.DataGridItem>[]>();
+	public actionsColumn: ButtonColumn<azdata.DataGridItem>;
 	public onColumnsChanged: Event<Slick.Column<azdata.DataGridItem>[]> = this._onColumnsChanged.event;
 
 	private _onDataChanged = new Emitter<void>();
 	public onDataChanged: Event<void> = this._onDataChanged.event;
 
 	constructor(private _providerId: string,
-		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService,
-		@IContextMenuService contextMenuService: IContextMenuService,
-		@IInstantiationService instantiationService: IInstantiationService,
-		@IMenuService menuService: IMenuService,
-		@IContextKeyService contextKeyService: IContextKeyService) {
+		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService) {
 		super();
-		this._actionsColumn = new ButtonColumn<azdata.DataGridItem>({
+		this.actionsColumn = new ButtonColumn<azdata.DataGridItem>({
 			id: 'actions',
 			iconCssClass: 'toggle-more',
 			title: nls.localize('resourceViewer.showActions', "Show Actions"),
 			sortable: false
 		});
-		this._register(this._actionsColumn.onClick(args => {
-			// Create the menu based off of the contributed menu actions. Note that this currently doesn't
-			// have any item-level support for action filtering, that can be added to the scoped context as
-			// needed in the future
-			const scopedContext = contextKeyService.createScoped();
-			const menu = menuService.createMenu(MenuId.DataGridItemContext, scopedContext);
-			const options = { arg: args.item };
-			const groups = menu.getActions(options);
-			const actions: IAction[] = [];
-			fillInActions(groups, actions, false);
-			contextMenuService.showContextMenu({
-				getAnchor: () => args.position,
-				getActions: () => actions
-			}
-			);
-		}));
 		this.refresh().catch(err => onUnexpectedError(err));
 	}
 
@@ -107,7 +83,7 @@ export class ResourceViewerInput extends EditorInput {
 	}
 
 	public get plugins(): Slick.Plugin<azdata.DataGridItem>[] {
-		return [this._actionsColumn];
+		return [this.actionsColumn];
 	}
 
 	private async fetchColumns(): Promise<void> {
@@ -128,7 +104,7 @@ export class ResourceViewerInput extends EditorInput {
 		});
 
 		// Now add in the actions column definition at the end
-		const actionsColumnDef: ColumnDefinition = Object.assign({}, this._actionsColumn.definition, { type: 'actions', filterable: false }) as ColumnDefinition;
+		const actionsColumnDef: ColumnDefinition = Object.assign({}, this.actionsColumn.definition, { type: 'actions', filterable: false }) as ColumnDefinition;
 		columnDefinitions.push(actionsColumnDef);
 		this.columns = columnDefinitions;
 	}

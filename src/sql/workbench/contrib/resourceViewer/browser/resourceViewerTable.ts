@@ -20,22 +20,22 @@ import { isString } from 'vs/base/common/types';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { localize } from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { ColumnDefinition } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { ColumnDefinition, ContextMenuAnchor } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
+import { Emitter } from 'vs/base/common/event';
 
 export class ResourceViewerTable extends Disposable {
 
 	private _resourceViewerTable!: Table<azdata.DataGridItem>;
 	private _dataView: TableDataView<azdata.DataGridItem>;
 
+	private _onContextMenu = new Emitter<{ anchor: ContextMenuAnchor, item: azdata.DataGridItem }>();
+	public onContextMenu = this._onContextMenu.event;
+
 	constructor(parent: HTMLElement,
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
 		@IOpenerService private _openerService: IOpenerService,
 		@ICommandService private _commandService: ICommandService,
-		@INotificationService private _notificationService: INotificationService,
-		@IInstantiationService instantiationService: IInstantiationService,
-		@IContextMenuService contextMenuService: IContextMenuService) {
+		@INotificationService private _notificationService: INotificationService) {
 		super();
 		let filterFn = (data: Array<azdata.DataGridItem>): Array<azdata.DataGridItem> => {
 			return data.filter(item => this.filter(item));
@@ -55,7 +55,12 @@ export class ResourceViewerTable extends Disposable {
 		this._register(attachButtonStyler(filterPlugin, this._themeService));
 		this._register(attachTableStyler(this._resourceViewerTable, this._themeService));
 		this._register(this._resourceViewerTable.onClick(this.onTableClick, this));
-
+		this._register(this._resourceViewerTable.onContextMenu((e: ITableMouseEvent) => {
+			this._onContextMenu.fire({
+				anchor: e.anchor,
+				item: this._dataView.getItem(e.cell.row)
+			});
+		}));
 		filterPlugin.onFilterApplied.subscribe(() => {
 			this._dataView.filter();
 			this._resourceViewerTable.grid.invalidate();

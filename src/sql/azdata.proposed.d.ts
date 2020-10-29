@@ -236,11 +236,6 @@ declare module 'azdata' {
 		id: string;
 
 		/**
-		 * The optional set of additional actions available
-		 */
-		actions?: ExecuteCommandInfo[];
-
-		/**
 		 * The other properties that will be displayed in the grid columns
 		 */
 		fieldValues: { [key: string]: string | DataGridHyperlinkInfo }
