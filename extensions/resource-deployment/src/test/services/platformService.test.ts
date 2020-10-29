@@ -284,10 +284,10 @@ describe('PlatformService', () => {
 	});
 	describe('runCommand', () => {
 		[
-			//	[commandSucceeds, ignoreError]
-				[true, undefined],
-				[false, true],
-				[false, false],
+			//[commandSucceeds, ignoreError]
+			[true, undefined],
+			[false, true],
+			[false, false],
 		].forEach(([commandSucceeds, ignoreError]) => {
 			if (ignoreError && commandSucceeds) {
 				return; //exit out of the loop as we do not handle ignoreError when command is successful
