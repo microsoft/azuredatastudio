@@ -25,7 +25,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
@@ -488,5 +488,17 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 	public get headerFilter(): boolean {
 		return this.getPropertyOrDefault<boolean>((props) => props.headerFilter, false);
+	}
+
+	public doAction(action: string, ...args: any[]): void {
+		switch (action) {
+			case ModelViewAction.AppendData:
+				this.appendData(args[0]);
+		}
+	}
+	private appendData(data: any[][]) {
+		this._tableData.push(TableComponent.transformData(data, this.columns));
+		this.data = this._tableData.getItems().map(dataObject => Object.values(dataObject));
+		this.layoutTable();
 	}
 }

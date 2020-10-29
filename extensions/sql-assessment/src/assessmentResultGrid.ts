@@ -121,10 +121,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 		if (this.dataItems) {
 			this.dataItems.push(...asmtResult.items);
 		}
-
-		await this.table.updateProperties({
-			'data': this.dataItems.map(item => this.convertToDataView(item))
-		});
+		this.table.appendData(asmtResult.items.map(item => this.convertToDataView(item)));
 	}
 
 	private async showDetails(rowNumber: number) {

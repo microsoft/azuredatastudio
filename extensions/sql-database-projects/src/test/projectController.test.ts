@@ -243,14 +243,14 @@ describe('ProjectsController', function (): void {
 				sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
 
 				// add dacpac reference
-				proj.addDatabaseReference({
+				await proj.addDatabaseReference({
 					dacpacFileLocation: vscode.Uri.file('test2.dacpac'),
 					databaseName: 'test2DbName',
 					databaseVariable: 'test2Db',
 					suppressMissingDependenciesErrors: false
 				});
 				// add project reference
-				proj.addProjectReference({
+				await proj.addProjectReference({
 					projectName: 'project1',
 					projectGuid: '',
 					projectRelativePath: vscode.Uri.file(path.join('..', 'project1', 'project1.sqlproj')),

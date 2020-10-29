@@ -21,11 +21,6 @@ export const properties: Array<ProviderProperties> = [
 						field: 'isCloud',
 						operator: '!=',
 						value: true
-					},
-					{
-						field: 'engineEditionId',
-						operator: '!=',
-						value: '11'
 					}
 				],
 				databaseProperties: [
@@ -82,6 +77,11 @@ export const properties: Array<ProviderProperties> = [
 						field: 'isCloud',
 						operator: '==',
 						value: true
+					},
+					{
+						field: 'engineEditionId',
+						operator: '!=',
+						value: '11'
 					}
 				],
 				databaseProperties: [
@@ -126,10 +126,6 @@ export const properties: Array<ProviderProperties> = [
 					{
 						displayName: nls.localize('compatibilityLevel', "Compatibility Level"),
 						value: 'compatibilityLevel'
-					},
-					{
-						displayName: nls.localize('owner', "Owner"),
-						value: 'owner'
 					}
 				],
 				serverProperties: [
