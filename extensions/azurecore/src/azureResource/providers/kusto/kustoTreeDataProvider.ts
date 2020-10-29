@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ExtensionNodeType, TreeItem, Account } from 'azdata';
-import { TreeItemCollapsibleState, ExtensionContext, workspace } from 'vscode';
+import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { AzureResourceItemType } from '../../constants';
-import { generateGuid } from '../../utils';
+import { generateGuid, isConnectionDialogBrowseViewEnabled } from '../../utils';
 import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { azureResource } from 'azureResource';
@@ -29,12 +29,12 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureRes
 	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: Account): TreeItem {
 		return {
 			id: `Kusto_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
-			label: `${databaseServer.name} (${KustoTreeDataProvider.containerLabel}, ${databaseServer.subscriptionName})`,
+			label: isConnectionDialogBrowseViewEnabled() ? `${databaseServer.name} (${KustoTreeDataProvider.containerLabel}, ${databaseServer.subscriptionName})` : databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/azureDE_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/azureDE.svg')
 			},
-			collapsibleState: workspace.getConfiguration('connection').get<boolean>('dialog.browse') ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
+			collapsibleState: isConnectionDialogBrowseViewEnabled() ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.azureDataExplorer,
 			payload: {
 				id: generateGuid(),
