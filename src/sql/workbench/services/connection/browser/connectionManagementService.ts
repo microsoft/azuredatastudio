@@ -312,11 +312,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			// Fill in the Azure account token if needed and open the connection dialog if it fails
 			let tokenFillSuccess = await this.fillInOrClearAzureToken(newConnection);
 
-			// If there's a token then there's a valid credential
-			if (tokenFillSuccess) {
-				hasSavedCred = true;
-			}
-
 			// If the password is required and still not loaded show the dialog
 			if ((!hasSavedCred && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
 				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options);
