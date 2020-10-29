@@ -4,22 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType, LabelPosition, BdcDeploymentType, FontWeight } from '../../../interfaces';
 import { createSection, createGroupContainer, createFlexContainer, createLabel } from '../../modelViewUtils';
-import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
-import { AuthenticationMode } from '../deployClusterWizardModel';
+import { AuthenticationMode, DeployClusterWizardModel } from '../deployClusterWizardModel';
 import * as localizedConstants from '../../../localizedConstants';
+import { ResourceTypePage } from '../../resourceTypeWizard';
 const localize = nls.loadMessageBundle();
 
-export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
+export class SummaryPage extends ResourceTypePage {
 	private formItems: azdata.FormComponent[] = [];
 	private form!: azdata.FormBuilder;
 	private view!: azdata.ModelView;
 
-	constructor(wizard: DeployClusterWizard) {
-		super(localize('deployCluster.summaryPageTitle', "Summary"), '', wizard);
+	constructor(private _model: DeployClusterWizardModel) {
+		super(localize('deployCluster.summaryPageTitle', "Summary"), '', _model.wizard);
 	}
 
 	public initialize(): void {
@@ -31,7 +30,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 	}
 
 	public async onEnter(): Promise<void> {
-		this.wizard.showCustomButtons();
+		this._model.showCustomButtons();
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
 		});
@@ -92,7 +91,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						}, {
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.AuthenticationMode', "Authentication mode"),
-							defaultValue: this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory ?
+							defaultValue: this._model.authenticationMode === AuthenticationMode.ActiveDirectory ?
 								localize('deployCluster.AuthenticationMode.ActiveDirectory', "Active Directory") :
 								localize('deployCluster.AuthenticationMode.Basic', "Basic"),
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
@@ -102,13 +101,13 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			]
 		};
 
-		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
+		if (this._model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			clusterSectionInfo.rows!.push({
 				items: [
 					{
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.OuDistinguishedName', "Organizational unit"),
-						defaultValue: this.wizard.model.getStringValue(VariableNames.OrganizationalUnitDistinguishedName_VariableName),
+						defaultValue: this._model.getStringValue(VariableNames.OrganizationalUnitDistinguishedName_VariableName),
 						labelCSSStyles: { fontWeight: FontWeight.Bold }
 					},
 					{
@@ -291,7 +290,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				title: '',
 				component: await createSection({
 					container: this.wizard.wizardObject,
-					inputComponents: this.wizard.inputComponents,
+					inputComponents: this._model.inputComponents,
 					sectionInfo: sectionInfo,
 					view: this.view,
 					onNewDisposableCreated: () => { },
@@ -302,7 +301,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			};
 		};
 
-		if (this.wizard.deploymentType === BdcDeploymentType.ExistingAKS || this.wizard.deploymentType === BdcDeploymentType.ExistingKubeAdm) {
+		if (this._model.deploymentType === BdcDeploymentType.ExistingAKS || this._model.deploymentType === BdcDeploymentType.ExistingKubeAdm) {
 			const deploymentTargetSection = await createSectionFunc(deploymentTargetSectionInfo);
 			this.formItems.push(deploymentTargetSection);
 		}
@@ -327,7 +326,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 	}
 
 	public async onLeave(): Promise<void> {
-		this.wizard.hideCustomButtons();
+		this._model.hideCustomButtons();
 		this.wizard.wizardObject.message = { text: '' };
 	}
 
@@ -422,7 +421,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 	private createEndpointRow(name: string, dnsVariableName: string, portVariableName: string): azdata.FlexContainer {
 		const items = [];
 		items.push(createLabel(this.view, { text: name, width: '150px', cssStyles: { fontWeight: FontWeight.Bold } }));
-		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
+		if (this._model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			items.push(createLabel(this.view, {
 				text: this.wizard.model.getStringValue(dnsVariableName)!, width: '200px'
 			}));
