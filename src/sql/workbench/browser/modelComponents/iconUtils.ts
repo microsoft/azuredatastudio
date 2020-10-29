@@ -52,3 +52,8 @@ function getIconUri(iconPath: string | URI): URI {
 		return URI.revive(iconPath);
 	}
 }
+
+export function getIconKey(iconPath: IUserFriendlyIcon) {
+	const iconUri: URI = getLightIconUri(iconPath);
+	return iconUri.toString(true);
+}

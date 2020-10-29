@@ -110,6 +110,15 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
 
+
+/**
+ * Format all text to replace all new lines with spaces and performs HTML entity encoding
+ */
+export function iconCssFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
+	let cellClasses = `grid-cell-value-container icon codicon slick-icon-cell-content ${value.text}`;
+	return `<span class="${cellClasses}">&nbsp;</span>`;
+}
+
 export function imageFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 	return `<img src="${value.text}" />`;
 }

@@ -810,6 +810,7 @@ declare module 'azdata' {
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	export interface TableComponent {
 
 		/**
@@ -827,8 +828,26 @@ declare module 'azdata' {
 =======
 		imageCollection?: Array<string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri }>,
 		iconProviderColumn?: string,
+=======
+	export interface IconColumnCellValue {
+		icon: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		ariaLabel: string;
+	}
+>>>>>>> e8547e786a... icon column
 
+	export enum ColumnType {
+		icon = 3
+	}
 
+<<<<<<< HEAD
 >>>>>>> 2cec81ed5f... image collection and image index
+=======
+	export interface TableColumn {
+
+		/**
+		* The text to display on the column heading. 'value' property will be used, if not specified
+		**/
+		name?: string;
+>>>>>>> e8547e786a... icon column
 	}
 }

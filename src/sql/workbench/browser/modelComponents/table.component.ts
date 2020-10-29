@@ -23,14 +23,13 @@ import { CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/bro
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
-import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { slickGridDataItemColumnValueWithNoData, textFormatter, iconCssFormatter } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
-import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { IUserFriendlyIcon, createIconCssClass, getIconKey } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
-import { TextWithIconCollectionColumn } from 'sql/base/browser/ui/table/plugins/textWithIconCollectionColumn';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -58,6 +57,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	private _onButtonClicked = new Emitter<ButtonClickEventArgs<{}>>();
 	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
 	public readonly onButtonClicked: vsEvent<ButtonClickEventArgs<{}>> = this._onButtonClicked.event;
+	private _iconCssMap: { [iconKey: string]: string };
 
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -72,27 +72,11 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 	}
 
-	private findIconProviders(columns: azdata.TableColumn[]): Set<string> | undefined {
-		if (!columns) {
-			return undefined;
-		}
-		return new Set<string>(
-			columns.map(col => {
-				const textColOptions = col.options as azdata.TextColumnOption;
-				if (textColOptions?.iconProviderColumn) {
-					return textColOptions.iconProviderColumn;
-				}
-				return '';
-			}));
-	}
-
 	transformColumns(columns: string[] | azdata.TableColumn[]): Slick.Column<any>[] {
 		let tableColumns: any[] = <any[]>columns;
 		if (tableColumns) {
 			let mycolumns: Slick.Column<any>[] = [];
 			let index: number = 0;
-			// get columns that will be used as icon providers
-			const iconProviderColumns = this.findIconProviders(columns as azdata.TableColumn[]);
 
 			(<any[]>columns).map(col => {
 				if (col.type && col.type === 1) {
@@ -100,11 +84,11 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				}
 				else if (col.type && col.type === 2) {
 					this.createButtonPlugin(col);
+				} else if (col.type && col.type === 3) {
+					mycolumns.push(TableComponent.createIconColumn(col));
 				}
 				else if (col.value) {
-					if (!iconProviderColumns?.has(col.value)) {
-						mycolumns.push(TableComponent.createTextColumn(col as azdata.TableColumn));
-					}
+					mycolumns.push(TableComponent.createTextColumn(col as azdata.TableColumn));
 				} else {
 					mycolumns.push(<Slick.Column<any>>{
 						name: <string>col,
@@ -127,23 +111,23 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 	}
 
-	private static createTextColumn(col: azdata.TableColumn): Slick.Column<any> {
-		if ((col.options as azdata.TextColumnOption)?.imageCollection?.length) {
-			const textColOptions = <azdata.TextColumnOption>col.options;
-			const textWithIconColumn = new TextWithIconCollectionColumn({
-				name: col.value,
-				id: col.value,
-				field: col.value,
-				width: col.width,
-				headerCssClass: col.headerCssClass,
-				formatter: textFormatter,
-				iconCssCollection: textColOptions.imageCollection.map(icon => createIconCssClass(icon)),
-				iconCssIndexField: textColOptions.iconProviderColumn
-			});
-			return textWithIconColumn.definition;
-		}
+	private static createIconColumn(col: azdata.TableColumn): Slick.Column<any> {
 		return <Slick.Column<any>>{
-			name: col.value,
+			name: col.name ?? col.value,
+			id: col.value,
+			field: col.value,
+			width: col.width,
+			cssClass: col.cssClass,
+			headerCssClass: col.headerCssClass,
+			toolTip: col.toolTip,
+			formatter: iconCssFormatter,
+			filterable: false
+		};
+	}
+
+	private static createTextColumn(col: azdata.TableColumn): Slick.Column<any> {
+		return <Slick.Column<any>>{
+			name: col.name ?? col.value,
 			id: col.value,
 			field: col.value,
 			width: col.width,
@@ -154,14 +138,28 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		};
 	}
 
-	public static transformData(rows: string[][], columns: any[]): { [key: string]: string }[] {
+
+
+	public static transformData(rows: (string | azdata.IconColumnCellValue)[][], columns: any[], iconCssMap?: { [iconKey: string]: string }): { [key: string]: string }[] {
 		if (rows && columns) {
+			let iconCssCache = iconCssMap ?? [];
 			return rows.map(row => {
 				let object: { [key: string]: string } = {};
 				if (row.forEach) {
 					row.forEach((val, index) => {
 						let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
-						object[columnName] = val;
+						if (val['icon']) {
+							const icon: IUserFriendlyIcon = (<azdata.IconColumnCellValue>val).icon;
+							const iconKey: string = getIconKey(icon);
+							const iconCssClass = createIconCssClass(icon, iconCssCache[iconKey]);
+							if (iconCssCache[iconKey] !== iconCssClass) {
+								iconCssCache[iconKey] = iconCssClass;
+							}
+
+							object[columnName] = iconCssClass;
+						} else {
+							object[columnName] = <string>val;
+						}
 					});
 				}
 				return object;
@@ -301,7 +299,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._tableData.clear();
-		this._tableData.push(TableComponent.transformData(this.data, this.columns));
+		this._tableData.push(TableComponent.transformData(this.data, this.columns, this._iconCssMap));
 		this._tableColumns = this.transformColumns(this.columns);
 		this._table.columns = this._tableColumns;
 		this._table.setData(this._tableData);
