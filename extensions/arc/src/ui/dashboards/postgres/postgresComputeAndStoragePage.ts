@@ -124,7 +124,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component());
 
 		this.workerContainer = this.modelView.modelBuilder.divContainer().component();
-		this.workerContainer.addItems(this.createUserInputSection(), { CSSStyles: { 'min-height': '30px' } });
+		this.handleServiceUpdated();
 		content.addItem(this.workerContainer, { CSSStyles: { 'min-height': '30px' } });
 
 		this.initialized = true;
@@ -284,24 +284,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			})
 		);
 
-	}
-
-	private createUserInputSection(): azdata.Component[] {
-		if (this._postgresModel.configLastUpdated) {
-			this.editWorkerNodeCount();
-			this.editCores();
-			this.editMemory();
-		}
-
-		return [
-			this.createWorkerNodesSectionContainer(),
-			this.createCoresMemorySection(),
-			this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox!),
-			this.createConfigurationSectionContainer(loc.coresLimit, this.coresLimitBox!),
-			this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox!),
-			this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!)
-
-		];
 	}
 
 	private createWorkerNodesSectionContainer(): azdata.FlexContainer {
@@ -483,8 +465,25 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private handleServiceUpdated() {
-		this.editWorkerNodeCount();
-		this.editCores();
-		this.editMemory();
+		if (this._postgresModel.configLastUpdated) {
+			this.editWorkerNodeCount();
+			this.editCores();
+			this.editMemory();
+
+			// Workaround https://github.com/microsoft/azuredatastudio/issues/13134
+			// by only adding these once the model has data. After the bug is fixed,
+			// use loading indicators instead of keeping the page blank.
+			if (this.workerContainer?.items.length === 0) {
+				this.workerContainer?.addItems([
+					this.createWorkerNodesSectionContainer(),
+					this.createCoresMemorySection(),
+					this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox!),
+					this.createConfigurationSectionContainer(loc.coresLimit, this.coresLimitBox!),
+					this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox!),
+					this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!)
+
+				]);
+			}
+		}
 	}
 }
