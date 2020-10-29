@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as constants from '../constants';
+import * as localizedConstants from '../../../localizedConstants';
 import { SectionInfo, LabelPosition, FontWeight, FieldType } from '../../../interfaces';
 import { createSection } from '../../modelViewUtils';
 import { BasePage } from '../../deployAzureSQLVMWizard/pages/basePage';
@@ -138,6 +139,17 @@ export class AzureSQLDBSummaryPage extends BasePage {
 				},
 				{
 					type: FieldType.ReadonlyText,
+					label: constants.FirewallToggleLabel,
+					defaultValue: model.newFirewallRule ? localizedConstants.yes : localizedConstants.no,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
+				}
+			]
+		};
+
+		if (model.newFirewallRule) {
+			databaseSettingSection.fields?.push(
+				{
+					type: FieldType.ReadonlyText,
 					label: constants.FirewallRuleNameLabel,
 					defaultValue: model.firewallRuleName,
 					labelCSSStyles: { fontWeight: FontWeight.Bold }
@@ -153,9 +165,8 @@ export class AzureSQLDBSummaryPage extends BasePage {
 					label: constants.EndIpAddressShortLabel,
 					defaultValue: model.endIpAddress,
 					labelCSSStyles: { fontWeight: FontWeight.Bold }
-				}
-			]
-		};
+				});
+		}
 
 
 		const createSectionFunc = async (sectionInfo: SectionInfo): Promise<azdata.FormComponent> => {

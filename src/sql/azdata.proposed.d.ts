@@ -139,7 +139,11 @@ declare module 'azdata' {
 		DataGridProvider = 'DataGridProvider'
 	}
 
+	/**
+	 * The type of the DataGrid column
+	 */
 	export type DataGridColumnType = 'hyperlink' | 'text' | 'image';
+
 	/**
 	 * A column in a data grid
 	 */
@@ -199,9 +203,13 @@ declare module 'azdata' {
 		 */
 		id: string;
 		/**
+		 * The text to display for the action
+		 */
+		displayText?: string;
+		/**
 		 * The optional args to pass to the command
 		 */
-		args?: string[];
+		args?: any[];
 	}
 
 	/**
@@ -226,14 +234,11 @@ declare module 'azdata' {
 		 * A unique identifier for this item
 		 */
 		id: string;
+
 		/**
-		 * The optional icon to display for this item
+		 * The other properties that will be displayed in the grid columns
 		 */
-		iconPath?: string;
-		/**
-		 * The other properties that will be displayed in the grid
-		 */
-		[key: string]: string | DataGridHyperlinkInfo;
+		fieldValues: { [key: string]: string | DataGridHyperlinkInfo }
 	}
 
 	/**

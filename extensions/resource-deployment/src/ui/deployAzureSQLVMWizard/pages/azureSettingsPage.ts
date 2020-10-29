@@ -8,8 +8,7 @@ import * as constants from '../constants';
 import { apiService } from '../../../services/apiService';
 import { azureResource } from 'azureResource';
 import * as vscode from 'vscode';
-import { BasePage } from './basePage';
-import { DeployAzureSQLVMWizardModel } from '../deployAzureSQLVMWizardModel';
+import * as localizedConstants from '../../../localizedConstants';
 
 export class AzureSettingsPage extends BasePage {
 	// <- means depends on
@@ -105,11 +104,11 @@ export class AzureSettingsPage extends BasePage {
 		});
 
 		this.signInButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: 'Sign In',
+			label: localizedConstants.signIn,
 			width: '100px'
 		}).component();
 		this.refreshButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: 'Refresh',
+			label: localizedConstants.refresh,
 			width: '100px'
 		}).component();
 
