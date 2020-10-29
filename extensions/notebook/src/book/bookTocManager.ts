@@ -15,6 +15,7 @@ export interface IBookTocManager {
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>
 }
 const allowedFileExtensions: string[] = ['.md', '.ipynb'];
+const initMarkdown: string[] = ['index.md', 'introduction.md', 'intro.md', 'readme.md'];
 
 export enum tocSectionOperation {
 	Remove,
@@ -22,46 +23,48 @@ export enum tocSectionOperation {
 }
 
 export class BookTocManager implements IBookTocManager {
+	public tableofContents: IJupyterBookSectionV2[];
 
 	constructor() {
 	}
 
-	async getAllFiles(toc: IJupyterBookSectionV2[], directory: string, filesInDir: string[]): Promise<IJupyterBookSectionV2[]> {
+	async getAllFiles(toc: IJupyterBookSectionV2[], directory: string, filesInDir: string[], rootDirectory: string): Promise<IJupyterBookSectionV2[]> {
 		await Promise.all(filesInDir.map(async file => {
 			let isDirectory = (await fs.promises.stat(path.join(directory, file))).isDirectory();
 			if (isDirectory) {
+				let files = await fs.promises.readdir(path.join(directory, file));
+				let initFile: string = '';
+				files.some((f, index) => {
+					if (initMarkdown.includes(f)) {
+						initFile = path.parse(f).name;
+						files.splice(index, 1);
+					}
+				});
 				let jupyterSection: IJupyterBookSectionV2 = {
 					title: file,
-					file: file,
+					file: path.join(file, initFile),
 					expand_sections: true,
 					numbered: false,
 					sections: []
 				};
-				let files = await fs.promises.readdir(path.join(directory, file));
 				toc.push(jupyterSection);
-				await this.getAllFiles(toc, path.join(directory, file), files);
+				await this.getAllFiles(toc, path.join(directory, file), files, rootDirectory);
 			} else if (allowedFileExtensions.includes(path.extname(file))) {
+				const filePath = directory === rootDirectory ? path.parse(file).name : path.join(path.basename(directory), path.parse(file).name);
 				const addFile: IJupyterBookSectionV2 = {
 					title: path.parse(file).name,
-					file: path.join(path.basename(directory), path.parse(file).name)
+					file: filePath
 				};
-				if (toc.length > 0) {
-					let indexToc = toc.findIndex(parent => parent.title === path.dirname(addFile.file));
-					if (indexToc !== -1) {
-						if (path.parse(addFile.file).ext === '.md') {
-							toc[indexToc].file = addFile.file;
-						} else {
-							toc[indexToc].sections.push(addFile);
-						}
+				let indexToc = toc.findIndex(parent => parent.title === path.basename(directory));
+				if (indexToc !== -1) {
+					if (toc[indexToc].file === '') {
+						//if there are no markdown files then add the first notebook
+						toc[indexToc].file = addFile.file;
+					} else {
+						toc[indexToc].sections.push(addFile);
 					}
-				} else if (path.parse(file).ext === '.md') {
-					//TODO : Add other types such as Intro, Introduction, Index etc etc
-					// what about two files named as Intro and then other as readme ?
-					let index: IJupyterBookSectionV2 = {
-						title: path.parse(file).name,
-						file: path.parse(file).name
-					};
-					toc.push(index);
+				} else {
+					toc.push(addFile);
 				}
 			}
 		}));
@@ -69,7 +72,7 @@ export class BookTocManager implements IBookTocManager {
 	}
 
 	hasSections(node: JupyterBookSection): boolean {
-		return (typeof node === 'object') && node.sections.length > 0 && (typeof node.sections !== 'undefined');
+		return node.sections.length > 0 && (typeof node.sections !== 'undefined');
 	}
 
 	updateToc(tableOfContents: JupyterBookSection[], newToc: JupyterBookSection, findSection: JupyterBookSection[]): boolean {
@@ -88,15 +91,16 @@ export class BookTocManager implements IBookTocManager {
 	}
 
 	public async createBook(bookContentPath: string, contentFolder: string): Promise<void> {
-		let filesinDir = await fs.readdir(contentFolder);
-		let toc: IJupyterBookSectionV2[] = await this.getAllFiles([], contentFolder, filesinDir);
-		//await fs.promises.mkdir(bookContentPath);
+		await fs.promises.mkdir(bookContentPath);
+		await fs.copy(contentFolder, bookContentPath);
+		let filesinDir = await fs.readdir(bookContentPath);
+		this.tableofContents = await this.getAllFiles([], bookContentPath, filesinDir, bookContentPath);
 		await fs.outputFile(path.join(bookContentPath, '_config.yml'), yaml.safeDump({ title: path.basename(bookContentPath) }));
-		await fs.outputFile(path.join(bookContentPath, '_toc.yml'), yaml.safeDump(toc, { lineWidth: Infinity }));
-		vscode.commands.executeCommand('notebook.command.openBook', bookContentPath, false);
+		await fs.outputFile(path.join(bookContentPath, '_toc.yml'), yaml.safeDump(this.tableofContents, { lineWidth: Infinity }));
+		//await vscode.commands.executeCommand('notebook.command.openBook', bookContentPath, false);
 	}
 
-	public async updateBook(element: BookTreeItem, updatedBook?: BookTreeItem): Promise<void> {
+	public async updateBook(element: BookTreeItem, updatedBook: BookTreeItem): Promise<void> {
 		if (updatedBook) {
 			//  Adding a new section in book, they must be the same version
 			let newTOC: JupyterBookSection = {};

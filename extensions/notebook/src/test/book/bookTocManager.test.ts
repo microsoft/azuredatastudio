@@ -5,63 +5,109 @@
 
 import * as should from 'should';
 import * as path from 'path';
-import * as TypeMoq from 'typemoq';
 import { BookTocManager } from '../../book/bookTocManager';
 import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
-import * as yaml from 'js-yaml';
-import { BookModel } from '../../book/bookModel';
+//import * as yaml from 'js-yaml';
 import * as sinon from 'sinon';
-import { IJupyterBookSectionV2, JupyterBookSection } from '../../contracts/content';
+import { IJupyterBookSectionV2 } from '../../contracts/content';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as uuid from 'uuid';
 
-describe('BookTocManagerTests', function () {
+export function equalTOC(actualToc: IJupyterBookSectionV2[], expectedToc: IJupyterBookSectionV2[]): boolean {
+	for(let [i,section] of actualToc.entries()){
+		if(section.title !== expectedToc[i].title || section.file !== expectedToc[i].file){
+			return false;
+		}
+	}
+	return true;
+}
 
+describe('BookTocManagerTests', function () {
 	describe('CreatingBooks', () => {
 		let notebooks: string[];
-		let books: BookModel[];
-		let tableOfContents: JupyterBookSection;
-		let rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
-		let bookFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
+		let bookFolderPath: string;
+		let rootFolderPath: string;
+		let root2FolderPath: string;
+		const subfolder = 'Subfolder'
+
 		afterEach(function (): void {
 			sinon.restore();
 		});
 
 		beforeEach(async () => {
-			notebooks = ['notebook1.ipynb', 'notebook2.ipynb', 'notebook3.ipynb'];
-			let subsections: IJupyterBookSectionV2[] = [];
-			notebooks.forEach(nb => {
-				subsections.push({
-					title: path.parse(nb).name,
-					file: path.parse(nb).name
-				});
-			});
+			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
+			bookFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
+			root2FolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
+			notebooks = ['notebook1.ipynb', 'notebook2.ipynb', 'notebook3.ipynb', 'index.md', 'readme.md'];
 
-			tableOfContents = {
-				title: 'index',
-				file: 'index',
-				expand_sections: true,
-				sections: subsections
-			}
+			await fs.mkdir(rootFolderPath);
+			await fs.writeFile(path.join(rootFolderPath, notebooks[0]), '');
+			await fs.writeFile(path.join(rootFolderPath, notebooks[1]), '');
+			await fs.writeFile(path.join(rootFolderPath, notebooks[2]), '');
+			await fs.writeFile(path.join(rootFolderPath, notebooks[3]), '');
 
-			// Mock Book Data
+			await fs.mkdir(root2FolderPath);
+			await fs.mkdir(path.join(root2FolderPath, subfolder));
+			await fs.writeFile(path.join(root2FolderPath, notebooks[0]), '');
+			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[1]), '');
+			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[2]), '');
+			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[4]), '');
+			await fs.writeFile(path.join(root2FolderPath, notebooks[3]), '');
+		});
+
+		it('should create a table of contents with no sections if there are only notebooks in folder', async function (): Promise<void> {
+			let bookTocManager: BookTocManager = new BookTocManager();
+			await bookTocManager.createBook(bookFolderPath, rootFolderPath);
+			let listFiles = await fs.promises.readdir(bookFolderPath);
+			should(bookTocManager.tableofContents.length).be.equal(4);
+			should(listFiles.length).be.equal(6);
+		});
+
+		it('should create a table of contents with sections if folder contains submodules', async () => {
+			let bookTocManager: BookTocManager = new BookTocManager();
+			let expectedSection: IJupyterBookSectionV2[] = [{
+				title: 'notebook2',
+				file: path.join(subfolder,'notebook2')
+			},
+			{
+				title: 'notebook3',
+				file: path.join(subfolder,'notebook3')
+			}];
+			await bookTocManager.createBook(bookFolderPath, root2FolderPath);
+			should(equalTOC(bookTocManager.tableofContents[2].sections, expectedSection)).be.true;
+			should(bookTocManager.tableofContents[2].file).be.equal(path.join(subfolder, 'readme'));
+		});
+
+		it('should ignore invalid file extensions', async () => {
+			await fs.writeFile(path.join(rootFolderPath, 'test.txt'), '');
+			let bookTocManager: BookTocManager = new BookTocManager();
+			await bookTocManager.createBook(bookFolderPath, rootFolderPath);
+			let listFiles = await fs.promises.readdir(bookFolderPath);
+			should(bookTocManager.tableofContents.length).be.equal(4);
+			should(listFiles.length).be.equal(7);
+		});
+	});
+
+	describe('EditingBooks', () => {
+		let bookItem : BookTreeItem;
+		let bookItem2: BookTreeItem;
+
+		afterEach(function (): void {
+			sinon.restore();
+		});
+
+		beforeEach(() => {
 			let bookTreeItemFormat1: BookTreeItemFormat = {
-				contentPath: path.join(rootFolderPath, 'index.md'),
-				root: rootFolderPath,
+				contentPath: undefined,
+				root: '/temp/SubFolder/',
 				tableOfContents: {
 					sections: [
 						{
-							file: path.join(path.sep, 'notebook1'),
-							title: path.join(path.sep, 'notebook1')
+							url: path.join(path.sep, 'sample', 'notebook')
 						},
 						{
-							file: path.join(path.sep, 'notebook2'),
-							title: path.join(path.sep, 'notebook2')
-						},
-						{
-							file: path.join(path.sep, 'notebook3'),
-							title: path.join(path.sep, 'notebook3')
+							url: path.join(path.sep, 'sample', 'notebook2')
 						}
 					]
 				},
@@ -69,64 +115,40 @@ describe('BookTocManagerTests', function () {
 				page: undefined,
 				title: undefined,
 				treeItemCollapsibleState: undefined,
-				type: BookTreeItemType.Book
+				type: BookTreeItemType.Book,
+				version: 'v1'
 			};
 
-			await fs.mkdir(rootFolderPath);
-			await fs.mkdir(bookFolderPath);
-			//await fs.promises.mkdir(dataFolderPath);
-			//await fs.promises.mkdir(contentFolderPath);
-			//await fs.promises.writeFile(configFile, 'title: Test Book');
-			//await fs.promises.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1\n  sections:\n  - title: Notebook2\n    url: /notebook2\n  - title: Notebook3\n    url: /notebook3\n- title: Markdown\n  url: /markdown\n- title: GitHub\n  url: https://github.com/\n  external: true');
-			await fs.writeFile(path.join(rootFolderPath,notebooks[0]), '');
-			await fs.writeFile(path.join(rootFolderPath,notebooks[1]), '');
-			await fs.writeFile(path.join(rootFolderPath,notebooks[2]), '');
+			let bookTreeItemFormat2: BookTreeItemFormat = {
+				contentPath: '/temp/SubFolder2/readme.md',
+				root: '/temp/SubFolder2/',
+				tableOfContents: {
+					sections: [
+						{
+							url: path.join(path.sep, 'sample', 'notebook')
+						},
+						{
+							url: path.join(path.sep, 'sample', 'notebook2')
+						}
+					]
+				},
+				isUntitled: undefined,
+				page: undefined,
+				title: undefined,
+				treeItemCollapsibleState: undefined,
+				type: BookTreeItemType.Markdown,
+				version: 'v1'
+			};
 
-
-			let bookModel1Mock: TypeMoq.IMock<BookModel> = TypeMoq.Mock.ofType<BookModel>();
-			bookModel1Mock.setup(model => model.bookItems).returns(() => [new BookTreeItem(bookTreeItemFormat1, undefined)]);
-			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep, 'temp', 'SubFolder', 'notebook1.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
-			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep, 'temp', 'SubFolder', 'notebook2.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
-			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep, 'temp', 'SubFolder', 'notebook3.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
-			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isAnyString())).returns((uri: string) => undefined);
-
-			books = [bookModel1Mock.object];
-		});
-
-		it('should create a table of contents for a given folder',  async function (): Promise<void>{
-			try {
-				let bookTocManager: BookTocManager = new BookTocManager();
-				await bookTocManager.createBook(bookFolderPath, rootFolderPath);
-				let file = await fs.promises.readFile(path.join(bookFolderPath, '_toc.yml'), 'utf8');
-				let toc = yaml.safeLoad(file);
-				should(toc).not.be.undefined;
-			}
-			catch(err){
-				console.log(err);
-			}
-		});
-
-		it('all notebooks should be in the toc', async () => {
-
-		});
-
-		it('should ignore invalid file extensions', async () => {
-		});
-
-		it('if the bookPath already exists then it will ask to overwrite', async () => {
-		});
-
-		it('should have subsections in TOC if there are subfolders', async () => {
-		});
-
-		it('the created book should open in ADS', async () => {
+			bookItem = new BookTreeItem(bookTreeItemFormat1, undefined);
+			bookItem2 = new BookTreeItem(bookTreeItemFormat2, undefined);
 		});
 
 		it('add notebook to book', async () => {
-			if (books) {
-
-			}
-
+			bookItem.contextValue = 'savedBook';
+			bookItem2.contextValue = 'section';
+			let bookTocManager: BookTocManager = new BookTocManager();
+			await bookTocManager.updateBook(bookItem2, bookItem);
 		});
 	});
 });
