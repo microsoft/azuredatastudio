@@ -318,38 +318,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private async createModelAndLoadContents(): Promise<void> {
-		//let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		this._register(this._model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
 		this._register(this._model.contentChanged((change) => this.handleContentChanged(change)));
 		this._register(this._model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider)));
 		this._register(this._model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs)));
-		/* INCOMING CHANGES
-		let model = new NotebookModel({
-			factory: this.modelFactory,
-			notebookUri: this._notebookParams.notebookUri,
-			connectionService: this.connectionManagementService,
-			notificationService: this.notificationService,
-			notebookManagers: this.notebookManagers,
-			contentManager: this._notebookParams.input.contentManager,
-			cellMagicMapper: new CellMagicMapper(this.notebookService.languageMagics),
-			providerId: 'sql',
-			defaultKernel: this._notebookParams.input.defaultKernel,
-			layoutChanged: this._notebookParams.input.layoutChanged,
-			capabilitiesService: this.capabilitiesService,
-			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
-		}, this.profile, this.logService, this.notificationService, this.adstelemetryService, this.capabilitiesService);
-		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
-		this._register(model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
-		this._register(model.contentChanged((change) => this.handleContentChanged(change)));
-		this._register(model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider)));
-		this._register(model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs)));
-		this._register(model.onCellTypeChanged(() => this.detectChanges()));
-		this._register(model.layoutChanged(() => this.detectChanges()));
-		this._model = this._register(model);
-		*/
 		this._register(this._model.onCellTypeChanged(() => this.detectChanges()));
 		this._register(this._model.layoutChanged(() => this.detectChanges()));
-		//await this._model.loadContents(trusted);
+
 		this._modelReadyDeferred.resolve(this._model);
 		this.setLoading(false);
 		this.updateToolbarComponents();
