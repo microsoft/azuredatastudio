@@ -561,10 +561,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 	private checkPreviousFilters(item): boolean {
 		for (let column in this.filterValueMap) {
-			if (column !== 'start' && this.filterValueMap[column][0].length > 0) {
-				let temp = this.filterValueMap[column][0] as unknown;
-				let arr = temp as [];
-				if (!arr.find(x => x === item[JobManagementUtilities.convertColNameToField(column)])) {
+			if (column !== 'start' && this.filterValueMap[column][0]) {
+				if (!this.filterValueMap[column][0].includes(item[JobManagementUtilities.convertColNameToField(column)])) {
 					return false;
 				}
 			}
