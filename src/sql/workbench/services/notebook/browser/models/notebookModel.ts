@@ -874,6 +874,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			return;
 		}
 
+		// Set each cell's connection as current notebook active connection
 		if (isMultiConnection && this._activeConnection) {
 			this._cells.forEach(c => {
 				if (c.cellType === CellTypes.Code) {
@@ -882,6 +883,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			});
 			this._activeConnection = undefined;
 		} else {
+			// Clear each cell's connection
 			this._cells.forEach(c => {
 				if (c.cellType === CellTypes.Code) {
 					c.changeContext(undefined);
