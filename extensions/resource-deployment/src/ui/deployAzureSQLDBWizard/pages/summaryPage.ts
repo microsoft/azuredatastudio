@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import { WizardPageBase } from '../../wizardPageBase';
 import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 import * as constants from '../constants';
+import * as localizedConstants from '../../../localizedConstants';
 import { SectionInfo, LabelPosition, FontWeight, FieldType } from '../../../interfaces';
 import { createSection } from '../../modelViewUtils';
 
@@ -139,13 +140,13 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 				{
 					type: FieldType.ReadonlyText,
 					label: constants.FirewallToggleLabel,
-					defaultValue: model.newFirewallRule,
+					defaultValue: model.newFirewallRule ? localizedConstants.yes : localizedConstants.no,
 					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				}
 			]
 		};
 
-		if (model.newFirewallRule === 'True') {
+		if (model.newFirewallRule) {
 			databaseSettingSection.fields?.push(
 				{
 					type: FieldType.ReadonlyText,

@@ -9,7 +9,7 @@ import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 import * as constants from '../constants';
 import { BasePage } from './basePage';
 import * as nls from 'vscode-nls';
-import * as localizedConstants from '../../../localizedConstants';
+import { createCheckbox, createFlexContainer, createLabel } from '../../modelViewUtils';
 const localize = nls.loadMessageBundle();
 
 export class DatabaseSettingsPage extends BasePage {
@@ -25,7 +25,9 @@ export class DatabaseSettingsPage extends BasePage {
 	private _collationTextbox!: azdata.InputBoxComponent;
 	private _collationTextRow!: azdata.FlexContainer;
 	private _IpInfoText!: azdata.TextComponent;
-	private _firewallToggleDropdown!: azdata.DropDownComponent;
+	private _firewallToggleDropdown!: azdata.CheckBoxComponent;
+	private _firewallToggleLabel!: azdata.TextComponent;
+
 
 
 	private _form!: azdata.FormContainer;
@@ -57,7 +59,7 @@ export class DatabaseSettingsPage extends BasePage {
 							component: this._collationTextRow
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.FirewallToggleLabel, constants.FirewallRuleDescription, this._firewallToggleDropdown, true)
+							component: createFlexContainer(view, [this._firewallToggleLabel, this._firewallToggleDropdown])
 						},
 						{
 							component: this._firewallRuleNameTextRow
@@ -136,27 +138,33 @@ export class DatabaseSettingsPage extends BasePage {
 	}
 
 	private createFirewallToggle(view: azdata.ModelView) {
-		this._firewallToggleDropdown = view.modelBuilder.dropDown().withProps({
-			values: [
-				{
-					displayName: localizedConstants.yes,
-					name: 'True'
-				},
-				{
-					displayName: localizedConstants.no,
-					name: 'False'
-				}
-			]
-		}).component();
 
-		this._firewallToggleDropdown.onValueChanged((value) => {
-			let dropDownValue = (this._firewallToggleDropdown.value as azdata.CategoryValue).name;
-			let displayValue: 'block' | 'none' = dropDownValue === 'True' ? 'block' : 'none';
+		this._firewallToggleDropdown = createCheckbox(view, {
+			initialValue: true,
+			label: '',
+			required: false
+		});
+
+		this._firewallToggleLabel = createLabel(view, {
+			text: constants.FirewallToggleLabel,
+			description: constants.FirewallRuleDescription,
+			required: false,
+			width: '250px',
+			cssStyles: {
+				'font-weight': '400',
+				'font-size': '13px',
+			}
+		});
+
+		this.wizard.model.newFirewallRule = true;
+
+		this._firewallToggleDropdown.onChanged((value) => {
+			let displayValue: 'block' | 'none' = (value) ? 'block' : 'none';
 			this.wizard.changeRowDisplay(this._firewallRuleNameTextRow, displayValue);
 			this.wizard.changeRowDisplay(this._endIpAddressTextRow, displayValue);
 			this.wizard.changeRowDisplay(this._startIpAddressTextRow, displayValue);
 			this.wizard.changeComponentDisplay(this._IpInfoText, displayValue);
-			this.wizard.model.newFirewallRule = dropDownValue;
+			this.wizard.model.newFirewallRule = value;
 		});
 	}
 
@@ -205,7 +213,7 @@ export class DatabaseSettingsPage extends BasePage {
 		let databasename = this._databaseNameTextbox.value!;
 		let collationname = this._collationTextbox.value!;
 
-		if (this.wizard.model.newFirewallRule === 'True') {
+		if (this.wizard.model.newFirewallRule) {
 			if (!(ipRegex.test(startipvalue))) {
 				errorMessages.push(localize('deployAzureSQLDB.DBMinIpInvalidError', "Min Ip address is invalid"));
 			}
