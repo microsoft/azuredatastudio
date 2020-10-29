@@ -188,6 +188,10 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	public readonly tooltip: string;
 
+	public set uri(uri: string) {
+		this._uri = uri;
+	}
+
 	/**
 	 * Helper method to find a child section with a specified URL
 	 * @param url The url of the section we're searching for
