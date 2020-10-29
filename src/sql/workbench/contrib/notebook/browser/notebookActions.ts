@@ -471,7 +471,7 @@ export class AttachToDropdown extends SelectBox {
 			}
 			let connection = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
 				{
-					connectionType: ConnectionType.temporary,
+					connectionType: ConnectionType.editor,
 					providers: providers
 				},
 				useProfile ? this.model.connectionProfile : undefined);

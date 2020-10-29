@@ -916,10 +916,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Add a connection to the active connections list.
 	 */
 	private tryAddActiveConnection(connectionManagementInfo: ConnectionManagementInfo, newConnection: interfaces.IConnectionProfile, addToMru: boolean): void {
-		if (newConnection) {
+		if (newConnection && addToMru) {
 			this._connectionStore.addRecentConnection(newConnection)
 				.then(() => {
-					connectionManagementInfo.connectHandler(addToMru);
+					connectionManagementInfo.connectHandler(true);
 				}, err => {
 					connectionManagementInfo.connectHandler(false, err);
 				});
