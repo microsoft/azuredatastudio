@@ -42,16 +42,16 @@ export class ResourceTypeWizard {
 		public toolsService: IToolsService,
 		public platformService: IPlatformService) {
 		this.wizardObject = azdata.window.createWizard(resourceType.displayName, resourceType.name, 'wide');
-		this.model = this.getResourceProviderModel();
+		this.model = this.getResourceProviderModel()!;
 	}
 
 
-	public getResourceProviderModel(): ResourceTypeModel {
+	public getResourceProviderModel(): ResourceTypeModel | undefined {
 		if (instanceOfWizardDeploymentProvider(this.provider)) {
 			return new DeployClusterWizardModel(this.provider, this);
 		}
 		// other types are undefined for now.
-		return undefined!;
+		return undefined;
 	}
 
 	public async open(): Promise<void> {
