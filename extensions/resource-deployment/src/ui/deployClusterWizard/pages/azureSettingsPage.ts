@@ -8,19 +8,19 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { FieldType, LabelPosition, SectionInfo } from '../../../interfaces';
 import { createSection, getDropdownComponent, InputComponentInfo, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
-import { WizardPageBase } from '../../wizardPageBase';
 import { AksName_VariableName, Location_VariableName, ResourceGroup_VariableName, SubscriptionId_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
-import { DeployClusterWizard } from '../deployClusterWizard';
 import { AzureRegion } from 'azurecore';
+import { DeployClusterWizardModel } from '../deployClusterWizardModel';
+import { ResourceTypePage } from '../../resourceTypeWizard';
 const localize = nls.loadMessageBundle();
 const MissingRequiredInformationErrorMessage = localize('deployCluster.MissingRequiredInfoError', "Please fill out the required fields marked with red asterisks.");
 
-export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
+export class AzureSettingsPage extends ResourceTypePage {
 	private inputComponents: InputComponents = {};
 
-	constructor(wizard: DeployClusterWizard) {
+	constructor(private _model: DeployClusterWizardModel) {
 		super(localize('deployCluster.AzureSettingsPageTitle', "Azure settings"),
-			localize('deployCluster.AzureSettingsPageDescription', "Configure the settings to create an Azure Kubernetes Service cluster"), wizard);
+			localize('deployCluster.AzureSettingsPageDescription', "Configure the settings to create an Azure Kubernetes Service cluster"), _model.wizard);
 	}
 
 	public initialize(): void {
@@ -134,13 +134,13 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				},
 				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
 					self.inputComponents[name] = inputComponentInfo;
-					self.wizard.inputComponents[name] = inputComponentInfo;
+					self._model.inputComponents[name] = inputComponentInfo;
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
 					self.validators.push(validator);
 				},
 				container: this.wizard.wizardObject,
-				inputComponents: this.wizard.inputComponents,
+				inputComponents: this._model.inputComponents,
 				toolsService: this.wizard.toolsService
 			});
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(

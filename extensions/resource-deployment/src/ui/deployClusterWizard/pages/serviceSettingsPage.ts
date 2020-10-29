@@ -7,17 +7,16 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { FieldType, SectionInfo } from '../../../interfaces';
 import { createFlexContainer, createGroupContainer, createLabel, createNumberInput, createSection, createTextInput, getCheckboxComponent, getDropdownComponent, getInputBoxComponent, InputComponentInfo, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
-import { WizardPageBase } from '../../wizardPageBase';
+import { ResourceTypePage } from '../../resourceTypeWizard';
 import * as VariableNames from '../constants';
-import { DeployClusterWizard } from '../deployClusterWizard';
-import { AuthenticationMode } from '../deployClusterWizardModel';
+import { AuthenticationMode, DeployClusterWizardModel } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
 const NumberInputWidth = '100px';
 const inputWidth = '180px';
 const labelWidth = '200px';
 
-export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
+export class ServiceSettingsPage extends ResourceTypePage {
 	private inputComponents: InputComponents = {};
 	private endpointHeaderRow!: azdata.FlexContainer;
 	private dnsColumnHeader!: azdata.TextComponent;
@@ -49,8 +48,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	private readableSecondaryNameLabel!: azdata.TextComponent;
 	private endpointSection!: azdata.GroupContainer;
 
-	constructor(wizard: DeployClusterWizard) {
-		super(localize('deployCluster.ServiceSettingsPageTitle', "Service settings"), '', wizard);
+	constructor(private _model: DeployClusterWizardModel) {
+		super(localize('deployCluster.ServiceSettingsPageTitle', "Service settings"), '', _model.wizard);
 	}
 	public initialize(): void {
 		const self = this;
@@ -120,7 +119,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				return await createSection({
 					view: view,
 					container: this.wizard.wizardObject,
-					inputComponents: this.wizard.inputComponents,
+					inputComponents: this._model.inputComponents,
 					sectionInfo: sectionInfo,
 					onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 						self.wizard.registerDisposable(disposable);
@@ -156,7 +155,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	private onNewInputComponentCreated(name: string, inputComponentInfo: InputComponentInfo) {
 		this.inputComponents[name] = inputComponentInfo;
-		this.wizard.inputComponents[name] = inputComponentInfo;
+		this._model.inputComponents[name] = inputComponentInfo;
 	}
 
 	private handleSparkSettingEvents(): void {
@@ -352,7 +351,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.setInputBoxValue(VariableNames.ControllerLogsStorageClassName_VariableName);
 		this.setInputBoxValue(VariableNames.ControllerLogsStorageSize_VariableName);
 		this.endpointHeaderRow.clearItems();
-		const adAuth = this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory;
+		const adAuth = this._model.authenticationMode === AuthenticationMode.ActiveDirectory;
 		const sqlServerScale = this.wizard.model.getIntegerValue(VariableNames.SQLServerScale_VariableName);
 
 		this.endpointSection.collapsed = !adAuth;
@@ -425,7 +424,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		row.clearItems();
 		const itemLayout: azdata.FlexItemLayout = { CSSStyles: { 'margin-right': '20px' } };
 		row.addItem(label);
-		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
+		if (this._model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			row.addItem(dnsInput, itemLayout);
 		}
 		row.addItem(portInput);

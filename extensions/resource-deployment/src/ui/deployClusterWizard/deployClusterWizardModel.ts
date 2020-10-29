@@ -2,19 +2,93 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { EOL } from 'os';
-import { delimiter } from 'path';
-import { BdcDeploymentType, ITool } from '../../interfaces';
+import * as azdata from 'azdata';
+import * as vscode from 'vscode';
+import { delimiter, join } from 'path';
+import * as fs from 'fs';
+import * as os from 'os';
+import { BdcDeploymentType, BdcWizardDeploymentProvider, ITool } from '../../interfaces';
 import { BigDataClusterDeploymentProfile, DataResource, HdfsResource, SqlServerMasterResource } from '../../services/bigDataClusterDeploymentProfile';
 import { KubeCtlToolName } from '../../services/tools/kubeCtlTool';
-import { getRuntimeBinaryPathEnvironmentVariableName, setEnvironmentVariablesForInstallPaths } from '../../common/utils';
-import { Model } from '../model';
-import { ToolsInstallPath } from './../../constants';
+import { getErrorMessage, getRuntimeBinaryPathEnvironmentVariableName, setEnvironmentVariablesForInstallPaths } from '../../common/utils';
+import { ToolsInstallPath } from '../../constants';
 import * as VariableNames from './constants';
+import { ResourceTypeModel, ResourceTypePage, ResourceTypeWizard } from '../resourceTypeWizard';
+import * as nls from 'vscode-nls';
+import { InputComponents } from '../modelViewUtils';
+import { INotebookService } from '../../services/notebookService';
+import { IAzdataService } from '../../services/azdataService';
+import { IKubeService } from '../../services/kubeService';
+import { DeploymentProfilePage } from './pages/deploymentProfilePage';
+import { AzureSettingsPage } from './pages/azureSettingsPage';
+import { ClusterSettingsPage } from './pages/clusterSettingsPage';
+import { ServiceSettingsPage } from './pages/serviceSettingsPage';
+import { SummaryPage } from './pages/summaryPage';
+import { TargetClusterContextPage } from './pages/targetClusterPage';
+import { IToolsService } from '../../services/toolsService';
+const localize = nls.loadMessageBundle();
 
-export class DeployClusterWizardModel extends Model {
-	constructor(public deploymentTarget: BdcDeploymentType) {
-		super();
+export class DeployClusterWizardModel extends ResourceTypeModel {
+	private _inputComponents: InputComponents = {};
+	private _kubeService: IKubeService;
+	private _azdataService: IAzdataService;
+	private _notebookService: INotebookService;
+	private toolsService: IToolsService;
+
+	private _saveConfigButton: azdata.window.Button;
+
+	public get kubeService(): IKubeService {
+		return this._kubeService;
+	}
+
+	public get azdataService(): IAzdataService {
+		return this._azdataService;
+	}
+
+	public get notebookService(): INotebookService {
+		return this._notebookService;
+	}
+
+	public get inputComponents(): InputComponents {
+		return this._inputComponents;
+	}
+
+	public showCustomButtons(): void {
+		this._saveConfigButton.hidden = false;
+	}
+
+	public hideCustomButtons(): void {
+		this._saveConfigButton.hidden = true;
+	}
+
+
+	public get deploymentType(): BdcDeploymentType {
+		return this.bdcProvider.bdcWizard.type;
+	}
+
+	initialize(): void {
+		this.wizard.setPages(this.getPages());
+		this.wizard.wizardObject.generateScriptButton.hidden = true;
+		this.wizard.wizardObject.doneButton.label = localize('deployCluster.ScriptToNotebook', "Script to Notebook");
+	}
+
+	async onOk(): Promise<void> {
+		await this.scriptToNotebook();
+	}
+
+	onCancel(): void { }
+
+	constructor(public bdcProvider: BdcWizardDeploymentProvider, wizard: ResourceTypeWizard) {
+		super(bdcProvider, wizard);
+		this._kubeService = this.wizard._kubeService;
+		this._azdataService = this.wizard.azdataService;
+		this._notebookService = this.wizard.notebookService;
+		this.toolsService = this.wizard.toolsService;
+		this.wizard.wizardObject.title = this.getTitle(this.deploymentType);
+		this._saveConfigButton = azdata.window.createButton(localize('deployCluster.SaveConfigFiles', "Save config files"), 'left');
+		this._saveConfigButton.hidden = true;
+		this.wizard.addButton(this._saveConfigButton);
+		this.wizard.registerDisposable(this._saveConfigButton.onClick(() => this.saveConfigFiles()));
 	}
 	public adAuthSupported: boolean = false;
 
@@ -144,17 +218,17 @@ export class DeployClusterWizardModel extends Model {
 	public getCodeCellContentForNotebook(tools: ITool[]): string[] {
 		const profile = this.createTargetProfile();
 		const statements: string[] = [];
-		if (this.deploymentTarget === BdcDeploymentType.NewAKS) {
+		if (this.deploymentType === BdcDeploymentType.NewAKS) {
 			statements.push(`azure_subscription_id = '${this.getStringValue(VariableNames.SubscriptionId_VariableName, '')}'`);
 			statements.push(`azure_region = '${this.getStringValue(VariableNames.Location_VariableName)}'`);
 			statements.push(`azure_resource_group = '${this.getStringValue(VariableNames.ResourceGroup_VariableName)}'`);
 			statements.push(`azure_vm_size = '${this.getStringValue(VariableNames.VMSize_VariableName)}'`);
 			statements.push(`azure_vm_count = '${this.getStringValue(VariableNames.VMCount_VariableName)}'`);
 			statements.push(`aks_cluster_name = '${this.getStringValue(VariableNames.AksName_VariableName)}'`);
-		} else if (this.deploymentTarget === BdcDeploymentType.ExistingAKS
-			|| this.deploymentTarget === BdcDeploymentType.ExistingKubeAdm
-			|| this.deploymentTarget === BdcDeploymentType.ExistingARO
-			|| this.deploymentTarget === BdcDeploymentType.ExistingOpenShift) {
+		} else if (this.deploymentType === BdcDeploymentType.ExistingAKS
+			|| this.deploymentType === BdcDeploymentType.ExistingKubeAdm
+			|| this.deploymentType === BdcDeploymentType.ExistingARO
+			|| this.deploymentType === BdcDeploymentType.ExistingOpenShift) {
 			statements.push(`mssql_kube_config_path = '${this.escapeForNotebookCodeCell(this.getStringValue(VariableNames.KubeConfigPath_VariableName)!)}'`);
 			statements.push(`mssql_cluster_context = '${this.getStringValue(VariableNames.ClusterContext_VariableName)}'`);
 			statements.push('os.environ["KUBECONFIG"] = mssql_kube_config_path');
@@ -177,7 +251,102 @@ export class DeployClusterWizardModel extends Model {
 		statements.push(`os.environ["${kubeCtlEnvVarName}"] = "${this.escapeForNotebookCodeCell(env[kubeCtlEnvVarName]!)}"`);
 		statements.push(`os.environ["PATH"] = os.environ["PATH"] + "${delimiter}" + "${this.escapeForNotebookCodeCell(env[ToolsInstallPath]!)}"`);
 		statements.push(`print('Variables have been set successfully.')`);
-		return statements.map(line => line + EOL);
+		return statements.map(line => line + os.EOL);
+	}
+
+	private async saveConfigFiles(): Promise<void> {
+		const options: vscode.OpenDialogOptions = {
+			defaultUri: vscode.Uri.file(os.homedir()),
+			canSelectFiles: false,
+			canSelectFolders: true,
+			canSelectMany: false,
+			openLabel: localize('deployCluster.SelectConfigFileFolder', "Save config files")
+		};
+		const pathArray = await vscode.window.showOpenDialog(options);
+		if (pathArray && pathArray[0]) {
+			const targetFolder = pathArray[0].fsPath;
+			try {
+				const profile = this.createTargetProfile();
+				await fs.promises.writeFile(join(targetFolder, 'bdc.json'), profile.getBdcJson());
+				await fs.promises.writeFile(join(targetFolder, 'control.json'), profile.getControlJson());
+				this.wizard.wizardObject.message = {
+					text: localize('deployCluster.SaveConfigFileSucceeded', "Config files saved to {0}", targetFolder),
+					level: azdata.window.MessageLevel.Information
+				};
+			}
+			catch (error) {
+				this.wizard.wizardObject.message = {
+					text: error.message,
+					level: azdata.window.MessageLevel.Error
+				};
+			}
+		}
+	}
+
+	private getPages(): ResourceTypePage[] {
+		const pages: ResourceTypePage[] = [];
+		switch (this.deploymentType) {
+			case BdcDeploymentType.NewAKS:
+				pages.push(
+					new DeploymentProfilePage(this),
+					new AzureSettingsPage(this),
+					new ClusterSettingsPage(this),
+					new ServiceSettingsPage(this),
+					new SummaryPage(this));
+				break;
+			case BdcDeploymentType.ExistingAKS:
+			case BdcDeploymentType.ExistingKubeAdm:
+			case BdcDeploymentType.ExistingARO:
+			case BdcDeploymentType.ExistingOpenShift:
+				pages.push(
+					new DeploymentProfilePage(this),
+					new TargetClusterContextPage(this),
+					new ClusterSettingsPage(this),
+					new ServiceSettingsPage(this),
+					new SummaryPage(this));
+				break;
+			default:
+				throw new Error(`Unknown deployment type: ${this.deploymentType}`);
+		}
+		return pages;
+	}
+
+	private async scriptToNotebook(): Promise<void> {
+		this.setNotebookEnvironmentVariables(process.env);
+		const variableValueStatements = this.getCodeCellContentForNotebook(this.toolsService.toolsForCurrentProvider);
+		const insertionPosition = 5; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
+		try {
+			await this.notebookService.openNotebookWithEdits(this.bdcProvider.bdcWizard.notebook, variableValueStatements, insertionPosition);
+		} catch (error) {
+			vscode.window.showErrorMessage(getErrorMessage(error));
+		}
+	}
+
+
+	private setNotebookEnvironmentVariables(env: NodeJS.ProcessEnv): void {
+		env[VariableNames.AdminPassword_VariableName] = this.getStringValue(VariableNames.AdminPassword_VariableName);
+		env[VariableNames.DockerPassword_VariableName] = this.getStringValue(VariableNames.DockerPassword_VariableName);
+		if (this.authenticationMode === AuthenticationMode.ActiveDirectory) {
+			env[VariableNames.DomainServiceAccountPassword_VariableName] = this.getStringValue(VariableNames.DomainServiceAccountPassword_VariableName);
+		}
+	}
+
+	private getTitle(type: BdcDeploymentType): string {
+		switch (type) {
+			case BdcDeploymentType.NewAKS:
+				return localize('deployCluster.NewAKSWizardTitle', "Deploy SQL Server 2019 Big Data Cluster on a new AKS cluster");
+			case BdcDeploymentType.ExistingAKS:
+				return localize('deployCluster.ExistingAKSWizardTitle', "Deploy SQL Server 2019 Big Data Cluster on an existing AKS cluster");
+			case BdcDeploymentType.ExistingKubeAdm:
+				return localize('deployCluster.ExistingKubeAdm', "Deploy SQL Server 2019 Big Data Cluster on an existing kubeadm cluster");
+			case BdcDeploymentType.ExistingARO:
+				return localize('deployCluster.ExistingARO', "Deploy SQL Server 2019 Big Data Cluster on an existing Azure Red Hat OpenShift cluster");
+			case BdcDeploymentType.ExistingOpenShift:
+				return localize('deployCluster.ExistingOpenShift', "Deploy SQL Server 2019 Big Data Cluster on an existing OpenShift cluster");
+
+			default:
+				throw new Error(`Unknown deployment type: ${type}`);
+		}
 	}
 }
 
