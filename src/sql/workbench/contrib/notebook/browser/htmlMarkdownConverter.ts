@@ -36,47 +36,47 @@ export class HTMLMarkdownConverter {
 				`;
 			}
 		});
-		this.turndownService.addRule('span', {
-			filter: 'span',
-			replacement: function (content, node) {
-				// There are certain properties that either don't have equivalents in markdown or whose transformations
-				// don't have actions defined in WYSIWYG yet. To unblock users, leaving these elements alone (including their child elements)
-				// Note: the initial list was generated from our TSG Jupyter Book
-				if (node && node.style) {
-					if (node.style.color ||
-						node.style.fontSize ||
-						(node.style.backgroundColor && node.style.backgroundColor !== 'yellow') ||
-						(node.style.background && node.style.background !== 'yellow') ||
-						node.style.lineHeight ||
-						node.style.marginLeft ||
-						node.style.marginBottom ||
-						node.style.textAlign
-					) {
-						return node.outerHTML;
-					}
-				}
-				let beginString = '';
-				let endString = '';
-				// TODO: handle other background colors and more styles
-				if (node?.style?.backgroundColor === 'yellow') {
-					beginString = '<mark>' + beginString;
-					endString += '</mark>';
-				}
-				if (node?.style?.fontWeight === 'bold') {
-					beginString = '**' + beginString;
-					endString += '**';
-				}
-				if (node?.style?.fontStyle === 'italic') {
-					beginString = '_' + beginString;
-					endString += '_';
-				}
-				if (node?.style?.textDecorationLine === 'underline') {
-					beginString = '<u>' + beginString;
-					endString += '</u>';
-				}
-				return beginString + content + endString;
-			}
-		});
+		// this.turndownService.addRule('span', {
+		// 	filter: 'span',
+		// 	replacement: function (content, node) {
+		// 		// There are certain properties that either don't have equivalents in markdown or whose transformations
+		// 		// don't have actions defined in WYSIWYG yet. To unblock users, leaving these elements alone (including their child elements)
+		// 		// Note: the initial list was generated from our TSG Jupyter Book
+		// 		if (node && node.style) {
+		// 			if (node.style.color ||
+		// 				node.style.fontSize ||
+		// 				(node.style.backgroundColor && node.style.backgroundColor !== 'yellow') ||
+		// 				(node.style.background && node.style.background !== 'yellow') ||
+		// 				node.style.lineHeight ||
+		// 				node.style.marginLeft ||
+		// 				node.style.marginBottom ||
+		// 				node.style.textAlign
+		// 			) {
+		// 				return node.outerHTML;
+		// 			}
+		// 		}
+		// 		let beginString = '';
+		// 		let endString = '';
+		// 		// TODO: handle other background colors and more styles
+		// 		if (node?.style?.backgroundColor === 'yellow') {
+		// 			beginString = '<mark>' + beginString;
+		// 			endString += '</mark>';
+		// 		}
+		// 		if (node?.style?.fontWeight === 'bold') {
+		// 			beginString = '**' + beginString;
+		// 			endString += '**';
+		// 		}
+		// 		if (node?.style?.fontStyle === 'italic') {
+		// 			beginString = '_' + beginString;
+		// 			endString += '_';
+		// 		}
+		// 		if (node?.style?.textDecorationLine === 'underline') {
+		// 			beginString = '<u>' + beginString;
+		// 			endString += '</u>';
+		// 		}
+		// 		return beginString + content + endString;
+		// 	}
+		// });
 		this.turndownService.addRule('img', {
 			filter: 'img',
 			replacement: (content, node) => {
@@ -107,27 +107,58 @@ export class HTMLMarkdownConverter {
 		});
 
 		this.turndownService.addRule('escapeAngleBrackets', {
-			filter: ['span', 'p', 'h1', 'h2', 'h3'],
+			filter: ['span', 'p', 'h1', 'h2', 'h3', 'u', 'mark'],
 			replacement: function (content, node) {
-				let text = content;
-				// check if text inside tag is of filter, if it is dont return tag
-				// if text in tag doesnt exist then return outerHTML
-				let htmlTags = ['<span>', '<p>', '<h1>', '<h2>', '<h3>', '<u>', '<mark>'];
-				let indexTag = text.indexOf('<');
-				for (let tag of htmlTags) {
-					if (text.includes(tag)) {
-						let textSubstring = text.substring(text.index('<', tag.length));
-						let firstTagReplace = textSubstring.replace('<', '\\<');
-						let modifiedText = firstTagReplace.replace('>', '\\>');
-						return tag + modifiedText;
+
+
+				let text = node.textContent;
+				let mapTags = { '<': '\\<', '>': '\\>' };
+
+				let escapedText = text.replace(/<|>/gi, function (matched) {
+					return mapTags[matched];
+				});
+
+				if (node.localName === 'span') {
+					// span text
+					if (node && node.style) {
+						if (node.style.color ||
+							node.style.fontSize ||
+							(node.style.backgroundColor && node.style.backgroundColor !== 'yellow') ||
+							(node.style.background && node.style.background !== 'yellow') ||
+							node.style.lineHeight ||
+							node.style.marginLeft ||
+							node.style.marginBottom ||
+							node.style.textAlign
+						) {
+							return node.outerHTML;
+						}
 					}
+
+					let beginString = '';
+					let endString = '';
+					// TODO: handle other background colors and more styles
+					if (node?.style?.backgroundColor === 'yellow') {
+						beginString = '<mark>' + beginString;
+						endString += '</mark>';
+					}
+					if (node?.style?.fontWeight === 'bold') {
+						beginString = '**' + beginString;
+						endString += '**';
+					}
+					if (node?.style?.fontStyle === 'italic') {
+						beginString = '_' + beginString;
+						endString += '_';
+					}
+					if (node?.style?.textDecorationLine === 'underline') {
+						beginString = '<u>' + beginString;
+						endString += '</u>';
+					}
+					return beginString + escapedText + endString;
+
+				} else if (node.localName === 'p') {
+					return '\n\n' + escapedText + '\n\n';
 				}
-				if (indexTag > -1) {
-					let firstTag = text.replace('<', '\\<');
-					let textWithTag = firstTag.replace('>', '\\>');
-					return textWithTag;
-				}
-				return node.outerHTML;
+				return escapedText;
 			}
 		});
 	}
