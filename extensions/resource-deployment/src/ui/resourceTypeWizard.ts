@@ -5,11 +5,10 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType } from '../interfaces';
+import { DeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType } from '../interfaces';
 import { Model } from './model';
 import { WizardPageBase } from './wizardPageBase';
 import { DeployClusterWizardModel } from './deployClusterWizard/deployClusterWizardModel';
-import { DeployAzureSQLVMWizardModel } from './deployAzureSQLVMWizard/deployAzureSQLVMWizardModel';
 import { WizardPageInfo } from './wizardPageInfo';
 import { IKubeService } from '../services/kubeService';
 import { IAzdataService } from '../services/azdataService';
@@ -50,8 +49,6 @@ export class ResourceTypeWizard {
 	public getResourceProviderModel(): ResourceTypeModel | undefined {
 		if (instanceOfWizardDeploymentProvider(this.provider)) {
 			return new DeployClusterWizardModel(this.provider, this);
-		} else if (instanceOfAzureSQLVMDeploymentProvider(this.provider)) {
-			return new DeployAzureSQLVMWizardModel(this.provider, this);
 		}
 		// other types are undefined for now.
 		return undefined;

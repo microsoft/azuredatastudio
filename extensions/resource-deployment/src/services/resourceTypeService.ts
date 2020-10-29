@@ -11,6 +11,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption } from '../interfaces';
+import { DeployAzureSQLVMWizard } from '../ui/deployAzureSQLVMWizard/deployAzureSQLVMWizard';
 import { DeployAzureSQLDBWizard } from '../ui/deployAzureSQLDBWizard/deployAzureSQLDBWizard';
 import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
 import { NotebookWizard } from '../ui/notebookWizard/notebookWizard';
@@ -252,10 +253,7 @@ export class ResourceTypeService implements IResourceTypeService {
 
 	public startDeployment(resourceType: ResourceType, provider: DeploymentProvider): void {
 		const self = this;
-		if (
-			instanceOfWizardDeploymentProvider(provider) ||
-			instanceOfAzureSQLVMDeploymentProvider(provider)
-		) {
+		if (instanceOfWizardDeploymentProvider(provider)) {
 			const wizard = new ResourceTypeWizard(resourceType, provider, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService);
 			wizard.open();
 		} else if (instanceOfNotebookWizardDeploymentProvider(provider)) {
@@ -288,6 +286,9 @@ export class ResourceTypeService implements IResourceTypeService {
 			vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(provider.webPageUrl));
 		} else if (instanceOfCommandDeploymentProvider(provider)) {
 			vscode.commands.executeCommand(provider.command);
+		} else if (instanceOfAzureSQLVMDeploymentProvider(provider)) {
+			const wizard = new DeployAzureSQLVMWizard(provider.azureSQLVMWizard, this.notebookService, this.toolsService);
+			wizard.open();
 		} else if (instanceOfAzureSQLDBDeploymentProvider(provider)) {
 			const wizard = new DeployAzureSQLDBWizard(provider.azureSQLDBWizard, this.notebookService, this.toolsService);
 			wizard.open();
