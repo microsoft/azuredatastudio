@@ -15,7 +15,7 @@ import * as sudo from 'sudo-prompt';
 import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
 import { OsDistribution } from '../../interfaces';
-import { CommandOptions, extensionOutputChannel, PlatformService } from '../../services/platformService';
+import { extensionOutputChannel, PlatformService } from '../../services/platformService';
 
 class TestChildProcessPromise<T> implements cp.ChildProcessPromise {
 	private _promise: Promise<T>;
@@ -160,7 +160,6 @@ describe('PlatformService', () => {
 			});
 		});
 	});
-
 	it('osDistribution', () => {
 		const result = platformService.osDistribution();
 		switch (process.platform) {
@@ -184,12 +183,7 @@ describe('PlatformService', () => {
 					}
 					case 'throws': {
 						sinon.stub(fs.promises, 'access').rejects({});
-						let error;
-						try {
-							await platformService.fileExists(filePath);
-						} catch (e) {
-							error = e;
-						}
+						const { error } = await tryExecuteAction(() => platformService.fileExists(filePath));
 						should(error).not.be.undefined();
 						break;
 					}
@@ -217,7 +211,7 @@ describe('PlatformService', () => {
 				await Promise.all([true, false].map(async (ignoreError) => {
 					it(`throws with ignoreError: ${ignoreError}`, async () => {
 						const stub = sinon.stub(fs.promises, 'unlink').throws();
-						const { error } = await tryExecuteAction<void>(() => platformService.deleteFile(filePath, ignoreError));
+						const { error } = await tryExecuteAction(() => platformService.deleteFile(filePath, ignoreError));
 						stub.callCount.should.equal(1);
 						stub.getCall(0).args[0].should.equal(filePath);
 						if (ignoreError) {
@@ -229,7 +223,6 @@ describe('PlatformService', () => {
 				}));
 			});
 		});
-
 		it('openFile', () => {
 			const stub = sinon.stub(vscode.commands, 'executeCommand').resolves(); //resolves with a known string
 			platformService.openFile(filePath);
@@ -259,7 +252,7 @@ describe('PlatformService', () => {
 		});
 		it('makeDirectory ', async () => {
 			const target = __dirname; //arbitrary path
-			sinon.stub(fs.promises, 'access').rejects(); // this simulates the target directory to not Exist.
+			sinon.stub(fs.promises, 'access').rejects({ code: 'ENOENT' }); // this simulates the target directory to not Exist.
 			const stub = sinon.stub(fs.promises, 'mkdir').resolves();
 			await platformService.makeDirectory(target);
 			stub.callCount.should.equal(1);
@@ -273,7 +266,6 @@ describe('PlatformService', () => {
 		stub.callCount.should.equal(1);
 		stub.getCall(0).args[0].should.equal(error);
 	});
-
 	describe('isNotebookNameUsed', () => {
 		[true, false].forEach((isUsed => {
 			it(`return value: ${isUsed}`, () => {
@@ -290,86 +282,48 @@ describe('PlatformService', () => {
 			});
 		}));
 	});
-
 	describe('runCommand', () => {
-		beforeEach('runCommand Setup', () => {
-			let outputChannelStub = TypeMoq.Mock.ofType<vscode.OutputChannel>();
-			outputChannelStub.setup(c => c.appendLine(TypeMoq.It.isAny())).callback((line => {
-				console.log(line);
-			}));
-		});
-
 		[
 			//	[commandSucceeds, ignoreError]
-			[true, undefined],
-			[false, true],
-			[false, false],
+				[true, undefined],
+				[false, true],
+				[false, false],
 		].forEach(([commandSucceeds, ignoreError]) => {
 			if (ignoreError && commandSucceeds) {
-				return; //exit out of the loop as we do not handle ignoreError
+				return; //exit out of the loop as we do not handle ignoreError when command is successful
 			}
 			it(`non-sudo, commandSucceeds: ${commandSucceeds}, ignoreError: ${ignoreError}`, async () => {
 				const command = __dirname; // arbitrary command string, and success string on successful execution and error string on error
 				const child = new TestChildProcessPromise<cp.Output>();
-				const stub = sinon.stub(cp, 'spawn').returns(child)
-
-				let error: any, result: string;
-				try {
-					const runningCommand = platformService.runCommand(command, { commandTitle: 'title', ignoreError: ignoreError });
-					if (commandSucceeds) {
-						child.emit('data', command);
-						child.emit('exit', 0, null); //resolve with 0 exit code
-						child.resolve({ stdout: command });
-					} else {
-						child.emit('data', command);
-						child.emit('exit', 1, null); // resolve with non-zero exit code
-						child.reject({ stderr: command });
-					}
-					result = await runningCommand;
-				} catch (e) {
-					error = e;
-				}
-				stub.callCount.should.equal(1);
+				const stub = sinon.stub(cp, 'spawn').returns(child);
+				const runningCommand = platformService.runCommand(command, { commandTitle: 'title', ignoreError: ignoreError });
+				// fake runCommand to behave like echo, returning the command back as stdout/stderr/error.
+				// TestChildProcessPromise object shares the stdout/stderr stream for convenience with the child stream.
 				if (commandSucceeds) {
-					result!.should.equal(command);
+					child.emit('data', command);
+					child.emit('exit', 0, null); //resolve with 0 exit code
+					child.resolve({ stdout: command });
 				} else {
-					if (ignoreError) {
-						should(error).be.undefined();
-						(result! === undefined || result.length === 0).should.be.true();
-					} else {
-						should(error).not.be.undefined();
-					}
+					child.emit('data', command);
+					child.emit('exit', 1, null); // resolve with non-zero exit code
+					child.reject({ stderr: command });
 				}
+				const { result, error } = await tryExecuteAction(() => runningCommand);
+				verifyCommandExecution(stub, result, error, command, commandSucceeds, ignoreError);
 			});
 
 			it(`sudo, commandSucceeds: ${commandSucceeds}, ignoreError: ${ignoreError}`, async () => {
 				const command = __dirname; // arbitrary command string, and success string on successful execution
-				const stub = sinon.stub(sudo, 'exec').callsFake((_cmd: string, _options: { [key: string]: any }, cb: (error: string, stdout: string, stderr: string) => void) => {
-					// behaves like echo, returning the _cmd back as output/stderr/error.
+				const stub = sinon.stub(sudo, 'exec').callsFake((cmd, _options, cb) => {
+					// behaves like echo, returning the _cmd back as stdout/stderr/error.
 					if (commandSucceeds) {
-						cb('', _cmd, '');
+						cb(''/* error */, cmd/* stdout */, ''/* stderr */);
 					} else {
-						cb(_cmd, '', _cmd);
+						cb(cmd/* error */, ''/* stdout */, cmd/* stderr */);
 					}
 				});
-				const options = <CommandOptions>{ commandTitle: 'title', ignoreError: ignoreError, sudo: true, workingDirectory: __dirname };
-				let error: any, result: string;
-				try {
-					result = await platformService.runCommand(command, options);
-				} catch (e) {
-					error = e;
-				}
-				stub.callCount.should.equal(1);
-				if (commandSucceeds) {
-					result!.should.equal(command);
-				} else {
-					if (ignoreError) {
-						should(error).be.undefined();
-						should(result! === undefined || result.length === 0).be.true();
-					} else {
-						should(error).not.be.undefined();
-					}
-				}
+				const { error, result } = await tryExecuteAction(() => platformService.runCommand(command, { commandTitle: 'title', ignoreError: ignoreError, sudo: true, workingDirectory: __dirname }));
+				verifyCommandExecution(stub, result, error, command, commandSucceeds, ignoreError);
 			});
 		});
 	});
@@ -385,3 +339,16 @@ async function tryExecuteAction<T>(action: () => T | PromiseLike<T>): Promise<{ 
 	return { result, error };
 }
 
+function verifyCommandExecution(stub: sinon.SinonStub, result: string | undefined, error: any, command: string, commandSucceeds: boolean | undefined, ignoreError: boolean | undefined) {
+	stub.callCount.should.equal(1);
+	if (commandSucceeds) {
+		result!.should.equal(command);
+	} else {
+		if (ignoreError) {
+			should(error).be.undefined();
+			(result === undefined || result.length === 0).should.be.true();
+		} else {
+			should(error).not.be.undefined();
+		}
+	}
+}
