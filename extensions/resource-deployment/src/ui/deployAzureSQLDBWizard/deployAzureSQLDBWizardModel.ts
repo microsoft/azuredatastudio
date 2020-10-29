@@ -27,6 +27,7 @@ export class DeployAzureSQLDBWizardModel extends Model {
 	public endIpAddress!: string;
 	public firewallRuleName!: string;
 	public databaseCollation!: string;
+	public newFirewallRule!: boolean;
 
 
 	constructor() {
@@ -41,11 +42,14 @@ export class DeployAzureSQLDBWizardModel extends Model {
 		statements.push(`azure_sqldb_server_name = '${this.azureServerName}'`);
 		//statements.push(`azure_sqldb_database_edition = '${this.databaseEdition}'`); //@todo alma1 10/7/2020 used for upcoming datbase hardware creation feature.
 		statements.push(`azure_sqldb_database_name = '${this.databaseName}'`);
-		//statements.push(`azure_sqldb_location = '${this.azureRegion}'`);  //@todo alma1 9/10/2020 used for upcoming server creation feature.
-		statements.push(`azure_sqldb_ip_start = '${this.startIpAddress}'`);
-		statements.push(`azure_sqldb_ip_end = '${this.endIpAddress}'`);
-		statements.push(`azure_sqldb_firewall_name = '${this.firewallRuleName}'`);
 		statements.push(`azure_sqldb_collation = '${this.databaseCollation}'`);
+		//statements.push(`azure_sqldb_location = '${this.azureRegion}'`);  //@todo alma1 9/10/2020 used for upcoming server creation feature.
+		statements.push(`azure_sqldb_enable_firewall_rule = ${(this.newFirewallRule) ? 'True' : 'False'}`);
+		if (this.newFirewallRule) {
+			statements.push(`azure_sqldb_ip_start = '${this.startIpAddress}'`);
+			statements.push(`azure_sqldb_ip_end = '${this.endIpAddress}'`);
+			statements.push(`azure_sqldb_firewall_name = '${this.firewallRuleName}'`);
+		}
 		// statements.push(`azure_sqldb_family = '${this.databaseFamily}'`); //@todo alma1 10/7/2020 used for upcoming datbase hardware creation feature.
 		// statements.push(`azure_sqldb_vcore = '${this.vCoreNumber}'`);
 		// statements.push(`azure_sqldb_maxmemory = '${this.storageInGB}'`);
