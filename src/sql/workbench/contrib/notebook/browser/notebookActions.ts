@@ -211,7 +211,7 @@ export class NotebookViewsOptions implements IActionProvider {
 	// Update SelectBox values
 	public updateView() {
 		this._options = [...new Set(this.views.getViews().map(view =>
-			new DashboardViewAction(view.guid, view.name, 'button', this._notebookService)
+			new DashboardViewAction(view.guid, view.name, 'button', this.views, this._notebookService)
 		))];
 
 		const backToNotebookButton = this.instantiationService.createInstance(NotebookViewAction, 'notebookView.backToNotebook', localize('notebookViewLabel', 'Editor'), 'notebook-button');
@@ -236,7 +236,8 @@ export class NotebookViewsOptions implements IActionProvider {
 export class DashboardViewAction extends Action {
 	constructor(
 		id: string, label: string, cssClass: string,
-		@INotebookService private _notebookService: INotebookService
+		private views: NotebookViewExtension,
+		@INotebookService private _notebookService: INotebookService,
 	) {
 		super(id, label, cssClass);
 	}
@@ -245,7 +246,12 @@ export class DashboardViewAction extends Action {
 		return new Promise<void>((resolve, reject) => {
 			try {
 				const editor = this._notebookService.findNotebookEditor(context);
+				const view = this.views.getViews().find(view => view.guid === this.id);
+
+				editor.model.viewMode = ViewMode.Notebook;
+				this.views.setActiveView(view);
 				editor.model.viewMode = ViewMode.Views;
+
 				resolve();
 			} catch (e) {
 				reject(e);

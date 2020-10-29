@@ -12,7 +12,7 @@ import { InsertCellsModal } from 'sql/workbench/contrib/notebook/browser/noteboo
 import { ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { CellExecutionState } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellExecutionState, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { CellContext, IMultiStateData, MultiStateAction } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -96,6 +96,7 @@ export class InsertCellAction extends Action {
 	private static readonly ICON = 'notebook-button masked-pseudo add-new';
 
 	constructor(
+		private onInsert: (cell: ICellModel) => void,
 		private _context: NotebookViewExtension,
 		private _containerRef: ViewContainerRef,
 		private _componentFactoryResolver: ComponentFactoryResolver,
@@ -106,7 +107,7 @@ export class InsertCellAction extends Action {
 
 	run(): Promise<boolean> {
 		try {
-			const optionsModal = this._instantiationService.createInstance(InsertCellsModal, this._context, this._containerRef, this._componentFactoryResolver);
+			const optionsModal = this._instantiationService.createInstance(InsertCellsModal, this.onInsert, this._context, this._containerRef, this._componentFactoryResolver);
 			optionsModal.render();
 			optionsModal.open();
 			return Promise.resolve(true);

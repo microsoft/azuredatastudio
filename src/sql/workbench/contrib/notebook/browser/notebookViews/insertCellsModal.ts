@@ -35,6 +35,7 @@ export class CellOptionsModel {
 
 	constructor(
 		optionsMetadata: ServiceOption[],
+		private onInsert: (cell: ICellModel) => any,
 		private _context: NotebookViewExtension,
 	) {
 		optionsMetadata.forEach(optionMetadata => {
@@ -73,7 +74,8 @@ export class CellOptionsModel {
 				const activeView = this._context.getActiveView();
 				const cellToInsert = activeView.getCell(optionElement.optionMetadata.name);
 				if (cellToInsert) {
-					activeView.insertCellAt(cellToInsert, 0, 0);
+					//activeView.insertCell(cellToInsert);
+					this.onInsert(cellToInsert);
 				}
 			}
 		}
@@ -101,6 +103,7 @@ export class InsertCellsModal extends Modal {
 	private _optionsMap: { [name: string]: Checkbox } = {};
 
 	constructor(
+		private onInsert: (cell: ICellModel) => any,
 		private _context: NotebookViewExtension,
 		private _containerRef: ViewContainerRef,
 		private _componentFactoryResolver: ComponentFactoryResolver,
@@ -126,7 +129,7 @@ export class InsertCellsModal extends Modal {
 		);
 
 		const options = this.getOptions();
-		this.viewModel = new CellOptionsModel(options, this._context);
+		this.viewModel = new CellOptionsModel(options, this.onInsert, this._context);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -155,7 +158,7 @@ export class InsertCellsModal extends Modal {
 		cellsAvailableToInsert.forEach((cell) => {
 			const optionWidget = this.createCheckBoxHelper(
 				container,
-				cell.renderedOutputTextContent[0]?.substr(0, 20) ?? localize("insertCellsModal.untitled", "Untitled Cell : {0}", cell.cellGuid),
+				'<div class="loading-spinner-container"><div class="loading-spinner codicon in-progress"></div></div>',//cell.renderedOutputTextContent[0]?.substr(0, 20) ?? localize("insertCellsModal.untitled", "Untitled Cell : {0}", cell.cellGuid),
 				false,
 				() => this.onOptionChecked(cell.cellGuid)
 			);
@@ -271,6 +274,19 @@ export class InsertCellsModal extends Modal {
 }
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	collector.addRule(`
+		#insert-dialog-cell-grid .loading-spinner-container {
+			flex: 1;
+			align-self: center;
+		}
+	`);
+
+	collector.addRule(`
+		#insert-dialog-cell-grid .loading-spinner {
+			margin: auto;
+		}
+	`);
+
 	collector.addRule(`
 		#insert-dialog-cell-grid input[type="checkbox"] {
 			display: flex;

@@ -21,7 +21,6 @@ import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 	templateUrl: decodeURI(require.toUrl('./gridstackItem.component.html'))
 })
 export class GridStackItemComponent implements OnInit {
-	//private _actions: Array<Action>;
 	private _actionbar: ActionBar;
 	private _metadata: INotebookViewCellMetadata;
 	private _activeView: INotebookView;
@@ -65,8 +64,6 @@ export class GridStackItemComponent implements OnInit {
 	}
 
 	initActionBar() {
-		// top action bar
-		//this._actions = new Array<Action>();
 		if (this._actionbarRef) {
 			let context = new CellContext(this.model, this.cell);
 
@@ -109,20 +106,24 @@ export class GridStackItemComponent implements OnInit {
 		this.changed('hide');
 	}
 
+	public get data(): any {
+		return this._metadata?.views?.find(v => v.guid === this._activeView.guid);
+	}
+
 	public get width(): number {
-		return this.cell.metadata?.extensions?.azuredatastudio?.views[0]?.width ? this.cell.metadata.extensions.azuredatastudio.views[0].width : 12;
+		return this.data?.width ? this.data.width : 12;
 	}
 
 	public get height(): number {
-		return this.cell.metadata?.extensions?.azuredatastudio?.views[0]?.height ? this.cell.metadata.extensions.azuredatastudio.views[0].height : 4;
+		return this.data.height ? this.data.height : 4;
 	}
 
 	public get x(): number {
-		return this.cell.metadata?.extensions?.azuredatastudio?.views[0]?.x;
+		return this.data?.x;
 	}
 
 	public get y(): number {
-		return this.cell.metadata?.extensions?.azuredatastudio?.views[0]?.y;
+		return this.data?.y;
 	}
 
 	public get display(): boolean {
@@ -130,7 +131,7 @@ export class GridStackItemComponent implements OnInit {
 			return true;
 		}
 
-		return !this._metadata?.views?.find(v => v.guid === this._activeView.guid).hidden;
+		return !this.data?.hidden;
 	}
 
 	public get showActionBar(): boolean {

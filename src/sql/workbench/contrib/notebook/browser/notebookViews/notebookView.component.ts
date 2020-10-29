@@ -37,6 +37,7 @@ import * as _ from 'lodash';
 import { find, firstIndex } from 'vs/base/common/arrays';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { GridStackComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/gridstack.component';
 
 export const PLACEHOLDER_SELECTOR: string = 'notebook-view-component';
 
@@ -52,6 +53,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 
 	@ViewChild('container', { read: ElementRef }) private container: ElementRef;
 	@ViewChild('viewsToolbar', { read: ElementRef }) private viewsToolbar: ElementRef;
+	@ViewChild(GridStackComponent) private gridstack: GridStackComponent;
 	@ViewChildren(CodeCellComponent) private codeCells: QueryList<CodeCellComponent>;
 	@ViewChildren(TextCellComponent) private textCells: QueryList<TextCellComponent>;
 
@@ -155,6 +157,9 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	addCell(cellType: CellType, index?: number, event?: UIEvent) {
 		throw new Error('Method not implemented.');
 	}
+	insertCell(cell: ICellModel) {
+		this.gridstack.onCellChanged({ cell: cell, event: 'insert' });
+	}
 
 	ngOnInit() {
 		this.initViewsToolbar();
@@ -173,8 +178,6 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	}
 
 	ngOnChanges() {
-		//this._prevModel = this.model;
-
 		this.initViewsToolbar();
 	}
 
@@ -248,7 +251,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		titleElement.style.marginRight = '25px';
 		titleElement.style.minHeight = '25px';
 
-		let addCellsAction = this.instantiationService.createInstance(InsertCellAction, this.extension, this._containerRef, this._componentFactoryResolver);
+		let insertCellsAction = this.instantiationService.createInstance(InsertCellAction, this.insertCell.bind(this), this.extension, this._containerRef, this._componentFactoryResolver);
 
 		this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'notebook-button masked-pseudo start-outline');
 
@@ -281,7 +284,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		this._actionBar.setContent([
 			{ element: titleElement },
 			{ element: Taskbar.createTaskbarSeparator() },
-			{ action: addCellsAction },
+			{ action: insertCellsAction },
 			{ action: this._runAllCellsAction },
 			{ element: spacerElement },
 			{ element: viewsDropdownContainer },

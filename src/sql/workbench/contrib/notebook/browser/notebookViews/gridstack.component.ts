@@ -14,6 +14,7 @@ import { NotebookViewExtension, INotebookViewCell, CellChangeEvent } from 'sql/w
 //declare var $: any; // JQuery
 
 import { GridStack } from 'gridstack';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 
 @Component({
 	selector: 'gridstack',
@@ -35,6 +36,10 @@ export class GridStackComponent implements OnInit {
 		this.loaded = false;
 	}
 
+	public get empty(): boolean {
+		return !this._items || !this._items.find(item => item.display);
+	}
+
 	public get hiddenItems(): GridStackItemComponent[] {
 		return this._items.filter(item => !item.display);
 	}
@@ -42,20 +47,9 @@ export class GridStackComponent implements OnInit {
 	ngOnInit() {
 		const self = this;
 
-		this.extension = new NotebookViewExtension(this.model);
-		const views = this.extension.getViews();
-		let activeView = this.extension.getActiveView() ?? views[0];
-
-		if (!activeView) {
-			//activeView = this._extension.createNewView('Test View');
-			//this._extension.setActiveView(activeView);
-			//this._extension.commit();
-		}
-
 		setTimeout(() => {
 			self._grid = GridStack.init({
-				alwaysShowResizeHandle: true,
-				//verticalMargin: 5
+				alwaysShowResizeHandle: true
 			});
 
 			this.cells.forEach((cell) => self._grid);
@@ -75,13 +69,28 @@ export class GridStackComponent implements OnInit {
 		}
 	}
 
-	onCellChanged(e: CellChangeEvent) {
+	async onCellChanged(e: CellChangeEvent) {
 		const currentView = this.extension.getActiveView();
 		if (this._grid && currentView) {
-			const results = this._grid.el.querySelector(`[data-cell-id='${e.cell.cellGuid}']`);
-			if (results.length === 1 && e.event === 'hide') {
-				this._grid.removeWidget(results[0]);
+			const cellElem = this._grid.el.querySelector(`[data-cell-id='${e.cell.cellGuid}']`);
+			if (cellElem && e.event === 'hide') {
+				this._grid.removeWidget(cellElem);
 				currentView.hideCell(e.cell);
+			}
+
+			if (e.cell && e.event === 'insert') {
+				const component = this._items.find(x => x.cell.cellGuid === e.cell.cellGuid);
+				currentView.moveCell(e.cell, 9999, 0);
+				currentView.insertCell(e.cell);
+
+				const el = this._grid.getGridItems().find(x => x.getAttribute('data-cell-id') === e.cell.cellGuid);
+				this._grid.makeWidget(el);
+				this._grid.move(el, 0, 0);
+				this._grid.resizable(el, true);
+				this._grid.movable(el, true);
+
+				component.initActionBar();
+				component.detectChanges();
 			}
 			this.detectChanges();
 		}
@@ -94,7 +103,7 @@ export class GridStackComponent implements OnInit {
 			const item = items.toArray().find(item => item.cell.cellGuid === cellId);
 
 			const activeView = this.extension.getActiveView();
-			if (activeView) {
+			if (item && activeView) {
 				const update: INotebookViewCell = {
 					guid: activeView.guid,
 					x: changedItem.x,
@@ -115,3 +124,11 @@ export class GridStackComponent implements OnInit {
 
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	collector.addRule(`
+		.empty-message {
+			text-align: center;
+		}
+	`);
+});

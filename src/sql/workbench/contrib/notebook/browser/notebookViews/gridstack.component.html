@@ -4,3 +4,6 @@
 		<ng-content *ngTemplateOutlet='wrapper.templateRef'></ng-content>
 	</ng-container>
 </div>
+<div class="empty-message" *ngIf="empty && loaded">
+	This view is empty. Add a cell to this view by clicking the Insert Cells button.
+</div>

@@ -9,7 +9,7 @@ import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contr
 import { Emitter, Event } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 
-export type CellChangeEventType = 'hide' | 'active';
+export type CellChangeEventType = 'hide' | 'insert' | 'active';
 
 export type CellChangeEvent = {
 	cell: ICellModel,
@@ -38,8 +38,9 @@ export interface INotebookView {
 	initialize(): void;
 	nameAvailable(name: string): boolean;
 	hideCell(cell: ICellModel): void;
+	moveCell(cell: ICellModel, x: number, y: number): void;
 	getCell(guid: string): Readonly<ICellModel>;
-	insertCellAt(cell: ICellModel, x: number, y: number, height?: number, width?: number): void;
+	insertCell(cell: ICellModel): void;
 	save(): void;
 	delete(): void;
 }
@@ -321,12 +322,16 @@ class NotebookView implements INotebookView {
 		});
 	}
 
-	public insertCellAt(cell: ICellModel, x: number, y: number, height: number = 4, width: number = 12) {
-		this._notebookViewExtension.updateCell(cell, this, { hidden: false, x, y, width, height });
+	public insertCell(cell: ICellModel) {
+		this._notebookViewExtension.updateCell(cell, this, { hidden: false });
 	}
 
 	public hideCell(cell: ICellModel) {
 		this._notebookViewExtension.updateCell(cell, this, { hidden: true });
+	}
+
+	public moveCell(cell: ICellModel, x: number, y: number) {
+		this._notebookViewExtension.updateCell(cell, this, { x, y });
 	}
 
 	public save() {
