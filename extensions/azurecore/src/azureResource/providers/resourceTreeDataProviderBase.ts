@@ -55,6 +55,7 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 
 export interface GraphData {
 	subscriptionId: string,
+	subscriptionName?: string,
 	tenantId: string;
 	id: string;
 	name: string;
@@ -122,12 +123,13 @@ export abstract class ResourceServiceBase<T extends GraphData, U extends azureRe
 	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: azdata.Account): Promise<U[]> {
 		const convertedResources: U[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
-		let graphResources = await queryGraphResources<T>(resourceClient, subscriptions, this.query);
-		let ids = new Set<string>();
+		const graphResources = await queryGraphResources<T>(resourceClient, subscriptions, this.query);
+		const ids = new Set<string>();
 		graphResources.forEach((res) => {
 			if (!ids.has(res.id)) {
 				ids.add(res.id);
-				let converted = this.convertResource(res);
+				res.subscriptionName = subscriptions.find(sub => sub.id === res.subscriptionId).name;
+				const converted = this.convertResource(res);
 				convertedResources.push(converted);
 			}
 		});

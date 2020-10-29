@@ -43,6 +43,7 @@ class ConnectionProfileGroupTemplate extends Disposable {
 	set(element: ConnectionProfileGroup) {
 		let rowElement = findParentElement(this._root, 'monaco-list-row');
 		if (rowElement) {
+			rowElement.style.color = element.textColor;
 			if (element.color) {
 				rowElement.style.background = element.color;
 			} else {

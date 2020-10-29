@@ -35,23 +35,29 @@ declare module 'azureResource' {
 			readonly treeItem: TreeItem;
 		}
 
+		export interface IAzureSubscriptionInfo {
+			id: string;
+			name: string;
+		}
+
 		export interface AzureResource {
 			name: string;
 			id: string;
-			subscriptionId: string;
+			subscription: IAzureSubscriptionInfo;
 			resourceGroup?: string;
 			tenant?: string;
 		}
 
-		export interface AzureResourceSubscription extends Omit<AzureResource, 'subscriptionId'> {
+		export interface AzureResourceSubscription extends Omit<AzureResource, 'subscription'> {
 		}
 
 		export interface AzureSqlResource extends AzureResource {
 			loginName: string;
 		}
 
-		export interface AzureGraphResource extends Omit<AzureResource, 'tenant'> {
+		export interface AzureGraphResource extends Omit<AzureResource, 'tenant' | 'subscription'> {
 			tenantId: string;
+			subscriptionId: string;
 			type: string;
 			location: string;
 		}
