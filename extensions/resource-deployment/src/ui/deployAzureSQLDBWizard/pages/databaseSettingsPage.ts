@@ -156,15 +156,15 @@ export class DatabaseSettingsPage extends BasePage {
 			}
 		});
 
-		this.wizard.model.newFirewallRule = true;
+		this._model.newFirewallRule = true;
 
 		this._firewallToggleDropdown.onChanged((value) => {
 			let displayValue: 'block' | 'none' = (value) ? 'block' : 'none';
-			this.wizard.changeRowDisplay(this._firewallRuleNameTextRow, displayValue);
-			this.wizard.changeRowDisplay(this._endIpAddressTextRow, displayValue);
-			this.wizard.changeRowDisplay(this._startIpAddressTextRow, displayValue);
-			this.wizard.changeComponentDisplay(this._IpInfoText, displayValue);
-			this.wizard.model.newFirewallRule = value;
+			this._model.changeRowDisplay(this._firewallRuleNameTextRow, displayValue);
+			this._model.changeRowDisplay(this._endIpAddressTextRow, displayValue);
+			this._model.changeRowDisplay(this._startIpAddressTextRow, displayValue);
+			this._model.changeComponentDisplay(this._IpInfoText, displayValue);
+			this._model.newFirewallRule = value;
 		});
 	}
 
@@ -213,7 +213,7 @@ export class DatabaseSettingsPage extends BasePage {
 		let databasename = this._databaseNameTextbox.value!;
 		let collationname = this._collationTextbox.value!;
 
-		if (this.wizard.model.newFirewallRule) {
+		if (this._model.newFirewallRule) {
 			if (!(ipRegex.test(startipvalue))) {
 				errorMessages.push(localize('deployAzureSQLDB.DBMinIpInvalidError', "Min Ip address is invalid"));
 			}

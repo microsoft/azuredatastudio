@@ -9,6 +9,8 @@ import { apiService } from '../../../services/apiService';
 import { azureResource } from 'azureResource';
 import * as vscode from 'vscode';
 import * as localizedConstants from '../../../localizedConstants';
+import { BasePage } from './basePage';
+import { DeployAzureSQLVMWizardModel } from '../deployAzureSQLVMWizardModel';
 
 export class AzureSettingsPage extends BasePage {
 	// <- means depends on
