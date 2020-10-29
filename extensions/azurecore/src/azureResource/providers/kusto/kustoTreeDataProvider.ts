@@ -16,7 +16,7 @@ import { azureResource } from 'azureResource';
 
 export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.KustoContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.KustoContainerLabel', "Azure Data Explorer Clusters");
+	private static readonly containerLabel = localize('azure.resource.providers.KustoContainerLabel', "Azure Data Explorer Cluster");
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
@@ -29,7 +29,7 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureRes
 	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: Account): TreeItem {
 		return {
 			id: `Kusto_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
-			label: databaseServer.name,
+			label: `${databaseServer.name} (${KustoTreeDataProvider.containerLabel}, ${databaseServer.subscriptionName})`,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/azureDE_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/azureDE.svg')

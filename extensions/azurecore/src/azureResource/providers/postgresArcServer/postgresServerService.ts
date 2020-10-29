@@ -28,6 +28,7 @@ export class PostgresServerArcService extends ResourceServiceBase<PostgresArcSer
 			loginName: resource.properties.admin,
 			defaultDatabaseName: 'postgres',
 			subscriptionId: resource.subscriptionId,
+			subscriptionName: resource.subscriptionName,
 			tenant: resource.tenantId,
 			resourceGroup: resource.resourceGroup
 		};

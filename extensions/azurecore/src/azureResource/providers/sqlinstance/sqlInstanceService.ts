@@ -29,6 +29,7 @@ export class SqlInstanceResourceService extends ResourceServiceBase<SqlInstanceG
 			loginName: resource.properties.administratorLogin,
 			defaultDatabaseName: 'master',
 			subscriptionId: resource.subscriptionId,
+			subscriptionName: resource.subscriptionName,
 			tenant: resource.tenantId,
 			resourceGroup: resource.resourceGroup
 		};

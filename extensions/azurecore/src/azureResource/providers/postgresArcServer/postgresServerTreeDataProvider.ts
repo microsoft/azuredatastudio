@@ -29,7 +29,7 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: Account): TreeItem {
 		return {
 			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
-			label: databaseServer.name,
+			label: `${databaseServer.name} (${PostgresServerArcTreeDataProvider.containerLabel}, ${databaseServer.subscriptionName})`,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')

@@ -7,7 +7,6 @@
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
 import { azureResource } from 'azureResource';
 
-
 export interface DbServerGraphData extends GraphData {
 	properties: {
 		fullyQualifiedDomainName: string;
@@ -31,6 +30,7 @@ export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbSe
 			loginName: resource.properties.administratorLogin,
 			defaultDatabaseName: 'master',
 			subscriptionId: resource.subscriptionId,
+			subscriptionName: resource.subscriptionName,
 			tenant: resource.tenantId,
 			resourceGroup: resource.resourceGroup
 		};

@@ -39,11 +39,12 @@ declare module 'azureResource' {
 			name: string;
 			id: string;
 			subscriptionId: string;
+			subscriptionName?: string;
 			resourceGroup?: string;
 			tenant?: string;
 		}
 
-		export interface AzureResourceSubscription extends Omit<AzureResource, 'subscriptionId'> {
+		export interface AzureResourceSubscription extends Omit<AzureResource, 'subscriptionId' | 'subscriptionName'> {
 		}
 
 		export interface AzureSqlResource extends AzureResource {
