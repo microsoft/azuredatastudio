@@ -139,7 +139,13 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	private onCellDataChanged(newValue: string | number | boolean | any, rowIdx: number, colIdx: number): void {
 		this.data[rowIdx][colIdx].value = newValue;
-		this.setPropertyFromUI<any[][]>((props, value) => props.data = value, this.data);
+
+		if (this.properties.data) {
+			this.setPropertyFromUI<any[][]>((props, value) => props.data = value, this.data);
+		} else {
+			this.setPropertyFromUI<any[][]>((props, value) => props.dataValues = value, this.data);
+		}
+
 		let newCellData: azdata.TableCell = {
 			row: rowIdx,
 			column: colIdx,
