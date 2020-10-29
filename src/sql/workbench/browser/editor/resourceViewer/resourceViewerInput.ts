@@ -13,13 +13,16 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
-import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { getDataGridFormatter } from 'sql/workbench/services/dataGridProvider/browser/dataGridProviderUtils';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IAction } from 'vs/base/common/actions';
+import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 
 export interface ColumnDefinition extends Slick.Column<azdata.DataGridItem> {
 	name: string;
-	type: azdata.DataGridColumnType;
+	// actions is a special internal type for the More Actions column
+	type: azdata.DataGridColumnType | 'actions';
 	filterable?: boolean;
 }
 
@@ -36,9 +39,11 @@ export class ResourceViewerInput extends EditorInput {
 	public onDataChanged: Event<void> = this._onDataChanged.event;
 
 	constructor(private _providerId: string,
-		@IDataGridProviderService private _dataGridProvider: IDataGridProviderService,
+		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IInstantiationService instantiationService: IInstantiationService) {
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IMenuService menuService: IMenuService,
+		@IContextKeyService contextKeyService: IContextKeyService) {
 		super();
 		this._actionsColumn = new ButtonColumn<azdata.DataGridItem>({
 			id: 'actions',
@@ -47,7 +52,15 @@ export class ResourceViewerInput extends EditorInput {
 			sortable: false
 		});
 		this._register(this._actionsColumn.onClick(args => {
-			const actions = args.item.actions.map(commandInfo => instantiationService.createInstance(ResourceViewerCommandAction, commandInfo.id, commandInfo.displayText, commandInfo.args));
+			// Create the menu based off of the contributed menu actions. Note that this currently doesn't
+			// have any item-level support for action filtering, that can be added to the scoped context as
+			// needed in the future
+			const scopedContext = contextKeyService.createScoped();
+			const menu = menuService.createMenu(MenuId.DataGridItemContext, scopedContext);
+			const options = { arg: args.item };
+			const groups = menu.getActions(options);
+			const actions: IAction[] = [];
+			fillInActions(groups, actions, false);
 			contextMenuService.showContextMenu({
 				getAnchor: () => args.position,
 				getActions: () => actions
@@ -98,14 +111,8 @@ export class ResourceViewerInput extends EditorInput {
 	}
 
 	private async fetchColumns(): Promise<void> {
-		const columns = await this._dataGridProvider.getDataGridColumns(this._providerId);
-		this.columns = columns.map(col => {
-			if (col.type === 'actions') {
-				const def = this._actionsColumn.definition as ColumnDefinition;
-				def.type = 'actions';
-				def.filterable = false;
-				return def;
-			}
+		const columns = await this._dataGridProviderService.getDataGridColumns(this._providerId);
+		const columnDefinitions: ColumnDefinition[] = columns.map(col => {
 			return {
 				name: col.name,
 				field: col.field,
@@ -119,21 +126,16 @@ export class ResourceViewerInput extends EditorInput {
 				type: col.type
 			};
 		});
+
+		// Now add in the actions column definition at the end
+		const actionsColumnDef: ColumnDefinition = Object.assign({}, this._actionsColumn.definition, { type: 'actions', filterable: false }) as ColumnDefinition;
+		columnDefinitions.push(actionsColumnDef);
+		this.columns = columnDefinitions;
 	}
 
 	private async fetchItems(): Promise<void> {
-		const items = await this._dataGridProvider.getDataGridItems(this._providerId);
+		const items = await this._dataGridProviderService.getDataGridItems(this._providerId);
 		this._data = items;
 		this._onDataChanged.fire();
-	}
-}
-
-class ResourceViewerCommandAction extends ExecuteCommandAction {
-	constructor(id: string, label: string, private _args: any[], @ICommandService commandService: ICommandService) {
-		super(id, label, commandService);
-	}
-
-	run(): Promise<any> {
-		return super.run(...this._args);
 	}
 }

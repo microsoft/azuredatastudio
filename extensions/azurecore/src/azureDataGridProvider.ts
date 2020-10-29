@@ -45,7 +45,6 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 							.map(item => {
 								return <azdata.DataGridItem>{
 									id: item.id,
-									actions: [{ id: 'vscode.open', args: ['https://microsoft.com'], displayText: loc.openInAzurePortal }],
 									fieldValues: {
 										nameLink: <azdata.DataGridHyperlinkInfo>{ displayText: item.name, linkOrCommand: 'https://microsoft.com' },
 										resourceGroup: item.resourceGroup,
@@ -75,8 +74,7 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 			{ id: 'type', type: 'text', field: 'typeDisplayName', name: loc.resourceType, width: 150 },
 			{ id: 'type', type: 'text', field: 'resourceGroup', name: loc.resourceGroup, width: 150 },
 			{ id: 'location', type: 'text', field: 'locationDisplayName', name: loc.location, width: 150 },
-			{ id: 'subscriptionId', type: 'text', field: 'subscriptionName', name: loc.subscription, width: 150 },
-			{ id: 'actions', type: 'actions', field: '', name: '' }
+			{ id: 'subscriptionId', type: 'text', field: 'subscriptionName', name: loc.subscription, width: 150 }
 		];
 	}
 }

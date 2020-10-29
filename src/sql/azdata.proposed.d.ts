@@ -142,7 +142,7 @@ declare module 'azdata' {
 	/**
 	 * The type of the DataGrid column
 	 */
-	export type DataGridColumnType = 'hyperlink' | 'text' | 'image' | 'actions';
+	export type DataGridColumnType = 'hyperlink' | 'text' | 'image';
 
 	/**
 	 * A column in a data grid

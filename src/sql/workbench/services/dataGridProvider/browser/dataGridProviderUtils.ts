@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { textFormatter, hyperLinkFormatter, imageFormatter } from 'sql/base/browser/ui/table/formatters';
 
-export function getDataGridFormatter(formatterType: azdata.DataGridColumnType): Slick.Formatter<any> | undefined {
+export function getDataGridFormatter(formatterType: azdata.DataGridColumnType): Slick.Formatter<any> {
 	switch (formatterType) {
 		case 'text':
 			return textFormatter;
@@ -15,5 +15,4 @@ export function getDataGridFormatter(formatterType: azdata.DataGridColumnType): 
 		case 'image':
 			return imageFormatter;
 	}
-	return undefined;
 }

@@ -71,5 +71,3 @@ export const azureArcsqlManagedInstance = localize('azurecore.azureArcsqlManaged
 export const azureArcService = localize('azurecore.azureArcService', "Data Service - Azure Arc");
 export const sqlServerArc = localize('azurecore.sqlServerArc', "SQL Server - Azure Arc");
 export const azureArcPostgresServer = localize('azurecore.azureArcPostgres', "Azure Arc enabled PostgreSQL Hyperscale");
-
-export const openInAzurePortal = localize('azureCore.openInAzurePortal', "Open in Azure Portal");
