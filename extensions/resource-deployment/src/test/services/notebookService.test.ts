@@ -5,7 +5,6 @@
 
 import * as azdata from 'azdata';
 import 'mocha';
-import * as should from 'should';
 import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
@@ -15,9 +14,10 @@ import { IPlatformService } from '../../services/platformService';
 import assert = require('assert');
 
 
-describe('Notebook Service Tests', function (): void {
+describe('NotebookService', function (): void {
 	const notebookInput = 'test-notebook.ipynb';
 	const notebookFileName = 'mynotebook.ipynb';
+	const expectedTargetFileName = 'mynotebook';
 	const sourceNotebookPath = `./notebooks/${notebookFileName}`;
 	const notebookWin32 = 'test-notebook-win32.ipynb';
 	const notebookDarwin = 'test-notebook-darwin.ipynb';
@@ -67,12 +67,11 @@ describe('Notebook Service Tests', function (): void {
 	});
 
 	it('findNextUntitledEditorName with no name conflict', () => {
-		const expectedTargetFile = 'mynotebook';
 		mockPlatformService.setup((service) => service.isNotebookNameUsed(TypeMoq.It.isAnyString()))
 			.returns((path) => { return false; });
 		const actualFileName = notebookService.findNextUntitledEditorName(sourceNotebookPath);
 		mockPlatformService.verify((service) => service.isNotebookNameUsed(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
-		assert.equal(actualFileName, expectedTargetFile, 'target file name is not correct');
+		assert.equal(actualFileName, expectedTargetFileName, 'target file name is not correct');
 	});
 
 	it('findNextUntitledEditorName with name conflicts', () => {
@@ -95,17 +94,14 @@ describe('Notebook Service Tests', function (): void {
 
 	it('showNotebookAsUntitled', async () => {
 		const documentContent = 'documentContent';
-		const openDocStub = sinon.stub(vscode.workspace, 'openTextDocument').resolves(<vscode.TextDocument>{ getText: () => documentContent });
-		const showDocStub = sinon.stub(azdata.nb, 'showNotebookDocument').resolves();
-		const result = await notebookService.showNotebookAsUntitled(sourceNotebookPath);
-		openDocStub.callCount.should.equal(1);
-		openDocStub.getCall(0).args[0]!.should.equal(sourceNotebookPath);
-		showDocStub.callCount.should.equal(1);
-		const untitledFileName = showDocStub.getCall(0).args[0]!;
+		sinon.stub(vscode.workspace, 'openTextDocument').resolves(<vscode.TextDocument>{ getText: () => documentContent });
+		const stub = sinon.stub(azdata.nb, 'showNotebookDocument').resolves();
+		await notebookService.showNotebookAsUntitled(sourceNotebookPath);
+		stub.callCount.should.equal(1);
+		const untitledFileName = stub.getCall(0).args[0]!;
 		untitledFileName.scheme.should.equal('untitled');
-		untitledFileName.path.should.equal(sourceNotebookPath);
-		const options = showDocStub.getCall(0).args[1]!;
+		untitledFileName.path.should.equal(expectedTargetFileName);
+		const options = stub.getCall(0).args[1]!;
 		options.initialContent!.should.equal(documentContent);
-		should(result).not.be.undefined();
 	});
 });
