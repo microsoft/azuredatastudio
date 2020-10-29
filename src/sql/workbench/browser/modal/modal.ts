@@ -56,7 +56,7 @@ export interface IModalDialogStyles {
 }
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
-export type DialogStyle = 'Normal' | 'Flyout' | 'Callout';
+export type DialogStyle = 'normal' | 'flyout' | 'callout';
 export type DialogPosition = 'left' | 'right' | 'above' | 'below' | undefined;
 
 export interface IModalOptions {
@@ -72,7 +72,7 @@ export interface IModalOptions {
 }
 
 const defaultOptions: IModalOptions = {
-	dialogStyle: 'Flyout',
+	dialogStyle: 'flyout',
 	dialogPosition: undefined,
 	width: 'narrow',
 	isAngular: false,
@@ -175,8 +175,8 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	public render() {
 		let builderClass = '.modal.fade';
-		builderClass += this._modalOptions.dialogStyle === 'Flyout' ? '.flyout-dialog'
-			: this._modalOptions.dialogStyle === 'Callout' ? '.callout-dialog'
+		builderClass += this._modalOptions.dialogStyle === 'flyout' ? '.flyout-dialog'
+			: this._modalOptions.dialogStyle === 'callout' ? '.callout-dialog'
 				: '';
 
 		this._bodyContainer = DOM.$(`${builderClass}`, { role: 'dialog', 'aria-label': this._title });
@@ -184,7 +184,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
 
-		if (this._modalOptions.dialogStyle === 'Callout') {
+		if (this._modalOptions.dialogStyle === 'callout') {
 			let arrowClass = `.arrow.from-${this._modalOptions.dialogPosition}`;
 			this._modalContent = DOM.append(this._modalDialog, DOM.$(`.modal-content${arrowClass}`));
 		} else {
@@ -197,7 +197,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalDialog.classList.add(`${this._modalOptions.width}-dialog`);
 		}
 
-		if (this._modalOptions.dialogStyle === 'Callout') {
+		if (this._modalOptions.dialogStyle === 'callout') {
 			this._register(DOM.addDisposableListener(this._bodyContainer, DOM.EventType.CLICK, (e) => this.handleClickOffModal(e)));
 		}
 
@@ -595,7 +595,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	public style(styles: IModalDialogStyles): void {
 		this._dialogForeground = styles.dialogForeground;
 		this._dialogBorder = styles.dialogBorder;
-		if (this._modalOptions.dialogStyle === 'Callout') {
+		if (this._modalOptions.dialogStyle === 'callout') {
 			this._dialogHeaderAndFooterBackground = styles.dialogBodyBackground;
 		} else {
 			this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground;

@@ -3,14 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { URI } from 'vs/base/common/uri';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import * as DOM from 'vs/base/browser/dom';
+import * as styler from 'vs/platform/theme/common/styler';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import * as DOM from 'vs/base/browser/dom';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IFileDialogService, IOpenDialogOptions } from 'vs/platform/dialogs/common/dialogs';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
@@ -19,14 +22,14 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import * as styler from 'vs/platform/theme/common/styler';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
+// import { IContextMenuDelegate } from 'vs/base/browser/contextmenu';
 
 export type CalloutStyle = 'LINK' | 'IMAGE' | 'TABLE';
 
-export interface ICalloutOptions {
+export interface ICalloutDialogOptions {
 	insertTtitle?: string,
 	calloutStyle?: CalloutStyle,
 	insertMarkup?: string,
@@ -34,12 +37,11 @@ export interface ICalloutOptions {
 	embedImage?: boolean
 }
 
-export class Callout extends Modal {
+export class CalloutDialog extends Modal {
 	private _calloutStyle: CalloutStyle;
-	private _triggerCssSelector: string;
-	private _container?: HTMLElement;
+	// private _container?: HTMLElement;
 
-	private _selectionComplete: Deferred<ICalloutOptions>;
+	private _selectionComplete: Deferred<ICalloutDialogOptions>;
 	private _insertButton: Button;
 	private _cancelButton: Button;
 	// Link
@@ -76,7 +78,8 @@ export class Callout extends Modal {
 	constructor(
 		calloutInstance: CalloutStyle,
 		title: string,
-		triggerCssSelector: string,
+		// trigger: HTMLElement,
+		@IFileDialogService private readonly _fileDialogService: IFileDialogService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
@@ -97,18 +100,17 @@ export class Callout extends Modal {
 			textResourcePropertiesService,
 			contextKeyService,
 			{
-				dialogStyle: 'Callout',
+				dialogStyle: 'callout',
 				dialogPosition: 'below'
 			});
-		this._selectionComplete = new Deferred<ICalloutOptions>();
+		this._selectionComplete = new Deferred<ICalloutDialogOptions>();
 		this._calloutStyle = calloutInstance;
-		this._triggerCssSelector = triggerCssSelector;
 	}
 
 	/**
 	 * Opens the dialog and returns a promise for what options the user chooses.
 	 */
-	public open(): Promise<ICalloutOptions> {
+	public open(): Promise<ICalloutDialogOptions> {
 		this.show();
 		return this._selectionComplete.promise;
 	}
@@ -128,7 +130,7 @@ export class Callout extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		this._container = container;
+		//this._container = container;
 		let description = DOM.$('.row');
 		DOM.append(container, description);
 
@@ -141,7 +143,7 @@ export class Callout extends Modal {
 			this._imageLocalRadioButton = new RadioButton(radioButtonGroup, {
 				label: this.localImageLabel,
 				enabled: true,
-				checked: false,
+				checked: false
 			});
 			this._imageRemoteRadioButton = new RadioButton(radioButtonGroup, {
 				label: this.remoteImageLabel,
@@ -172,7 +174,9 @@ export class Callout extends Modal {
 			DOM.append(inputContainer, browseButtonContainer);
 			DOM.append(browseButtonContainer, this._imageBrowseButton);
 
-			// this._imageBrowseButton.onclick(() => this.handleBrowse());
+			this._register(DOM.addDisposableListener(this._imageBrowseButton, DOM.EventType.CLICK, () => {
+				this.handleBrowse();
+			}, true));
 
 			DOM.append(description, inputContainer);
 
@@ -218,8 +222,7 @@ export class Callout extends Modal {
 			DOM.append(description, linkAddressInputContainer);
 		}
 
-		// These are the values I need, but they need to be set somewhere else:
-		let elTrigger = document.querySelector(this._triggerCssSelector).getBoundingClientRect();
+		//let elTrigger = document.querySelector(this._triggerCssSelector).getBoundingClientRect();
 		// this._container.style.position = 'absolute';
 		// this._container.style.left = `${Math.round(elTrigger.x)}px`;
 		// this._container.style.top = `${Math.round(elTrigger.top)}px`;
@@ -266,10 +269,22 @@ export class Callout extends Modal {
 			imagePath: undefined,
 			embedImage: undefined
 		});
+		this.dispose();
 	}
 
-	// private handleBrowse(): void {
-	// Todo: Find code used to browse file system ...
-	//}
+	private getUserHome(): string {
+		return process.env.HOME || process.env.USERPROFILE;
+	}
 
+	private async handleBrowse(): Promise<void> {
+		let options: IOpenDialogOptions = {
+			openLabel: undefined,
+			canSelectFiles: true,
+			canSelectFolders: true,
+			canSelectMany: false,
+			defaultUri: URI.file(this.getUserHome()),
+			title: undefined
+		};
+		await this._fileDialogService.showOpenDialog(options);
+	}
 }

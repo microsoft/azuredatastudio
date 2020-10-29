@@ -610,7 +610,7 @@ declare module 'azdata' {
 
 		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
-		export type DialogStyle = 'Normal' | 'Flyout' | 'Callout';
+		export type DialogStyle = 'normal' | 'flyout' | 'callout';
 
 		export type DialogPosition = 'left' | 'right' | 'above' | 'below' | undefined;
 
