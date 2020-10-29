@@ -44,3 +44,4 @@ export const EndIpAddressLabel = localize('deployAzureSQLDB.EndIpAddressLabel', 
 export const StartIpAddressShortLabel = localize('deployAzureSQLDB.StartIpAddressShortLabel', "Min IP address");
 export const EndIpAddressShortLabel = localize('deployAzureSQLDB.EndIpAddressShortLabel', "Max IP address");
 export const FirewallRuleDescription = localize('deployAzureSQLDB.FirewallRuleDescription', "Create a firewall rule for your local client IP in order to connect to your database through Azure Data Studio after creation is completed.");
+export const FirewallToggleLabel = localize('deployAzureSQLDB.FirewallToggleLabel', "Create a firewall rule");

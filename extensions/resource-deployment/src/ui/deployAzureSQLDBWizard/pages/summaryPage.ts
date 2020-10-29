@@ -138,6 +138,17 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 				},
 				{
 					type: FieldType.ReadonlyText,
+					label: constants.FirewallToggleLabel,
+					defaultValue: model.newFirewallRule,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
+				}
+			]
+		};
+
+		if (model.newFirewallRule === 'True') {
+			databaseSettingSection.fields?.push(
+				{
+					type: FieldType.ReadonlyText,
 					label: constants.FirewallRuleNameLabel,
 					defaultValue: model.firewallRuleName,
 					labelCSSStyles: { fontWeight: FontWeight.Bold }
@@ -153,9 +164,8 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 					label: constants.EndIpAddressShortLabel,
 					defaultValue: model.endIpAddress,
 					labelCSSStyles: { fontWeight: FontWeight.Bold }
-				}
-			]
-		};
+				});
+		}
 
 
 		const createSectionFunc = async (sectionInfo: SectionInfo): Promise<azdata.FormComponent> => {
