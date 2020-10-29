@@ -57,7 +57,10 @@ describe('Azure Models Component', () => {
 			{
 				name: 'group',
 				id: '3',
-				subscriptionId: 's1'
+				subscription: {
+					id: 's1',
+					name: 's1'
+				}
 			}
 		];
 		let workspaces: Workspace[] = [

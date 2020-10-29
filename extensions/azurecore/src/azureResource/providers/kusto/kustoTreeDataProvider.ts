@@ -29,7 +29,7 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureRes
 	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: Account): TreeItem {
 		return {
 			id: `Kusto_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
-			label: isConnectionDialogBrowseViewEnabled() ? `${databaseServer.name} (${KustoTreeDataProvider.containerLabel}, ${databaseServer.subscriptionName})` : databaseServer.name,
+			label: isConnectionDialogBrowseViewEnabled() ? `${databaseServer.name} (${KustoTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/azureDE_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/azureDE.svg')

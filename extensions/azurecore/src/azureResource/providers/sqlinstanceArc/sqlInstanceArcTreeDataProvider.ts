@@ -29,7 +29,7 @@ export class SqlInstanceArcTreeDataProvider extends ResourceTreeDataProviderBase
 	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: Account): TreeItem {
 		return {
 			id: `sqlInstance_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
-			label: isConnectionDialogBrowseViewEnabled() ? `${databaseServer.name} (${SqlInstanceArcTreeDataProvider.containerLabel}, ${databaseServer.subscriptionName})` : databaseServer.name,
+			label: isConnectionDialogBrowseViewEnabled() ? `${databaseServer.name} (${SqlInstanceArcTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_instance_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_instance.svg')

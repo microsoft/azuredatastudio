@@ -88,7 +88,10 @@ function createContext(): TestContext {
 			{
 				name: 'g1',
 				id: 'g1',
-				subscriptionId: 's1'
+				subscription: {
+					id: 's1',
+					name: 's1'
+				}
 			}
 		],
 		workspaces: [{
