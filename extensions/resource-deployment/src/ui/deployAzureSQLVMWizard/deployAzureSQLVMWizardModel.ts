@@ -5,7 +5,7 @@
 
 import { EOL } from 'os';
 import * as azdata from 'azdata';
-import { ResourceTypeModel, ResourceTypePage, ResourceTypeWizard } from '../resourceTypeWizard';
+import { ResourceTypeWizard } from '../resourceTypeWizard';
 import { AzureSQLVMDeploymentProvider } from '../../interfaces';
 import * as constants from './constants';
 import { IToolsService } from '../../services/toolsService';
@@ -18,6 +18,8 @@ import { VmSettingsPage } from './pages/vmSettingsPage';
 import { NetworkSettingsPage } from './pages/networkSettingsPage';
 import { SqlServerSettingsPage } from './pages/sqlServerSettingsPage';
 import { AzureSQLVMSummaryPage } from './pages/summaryPage';
+import { ResourceTypeModel } from '../resourceTypeModel';
+import { ResourceTypePage } from '../resourceTypePage';
 const localize = nls.loadMessageBundle();
 
 
