@@ -809,45 +809,26 @@ declare module 'azdata' {
 		headerFilter?: boolean,
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	export interface TableComponent {
-
 		/**
 		 * Append data to an exsiting table data.
 		 */
 		appendData(data: any[][]);
-=======
-	export interface TextColumnOption {
-		/**
-		 * Specifies images collection and column that will provide an index of images collection to display. iconProviderColumn will not be displayed in this case as a separate column.
-		 */
-<<<<<<< HEAD
-		iconCssClassColumn?: string
->>>>>>> 0da6138f4a... Grid with icon in text column
-=======
-		imageCollection?: Array<string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri }>,
-		iconProviderColumn?: string,
-=======
+	}
+
 	export interface IconColumnCellValue {
 		icon: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 		ariaLabel: string;
 	}
->>>>>>> e8547e786a... icon column
 
 	export enum ColumnType {
 		icon = 3
 	}
 
-<<<<<<< HEAD
->>>>>>> 2cec81ed5f... image collection and image index
-=======
 	export interface TableColumn {
-
 		/**
 		* The text to display on the column heading. 'value' property will be used, if not specified
 		**/
 		name?: string;
->>>>>>> e8547e786a... icon column
 	}
 }
