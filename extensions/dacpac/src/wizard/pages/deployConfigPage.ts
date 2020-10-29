@@ -52,7 +52,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 	async onPageEnter(): Promise<boolean> {
 		let r1 = await this.populateServerDropdown();
-		let r2 = await this.populateDeployDatabaseDropdown();
+		let r2 = await this.populateDatabaseDropdown();
 		// get existing database values to verify if new database name is valid
 		await this.getDatabaseValues();
 		return r1 && r2;
@@ -99,7 +99,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 		};
 	}
 
-	private async createRadiobuttons(): Promise<azdata.FormComponent> {
+	private createRadiobuttons(): azdata.FormComponent {
 		let upgradeRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'updateExistingOrCreateNew',
@@ -112,13 +112,9 @@ export class DeployConfigPage extends DacFxConfigPage {
 				label: loc.newDatabase,
 			}).component();
 
-		upgradeRadioButton.onDidClick(() => {
-			this.updateUpgradeRadioButton();
-		});
+		this.selectUpgradeRadioButton(upgradeRadioButton);
 
-		newRadioButton.onDidClick(() => {
-			this.updateNewRadioButton();
-		});
+		this.selectNewRadioButton(newRadioButton);
 
 		// Saving instances of the radio buttons to update if databases don't exist
 		this.upgradeRadioButton = upgradeRadioButton;
@@ -153,7 +149,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 		};
 	}
 
-	protected async populateDeployDatabaseDropdown(): Promise<boolean> {
+	protected async populateDatabaseDropdown(): Promise<boolean> {
 		this.databaseLoader.loading = true;
 		this.databaseDropdown.updateProperties({ values: [] });
 		if (!this.model.server) {
@@ -161,15 +157,29 @@ export class DeployConfigPage extends DacFxConfigPage {
 			return false;
 		}
 		let values = await this.getDatabaseValues();
+
 		/*
-		If there are no databases, call the disableUpgradeRadioButton function. Else, enable the
-		upgrade radio button.
+		Check if databases exist for the selected server.
 		*/
-		if (values.length === 0) {
-			this.disableUpgradeRadioButton();
+		if (values.length === 0 || !this.model.databaseExists) {
+			/*
+			Set the upgrade radio button to be disabled and call the selectNewRadioButton function
+			to update the new radio button accordingly.
+			*/
+			this.upgradeRadioButton.enabled = false;
+			this.newRadioButton.checked = true;
+
+			this.selectNewRadioButton(this.newRadioButton);
 		}
 		else {
-			this.enableUpgradeRadioButton();
+			/*
+			Set the upgrade radio button to be enabled and call the selectUpgradeRadioButton function
+			to update the upgrade radio button accordingly.
+			*/
+
+			this.upgradeRadioButton.enabled = true;
+
+			this.selectUpgradeRadioButton(this.upgradeRadioButton);
 		}
 
 		//set the database to the first dropdown value if upgrading, otherwise it should get set to the textbox value
@@ -185,43 +195,12 @@ export class DeployConfigPage extends DacFxConfigPage {
 	}
 
 	/*
-	Function that is used to change the radio button DOM based on whether databases exist or not.
-	*/
-	private disableUpgradeRadioButton(): azdata.FormComponent {
-		/* Set the upgrade radio button to be disabled and call the updateNewRadioButton function
-		to update the new radio button accordingly.
-		*/
-		this.upgradeRadioButton.enabled = false;
-		this.newRadioButton.checked = true;
-
-		this.updateNewRadioButton();
-
-		return this.createRadioButtonFlexContainer(this.upgradeRadioButton, this.newRadioButton);
-	}
-
-	/*
-	Function that enables the upgrade radio button if databases exist.
-	*/
-	private async enableUpgradeRadioButton(): Promise<azdata.FormComponent> {
-		/*
-		Enable the upgrade radio button and call the updateUpgradeRadioButton function to update the
-		upgrade radio button accordingly.
-		*/
-		this.upgradeRadioButton.enabled = true;
-
-		this.updateUpgradeRadioButton();
-
-		return this.createRadioButtonFlexContainer(this.upgradeRadioButton, this.newRadioButton);
-	}
-
-	/*
 	Function that is used to update the window if upgrade radio button is selected.
 	*/
 	private updateUpgradeRadioButton(): void {
 		this.model.upgradeExisting = true;
 		this.formBuilder.removeFormItem(this.databaseComponent);
 		this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
-		this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 
 		// add deploy plan page and remove and re-add summary page so that it has the correct page number
 		this.instance.wizard.removePage(DeployNewOperationPath.summary);
@@ -238,7 +217,6 @@ export class DeployConfigPage extends DacFxConfigPage {
 		this.model.upgradeExisting = false;
 		this.formBuilder.removeFormItem(this.databaseDropdownComponent);
 		this.formBuilder.addFormItem(this.databaseComponent, { horizontal: true, componentWidth: 400 });
-		this.model.database = this.databaseTextBox.value;
 		this.instance.setDoneButton(Operation.deploy);
 
 		// remove deploy plan page and read summary page so that it has the correct page number
@@ -263,5 +241,27 @@ export class DeployConfigPage extends DacFxConfigPage {
 			component: flexRadioButtonsModel,
 			title: loc.targetDatabase
 		};
+	}
+
+	/*
+	Function which calls the onDidClick method for upgrade radio button to update it and set the
+	database name.
+	*/
+	private selectUpgradeRadioButton(upgradeRadioButton: azdata.RadioButtonComponent): void {
+		upgradeRadioButton.onDidClick(() => {
+			this.updateUpgradeRadioButton();
+			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
+		});
+	}
+
+	/*
+	Function which calls the onDidClick method for new radio button to update it and set the
+	database name.
+	*/
+	private selectNewRadioButton(newRadioButton: azdata.RadioButtonComponent): void {
+		newRadioButton.onDidClick(() => {
+			this.updateNewRadioButton();
+			this.model.database = this.databaseTextBox.value;
+		});
 	}
 }
