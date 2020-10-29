@@ -5,10 +5,10 @@
 
 import * as azdata from 'azdata';
 import { EOL } from 'os';
-import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 import * as constants from '../constants';
 import { BasePage } from './basePage';
 import * as nls from 'vscode-nls';
+import { DeployAzureSQLDBWizardModel } from '../deployAzureSQLDBWizardModel';
 const localize = nls.loadMessageBundle();
 
 export class DatabaseSettingsPage extends BasePage {
@@ -27,11 +27,11 @@ export class DatabaseSettingsPage extends BasePage {
 
 	private _form!: azdata.FormContainer;
 
-	constructor(wizard: DeployAzureSQLDBWizard) {
+	constructor(private _model: DeployAzureSQLDBWizardModel) {
 		super(
 			constants.DatabaseSettingsPageTitle,
 			'',
-			wizard
+			_model.wizard
 		);
 	}
 
@@ -110,10 +110,10 @@ export class DatabaseSettingsPage extends BasePage {
 		}).component();
 
 		this._startIpAddressTextbox.onTextChanged((value) => {
-			this.wizard.model.startIpAddress = value;
+			this._model.startIpAddress = value;
 		});
 
-		this._startIpAddressTextRow = this.wizard.createFormRowComponent(view, constants.StartIpAddressLabel, '', this._startIpAddressTextbox, true);
+		this._startIpAddressTextRow = this._model.createFormRowComponent(view, constants.StartIpAddressLabel, '', this._startIpAddressTextbox, true);
 
 		//End IP Address Section:
 
@@ -122,20 +122,20 @@ export class DatabaseSettingsPage extends BasePage {
 		}).component();
 
 		this._endIpAddressTextbox.onTextChanged((value) => {
-			this.wizard.model.endIpAddress = value;
+			this._model.endIpAddress = value;
 		});
 
-		this._endIpAddressTextRow = this.wizard.createFormRowComponent(view, constants.EndIpAddressLabel, '', this._endIpAddressTextbox, true);
+		this._endIpAddressTextRow = this._model.createFormRowComponent(view, constants.EndIpAddressLabel, '', this._endIpAddressTextbox, true);
 	}
 
 	private createFirewallNameText(view: azdata.ModelView) {
 
 		this._firewallRuleNameTextbox = view.modelBuilder.inputBox().component();
 
-		this._firewallRuleNameTextRow = this.wizard.createFormRowComponent(view, constants.FirewallRuleNameLabel, '', this._firewallRuleNameTextbox, true);
+		this._firewallRuleNameTextRow = this._model.createFormRowComponent(view, constants.FirewallRuleNameLabel, '', this._firewallRuleNameTextbox, true);
 
 		this._firewallRuleNameTextbox.onTextChanged((value) => {
-			this.wizard.model.firewallRuleName = value;
+			this._model.firewallRuleName = value;
 		});
 	}
 
@@ -143,10 +143,10 @@ export class DatabaseSettingsPage extends BasePage {
 
 		this._databaseNameTextbox = view.modelBuilder.inputBox().component();
 
-		this._databaseNameTextRow = this.wizard.createFormRowComponent(view, constants.DatabaseNameLabel, '', this._databaseNameTextbox, true);
+		this._databaseNameTextRow = this._model.createFormRowComponent(view, constants.DatabaseNameLabel, '', this._databaseNameTextbox, true);
 
 		this._databaseNameTextbox.onTextChanged((value) => {
-			this.wizard.model.databaseName = value;
+			this._model.databaseName = value;
 		});
 	}
 
@@ -157,10 +157,10 @@ export class DatabaseSettingsPage extends BasePage {
 		}).component();
 
 		this._collationTextbox.onTextChanged((value) => {
-			this.wizard.model.databaseCollation = value;
+			this._model.databaseCollation = value;
 		});
 
-		this._collationTextRow = this.wizard.createFormRowComponent(view, constants.CollationNameLabel, '', this._collationTextbox, true);
+		this._collationTextRow = this._model.createFormRowComponent(view, constants.CollationNameLabel, '', this._collationTextbox, true);
 	}
 
 
@@ -217,19 +217,19 @@ export class DatabaseSettingsPage extends BasePage {
 			errorMessages.push(localize('deployAzureSQLDB.DBCollationSpecialCharError', "Collation name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
 		}
 
-		this.wizard.showErrorMessage(errorMessages.join(EOL));
+		this._model.showErrorMessage(errorMessages.join(EOL));
 		return errorMessages.join(EOL);
 	}
 
 	protected async databaseNameExists(dbName: string): Promise<boolean> {
 		const url = `https://management.azure.com` +
-			`/subscriptions/${this.wizard.model.azureSubscription}` +
-			`/resourceGroups/${this.wizard.model.azureResouceGroup}` +
+			`/subscriptions/${this._model.azureSubscription}` +
+			`/resourceGroups/${this._model.azureResouceGroup}` +
 			`/providers/Microsoft.Sql` +
-			`/servers/${this.wizard.model.azureServerName}` +
+			`/servers/${this._model.azureServerName}` +
 			`/databases?api-version=2017-10-01-preview`;
 
-		let response = await this.wizard.getRequest(url, true);
+		let response = await this._model.getRequest(url, true);
 
 		let nameArray = response.data.value.map((v: any) => { return v.name; });
 		return (nameArray.includes(dbName));

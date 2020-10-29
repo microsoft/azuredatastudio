@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType } from '../interfaces';
+import { DeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType } from '../interfaces';
 import { DeployClusterWizardModel } from './deployClusterWizard/deployClusterWizardModel';
 import { DeployAzureSQLVMWizardModel } from './deployAzureSQLVMWizard/deployAzureSQLVMWizardModel';
 import { WizardPageInfo } from './wizardPageInfo';
@@ -17,6 +17,7 @@ import { IPlatformService } from '../services/platformService';
 import { ResourceTypeModel } from './resourceTypeModel';
 import { ResourceTypePage } from './resourceTypePage';
 import { NotebookWizardModel } from './notebookWizard/notebookWizard';
+import { DeployAzureSQLDBWizardModel } from './deployAzureSQLDBWizard/deployAzureSQLDBWizardModel';
 
 export class ResourceTypeWizard {
 	private customButtons: azdata.window.Button[] = [];
@@ -55,6 +56,8 @@ export class ResourceTypeWizard {
 			return new DeployAzureSQLVMWizardModel(this.provider, this);
 		} else if (instanceOfNotebookWizardDeploymentProvider(this.provider)) {
 			return new NotebookWizardModel(this.provider, this);
+		} else if (instanceOfAzureSQLDBDeploymentProvider(this.provider)) {
+			return new DeployAzureSQLDBWizardModel(this.provider, this);
 		}
 		// other types are undefined for now.
 		return undefined;

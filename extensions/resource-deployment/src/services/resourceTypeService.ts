@@ -11,7 +11,6 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption } from '../interfaces';
-import { DeployAzureSQLDBWizard } from '../ui/deployAzureSQLDBWizard/deployAzureSQLDBWizard';
 import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
 import { AzdataService } from './azdataService';
 import { KubeService } from './kubeService';
@@ -254,7 +253,8 @@ export class ResourceTypeService implements IResourceTypeService {
 		if (
 			instanceOfWizardDeploymentProvider(provider) ||
 			instanceOfNotebookWizardDeploymentProvider(provider) ||
-			instanceOfAzureSQLVMDeploymentProvider(provider)
+			instanceOfAzureSQLVMDeploymentProvider(provider) ||
+			instanceOfAzureSQLDBDeploymentProvider(provider)
 		) {
 			const wizard = new ResourceTypeWizard(resourceType, provider, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService);
 			wizard.open();
@@ -285,9 +285,6 @@ export class ResourceTypeService implements IResourceTypeService {
 			vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(provider.webPageUrl));
 		} else if (instanceOfCommandDeploymentProvider(provider)) {
 			vscode.commands.executeCommand(provider.command);
-		} else if (instanceOfAzureSQLDBDeploymentProvider(provider)) {
-			const wizard = new DeployAzureSQLDBWizard(provider.azureSQLDBWizard, this.notebookService, this.toolsService);
-			wizard.open();
 		}
 	}
 
