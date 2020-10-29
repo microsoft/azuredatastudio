@@ -92,11 +92,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	registerAzureResourceCommands(appContext, [azureResourceTree, connectionDialogTree]);
 	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
 	vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
-		const portalEndpoint = item.fieldValues.portalEndpoint;
-		const subscriptionId = item.fieldValues.subscriptionId;
-		const resourceGroup = item.fieldValues.resourceGroup;
-		const type = item.fieldValues.type;
-		const name = item.fieldValues.name;
+		const portalEndpoint = item.portalEndpoint;
+		const subscriptionId = item.subscriptionId;
+		const resourceGroup = item.resourceGroup;
+		const type = item.type;
+		const name = item.name;
 		if (portalEndpoint && subscriptionId && resourceGroup && type && name) {
 			await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
 		} else {
