@@ -46,14 +46,14 @@ export class AssessmentResultGrid implements vscode.Disposable {
 					dark: extensionContext.asAbsolutePath('resources/dark/database.svg'),
 					light: extensionContext.asAbsolutePath('resources/light/database.svg')
 				},
-				ariaLabel: 'Database Icon'
+				ariaLabel: localize('databaseIconLabel', "Database Icon")
 			},
 			[azdata.sqlAssessment.SqlAssessmentTargetType.Server]: {
 				icon: {
 					dark: extensionContext.asAbsolutePath('resources/dark/server.svg'),
 					light: extensionContext.asAbsolutePath('resources/light/server.svg')
 				},
-				ariaLabel: 'Server Icon'
+				ariaLabel: localize('serverIconLabel', "Server Icon")
 			}
 		};
 
@@ -67,7 +67,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 						type: azdata.ColumnType.icon,
 						width: 10,
 						headerCssClass: headerCssClass,
-						toolTip: 'Target type'
+						toolTip: localize('asmt.column.targetType', "Target Type"),
 					},
 					{ value: LocalizedStrings.TARGET_COLUMN_NAME, headerCssClass: headerCssClass, width: 125 },
 					{ value: LocalizedStrings.SEVERITY_COLUMN_NAME, headerCssClass: headerCssClass, width: 100 },

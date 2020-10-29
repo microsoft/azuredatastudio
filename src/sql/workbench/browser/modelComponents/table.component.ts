@@ -533,7 +533,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 	}
 	private appendData(data: any[][]) {
-		this._tableData.push(TableComponent.transformData(data, this.columns));
+		this._tableData.push(TableComponent.transformData(data, this.columns, this._iconCssMap));
 		this.data = this._tableData.getItems().map(dataObject => Object.values(dataObject));
 		this.layoutTable();
 	}
