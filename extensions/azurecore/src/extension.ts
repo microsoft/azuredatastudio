@@ -101,7 +101,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
 		} else {
 			console.log(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
-			vscode.window.showErrorMessage('Unable to open link, missing required values');
+			vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
 		}
 	});
 
