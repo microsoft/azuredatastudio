@@ -14,7 +14,7 @@ import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ContextMenuAnchor, ResourceViewerInput } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
+import { ResourceViewerInput } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
 import { ResourceViewerTable } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerTable';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { ResourceViewerEditColumns, ResourceViewerRefresh } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerActions';
@@ -23,6 +23,8 @@ import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewIt
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+
+export type ContextMenuAnchor = HTMLElement | { x: number; y: number; width?: number; height?: number; };
 
 export class ResourceViewerEditor extends EditorPane {
 	public static readonly ID: string = 'workbench.editor.resource-viewer';

@@ -13,8 +13,6 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { getDataGridFormatter } from 'sql/workbench/services/dataGridProvider/browser/dataGridProviderUtils';
 
-export type ContextMenuAnchor = HTMLElement | { x: number; y: number; width?: number; height?: number; };
-
 export interface ColumnDefinition extends Slick.Column<azdata.DataGridItem> {
 	name: string;
 	// actions is a special internal type for the More Actions column

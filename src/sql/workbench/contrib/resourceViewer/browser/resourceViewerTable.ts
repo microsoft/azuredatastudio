@@ -20,8 +20,9 @@ import { isString } from 'vs/base/common/types';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { localize } from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { ColumnDefinition, ContextMenuAnchor } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
+import { ColumnDefinition } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
 import { Emitter } from 'vs/base/common/event';
+import { ContextMenuAnchor } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerEditor';
 
 export class ResourceViewerTable extends Disposable {
 
