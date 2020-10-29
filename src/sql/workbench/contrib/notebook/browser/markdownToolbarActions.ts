@@ -34,19 +34,13 @@ export class TransformMarkdownAction extends Action {
 		this._tooltip = tooltip;
 	}
 	public async run(context: any): Promise<boolean> {
-		return new Promise<boolean>(async (resolve, reject) => {
-			try {
-				if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
-					this.transformDocumentCommand();
-				} else {
-					let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel, this._instantiationService);
-					await markdownTextTransformer.transformText(this._type);
-				}
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+		if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
+			this.transformDocumentCommand();
+		} else {
+			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel, this._instantiationService);
+			await markdownTextTransformer.transformText(this._type);
+		}
+		return true;
 	}
 
 	private transformDocumentCommand() {

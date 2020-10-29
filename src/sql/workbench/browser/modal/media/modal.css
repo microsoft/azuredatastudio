@@ -32,7 +32,7 @@
 	width: 452px;
 }
 .modal.callout-dialog .modal-content.arrow:before {
-	content: "";
+	content: '';
 	display: block;
 	height: 0;
 	position: absolute;
@@ -334,45 +334,45 @@
 
 .hc-black .dialog-message.warning .close-message-icon,
 .close-message-icon {
-	background: url("close_inverse.svg") center center no-repeat;
+	background: url('close_inverse.svg') center center no-repeat;
 }
 
 .dialog-message.warning .close-message-icon {
-	background: url("close.svg") center center no-repeat;
+	background: url('close.svg') center center no-repeat;
 }
 
 .hc-black .dialog-message.warning .copy-message-icon,
 .copy-message-icon {
-	background: url("copy_inverse.svg") center center no-repeat;
+	background: url('copy_inverse.svg') center center no-repeat;
 }
 
 .dialog-message.warning .copy-message-icon {
-	background: url("copy.svg") center center no-repeat;
+	background: url('copy.svg') center center no-repeat;
 }
 
 .hc-black .dialog-message.warning .message-details-icon,
 .message-details-icon {
-	background: url("show_details_inverse.svg") center center no-repeat;
+	background: url('show_details_inverse.svg') center center no-repeat;
 }
 
 .dialog-message.warning .message-details-icon {
-	background: url("show_details.svg") center center no-repeat;
+	background: url('show_details.svg') center center no-repeat;
 }
 
 .dialog-message.info .dialog-message-icon {
-	background: url("info_notification_inverse.svg") center center no-repeat;
+	background: url('info_notification_inverse.svg') center center no-repeat;
 }
 
 .hc-black .dialog-message.warning .dialog-message-icon {
-	background: url("warning_notification_inverse.svg") center center no-repeat;
+	background: url('warning_notification_inverse.svg') center center no-repeat;
 }
 
 .dialog-message.warning .dialog-message-icon {
-	background: url("warning_notification.svg") center center no-repeat;
+	background: url('warning_notification.svg') center center no-repeat;
 }
 
 .dialog-message.error .dialog-message-icon {
-	background: url("error_notification_inverse.svg") center center no-repeat;
+	background: url('error_notification_inverse.svg') center center no-repeat;
 }
 
 .codicon.masked-icon.browse-local {
@@ -384,8 +384,8 @@
 	height: 25px;
 	width: 25px;
 	background-image: none;
-	-webkit-mask-image: url("browse-local.svg");
-	mask-image: url("browse-local.svg");
+	-webkit-mask-image: url('browse-local.svg');
+	mask-image: url('browse-local.svg');
 	-webkit-mask-size: 100%;
 	mask-size: 100%;
 }
