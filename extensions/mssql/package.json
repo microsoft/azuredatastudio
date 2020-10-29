@@ -488,11 +488,6 @@
               "field": "isCloud",
               "operator": "!=",
               "value": true
-            },
-            {
-              "field": "engineEditionId",
-              "operator": "!=",
-              "value": "11"
             }
           ],
           "databaseProperties": [
@@ -571,6 +566,11 @@
               "field": "isCloud",
               "operator": "==",
               "value": true
+            },
+            {
+              "field": "engineEditionId",
+              "operator": "!=",
+              "value": "11"
             }
           ],
           "databaseProperties": [
@@ -632,10 +632,6 @@
             {
               "displayName": "%cloud.databaseProperties.compatibilityLevel%",
               "value": "compatibilityLevel"
-            },
-            {
-              "displayName": "%cloud.databaseProperties.owner%",
-              "value": "owner"
             }
           ],
           "serverProperties": [
