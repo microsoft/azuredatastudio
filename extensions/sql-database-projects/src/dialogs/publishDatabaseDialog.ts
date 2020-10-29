@@ -460,8 +460,7 @@ export class PublishDatabaseDialog {
 
 			const data = this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars!);
 			(<azdata.DeclarativeTableComponent>this.sqlCmdVariablesTable)!.updateProperties({
-				dataValues: data,
-				data: [] // data is deprecated, but the table gets updated incorrectly if this isn't set to an empty array
+				dataValues: data
 			});
 
 			this.tryEnableGenerateScriptAndOkButtons();
@@ -569,8 +568,7 @@ export class PublishDatabaseDialog {
 
 				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
 				await (<azdata.DeclarativeTableComponent>this.sqlCmdVariablesTable).updateProperties({
-					dataValues: data,
-					data: [] // data is deprecated, but the table gets updated incorrectly if this isn't set to an empty array
+					dataValues: data
 				});
 
 				if (Object.keys(result.sqlCmdVariables).length) {
