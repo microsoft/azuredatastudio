@@ -765,7 +765,7 @@ export class CellModel extends Disposable implements ICellModel {
 			cellJson.metadata.tags = metadata.tags;
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount ? this.executionCount : null;
-			if (this._configurationService.getValue('notebook.saveConnectionName')) {
+			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
 				metadata.connectionName = this._savedConnectionName;
 			}
 		}

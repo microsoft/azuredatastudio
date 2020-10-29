@@ -868,4 +868,20 @@ suite('Cell Model', function (): void {
 		assert(!isEditMode);
 	});
 
+	test('Should read connection name from notebook metadata and use its corresponding connection profile', async function () {
+		const connectionName = 'connectionName';
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '',
+			metadata: { connectionName: connectionName }
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		assert.equal(model.savedConnectionName, connectionName);
+	});
+
 });
