@@ -20,6 +20,10 @@ export class NativeClipboardService implements IClipboardService {
 		@IElectronService private readonly electronService: IElectronService
 	) { }
 
+	async write(data: any, type?: 'selection' | 'clipboard'): Promise<void> {
+		return this.electronService.writeClipboardData(data, type);
+	}
+
 	async writeText(text: string, type?: 'selection' | 'clipboard'): Promise<void> {
 		return this.electronService.writeClipboardText(text, type);
 	}

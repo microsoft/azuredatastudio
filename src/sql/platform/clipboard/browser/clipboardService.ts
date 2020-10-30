@@ -25,6 +25,10 @@ export class BrowserClipboardService implements IClipboardService {
 		this._notificationService.info(localize('imageCopyingNotSupported', "Copying images is not supported"));
 	}
 
+	write(data: string): Promise<void> {
+		return this._vsClipboardService.writeText(data);	// throw not implem
+	}
+
 	writeText(text: string): Promise<void> {
 		return this._vsClipboardService.writeText(text);
 	}

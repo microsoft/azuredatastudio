@@ -49,7 +49,7 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 
 	// create a mapping of the ranges to get promises
 	let tasks: (() => Promise<void>)[] = selection.map((range) => {
-		return async (): Promise<void> => {
+		let a = async (): Promise<void> => {
 			let startCol = range.fromCell;
 			let startRow = range.fromRow;
 
@@ -86,6 +86,7 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 				}
 			}
 		};
+		return a;
 	});
 
 	// Set the tasks gathered above to execute
