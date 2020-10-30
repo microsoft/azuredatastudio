@@ -23,7 +23,7 @@ import { CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/bro
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
-import { slickGridDataItemColumnValueWithNoData, textFormatter, iconCssFormatter } from 'sql/base/browser/ui/table/formatters';
+import { slickGridDataItemColumnValueWithNoData, textFormatter, iconCssFormatter, CssIconCellValue } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
@@ -146,11 +146,11 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 
 
-	public static transformData(rows: (string | azdata.IconColumnCellValue)[][], columns: any[], iconCssMap?: { [iconKey: string]: string }): { [key: string]: string | { text: string, ariaLabel: string } }[] {
+	public static transformData(rows: (string | azdata.IconColumnCellValue)[][], columns: any[], iconCssMap?: { [iconKey: string]: string }): { [key: string]: string | CssIconCellValue }[] {
 		if (rows && columns) {
 			let iconCssCache = iconCssMap ?? [];
 			return rows.map(row => {
-				let object: { [key: string]: string | { text: string, ariaLabel: string } } = {};
+				let object: { [key: string]: string | CssIconCellValue } = {};
 				if (!Array.isArray(row)) {
 					return object;
 				}
@@ -165,7 +165,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 							iconCssCache[iconKey] = iconCssClass;
 						}
 
-						object[columnName] = { text: iconCssClass, ariaLabel: (<azdata.IconColumnCellValue>val).ariaLabel };
+						object[columnName] = { iconCssClass: iconCssClass, ariaLabel: val.ariaLabel };
 					} else {
 						object[columnName] = <string>val;
 					}

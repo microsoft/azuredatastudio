@@ -36,6 +36,12 @@ export interface HyperlinkCellValue {
 	linkOrCommand: string | ExecuteCommandInfo;
 }
 
+export interface CssIconCellValue {
+	iconCssClass: string,
+	ariaLabel: string
+}
+
+
 export namespace DBCellValue {
 	export function isDBCellValue(object: any): boolean {
 		return (object !== undefined && object.displayValue !== undefined && object.isNull !== undefined);
@@ -48,6 +54,10 @@ export namespace DBCellValue {
  */
 export function isHyperlinkCellValue(obj: any | undefined): obj is HyperlinkCellValue {
 	return !!(<HyperlinkCellValue>obj)?.linkOrCommand;
+}
+
+export function isCssIconCellValue(obj: any | undefined): obj is CssIconCellValue {
+	return !!(<CssIconCellValue>obj)?.iconCssClass;
 }
 
 /**
@@ -103,12 +113,11 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 }
 
 
-/**
- * Format all text to replace all new lines with spaces and performs HTML entity encoding
- */
 export function iconCssFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
-	let cellClasses = `grid-cell-value-container icon codicon slick-icon-cell-content ${value.text}`;
-	return `<span class="${cellClasses}">&nbsp;</span>`;
+	if (isCssIconCellValue(value)) {
+		return `<div role='image' aria-label="${value.ariaLabel}" class="grid-cell-value-container icon codicon slick-icon-cell-content ${value.iconCssClass}">&nbsp;</div>`;
+	}
+	return textFormatter(row, cell, value, columnDef, dataContext);
 }
 
 export function imageFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
@@ -138,7 +147,7 @@ export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any
  * In this case, for no display value ariaLabel will be set to specific string "no data available" for accessibily support for screen readers
  * Set 'no data' label only if cell is present and has no value (so that checkbox and other custom plugins do not get 'no data' label)
  */
-export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: any): { text: string; ariaLabel: string; } {
+export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: any): { text: string; ariaLabel: string; } | CssIconCellValue {
 	let displayValue = value[columnDef.field];
 	if (typeof displayValue === 'number') {
 		displayValue = displayValue.toString();
@@ -146,15 +155,11 @@ export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: an
 	if (displayValue instanceof Array) {
 		displayValue = displayValue.toString();
 	}
-	if (displayValue['ariaLabel']) {
-		return {
-			text: displayValue['text'],
-			ariaLabel: displayValue['text']
-				? escape(displayValue['ariaLabel'])
-				: ((displayValue['text'] !== undefined) ? localize("tableCell.NoDataAvailable", "no data available") : displayValue['text'])
-		};
 
+	if (isCssIconCellValue(displayValue)) {
+		return displayValue;
 	}
+
 	return {
 		text: displayValue,
 		ariaLabel: displayValue ? escape(displayValue) : ((displayValue !== undefined) ? localize("tableCell.NoDataAvailable", "no data available") : displayValue)
