@@ -407,10 +407,10 @@ export class CellAttachToDropdown extends SelectBox {
 		this._register(this.cellModel.contextsChanged(() => {
 			this.handleContextsChanged();
 		}));
-		// this._register(this.cell.contextsLoading(() => { // TODO: cell contextsLoading()
-		// 	this.setOptions([msgLoadingContexts], 0);
-		// }));
-		// this.cellModel.requestConnectionHandler = () => this.openConnectionDialog(true); // TODO: cell requestConnectionHandler
+		this._register(this.cellModel.contextsLoading(() => {
+			this.setOptions([msgLoadingContexts], 0);
+		}));
+		this.cellModel.requestConnectionHandler = () => this.openConnectionDialog(true);
 		this.handleContextsChanged();
 	}
 
@@ -447,7 +447,7 @@ export class CellAttachToDropdown extends SelectBox {
 			this.setOptions([msgLocalHost]);
 		} else {
 			let connections: string[] = [];
-			if (model.context && model.context.title && (connProviderIds.includes(this.notebookModel.context.providerName))) {
+			if (model.context && model.context.title && (connProviderIds.includes(model.context.providerName))) {
 				connections.push(model.context.title);
 			} else if (model.savedConnectionName) {
 				connections.push(model.savedConnectionName);
@@ -477,8 +477,8 @@ export class CellAttachToDropdown extends SelectBox {
 	// /**
 	//  * Open connection dialog
 	//  * Enter server details and connect to a server from the dialog
-	//  * Bind the server value to 'Attach To' drop down
-	//  * Connected server is displayed at the top of drop down
+	//  * Bind the server value to cell 'Attach To' drop down
+	//  * Connected server is displayed at the top of cell drop down
 	//  **/
 	public async openConnectionDialog(useProfile: boolean = false): Promise<boolean> {
 		try {

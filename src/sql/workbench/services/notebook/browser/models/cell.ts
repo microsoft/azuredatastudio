@@ -76,6 +76,8 @@ export class CellModel extends Disposable implements ICellModel {
 	private _contextsChangedEmitter = new Emitter<void>();
 	private _contextsLoadingEmitter = new Emitter<void>();
 
+	public requestConnectionHandler: (() => Promise<boolean>) | undefined;
+
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
 		@optional(INotebookService) private _notebookService?: INotebookService,
@@ -444,11 +446,18 @@ export class CellModel extends Disposable implements ICellModel {
 				this.sendNotification(notificationService, Severity.Info, localize('runCellCancelled', "Cell execution cancelled"));
 			} else {
 				// TODO update source based on editor component contents
-				if (kernel.requiresConnection && (!this.notebookModel.multiConnectionMode && !this.notebookModel.context)
-					|| (this.notebookModel.multiConnectionMode && !this.activeConnection)) {
-					let connected = await this.notebookModel.requestConnection();
-					if (!connected) {
-						return false;
+				if (kernel.requiresConnection) {
+					let connected: boolean;
+					if (!this.notebookModel.multiConnectionMode && !this.notebookModel.context) {
+						connected = await this.notebookModel.requestConnection();
+						if (!connected) {
+							return false;
+						}
+					} else if (this.notebookModel.multiConnectionMode && !this.context) {
+						connected = await this.requestConnection();
+						if (!connected) {
+							return false;
+						}
 					}
 				}
 				let content = this.source;
@@ -513,6 +522,22 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 
 		return true;
+	}
+
+	public async requestConnection(): Promise<boolean> {
+		// If there is a saved connection name with a corresponding connection profile, use that one,
+		// otherwise show connection dialog
+		if (this._savedConnectionName) {
+			let profile: ConnectionProfile | undefined = this.getConnectionProfileFromName(this._savedConnectionName);
+			if (profile) {
+				await this.changeContext(this._savedConnectionName, profile);
+				return true;
+			}
+		}
+		if (this.requestConnectionHandler) {
+			return this.requestConnectionHandler();
+		}
+		return false;
 	}
 
 	private async getOrStartKernel(notificationService: INotificationService): Promise<nb.IKernel> {

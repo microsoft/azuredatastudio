@@ -211,7 +211,7 @@ export class TrustedAction extends ToggleableAction {
 export class MultiConnectionAction extends ToggleableAction {
 	// Constants
 	private static readonly multiConnectionLabel = localize('multiConnectionLabel', "Multiple Connections");
-	private static readonly singleConnectionLabel = localize('singleConnectionLabel', "Single Conection");
+	private static readonly singleConnectionLabel = localize('singleConnectionLabel', "Single Connection");
 	// TODO: Update icons
 	private static readonly baseClass = 'notebook-button';
 	private static readonly previewTrustedCssClass = 'icon-shield';
