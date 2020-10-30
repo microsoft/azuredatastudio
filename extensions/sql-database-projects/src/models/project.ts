@@ -298,7 +298,7 @@ export class Project {
 		const attributes = new Map<string, string>();
 
 		if (itemType === templates.externalStreamingJob) {
-			attributes.set(constants.Type, itemType);
+			attributes.set(constants.Type, constants.ExternalStreamingJob);
 		}
 
 		await this.addToProjFile(fileEntry, xmlTag, attributes);
@@ -490,6 +490,7 @@ export class Project {
 		if (!outputItemGroup) {
 			outputItemGroup = this.projFileXmlDoc.createElement(constants.ItemGroup);
 			this.projFileXmlDoc.documentElement.appendChild(outputItemGroup);
+
 			if (prePostScriptExist) {
 				prePostScriptExist.scriptExist = false;
 			}
@@ -504,6 +505,7 @@ export class Project {
 		if (xmlTag === constants.PreDeploy || xmlTag === constants.PostDeploy) {
 			let prePostScriptExist = { scriptExist: true };
 			itemGroup = this.findOrCreateItemGroup(xmlTag, prePostScriptExist);
+
 			if (prePostScriptExist.scriptExist === true) {
 				window.showInformationMessage(constants.deployScriptExists(xmlTag));
 				xmlTag = constants.None;	// Add only one pre-deploy and post-deploy script. All additional ones get added in the same item group with None tag
@@ -515,13 +517,13 @@ export class Project {
 
 		const newFileNode = this.projFileXmlDoc.createElement(xmlTag);
 
+		newFileNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(path));
+
 		if (attributes) {
 			for (const key of attributes.keys()) {
 				newFileNode.setAttribute(key, attributes.get(key));
 			}
 		}
-
-		newFileNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(path));
 
 		itemGroup.appendChild(newFileNode);
 	}
@@ -548,12 +550,14 @@ export class Project {
 	private removeNode(includeString: string, nodes: any): boolean {
 		for (let i = 0; i < nodes.length; i++) {
 			const parent = nodes[i].parentNode;
+
 			if (nodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(includeString)) {
 				parent.removeChild(nodes[i]);
 
 				// delete ItemGroup if this was the only entry
 				// only want element nodes, not text nodes
 				const otherChildren = Array.from(parent.childNodes).filter((c: any) => c.childNodes);
+
 				if (otherChildren.length === 0) {
 					parent.parentNode.removeChild(parent);
 				}

@@ -226,6 +226,7 @@ export const False = 'False';
 export const Private = 'Private';
 export const ProjectGuid = 'ProjectGuid';
 export const Type = 'Type';
+export const ExternalStreamingJob: string = 'ExternalStreamingJob';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
