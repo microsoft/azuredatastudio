@@ -76,7 +76,13 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 
 			switch (entry.type) {
 				case EntryType.File:
-					newNode = new fileTree.FileNode(entry.fsUri, parentNode);
+					if (entry.sqlObjectType === 'externalStreamingJob') {
+						newNode = new fileTree.ExternalStreamingJobFileNode(entry.fsUri, parentNode);
+					}
+					else {
+						newNode = new fileTree.FileNode(entry.fsUri, parentNode);
+					}
+
 					break;
 				case EntryType.Folder:
 					newNode = new fileTree.FolderNode(entry.fsUri, parentNode);
