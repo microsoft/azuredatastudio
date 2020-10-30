@@ -17,6 +17,8 @@ text-cell-component .notebook-preview {
 	flex-direction: column;
 	padding-left: 8px;
 	padding-right: 8px;
+	padding-top: 14px;
+	padding-bottom: 14px;
 	user-select: none;
 	width: 100%;
 	outline: none;
