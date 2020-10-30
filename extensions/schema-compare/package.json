@@ -72,6 +72,12 @@
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
           "group": "export"
         }
+      ],
+      "commandPalette": [
+        {
+          "command": "schemaCompare.start",
+          "when": "mssql:engineedition != 11"
+        }
       ]
     }
   },
