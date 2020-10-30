@@ -13,7 +13,6 @@ import { AppContext } from '../appContext';
 import { AzureResourceServiceNames } from './constants';
 import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionService } from './interfaces';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
-import * as vscode from 'vscode';
 
 const localize = nls.loadMessageBundle();
 
