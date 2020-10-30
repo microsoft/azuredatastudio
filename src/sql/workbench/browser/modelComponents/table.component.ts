@@ -140,11 +140,11 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 
 
-	public static transformData(rows: (string | azdata.IconColumnCellValue)[][], columns: any[], iconCssMap?: { [iconKey: string]: string }): { [key: string]: string }[] {
+	public static transformData(rows: (string | azdata.IconColumnCellValue)[][], columns: any[], iconCssMap?: { [iconKey: string]: string }): { [key: string]: string | { text: string, areaLabel: string } }[] {
 		if (rows && columns) {
 			let iconCssCache = iconCssMap ?? [];
 			return rows.map(row => {
-				let object: { [key: string]: string } = {};
+				let object: { [key: string]: string | { text: string, areaLabel: string } } = {};
 				if (row.forEach) {
 					row.forEach((val, index) => {
 						let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
@@ -156,7 +156,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 								iconCssCache[iconKey] = iconCssClass;
 							}
 
-							object[columnName] = iconCssClass;
+							object[columnName] = { text: iconCssClass, areaLabel: (<azdata.IconColumnCellValue>val).ariaLabel };
 						} else {
 							object[columnName] = <string>val;
 						}
