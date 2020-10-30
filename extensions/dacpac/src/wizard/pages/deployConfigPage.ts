@@ -168,6 +168,16 @@ export class DeployConfigPage extends DacFxConfigPage {
 			values: values
 		});
 
+		this.databaseLoader.loading = false;
+
+		/*
+		Check to avoid having the new radio button checked by default.
+		*/
+		if (this.newRadioButton.checked) {
+			this.newRadioButton.checked = values.length === 0 ? true : false;
+			this.upgradeRadioButton.enabled = values.length === 0 ? false : true;
+		}
+
 		/*
 		Check if databases exist for the selected server.
 		*/
@@ -177,9 +187,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 			to update the new radio button accordingly.
 			*/
 			this.upgradeRadioButton.enabled = false;
-			this.newRadioButton.checked = true;
 			this.updateNewRadioButton();
-
 		}
 		else {
 			/*
@@ -187,7 +195,6 @@ export class DeployConfigPage extends DacFxConfigPage {
 			to update the upgrade radio button accordingly.
 			*/
 			this.upgradeRadioButton.enabled = true;
-
 			this.updateUpgradeRadioButton();
 		}
 
@@ -196,7 +203,6 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.model.database = values[0];
 		}
 
-		this.databaseLoader.loading = false;
 		return true;
 	}
 
@@ -207,7 +213,6 @@ export class DeployConfigPage extends DacFxConfigPage {
 		this.model.upgradeExisting = true;
 		this.formBuilder.removeFormItem(this.databaseComponent);
 		this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
-		//this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 
 		// add deploy plan page and remove and re-add summary page so that it has the correct page number
 		if (this.instance.wizard.pages.length < 4) {
@@ -226,11 +231,10 @@ export class DeployConfigPage extends DacFxConfigPage {
 		this.model.upgradeExisting = false;
 		this.formBuilder.removeFormItem(this.databaseDropdownComponent);
 		this.formBuilder.addFormItem(this.databaseComponent, { horizontal: true, componentWidth: 400 });
-		//this.model.database = this.databaseTextBox.value;
 		this.instance.setDoneButton(Operation.deploy);
 
 		// remove deploy plan page and read summary page so that it has the correct page number
-		if (this.instance.wizard.pages.length === 4) {
+		if (this.instance.wizard.pages.length >= 4) {
 			this.instance.wizard.removePage(DeployOperationPath.summary);
 			this.instance.wizard.removePage(DeployOperationPath.deployPlan);
 			let summaryPage = this.instance.pages.get(PageName.summary);
