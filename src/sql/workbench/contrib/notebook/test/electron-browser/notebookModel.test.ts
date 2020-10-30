@@ -608,7 +608,8 @@ suite('notebook model', function (): void {
 			id: '',
 			options: {}
 		};
-		sinon.stub(queryConnectionService, 'getConnections').returns(expectedConnectionProfile);
+		sinon.stub(queryConnectionService.object, 'getConnections').returns([expectedConnectionProfile]);
+		sinon.stub(configurationService, 'getValue').returns(true);
 
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);

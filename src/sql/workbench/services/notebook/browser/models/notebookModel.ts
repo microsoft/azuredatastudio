@@ -408,7 +408,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (profile) {
 				await this.changeContext(this._savedConnectionName, profile);
 				return true;
-			} // TODO: No matching connection profile for saved connection name
+			}
 		}
 		if (this.requestConnectionHandler) {
 			return this.requestConnectionHandler();
@@ -923,7 +923,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	// Get saved connection name if saved in notebook file
 	private getSavedConnectionName(notebook: nb.INotebookContents): string | undefined {
-		return (notebook && notebook.metadata && notebook.metadata.connectionName) ? notebook.metadata.connectionName : undefined;
+		return notebook?.metadata?.connectionName ? notebook.metadata.connectionName : undefined;
 	}
 
 	// Get default kernel info if saved in notebook file
