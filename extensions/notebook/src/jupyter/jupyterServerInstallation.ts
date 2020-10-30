@@ -287,6 +287,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public async configurePackagePaths(): Promise<void> {
+		// Delete existing Python variables in ADS to prevent conflict with other installs
+		delete process.env['PYTHONPATH'];
+		delete process.env['PYTHONSTARTUP'];
+		delete process.env['PYTHONHOME'];
+
 		//Python source path up to bundle version
 		let pythonSourcePath = this._usingExistingPython
 			? this._pythonInstallationPath
@@ -319,11 +324,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				].join(delimiter);
 			}
 		}
-
-		// Delete existing Python variables in ADS to prevent conflict with other installs
-		delete process.env['PYTHONPATH'];
-		delete process.env['PYTHONSTARTUP'];
-		delete process.env['PYTHONHOME'];
 
 		// Skip adding user package directory on SAWs, since packages will already be included with ADS
 		if (!this._runningOnSAW && await utils.exists(this._pythonExecutable)) {
