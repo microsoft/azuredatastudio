@@ -9,6 +9,7 @@ import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
 import { ControllerModel, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
+import { Deferred } from '../common/promise';
 import { parseIpAndPort } from '../common/utils';
 
 export class PostgresModel extends ResourceModel {
@@ -18,6 +19,8 @@ export class PostgresModel extends ResourceModel {
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.PostgresServerShowResult>();
 	public onConfigUpdated = this._onConfigUpdated.event;
 	public configLastUpdated?: Date;
+
+	private _refreshPromise?: Deferred<void>;
 
 	constructor(private _controllerModel: ControllerModel, info: ResourceInfo, registration: Registration) {
 		super(info, registration);
@@ -81,9 +84,23 @@ export class PostgresModel extends ResourceModel {
 
 	/** Refreshes the model */
 	public async refresh() {
-		await this._controllerModel.azdataLogin();
-		this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name)).result;
-		this.configLastUpdated = new Date();
-		this._onConfigUpdated.fire(this._config);
+		// Only allow one refresh to be happening at a time
+		if (this._refreshPromise) {
+			return this._refreshPromise.promise;
+		}
+		this._refreshPromise = new Deferred();
+
+		try {
+			await this._controllerModel.azdataLogin();
+			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name)).result;
+			this.configLastUpdated = new Date();
+			this._onConfigUpdated.fire(this._config);
+			this._refreshPromise.resolve();
+		} catch (err) {
+			this._refreshPromise.reject(err);
+			throw err;
+		} finally {
+			this._refreshPromise = undefined;
+		}
 	}
 }
