@@ -12,7 +12,7 @@ describe('API Service Tests', function (): void {
 		const api = apiService.azurecoreApi;
 		assert(api !== undefined);
 	});
-	it('get azdataApi returns azure api', () => {
+	it.skip('get azdataApi returns azdata api', () => {
 		const api = apiService.azdataApi;
 		assert(api !== undefined);
 	});
