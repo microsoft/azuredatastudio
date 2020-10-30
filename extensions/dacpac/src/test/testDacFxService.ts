@@ -10,8 +10,9 @@ export const deployOperationId = 'deploy dacpac';
 export const extractOperationId = 'extract dacpac';
 export const exportOperationId = 'export bacpac';
 export const importOperationId = 'import bacpac';
-export const generateScript = 'genenrate script';
-export const generateDeployPlan = 'genenrate deploy plan';
+export const generateScript = 'generate script';
+export const generateDeployPlan = 'generate deploy plan';
+export const validateStreamingJob = 'validate streaming job';
 
 export class DacFxTestService implements mssql.IDacFxService {
 	dacfxResult: mssql.DacFxResult = {
@@ -143,5 +144,13 @@ export class DacFxTestService implements mssql.IDacFxService {
 		};
 
 		return Promise.resolve(optionsResult);
+	}
+	validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<mssql.ValidateStreamingJobResult> {
+		this.dacfxResult.operationId = validateStreamingJob;
+		const streamingJobValidationResult: mssql.ValidateStreamingJobResult = {
+			success: true,
+			errorMessage: ''
+		};
+		return Promise.resolve(streamingJobValidationResult);
 	}
 }
