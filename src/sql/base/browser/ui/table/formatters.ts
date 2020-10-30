@@ -146,11 +146,11 @@ export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: an
 	if (displayValue instanceof Array) {
 		displayValue = displayValue.toString();
 	}
-	if (displayValue['areaLabel']) {
+	if (displayValue['ariaLabel']) {
 		return {
 			text: displayValue['text'],
 			ariaLabel: displayValue['text']
-				? escape(displayValue['areaLabel'])
+				? escape(displayValue['ariaLabel'])
 				: ((displayValue['text'] !== undefined) ? localize("tableCell.NoDataAvailable", "no data available") : displayValue['text'])
 		};
 

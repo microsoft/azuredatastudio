@@ -17,7 +17,7 @@ suite('TableComponent Tests', () => {
 			['4', '5', '6']
 		];
 		let columns = ['c1', 'c2', 'c3'];
-		let actual: { [key: string]: string | { text: string, areaLabel: string } }[] = TableComponent.transformData(data, columns);
+		let actual: { [key: string]: string | { text: string, ariaLabel: string } }[] = TableComponent.transformData(data, columns);
 		let expected: { [key: string]: string }[] = [
 			{
 				'c1': '1',
@@ -36,7 +36,7 @@ suite('TableComponent Tests', () => {
 	test('Table transformData should return empty array given undefined rows', () => {
 		let data = undefined;
 		let columns = ['c1', 'c2', 'c3'];
-		let actual: { [key: string]: string | { text: string, areaLabel: string } }[] = TableComponent.transformData(data, columns);
+		let actual: { [key: string]: string | { text: string, ariaLabel: string } }[] = TableComponent.transformData(data, columns);
 		let expected: { [key: string]: string }[] = [];
 		assert.deepEqual(actual, expected);
 	});
@@ -47,7 +47,7 @@ suite('TableComponent Tests', () => {
 			['4', '5', '6']
 		];
 		let columns;
-		let actual: { [key: string]: string | { text: string, areaLabel: string } }[] = TableComponent.transformData(data, columns);
+		let actual: { [key: string]: string | { text: string, ariaLabel: string } }[] = TableComponent.transformData(data, columns);
 		let expected: { [key: string]: string }[] = [];
 		assert.deepEqual(actual, expected);
 	});
@@ -58,7 +58,7 @@ suite('TableComponent Tests', () => {
 			['4', '5']
 		];
 		let columns = ['c1', 'c2', 'c3'];
-		let actual: { [key: string]: string | { text: string, areaLabel: string } }[] = TableComponent.transformData(data, columns);
+		let actual: { [key: string]: string | { text: string, ariaLabel: string } }[] = TableComponent.transformData(data, columns);
 		let expected: { [key: string]: string }[] = [
 			{
 				'c1': '1',
