@@ -183,15 +183,16 @@ export class DeployConfigPage extends DacFxConfigPage {
 		*/
 		if (values.length === 0) {
 			/*
-			Set the upgrade radio button to be disabled and call the selectNewRadioButton function
+			Set the upgrade radio button to be disabled and call the updateNewRadioButton function
 			to update the new radio button accordingly.
 			*/
 			this.upgradeRadioButton.enabled = false;
+			this.newRadioButton.checked = true;
 			this.updateNewRadioButton();
 		}
 		else {
 			/*
-			Set the upgrade radio button to be enabled and call the selectUpgradeRadioButton function
+			Set the upgrade radio button to be enabled and call the updateUpgradeRadioButton function
 			to update the upgrade radio button accordingly.
 			*/
 			this.upgradeRadioButton.enabled = true;
