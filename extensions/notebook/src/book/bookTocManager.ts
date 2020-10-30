@@ -71,17 +71,15 @@ export class BookTocManager implements IBookTocManager {
 		return node.sections !== undefined && node.sections.length > 0;
 	}
 
-	equalSection(section1: JupyterBookSection, section2: JupyterBookSection): boolean {
-		if (section1.title === section2.title && section1.url === section2.url) {
-			return true;
-		}
-		return false;
-	}
-
 	updateToc(tableOfContents: JupyterBookSection[], findSection: BookTreeItem, addSection: JupyterBookSection): JupyterBookSection[] {
 		for (const section of tableOfContents) {
-			if (section.title === findSection.title && section.url === findSection.uri) {
-				section.sections.push(addSection);
+			if (path.dirname(section.url) === path.join(path.sep, path.dirname(findSection.uri)) || path.dirname((section as IJupyterBookSectionV2).file) === path.join(path.sep, path.dirname(findSection.uri))) {
+				if (tableOfContents[tableOfContents.length - 1].sections) {
+					tableOfContents[tableOfContents.length - 1].sections.push(addSection);
+				} else {
+					tableOfContents[tableOfContents.length - 1].sections = [addSection];
+				}
+				break;
 			}
 			else if (this.hasSections(section)) {
 				return this.updateToc(section.sections, findSection, addSection);
@@ -95,34 +93,47 @@ export class BookTocManager implements IBookTocManager {
 		await fs.copy(contentFolder, bookContentPath);
 		let filesinDir = await fs.readdir(bookContentPath);
 		this.tableofContents = await this.getAllFiles([], bookContentPath, filesinDir, bookContentPath);
-		await fs.outputFile(path.join(bookContentPath, '_config.yml'), yaml.safeDump({ title: path.basename(bookContentPath) }));
-		await fs.outputFile(path.join(bookContentPath, '_toc.yml'), yaml.safeDump(this.tableofContents, { lineWidth: Infinity }));
-		await vscode.commands.executeCommand('notebook.command.openBook', bookContentPath, false);
+		await fs.writeFile(path.join(bookContentPath, '_config.yml'), yaml.safeDump({ title: path.basename(bookContentPath) }));
+		await fs.writeFile(path.join(bookContentPath, '_toc.yml'), yaml.safeDump(this.tableofContents, { lineWidth: Infinity }));
+		await vscode.commands.executeCommand('notebook.command.openNotebookFolder', bookContentPath, undefined, true);
 	}
 
-	async addSectionToBook(section: BookTreeItem, book: BookTreeItem): Promise<void> {
+	async addSection(section: BookTreeItem, book: BookTreeItem, isSection: boolean): Promise<void> {
 		this.newSection.title = section.title;
+		const rootPath = isSection ? path.dirname(book.book.contentPath) : book.rootContentPath;
+		const uri = isSection ? path.join(path.basename(rootPath), section.uri) : section.uri;
 		if (section.book.version === BookVersion.v1) {
-			this.newSection.url = section.uri;
+			this.newSection.url = uri;
 			let movedSections: IJupyterBookSectionV1[] = [];
 			const files = section.sections as IJupyterBookSectionV1[];
 			for (const elem of files) {
-				await fs.promises.mkdir(path.join(book.rootContentPath, path.dirname(elem.url)), { recursive: true });
-				await fs.move(path.join(path.dirname(section.book.contentPath), path.basename(elem.url)), path.join(book.rootContentPath, elem.url));
-				movedSections.push({ url: elem.url, title: elem.title });
+				await fs.promises.mkdir(path.join(rootPath, path.dirname(elem.url)), { recursive: true });
+				await fs.move(path.join(path.dirname(section.book.contentPath), path.basename(elem.url)), path.join(rootPath, elem.url));
+				movedSections.push({ url: isSection ? path.join(path.basename(rootPath), elem.url) : elem.url, title: elem.title });
 			}
 			this.newSection.sections = movedSections;
 		} else if (section.book.version === BookVersion.v2) {
+			(this.newSection as IJupyterBookSectionV2).file = uri;
+			let movedSections: IJupyterBookSectionV2[] = [];
 			const files = section.sections as IJupyterBookSectionV2[];
-			files.forEach(async elem => {
-				await fs.promises.mkdir(path.join(book.rootContentPath, path.dirname(elem.file)), { recursive: true });
-				await fs.move(path.join(path.dirname(section.book.contentPath), path.basename(elem.file)), path.join(book.rootContentPath, elem.file));
-				(this.newSection as IJupyterBookSectionV2).file = section.uri;
-				this.newSection.sections.push({ file: elem.file, title: elem.title });
-			});
+			for (const elem of files) {
+				await fs.promises.mkdir(path.join(rootPath, path.dirname(elem.file)), { recursive: true });
+				await fs.move(path.join(path.dirname(section.book.contentPath), path.basename(elem.file)), path.join(rootPath, elem.file));
+				movedSections.push({ file: isSection ? path.join(path.basename(rootPath), elem.file) : elem.file, title: elem.title });
+			}
+			this.newSection.sections = movedSections;
 		}
-		book.tableOfContents.sections.push(this.newSection);
-		await fs.outputFile(book.tableOfContentsPath, yaml.safeDump(book.tableOfContents, { lineWidth: Infinity }));
+	}
+
+	async addNotebook(notebook: BookTreeItem, book: BookTreeItem, isSection: boolean): Promise<void> {
+		const rootPath = isSection ? path.dirname(book.book.contentPath) : book.rootContentPath;
+		let notebookName = path.basename(notebook.book.contentPath);
+		await fs.move(notebook.book.contentPath, path.join(rootPath, notebookName));
+		if (book.book.version === BookVersion.v1) {
+			this.newSection = { url: notebookName, title: notebookName };
+		} else if (book.book.version === BookVersion.v2) {
+			this.newSection = { file: notebookName, title: notebookName };
+		}
 	}
 
 	async addNotebookToBook(notebook: BookTreeItem, book: BookTreeItem): Promise<void> {
@@ -134,46 +145,31 @@ export class BookTocManager implements IBookTocManager {
 			this.newSection = { file: notebookName, title: notebookName };
 		}
 		book.tableOfContents.sections.push(this.newSection);
-		await fs.outputFile(book.tableOfContentsPath, yaml.safeDump(book.tableOfContents, { lineWidth: Infinity }));
-	}
-
-	async addSectionToSection(section: BookTreeItem, bookSection: BookTreeItem): Promise<void> {
-		const bookSectionRootPath = path.dirname(bookSection.book.contentPath);
-		this.newSection.title = section.title;
-		if (section.book.version === BookVersion.v1) {
-			this.newSection.url = section.uri;
-			let movedSections: IJupyterBookSectionV1[] = [];
-			const files = section.sections as IJupyterBookSectionV1[];
-			for (const elem of files) {
-				await fs.promises.mkdir(path.join(bookSectionRootPath, path.dirname(elem.url)), { recursive: true });
-				await fs.move(path.join(path.dirname(section.book.contentPath), path.basename(elem.url)), path.join(bookSectionRootPath, elem.url));
-				movedSections.push({ url: elem.url, title: elem.title });
-			}
-			this.newSection.sections = movedSections;
-		} else if (section.book.version === BookVersion.v2) {
-			const files = section.sections as IJupyterBookSectionV2[];
-			files.forEach(async elem => {
-				await fs.promises.mkdir(path.join(bookSectionRootPath, path.dirname(elem.file)), { recursive: true });
-				await fs.move(path.join(path.dirname(section.book.contentPath), path.basename(elem.file)), path.join(bookSectionRootPath, elem.file));
-				(this.newSection as IJupyterBookSectionV2).file = section.uri;
-				this.newSection.sections.push({ file: elem.file, title: elem.title });
-			});
-		}
-		const newTableOfContents = this.updateToc(bookSection.tableOfContents.sections, bookSection, this.newSection);
-		await fs.outputFile(bookSection.tableOfContentsPath, yaml.safeDump(newTableOfContents, { lineWidth: Infinity }));
-
+		await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(book.tableOfContents, { lineWidth: Infinity }));
 	}
 
 	public async updateBook(element: BookTreeItem, updatedBook: BookTreeItem): Promise<void> {
 		if (element.contextValue === 'section' && updatedBook.book.version === element.book.version) {
 			if (updatedBook.contextValue === 'section') {
-				await this.addSectionToSection(element, updatedBook);
+				await this.addSection(element, updatedBook, true);
+				this.tableofContents = this.updateToc(updatedBook.tableOfContents.sections, updatedBook, this.newSection);
+				await fs.writeFile(updatedBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity }));
 			} else if (updatedBook.contextValue === 'savedBook') {
-				await this.addSectionToBook(element, updatedBook);
+				await this.addSection(element, updatedBook, false);
+				updatedBook.tableOfContents.sections.push(this.newSection);
+				await fs.writeFile(updatedBook.tableOfContentsPath, yaml.safeDump(updatedBook.tableOfContents, { lineWidth: Infinity }));
 			}
 		}
 		else if (element.contextValue === 'savedNotebook') {
-			await this.addNotebookToBook(element, updatedBook);
+			if (updatedBook.contextValue === 'savedBook') {
+				await this.addNotebook(element, updatedBook, false);
+				updatedBook.tableOfContents.sections.push(this.newSection);
+				await fs.writeFile(updatedBook.tableOfContentsPath, yaml.safeDump(updatedBook.tableOfContents, { lineWidth: Infinity }));
+			} else if (updatedBook.contextValue === 'section') {
+				await this.addNotebook(element, updatedBook, true);
+				this.tableofContents = this.updateToc(updatedBook.tableOfContents.sections, updatedBook, this.newSection);
+				await fs.writeFile(updatedBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity }));
+			}
 		}
 	}
 }
