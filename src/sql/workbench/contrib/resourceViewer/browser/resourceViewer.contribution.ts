@@ -22,6 +22,7 @@ import { Codicon } from 'vs/base/common/codicons';
 import { localize } from 'vs/nls';
 import { Extensions as ViewContainerExtensions, IViewsRegistry, IViewContainersRegistry, ViewContainerLocation } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 CommandsRegistry.registerCommand({
 	id: 'resourceViewer.openResourceViewer',
@@ -50,9 +51,10 @@ Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).regi
 
 class ResourceViewerContributor implements IWorkbenchContribution {
 	constructor(
-		@IConfigurationService readonly configurationService: IConfigurationService
+		@IConfigurationService readonly configurationService: IConfigurationService,
+		@IProductService readonly productService: IProductService
 	) {
-		if (configurationService.getValue('workbench.enablePreviewFeatures')) {
+		if (productService.quality !== 'stable' && productService.quality !== 'saw' && configurationService.getValue('workbench.enablePreviewFeatures')) {
 			registerResourceViewerContainer();
 		}
 	}
