@@ -11,7 +11,7 @@ import { BookVersion } from './bookModel';
 import * as vscode from 'vscode';
 
 export interface IBookTocManager {
-	updateBook(section: BookTreeItem, updatedBook: BookTreeItem): Promise<void>;
+	updateBook(element: BookTreeItem, book: BookTreeItem): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>
 }
 const allowedFileExtensions: string[] = ['.md', '.ipynb'];
@@ -88,6 +88,12 @@ export class BookTocManager implements IBookTocManager {
 		return tableOfContents;
 	}
 
+	/**
+	 * Follows the same logic as the JupyterBooksCreate.ipynb. It receives a path that contains a notebooks and
+	 * a path where it creates the book. It copies the contents from one folder to another and creates a table of contents.
+	 * @param bookContentPath The path to the book folder, the basename of the path is the name of the book
+	 * @param contentFolder The path to the folder that contains the notebooks and markdown files to be added to the created book.
+	*/
 	public async createBook(bookContentPath: string, contentFolder: string): Promise<void> {
 		await fs.promises.mkdir(bookContentPath);
 		await fs.copy(contentFolder, bookContentPath);
@@ -136,39 +142,32 @@ export class BookTocManager implements IBookTocManager {
 		}
 	}
 
-	async addNotebookToBook(notebook: BookTreeItem, book: BookTreeItem): Promise<void> {
-		let notebookName = path.relative(notebook.book.root, notebook.book.contentPath);
-		await fs.move(notebook.book.contentPath, path.join(book.rootContentPath, notebookName));
-		if (book.book.version === BookVersion.v1) {
-			this.newSection = { url: notebookName, title: notebookName };
-		} else if (book.book.version === BookVersion.v2) {
-			this.newSection = { file: notebookName, title: notebookName };
-		}
-		book.tableOfContents.sections.push(this.newSection);
-		await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(book.tableOfContents, { lineWidth: Infinity }));
-	}
-
-	public async updateBook(element: BookTreeItem, updatedBook: BookTreeItem): Promise<void> {
-		if (element.contextValue === 'section' && updatedBook.book.version === element.book.version) {
-			if (updatedBook.contextValue === 'section') {
-				await this.addSection(element, updatedBook, true);
-				this.tableofContents = this.updateToc(updatedBook.tableOfContents.sections, updatedBook, this.newSection);
-				await fs.writeFile(updatedBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity }));
-			} else if (updatedBook.contextValue === 'savedBook') {
-				await this.addSection(element, updatedBook, false);
-				updatedBook.tableOfContents.sections.push(this.newSection);
-				await fs.writeFile(updatedBook.tableOfContentsPath, yaml.safeDump(updatedBook.tableOfContents, { lineWidth: Infinity }));
+	/**
+	 * Moves the element to the book's folder and adds it to the table of contents.
+	 * @param element Notebook, Markdown File, or section that will be added to the book.
+	 * @param book Book or a BookSection that will be modified.
+	*/
+	public async updateBook(element: BookTreeItem, book: BookTreeItem): Promise<void> {
+		if (element.contextValue === 'section' && book.book.version === element.book.version) {
+			if (book.contextValue === 'section') {
+				await this.addSection(element, book, true);
+				this.tableofContents = this.updateToc(book.tableOfContents.sections, book, this.newSection);
+				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity }));
+			} else if (book.contextValue === 'savedBook') {
+				await this.addSection(element, book, false);
+				book.tableOfContents.sections.push(this.newSection);
+				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(book.tableOfContents, { lineWidth: Infinity }));
 			}
 		}
 		else if (element.contextValue === 'savedNotebook') {
-			if (updatedBook.contextValue === 'savedBook') {
-				await this.addNotebook(element, updatedBook, false);
-				updatedBook.tableOfContents.sections.push(this.newSection);
-				await fs.writeFile(updatedBook.tableOfContentsPath, yaml.safeDump(updatedBook.tableOfContents, { lineWidth: Infinity }));
-			} else if (updatedBook.contextValue === 'section') {
-				await this.addNotebook(element, updatedBook, true);
-				this.tableofContents = this.updateToc(updatedBook.tableOfContents.sections, updatedBook, this.newSection);
-				await fs.writeFile(updatedBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity }));
+			if (book.contextValue === 'savedBook') {
+				await this.addNotebook(element, book, false);
+				book.tableOfContents.sections.push(this.newSection);
+				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(book.tableOfContents, { lineWidth: Infinity }));
+			} else if (book.contextValue === 'section') {
+				await this.addNotebook(element, book, true);
+				this.tableofContents = this.updateToc(book.tableOfContents.sections, book, this.newSection);
+				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity }));
 			}
 		}
 	}
