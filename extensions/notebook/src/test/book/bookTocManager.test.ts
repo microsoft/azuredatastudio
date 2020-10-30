@@ -169,10 +169,7 @@ describe('BookTocManagerTests', function () {
 						'url': path.join('sample', 'notebook4')
 					}
 				],
-				section2: {
-					'title': 'Test',
-					'url': path.join(path.sep, 'test', 'readme'),
-					'sections': [
+				section2: [
 						{
 							'title': 'Notebook 5',
 							'url': path.join(path.sep, 'test', 'notebook5')
@@ -182,7 +179,6 @@ describe('BookTocManagerTests', function () {
 							'url': path.join(path.sep, 'test', 'notebook6')
 						}
 					]
-				}
 			}, {
 				it: 'using jupyter-book versions >= 0.7.0',
 				version: 'v2',
@@ -235,10 +231,7 @@ describe('BookTocManagerTests', function () {
 						'file': path.join('sample', 'notebook4')
 					}
 				],
-				section2: {
-					'title': 'Test',
-					'file': path.join(path.sep, 'test', 'readme'),
-					'sections': [
+				section2: [
 						{
 							'title': 'Notebook 5',
 							'file': path.join(path.sep, 'test', 'notebook5')
@@ -248,7 +241,6 @@ describe('BookTocManagerTests', function () {
 							'file': path.join(path.sep, 'test', 'notebook6')
 						}
 					]
-				}
 			}
 		];
 
@@ -288,13 +280,13 @@ describe('BookTocManagerTests', function () {
 						contentPath: run.bookSection2.contentPath,
 						root: run.bookSection2.sectionRoot,
 						tableOfContents: {
-							sections: [run.section2]
+							sections: run.section2
 						},
 						isUntitled: undefined,
 						treeItemCollapsibleState: undefined,
 						type: BookTreeItemType.Book,
 						version: run.version,
-						page: [run.section2]
+						page: run.section2
 					};
 
 					let bookTreeItemFormat4: BookTreeItemFormat = {
@@ -361,7 +353,7 @@ describe('BookTocManagerTests', function () {
 					const tocFile = await fs.promises.readFile(path.join(run.bookSection2.tocPath), 'utf8');
 					let toc = yaml.safeLoad(tocFile);
 					should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook3', 'notebook4']), 'The files of the section should be moved to the books folder');
-					should(equalSections(toc[0].sections[2], bookTocManager.newSection)).be.true;
+					should(equalSections(toc[1].sections, bookTocManager.newSection)).be.true;
 				});
 
 				it('Add notebook to book', async () => {

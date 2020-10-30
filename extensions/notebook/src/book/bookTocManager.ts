@@ -76,7 +76,7 @@ export class BookTocManager implements IBookTocManager {
 
 	updateToc(tableOfContents: JupyterBookSection[], findSection: BookTreeItem, addSection: JupyterBookSection): JupyterBookSection[] {
 		for (const section of tableOfContents) {
-			if (path.dirname(section.url) === path.join(path.sep, path.dirname(findSection.uri)) || path.dirname((section as IJupyterBookSectionV2).file) === path.join(path.sep, path.dirname(findSection.uri))) {
+			if ((section as IJupyterBookSectionV1).url && path.dirname(section.url) === path.join(path.sep, path.dirname(findSection.uri)) || (section as IJupyterBookSectionV2).file && path.dirname((section as IJupyterBookSectionV2).file) === path.join(path.sep, path.dirname(findSection.uri))) {
 				if (tableOfContents[tableOfContents.length - 1].sections) {
 					tableOfContents[tableOfContents.length - 1].sections.push(addSection);
 				} else {
