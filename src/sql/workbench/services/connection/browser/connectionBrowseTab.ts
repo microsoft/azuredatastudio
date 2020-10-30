@@ -216,8 +216,8 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 			this.updateSavedConnectionsNode();
 		}));
 
-		this._register(this.themeService.onDidColorThemeChange(() => {
-			this.refresh();
+		this._register(this.themeService.onDidColorThemeChange(async () => {
+			await this.refresh();
 		}));
 	}
 
