@@ -49,7 +49,7 @@ export class GridStackComponent implements OnInit {
 
 		setTimeout(() => {
 			self._grid = GridStack.init({
-				alwaysShowResizeHandle: true
+				alwaysShowResizeHandle: false
 			});
 
 			this.cells.forEach((cell) => self._grid);
