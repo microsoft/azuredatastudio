@@ -30,6 +30,7 @@ export class BookTocManager implements IBookTocManager {
 			if (isDirectory) {
 				let files = await fs.promises.readdir(path.join(directory, file));
 				let initFile: string = '';
+				//Add files named as readme or index whithin the directory as the first file of the section.
 				files.some((f, index) => {
 					if (initMarkdown.includes(f)) {
 						initFile = path.parse(f).name;
@@ -46,15 +47,17 @@ export class BookTocManager implements IBookTocManager {
 				toc.push(jupyterSection);
 				await this.getAllFiles(toc, path.join(directory, file), files, rootDirectory);
 			} else if (allowedFileExtensions.includes(path.extname(file))) {
+				// if the file is in the book root we don't include the directory.
 				const filePath = directory === rootDirectory ? path.parse(file).name : path.join(path.basename(directory), path.parse(file).name);
 				const addFile: IJupyterBookSectionV2 = {
 					title: path.parse(file).name,
 					file: filePath
 				};
+				//find if the directory (section) of the file exists else just add the file at the end of the table of contents
 				let indexToc = toc.findIndex(parent => parent.title === path.basename(directory));
+				//if there is not init markdown file then add the first notebook or markdown file that is found
 				if (indexToc !== -1) {
 					if (toc[indexToc].file === '') {
-						//if there are no markdown files then add the first notebook
 						toc[indexToc].file = addFile.file;
 					} else {
 						toc[indexToc].sections.push(addFile);
@@ -106,8 +109,11 @@ export class BookTocManager implements IBookTocManager {
 
 	async addSection(section: BookTreeItem, book: BookTreeItem, isSection: boolean): Promise<void> {
 		this.newSection.title = section.title;
+		//the book contentPath contains the first file of the section, we get the dirname to identify the section's root path
 		const rootPath = isSection ? path.dirname(book.book.contentPath) : book.rootContentPath;
-		const uri = isSection ? path.join(path.basename(rootPath), section.uri) : section.uri;
+		// the uri contains the first notebook or markdown file in the TOC format. If we are in a section,
+		// we want to include the intermediary directories between the book's root and the section
+		const uri = isSection ? path.relative(rootPath, section.uri) : section.uri;
 		if (section.book.version === BookVersion.v1) {
 			this.newSection.url = uri;
 			let movedSections: IJupyterBookSectionV1[] = [];
@@ -115,7 +121,7 @@ export class BookTocManager implements IBookTocManager {
 			for (const elem of files) {
 				await fs.promises.mkdir(path.join(rootPath, path.dirname(elem.url)), { recursive: true });
 				await fs.move(path.join(path.dirname(section.book.contentPath), path.basename(elem.url)), path.join(rootPath, elem.url));
-				movedSections.push({ url: isSection ? path.join(path.basename(rootPath), elem.url) : elem.url, title: elem.title });
+				movedSections.push({ url: isSection ? path.relative(rootPath, elem.url) : elem.url, title: elem.title });
 			}
 			this.newSection.sections = movedSections;
 		} else if (section.book.version === BookVersion.v2) {
@@ -125,13 +131,14 @@ export class BookTocManager implements IBookTocManager {
 			for (const elem of files) {
 				await fs.promises.mkdir(path.join(rootPath, path.dirname(elem.file)), { recursive: true });
 				await fs.move(path.join(path.dirname(section.book.contentPath), path.basename(elem.file)), path.join(rootPath, elem.file));
-				movedSections.push({ file: isSection ? path.join(path.basename(rootPath), elem.file) : elem.file, title: elem.title });
+				movedSections.push({ file: isSection ? path.relative(rootPath, elem.file) : elem.file, title: elem.title });
 			}
 			this.newSection.sections = movedSections;
 		}
 	}
 
 	async addNotebook(notebook: BookTreeItem, book: BookTreeItem, isSection: boolean): Promise<void> {
+		//the book's contentPath contains the first file of the section, we get the dirname to identify the section's root path
 		const rootPath = isSection ? path.dirname(book.book.contentPath) : book.rootContentPath;
 		let notebookName = path.basename(notebook.book.contentPath);
 		await fs.move(notebook.book.contentPath, path.join(rootPath, notebookName));
