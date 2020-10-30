@@ -170,13 +170,6 @@ export class DeployAzureSQLDBWizardModel extends ResourceTypeModel {
 		});
 	}
 
-	public showErrorMessage(message: string) {
-		this.wizard.wizardObject.message = {
-			text: message,
-			level: azdata.window.MessageLevel.Error
-		};
-	}
-
 	private async scriptToNotebook(): Promise<void> {
 		const variableValueStatements = this.getCodeCellContentForNotebook();
 		const insertionPosition = 2; // Cell number 2 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.

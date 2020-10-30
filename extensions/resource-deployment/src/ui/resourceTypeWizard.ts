@@ -16,7 +16,7 @@ import { IToolsService } from '../services/toolsService';
 import { IPlatformService } from '../services/platformService';
 import { ResourceTypeModel } from './resourceTypeModel';
 import { ResourceTypePage } from './resourceTypePage';
-import { NotebookWizardModel } from './notebookWizard/notebookWizard';
+import { NotebookWizardModel } from './notebookWizard/notebookWizardModel';
 import { DeployAzureSQLDBWizardModel } from './deployAzureSQLDBWizard/deployAzureSQLDBWizardModel';
 
 export class ResourceTypeWizard {
@@ -125,6 +125,13 @@ export class ResourceTypeWizard {
 
 	public registerDisposable(disposable: vscode.Disposable): void {
 		this.toDispose.push(disposable);
+	}
+
+	public showErrorMessage(message: string) {
+		this.wizardObject.message = {
+			text: message,
+			level: azdata.window.MessageLevel.Error
+		};
 	}
 
 }

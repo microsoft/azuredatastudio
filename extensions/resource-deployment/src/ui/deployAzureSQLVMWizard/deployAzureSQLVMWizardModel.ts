@@ -206,13 +206,6 @@ export class DeployAzureSQLVMWizardModel extends ResourceTypeModel {
 		});
 	}
 
-	public showErrorMessage(message: string) {
-		this.wizard.wizardObject.message = {
-			text: message,
-			level: azdata.window.MessageLevel.Error
-		};
-	}
-
 	public validatePassword(password: string): string[] {
 		/**
 		 * 1. Password length should be between 12 and 123.

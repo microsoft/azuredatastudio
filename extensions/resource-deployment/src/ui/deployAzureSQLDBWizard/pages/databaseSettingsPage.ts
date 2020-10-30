@@ -260,7 +260,7 @@ export class DatabaseSettingsPage extends BasePage {
 			errorMessages.push(localize('deployAzureSQLDB.DBCollationSpecialCharError', "Collation name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
 		}
 
-		this._model.showErrorMessage(errorMessages.join(EOL));
+		this._model.wizard.showErrorMessage(errorMessages.join(EOL));
 		return errorMessages.join(EOL);
 	}
 

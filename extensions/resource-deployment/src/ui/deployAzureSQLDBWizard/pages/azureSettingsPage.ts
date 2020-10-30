@@ -193,10 +193,10 @@ export class AzureSettingsPage extends BasePage {
 		let accounts = await azdata.accounts.getAllAccounts();
 
 		if (accounts.length === 0) {
-			this._model.showErrorMessage(localize('deployAzureSQLDB.azureSignInError', "Sign in to an Azure account first"));
+			this._model.wizard.showErrorMessage(localize('deployAzureSQLDB.azureSignInError', "Sign in to an Azure account first"));
 			return;
 		} else {
-			this._model.showErrorMessage('');
+			this._model.wizard.showErrorMessage('');
 		}
 
 		this._model.addDropdownValues(
@@ -760,7 +760,7 @@ export class AzureSettingsPage extends BasePage {
 		// 	errorMessages.push(localize('deployAzureSQLDB.SupportedFamiliesError', "No Supported Family found in current DB edition.\nSelect a different edition"));
 		// }
 
-		this._model.showErrorMessage(errorMessages.join(EOL));
+		this._model.wizard.showErrorMessage(errorMessages.join(EOL));
 		return errorMessages.join(EOL);
 	}
 }

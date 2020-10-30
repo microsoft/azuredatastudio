@@ -443,7 +443,7 @@ export class VmSettingsPage extends BasePage {
 			errorMessages.push(localize('deployAzureSQLVM.vmDropdownSizeError', "Select a valid virtual machine size."));
 		}
 
-		this._model.showErrorMessage(errorMessages.join(EOL));
+		this._model.wizard.showErrorMessage(errorMessages.join(EOL));
 
 		return errorMessages.join(EOL);
 	}

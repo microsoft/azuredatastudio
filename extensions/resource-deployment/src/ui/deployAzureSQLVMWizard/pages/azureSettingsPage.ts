@@ -132,10 +132,10 @@ export class AzureSettingsPage extends BasePage {
 		let accounts = await azdata.accounts.getAllAccounts();
 
 		if (accounts.length === 0) {
-			this._model.showErrorMessage('Sign in to an Azure account first');
+			this._model.wizard.showErrorMessage('Sign in to an Azure account first');
 			return;
 		} else {
-			this._model.showErrorMessage('');
+			this._model.wizard.showErrorMessage('');
 		}
 
 		this._model.addDropdownValues(

@@ -243,7 +243,7 @@ export class SqlServerSettingsPage extends BasePage {
 		}
 
 
-		this._model.showErrorMessage(errorMessages.join(EOL));
+		this._model.wizard.showErrorMessage(errorMessages.join(EOL));
 
 		return errorMessages.join(EOL);
 	}

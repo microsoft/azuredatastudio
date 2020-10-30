@@ -471,7 +471,7 @@ export class NetworkSettingsPage extends BasePage {
 			}
 		}
 
-		this._model.showErrorMessage(errorMessages.join('\n'));
+		this._model.wizard.showErrorMessage(errorMessages.join('\n'));
 		return errorMessages.join('\n');
 
 	}
