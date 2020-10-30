@@ -26,6 +26,7 @@ declare module 'azureResource' {
 		}
 
 		export interface IAzureResourceTreeDataProvider extends TreeDataProvider<IAzureResourceNode> {
+			browseConnectionMode: boolean;
 		}
 
 		export interface IAzureResourceNode {

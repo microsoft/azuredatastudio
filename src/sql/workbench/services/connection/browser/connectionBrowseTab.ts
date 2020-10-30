@@ -50,7 +50,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 export type TreeElement = ConnectionDialogTreeProviderElement | ITreeItemFromProvider | SavedConnectionNode | ServerTreeElement;
 
 export class ConnectionBrowseTab implements IPanelTab {
-	public readonly title = localize('connectionDialog.browser', "Browse");
+	public readonly title = localize('connectionDialog.browser', "Browse (Preview)");
 	public readonly identifier = 'connectionBrowse';
 	public readonly view = this.instantiationService.createInstance(ConnectionBrowserView);
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService) { }
