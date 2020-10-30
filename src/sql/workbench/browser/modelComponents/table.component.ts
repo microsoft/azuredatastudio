@@ -144,8 +144,6 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		};
 	}
 
-
-
 	public transformData(rows: (string | azdata.IconColumnCellValue)[][], columns: any[]): { [key: string]: string | CssIconCellValue }[] {
 		if (rows && columns) {
 
@@ -157,7 +155,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 				row.forEach((val, index) => {
 					let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
-					if (TableComponent.isIconColumnCellValue(val)) {
+					if (isIconColumnCellValue(val)) {
 						const icon: IUserFriendlyIcon = val.icon;
 						const iconKey: string = getIconKey(icon);
 						const iconCssClass = this._iconCssMap[iconKey] ?? createIconCssClass(icon);
@@ -175,10 +173,6 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		} else {
 			return [];
 		}
-	}
-
-	private static isIconColumnCellValue(obj: any | undefined): obj is azdata.IconColumnCellValue {
-		return !!(<azdata.IconColumnCellValue>obj)?.icon;
 	}
 
 	ngAfterViewInit(): void {
@@ -549,4 +543,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		this.data = this._tableData.getItems().map(dataObject => Object.values(dataObject));
 		this.layoutTable();
 	}
+}
+
+function isIconColumnCellValue(obj: any | undefined): obj is azdata.IconColumnCellValue {
+	return !!(<azdata.IconColumnCellValue>obj)?.icon;
 }

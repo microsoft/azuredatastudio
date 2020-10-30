@@ -115,7 +115,7 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 
 export function iconCssFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 	if (isCssIconCellValue(value)) {
-		return `<div role='image' aria-label="${value.ariaLabel}" class="grid-cell-value-container icon codicon slick-icon-cell-content ${value.iconCssClass}"></div>`;
+		return `<div role='image' aria-label="${escape(value.ariaLabel)}" class="grid-cell-value-container icon codicon slick-icon-cell-content ${value.iconCssClass}"></div>`;
 	}
 	return textFormatter(row, cell, value, columnDef, dataContext);
 }
