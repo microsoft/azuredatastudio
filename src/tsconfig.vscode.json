@@ -6,7 +6,7 @@
 		"experimentalDecorators": true,
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,
-		"strict": true,
+		"strict": false,
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"removeComments": false,

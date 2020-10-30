@@ -33,7 +33,7 @@ import { Emitter, Event } from 'vs/base/common/event';
 class MockWorkbenchEnvironmentService extends NativeWorkbenchEnvironmentService {
 
 	constructor(public userEnv: IProcessEnvironment) {
-		super({ ...TestWorkbenchConfiguration, userEnv }, undefined);
+		super({ ...TestWorkbenchConfiguration, userEnv });
 	}
 }
 

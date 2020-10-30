@@ -119,7 +119,7 @@ export class ExtHostFileSystem implements ExtHostFileSystemShape {
 	private _linkProviderRegistration?: IDisposable;
 	private _handlePool: number = 0;
 
-	constructor(mainContext: IMainContext, private _extHostLanguageFeatures: ExtHostLanguageFeatures) {
+	constructor(mainContext: IMainContext, private _extHostLanguageFeatures: ExtHostLanguageFeatures, private _extHostFileSystemInfo: IExtHostFileSystemInfo) {
 		this._proxy = mainContext.getProxy(MainContext.MainThreadFileSystem);
 	}
 

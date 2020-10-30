@@ -25,6 +25,7 @@ export interface INativeWorkbenchEnvironmentService extends IWorkbenchEnvironmen
 	readonly crashReporterId?: string;
 
 	readonly execPath: string;
+	readonly cliPath: string;
 
 	readonly log?: string;
 	readonly extHostLogsPath: URI;

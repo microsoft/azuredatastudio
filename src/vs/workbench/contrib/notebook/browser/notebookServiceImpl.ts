@@ -844,6 +844,13 @@ export class NotebookService extends Disposable implements INotebookService, ICu
 		}
 	}
 
+	async resolveNotebookEditor(viewType: string, uri: URI, editorId: string): Promise<void> {
+		const entry = this._notebookProviders.get(viewType);
+		if (entry) {
+			entry.controller.resolveNotebookEditor(viewType, uri, editorId);
+		}
+	}
+
 	removeNotebookEditor(editor: INotebookEditor) {
 		const editorCache = this._notebookEditors.get(editor.getId());
 
