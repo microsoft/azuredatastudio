@@ -9,7 +9,7 @@ import { BookTocManager } from '../../book/bookTocManager';
 import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
 import * as yaml from 'js-yaml';
 import * as sinon from 'sinon';
-import { IJupyterBookSectionV2 } from '../../contracts/content';
+import { IJupyterBookSectionV2, JupyterBookSection } from '../../contracts/content';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as uuid from 'uuid';
@@ -20,6 +20,11 @@ export function equalTOC(actualToc: IJupyterBookSectionV2[], expectedToc: IJupyt
 			return false;
 		}
 	}
+	return true;
+}
+
+export function equalSections(actualSection: JupyterBookSection, expectedSection: JupyterBookSection): boolean {
+
 	return true;
 }
 
@@ -90,25 +95,28 @@ describe('BookTocManagerTests', function () {
 	});
 
 	describe('EditingBooks', () => {
-		let bookItem: BookTreeItem;
-		let bookItem2: BookTreeItem;
-		let bookItem3: BookTreeItem;
-		let rootFolderPath: string;
-		let root2FolderPath: string;
-		let root3FolderPath: string;
+		let book: BookTreeItem;
+		let bookSection: BookTreeItem;
+		let bookSection2: BookTreeItem;
+		let notebook: BookTreeItem;
+		let rootBookFolderPath: string;
+		let rootSectionFolderPath: string;
+		let rootSection2FolderPath: string;
+		let notebookContentPath: string;
+		let bookTocManager: BookTocManager;
 
 		afterEach(function (): void {
 			sinon.restore();
 		});
 
 		beforeEach(async () => {
-			rootFolderPath = path.join(os.tmpdir(), `Book1TestData_${uuid.v4()}`);
-			root2FolderPath = path.join(os.tmpdir(), `Book2TestData_${uuid.v4()}`);
-			root3FolderPath = path.join(os.tmpdir(), `Book2TestData_${uuid.v4()}`);
+			rootBookFolderPath = path.join(os.tmpdir(), uuid.v4(), 'Book');
+			rootSectionFolderPath = path.join(os.tmpdir(), uuid.v4(), 'BookSection');
+			rootSection2FolderPath = path.join(os.tmpdir(), uuid.v4(), 'BookSection2');
 
 			let bookTreeItemFormat1: BookTreeItemFormat = {
 				contentPath: undefined,
-				root: rootFolderPath,
+				root: rootBookFolderPath,
 				tableOfContents: {
 					sections: [
 						{
@@ -138,8 +146,8 @@ describe('BookTocManagerTests', function () {
 
 			let bookTreeItemFormat2: BookTreeItemFormat = {
 				title: 'Sample',
-				contentPath: path.join(root2FolderPath, 'content', 'SubFolder2', 'sample', 'readme.md'),
-				root: path.join(root2FolderPath, 'content', 'SubFolder2'),
+				contentPath: path.join(rootSectionFolderPath, 'content', 'sample', 'readme.md'),
+				root: path.join(rootSectionFolderPath, 'content'),
 				tableOfContents: {
 					sections: [
 						{
@@ -166,11 +174,35 @@ describe('BookTocManagerTests', function () {
 				]
 			};
 
-				let bookTreeItemFormat3: BookTreeItemFormat = {
-					title: 'Test',
-					contentPath: path.join(root3FolderPath, 'content', 'test', 'readme.md'),
-					root: path.join(root2FolderPath, 'content'),
-					tableOfContents: {
+			let bookTreeItemFormat3: BookTreeItemFormat = {
+				title: 'Test',
+				contentPath: path.join(rootSection2FolderPath, 'content', 'test', 'readme.md'),
+				root: rootSection2FolderPath,
+				tableOfContents: {
+					sections: [
+						{
+							title: 'Test',
+							url: path.join(path.sep, 'test', 'readme'),
+							sections: [
+								{
+									url: path.join(path.sep, 'test', 'notebook5')
+								},
+								{
+									url: path.join(path.sep, 'test', 'notebook6')
+								}
+							]
+						},
+
+					]
+				},
+				isUntitled: undefined,
+				treeItemCollapsibleState: undefined,
+				type: BookTreeItemType.Book,
+				version: 'v1',
+				page: [
+					{
+						title: 'Test',
+						url: path.join(path.sep, 'test', 'readme'),
 						sections: [
 							{
 								url: path.join(path.sep, 'test', 'notebook5')
@@ -179,72 +211,88 @@ describe('BookTocManagerTests', function () {
 								url: path.join(path.sep, 'test', 'notebook6')
 							}
 						]
-					},
-					isUntitled: undefined,
-					treeItemCollapsibleState: undefined,
-					type: BookTreeItemType.Book,
-					version: 'v1',
-					page: [
-						{
-							title: 'Notebook 5',
-							url: path.join('test', 'notebook5')
-						},
-						{
-							title: 'Notebook 6',
-							url: path.join('test', 'notebook6')
-						}
-					]
+					}
+				]
 			};
 
-			bookItem = new BookTreeItem(bookTreeItemFormat1, undefined);
-			bookItem2 = new BookTreeItem(bookTreeItemFormat2, undefined);
-			bookItem3 = new BookTreeItem(bookTreeItemFormat3, undefined);
-			bookItem2.uri = path.join('sample', 'readme');
-			bookItem3.uri = path.join('test', 'readme');
-			let content1Folder = path.join(root2FolderPath, 'content','SubFolder2', 'sample');
-			let content2Folder = path.join(root2FolderPath, 'content','SubFolder2', 'sample');
-			await fs.promises.mkdir(content1Folder, {recursive: true});
-			await fs.promises.mkdir(content2Folder, {recursive: true});
+			let bookTreeItemFormat4: BookTreeItemFormat = {
+				title: 'Test',
+				contentPath: path.join(rootBookFolderPath, 'content', 'test', 'readme.md'),
+				root: rootSection2FolderPath,
+				tableOfContents: {
+					sections: undefined
+				},
+				isUntitled: undefined,
+				treeItemCollapsibleState: undefined,
+				type: BookTreeItemType.Notebook,
+				version: 'v1',
+				page: {
+					sections: undefined
+				}
+			};
+
+
+			book = new BookTreeItem(bookTreeItemFormat1, undefined);
+			bookSection = new BookTreeItem(bookTreeItemFormat2, undefined);
+			bookSection2 = new BookTreeItem(bookTreeItemFormat3, undefined);
+			notebook = new BookTreeItem(bookTreeItemFormat4, undefined);
+			bookTocManager = new BookTocManager();
+
+			bookSection.uri = path.join('sample', 'readme');
+			bookSection2.uri = path.join('test', 'readme');
+
+			book.contextValue = 'savedBook';
+			bookSection.contextValue = 'section';
+			bookSection2.contextValue = 'section';
+			notebook.contextValue = 'savedNotebook';
+
+
+			await fs.promises.mkdir(path.join(rootBookFolderPath, '_data'), { recursive: true });
+
+			let content1Folder = path.join(rootBookFolderPath, 'content', 'sample');
+			let content2Folder = path.join(rootSectionFolderPath, 'content', 'sample');
+			let content3Folder = path.join(rootSection2FolderPath, 'content', 'test');
+			await fs.promises.mkdir(content1Folder, { recursive: true });
+			await fs.promises.mkdir(content2Folder, { recursive: true });
+			await fs.promises.mkdir(content3Folder, { recursive: true });
+			await fs.promises.mkdir(path.dirname(notebook.book.contentPath), { recursive: true });
+			await fs.promises.mkdir(path.join(rootSection2FolderPath, '_data'), { recursive: true });
 			await fs.writeFile(path.join(content2Folder, 'notebook3'), '');
 			await fs.writeFile(path.join(content2Folder, 'notebook4'), '');
+			await fs.writeFile(path.join(content3Folder, 'readme'), '');
+			await fs.writeFile(notebook.book.contentPath, '');
 		});
 
-		it('add notebook to book', async () => {
-			try {
-				bookItem.contextValue = 'savedBook';
-				bookItem2.contextValue = 'section';
-				let bookTocManager: BookTocManager = new BookTocManager();
-				await bookTocManager.updateBook(bookItem2, bookItem);
-				let content1Folder = path.join(rootFolderPath, 'content', 'sample');
-				let listFiles = await fs.promises.readdir(content1Folder);
-				const tocFile = await fs.promises.readFile(path.join(rootFolderPath,'_data', 'toc.yml'), 'utf8');
-				let toc = yaml.safeLoad(tocFile);
-				if(listFiles || toc){
-
-				}
-			}
-			catch (error) {
-				console.log(error);
-			}
+		it('Add section to book', async () => {
+			await bookTocManager.updateBook(bookSection, book);
+			let content = path.join(rootBookFolderPath, 'content', 'sample');
+			const listFiles = await fs.promises.readdir(content);
+			const tocFile = await fs.promises.readFile(path.join(rootBookFolderPath, '_data', 'toc.yml'), 'utf8');
+			let toc = yaml.safeLoad(tocFile);
+			should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook3', 'notebook4']), 'The files of the section should be moved to the books folder');
+			should(toc.sections[2].title).be.equal(bookTocManager.newSection.title, 'The tableOfContents of the book should include the new section');
 		});
 
-		it('add section to section', async () => {
-			try {
-				bookItem3.contextValue = 'section';
-				bookItem2.contextValue = 'section';
-				let bookTocManager: BookTocManager = new BookTocManager();
-				await bookTocManager.updateBook(bookItem2, bookItem3);
-				let content3Folder = path.join(root3FolderPath, 'content', 'test');
-				let listFiles = await fs.promises.readdir(content3Folder);
-				const tocFile = await fs.promises.readFile(path.join(rootFolderPath,'_data', 'toc.yml'), 'utf8');
-				let toc = yaml.safeLoad(tocFile);
-				if(listFiles || toc){
-
-				}
-			}
-			catch (error) {
-				console.log(error);
-			}
+		it('Add section to section', async () => {
+			await bookTocManager.updateBook(bookSection, bookSection2);
+			let content3Folder = path.join(rootSection2FolderPath, 'content', 'test', 'sample');
+			let listFiles = await fs.promises.readdir(content3Folder);
+			const tocFile = await fs.promises.readFile(path.join(rootSection2FolderPath, '_data', 'toc.yml'), 'utf8');
+			let toc = yaml.safeLoad(tocFile);
+			should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook3', 'notebook4']), 'The files of the section should be moved to the books folder');
+			should(toc[0].sections[2].title).be.equal(bookTocManager.newSection.title, 'The tableOfContents of the book should include the new section');
 		});
+
+		it('Add notebook to book', async () => {
+			await bookTocManager.updateBook(notebook, book);
+			let content = path.join(rootBookFolderPath, 'content');
+			let listFiles = await fs.promises.readdir(content);
+			const tocFile = await fs.promises.readFile(path.join(rootBookFolderPath, '_data', 'toc.yml'), 'utf8');
+			let toc = yaml.safeLoad(tocFile);
+			should(listFiles.findIndex(f => f === 'readme.md')).not.be.equal(-1);
+			should(toc.sections[2].title).be.equal(bookTocManager.newSection.title, 'The tableOfContents of the book should include the new notebook');
+		});
+
+
 	});
 });

@@ -76,7 +76,7 @@ export class BookTreeItem extends vscode.TreeItem {
 			this.tooltip = `${this._uri}`;
 		}
 		else {
-			this._tableOfContentsPath = this.book.type === BookTreeItemType.Book || this.contextValue === 'section' ? (this.book.version === BookVersion.v1 ? path.join(this.book.root, '_data', 'toc.yml') : path.join(this.book.root, '_toc.yml')) : undefined;
+			this._tableOfContentsPath = (this.book.type === BookTreeItemType.Book || this.contextValue === 'section') ? (this.book.version === BookVersion.v1 ? path.join(this.book.root, '_data', 'toc.yml') : path.join(this.book.root, '_toc.yml')) : undefined;
 			this._rootContentPath = this.book.version === BookVersion.v1 ? path.join(this.book.root, content) : this.book.root;
 			this.tooltip = this.book.type === BookTreeItemType.Book ? this._rootContentPath : this.book.contentPath;
 			this.resourceUri = vscode.Uri.file(this.book.root);
@@ -204,7 +204,7 @@ export class BookTreeItem extends vscode.TreeItem {
 	}
 
 	private findChildSectionRecur(section: JupyterBookSection, url: string): JupyterBookSection | undefined {
-		if (section.url && section.url === url) {
+		if ((section as IJupyterBookSectionV1).url && (section as IJupyterBookSectionV1).url === url || (section as IJupyterBookSectionV2).file && (section as IJupyterBookSectionV2).file === url) {
 			return section;
 		} else if (section.sections) {
 			for (const childSection of section.sections) {
