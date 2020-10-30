@@ -198,8 +198,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.workerBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			validationErrorMessage: loc.workerValidationErrorMessage,
-			inputType: 'number',
-			placeHolder: loc.loading
+			inputType: 'number'
 		}).component();
 
 		this.disposables.push(
@@ -216,8 +215,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 1,
 			validationErrorMessage: loc.coresValidationErrorMessage,
-			inputType: 'number',
-			placeHolder: loc.loading
+			inputType: 'number'
 		}).component();
 
 		this.disposables.push(
@@ -234,8 +232,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 1,
 			validationErrorMessage: loc.coresValidationErrorMessage,
-			inputType: 'number',
-			placeHolder: loc.loading
+			inputType: 'number'
 		}).component();
 
 		this.disposables.push(
@@ -252,8 +249,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 0.25,
 			validationErrorMessage: loc.memoryLimitValidationErrorMessage,
-			inputType: 'number',
-			placeHolder: loc.loading
+			inputType: 'number'
 		}).component();
 
 		this.disposables.push(
@@ -270,8 +266,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 0.25,
 			validationErrorMessage: loc.memoryRequestValidationErrorMessage,
-			inputType: 'number',
-			placeHolder: loc.loading
+			inputType: 'number'
 		}).component();
 
 		this.disposables.push(
@@ -287,21 +282,25 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private createUserInputSection(): azdata.Component[] {
-		if (this._postgresModel.configLastUpdated) {
+		if (!this._postgresModel.configLastUpdated) {
+			return [];
+		} else {
 			this.editWorkerNodeCount();
 			this.editCores();
 			this.editMemory();
+
+			return [
+				this.createWorkerNodesSectionContainer(),
+				this.createCoresMemorySection(),
+				this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox!),
+				this.createConfigurationSectionContainer(loc.coresLimit, this.coresLimitBox!),
+				this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox!),
+				this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!)
+
+			];
 		}
 
-		return [
-			this.createWorkerNodesSectionContainer(),
-			this.createCoresMemorySection(),
-			this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox!),
-			this.createConfigurationSectionContainer(loc.coresLimit, this.coresLimitBox!),
-			this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox!),
-			this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!)
 
-		];
 	}
 
 	private createWorkerNodesSectionContainer(): azdata.FlexContainer {
@@ -483,8 +482,13 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private handleServiceUpdated() {
-		this.editWorkerNodeCount();
-		this.editCores();
-		this.editMemory();
+		if (this.workerContainer!.items.length === 0) {
+			this.workerContainer!.addItems(this.createUserInputSection(), { CSSStyles: { 'min-height': '30px' } });
+		} else {
+			this.editWorkerNodeCount();
+			this.editCores();
+			this.editMemory();
+		}
+
 	}
 }
