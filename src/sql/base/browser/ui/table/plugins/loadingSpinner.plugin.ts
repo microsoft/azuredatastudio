@@ -7,8 +7,9 @@ import 'vs/css!./media/loadingSpinner.plugin';
 
 import * as DOM from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
+
 /**
- * Plugin that will display a loading spinner
+ * Plugin that will hide the viewport and display a loading spinner when set to loading
  */
 export class LoadingSpinnerPlugin<T extends Slick.SlickData> implements Slick.Plugin<T>{
 	private _viewport!: HTMLElement;
