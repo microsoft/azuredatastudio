@@ -52,6 +52,7 @@ export class ResourceViewerTable extends Disposable {
 			dataItemColumnValueExtractor: dataGridColumnValueExtractor,
 			forceFitColumns: true
 		}));
+
 		this._resourceViewerTable.setSelectionModel(new RowSelectionModel());
 		let filterPlugin = new HeaderFilter<azdata.DataGridItem>();
 		this._register(attachButtonStyler(filterPlugin, this._themeService));
@@ -98,6 +99,10 @@ export class ResourceViewerTable extends Disposable {
 
 	public set loading(isLoading: boolean) {
 		this._loadingSpinnerPlugin.loading = isLoading;
+	}
+
+	public set title(title: string) {
+		this._resourceViewerTable.setTableTitle(title);
 	}
 
 	public registerPlugin(plugin: Slick.Plugin<azdata.DataGridItem>): void {
