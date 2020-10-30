@@ -131,8 +131,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		};
 	}
 
-	private static createTextColumn(col: azdata.TableColumn): Slick.Column<any> {
-		return <Slick.Column<any>>{
+	private static createTextColumn<T extends Slick.SlickData>(col: azdata.TableColumn): Slick.Column<T> {
+		return {
 			name: col.name ?? col.value,
 			id: col.value,
 			field: col.value,
@@ -140,7 +140,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			cssClass: col.cssClass,
 			headerCssClass: col.headerCssClass,
 			toolTip: col.toolTip,
-			formatter: textFormatter,
+			formatter: textFormatter
 		};
 	}
 
