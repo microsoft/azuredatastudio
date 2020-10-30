@@ -16,7 +16,7 @@ import { ProjectsController } from './projectController';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { NetCoreTool } from '../tools/netcoreTool';
 import { Project } from '../models/project';
-import { FileNode, FolderNode } from '../models/tree/fileFolderTreeItem';
+import { ExternalStreamingJobFileNode, FileNode, FolderNode } from '../models/tree/fileFolderTreeItem';
 import { IconPathHelper } from '../common/iconHelper';
 import { IProjectProvider } from 'dataworkspace';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
@@ -80,6 +80,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: BaseProjectTreeItem) => { await this.projectsController.delete(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: FileNode | FolderNode) => { await this.projectsController.exclude(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: BaseProjectTreeItem) => { await this.projectsController.changeTargetPlatform(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.validateExternalStreamingJob', async (node: ExternalStreamingJobFileNode) => { await this.projectsController.validateExternalStreamingJob(node); });
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
 

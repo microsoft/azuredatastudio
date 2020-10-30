@@ -32,6 +32,10 @@ export class Project {
 	public postDeployScripts: FileProjectEntry[] = [];
 	public noneDeployScripts: FileProjectEntry[] = [];
 
+	public get dacpacOutputPath(): string {
+		return path.join(this.projectFolderPath, 'bin', 'Debug', `${this.projectFileName}.dacpac`);
+	}
+
 	public get projectFolderPath() {
 		return Uri.file(path.dirname(this.projectFilePath)).fsPath;
 	}
@@ -71,8 +75,7 @@ export class Project {
 
 			const buildElements = itemGroup.getElementsByTagName(constants.Build);
 			for (let b = 0; b < buildElements.length; b++) {
-				buildElements[b].getAttributes();
-				this.files.push(this.createFileProjectEntry(buildElements[b].getAttribute(constants.Include), EntryType.File));
+				this.files.push(this.createFileProjectEntry(buildElements[b].getAttribute(constants.Include), EntryType.File, buildElements[b].getAttribute(constants.Type)));
 			}
 
 			const folderElements = itemGroup.getElementsByTagName(constants.Folder);
@@ -295,7 +298,7 @@ export class Project {
 		const attributes = new Map<string, string>();
 
 		if (itemType === templates.externalStreamingJob) {
-			attributes.set('type', itemType);
+			attributes.set(constants.Type, itemType);
 		}
 
 		await this.addToProjFile(fileEntry, xmlTag, attributes);
@@ -461,9 +464,9 @@ export class Project {
 		await this.addToProjFile(sqlCmdVariableEntry);
 	}
 
-	public createFileProjectEntry(relativePath: string, entryType: EntryType): FileProjectEntry {
+	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string): FileProjectEntry {
 		let platformSafeRelativePath = utils.getPlatformSafeFileEntryPath(relativePath);
-		return new FileProjectEntry(Uri.file(path.join(this.projectFolderPath, platformSafeRelativePath)), relativePath, entryType);
+		return new FileProjectEntry(Uri.file(path.join(this.projectFolderPath, platformSafeRelativePath)), relativePath, entryType, sqlObjectType);
 	}
 
 	private findOrCreateItemGroup(containedTag?: string, prePostScriptExist?: { scriptExist: boolean; }): any {
@@ -916,11 +919,13 @@ export class FileProjectEntry extends ProjectEntry {
 	 */
 	fsUri: Uri;
 	relativePath: string;
+	sqlObjectType: string | undefined;
 
-	constructor(uri: Uri, relativePath: string, type: EntryType) {
-		super(type);
+	constructor(uri: Uri, relativePath: string, entryType: EntryType, sqlObjectType?: string) {
+		super(entryType);
 		this.fsUri = uri;
 		this.relativePath = relativePath;
+		this.sqlObjectType = sqlObjectType;
 	}
 
 	public toString(): string {

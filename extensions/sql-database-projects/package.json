@@ -157,6 +157,11 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
+        "command": "sqlDatabaseProjects.validateExternalStreamingJob",
+        "title": "%sqlDatabaseProjects.validateExternalStreamingJob%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
         "command": "sqlDatabaseProjects.openContainingFolder",
         "title": "%sqlDatabaseProjects.openContainingFolder%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -341,6 +346,11 @@
           "command": "sqlDatabaseProjects.addDatabaseReference",
           "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.referencesRoot",
           "group": "4_dbProjects_addDatabaseReference"
+        },
+        {
+          "command": "sqlDatabaseProjects.validateExternalStreamingJob",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.externalStreamingJob",
+          "group": "5_dbProjects_streamingJob"
         },
         {
           "command": "sqlDatabaseProjects.exclude",
