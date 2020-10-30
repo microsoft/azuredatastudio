@@ -250,15 +250,7 @@ export class ResourceTypeService implements IResourceTypeService {
 
 	public startDeployment(resourceType: ResourceType, provider: DeploymentProvider): void {
 		const self = this;
-		if (
-			instanceOfWizardDeploymentProvider(provider) ||
-			instanceOfNotebookWizardDeploymentProvider(provider) ||
-			instanceOfAzureSQLVMDeploymentProvider(provider) ||
-			instanceOfAzureSQLDBDeploymentProvider(provider)
-		) {
-			const wizard = new ResourceTypeWizard(resourceType, provider, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService);
-			wizard.open();
-		} else if (instanceOfDialogDeploymentProvider(provider)) {
+		if (instanceOfDialogDeploymentProvider(provider)) {
 			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, this.toolsService, provider.dialog);
 			dialog.open();
 		} else if (instanceOfNotebookDeploymentProvider(provider)) {
@@ -285,6 +277,9 @@ export class ResourceTypeService implements IResourceTypeService {
 			vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(provider.webPageUrl));
 		} else if (instanceOfCommandDeploymentProvider(provider)) {
 			vscode.commands.executeCommand(provider.command);
+		} else {
+			const wizard = new ResourceTypeWizard(resourceType, provider, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService);
+			wizard.open();
 		}
 	}
 
