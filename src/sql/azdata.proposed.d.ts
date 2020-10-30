@@ -819,10 +819,25 @@ declare module 'azdata' {
 	}
 
 	export interface TableComponent {
-
 		/**
 		 * Append data to an exsiting table data.
 		 */
 		appendData(data: any[][]);
+	}
+
+	export interface IconColumnCellValue {
+		icon: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		ariaLabel: string;
+	}
+
+	export enum ColumnType {
+		icon = 3
+	}
+
+	export interface TableColumn {
+		/**
+		* The text to display on the column heading. 'value' property will be used, if not specified
+		**/
+		name?: string;
 	}
 }
