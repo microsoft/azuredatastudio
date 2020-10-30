@@ -5,16 +5,19 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType } from '../interfaces';
-import { Model } from './model';
-import { WizardPageBase } from './wizardPageBase';
+import { DeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType } from '../interfaces';
 import { DeployClusterWizardModel } from './deployClusterWizard/deployClusterWizardModel';
+import { DeployAzureSQLVMWizardModel } from './deployAzureSQLVMWizard/deployAzureSQLVMWizardModel';
 import { WizardPageInfo } from './wizardPageInfo';
 import { IKubeService } from '../services/kubeService';
 import { IAzdataService } from '../services/azdataService';
 import { INotebookService } from '../services/notebookService';
 import { IToolsService } from '../services/toolsService';
 import { IPlatformService } from '../services/platformService';
+import { ResourceTypeModel } from './resourceTypeModel';
+import { ResourceTypePage } from './resourceTypePage';
+import { NotebookWizardModel } from './notebookWizard/notebookWizardModel';
+import { DeployAzureSQLDBWizardModel } from './deployAzureSQLDBWizard/deployAzureSQLDBWizardModel';
 
 export class ResourceTypeWizard {
 	private customButtons: azdata.window.Button[] = [];
@@ -49,6 +52,12 @@ export class ResourceTypeWizard {
 	public getResourceProviderModel(): ResourceTypeModel | undefined {
 		if (instanceOfWizardDeploymentProvider(this.provider)) {
 			return new DeployClusterWizardModel(this.provider, this);
+		} else if (instanceOfAzureSQLVMDeploymentProvider(this.provider)) {
+			return new DeployAzureSQLVMWizardModel(this.provider, this);
+		} else if (instanceOfNotebookWizardDeploymentProvider(this.provider)) {
+			return new NotebookWizardModel(this.provider, this);
+		} else if (instanceOfAzureSQLDBDeploymentProvider(this.provider)) {
+			return new DeployAzureSQLDBWizardModel(this.provider, this);
 		}
 		// other types are undefined for now.
 		return undefined;
@@ -118,23 +127,11 @@ export class ResourceTypeWizard {
 		this.toDispose.push(disposable);
 	}
 
-}
-
-
-
-export abstract class ResourceTypePage extends WizardPageBase<ResourceTypeWizard>{
-	abstract initialize(): void;
-}
-
-export abstract class ResourceTypeModel extends Model {
-
-	constructor(public provider: DeploymentProvider, public wizard: ResourceTypeWizard) {
-		super();
+	public showErrorMessage(message: string) {
+		this.wizardObject.message = {
+			text: message,
+			level: azdata.window.MessageLevel.Error
+		};
 	}
-
-	abstract initialize(): void;
-	abstract async onOk(): Promise<void>;
-	abstract onCancel(): void;
-	async onGenerateScript(): Promise<void> { }
 
 }

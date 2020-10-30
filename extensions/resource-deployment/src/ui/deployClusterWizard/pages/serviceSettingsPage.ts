@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { FieldType, SectionInfo } from '../../../interfaces';
 import { createFlexContainer, createGroupContainer, createLabel, createNumberInput, createSection, createTextInput, getCheckboxComponent, getDropdownComponent, getInputBoxComponent, InputComponentInfo, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
-import { ResourceTypePage } from '../../resourceTypeWizard';
+import { ResourceTypePage } from '../../resourceTypePage';
 import * as VariableNames from '../constants';
 import { AuthenticationMode, DeployClusterWizardModel } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
