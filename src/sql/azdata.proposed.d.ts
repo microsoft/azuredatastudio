@@ -253,6 +253,11 @@ declare module 'azdata' {
 		 * Gets the list of data grid columns for this provider
 		 */
 		getDataGridColumns(): Thenable<DataGridColumn[]>;
+
+		/**
+		 * The user visible string to use for the title of the grid
+		 */
+		title: string;
 	}
 
 	export interface HyperlinkComponent {

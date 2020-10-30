@@ -28,6 +28,8 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 	constructor(private _appContext: AppContext) { }
 
 	public providerId = constants.dataGridProviderId;
+	public title = loc.azureResourcesGridTitle;
+
 	public async getDataGridItems() {
 		const accounts = await azdata.accounts.getAllAccounts();
 		const items: any[] = [];
