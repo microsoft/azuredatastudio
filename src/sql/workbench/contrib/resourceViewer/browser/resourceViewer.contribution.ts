@@ -21,8 +21,6 @@ import { RESOURCE_VIEWER_VIEW_CONTAINER_ID, RESOURCE_VIEWER_VIEW_ID } from 'sql/
 import { Codicon } from 'vs/base/common/codicons';
 import { localize } from 'vs/nls';
 import { Extensions as ViewContainerExtensions, IViewsRegistry, IViewContainersRegistry, ViewContainerLocation } from 'vs/workbench/common/views';
-import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { onUnexpectedError } from 'vs/base/common/errors';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 CommandsRegistry.registerCommand({
