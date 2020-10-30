@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Action } from 'vs/base/common/actions';
+import { localize } from 'vs/nls';
 import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { IRange, Range } from 'vs/editor/common/core/range';
@@ -64,12 +65,14 @@ export class TransformMarkdownAction extends Action {
 				document.execCommand('hiliteColor', false, 'Yellow');
 				break;
 			case MarkdownButtonType.IMAGE:
+			case MarkdownButtonType.IMAGE_PREVIEW:
 				// TODO
 				break;
 			case MarkdownButtonType.ITALIC:
 				document.execCommand('italic');
 				break;
 			case MarkdownButtonType.LINK:
+			case MarkdownButtonType.LINK_PREVIEW:
 				document.execCommand('createLink', false, window.getSelection()?.focusNode?.textContent);
 				break;
 			case MarkdownButtonType.ORDERED_LIST:
@@ -90,6 +93,8 @@ export class TransformMarkdownAction extends Action {
 
 export class MarkdownTextTransformer {
 	private _callout: CalloutDialog;
+	private readonly insertLinkHeading = localize('callout.insertLinkHeading', "Insert link");
+	private readonly insertImageHeading = localize('callout.insertImageHeading', "Insert image");
 
 	constructor(
 		private _notebookService: INotebookService,
@@ -101,7 +106,7 @@ export class MarkdownTextTransformer {
 		return this._notebookEditor;
 	}
 
-	public async transformText(type: MarkdownButtonType): Promise<void> {
+	public async transformText(type: MarkdownButtonType, triggerElement?: HTMLElement): Promise<void> {
 		let editorControl = this.getEditorControl();
 		if (editorControl) {
 			let selections = editorControl.getSelections();
@@ -118,10 +123,9 @@ export class MarkdownTextTransformer {
 			let beginInsertedText: string;
 			let endInsertedText: string;
 
-			if (type === MarkdownButtonType.IMAGE || type === MarkdownButtonType.LINK) {
-
+			if (type === MarkdownButtonType.IMAGE_PREVIEW || type === MarkdownButtonType.LINK_PREVIEW) {
 				let calloutStyle = MarkdownButtonType[type].toString() as CalloutStyle;
-				beginInsertedText = await this.createCallout(calloutStyle);
+				beginInsertedText = await this.createCallout(calloutStyle, triggerElement);
 			} else {
 				beginInsertedText = getStartTextToInsert(type);
 				endInsertedText = getEndTextToInsert(type);
@@ -161,15 +165,23 @@ export class MarkdownTextTransformer {
 	 * Instantiate modal for use as callout when inserting Link or Image into markdown.
 	 * @param calloutStyle Style of callout passed in to determine which callout is rendered
 	 */
-	private async createCallout(calloutStyle: CalloutStyle) {
+	private async createCallout(calloutStyle: CalloutStyle, triggerElement: HTMLElement) {
+		const posX = triggerElement.getBoundingClientRect().left;
+		const posY = triggerElement.getBoundingClientRect().top;
 		let title = calloutStyle.toString().toLowerCase();
 
+		if (title.includes('image')) {
+			title = this.insertImageHeading;
+		} else {
+			title = this.insertLinkHeading;
+		}
+
 		if (!this._callout) {
-			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutStyle, title);
+			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutStyle, title, posX, posY);
 			this._callout.render();
 		}
 		let calloutOptions = await this._callout.open();
-		calloutOptions.insertTtitle = calloutStyle.toString().toLowerCase();
+		calloutOptions.insertTtitle = title;
 		calloutOptions.calloutStyle = calloutStyle;
 
 		return calloutOptions.insertMarkup;
@@ -386,9 +398,11 @@ export enum MarkdownButtonType {
 	CODE,
 	HIGHLIGHT,
 	LINK,
+	LINK_PREVIEW,
 	UNORDERED_LIST,
 	ORDERED_LIST,
 	IMAGE,
+	IMAGE_PREVIEW,
 	HEADING1,
 	HEADING2,
 	HEADING3,
@@ -457,12 +471,14 @@ function getStartTextToInsert(type: MarkdownButtonType): string {
 		case MarkdownButtonType.CODE:
 			return '```\n';
 		case MarkdownButtonType.LINK:
+		case MarkdownButtonType.LINK_PREVIEW:
 			return '[';
 		case MarkdownButtonType.UNORDERED_LIST:
 			return '- ';
 		case MarkdownButtonType.ORDERED_LIST:
 			return '1. ';
 		case MarkdownButtonType.IMAGE:
+		case MarkdownButtonType.IMAGE_PREVIEW:
 			return '![';
 		case MarkdownButtonType.HIGHLIGHT:
 			return '<mark>';
@@ -492,7 +508,9 @@ function getEndTextToInsert(type: MarkdownButtonType): string {
 		case MarkdownButtonType.CODE:
 			return '\n```';
 		case MarkdownButtonType.LINK:
+		case MarkdownButtonType.LINK_PREVIEW:
 		case MarkdownButtonType.IMAGE:
+		case MarkdownButtonType.IMAGE_PREVIEW:
 			return ']()';
 		case MarkdownButtonType.HIGHLIGHT:
 			return '</mark>';
@@ -540,8 +558,10 @@ function getColumnOffsetForSelection(type: MarkdownButtonType, nothingSelected: 
 	}
 	switch (type) {
 		case MarkdownButtonType.LINK:
+		case MarkdownButtonType.LINK_PREVIEW:
 			return 2;
 		case MarkdownButtonType.IMAGE:
+		case MarkdownButtonType.IMAGE_PREVIEW:
 			return 2;
 		// -1 is considered as having no explicit offset, so do not do anything with selection
 		default: return -1;

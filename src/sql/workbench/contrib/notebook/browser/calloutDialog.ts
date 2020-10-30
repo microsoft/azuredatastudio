@@ -25,9 +25,11 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
-// import { IContextMenuDelegate } from 'vs/base/browser/contextmenu';
 
 export type CalloutStyle = 'LINK' | 'IMAGE' | 'TABLE';
+
+const LINK = 'LINK_PREVIEW';
+const IMAGE = 'IMAGE_PREVIEW';
 
 export interface ICalloutDialogOptions {
 	insertTtitle?: string,
@@ -39,8 +41,6 @@ export interface ICalloutDialogOptions {
 
 export class CalloutDialog extends Modal {
 	private _calloutStyle: CalloutStyle;
-	// private _container?: HTMLElement;
-
 	private _selectionComplete: Deferred<ICalloutDialogOptions>;
 	private _insertButton: Button;
 	private _cancelButton: Button;
@@ -78,7 +78,8 @@ export class CalloutDialog extends Modal {
 	constructor(
 		calloutInstance: CalloutStyle,
 		title: string,
-		// trigger: HTMLElement,
+		posX: number,
+		posY: number,
 		@IFileDialogService private readonly _fileDialogService: IFileDialogService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
@@ -90,7 +91,7 @@ export class CalloutDialog extends Modal {
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(
-			localize('callout.title', "Insert {0}", title),
+			title,
 			TelemetryKeys.SelectImage,
 			telemetryService,
 			layoutService,
@@ -101,8 +102,11 @@ export class CalloutDialog extends Modal {
 			contextKeyService,
 			{
 				dialogStyle: 'callout',
-				dialogPosition: 'below'
+				dialogPosition: 'below',
+				positionX: posX,
+				positionY: posY
 			});
+
 		this._selectionComplete = new Deferred<ICalloutDialogOptions>();
 		this._calloutStyle = calloutInstance;
 	}
@@ -130,11 +134,10 @@ export class CalloutDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		//this._container = container;
 		let description = DOM.$('.row');
 		DOM.append(container, description);
 
-		if (this._calloutStyle === 'IMAGE') {
+		if (this._calloutStyle === `${IMAGE}`) {
 			this._imageLocationLabel = DOM.$('.label');
 			this._imageLocationLabel.innerText = this.locationLabel;
 			DOM.append(description, this._imageLocationLabel);
@@ -192,7 +195,7 @@ export class CalloutDialog extends Modal {
 			DOM.append(description, this._imageEmbedLabel);
 		}
 
-		if (this._calloutStyle === 'LINK') {
+		if (this._calloutStyle === `${LINK}`) {
 			this._linkTextLabel = DOM.$('.label');
 			this._linkTextLabel.innerText = this.linkTextLabel;
 			DOM.append(description, this._linkTextLabel);
@@ -221,23 +224,18 @@ export class CalloutDialog extends Modal {
 				});
 			DOM.append(description, linkAddressInputContainer);
 		}
-
-		//let elTrigger = document.querySelector(this._triggerCssSelector).getBoundingClientRect();
-		// this._container.style.position = 'absolute';
-		// this._container.style.left = `${Math.round(elTrigger.x)}px`;
-		// this._container.style.top = `${Math.round(elTrigger.top)}px`;
 	}
 
 	private registerListeners(): void {
 		// Theme styler
 		this._register(attachButtonStyler(this._insertButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
-		if (this._calloutStyle === 'IMAGE') {
+		if (this._calloutStyle === `${IMAGE}`) {
 			this._register(styler.attachInputBoxStyler(this._imageUrlInputBox, this._themeService));
 			this._register(styler.attachButtonStyler(this._imageEmbedCheckbox, this._themeService));
 			this._register(styler.attachCheckboxStyler(this._imageEmbedCheckbox, this._themeService));
 		}
-		if (this._calloutStyle === 'LINK') {
+		if (this._calloutStyle === `${LINK}`) {
 			this._register(styler.attachInputBoxStyler(this._linkTextInputBox, this._themeService));
 			this._register(styler.attachInputBoxStyler(this._linkAddressInputBox, this._themeService));
 		}
@@ -248,14 +246,14 @@ export class CalloutDialog extends Modal {
 
 	public insert(calloutStyle: string) {
 		this.hide();
-		if (calloutStyle === 'IMAGE') {
+		if (calloutStyle === `${IMAGE}`) {
 			this._selectionComplete.resolve({
 				insertMarkup: `<img src="${this._imageUrlInputBox.value}">`,
 				imagePath: this._imageUrlInputBox.value,
 				embedImage: this._imageEmbedCheckbox.checked
 			});
 		}
-		if (calloutStyle === 'LINK') {
+		if (calloutStyle === `${LINK}`) {
 			this._selectionComplete.resolve({
 				insertMarkup: `<a href="${this._linkAddressInputBox.value}">${this._linkTextInputBox.value}</a>`,
 			});

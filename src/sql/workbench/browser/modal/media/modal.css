@@ -26,40 +26,43 @@
 	border-radius: 2px;
 	box-shadow: 0px 3px 8px rgba(var(--foreground));
 	max-height: 300px;
-	margin: 0 auto;
-	top: 50%;
-	transform: translateY(50%);
+	position: absolute;
 	width: 452px;
 }
 .modal.callout-dialog .modal-content.arrow:before {
+	border-width: 1em;
+	border-style: solid;
+	border-color:
+		transparent
+		transparent
+		var(--bodybackground)
+		var(--bodybackground);
+	box-shadow: -3px 3px 3px 0 rgba(var(--foreground));
 	content: '';
 	display: block;
 	height: 0;
 	position: absolute;
 	width: 0;
-	border: 1em solid var(--bodybackground);
-	border-color: transparent transparent var(--bodybackground)
-		var(--bodybackground);
-	box-shadow: -3px 3px 3px 0 rgba(var(--foreground));
 }
 
 .hc-black .modal.callout-dialog .modal-dialog {
 	box-shadow: none;
 }
 .hc-black .modal.callout-dialog .modal-content.arrow:before {
-	box-shadow: none;
+	background-color: var(--bodybackground);
 	border-top: var(--border) solid 1px;
 	border-left: var(--border) solid 1px;
 	border-bottom: none;
 	border-right: none;
+	box-shadow: none;
 	height: 2em;
 	width: 2em;
-	background-color: var(--bodybackground);
 }
 
 .modal.callout-dialog .modal-content.arrow.from-below:before {
+	border-width: 0.5em;
 	left: 2em;
-	top: -0.9em;
+	top: -0.2em;
 	transform: rotate(135deg);
 }
 .hc-black .modal.callout-dialog .modal-content.arrow.from-below:before {

@@ -62,6 +62,8 @@ export type DialogPosition = 'left' | 'right' | 'above' | 'below' | undefined;
 export interface IModalOptions {
 	dialogStyle?: DialogStyle;
 	dialogPosition?: DialogPosition;
+	positionX?: number;
+	positionY?: number;
 	width?: DialogWidth;
 	isAngular?: boolean;
 	hasBackButton?: boolean;
@@ -74,6 +76,8 @@ export interface IModalOptions {
 const defaultOptions: IModalOptions = {
 	dialogStyle: 'flyout',
 	dialogPosition: undefined,
+	positionX: undefined,
+	positionY: undefined,
 	width: 'narrow',
 	isAngular: false,
 	hasBackButton: false,
@@ -187,6 +191,12 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (this._modalOptions.dialogStyle === 'callout') {
 			let arrowClass = `.arrow.from-${this._modalOptions.dialogPosition}`;
 			this._modalContent = DOM.append(this._modalDialog, DOM.$(`.modal-content${arrowClass}`));
+
+			if (this._modalOptions.dialogPosition === 'below') {
+				this._modalDialog.style.left = `${this._modalOptions.positionX - 22}px`;
+				this._modalDialog.style.top = `${this._modalOptions.positionY + 30}px`;
+			}
+
 		} else {
 			this._modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
 		}
@@ -629,7 +639,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				${foregroundRgb.rgba.r},
 				${foregroundRgb.rgba.g},
 				${foregroundRgb.rgba.b},
-				0.14
+				0.08
 			`);
 		}
 
