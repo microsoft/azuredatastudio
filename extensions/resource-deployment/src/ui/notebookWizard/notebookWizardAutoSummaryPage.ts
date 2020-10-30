@@ -7,7 +7,7 @@ import * as nls from 'vscode-nls';
 
 import { SubFieldInfo, FieldType, FontWeight, LabelPosition, SectionInfo } from '../../interfaces';
 import { createSection, DefaultInputWidth, DefaultLabelWidth, DefaultFieldAlignItems, DefaultFieldWidth, DefaultFieldHeight } from '../modelViewUtils';
-import { NotebookWizardModel } from './notebookWizard';
+import { NotebookWizardModel } from './notebookWizardModel';
 import { NotebookWizardPage } from './notebookWizardPage';
 
 const localize = nls.loadMessageBundle();

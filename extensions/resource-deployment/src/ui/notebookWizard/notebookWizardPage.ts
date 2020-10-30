@@ -10,7 +10,7 @@ import { NotebookWizardPageInfo } from '../../interfaces';
 import { initializeWizardPage, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
 import { ResourceTypePage } from '../resourceTypePage';
 import { WizardPageInfo } from '../wizardPageInfo';
-import { NotebookWizardModel } from './notebookWizard';
+import { NotebookWizardModel } from './notebookWizardModel';
 
 const localize = nls.loadMessageBundle();
 
