@@ -117,8 +117,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 	}
 
-	private static createIconColumn(col: azdata.TableColumn): Slick.Column<any> {
-		return <Slick.Column<any>>{
+	private static createIconColumn<T extends Slick.SlickData>(col: azdata.TableColumn): Slick.Column<T> {
+		return <Slick.Column<T>>{
 			name: col.name ?? col.value,
 			id: col.value,
 			field: col.value,

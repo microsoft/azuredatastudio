@@ -12,7 +12,7 @@ export interface TextWithIconColumnDefinition<T extends Slick.SlickData> extends
 	iconCssClassField?: string;
 }
 
-export interface TextWithIconColumnOptions {
+export interface TextWithIconColumnOptions<T extends Slick.SlickData> {
 	iconCssClassField?: string;
 	field?: string;
 	width?: number;
@@ -20,14 +20,14 @@ export interface TextWithIconColumnOptions {
 	resizable?: boolean;
 	name?: string;
 	headerCssClass?: string;
-	formatter?: Slick.Formatter<any>
+	formatter?: Slick.Formatter<T>
 }
 
 export class TextWithIconColumn<T extends Slick.SlickData> {
 
 	private _definition: TextWithIconColumnDefinition<T>;
 
-	constructor(options: TextWithIconColumnOptions) {
+	constructor(options: TextWithIconColumnOptions<T>) {
 		this._definition = {
 			id: options.id,
 			field: options.field,
