@@ -12,6 +12,7 @@ import { AzureResourceErrorMessageUtil } from '../utils';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 
 export abstract class ResourceTreeDataProviderBase<T extends azureResource.AzureResource> implements azureResource.IAzureResourceTreeDataProvider {
+	public browseConnectionMode: boolean = false;
 
 	public constructor(protected _resourceService: IAzureResourceService<T>) {
 	}
