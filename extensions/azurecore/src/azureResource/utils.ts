@@ -285,7 +285,3 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
 	}
 	return result;
 }
-
-export function isConnectionDialogBrowseViewEnabled(): boolean {
-	return vscode.workspace.getConfiguration('connection').get<boolean>('dialog.browse');
-}

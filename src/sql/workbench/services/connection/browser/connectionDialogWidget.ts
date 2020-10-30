@@ -125,8 +125,8 @@ export class ConnectionDialogWidget extends Modal {
 			{ hasSpinner: true, spinnerTitle: localize('connecting', "Connecting"), hasErrors: true });
 
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('connection.dialog.browse') && this.browsePanel) {
-				const doUseBrowsePanel = this._configurationService.getValue<boolean>('connection.dialog.browse');
+			if (e.affectsConfiguration('workbench.enablePreviewFeatures') && this.browsePanel) {
+				const doUseBrowsePanel = this._configurationService.getValue<boolean>('workbench.enablePreviewFeatures');
 				if (doUseBrowsePanel && !this._panel.contains(this.browsePanel)) {
 					this._panel.pushTab(this.browsePanel);
 				} else if (!doUseBrowsePanel && this._panel.contains(this.browsePanel)) {
@@ -281,7 +281,7 @@ export class ConnectionDialogWidget extends Modal {
 			}
 		});
 
-		if (this._configurationService.getValue<boolean>('connection.dialog.browse')) {
+		if (this._configurationService.getValue<boolean>('workbench.enablePreviewFeatures')) {
 			this._panel.pushTab(this.browsePanel);
 		}
 
