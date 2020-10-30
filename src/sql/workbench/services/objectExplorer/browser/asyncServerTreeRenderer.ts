@@ -26,12 +26,17 @@ import { withNullAsUndefined } from 'vs/base/common/types';
 
 const DefaultConnectionIconClass = 'server-page';
 
+export interface ConnectionProfileGroupDisplayOptions {
+	showColor: boolean;
+}
+
 class ConnectionProfileGroupTemplate extends Disposable {
 	private _root: HTMLElement;
 	private _nameContainer: HTMLElement;
 
 	constructor(
-		container: HTMLElement
+		container: HTMLElement,
+		private _option: ConnectionProfileGroupDisplayOptions
 	) {
 		super();
 		container.parentElement!.classList.add('server-group');
@@ -42,7 +47,7 @@ class ConnectionProfileGroupTemplate extends Disposable {
 
 	set(element: ConnectionProfileGroup) {
 		let rowElement = findParentElement(this._root, 'monaco-list-row');
-		if (rowElement) {
+		if (this._option.showColor && rowElement) {
 			rowElement.style.color = element.textColor;
 			if (element.color) {
 				rowElement.style.background = element.color;
@@ -63,10 +68,11 @@ export class ConnectionProfileGroupRenderer implements ITreeRenderer<ConnectionP
 
 	readonly templateId: string = ServerTreeRenderer.CONNECTION_GROUP_TEMPLATE_ID;
 
-	constructor(@IInstantiationService private readonly _instantiationService: IInstantiationService) { }
+	constructor(private _options: ConnectionProfileGroupDisplayOptions,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService) { }
 
 	renderTemplate(container: HTMLElement): ConnectionProfileGroupTemplate {
-		return this._instantiationService.createInstance(ConnectionProfileGroupTemplate, container);
+		return this._instantiationService.createInstance(ConnectionProfileGroupTemplate, container, this._options);
 	}
 	renderElement(node: ITreeNode<ConnectionProfileGroup, FuzzyScore>, index: number, template: ConnectionProfileGroupTemplate): void {
 		template.set(node.element);
