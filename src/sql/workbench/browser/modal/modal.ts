@@ -194,7 +194,7 @@ export abstract class Modal extends Disposable implements IThemable {
 
 			if (this._modalOptions.dialogPosition === 'below') {
 				this._modalDialog.style.left = `${this._modalOptions.positionX - 22}px`;
-				this._modalDialog.style.top = `${this._modalOptions.positionY + 30}px`;
+				this._modalDialog.style.top = `${this._modalOptions.positionY + 24}px`;
 			}
 
 		} else {

@@ -71,7 +71,8 @@ export class CalloutDialog extends Modal {
 	private readonly localImageLabel = localize('callout.localImageLabel', "This computer");
 	private readonly remoteImageLabel = localize('callout.remoteImageLabel', "Online");
 	private readonly pathInputLabel = localize('callout.pathInputLabel', "Image URL");
-	private readonly pathPlaceholder = localize('callout.pathPlaceholder', "Enter image URL");
+	private readonly pathPlaceholder = localize('callout.pathPlaceholder', "Enter image path");
+	private readonly urlPlaceholder = localize('callout.urlPlaceholder', "Enter image URL");
 	private readonly browseAltText = localize('callout.browseAltText', "Browse");
 	private readonly embedImageLabel = localize('callout.embedImageLabel', "Attach image to notebook");
 
@@ -134,13 +135,17 @@ export class CalloutDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		let description = DOM.$('.row');
-		DOM.append(container, description);
 
 		if (this._calloutStyle === `${IMAGE}`) {
-			this._imageLocationLabel = DOM.$('.label');
+			let imageContentColumn = DOM.$('.column.insert-image');
+			DOM.append(container, imageContentColumn);
+
+			let locationRow = DOM.$('.row');
+			DOM.append(imageContentColumn, locationRow);
+
+			this._imageLocationLabel = DOM.$('p');
 			this._imageLocationLabel.innerText = this.locationLabel;
-			DOM.append(description, this._imageLocationLabel);
+			DOM.append(locationRow, this._imageLocationLabel);
 
 			let radioButtonGroup = DOM.$('.radio-group');
 			this._imageLocalRadioButton = new RadioButton(radioButtonGroup, {
@@ -157,13 +162,19 @@ export class CalloutDialog extends Modal {
 			this._imageLocalRadioButton.name = 'group1';
 			this._imageRemoteRadioButton.value = 'remote';
 			this._imageRemoteRadioButton.name = 'group1';
-			DOM.append(description, radioButtonGroup);
+			DOM.append(locationRow, radioButtonGroup);
 
-			this._imageUrlLabel = DOM.$('.label');
-			this._imageUrlLabel.innerText = this.pathInputLabel;
-			DOM.append(description, this._imageUrlLabel);
+			let pathRow = DOM.$('.row');
+			DOM.append(imageContentColumn, pathRow);
+			this._imageUrlLabel = DOM.$('p');
+			if (this._imageLocalRadioButton.checked === true) {
+				this._imageUrlLabel.innerText = this.pathPlaceholder;
+			} else {
+				this._imageUrlLabel.innerText = this.urlPlaceholder;
+			}
+			DOM.append(pathRow, this._imageUrlLabel);
 
-			const inputContainer = DOM.$('.input-field');
+			let inputContainer = DOM.$('.flex-container');
 			this._imageUrlInputBox = new InputBox(
 				inputContainer,
 				this.contextViewService,
@@ -171,7 +182,7 @@ export class CalloutDialog extends Modal {
 					placeholder: this.pathPlaceholder,
 					ariaLabel: this.pathInputLabel
 				});
-			const browseButtonContainer = DOM.$('.button-icon');
+			let browseButtonContainer = DOM.$('.button-icon');
 			this._imageBrowseButton = DOM.$('a.notebook-button.codicon.masked-icon.browse-local');
 			this._imageBrowseButton.title = this.browseAltText;
 			DOM.append(inputContainer, browseButtonContainer);
@@ -181,9 +192,11 @@ export class CalloutDialog extends Modal {
 				this.handleBrowse();
 			}, true));
 
-			DOM.append(description, inputContainer);
+			DOM.append(pathRow, inputContainer);
 
-			this._imageEmbedLabel = DOM.append(description, DOM.$('.row'));
+			let embedRow = DOM.$('.row');
+			DOM.append(imageContentColumn, embedRow);
+			this._imageEmbedLabel = DOM.append(embedRow, DOM.$('.checkbox'));
 			this._imageEmbedCheckbox = new Checkbox(
 				this._imageEmbedLabel,
 				{
@@ -192,13 +205,19 @@ export class CalloutDialog extends Modal {
 					onChange: (viaKeyboard) => { },
 					ariaLabel: this.embedImageLabel
 				});
-			DOM.append(description, this._imageEmbedLabel);
+			DOM.append(embedRow, this._imageEmbedLabel);
 		}
 
 		if (this._calloutStyle === `${LINK}`) {
-			this._linkTextLabel = DOM.$('.label');
+			let linkContentColumn = DOM.$('.column.insert-link');
+			DOM.append(container, linkContentColumn);
+
+			let linkTextRow = DOM.$('.row');
+			DOM.append(linkContentColumn, linkTextRow);
+
+			this._linkTextLabel = DOM.$('p');
 			this._linkTextLabel.innerText = this.linkTextLabel;
-			DOM.append(description, this._linkTextLabel);
+			DOM.append(linkTextRow, this._linkTextLabel);
 
 			const linkTextInputContainer = DOM.$('.input-field');
 			this._linkTextInputBox = new InputBox(
@@ -208,11 +227,13 @@ export class CalloutDialog extends Modal {
 					placeholder: this.linkTextPlaceholder,
 					ariaLabel: this.linkTextLabel
 				});
-			DOM.append(description, linkTextInputContainer);
+			DOM.append(linkTextRow, linkTextInputContainer);
 
-			this._linkAddressLabel = DOM.$('.label');
+			let linkAddressRow = DOM.$('.row');
+			DOM.append(linkContentColumn, linkAddressRow);
+			this._linkAddressLabel = DOM.$('p');
 			this._linkAddressLabel.innerText = this.linkAddressLabel;
-			DOM.append(description, this._linkAddressLabel);
+			DOM.append(linkAddressRow, this._linkAddressLabel);
 
 			const linkAddressInputContainer = DOM.$('.input-field');
 			this._linkAddressInputBox = new InputBox(
@@ -222,7 +243,7 @@ export class CalloutDialog extends Modal {
 					placeholder: this.linkAddressPlaceholder,
 					ariaLabel: this.linkAddressLabel
 				});
-			DOM.append(description, linkAddressInputContainer);
+			DOM.append(linkAddressRow, linkAddressInputContainer);
 		}
 	}
 
@@ -255,7 +276,7 @@ export class CalloutDialog extends Modal {
 		}
 		if (calloutStyle === `${LINK}`) {
 			this._selectionComplete.resolve({
-				insertMarkup: `<a href="${this._linkAddressInputBox.value}">${this._linkTextInputBox.value}</a>`,
+				insertMarkup: `[${this._linkTextInputBox.value}](${this._linkAddressInputBox.value})`,
 			});
 		}
 	}
