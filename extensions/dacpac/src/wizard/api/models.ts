@@ -16,5 +16,4 @@ export interface DacFxDataModel {
 	filePath: string;
 	version: string;
 	upgradeExisting: boolean;
-	databaseExists: boolean;
 }

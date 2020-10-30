@@ -38,27 +38,12 @@ export abstract class DacFxConfigPage extends BasePage {
 			required: true,
 			ariaLabel: serverDropDownTitle
 		}).component();
-		/*
-		Variable this.model.databaseExists checks if server selected from dropdown has databases
-		or not.
-		*/
-		this.model.databaseExists = true;
+
 		// Handle server changes
 		this.serverDropdown.onValueChanged(async () => {
 			this.model.server = (this.serverDropdown.value as ConnectionDropdownValue).connection;
 			this.model.serverName = (this.serverDropdown.value as ConnectionDropdownValue).displayName;
 			if (this.databaseDropdown) {
-				let values = await this.getDatabaseValues();
-				/*
-				Check if the server selected from dropdown has databases or not.
-				Variable this.model.databaseExists checks this case.
-				*/
-				if (values.length !== 0) {
-					this.model.databaseExists = true;
-				}
-				else {
-					this.model.databaseExists = false;
-				}
 				await this.populateDatabaseDropdown();
 			} else {
 				await this.getDatabaseValues();

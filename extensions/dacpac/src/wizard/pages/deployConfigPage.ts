@@ -112,9 +112,15 @@ export class DeployConfigPage extends DacFxConfigPage {
 				label: loc.newDatabase,
 			}).component();
 
-		this.selectUpgradeRadioButton(upgradeRadioButton);
+		upgradeRadioButton.onDidClick(() => {
 
-		this.selectNewRadioButton(newRadioButton);
+			this.updateUpgradeRadioButton();
+		});
+
+		newRadioButton.onDidClick(() => {
+
+			this.updateNewRadioButton();
+		});
 
 		// Saving instances of the radio buttons to update if databases don't exist
 		this.upgradeRadioButton = upgradeRadioButton;
@@ -158,28 +164,31 @@ export class DeployConfigPage extends DacFxConfigPage {
 		}
 		let values = await this.getDatabaseValues();
 
+		this.databaseDropdown.updateProperties({
+			values: values
+		});
+
 		/*
 		Check if databases exist for the selected server.
 		*/
-		if (values.length === 0 || !this.model.databaseExists) {
+		if (values.length === 0) {
 			/*
 			Set the upgrade radio button to be disabled and call the selectNewRadioButton function
 			to update the new radio button accordingly.
 			*/
 			this.upgradeRadioButton.enabled = false;
 			this.newRadioButton.checked = true;
+			this.updateNewRadioButton();
 
-			this.selectNewRadioButton(this.newRadioButton);
 		}
 		else {
 			/*
 			Set the upgrade radio button to be enabled and call the selectUpgradeRadioButton function
 			to update the upgrade radio button accordingly.
 			*/
-
 			this.upgradeRadioButton.enabled = true;
 
-			this.selectUpgradeRadioButton(this.upgradeRadioButton);
+			this.updateUpgradeRadioButton();
 		}
 
 		//set the database to the first dropdown value if upgrading, otherwise it should get set to the textbox value
@@ -187,9 +196,6 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.model.database = values[0];
 		}
 
-		this.databaseDropdown.updateProperties({
-			values: values
-		});
 		this.databaseLoader.loading = false;
 		return true;
 	}
@@ -201,13 +207,16 @@ export class DeployConfigPage extends DacFxConfigPage {
 		this.model.upgradeExisting = true;
 		this.formBuilder.removeFormItem(this.databaseComponent);
 		this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
+		//this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 
 		// add deploy plan page and remove and re-add summary page so that it has the correct page number
-		this.instance.wizard.removePage(DeployNewOperationPath.summary);
-		let deployPlanPage = this.instance.pages.get(PageName.deployPlan);
-		let summaryPage = this.instance.pages.get(PageName.summary);
-		this.instance.wizard.addPage(deployPlanPage.wizardPage, DeployOperationPath.deployPlan);
-		this.instance.wizard.addPage(summaryPage.wizardPage, DeployOperationPath.summary);
+		if (this.instance.wizard.pages.length < 4) {
+			this.instance.wizard.removePage(DeployNewOperationPath.summary);
+			let deployPlanPage = this.instance.pages.get(PageName.deployPlan);
+			let summaryPage = this.instance.pages.get(PageName.summary);
+			this.instance.wizard.addPage(deployPlanPage.wizardPage, DeployOperationPath.deployPlan);
+			this.instance.wizard.addPage(summaryPage.wizardPage, DeployOperationPath.summary);
+		}
 	}
 
 	/*
@@ -217,13 +226,16 @@ export class DeployConfigPage extends DacFxConfigPage {
 		this.model.upgradeExisting = false;
 		this.formBuilder.removeFormItem(this.databaseDropdownComponent);
 		this.formBuilder.addFormItem(this.databaseComponent, { horizontal: true, componentWidth: 400 });
+		//this.model.database = this.databaseTextBox.value;
 		this.instance.setDoneButton(Operation.deploy);
 
 		// remove deploy plan page and read summary page so that it has the correct page number
-		this.instance.wizard.removePage(DeployOperationPath.summary);
-		this.instance.wizard.removePage(DeployOperationPath.deployPlan);
-		let summaryPage = this.instance.pages.get(PageName.summary);
-		this.instance.wizard.addPage(summaryPage.wizardPage, DeployNewOperationPath.summary);
+		if (this.instance.wizard.pages.length === 4) {
+			this.instance.wizard.removePage(DeployOperationPath.summary);
+			this.instance.wizard.removePage(DeployOperationPath.deployPlan);
+			let summaryPage = this.instance.pages.get(PageName.summary);
+			this.instance.wizard.addPage(summaryPage.wizardPage, DeployNewOperationPath.summary);
+		}
 	}
 
 	/*
@@ -243,25 +255,4 @@ export class DeployConfigPage extends DacFxConfigPage {
 		};
 	}
 
-	/*
-	Function which calls the onDidClick method for upgrade radio button to update it and set the
-	database name.
-	*/
-	private selectUpgradeRadioButton(upgradeRadioButton: azdata.RadioButtonComponent): void {
-		upgradeRadioButton.onDidClick(() => {
-			this.updateUpgradeRadioButton();
-			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
-		});
-	}
-
-	/*
-	Function which calls the onDidClick method for new radio button to update it and set the
-	database name.
-	*/
-	private selectNewRadioButton(newRadioButton: azdata.RadioButtonComponent): void {
-		newRadioButton.onDidClick(() => {
-			this.updateNewRadioButton();
-			this.model.database = this.databaseTextBox.value;
-		});
-	}
 }
