@@ -17,6 +17,10 @@ export interface IBookTocManager {
 const allowedFileExtensions: string[] = ['.md', '.ipynb'];
 const initMarkdown: string[] = ['index.md', 'introduction.md', 'intro.md', 'readme.md'];
 
+export function hasSections(node: JupyterBookSection): boolean {
+	return node.sections !== undefined && node.sections.length > 0;
+}
+
 export class BookTocManager implements IBookTocManager {
 	public tableofContents: IJupyterBookSectionV2[];
 	public newSection: JupyterBookSection = {};
@@ -70,10 +74,6 @@ export class BookTocManager implements IBookTocManager {
 		return toc;
 	}
 
-	hasSections(node: JupyterBookSection): boolean {
-		return node.sections !== undefined && node.sections.length > 0;
-	}
-
 	updateToc(tableOfContents: JupyterBookSection[], findSection: BookTreeItem, addSection: JupyterBookSection): JupyterBookSection[] {
 		for (const section of tableOfContents) {
 			if (path.dirname(section.url) === path.join(path.sep, path.dirname(findSection.uri)) || path.dirname((section as IJupyterBookSectionV2).file) === path.join(path.sep, path.dirname(findSection.uri))) {
@@ -84,7 +84,7 @@ export class BookTocManager implements IBookTocManager {
 				}
 				break;
 			}
-			else if (this.hasSections(section)) {
+			else if (hasSections(section)) {
 				return this.updateToc(section.sections, findSection, addSection);
 			}
 		}
@@ -111,9 +111,9 @@ export class BookTocManager implements IBookTocManager {
 		this.newSection.title = section.title;
 		//the book contentPath contains the first file of the section, we get the dirname to identify the section's root path
 		const rootPath = isSection ? path.dirname(book.book.contentPath) : book.rootContentPath;
-		// the uri contains the first notebook or markdown file in the TOC format. If we are in a section,
+		// TODO: the uri contains the first notebook or markdown file in the TOC format. If we are in a section,
 		// we want to include the intermediary directories between the book's root and the section
-		const uri = isSection ? path.relative(rootPath, section.uri) : section.uri;
+		const uri = isSection ? path.join(path.basename(rootPath), section.uri) : section.uri;
 		if (section.book.version === BookVersion.v1) {
 			this.newSection.url = uri;
 			let movedSections: IJupyterBookSectionV1[] = [];
@@ -121,7 +121,7 @@ export class BookTocManager implements IBookTocManager {
 			for (const elem of files) {
 				await fs.promises.mkdir(path.join(rootPath, path.dirname(elem.url)), { recursive: true });
 				await fs.move(path.join(path.dirname(section.book.contentPath), path.basename(elem.url)), path.join(rootPath, elem.url));
-				movedSections.push({ url: isSection ? path.relative(rootPath, elem.url) : elem.url, title: elem.title });
+				movedSections.push({ url: isSection ? path.join(path.basename(rootPath), elem.url) : elem.url, title: elem.title });
 			}
 			this.newSection.sections = movedSections;
 		} else if (section.book.version === BookVersion.v2) {
@@ -131,7 +131,7 @@ export class BookTocManager implements IBookTocManager {
 			for (const elem of files) {
 				await fs.promises.mkdir(path.join(rootPath, path.dirname(elem.file)), { recursive: true });
 				await fs.move(path.join(path.dirname(section.book.contentPath), path.basename(elem.file)), path.join(rootPath, elem.file));
-				movedSections.push({ file: isSection ? path.relative(rootPath, elem.file) : elem.file, title: elem.title });
+				movedSections.push({ file: isSection ? path.join(path.basename(rootPath), elem.file) : elem.file, title: elem.title });
 			}
 			this.newSection.sections = movedSections;
 		}
