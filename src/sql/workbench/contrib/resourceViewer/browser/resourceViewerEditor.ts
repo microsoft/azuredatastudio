@@ -94,6 +94,8 @@ export class ResourceViewerEditor extends EditorPane {
 	async setInput(input: ResourceViewerInput, options: EditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		await super.setInput(input, options, context, token);
 
+		this._resourceViewerTable.title = input.title;
+
 		this._inputDisposables.clear();
 
 		input.plugins.forEach(plugin => {
