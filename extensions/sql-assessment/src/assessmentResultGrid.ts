@@ -28,20 +28,47 @@ export class AssessmentResultGrid implements vscode.Disposable {
 	private descriptionCaption!: azdata.TextComponent;
 
 	private asmtType!: AssessmentType;
+	private targetTypeIcon: { [targetType: number]: azdata.IconColumnCellValue };
 
-	private readonly checkIdColOrder = 4;
-	private readonly targetColOrder = 0;
+
+	private readonly checkIdColOrder = 5;
+	private readonly targetColOrder = 1;
 
 	public get component(): azdata.Component {
 		return this.rootContainer;
 	}
 
-	public constructor(view: azdata.ModelView) {
+	public constructor(view: azdata.ModelView, extensionContext: vscode.ExtensionContext) {
 		const headerCssClass = 'no-borders align-with-header';
+		this.targetTypeIcon = {
+			[azdata.sqlAssessment.SqlAssessmentTargetType.Database]: {
+				icon: {
+					dark: extensionContext.asAbsolutePath('resources/dark/database.svg'),
+					light: extensionContext.asAbsolutePath('resources/light/database.svg')
+				},
+				ariaLabel: localize('databaseIconLabel', "Database Icon")
+			},
+			[azdata.sqlAssessment.SqlAssessmentTargetType.Server]: {
+				icon: {
+					dark: extensionContext.asAbsolutePath('resources/dark/server.svg'),
+					light: extensionContext.asAbsolutePath('resources/light/server.svg')
+				},
+				ariaLabel: localize('serverIconLabel', "Server Icon")
+			}
+		};
+
 		this.table = view.modelBuilder.table()
 			.withProperties<azdata.TableComponentProperties>({
 				data: [],
 				columns: [
+					{
+						value: 'targetType',
+						name: '',
+						type: azdata.ColumnType.icon,
+						width: 10,
+						headerCssClass: headerCssClass,
+						toolTip: localize('asmt.column.targetType', "Target Type"),
+					},
 					{ value: LocalizedStrings.TARGET_COLUMN_NAME, headerCssClass: headerCssClass, width: 125 },
 					{ value: LocalizedStrings.SEVERITY_COLUMN_NAME, headerCssClass: headerCssClass, width: 100 },
 					{ value: LocalizedStrings.MESSAGE_COLUMN_NAME, headerCssClass: headerCssClass, width: 900 },
@@ -250,6 +277,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 
 	private convertToDataView(asmtResult: azdata.SqlAssessmentResultItem): any[] {
 		return [
+			this.targetTypeIcon[asmtResult.targetType],
 			asmtResult.targetName,
 			asmtResult.level,
 			this.asmtType === AssessmentType.InvokeAssessment ? asmtResult.message : asmtResult.displayName,
