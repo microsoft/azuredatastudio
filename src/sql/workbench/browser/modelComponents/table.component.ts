@@ -37,6 +37,13 @@ export enum ColumnSizingMode {
 	DataFit = 2		// columns use sizing based on cell data, horiz scroll bar present if more cells than visible in view area
 }
 
+enum ColumnType {
+	text = 0,
+	checkBox = 1,
+	button = 2,
+	icon = 3
+}
+
 @Component({
 	selector: 'modelview-table',
 	template: `
@@ -79,12 +86,11 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			let index: number = 0;
 
 			(<any[]>columns).map(col => {
-				if (col.type && col.type === 1) {
+				if (col.type === ColumnType.checkBox) {
 					this.createCheckBoxPlugin(col, index);
-				}
-				else if (col.type && col.type === 2) {
+				} else if (col.type === ColumnType.button) {
 					this.createButtonPlugin(col);
-				} else if (col.type && col.type === 3) {
+				} else if (col.type === ColumnType.icon) {
 					mycolumns.push(TableComponent.createIconColumn(col));
 				}
 				else if (col.value) {
@@ -151,11 +157,11 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 				row.forEach((val, index) => {
 					let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
-					if (val['icon']) {
-						const icon: IUserFriendlyIcon = (<azdata.IconColumnCellValue>val).icon;
+					if (TableComponent.isIconColumnCellValue(val)) {
+						const icon: IUserFriendlyIcon = val.icon;
 						const iconKey: string = getIconKey(icon);
-						const iconCssClass = createIconCssClass(icon, iconCssCache[iconKey]);
-						if (iconCssCache[iconKey] !== iconCssClass) {
+						const iconCssClass = iconCssCache[iconKey] ?? createIconCssClass(icon);
+						if (!iconCssCache[iconKey]) {
 							iconCssCache[iconKey] = iconCssClass;
 						}
 
@@ -169,6 +175,10 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		} else {
 			return [];
 		}
+	}
+
+	private static isIconColumnCellValue(obj: any | undefined): obj is azdata.IconColumnCellValue {
+		return !!(<azdata.IconColumnCellValue>obj)?.icon;
 	}
 
 	ngAfterViewInit(): void {
