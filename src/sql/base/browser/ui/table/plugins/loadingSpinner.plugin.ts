@@ -1,0 +1,39 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+import 'vs/css!./media/loadingSpinner.plugin';
+
+import * as DOM from 'vs/base/browser/dom';
+import { localize } from 'vs/nls';
+/**
+ * Plugin that will display a loading spinner
+ */
+export class LoadingSpinnerPlugin<T extends Slick.SlickData> implements Slick.Plugin<T>{
+	private _viewport!: HTMLElement;
+	private _loadingContainer!: HTMLElement;
+	private _loading = false;
+
+	public init(grid: Slick.Grid<T>): void {
+		this._loadingContainer = DOM.$('div.loading-spinner-plugin-container');
+		this._viewport = grid.getContainerNode().getElementsByClassName('slick-viewport')[0] as HTMLElement;
+		this._viewport.parentElement.insertBefore(this._loadingContainer, this._viewport);
+	}
+
+	public destroy(): void { }
+
+	public set loading(isLoading: boolean) {
+		if (isLoading) {
+			if (!this._loading) {
+				DOM.hide(this._viewport);
+				const spinner = DOM.$('div.loading-spinner.codicon.in-progress', { title: localize('loadingSpinner.loading', "Loading") });
+				this._loadingContainer.appendChild(spinner);
+			}
+		} else {
+			DOM.show(this._viewport);
+			DOM.clearNode(this._loadingContainer);
+		}
+		this._loading = isLoading;
+	}
+}

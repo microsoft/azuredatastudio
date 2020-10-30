@@ -23,12 +23,13 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { ColumnDefinition } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
 import { Emitter } from 'vs/base/common/event';
 import { ContextMenuAnchor } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerEditor';
+import { LoadingSpinnerPlugin } from 'sql/base/browser/ui/table/plugins/loadingSpinner.plugin';
 
 export class ResourceViewerTable extends Disposable {
 
 	private _resourceViewerTable!: Table<azdata.DataGridItem>;
 	private _dataView: TableDataView<azdata.DataGridItem>;
-
+	private _loadingSpinnerPlugin = new LoadingSpinnerPlugin<azdata.DataGridItem>();
 	private _onContextMenu = new Emitter<{ anchor: ContextMenuAnchor, item: azdata.DataGridItem }>();
 	public onContextMenu = this._onContextMenu.event;
 
@@ -81,6 +82,7 @@ export class ResourceViewerTable extends Disposable {
 			this._resourceViewerTable.grid.render();
 		});
 		this._resourceViewerTable.registerPlugin(filterPlugin);
+		this._resourceViewerTable.registerPlugin(this._loadingSpinnerPlugin);
 	}
 
 	public set data(data: azdata.DataGridItem[]) {
@@ -92,6 +94,10 @@ export class ResourceViewerTable extends Disposable {
 
 	public set columns(columns: Slick.Column<Slick.SlickData>[]) {
 		this._resourceViewerTable.columns = columns;
+	}
+
+	public set loading(isLoading: boolean) {
+		this._loadingSpinnerPlugin.loading = isLoading;
 	}
 
 	public registerPlugin(plugin: Slick.Plugin<azdata.DataGridItem>): void {
