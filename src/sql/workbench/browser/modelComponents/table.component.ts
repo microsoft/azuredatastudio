@@ -64,7 +64,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	private _onButtonClicked = new Emitter<ButtonClickEventArgs<{}>>();
 	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
 	public readonly onButtonClicked: vsEvent<ButtonClickEventArgs<{}>> = this._onButtonClicked.event;
-	private _iconCssMap: { [iconKey: string]: string };
+	private _iconCssMap: { [iconKey: string]: string } = {};
 
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -146,9 +146,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 
 
-	public static transformData(rows: (string | azdata.IconColumnCellValue)[][], columns: any[], iconCssMap?: { [iconKey: string]: string }): { [key: string]: string | CssIconCellValue }[] {
+	public transformData(rows: (string | azdata.IconColumnCellValue)[][], columns: any[]): { [key: string]: string | CssIconCellValue }[] {
 		if (rows && columns) {
-			let iconCssCache = iconCssMap ?? [];
+
 			return rows.map(row => {
 				let object: { [key: string]: string | CssIconCellValue } = {};
 				if (!Array.isArray(row)) {
@@ -160,9 +160,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 					if (TableComponent.isIconColumnCellValue(val)) {
 						const icon: IUserFriendlyIcon = val.icon;
 						const iconKey: string = getIconKey(icon);
-						const iconCssClass = iconCssCache[iconKey] ?? createIconCssClass(icon);
-						if (!iconCssCache[iconKey]) {
-							iconCssCache[iconKey] = iconCssClass;
+						const iconCssClass = this._iconCssMap[iconKey] ?? createIconCssClass(icon);
+						if (!this._iconCssMap[iconKey]) {
+							this._iconCssMap[iconKey] = iconCssClass;
 						}
 
 						object[columnName] = { iconCssClass: iconCssClass, ariaLabel: val.ariaLabel };
@@ -311,7 +311,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._tableData.clear();
-		this._tableData.push(TableComponent.transformData(this.data, this.columns, this._iconCssMap));
+		this._tableData.push(this.transformData(this.data, this.columns));
 		this._tableColumns = this.transformColumns(this.columns);
 		this._table.columns = this._tableColumns;
 		this._table.setData(this._tableData);
@@ -545,7 +545,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 	}
 	private appendData(data: any[][]) {
-		this._tableData.push(TableComponent.transformData(data, this.columns, this._iconCssMap));
+		this._tableData.push(this.transformData(data, this.columns));
 		this.data = this._tableData.getItems().map(dataObject => Object.values(dataObject));
 		this.layoutTable();
 	}

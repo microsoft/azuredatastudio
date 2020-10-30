@@ -10,6 +10,7 @@ import { CssIconCellValue } from 'sql/base/browser/ui/table/formatters';
 suite('TableComponent Tests', () => {
 
 	setup(() => {
+
 	});
 
 	test('Table transformData should convert data and columns successfully given valid inputs', () => {
@@ -18,7 +19,9 @@ suite('TableComponent Tests', () => {
 			['4', '5', '6']
 		];
 		let columns = ['c1', 'c2', 'c3'];
-		let actual: { [key: string]: string | CssIconCellValue }[] = TableComponent.transformData(data, columns);
+		const tableComponent = new TableComponent(undefined, undefined, undefined);
+
+		let actual: { [key: string]: string | CssIconCellValue }[] = tableComponent.transformData(data, columns);
 		let expected: { [key: string]: string }[] = [
 			{
 				'c1': '1',
@@ -36,8 +39,9 @@ suite('TableComponent Tests', () => {
 
 	test('Table transformData should return empty array given undefined rows', () => {
 		let data = undefined;
+		const tableComponent = new TableComponent(undefined, undefined, undefined);
 		let columns = ['c1', 'c2', 'c3'];
-		let actual: { [key: string]: string | CssIconCellValue }[] = TableComponent.transformData(data, columns);
+		let actual: { [key: string]: string | CssIconCellValue }[] = tableComponent.transformData(data, columns);
 		let expected: { [key: string]: string }[] = [];
 		assert.deepEqual(actual, expected);
 	});
@@ -48,7 +52,8 @@ suite('TableComponent Tests', () => {
 			['4', '5', '6']
 		];
 		let columns;
-		let actual: { [key: string]: string | CssIconCellValue }[] = TableComponent.transformData(data, columns);
+		const tableComponent = new TableComponent(undefined, undefined, undefined);
+		let actual: { [key: string]: string | CssIconCellValue }[] = tableComponent.transformData(data, columns);
 		let expected: { [key: string]: string }[] = [];
 		assert.deepEqual(actual, expected);
 	});
@@ -58,8 +63,9 @@ suite('TableComponent Tests', () => {
 			['1', '2'],
 			['4', '5']
 		];
+		const tableComponent = new TableComponent(undefined, undefined, undefined);
 		let columns = ['c1', 'c2', 'c3'];
-		let actual: { [key: string]: string | CssIconCellValue }[] = TableComponent.transformData(data, columns);
+		let actual: { [key: string]: string | CssIconCellValue }[] = tableComponent.transformData(data, columns);
 		let expected: { [key: string]: string }[] = [
 			{
 				'c1': '1',
