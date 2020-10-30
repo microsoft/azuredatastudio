@@ -7,7 +7,6 @@ import 'vs/css!./media/loadingSpinner.plugin';
 
 import * as DOM from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import { Table } from 'sql/base/browser/ui/table/table';
 
 /**
  * Plugin that will hide the viewport and display a loading spinner when set to loading
