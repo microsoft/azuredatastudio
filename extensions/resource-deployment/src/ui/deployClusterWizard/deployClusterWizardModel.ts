@@ -13,7 +13,7 @@ import { KubeCtlToolName } from '../../services/tools/kubeCtlTool';
 import { getErrorMessage, getRuntimeBinaryPathEnvironmentVariableName, setEnvironmentVariablesForInstallPaths } from '../../common/utils';
 import { ToolsInstallPath } from '../../constants';
 import * as VariableNames from './constants';
-import { ResourceTypeModel, ResourceTypePage, ResourceTypeWizard } from '../resourceTypeWizard';
+import { ResourceTypeWizard } from '../resourceTypeWizard';
 import * as nls from 'vscode-nls';
 import { InputComponents } from '../modelViewUtils';
 import { INotebookService } from '../../services/notebookService';
@@ -26,6 +26,8 @@ import { ServiceSettingsPage } from './pages/serviceSettingsPage';
 import { SummaryPage } from './pages/summaryPage';
 import { TargetClusterContextPage } from './pages/targetClusterPage';
 import { IToolsService } from '../../services/toolsService';
+import { ResourceTypeModel } from '../resourceTypeModel';
+import { ResourceTypePage } from '../resourceTypePage';
 const localize = nls.loadMessageBundle();
 
 export class DeployClusterWizardModel extends ResourceTypeModel {

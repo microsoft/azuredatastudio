@@ -3,8 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ResourceTypePage } from '../../resourceTypePage';
+import { ResourceTypeWizard } from './resourceTypeWizard';
+import { WizardPageBase } from './wizardPageBase';
 
-export abstract class BasePage extends ResourceTypePage {
-	public abstract initialize(): void;
+export abstract class ResourceTypePage extends WizardPageBase<ResourceTypeWizard>{
+	abstract initialize(): void;
 }
