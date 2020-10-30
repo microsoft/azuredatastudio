@@ -145,23 +145,25 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			let iconCssCache = iconCssMap ?? [];
 			return rows.map(row => {
 				let object: { [key: string]: string | { text: string, ariaLabel: string } } = {};
-				if (row.forEach) {
-					row.forEach((val, index) => {
-						let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
-						if (val['icon']) {
-							const icon: IUserFriendlyIcon = (<azdata.IconColumnCellValue>val).icon;
-							const iconKey: string = getIconKey(icon);
-							const iconCssClass = createIconCssClass(icon, iconCssCache[iconKey]);
-							if (iconCssCache[iconKey] !== iconCssClass) {
-								iconCssCache[iconKey] = iconCssClass;
-							}
-
-							object[columnName] = { text: iconCssClass, ariaLabel: (<azdata.IconColumnCellValue>val).ariaLabel };
-						} else {
-							object[columnName] = <string>val;
-						}
-					});
+				if (!Array.isArray(row)) {
+					return object;
 				}
+
+				row.forEach((val, index) => {
+					let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
+					if (val['icon']) {
+						const icon: IUserFriendlyIcon = (<azdata.IconColumnCellValue>val).icon;
+						const iconKey: string = getIconKey(icon);
+						const iconCssClass = createIconCssClass(icon, iconCssCache[iconKey]);
+						if (iconCssCache[iconKey] !== iconCssClass) {
+							iconCssCache[iconKey] = iconCssClass;
+						}
+
+						object[columnName] = { text: iconCssClass, ariaLabel: (<azdata.IconColumnCellValue>val).ariaLabel };
+					} else {
+						object[columnName] = <string>val;
+					}
+				});
 				return object;
 			});
 		} else {

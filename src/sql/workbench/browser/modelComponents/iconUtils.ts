@@ -53,7 +53,6 @@ function getIconUri(iconPath: string | URI): URI {
 	}
 }
 
-export function getIconKey(iconPath: IUserFriendlyIcon) {
-	const iconUri: URI = getLightIconUri(iconPath);
-	return iconUri.toString(true);
+export function getIconKey(iconPath: IUserFriendlyIcon): string {
+	return getLightIconUri(iconPath).toString(true) + getDarkIconUri(iconPath)?.toString(true);
 }
