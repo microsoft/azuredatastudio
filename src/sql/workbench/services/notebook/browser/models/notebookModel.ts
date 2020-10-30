@@ -362,7 +362,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						}
 					}
 					Object.keys(contents.metadata).forEach(key => {
-						let expectedKeys = ['kernelspec', 'language_info', 'tags', 'connectionName'];
+						let expectedKeys = ['kernelspec', 'language_info', 'tags', 'connection_name'];
 						// If custom metadata is defined, add to the _existingMetadata object
 						if (expectedKeys.indexOf(key) < 0) {
 							this._existingMetadata[key] = contents.metadata[key];
@@ -923,7 +923,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	// Get saved connection name if saved in notebook file
 	private getSavedConnectionName(notebook: nb.INotebookContents): string | undefined {
-		return notebook?.metadata?.connectionName ? notebook.metadata.connectionName : undefined;
+		return notebook?.metadata?.connection_name ? notebook.metadata.connection_name : undefined;
 	}
 
 	// Get default kernel info if saved in notebook file
@@ -1164,7 +1164,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		metadata.language_info = this.languageInfo;
 		metadata.tags = this._tags;
 		if (this.configurationService.getValue(saveConnectionNameConfigName)) {
-			metadata.connectionName = this._savedConnectionName;
+			metadata.connection_name = this._savedConnectionName;
 		}
 		Object.keys(this._existingMetadata).forEach(key => {
 			metadata[key] = this._existingMetadata[key];

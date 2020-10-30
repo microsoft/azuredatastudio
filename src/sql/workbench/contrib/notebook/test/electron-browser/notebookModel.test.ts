@@ -581,7 +581,7 @@ suite('notebook model', function (): void {
 		let notebook: nb.INotebookContents = {
 			cells: [],
 			metadata: {
-				connectionName: connectionName
+				connection_name: connectionName
 			},
 			nbformat: 4,
 			nbformat_minor: 5

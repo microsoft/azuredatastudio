@@ -71,7 +71,7 @@ declare module 'azdata' {
 		}
 
 		export interface INotebookMetadata {
-			connectionName?: string;
+			connection_name?: string;
 		}
 	}
 
