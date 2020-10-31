@@ -43,7 +43,7 @@ import { ClearRecentConnectionsAction } from 'sql/workbench/services/connection/
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ConnectionBrowseTab, ITreeItemFromProvider } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
+import { ConnectionBrowseTab } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -265,21 +265,9 @@ export class ConnectionDialogWidget extends Modal {
 
 		this.browsePanel = new ConnectionBrowseTab(this.instantiationService);
 
-		this.browsePanel.view.onSelect(e => {
-			if (e.element instanceof ConnectionProfile) {
-				this.onConnectionClick(e.element);
-			} else if ((e.element as ITreeItemFromProvider)?.element?.payload) {
-				this.onConnectionClick((e.element as ITreeItemFromProvider).element.payload);
-			}
-		});
-
-		this.browsePanel.view.onDblClick(e => {
-			if (e.element instanceof ConnectionProfile) {
-				this.onConnectionClick(e.element, true);
-			} else if ((e.element as ITreeItemFromProvider)?.element?.payload) {
-				this.onConnectionClick((e.element as ITreeItemFromProvider).element.payload, true);
-			}
-		});
+		this._register(this.browsePanel.view.onSelectedConnectionChanged(e => {
+			this.onConnectionClick(e.connectionProfile, e.connect);
+		}));
 
 		if (this._configurationService.getValue<boolean>('workbench.enablePreviewFeatures')) {
 			this._panel.pushTab(this.browsePanel);
