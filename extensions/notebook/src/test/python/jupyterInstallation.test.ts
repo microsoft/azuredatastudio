@@ -246,9 +246,6 @@ describe('Jupyter Server Installation', function () {
 		}, {
 			name: 'pandas',
 			version: '0.24.2'
-		}, {
-			name: 'prose-codeaccelerator',
-			version: '1.3.0'
 		}];
 		let packages = installation.getRequiredPackagesForKernel(pysparkDisplayName);
 		should(packages).be.deepEqual(expectedPackages, "Unexpected packages for PySpark kernel.");
