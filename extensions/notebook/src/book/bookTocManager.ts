@@ -34,7 +34,7 @@ export class BookTocManager implements IBookTocManager {
 			if (isDirectory) {
 				let files = await fs.promises.readdir(path.join(directory, file));
 				let initFile: string = '';
-				//Add files named as readme or index whithin the directory as the first file of the section.
+				//Add files named as readme or index within the directory as the first file of the section.
 				files.some((f, index) => {
 					if (initMarkdown.includes(f)) {
 						initFile = path.parse(f).name;
