@@ -10,7 +10,7 @@ import { IConnectionTreeDescriptor, IConnectionTreeService } from 'sql/workbench
 import * as DOM from 'vs/base/browser/dom';
 import { IIdentityProvider, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
-import { IAsyncDataSource, ITreeMouseEvent, ITreeNode, ITreeRenderer } from 'vs/base/browser/ui/tree/tree';
+import { IAsyncDataSource, ITreeNode, ITreeRenderer } from 'vs/base/browser/ui/tree/tree';
 import { Iterable } from 'vs/base/common/iterator';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { basename, dirname } from 'vs/base/common/resources';
@@ -46,6 +46,7 @@ import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/cont
 import { IAction } from 'vs/base/common/actions';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConnectionProfile } from 'azdata';
 
 export type TreeElement = ConnectionDialogTreeProviderElement | ITreeItemFromProvider | SavedConnectionNode | ServerTreeElement;
 
@@ -54,6 +55,11 @@ export class ConnectionBrowseTab implements IPanelTab {
 	public readonly identifier = 'connectionBrowse';
 	public readonly view = this.instantiationService.createInstance(ConnectionBrowserView);
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService) { }
+}
+
+export interface SelectedConnectionChangedEventArgs {
+	connectionProfile: IConnectionProfile,
+	connect: boolean
 }
 
 export class ConnectionBrowserView extends Disposable implements IPanelView {
@@ -67,11 +73,8 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 
 	public onDidChangeVisibility = Event.None;
 
-	private readonly _onSelect = this._register(new Emitter<ITreeMouseEvent<TreeElement>>());
-	public readonly onSelect = this._onSelect.event;
-
-	private readonly _onDblClick = this._register(new Emitter<ITreeMouseEvent<TreeElement>>());
-	public readonly onDblClick = this._onDblClick.event;
+	private readonly _onSelectedConnectionChanged = this._register(new Emitter<SelectedConnectionChangedEventArgs>());
+	public readonly onSelectedConnectionChanged = this._onSelectedConnectionChanged.event;
 
 	constructor(
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
@@ -180,19 +183,12 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 				});
 			}
 		}));
-		this._register(this.tree.onMouseDblClick(e => this._onDblClick.fire(e)));
-		this._register(this.tree.onMouseClick(e => this._onSelect.fire(e)));
+		this._register(this.tree.onMouseDblClick(e => {
+			this.handleTreeElementSelection(e?.element, true);
+		}));
+
 		this._register(this.tree.onDidOpen((e) => {
-			if (!e.browserEvent) {
-				return;
-			}
-			const selection = this.tree.getSelection();
-			if (selection.length === 1) {
-				const selectedNode = selection[0];
-				if ('element' in selectedNode && selectedNode.element.command) {
-					this.commandService.executeCommand(selectedNode.element.command.id, ...(selectedNode.element.command.arguments || []));
-				}
-			}
+			this.handleTreeElementSelection(e?.element, false);
 		}));
 
 		this.tree.setInput(this.model);
@@ -219,6 +215,30 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		this._register(this.themeService.onDidColorThemeChange(async () => {
 			await this.refresh();
 		}));
+	}
+
+	private handleTreeElementSelection(selectedNode: TreeElement, connect: boolean): void {
+		if (!selectedNode) {
+			return;
+		}
+		if ('element' in selectedNode) {
+			if (selectedNode.element.command) {
+				this.commandService.executeCommand(selectedNode.element.command.id, ...(selectedNode.element.command.arguments || []));
+			} else {
+				if (selectedNode.element.payload) {
+					this._onSelectedConnectionChanged.fire(
+						{
+							connectionProfile: selectedNode.element.payload,
+							connect: connect
+						});
+				}
+			}
+		} else if (selectedNode instanceof ConnectionProfile) {
+			this._onSelectedConnectionChanged.fire({
+				connectionProfile: selectedNode,
+				connect: connect
+			});
+		}
 	}
 
 	private updateSavedConnectionsNode(): void {
