@@ -369,8 +369,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private updateToolbarComponents() {
+		this._trustedAction.enabled = true;
 		if (this.model.trustedMode) {
-			this._trustedAction.enabled = true;
 			this._trustedAction.trusted = true;
 		}
 	}
