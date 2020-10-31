@@ -108,7 +108,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		let powershellPkg = {
 			name: 'powershell-kernel',
-			version: '0.1.3'
+			version: '0.1.4'
 		};
 		this._requiredKernelPackages.set(constants.powershellDisplayName, [jupyterPkg, powershellPkg]);
 
