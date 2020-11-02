@@ -23,12 +23,13 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { ColumnDefinition } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
 import { Emitter } from 'vs/base/common/event';
 import { ContextMenuAnchor } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerEditor';
+import { LoadingSpinnerPlugin } from 'sql/base/browser/ui/table/plugins/loadingSpinner.plugin';
 
 export class ResourceViewerTable extends Disposable {
 
 	private _resourceViewerTable!: Table<azdata.DataGridItem>;
 	private _dataView: TableDataView<azdata.DataGridItem>;
-
+	private _loadingSpinnerPlugin = new LoadingSpinnerPlugin<azdata.DataGridItem>();
 	private _onContextMenu = new Emitter<{ anchor: ContextMenuAnchor, item: azdata.DataGridItem }>();
 	public onContextMenu = this._onContextMenu.event;
 
@@ -51,8 +52,9 @@ export class ResourceViewerTable extends Disposable {
 			dataItemColumnValueExtractor: dataGridColumnValueExtractor,
 			forceFitColumns: true
 		}));
+
 		this._resourceViewerTable.setSelectionModel(new RowSelectionModel());
-		let filterPlugin = new HeaderFilter<Slick.SlickData>();
+		let filterPlugin = new HeaderFilter<azdata.DataGridItem>();
 		this._register(attachButtonStyler(filterPlugin, this._themeService));
 		this._register(attachTableStyler(this._resourceViewerTable, this._themeService));
 		this._register(this._resourceViewerTable.onClick(this.onTableClick, this));
@@ -81,6 +83,7 @@ export class ResourceViewerTable extends Disposable {
 			this._resourceViewerTable.grid.render();
 		});
 		this._resourceViewerTable.registerPlugin(filterPlugin);
+		this._resourceViewerTable.registerPlugin(this._loadingSpinnerPlugin);
 	}
 
 	public set data(data: azdata.DataGridItem[]) {
@@ -92,6 +95,14 @@ export class ResourceViewerTable extends Disposable {
 
 	public set columns(columns: Slick.Column<Slick.SlickData>[]) {
 		this._resourceViewerTable.columns = columns;
+	}
+
+	public set loading(isLoading: boolean) {
+		this._loadingSpinnerPlugin.loading = isLoading;
+	}
+
+	public set title(title: string) {
+		this._resourceViewerTable.setTableTitle(title);
 	}
 
 	public registerPlugin(plugin: Slick.Plugin<azdata.DataGridItem>): void {
@@ -130,7 +141,7 @@ export class ResourceViewerTable extends Disposable {
 		const column = this._resourceViewerTable.columns[event.cell.cell] as ColumnDefinition;
 		if (column) {
 			const row = this._dataView.getItem(event.cell.row);
-			const value = row.fieldValues[column.field];
+			const value = row[column.field];
 			if (isHyperlinkCellValue(value)) {
 				if (isString(value.linkOrCommand)) {
 					try {
@@ -154,7 +165,7 @@ export class ResourceViewerTable extends Disposable {
  * Extracts the specified field into the expected object to be handled by SlickGrid and/or formatters as needed.
  */
 function dataGridColumnValueExtractor(value: azdata.DataGridItem, columnDef: ColumnDefinition): TextCellValue | HyperlinkCellValue {
-	const fieldValue = value.fieldValues[columnDef.field];
+	const fieldValue = value[columnDef.field];
 	if (columnDef.type === 'hyperlink') {
 		return fieldValue as HyperlinkCellValue;
 	} else {

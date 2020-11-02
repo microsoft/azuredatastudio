@@ -77,6 +77,10 @@ declare module 'azdata' {
 		export interface ICellOutputMetadata {
 			resultSet?: ResultSetSummary;
 		}
+
+		export interface INotebookMetadata {
+			connection_name?: string;
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
@@ -238,7 +242,7 @@ declare module 'azdata' {
 		/**
 		 * The other properties that will be displayed in the grid columns
 		 */
-		fieldValues: { [key: string]: string | DataGridHyperlinkInfo }
+		[key: string]: string | DataGridHyperlinkInfo;
 	}
 
 	/**
@@ -253,6 +257,11 @@ declare module 'azdata' {
 		 * Gets the list of data grid columns for this provider
 		 */
 		getDataGridColumns(): Thenable<DataGridColumn[]>;
+
+		/**
+		 * The user visible string to use for the title of the grid
+		 */
+		title: string;
 	}
 
 	export interface HyperlinkComponent {
@@ -810,10 +819,25 @@ declare module 'azdata' {
 	}
 
 	export interface TableComponent {
-
 		/**
 		 * Append data to an exsiting table data.
 		 */
 		appendData(data: any[][]);
+	}
+
+	export interface IconColumnCellValue {
+		icon: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		ariaLabel: string;
+	}
+
+	export enum ColumnType {
+		icon = 3
+	}
+
+	export interface TableColumn {
+		/**
+		* The text to display on the column heading. 'value' property will be used, if not specified
+		**/
+		name?: string;
 	}
 }

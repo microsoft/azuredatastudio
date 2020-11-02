@@ -17,7 +17,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ResourceViewerInput } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
 import { ResourceViewerTable } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerTable';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
-import { ResourceViewerEditColumns, ResourceViewerRefresh } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerActions';
+import { ResourceViewerRefresh } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerActions';
 import { IAction } from 'vs/base/common/actions';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
@@ -67,10 +67,8 @@ export class ResourceViewerEditor extends EditorPane {
 		header.className = 'resource-viewer-header';
 		this._actionBar = this._register(new Taskbar(header));
 
-		const editColumnsAction = this._register(this._instantiationService.createInstance(ResourceViewerEditColumns));
 		const refreshAction = this._register(this._instantiationService.createInstance(ResourceViewerRefresh));
 		this._actionBar.setContent([
-			{ action: editColumnsAction },
 			{ action: refreshAction }
 		]);
 		return header;
@@ -94,9 +92,9 @@ export class ResourceViewerEditor extends EditorPane {
 	async setInput(input: ResourceViewerInput, options: EditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		await super.setInput(input, options, context, token);
 
-		this._inputDisposables.clear();
+		this._resourceViewerTable.title = input.title;
 
-		this._resourceViewerTable.data = input.data;
+		this._inputDisposables.clear();
 
 		input.plugins.forEach(plugin => {
 			this._resourceViewerTable.registerPlugin(plugin);
@@ -107,16 +105,24 @@ export class ResourceViewerEditor extends EditorPane {
 			});
 		});
 
-		this._resourceViewerTable.columns = input.columns;
 		this._inputDisposables.add(input.onColumnsChanged(columns => {
 			this._resourceViewerTable.columns = columns;
 		}));
+		this._resourceViewerTable.columns = input.columns;
+
 		this._inputDisposables.add(input.onDataChanged(() => {
 			this._resourceViewerTable.data = input.data;
 		}));
+		this._resourceViewerTable.data = input.data;
+
 		this._inputDisposables.add(input.actionsColumn.onClick(e => {
 			this.showContextMenu(e.position, e.item);
 		}));
+
+		this._inputDisposables.add(input.onLoadingChanged(loading => {
+			this._resourceViewerTable.loading = loading;
+		}));
+		this._resourceViewerTable.loading = input.loading;
 
 		this._actionBar.context = input;
 

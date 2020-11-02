@@ -17,7 +17,10 @@ export class AzureResourceGroupService extends ResourceServiceBase<DbServerGraph
 		return {
 			id: resource.id,
 			name: resource.name,
-			subscriptionId: resource.subscriptionId,
+			subscription: {
+				id: resource.subscriptionId,
+				name: resource.subscriptionName
+			},
 			tenant: resource.tenantId
 		};
 	}

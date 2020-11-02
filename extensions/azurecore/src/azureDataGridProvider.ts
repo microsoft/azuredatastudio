@@ -28,6 +28,8 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 	constructor(private _appContext: AppContext) { }
 
 	public providerId = constants.dataGridProviderId;
+	public title = loc.azureResourcesGridTitle;
+
 	public async getDataGridItems() {
 		const accounts = await azdata.accounts.getAllAccounts();
 		const items: any[] = [];
@@ -45,14 +47,16 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 							.map(item => {
 								return <azdata.DataGridItem>{
 									id: item.id,
-									fieldValues: {
-										nameLink: <azdata.DataGridHyperlinkInfo>{ displayText: item.name, linkOrCommand: 'https://microsoft.com' },
-										resourceGroup: item.resourceGroup,
-										subscriptionName: subscriptions.find(subscription => subscription.id === item.subscriptionId)?.name ?? item.subscriptionId,
-										locationDisplayName: utils.getRegionDisplayName(item.location),
-										typeDisplayName: utils.getResourceTypeDisplayName(item.type),
-										iconPath: utils.getResourceTypeIcon(this._appContext, item.type),
-									}
+									// Property values
+									name: item.name,
+									resourceGroup: item.resourceGroup,
+									subscriptionId: item.subscriptionId,
+									subscriptionName: subscriptions.find(subscription => subscription.id === item.subscriptionId)?.name ?? item.subscriptionId,
+									locationDisplayName: utils.getRegionDisplayName(item.location),
+									type: item.type,
+									typeDisplayName: utils.getResourceTypeDisplayName(item.type),
+									iconPath: utils.getResourceTypeIcon(this._appContext, item.type),
+									portalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 								};
 							});
 						items.push(...newItems);
@@ -70,7 +74,7 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 	public async getDataGridColumns(): Promise<azdata.DataGridColumn[]> {
 		return [
 			{ id: 'icon', type: 'image', field: 'iconPath', name: '', width: 25, sortable: false, filterable: false, resizable: false, tooltip: loc.typeIcon },
-			{ id: 'name', type: 'hyperlink', field: 'nameLink', name: loc.name, width: 150 },
+			{ id: 'name', type: 'text', field: 'name', name: loc.name, width: 150 },
 			{ id: 'type', type: 'text', field: 'typeDisplayName', name: loc.resourceType, width: 150 },
 			{ id: 'type', type: 'text', field: 'resourceGroup', name: loc.resourceGroup, width: 150 },
 			{ id: 'location', type: 'text', field: 'locationDisplayName', name: loc.location, width: 150 },

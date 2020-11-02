@@ -355,6 +355,7 @@ export class KernelsDropdown extends SelectBox {
 }
 
 const attachToDropdownElementId = 'attach-to-dropdown';
+const saveConnectionNameConfigName = 'notebook.saveConnectionName';
 
 export class AttachToDropdown extends SelectBox {
 	private model: NotebookModel;
@@ -365,6 +366,7 @@ export class AttachToDropdown extends SelectBox {
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@INotificationService private _notificationService: INotificationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false, ariaLabel: attachToLabel, id: attachToDropdownElementId } as ISelectBoxOptionsWithLabel);
 		if (modelReady) {
@@ -428,7 +430,14 @@ export class AttachToDropdown extends SelectBox {
 		if ((connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
 			this.setOptions([msgLocalHost]);
 		} else {
-			let connections: string[] = model.context && model.context.title && (connProviderIds.includes(this.model.context.providerName)) ? [model.context.title] : [msgSelectConnection];
+			let connections: string[] = [];
+			if (model.context && model.context.title && (connProviderIds.includes(this.model.context.providerName))) {
+				connections.push(model.context.title);
+			} else if (this._configurationService.getValue(saveConnectionNameConfigName) && model.savedConnectionName) {
+				connections.push(model.savedConnectionName);
+			} else {
+				connections.push(msgSelectConnection);
+			}
 			if (!connections.find(x => x === msgChangeConnection)) {
 				connections.push(msgChangeConnection);
 			}

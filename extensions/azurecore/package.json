@@ -22,7 +22,7 @@
     "resourceViewResources": [
       {
         "id": "azure-resources",
-        "name": "Azure",
+        "name": "%azure.resource.view.title%",
         "icon": "./resources/azure.svg"
       }
     ],
