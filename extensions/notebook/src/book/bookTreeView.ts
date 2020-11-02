@@ -140,7 +140,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		await this.bookTocManager.createBook(bookPath, contentPath);
 	}
 
-	async editBook(book: BookTreeItem, section: BookTreeItem, sectionParent: BookTreeItem): Promise<void> {
+	async editBook(book: BookTreeItem, section: BookTreeItem): Promise<void> {
 		await this.bookTocManager.updateBook(section, book);
 	}
 
