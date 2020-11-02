@@ -14,10 +14,12 @@ const localize = nls.loadMessageBundle();
 
 
 export class PageLessDeploymentModel extends ResourceTypeModel {
+
 	initialize(): void {
 		const pages: ResourceTypePage[] = [];
 		this.wizard.setPages(pages);
 	}
+
 	async onOk(): Promise<void> {
 		let provider: DeploymentProvider = this.wizard.provider;
 		if (instanceOfDialogDeploymentProvider(provider)) {
@@ -50,6 +52,7 @@ export class PageLessDeploymentModel extends ResourceTypeModel {
 			vscode.commands.executeCommand(provider.command);
 		}
 	}
+
 	onCancel(): void {
 	}
 

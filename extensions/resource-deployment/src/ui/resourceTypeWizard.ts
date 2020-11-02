@@ -25,9 +25,9 @@ import { PageLessDeploymentModel } from './pageLessDeploymentModel';
 export class ResourceTypeWizard {
 	private customButtons: azdata.window.Button[] = [];
 	public pages: ResourceTypePage[] = [];
-	public wizardObject: azdata.window.Wizard;
+	public wizardObject!: azdata.window.Wizard;
 	public toDispose: vscode.Disposable[] = [];
-	public model!: ResourceTypeModel;
+	private _model!: ResourceTypeModel;
 	private _useGenerateScriptButton!: boolean;
 	public toolsEulaPagePresets!: ResourceTypeOptionValue[];
 
@@ -49,7 +49,6 @@ export class ResourceTypeWizard {
 		public toolsService: IToolsService,
 		public platformService: IPlatformService,
 		public resourceTypeService: ResourceTypeService) {
-		this.wizardObject = azdata.window.createWizard(resourceType.displayName, resourceType.name, 'wide');
 	}
 
 
@@ -67,8 +66,22 @@ export class ResourceTypeWizard {
 	}
 
 	public async open(): Promise<void> {
+		this.wizardObject = azdata.window.createWizard(this.resourceType.displayName, this.resourceType.name, 'wide');
 		this.model = this.getResourceProviderModel();
-		this.model.initialize();
+		await this.wizardObject.open();
+	}
+
+	public async refresh(): Promise<void> {
+		this.dispose();
+		await this.wizardObject.close();
+		this.wizardObject = azdata.window.createWizard(this.resourceType.displayName, this.resourceType.name, 'wide');
+		this.model = this.getResourceProviderModel();
+		await this.wizardObject.open();
+	}
+
+	public set model(value: ResourceTypeModel) {
+		this._model = value;
+		this._model.initialize();
 		this.wizardObject.generateScriptButton.hidden = true; // by default generateScriptButton stays hidden.
 		this.wizardObject.customButtons = this.customButtons;
 		this.toDispose.push(this.wizardObject.onPageChanged(async (e) => {
@@ -89,20 +102,22 @@ export class ResourceTypeWizard {
 		}));
 
 		this.toDispose.push(this.wizardObject.doneButton.onClick(async () => {
-			await this.model.onOk();
+			await this._model.onOk();
 			this.dispose();
 		}));
 		this.toDispose.push(this.wizardObject.generateScriptButton.onClick(async () => {
-			await this.model.onGenerateScript();
+			await this._model.onGenerateScript();
 			this.dispose();
 			this.wizardObject.close(); // close the wizard. This is already hooked up into doneButton, so it is not needed for that button above.
 		}));
 		this.toDispose.push(this.wizardObject.cancelButton.onClick(() => {
-			this.model.onCancel();
+			this._model.onCancel();
 			this.dispose();
 		}));
+	}
 
-		await this.wizardObject.open();
+	public get model(): ResourceTypeModel {
+		return this._model;
 	}
 
 	public addButton(button: azdata.window.Button) {
@@ -140,9 +155,9 @@ export class ResourceTypeWizard {
 		};
 	}
 
-	public close() {
-		this.dispose();
+	public async close() {
 		this.wizardObject.close();
+		this.dispose();
 	}
 
 }

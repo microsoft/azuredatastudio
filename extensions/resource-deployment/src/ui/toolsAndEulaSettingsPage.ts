@@ -52,19 +52,12 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	}
 
 	public async onEnter(): Promise<void> {
+		this.wizard.wizardObject.generateScriptButton.hidden = true;
 		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
 			}
 
-			const isValid = this._resourceType.agreement === undefined || this._agreeementCheckBox.checked;
-			if (!isValid) {
-				this.wizard.wizardObject.message = {
-					text: localize('deploymentDialog.AcceptAgreements', "You must agree to the license agreements in order to proceed."),
-					level: azdata.window.MessageLevel.Error
-				};
-				return false;
-			}
 			if (!this._eulaValidationSucceeded && !(await this.acquireEulaAndProceed())) {
 				return false; // we return false so that the workflow does not proceed and user gets to either click acceptEulaAndSelect again or cancel
 			}
@@ -206,13 +199,10 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 
 						resourceTypeOptions.push(option.values[0]);
 
-						this.wizard.registerDisposable(optionSelectBox.onValueChanged(() => {
-							this.updateOkButtonText();
-							this.updateToolsDisplayTable();
+						this.wizard.registerDisposable(optionSelectBox.onValueChanged(async () => {
 							resourceTypeOptions[index] = <ResourceTypeOptionValue>optionSelectBox.value;
 							this.wizard.provider = this.getCurrentProvider();
-							this.wizard.close();
-							this.wizard.open();
+							await this.wizard.refresh();
 						}));
 
 						this._optionDropDownMap.set(option.name, optionSelectBox);
