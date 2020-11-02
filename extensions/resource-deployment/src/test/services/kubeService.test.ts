@@ -48,23 +48,23 @@ describe('KubeService', function (): void {
 		it('success', async () => {
 			sinon.stub(fs.promises, 'access').withArgs(configFile).resolves(); //resolving access to file, mocks its existence
 			sinon.stub(yamljs, 'load').returns(<any>kubeConfig);
-			const verifyConfigs = (contexts: KubeClusterContext[], testName: string) => {
+			const verifyContexts = (contexts: KubeClusterContext[], testName: string) => {
 				contexts.length.should.equal(2, `test: ${testName} failed`);
 				contexts[0].name.should.equal('docker-for-desktop', `test: ${testName} failed`);
 				contexts[0].isCurrentContext.should.be.true( `test: ${testName} failed`);
 				contexts[1].name.should.equal('kubernetes-admin@kubernetes', `test: ${testName} failed`);
 				contexts[1].isCurrentContext.should.be.false( `test: ${testName} failed`);
 			};
-			verifyConfigs(await getKubeConfigClusterContexts(configFile), 'getKubeConfigClusterContexts');
-			verifyConfigs(await kubeService.getClusterContexts(configFile), 'getClusterContexts');
+			verifyContexts(await getKubeConfigClusterContexts(configFile), 'getKubeConfigClusterContexts');
+			verifyContexts(await kubeService.getClusterContexts(configFile), 'getClusterContexts');
 		});
 		it('errors with empty array on ENOENT error', async () => {
 			sinon.stub(fs.promises, 'access').withArgs(configFile).rejects(Object.assign(new Error(), { code: 'ENOENT' })); //rejecting access to file, fakes its non-existence with specific error
-			const verifyConfigs = (contexts: KubeClusterContext[], testName: string) => {
+			const verifyContexts = (contexts: KubeClusterContext[], testName: string) => {
 				contexts.length.should.equal(0, `test: ${testName} failed`);
 			};
-			verifyConfigs(await getKubeConfigClusterContexts(configFile), 'getKubeConfigClusterContexts');
-			verifyConfigs(await kubeService.getClusterContexts(configFile), 'getClusterContexts');
+			verifyContexts(await getKubeConfigClusterContexts(configFile), 'getKubeConfigClusterContexts');
+			verifyContexts(await kubeService.getClusterContexts(configFile), 'getClusterContexts');
 		});
 		it('throws error when unable to access file with non ENOENT error', async () => {
 			const error = new Error('unknown error accessing file');
