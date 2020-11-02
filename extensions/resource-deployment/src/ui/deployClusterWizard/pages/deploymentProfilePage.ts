@@ -8,7 +8,7 @@ import * as nls from 'vscode-nls';
 import { BdcDeploymentType } from '../../../interfaces';
 import { BigDataClusterDeploymentProfile } from '../../../services/bigDataClusterDeploymentProfile';
 import { createFlexContainer, createLabel } from '../../modelViewUtils';
-import { ResourceTypePage } from '../../resourceTypeWizard';
+import { ResourceTypePage } from '../../resourceTypePage';
 import * as VariableNames from '../constants';
 import { DeployClusterWizardModel } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();

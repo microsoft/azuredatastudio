@@ -74,7 +74,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 			}
 		});
 
-		this.resultGrid = new AssessmentResultGrid(view);
+		this.resultGrid = new AssessmentResultGrid(view, this.extensionContext);
 		rootContainer.addItem(this.resultGrid.component, {
 			flex: '1 1 auto',
 			CSSStyles: {
