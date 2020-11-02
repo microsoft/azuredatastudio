@@ -233,6 +233,9 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
 			},
 			"webRoot": "${workspaceFolder}",
+			"env": {
+				"ADS_TEST_GREP": "KubeService"
+			},
 			"timeout": 45000
 		},
 		{

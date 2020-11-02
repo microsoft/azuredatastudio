@@ -10,7 +10,6 @@ import * as sinon from 'sinon';
 import * as yamljs from 'yamljs';
 import { tryExecuteAction } from '../../common/utils';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts, KubeClusterContext, KubeService } from '../../services/kubeService';
-import should = require('should');
 
 const kubeConfig =
 {
@@ -45,35 +44,33 @@ describe('KubeService', function (): void {
 		kubeService.getDefaultConfigPath().should.endWith(path.join('.kube', 'config'));
 	});
 
-	describe('getKubeConfigClusterContexts', () => {
+	describe('get Kube Config Cluster Contexts', () => {
 		it('success', async () => {
 			sinon.stub(fs.promises, 'access').withArgs(configFile).resolves(); //resolving access to file, mocks its existence
 			sinon.stub(yamljs, 'load').returns(<any>kubeConfig);
-			const verifyConfigs = (configs: KubeClusterContext[]) => {
-				configs.length.should.equal(2);
-				configs[0].name.should.equal('docker-for-desktop');
-				configs[0].isCurrentContext = true;
-				configs[1].name.should.equal('kubernetes-admin@kubernetes');
-				configs[1].isCurrentContext = false;
+			const verifyConfigs = (contexts: KubeClusterContext[], testName: string) => {
+				contexts.length.should.equal(2, `test: ${testName} failed`);
+				contexts[0].name.should.equal('docker-for-desktop', `test: ${testName} failed`);
+				contexts[0].isCurrentContext.should.be.true( `test: ${testName} failed`);
+				contexts[1].name.should.equal('kubernetes-admin@kubernetes', `test: ${testName} failed`);
+				contexts[1].isCurrentContext.should.be.false( `test: ${testName} failed`);
 			};
-			verifyConfigs(await getKubeConfigClusterContexts(configFile));
-			verifyConfigs(await kubeService.getClusterContexts(configFile));
+			verifyConfigs(await getKubeConfigClusterContexts(configFile), 'getKubeConfigClusterContexts');
+			verifyConfigs(await kubeService.getClusterContexts(configFile), 'getClusterContexts');
 		});
-		it('errors with empty array', async () => {
-			// let enoentError = new Error();
-			// ;
-			sinon.stub(fs.promises, 'access').withArgs(configFile).rejects(Object.assign(new Error(), { code: 'ENOENT' })); //resolving access to file, mocks its existence
-			const verifyConfigs = (configs: KubeClusterContext[]) => {
-				configs.length.should.equal(0);
+		it('errors with empty array on ENOENT error', async () => {
+			sinon.stub(fs.promises, 'access').withArgs(configFile).rejects(Object.assign(new Error(), { code: 'ENOENT' })); //rejecting access to file, fakes its non-existence with specific error
+			const verifyConfigs = (contexts: KubeClusterContext[], testName: string) => {
+				contexts.length.should.equal(0, `test: ${testName} failed`);
 			};
-			verifyConfigs(await getKubeConfigClusterContexts(configFile));
-			verifyConfigs(await kubeService.getClusterContexts(configFile));
+			verifyConfigs(await getKubeConfigClusterContexts(configFile), 'getKubeConfigClusterContexts');
+			verifyConfigs(await kubeService.getClusterContexts(configFile), 'getClusterContexts');
 		});
-		it('throws error when unable to access file', async () => {
-			sinon.stub(fs.promises, 'access').withArgs(configFile).rejects(new Error()); //resolving access to file, mocks its existence
-			should((await tryExecuteAction(() => getKubeConfigClusterContexts(configFile))).error).not.be.undefined();
-			should((await tryExecuteAction(() => kubeService.getClusterContexts(configFile))).error).not.be.undefined();
-
+		it('throws error when unable to access file with non ENOENT error', async () => {
+			const error = new Error('unknown error accessing file');
+			sinon.stub(fs.promises, 'access').withArgs(configFile).rejects(error); //rejecting access to file, fakes its non-existence
+			((await tryExecuteAction(() => getKubeConfigClusterContexts(configFile))).error).should.equal(error, `test: getKubeConfigClusterContexts failed`);
+			((await tryExecuteAction(() => kubeService.getClusterContexts(configFile))).error).should.equal(error, `test: getClusterContexts failed`);
 		});
 	});
 });
