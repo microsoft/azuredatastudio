@@ -5,12 +5,9 @@
 
 import * as should from 'should';
 import * as azdata from 'azdata';
-import * as mssql from '../../../../mssql';
-import * as TypeMoq from 'typemoq';
 import * as sinon from 'sinon';
 import { CreateProjectFromDatabaseDialog } from '../../dialogs/createProjectFromDatabaseDialog';
 import { mockConnectionProfile } from '../testContext';
-import { ImportDataModel } from '../../models/api/import';
 
 describe('Create Project From Database Dialog', () => {
 	afterEach(function (): void {
