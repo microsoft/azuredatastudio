@@ -120,9 +120,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			}, {
 				name: 'pandas',
 				version: '0.24.2'
-			}, {
-				name: 'prose-codeaccelerator',
-				version: '1.3.0'
 			}];
 		this._requiredKernelPackages.set(constants.pysparkDisplayName, sparkPackages);
 		this._requiredKernelPackages.set(constants.sparkScalaDisplayName, sparkPackages);
@@ -526,7 +523,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		let versionSpecifier = useMinVersion ? '>=' : '==';
 		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
-		let cmd = `"${this.pythonExecutable}" -m pip install --user ${packagesStr} --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		let cmd = `"${this.pythonExecutable}" -m pip install --user ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 
