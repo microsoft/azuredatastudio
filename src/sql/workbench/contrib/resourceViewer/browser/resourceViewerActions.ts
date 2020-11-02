@@ -7,19 +7,6 @@ import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { ResourceViewerInput } from 'sql/workbench/browser/editor/resourceViewer/resourceViewerInput';
 
-export class ResourceViewerEditColumns extends Action {
-	public static readonly ID = 'resourceViewer.editColumns';
-	public static readonly LABEL = nls.localize('resourceViewer.editColumns', "Edit Columns");
-
-	constructor() {
-		super(ResourceViewerEditColumns.ID, ResourceViewerEditColumns.LABEL, 'codicon edit');
-	}
-
-	public async run(input: ResourceViewerInput): Promise<void> {
-
-	}
-}
-
 export class ResourceViewerRefresh extends Action {
 	public static readonly ID = 'resourceViewer.refresh';
 	public static readonly LABEL = nls.localize('resourceViewer.refresh', "Refresh");

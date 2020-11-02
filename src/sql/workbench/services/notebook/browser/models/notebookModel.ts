@@ -29,6 +29,9 @@ import { notebookConstants } from 'sql/workbench/services/notebook/browser/inter
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { Deferred } from 'sql/base/common/promise';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { values } from 'vs/base/common/collections';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -44,6 +47,8 @@ export class ErrorInfo {
 	constructor(public readonly message: string, public readonly severity: MessageLevel) {
 	}
 }
+
+const saveConnectionNameConfigName = 'notebook.saveConnectionName';
 
 export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
@@ -68,6 +73,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _language: string = '';
 	private _onErrorEmitter = new Emitter<INotification>();
 	private _savedKernelInfo: nb.IKernelSpec | undefined;
+	private _savedConnectionName: string | undefined;
 	private readonly _nbformat: number = nbversion.MAJOR_VERSION;
 	private readonly _nbformatMinor: number = nbversion.MINOR_VERSION;
 	private _activeConnection: ConnectionProfile | undefined;
@@ -93,6 +99,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@ILogService private readonly logService: ILogService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IAdsTelemetryService private readonly adstelemetryService: IAdsTelemetryService,
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
+		@IConfigurationService private configurationService: IConfigurationService,
 		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService
 
 	) {
@@ -199,6 +207,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._activeConnection;
 	}
 
+	public get savedConnectionName(): string | undefined {
+		return this._savedConnectionName;
+	}
+
 	public get specs(): nb.IAllKernels | undefined {
 		let specs: nb.IAllKernels = {
 			defaultKernel: '',
@@ -271,17 +283,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	/**
-	 * Indicates all result grid output has been converted to mimeType and html.
-	 */
-	public get gridDataConversionComplete(): Promise<any> {
-		let promises = [];
-		for (let cell of this._cells) {
-			promises.push(cell.gridDataConversionComplete);
-		}
-		return Promise.all(promises);
-	}
-
-	/**
 	 * Notifies when the client session is ready for use
 	 */
 	public get onClientSessionReady(): Event<IClientSession> {
@@ -336,6 +337,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (contents) {
 				this._defaultLanguageInfo = contents.metadata?.language_info;
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
+				this._savedConnectionName = this.getSavedConnectionName(contents);
 				if (contents.metadata) {
 					//Telemetry of loading notebook
 					let metadata: any = contents.metadata;
@@ -349,7 +351,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						}
 					}
 					Object.keys(contents.metadata).forEach(key => {
-						let expectedKeys = ['kernelspec', 'language_info', 'tags'];
+						let expectedKeys = ['kernelspec', 'language_info', 'tags', 'connection_name'];
 						// If custom metadata is defined, add to the _existingMetadata object
 						if (expectedKeys.indexOf(key) < 0) {
 							this._existingMetadata[key] = contents.metadata[key];
@@ -367,7 +369,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						*/
 						if (cellModel.isInjectedParameter) {
 							cellModel.source = cellModel.source.slice(1);
-							cellModel.source = '# Injected-Parameters\n' + cellModel.source;
+							cellModel.source = ['# Injected-Parameters\n'].concat(cellModel.source);
 						}
 						this.trackMarkdownTelemetry(<nb.ICellContents>c, cellModel);
 						return cellModel;
@@ -398,6 +400,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public async requestConnection(): Promise<boolean> {
+		// If there is a saved connection name with a corresponding connection profile, use that one,
+		// otherwise show connection dialog
+		if (this.configurationService.getValue(saveConnectionNameConfigName) && this._savedConnectionName) {
+			let profile: ConnectionProfile | undefined = this.getConnectionProfileFromName(this._savedConnectionName);
+			if (profile) {
+				await this.changeContext(this._savedConnectionName, profile);
+				return true;
+			}
+		}
 		if (this.requestConnectionHandler) {
 			return this.requestConnectionHandler();
 		} else if (this.notificationService) {
@@ -579,6 +590,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 			if (this.isValidConnection(profile)) {
 				this._activeConnection = profile;
+				this._savedConnectionName = profile.connectionName;
 			}
 
 			clientSession.onKernelChanging(async (e) => {
@@ -867,6 +879,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					this._kernelDisplayNameToConnectionProviderIds.set(newConnection.serverCapabilities.notebookKernelAlias, [newConnection.providerName]);
 				}
 				this._activeConnection = newConnection;
+				this._savedConnectionName = newConnection.connectionName;
 				this.setActiveConnectionIfDifferent(newConnection);
 				this._activeClientSession.updateConnection(newConnection.toIConnectionProfile()).then(
 					result => {
@@ -898,9 +911,19 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._activeConnection.id !== newConnection.id) {
 			// Change the active connection to newConnection
 			this._activeConnection = newConnection;
+			this._savedConnectionName = newConnection.connectionName;
 		}
 	}
 
+	private getConnectionProfileFromName(connectionName: string): ConnectionProfile | undefined {
+		let connections: ConnectionProfile[] = this.connectionManagementService.getConnections();
+		return values(connections).find(connection => connection.connectionName === connectionName);
+	}
+
+	// Get saved connection name if saved in notebook file
+	private getSavedConnectionName(notebook: nb.INotebookContents): string | undefined {
+		return notebook?.metadata?.connection_name ? notebook.metadata.connection_name : undefined;
+	}
 
 	// Get default kernel info if saved in notebook file
 	private getSavedKernelInfo(notebook: nb.INotebookContents): nb.IKernelSpec | undefined {
@@ -1139,6 +1162,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		metadata.kernelspec = this._savedKernelInfo;
 		metadata.language_info = this.languageInfo;
 		metadata.tags = this._tags;
+		if (this.configurationService.getValue(saveConnectionNameConfigName)) {
+			metadata.connection_name = this._savedConnectionName;
+		}
 		Object.keys(this._existingMetadata).forEach(key => {
 			metadata[key] = this._existingMetadata[key];
 		});

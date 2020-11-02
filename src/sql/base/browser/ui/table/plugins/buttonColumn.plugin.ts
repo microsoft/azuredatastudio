@@ -12,9 +12,22 @@ export interface ButtonColumnDefinition<T extends Slick.SlickData> extends TextW
 }
 
 export interface ButtonColumnOptions {
+	/**
+	 * The CSS class of the icon (either a common icon or one added by the user of this column) to display in the button
+	 */
 	iconCssClass?: string;
+	/**
+	 * The aria-label title of the button
+	 */
 	title?: string;
+	/**
+	 * The unique ID used by SlickGrid
+	 */
 	id?: string;
+	/**
+	 * Whether the column is sortable or not
+	 */
+	sortable?: boolean;
 }
 
 export interface ButtonClickEventArgs<T extends Slick.SlickData> {
@@ -41,7 +54,8 @@ export class ButtonColumn<T extends Slick.SlickData> implements Slick.Plugin<T> 
 			},
 			width: 30,
 			selectable: false,
-			iconCssClassField: options.iconCssClass
+			iconCssClassField: options.iconCssClass,
+			sortable: options.sortable
 		};
 	}
 

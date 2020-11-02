@@ -14,7 +14,7 @@ export interface ResourceType {
 	displayName: string;
 	description: string;
 	platforms: string[] | '*';
-	icon: { light: string; dark: string };
+	icon: { light: string; dark: string } | string;
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
 	agreement?: AgreementInfo;

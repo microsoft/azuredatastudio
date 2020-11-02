@@ -4,23 +4,24 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { WizardPageBase } from '../../wizardPageBase';
-import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 import * as constants from '../constants';
+import * as localizedConstants from '../../../localizedConstants';
 import { SectionInfo, LabelPosition, FontWeight, FieldType } from '../../../interfaces';
 import { createSection } from '../../modelViewUtils';
+import { BasePage } from '../../deployAzureSQLVMWizard/pages/basePage';
+import { DeployAzureSQLDBWizardModel } from '../deployAzureSQLDBWizardModel';
 
-export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard> {
+export class AzureSQLDBSummaryPage extends BasePage {
 
 	private formItems: azdata.FormComponent[] = [];
 	private _form!: azdata.FormBuilder;
 	private _view!: azdata.ModelView;
 
-	constructor(wizard: DeployAzureSQLDBWizard) {
+	constructor(private _model: DeployAzureSQLDBWizardModel) {
 		super(
 			'Summary',
 			'',
-			wizard
+			_model.wizard
 		);
 
 	}
@@ -41,7 +42,7 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 
 		this.formItems = [];
 
-		let model = this.wizard.model;
+		let model = this._model;
 
 		const labelWidth = '150px';
 		const inputWidth = '400px';
@@ -138,6 +139,17 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 				},
 				{
 					type: FieldType.ReadonlyText,
+					label: constants.FirewallToggleLabel,
+					defaultValue: model.newFirewallRule ? localizedConstants.yes : localizedConstants.no,
+					labelCSSStyles: { fontWeight: FontWeight.Bold }
+				}
+			]
+		};
+
+		if (model.newFirewallRule) {
+			databaseSettingSection.fields?.push(
+				{
+					type: FieldType.ReadonlyText,
 					label: constants.FirewallRuleNameLabel,
 					defaultValue: model.firewallRuleName,
 					labelCSSStyles: { fontWeight: FontWeight.Bold }
@@ -153,9 +165,8 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 					label: constants.EndIpAddressShortLabel,
 					defaultValue: model.endIpAddress,
 					labelCSSStyles: { fontWeight: FontWeight.Bold }
-				}
-			]
-		};
+				});
+		}
 
 
 		const createSectionFunc = async (sectionInfo: SectionInfo): Promise<azdata.FormComponent> => {

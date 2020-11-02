@@ -171,7 +171,6 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 		try {
 			if (this._tableSelectionComponent && this._dataTable) {
 				await this._tableSelectionComponent.refresh();
-				await this._dataTable.refresh();
 				this.refreshComponents();
 			}
 		} catch (err) {
