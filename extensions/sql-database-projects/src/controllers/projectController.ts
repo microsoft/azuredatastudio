@@ -687,7 +687,7 @@ export class ProjectsController {
 		return new CreateProjectFromDatabaseDialog(profile);
 	}
 
-	private async createNewProjectCallBack(model: ImportDataModel) {
+	public async createNewProjectCallBack(model: ImportDataModel) {
 		try {
 			let newProjFolderUri = model.filePath;
 
@@ -705,6 +705,7 @@ export class ProjectsController {
 			let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
 			await project.addToProject(fileFolderList); // Add generated file structure to the project
+			await this.openProject(vscode.Uri.file(newProjFilePath));
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
