@@ -21,7 +21,7 @@ export class HTMLMarkdownConverter {
 	}
 
 	private setTurndownOptions() {
-		this.turndownService.keep(['u', 'mark']);
+		this.turndownService.keep(['u', 'mark', 'style']);
 		this.turndownService.use(turndownPluginGfm.gfm);
 		this.turndownService.addRule('pre', {
 			filter: 'pre',
@@ -39,6 +39,22 @@ export class HTMLMarkdownConverter {
 		this.turndownService.addRule('span', {
 			filter: 'span',
 			replacement: function (content, node) {
+				// There are certain properties that either don't have equivalents in markdown or whose transformations
+				// don't have actions defined in WYSIWYG yet. To unblock users, leaving these elements alone (including their child elements)
+				// Note: the initial list was generated from our TSG Jupyter Book
+				if (node && node.style) {
+					if (node.style.color ||
+						node.style.fontSize ||
+						(node.style.backgroundColor && node.style.backgroundColor !== 'yellow') ||
+						(node.style.background && node.style.background !== 'yellow') ||
+						node.style.lineHeight ||
+						node.style.marginLeft ||
+						node.style.marginBottom ||
+						node.style.textAlign
+					) {
+						return node.outerHTML;
+					}
+				}
 				let beginString = '';
 				let endString = '';
 				// TODO: handle other background colors and more styles
@@ -58,7 +74,7 @@ export class HTMLMarkdownConverter {
 					beginString = '<u>' + beginString;
 					endString += '</u>';
 				}
-				return beginString + node.textContent + endString;
+				return beginString + content + endString;
 			}
 		});
 		this.turndownService.addRule('img', {

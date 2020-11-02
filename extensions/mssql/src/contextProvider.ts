@@ -21,9 +21,9 @@ enum ContextKeys {
 }
 
 const isCloudEditions = [
-	5,
-	6,
-	11
+	azdata.DatabaseEngineEdition.SqlDatabase,
+	azdata.DatabaseEngineEdition.SqlDataWarehouse,
+	azdata.DatabaseEngineEdition.SqlOnDemand
 ];
 
 function setCommandContext(key: ContextKeys | string, value: any) {

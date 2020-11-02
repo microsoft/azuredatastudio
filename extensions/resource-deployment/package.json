@@ -70,14 +70,8 @@
         "displayName": "%resource-type-sql-image-display-name%",
         "description": "%resource-type-sql-image-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/sql_server_container.svg",
-          "dark": "./images/sql_server_container_inverse.svg"
-        },
-        "tags": [
-          "On-premises",
-          "SQL Server"
-        ],
+        "icon": "./images/sql_server_container.svg",
+        "tags": ["On-premises", "SQL Server"],
         "options": [
           {
             "name": "version",
@@ -205,14 +199,8 @@
         "displayName": "%resource-type-sql-bdc-display-name%",
         "description": "%resource-type-sql-bdc-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/sql_bdc.svg",
-          "dark": "./images/sql_bdc_inverse.svg"
-        },
-        "tags": [
-          "On-premises",
-          "SQL Server"
-        ],
+        "icon": "./images/sql_bdc.svg",
+        "tags": ["On-premises", "SQL Server"],
         "options": [
           {
             "name": "version",
@@ -267,7 +255,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.0.0"
+                "version": "20.2.2"
               }
             ],
             "when": "target=new-aks&&version=bdc2019"
@@ -284,7 +272,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.0.0"
+                "version": "20.2.2"
               }
             ],
             "when": "target=existing-aks&&version=bdc2019"
@@ -301,7 +289,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.0.0"
+                "version": "20.2.2"
               }
             ],
             "when": "target=existing-kubeadm&&version=bdc2019"
@@ -318,7 +306,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.0.0"
+                "version": "20.2.2"
               }
             ],
             "when": "target=existing-aro&&version=bdc2019"
@@ -335,7 +323,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.0.0"
+                "version": "20.2.2"
               }
             ],
             "when": "target=existing-openshift&&version=bdc2019"
@@ -409,14 +397,8 @@
         "displayName": "%azure-sqldb-display-name%",
         "description": "%azure-sqldb-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/azure-sql-db.svg",
-          "dark": "./images/azure-sql-db.svg"
-        },
-        "tags": [
-          "SQL Server",
-          "Cloud"
-        ],
+        "icon": "./images/azure-sql-db.svg",
+        "tags": ["SQL Server", "Cloud"],
         "okButtonText": [
           {
             "value": "%azure-sqldb-notebook-ok-button-text%",
@@ -497,14 +479,8 @@
         "displayName": "%azure-sqlvm-display-name%",
         "description": "%azure-sqlvm-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/azure-sql-vm.svg",
-          "dark": "./images/azure-sql-vm.svg"
-        },
-        "tags": [
-          "SQL Server",
-          "Cloud"
-        ],
+        "icon": "./images/azure-sql-vm.svg",
+        "tags": ["SQL Server", "Cloud"],
         "providers": [
           {
             "azureSQLVMWizard": {

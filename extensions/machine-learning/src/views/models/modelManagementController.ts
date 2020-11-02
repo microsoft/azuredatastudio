@@ -17,7 +17,7 @@ import {
 	AzureResourceEventArgs, ListAzureModelsEventName, ListSubscriptionsEventName, ListModelsEventName, ListWorkspacesEventName,
 	ListGroupsEventName, ListAccountsEventName, RegisterLocalModelEventName, RegisterAzureModelEventName,
 	ModelViewBase, SourceModelSelectedEventName, RegisterModelEventName, DownloadAzureModelEventName,
-	ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs, DownloadRegisteredModelEventName, LoadModelParametersEventName, ModelSourceType, ModelViewData, StoreImportTableEventName, VerifyImportTableEventName, EditModelEventName, UpdateModelEventName, DeleteModelEventName, SignInToAzureEventName
+	ListDatabaseNamesEventName, ListTableNamesEventName, ListColumnNamesEventName, PredictModelEventName, PredictModelEventArgs, DownloadRegisteredModelEventName, LoadModelParametersEventName, ModelSourceType, ModelViewData, StoreImportTableEventName, VerifyImportTableEventName, EditModelEventName, UpdateModelEventName, DeleteModelEventName, SignInToAzureEventName, PredictWizardEventName
 } from './modelViewBase';
 import { ControllerBase } from '../controllerBase';
 import { ImportModelWizard } from './manageModels/importModelWizard';
@@ -93,20 +93,25 @@ export class ModelManagementController extends ControllerBase {
 	/**
 	 * Opens the wizard for prediction
 	 */
-	public async predictModel(): Promise<ModelViewBase | undefined> {
+	public async predictModel(models?: ImportedModel[] | undefined, parent?: ModelViewBase, controller?: ModelManagementController, apiWrapper?: ApiWrapper, root?: string): Promise<ModelViewBase | undefined> {
 
-		const onnxSupported = await this._predictService.serverSupportOnnxModel();
+		controller = controller || this;
+		apiWrapper = apiWrapper || this._apiWrapper;
+		root = root || this._root;
+		const onnxSupported = await controller._predictService.serverSupportOnnxModel();
 		if (onnxSupported) {
-			await this._deployedModelService.installDependencies();
-			let view = new PredictWizard(this._apiWrapper, this._root);
-			view.importTable = await this._deployedModelService.getRecentImportTable();
+			await controller._deployedModelService.installDependencies();
+			let view = new PredictWizard(apiWrapper, root, parent, models);
+			view.importTable = await controller._deployedModelService.getRecentImportTable();
 
-			this.registerEvents(view);
+			controller.registerEvents(view);
 
 			view.on(LoadModelParametersEventName, async (args) => {
-				const modelArtifact = await view.getModelFileName();
-				await this.executeAction(view, LoadModelParametersEventName, args, this.loadModelParameters, this._deployedModelService,
-					modelArtifact?.filePath);
+				if (controller) {
+					const modelArtifact = await view.getModelFileName();
+					await controller.executeAction(view, LoadModelParametersEventName, args, controller.loadModelParameters, controller._deployedModelService,
+						modelArtifact?.filePath);
+				}
 			});
 
 			// Open view
@@ -162,6 +167,10 @@ export class ModelManagementController extends ControllerBase {
 		view.on(RegisterModelEventName, async (args) => {
 			const importTable = <DatabaseTable>args;
 			await this.executeAction(view, RegisterModelEventName, args, this.importModel, importTable, view, this, this._apiWrapper, this._root);
+		});
+		view.on(PredictWizardEventName, async (args) => {
+			const models = <ImportedModel[] | undefined>args;
+			await this.executeAction(view, PredictWizardEventName, args, this.predictModel, models, view, this, this._apiWrapper, this._root);
 		});
 		view.on(EditModelEventName, async (args) => {
 			const model = <ImportedModel>args;

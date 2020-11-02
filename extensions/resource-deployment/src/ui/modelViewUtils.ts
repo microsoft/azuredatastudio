@@ -552,9 +552,6 @@ function processTextField(context: FieldContext): azdata.InputBoxComponent {
 	return input;
 
 }
-
-
-
 function processPasswordField(context: FieldContext): void {
 	const passwordInput = processTextField(context);
 

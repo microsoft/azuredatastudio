@@ -4,23 +4,23 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { WizardPageBase } from '../../wizardPageBase';
-import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 import * as constants from '../constants';
 import { SectionInfo, LabelPosition, FontWeight, FieldType } from '../../../interfaces';
 import { createSection } from '../../modelViewUtils';
+import { BasePage } from './basePage';
+import { DeployAzureSQLVMWizardModel } from '../deployAzureSQLVMWizardModel';
 
-export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard> {
+export class AzureSQLVMSummaryPage extends BasePage {
 
 	private formItems: azdata.FormComponent[] = [];
 	private _form!: azdata.FormBuilder;
 	private _view!: azdata.ModelView;
 
-	constructor(wizard: DeployAzureSQLVMWizard) {
+	constructor(private _model: DeployAzureSQLVMWizardModel) {
 		super(
 			'Summary',
 			'',
-			wizard
+			_model.wizard
 		);
 
 	}
@@ -41,8 +41,6 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 
 		this.formItems = [];
 
-		let model = this.wizard.model;
-
 		const labelWidth = '150px';
 		const inputWidth = '400px';
 		const fieldHeight = '20px';
@@ -60,7 +58,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.AzureAccountDropdownLabel,
-							defaultValue: model.azureAccount.displayInfo.displayName,
+							defaultValue: this._model.azureAccount.displayInfo.displayName,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						},
 					]
@@ -70,7 +68,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.AzureAccountSubscriptionDropdownLabel,
-							defaultValue: model.azureSubscriptionDisplayName,
+							defaultValue: this._model.azureSubscriptionDisplayName,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						}
 					]
@@ -80,7 +78,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.AzureAccountResourceGroupDropdownLabel,
-							defaultValue: model.azureResouceGroup,
+							defaultValue: this._model.azureResouceGroup,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						}
 					]
@@ -90,7 +88,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.AzureAccountRegionDropdownLabel,
-							defaultValue: model.azureRegion,
+							defaultValue: this._model.azureRegion,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						}
 					]
@@ -110,7 +108,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.VmNameTextBoxLabel,
-							defaultValue: model.vmName,
+							defaultValue: this._model.vmName,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						}
 					]
@@ -120,7 +118,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.SqlAuthenticationUsernameLabel,
-							defaultValue: model.vmUsername,
+							defaultValue: this._model.vmUsername,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						},
 					]
@@ -130,7 +128,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.VmImageDropdownLabel,
-							defaultValue: model.vmImage,
+							defaultValue: this._model.vmImage,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						}
 					]
@@ -140,7 +138,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.VmSkuDropdownLabel,
-							defaultValue: model.vmImageSKU,
+							defaultValue: this._model.vmImageSKU,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						},
 					]
@@ -150,7 +148,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.VmVersionDropdownLabel,
-							defaultValue: model.vmImageVersion,
+							defaultValue: this._model.vmImageVersion,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						}
 					]
@@ -160,7 +158,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.VmSizeDropdownLabel,
-							defaultValue: model.vmSize,
+							defaultValue: this._model.vmSize,
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						}
 					]
@@ -180,7 +178,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.VirtualNetworkDropdownLabel,
-							defaultValue: ((model.newVirtualNetwork === 'True' ? '(new) ' : '') + this.processVnetName()),
+							defaultValue: ((this._model.newVirtualNetwork === 'True' ? '(new) ' : '') + this.processVnetName()),
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						},
 					]
@@ -191,7 +189,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.SubnetDropdownLabel,
-							defaultValue: ((model.newSubnet === 'True' ? '(new) ' : '') + this.processSubnetName()),
+							defaultValue: ((this._model.newSubnet === 'True' ? '(new) ' : '') + this.processSubnetName()),
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						},
 					]
@@ -202,7 +200,7 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 						{
 							type: FieldType.ReadonlyText,
 							label: constants.PublicIPDropdownLabel,
-							defaultValue: ((model.newPublicIp === 'True' ? '(new) ' : '') + this.processPublicIp()),
+							defaultValue: ((this._model.newPublicIp === 'True' ? '(new) ' : '') + this.processPublicIp()),
 							labelCSSStyles: { fontWeight: FontWeight.Bold }
 						}
 					]
@@ -225,13 +223,13 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 				{
 					type: FieldType.ReadonlyText,
 					label: constants.SqlConnectivityTypeDropdownLabel,
-					defaultValue: model.sqlConnectivityType,
+					defaultValue: this._model.sqlConnectivityType,
 					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				}
 			]
 		});
 
-		if (model.sqlConnectivityType !== 'local') {
+		if (this._model.sqlConnectivityType !== 'local') {
 			sqlServerSettingsPage.rows?.push({
 				items: [
 					{
@@ -250,19 +248,19 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 				{
 					type: FieldType.ReadonlyText,
 					label: constants.SqlEnableSQLAuthenticationLabel,
-					defaultValue: (model.enableSqlAuthentication === 'True' ? 'Yes ' : 'No '),
+					defaultValue: (this._model.enableSqlAuthentication === 'True' ? 'Yes ' : 'No '),
 					labelCSSStyles: { fontWeight: FontWeight.Bold }
 				}
 			]
 		});
 
-		if (model.enableSqlAuthentication === 'True') {
+		if (this._model.enableSqlAuthentication === 'True') {
 			sqlServerSettingsPage.rows?.push({
 				items: [
 					{
 						type: FieldType.ReadonlyText,
 						label: constants.SqlAuthenticationUsernameLabel,
-						defaultValue: model.sqlAuthenticationUsername,
+						defaultValue: this._model.sqlAuthenticationUsername,
 						labelCSSStyles: { fontWeight: FontWeight.Bold }
 					}
 				]
@@ -337,31 +335,31 @@ export class AzureSQLVMSummaryPage extends WizardPageBase<DeployAzureSQLVMWizard
 	}
 
 	public processVnetName(): string {
-		if (this.wizard.model.newVirtualNetwork === 'True') {
-			return this.wizard.model.virtualNetworkName;
+		if (this._model.newVirtualNetwork === 'True') {
+			return this._model.virtualNetworkName;
 		}
 
-		let resourceGroupName = this.wizard.model.virtualNetworkName.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
-		let vnetName = this.wizard.model.virtualNetworkName.replace(RegExp('^(.*?)/virtualNetworks/'), '');
+		let resourceGroupName = this._model.virtualNetworkName.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
+		let vnetName = this._model.virtualNetworkName.replace(RegExp('^(.*?)/virtualNetworks/'), '');
 		return `(${resourceGroupName}) ${vnetName}`;
 	}
 
 	public processSubnetName(): string {
-		if (this.wizard.model.newSubnet === 'True') {
-			return this.wizard.model.subnetName;
+		if (this._model.newSubnet === 'True') {
+			return this._model.subnetName;
 		}
 
-		let subnetName = this.wizard.model.subnetName.replace(RegExp('^(.*?)/subnets/'), '');
+		let subnetName = this._model.subnetName.replace(RegExp('^(.*?)/subnets/'), '');
 		return `${subnetName}`;
 	}
 
 	public processPublicIp(): string {
-		if (this.wizard.model.newPublicIp === 'True') {
-			return this.wizard.model.publicIpName;
+		if (this._model.newPublicIp === 'True') {
+			return this._model.publicIpName;
 		}
 
-		let resourceGroupName = this.wizard.model.publicIpName.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
-		let pipName = this.wizard.model.publicIpName.replace(RegExp('^(.*?)/publicIPAddresses/'), '');
+		let resourceGroupName = this._model.publicIpName.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
+		let pipName = this._model.publicIpName.replace(RegExp('^(.*?)/publicIPAddresses/'), '');
 		return `(${resourceGroupName}) ${pipName}`;
 	}
 }

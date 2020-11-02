@@ -15,7 +15,6 @@ import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookE
 import { NBTestQueryManagementService } from 'sql/workbench/contrib/notebook/test/nbTestQueryManagementService';
 import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
-import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookEditor, INotebookParams, INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
@@ -57,17 +56,14 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 
 class NotebookModelStub extends stubs.NotebookModelStub {
-	private _cells: Array<ICellModel> = [new CellModel(undefined, undefined)];
 	public contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
 	private _onActiveCellChanged = new Emitter<ICellModel>();
 
-	get cells(): ReadonlyArray<ICellModel> {
-		return this._cells;
+	get cells(): ICellModel[] {
+		return this.cells;
 	}
 	public get contentChanged(): Event<NotebookContentChange> {
 		return this.contentChangedEmitter.event;
@@ -99,11 +95,10 @@ suite.skip('Test class NotebookEditor:', () => {
 	let queryTextEditor: QueryTextEditor;
 	let untitledNotebookInput: UntitledNotebookInput;
 	let notebookEditorStub: NotebookEditorStub;
-	let notificationService: TypeMoq.Mock<INotificationService>;
 
 	setup(async () => {
 		// setup services
-		({ instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub, notificationService } = setupServices({ instantiationService, workbenchThemeService }));
+		({ instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub } = setupServices({ instantiationService, workbenchThemeService }));
 		// Create notebookEditor
 		notebookEditor = createNotebookEditor(instantiationService, workbenchThemeService, notebookService);
 	});
@@ -124,7 +119,7 @@ suite.skip('Test class NotebookEditor:', () => {
 			const untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, untitledTextEditorService.create({ associatedResource: untitledUri }));
 			const untitledNotebookInput = new UntitledNotebookInput(
 				testTitle, untitledUri, untitledTextInput,
-				undefined, instantiationService, notebookService, extensionService, notificationService.object
+				undefined, instantiationService, notebookService, extensionService
 			);
 			const testNotebookEditor = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: notebookModel, notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 			notebookService.addNotebookEditor(testNotebookEditor);
@@ -672,7 +667,6 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 	const uninstallEvent = new Emitter<IExtensionIdentifier>();
 	const didUninstallEvent = new Emitter<DidUninstallExtensionEvent>();
 
-	const notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
 	const instantiationService = arg.instantiationService ?? <TestInstantiationService>workbenchInstantiationService();
 	const workbenchThemeService = arg.workbenchThemeService ?? instantiationService.createInstance(WorkbenchThemeService);
 	instantiationService.stub(IWorkbenchThemeService, workbenchThemeService);
@@ -709,7 +703,7 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 	const untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, untitledTextEditorService.create({ associatedResource: untitledUri }));
 	const untitledNotebookInput = new UntitledNotebookInput(
 		testTitle, untitledUri, untitledTextInput,
-		undefined, instantiationService, notebookService, extensionService, notificationService.object
+		undefined, instantiationService, notebookService, extensionService
 	);
 
 	const cellTextEditorGuid = generateUuid();
@@ -724,7 +718,7 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 	);
 	const notebookEditorStub = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub(), notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 	notebookService.addNotebookEditor(notebookEditorStub);
-	return { instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub, notificationService };
+	return { instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub };
 }
 
 function createNotebookEditor(instantiationService: TestInstantiationService, workbenchThemeService: WorkbenchThemeService, notebookService: NotebookService) {
