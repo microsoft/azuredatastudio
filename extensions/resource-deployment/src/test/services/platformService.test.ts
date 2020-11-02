@@ -14,6 +14,7 @@ import { Readable } from 'stream';
 import * as sudo from 'sudo-prompt';
 import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
+import { tryExecuteAction } from '../../common/utils';
 import { OsDistribution } from '../../interfaces';
 import { extensionOutputChannel, PlatformService } from '../../services/platformService';
 
@@ -326,16 +327,6 @@ describe('PlatformService', () => {
 		});
 	});
 });
-
-async function tryExecuteAction<T>(action: () => T | PromiseLike<T>): Promise<{ result: T | undefined, error: any }> {
-	let error: any, result: T | undefined;
-	try {
-		result = await action();
-	} catch (e) {
-		error = e;
-	}
-	return { result, error };
-}
 
 function verifyCommandExecution(stub: sinon.SinonStub, result: string | undefined, error: any, command: string, commandSucceeds: boolean | undefined, ignoreError: boolean | undefined) {
 	stub.callCount.should.equal(1);
