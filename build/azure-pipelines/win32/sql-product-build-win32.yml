@@ -85,25 +85,6 @@ steps:
     condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
 
   - powershell: |
-      # Install SAW specific extensions
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      $tempFilePath = (New-TemporaryFile).FullName
-      $zipFilePath = $tempFilePath + ".zip"
-      $extensionUri = "$(standalone-extensions-uri)"
-      $adsExtensionPath = "$(agent.builddirectory)\azuredatastudio-win32-x64\extensions"
-
-      Invoke-WebRequest -Uri $extensionUri -OutFile $tempFilePath
-      Write-Host "Finished downloading extensions..."
-      Move-Item $tempFilePath $zipFilePath
-      Write-Host "Renamed to archive..."
-      Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
-      Write-Host "Extracted to $adsExtensionPath..."
-      Get-ChildItem -Path $adsExtensionPath -Recurse | Select -ExpandProperty FullName
-    displayName: Install SAW Extensions
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'))
-
-  - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { node build/azure-pipelines/mixin }
@@ -131,6 +112,25 @@ steps:
       vstsFeed: '2191dd5f-4aec-491b-ac50-568bbc331c8a'
       vstsFeedPackage: '2e355f03-a97e-499a-949b-f02d62b6160c'
       vstsPackageVersion: '*'
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'))
+
+  - powershell: |
+      # Install SAW specific extensions
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      $tempFilePath = (New-TemporaryFile).FullName
+      $zipFilePath = $tempFilePath + ".zip"
+      $extensionUri = "$(standalone-extensions-uri)"
+      $adsExtensionPath = "$(agent.builddirectory)\azuredatastudio-win32-x64\resources\app\extensions"
+
+      Invoke-WebRequest -Uri $extensionUri -OutFile $tempFilePath
+      Write-Host "Finished downloading extensions..."
+      Move-Item $tempFilePath $zipFilePath
+      Write-Host "Renamed to archive..."
+      Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
+      Write-Host "Extracted to $adsExtensionPath..."
+      Get-ChildItem -Path $adsExtensionPath -Recurse | Select -ExpandProperty FullName
+    displayName: Install SAW Extensions
     condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'))
 
   # - powershell: | @anthonydresser unit tests timeout never existing the node process
