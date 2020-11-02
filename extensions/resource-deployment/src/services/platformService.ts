@@ -221,13 +221,10 @@ export class PlatformService implements IPlatformService {
 
 		try {
 			const { stdout, stderr } = await this.sudoExec(command, sudoOptions);
-			console.log(`TCL::: runSudoCommand - stderr`, stderr);
-			console.log(`TCL::: runSudoCommand - stdout`, stdout);
 			this.outputDataChunk(stdout, outputChannel, localize('platformService.RunCommand.stdout', "    stdout: "));
 			this.outputDataChunk(stderr, outputChannel, localize('platformService.RunCommand.stderr', "    stderr: "));
 			return stdout;
 		} catch (error) {
-			console.log(`TCL::: runSudoCommand - error`, error);
 			this.outputDataChunk(error, outputChannel, localize('platformService.RunCommand.stderr', "    stderr: "));
 			throw error;
 		}
