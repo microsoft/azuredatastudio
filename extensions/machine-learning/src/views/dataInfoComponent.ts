@@ -24,8 +24,8 @@ export class DataInfoComponent extends ViewBase {
 	private _labelComponent: azdata.TextComponent | undefined;
 	private _descriptionComponent: azdata.TextComponent | undefined;
 	private _loadingComponent: azdata.LoadingComponent | undefined;
-	private _width: number = 100;
-	private _height: number = 100;
+	private _width: number = 200;
+	private _height: number = 200;
 	private _title: string = '';
 	private _description: string = '';
 	private _iconComponent: azdata.ImageComponent | undefined;
@@ -63,14 +63,14 @@ export class DataInfoComponent extends ViewBase {
 		}
 
 		this._iconComponent = modelBuilder.image().withProperties({
-			width: 100,
-			height: 100,
+			width: 128,
+			height: 128,
 			iconWidth: this._iconSettings.width,
 			iconHeight: this._iconSettings.height,
 			title: this._title
 		}).component();
 		let iconContainer = modelBuilder.flexContainer().withLayout({
-			width: 100,
+			width: 128,
 		}).component();
 
 		iconContainer.addItem(this._iconComponent, {

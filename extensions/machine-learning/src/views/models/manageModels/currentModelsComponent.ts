@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 
 import * as constants from '../../../common/constants';
+import { DataInfoComponent } from '../../dataInfoComponent';
 import { ModelViewBase } from '../modelViewBase';
 import { CurrentModelsTable } from './currentModelsTable';
 import { ApiWrapper } from '../../../common/apiWrapper';
@@ -17,15 +18,13 @@ import { ImportedModel } from '../../../modelManagement/interfaces';
  * View to render current registered models
  */
 export class CurrentModelsComponent extends ModelViewBase implements IPageView {
+	private _emptyModelsComponent: DataInfoComponent | undefined;
 	private _dataTable: CurrentModelsTable | undefined;
 	private _loader: azdata.LoadingComponent | undefined;
 	private _tableSelectionComponent: TableSelectionComponent | undefined;
 	private _subheadingContainer: azdata.FlexContainer | undefined;
 	private _subheadingTextComponent: azdata.TextComponent | undefined;
 	private _subheadingLinkComponent: azdata.HyperlinkComponent | undefined;
-	private _labelComponent: azdata.TextComponent | undefined;
-	private _dataStateImageComponent: azdata.ImageComponent | undefined;
-	private _descriptionComponent: azdata.TextComponent | undefined;
 	private _labelContainer: azdata.FlexContainer | undefined;
 	private _formBuilder: azdata.FormBuilder | undefined;
 
@@ -63,20 +62,20 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 		this._loader = modelBuilder.loadingComponent()
 			.withItem(formModelBuilder.component())
 			.withProperties({
-				loading: true,
+				loading: true
 			}).component();
-		this._dataStateImageComponent = modelBuilder.image().withProperties({
-			iconPath: this.asAbsolutePath('images/emptyState.svg'),
-			iconHeight: '128px',
-			iconWidth: '128px',
-			height: '128px'
-		}).component();
-		this._labelComponent = modelBuilder.text().withProperties({
-			value: constants.modelsListEmptyMessage
-		}).component();
-		this._descriptionComponent = modelBuilder.text().withProperties({
-			value: constants.modelsListEmptyDescription
-		}).component();
+		this._emptyModelsComponent = new DataInfoComponent(this._apiWrapper, this);
+		this._emptyModelsComponent.width = 200;
+		this._emptyModelsComponent.height = 250;
+		this._emptyModelsComponent.title = constants.modelsListEmptyMessage;
+		this._emptyModelsComponent.iconSettings = {
+			css: { 'padding-top': '30px' },
+			path: this.asAbsolutePath('images/emptyTable.svg'),
+			width: 128,
+			height: 128
+		};
+		this._emptyModelsComponent.refresh();
+		this._emptyModelsComponent.registerComponent(modelBuilder);
 		this._labelContainer = modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '750px',
@@ -101,30 +100,16 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 				'font-size': '13px'
 			}
 		}).component();
-		this._labelContainer.addItem(
-			this._dataStateImageComponent
-			, {
-				CSSStyles: {
-					'height': '128px',
-					'width': '128px',
-					'margin': '0 auto',
-					'padding-top': '30px'
-				}
-			});
-		this._labelContainer.addItem(
-			this._labelComponent
-			, {
-				CSSStyles: {
-					'font-size': '16px'
-				}
-			});
-		this._labelContainer.addItem(
-			this._descriptionComponent
-			, {
-				CSSStyles: {
-					'font-size': '13px'
-				}
-			});
+		if (this._emptyModelsComponent.component) {
+			this._labelContainer.addItem(this._emptyModelsComponent.component
+				, {
+					CSSStyles: {
+						'background-size': '100%',
+						'margin': '0 auto',
+					}
+				});
+
+		}
 		this._subheadingContainer.addItems(
 			[this._subheadingTextComponent, this._subheadingLinkComponent]
 		);
@@ -166,6 +151,9 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 	 * Refreshes the view
 	 */
 	public async refresh(): Promise<void> {
+		if (this._emptyModelsComponent) {
+			await this._emptyModelsComponent.refresh();
+		}
 		await this.onLoading();
 
 		try {

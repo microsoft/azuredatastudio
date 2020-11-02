@@ -54,10 +54,10 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._databases = modelBuilder.dropDown().withProperties({
-			width: '221px'//this.componentMaxLength,
+			width: '221px'
 		}).component();
 		this._tables = modelBuilder.dropDown().withProperties({
-			width: '221px'//this.componentMaxLength - 10,
+			width: '221px'
 		}).component();
 
 		this._databases.onValueChanged(async () => {
