@@ -359,10 +359,7 @@
           "light": "./images/sql_server_on_windows.svg",
           "dark": "./images/sql_server_on_windows_inverse.svg"
         },
-        "tags": [
-          "On-premises",
-          "SQL Server"
-        ],
+        "tags": ["On-premises", "SQL Server"],
         "options": [
           {
             "name": "version",
@@ -435,7 +432,7 @@
         ],
         "providers": [
           {
-            "azureSQLDBWizard": {
+            "azureSQLDBWizard":{
               "notebook": "./notebooks/azuredb/create-sqldb.ipynb"
             },
             "requiredTools": [

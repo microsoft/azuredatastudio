@@ -81,12 +81,12 @@ export abstract class WizardBase<T, P extends WizardPageBase<T>, M extends Model
 		this.wizardObject!.pages = pages.map(p => p.pageObject);
 		this.pages = pages;
 		this.pages.forEach((page) => {
-			page. pageObject.onValidityChanged((isValid: boolean) => {
+			page.pageObject.onValidityChanged((isValid: boolean) => {
 				// generateScriptButton is enabled only when the page is valid.
 				this.wizardObject.generateScriptButton.enabled = isValid;
 			});
-			page.                                                                                                     initialize();
-		 });
+			page.initialize();
+		});
 	}
 
 	protected dispose() {
