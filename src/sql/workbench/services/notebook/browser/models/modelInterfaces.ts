@@ -213,6 +213,11 @@ export interface IClientSession extends IDisposable {
 	updateConnection(connection: IConnectionProfile): Promise<void>;
 
 	/**
+	 * Adds a connection
+	 */
+	addConnection(connection: IConnectionProfile): Promise<void>;
+
+	/**
 	 * Supports registering a handler to run during kernel change and implement any calls needed to configure
 	 * the kernel before actions such as run should be allowed
 	 */

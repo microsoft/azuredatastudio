@@ -318,6 +318,7 @@ export class CellModel extends Disposable implements ICellModel {
 				connection = newConnection;
 			}
 			this.activeConnection = connection;
+			this.notebookModel.clientSession.addConnection(connection);
 			this._contextsChangedEmitter.fire();
 		}
 	}
@@ -554,7 +555,7 @@ export class CellModel extends Disposable implements ICellModel {
 						const future = kernel.requestExecute({
 							code: content,
 							stop_on_error: true
-						}, false);
+						}, false, this._activeConnection?.id, this._cellUri.toString());
 						this.setFuture(future as FutureInternal);
 						this.fireExecutionStateChanged();
 						// For now, await future completion. Later we should just track and handle cancellation based on model notifications
@@ -883,7 +884,7 @@ export class CellModel extends Disposable implements ICellModel {
 			cellJson.metadata.tags = metadata.tags;
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount ? this.executionCount : null;
-			if (this._configurationService.getValue('notebook.saveConnectionName')) {
+			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
 				metadata.connection_name = this._savedConnectionName;
 			}
 		}

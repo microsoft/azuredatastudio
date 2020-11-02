@@ -297,6 +297,10 @@ export class ClientSession implements IClientSession {
 		}
 	}
 
+	public async addConnection(connection: IConnectionProfile): Promise<void> {
+		await this._session.addConnection(connection);
+	}
+
 	/**
 	 * Kill the kernel and shutdown the session.
 	 *

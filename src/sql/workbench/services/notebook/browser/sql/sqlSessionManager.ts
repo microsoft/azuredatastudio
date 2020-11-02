@@ -174,12 +174,22 @@ export class SqlSession implements nb.ISession {
 		}
 		return Promise.resolve();
 	}
+
+	addConnection(connection: ConnectionProfile): Thenable<void> {
+		if (this._kernel) {
+			this._kernel.addConnection(connection);
+		}
+		return Promise.resolve();
+	}
 }
 
 class SqlKernel extends Disposable implements nb.IKernel {
 	private _queryRunner: QueryRunner;
 	private _currentConnection: IConnectionProfile;
 	private _currentConnectionProfile: ConnectionProfile;
+	private _queryRunners: Map<string, QueryRunner> = new Map<string, QueryRunner | undefined>();
+	private _connections: Map<string, IConnectionProfile> = new Map<string, IConnectionProfile>();
+	private _connectionProfiles: Map<string, ConnectionProfile> = new Map<string, ConnectionProfile>();
 	static kernelId: number = 0;
 
 	private _id: string | undefined;
@@ -285,36 +295,66 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		this._queryRunner = undefined;
 	}
 
+	public addConnection(connection: IConnectionProfile): void {
+		this._connections.set(connection.id, connection);
+		this._connectionProfiles.set(connection.id, new ConnectionProfile(this._capabilitiesService, connection));
+		this._queryRunners.set(connection.id, undefined);
+	}
+
 	getSpec(): Thenable<nb.IKernelSpec> {
 		return Promise.resolve(notebookConstants.sqlKernelSpec);
 	}
 
-	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
+	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean, connectionProfileId?: string, cellUri?: string): nb.IFuture {
 		let canRun: boolean = true;
 		let code = this.getCodeWithoutCellMagic(content);
-		if (this._queryRunner) {
+		let queryRunner: QueryRunner;
+
+		// Cell has a connection different from notebook connection
+		if (connectionProfileId) {
+			queryRunner = this._queryRunners.get(connectionProfileId);
+		} else {
+			queryRunner = this._queryRunner;
+		}
+		if (queryRunner) {
 			// Cancel any existing query
-			if (this._future && !this._queryRunner.hasCompleted) {
-				this._queryRunner.cancelQuery().then(ok => undefined, error => this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error));
+			if (this._future && !queryRunner.hasCompleted) {
+				queryRunner.cancelQuery().then(ok => undefined, error => this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error));
 				// TODO when we can just show error as an output, should show an "execution canceled" error in output
 				this._future.handleDone().catch(err => onUnexpectedError(err));
 			}
-			this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
-		} else if (this._currentConnection && this._currentConnectionProfile) {
-			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionPath);
-			this._connectionManagementService.connect(this._currentConnectionProfile, this._connectionPath).then((result) => {
-				this.addQueryEventListeners(this._queryRunner);
-				this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
-			}).catch(err => onUnexpectedError(err));
+			queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 		} else {
-			canRun = false;
+			let connection = connectionProfileId ? this._connections.get(connectionProfileId) : this._currentConnection;
+			let connectionProfile = connectionProfileId ? this._connectionProfiles.get(connectionProfileId) : this._currentConnectionProfile;
+			if (connection && connectionProfile) {
+				if (connectionProfileId) {
+					let queryRunnerUri: string = 'queryRunner-' + cellUri;
+					queryRunner = this._instantiationService.createInstance(QueryRunner, queryRunnerUri);
+					this._queryRunners.set(connectionProfileId, queryRunner);
+					this._connectionManagementService.connect(connectionProfile, queryRunnerUri).then((result) => {
+						this.addQueryEventListeners(queryRunner);
+						queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
+					}).catch(err => onUnexpectedError(err));
+				} else {
+					queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionPath);
+					this._queryRunner = queryRunner;
+					this._connectionManagementService.connect(connectionProfile, this._connectionPath).then((result) => {
+						this.addQueryEventListeners(queryRunner);
+						queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
+					}).catch(err => onUnexpectedError(err));
+				}
+
+			} else {
+				canRun = false;
+			}
 		}
 
 		// Only update execution count if this will run. if not, set as undefined in future so cell isn't shown as having run?
 		// TODO verify this is "canonical" behavior
 		let count = canRun ? ++this._executionCount : undefined;
 
-		this._future = new SQLFuture(this._queryRunner, count, this._configurationService, this.logService);
+		this._future = new SQLFuture(queryRunner, count, this._configurationService, this.logService);
 		if (!canRun) {
 			// Complete early
 			this._future.handleDone(new Error(localize('connectionRequired', "A connection must be chosen to run notebook cells"))).catch(err => onUnexpectedError(err));
@@ -350,8 +390,9 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	interrupt(): Thenable<void> {
 		// TODO: figure out what to do with the QueryCancelResult
-		return this._queryRunner.cancelQuery().then((cancelResult) => {
-		});
+		let runners = [...this._queryRunners.values()];
+		runners.push(this._queryRunner);
+		return Promise.all(runners.map(queryRunner => queryRunner.cancelQuery())).then();
 	}
 
 	private addQueryEventListeners(queryRunner: QueryRunner): void {
@@ -393,10 +434,14 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	public async disconnect(): Promise<void> {
-		if (this._connectionPath) {
-			if (this._connectionManagementService.isConnected(this._connectionPath)) {
+		let connectionPaths: string[] = [this._connectionPath];
+		for (let queryRunner of this._queryRunners.values()) {
+			connectionPaths.push(queryRunner.uri);
+		}
+		for (let path in connectionPaths) {
+			if (this._connectionManagementService.isConnected(path)) {
 				try {
-					await this._connectionManagementService.disconnect(this._connectionPath);
+					await this._connectionManagementService.disconnect(path);
 				} catch (err) {
 					this.logService.error(err);
 				}

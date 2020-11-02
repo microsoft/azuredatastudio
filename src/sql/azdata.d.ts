@@ -4919,6 +4919,10 @@ declare module 'azdata' {
 			 *
 			 * @param disposeOnDone - Whether to dispose of the future when done.
 			 *
+			 * @param connectionProfileId - The connection profile id of the cell creating the request.
+			 *
+			 * @param cellUri - The uri id of the cell creating the request.
+			 *
 			 * @returns A kernel future.
 			 *
 			 * #### Notes
@@ -4933,7 +4937,7 @@ declare module 'azdata' {
 			 *
 			 * **See also:** [[IExecuteReply]]
 			 */
-			requestExecute(content: IExecuteRequest, disposeOnDone?: boolean): IFuture;
+			requestExecute(content: IExecuteRequest, disposeOnDone?: boolean, connectionProfileId?: string, cellUri?: string): IFuture;
 
 			/**
 			 * Send a `complete_request` message.

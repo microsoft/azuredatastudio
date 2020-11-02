@@ -100,6 +100,10 @@ export class EmptySession implements nb.ISession {
 	configureConnection(connection: ConnectionProfile): Thenable<void> {
 		return Promise.resolve();
 	}
+
+	addConnection(connection: ConnectionProfile): Thenable<void> {
+		return Promise.resolve();
+	}
 }
 
 class EmptyKernel implements nb.IKernel {

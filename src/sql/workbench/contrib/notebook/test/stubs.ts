@@ -310,6 +310,9 @@ export class ClientSessionStub implements IClientSession {
 	updateConnection(connection: IConnectionProfile): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
+	addConnection(connection: IConnectionProfile): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
 	onKernelChanging(changeHandler: (kernel: nb.IKernelChangedArgs) => Promise<void>): void {
 		throw new Error('Method not implemented.');
 	}

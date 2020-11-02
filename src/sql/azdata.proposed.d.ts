@@ -86,6 +86,10 @@ declare module 'azdata' {
 		export interface ICellMetadata {
 			connection_name?: string;
 		}
+
+		export interface ISession {
+			addConnection(connection: IConnectionProfile): Thenable<void>;
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
