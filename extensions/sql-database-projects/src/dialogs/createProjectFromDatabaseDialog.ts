@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as newProjectTool from '../tools/newProjectTool';
+import * as mssql from '../../../mssql';
 
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
@@ -16,12 +17,12 @@ import { Deferred } from '../common/promise';
 export class CreateProjectFromDatabaseDialog {
 	public dialog: azdata.window.Dialog;
 	public importTab: azdata.window.DialogTab;
-	private sourceConnectionTextBox: azdata.InputBoxComponent | undefined;
+	public sourceConnectionTextBox: azdata.InputBoxComponent | undefined;
 	private selectConnectionButton: azdata.ButtonComponent | undefined;
-	private sourceDatabaseDropDown: azdata.DropDownComponent | undefined;
-	private projectNameTextBox: azdata.InputBoxComponent | undefined;
-	private projectLocationTextBox: azdata.InputBoxComponent | undefined;
-	private folderStructureDropDown: azdata.DropDownComponent | undefined;
+	public sourceDatabaseDropDown: azdata.DropDownComponent | undefined;
+	public projectNameTextBox: azdata.InputBoxComponent | undefined;
+	public projectLocationTextBox: azdata.InputBoxComponent | undefined;
+	public folderStructureDropDown: azdata.DropDownComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
 	private connectionId: string | undefined;
 	private toDispose: vscode.Disposable[] = [];
@@ -29,7 +30,6 @@ export class CreateProjectFromDatabaseDialog {
 	private initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
 
 	public createNewProjectCallBack: ((model: ImportDataModel) => any) | undefined;
-	public mapExtractTargetEnum: ((folderStructure: string) => any) | undefined;
 
 	constructor(private profile: azdata.IConnectionProfile | undefined) {
 		this.dialog = azdata.window.createModelViewDialog(constants.createProjectFromDatabaseDialogName);
@@ -48,7 +48,7 @@ export class CreateProjectFromDatabaseDialog {
 		await this.initDialogPromise;
 
 		if (this.profile) {
-			this.updateConnectionComponents(this.getConnectionName(this.profile), this.profile.id, this.profile.databaseName!);
+			await this.updateConnectionComponents(this.getConnectionName(this.profile), this.profile.id, this.profile.databaseName!);
 		}
 	}
 
@@ -112,7 +112,7 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	private createConnectionRow(view: azdata.ModelView): azdata.FlexContainer {
-		this.sourceConnectionTextBox = this.createSourceConnectionComponent(view);
+		const sourceConnectionTextBox = this.createSourceConnectionComponent(view);
 		const selectConnectionButton: azdata.Component = this.createSelectConnectionButton(view);
 
 		const serverLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -121,7 +121,7 @@ export class CreateProjectFromDatabaseDialog {
 			width: cssStyles.importDialogLabelWidth
 		}).component();
 
-		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, this.sourceConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, sourceConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 		connectionRow.insertItem(selectConnectionButton, 2, { CSSStyles: { 'margin-right': '0px' } });
 
 		return connectionRow;
@@ -182,7 +182,7 @@ export class CreateProjectFromDatabaseDialog {
 			let connectionTextboxValue: string;
 			connectionTextboxValue = this.getConnectionName(connection);
 
-			this.updateConnectionComponents(connectionTextboxValue, this.connectionId, connection.options.database);
+			await this.updateConnectionComponents(connectionTextboxValue, this.connectionId, connection.options.database);
 		});
 
 		return this.selectConnectionButton;
@@ -338,7 +338,7 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	// only enable Import button if all fields are filled
-	private tryEnableImportButton(): void {
+	public tryEnableImportButton(): void {
 		if (this.sourceConnectionTextBox!.value && this.sourceDatabaseDropDown!.value
 			&& this.projectNameTextBox!.value && this.projectLocationTextBox!.value) {
 			this.dialog.okButton.enabled = true;
@@ -354,12 +354,23 @@ export class CreateProjectFromDatabaseDialog {
 			projName: this.projectNameTextBox!.value!,
 			filePath: this.projectLocationTextBox!.value!,
 			version: '1.0.0.0',
-			extractTarget: this.mapExtractTargetEnum!(<string>this.folderStructureDropDown!.value)
+			extractTarget: this.mapExtractTargetEnum(<string>this.folderStructureDropDown!.value)
 		};
 
 		azdata.window.closeDialog(this.dialog);
 		await this.createNewProjectCallBack!(model);
 
 		this.dispose();
+	}
+
+	private mapExtractTargetEnum(inputTarget: string): mssql.ExtractTarget {
+		switch (inputTarget) {
+			case constants.file: return mssql.ExtractTarget['file'];
+			case constants.flat: return mssql.ExtractTarget['flat'];
+			case constants.objectType: return mssql.ExtractTarget['objectType'];
+			case constants.schema: return mssql.ExtractTarget['schema'];
+			case constants.schemaObjectType: return mssql.ExtractTarget['schemaObjectType'];
+			default: throw new Error(constants.invalidInput(inputTarget));
+		}
 	}
 }

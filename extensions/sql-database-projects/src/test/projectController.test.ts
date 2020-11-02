@@ -6,7 +6,6 @@
 import * as should from 'should';
 import * as path from 'path';
 import * as os from 'os';
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
 import * as sinon from 'sinon';
@@ -14,11 +13,12 @@ import * as baselines from './baselines/baselines';
 import * as templates from '../templates/templates';
 import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
+import * as mssql from '../../../mssql';
 
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
-import { createContext, TestContext, mockDacFxResult } from './testContext';
+import { createContext, TestContext, mockDacFxResult, mockConnectionProfile } from './testContext';
 import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry, SystemDatabaseReferenceProjectEntry } from '../models/project';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
@@ -28,25 +28,9 @@ import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 
 let testContext: TestContext;
-
-// Mock test data
-const mockConnectionProfile: azdata.IConnectionProfile = {
-	connectionName: 'My Connection',
-	serverName: 'My Server',
-	databaseName: 'My Database',
-	userName: 'My User',
-	password: 'My Pwd',
-	authenticationType: 'SqlLogin',
-	savePassword: false,
-	groupFullName: 'My groupName',
-	groupId: 'My GroupId',
-	providerName: 'My Server',
-	saveProfile: true,
-	id: 'My Id',
-	options: undefined as any
-};
 
 describe('ProjectsController', function (): void {
 	before(async function (): Promise<void> {
@@ -440,7 +424,7 @@ describe('ProjectsController', function (): void {
 		});
 	});
 
-	describe('import operations', function (): void {
+	describe('Import operations and dialog', function (): void {
 		it('Should create list of all files and folders correctly', async function (): Promise<void> {
 			const testFolderPath = await testUtils.createDummyFileStructure();
 
@@ -464,103 +448,44 @@ describe('ProjectsController', function (): void {
 			should(spy.calledWith(msg)).be.true(`showErrorMessage not called with expected message '${msg}' Actual '${spy.getCall(0).args[0]}'`);
 		});
 
-		it('Should show error when no project name provided', async function (): Promise<void> {
-			for (const name of ['', '    ', undefined]) {
-				sinon.stub(vscode.window, 'showInputBox').resolves(name);
-				const spy = sinon.spy(vscode.window, 'showErrorMessage');
+		it('Create project from Database dialog should open from ProjectController', async function (): Promise<void> {
+			let opened = false;
 
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-				await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-				should(spy.calledOnce).be.true('showErrorMessage should have been called');
-				should(spy.calledWith(constants.projectNameRequired)).be.true(`showErrorMessage not called with expected message '${constants.projectNameRequired}' Actual '${spy.getCall(0).args[0]}'`);
-				sinon.restore();
-			}
-		});
+			let createProjectFromDatabaseDialog = TypeMoq.Mock.ofType(CreateProjectFromDatabaseDialog, undefined, undefined, mockConnectionProfile);
+			createProjectFromDatabaseDialog.setup(x => x.openDialog()).returns(() => { opened = true; return Promise.resolve(undefined); });
 
-		it('Should show error when no target information provided', async function (): Promise<void> {
-			sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
-			sinon.stub(vscode.window, 'showQuickPick').resolves(undefined);
-			sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file('fakePath')]);
-			const spy = sinon.spy(vscode.window, 'showErrorMessage');
-
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-			await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-			should(spy.calledOnce).be.true('showErrorMessage should have been called');
-			should(spy.calledWith(constants.extractTargetRequired)).be.true(`showErrorMessage not called with expected message '${constants.extractTargetRequired}' Actual '${spy.getCall(0).args[0]}'`);
-		});
-
-		it('Should show error when no location provided with ExtractTarget = File', async function (): Promise<void> {
-			sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
-			sinon.stub(vscode.window, 'showOpenDialog').resolves(undefined);
-			sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.file });
-			const spy = sinon.spy(vscode.window, 'showErrorMessage');
-
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-			await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-			should(spy.calledOnce).be.true('showErrorMessage should have been called');
-			should(spy.calledWith(constants.projectLocationRequired)).be.true(`showErrorMessage not called with expected message '${constants.projectLocationRequired}' Actual '${spy.getCall(0).args[0]}'`);
-		});
-
-		it('Should show error when no location provided with ExtractTarget = SchemaObjectType', async function (): Promise<void> {
-			sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
-			sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.schemaObjectType });
-			sinon.stub(vscode.window, 'showOpenDialog').resolves(undefined);
-			const spy = sinon.spy(vscode.window, 'showErrorMessage');
-
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-			await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-			should(spy.calledOnce).be.true('showErrorMessage should have been called');
-			should(spy.calledWith(constants.projectLocationRequired)).be.true(`showErrorMessage not called with expected message '${constants.projectLocationRequired}' Actual '${spy.getCall(0).args[0]}'`);
-		});
-
-		it('Should set model filePath correctly for ExtractType = File and not-File.', async function (): Promise<void> {
-			const projectName = 'MyProjectName';
-			let folderPath = await testUtils.generateTestFolderPath();
-
-			sinon.stub(vscode.window, 'showInputBox').resolves(projectName);
-			const showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.file });
-			sinon.stub(vscode.window, 'showOpenDialog').callsFake(() => Promise.resolve([vscode.Uri.file(folderPath)]));
-
-			let importPath;
-
-			let projController = TypeMoq.Mock.ofType(ProjectsController, undefined, undefined, new SqlDatabaseProjectTreeViewProvider());
+			let projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
+			projController.setup(x => x.getCreateProjectFromDatabaseDialog(TypeMoq.It.isAny())).returns(() => createProjectFromDatabaseDialog.object);
 
-			projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { importPath = model.filePath; });
-
-			await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-			should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName, projectName + '.sql')).fsPath, `model.filePath should be set to a specific file for ExtractTarget === file, but was ${importPath}`);
-
-			// reset for counter-test
-			importPath = undefined;
-			folderPath = await testUtils.generateTestFolderPath();
-			showQuickPickStub.resolves({ label: constants.schemaObjectType });
-
-			await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-			should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName)).fsPath, `model.filePath should be set to a folder for ExtractTarget !== file, but was ${importPath}`);
+			await projController.object.importNewDatabaseProject(mockConnectionProfile);
+			should(opened).equal(true);
 		});
 
-		it('Should establish Import context correctly for ObjectExplorer and palette launch points', async function (): Promise<void> {
-			const connectionId = 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575';
-			// test welcome button and palette launch points (context-less)
-			let mockDbSelection = 'FakeDatabase';
-			sinon.stub(azdata.connection, 'listDatabases').resolves([]);
-			sinon.stub(vscode.window, 'showQuickPick').resolves({ label: mockDbSelection });
-			sinon.stub(azdata.connection, 'openConnectionDialog').resolves({
-				providerName: 'MSSQL',
-				connectionId: connectionId,
-				options: {}
+		it('Callbacks are hooked up and called from create project from database dialog', async function (): Promise<void> {
+			const createProjectFromDbHoller = 'hello from callback for importNewDatabaseProject()';
+
+			let holler = 'nothing';
+
+			const createProjectFromDatabaseDialog = TypeMoq.Mock.ofType(CreateProjectFromDatabaseDialog, undefined, undefined, undefined);
+			createProjectFromDatabaseDialog.callBase = true;
+			createProjectFromDatabaseDialog.setup(x => x.importClick()).returns(() => {
+				projController.object.createNewProjectCallBack( { serverId: 'My Id', database: 'My Database', projName: 'testProject', filePath: 'testLocation', version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'] });
+				return Promise.resolve(undefined);
 			});
 
-			let projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+			const projController = TypeMoq.Mock.ofType(ProjectsController);
+			projController.callBase = true;
+			projController.setup(x => x.getCreateProjectFromDatabaseDialog(TypeMoq.It.isAny())).returns(() => createProjectFromDatabaseDialog.object);
+			projController.setup(x => x.createNewProjectCallBack(TypeMoq.It.isAny())).returns(() => {
+				holler = createProjectFromDbHoller;
+				return Promise.resolve(undefined);
+			});
 
-			let result = await projController.getModelFromContext(undefined);
+			let dialog = await projController.object.importNewDatabaseProject(undefined);
+			await dialog.importClick();
 
-			should(result).deepEqual({ database: mockDbSelection, serverId: connectionId });
-
-			// test launch via Object Explorer context
-			result = await projController.getModelFromContext(mockConnectionProfile);
-			should(result).deepEqual({ database: 'My Database', serverId: 'My Id' });
+			should(holler).equal(createProjectFromDbHoller, 'executionCallback() is supposed to have been setup and called for create project from database scenario');
 		});
 	});
 
