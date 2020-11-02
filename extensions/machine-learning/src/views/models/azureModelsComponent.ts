@@ -11,6 +11,8 @@ import { AzureModelsTable } from './azureModelsTable';
 import { IDataComponent, AzureModelResource } from '../interfaces';
 import { ModelArtifact } from './prediction/modelArtifact';
 import { AzureSignInComponent } from './azureSignInComponent';
+import { DataInfoComponent } from '../dataInfoComponent';
+import * as constants from '../../common/constants';
 
 export class AzureModelsComponent extends ModelViewBase implements IDataComponent<AzureModelResource[]> {
 
@@ -21,6 +23,7 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 	private _loader: azdata.LoadingComponent | undefined;
 	private _form: azdata.FormContainer | undefined;
 	private _downloadedFile: ModelArtifact | undefined;
+	private _emptyModelsComponent: DataInfoComponent | undefined;
 
 	/**
 	 * Component to render a view to pick an azure model
@@ -49,9 +52,32 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 			this._downloadedFile = undefined;
 		});
 
+		this._emptyModelsComponent = new DataInfoComponent(this._apiWrapper, this);
+		this._emptyModelsComponent.width = 300;
+		this._emptyModelsComponent.height = 250;
+		this._emptyModelsComponent.iconSettings = {
+			css: { 'padding-top': '20px' },
+			width: 100,
+			height: 100
+		};
+
+		this._emptyModelsComponent.registerComponent(modelBuilder);
+
 		this.azureFilterComponent.onWorkspacesSelectedChanged(async () => {
 			await this.onLoading();
 			await this.azureModelsTable?.loadData(this.azureFilterComponent?.data);
+			if (this._emptyModelsComponent) {
+				if (this.azureModelsTable?.isTableEmpty) {
+					this._emptyModelsComponent.title = constants.azureModelsListEmptyTitle;
+					this._emptyModelsComponent.description = constants.azureModelsListEmptyDescription;
+					this._emptyModelsComponent.iconSettings.path = this.asAbsolutePath('images/emptyTable.svg');
+				} else {
+					this._emptyModelsComponent.title = '';
+					this._emptyModelsComponent.description = '';
+					this._emptyModelsComponent.iconSettings.path = 'noicon';
+				}
+				await this._emptyModelsComponent.refresh();
+			}
 			await this.onLoaded();
 		});
 
@@ -80,22 +106,30 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 	}
 
 	private addAzureComponents(formBuilder: azdata.FormBuilder) {
-		if (this.azureFilterComponent && this._loader) {
+		if (this.azureFilterComponent && this._loader && this._emptyModelsComponent?.component) {
 			this.azureFilterComponent.addComponents(formBuilder);
 
 			formBuilder.addFormItems([{
 				title: '',
 				component: this._loader
-			}]);
+			}], { horizontal: true });
+			formBuilder.addFormItems([{
+				title: '',
+				component: this._emptyModelsComponent.component
+			}], { horizontal: true });
 		}
 	}
 
 	private removeAzureComponents(formBuilder: azdata.FormBuilder) {
-		if (this.azureFilterComponent && this._loader) {
+		if (this.azureFilterComponent && this._loader && this._emptyModelsComponent?.component) {
 			this.azureFilterComponent.removeComponents(formBuilder);
 			formBuilder.removeFormItem({
 				title: '',
 				component: this._loader
+			});
+			formBuilder.removeFormItem({
+				title: '',
+				component: this._emptyModelsComponent.component
 			});
 		}
 	}

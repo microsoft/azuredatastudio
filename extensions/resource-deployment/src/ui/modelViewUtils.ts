@@ -538,7 +538,7 @@ function processNumberField(context: FieldContext): void {
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo);
 }
 
-function processTextField(context: FieldContext): void {
+function processTextField(context: FieldContext): azdata.InputBoxComponent {
 	const isPasswordField = context.fieldInfo.type === FieldType.Password || context.fieldInfo.type === FieldType.SQLPassword;
 	let validationRegex: RegExp | undefined = context.fieldInfo.textValidationRequired ? new RegExp(context.fieldInfo.textValidationRegex!) : undefined;
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
@@ -573,11 +573,11 @@ function processTextField(context: FieldContext): void {
 		};
 		context.onNewValidatorCreated(inputValidator);
 	}
+	return input;
 }
 
 function processPasswordField(context: FieldContext): void {
-	processTextField(context);
-	const passwordInput = context.inputComponents[context.fieldInfo.variableName!].component as azdata.InputBoxComponent;
+	const passwordInput = processTextField(context);
 
 	if (context.fieldInfo.type === FieldType.SQLPassword) {
 		const invalidPasswordMessage = getInvalidSQLPasswordMessage(context.fieldInfo.label);

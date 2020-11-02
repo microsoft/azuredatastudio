@@ -21,6 +21,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
+import { ICellValue, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 
 export interface ICellRange {
 	readonly start: number;
@@ -237,10 +238,6 @@ export interface INotebookModel {
 	 * Promise indicating when client session is ready to use.
 	 */
 	readonly sessionLoadFinished: Promise<void>;
-	/**
-	 * Promise indicating when output grid data is converted to mimeType and html.
-	 */
-	gridDataConversionComplete: Promise<any>;
 	/**
 	 * LanguageInfo saved in the notebook
 	 */
@@ -460,6 +457,11 @@ export interface IOutputChangedEvent {
 	shouldScroll: boolean;
 }
 
+export interface ITableUpdatedEvent {
+	resultSet: ResultSetSummary;
+	rows: ICellValue[][];
+}
+
 export interface ICellModel {
 	cellUri: URI;
 	id: string;
@@ -475,6 +477,7 @@ export interface ICellModel {
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
 	renderedOutputTextContent?: string[];
 	readonly onOutputsChanged: Event<IOutputChangedEvent>;
+	readonly onTableUpdated: Event<ITableUpdatedEvent>;
 	readonly onExecutionStateChange: Event<CellExecutionState>;
 	readonly executionState: CellExecutionState;
 	readonly notebookModel: NotebookModel;
@@ -488,7 +491,10 @@ export interface ICellModel {
 	stdInVisible: boolean;
 	readonly onLoaded: Event<string>;
 	isCollapsed: boolean;
+	isParameter: boolean;
+	isInjectedParameter: boolean;
 	readonly onCollapseStateChanged: Event<boolean>;
+	readonly onParameterStateChanged: Event<boolean>;
 	readonly onCellModeChanged: Event<boolean>;
 	modelContentChangedEvent: IModelContentChangedEvent;
 	isEditMode: boolean;
@@ -499,9 +505,6 @@ export interface ICellModel {
 	readonly onCellMarkdownModeChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
-	gridDataConversionComplete: Promise<void>;
-	addGridDataConversionPromise(complete: Promise<void>): void;
-	updateOutputData(batchId: number, id: number, data: any): void;
 	readonly context: ConnectionProfile | undefined;
 	readonly savedConnectionName: string | undefined;
 	changeContext(connectionName: string, newConnection?: ConnectionProfile): Promise<void>;

@@ -11,10 +11,42 @@ export interface DBCellValue {
 	isNull: boolean;
 }
 
+/**
+ * Info for executing a command. @see azdata.ExecuteCommandInfo
+ */
+export interface ExecuteCommandInfo {
+	id: string;
+	args?: string[]
+}
+
+/**
+ * The info for a DataGrid Text Cell.
+ */
+export interface TextCellValue {
+	text: string;
+	ariaLabel: string;
+}
+
+/**
+ * The info for a DataGrid Hyperlink Cell.
+ */
+export interface HyperlinkCellValue {
+	displayText: string;
+	linkOrCommand: string | ExecuteCommandInfo;
+}
+
 export namespace DBCellValue {
 	export function isDBCellValue(object: any): boolean {
 		return (object !== undefined && object.displayValue !== undefined && object.isNull !== undefined);
 	}
+}
+
+/**
+ * Checks whether the specified object is a HyperlinkCellValue object or not
+ * @param obj The object to test
+ */
+export function isHyperlinkCellValue(obj: any | undefined): obj is HyperlinkCellValue {
+	return !!(<HyperlinkCellValue>obj)?.linkOrCommand;
 }
 
 
@@ -34,6 +66,8 @@ export function hyperLinkFormatter(row: number | undefined, cell: any | undefine
 		} else {
 			cellClasses += ' missing-value';
 		}
+	} else if (isHyperlinkCellValue(value)) {
+		return `<a class="${cellClasses}" href="#" >${escape(value.displayText)}</a>`;
 	}
 	return `<span title="${valueToDisplay}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
@@ -76,18 +110,26 @@ export function imageFormatter(row: number | undefined, cell: any | undefined, v
  * Provide slick grid cell with encoded ariaLabel and plain text.
  * text will be escaped by the textFormatter and ariaLabel will be consumed by slickgrid directly.
  */
-export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any): { text: string; ariaLabel: string; } {
-	let displayValue = value[columnDef.field];
-	return {
-		text: displayValue,
-		ariaLabel: displayValue ? escape(displayValue) : displayValue
-	};
+export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any): TextCellValue | HyperlinkCellValue {
+	let fieldValue = value[columnDef.field];
+	if (columnDef.type === 'hyperlink') {
+		return <HyperlinkCellValue>{
+			displayText: fieldValue.displayText,
+			linkOrCommand: fieldValue.linkOrCommand
+		};
+	} else {
+		return <TextCellValue>{
+			text: fieldValue,
+			ariaLabel: fieldValue ? escape(fieldValue) : fieldValue
+		};
+	}
+
 }
 
 /**
  * Alternate function to provide slick grid cell with ariaLabel and plain text
  * In this case, for no display value ariaLabel will be set to specific string "no data available" for accessibily support for screen readers
- * Set 'no data' lable only if cell is present and has no value (so that checkbox and other custom plugins do not get 'no data' label)
+ * Set 'no data' label only if cell is present and has no value (so that checkbox and other custom plugins do not get 'no data' label)
  */
 export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: any): { text: string; ariaLabel: string; } {
 	let displayValue = value[columnDef.field];
