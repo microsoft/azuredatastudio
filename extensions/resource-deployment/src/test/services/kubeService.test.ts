@@ -51,9 +51,9 @@ describe('KubeService', function (): void {
 			const verifyContexts = (contexts: KubeClusterContext[], testName: string) => {
 				contexts.length.should.equal(2, `test: ${testName} failed`);
 				contexts[0].name.should.equal('docker-for-desktop', `test: ${testName} failed`);
-				contexts[0].isCurrentContext.should.be.true( `test: ${testName} failed`);
+				contexts[0].isCurrentContext.should.be.true(`test: ${testName} failed`);
 				contexts[1].name.should.equal('kubernetes-admin@kubernetes', `test: ${testName} failed`);
-				contexts[1].isCurrentContext.should.be.false( `test: ${testName} failed`);
+				contexts[1].isCurrentContext.should.be.false(`test: ${testName} failed`);
 			};
 			verifyContexts(await getKubeConfigClusterContexts(configFile), 'getKubeConfigClusterContexts');
 			verifyContexts(await kubeService.getClusterContexts(configFile), 'getClusterContexts');
