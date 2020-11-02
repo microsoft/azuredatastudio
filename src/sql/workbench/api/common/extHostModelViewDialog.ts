@@ -368,7 +368,7 @@ export interface WizardPageEventInfo {
 
 class WizardImpl implements azdata.window.Wizard {
 	private _currentPage: number = undefined;
-	private pages: azdata.window.WizardPage[] = [];
+	public pages: azdata.window.WizardPage[] = [];
 	public doneButton: azdata.window.Button;
 	public cancelButton: azdata.window.Button;
 	public generateScriptButton: azdata.window.Button;
