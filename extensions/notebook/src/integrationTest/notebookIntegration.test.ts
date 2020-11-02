@@ -60,7 +60,7 @@ describe('Notebook Extension Python Installation', function () {
 		console.log('Uninstalling existing pip dependencies');
 		let install = jupyterController.jupyterInstallation;
 		let pythonExe = JupyterServerInstallation.getPythonExePath(pythonInstallDir, false);
-		let command = `"${pythonExe}" -m pip uninstall -y jupyter pandas sparkmagic prose-codeaccelerator`;
+		let command = `"${pythonExe}" -m pip uninstall -y jupyter pandas sparkmagic`;
 		await executeStreamedCommand(command, { env: install.execOptions.env }, install.outputChannel);
 		console.log('Uninstalling existing pip dependencies is done');
 
