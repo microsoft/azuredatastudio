@@ -368,7 +368,7 @@ export interface WizardPageEventInfo {
 
 class WizardImpl implements azdata.window.Wizard {
 	private _currentPage: number = undefined;
-	private _pages: azdata.window.WizardPage[] = [];
+	private pages: azdata.window.WizardPage[] = [];
 	public doneButton: azdata.window.Button;
 	public cancelButton: azdata.window.Button;
 	public generateScriptButton: azdata.window.Button;
@@ -400,15 +400,6 @@ class WizardImpl implements azdata.window.Wizard {
 
 	public registerOperation(operationInfo: azdata.BackgroundOperationInfo): void {
 		this._operationHandler.registerOperation(operationInfo);
-	}
-
-	public get pages(): azdata.window.WizardPage[] {
-		return this._pages;
-	}
-
-	public set pages(pages: azdata.window.WizardPage[]) {
-		this._pages = pages;
-		this._extHostModelViewDialog.updateWizard(this);
 	}
 
 	public get width(): azdata.window.DialogWidth {
