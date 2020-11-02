@@ -149,10 +149,10 @@ export const extLangInstallFailedError = localize('extLang.installFailedError', 
 export const extLangUpdateFailedError = localize('extLang.updateFailedError', "Failed to update language");
 
 export const modelUpdateFailedError = localize('models.modelUpdateFailedError', "Failed to update the model");
-export const modelsListEmptyMessage = localize('models.modelsListEmptyMessage', "No models yet");
+export const modelsListEmptyMessage = localize('models.modelsListEmptyMessage', "No models found");
 export const azureModelsListEmptyTitle = localize('models.azureModelsListEmptyTitle', "No models found");
 export const azureModelsListEmptyDescription = localize('models.azureModelsListEmptyDescription', "Select another Azure ML workspace");
-export const modelsListEmptyDescription = localize('models.modelsListEmptyDescription', "Use import wizard to add models to this table");
+export const modelsListEmptyDescription = localize('models.modelsListEmptyDescription', "Select another database or table");
 export const databaseName = localize('databaseName', "Database");
 export const databaseToStoreInfo = localize('databaseToStoreInfo', "Select a database to store the new model.");
 export const tableToStoreInfo = localize('tableToStoreInfo', "Select an existing table that conforms the model schema or create a new one to store the imported model.");
@@ -281,6 +281,7 @@ export const mlsDocLink = 'https://go.microsoft.com/fwlink/?linkid=2128672';
 export const mlsMIDocLink = 'https://go.microsoft.com/fwlink/?linkid=2128673';
 export const onnxOnEdgeDocs = 'https://go.microsoft.com/fwlink/?linkid=2128882';
 export const managePackagesDocs = 'https://go.microsoft.com/fwlink/?linkid=2129919';
+export const importModelsDoc = 'https://go.microsoft.com/fwlink/?linkid=2129796';
 
 // CSS Styles
 //

@@ -43,13 +43,14 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 			});
 		this._dataInfoComponent = new DataInfoComponent(this._apiWrapper, this);
 
-		this._dataInfoComponent.width = 300;
-		this._dataInfoComponent.height = 300;
+		this._dataInfoComponent.width = 350;
 		this._dataInfoComponent.iconSettings = {
 			css: {
 				'border': 'solid',
-				'margin': '5px'
-			}
+				'margin': '5px',
+			},
+			width: 100,
+			height: 100
 		};
 		this._dataInfoComponent.registerComponent(modelBuilder);
 

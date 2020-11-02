@@ -68,13 +68,13 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 		this._emptyModelsComponent.width = 200;
 		this._emptyModelsComponent.height = 250;
 		this._emptyModelsComponent.title = constants.modelsListEmptyMessage;
+		this._emptyModelsComponent.description = constants.modelsListEmptyDescription;
 		this._emptyModelsComponent.iconSettings = {
 			css: { 'padding-top': '30px' },
 			path: this.asAbsolutePath('images/emptyTable.svg'),
 			width: 128,
 			height: 128
 		};
-		this._emptyModelsComponent.refresh();
 		this._emptyModelsComponent.registerComponent(modelBuilder);
 		this._labelContainer = modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
@@ -95,7 +95,7 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 		}).component();
 		this._subheadingLinkComponent = modelBuilder.hyperlink().withProperties({
 			label: constants.learnMoreLink,
-			url: 'https://www.microsoft.com/',
+			url: constants.importModelsDoc,
 			CSSStyles: {
 				'font-size': '13px'
 			}
@@ -185,6 +185,7 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 			await this.storeImportConfigTable();
 			if (this._dataTable) {
 				await this._dataTable.refresh();
+				await this._emptyModelsComponent?.refresh();
 			}
 			this.refreshComponents();
 		}
