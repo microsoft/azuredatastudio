@@ -23,7 +23,7 @@ const localize = nls.loadMessageBundle();
 export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
-	startDeployment(resourceType: ResourceType, provider: DeploymentProvider): void;
+	startDeployment(resourceType: ResourceType): void;
 }
 
 export class ResourceTypeService implements IResourceTypeService {
@@ -246,8 +246,8 @@ export class ResourceTypeService implements IResourceTypeService {
 	}
 
 
-	public startDeployment(resourceType: ResourceType, provider: DeploymentProvider): void {
-		const wizard = new ResourceTypeWizard(resourceType, provider, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this);
+	public startDeployment(resourceType: ResourceType): void {
+		const wizard = new ResourceTypeWizard(resourceType, resourceType.providers[0], new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this);
 		wizard.open();
 	}
 
