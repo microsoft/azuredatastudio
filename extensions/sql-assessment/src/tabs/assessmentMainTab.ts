@@ -236,8 +236,8 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 			.withProperties<azdata.ButtonProperties>({
 				label: localize('btnGeneratehtmlreport', "Create HTML Report"),
 				iconPath: {
-					dark: this.extensionContext.asAbsolutePath('resources/dark/newquery_inverse.svg'),
-					light: this.extensionContext.asAbsolutePath('resources/light/newquery.svg')
+					dark: this.extensionContext.asAbsolutePath('resources/dark/book_inverse.svg'),
+					light: this.extensionContext.asAbsolutePath('resources/light/book.svg')
 				},
 				enabled: false
 			}).component();
