@@ -113,7 +113,7 @@ export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 					for (const providerId of resourceProviderIds) {
 						const resourceTypes = await this._resourceService.getRootChildren(providerId, this.account, subscription, subscription.tenant);
 						for (const resourceType of resourceTypes) {
-							dataResources.push(...await this._resourceService.getChildren(providerId, resourceType.resourceNode));
+							dataResources.push(...await this._resourceService.getChildren(providerId, resourceType.resourceNode, true));
 						}
 					}
 				}

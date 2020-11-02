@@ -29,12 +29,12 @@ export class AzureResourceDatabaseServerTreeDataProvider extends ResourceTreeDat
 	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: Account): TreeItem {
 		return {
 			id: `databaseServer_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
-			label: databaseServer.name,
+			label: this.browseConnectionMode ? `${databaseServer.name} (${AzureResourceDatabaseServerTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
 			},
-			collapsibleState: vscode.workspace.getConfiguration('connection').get<boolean>('dialog.browse') ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
+			collapsibleState: this.browseConnectionMode ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.databaseServer,
 			payload: {
 				id: generateGuid(),

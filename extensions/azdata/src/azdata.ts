@@ -95,7 +95,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 		postgres: {
 			server: {
 				delete: (name: string): Promise<azdataExt.AzdataOutput<void>> => {
-					return this.executeCommand<void>(['arc', 'postgres', 'server', 'delete', '-n', name]);
+					return this.executeCommand<void>(['arc', 'postgres', 'server', 'delete', '-n', name, '--force']);
 				},
 				list: (): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerListResult[]>> => {
 					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list']);

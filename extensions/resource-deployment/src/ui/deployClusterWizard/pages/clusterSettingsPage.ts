@@ -12,7 +12,7 @@ import { createSection, getInputBoxComponent, getInvalidSQLPasswordMessage, getP
 import * as VariableNames from '../constants';
 import { AuthenticationMode, DeployClusterWizardModel } from '../deployClusterWizardModel';
 import * as localizedConstants from '../../../localizedConstants';
-import { ResourceTypePage } from '../../resourceTypeWizard';
+import { ResourceTypePage } from '../../resourceTypePage';
 const localize = nls.loadMessageBundle();
 
 const ConfirmPasswordName = 'ConfirmPassword';
@@ -349,7 +349,7 @@ export class ClusterSettingsPage extends ResourceTypePage {
 					});
 
 					if (messages.length > 0) {
-						this.wizard.wizardObject.message = {
+						this._model.wizard.wizardObject.message = {
 							text: messages.length === 1 ? messages[0] : localize('deployCluster.ValidationError', "There are some errors on this page, click 'Show Details' to view the errors."),
 							description: messages.length === 1 ? undefined : messages.join(EOL),
 							level: azdata.window.MessageLevel.Error
