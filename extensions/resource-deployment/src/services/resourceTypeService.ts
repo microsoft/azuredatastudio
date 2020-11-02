@@ -247,7 +247,7 @@ export class ResourceTypeService implements IResourceTypeService {
 
 
 	public startDeployment(resourceType: ResourceType): void {
-		const wizard = new ResourceTypeWizard(resourceType, resourceType.providers[0], new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this);
+		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this);
 		wizard.open();
 	}
 

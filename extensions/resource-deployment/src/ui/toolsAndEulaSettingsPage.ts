@@ -16,10 +16,6 @@ import { ResourceTypeWizard } from './resourceTypeWizard';
 
 const localize = nls.loadMessageBundle();
 
-/**
- * This page contains license agreements, deployment options and Tools table for deployment types. Should be included in all custom deployment types that opens a wizard for deployment.
- * Earlier this was a part of the resourceTypePicker dialog
- */
 export class ToolsAndEulaPage extends ResourceTypePage {
 	private form!: azdata.FormBuilder;
 	private view!: azdata.ModelView;
@@ -202,7 +198,8 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						this.wizard.registerDisposable(optionSelectBox.onValueChanged(async () => {
 							resourceTypeOptions[index] = <ResourceTypeOptionValue>optionSelectBox.value;
 							this.wizard.provider = this.getCurrentProvider();
-							await this.wizard.refresh();
+							await this.wizard.close();
+							await this.wizard.open();
 						}));
 
 						this._optionDropDownMap.set(option.name, optionSelectBox);
