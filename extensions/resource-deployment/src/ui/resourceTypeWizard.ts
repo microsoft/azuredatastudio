@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType } from '../interfaces';
+import { DeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType, ResourceTypeOptionValue } from '../interfaces';
 import { DeployClusterWizardModel } from './deployClusterWizard/deployClusterWizardModel';
 import { DeployAzureSQLVMWizardModel } from './deployAzureSQLVMWizard/deployAzureSQLVMWizardModel';
 import { WizardPageInfo } from './wizardPageInfo';
@@ -18,14 +18,18 @@ import { ResourceTypeModel } from './resourceTypeModel';
 import { ResourceTypePage } from './resourceTypePage';
 import { NotebookWizardModel } from './notebookWizard/notebookWizardModel';
 import { DeployAzureSQLDBWizardModel } from './deployAzureSQLDBWizard/deployAzureSQLDBWizardModel';
+import { ToolsAndEulaPage } from './toolsAndEulaSettingsPage';
+import { ResourceTypeService } from '../services/resourceTypeService';
+import { PageLessDeploymentModel } from './pageLessDeploymentModel';
 
 export class ResourceTypeWizard {
 	private customButtons: azdata.window.Button[] = [];
 	public pages: ResourceTypePage[] = [];
 	public wizardObject: azdata.window.Wizard;
 	public toDispose: vscode.Disposable[] = [];
-	public model: ResourceTypeModel;
+	public model!: ResourceTypeModel;
 	private _useGenerateScriptButton!: boolean;
+	public toolsEulaPagePresets!: ResourceTypeOptionValue[];
 
 	public get useGenerateScriptButton(): boolean {
 		return this._useGenerateScriptButton;
@@ -43,13 +47,13 @@ export class ResourceTypeWizard {
 		public azdataService: IAzdataService,
 		public notebookService: INotebookService,
 		public toolsService: IToolsService,
-		public platformService: IPlatformService) {
+		public platformService: IPlatformService,
+		public resourceTypeService: ResourceTypeService) {
 		this.wizardObject = azdata.window.createWizard(resourceType.displayName, resourceType.name, 'wide');
-		this.model = this.getResourceProviderModel()!;
 	}
 
 
-	public getResourceProviderModel(): ResourceTypeModel | undefined {
+	public getResourceProviderModel(): ResourceTypeModel {
 		if (instanceOfWizardDeploymentProvider(this.provider)) {
 			return new DeployClusterWizardModel(this.provider, this);
 		} else if (instanceOfAzureSQLVMDeploymentProvider(this.provider)) {
@@ -59,11 +63,11 @@ export class ResourceTypeWizard {
 		} else if (instanceOfAzureSQLDBDeploymentProvider(this.provider)) {
 			return new DeployAzureSQLDBWizardModel(this.provider, this);
 		}
-		// other types are undefined for now.
-		return undefined;
+		return new PageLessDeploymentModel(this.provider, this);
 	}
 
 	public async open(): Promise<void> {
+		this.model = this.getResourceProviderModel();
 		this.model.initialize();
 		this.wizardObject.generateScriptButton.hidden = true; // by default generateScriptButton stays hidden.
 		this.wizardObject.customButtons = this.customButtons;
@@ -106,6 +110,7 @@ export class ResourceTypeWizard {
 	}
 
 	public setPages(pages: ResourceTypePage[]) {
+		pages.unshift(new ToolsAndEulaPage(this));
 		this.wizardObject!.pages = pages.map(p => p.pageObject);
 		this.pages = pages;
 		this.pages.forEach((page) => {
@@ -121,6 +126,7 @@ export class ResourceTypeWizard {
 		this.toDispose.forEach((disposable: vscode.Disposable) => {
 			disposable.dispose();
 		});
+		this.toDispose = [];
 	}
 
 	public registerDisposable(disposable: vscode.Disposable): void {
@@ -132,6 +138,11 @@ export class ResourceTypeWizard {
 			text: message,
 			level: azdata.window.MessageLevel.Error
 		};
+	}
+
+	public close() {
+		this.dispose();
+		this.wizardObject.close();
 	}
 
 }

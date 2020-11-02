@@ -64,3 +64,13 @@ export function getResourceTypeCategoryLocalizedString(resourceTypeCategory: str
 			return resourceTypeCategory;
 	}
 }
+
+export const descriptionText = localize('resourceDeployment.Description', "Description");
+export const toolText = localize('resourceDeployment.Tool', "Tool");
+export const statusText = localize('resourceDeployment.Status', "Status");
+export const versionText = localize('resourceDeployment.Version', "Version");
+export const requiredVersionText = localize('resourceDeployment.RequiredVersion', "Required Version");
+export const discoverPathOrAdditionalInfromationText = localize('resourceDeployment.discoverPathOrAdditionalInfromation', "Discovered Path or Additional Information");
+export const requiredToolsText = localize('resourceDeployment.requiredTools', "Required tools");
+export const installToolsText = localize('resourceDeployment.InstallTools', "Install tools");
+export const optionsText = localize('resourceDeployment.Options', "Options");
