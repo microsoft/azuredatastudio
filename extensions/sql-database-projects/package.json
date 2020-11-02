@@ -253,6 +253,10 @@
           "when": "false"
         },
         {
+          "command": "sqlDatabaseProjects.validateExternalStreamingJob",
+          "when": "false"
+        },
+        {
           "command": "sqlDatabaseProjects.openContainingFolder",
           "when": "false"
         },
