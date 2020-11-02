@@ -123,7 +123,12 @@ steps:
       $extensionUri = "$(standalone-extensions-uri)"
       $adsExtensionPath = "$(agent.builddirectory)\azuredatastudio-win32-x64\extensions"
 
-      exec { Invoke-WebRequest -Uri $extensionUri -OutFile $tempFilePath; Move-Item $tempFilePath $zipFilePath; Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath }
+      Invoke-WebRequest -Uri $extensionUri -OutFile $tempFilePath
+      Write-Host "Finished downloading extensions..."
+      Move-Item $tempFilePath $zipFilePath
+      Write-Host "Renamed to archive..."
+      Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
+      Write-Host "Extracted to $adsExtensionPath..."
     displayName: Install SAW Extensions
     condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'))
 
