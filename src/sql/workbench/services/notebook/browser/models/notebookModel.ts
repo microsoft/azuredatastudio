@@ -1196,6 +1196,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		metadata.kernelspec = this._savedKernelInfo;
 		metadata.language_info = this.languageInfo;
 		metadata.tags = this._tags;
+		metadata.multiConnectionMode = this._multiConnectionMode;
 		if (this.configurationService.getValue('notebook.saveConnectionName')) {
 			metadata.connectionName = this._savedConnectionName;
 		}
