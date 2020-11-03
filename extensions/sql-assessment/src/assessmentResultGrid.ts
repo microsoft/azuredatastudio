@@ -121,9 +121,9 @@ export class AssessmentResultGrid implements vscode.Disposable {
 
 	public async displayResult(asmtResult: azdata.SqlAssessmentResult, method: AssessmentType) {
 		this.asmtType = method;
-		this.dataItems = asmtResult.items;
+		this.dataItems = this.filterOutNotSupportedKind(asmtResult.items);
 		await this.table.updateProperties({
-			'data': asmtResult.items.map(item => this.convertToDataView(item))
+			'data': this.filterOutNotSupportedKind(asmtResult.items).map(item => this.convertToDataView(item))
 		});
 		this.rootContainer.setLayout({
 			flexFlow: 'column',
@@ -145,20 +145,39 @@ export class AssessmentResultGrid implements vscode.Disposable {
 		});
 	}
 
+	private filterOutNotSupportedKind(items: azdata.SqlAssessmentResultItem[]): azdata.SqlAssessmentResultItem[] {
+		if (this.asmtType === AssessmentType.AvailableRules) {
+			return items;
+		}
+
+		return items.filter(i => i.kind === azdata.sqlAssessment.SqlAssessmentResultItemKind.RealResult);
+	}
+
 	public async appendResult(asmtResult: azdata.SqlAssessmentResult): Promise<void> {
 		if (this.dataItems) {
-			this.dataItems.push(...asmtResult.items);
+			this.dataItems.push(...this.filterOutNotSupportedKind(asmtResult.items));
 		}
-		this.table.appendData(asmtResult.items.map(item => this.convertToDataView(item)));
+		this.table.appendData(this.filterOutNotSupportedKind(asmtResult.items).map(item => this.convertToDataView(item)));
 	}
 
 	private async showDetails(rowNumber: number) {
 		const selectedRowValues = this.table.data[rowNumber];
+<<<<<<< HEAD
 		const asmtResultItem = this.dataItems.find(item =>
 			item.targetName === selectedRowValues[this.targetColOrder]
 			&& item.checkId === selectedRowValues[this.checkIdColOrder]
 			&& item.message === selectedRowValues[this.messageColOrder]
 		);
+=======
+		const asmtResultItem = this.asmtType === AssessmentType.InvokeAssessment
+			? this.dataItems.find(item =>
+				item.targetName === selectedRowValues[this.targetColOrder]
+				&& item.checkId === selectedRowValues[this.checkIdColOrder]
+				&& item.message === selectedRowValues[this.messageColOrder])
+			: this.dataItems.find(item =>
+				item.targetName === selectedRowValues[this.targetColOrder]
+				&& item.checkId === selectedRowValues[this.checkIdColOrder]);
+>>>>>>> 8b8c4067c... fix for history reload upon target change and filter out unsupported asmt messages
 
 		if (!asmtResultItem) {
 			return;
