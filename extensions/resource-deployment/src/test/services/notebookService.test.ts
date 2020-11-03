@@ -15,18 +15,8 @@ import { Notebook, NotebookService } from '../../services/notebookService';
 import { IPlatformService } from '../../services/platformService';
 import * as loc from '../../localizedConstants';
 import assert = require('assert');
+import { Deferred } from '../utils';
 
-class Deferred<T> {
-	promise: Promise<T>;
-	resolve!: (value?: T | PromiseLike<T>) => void;
-	reject!: (reason?: any) => void;
-	constructor() {
-		this.promise = new Promise<T>((resolve, reject) => {
-			this.resolve = resolve;
-			this.reject = reject;
-		});
-	}
-}
 describe('NotebookService', function (): void {
 	const notebookInput = 'test-notebook.ipynb';
 	const sourceNotebookContent = '{ "cells": [] }';
@@ -155,7 +145,7 @@ describe('NotebookService', function (): void {
 		valueInserted.cell_type.should.equal('code');
 		valueInserted.source.should.equal(cellStatements);
 		const insertionPosition = editorBuilderStub.getCall(0).args[1];
-		should(insertionPosition).be.equal(0); //default insertionPosition is 0.
+		should(insertionPosition).be.equal(0, 'default insertion point should be 0');
 		showNotebookVerify(showNotebookStub, expectedTargetFileName, sourceNotebookContent);
 	});
 
@@ -176,7 +166,7 @@ describe('NotebookService', function (): void {
 			const errorMessage = 'errorMessage';
 			executeNotebookSetup({ mockPlatformService, storagePath, errorMessage, sourceNotebookContent });
 			const result = await notebookService.executeNotebook(<Notebook>{}, process.env);
-			result.succeeded.should.be.false();
+			result.succeeded.should.be.false('executeNotebook should return an object with succeeded set to false when an error occurs during execution');
 			result.outputNotebook!.should.equal(sourceNotebookContent);
 			result.errorMessage!.should.equal(errorMessage);
 		});
