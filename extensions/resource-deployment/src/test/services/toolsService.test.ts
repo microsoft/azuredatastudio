@@ -3,12 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'mocha';
-import assert = require('assert');
 import * as TypeMoq from 'typemoq';
-import { ToolsService } from '../../services/toolsService';
 import { ITool, ToolType } from '../../interfaces';
 import { IPlatformService } from '../../services/platformService';
+import { ToolsService } from '../../services/toolsService';
 
 
 const tools: { name: string; type: ToolType }[] = [
@@ -32,12 +30,12 @@ describe('Tools Service Tests', function (): void {
 				}
 			}
 		}
-		assert(missingTypes.length === 0, `the following enum values are not included in the test:${missingTypes.join(',')}`);
+		(missingTypes.length === 0).should.be.true(`the following enum values are not included in the test:${missingTypes.join(',')}`);
 
 		tools.forEach(toolInfo => {
 			const tool = toolsService.getToolByName(toolInfo.name);
-			assert(!!tool, `The tool: ${toolInfo.name} is not recognized`);
-			assert.equal(tool!.type, toolInfo.type, 'returned notebook name does not match expected value');
+			(!!tool).should.be.true(`The tool: ${toolInfo.name} is not recognized`);
+			(tool!.type).should.equal(toolInfo.type, 'returned notebook name does not match expected value');
 		});
 	});
 
@@ -45,17 +43,17 @@ describe('Tools Service Tests', function (): void {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 		const toolsService = new ToolsService(mockPlatformService.object);
 		const tool = toolsService.getToolByName('no-such-tool');
-		assert(tool === undefined, 'for a not defined tool, expected value is undefined');
+		(tool === undefined).should.be.true('for a not defined tool, expected value is undefined');
 	});
 
 	it('get/set tools for CurrentProvider', () => {
 		const iTools: ITool[] = tools.map(toolInfo => {
 			const tool = toolsService.getToolByName(toolInfo.name);
-			assert(!!tool, `The tool: ${toolInfo.name} is not recognized`);
-			assert.equal(tool!.type, toolInfo.type, 'returned notebook name does not match expected value');
+			(!!tool).should.be.true(`The tool: ${toolInfo.name} is not recognized`);
+			tool!.type.should.equal(toolInfo.type, 'returned notebook name does not match expected value');
 			return tool!;
 		});
 		toolsService.toolsForCurrentProvider = iTools;
-		assert.deepEqual(iTools, toolsService.toolsForCurrentProvider, 'toolsForCurrentProvider did not return the value we set');
+		iTools.should.deepEqual(toolsService.toolsForCurrentProvider, 'toolsForCurrentProvider did not return the value we set');
 	});
 });
