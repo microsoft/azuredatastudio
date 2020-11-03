@@ -114,7 +114,8 @@ export class ResourceViewerInput extends EditorInput {
 				filterable: col.filterable ?? true,
 				resizable: col.resizable ?? true,
 				tooltip: col.tooltip,
-				minWidth: col.minWidth,
+				width: col.width,
+				minWidth: col.width,
 				type: col.type
 			};
 		});

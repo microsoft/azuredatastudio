@@ -73,12 +73,12 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 
 	public async getDataGridColumns(): Promise<azdata.DataGridColumn[]> {
 		return [
-			{ id: 'icon', type: 'image', field: 'iconPath', name: '', minWidth: 25, sortable: false, filterable: false, resizable: false, tooltip: loc.typeIcon },
-			{ id: 'name', type: 'text', field: 'name', name: loc.name, minWidth: 150 },
-			{ id: 'type', type: 'text', field: 'typeDisplayName', name: loc.resourceType, minWidth: 150 },
-			{ id: 'type', type: 'text', field: 'resourceGroup', name: loc.resourceGroup, minWidth: 150 },
-			{ id: 'location', type: 'text', field: 'locationDisplayName', name: loc.location, minWidth: 150 },
-			{ id: 'subscriptionId', type: 'text', field: 'subscriptionName', name: loc.subscription, minWidth: 150 }
+			{ id: 'icon', type: 'image', field: 'iconPath', name: '', width: 25, sortable: false, filterable: false, resizable: false, tooltip: loc.typeIcon },
+			{ id: 'name', type: 'text', field: 'name', name: loc.name, width: 150 },
+			{ id: 'type', type: 'text', field: 'typeDisplayName', name: loc.resourceType, width: 150 },
+			{ id: 'type', type: 'text', field: 'resourceGroup', name: loc.resourceGroup, width: 150 },
+			{ id: 'location', type: 'text', field: 'locationDisplayName', name: loc.location, width: 150 },
+			{ id: 'subscriptionId', type: 'text', field: 'subscriptionName', name: loc.subscription, width: 150 }
 		];
 	}
 }
