@@ -13,6 +13,7 @@ import { PostgresModel } from '../../../models/postgresModel';
 import { convertToGibibyteString } from '../../../common/utils';
 
 export class PostgresComputeAndStoragePage extends DashboardPage {
+	private dataLoading!: azdata.LoadingComponent;
 	private workerContainer?: azdata.DivContainer;
 
 	private workerBox?: azdata.InputBoxComponent;
@@ -118,11 +119,16 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		computeInfoAndLinks.addItem(infoComputeStorage_p6, { CSSStyles: { 'margin-right': '5px' } });
 		content.addItem(computeInfoAndLinks, { CSSStyles: { 'min-height': '30px' } });
 
-
-
 		this.workerContainer = this.modelView.modelBuilder.divContainer().component();
 		this.handleServiceUpdated();
 		content.addItem(this.workerContainer, { CSSStyles: { 'min-height': '30px' } });
+
+		this.dataLoading = this.modelView.modelBuilder.loadingComponent()
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._postgresModel.configLastUpdated
+			}).component();
+
+		content.addItem(this.dataLoading, { CSSStyles: cssStyles.text });
 
 		this.initialized = true;
 
@@ -162,6 +168,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 					this._postgresModel.refresh();
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
+
+					this.dataLoading!.updateCssStyles({ display: 'initial' });
+					this.dataLoading!.loading = true;
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
@@ -462,6 +471,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private handleServiceUpdated() {
 		if (this._postgresModel.configLastUpdated) {
+			this.dataLoading!.loading = false;
+			this.dataLoading!.updateCssStyles({ display: 'none' });
 			this.editWorkerNodeCount();
 			this.editCores();
 			this.editMemory();
@@ -470,6 +481,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			// by only adding these once the model has data. After the bug is fixed,
 			// use loading indicators instead of keeping the page blank.
 			if (this.workerContainer?.items.length === 0) {
+
 				this.workerContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 					value: loc.workerNodes,
 					CSSStyles: { ...cssStyles.title, 'margin-top': '25px' }

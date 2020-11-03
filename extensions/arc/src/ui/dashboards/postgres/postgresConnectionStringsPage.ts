@@ -11,6 +11,7 @@ import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresConnectionStringsPage extends DashboardPage {
+	private dataLoading!: azdata.LoadingComponent;
 	private keyValueContainer?: KeyValueContainer;
 
 	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
@@ -60,6 +61,18 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 		this.keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, this.getConnectionStrings());
 		this.disposables.push(this.keyValueContainer);
 		content.addItem(this.keyValueContainer.container);
+
+		if (!this._postgresModel.configLastUpdated) {
+			this.keyValueContainer?.container.updateCssStyles({ display: 'none' });
+		}
+
+		this.dataLoading = this.modelView.modelBuilder.loadingComponent()
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._postgresModel.configLastUpdated
+			}).component();
+
+		content.addItem(this.dataLoading, { CSSStyles: cssStyles.text });
+
 		this.initialized = true;
 		return root;
 	}
@@ -88,6 +101,9 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 	}
 
 	private handleServiceUpdated() {
+		this.dataLoading!.loading = false;
+		this.dataLoading!.updateCssStyles({ display: 'none' });
 		this.keyValueContainer?.refresh(this.getConnectionStrings());
+		this.keyValueContainer?.container.updateCssStyles({ display: 'initial' });
 	}
 }
