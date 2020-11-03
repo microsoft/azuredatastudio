@@ -150,6 +150,8 @@ export const extLangUpdateFailedError = localize('extLang.updateFailedError', "F
 
 export const modelUpdateFailedError = localize('models.modelUpdateFailedError', "Failed to update the model");
 export const modelsListEmptyMessage = localize('models.modelsListEmptyMessage', "No models found");
+export const selectModelTableMessage = localize('models.selectModelTableMessage', "Select table");
+export const selectModelDatabaseMessage = localize('models.selectModelDatabaseMessage', "Select Database");
 export const azureModelsListEmptyTitle = localize('models.azureModelsListEmptyTitle', "No models found");
 export const azureModelsListEmptyDescription = localize('models.azureModelsListEmptyDescription', "Select another Azure ML workspace");
 export const modelsListEmptyDescription = localize('models.modelsListEmptyDescription', "Select another database or table");
@@ -183,8 +185,10 @@ export const dataTypeName = localize('predict.dataTypeName', "Type");
 export const displayName = localize('predict.displayName', "Display  name");
 export const inputName = localize('predict.inputName', "Model input");
 export const selectColumnTitle = localize('predict.selectColumnTitle', "Select column...");
-export const selectDatabaseTitle = localize('predict.selectDatabaseTitle', "Select database with models");
-export const selectTableTitle = localize('predict.selectTableTitle', "Select table with models");
+export const selectModelDatabaseTitle = localize('models.selectModelDatabaseTitle', "Select database with models");
+export const selectModelTableTitle = localize('models.selectModelTableTitle', "Select tables with models");
+export const selectDatabaseTitle = localize('predict.selectDatabaseTitle', "Select database");
+export const selectTableTitle = localize('predict.selectTableTitle', "Select table");
 export const outputName = localize('predict.outputName', "Name");
 export const azureSubscription = localize('models.azureSubscription', "Azure subscription");
 export const azureGroup = localize('models.azureGroup', "Azure resource group");
@@ -213,6 +217,8 @@ export const registerModelTitle = localize('models.RegisterWizard', "Import mode
 export const viewImportModelsTitle = localize('models.viewImportModelsTitle', "View and import models");
 export const viewImportModelsDesc = localize('models.viewImportModelsDesc',
 	"Machine Learning models can be stored in one or more databases and tables. Select the model database and table to view the models within them.");
+export const viewImportModeledForPredictDesc = localize('models.viewImportModeledForPredictDesc',
+	"The models are stored in one or more databases and tables. Select the model database and table to view models in them.");
 export const learnMoreLink = localize('models.learnMoreLink', "Learn more.");
 
 export const importModelTitle = localize('models.importModelTitle', "Import or view models");

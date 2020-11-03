@@ -39,7 +39,10 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 				databaseTitle: constants.databaseName,
 				tableTitle: constants.tableName,
 				databaseInfo: constants.databaseToStoreInfo,
-				tableInfo: constants.tableToStoreInfo
+				tableInfo: constants.tableToStoreInfo,
+				defaultDbName: constants.selectModelDatabaseTitle,
+				defaultTableName: constants.selectModelTableTitle,
+				useImportModelCache: true
 			});
 		this._dataInfoComponent = new DataInfoComponent(this._apiWrapper, this);
 
@@ -49,8 +52,10 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 				'border': 'solid',
 				'margin': '5px',
 			},
-			width: 100,
-			height: 100
+			width: 50,
+			height: 50,
+			containerHeight: 100,
+			containerWidth: 100
 		};
 		this._dataInfoComponent.registerComponent(modelBuilder);
 
@@ -71,8 +76,12 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 	}
 
 	private async onTableSelected(): Promise<void> {
+		let importTableIsValid = false;
 		if (this.tableSelectionComponent?.data) {
 			this.importTable = this.tableSelectionComponent?.data;
+			if (this.tableSelectionComponent !== undefined && this.tableSelectionComponent.isDataValid) {
+				importTableIsValid = true;
+			}
 		}
 
 		if (this.importTable && this._dataInfoComponent) {
@@ -82,7 +91,7 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 			// Since Table name is picked last as per new flow this hasn't been set yet.
 			this.modelsViewData?.forEach(x => x.targetImportTable = this.importTable);
 
-			if (!this.validateImportTableName()) {
+			if (!importTableIsValid) {
 				this._dataInfoComponent.title = constants.selectModelsTableMessage;
 				this._dataInfoComponent.iconSettings.path = 'noicon';
 			} else {
@@ -98,11 +107,6 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 
 			await this._dataInfoComponent.refresh();
 		}
-	}
-
-	private validateImportTableName(): boolean {
-		return this.importTable?.databaseName !== undefined && this.importTable?.databaseName !== constants.selectDatabaseTitle
-			&& this.importTable?.tableName !== undefined && this.importTable?.tableName !== constants.selectTableTitle;
 	}
 
 	/**
@@ -145,7 +149,7 @@ export class ModelImportLocationPage extends ModelViewBase implements IPageView,
 	public async validate(): Promise<boolean> {
 		let validated = false;
 
-		if (this.data && this.validateImportTableName()) {
+		if (this.data && this.tableSelectionComponent !== undefined && this.tableSelectionComponent.isDataValid) {
 			validated = true;
 			validated = await this.verifyImportConfigTable(this.data);
 			if (!validated) {

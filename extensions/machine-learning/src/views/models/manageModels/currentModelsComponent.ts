@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 
 import * as constants from '../../../common/constants';
 import { DataInfoComponent } from '../../dataInfoComponent';
-import { ModelViewBase } from '../modelViewBase';
+import { ModelActionType, ModelViewBase } from '../modelViewBase';
 import { CurrentModelsTable } from './currentModelsTable';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import { IPageView, IComponentSettings } from '../../interfaces';
@@ -49,7 +49,10 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 			tableTitle: constants.tableName,
 			databaseInfo: constants.modelDatabaseInfo,
 			tableInfo: constants.modelTableInfo,
-			layout: 'vertical'
+			layout: 'vertical',
+			defaultDbName: constants.selectModelDatabaseTitle,
+			defaultTableName: constants.selectModelTableTitle,
+			useImportModelCache: true
 		});
 		this._tableSelectionComponent.registerComponent(modelBuilder);
 		this._tableSelectionComponent.onSelectedChanged(async () => {
@@ -88,7 +91,7 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 			width: '452px'
 		}).component();
 		this._subheadingTextComponent = modelBuilder.text().withProperties(<azdata.CheckBoxProperties>{
-			value: constants.viewImportModelsDesc,
+			value: this.modelActionType === ModelActionType.Import ? constants.viewImportModelsDesc : constants.viewImportModeledForPredictDesc,
 			CSSStyles: {
 				'font-size': '13px'
 			}
@@ -121,10 +124,9 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 	public addComponents(formBuilder: azdata.FormBuilder) {
 		this._formBuilder = formBuilder;
 		if (this._tableSelectionComponent && this._dataTable && this._labelContainer && this._subheadingContainer) {
+			formBuilder.addFormItem({ title: '', component: this._subheadingContainer });
 			this._tableSelectionComponent.addComponents(formBuilder);
 			this._dataTable.addComponents(formBuilder);
-
-			formBuilder.addFormItem({ title: '', component: this._subheadingContainer });
 
 			if (this._dataTable.isEmpty) {
 				formBuilder.addFormItem({ title: '', component: this._labelContainer });
@@ -183,8 +185,19 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 		if (this._tableSelectionComponent?.data) {
 			this.importTable = this._tableSelectionComponent?.data;
 			await this.storeImportConfigTable();
-			if (this._dataTable) {
+			if (this._dataTable && this._emptyModelsComponent) {
 				await this._dataTable.refresh();
+				if (this._tableSelectionComponent?.defaultDbNameIsSelected) {
+					this._emptyModelsComponent.title = constants.selectModelDatabaseMessage;
+					this._emptyModelsComponent.description = '';
+				} else if (this._tableSelectionComponent?.defaultTableNameIsSelected) {
+					this._emptyModelsComponent.title = constants.selectModelTableMessage;
+					this._emptyModelsComponent.description = '';
+
+				} else {
+					this._emptyModelsComponent.title = constants.modelsListEmptyMessage;
+					this._emptyModelsComponent.description = constants.modelsListEmptyDescription;
+				}
 				await this._emptyModelsComponent?.refresh();
 			}
 			this.refreshComponents();

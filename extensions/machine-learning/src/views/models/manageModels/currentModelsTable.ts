@@ -40,7 +40,23 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._modelBuilder = modelBuilder;
-		let columns = [
+		let columns: azdata.DeclarativeTableColumn[] = [];
+		if (this._settings.selectable) {
+			columns.push(
+				{ // Action
+					displayName: '',
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: 50,
+					headerCssStyles: {
+						...constants.cssStyles.tableHeader
+					},
+					rowCssStyles: {
+						...constants.cssStyles.tableRow
+					},
+				});
+		}
+		columns.push(...[
 			{ // Name
 				displayName: constants.modelName,
 				ariaLabel: constants.modelName,
@@ -92,6 +108,20 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				rowCssStyles: {
 					...constants.cssStyles.tableRow
 				},
+			}
+		]);
+		if (this._settings.editable) {
+			columns.push(...[{ // Action
+				displayName: '',
+				valueType: azdata.DeclarativeDataType.component,
+				isReadOnly: true,
+				width: 50,
+				headerCssStyles: {
+					...constants.cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...constants.cssStyles.tableRow
+				},
 			},
 			{ // Action
 				displayName: '',
@@ -105,22 +135,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					...constants.cssStyles.tableRow
 				},
 			}
-		];
-		if (this._settings.editable) {
-			columns.push(
-				{ // Action
-					displayName: '',
-					valueType: azdata.DeclarativeDataType.component,
-					isReadOnly: true,
-					width: 50,
-					headerCssStyles: {
-						...constants.cssStyles.tableHeader
-					},
-					rowCssStyles: {
-						...constants.cssStyles.tableRow
-					},
-				}
-			);
+			]);
 			columns.push(
 				{ // Action
 					displayName: '',
@@ -217,7 +232,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		if (this._modelBuilder) {
 			const selectButton = this.createSelectButton(model);
 			if (selectButton) {
-				row.push(selectButton);
+				row = [selectButton, model.modelName, model.created, model.version, model.framework];
 			}
 			const editButtons = this.createEditButtons(model);
 			if (editButtons && editButtons.length > 0) {
