@@ -5,14 +5,14 @@
 
 import * as TypeMoq from 'typemoq';
 import 'mocha';
-import { NotebookService } from '../services/notebookService';
+import { NotebookService } from '../../services/notebookService';
 import assert = require('assert');
-import { NotebookPathInfo } from '../interfaces';
-import { IPlatformService } from '../services/platformService';
+import { NotebookPathInfo } from '../../interfaces';
+import { IPlatformService } from '../../services/platformService';
 
-suite('Notebook Service Tests', function (): void {
+describe('Notebook Service Tests', function (): void {
 
-	test('getNotebook with string parameter', () => {
+	it('getNotebook with string parameter', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 		const notebookService = new NotebookService(mockPlatformService.object, '');
 		const notebookInput = 'test-notebook.ipynb';
@@ -28,7 +28,7 @@ suite('Notebook Service Tests', function (): void {
 		mockPlatformService.verify((service) => service.platform(), TypeMoq.Times.never());
 	});
 
-	test('getNotebook with NotebookInfo parameter', () => {
+	it('getNotebook with NotebookInfo parameter', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 		const notebookService = new NotebookService(mockPlatformService.object, '');
 		const notebookWin32 = 'test-notebook-win32.ipynb';
@@ -58,7 +58,7 @@ suite('Notebook Service Tests', function (): void {
 		mockPlatformService.verify((service) => service.platform(), TypeMoq.Times.once());
 	});
 
-	test('findNextUntitledEditorName with no name conflict', () => {
+	it('findNextUntitledEditorName with no name conflict', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 		const notebookService = new NotebookService(mockPlatformService.object, '');
 		const notebookFileName = 'mynotebook.ipynb';
@@ -72,7 +72,7 @@ suite('Notebook Service Tests', function (): void {
 		assert.equal(actualFileName, expectedTargetFile, 'target file name is not correct');
 	});
 
-	test('findNextUntitledEditorName with name conflicts', () => {
+	it('findNextUntitledEditorName with name conflicts', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 		const notebookService = new NotebookService(mockPlatformService.object, '');
 		const notebookFileName = 'mynotebook.ipynb';

@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'mocha';
+import { apiService } from '../../services/apiService';
 import assert = require('assert');
-import { apiService } from '../services/apiService';
 
-suite('API Service Tests', function (): void {
-	test('getAzurecoreApi returns azure api', () => {
+describe('API Service Tests', function (): void {
+	it('get azurecoreApi returns azure api', () => {
 		const api = apiService.azurecoreApi;
 		assert(api !== undefined);
 	});
