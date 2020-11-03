@@ -196,10 +196,10 @@ export class CopyCurrentQueryWithResultsKeyboardAction extends Action {
 						copyString = copyString.concat('\t');
 					}
 					// Removes the tab seperator from the end of a row
-					copyString = copyString.slice(0, -1 * '\t'.length);
+					copyString = copyString.slice(0, -1 * '\t'.length) + '\n';
 				}
 
-				allResults = allResults + copyString + '\n\n\n';
+				allResults = allResults + copyString + '\n\n';
 			}
 
 			/*let tablesHtml = '';
@@ -211,10 +211,10 @@ export class CopyCurrentQueryWithResultsKeyboardAction extends Action {
 				}
 			});*/
 
-			this._clipboardService.writeText(editor.getAllText() + '\n' + allResults);
+			//this._clipboardService.writeText(editor.getAllText() + EOL + allResults);
 
 			let data = {
-				text: editor.getAllText() + '\n\n' + allResults,
+				text: `${editor.getSelectionText() ? editor.getSelectionText() : editor.getAllText()} \n\n ${allResults}`,
 				html: '"<div><br/><br/><header>Table0</header><table cellPadding="5" cellSpacing="1" style="border:1;border-color:Black;font-family:Segoe UI;font-size:12px;border-collapse:collapse"><tr style="background-color:DarkGray"><th style="border:solid black 1.0pt;white-space:nowrap">StartTime</th><th style="border:solid black 1.0pt;white-space:nowrap">EndTime</th><th style="border:solid black 1.0pt;white-space:nowrap">EpisodeId</th><th style="border:solid black 1.0pt;white-space:nowrap">EventId</th><th style="border:solid black 1.0pt;white-space:nowrap">State</th><th style="border:solid black 1.0pt;white-space:nowrap">EventType</th><th style="border:solid black 1.0pt;white-space:nowrap">InjuriesDirect</th><th style="border:solid black 1.0pt;white-space:nowrap">InjuriesIndirect</th><th style="border:solid black 1.0pt;white-space:nowrap">DeathsDirect</th><th style="border:solid black 1.0pt;white-space:nowrap">DeathsIndirect</th><th style="border:solid black 1.0pt;white-space:nowrap">DamageProperty</th><th style="border:solid black 1.0pt;white-space:nowrap">DamageCrops</th><th style="border:solid black 1.0pt;white-space:nowrap">Source</th><th style="border:solid black 1.0pt;white-space:nowrap">BeginLocation</th><th style="border:solid black 1.0pt;white-space:nowrap">EndLocation</th><th style="border:solid black 1.0pt;white-space:nowrap">BeginLat</th><th style="border:solid black 1.0pt;white-space:nowrap">BeginLon</th><th style="border:solid black 1.0pt;white-space:nowrap">EndLat</th><th style="border:solid black 1.0pt;white-space:nowrap">EndLon</th><th style="border:solid black 1.0pt;white-space:nowrap">EpisodeNarrative</th><th style="border:solid black 1.0pt;white-space:nowrap">EventNarrative</th><th style="border:solid black 1.0pt;white-space:nowrap">StormSummary</th></tr><tr><td style="border:solid black 1.0pt;white-space:nowrap">2007-09-29T08:11:00Z</td><td style="border:solid black 1.0pt;white-space:nowrap">2007-09-29T08:11:00Z</td><td style="border:solid black 1.0pt;white-space:nowrap">11091</td><td style="border:solid black 1.0pt;white-space:nowrap">61032</td><td style="border:solid black 1.0pt;white-space:nowrap">ATLANTIC SOUTH</td><td style="border:solid black 1.0pt;white-space:nowrap">Waterspout</td><td style="border:solid black 1.0pt;white-space:nowrap">0</td><td style="border:solid black 1.0pt;white-space:nowrap">0</td><td style="border:solid black 1.0pt;white-space:nowrap">0</td><td style="border:solid black 1.0pt;white-space:nowrap">0</td><td style="border:solid black 1.0pt;white-space:nowrap">0</td><td style="border:solid black 1.0pt;white-space:nowrap">0</td><td style="border:solid black 1.0pt;white-space:nowrap">Trained Spotter</td><td style="border:solid black 1.0pt;white-space:nowrap">MELBOURNE BEACH</td><td style="border:solid black 1.0pt;white-space:nowrap">MELBOURNE BEACH</td><td style="border:solid black 1.0pt;white-space:nowrap">28.0393</td><td style="border:solid black 1.0pt;white-space:nowrap">-80.6048</td><td style="border:solid black 1.0pt;white-space:nowrap">28.0393</td><td style="border:solid black 1.0pt;white-space:nowrap">-80.6048</td><td style="border:solid black 1.0pt;white-space:nowrap">Showers and thunderstorms lingering along the coast produced waterspouts in Brevard County.</td><td style="border:solid black 1.0pt;white-space:nowrap">A waterspout formed in the Atlantic southeast of Melbourne Beach and briefly moved toward shore.</td><td style="border:solid black 1.0pt;white-space:nowrap">{&quot;TotalDamages&quot;:0,&quot;StartTime&quot;:&quot;2007-09-29T08:11:00.0000000Z&quot;,&quot;EndTime&quot;:&quot;2007-09-29T08:11:00.0000000Z&quot;,&quot;Details&quot;:{&quot;Description&quot;:&quot;A waterspout formed in the Atlantic southeast of Melbourne Beach and briefly moved toward shore.&quot;,&quot;Location&quot;:&quot;ATLANTIC SOUTH&quot;}}</td></tr></table></div>"'
 			};
 			//`${}`
