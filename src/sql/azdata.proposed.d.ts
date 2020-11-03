@@ -193,9 +193,9 @@ declare module 'azdata' {
 		tooltip?: string;
 
 		/**
-		 * Width of the column in pixels.
+		 * Minimum width of the column in pixels.
 		 */
-		width?: number
+		minWidth?: number
 	}
 
 	/**
