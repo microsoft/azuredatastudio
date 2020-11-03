@@ -35,19 +35,8 @@ let argv = require('yargs')
 
 // set up environment
 
-let VSCODEUSERDATADIR;
-
-if (process.env.VSCODEUSERDATAROOT) {
-	console.log(`root : ${process.env.VSCODEUSERDATAROOT}`);
-	let tmpName = tmp.tmpNameSync({ prefix: 'adsuser' });
-	console.log(`tmpname : ${tmpName}`);
-
-	VSCODEUSERDATADIR = path.join(process.env.VSCODEUSERDATAROOT, );
-	console.log(`data dir : ${VSCODEUSERDATADIR}`);
-} else {
-	VSCODEUSERDATADIR = tmp.dirSync({ prefix: 'adsuser' }).name;
-}
-const VSCODEEXTENSIONSDIR = tmp.dirSync({ prefix: 'adsext' }).name;
+const VSCODEUSERDATADIR = tmp.dirSync({ dir: '/tmp/adsuser', prefix: 'adsuser' }).name;
+const VSCODEEXTENSIONSDIR = tmp.dirSync({ dir: '/tmp/adsext', prefix: 'adsext' }).name;
 
 console.log(VSCODEUSERDATADIR);
 console.log(VSCODEEXTENSIONSDIR);
