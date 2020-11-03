@@ -152,8 +152,8 @@ steps:
   - script: |
       set -e
       mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
-      cd $TMPDIR
-      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/logs-linux-x64.tar.gz adsuser
+      cd /tmp
+      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/logs-linux-x64.tar.gz adsuser*
     displayName: Archive Logs
     continueOnError: true
 
