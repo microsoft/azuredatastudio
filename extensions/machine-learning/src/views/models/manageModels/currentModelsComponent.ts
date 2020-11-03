@@ -22,6 +22,8 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 	private _dataTable: CurrentModelsTable | undefined;
 	private _loader: azdata.LoadingComponent | undefined;
 	private _tableSelectionComponent: TableSelectionComponent | undefined;
+	private _tableDataCountContainer: azdata.FlexContainer | undefined;
+	private _tableDataCountComponent: azdata.TextComponent | undefined;
 	private _subheadingContainer: azdata.FlexContainer | undefined;
 	private _subheadingTextComponent: azdata.TextComponent | undefined;
 	private _subheadingLinkComponent: azdata.HyperlinkComponent | undefined;
@@ -60,6 +62,22 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 		});
 		this._dataTable = new CurrentModelsTable(this._apiWrapper, this, this._settings);
 		this._dataTable.registerComponent(modelBuilder);
+
+		let dataCountString: string = constants.getDataCount(0);
+
+		this._tableDataCountContainer = modelBuilder.flexContainer().component();
+		this._tableDataCountComponent = modelBuilder.text().withProperties({
+			value: dataCountString,
+			margin: '0'
+		}).component();
+		this._tableDataCountContainer.addItem(this._tableDataCountComponent,
+			{
+				CSSStyles: {
+					'font-size': '13px',
+					'margin': '0'
+				}
+			});
+
 
 		let formModelBuilder = modelBuilder.formContainer();
 		this._loader = modelBuilder.loadingComponent()
@@ -107,8 +125,7 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 			this._labelContainer.addItem(this._emptyModelsComponent.component
 				, {
 					CSSStyles: {
-						'background-size': '100%',
-						'margin': '0 auto',
+						'margin': '0 auto'
 					}
 				});
 
@@ -123,7 +140,7 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
 		this._formBuilder = formBuilder;
-		if (this._tableSelectionComponent && this._dataTable && this._labelContainer && this._subheadingContainer) {
+		if (this._tableSelectionComponent && this._dataTable && this._tableDataCountContainer && this._labelContainer && this._subheadingContainer) {
 			formBuilder.addFormItem({ title: '', component: this._subheadingContainer });
 			this._tableSelectionComponent.addComponents(formBuilder);
 			this._dataTable.addComponents(formBuilder);
@@ -131,6 +148,7 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 			if (this._dataTable.isEmpty) {
 				formBuilder.addFormItem({ title: '', component: this._labelContainer });
 			}
+			formBuilder.addFormItem({ title: '', component: this._tableDataCountContainer });
 		}
 	}
 

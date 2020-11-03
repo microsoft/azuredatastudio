@@ -278,6 +278,8 @@ export const mlsInstallOdbcDocDesc = localize('mlsInstallOdbcDocDesc', "This doc
 export const onnxOnEdgeOdbcDocTitle = localize('onnxOnEdgeOdbcDocTitle', "Machine learning and AI with ONNX in SQL Database Edge Preview");
 export const onnxOnEdgeOdbcDocDesc = localize('onnxOnEdgeOdbcDocDesc', "Get started with machine learning in Azure SQL Database Edge");
 
+export function getDataCount(dataCount: number): string { return localize('ml.dataCount', "Showing {0} model(s)", dataCount); }
+
 // Links
 //
 export const odbcDriverDocuments = 'https://go.microsoft.com/fwlink/?linkid=2129818';
