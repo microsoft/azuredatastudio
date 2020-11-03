@@ -65,7 +65,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _trustedMode: boolean;
 	private _onActiveCellChanged = new Emitter<ICellModel | undefined>();
 	private _onCellTypeChanged = new Emitter<ICellModel>();
-	private _multiConnectionMode: boolean = false;
 
 	private _cells: ICellModel[] | undefined;
 	private _defaultLanguageInfo: nb.ILanguageInfo | undefined;
@@ -275,15 +274,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		});
 	}
 
-	public get multiConnectionMode(): boolean {
-		return this._multiConnectionMode;
-	}
-
-	public set multiConnectionMode(isMultiConnection: boolean) {
-		this.updateCellConnections(isMultiConnection);
-		this._multiConnectionMode = isMultiConnection;
-	}
-
 	/**
 	 * Indicates the server has finished loading. It may have failed to load in
 	 * which case the view will be in an error state.
@@ -346,7 +336,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._cells = [];
 			if (contents) {
 				this._defaultLanguageInfo = contents.metadata?.language_info;
-				this._multiConnectionMode = contents.metadata?.multiConnectionMode;
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
 				this._savedConnectionName = this.getSavedConnectionName(contents);
 				if (contents.metadata) {
@@ -869,30 +858,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return spec;
 	}
 
-	private updateCellConnections(isMultiConnection: boolean): void {
-		// No change
-		if (isMultiConnection === this._multiConnectionMode) {
-			return;
-		}
-
-		// Set each cell's connection as current notebook active connection
-		if (isMultiConnection && this._activeConnection) {
-			this._cells.forEach(c => {
-				if (c.cellType === CellTypes.Code) {
-					c.changeContext(this._activeConnection.connectionName, this._activeConnection);
-				}
-			});
-			this._activeConnection = undefined;
-		} else {
-			// Clear each cell's connection
-			this._cells.forEach(c => {
-				if (c.cellType === CellTypes.Code) {
-					c.changeContext(undefined);
-				}
-			});
-		}
-	}
-
 	public async changeContext(title: string, newConnection?: ConnectionProfile, hideErrorMessage?: boolean): Promise<void> {
 		try {
 			if ((!newConnection) && this._activeConnection && (this._activeConnection.title === title)) {
@@ -1197,7 +1162,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		metadata.kernelspec = this._savedKernelInfo;
 		metadata.language_info = this.languageInfo;
 		metadata.tags = this._tags;
-		metadata.multiConnectionMode = this._multiConnectionMode;
 		if (this.configurationService.getValue(saveConnectionNameConfigName)) {
 			metadata.connection_name = this._savedConnectionName;
 		}

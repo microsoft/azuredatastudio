@@ -501,7 +501,6 @@ export interface ICellModel {
 	cellSourceChanged: boolean;
 	readonly context: ConnectionProfile | undefined;
 	readonly savedConnectionName: string | undefined;
-	changeContext(connectionName: string, newConnection?: ConnectionProfile): Promise<void>;
 }
 
 export interface IModelFactory {

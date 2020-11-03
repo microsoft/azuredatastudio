@@ -1034,7 +1034,7 @@ suite('Cell Model', function (): void {
 		let contents: nb.ICellContents = {
 			cell_type: CellTypes.Code,
 			source: '',
-			metadata: { connectionName: connectionName }
+			metadata: { connection_name: connectionName }
 		};
 		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 		assert.equal(model.savedConnectionName, connectionName);

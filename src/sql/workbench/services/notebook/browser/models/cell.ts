@@ -29,7 +29,6 @@ import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbenc
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { values } from 'vs/base/common/collections';
 import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
 
 let modelId = 0;
@@ -72,13 +71,10 @@ export class CellModel extends Disposable implements ICellModel {
 	private _showMarkdown: boolean = false;
 	private _cellSourceChanged: boolean = false;
 	private _defaultToWYSIWYG: boolean;
-	private _activeConnection: ConnectionProfile | undefined;
-	private _onValidConnectionSelected = new Emitter<boolean>();
-	private _contextsChangedEmitter = new Emitter<void>();
-	private _contextsLoadingEmitter = new Emitter<void>();
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
+	private _activeConnection: ConnectionProfile | undefined;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -279,47 +275,12 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._options.notebook.language;
 	}
 
-	public get contextsChanged(): Event<void> {
-		return this._contextsChangedEmitter.event;
-	}
-
-	public get contextsLoading(): Event<void> {
-		return this._contextsLoadingEmitter.event;
-	}
-
-	public get onValidConnectionSelected(): Event<boolean> {
-		return this._onValidConnectionSelected.event;
-	}
-
 	public get savedConnectionName(): string | undefined {
 		return this._savedConnectionName;
 	}
 
 	public get context(): ConnectionProfile | undefined {
 		return this._activeConnection;
-	}
-
-	public async changeContext(connectionName: string, newConnection?: ConnectionProfile): Promise<void> {
-		// Remove cell's connection
-		if (!connectionName) {
-			this._activeConnection = undefined;
-			this._savedConnectionName = undefined;
-			this._contextsChangedEmitter.fire();
-		} else {
-			// Set new connection for cell
-			let connection;
-			if (!newConnection) {
-				let connection = this.getConnectionProfileFromName(connectionName);
-				if (!connection) {
-					// TODO: show connection dialog for alias that doesn't have a connection?
-				}
-			} else {
-				connection = newConnection;
-			}
-			this._activeConnection = connection;
-			this._savedConnectionName = connectionName;
-			this._contextsChangedEmitter.fire();
-		}
 	}
 
 	public get cellGuid(): string {
@@ -525,8 +486,7 @@ export class CellModel extends Disposable implements ICellModel {
 				this.sendNotification(notificationService, Severity.Info, localize('runCellCancelled', "Cell execution cancelled"));
 			} else {
 				// TODO update source based on editor component contents
-				if (kernel.requiresConnection && (!this.notebookModel.multiConnectionMode && !this.notebookModel.context)
-					|| (this.notebookModel.multiConnectionMode && !this.context)) {
+				if (kernel.requiresConnection && !this.notebookModel.context) {
 					let connected = await this.notebookModel.requestConnection();
 					if (!connected) {
 						return false;
@@ -856,7 +816,7 @@ export class CellModel extends Disposable implements ICellModel {
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount ? this.executionCount : null;
 			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
-				metadata.connectionName = this._savedConnectionName;
+				metadata.connection_name = this._savedConnectionName;
 			}
 		}
 		return cellJson as nb.ICellContents;
@@ -882,7 +842,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
-		this._savedConnectionName = this._metadata.connectionName;
+		this._savedConnectionName = this._metadata.connection_name;
 		if (cell.outputs) {
 			for (let output of cell.outputs) {
 				// For now, we're assuming it's OK to save these as-is with no modification
@@ -1015,10 +975,5 @@ export class CellModel extends Disposable implements ICellModel {
 				}
 			}));
 		}
-	}
-
-	private getConnectionProfileFromName(connectionName: string): ConnectionProfile | undefined {
-		let connections: ConnectionProfile[] = this._connectionManagementService.getConnections();
-		return values(connections).find(connection => connection.connectionName === connectionName);
 	}
 }
