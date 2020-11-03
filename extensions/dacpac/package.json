@@ -26,7 +26,7 @@
   "contributes": {
     "configuration": [
       {
-        "title": "%dacFx.Settings%",
+        "title": "%dacFx.settings%",
         "properties": {
           "dacFx.defaultSaveLocation": {
             "type": "string",
