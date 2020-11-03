@@ -14,7 +14,7 @@ import { Dashboard } from '../../components/dashboard';
 import { PostgresDiagnoseAndSolveProblemsPage } from './postgresDiagnoseAndSolveProblemsPage';
 import { PostgresSupportRequestPage } from './postgresSupportRequestPage';
 import { PostgresComputeAndStoragePage } from './postgresComputeAndStoragePage';
-import { PostgresPropertiesPage } from './postgresPropertiesPage';
+import { PostgresParametersPage } from './postgresParametersPage';
 
 export class PostgresDashboard extends Dashboard {
 	constructor(private _context: vscode.ExtensionContext, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
@@ -33,7 +33,9 @@ export class PostgresDashboard extends Dashboard {
 		const overviewPage = new PostgresOverviewPage(modelView, this._controllerModel, this._postgresModel);
 		const connectionStringsPage = new PostgresConnectionStringsPage(modelView, this._postgresModel);
 		const computeAndStoragePage = new PostgresComputeAndStoragePage(modelView, this._postgresModel);
-		const propertiesPage = new PostgresPropertiesPage(modelView, this._controllerModel, this._postgresModel);
+		// TODO: Removed properties page while investigating bug where refreshed values don't appear in UI
+		// const propertiesPage = new PostgresPropertiesPage(modelView, this._controllerModel, this._postgresModel);
+		const parametersPage = new PostgresParametersPage(modelView, this._controllerModel, this._postgresModel);
 		const diagnoseAndSolveProblemsPage = new PostgresDiagnoseAndSolveProblemsPage(modelView, this._context, this._postgresModel);
 		const supportRequestPage = new PostgresSupportRequestPage(modelView, this._controllerModel, this._postgresModel);
 
@@ -44,7 +46,7 @@ export class PostgresDashboard extends Dashboard {
 				tabs: [
 					connectionStringsPage.tab,
 					computeAndStoragePage.tab,
-					propertiesPage.tab
+					parametersPage.tab
 				]
 			},
 			{
