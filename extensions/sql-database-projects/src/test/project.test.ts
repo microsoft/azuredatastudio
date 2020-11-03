@@ -31,12 +31,14 @@ describe('Project: sqlproj content operations', function (): void {
 		const project: Project = await Project.openProject(projFilePath);
 
 		// Files and folders
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(5);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(6);
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
 
 		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Views\\User\\Profile.sql')).not.equal(undefined); // mixed ItemGroup file
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === '..\\Test\\Test.sql')).not.equal(undefined); // mixed ItemGroup file
+		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'MyExternalStreamingJob.sql')).not.equal(undefined); // entry with custom attribute
+
 
 		// SqlCmdVariables
 		should(Object.keys(project.sqlCmdVariables).length).equal(2);
@@ -94,20 +96,26 @@ describe('Project: sqlproj content operations', function (): void {
 		const project = await Project.openProject(projFilePath);
 
 		const folderPath = 'Stored Procedures';
-		const filePath = path.join(folderPath, 'Fake Stored Proc.sql');
-		const fileContents = 'SELECT \'This is not actually a stored procedure.\'';
+		const scriptPath = path.join(folderPath, 'Fake Stored Proc.sql');
+		const scriptContents = 'SELECT \'This is not actually a stored procedure.\'';
+
+		const scriptPathTagged = path.join(folderPath, 'Fake External Streaming Job.sql');
+		const scriptContentsTagged = 'EXEC sys.sp_create_streaming_job \'job\', \'SELECT 7\'';
 
 		await project.addFolderItem(folderPath);
-		await project.addScriptItem(filePath, fileContents);
+		await project.addScriptItem(scriptPath, scriptContents);
+		await project.addScriptItem(scriptPathTagged, scriptContentsTagged, templates.externalStreamingJob);
 
 		const newProject = await Project.openProject(projFilePath);
 
 		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === convertSlashesForSqlProj(folderPath))).not.equal(undefined);
-		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(filePath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPathTagged))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPathTagged))?.sqlObjectType).equal(constants.ExternalStreamingJob);
 
-		const newFileContents = (await fs.readFile(path.join(newProject.projectFolderPath, filePath))).toString();
+		const newScriptContents = (await fs.readFile(path.join(newProject.projectFolderPath, scriptPath))).toString();
 
-		should(newFileContents).equal(fileContents);
+		should(newScriptContents).equal(scriptContents);
 	});
 
 	it('Should add Folder and Build entries to sqlproj with pre-existing scripts on disk', async function (): Promise<void> {
