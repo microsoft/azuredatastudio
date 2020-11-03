@@ -8,6 +8,8 @@
 const json = require('gulp-json-editor');
 const buffer = require('gulp-buffer');
 const filter = require('gulp-filter');
+const download = require("gulp-download-stream");
+const zip = require('gulp-vinyl-zip');
 const es = require('event-stream');
 const vfs = require('vinyl-fs');
 const fancyLog = require('fancy-log');
@@ -17,6 +19,7 @@ const path = require('path');
 
 function main() {
 	const quality = process.env['VSCODE_QUALITY'];
+	const extensionsUri = process.env['EXTERNAL_EXTENSIONS_URI'];
 
 	if (!quality) {
 		console.log('Missing VSCODE_QUALITY, skipping mixin');
@@ -25,8 +28,10 @@ function main() {
 
 	const productJsonFilter = filter(f => f.relative === 'product.json', { restore: true });
 
+	// Make available SAW specific extensions
 	fancyLog(ansiColors.blue('[mixin]'), `Mixing in sources:`);
-	return vfs
+
+	vfs
 		.src(`quality/${quality}/**`, { base: `quality/${quality}` })
 		.pipe(filter(f => !f.isDirectory()))
 		.pipe(productJsonFilter)
@@ -63,6 +68,12 @@ function main() {
 			return f;
 		}))
 		.pipe(vfs.dest('.'));
+
+		if(quality === 'saw'){
+			download(extensionsUri)
+				.pipe(zip.src())
+				.pipe(vfs.dest(`quality/${quality}/resources/app/extensions`));
+		}
 }
 
 main();
