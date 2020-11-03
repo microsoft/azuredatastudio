@@ -94,7 +94,6 @@ export class ColumnsSelectionPage extends ModelViewBase implements IPageView, ID
 			if (modelParameters && this.inputColumnsComponent && this.outputColumnsComponent) {
 				this.inputColumnsComponent.modelParameters = modelParameters;
 				this.outputColumnsComponent.modelParameters = modelParameters;
-				await this.inputColumnsComponent.refresh();
 				await this.outputColumnsComponent.refresh();
 			}
 		} catch (error) {

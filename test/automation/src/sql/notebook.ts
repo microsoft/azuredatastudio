@@ -93,6 +93,6 @@ export class NotebookToolbar {
 
 	async waitForKernel(kernel: string): Promise<void> {
 		const kernelDropdownValue = `${NotebookToolbar.toolbarSelector} select[id="kernel-dropdown"][title="${kernel}"]`;
-		await this.code.waitForElement(kernelDropdownValue);
+		await this.code.waitForElement(kernelDropdownValue, undefined, 3000); // wait up to 5 minutes for kernel change
 	}
 }

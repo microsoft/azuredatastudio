@@ -6,11 +6,11 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as constants from './../common/constants';
 import { BookTreeItem } from './bookTreeItem';
-import { BookModel } from './bookModel';
+import { BookModel, BookVersion } from './bookModel';
 
 export interface IBookTrustManager {
 	isNotebookTrustedByDefault(notebookUri: string): boolean;
-	setBookAsTrusted(bookRootPath: string): boolean;
+	setBookAsTrusted(bookRootPath: string, isTrusted: boolean): boolean;
 }
 
 enum TrustBookOperation {
@@ -27,7 +27,7 @@ export class BookTrustManager implements IBookTrustManager {
 		let trustableBookPaths = this.getTrustableBookPaths();
 		let hasTrustedBookPath: boolean = treeBookItems
 			.filter(bookItem => trustableBookPaths.some(trustableBookPath => trustableBookPath === path.join(bookItem.book.root, path.sep)))
-			.some(bookItem => normalizedNotebookUri.startsWith(path.join(bookItem.root, 'content', path.sep)));
+			.some(bookItem => normalizedNotebookUri.startsWith(bookItem.version === BookVersion.v1 ? path.join(bookItem.book.root, 'content', path.sep) : path.join(bookItem.book.root, path.sep)));
 		let isNotebookTrusted = hasTrustedBookPath && this.books.some(bookModel => bookModel.getNotebook(normalizedNotebookUri));
 		return isNotebookTrusted;
 	}
@@ -57,8 +57,11 @@ export class BookTrustManager implements IBookTrustManager {
 			.reduce((accumulator, currentBookItemList) => accumulator.concat(currentBookItemList), []);
 	}
 
-	setBookAsTrusted(bookRootPath: string): boolean {
-		return this.updateTrustedBooks(bookRootPath, TrustBookOperation.Add);
+	setBookAsTrusted(bookRootPath: string, isTrusted: boolean): boolean {
+		if (isTrusted) {
+			return this.updateTrustedBooks(bookRootPath, TrustBookOperation.Add);
+		}
+		return this.updateTrustedBooks(bookRootPath, TrustBookOperation.Remove);
 	}
 
 	getTrustedBookPathsInConfig(): string[] {

@@ -4703,9 +4703,11 @@ declare module 'azdata' {
 
 		export interface ICellOutput {
 			output_type: OutputTypeName;
-			metadata?: {
-				azdata_chartOptions?: any;
-			};
+			metadata?: ICellOutputMetadata;
+		}
+
+		export interface ICellOutputMetadata {
+			azdata_chartOptions?: any;
 		}
 
 		/**
@@ -4738,7 +4740,9 @@ declare module 'azdata' {
 			/**
 			 * Optional metadata, also a mime bundle
 			 */
-			metadata?: {};
+			metadata?: {
+				resultSet?: ResultSetSummary;
+			};
 		}
 		export interface IDisplayData extends IDisplayResult {
 			output_type: 'display_data';

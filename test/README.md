@@ -20,6 +20,23 @@ Run these with the script `./scripts/test-extensions-unit.[bat|sh]`
 
 Code coverage is enabled by default. Reports can be found in the coverage folder at the root of the folder for each extension that ran.
 
+To run just the tests from a specific extension run
+
+`node ./scripts/test-extensions-unit.js [extensionName]`
+
+e.g.
+
+`node ./scripts/test-extensions-unit.js notebook`
+
+will run all tests from the notebook extension.
+
+In addition the extensions also support the [grep Mocha option](https://mochajs.org/api/mocha#grep). Set the `ADS_TEST_GREP` environment variable to a string that will be used to match the full test title.
+
+e.g.
+
+`$ENV:ADS_TEST_GREP="my test name"`
+
+and then running one of the above test commands will run only the tests which contain the phrase `my test name` in the title.
 
 ### Integration tests
 

@@ -17,6 +17,7 @@ import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import { Deferred } from '../common/promise';
 import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
+import { IKernelInfo } from '../contracts/content';
 
 const localize = nls.loadMessageBundle();
 const msgInstallPkgProgress = localize('msgInstallPkgProgress', "Notebook dependencies installation is in progress");
@@ -107,7 +108,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		let powershellPkg = {
 			name: 'powershell-kernel',
-			version: '0.1.3'
+			version: '0.1.4'
 		};
 		this._requiredKernelPackages.set(constants.powershellDisplayName, [jupyterPkg, powershellPkg]);
 
@@ -119,9 +120,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			}, {
 				name: 'pandas',
 				version: '0.24.2'
-			}, {
-				name: 'prose-codeaccelerator',
-				version: '1.3.0'
 			}];
 		this._requiredKernelPackages.set(constants.pysparkDisplayName, sparkPackages);
 		this._requiredKernelPackages.set(constants.sparkScalaDisplayName, sparkPackages);
@@ -287,6 +285,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public async configurePackagePaths(): Promise<void> {
+		// Delete existing Python variables in ADS to prevent conflict with other installs
+		delete process.env['PYTHONPATH'];
+		delete process.env['PYTHONSTARTUP'];
+		delete process.env['PYTHONHOME'];
+
 		//Python source path up to bundle version
 		let pythonSourcePath = this._usingExistingPython
 			? this._pythonInstallationPath
@@ -327,11 +330,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
 			}
 		}
-
-		// Delete existing Python variables in ADS to prevent conflict with other installs
-		delete process.env['PYTHONPATH'];
-		delete process.env['PYTHONSTARTUP'];
-		delete process.env['PYTHONHOME'];
 
 		// Store the executable options to run child processes with env var without interfering parent env var.
 		let env = Object.assign({}, process.env);
@@ -525,7 +523,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		let versionSpecifier = useMinVersion ? '>=' : '==';
 		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
-		let cmd = `"${this.pythonExecutable}" -m pip install --user ${packagesStr} --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		let cmd = `"${this.pythonExecutable}" -m pip install --user ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 
@@ -707,6 +705,29 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	public getRequiredPackagesForKernel(kernelName: string): PythonPkgDetails[] {
 		return this._requiredKernelPackages.get(kernelName) ?? [];
+	}
+
+	public get runningOnSaw(): boolean {
+		return this._runningOnSAW;
+	}
+
+	public async updateKernelSpecPaths(kernelsFolder: string): Promise<void> {
+		if (!this._runningOnSAW) {
+			return;
+		}
+		let fileNames = await fs.readdir(kernelsFolder);
+		let filePaths = fileNames.map(name => path.join(kernelsFolder, name));
+		let fileStats = await Promise.all(filePaths.map(path => fs.stat(path)));
+		let folderPaths = filePaths.filter((value, index) => value && fileStats[index].isDirectory());
+		let kernelFiles = folderPaths.map(folder => path.join(folder, 'kernel.json'));
+		await Promise.all(kernelFiles.map(file => this.updateKernelSpecPath(file)));
+	}
+
+	private async updateKernelSpecPath(kernelPath: string): Promise<void> {
+		let fileContents = await fs.readFile(kernelPath);
+		let kernelSpec = <IKernelInfo>JSON.parse(fileContents.toString());
+		kernelSpec.argv = kernelSpec.argv?.map(arg => arg.replace('{ADS_PYTHONDIR}', this._pythonInstallationPath));
+		await fs.writeFile(kernelPath, JSON.stringify(kernelSpec, undefined, '\t'));
 	}
 }
 

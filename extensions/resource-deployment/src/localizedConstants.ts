@@ -20,6 +20,8 @@ export const kubeConfigFilePath = localize('kubeConfigClusterPicker.kubeConfigFi
 export const clusterContextNotFound = localize('kubeConfigClusterPicker.clusterContextNotFound', "No cluster context information found");
 export const signIn = localize('azure.signin', "Sign in…");
 export const refresh = localize('azure.refresh', "Refresh");
+export const yes = localize('azure.yes', "Yes");
+export const no = localize('azure.no', "No");
 export const createNewResourceGroup = localize('azure.resourceGroup.createNewResourceGroup', "Create a new resource group");
 export const NewResourceGroupAriaLabel = localize('azure.resourceGroup.NewResourceGroupAriaLabel', "New resource group name");
 export const realm = localize('deployCluster.Realm', "Realm");
@@ -38,7 +40,8 @@ export const acceptEulaAndSelect = localize('deploymentDialog.RecheckEulaButton'
 
 export const resourceTypePickerDialogTitle = localize('resourceTypePickerDialog.title', "Select the deployment options");
 export const resourceTypeSearchBoxDescription = localize('resourceTypePickerDialog.resourceSearchPlaceholder', "Filter resources...");
-export const resoucrceTypeCategoryListViewTitle = localize('resourceTypePickerDialog.tagsListViewTitle', 'Categories');
+export const resourceTypeCategoryListViewTitle = localize('resourceTypePickerDialog.tagsListViewTitle', "Categories");
+export const multipleValidationErrors = localize("validation.multipleValidationErrors", "There are some errors on this page, click 'Show Details' to view the errors.");
 
 export const scriptToNotebook = localize('ui.ScriptToNotebookButton', "Script");
 export const deployNotebook = localize('ui.DeployButton', "Run");

@@ -272,17 +272,13 @@ export class ProjectsController {
 		// check if schema compare extension is installed
 		if (vscode.extensions.getExtension(constants.schemaCompareExtensionId)) {
 			// build project
-			await this.buildProject(treeNode);
-
-			// start schema compare with the dacpac produced from build
-			const project = this.getProjectFromContext(treeNode);
-			const dacpacPath = path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
+			const dacpacPath = await this.buildProject(treeNode);
 
 			// check that dacpac exists
 			if (await utils.exists(dacpacPath)) {
 				await vscode.commands.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
 			} else {
-				vscode.window.showErrorMessage(constants.buildDacpacNotFound);
+				vscode.window.showErrorMessage(constants.buildFailedCannotStartSchemaCompare);
 			}
 		} else {
 			vscode.window.showErrorMessage(constants.schemaCompareNotInstalled);

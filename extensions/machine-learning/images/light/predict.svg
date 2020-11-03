@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>Predict</title>
+  <g id="ff21850e-cc3c-49a5-89aa-1e729237460d" data-name="Labels">
+    <circle cx="1.5" cy="10.5" r="1.5"/>
+    <circle cx="9.5" cy="10.5" r="1.5"/>
+    <circle cx="5.4" cy="6.5" r="1.5"/>
+    <path d="M14.5,4a.5.5,0,1,1-.5.5.5.5,0,0,1,.5-.5m0-1A1.5,1.5,0,1,0,16,4.5,1.5,1.5,0,0,0,14.5,3Z"/>
+    <line x1="1.5" y1="10.5" x2="5" y2="6.5" fill="none" stroke="#000" stroke-miterlimit="10"/>
+    <line x1="9.5" y1="10.5" x2="14.3" y2="5" fill="none" stroke="#000" stroke-miterlimit="10"/>
+    <line x1="1.5" y1="10.5" x2="5.427" y2="6" fill="none" stroke="#000" stroke-miterlimit="10"/>
+    <line x1="9.327" y1="10.5" x2="5.4" y2="6" fill="none" stroke="#000" stroke-miterlimit="10"/>
+  </g>
+</svg>

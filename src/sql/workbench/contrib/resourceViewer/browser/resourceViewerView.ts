@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/resourceViewerView';
 import { ResourceType, ResourceViewerResourcesRegistry, Extensions } from 'sql/platform/resourceViewer/common/resourceViewerRegistry';
-import { append, $ } from 'vs/base/browser/dom';
+import { append, $, asCSSUrl } from 'vs/base/browser/dom';
 import { IIdentityProvider, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { IDataSource, ITreeMouseEvent, ITreeNode, ITreeRenderer } from 'vs/base/browser/ui/tree/tree';
@@ -22,6 +22,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IViewPaneOptions, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
+import { localize } from 'vs/nls';
 
 type TreeElement = ResourceType;
 
@@ -73,10 +74,10 @@ export class ResourceViewerView extends ViewPane {
 		this.tree.setInput(this.model);
 
 		this._register(Registry.as<ResourceViewerResourcesRegistry>(Extensions.ResourceViewerExtension).onDidRegisterResource(() => this.tree.updateChildren(this.model)));
-		this._register(this.tree.onMouseDblClick(this.onDoubleClick, this));
+		this._register(this.tree.onMouseClick(this.onMouseClick, this));
 	}
 
-	private onDoubleClick(event: ITreeMouseEvent<TreeElement | null>) {
+	private onMouseClick(event: ITreeMouseEvent<TreeElement | null>) {
 		if (event.element) {
 			this.commandService.executeCommand('resourceViewer.openResourceViewer', event.element.id);
 		}
@@ -98,14 +99,15 @@ class ResourceRenderer implements ITreeRenderer<ResourceType, void, ResourceType
 	public readonly templateId = ResourceRenderer.TEMPLATEID;
 
 	renderTemplate(parent: HTMLElement): ResourceTypeTemplate {
-		const container = append(parent, $('span'));
-		const icon = append(container, $('.icon'));
-		const name = append(container, $('.name'));
+		const container = append(parent, $('span.resource-type-row'));
+		const icon = append(container, $('.resource-type-icon'));
+		const name = append(container, $('.resource-type-name'));
 		return { name, icon };
 	}
 
 	renderElement(element: ITreeNode<ResourceType, void>, index: number, templateData: ResourceTypeTemplate, height: number): void {
 		templateData.name.innerText = element.element.name;
+		templateData.icon.style.backgroundImage = asCSSUrl(element.element.icon);
 	}
 
 	disposeTemplate(templateData: ResourceTypeTemplate): void {
@@ -116,7 +118,7 @@ class ResourceRenderer implements ITreeRenderer<ResourceType, void, ResourceType
 
 class ListDelegate implements IListVirtualDelegate<TreeElement> {
 	getHeight(): number {
-		return 22;
+		return 40;
 	}
 
 	getTemplateId(element: TreeElement): string {
@@ -134,7 +136,7 @@ class TreeModel {
 	private readonly registry = Registry.as<ResourceViewerResourcesRegistry>(Extensions.ResourceViewerExtension);
 
 	getChildren(): ResourceType[] {
-		return this.registry.allResources.slice();
+		return this.registry.allResources.filter(resource => resource.id === 'azure-resources');
 	}
 }
 
@@ -144,7 +146,7 @@ class ListAccessibilityProvider implements IListAccessibilityProvider<TreeElemen
 	}
 
 	getWidgetAriaLabel(): string {
-		return 'Resource Viewer Tree';
+		return localize('resourceViewer.ariaLabel', "Resource Viewer Tree");
 	}
 }
 

@@ -48,6 +48,8 @@ export class ErrorInfo {
 	}
 }
 
+const saveConnectionNameConfigName = 'notebook.saveConnectionName';
+
 export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
 	private _contextsLoadingEmitter = new Emitter<void>();
@@ -291,17 +293,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	/**
-	 * Indicates all result grid output has been converted to mimeType and html.
-	 */
-	public get gridDataConversionComplete(): Promise<any> {
-		let promises = [];
-		for (let cell of this._cells) {
-			promises.push(cell.gridDataConversionComplete);
-		}
-		return Promise.all(promises);
-	}
-
-	/**
 	 * Notifies when the client session is ready for use
 	 */
 	public get onClientSessionReady(): Event<IClientSession> {
@@ -371,7 +362,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						}
 					}
 					Object.keys(contents.metadata).forEach(key => {
-						let expectedKeys = ['kernelspec', 'language_info', 'tags', 'connectionName'];
+						let expectedKeys = ['kernelspec', 'language_info', 'tags', 'connection_name'];
 						// If custom metadata is defined, add to the _existingMetadata object
 						if (expectedKeys.indexOf(key) < 0) {
 							this._existingMetadata[key] = contents.metadata[key];
@@ -381,6 +372,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
+						/*
+						In a parameterized notebook there will be an injected parameter cell.
+						Papermill originally inserts the injected parameter with the comment "# Parameters"
+						which would make it confusing to the user between the difference between this cell and the tagged parameters cell.
+						So to make it clear we edit the injected parameters comment to indicate it is the Injected-Parameters cell.
+						*/
+						if (cellModel.isInjectedParameter) {
+							cellModel.source = cellModel.source.slice(1);
+							cellModel.source = ['# Injected-Parameters\n'].concat(cellModel.source);
+						}
 						this.trackMarkdownTelemetry(<nb.ICellContents>c, cellModel);
 						return cellModel;
 					});
@@ -412,12 +413,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public async requestConnection(): Promise<boolean> {
 		// If there is a saved connection name with a corresponding connection profile, use that one,
 		// otherwise show connection dialog
-		if (this._savedConnectionName) {
+		if (this.configurationService.getValue(saveConnectionNameConfigName) && this._savedConnectionName) {
 			let profile: ConnectionProfile | undefined = this.getConnectionProfileFromName(this._savedConnectionName);
 			if (profile) {
 				await this.changeContext(this._savedConnectionName, profile);
 				return true;
-			} // TODO: No matching connection profile for saved connection name
+			}
 		}
 		if (this.requestConnectionHandler) {
 			return this.requestConnectionHandler();
@@ -956,7 +957,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	// Get saved connection name if saved in notebook file
 	private getSavedConnectionName(notebook: nb.INotebookContents): string | undefined {
-		return (notebook && notebook.metadata && notebook.metadata.connectionName) ? notebook.metadata.connectionName : undefined;
+		return notebook?.metadata?.connection_name ? notebook.metadata.connection_name : undefined;
 	}
 
 	// Get default kernel info if saved in notebook file
@@ -1197,8 +1198,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		metadata.language_info = this.languageInfo;
 		metadata.tags = this._tags;
 		metadata.multiConnectionMode = this._multiConnectionMode;
-		if (this.configurationService.getValue('notebook.saveConnectionName')) {
-			metadata.connectionName = this._savedConnectionName;
+		if (this.configurationService.getValue(saveConnectionNameConfigName)) {
+			metadata.connection_name = this._savedConnectionName;
 		}
 		Object.keys(this._existingMetadata).forEach(key => {
 			metadata[key] = this._existingMetadata[key];
