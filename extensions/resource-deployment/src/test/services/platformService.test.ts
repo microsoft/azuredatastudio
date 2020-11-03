@@ -3,117 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import * as events from 'events';
 import * as fs from 'fs';
 import 'mocha';
 import * as os from 'os';
 import * as cp from 'promisify-child-process';
 import * as should from 'should';
 import * as sinon from 'sinon';
-import { Readable } from 'stream';
 import * as sudo from 'sudo-prompt';
 import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
+import { tryExecuteAction } from '../../common/utils';
 import { OsDistribution } from '../../interfaces';
 import { extensionOutputChannel, PlatformService } from '../../services/platformService';
-
-class TestChildProcessPromise<T> implements cp.ChildProcessPromise {
-	private _promise: Promise<T>;
-	private _event: events.EventEmitter = new events.EventEmitter();
-
-	constructor() {
-		this._promise = new Promise<T>((resolve, reject) => {
-			this.resolve = resolve;
-			this.reject = reject;
-		});
-	}
-	resolve!: (value?: T | PromiseLike<T>) => void;
-	reject!: (reason?: any) => void;
-	then<TResult1 = T, TResult2 = never>(onFulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null, onRejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null): Promise<TResult1 | TResult2> {
-		return this._promise.then(onFulfilled, onRejected);
-	}
-	catch<TResult = never>(onRejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null): Promise<T | TResult> {
-		return this._promise.catch(onRejected);
-	}
-	[Symbol.toStringTag]: string;
-	finally(onFinally?: (() => void) | null): Promise<T> {
-		return this._promise.finally(onFinally);
-	}
-	stdin: any = this._event;
-	stdout: Readable | null = <Readable>this._event;
-	stderr: Readable | null = <Readable>this._event;
-	channel?: any;
-	stdio: [any, Readable | null, Readable | null, any, any] = [this.stdin, this.stdout, this.stderr, undefined, undefined];
-	killed: boolean = false;
-	pid: number = -1;
-	connected: boolean = false;
-	kill(signal?: number | 'SIGABRT' | 'SIGALRM' | 'SIGBUS' | 'SIGCHLD' | 'SIGCONT' | 'SIGFPE' | 'SIGHUP' | 'SIGILL' | 'SIGINT' | 'SIGIO' | 'SIGIOT' | 'SIGKILL' | 'SIGPIPE' | 'SIGPOLL' | 'SIGPROF' | 'SIGPWR' | 'SIGQUIT' | 'SIGSEGV' | 'SIGSTKFLT' | 'SIGSTOP' | 'SIGSYS' | 'SIGTERM' | 'SIGTRAP' | 'SIGTSTP' | 'SIGTTIN' | 'SIGTTOU' | 'SIGUNUSED' | 'SIGURG' | 'SIGUSR1' | 'SIGUSR2' | 'SIGVTALRM' | 'SIGWINCH' | 'SIGXCPU' | 'SIGXFSZ' | 'SIGBREAK' | 'SIGLOST' | 'SIGINFO'): void {
-		throw new Error('Method not implemented.');
-	}
-
-	send(message: any, callback?: (error: Error | null) => void): boolean;
-	send(message: any, sendHandle?: any, callback?: (error: Error | null) => void): boolean;
-	send(message: any, sendHandle?: any, options?: any, callback?: (error: Error | null) => void): boolean;
-	send(message: any, sendHandle?: any, options?: any, callback?: any): boolean {
-		throw new Error('Method not implemented.');
-	}
-	disconnect(): void {
-		throw new Error('Method not implemented.');
-	}
-	unref(): void {
-		throw new Error('Method not implemented.');
-	}
-	ref(): void {
-		throw new Error('Method not implemented.');
-	}
-	addListener(event: string | symbol, listener: (...args: any[]) => void): this {
-		throw new Error('Method not implemented.');
-	}
-	on(event: string | symbol, listener: (...args: any[]) => void): this {
-		this._event.on(event, listener);
-		return this;
-	}
-	once(event: string | symbol, listener: (...args: any[]) => void): this {
-		throw new Error('Method not implemented.');
-	}
-	prependListener(event: string | symbol, listener: (...args: any[]) => void): this {
-		throw new Error('Method not implemented.');
-	}
-	prependOnceListener(event: string | symbol, listener: (...args: any[]) => void): this {
-		throw new Error('Method not implemented.');
-	}
-	removeListener(event: string | symbol, listener: (...args: any[]) => void): this {
-		throw new Error('Method not implemented.');
-	}
-	off(event: string | symbol, listener: (...args: any[]) => void): this {
-		throw new Error('Method not implemented.');
-	}
-	removeAllListeners(event?: string | symbol): this {
-		throw new Error('Method not implemented.');
-	}
-	setMaxListeners(n: number): this {
-		throw new Error('Method not implemented.');
-	}
-	getMaxListeners(): number {
-		throw new Error('Method not implemented.');
-	}
-	listeners(event: string | symbol): Function[] {
-		throw new Error('Method not implemented.');
-	}
-	rawListeners(event: string | symbol): Function[] {
-		throw new Error('Method not implemented.');
-	}
-	emit(event: string | symbol, ...args: any[]): boolean {
-		return this._event.emit(event, args);
-	}
-	eventNames(): (string | symbol)[] {
-		throw new Error('Method not implemented.');
-	}
-	listenerCount(type: string | symbol): number {
-		throw new Error('Method not implemented.');
-	}
-
-}
+import { TestChildProcessPromise } from '../stubs';
 
 const globalStoragePath = os.tmpdir();
 const platformService = new PlatformService(globalStoragePath);
@@ -187,7 +89,7 @@ describe('PlatformService', () => {
 						should(error).not.be.undefined();
 						break;
 					}
-					default: console.log('unexpected error'); break;
+					default: throw new Error('unexpected error');
 				}
 			});
 		}));
@@ -282,11 +184,10 @@ describe('PlatformService', () => {
 	});
 	describe('runCommand', () => {
 		[
-			//[commandSucceeds, ignoreError]
-			[true, undefined],
-			[false, true],
-			[false, false],
-		].forEach(([commandSucceeds, ignoreError]) => {
+			{ commandSucceeds: true },
+			{ commandSucceeds: false, ignoreError: true },
+			{ commandSucceeds: false, ignoreError: false },
+		].forEach(({ commandSucceeds, ignoreError }) => {
 			if (ignoreError && commandSucceeds) {
 				return; //exit out of the loop as we do not handle ignoreError when command is successful
 			}
@@ -327,16 +228,6 @@ describe('PlatformService', () => {
 	});
 });
 
-async function tryExecuteAction<T>(action: () => T | PromiseLike<T>): Promise<{ result: T | undefined, error: any }> {
-	let error: any, result: T | undefined;
-	try {
-		result = await action();
-	} catch (e) {
-		error = e;
-	}
-	return { result, error };
-}
-
 function verifyCommandExecution(stub: sinon.SinonStub, result: string | undefined, error: any, command: string, commandSucceeds: boolean | undefined, ignoreError: boolean | undefined) {
 	stub.callCount.should.equal(1);
 	if (commandSucceeds) {
@@ -344,7 +235,7 @@ function verifyCommandExecution(stub: sinon.SinonStub, result: string | undefine
 	} else {
 		if (ignoreError) {
 			should(error).be.undefined();
-			(result === undefined || result.length === 0).should.be.true();
+			(result === undefined || result.length === 0).should.be.true('result should be an empty string or be undefined when an error occurs');
 		} else {
 			should(error).not.be.undefined();
 		}
