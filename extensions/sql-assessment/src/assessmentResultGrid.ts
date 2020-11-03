@@ -162,13 +162,6 @@ export class AssessmentResultGrid implements vscode.Disposable {
 
 	private async showDetails(rowNumber: number) {
 		const selectedRowValues = this.table.data[rowNumber];
-<<<<<<< HEAD
-		const asmtResultItem = this.dataItems.find(item =>
-			item.targetName === selectedRowValues[this.targetColOrder]
-			&& item.checkId === selectedRowValues[this.checkIdColOrder]
-			&& item.message === selectedRowValues[this.messageColOrder]
-		);
-=======
 		const asmtResultItem = this.asmtType === AssessmentType.InvokeAssessment
 			? this.dataItems.find(item =>
 				item.targetName === selectedRowValues[this.targetColOrder]
@@ -177,7 +170,6 @@ export class AssessmentResultGrid implements vscode.Disposable {
 			: this.dataItems.find(item =>
 				item.targetName === selectedRowValues[this.targetColOrder]
 				&& item.checkId === selectedRowValues[this.checkIdColOrder]);
->>>>>>> 8b8c4067c... fix for history reload upon target change and filter out unsupported asmt messages
 
 		if (!asmtResultItem) {
 			return;
