@@ -12,21 +12,11 @@ import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
 import { NotebookPathInfo } from '../../interfaces';
 import { Notebook, NotebookService } from '../../services/notebookService';
-import { IPlatformService 	} from '../../services/platformService';
+import { IPlatformService } from '../../services/platformService';
 import * as loc from '../../localizedConstants';
 import assert = require('assert');
+import { Deferred } from '../utils';
 
-class Deferred<T> {
-	promise: Promise<T>;
-	resolve!: (value?: T | PromiseLike<T>) => void;
-	reject!: (reason?: any) => void;
-	constructor() {
-		this.promise = new Promise<T>((resolve, reject) => {
-			this.resolve = resolve;
-			this.reject = reject;
-		});
-	}
-}
 describe('NotebookService', function (): void {
 	const notebookInput = 'test-notebook.ipynb';
 	const sourceNotebookContent = '{ "cells": [] }';
@@ -42,32 +32,31 @@ describe('NotebookService', function (): void {
 	let mockPlatformService: TypeMoq.IMock<IPlatformService>, notebookService: NotebookService;
 
 	beforeEach('NotebookService Setup', () => {
-		mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();//PlatformService, TypeMoq.MockBehavior.Loose
+		mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 		notebookService = new NotebookService(mockPlatformService.object, extensionPath);
 	});
 
 	afterEach('NotebookService cleanup', () => {
 		sinon.restore();
-		mockPlatformService.reset();
 	});
 
 	it('getNotebook with string parameter', async () => {
 		mockPlatformService.setup(x => x.fileExists(notebookInput)).returns(async () => true);
 		mockPlatformService.setup(x => x.readTextFile(notebookInput)).returns(async () => sourceNotebookContent);
 		let returnValue = await notebookService.getNotebook(notebookInput);
-		assert.deepEqual(returnValue, JSON.parse(sourceNotebookContent), 'returned notebook does not match expected value');
+		returnValue.should.deepEqual(JSON.parse(sourceNotebookContent), 'returned notebook does not match expected value');
 	});
 
 	it('getNotebookPath with string parameter', () => {
 		mockPlatformService.setup((service) => service.platform()).returns(() => { return 'win32'; });
 		let returnValue = notebookService.getNotebookPath(notebookInput);
-		assert.strictEqual(returnValue, notebookInput, 'returned notebook name does not match expected value');
+		returnValue.should.equal(notebookInput, 'returned notebook name does not match expected value');
 		mockPlatformService.verify((service) => service.platform(), TypeMoq.Times.never());
 
 		mockPlatformService.reset();
 		mockPlatformService.setup((service) => service.platform()).returns(() => { return 'win32'; });
 		returnValue = notebookService.getNotebookPath('');
-		assert.strictEqual(returnValue, '', 'returned notebook name does not match expected value is not an empty string');
+		returnValue.should.equal('', 'returned notebook name does not match expected value is not an empty string');
 		mockPlatformService.verify((service) => service.platform(), TypeMoq.Times.never());
 	});
 
@@ -79,19 +68,19 @@ describe('NotebookService', function (): void {
 		};
 		mockPlatformService.setup((service) => service.platform()).returns(() => { return 'win32'; });
 		let returnValue = notebookService.getNotebookPath(notebookInput);
-		assert.strictEqual(returnValue, notebookWin32, 'returned notebook name does not match expected value for win32 platform');
+		returnValue.should.equal(notebookWin32, 'returned notebook name does not match expected value for win32 platform');
 		mockPlatformService.verify((service) => service.platform(), TypeMoq.Times.once());
 
 		mockPlatformService.reset();
 		mockPlatformService.setup((service) => service.platform()).returns(() => { return 'darwin'; });
 		returnValue = notebookService.getNotebookPath(notebookInput);
-		assert.strictEqual(returnValue, notebookDarwin, 'returned notebook name does not match expected value for darwin platform');
+		returnValue.should.equal(notebookDarwin, 'returned notebook name does not match expected value for darwin platform');
 		mockPlatformService.verify((service) => service.platform(), TypeMoq.Times.once());
 
 		mockPlatformService.reset();
 		mockPlatformService.setup((service) => service.platform()).returns(() => { return 'linux'; });
 		returnValue = notebookService.getNotebookPath(notebookInput);
-		assert.strictEqual(returnValue, notebookLinux, 'returned notebook name does not match expected value for linux platform');
+		returnValue.should.equal(notebookLinux, 'returned notebook name does not match expected value for linux platform');
 		mockPlatformService.verify((service) => service.platform(), TypeMoq.Times.once());
 	});
 
@@ -100,7 +89,7 @@ describe('NotebookService', function (): void {
 			.returns((path) => { return false; });
 		const actualFileName = notebookService.findNextUntitledEditorName(sourceNotebookRelativePath);
 		mockPlatformService.verify((service) => service.isNotebookNameUsed(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
-		assert.strictEqual(actualFileName, expectedTargetFileName, 'target file name is not correct');
+		actualFileName.should.equal(expectedTargetFileName, 'target file name is not correct');
 	});
 
 	it('findNextUntitledEditorName with name conflicts', () => {
@@ -156,7 +145,7 @@ describe('NotebookService', function (): void {
 		valueInserted.cell_type.should.equal('code');
 		valueInserted.source.should.equal(cellStatements);
 		const insertionPosition = editorBuilderStub.getCall(0).args[1];
-		should(insertionPosition).be.equal(0); //default insertionPosition is 0.
+		should(insertionPosition).be.equal(0, 'default insertion point should be 0');
 		showNotebookVerify(showNotebookStub, expectedTargetFileName, sourceNotebookContent);
 	});
 
@@ -177,7 +166,7 @@ describe('NotebookService', function (): void {
 			const errorMessage = 'errorMessage';
 			executeNotebookSetup({ mockPlatformService, storagePath, errorMessage, sourceNotebookContent });
 			const result = await notebookService.executeNotebook(<Notebook>{}, process.env);
-			result.succeeded.should.be.false();
+			result.succeeded.should.be.false('executeNotebook should return an object with succeeded set to false when an error occurs during execution');
 			result.outputNotebook!.should.equal(sourceNotebookContent);
 			result.errorMessage!.should.equal(errorMessage);
 		});
@@ -196,7 +185,6 @@ describe('NotebookService', function (): void {
 		[true, false].forEach(outputProduced => {
 			it(`fails, with outputGenerated = ${outputProduced}`, async () => {
 				const deferred = new Deferred<void>();
-				//this.timeout(10000);
 				const errorMessage = 'errorMessage';
 				executeNotebookSetup({ mockPlatformService, storagePath, errorMessage, sourceNotebookContent: outputProduced ? sourceNotebookContent : '' });
 				const stub = sinon.stub(azdata.tasks, 'startBackgroundOperation').callThrough();
@@ -214,7 +202,6 @@ describe('NotebookService', function (): void {
 						message.should.equal(loc.taskFailedWithNoOutputNotebook(taskName));
 						deferred.resolve();
 					}
-					//deferred.resolve();
 				});
 				notebookService.backgroundExecuteNotebook(taskName, <Notebook>{ cells: [] }, 'deploy'/*tempNotebookPrefix*/, mockPlatformService.object, process.env);
 				verifyBackgroundExecuteNotebookKickoff(stub, taskName);
