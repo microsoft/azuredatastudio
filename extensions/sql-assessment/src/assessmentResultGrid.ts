@@ -33,6 +33,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 
 	private readonly checkIdColOrder = 5;
 	private readonly targetColOrder = 1;
+	private readonly messageColOrder = 3;
 
 	public get component(): azdata.Component {
 		return this.rootContainer;
@@ -155,7 +156,10 @@ export class AssessmentResultGrid implements vscode.Disposable {
 		const selectedRowValues = this.table.data[rowNumber];
 		const asmtResultItem = this.dataItems.find(item =>
 			item.targetName === selectedRowValues[this.targetColOrder]
-			&& item.checkId === selectedRowValues[this.checkIdColOrder]);
+			&& item.checkId === selectedRowValues[this.checkIdColOrder]
+			&& item.message === selectedRowValues[this.messageColOrder]
+		);
+
 		if (!asmtResultItem) {
 			return;
 		}
