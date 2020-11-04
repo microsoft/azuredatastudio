@@ -209,7 +209,7 @@ export class Dropdown extends Disposable {
 		});
 
 		this._controller.onDropdownEscape(() => {
-			this._input.focus();
+			(this._inputContainer.getElementsByClassName('action-label codicon dropdown-arrow')[0] as HTMLElement).focus();
 			this.contextViewService.hideContextView();
 		});
 
