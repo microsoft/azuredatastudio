@@ -79,7 +79,6 @@ export class ResourceViewerEditor extends EditorPane {
 		resourceViewerTableContainer.className = 'resource-viewer-table monaco-editor';
 		resourceViewerTableContainer.style.width = '100%';
 		resourceViewerTableContainer.style.height = '100%';
-		resourceViewerTableContainer.style.overflow = 'hidden';
 		resourceViewerTableContainer.style.position = 'relative';
 		this._resourceViewerTable = this._register(this._instantiationService.createInstance(ResourceViewerTable, resourceViewerTableContainer));
 		return resourceViewerTableContainer;
@@ -130,8 +129,10 @@ export class ResourceViewerEditor extends EditorPane {
 	}
 
 	public layout(dimension: DOM.Dimension): void {
+		this._resourceViewerTable.layout();
 		this._container.style.width = dimension.width + 'px';
-		this._container.style.height = dimension.height + 'px';
+		const actionbarHeight = DOM.getTotalHeight(this._actionBar.getContainer());
+		this._container.style.height = (dimension.height - actionbarHeight) + 'px';
 	}
 
 	private showContextMenu(anchor: ContextMenuAnchor, context: azdata.DataGridItem): void {
