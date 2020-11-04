@@ -5,7 +5,7 @@
 			<ng-container *ngFor="let column of columns; let c = index;">
 				<th class="declarative-table-header" aria-sort="none" [style.width]="getColumnWidth(column)"
 					[ngStyle]="column.headerCssStyles"
-					[attr.aria-label]="(column.ariaLabel)?column.ariaLabel:column.displayName">
+					[attr.aria-label]="getHeaderAriaLabel(c)">
 					{{column.displayName}}
 					<checkbox *ngIf="isCheckBox(c)" [checked]="isHeaderChecked(c)"
 					[aria-label]="getCheckAllColumnAriaLabel(c)" (onChange)="onHeaderCheckBoxChanged($event,c)"
