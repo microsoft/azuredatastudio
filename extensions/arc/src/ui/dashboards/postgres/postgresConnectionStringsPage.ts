@@ -17,6 +17,11 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
 		super(modelView);
 
+		this.dataLoading = this.modelView.modelBuilder.loadingComponent()
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._postgresModel.configLastUpdated
+			}).component();
+
 		this.disposables.push(this._postgresModel.onConfigUpdated(
 			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
 	}
@@ -62,15 +67,6 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 		this.disposables.push(this.keyValueContainer);
 		content.addItem(this.keyValueContainer.container);
 
-		if (!this._postgresModel.configLastUpdated) {
-			this.keyValueContainer?.container.updateCssStyles({ display: 'none' });
-		}
-
-		this.dataLoading = this.modelView.modelBuilder.loadingComponent()
-			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this._postgresModel.configLastUpdated
-			}).component();
-
 		content.addItem(this.dataLoading, { CSSStyles: cssStyles.text });
 
 		this.initialized = true;
@@ -104,6 +100,5 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 		this.dataLoading!.loading = false;
 		this.dataLoading!.updateCssStyles({ display: 'none' });
 		this.keyValueContainer?.refresh(this.getConnectionStrings());
-		this.keyValueContainer?.container.updateCssStyles({ display: 'initial' });
 	}
 }
