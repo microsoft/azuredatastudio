@@ -149,7 +149,9 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 			if (this._dataTable.isEmpty) {
 				formBuilder.addFormItem({ title: '', component: this._labelContainer });
 			}
-
+			if (this._tableDataCountComponent) {
+				this._tableDataCountComponent.value = constants.getDataCount(this._dataTable.modelCounts);
+			}
 		}
 	}
 
@@ -206,20 +208,26 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 		if (this._tableSelectionComponent?.data) {
 			this.importTable = this._tableSelectionComponent?.data;
 			await this.storeImportConfigTable();
-			if (this._dataTable && this._emptyModelsComponent) {
+			if (this._dataTable) {
 				await this._dataTable.refresh();
-				if (this._tableSelectionComponent?.defaultDbNameIsSelected) {
-					this._emptyModelsComponent.title = constants.selectModelDatabaseMessage;
-					this._emptyModelsComponent.description = '';
-				} else if (this._tableSelectionComponent?.defaultTableNameIsSelected) {
-					this._emptyModelsComponent.title = constants.selectModelTableMessage;
-					this._emptyModelsComponent.description = '';
+				if (this._emptyModelsComponent) {
+					if (this._tableSelectionComponent?.defaultDbNameIsSelected) {
+						this._emptyModelsComponent.title = constants.selectModelDatabaseMessage;
+						this._emptyModelsComponent.description = '';
+					} else if (this._tableSelectionComponent?.defaultTableNameIsSelected) {
+						this._emptyModelsComponent.title = constants.selectModelTableMessage;
+						this._emptyModelsComponent.description = '';
 
-				} else {
-					this._emptyModelsComponent.title = constants.modelsListEmptyMessage;
-					this._emptyModelsComponent.description = constants.modelsListEmptyDescription;
+					} else {
+						this._emptyModelsComponent.title = constants.modelsListEmptyMessage;
+						this._emptyModelsComponent.description = constants.modelsListEmptyDescription;
+					}
+					await this._emptyModelsComponent.refresh();
 				}
-				await this._emptyModelsComponent?.refresh();
+
+				if (this._tableDataCountComponent) {
+					this._tableDataCountComponent.value = constants.getDataCount(this._dataTable.modelCounts);
+				}
 			}
 			this.refreshComponents();
 		}

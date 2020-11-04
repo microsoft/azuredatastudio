@@ -25,7 +25,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	private _downloadedFile: ModelArtifact | undefined;
 	private _onModelSelectionChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	public readonly onModelSelectionChanged: vscode.Event<void> = this._onModelSelectionChanged.event;
-	public isEmpty: boolean = false;
+	public modelCounts: number = 0;
 
 	/**
 	 * Creates new view
@@ -207,9 +207,10 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				tableData = tableData.concat(models.map(model => this.createTableRow(model)));
 			}
 
-			this.isEmpty = models === undefined || models.length === 0;
-
+			this.modelCounts = models === undefined || models.length === 0 ? 0 : models.length;
 			this._table.data = tableData;
+		} else {
+			this.modelCounts = 0;
 		}
 		this.onModelSelected();
 		await this.onLoaded();
@@ -225,6 +226,10 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		if (this._loader) {
 			this._loader.loading = false;
 		}
+	}
+
+	public get isEmpty(): boolean {
+		return this.modelCounts === 0;
 	}
 
 	private createTableRow(model: ImportedModel): any[] {
