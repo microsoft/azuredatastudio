@@ -123,7 +123,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 		this.asmtType = method;
 		this.dataItems = this.filterOutNotSupportedKind(asmtResult.items);
 		await this.table.updateProperties({
-			'data': this.filterOutNotSupportedKind(asmtResult.items).map(item => this.convertToDataView(item))
+			'data': this.dataItems.map(item => this.convertToDataView(item))
 		});
 		this.rootContainer.setLayout({
 			flexFlow: 'column',
@@ -145,6 +145,8 @@ export class AssessmentResultGrid implements vscode.Disposable {
 		});
 	}
 
+	// we need to filter out warnings and error results since we don't have an appropriate way of displaying such messages.
+	// have to redone this once required functionality will be added to the core.
 	private filterOutNotSupportedKind(items: azdata.SqlAssessmentResultItem[]): azdata.SqlAssessmentResultItem[] {
 		if (this.asmtType === AssessmentType.AvailableRules) {
 			return items;
@@ -154,10 +156,11 @@ export class AssessmentResultGrid implements vscode.Disposable {
 	}
 
 	public async appendResult(asmtResult: azdata.SqlAssessmentResult): Promise<void> {
+		let filteredValues = this.filterOutNotSupportedKind(asmtResult.items);
 		if (this.dataItems) {
-			this.dataItems.push(...this.filterOutNotSupportedKind(asmtResult.items));
+			this.dataItems.push(...filteredValues);
 		}
-		this.table.appendData(this.filterOutNotSupportedKind(asmtResult.items).map(item => this.convertToDataView(item)));
+		this.table.appendData(filteredValues.map(item => this.convertToDataView(item)));
 	}
 
 	private async showDetails(rowNumber: number) {
