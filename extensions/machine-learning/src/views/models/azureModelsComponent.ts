@@ -57,8 +57,8 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 		this._emptyModelsComponent.height = 250;
 		this._emptyModelsComponent.iconSettings = {
 			css: { 'padding-top': '20px' },
-			width: 100,
-			height: 100
+			width: 128,
+			height: 128
 		};
 
 		this._emptyModelsComponent.registerComponent(modelBuilder);

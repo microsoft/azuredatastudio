@@ -9,7 +9,6 @@ import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { IDataComponent } from '../interfaces';
 import { DatabaseTable } from '../../prediction/interfaces';
-import * as constants from '../../common/constants';
 
 export interface ITableSelectionSettings {
 	editable: boolean,
@@ -17,7 +16,11 @@ export interface ITableSelectionSettings {
 	databaseTitle: string,
 	tableTitle: string,
 	databaseInfo: string,
-	tableInfo: string
+	tableInfo: string,
+	layout?: string,
+	defaultTableName: string;
+	defaultDbName: string;
+	useImportModelCache: boolean
 }
 /**
  * View to render filters to pick an azure resource
@@ -53,10 +56,10 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._databases = modelBuilder.dropDown().withProperties({
-			width: this.componentMaxLength,
+			width: '221px'
 		}).component();
 		this._tables = modelBuilder.dropDown().withProperties({
-			width: this.componentMaxLength - 10,
+			width: '221px'
 		}).component();
 
 		this._databases.onValueChanged(async () => {
@@ -142,10 +145,10 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 		], {
 			flex: '0 0 auto',
 			CSSStyles: {
-				'align-items': 'flex-start'
+				'align-items': 'flex-start',
 			}
 		}).withLayout({
-			flexFlow: this._settings.editable ? 'column' : 'row',
+			flexFlow: this._settings.layout === 'horizontal' ? 'row' : 'column',
 			justifyContent: 'space-between',
 			width: this.tableMaxLength
 		}).component();
@@ -191,13 +194,31 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	}
 
 	/**
+	 * Returns selected data
+	 */
+	public get defaultDbNameIsSelected(): boolean {
+		return this.data === undefined || this.data.databaseName === this._settings.defaultDbName;
+	}
+
+	/**
+	 * Returns selected data
+	 */
+	public get defaultTableNameIsSelected(): boolean {
+		return this.data === undefined || this.data.tableName === this._settings.defaultTableName;
+	}
+
+	public get isDataValid(): boolean {
+		return this.data !== undefined && this.data.databaseName !== this._settings.defaultDbName && this.data.tableName !== this._settings.defaultTableName;
+	}
+
+	/**
 	 * loads data in the components
 	 */
 	public async loadData(): Promise<void> {
 		this._dbNames = await this.listDatabaseNames();
 		let dbNames = this._dbNames;
-		if (!this._dbNames.find(x => x === constants.selectDatabaseTitle)) {
-			dbNames = [constants.selectDatabaseTitle].concat(this._dbNames);
+		if (!this._dbNames.find(x => x === this._settings.defaultDbName)) {
+			dbNames = [this._settings.defaultDbName].concat(this._dbNames);
 		}
 		if (this._databases && dbNames && dbNames.length > 0) {
 			this._databases.values = dbNames;
@@ -230,14 +251,14 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 		this.refreshTableComponent();
 
 
-		if (this._tableNames && !this._tableNames.find(x => x.tableName === constants.selectTableTitle)) {
-			const firstRow: DatabaseTable = { tableName: constants.selectTableTitle, databaseName: '', schema: '' };
+		if (this._tableNames && !this._tableNames.find(x => x.tableName === this._settings.defaultTableName)) {
+			const firstRow: DatabaseTable = { tableName: this._settings.defaultTableName, databaseName: '', schema: '' };
 			tableNames = [firstRow].concat(this._tableNames);
 		}
 
 		if (this._tables && tableNames && tableNames.length > 0) {
 			this._tables.values = tableNames.map(t => this.getTableFullName(t));
-			if (this.importTable && this.importTable.databaseName === this._databases?.value) {
+			if (this._settings.useImportModelCache && this.importTable && this.importTable.databaseName === this._databases?.value) {
 				const selectedTable = tableNames.find(t => t.tableName === this.importTable?.tableName && t.schema === this.importTable?.schema);
 				if (selectedTable) {
 					this._selectedTableName = this.getTableFullName(selectedTable);
@@ -266,7 +287,7 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	}
 
 	private getTableFullName(table: DatabaseTable): string {
-		return table.tableName === constants.selectTableTitle ? table.tableName : `${table.schema}.${table.tableName}`;
+		return table.tableName === this._settings.defaultTableName ? table.tableName : `${table.schema}.${table.tableName}`;
 	}
 
 	private async onTableSelected(): Promise<void> {
