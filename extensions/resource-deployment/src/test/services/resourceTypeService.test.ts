@@ -8,14 +8,14 @@ import * as TypeMoq from 'typemoq';
 import assert = require('assert');
 import should = require('should');
 import { EOL } from 'os';
-import { ResourceTypeService, processWhenClause } from '../services/resourceTypeService';
-import { IPlatformService } from '../services/platformService';
-import { ToolsService } from '../services/toolsService';
-import { NotebookService } from '../services/notebookService';
+import { ResourceTypeService, processWhenClause } from '../../services/resourceTypeService';
+import { IPlatformService } from '../../services/platformService';
+import { ToolsService } from '../../services/toolsService';
+import { NotebookService } from '../../services/notebookService';
 
-suite('Resource Type Service Tests', function (): void {
+describe('Resource Type Service Tests', function (): void {
 
-	test('test resource types', () => {
+	it('test resource types', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 		const toolsService = new ToolsService(mockPlatformService.object);
 		const notebookService = new NotebookService(mockPlatformService.object, '');
@@ -47,7 +47,7 @@ suite('Resource Type Service Tests', function (): void {
 		assert(validationErrors.length === 0, `Validation errors detected in the package.json: ${validationErrors.join(EOL)}.`);
 	});
 
-	test('Selected options containing all when clauses should return true', () => {
+	it('Selected options containing all when clauses should return true', () => {
 		const whenSelectedTrue: { when: string; selectedOptions: { option: string, value: string }[] }[] = [
 			{
 				when: 'resourceType=sql-bdc && newType=sql-windows-setup', selectedOptions: [{ option: 'resourceType', value: 'sql-image' }, { option: 'resourceType', value: 'sql-bdc' }, { option: 'newType', value: 'sql-windows-setup' }]
@@ -62,16 +62,16 @@ suite('Resource Type Service Tests', function (): void {
 		});
 	});
 
-	test('When clause that reads "true" (ignoring case) should always return true', () => {
+	it('When clause that reads "true" (ignoring case) should always return true', () => {
 		should(processWhenClause(undefined, [])).be.true('undefined when clause should always return true');
 		should(processWhenClause('TrUe', [])).be.true(`"true" when clause should always return true`);
 	});
 
-	test('No selected options returns false', () => {
+	it('No selected options returns false', () => {
 		should(processWhenClause('newType=empty', [])).be.false('No selected options should return false');
 	});
 
-	test('Unfulfilled or partially fulfilled when clauses return false', () => {
+	it('Unfulfilled or partially fulfilled when clauses return false', () => {
 		const whenSelectedFalse: { when: string; selectedOptions: { option: string, value: string }[] }[] = [
 			{
 				when: 'resourceType=sql-bdc && dneType=does-not-exist', selectedOptions: [{ option: 'resourceType', value: 'sql-image' }, { option: 'resourceType', value: 'sql-bdc' }, { option: 'newType', value: 'sql-windows-setup' }]
@@ -85,7 +85,7 @@ suite('Resource Type Service Tests', function (): void {
 		});
 	});
 
-	test('An invalid when clause should always return false', () => {
+	it('An invalid when clause should always return false', () => {
 		should(processWhenClause('badWhenClause', [{ option: 'bad', value: 'WhenClause' }])).be.false(`invalid when clause should return false`);
 	});
 });

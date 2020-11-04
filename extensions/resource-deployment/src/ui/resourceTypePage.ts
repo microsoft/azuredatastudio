@@ -3,13 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'mocha';
-import assert = require('assert');
-import { apiService } from '../services/apiService';
+import { ResourceTypeWizard } from './resourceTypeWizard';
+import { WizardPageBase } from './wizardPageBase';
 
-suite('API Service Tests', function (): void {
-	test('getAzurecoreApi returns azure api', () => {
-		const api = apiService.azurecoreApi;
-		assert(api !== undefined);
-	});
-});
+export abstract class ResourceTypePage extends WizardPageBase<ResourceTypeWizard>{
+	abstract initialize(): void;
+}

@@ -13,6 +13,7 @@
 	"sqlDatabaseProjects.schemaCompare": "Schema Compare",
 	"sqlDatabaseProjects.delete": "Delete",
 	"sqlDatabaseProjects.exclude": "Exclude from project",
+	"sqlDatabaseProjects.validateExternalStreamingJob": "Validate External Streaming Job",
 
 	"sqlDatabaseProjects.newScript": "Add Script",
 	"sqlDatabaseProjects.newPreDeploymentScript": "Add Pre-Deployment Script",
@@ -20,6 +21,7 @@
 	"sqlDatabaseProjects.newTable": "Add Table",
 	"sqlDatabaseProjects.newView": "Add View",
 	"sqlDatabaseProjects.newStoredProcedure": "Add Stored Procedure",
+	"sqlDatabaseProjects.newExternalStreamingJob": "Add External Streaming Job",
 	"sqlDatabaseProjects.newItem": "Add Item...",
 	"sqlDatabaseProjects.newFolder": "Add Folder",
 

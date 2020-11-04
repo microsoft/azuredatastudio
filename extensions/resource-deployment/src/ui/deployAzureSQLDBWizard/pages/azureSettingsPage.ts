@@ -6,12 +6,13 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as constants from '../constants';
-import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 import { apiService } from '../../../services/apiService';
 import { azureResource } from 'azureResource';
 import * as vscode from 'vscode';
 import { BasePage } from './basePage';
 import * as nls from 'vscode-nls';
+import { DeployAzureSQLDBWizardModel } from '../deployAzureSQLDBWizardModel';
+import * as localizedConstants from '../../../localizedConstants';
 const localize = nls.loadMessageBundle();
 
 export class AzureSettingsPage extends BasePage {
@@ -58,11 +59,11 @@ export class AzureSettingsPage extends BasePage {
 
 	private _accountsMap!: Map<string, azdata.Account>;
 	private _subscriptionsMap!: Map<string, azureResource.AzureResourceSubscription>;
-	constructor(wizard: DeployAzureSQLDBWizard) {
+	constructor(private _model: DeployAzureSQLDBWizardModel) {
 		super(
 			constants.AzureSettingsPageTitle,
 			'',
-			wizard
+			_model.wizard
 		);
 		this._accountsMap = new Map();
 		this._subscriptionsMap = new Map();
@@ -90,19 +91,19 @@ export class AzureSettingsPage extends BasePage {
 				.withFormItems(
 					[
 						{
-							component: this.wizard.createFormRowComponent(view, constants.AzureAccountDropdownLabel, '', this._azureAccountsDropdown, true)
+							component: this._model.createFormRowComponent(view, constants.AzureAccountDropdownLabel, '', this._azureAccountsDropdown, true)
 						},
 						{
 							component: this.buttonFlexContainer
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.AzureAccountSubscriptionDropdownLabel, '', this._azureSubscriptionsDropdown, true)
+							component: this._model.createFormRowComponent(view, constants.AzureAccountSubscriptionDropdownLabel, '', this._azureSubscriptionsDropdown, true)
 						},
 						// { //@todo alma1 9/9/2020 Used for upcoming server creation feature.
 						// 	component: this.wizard.createFormRowComponent(view, constants.AzureAccountResourceGroupDropdownLabel, '', this._resourceGroupDropdown, true)
 						// },
 						{
-							component: this.wizard.createFormRowComponent(view, constants.AzureAccountDatabaseServersDropdownLabel, '', this._serverGroupDropdown, true)
+							component: this._model.createFormRowComponent(view, constants.AzureAccountDatabaseServersDropdownLabel, '', this._serverGroupDropdown, true)
 						},
 						// { //@todo alma1 9/8/2020 Used for upcoming server creation feature.
 						// 	component: this.wizard.createFormRowComponent(view, constants.AzureAccountRegionDropdownLabel, '', this._azureRegionsDropdown, true)
@@ -161,16 +162,16 @@ export class AzureSettingsPage extends BasePage {
 		this._azureAccountsDropdown = view.modelBuilder.dropDown().withProperties({}).component();
 
 		this._azureAccountsDropdown.onValueChanged(async (value) => {
-			this.wizard.model.azureAccount = this._accountsMap.get(value.selected)!;
+			this._model.azureAccount = this._accountsMap.get(value.selected)!;
 			this.populateAzureSubscriptionsDropdown();
 		});
 
 		this.signInButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: 'Sign In',
+			label: localizedConstants.signIn,
 			width: '100px'
 		}).component();
 		this.refreshButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: 'Refresh',
+			label: localizedConstants.refresh,
 			width: '100px'
 		}).component();
 
@@ -192,13 +193,13 @@ export class AzureSettingsPage extends BasePage {
 		let accounts = await azdata.accounts.getAllAccounts();
 
 		if (accounts.length === 0) {
-			this.wizard.showErrorMessage(localize('deployAzureSQLDB.azureSignInError', "Sign in to an Azure account first"));
+			this._model.wizard.showErrorMessage(localize('deployAzureSQLDB.azureSignInError', "Sign in to an Azure account first"));
 			return;
 		} else {
-			this.wizard.showErrorMessage('');
+			this._model.wizard.showErrorMessage('');
 		}
 
-		this.wizard.addDropdownValues(
+		this._model.addDropdownValues(
 			this._azureAccountsDropdown,
 			accounts.map((account): azdata.CategoryValue => {
 				let accountCategoryValue = {
@@ -210,7 +211,7 @@ export class AzureSettingsPage extends BasePage {
 			}),
 		);
 
-		this.wizard.model.azureAccount = accounts[0];
+		this._model.azureAccount = accounts[0];
 		this._azureAccountsDropdown.loading = false;
 
 		await this.populateAzureSubscriptionsDropdown();
@@ -222,11 +223,11 @@ export class AzureSettingsPage extends BasePage {
 		this._azureSubscriptionsDropdown.onValueChanged(async (value) => {
 
 			let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
-			this.wizard.model.azureSubscription = currentSubscriptionValue.name;
-			this.wizard.model.azureSubscriptionDisplayName = currentSubscriptionValue.displayName;
+			this._model.azureSubscription = currentSubscriptionValue.name;
+			this._model.azureSubscriptionDisplayName = currentSubscriptionValue.displayName;
 
-			this.wizard.model.securityToken = await azdata.accounts.getAccountSecurityToken(
-				this.wizard.model.azureAccount,
+			this._model.securityToken = await azdata.accounts.getAccountSecurityToken(
+				this._model.azureAccount,
 				this._subscriptionsMap.get(currentSubscriptionValue.name)?.tenant!,
 				azdata.AzureResource.ResourceManagement
 			);
@@ -265,7 +266,7 @@ export class AzureSettingsPage extends BasePage {
 		}
 		subscriptions.sort((a: any, b: any) => a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()));
 
-		this.wizard.addDropdownValues(
+		this._model.addDropdownValues(
 			this._azureSubscriptionsDropdown,
 			subscriptions.map((subscription: any): azdata.CategoryValue => {
 				let subscriptionCategoryValue = {
@@ -277,11 +278,11 @@ export class AzureSettingsPage extends BasePage {
 			})
 		);
 
-		this.wizard.model.azureSubscription = (this._azureSubscriptionsDropdown.value as azdata.CategoryValue).name;
-		this.wizard.model.azureSubscriptionDisplayName = (this._azureSubscriptionsDropdown.value as azdata.CategoryValue).displayName;
+		this._model.azureSubscription = (this._azureSubscriptionsDropdown.value as azdata.CategoryValue).name;
+		this._model.azureSubscriptionDisplayName = (this._azureSubscriptionsDropdown.value as azdata.CategoryValue).displayName;
 
-		this.wizard.model.securityToken = await azdata.accounts.getAccountSecurityToken(
-			this.wizard.model.azureAccount,
+		this._model.securityToken = await azdata.accounts.getAccountSecurityToken(
+			this._model.azureAccount,
 			this._subscriptionsMap.get((this._azureSubscriptionsDropdown.value as azdata.CategoryValue).name)?.tenant!,
 			azdata.AzureResource.ResourceManagement
 		);
@@ -298,9 +299,9 @@ export class AzureSettingsPage extends BasePage {
 		}).component();
 		this._serverGroupDropdown.onValueChanged(async (value) => {
 			if (value.selected === ((this._serverGroupDropdown.value as azdata.CategoryValue).displayName)) {
-				this.wizard.model.azureServerName = value.selected;
-				this.wizard.model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
-				this.wizard.model.azureRegion = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/location/'), '');
+				this._model.azureServerName = value.selected;
+				this._model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
+				this._model.azureRegion = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/location/'), '');
 				//this.populateManagedInstanceDropdown(); //@todo alma1 9/8/2020 functions below are used for upcoming database hardware creation feature.
 			}
 		});
@@ -317,8 +318,8 @@ export class AzureSettingsPage extends BasePage {
 			// await this.populateManagedInstanceDropdown(); //@todo alma1 9/8/2020 functions below are used for upcoming database hardware creation feature.
 			return;
 		}
-		let url = `https://management.azure.com/subscriptions/${this.wizard.model.azureSubscription}/providers/Microsoft.Sql/servers?api-version=2019-06-01-preview`;
-		let response = await this.wizard.getRequest(url);
+		let url = `https://management.azure.com/subscriptions/${this._model.azureSubscription}/providers/Microsoft.Sql/servers?api-version=2019-06-01-preview`;
+		let response = await this._model.getRequest(url);
 		if (response.data.value.length === 0) {
 			this._serverGroupDropdown.updateProperties({
 				values: [
@@ -334,7 +335,7 @@ export class AzureSettingsPage extends BasePage {
 		} else {
 			response.data.value.sort((a: azdata.CategoryValue, b: azdata.CategoryValue) => (a!.name > b!.name) ? 1 : -1);
 		}
-		this.wizard.addDropdownValues(
+		this._model.addDropdownValues(
 			this._serverGroupDropdown,
 			response.data.value.map((value: any) => {
 				return {
@@ -345,9 +346,9 @@ export class AzureSettingsPage extends BasePage {
 			})
 		);
 		if (this._serverGroupDropdown.value) {
-			this.wizard.model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
-			this.wizard.model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
-			this.wizard.model.azureRegion = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/location/'), '');
+			this._model.azureServerName = (this._serverGroupDropdown.value as azdata.CategoryValue).displayName;
+			this._model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '');
+			this._model.azureRegion = (this._serverGroupDropdown.value as azdata.CategoryValue).name.replace(RegExp('^(.*?)/location/'), '');
 		}
 		this._serverGroupDropdown.loading = false;
 		// await this.populateManagedInstanceDropdown(); //@todo alma1 9/8/2020 functions below are used for upcoming database hardware creation feature.
@@ -759,7 +760,7 @@ export class AzureSettingsPage extends BasePage {
 		// 	errorMessages.push(localize('deployAzureSQLDB.SupportedFamiliesError', "No Supported Family found in current DB edition.\nSelect a different edition"));
 		// }
 
-		this.wizard.showErrorMessage(errorMessages.join(EOL));
+		this._model.wizard.showErrorMessage(errorMessages.join(EOL));
 		return errorMessages.join(EOL);
 	}
 }

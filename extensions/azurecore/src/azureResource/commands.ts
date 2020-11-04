@@ -30,13 +30,34 @@ export function registerAzureResourceCommands(appContext: AppContext, trees: (Az
 				vscode.window.showInformationMessage(msg);
 				return;
 			}
-			if (!node || !(node instanceof AzureResourceAccountTreeNode)) {
-				return;
+			let azureAccount: AzureAccount | undefined;
+			if (node instanceof AzureResourceAccountTreeNode) {
+				azureAccount = node.account as AzureAccount;
+			} else {
+				let accounts = await azdata.accounts.getAllAccounts();
+				accounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
+				if (accounts.length === 0) {
+					const signin = localize('azure.signIn', "Sign in");
+					const action = await vscode.window.showErrorMessage(localize('azure.noAccountError', "You are not currently signed into any Azure accounts, Please sign in and then try again."),
+						signin);
+					if (action === signin) {
+						vscode.commands.executeCommand('azure.resource.signin');
+					}
+					return;
+				} else if (accounts.length === 1) {
+					azureAccount = accounts[0];
+				} else {
+					const pickedAccount = await vscode.window.showQuickPick(accounts.map(account => account.displayInfo.displayName), {
+						canPickMany: false,
+						placeHolder: localize('azure.pickAnAzureAccount', "Select an Azure account")
+					});
+					if (!pickedAccount) {
+						vscode.window.showErrorMessage(localize('azure.accountNotSelectedError', "You must select an Azure account for this feature to work."));
+						return;
+					}
+					azureAccount = accounts.find(acct => acct.displayInfo.displayName === pickedAccount);
+				}
 			}
-
-			const accountNode = node as AzureResourceAccountTreeNode;
-			const azureAccount = accountNode.account as AzureAccount;
-
 
 			const terminalService = appContext.getService<IAzureTerminalService>(AzureResourceServiceNames.terminalService);
 

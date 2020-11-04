@@ -6,12 +6,12 @@
 import 'mocha';
 import * as TypeMoq from 'typemoq';
 import * as should from 'should';
-import { IPlatformService, CommandOptions } from '../services/platformService';
-import { AzdataService } from '../services/azdataService';
-import { BdcDeploymentType } from '../interfaces';
+import { IPlatformService, CommandOptions } from '../../services/platformService';
+import { AzdataService } from '../../services/azdataService';
+import { BdcDeploymentType } from '../../interfaces';
 
-suite('azdata service Tests', function (): void {
-	test('azdata service handles deployment types properly', async () => {
+describe('azdata service Tests', function (): void {
+	it('azdata service handles deployment types properly', async () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 		const azdataService = new AzdataService(mockPlatformService.object);
 		mockPlatformService.setup((service) => service.runCommand(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((command: string, options: CommandOptions | undefined) => {
@@ -30,7 +30,7 @@ suite('azdata service Tests', function (): void {
 		mockPlatformService.verify((service) => service.runCommand(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(5));
 	});
 
-	test('azdata service returns correct deployment profiles', async () => {
+	it('azdata service returns correct deployment profiles', async () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 		const azdataService = new AzdataService(mockPlatformService.object);
 		mockPlatformService.setup((service => service.storagePath())).returns(() => {
