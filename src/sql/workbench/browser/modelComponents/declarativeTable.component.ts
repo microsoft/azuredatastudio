@@ -220,6 +220,10 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		return '';
 	}
 
+	public getCheckAllColumnAriaLabel(colIdx: number): string {
+		return localize('checkAllColumnLabel', "check all {0}", this.columns[colIdx].displayName);
+	}
+
 	public getItemDescriptor(componentId: string): IComponentDescriptor {
 		return this.modelStore.getComponentDescriptor(componentId);
 	}
