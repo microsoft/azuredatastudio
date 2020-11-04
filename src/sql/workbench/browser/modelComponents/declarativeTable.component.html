@@ -8,7 +8,7 @@
 					[attr.aria-label]="(column.ariaLabel)?column.ariaLabel:column.displayName">
 					{{column.displayName}}
 					<checkbox *ngIf="isCheckBox(c)" [checked]="isHeaderChecked(c)"
-						[aria-label]="getCheckAllColumnAriaLabel(c)" (onChange)="onHeaderCheckBoxChanged($event,c)"
+					[aria-label]="getCheckAllColumnAriaLabel(c)" (onChange)="onHeaderCheckBoxChanged($event,c)"
 						label=""></checkbox>
 				</th>
 			</ng-container>
