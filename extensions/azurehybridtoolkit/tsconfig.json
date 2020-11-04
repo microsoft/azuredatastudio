@@ -1,0 +1,18 @@
+{
+	"extends": "../shared.tsconfig.json",
+	"compilerOptions": {
+		"experimentalDecorators": true,
+		"lib": [
+			"dom"
+		],
+		"outDir": "./out",
+		"strict": false,
+		"noUnusedParameters": false,
+		"typeRoots": [
+			"./node_modules/@types"
+		]
+	},
+	"include": [
+		"src/**/*"
+	]
+}
