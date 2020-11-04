@@ -3,13 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'mocha';
-import assert = require('assert');
-import { apiService } from '../services/apiService';
-
-suite('API Service Tests', function (): void {
-	test('getAzurecoreApi returns azure api', () => {
-		const api = apiService.azurecoreApi;
-		assert(api !== undefined);
-	});
-});
+export class Deferred<T> {
+	promise: Promise<T> = new Promise<T>((resolve, reject) => {
+		this.resolve = resolve;
+		this.reject = reject;
+	});;
+	resolve!: (value?: T | PromiseLike<T>) => void;
+	reject!: (reason?: any) => void;
+}
