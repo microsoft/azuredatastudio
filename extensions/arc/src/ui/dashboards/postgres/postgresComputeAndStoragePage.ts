@@ -41,6 +41,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.initializeConfigurationBoxes();
 
+		this.dataLoading = this.modelView.modelBuilder.loadingComponent()
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._postgresModel.configLastUpdated
+			}).component();
+
 		this.disposables.push(this._postgresModel.onConfigUpdated(
 			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
 	}
@@ -123,11 +128,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.handleServiceUpdated();
 		content.addItem(this.workerContainer, { CSSStyles: { 'min-height': '30px' } });
 
-		this.dataLoading = this.modelView.modelBuilder.loadingComponent()
-			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this._postgresModel.configLastUpdated
-			}).component();
-
 		content.addItem(this.dataLoading, { CSSStyles: cssStyles.text });
 
 		this.initialized = true;
@@ -161,16 +161,14 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 						},
 						(_progress, _token) => {
 							return this._azdataApi.azdata.arc.postgres.server.edit(
-								this._postgresModel.info.name, this.saveArgs);
+								this._postgresModel.info.name, this.saveArgs).then(
+									async () => {
+										await this._postgresModel.refresh();
+									});
 						}
 					);
 
-					this._postgresModel.refresh();
-
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
-
-					this.dataLoading!.updateCssStyles({ display: 'initial' });
-					this.dataLoading!.loading = true;
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));

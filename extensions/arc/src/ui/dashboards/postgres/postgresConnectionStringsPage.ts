@@ -50,7 +50,7 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 
 		const link = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 			label: loc.learnAboutPostgresClients,
-			url: 'https://docs.microsoft.com/azure/postgresql/concepts-connection-libraries',
+			url: 'https://docs.microsoft.com/azure/azure-arc/data/get-connection-endpoints-and-connection-strings-postgres-hyperscale',
 		}).component();
 
 		const infoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
