@@ -143,20 +143,23 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 		if (this._tableSelectionComponent && this._dataTable && this._tableDataCountContainer && this._labelContainer && this._subheadingContainer) {
 			formBuilder.addFormItem({ title: '', component: this._subheadingContainer });
 			this._tableSelectionComponent.addComponents(formBuilder);
+			formBuilder.addFormItem({ title: '', component: this._tableDataCountContainer });
 			this._dataTable.addComponents(formBuilder);
 
 			if (this._dataTable.isEmpty) {
 				formBuilder.addFormItem({ title: '', component: this._labelContainer });
 			}
-			formBuilder.addFormItem({ title: '', component: this._tableDataCountContainer });
+
 		}
 	}
 
 	public removeComponents(formBuilder: azdata.FormBuilder) {
-		if (this._tableSelectionComponent && this._dataTable && this._labelContainer) {
+		if (this._tableSelectionComponent && this._dataTable && this._labelContainer && this._tableDataCountContainer && this._subheadingContainer) {
 			this._tableSelectionComponent.removeComponents(formBuilder);
 			this._dataTable.removeComponents(formBuilder);
 			formBuilder.removeFormItem({ title: '', component: this._labelContainer });
+			formBuilder.removeFormItem({ title: '', component: this._tableDataCountContainer });
+			formBuilder.removeFormItem({ title: '', component: this._subheadingContainer });
 		}
 	}
 
