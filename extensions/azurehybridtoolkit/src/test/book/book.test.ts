@@ -12,11 +12,10 @@ import * as rimraf from 'rimraf';
 import * as os from 'os';
 import * as uuid from 'uuid';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
-import { BookTreeItem, BookTreeItemType } from '../../book/bookTreeItem';
+import { BookTreeItem } from '../../book/bookTreeItem';
 import { promisify } from 'util';
 import { MockExtensionContext } from '../common/stubs';
 import { exists } from '../../common/utils';
-import { BookModel } from '../../book/bookModel';
 import { BookTrustManager } from '../../book/bookTrustManager';
 import { NavigationProviders } from '../../common/constants';
 import { readBookError } from '../../common/localizedConstants';
@@ -569,7 +568,7 @@ describe('BooksTreeViewTests', function () {
 					}
 				});
 		});
-	})});
+	});});
 
 	describe('BookTreeViewProvider.getSections', function() {
 		let rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
@@ -642,10 +641,12 @@ describe('BooksTreeViewTests', function () {
 			});
 
 			after(async function (): Promise<void> {
-				if (await exists(rootFolderPath)) await promisify(rimraf)(rootFolderPath);
+				if (await exists(rootFolderPath)) {
+					await promisify(rimraf)(rootFolderPath);
+				}
 			});
 		});
-	})});
+	});});
 
 	describe('BookTreeViewProvider.Commands', function() {
 		let rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
@@ -779,23 +780,6 @@ describe('BooksTreeViewTests', function () {
 					should(notebookUri.scheme).equal('untitled', 'Failed to get untitled uri of the resource');
 				});
 
-				it('openNotebookFolder without folderPath should prompt for folder path and invoke loadNotebooksInFolder', async () => {
-					sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(rootFolderPath)]));
-					let loadNotebooksSpy = sinon.spy(bookTreeViewProvider, 'loadNotebooksInFolder');
-					await bookTreeViewProvider.openNotebookFolder();
-
-					should(loadNotebooksSpy.calledWith(rootFolderPath)).be.true('openNotebookFolder should have called loadNotebooksInFolder passing the folderPath');
-				});
-
-				it('openNotebookFolder with folderPath shouldn\'t prompt for folder path but invoke loadNotebooksInFolder with the provided folderPath', async () => {
-					let showOpenDialogSpy = sinon.spy(vscode.window, 'showOpenDialog');
-					let loadNotebooksSpy = sinon.spy(bookTreeViewProvider, 'loadNotebooksInFolder');
-					await bookTreeViewProvider.openNotebookFolder(rootFolderPath);
-
-					should(showOpenDialogSpy.notCalled).be.true('openNotebookFolder with folderPath shouldn\'t prompt to select folder');
-					should(loadNotebooksSpy.calledOnce).be.true('openNotebookFolder should have called loadNotebooksInFolder');
-				});
-
 				it('openNewBook should prompt for notebook path and invoke openBook', async () => {
 					sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(rootFolderPath)]));
 					let openBookSpy = sinon.spy(bookTreeViewProvider, 'openBook');
@@ -898,28 +882,6 @@ describe('BooksTreeViewTests', function () {
 					await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				});
 
-				it('should include books and notebooks when opening parent folder', async () => {
-					await bookTreeViewProvider.loadNotebooksInFolder(rootFolderPath);
-					should(bookTreeViewProvider.books.length).equal(2, 'Should have loaded a book and a notebook');
-
-					validateIsBook(bookTreeViewProvider.books[0]);
-					validateIsNotebook(bookTreeViewProvider.books[1]);
-				});
-
-				it('should include only books when opening books folder', async () => {
-					await bookTreeViewProvider.loadNotebooksInFolder(run.folderPaths.bookFolderPath);
-					should(bookTreeViewProvider.books.length).equal(1, 'Should have loaded only one book');
-
-					validateIsBook(bookTreeViewProvider.books[0]);
-				});
-
-				it('should include only notebooks when opening notebooks folder', async () => {
-					await bookTreeViewProvider.loadNotebooksInFolder(run.folderPaths.notebookFolderPath);
-					should(bookTreeViewProvider.books.length).equal(1, 'Should have loaded only one notebook');
-
-					validateIsNotebook(bookTreeViewProvider.books[0]);
-				});
-
 				afterEach(async function (): Promise<void> {
 					let bookItems = await bookTreeViewProvider.getChildren();
 					await Promise.all(bookItems.map(bookItem => bookTreeViewProvider.closeBook(bookItem)));
@@ -930,37 +892,6 @@ describe('BooksTreeViewTests', function () {
 						await promisify(rimraf)(rootFolderPath);
 					}
 				});
-
-				let validateIsBook = (book: BookModel) => {
-					should(book.isNotebook).be.false();
-					should(book.bookItems.length).equal(1);
-
-					let bookItem = book.bookItems[0];
-
-					let bookDetails = bookItem.book;
-					should(bookDetails.type).equal(BookTreeItemType.Book);
-					should(bookDetails.title).equal(run.contents.bookTitle);
-					should(bookDetails.contentPath).equal(run.folderPaths.tableOfContentsFile.replace(/\\/g, '/'));
-					should(bookDetails.root).equal(run.folderPaths.bookFolderPath.replace(/\\/g, '/'));
-					should(bookDetails.tableOfContents.sections).not.equal(undefined);
-					should(bookDetails.page).not.equal(undefined);
-				};
-
-				let validateIsNotebook = (book: BookModel) => {
-					should(book.isNotebook).be.true();
-					should(book.bookItems.length).equal(1);
-
-					let bookItem = book.bookItems[0];
-					should(book.getAllNotebooks().get(vscode.Uri.file(run.folderPaths.standaloneNotebookFile).fsPath)).equal(bookItem);
-
-					let bookDetails = bookItem.book;
-					should(bookDetails.type).equal(BookTreeItemType.Notebook);
-					should(bookDetails.title).equal(run.contents.standaloneNotebookTitle);
-					should(bookDetails.contentPath).equal(run.folderPaths.standaloneNotebookFile.replace(/\\/g, '/'));
-					should(bookDetails.root).equal(run.folderPaths.notebookFolderPath.replace(/\\/g, '/'));
-					should(bookDetails.tableOfContents.sections).equal(undefined);
-					should(bookDetails.page.sections).equal(undefined);
-				};
 			});
 		});
 

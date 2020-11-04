@@ -30,9 +30,8 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	 * If changes are made to bookTreeView.openBook, please ensure backwards compatibility with its current state.
 	 * This is the command used in the extension generator to open a Jupyter Book.
 	 */
-	console.log('reached here!');
 
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('hybridtoolkit.command.openNotebookFolder', (urlToOpen?: string, showPreview?: boolean) => bookTreeViewProvider.openNotebookFolder('./notebooks', urlToOpen, showPreview)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('hybridtoolkit.command.openNotebookFolder', () => bookTreeViewProvider.openNotebookFolder()));
 
 
 	controller = new JupyterController(appContext);

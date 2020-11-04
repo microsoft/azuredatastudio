@@ -83,7 +83,7 @@ export class GitHubRemoteBook extends RemoteBook {
 			}
 			await fs.promises.unlink(remoteBookFullPath.fsPath);
 			this.outputChannel.appendLine(loc.msgRemoteBookDownloadComplete);
-			vscode.commands.executeCommand('hybridtoolkit.command.openNotebookFolder', this.localPath.fsPath, undefined, true);
+			vscode.commands.executeCommand('hybridtoolkit.command.openNotebookFolder', undefined, true);
 		}
 		catch (err) {
 			this.outputChannel.appendLine(loc.msgRemoteBookUnpackingError);

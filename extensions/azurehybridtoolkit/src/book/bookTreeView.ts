@@ -67,7 +67,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} else {
 			await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
 				try {
-					await this.loadNotebooksInFolder(workspaceFolder.uri.fsPath);
+					await this.loadNotebooksInFolder();
 				} catch {
 					// no-op, not all workspace folders are going to be valid books
 				}
@@ -457,33 +457,18 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	public async openNotebookFolder(folderPath?: string, urlToOpen?: string, showPreview?: boolean): Promise<void> {
-		if (!folderPath) {
-			const allFilesFilter = loc.allFiles;
-			let filter: any = {};
-			filter[allFilesFilter] = '*';
-			let uris = await vscode.window.showOpenDialog({
-				filters: filter,
-				canSelectFiles: false,
-				canSelectMany: false,
-				canSelectFolders: true,
-				openLabel: loc.labelSelectFolder
-			});
-			folderPath = uris && uris.length > 0 ? uris[0].fsPath : undefined;
-		}
-
-		if (folderPath) {
-			await this.loadNotebooksInFolder(folderPath, urlToOpen, showPreview);
-		}
+	public async openNotebookFolder(): Promise<void> {
+		await this.loadNotebooksInFolder();
 	}
 
-	public async loadNotebooksInFolder(folderPath: string, urlToOpen?: string, showPreview?: boolean) {
+	public async loadNotebooksInFolder() {
+		const folderPath = path.join(__dirname, '../../notebooks');
 		let bookCollection = await this.getNotebooksInTree(folderPath);
 		for (let i = 0; i < bookCollection.bookPaths.length; i++) {
-			await this.openBook(bookCollection.bookPaths[i], urlToOpen, showPreview);
+			await this.openBook(bookCollection.bookPaths[i]);
 		}
 		for (let i = 0; i < bookCollection.notebookPaths.length; i++) {
-			await this.openBook(bookCollection.notebookPaths[i], urlToOpen, showPreview, true);
+			await this.openBook(bookCollection.notebookPaths[i], undefined, undefined, true);
 		}
 	}
 
