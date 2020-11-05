@@ -71,13 +71,9 @@ export class ResourceTypeWizard {
 			//if we are changing to the first page from no page before, essentially when we load the wizard for the first time, e.lastPage is -1 and previousPage is undefined.
 			await previousPage?.onLeave(new WizardPageInfo(e.lastPage, this.pages.length));
 			if (this.useGenerateScriptButton) {
-				if (newPage === this.pages.slice(-1)[0]) {
-					// if newPage is the last page
-					this.wizardObject.generateScriptButton.hidden = false; //un-hide generateScriptButton on last page
-				} else {
-					// if newPage is not the last page
-					this.wizardObject.generateScriptButton.hidden = true; //hide generateScriptButton if it is not the last page
-				}
+				this.wizardObject.generateScriptButton.hidden = (newPage === this.pages.slice(-1)[0])
+					? false // if newPage is the last page
+					: true; // if newPage is not the last page
 			}
 			await newPage.onEnter(new WizardPageInfo(e.newPage, this.pages.length));
 		}));
@@ -116,7 +112,7 @@ export class ResourceTypeWizard {
 		/**
 		 * Currently changing wizard titles and pages does not work without closing and reopening the wizard. (it makes the changes to objects but visually everything remains the same).
 		 * Also, the done button listener gets broken when we close and reopen the same dialog
-		 * For these reasons, I am creating a new wizard every time user changes the options.
+		 * For these reasons, I am creating a new wizard every time user changes the options that requires changes to the wizard's titles and pages.
 		 */
 		this.createNewWizard();
 		this.updateModelFromProvider();

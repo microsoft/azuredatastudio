@@ -25,7 +25,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 	private _toolsLoadingComponent!: azdata.LoadingComponent;
 	private _agreementContainer!: azdata.DivContainer;
-	private _agreeementCheckBox!: azdata.CheckBoxComponent;
+	private _agreementCheckBox!: azdata.CheckBoxComponent;
 	private _installToolButton!: azdata.ButtonComponent;
 	private _installationInProgress: boolean = false;
 	private _tools: ITool[] = [];
@@ -130,7 +130,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 
 			this.form = view.modelBuilder.formContainer().withFormItems(
 				[
-
 					{
 						component: this._optionsContainer,
 					}, {
@@ -208,10 +207,8 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					});
 				}
 
-
 				this.updateOkButtonText();
 				this.updateToolsDisplayTable();
-
 			});
 		});
 		this._isInitialized = true;
@@ -219,7 +216,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 
 
 	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
-		this._agreeementCheckBox = this.view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+		this._agreementCheckBox = this.view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
 			ariaLabel: this.getAgreementDisplayText(agreementInfo),
 			required: true
 		}).component();
@@ -228,7 +225,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			links: agreementInfo.links,
 			requiredIndicator: true
 		}).component();
-		return createFlexContainer(this.view, [this._agreeementCheckBox, text]);
+		return createFlexContainer(this.view, [this._agreementCheckBox, text]);
 	}
 
 	private getAgreementDisplayText(agreementInfo: AgreementInfo): string {
@@ -507,5 +504,4 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		this.wizard.wizardObject.doneButton.enabled = enable;
 		this.wizard.wizardObject.nextButton.enabled = enable;
 	}
-
 }
