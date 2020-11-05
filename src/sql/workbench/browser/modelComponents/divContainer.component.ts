@@ -51,12 +51,9 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 		this._overflowY = '';	// default
 	}
 
-	ngAfterViewInit() {
+	ngAfterViewInit(): void {
 		this.viewInitialized = true;
 		this.updateClickListener();
-	}
-
-	ngOnInit(): void {
 		this.baseInit();
 	}
 

@@ -71,7 +71,7 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.baseInit();
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());

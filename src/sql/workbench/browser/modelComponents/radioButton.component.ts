@@ -35,11 +35,6 @@ export default class RadioButtonComponent extends ComponentBase<azdata.RadioButt
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-
-	}
-
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
 			this._input = new RadioButton(this._inputContainer.nativeElement, {
@@ -55,6 +50,7 @@ export default class RadioButtonComponent extends ComponentBase<azdata.RadioButt
 				});
 			}));
 		}
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {
