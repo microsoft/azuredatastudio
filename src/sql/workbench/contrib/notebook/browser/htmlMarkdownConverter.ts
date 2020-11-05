@@ -114,17 +114,17 @@ export class HTMLMarkdownConverter {
 					.replace(/\n/gm, '\n    '); // indent
 				let prefix = options.bulletListMarker + ' ';
 				let parent = node.parentNode;
+				let nestedCount = 0;
 				if (parent.nodeName === 'OL') {
 					let start = parent.getAttribute('start');
 					let index = Array.prototype.indexOf.call(parent.children, node);
 					prefix = (start ? Number(start) + index : index + 1) + '. ';
 				} else if (parent.nodeName === 'UL') {
-					let count = 0;
 					while (parent?.nodeName === 'UL') {
-						count++;
+						nestedCount++;
 						parent = parent?.parentNode;
 					}
-					prefix = ('    '.repeat(count - 1)) + '- ';
+					prefix = ('    '.repeat(nestedCount - 1)) + options.bulletListMarker + ' ';
 				}
 				return (
 					prefix + content + (node.nextSibling && !/\n$/.test(content) ? '\n' : '')
