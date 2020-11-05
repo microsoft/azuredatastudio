@@ -57,34 +57,12 @@ export class ResourceTypeWizard {
 	}
 
 
-	public getResourceProviderModel(): ResourceTypeModel {
-		/**
-		 * Currently changing wizard tiltes and pages does not work without closing and reopening the wizard. (it makes the changes to objects but visually everything remains the same).
-		 * Also, the done button listener gets broken when we close and reopen the same dialog
-		 * For these reasons, I am creating a new wizard every time user changes the options.
-		 */
-		this.wizardObject = azdata.window.createWizard(this.resourceType.displayName, this.resourceType.name, 'wide');
-		if (instanceOfWizardDeploymentProvider(this.provider)) {
-			return new DeployClusterWizardModel(this.provider, this);
-		} else if (instanceOfAzureSQLVMDeploymentProvider(this.provider)) {
-			return new DeployAzureSQLVMWizardModel(this.provider, this);
-		} else if (instanceOfNotebookWizardDeploymentProvider(this.provider)) {
-			return new NotebookWizardModel(this.provider, this);
-		} else if (instanceOfAzureSQLDBDeploymentProvider(this.provider)) {
-			return new DeployAzureSQLDBWizardModel(this.provider, this);
-		} else {
-			return new PageLessDeploymentModel(this.provider, this);
+	private createNewWizard() {
+		// closing the current wizard and disposing off any listners from the closed wizard
+		if (this.wizardObject) {
+			this.close();
 		}
-	}
-
-	public async open(): Promise<void> {
-		this.model = this.getResourceProviderModel();
-		await this.wizardObject.open();
-	}
-
-	public set model(value: ResourceTypeModel) {
-		this._model = value;
-		this._model.initialize();
+		this.wizardObject = azdata.window.createWizard(this.resourceType.displayName, this.resourceType.name, 'wide');
 		this.wizardObject.generateScriptButton.hidden = true; // by default generateScriptButton stays hidden.
 		this.wizardObject.customButtons = this.customButtons;
 		this.toDispose.push(this.wizardObject.onPageChanged(async (e) => {
@@ -119,8 +97,35 @@ export class ResourceTypeWizard {
 		}));
 	}
 
-	public get model(): ResourceTypeModel {
-		return this._model;
+
+	private getResourceProviderModel(): ResourceTypeModel {
+		if (instanceOfWizardDeploymentProvider(this.provider)) {
+			return new DeployClusterWizardModel(this.provider, this);
+		} else if (instanceOfAzureSQLVMDeploymentProvider(this.provider)) {
+			return new DeployAzureSQLVMWizardModel(this.provider, this);
+		} else if (instanceOfNotebookWizardDeploymentProvider(this.provider)) {
+			return new NotebookWizardModel(this.provider, this);
+		} else if (instanceOfAzureSQLDBDeploymentProvider(this.provider)) {
+			return new DeployAzureSQLDBWizardModel(this.provider, this);
+		} else {
+			return new PageLessDeploymentModel(this.provider, this);
+		}
+	}
+
+	public async open(): Promise<void> {
+		/**
+		 * Currently changing wizard titles and pages does not work without closing and reopening the wizard. (it makes the changes to objects but visually everything remains the same).
+		 * Also, the done button listener gets broken when we close and reopen the same dialog
+		 * For these reasons, I am creating a new wizard every time user changes the options.
+		 */
+		this.createNewWizard();
+		this.updateModelFromProvider();
+		await this.wizardObject.open();
+	}
+
+	private updateModelFromProvider() {
+		this._model = this.getResourceProviderModel();
+		this._model.initialize();
 	}
 
 	public addButton(button: azdata.window.Button) {
@@ -158,7 +163,7 @@ export class ResourceTypeWizard {
 		};
 	}
 
-	public async close() {
+	private async close() {
 		this.dispose();
 		this.wizardObject.close();
 	}

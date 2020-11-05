@@ -194,7 +194,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						this.wizard.registerDisposable(optionSelectBox.onValueChanged(async () => {
 							resourceTypeOptions[index] = <ResourceTypeOptionValue>optionSelectBox.value;
 							this.wizard.provider = this.getCurrentProvider();
-							await this.wizard.close();
 							await this.wizard.open();
 						}));
 
