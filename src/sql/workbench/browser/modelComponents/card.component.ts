@@ -72,7 +72,6 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 	}
 
 	ngAfterViewInit(): void {
-		this.baseInit();
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.onkeydown(this._el.nativeElement, (e: StandardKeyboardEvent) => {
@@ -81,7 +80,7 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 				DOM.EventHelper.stop(e, true);
 			}
 		});
-
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {
