@@ -40,6 +40,10 @@ export class ResourceTypeWizard {
 		this._useGenerateScriptButton = value;
 	}
 
+	public get model(): ResourceTypeModel {
+		return this._model;
+	}
+
 	constructor(
 		public resourceType: ResourceType,
 		public _kubeService: IKubeService,
