@@ -3,11 +3,8 @@
 	"relativeSourcePath": "..",
 	"relativeCoverageDir": "../../coverage",
 	"ignorePatterns": [
-		"**/integrationTest/**",
 		"**/node_modules/**",
-		"**/test/**",
-		"extension.js",
-		"common/localizedConstants.js"
+		"**/test/**"
 	],
 	"reports": [
 		"cobertura",

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import vscode = require('vscode');
 
 export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('hybridtoolkit.openNotebooks', () => {
