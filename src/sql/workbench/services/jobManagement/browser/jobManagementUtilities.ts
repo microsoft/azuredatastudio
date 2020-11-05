@@ -40,20 +40,16 @@ export class JobManagementUtilities {
 		return bool ? nls.localize('agentUtilities.yes', "Yes") : nls.localize('agentUtilities.no', "No");
 	}
 
-	public static convertToNextRun(date: string) {
-		let newDate = date as unknown;
-		let dateArr = newDate as [];
-		if (dateArr.find(x => x === '1/1/0001')) {
+	public static convertToNextRun(date: string): string {
+		if (date.includes('1/1/0001')) {
 			return nls.localize('agentUtilities.notScheduled', "Not Scheduled");
 		} else {
 			return date;
 		}
 	}
 
-	public static convertToLastRun(date: string) {
-		let newDate = date as unknown;
-		let dateArr = newDate as [];
-		if (dateArr.find(x => x === '1/1/0001')) {
+	public static convertToLastRun(date: string): string {
+		if (date.includes('1/1/0001')) {
 			return nls.localize('agentUtilities.neverRun', "Never Run");
 		} else {
 			return date;
