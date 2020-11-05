@@ -56,10 +56,10 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._databases = modelBuilder.dropDown().withProperties({
-			width: '221px'
+			width: '275px'
 		}).component();
 		this._tables = modelBuilder.dropDown().withProperties({
-			width: '221px'
+			width: '275px'
 		}).component();
 
 		this._databases.onValueChanged(async () => {
@@ -146,10 +146,11 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 			flex: '0 0 auto',
 			CSSStyles: {
 				'align-items': 'flex-start',
+				'padding-right': '16px',
 			}
 		}).withLayout({
 			flexFlow: this._settings.layout === 'horizontal' ? 'row' : 'column',
-			justifyContent: 'space-between',
+			justifyContent: 'flex-start',
 			width: this.tableMaxLength
 		}).component();
 

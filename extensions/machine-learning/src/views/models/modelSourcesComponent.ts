@@ -107,7 +107,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 		this._selectedSourceLabel = modelBuilder.text().withProperties({
 			value: this.getSourceTypeDescription(this._sourceType),
 			CSSStyles: {
-				'font-size': '14px',
+				'font-size': '13px',
 				'margin': '0',
 				'width': '438px'
 			}
