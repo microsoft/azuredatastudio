@@ -93,13 +93,17 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 			}
 		}).component();
 
-		this._existingTableButton.onDidClick(() => {
+		this._existingTableButton.onDidClick(async () => {
 			this._existingTablesSelected = true;
 			this.refreshTableComponent();
+			this._selectedTableName = <string>this._tables?.value ?? '';
+			await this.onTableSelected();
 		});
-		this._newTableButton.onDidClick(() => {
+		this._newTableButton.onDidClick(async () => {
 			this._existingTablesSelected = false;
 			this.refreshTableComponent();
+			this._selectedTableName = '';
+			await this.onTableSelected();
 		});
 		this._newTableName.onTextChanged(async () => {
 			if (this._newTableName) {
@@ -209,7 +213,7 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	}
 
 	public get isDataValid(): boolean {
-		return this.data !== undefined && this.data.databaseName !== this._settings.defaultDbName && this.data.tableName !== this._settings.defaultTableName;
+		return this.data !== undefined && this.data.databaseName !== '' && this.data.tableName !== '' && this.data.databaseName !== undefined && this.data.tableName !== undefined && this.data.databaseName !== this._settings.defaultDbName && this.data.tableName !== this._settings.defaultTableName;
 	}
 
 	/**
