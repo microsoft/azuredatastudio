@@ -540,7 +540,7 @@ export class ProjectsController {
 		const addDatabaseReferenceDialog = this.getAddDatabaseReferenceDialog(project);
 		addDatabaseReferenceDialog.addReference = async (proj, prof) => await this.addDatabaseReferenceCallback(proj, prof);
 
-		await addDatabaseReferenceDialog.openDialog();
+		addDatabaseReferenceDialog.openDialog();
 
 		return addDatabaseReferenceDialog;
 	}
