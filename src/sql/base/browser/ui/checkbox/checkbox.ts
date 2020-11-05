@@ -66,11 +66,6 @@ export class Checkbox extends Widget {
 			this.onChange(opts.onChange);
 		}
 
-		this._el.addEventListener('focus', () => {
-			this._el.style.outlineColor = '#E47609';
-			this._el.style.outlineWidth = '2px';
-		});
-
 		container.appendChild(this._el);
 		container.appendChild(this._label);
 	}
