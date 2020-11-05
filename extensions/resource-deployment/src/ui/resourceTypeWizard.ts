@@ -58,7 +58,7 @@ export class ResourceTypeWizard {
 
 
 	private createNewWizard() {
-		// closing the current wizard and disposing off any listners from the closed wizard
+		// closing the current wizard and disposing off any listeners from the closed wizard
 		if (this.wizardObject) {
 			this.close();
 		}
