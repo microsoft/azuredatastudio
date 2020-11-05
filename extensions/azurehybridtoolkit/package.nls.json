@@ -2,5 +2,5 @@
 	"displayName": "Azure Cloud Hybrid Toolkit Extension",
 	"description": "Opens up Cloud Hybrid Toolkit",
 	"preview-category": "Hybrid Toolkit",
-	"title.openNotebookFolder": "Open Notebooks in Folder",
+	"title.openNotebookFolder": "Open Notebooks in Folder"
 }
