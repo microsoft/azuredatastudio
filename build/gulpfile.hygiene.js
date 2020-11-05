@@ -62,6 +62,7 @@ const indentationFilter = [
 	'!test/smoke/out/**',
 	'!extensions/typescript-language-features/test-workspace/**',
 	'!extensions/vscode-api-tests/testWorkspace/**',
+	'!extensions/azurehybridtoolkit/notebooks/**',
 	'!extensions/vscode-api-tests/testWorkspace2/**',
 	'!build/monaco/**',
 	'!build/win32/**',
@@ -150,7 +151,6 @@ const copyrightFilter = [
 	'!src/vs/editor/test/node/classification/typescript-test.ts',
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
-	'!extensions/azurehybridtoolkit/src/intellisense/text.ts',
 	'!extensions/mssql/src/hdfs/webhdfs.ts',
 	'!src/sql/workbench/contrib/notebook/browser/outputs/tableRenderers.ts',
 	'!src/sql/workbench/contrib/notebook/common/models/url.ts',
@@ -176,11 +176,9 @@ const copyrightFilter = [
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/notebook/src/prompts/**',
-	'!extensions/azurehybridtoolkit/src/prompts/**',
 	'!extensions/mssql/src/prompts/**',
 	'!extensions/kusto/src/prompts/**',
-	'!extensions/notebook/resources/jupyter_config/**',
-	'!extensions/azurehybridtoolkit/resources/jupyter_config/**',
+	'!extensions/azurehybridtoolkit/notebooks/**',
 	'!extensions/query-history/images/**',
 	'!**/*.gif',
 	'!**/*.xlf',
@@ -217,7 +215,7 @@ const tsHygieneFilter = [
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}},
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts', // {{SQL CARBON EDIT}},
 	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // {{SQL CARBON EDIT}} skip this because we have no plans on touching this and its not ours
-	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts' // {{SQL CARBON EDIT}} skip this because known issue
+	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts', // {{SQL CARBON EDIT}} skip this because known issue
 ];
 
 const copyrightHeaderLines = [

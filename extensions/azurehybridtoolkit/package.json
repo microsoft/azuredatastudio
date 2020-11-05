@@ -8,110 +8,23 @@
     "vscode": "*",
     "azdata": "*"
   },
-  "main": "./out/extension",
+  "main": "./out/main",
   "activationEvents": [
     "*"
   ],
   "contributes": {
     "commands": [
       {
-        "command": "hybridtoolkit.command.openNotebookFolder",
+        "command": "hybridtoolkit.openNotebooks",
         "title": "%title.openNotebookFolder%",
         "category": "%preview-category%"
-      }
-    ],
-    "languages": [
-      {
-        "id": "notebook",
-        "extensions": [
-          ".ipynb"
-        ],
-        "aliases": [
-          "Notebook"
-        ],
-        "configuration": "./language-configuration.json"
-      }
-    ],
-    "grammars": [
-      {
-        "language": "notebook",
-        "scopeName": "source.notebook",
-        "path": "./syntaxes/notebook.tmLanguage.json"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "hybridtoolkit.command.openNotebookFolder",
+          "command": "hybridtoolkit.openNotebooks",
           "when": "true"
-        }
-      ]
-    },
-    "notebook.languagemagics": [
-      {
-        "magic": "lang_python",
-        "language": "python",
-        "executionTarget": null,
-        "kernels": [
-          "sql"
-        ]
-      },
-      {
-        "magic": "lang_r",
-        "language": "r",
-        "executionTarget": null,
-        "kernels": [
-          "sql"
-        ]
-      },
-      {
-        "magic": "lang_java",
-        "language": "java",
-        "executionTarget": null,
-        "kernels": [
-          "sql"
-        ]
-      }
-    ],
-    "notebook.providers": {
-      "provider": "jupyter",
-      "fileExtensions": [
-        "IPYNB"
-      ],
-      "standardKernels": [
-        {
-          "name": "pysparkkernel",
-          "displayName": "PySpark",
-          "connectionProviderIds": [
-            "MSSQL"
-          ],
-          "blockedOnSAW": true
-        },
-        {
-          "name": "sparkkernel",
-          "displayName": "Spark | Scala",
-          "connectionProviderIds": [
-            "MSSQL"
-          ],
-          "blockedOnSAW": true
-        },
-        {
-          "name": "sparkrkernel",
-          "displayName": "Spark | R",
-          "connectionProviderIds": [
-            "MSSQL"
-          ],
-          "blockedOnSAW": true
-        },
-        {
-          "name": "python3",
-          "displayName": "Python 3",
-          "connectionProviderIds": []
-        },
-        {
-          "name": "powershell",
-          "displayName": "PowerShell",
-          "connectionProviderIds": []
         }
       ]
     }
