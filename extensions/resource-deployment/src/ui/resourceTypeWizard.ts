@@ -40,7 +40,6 @@ export class ResourceTypeWizard {
 		this._useGenerateScriptButton = value;
 	}
 
-	//TODO: eventually only resourceType will be passed. For now, we are passing both \the resourceType and provider
 	constructor(
 		public resourceType: ResourceType,
 		public _kubeService: IKubeService,
@@ -51,12 +50,7 @@ export class ResourceTypeWizard {
 		public resourceTypeService: ResourceTypeService) {
 
 		if (resourceType.options) {
-			let options: { option: string; value: string; }[] = [];
-			resourceType.options.forEach(option => {
-				options.push({ option: option.name, value: option.values[0].name });
-			});
-
-			this.provider = this.resourceType.getProvider(options)!;
+			this.provider = this.resourceType.getProvider(resourceType.options.map(option => { return { option: option.name, value: option.values[0].name }; }))!;
 		} else {
 			this.provider = this.resourceType.providers[0];
 		}
@@ -72,8 +66,9 @@ export class ResourceTypeWizard {
 			return new NotebookWizardModel(this.provider, this);
 		} else if (instanceOfAzureSQLDBDeploymentProvider(this.provider)) {
 			return new DeployAzureSQLDBWizardModel(this.provider, this);
+		} else {
+			return new PageLessDeploymentModel(this.provider, this);
 		}
-		return new PageLessDeploymentModel(this.provider, this);
 	}
 
 	public async open(): Promise<void> {

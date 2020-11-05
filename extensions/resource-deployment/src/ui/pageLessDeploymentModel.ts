@@ -10,14 +10,14 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { ResourceTypePage } from './resourceTypePage';
+
 const localize = nls.loadMessageBundle();
 
 
 export class PageLessDeploymentModel extends ResourceTypeModel {
 
 	initialize(): void {
-		const pages: ResourceTypePage[] = [];
-		this.wizard.setPages(pages);
+		this.wizard.setPages([]);
 	}
 
 	async onOk(): Promise<void> {
