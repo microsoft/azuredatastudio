@@ -153,13 +153,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 							title: loc.updatingInstance(this._postgresModel.info.name),
 							cancellable: false
 						},
-						(_progress, _token) => {
-							return this._azdataApi.azdata.arc.postgres.server.edit(
+						async (_progress, _token): Promise<void> => {
+							await this._azdataApi.azdata.arc.postgres.server.edit(
 								this._postgresModel.info.name, this.saveArgs);
+							await this._postgresModel.refresh();
 						}
 					);
-
-					this._postgresModel.refresh();
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 
