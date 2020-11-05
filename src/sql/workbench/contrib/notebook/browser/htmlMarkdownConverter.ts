@@ -105,6 +105,32 @@ export class HTMLMarkdownConverter {
 				return `[${node.innerText}](${node.href})`;
 			}
 		});
+		this.turndownService.addRule('listItem', {
+			filter: 'li',
+			replacement: function (content, node, options) {
+				content = content
+					.replace(/^\n+/, '') // remove leading newlines
+					.replace(/\n+$/, '\n') // replace trailing newlines with just a single one
+					.replace(/\n/gm, '\n    '); // indent
+				let prefix = options.bulletListMarker + ' ';
+				let parent = node.parentNode;
+				if (parent.nodeName === 'OL') {
+					let start = parent.getAttribute('start');
+					let index = Array.prototype.indexOf.call(parent.children, node);
+					prefix = (start ? Number(start) + index : index + 1) + '. ';
+				} else if (parent.nodeName === 'UL') {
+					let count = 0;
+					while (parent?.nodeName === 'UL') {
+						count++;
+						parent = parent?.parentNode;
+					}
+					prefix = ('    '.repeat(count - 1)) + '- ';
+				}
+				return (
+					prefix + content + (node.nextSibling && !/\n$/.test(content) ? '\n' : '')
+				);
+			}
+		});
 	}
 }
 
