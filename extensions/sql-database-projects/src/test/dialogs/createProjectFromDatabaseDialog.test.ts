@@ -5,9 +5,11 @@
 
 import * as should from 'should';
 import * as azdata from 'azdata';
+import * as mssql from '../../../../mssql';
 import * as sinon from 'sinon';
 import { CreateProjectFromDatabaseDialog } from '../../dialogs/createProjectFromDatabaseDialog';
 import { mockConnectionProfile } from '../testContext';
+import { ImportDataModel } from '../../models/api/import';
 
 describe('Create Project From Database Dialog', () => {
 	afterEach(function (): void {
@@ -69,5 +71,39 @@ describe('Create Project From Database Dialog', () => {
 		dialog.folderStructureDropDown!.value = 'Object Type';
 		dialog.tryEnableImportButton();
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled since all the required fields are filled');
+	});
+
+	it('Should create default project name correctly when database information is populated', async function (): Promise<void> {
+		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
+		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
+		await dialog.openDialog();
+		dialog.setProjectName();
+
+		should.equal(dialog.projectNameTextBox!.value, 'DatabaseProjectMy Database');
+	});
+
+	it('Should include all info in import data model and connect to appropriate call back properties', async function (): Promise<void> {
+		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
+		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
+		await dialog.openDialog();
+
+		dialog.projectNameTextBox!.value = 'testProject';
+		dialog.projectLocationTextBox!.value = 'testLocation';
+
+		let model: ImportDataModel;
+
+		const expectedImportDataModel: ImportDataModel  = {
+			serverId: 'My Id',
+			database: 'My Database',
+			projName: 'testProject',
+			filePath: 'testLocation',
+			version: '1.0.0.0',
+			extractTarget: mssql.ExtractTarget['schemaObjectType']
+		};
+
+		dialog.createNewProjectCallBack = (m) => { model = m; };
+		await dialog.importClick();
+
+		should(model!).deepEqual(expectedImportDataModel);
 	});
 });

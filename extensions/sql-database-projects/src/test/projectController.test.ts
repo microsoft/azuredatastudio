@@ -29,6 +29,7 @@ import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
+import { ImportDataModel } from '../models/api/import';
 
 let testContext: TestContext;
 
@@ -469,8 +470,8 @@ describe('ProjectsController', function (): void {
 
 			const createProjectFromDatabaseDialog = TypeMoq.Mock.ofType(CreateProjectFromDatabaseDialog, undefined, undefined, undefined);
 			createProjectFromDatabaseDialog.callBase = true;
-			createProjectFromDatabaseDialog.setup(x => x.importClick()).returns(() => {
-				projController.object.createNewProjectCallBack( { serverId: 'My Id', database: 'My Database', projName: 'testProject', filePath: 'testLocation', version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'] });
+			createProjectFromDatabaseDialog.setup(x => x.importClick()).returns(async () => {
+				await projController.object.createNewProjectCallBack( { serverId: 'My Id', database: 'My Database', projName: 'testProject', filePath: 'testLocation', version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'] });
 				return Promise.resolve(undefined);
 			});
 
@@ -486,6 +487,32 @@ describe('ProjectsController', function (): void {
 			await dialog.importClick();
 
 			should(holler).equal(createProjectFromDbHoller, 'executionCallback() is supposed to have been setup and called for create project from database scenario');
+		});
+
+		it('Should set model filePath correctly for ExtractType = File', async function (): Promise<void> {
+			let folderPath = await testUtils.generateTestFolderPath();
+			let projectName = 'My Project';
+			let importPath;
+			let model: ImportDataModel = { serverId: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['file'] };
+
+			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+			projController.setFilePath(model);
+			importPath = model.filePath;
+
+			should(importPath.toUpperCase()).equal(vscode.Uri.file(path.join(folderPath, projectName + '.sql')).fsPath.toUpperCase(), `model.filePath should be set to a specific file for ExtractTarget === file, but was ${importPath}`);
+		});
+
+		it('Should set model filePath correctly for ExtractType = Schema/Object Type', async function (): Promise<void> {
+			let folderPath = await testUtils.generateTestFolderPath();
+			let projectName = 'My Project';
+			let importPath;
+			let model: ImportDataModel = { serverId: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'] };
+
+			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+			projController.setFilePath(model);
+			importPath = model.filePath;
+
+			should(importPath.toUpperCase()).equal(vscode.Uri.file(path.join(folderPath)).fsPath.toUpperCase(), `model.filePath should be set to a folder for ExtractTarget !== file, but was ${importPath}`);
 		});
 	});
 

@@ -540,7 +540,7 @@ export class ProjectsController {
 		const addDatabaseReferenceDialog = this.getAddDatabaseReferenceDialog(project);
 		addDatabaseReferenceDialog.addReference = async (proj, prof) => await this.addDatabaseReferenceCallback(proj, prof);
 
-		addDatabaseReferenceDialog.openDialog();
+		await addDatabaseReferenceDialog.openDialog();
 
 		return addDatabaseReferenceDialog;
 	}
@@ -672,13 +672,13 @@ export class ProjectsController {
 	 * Imports a new SQL database project from the existing database,
 	 * prompting the user for a name, file path location and extract target
 	 */
-	public importNewDatabaseProject(context: azdata.IConnectionProfile | any): CreateProjectFromDatabaseDialog {
+	public async importNewDatabaseProject(context: azdata.IConnectionProfile | any): Promise<CreateProjectFromDatabaseDialog> {
 		let profile = this.getConnectionProfileFromContext(context);
 		let createProjectFromDatabaseDialog = this.getCreateProjectFromDatabaseDialog(profile);
 
 		createProjectFromDatabaseDialog.createNewProjectCallBack = async (model) => await this.createNewProjectCallBack(model);
 
-		createProjectFromDatabaseDialog.openDialog();
+		await createProjectFromDatabaseDialog.openDialog();
 
 		return createProjectFromDatabaseDialog;
 	}
@@ -693,12 +693,9 @@ export class ProjectsController {
 
 			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
 			model.filePath = path.dirname(newProjFilePath);
+			this.setFilePath(model);
 
-			if (model.extractTarget === mssql.ExtractTarget.file) {
-				model.filePath = path.join(model.filePath, model.projName + '.sql'); // File extractTarget specifies the exact file rather than the containing folder
-			}
-
-			newProjectTool.updateSaveLocationSetting();
+			await newProjectTool.updateSaveLocationSetting();
 
 			const project = await Project.openProject(newProjFilePath);
 			await this.importApiCall(model); // Call ExtractAPI in DacFx Service
@@ -709,6 +706,12 @@ export class ProjectsController {
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	public setFilePath(model: ImportDataModel) {
+		if (model.extractTarget === mssql.ExtractTarget.file) {
+			model.filePath = path.join(model.filePath, model.projName + '.sql'); // File extractTarget specifies the exact file rather than the containing folder
 		}
 	}
 
