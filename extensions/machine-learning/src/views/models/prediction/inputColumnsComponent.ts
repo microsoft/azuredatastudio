@@ -46,7 +46,8 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 				tableInfo: constants.columnTableInfo,
 				defaultDbName: constants.selectDatabaseTitle,
 				defaultTableName: constants.selectTableTitle,
-				useImportModelCache: false
+				useImportModelCache: false,
+				layout: 'horizontal'
 			});
 		this._tableSelectionComponent.registerComponent(modelBuilder);
 		this._tableSelectionComponent.onSelectedChanged(async () => {

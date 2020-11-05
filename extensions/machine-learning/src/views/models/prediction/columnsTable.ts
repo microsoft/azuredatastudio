@@ -353,8 +353,8 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				width: 50,
 				height: 50,
 				iconPath: {
-					dark: this.asAbsolutePath('images/arrow.svg'),
-					light: this.asAbsolutePath('images/arrow.svg')
+					dark: this.asAbsolutePath('images/dark/arrow.svg'),
+					light: this.asAbsolutePath('images/light/arrow.svg')
 				},
 				iconWidth: 20,
 				iconHeight: 20,
