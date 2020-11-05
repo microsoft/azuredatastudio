@@ -97,7 +97,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				width: 105
 			};
 			const installedPathColumn: azdata.TableColumn = {
-				value: loc.discoverPathOrAdditionalInfromationText,
+				value: loc.discoverPathOrAdditionalInformationText,
 				width: 580
 			};
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({

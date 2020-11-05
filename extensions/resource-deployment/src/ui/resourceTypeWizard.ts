@@ -72,7 +72,6 @@ export class ResourceTypeWizard {
 	}
 
 	public async open(): Promise<void> {
-		this.wizardObject = azdata.window.createWizard(this.resourceType.displayName, this.resourceType.name, 'wide');
 		this.setPages([]);
 		this.model = this.getResourceProviderModel();
 		await this.wizardObject.open();
@@ -80,6 +79,7 @@ export class ResourceTypeWizard {
 
 	public set model(value: ResourceTypeModel) {
 		this._model = value;
+		this.wizardObject = azdata.window.createWizard(this.resourceType.displayName, this.resourceType.name, 'wide');
 		this._model.initialize();
 		this.wizardObject.generateScriptButton.hidden = true; // by default generateScriptButton stays hidden.
 		this.wizardObject.customButtons = this.customButtons;

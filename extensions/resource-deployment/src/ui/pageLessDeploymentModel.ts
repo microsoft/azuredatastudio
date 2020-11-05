@@ -9,7 +9,6 @@ import { ResourceTypeModel } from './resourceTypeModel';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { ResourceTypePage } from './resourceTypePage';
 
 const localize = nls.loadMessageBundle();
 
