@@ -58,6 +58,11 @@ export class ResourceTypeWizard {
 
 
 	public getResourceProviderModel(): ResourceTypeModel {
+		/**
+		 * Currently changing wizard tiltes and pages does not work without closing and reopening the wizard. (it makes the changes to objects but visually everything remains the same).
+		 * Also, the done button listener gets broken when we close and reopen the same dialog
+		 * For these reasons, I am creating a new wizard every time user changes the options.
+		 */
 		this.wizardObject = azdata.window.createWizard(this.resourceType.displayName, this.resourceType.name, 'wide');
 		if (instanceOfWizardDeploymentProvider(this.provider)) {
 			return new DeployClusterWizardModel(this.provider, this);

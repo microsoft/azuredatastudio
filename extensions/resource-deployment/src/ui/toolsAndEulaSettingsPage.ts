@@ -194,11 +194,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						this.wizard.registerDisposable(optionSelectBox.onValueChanged(async () => {
 							resourceTypeOptions[index] = <ResourceTypeOptionValue>optionSelectBox.value;
 							this.wizard.provider = this.getCurrentProvider();
-							/**
-							 * Currently changing wizard tiltes and pages does not work without closing and reopening the wizard. (it makes the changes to objects but visually everything remains the same).
-							 * Also, the done button listener gets broken when we close and reopen the same dialog
-							 * For these reasons, I am creating a new wizard every time user changes the options.
-							 */
 							await this.wizard.close();
 							await this.wizard.open();
 						}));
