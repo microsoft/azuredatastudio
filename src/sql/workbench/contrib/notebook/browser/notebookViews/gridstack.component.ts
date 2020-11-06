@@ -15,6 +15,7 @@ import { NotebookViewExtension, INotebookViewCell, CellChangeEvent } from 'sql/w
 
 import { GridStack } from 'gridstack';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { localize } from 'vs/nls';
 
 @Component({
 	selector: 'gridstack',
@@ -42,6 +43,10 @@ export class GridStackComponent implements OnInit {
 
 	public get hiddenItems(): GridStackItemComponent[] {
 		return this._items.filter(item => !item.display);
+	}
+
+	public get emptyText(): String {
+		return localize('emptyText', "This view is empty. Add a cell to this view by clicking the Insert Cells button.");
 	}
 
 	ngOnInit() {
