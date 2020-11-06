@@ -57,7 +57,7 @@ export class ResourceTypeWizard {
 		public resourceTypeService: ResourceTypeService) {
 		/**
 		 * Setting the first provider from the first value of the dropdowns.
-		 * If there are no options (dropdowns) then the resource type has only one provider which is set as default
+		 * If there are no options (dropdowns) then the resource type has only one provider which is set as default here.
 		 */
 		if (resourceType.options) {
 			this.provider = this.resourceType.getProvider(resourceType.options.map(option => { return { option: option.name, value: option.values[0].name }; }))!;
