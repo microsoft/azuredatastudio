@@ -99,6 +99,8 @@ export class Dropdown extends Disposable {
 	public onFocus: Event<void> = this._onFocus.event;
 	private readonly _widthControlElement: HTMLElement;
 
+	private _focusRestoreTarget: HTMLElement;
+
 	constructor(
 		container: HTMLElement,
 		private readonly contextViewService: IContextViewProvider,
@@ -209,8 +211,10 @@ export class Dropdown extends Disposable {
 		});
 
 		this._controller.onDropdownEscape(() => {
-			this._input.focus();
 			this.contextViewService.hideContextView();
+			setTimeout(() => {
+				this._focusRestoreTarget?.focus();
+			}, 0);
 		});
 
 		this._input.onDidChange(e => {
@@ -235,6 +239,7 @@ export class Dropdown extends Disposable {
 
 	private _showList(): void {
 		if (this._input.isEnabled()) {
+			this._focusRestoreTarget = document.activeElement as HTMLElement;
 			this._onFocus.fire();
 			this._filter.filterString = '';
 			this.contextViewService.showContextView({
