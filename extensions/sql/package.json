@@ -9,11 +9,7 @@
 		"vscode": "*"
 	},
 	"scripts": {
-<<<<<<< HEAD
-		"update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
-=======
 		"update-grammar": "node ./build/update-grammar.js"
->>>>>>> f53678cb4b5... Update branch for sql grammar
 	},
 	"contributes": {
 		"languages": [
