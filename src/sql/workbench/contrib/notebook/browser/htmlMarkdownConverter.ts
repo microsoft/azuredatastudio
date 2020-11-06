@@ -151,12 +151,12 @@ export class HTMLMarkdownConverter {
 			filter: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
 			replacement: function (content, node, options) {
 				let hLevel = Number(node.nodeName.charAt(1));
-				let excapedText = escapeAngleBrackets(content);
+				let escapedText = escapeAngleBrackets(content);
 				if (options.headingStyle === 'setext' && hLevel < 3) {
-					let underline = repeat((hLevel === 1 ? '=' : '-'), excapedText.length);
-					return '\n\n' + excapedText + '\n' + underline + '\n\n';
+					let underline = repeat((hLevel === 1 ? '=' : '-'), escapedText.length);
+					return '\n\n' + escapedText + '\n' + underline + '\n\n';
 				} else {
-					return '\n\n' + repeat('#', hLevel) + ' ' + excapedText + '\n\n';
+					return '\n\n' + repeat('#', hLevel) + ' ' + escapedText + '\n\n';
 				}
 			}
 		});
@@ -220,8 +220,8 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 	return '';
 }
 
-export function escapeAngleBrackets(textContent: any) {
-	let text = textContent;
+export function escapeAngleBrackets(textContent: string) {
+	let text: string = textContent;
 	if (text.includes('<u>') || text.includes('<mark>')) {
 		return text;
 	}
