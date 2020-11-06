@@ -170,7 +170,7 @@ export class ModelManagementController extends ControllerBase {
 		});
 		view.on(PredictWizardEventName, async (args) => {
 			const models = <ImportedModel[] | undefined>args;
-			await this.executeAction(view, PredictWizardEventName, args, this.predictModel, models, view, this, this._apiWrapper, this._root);
+			await this.executeAction(view, PredictWizardEventName, args, this.predictModel, models, undefined, this, this._apiWrapper, this._root);
 		});
 		view.on(EditModelEventName, async (args) => {
 			const model = <ImportedModel>args;
