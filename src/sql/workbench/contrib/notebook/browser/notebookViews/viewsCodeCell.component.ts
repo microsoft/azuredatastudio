@@ -5,6 +5,7 @@
 
 import { ChangeDetectorRef, Component, forwardRef, Inject } from '@angular/core';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
+import { localize } from 'vs/nls';
 
 
 export const CODE_SELECTOR: string = 'views-code-cell-component';
@@ -17,5 +18,9 @@ export const CODE_SELECTOR: string = 'views-code-cell-component';
 export class ViewsCodeCellComponent extends CodeCellComponent {
 	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
 		super(changeRef);
+	}
+
+	get emptyCellText(): string {
+		return localize('viewsCodeCell.emptyCellText', "Please run this cell to view outputs.");
 	}
 }
