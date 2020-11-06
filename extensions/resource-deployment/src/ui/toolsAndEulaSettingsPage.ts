@@ -51,6 +51,10 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		this.wizard.wizardObject.generateScriptButton.hidden = true;
 		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
 			if (!this._eulaValidationSucceeded && !(await this.acquireEulaAndProceed())) {
+				this.wizard.wizardObject.message = {
+					text: localize('deploymentDialog.FailedEulaValidation', "To proceed, you must accept the terms of the End User License Agreement(EULA)"),
+					level: azdata.window.MessageLevel.Error
+				};
 				return false; // we return false so that the workflow does not proceed and user gets to either click acceptEulaAndSelect again or cancel
 			}
 

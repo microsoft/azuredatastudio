@@ -36,13 +36,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 	initialize() {
 		let tab = azdata.window.createTab('');
 		this._dialogObject.registerCloseValidator(async () => {
-			if (!this._selectedResourceType) {
-				this._dialogObject.message = {
-					text: localize('deploymentDialog.AcceptAgreements', "You must agree to the license agreements in order to proceed."),
-					level: azdata.window.MessageLevel.Error
-				};
-				return false;
-			}
 			return true;
 		});
 		tab.registerContent((view: azdata.ModelView) => {
