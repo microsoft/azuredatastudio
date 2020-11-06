@@ -409,6 +409,28 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.databaseReferences.length).equal(3, 'There should be three database references after trying to add a reference to testProject again');
 	});
 
+	it('Should handle trying to add duplicate database references when slashes are different direction', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+
+		const projectReference: IProjectReferenceSettings = {
+			projectName: 'testProject',
+			projectGuid: '',
+			projectRelativePath: Uri.file('testFolder/testProject.sqlproj'),
+			suppressMissingDependenciesErrors: false
+		};
+		await project.addProjectReference(projectReference);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to testProject.sqlproj');
+		should(project.databaseReferences[0].databaseName).equal('testProject', 'project.databaseReferences[0].databaseName should be testProject');
+
+		// try to add reference to testProject again with slashes in the other direction
+		projectReference.projectRelativePath = Uri.file('testFolder\\testProject.sqlproj');
+		await testUtils.shouldThrowSpecificError(async () => await project.addProjectReference(projectReference), constants.databaseReferenceAlreadyExists);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to testProject again');
+	});
+
 	it('Should update sqlcmd variable values if value changes', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
