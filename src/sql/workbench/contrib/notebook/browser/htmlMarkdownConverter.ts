@@ -200,12 +200,6 @@ export class HTMLMarkdownConverter {
 				return delimiter + leadingSpace + content + trailingSpace + delimiter;
 			}
 		});
-		// this.turndownService.addRule('keep', {
-		// 	filter: ['u', 'mark', 'style'],
-		// 	replacement: function (content, node, options) {
-		// 		return node.outerHTML;
-		// 	}
-		// });
 	}
 }
 
@@ -228,6 +222,9 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 
 export function escapeAngleBrackets(textContent: any) {
 	let text = textContent;
+	if (text.includes('<u>') || text.includes('<mark>')) {
+		return text;
+	}
 	let mapTags = { '<': '\\<', '>': '\\>' };
 
 	let escapedText = text.replace(/<|>/gi, function (matched) {
