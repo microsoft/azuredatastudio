@@ -352,6 +352,11 @@
           "group": "4_dbProjects_addDatabaseReference"
         },
         {
+          "command": "sqlDatabaseProjects.validateExternalStreamingJob",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.file.externalStreamingJob",
+          "group": "5_dbProjects_streamingJob"
+        },
+        {
           "command": "sqlDatabaseProjects.exclude",
           "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/",
           "group": "9_dbProjectsLast@1"
