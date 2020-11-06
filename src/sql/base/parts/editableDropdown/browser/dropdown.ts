@@ -121,6 +121,7 @@ export class Dropdown extends Disposable {
 		this._treeContainer = DOM.$('.dropdown-tree');
 
 		this._toggleAction = new ToggleDropdownAction(() => {
+			this._input.focus();
 			this._showList();
 			this._tree.domFocus();
 			this._tree.focusFirst();
