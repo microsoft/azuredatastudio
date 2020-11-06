@@ -200,13 +200,12 @@ export class HTMLMarkdownConverter {
 				return delimiter + leadingSpace + content + trailingSpace + delimiter;
 			}
 		});
-		this.turndownService.addRule('keep', {
-			filter: ['u', 'mark', 'style'],
-			replacement: function (content, node, options) {
-				return node.outerHTML;
-			}
-
-		});
+		// this.turndownService.addRule('keep', {
+		// 	filter: ['u', 'mark', 'style'],
+		// 	replacement: function (content, node, options) {
+		// 		return node.outerHTML;
+		// 	}
+		// });
 	}
 }
 

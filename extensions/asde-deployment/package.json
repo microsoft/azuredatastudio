@@ -24,10 +24,7 @@
         "displayName": "%resource-type-sql-edge-display-name%",
         "description": "%resource-type-sql-edge-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/sqldb_edge.svg",
-          "dark": "./images/sqldb_edge_inverse.svg"
-        },
+        "icon": "./images/sqldb_edge.svg",
         "tags": [
           "Hybrid",
           "SQL Server"

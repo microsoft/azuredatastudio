@@ -3,10 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WizardPageBase } from '../../wizardPageBase';
-import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
+import { ResourceTypePage } from '../../resourceTypePage';
 
-export abstract class BasePage extends WizardPageBase<DeployAzureSQLVMWizard> {
+export abstract class BasePage extends ResourceTypePage {
 
 	protected liveValidation!: boolean;
 

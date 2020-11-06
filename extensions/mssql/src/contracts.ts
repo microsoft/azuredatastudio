@@ -476,6 +476,12 @@ export interface GenerateDeployPlanParams {
 export interface GetOptionsFromProfileParams {
 	profilePath: string;
 }
+
+export interface ValidateStreamingJobParams {
+	packageFilePath: string,
+	createStreamingJobTsql: string
+}
+
 export namespace ExportRequest {
 	export const type = new RequestType<ExportParams, mssql.DacFxResult, void, void>('dacfx/export');
 }
@@ -503,7 +509,12 @@ export namespace GenerateDeployPlanRequest {
 export namespace GetOptionsFromProfileRequest {
 	export const type = new RequestType<GetOptionsFromProfileParams, mssql.DacFxOptionsResult, void, void>('dacfx/getOptionsFromProfile');
 }
-// ------------------------------- < DacFx > ------------------------------------
+
+export namespace ValidateStreamingJobRequest {
+	export const type = new RequestType<ValidateStreamingJobParams, mssql.ValidateStreamingJobResult, void, void>('dacfx/validateStreamingJob');
+}
+
+// ------------------------------- </ DacFx > ------------------------------------
 
 // ------------------------------- <CMS> ----------------------------------------
 

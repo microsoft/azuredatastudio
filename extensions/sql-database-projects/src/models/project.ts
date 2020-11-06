@@ -32,6 +32,10 @@ export class Project {
 	public postDeployScripts: FileProjectEntry[] = [];
 	public noneDeployScripts: FileProjectEntry[] = [];
 
+	public get dacpacOutputPath(): string {
+		return path.join(this.projectFolderPath, 'bin', 'Debug', `${this.projectFileName}.dacpac`);
+	}
+
 	public get projectFolderPath() {
 		return Uri.file(path.dirname(this.projectFilePath)).fsPath;
 	}
@@ -71,7 +75,7 @@ export class Project {
 
 			const buildElements = itemGroup.getElementsByTagName(constants.Build);
 			for (let b = 0; b < buildElements.length; b++) {
-				this.files.push(this.createFileProjectEntry(buildElements[b].getAttribute(constants.Include), EntryType.File));
+				this.files.push(this.createFileProjectEntry(buildElements[b].getAttribute(constants.Include), EntryType.File, buildElements[b].getAttribute(constants.Type)));
 			}
 
 			const folderElements = itemGroup.getElementsByTagName(constants.Folder);
@@ -291,7 +295,13 @@ export class Project {
 				this.files.push(fileEntry);
 		}
 
-		await this.addToProjFile(fileEntry, xmlTag);
+		const attributes = new Map<string, string>();
+
+		if (itemType === templates.externalStreamingJob) {
+			attributes.set(constants.Type, constants.ExternalStreamingJob);
+		}
+
+		await this.addToProjFile(fileEntry, xmlTag, attributes);
 
 		return fileEntry;
 	}
@@ -454,9 +464,9 @@ export class Project {
 		await this.addToProjFile(sqlCmdVariableEntry);
 	}
 
-	public createFileProjectEntry(relativePath: string, entryType: EntryType): FileProjectEntry {
+	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string): FileProjectEntry {
 		let platformSafeRelativePath = utils.getPlatformSafeFileEntryPath(relativePath);
-		return new FileProjectEntry(Uri.file(path.join(this.projectFolderPath, platformSafeRelativePath)), relativePath, entryType);
+		return new FileProjectEntry(Uri.file(path.join(this.projectFolderPath, platformSafeRelativePath)), relativePath, entryType, sqlObjectType);
 	}
 
 	private findOrCreateItemGroup(containedTag?: string, prePostScriptExist?: { scriptExist: boolean; }): any {
@@ -480,6 +490,7 @@ export class Project {
 		if (!outputItemGroup) {
 			outputItemGroup = this.projFileXmlDoc.createElement(constants.ItemGroup);
 			this.projFileXmlDoc.documentElement.appendChild(outputItemGroup);
+
 			if (prePostScriptExist) {
 				prePostScriptExist.scriptExist = false;
 			}
@@ -488,12 +499,13 @@ export class Project {
 		return outputItemGroup;
 	}
 
-	private addFileToProjFile(path: string, xmlTag: string): void {
+	private addFileToProjFile(path: string, xmlTag: string, attributes?: Map<string, string>): void {
 		let itemGroup;
 
 		if (xmlTag === constants.PreDeploy || xmlTag === constants.PostDeploy) {
 			let prePostScriptExist = { scriptExist: true };
 			itemGroup = this.findOrCreateItemGroup(xmlTag, prePostScriptExist);
+
 			if (prePostScriptExist.scriptExist === true) {
 				window.showInformationMessage(constants.deployScriptExists(xmlTag));
 				xmlTag = constants.None;	// Add only one pre-deploy and post-deploy script. All additional ones get added in the same item group with None tag
@@ -504,7 +516,15 @@ export class Project {
 		}
 
 		const newFileNode = this.projFileXmlDoc.createElement(xmlTag);
+
 		newFileNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(path));
+
+		if (attributes) {
+			for (const key of attributes.keys()) {
+				newFileNode.setAttribute(key, attributes.get(key));
+			}
+		}
+
 		itemGroup.appendChild(newFileNode);
 	}
 
@@ -530,12 +550,14 @@ export class Project {
 	private removeNode(includeString: string, nodes: any): boolean {
 		for (let i = 0; i < nodes.length; i++) {
 			const parent = nodes[i].parentNode;
+
 			if (nodes[i].getAttribute(constants.Include) === utils.convertSlashesForSqlProj(includeString)) {
 				parent.removeChild(nodes[i]);
 
 				// delete ItemGroup if this was the only entry
 				// only want element nodes, not text nodes
 				const otherChildren = Array.from(parent.childNodes).filter((c: any) => c.childNodes);
+
 				if (otherChildren.length === 0) {
 					parent.parentNode.removeChild(parent);
 				}
@@ -588,36 +610,36 @@ export class Project {
 		}
 	}
 
-	private addSystemDatabaseReferenceToProjFile(entry: SystemDatabaseReferenceProjectEntry): void {
+	private async addSystemDatabaseReferenceToProjFile(entry: SystemDatabaseReferenceProjectEntry): Promise<void> {
 		const systemDbReferenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 
 		// if it's a system database reference, we'll add an additional node with the SSDT location of the dacpac later
 		systemDbReferenceNode.setAttribute(constants.Condition, constants.NetCoreCondition);
 		systemDbReferenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
-		this.addDatabaseReferenceChildren(systemDbReferenceNode, entry);
+		await this.addDatabaseReferenceChildren(systemDbReferenceNode, entry);
 		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(systemDbReferenceNode);
 
 		// add a reference to the system dacpac in SSDT if it's a system db
 		const ssdtReferenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 		ssdtReferenceNode.setAttribute(constants.Condition, constants.NotNetCoreCondition);
 		ssdtReferenceNode.setAttribute(constants.Include, entry.ssdtPathForSqlProj());
-		this.addDatabaseReferenceChildren(ssdtReferenceNode, entry);
+		await this.addDatabaseReferenceChildren(ssdtReferenceNode, entry);
 		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(ssdtReferenceNode);
 	}
 
-	private addDatabaseReferenceToProjFile(entry: IDatabaseReferenceProjectEntry): void {
+	private async addDatabaseReferenceToProjFile(entry: IDatabaseReferenceProjectEntry): Promise<void> {
 		if (entry instanceof SystemDatabaseReferenceProjectEntry) {
-			this.addSystemDatabaseReferenceToProjFile(<SystemDatabaseReferenceProjectEntry>entry);
+			await this.addSystemDatabaseReferenceToProjFile(<SystemDatabaseReferenceProjectEntry>entry);
 		} else if (entry instanceof SqlProjectReferenceProjectEntry) {
 			const referenceNode = this.projFileXmlDoc.createElement(constants.ProjectReference);
 			referenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
 			this.addProjectReferenceChildren(referenceNode, <SqlProjectReferenceProjectEntry>entry);
-			this.addDatabaseReferenceChildren(referenceNode, entry);
+			await this.addDatabaseReferenceChildren(referenceNode, entry);
 			this.findOrCreateItemGroup(constants.ProjectReference).appendChild(referenceNode);
 		} else {
 			const referenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 			referenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
-			this.addDatabaseReferenceChildren(referenceNode, entry);
+			await this.addDatabaseReferenceChildren(referenceNode, entry);
 			this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(referenceNode);
 		}
 
@@ -631,7 +653,7 @@ export class Project {
 		return found;
 	}
 
-	private addDatabaseReferenceChildren(referenceNode: any, entry: IDatabaseReferenceProjectEntry): void {
+	private async addDatabaseReferenceChildren(referenceNode: any, entry: IDatabaseReferenceProjectEntry): Promise<void> {
 		const suppressMissingDependenciesErrorNode = this.projFileXmlDoc.createElement(constants.SuppressMissingDependenciesErrors);
 		const suppressMissingDependenciesErrorTextNode = this.projFileXmlDoc.createTextNode(entry.suppressMissingDependenciesErrors ? constants.True : constants.False);
 		suppressMissingDependenciesErrorNode.appendChild(suppressMissingDependenciesErrorTextNode);
@@ -644,7 +666,7 @@ export class Project {
 			referenceNode.appendChild(databaseSqlCmdVariableElement);
 
 			// add SQLCMD variable
-			this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).databaseName);
+			await this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).databaseVariableLiteralValue!);
 		} else if (entry.databaseVariableLiteralValue) {
 			const databaseVariableLiteralValueElement = this.projFileXmlDoc.createElement(constants.DatabaseVariableLiteralValue);
 			const databaseTextNode = this.projFileXmlDoc.createTextNode(entry.databaseVariableLiteralValue);
@@ -659,7 +681,7 @@ export class Project {
 			referenceNode.appendChild(serverSqlCmdVariableElement);
 
 			// add SQLCMD variable
-			this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).serverSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).serverName!);
+			await this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).serverSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).serverName!);
 		}
 	}
 
@@ -809,16 +831,16 @@ export class Project {
 		}
 	}
 
-	private async addToProjFile(entry: ProjectEntry, xmlTag?: string) {
+	private async addToProjFile(entry: ProjectEntry, xmlTag?: string, attributes?: Map<string, string>): Promise<void> {
 		switch (entry.type) {
 			case EntryType.File:
-				this.addFileToProjFile((<FileProjectEntry>entry).relativePath, xmlTag ? xmlTag : constants.Build);
+				this.addFileToProjFile((<FileProjectEntry>entry).relativePath, xmlTag ? xmlTag : constants.Build, attributes);
 				break;
 			case EntryType.Folder:
 				this.addFolderToProjFile((<FileProjectEntry>entry).relativePath);
 				break;
 			case EntryType.DatabaseReference:
-				this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
+				await this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
 				break;
 			case EntryType.SqlCmdVariable:
 				this.addSqlCmdVariableToProjFile(<SqlCmdVariableProjectEntry>entry);
@@ -901,11 +923,13 @@ export class FileProjectEntry extends ProjectEntry {
 	 */
 	fsUri: Uri;
 	relativePath: string;
+	sqlObjectType: string | undefined;
 
-	constructor(uri: Uri, relativePath: string, type: EntryType) {
-		super(type);
+	constructor(uri: Uri, relativePath: string, entryType: EntryType, sqlObjectType?: string) {
+		super(entryType);
 		this.fsUri = uri;
 		this.relativePath = relativePath;
+		this.sqlObjectType = sqlObjectType;
 	}
 
 	public toString(): string {
