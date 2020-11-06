@@ -13,6 +13,7 @@ import { PostgresModel } from '../../../models/postgresModel';
 import { convertToGibibyteString } from '../../../common/utils';
 
 export class PostgresComputeAndStoragePage extends DashboardPage {
+	private dataLoading!: azdata.LoadingComponent;
 	private workerContainer?: azdata.DivContainer;
 
 	private workerBox?: azdata.InputBoxComponent;
@@ -39,6 +40,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
 		this.initializeConfigurationBoxes();
+
+		this.dataLoading = this.modelView.modelBuilder.loadingComponent()
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._postgresModel.configLastUpdated
+			}).component();
 
 		this.disposables.push(this._postgresModel.onConfigUpdated(
 			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
@@ -118,11 +124,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		computeInfoAndLinks.addItem(infoComputeStorage_p6, { CSSStyles: { 'margin-right': '5px' } });
 		content.addItem(computeInfoAndLinks, { CSSStyles: { 'min-height': '30px' } });
 
-
-
 		this.workerContainer = this.modelView.modelBuilder.divContainer().component();
 		this.handleServiceUpdated();
 		content.addItem(this.workerContainer, { CSSStyles: { 'min-height': '30px' } });
+
+		content.addItem(this.dataLoading, { CSSStyles: cssStyles.text });
 
 		this.initialized = true;
 
@@ -153,13 +159,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 							title: loc.updatingInstance(this._postgresModel.info.name),
 							cancellable: false
 						},
-						(_progress, _token) => {
-							return this._azdataApi.azdata.arc.postgres.server.edit(
+						async (_progress, _token): Promise<void> => {
+							await this._azdataApi.azdata.arc.postgres.server.edit(
 								this._postgresModel.info.name, this.saveArgs);
+							await this._postgresModel.refresh();
 						}
 					);
-
-					this._postgresModel.refresh();
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 
@@ -462,6 +467,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private handleServiceUpdated() {
 		if (this._postgresModel.configLastUpdated) {
+			this.dataLoading!.loading = false;
+			this.dataLoading!.updateCssStyles({ display: 'none' });
 			this.editWorkerNodeCount();
 			this.editCores();
 			this.editMemory();
@@ -470,6 +477,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			// by only adding these once the model has data. After the bug is fixed,
 			// use loading indicators instead of keeping the page blank.
 			if (this.workerContainer?.items.length === 0) {
+
 				this.workerContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 					value: loc.workerNodes,
 					CSSStyles: { ...cssStyles.title, 'margin-top': '25px' }

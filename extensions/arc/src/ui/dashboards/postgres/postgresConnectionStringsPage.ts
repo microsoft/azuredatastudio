@@ -11,10 +11,16 @@ import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresConnectionStringsPage extends DashboardPage {
+	private dataLoading!: azdata.LoadingComponent;
 	private keyValueContainer?: KeyValueContainer;
 
 	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
 		super(modelView);
+
+		this.dataLoading = this.modelView.modelBuilder.loadingComponent()
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._postgresModel.configLastUpdated
+			}).component();
 
 		this.disposables.push(this._postgresModel.onConfigUpdated(
 			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
@@ -49,7 +55,7 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 
 		const link = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 			label: loc.learnAboutPostgresClients,
-			url: 'https://docs.microsoft.com/azure/postgresql/concepts-connection-libraries',
+			url: 'https://docs.microsoft.com/azure/azure-arc/data/get-connection-endpoints-and-connection-strings-postgres-hyperscale',
 		}).component();
 
 		const infoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
@@ -60,6 +66,9 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 		this.keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, this.getConnectionStrings());
 		this.disposables.push(this.keyValueContainer);
 		content.addItem(this.keyValueContainer.container);
+
+		content.addItem(this.dataLoading, { CSSStyles: cssStyles.text });
+
 		this.initialized = true;
 		return root;
 	}
@@ -88,6 +97,8 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 	}
 
 	private handleServiceUpdated() {
+		this.dataLoading!.loading = false;
+		this.dataLoading!.updateCssStyles({ display: 'none' });
 		this.keyValueContainer?.refresh(this.getConnectionStrings());
 	}
 }
