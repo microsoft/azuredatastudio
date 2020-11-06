@@ -203,7 +203,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this.workerBox!.onTextChanged(() => {
+			this.workerBox.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.workerBox!))) {
 					this.saveArgs.workers = undefined;
 				} else {
@@ -220,7 +220,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this.coresLimitBox!.onTextChanged(() => {
+			this.coresLimitBox.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.coresLimitBox!))) {
 					this.saveArgs.coresLimit = undefined;
 				} else {
@@ -237,7 +237,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this.coresRequestBox!.onTextChanged(() => {
+			this.coresRequestBox.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.coresRequestBox!))) {
 					this.saveArgs.coresRequest = undefined;
 				} else {
@@ -254,7 +254,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this.memoryLimitBox!.onTextChanged(() => {
+			this.memoryLimitBox.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.memoryLimitBox!))) {
 					this.saveArgs.memoryLimit = undefined;
 				} else {
@@ -271,7 +271,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this.memoryRequestBox!.onTextChanged(() => {
+			this.memoryRequestBox.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.memoryRequestBox!))) {
 					this.saveArgs.memoryRequest = undefined;
 				} else {
