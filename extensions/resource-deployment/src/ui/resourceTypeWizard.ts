@@ -28,7 +28,7 @@ export class ResourceTypeWizard {
 	public wizardObject!: azdata.window.Wizard;
 	public toDispose: vscode.Disposable[] = [];
 	/**
-	 * resourceTypeModel depends on the deployment provider and can be updated from toolsAndEulaPage.
+	 * resourceTypeModel depends on the deployment provider and is updated from toolsAndEulaPage.
 	 */
 	private _model!: ResourceTypeModel;
 	private _useGenerateScriptButton!: boolean;
