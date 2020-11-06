@@ -15,6 +15,7 @@ import { promises as fs } from 'fs';
 import { Project, EntryType, SystemDatabase, SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
 import { exists, convertSlashesForSqlProj } from '../common/utils';
 import { Uri, window } from 'vscode';
+import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 
 let projFilePath: string;
 
@@ -374,21 +375,38 @@ describe('Project: sqlproj content operations', function (): void {
 		const project = await Project.openProject(projFilePath);
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
-		await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false });
+
+		const systemDbReference: ISystemDatabaseReferenceSettings = { databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false };
+		await project.addSystemDatabaseReference(systemDbReference);
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
 		should(project.databaseReferences[0].databaseName).equal(constants.master, 'project.databaseReferences[0].databaseName should be master');
 
 		// try to add reference to master again
-		await testUtils.shouldThrowSpecificError(async () => await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false }), constants.databaseReferenceAlreadyExists);
+		await testUtils.shouldThrowSpecificError(async () => await project.addSystemDatabaseReference(systemDbReference), constants.databaseReferenceAlreadyExists);
 		should(project.databaseReferences.length).equal(1, 'There should only be one database reference after trying to add a reference to master again');
 
-		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), suppressMissingDependenciesErrors: false });
+		const dacpacReference: IDacpacReferenceSettings = { dacpacFileLocation: Uri.file('test.dacpac'), suppressMissingDependenciesErrors: false };
+		await project.addDatabaseReference(dacpacReference);
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to test.dacpac');
 		should(project.databaseReferences[1].databaseName).equal('test', 'project.databaseReferences[1].databaseName should be test');
 
 		// try to add reference to test.dacpac again
-		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), suppressMissingDependenciesErrors: false }), constants.databaseReferenceAlreadyExists);
+		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference(dacpacReference), constants.databaseReferenceAlreadyExists);
 		should(project.databaseReferences.length).equal(2, 'There should be two database references after trying to add a reference to test.dacpac again');
+
+		const projectReference: IProjectReferenceSettings = {
+			projectName: 'testProject',
+			projectGuid: '',
+			projectRelativePath: Uri.file('testProject.sqlproj'),
+			suppressMissingDependenciesErrors: false
+		};
+		await project.addProjectReference(projectReference);
+		should(project.databaseReferences.length).equal(3, 'There should be two database references after adding a reference to testProject.sqlproj');
+		should(project.databaseReferences[2].databaseName).equal('testProject', 'project.databaseReferences[2].databaseName should be testProject');
+
+		// try to add reference to testProject again
+		await testUtils.shouldThrowSpecificError(async () => await project.addProjectReference(projectReference), constants.databaseReferenceAlreadyExists);
+		should(project.databaseReferences.length).equal(3, 'There should be three database references after trying to add a reference to testProject again');
 	});
 
 	it('Should update sqlcmd variable values if value changes', async function (): Promise<void> {
