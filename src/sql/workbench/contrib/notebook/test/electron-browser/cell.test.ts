@@ -1024,7 +1024,7 @@ suite('Cell Model', function (): void {
 		assert(!isEditMode);
 	});
 
-	test('Should read connection name from notebook metadata and use its corresponding connection profile', async function () {
+	test('Should read connection name from notebook metadata', async function () {
 		const connectionName = 'connectionName';
 		let notebookModel = new NotebookModelStub({
 			name: '',

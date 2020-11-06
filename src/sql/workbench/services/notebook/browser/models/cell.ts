@@ -28,7 +28,6 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
 
 let modelId = 0;
@@ -74,7 +73,6 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
-	private _activeConnection: ConnectionProfile | undefined;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -277,10 +275,6 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get savedConnectionName(): string | undefined {
 		return this._savedConnectionName;
-	}
-
-	public get context(): ConnectionProfile | undefined {
-		return this._activeConnection;
 	}
 
 	public get cellGuid(): string {

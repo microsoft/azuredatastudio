@@ -499,7 +499,6 @@ export interface ICellModel {
 	readonly onCellMarkdownModeChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
-	readonly context: ConnectionProfile | undefined;
 	readonly savedConnectionName: string | undefined;
 }
 
