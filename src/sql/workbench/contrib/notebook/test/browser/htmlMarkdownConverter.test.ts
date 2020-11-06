@@ -138,4 +138,18 @@ suite('HTML Markdown Converter', function (): void {
 		htmlString = '<a href="http://www.microsoft.com/images/msft.png">msft</a>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '[msft](http://www.microsoft.com/images/msft.png)', 'Basic http link test failed');
 	});
+	test('Should transform <li> tags', () => {
+		htmlString = '<ul><li>Test</li></ul>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test`, 'Basic unordered list test failed');
+		htmlString = '<ul><li>Test</li><li>Test2</li></ul>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test\n- Test2`, 'Basic unordered 2 item list test failed');
+		htmlString = '<ul><li>Test<ul><li>Test2</li></ul><li>Test3</li></ul>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test\n    - Test2\n- Test3`, 'Nested item list test failed');
+		htmlString = '<ol><li>Test</li></ol>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `1. Test`, 'Basic ordered item test failed');
+		htmlString = '<ol><li>Test</li><li>Test2</li></ol>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `1. Test\n2. Test2`, 'Basic ordered item test failed');
+		htmlString = '<ol><li>Test<ol><li>Test2</li></ol><li>Test3</li></ol>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `1. Test\n    1. Test2\n2. Test3`, 'Basic ordered item test failed');
+	});
 });
