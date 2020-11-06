@@ -370,7 +370,23 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('<DefaultValue>otherServerName</DefaultValue>');
 	});
 
-	it('Should not allow adding duplicate database references', async function (): Promise<void> {
+	it('Should not allow adding duplicate dacpac references', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+
+		const dacpacReference: IDacpacReferenceSettings = { dacpacFileLocation: Uri.file('test.dacpac'), suppressMissingDependenciesErrors: false };
+		await project.addDatabaseReference(dacpacReference);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to test.dacpac');
+		should(project.databaseReferences[0].databaseName).equal('test', 'project.databaseReferences[0].databaseName should be test');
+
+		// try to add reference to test.dacpac again
+		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference(dacpacReference), constants.databaseReferenceAlreadyExists);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to test.dacpac again');
+	});
+
+	it('Should not allow adding duplicate system database references', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
@@ -384,15 +400,13 @@ describe('Project: sqlproj content operations', function (): void {
 		// try to add reference to master again
 		await testUtils.shouldThrowSpecificError(async () => await project.addSystemDatabaseReference(systemDbReference), constants.databaseReferenceAlreadyExists);
 		should(project.databaseReferences.length).equal(1, 'There should only be one database reference after trying to add a reference to master again');
+	});
 
-		const dacpacReference: IDacpacReferenceSettings = { dacpacFileLocation: Uri.file('test.dacpac'), suppressMissingDependenciesErrors: false };
-		await project.addDatabaseReference(dacpacReference);
-		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to test.dacpac');
-		should(project.databaseReferences[1].databaseName).equal('test', 'project.databaseReferences[1].databaseName should be test');
+	it('Should not allow adding duplicate project references', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
 
-		// try to add reference to test.dacpac again
-		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference(dacpacReference), constants.databaseReferenceAlreadyExists);
-		should(project.databaseReferences.length).equal(2, 'There should be two database references after trying to add a reference to test.dacpac again');
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 
 		const projectReference: IProjectReferenceSettings = {
 			projectName: 'testProject',
@@ -401,12 +415,12 @@ describe('Project: sqlproj content operations', function (): void {
 			suppressMissingDependenciesErrors: false
 		};
 		await project.addProjectReference(projectReference);
-		should(project.databaseReferences.length).equal(3, 'There should be two database references after adding a reference to testProject.sqlproj');
-		should(project.databaseReferences[2].databaseName).equal('testProject', 'project.databaseReferences[2].databaseName should be testProject');
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to testProject.sqlproj');
+		should(project.databaseReferences[0].databaseName).equal('testProject', 'project.databaseReferences[0].databaseName should be testProject');
 
 		// try to add reference to testProject again
 		await testUtils.shouldThrowSpecificError(async () => await project.addProjectReference(projectReference), constants.databaseReferenceAlreadyExists);
-		should(project.databaseReferences.length).equal(3, 'There should be three database references after trying to add a reference to testProject again');
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to testProject again');
 	});
 
 	it('Should handle trying to add duplicate database references when slashes are different direction', async function (): Promise<void> {
