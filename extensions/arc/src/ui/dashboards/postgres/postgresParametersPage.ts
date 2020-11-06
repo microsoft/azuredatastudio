@@ -12,6 +12,7 @@ import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresParametersPage extends DashboardPage {
+	private searchBox?: azdata.InputBoxComponent;
 
 	private discardButton?: azdata.ButtonComponent;
 	private saveButton?: azdata.ButtonComponent;
@@ -23,6 +24,8 @@ export class PostgresParametersPage extends DashboardPage {
 	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
 		super(modelView);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+
+		this.initializeSearchBox();
 
 		this.disposables.push(this._postgresModel.onConfigUpdated(
 			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
@@ -65,7 +68,7 @@ export class PostgresParametersPage extends DashboardPage {
 		infoAndLink.addItem(link);
 		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '25px' } });
 
-
+		content.addItem(this.searchBox!, { CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' } });
 		// Add in content
 
 
@@ -150,6 +153,23 @@ export class PostgresParametersPage extends DashboardPage {
 			{ component: this.discardButton },
 			{ component: this.resetButton }
 		]).component();
+	}
+
+	private initializeSearchBox() {
+		this.searchBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			readOnly: false,
+			placeHolder: loc.searchToFilter
+		}).component();
+
+		this.disposables.push(
+			this.searchBox.onTextChanged(() => {
+				this.filterParameters();
+			})
+		);
+	}
+
+	private filterParameters() {
+
 	}
 
 
