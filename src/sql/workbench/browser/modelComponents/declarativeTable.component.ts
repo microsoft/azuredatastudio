@@ -221,7 +221,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	}
 
 	public getCheckAllColumnAriaLabel(colIdx: number): string {
-		return localize('uncheckAllColumnLabel', "check all checkboxes in column: {0}", this.columns[colIdx].displayName);
+		return localize('checkAllColumnLabel', "check all checkboxes in column: {0}", this.columns[colIdx].displayName);
 	}
 
 	public getHeaderAriaLabel(colIdx: number): string {
