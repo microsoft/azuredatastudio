@@ -298,6 +298,7 @@ export class Project {
 		const attributes = new Map<string, string>();
 
 		if (itemType === templates.externalStreamingJob) {
+			fileEntry.sqlObjectType = constants.ExternalStreamingJob;
 			attributes.set(constants.Type, constants.ExternalStreamingJob);
 		}
 
