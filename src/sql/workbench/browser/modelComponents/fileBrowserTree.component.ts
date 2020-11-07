@@ -39,14 +39,11 @@ export default class FileBrowserTreeComponent extends ComponentBase<azdata.FileB
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
 	ngAfterViewInit(): void {
 		this._viewModel = this._instantiationService.createInstance(FileBrowserViewModel);
 		this._viewModel.onAddFileTree(args => this.handleOnAddFileTree(args.rootNode, args.selectedNode, args.expandedNodes));
 		this._viewModel.onPathValidate(args => this.handleOnValidate(args.succeeded, args.message));
+		this.baseInit();
 	}
 
 	public initialize() {

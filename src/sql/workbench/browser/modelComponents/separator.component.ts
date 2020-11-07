@@ -33,15 +33,12 @@ export default class SeparatorComponent extends ComponentBase<azdata.SeparatorCo
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
 	ngAfterViewInit(): void {
 		if (this._separatorContainer) {
 			this._separator = new Separator(this._separatorContainer.nativeElement);
 			this._register(this._separator);
 		}
+		this.baseInit();
 	}
 
 	setLayout(layout: any): void {

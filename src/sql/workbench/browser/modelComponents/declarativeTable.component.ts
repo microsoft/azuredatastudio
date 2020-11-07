@@ -45,11 +45,8 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
 	ngAfterViewInit(): void {
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {

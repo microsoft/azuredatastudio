@@ -59,7 +59,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.baseInit();
 	}
 
