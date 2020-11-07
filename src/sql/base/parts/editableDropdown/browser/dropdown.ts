@@ -121,6 +121,8 @@ export class Dropdown extends Disposable {
 		this._treeContainer = DOM.$('.dropdown-tree');
 
 		this._toggleAction = new ToggleDropdownAction(() => {
+			// Move the focus to input focus so that when we close the context menu by press escaping
+			// the focus stays on the input box, this is behavior of a regular select box.
 			this._input.focus();
 			this._showList();
 			this._tree.domFocus();
