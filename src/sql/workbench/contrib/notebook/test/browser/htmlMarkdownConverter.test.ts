@@ -152,4 +152,16 @@ suite('HTML Markdown Converter', function (): void {
 		htmlString = '<ol><li>Test<ol><li>Test2</li></ol><li>Test3</li></ol>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `1. Test\n    1. Test2\n2. Test3`, 'Basic ordered item test failed');
 	});
+	test('Should keep < > tag', () => {
+		htmlString = '&lt;test&gt';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '<test>', 'Tag inside HTML tag test failed to escape');
+		htmlString = '&lt;test&gt<span style="background:red">TEST MESSAGE</span>&lt;test&gt';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '<test><span style="background:red">TEST MESSAGE</span><test>', 'Tag inside HTML tag test failed to escape');
+		htmlString = '<h1>&lt;test&gt;<h1>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '# \\<test\\>', 'Tag inside HTML tag test failed to escape');
+		htmlString = '<h2>&lt;test&gt;<h2>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '## \\<test\\>', 'Tag inside HTML tag test failed to escape');
+		htmlString = '<h3>&lt;test&gt;<h3>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '### \\<test\\>', 'Tag inside HTML tag test failed to escape');
+	});
 });
