@@ -41,15 +41,31 @@ export class JobManagementUtilities {
 	}
 
 	public static convertToNextRun(date: string) {
-		return date.includes('1/1/0001') ? nls.localize('agentUtilities.notScheduled', "Not Scheduled") : date;
+		let newDate = date as unknown;
+		let dateArr = newDate as [];
+		if (dateArr.find(x => x === '1/1/0001')) {
+			return nls.localize('agentUtilities.notScheduled', "Not Scheduled");
+		} else {
+			return date;
+		}
 	}
 
 	public static convertToLastRun(date: string) {
-		return date.includes('1/1/0001') ? nls.localize('agentUtilities.neverRun', "Never Run") : date;
+		let newDate = date as unknown;
+		let dateArr = newDate as [];
+		if (dateArr.find(x => x === '1/1/0001')) {
+			return nls.localize('agentUtilities.neverRun', "Never Run");
+		} else {
+			return date;
+		}
 	}
 
 	public static setRunnable(icon: HTMLElement, index: number) {
-		icon.classList.remove('non-runnable');
+		let temp = icon.className as unknown;
+		let classNameArr = temp as [];
+		if (classNameArr.find(x => x === 'non-runnable')) {
+			icon.className = icon.className.slice(0, index);
+		}
 	}
 
 	public static getActionIconClassName(startIcon: HTMLElement, stopIcon: HTMLElement, executionStatus: number) {

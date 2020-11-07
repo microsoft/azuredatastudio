@@ -79,12 +79,12 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 	private _jobCacheObject: JobCacheObject;
 	private rowDetail: RowDetailView<IItem>;
-	private filterPlugin: HeaderFilter<IItem>;
-	private dataView: Slick.Data.DataView<IItem>;
+	private filterPlugin: any;
+	private dataView: any;
 	public _isCloud: boolean;
-	private filterStylingMap: { [columnName: string]: IItem[]; } = {};
+	private filterStylingMap: { [columnName: string]: [any]; } = {};
 	private filterStack = ['start'];
-	private filterValueMap: { [columnName: string]: { filterValues: string[], filteredItems: IItem[] } } = {};
+	private filterValueMap: { [columnName: string]: string[]; } = {};
 	private sortingStylingMap: { [columnName: string]: any; } = {};
 
 	public jobs: azdata.AgentJobInfo[];
@@ -157,7 +157,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			column.rerenderOnResize = true;
 			return column;
 		});
-		let options = <Slick.GridOptions<IItem>>{
+		let options = <Slick.GridOptions<any>>{
 			syncColumnCellResize: true,
 			enableColumnReorder: false,
 			rowHeight: ROW_HEIGHT,
@@ -181,7 +181,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-		let filterPlugin = new HeaderFilter<IItem>();
+		let filterPlugin = new HeaderFilter<{ inlineFilters: false }>();
 		this._register(attachButtonStyler(filterPlugin, this._themeService));
 		this.filterPlugin = filterPlugin;
 		jQuery(this._gridEl.nativeElement).empty();
@@ -254,7 +254,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			this._table.grid.resetActiveCell();
 			let filterValues = args.column.filterValues;
 			if (filterValues) {
-				let currentFilteredItems = this.dataView.getFilteredItems();
 				if (filterValues.length === 0) {
 					// if an associated styling exists with the current filters
 					if (this.filterStylingMap[args.column.name]) {
@@ -271,8 +270,9 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 							delete this.filterValueMap[args.column.name];
 						}
 						// apply the previous filter styling
-						let previousFilteredItems = this.filterValueMap[this.filterStack[this.filterStack.length - 1]].filteredItems;
-						if (previousFilteredItems === currentFilteredItems) {
+						let currentItems = this.dataView.getFilteredItems();
+						let styledItems = this.filterValueMap[this.filterStack[this.filterStack.length - 1]][1];
+						if (styledItems === currentItems) {
 							let lastColStyle = this.filterStylingMap[this.filterStack[this.filterStack.length - 1]];
 							for (let i = 0; i < lastColStyle.length; i++) {
 								this._table.grid.setCellCssStyles(lastColStyle[i][0], lastColStyle[i][1]);
@@ -280,13 +280,14 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 						} else {
 							// style it all over again
 							let seenJobs = 0;
-							for (let i = 0; i < currentFilteredItems.length; i++) {
+							for (let i = 0; i < currentItems.length; i++) {
 								this._table.grid.removeCellCssStyles('error-row' + i.toString());
 								let item = this.dataView.getFilteredItems()[i];
 								if (item.lastRunOutcome === 'Failed') {
 									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
 									if (this.filterStack.indexOf(args.column.name) < 0) {
 										this.filterStack.push(args.column.name);
+										this.filterValueMap[args.column.name] = [filterValues];
 									}
 									// one expansion for the row and one for
 									// the error detail
@@ -296,6 +297,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 								seenJobs++;
 							}
 							this.dataView.refresh();
+							this.filterValueMap[args.column.name].push(this.dataView.getFilteredItems());
 							this._table.grid.resetActiveCell();
 						}
 						if (this.filterStack.length === 0) {
@@ -310,11 +312,12 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 						// current filter
 						if (filterValues.find(x => x === item[args.column.field])) {
 							// check all previous filters
-							if (this.isItemFiltered(item)) {
+							if (this.checkPreviousFilters(item)) {
 								if (item.lastRunOutcome === 'Failed') {
 									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
 									if (this.filterStack.indexOf(args.column.name) < 0) {
 										this.filterStack.push(args.column.name);
+										this.filterValueMap[args.column.name] = [filterValues];
 									}
 									// one expansion for the row and one for
 									// the error detail
@@ -326,7 +329,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 						}
 					}
 					this.dataView.refresh();
-					this.filterValueMap[args.column.name] = { filterValues: filterValues, filteredItems: this.dataView.getFilteredItems() };
+					if (this.filterValueMap[args.column.name]) {
+						this.filterValueMap[args.column.name].push(this.dataView.getFilteredItems());
+					} else {
+						this.filterValueMap[args.column.name] = this.dataView.getFilteredItems();
+					}
 
 					this._table.grid.resetActiveCell();
 				}
@@ -382,7 +389,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 		// cache the dataview for future use
 		this._jobCacheObject.dataView = this.dataView;
-		this.filterValueMap['start'] = { filterValues: [], filteredItems: this.dataView.getItems() };
+		this.filterValueMap['start'] = [[], this.dataView.getItems()];
 		this.loadJobHistories().catch(onUnexpectedError);
 	}
 
@@ -552,13 +559,12 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		return [failing, nonFailing];
 	}
 
-	/**
-	 * Returns true if the item matches all filters currently applied
-	 */
-	private isItemFiltered(item: IItem): boolean {
+	private checkPreviousFilters(item): boolean {
 		for (let column in this.filterValueMap) {
-			if (column !== 'start' && this.filterValueMap[column]) {
-				if (!this.filterValueMap[column].filterValues.includes(item[JobManagementUtilities.convertColNameToField(column)])) {
+			if (column !== 'start' && this.filterValueMap[column][0].length > 0) {
+				let temp = this.filterValueMap[column][0] as unknown;
+				let arr = temp as [];
+				if (!arr.find(x => x === item[JobManagementUtilities.convertColNameToField(column)])) {
 					return false;
 				}
 			}
