@@ -1,90 +1,4 @@
 /*!
- * required gridstack 1.1.2 CSS for default 12 and 1 columnMode size. Use gridstack-extra.css for others
- * https://gridstackjs.com/
- * (c) 2014-2020 Alain Dumesny, Dylan Weiss, Pavel Reznikov
- * gridstack.js may be freely distributed under the MIT license.
-*/
-/*
-:root .grid-stack-item>.ui-resizable-handle{filter:none}
-.grid-stack{position:relative;}
-.grid-stack.grid-stack-rtl{direction:ltr}
-.grid-stack.grid-stack-rtl>.grid-stack-item{direction:rtl}
-.grid-stack .grid-stack-placeholder>.placeholder-content{border:1px dashed #d3d3d3;margin:0;position:absolute;top:0;left:5px;right:5px;bottom:0;width:auto;z-index:0!important;text-align:center}
-.grid-stack>.grid-stack-item{min-width:8.3333333333%;position:absolute;padding:0}
-.grid-stack>.grid-stack-item>.grid-stack-item-content{margin:0;position:absolute;top:0;left:5px;right:5px;bottom:0;width:auto;overflow-x:hidden;overflow-y:auto}
-.grid-stack>.grid-stack-item>.ui-resizable-handle{position:absolute;font-size:.1px;display:block;-ms-touch-action:none;touch-action:none}
-.grid-stack>.grid-stack-item.ui-resizable-autohide>.ui-resizable-handle,.grid-stack>.grid-stack-item.ui-resizable-disabled>.ui-resizable-handle{display:none}
-.grid-stack>.grid-stack-item.ui-draggable-dragging,.grid-stack>.grid-stack-item.ui-resizable-resizing{z-index:100}
-.grid-stack>.grid-stack-item.ui-draggable-dragging>.grid-stack-item-content,.grid-stack>.grid-stack-item.ui-resizable-resizing>.grid-stack-item-content{box-shadow:1px 4px 6px rgba(0,0,0,.2);opacity:.8}
-.grid-stack>.grid-stack-item>.ui-resizable-se,.grid-stack>.grid-stack-item>.ui-resizable-sw{background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg width='19' height='19' viewBox='0 0 19 19' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cline x1='0.646447' y1='14.6464' x2='14.6464' y2='0.646447' stroke='%230078D4'/%3e%3cline x1='8.07125' y1='15' x2='15.0713' y2='7.99996' stroke='%230078D4'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:center;}
-.grid-stack>.grid-stack-item>.ui-resizable-se{};
-.grid-stack>.grid-stack-item>.ui-resizable-nw{cursor:nw-resize;width:20px;height:20px;left:10px;top:0}
-.grid-stack>.grid-stack-item>.ui-resizable-n{cursor:n-resize;height:10px;top:0;left:25px;right:25px}
-.grid-stack>.grid-stack-item>.ui-resizable-ne{cursor:ne-resize;width:20px;height:20px;right:10px;top:0}
-.grid-stack>.grid-stack-item>.ui-resizable-e{cursor:e-resize;width:10px;right:10px;top:15px;bottom:15px}
-.grid-stack>.grid-stack-item>.ui-resizable-se{cursor:se-resize;width:20px;height:20px;right:5px;bottom:0}
-.grid-stack>.grid-stack-item>.ui-resizable-s{cursor:s-resize;height:10px;left:25px;bottom:0;right:25px}
-.grid-stack>.grid-stack-item>.ui-resizable-sw{cursor:sw-resize;width:20px;height:20px;left:10px;bottom:0}
-.grid-stack>.grid-stack-item>.ui-resizable-w{cursor:w-resize;width:10px;left:10px;top:15px;bottom:15px}
-.grid-stack>.grid-stack-item.ui-draggable-dragging>.ui-resizable-handle{display:none!important}
-.grid-stack>.grid-stack-item[data-gs-width='1']{width:8.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-x='1']{left:8.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-min-width='1']{min-width:8.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-max-width='1']{max-width:8.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-width='2']{width:16.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-x='2']{left:16.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-min-width='2']{min-width:16.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-max-width='2']{max-width:16.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-width='3']{width:25%}
-.grid-stack>.grid-stack-item[data-gs-x='3']{left:25%}
-.grid-stack>.grid-stack-item[data-gs-min-width='3']{min-width:25%}
-.grid-stack>.grid-stack-item[data-gs-max-width='3']{max-width:25%}
-.grid-stack>.grid-stack-item[data-gs-width='4']{width:33.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-x='4']{left:33.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-min-width='4']{min-width:33.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-max-width='4']{max-width:33.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-width='5']{width:41.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-x='5']{left:41.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-min-width='5']{min-width:41.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-max-width='5']{max-width:41.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-width='6']{width:50%}
-.grid-stack>.grid-stack-item[data-gs-x='6']{left:50%}
-.grid-stack>.grid-stack-item[data-gs-min-width='6']{min-width:50%}
-.grid-stack>.grid-stack-item[data-gs-max-width='6']{max-width:50%}
-.grid-stack>.grid-stack-item[data-gs-width='7']{width:58.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-x='7']{left:58.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-min-width='7']{min-width:58.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-max-width='7']{max-width:58.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-width='8']{width:66.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-x='8']{left:66.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-min-width='8']{min-width:66.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-max-width='8']{max-width:66.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-width='9']{width:75%}
-.grid-stack>.grid-stack-item[data-gs-x='9']{left:75%}
-.grid-stack>.grid-stack-item[data-gs-min-width='9']{min-width:75%}
-.grid-stack>.grid-stack-item[data-gs-max-width='9']{max-width:75%}
-.grid-stack>.grid-stack-item[data-gs-width='10']{width:83.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-x='10']{left:83.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-min-width='10']{min-width:83.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-max-width='10']{max-width:83.3333333333%}
-.grid-stack>.grid-stack-item[data-gs-width='11']{width:91.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-x='11']{left:91.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-min-width='11']{min-width:91.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-max-width='11']{max-width:91.6666666667%}
-.grid-stack>.grid-stack-item[data-gs-width='12']{width:100%}
-.grid-stack>.grid-stack-item[data-gs-x='12']{left:100%}
-.grid-stack>.grid-stack-item[data-gs-min-width='12']{min-width:100%}
-.grid-stack>.grid-stack-item[data-gs-max-width='12']{max-width:100%}
-.grid-stack.grid-stack-1>.grid-stack-item{min-width:100%}
-.grid-stack.grid-stack-1>.grid-stack-item[data-gs-width='1']{width:100%}
-.grid-stack.grid-stack-1>.grid-stack-item[data-gs-x='1']{left:100%}
-.grid-stack.grid-stack-1>.grid-stack-item[data-gs-min-width='1']{min-width:100%}
-.grid-stack.grid-stack-1>.grid-stack-item[data-gs-max-width='1']{max-width:100%}
-.grid-stack.grid-stack-animate,.grid-stack.grid-stack-animate .grid-stack-item{-webkit-transition:left .3s,top .3s,height .3s,width .3s;-moz-transition:left .3s,top .3s,height .3s,width .3s;-ms-transition:left .3s,top .3s,height .3s,width .3s;-o-transition:left .3s,top .3s,height .3s,width .3s;transition:left .3s,top .3s,height .3s,width .3s}
-.grid-stack.grid-stack-animate .grid-stack-item.grid-stack-placeholder,.grid-stack.grid-stack-animate .grid-stack-item.ui-draggable-dragging,.grid-stack.grid-stack-animate .grid-stack-item.ui-resizable-resizing{-webkit-transition:left 0s,top 0s,height 0s,width 0s;-moz-transition:left 0s,top 0s,height 0s,width 0s;-ms-transition:left 0s,top 0s,height 0s,width 0s;-o-transition:left 0s,top 0s,height 0s,width 0s;transition:left 0s,top 0s,height 0s,width 0s}
-*/
-
-/*!
  * required gridstack 2.0.0 CSS for default 12 and 1 columnMode size. Use gridstack-extra.css for others
  * https://gridstackjs.com/
  * (c) 2014-2020 Alain Dumesny, Dylan Weiss, Pavel Reznikov
@@ -316,13 +230,14 @@
 
 .grid-stack { margin: 0 8px; }
 .grid-stack>.grid-stack-item { margin: 0; }
-.grid-stack>.grid-stack-item .grid-stack-item-content { display: flex; cursor: move; box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.13); border-radius: 2px; }
-.grid-stack>.grid-stack-item .grid-stack-item-content > .grid-stack-content-wrapper { width: 100%; display: flex; flex-direction: column; flex: 1; padding: 3px !important; margin-bottom: 20px; }
+.grid-stack>.grid-stack-item .grid-stack-item-content { display: flex; cursor: move; box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.13); border-radius: 2px; overflow: visible; }
+.grid-stack>.grid-stack-item .grid-stack-item-content > .grid-stack-content-wrapper { width: 100%; display: flex; flex-direction: column; flex: 1; margin-bottom: 20px; }
 .grid-stack>.grid-stack-item .grid-stack-item-content .grid-stack-content-wrapper-inner { overflow-y: auto; background: #fff; height: 100%; cursor: auto; }
 .grid-stack>.grid-stack-item .grid-stack-item-content ::-webkit-scrollbar { width: 8px;}
 .grid-stack>.grid-stack-item .grid-stack-item-content .grid-stack-content-header { flex-direction: row; justify-content: space-between; display: flex;  margin-bottom: 3px; padding: 0 5px; }
 .grid-stack>.grid-stack-item .grid-stack-item-content .grid-stack-content-header .action-label.codicon{ background-size: 16px;padding: 11px; }
 .grid-stack>.grid-stack-item .grid-stack-item-content .grid-stack-item-title { font-size: 13px; line-height: 25px; font-weight: 400; }
+.grid-stack>.grid-stack-item .grid-stack-item-content .actionbar { top: -14px; z-index: 999; }
 .grid-stack>.grid-stack-item.notebook-cell.active .actionbar { background-color: #ffffff; z-index: 1; transform: translate(0px, 7px); }
 .grid-stack>.grid-stack-item.ui-draggable-dragging>.grid-stack-item-content,.grid-stack>.grid-stack-item.ui-resizable-resizing>.grid-stack-item-content{box-shadow:1px 4px 6px rgba(0,0,0,.2);opacity:.8}
 .grid-stack>.grid-stack-item>.ui-resizable-se,.grid-stack>.grid-stack-item>.ui-resizable-sw{background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg width='19' height='19' viewBox='0 0 19 19' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cline x1='0.646447' y1='14.6464' x2='14.6464' y2='0.646447' stroke='%230078D4'/%3e%3cline x1='8.07125' y1='15' x2='15.0713' y2='7.99996' stroke='%230078D4'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:center; transform: rotate(0deg);  }
