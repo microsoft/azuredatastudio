@@ -1,17 +1,20 @@
 <ng-template #templateRef>
 <div
 	*ngIf="display"
-	class="notebook-cell grid-stack-item"
+	class="grid-stack-item"
 	attr.data-cell-id="{{cell.cellGuid}}"
 	attr.data-gs-width="{{width}}"
 	attr.data-gs-height="{{height}}"
 	attr.data-gs-x="{{x}}"
 	attr.data-gs-y="{{y}}"
 	(click)="selectCell(cell, $event)"
-	[class.active]="cell.active"
 >
-	<div #actionbar [style.display]="showActionBar ? 'block' : 'none'" class="actionbar"></div>
-	<div *ngIf="ready" #item class="grid-stack-item-content">
+	<div
+		#item
+		class="grid-stack-item-content notebook-cell"
+		[class.active]="cell.active"
+	>
+		<div #actionbar [style.display]="showActionBar ? 'block' : 'none'" class="actionbar"></div>
 		<div class="grid-stack-content-wrapper">
 			<div class="grid-stack-content-wrapper-inner">
 				<views-code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
