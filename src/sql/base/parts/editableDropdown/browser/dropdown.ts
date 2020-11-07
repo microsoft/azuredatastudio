@@ -213,6 +213,7 @@ export class Dropdown extends Disposable {
 
 		this._controller.onDropdownEscape(() => {
 			this.contextViewService.hideContextView();
+			// have to put this in the setTimeout to make sure the focus can be set properly when the context menu is opened by pressing the DownArrow key
 			setTimeout(() => {
 				this._focusRestoreTarget?.focus();
 			}, 0);
