@@ -222,7 +222,7 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 
 export function escapeAngleBrackets(textContent: string) {
 	let text: string = textContent;
-	if (text.includes('<u>') || text.includes('<mark>')) {
+	if (text.includes('<u>') || text.includes('<mark>') || text.includes('style')) {
 		return text;
 	}
 	let mapTags = { '<': '\\<', '>': '\\>' };
