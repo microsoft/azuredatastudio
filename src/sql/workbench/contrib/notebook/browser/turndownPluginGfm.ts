@@ -119,7 +119,7 @@ rules['tableSection'] = {
 	}
 };
 
-// A tr is a heading row if
+// A tr is a heading row if:
 // - the parent is a THEAD
 // - or if its the first child of the TABLE or the first TBODY (possibly
 //   following a blank THEAD)
