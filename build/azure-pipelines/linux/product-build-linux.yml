@@ -5,20 +5,6 @@ steps:
     echo -n $VSCODE_QUALITY > .build/quality
   displayName: Prepare cache flag
 
-- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-  inputs:
-    keyfile: 'build/.cachesalt, .build/commit, .build/quality'
-    targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
-    vstsFeed: 'npm-vscode'
-    platformIndependent: true
-    alias: 'Compilation'
-
-- script: |
-    set -e
-    exit 1
-  displayName: Check RestoreCache
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
-
 - task: NodeTool@0
   inputs:
     versionSpec: "12.14.1"
@@ -51,35 +37,6 @@ steps:
     git fetch distro
     git merge $(node -p "require('./package.json').distro")
   displayName: Merge distro
-
-- script: |
-    echo -n $VSCODE_ARCH > .build/arch
-  displayName: Prepare arch cache flag
-
-- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-  inputs:
-    keyfile: '.build/arch, build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-    vstsFeed: 'npm-vscode'
-
-- script: |
-    set -e
-    CHILD_CONCURRENCY=1 npm_config_arch=$(NPM_ARCH) yarn --frozen-lockfile
-  displayName: Install dependencies
-  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
-
-- task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-  inputs:
-    keyfile: '.build/arch, build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-    vstsFeed: 'npm-vscode'
-  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
-
-- script: |
-    set -e
-    yarn postinstall
-  displayName: Run postinstall scripts
-  condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
 
 - script: |
     set -e
