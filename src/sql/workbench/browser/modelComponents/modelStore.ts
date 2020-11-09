@@ -6,6 +6,7 @@
 import { Deferred } from 'sql/base/common/promise';
 import { entries } from 'sql/base/common/collections';
 import { IComponentDescriptor, IModelStore, IComponent } from 'sql/platform/dashboard/browser/interfaces';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 class ComponentDescriptor implements IComponentDescriptor {
 	constructor(public readonly id: string, public readonly type: string) {
@@ -102,7 +103,7 @@ export class ModelStore implements IModelStore {
 
 	/**
 	 * Runs the set of pending actions for a given component. This will run the initial setup actions
-	 * first and then run all the other actions afterwards. 
+	 * first and then run all the other actions afterwards.
 	 * @param componentId The ID of the component to run the currently pending actions for
 	 * @param component The component object to run the actions against
 	 */
@@ -115,7 +116,7 @@ export class ModelStore implements IModelStore {
 				resolve();
 			}).then(() => {
 				promiseTracker.actions.resolve(component);
-			});
+			}).catch(onUnexpectedError);
 			this._componentActions[componentId] = undefined;
 		}
 	}
