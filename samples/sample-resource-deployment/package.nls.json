@@ -22,6 +22,9 @@
 	"resource.type.wizard.display.name": "Test controller",
 	"resource.type.wizard.description": "Creates a Test controller",
 
+	"validation.wizard.display.name": "Validation Wizard",
+	"validation.wizard.description": "A wizard to test out validations",
+
 	"wizard.new.wizard.title": "Create Test controller",
 	"wizard.cluster.environment.title": "What is your target existing Kubernetes cluster environment?",
 	"wizard.select.cluster.title": "Select from installed existing Kubernetes clusters",

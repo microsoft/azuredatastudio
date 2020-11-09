@@ -629,6 +629,19 @@
                           ]
                         },
                         {
+                          "label": "%arc.memory-limit.label%",
+                          "description": "%arc.sql.memory-limit.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
+                          "type": "number",
+                          "min": 2,
+                          "required": false,
+                          "validations": [{
+                            "type": ">=",
+                            "target": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
+                            "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
+                          }]
+                        },
+                        {
                           "label": "%arc.cores-request.label%",
                           "description": "%arc.sql.cores-request.description%",
                           "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
@@ -646,19 +659,6 @@
                               "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
                             }
                           ]
-                        },
-                        {
-                          "label": "%arc.memory-limit.label%",
-                          "description": "%arc.sql.memory-limit.description%",
-                          "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
-                          "type": "number",
-                          "min": 2,
-                          "required": false,
-                          "validations": [{
-                            "type": ">=",
-                            "target": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
-                            "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
-                          }]
                         },
                         {
                           "label": "%arc.memory-request.label%",

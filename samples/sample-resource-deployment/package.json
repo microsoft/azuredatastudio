@@ -25,8 +25,8 @@
     "resourceDeploymentTypes": [
       {
 				"name": "validations-wizard",
-				"displayName": "%resource.type.wizard.display.name%",
-				"description": "%resource.type.wizard.description%",
+				"displayName": "%validation.wizard.display.name%",
+				"description": "%validation.wizard.description%",
 				"platforms": "*",
         "icon": {
           "light": "./images/book.svg",
@@ -54,7 +54,7 @@
                           "description": "%arc.sql.cores-limit.description%",
                           "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
                           "type": "number",
-                          "min": 1,
+                          "defaultValue": 5,
                           "required": false,
                           "validations": [
                             {
@@ -73,7 +73,7 @@
                           "description": "%arc.sql.cores-request.description%",
                           "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
                           "type": "number",
-                          "min": 1,
+                          "defaultValue": 2,
                           "required": false,
                           "validations": [
                             {
