@@ -52,10 +52,17 @@ export class ModelStore implements IModelStore {
 		return this._componentMappings[componentId];
 	}
 
+	/**
+	 * Queues up an action to run once a component is created and registered. This will run immediately if the component is
+	 * already registered.
+	 * @param componentId The ID of the component to queue up the action for
+	 * @param action The action to run when the component is registered
+	 * @param initial Whether this is an initial setup action that should be done before other post-setup actions
+	 */
 	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T, initial: boolean = false): void {
 		let component = this.getComponent(componentId);
 		if (component) {
-			Promise.resolve(action(component));
+			action(component);
 		} else {
 			this.addPendingAction(componentId, action, initial);
 		}
@@ -70,6 +77,12 @@ export class ModelStore implements IModelStore {
 		return Promise.all(this._validationCallbacks.map(callback => callback(componentId))).then(validations => validations.every(validation => validation === true));
 	}
 
+	/**
+	 * Adds the specified action to the list of actions to run once the specified component is created and registered.
+	 * @param componentId The ID of the component to add the action to
+	 * @param action The action to run once the component is registered
+	 * @param initial Whether this is an initial setup action that should be ran before other post-setup actions
+	 */
 	private addPendingAction<T>(componentId: string, action: ModelStoreAction<T>, initial: boolean): void {
 		// We create a promise and chain it onto a tracking promise whose resolve method
 		// will only be called once the component is created
@@ -87,6 +100,12 @@ export class ModelStore implements IModelStore {
 		}
 	}
 
+	/**
+	 * Runs the set of pending actions for a given component. This will run the initial setup actions
+	 * first and then run all the other actions afterwards. 
+	 * @param componentId The ID of the component to run the currently pending actions for
+	 * @param component The component object to run the actions against
+	 */
 	private runPendingActions(componentId: string, component: IComponent) {
 		let promiseTracker = this._componentActions[componentId];
 		if (promiseTracker) {
