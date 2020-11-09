@@ -99,15 +99,12 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
 	ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
 	ngAfterViewInit(): void {
+		this.baseInit();
 	}
 
 	public layout(): void {

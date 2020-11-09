@@ -74,11 +74,6 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-
-	}
-
 	transformColumns(columns: string[] | azdata.TableColumn[]): Slick.Column<any>[] {
 		let tableColumns: any[] = <any[]>columns;
 		if (tableColumns) {
@@ -238,6 +233,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				}
 			});
 		}
+		this.baseInit();
 	}
 
 	public validate(): Thenable<boolean> {

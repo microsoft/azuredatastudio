@@ -61,10 +61,6 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		}
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
 	ngAfterViewInit(): void {
 		if (this._editableDropDownContainer) {
 			let dropdownOptions: IDropdownOptions = {
@@ -115,6 +111,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		this._register(this._loadingBox);
 		this._register(attachSelectBoxStyler(this._loadingBox, this.themeService));
 		this._loadingBoxContainer.nativeElement.className = ''; // Removing the dropdown arrow icon from the right
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {

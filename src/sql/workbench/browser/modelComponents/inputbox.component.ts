@@ -51,10 +51,6 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
 	ngAfterViewInit(): void {
 		let inputOptions: IInputOptions = {
 			placeholder: '',
@@ -110,6 +106,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 			this.registerInput(this._textAreaInput, () => this.multiline);
 		}
 		this.inputElement.hideErrors = true;
+		this.baseInit();
 	}
 
 	private tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {

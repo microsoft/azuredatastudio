@@ -138,6 +138,7 @@ suite('HTML Markdown Converter', function (): void {
 		htmlString = '<a href="http://www.microsoft.com/images/msft.png">msft</a>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '[msft](http://www.microsoft.com/images/msft.png)', 'Basic http link test failed');
 	});
+  
 	test('Should transform <li> tags', () => {
 		htmlString = '<ul><li>Test</li></ul>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test`, 'Basic unordered list test failed');
@@ -152,6 +153,7 @@ suite('HTML Markdown Converter', function (): void {
 		htmlString = '<ol><li>Test<ol><li>Test2</li></ol><li>Test3</li></ol>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `1. Test\n    1. Test2\n2. Test3`, 'Basic ordered item test failed');
 	});
+  
 	test('Should keep < > tag', () => {
 		htmlString = '&lt;test&gt';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '<test>', 'Non-HTML tag test failed to escape');
@@ -179,5 +181,19 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark>&lt;test&gt;</mark>', 'Basic highlighting Non-HTML tag test failed to escape');
 		htmlString = '<mark><h1>&lt;test&gt;</h1></mark>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark><h1>&lt;test&gt;</h1></mark>', 'Non-HTML tag inside multiple html tags test failed to escape');
+
+	test('Should transform table with no header', () => {
+		htmlString = '<table>\n<thead>\n<tr>\n<th></th>\n<th></th>\n<th></th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `|  |  |  |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with no header failed');
+	});
+
+	test('Should transform table with missing headings', () => {
+		htmlString = '<table>\n<thead>\n<tr>\n<th>Test</th>\n<th></th>\n<th></th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test |  |  |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with missing headings failed');
+	});
+
+	test('Should transform table with header', () => {
+		htmlString = '<table>\n<thead>\n<tr>\n<th>Test</th>\n<th>Test</th>\n<th>Test</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test | Test |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with header failed');
 	});
 });
