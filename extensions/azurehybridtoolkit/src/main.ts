@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
-	vscode.commands.registerCommand('hybridtoolkit.openNotebooks', () => {
+	vscode.commands.registerCommand('hybridtoolkit.openbook', () => {
 		vscode.commands.executeCommand('notebook.command.openNotebookFolder', context.asAbsolutePath('notebooks'), undefined, undefined);
 	});
 }
