@@ -78,6 +78,14 @@ export class Notebook {
 		const outputComponent = '.notebook-cell.active .notebook-output';
 		await this.code.waitForElement(outputComponent);
 	}
+
+	async trustNotebook(): Promise<void> {
+		await this.toolbar.trustNotebook();
+	}
+
+	async isTrusted(): Promise<void> {
+		await this.toolbar.isTrusted();
+	}
 }
 
 export class NotebookToolbar {
@@ -94,5 +102,21 @@ export class NotebookToolbar {
 	async waitForKernel(kernel: string): Promise<void> {
 		const kernelDropdownValue = `${NotebookToolbar.toolbarSelector} select[id="kernel-dropdown"][title="${kernel}"]`;
 		await this.code.waitForElement(kernelDropdownValue, undefined, 3000); // wait up to 5 minutes for kernel change
+	}
+
+	async trustNotebook(): Promise<void> {
+		const trustedButton = `${NotebookToolbar.toolbarSelector} a[class="action-label codicon notebook-button masked-icon icon-shield"]`;
+		const notTrustedButton = `${NotebookToolbar.toolbarSelector} a[class="action-label codicon notebook-button masked-icon icon-shield-x"]`;
+
+		await this.code.waitAndClick(NotebookToolbar.toolbarSelector);
+		if (this.code.waitForElement(notTrustedButton)) {
+			this.code.waitAndClick(notTrustedButton);
+			this.code.waitForElement(trustedButton);
+		}
+	}
+
+	async isTrusted(): Promise<void> {
+		const trustedButton = `${NotebookToolbar.toolbarSelector} a[class="action-label codicon notebook-button masked-icon icon-shield"]`;
+		await this.code.waitForElement(trustedButton);
 	}
 }

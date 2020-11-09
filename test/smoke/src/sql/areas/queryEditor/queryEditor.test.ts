@@ -22,6 +22,7 @@ export function setup() {
 			await app.workbench.queryEditor.commandBar.run();
 			await app.workbench.queryEditor.waitForResults();
 			await app.workbench.quickaccess.runCommand('workbench.action.closeAllEditors');
+			await app.code.dispatchKeybinding('enter');
 		});
 	});
 }
@@ -38,5 +39,6 @@ export function setupWeb() {
 		await app.workbench.queryEditor.commandBar.run();
 		await app.workbench.queryEditor.waitForResults();
 		await app.workbench.quickaccess.runCommand('workbench.action.closeAllEditors');
+		await app.code.dispatchKeybinding('enter');
 	});
 }
