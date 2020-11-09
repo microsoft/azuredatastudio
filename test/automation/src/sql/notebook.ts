@@ -80,23 +80,23 @@ export class Notebook {
 		return this.code.waitForTextContent(selector, undefined, c => accept(c.replace(/\u00a0/g, ' ')));
 	}
 
-	async waitForResults(): Promise<void> {
+	async waitForActiveCellResults(): Promise<void> {
 		const outputComponent = '.notebook-cell.active .notebook-output';
 		await this.code.waitForElement(outputComponent);
 	}
 
-	async waitForAllResults(cellIds: number[]): Promise<void> {
+	async waitForResults(cellIds: number[]): Promise<void> {
 		for (let i of cellIds) {
 			await this.code.waitForElement(`div.notebook-cell[id="${i}"] .notebook-output`);
 		}
 	}
 
-	async waitForResultsGone(): Promise<void> {
+	async waitForActiveCellResultsGone(): Promise<void> {
 		const outputComponent = '.notebook-cell.active .notebook-output';
 		await this.code.waitForElementGone(outputComponent);
 	}
 
-	async waitForAllResultsGone(cellIds: number[]): Promise<void> {
+	async waitForResultsGone(cellIds: number[]): Promise<void> {
 		for (let i of cellIds) {
 			await this.code.waitForElementGone(`div.notebook-cell[id="${i}"] .notebook-output`);
 		}
