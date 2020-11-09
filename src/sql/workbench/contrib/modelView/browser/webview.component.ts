@@ -62,12 +62,12 @@ export default class WebViewComponent extends ComponentBase<WebViewProperties> i
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
+	ngAfterViewInit(): void {
 		this._createWebview();
 		this._register(addDisposableListener(window, EventType.RESIZE, e => {
 			this.layout();
 		}));
+		this.baseInit();
 	}
 
 	private _createWebview(): void {

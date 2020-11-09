@@ -34,7 +34,7 @@ export default class PropertiesContainerComponent extends ComponentBase<azdata.P
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.baseInit();
 	}
 

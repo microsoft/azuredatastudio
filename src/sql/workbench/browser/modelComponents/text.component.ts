@@ -51,12 +51,9 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
 	ngAfterViewInit(): void {
 		this.updateText();
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {

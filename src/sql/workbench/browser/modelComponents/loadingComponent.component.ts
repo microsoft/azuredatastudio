@@ -44,13 +44,9 @@ export default class LoadingComponent extends ComponentBase<azdata.LoadingCompon
 		});
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-
-	}
-
 	ngAfterViewInit(): void {
 		this.setLayout();
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {

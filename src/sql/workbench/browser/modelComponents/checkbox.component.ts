@@ -37,11 +37,6 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-
-	}
-
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
 			let inputOptions: ICheckboxOptions = {
@@ -62,6 +57,7 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 			this._register(attachCheckboxStyler(this._input, this.themeService));
 			this._validations.push(() => !this.required || this.checked);
 		}
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {

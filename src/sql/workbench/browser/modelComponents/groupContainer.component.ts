@@ -49,15 +49,12 @@ export default class GroupContainer extends ContainerBase<GroupLayout, GroupCont
 		this.collapsed = false;
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.baseInit();
 	}
 
 	ngOnDestroy(): void {
 		this.baseDestroy();
-	}
-
-	ngAfterViewInit(): void {
 	}
 
 	onKeyDown(event: KeyboardEvent): void {

@@ -57,12 +57,9 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
 	ngAfterViewInit(): void {
 		this._register(attachTabbedPanelStyler(this._panel, this.themeService));
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {

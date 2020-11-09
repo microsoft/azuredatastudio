@@ -33,12 +33,9 @@ export default class HyperlinkComponent extends TitledComponent<azdata.Hyperlink
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
 	ngAfterViewInit(): void {
 		this._register(DOM.addDisposableListener(this._el.nativeElement, 'click', (e: MouseEvent) => this.onClick(e)));
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {

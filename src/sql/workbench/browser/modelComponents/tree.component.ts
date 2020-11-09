@@ -62,15 +62,11 @@ export default class TreeComponent extends ComponentBase<azdata.TreeProperties> 
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-
-	}
-
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
 			this.createTreeControl();
 		}
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {
