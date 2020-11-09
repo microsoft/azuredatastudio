@@ -181,6 +181,8 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark>&lt;test&gt;</mark>', 'Basic highlighting Non-HTML tag test failed to escape');
 		htmlString = '<mark><h1>&lt;test&gt;</h1></mark>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark><h1>&lt;test&gt;</h1></mark>', 'Non-HTML tag inside multiple html tags test failed to escape');
+		htmlString = '<p>&lt;style&gt</p>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '\\<style\\>', 'Style tag as a non-HTML tag test failed to escape');
 	});
 
 	test('Should transform table with no header', () => {
@@ -197,5 +199,4 @@ suite('HTML Markdown Converter', function (): void {
 		htmlString = '<table>\n<thead>\n<tr>\n<th>Test</th>\n<th>Test</th>\n<th>Test</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test | Test |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with header failed');
 	});
-
 });
