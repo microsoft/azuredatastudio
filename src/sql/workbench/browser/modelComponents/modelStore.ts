@@ -13,11 +13,13 @@ class ComponentDescriptor implements IComponentDescriptor {
 	}
 }
 
+export type ModelStoreAction<T> = (component: IComponent) => T;
+
 export class ModelStore implements IModelStore {
 
 	private _descriptorMappings: { [x: string]: IComponentDescriptor } = {};
 	private _componentMappings: { [x: string]: IComponent } = {};
-	private _componentActions: { [x: string]: Deferred<IComponent> } = {};
+	private _componentActions: { [x: string]: { initial: ModelStoreAction<any>[], actions: Deferred<IComponent> } } = {};
 	private _validationCallbacks: ((componentId: string) => Thenable<boolean>)[] = [];
 	constructor() {
 	}
@@ -50,12 +52,12 @@ export class ModelStore implements IModelStore {
 		return this._componentMappings[componentId];
 	}
 
-	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): Promise<T> {
+	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T, initial: boolean = false): void {
 		let component = this.getComponent(componentId);
 		if (component) {
-			return Promise.resolve(action(component));
+			Promise.resolve(action(component));
 		} else {
-			return this.addPendingAction(componentId, action);
+			this.addPendingAction(componentId, action, initial);
 		}
 	}
 
@@ -68,24 +70,34 @@ export class ModelStore implements IModelStore {
 		return Promise.all(this._validationCallbacks.map(callback => callback(componentId))).then(validations => validations.every(validation => validation === true));
 	}
 
-	private addPendingAction<T>(componentId: string, action: (component: IComponent) => T): Promise<T> {
+	private addPendingAction<T>(componentId: string, action: ModelStoreAction<T>, initial: boolean): void {
 		// We create a promise and chain it onto a tracking promise whose resolve method
 		// will only be called once the component is created
-		let deferredPromise = this._componentActions[componentId];
-		if (!deferredPromise) {
-			deferredPromise = new Deferred();
-			this._componentActions[componentId] = deferredPromise;
+		let deferredActions = this._componentActions[componentId];
+		if (!deferredActions) {
+			deferredActions = { initial: [], actions: new Deferred() };
+			this._componentActions[componentId] = deferredActions;
 		}
-		let promise = deferredPromise.promise.then((component) => {
-			return action(component);
-		});
-		return promise;
+		if (initial) {
+			deferredActions.initial.push(action);
+		} else {
+			deferredActions.actions.promise.then((component) => {
+				return action(component);
+			});
+		}
 	}
 
 	private runPendingActions(componentId: string, component: IComponent) {
 		let promiseTracker = this._componentActions[componentId];
 		if (promiseTracker) {
-			promiseTracker.resolve(component);
+			// Run initial actions first to ensure they're done before later actions (and thus don't overwrite following actions)
+			new Promise(resolve => {
+				promiseTracker.initial.forEach(action => action(component));
+				resolve();
+			}).then(() => {
+				promiseTracker.actions.resolve(component);
+			});
+			this._componentActions[componentId] = undefined;
 		}
 	}
 }

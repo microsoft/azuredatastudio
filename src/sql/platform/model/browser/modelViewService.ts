@@ -37,7 +37,7 @@ export interface IModelView extends IView {
 	removeFromContainer(containerId: string, item: IItemConfig): void;
 	setLayout(componentId: string, layout: any): void;
 	setItemLayout(componentId: string, item: IItemConfig): void;
-	setProperties(componentId: string, properties: { [key: string]: any }): void;
+	setProperties(componentId: string, properties: { [key: string]: any }, initial?: boolean): void;
 	setDataProvider(handle: number, componentId: string, context: any): void;
 	refreshDataProvider(componentId: string, item: any): void;
 	registerEvent(componentId: string): void;
