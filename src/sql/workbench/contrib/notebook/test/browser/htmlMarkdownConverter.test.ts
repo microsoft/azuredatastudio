@@ -155,8 +155,8 @@ suite('HTML Markdown Converter', function (): void {
 	test('Should keep < > tag', () => {
 		htmlString = '&lt;test&gt';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '<test>', 'Non-HTML tag test failed to escape');
-		htmlString = '&lt;test&gt<span style="background:red">test</span>&lt;test&gt';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<test><span style="background:red">tes</span><test>', 'Non-HTML tag inside span tag test failed to escape');
+		htmlString = '&lt;test&gt<span style="background:red">message</span>&lt;test&gt';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '<test><span style="background:red">message</span><test>', 'Non-HTML tag inside span tag test failed to escape');
 		htmlString = '<h1>&lt;test&gt;<h1>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '# \\<test\\>', 'Non-HTML tag inside H1 tag test failed to escape');
 		htmlString = '<h2>&lt;test&gt;<h2>';
