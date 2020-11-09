@@ -104,7 +104,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		if (!layout) {
 			return;
 		}
-		this.queueAction(componentId, (component) => component.setLayout(layout));
+		this.queueAction(componentId, (component) => component.setLayout(layout), initial);
 	}
 
 	setItemLayout(containerId: string, itemConfig: IItemConfig): void {
