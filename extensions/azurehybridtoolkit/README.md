@@ -1,12 +1,6 @@
-# Notebook extension for Azure Data Studio
+# Azure SQL Hybrid Cloud Toolkit Jupyter Book Extension for Azure Data Studio
 
-Welcome to the Notebook extension for Azure Data Studio! This extension supports core notebook functionality including configuration settings, actions such as New / Open Notebook, and more.
-
-## Books in Azure Data Studio
-
-Jupyter Book allows opening a single "Book" of related notebooks and markdown files. This feature will work if you open any Book folder in Azure Data Studio.
-
-Download a [sample book](https://github.com/jupyter/jupyter-book) and open folder in Azure Data Studio to get started. You can learn more about Books on the [Jupyter Book homepage](https://jupyter.org/jupyter-book/intro.html).
+Welcome to the Azure SQL Hybrid Cloud Toolkit Jupyter Book Extension for Azure Data Studio! This extension opens a Jupyter Book that has several utilities for Azure SQL such as migration assessments and setting up networking connectivity.
 
 ## Code of Conduct
 

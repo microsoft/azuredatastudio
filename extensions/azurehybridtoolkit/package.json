@@ -15,28 +15,13 @@
   "contributes": {
     "commands": [
       {
-        "command": "hybridtoolkit.openNotebooks",
-        "title": "%title.openNotebookFolder%",
-        "icon": {
-          "dark": "resources/dark/placeholder_logo_jupyterhub.svg",
-          "light": "resources/light/placeholder_logo_jupyterhub.svg"
-        }
+        "command": "hybridtoolkit.openbook",
+        "title": "%title.openJupyterBook%"
       }
-    ],
-    "menus": {
-      "commandPalette": [
-        {
-          "command": "hybridtoolkit.openNotebooks",
-          "when": "true"
-        }
-      ]
-    }
+    ]
   },
   "dependencies": {
     "vscode-nls": "^4.0.0"
-  },
-  "devDependencies": {
-    "vscode": "1.0.1"
   },
   "__metadata": {
     "publisherDisplayName": "Microsoft",
