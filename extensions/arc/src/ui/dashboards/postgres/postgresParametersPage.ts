@@ -100,6 +100,11 @@ export class PostgresParametersPage extends DashboardPage {
 						}
 					);
 
+					//Edit multiple
+					// azdata arc postgres server edit -n <server group name> -e '<parameter name>="<parameter value>"", <parameter name>="<parameter value>"",...'
+
+
+
 					this._postgresModel.refresh();
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
@@ -142,6 +147,10 @@ export class PostgresParametersPage extends DashboardPage {
 				try {
 
 					// TODO
+					//all
+					// azdata arc postgres server edit -n <server group name> -e '' -re
+					//indv
+					// azdata arc postgres server edit -n postgres01 -e shared_buffers=
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.refreshFailed(error));
@@ -169,6 +178,18 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private filterParameters() {
+
+	}
+
+	private createParametersTable() {
+		// Define server settings that shouldn't be modified. we block archive_*, restore_*, and synchronous_commit to prevent the user
+		// from messing up our backups. (we rely on synchronous_commit to ensure WAL changes are written immediately.)
+		// we block log_* to protect our logging. we block wal_level because Citus needs a particular wal_Level to rebalance shards
+		// TODO: Review list of blacklisted parameters. wal_level should only be blacklisted if sharding is enabled
+		/* To not be modified
+			"archive_command", "archive_timeout", "log_directory", "log_file_mode", "log_filename", "restore_command",
+			"shared_preload_libraries", "synchronous_commit", "ssl", "unix_socket_permissions", "wal_level" */
+
 
 	}
 
