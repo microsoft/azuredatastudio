@@ -47,6 +47,9 @@ export class ResourceTypeWizard {
 		return this._model;
 	}
 
+	public get lastPage(): ResourceTypePage | undefined {
+		return this.pages.length > 0 ? this.pages[this.pages.length - 1] : undefined;
+	}
 	constructor(
 		public resourceType: ResourceType,
 		public _kubeService: IKubeService,
@@ -93,9 +96,10 @@ export class ResourceTypeWizard {
 			this.dispose();
 		}));
 		this.toDispose.push(this.wizardObject.generateScriptButton.onClick(async () => {
-			await this._model.onGenerateScript();
-			this.dispose();
-			this.wizardObject.close(); // close the wizard. This is already hooked up into doneButton, so it is not needed for that button above.
+			if (await this._model.onGenerateScript()) {
+				this.dispose();
+				this.wizardObject.close(); // close the wizard. This is already hooked up into doneButton, so it is not needed for that button above.
+			}
 		}));
 		this.toDispose.push(this.wizardObject.cancelButton.onClick(() => {
 			this._model.onCancel();

@@ -108,31 +108,34 @@ export class NotebookWizardPage extends ResourceTypePage {
 			 * The first condition checks that edge case.
 			 */
 			if (pcInfo.newPage === undefined || pcInfo.newPage > pcInfo.lastPage) {
-				const messages: string[] = [];
-
-				this.validators.forEach((validator) => {
-					const result = validator();
-					if (!result.valid) {
-						messages.push(result.message);
-					}
-				});
-
-				if (messages.length > 0) {
-					this.wizard.wizardObject.message = {
-						text:
-							messages.length === 1
-								? messages[0]
-								: localize(
-									"wizardPage.ValidationError",
-									"There are some errors on this page, click 'Show Details' to view the errors."
-								),
-						description: messages.length === 1 ? undefined : messages.join(EOL),
-						level: azdata.window.MessageLevel.Error,
-					};
-				}
-				return messages.length === 0;
+				return this.validatePage();
 			}
 			return true;
 		});
+	}
+
+	public validatePage(): boolean {
+		const messages: string[] = [];
+
+		this.validators.forEach((validator) => {
+			const result = validator();
+			if (!result.valid) {
+				messages.push(result.message);
+			}
+		});
+
+		if (messages.length > 0) {
+			this.wizard.wizardObject.message = {
+				text: messages.length === 1
+					? messages[0]
+					: localize(
+						"wizardPage.ValidationError",
+						"There are some errors on this page, click 'Show Details' to view the errors."
+					),
+				description: messages.length === 1 ? undefined : messages.join(EOL),
+				level: azdata.window.MessageLevel.Error,
+			};
+		}
+		return messages.length === 0;
 	}
 }
