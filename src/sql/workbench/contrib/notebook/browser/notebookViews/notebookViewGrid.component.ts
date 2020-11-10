@@ -4,29 +4,30 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Component, OnInit, ViewChildren, QueryList, Input, Inject, forwardRef, ChangeDetectorRef } from '@angular/core';
-import { GridStackItemComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/gridstackItem.component';
+import { ViewCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewCard.component';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 
 import 'vs/css!./gridstack';
+import 'vs/css!./notebookviews';
 
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { NotebookViewExtension, INotebookViewCell, CellChangeEvent } from 'sql/workbench/services/notebook/browser/models/notebookView';
-//declare var $: any; // JQuery
+import { NotebookViewService, INotebookViewCell } from 'sql/workbench/services/notebook/browser/models/notebookViewService';
 
 import { GridStack } from 'gridstack';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
+import { CellChangeEvent } from 'sql/workbench/services/notebook/browser/models/notebookViewModel';
 
 @Component({
-	selector: 'gridstack',
-	templateUrl: decodeURI(require.toUrl('./gridstack.component.html'))
+	selector: 'notebook-views-grid-component',
+	templateUrl: decodeURI(require.toUrl('./notebookViewGrid.component.html'))
 })
-export class GridStackComponent implements OnInit {
+export class NotebookViewsGridComponent implements OnInit {
 	@Input() cells: ICellModel[];
 	@Input() model: NotebookModel;
-	@Input() extension: NotebookViewExtension;
+	@Input() extension: NotebookViewService;
 
-	@ViewChildren(GridStackItemComponent) private _items: QueryList<GridStackItemComponent>;
+	@ViewChildren(ViewCardComponent) private _items: QueryList<ViewCardComponent>;
 
 	protected _grid: any;
 	public loaded: boolean;
@@ -41,7 +42,7 @@ export class GridStackComponent implements OnInit {
 		return !this._items || !this._items.find(item => item.display);
 	}
 
-	public get hiddenItems(): GridStackItemComponent[] {
+	public get hiddenItems(): ViewCardComponent[] {
 		return this._items.filter(item => !item.display);
 	}
 

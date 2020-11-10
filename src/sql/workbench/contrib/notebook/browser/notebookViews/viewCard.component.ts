@@ -9,20 +9,18 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { HideCellAction, RunCellAction, ViewCellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/notebookViews/actions';
-import { NotebookViewExtension, INotebookViewCellMetadata, INotebookView, CellChangeEventType } from 'sql/workbench/services/notebook/browser/models/notebookView';
+import { NotebookViewService } from 'sql/workbench/services/notebook/browser/models/notebookViewService';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-
-
-//declare var $: any; // JQuery
+import { CellChangeEventType, DEFAULT_VIEW_CARD_HEIGHT, DEFAULT_VIEW_CARD_WIDTH, INotebookView, INotebookViewCellMetadata } from 'sql/workbench/services/notebook/browser/models/notebookViewModel';
 
 @Component({
-	selector: 'gridstack-item',
-	templateUrl: decodeURI(require.toUrl('./gridstackItem.component.html'))
+	selector: 'view-card-component',
+	templateUrl: decodeURI(require.toUrl('./viewCard.component.html'))
 })
-export class GridStackItemComponent implements OnInit {
+export class ViewCardComponent implements OnInit {
 	private _actionbar: Taskbar;
 	private _metadata: INotebookViewCellMetadata;
 	private _activeView: INotebookView;
@@ -31,7 +29,7 @@ export class GridStackItemComponent implements OnInit {
 
 	@Input() cell: ICellModel;
 	@Input() model: NotebookModel;
-	@Input() extension: NotebookViewExtension;
+	@Input() extension: NotebookViewService;
 	@Input() ready: boolean;
 	@Output() onChange: EventEmitter<any> = new EventEmitter();
 
@@ -89,7 +87,6 @@ export class GridStackItemComponent implements OnInit {
 			taskbarContent.push({ element: moreActionsContainer });
 
 			this._actionbar.setContent(taskbarContent);
-
 		}
 	}
 
@@ -124,11 +121,11 @@ export class GridStackItemComponent implements OnInit {
 	}
 
 	public get width(): number {
-		return this.data?.width ? this.data.width : 12;
+		return this.data?.width ? this.data.width : DEFAULT_VIEW_CARD_WIDTH;
 	}
 
 	public get height(): number {
-		return this.data.height ? this.data.height : 4;
+		return this.data.height ? this.data.height : DEFAULT_VIEW_CARD_HEIGHT;
 	}
 
 	public get x(): number {

@@ -1,6 +1,6 @@
 <div class="grid-stack">
 	<ng-container *ngFor="let cell of cells">
-		<gridstack-item #wrapper [ready]="loaded" [extension]="extension" [cell]="cell" [model]="model" (onChange)="onCellChanged($event)"></gridstack-item>
+		<view-card-component #wrapper [ready]="loaded" [extension]="extension" [cell]="cell" [model]="model" (onChange)="onCellChanged($event)"></view-card-component>
 		<ng-content *ngTemplateOutlet='wrapper.templateRef'></ng-content>
 	</ng-container>
 </div>

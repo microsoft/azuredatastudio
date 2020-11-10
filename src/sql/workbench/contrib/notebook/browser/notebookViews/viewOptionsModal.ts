@@ -16,11 +16,11 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
 import { attachButtonStyler, attachInputBoxStyler } from 'sql/platform/theme/common/styler';
-import { INotebookView } from 'sql/workbench/services/notebook/browser/models/notebookView';
 import { localize } from 'vs/nls';
 import { IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { INotebookView } from 'sql/workbench/services/notebook/browser/models/notebookViewModel';
 
 export class ViewOptionsModal extends Modal {
 	private _submitButton: Button;

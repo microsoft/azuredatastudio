@@ -33,9 +33,8 @@ import { CollapseComponent } from 'sql/workbench/contrib/notebook/browser/cellVi
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
 import { NotebookViewComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookView.component';
-import { DashboardViewComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/dashboardView.component';
-import { GridStackComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/gridstack.component';
-import { GridStackItemComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/gridstackItem.component';
+import { NotebookViewsGridComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewGrid.component';
+import { ViewCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewCard.component';
 import { NotebookEditorComponent } from 'sql/workbench/contrib/notebook/browser/notebookEditor.component';
 import { ViewCellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewCellToolbar.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
@@ -65,9 +64,8 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			NotebookComponent,
 			NotebookEditorComponent,
 			NotebookViewComponent,
-			DashboardViewComponent,
-			GridStackComponent,
-			GridStackItemComponent,
+			NotebookViewsGridComponent,
+			ViewCardComponent,
 			ComponentHostDirective,
 			OutputAreaComponent,
 			OutputComponent,
