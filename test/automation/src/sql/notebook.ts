@@ -7,6 +7,7 @@ import { Code } from '../code';
 import { QuickAccess } from '../quickaccess';
 import { QuickInput } from '../quickinput';
 import { Editors } from '../editors';
+import { IElement } from '..';
 
 const winOrCtrl = process.platform === 'darwin' ? 'ctrl' : 'win';
 
@@ -83,14 +84,24 @@ export class Notebook {
 		await this.toolbar.trustNotebook();
 	}
 
-	async isTrusted(): Promise<void> {
-		await this.toolbar.isTrusted();
+	async waitForTrustedIcon(): Promise<void> {
+		await this.toolbar.waitForTrustedIcon();
+	}
+
+	async waitForNotTrustedIcon(): Promise<void> {
+		await this.toolbar.waitForNotTrustedIcon();
 	}
 }
 
 export class NotebookToolbar {
 
 	private static readonly toolbarSelector = '.notebookEditor .editor-toolbar .actions-container';
+	private static readonly toolbarButtonSelector = `${NotebookToolbar.toolbarSelector} a.action-label.codicon.notebook-button.masked-icon`;
+	private static readonly trustedButtonClass = 'action-label codicon notebook-button masked-icon icon-shield';
+	private static readonly trustedButtonSelector = `${NotebookToolbar.toolbarSelector} a[class="${NotebookToolbar.trustedButtonClass}"]`;
+	private static readonly notTrustedButtonClass = 'action-label codicon notebook-button masked-icon icon-shield-x';
+	private static readonly notTrustedButtonSelector = `${NotebookToolbar.toolbarSelector} a[class="${NotebookToolbar.notTrustedButtonClass}"]`;
+
 	constructor(private code: Code) { }
 
 	async changeKernel(kernel: string): Promise<void> {
@@ -105,18 +116,24 @@ export class NotebookToolbar {
 	}
 
 	async trustNotebook(): Promise<void> {
-		const trustedButton = `${NotebookToolbar.toolbarSelector} a[class="action-label codicon notebook-button masked-icon icon-shield"]`;
-		const notTrustedButton = `${NotebookToolbar.toolbarSelector} a[class="action-label codicon notebook-button masked-icon icon-shield-x"]`;
-
 		await this.code.waitAndClick(NotebookToolbar.toolbarSelector);
-		if (this.code.waitForElement(notTrustedButton)) {
-			this.code.waitAndClick(notTrustedButton);
-			this.code.waitForElement(trustedButton);
-		}
+
+		let buttons: IElement[] = await this.code.waitForElements(NotebookToolbar.toolbarButtonSelector, false);
+		buttons.forEach(async button => {
+			if (button.className === NotebookToolbar.trustedButtonClass) { // notebook is already trusted
+				return;
+			} else if (button.className === NotebookToolbar.notTrustedButtonClass) {
+				await this.code.waitAndClick(NotebookToolbar.notTrustedButtonSelector);
+				return;
+			}
+		});
 	}
 
-	async isTrusted(): Promise<void> {
-		const trustedButton = `${NotebookToolbar.toolbarSelector} a[class="action-label codicon notebook-button masked-icon icon-shield"]`;
-		await this.code.waitForElement(trustedButton);
+	async waitForTrustedIcon(): Promise<void> {
+		await this.code.waitForElement(NotebookToolbar.trustedButtonSelector);
+	}
+
+	async waitForNotTrustedIcon(): Promise<void> {
+		await this.code.waitForElement(NotebookToolbar.notTrustedButtonSelector);
 	}
 }

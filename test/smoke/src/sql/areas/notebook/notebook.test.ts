@@ -29,13 +29,14 @@ export function setup() {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
 			await app.workbench.sqlNotebook.waitForKernel('SQL');
+			await app.workbench.sqlNotebook.waitForNotTrustedIcon();
 			await app.workbench.sqlNotebook.trustNotebook();
-			await app.workbench.sqlNotebook.isTrusted();
+			await app.workbench.sqlNotebook.waitForTrustedIcon();
 			await app.workbench.quickaccess.runCommand('workbench.action.files.save');
 			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
 
 			await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
-			await app.workbench.sqlNotebook.isTrusted();
+			await app.workbench.sqlNotebook.waitForTrustedIcon();
 			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
 		});
 	});
