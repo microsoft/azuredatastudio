@@ -25,11 +25,11 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 	setProjectProviderContextValue(workspaceService);
 	context.subscriptions.push(vscode.commands.registerCommand('projects.new', async () => {
 		const dialog = new NewProjectDialog(workspaceService);
-		dialog.open();
+		await dialog.open();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openExisting', async () => {
 		const dialog = new OpenExistingDialog(workspaceService, context);
-		dialog.open();
+		await dialog.open();
 
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', () => {

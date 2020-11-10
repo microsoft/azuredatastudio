@@ -21,7 +21,8 @@ class NewProjectDialogModel {
 	location: string = '';
 }
 export class NewProjectDialog extends DialogBase {
-	private model: NewProjectDialogModel = new NewProjectDialogModel();
+	public model: NewProjectDialogModel = new NewProjectDialogModel();
+
 	constructor(private workspaceService: IWorkspaceService) {
 		super(constants.NewProjectDialogTitle, 'NewProject');
 	}
@@ -190,5 +191,6 @@ export class NewProjectDialog extends DialogBase {
 			}
 		]).component();
 		await view.initializeModel(form);
+		this.initDialogComplete?.resolve();
 	}
 }

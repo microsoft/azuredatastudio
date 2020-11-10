@@ -12,9 +12,11 @@ import { fileExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
 
 export class OpenExistingDialog extends DialogBase {
-	private _projectFile: string = '';
-	private _workspaceFile: string = '';
-	private _targetTypeRadioCardGroup: azdata.RadioCardGroupComponent | undefined;
+	public _projectFile: string = '';
+	public _workspaceFile: string = '';
+	public _targetTypeRadioCardGroup: azdata.RadioCardGroupComponent | undefined;
+	public _filePathTextBox: azdata.InputBoxComponent | undefined;
+
 	private _targetTypes = [
 		{
 			name: constants.Project,
@@ -103,15 +105,15 @@ export class OpenExistingDialog extends DialogBase {
 			selectedCardId: constants.Project
 		}).component();
 
-		const projectFilePathTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this._filePathTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.LocationSelectorTitle,
 			placeHolder: constants.ProjectFilePlaceholder,
 			required: true,
 			width: constants.DefaultInputWidth
 		}).component();
-		this.register(projectFilePathTextBox.onTextChanged(() => {
-			this._projectFile = projectFilePathTextBox.value!;
-			projectFilePathTextBox.updateProperty('title', this._projectFile);
+		this.register(this._filePathTextBox.onTextChanged(() => {
+			this._projectFile = this._filePathTextBox!.value!;
+			this._filePathTextBox!.updateProperty('title', this._projectFile);
 		}));
 
 		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -122,21 +124,21 @@ export class OpenExistingDialog extends DialogBase {
 		}).component();
 		this.register(browseFolderButton.onDidClick(async () => {
 			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Project) {
-				await this.projectBrowse(projectFilePathTextBox);
+				await this.projectBrowse();
 			} else if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
-				await this.workspaceBrowse(projectFilePathTextBox);
+				await this.workspaceBrowse();
 			}
 		}));
 
 		this.register(this._targetTypeRadioCardGroup.onSelectionChanged(({ cardId }) => {
 			if (cardId === constants.Project) {
-				projectFilePathTextBox.placeHolder = constants.ProjectFilePlaceholder;
+				this._filePathTextBox!.placeHolder = constants.ProjectFilePlaceholder;
 			} else if (cardId === constants.Workspace) {
-				projectFilePathTextBox.placeHolder = constants.WorkspacePlaceholder;
+				this._filePathTextBox!.placeHolder = constants.WorkspacePlaceholder;
 			}
 
 			// clear selected file textbox
-			projectFilePathTextBox.value = '';
+			this._filePathTextBox!.value = '';
 		}));
 
 		const form = view.modelBuilder.formContainer().withFormItems([
@@ -147,13 +149,14 @@ export class OpenExistingDialog extends DialogBase {
 			}, {
 				title: constants.LocationSelectorTitle,
 				required: true,
-				component: this.createHorizontalContainer(view, [projectFilePathTextBox, browseFolderButton])
+				component: this.createHorizontalContainer(view, [this._filePathTextBox, browseFolderButton])
 			}
 		]).component();
 		await view.initializeModel(form);
+		this.initDialogComplete?.resolve();
 	}
 
-	private async workspaceBrowse(projectFilePathTextBox: azdata.InputBoxComponent): Promise<void> {
+	public async workspaceBrowse(): Promise<void> {
 		const filters: { [name: string]: string[] } = { [constants.Workspace]: [constants.WorkspaceFileExtension] };
 		const fileUris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
@@ -168,11 +171,11 @@ export class OpenExistingDialog extends DialogBase {
 		}
 
 		const workspaceFilePath = fileUris[0].fsPath;
-		projectFilePathTextBox.value = workspaceFilePath;
+		this._filePathTextBox!.value = workspaceFilePath;
 		this._workspaceFile = workspaceFilePath;
 	}
 
-	private async projectBrowse(projectFilePathTextBox: azdata.InputBoxComponent): Promise<void> {
+	public async projectBrowse(): Promise<void> {
 		const filters: { [name: string]: string[] } = {};
 		const projectTypes = await this.workspaceService.getAllProjectTypes();
 		filters[constants.AllProjectTypes] = projectTypes.map(type => type.projectFileExtension);
@@ -193,7 +196,7 @@ export class OpenExistingDialog extends DialogBase {
 		}
 
 		const projectFilePath = fileUris[0].fsPath;
-		projectFilePathTextBox.value = projectFilePath;
+		this._filePathTextBox!.value = projectFilePath;
 		this._projectFile = projectFilePath;
 	}
 }
