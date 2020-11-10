@@ -83,7 +83,13 @@ export class NotebookWizardPage extends ResourceTypePage {
 		if (pageInfo.isLastPage) {
 			// on the last page either one or both of done button and generateScript button are visible depending on configuration of 'runNotebook' in wizard info
 			this.wizard.wizardObject.doneButton.hidden = !this.isDoneButtonVisible;
+			if (this._model.wizardInfo.doneAction?.label) {
+				this.wizard.wizardObject.doneButton.label = this._model.wizardInfo.doneAction.label;
+			}
 			this.wizard.wizardObject.generateScriptButton.hidden = !this.isGenerateScriptButtonVisible;
+			if (this._model.wizardInfo.scriptAction?.label) {
+				this.wizard.wizardObject.generateScriptButton.label = this._model.wizardInfo.scriptAction.label;
+			}
 		} else {
 			//on any page but the last page doneButton and generateScriptButton are hidden
 			this.wizard.wizardObject.doneButton.hidden = true;
@@ -96,32 +102,40 @@ export class NotebookWizardPage extends ResourceTypePage {
 
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
-			if (pcInfo.newPage > pcInfo.lastPage) {
-				const messages: string[] = [];
 
-				this.validators.forEach((validator) => {
-					const result = validator();
-					if (!result.valid) {
-						messages.push(result.message);
-					}
-				});
-
-				if (messages.length > 0) {
-					this.wizard.wizardObject.message = {
-						text:
-							messages.length === 1
-								? messages[0]
-								: localize(
-									"wizardPage.ValidationError",
-									"There are some errors on this page, click 'Show Details' to view the errors."
-								),
-						description: messages.length === 1 ? undefined : messages.join(EOL),
-						level: azdata.window.MessageLevel.Error,
-					};
-				}
-				return messages.length === 0;
+			/**
+			 * In case of the last page, when the user presses the ok Button the new page will be undefined.
+			 * The first condition checks that edge case.
+			 */
+			if (pcInfo.newPage === undefined || pcInfo.newPage > pcInfo.lastPage) {
+				return this.validatePage();
 			}
 			return true;
 		});
+	}
+
+	public validatePage(): boolean {
+		const messages: string[] = [];
+
+		this.validators.forEach((validator) => {
+			const result = validator();
+			if (!result.valid) {
+				messages.push(result.message);
+			}
+		});
+
+		if (messages.length > 0) {
+			this.wizard.wizardObject.message = {
+				text: messages.length === 1
+					? messages[0]
+					: localize(
+						"wizardPage.ValidationError",
+						"There are some errors on this page, click 'Show Details' to view the errors."
+					),
+				description: messages.length === 1 ? undefined : messages.join(EOL),
+				level: azdata.window.MessageLevel.Error,
+			};
+		}
+		return messages.length === 0;
 	}
 }
