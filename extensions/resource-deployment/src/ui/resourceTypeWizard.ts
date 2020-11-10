@@ -35,6 +35,10 @@ export class ResourceTypeWizard {
 		this._useGenerateScriptButton = value;
 	}
 
+	public get lastPage(): ResourceTypePage | undefined {
+		return this.pages.length > 0 ? this.pages[this.pages.length - 1] : undefined;
+	}
+
 	//TODO: eventually only resourceType will be passed. For now, we are passing both the resourceType and provider
 	constructor(
 		public resourceType: ResourceType,
@@ -89,9 +93,10 @@ export class ResourceTypeWizard {
 			this.dispose();
 		}));
 		this.toDispose.push(this.wizardObject.generateScriptButton.onClick(async () => {
-			await this.model.onGenerateScript();
-			this.dispose();
-			this.wizardObject.close(); // close the wizard. This is already hooked up into doneButton, so it is not needed for that button above.
+			if (await this.model.onGenerateScript()) {
+				this.dispose();
+				this.wizardObject.close(); // close the wizard. This is already hooked up into doneButton, so it is not needed for that button above.
+			}
 		}));
 		this.toDispose.push(this.wizardObject.cancelButton.onClick(() => {
 			this.model.onCancel();
