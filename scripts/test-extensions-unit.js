@@ -33,14 +33,6 @@ let argv = require('yargs')
 	.default('extensions', extensionList)
 	.strict().help().wrap(null).version(false).argv;
 
-// set up environment
-
-const VSCODEUSERDATADIR = tmp.dirSync({ prefix: 'adsuser' }).name;
-const VSCODEEXTENSIONSDIR = tmp.dirSync({ prefix: 'adsext' }).name;
-
-console.log(`VSCODEUSERDATADIR : ${VSCODEUSERDATADIR}`);
-console.log(`VSCODEEXTENSIONSDIR : ${VSCODEEXTENSIONSDIR}`);
-
 if (!process.env.INTEGRATION_TEST_ELECTRON_PATH) {
 	process.env.INTEGRATION_TEST_ELECTRON_PATH = path.join(__dirname, '..', 'scripts', os.platform() === 'win32' ? 'code.bat' : 'code.sh');
 	console.log('Running unit tests out of sources.');
@@ -66,6 +58,14 @@ for (const ext of argv.extensions) {
 	console.log('*'.repeat(ext.length + 23));
 	console.log(`*** starting ${ext} tests ***`);
 	console.log('*'.repeat(ext.length + 23));
+
+	// set up environment
+
+	const VSCODEUSERDATADIR = tmp.dirSync({ prefix: `adsuser_${ext}` }).name;
+	const VSCODEEXTENSIONSDIR = tmp.dirSync({ prefix: `adsext_${ext}` }).name;
+
+	console.log(`VSCODEUSERDATADIR : ${VSCODEUSERDATADIR}`);
+	console.log(`VSCODEEXTENSIONSDIR : ${VSCODEEXTENSIONSDIR}`);
 
 	const command = `${process.env.INTEGRATION_TEST_ELECTRON_PATH} --no-sandbox --extensionDevelopmentPath=${path.join(__dirname, '..', 'extensions', ext)} --extensionTestsPath=${path.join(__dirname, '..', 'extensions', ext, 'out', 'test')} --user-data-dir=${VSCODEUSERDATADIR} --extensions-dir=${VSCODEEXTENSIONSDIR} --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu`;
 	console.log(`Command used: ${command}`);
