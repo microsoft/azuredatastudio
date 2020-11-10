@@ -18,7 +18,11 @@
         "command": "hybridtoolkit.openbook",
         "title": "%title.openJupyterBook%"
       }
-    ]
+    ],
+    "notebook.books": [{
+      "name": "%title.cloudHybridBooks%",
+      "path": "notebooks/hybridjupyterbook"
+  }]
   },
   "dependencies": {
     "vscode-nls": "^4.0.0"

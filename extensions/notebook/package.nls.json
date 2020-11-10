@@ -32,6 +32,7 @@
 	"title.configurePython": "Configure Python for Notebooks",
 	"title.managePackages": "Manage Packages",
 	"title.SQL19PreviewBook": "SQL Server 2019 Guide",
+	"title.SQLHybridToolkitBook": "Azure SQL Hybrid Cloud Toolkit",
 	"books-preview-category": "Jupyter Books",
 	"title.saveJupyterBook": "Save Book",
 	"title.trustBook": "Trust Book",
