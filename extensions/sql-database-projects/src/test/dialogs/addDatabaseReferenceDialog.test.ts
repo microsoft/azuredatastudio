@@ -31,8 +31,6 @@ describe('Add Database Reference Dialog', () => {
 
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled since initial type of systemDb has default values filled');
 		should(dialog.currentReferenceType).equal(ReferenceType.systemDb);
-		dialog.tryEnableAddReferenceButton();
-		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled because there is a default value in the database name textbox');
 
 		// empty db name textbox
 		dialog.databaseNameTextbox!.value = '';
