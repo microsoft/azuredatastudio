@@ -157,12 +157,6 @@ steps:
     displayName: Archive Logs
     continueOnError: true
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      artifactName: logs
-    displayName: Publish Logs
-    continueOnError: true
-
   - script: |
       set -e
       yarn gulp vscode-linux-x64-build-deb
