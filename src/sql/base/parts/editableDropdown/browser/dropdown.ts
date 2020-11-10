@@ -130,7 +130,7 @@ export class Dropdown extends Disposable {
 		// in the text box - we already have tooltips for each item in the dropdown itself.
 		this._input.inputElement.title = '';
 
-		this._input.inputElement.setAttribute('role', 'combobox');
+		this._inputContainer.setAttribute('role', 'combobox');
 
 		this._register(DOM.addDisposableListener(this._input.inputElement, DOM.EventType.CLICK, () => {
 			this._showList();
@@ -155,14 +155,14 @@ export class Dropdown extends Disposable {
 					if (this._treeContainer.parentElement) {
 						this._input.validate();
 						this._onBlur.fire();
-						this.contextViewService.hideContextView();
+						this._hideList();
 						e.stopPropagation();
 					}
 					break;
 				case KeyCode.Tab:
 					this._input.validate();
 					this._onBlur.fire();
-					this.contextViewService.hideContextView();
+					this._hideList();
 					e.stopPropagation();
 					break;
 				case KeyCode.DownArrow:
@@ -198,11 +198,11 @@ export class Dropdown extends Disposable {
 			this.value = e.value;
 			this._onValueChange.fire(e.value);
 			this._input.focus();
-			this.contextViewService.hideContextView();
+			this._hideList();
 		});
 
 		this._controller.onDropdownEscape(() => {
-			this.contextViewService.hideContextView();
+			this._hideList();
 			// have to put this in the setTimeout to make sure the focus can be set properly when the context menu is opened by pressing the DownArrow key
 			setTimeout(() => {
 				this._input.focus();
@@ -221,7 +221,7 @@ export class Dropdown extends Disposable {
 		});
 
 		this.onBlur(() => {
-			this.contextViewService.hideContextView();
+			this._hideList();
 			this._input.validate();
 		});
 
@@ -231,6 +231,7 @@ export class Dropdown extends Disposable {
 
 	private _showList(): void {
 		if (this._input.isEnabled()) {
+			this._inputContainer.setAttribute('aria-expanded', 'true');
 			this._onFocus.fire();
 			this._filter.filterString = '';
 			this.contextViewService.showContextView({
@@ -246,8 +247,13 @@ export class Dropdown extends Disposable {
 						}
 					};
 				}
-			});
+			}, this._inputContainer);
 		}
+	}
+
+	private _hideList(): void {
+		this.contextViewService.hideContextView();
+		this._inputContainer.setAttribute('aria-expanded', 'false');
 	}
 
 	private _layoutTree(): void {
@@ -316,7 +322,7 @@ export class Dropdown extends Disposable {
 
 	public blur() {
 		this._input.blur();
-		this.contextViewService.hideContextView();
+		this._hideList();
 	}
 
 	style(style: IListStyles & IInputBoxStyles & IDropdownStyles) {
