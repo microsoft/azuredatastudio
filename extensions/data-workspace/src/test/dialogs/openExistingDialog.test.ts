@@ -5,15 +5,13 @@
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import * as os from 'os';
-import * as path from 'path';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 import * as constants from '../../common/constants';
 import { promises as fs } from 'fs';
 import { WorkspaceService } from '../../services/workspaceService';
 import { OpenExistingDialog } from '../../dialogs/openExistingDialog';
-import { testProjectType } from '../testUtils';
+import { createProjectFile, generateUniqueProjectFilePath, generateUniqueWorkspaceFilePath, testProjectType } from '../testUtils';
 
 suite('Open Existing Dialog', function (): void {
 	const mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
@@ -32,8 +30,7 @@ suite('Open Existing Dialog', function (): void {
 		should.equal(await dialog.validate(), false, 'Validation fail because project file does not exist');
 
 		// create a project file
-		dialog._projectFile = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}.sqlproj`);
-		await fs.writeFile(dialog._projectFile, '');
+		dialog._projectFile = await createProjectFile('testproj');
 		should.equal(await dialog.validate(), true, 'Validation pass because project file exists');
 	});
 
@@ -47,7 +44,7 @@ suite('Open Existing Dialog', function (): void {
 		should.equal(await dialog.validate(), false, 'Validation fail because workspace file does not exist');
 
 		// create a workspace file
-		dialog._workspaceFile = path.join(os.tmpdir(), `TestWorkspace_${new Date().getTime()}.code-workspace`);
+		dialog._workspaceFile = generateUniqueWorkspaceFilePath();
 		await fs.writeFile(dialog._workspaceFile, '');
 		should.equal(await dialog.validate(), true, 'Validation pass because workspace file exists');
 	});
@@ -60,7 +57,7 @@ suite('Open Existing Dialog', function (): void {
 		const dialog = new OpenExistingDialog(workspaceServiceMock.object, mockExtensionContext.object);
 		await dialog.open();
 
-		dialog._projectFile = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}.sqlproj`);
+		dialog._projectFile = generateUniqueProjectFilePath('testproj');
 		should.doesNotThrow(async () => await dialog.onComplete());
 
 		workspaceServiceMock.setup(x => x.validateWorkspace()).throws(new Error('test error'));
@@ -80,7 +77,7 @@ suite('Open Existing Dialog', function (): void {
 		should.equal(dialog._workspaceFile, '', 'Workspace file should not be set when no file is selected');
 
 		sinon.restore();
-		const workspaceFile = vscode.Uri.file(path.join(os.tmpdir(), 'TestWorkspace.code-workspace'));
+		const workspaceFile = vscode.Uri.file(generateUniqueWorkspaceFilePath());
 		sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([workspaceFile]));
 		await dialog.workspaceBrowse();
 		should.equal(dialog._workspaceFile, workspaceFile.fsPath, 'Workspace file should get set');
@@ -99,7 +96,7 @@ suite('Open Existing Dialog', function (): void {
 		should.equal(dialog._projectFile, '', 'Project file should not be set when no file is selected');
 
 		sinon.restore();
-		const projectFile = vscode.Uri.file(path.join(os.tmpdir(), 'TestProject.testproj'));
+		const projectFile = vscode.Uri.file(generateUniqueProjectFilePath('testproj'));
 		sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([projectFile]));
 		await dialog.projectBrowse();
 		should.equal(dialog._projectFile, projectFile.fsPath, 'Project file should be set');
