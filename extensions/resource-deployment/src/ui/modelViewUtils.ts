@@ -181,6 +181,7 @@ export function createLabel(view: azdata.ModelView, info: { text: string, descri
 	text.width = info.width;
 	return text;
 }
+
 export function createNumberInput(view: azdata.ModelView, info: { defaultValue?: string, ariaLabel: string, min?: number, max?: number, required?: boolean, width?: string, placeHolder?: string, enabled?: boolean, container?: azdata.window.Dialog | azdata.window.Wizard, validations?: Validation[] }): azdata.InputBoxComponent {
 	return createInputBox(view, Object.assign({ type: <azdata.InputBoxInputType>'number' }, info));
 }
@@ -375,6 +376,7 @@ function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata
 }
 
 async function processField(context: FieldContext): Promise<void> {
+	//populate the fieldValidations objects for each field based on the information from the fieldInfo
 	context.fieldValidations = context.fieldInfo.validations?.map((validation => createValidation(
 		validation,
 		async (isValid) => {
