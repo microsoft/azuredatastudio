@@ -99,8 +99,6 @@ export class Dropdown extends Disposable {
 	public onFocus: Event<void> = this._onFocus.event;
 	private readonly _widthControlElement: HTMLElement;
 
-	private _focusRestoreTarget: HTMLElement;
-
 	constructor(
 		container: HTMLElement,
 		private readonly contextViewService: IContextViewProvider,
@@ -116,18 +114,9 @@ export class Dropdown extends Disposable {
 		this._el = DOM.append(container, DOM.$('.monaco-dropdown'));
 		this._el.style.width = '100%';
 
-		this._inputContainer = DOM.append(this._el, DOM.$('.dropdown-input'));
+		this._inputContainer = DOM.append(this._el, DOM.$('.dropdown-input.select-container'));
 		this._inputContainer.style.width = '100%';
 		this._treeContainer = DOM.$('.dropdown-tree');
-
-		this._toggleAction = new ToggleDropdownAction(() => {
-			// Move the focus to input focus so that when we close the context menu by press escaping
-			// the focus stays on the input box, this is behavior of a regular select box.
-			this._input.focus();
-			this._showList();
-			this._tree.domFocus();
-			this._tree.focusFirst();
-		}, this._options.actionLabel);
 
 		this._input = new InputBox(this._inputContainer, contextViewService, {
 			validationOptions: {
@@ -136,13 +125,14 @@ export class Dropdown extends Disposable {
 				validation: v => this._inputValidator(v)
 			},
 			placeholder: this._options.placeholder,
-			actions: [this._toggleAction],
 			ariaLabel: this._options.ariaLabel
 		});
 
 		// Clear title from input box element (defaults to placeholder value) since we don't want a tooltip for the selected value
 		// in the text box - we already have tooltips for each item in the dropdown itself.
 		this._input.inputElement.title = '';
+
+		this._input.inputElement.setAttribute('role', 'combobox');
 
 		this._register(DOM.addDisposableListener(this._input.inputElement, DOM.EventType.CLICK, () => {
 			this._showList();
@@ -217,7 +207,7 @@ export class Dropdown extends Disposable {
 			this.contextViewService.hideContextView();
 			// have to put this in the setTimeout to make sure the focus can be set properly when the context menu is opened by pressing the DownArrow key
 			setTimeout(() => {
-				this._focusRestoreTarget?.focus();
+				this._input.focus();
 			}, 0);
 		});
 
@@ -243,7 +233,6 @@ export class Dropdown extends Disposable {
 
 	private _showList(): void {
 		if (this._input.isEnabled()) {
-			this._focusRestoreTarget = document.activeElement as HTMLElement;
 			this._onFocus.fire();
 			this._filter.filterString = '';
 			this.contextViewService.showContextView({
