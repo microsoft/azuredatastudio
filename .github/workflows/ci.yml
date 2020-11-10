@@ -31,7 +31,10 @@ jobs:
       with:
         node-version: 10
     # TODO: cache node modules
-    - run: yarn --frozen-lockfile
+    # Increase timeout to get around latency issues when fetching certain packages
+    - run: |
+        yarn config set network-timeout 300000
+        yarn --frozen-lockfile
       name: Install Dependencies
     - run: yarn electron x64
       name: Download Electron
