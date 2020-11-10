@@ -29,17 +29,16 @@ export function setup() {
 			await app.workbench.sqlNotebook.waitForKernel('Python 3');
 
 			await app.workbench.sqlNotebook.clearResults();
-			await app.workbench.sqlNotebook.waitForResultsGone([1, 2, 3]);
+			await app.workbench.sqlNotebook.waitForAllResultsGone();
 			await app.workbench.sqlNotebook.runAllCells();
-			await app.workbench.sqlNotebook.waitForResults([1, 2, 3]);
+			await app.workbench.sqlNotebook.waitForAllResults();
 
 			await app.workbench.quickaccess.runCommand('workbench.action.files.save');
 			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
 
 			await app.workbench.sqlNotebook.openFile('hello.ipynb');
 			await app.workbench.sqlNotebook.waitForKernel('Python 3');
-			// The cell ids increase by one after closing and reopening notebook
-			await app.workbench.sqlNotebook.waitForResults([4, 5, 6]);
+			await app.workbench.sqlNotebook.waitForAllResults();
 		});
 	});
 }

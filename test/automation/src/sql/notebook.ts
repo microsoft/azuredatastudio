@@ -85,10 +85,21 @@ export class Notebook {
 		await this.code.waitForElement(outputComponent);
 	}
 
-	async waitForResults(cellIds: number[]): Promise<void> {
+	async waitForResults(cellIds: string[]): Promise<void> {
 		for (let i of cellIds) {
 			await this.code.waitForElement(`div.notebook-cell[id="${i}"] .notebook-output`);
 		}
+	}
+
+	async waitForAllResults(): Promise<void> {
+		let cellIds: string[] = [];
+		await this.code.waitForElements('div.notebook-cell', false, result => {
+			for (let cell of result) {
+				cellIds.push(cell.attributes['id']);
+			}
+			return true;
+		});
+		await this.waitForResults(cellIds);
 	}
 
 	async waitForActiveCellResultsGone(): Promise<void> {
@@ -96,10 +107,21 @@ export class Notebook {
 		await this.code.waitForElementGone(outputComponent);
 	}
 
-	async waitForResultsGone(cellIds: number[]): Promise<void> {
+	async waitForResultsGone(cellIds: string[]): Promise<void> {
 		for (let i of cellIds) {
 			await this.code.waitForElementGone(`div.notebook-cell[id="${i}"] .notebook-output`);
 		}
+	}
+
+	async waitForAllResultsGone(): Promise<void> {
+		let cellIds: string[] = [];
+		await this.code.waitForElements('div.notebook-cell', false, result => {
+			for (let cell of result) {
+				cellIds.push(cell.attributes['id']);
+			}
+			return true;
+		});
+		await this.waitForResultsGone(cellIds);
 	}
 }
 
