@@ -57,7 +57,9 @@ export class NotebookWizardModel extends ResourceTypeModel {
 	public onCancel(): void {
 	}
 
-	// Generates the notebook and returns true on successful generate
+	/**
+	 * Generates the notebook and returns true on successful generation
+	 **/
 	public async onGenerateScript(): Promise<boolean> {
 		const lastPage = this.wizard.lastPage! as NotebookWizardPage;
 		if (lastPage.validatePage()) {

@@ -16,7 +16,9 @@ export abstract class ResourceTypeModel extends Model {
 	abstract initialize(): void;
 	abstract async onOk(): Promise<void>;
 	abstract onCancel(): void;
-	// performs the script generation and returns true if script was generated successfully
+	/**
+	 * performs the script generation and returns true if script was generated successfully
+	 **/
 	async onGenerateScript(): Promise<boolean> { return true; }
 
 }

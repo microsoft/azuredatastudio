@@ -50,6 +50,7 @@ export class ResourceTypeWizard {
 	public get lastPage(): ResourceTypePage | undefined {
 		return this.pages.length > 0 ? this.pages[this.pages.length - 1] : undefined;
 	}
+
 	constructor(
 		public resourceType: ResourceType,
 		public _kubeService: IKubeService,
