@@ -82,7 +82,6 @@ export class Dropdown extends Disposable {
 	private _input: InputBox;
 	private _tree: ITree;
 	private _options: IDropdownOptions;
-	private _toggleAction: ToggleDropdownAction;
 	private _dataSource = new DropdownDataSource();
 	private _filter = new DropdownFilter();
 	private _renderer = new DropdownRenderer();
@@ -348,7 +347,6 @@ export class Dropdown extends Disposable {
 
 	public set enabled(val: boolean) {
 		this._input.setEnabled(val);
-		this._toggleAction.enabled = val;
 	}
 
 	public get enabled(): boolean {
