@@ -7,9 +7,16 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { OkButtonText } from '../common/constants';
 
+interface Deferred<T> {
+	resolve: (result: T | Promise<T>) => void;
+	reject: (reason: any) => void;
+}
+
 export abstract class DialogBase {
 	protected _toDispose: vscode.Disposable[] = [];
 	protected _dialogObject: azdata.window.Dialog;
+	protected initDialogComplete: Deferred<void> | undefined;
+	protected initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
 
 	constructor(dialogTitle: string, dialogName: string, dialogWidth: azdata.window.DialogWidth = 600) {
 		this._dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, dialogWidth);
@@ -27,13 +34,14 @@ export abstract class DialogBase {
 		return Promise.resolve(true);
 	}
 
-	public open(): void {
+	public async open(): Promise<void> {
 		const tab = azdata.window.createTab('');
-		tab.registerContent((view: azdata.ModelView) => {
+		tab.registerContent(async (view: azdata.ModelView) => {
 			return this.initialize(view);
 		});
 		this._dialogObject.content = [tab];
 		azdata.window.openDialog(this._dialogObject);
+		await this.initDialogPromise;
 	}
 
 	private onCancelButtonClicked(): void {
