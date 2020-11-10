@@ -65,5 +65,5 @@ export const invalidFileCharsErrorMessage = localize('dacfx.invalidFileCharsErro
 export const reservedWindowsFilenameErrorMessage = localize('dacfx.reservedWindowsFilenameErrorMessage', "This file name is reserved for use by Windows. Choose another name and try again");
 export const reservedValueErrorMessage = localize('dacfx.reservedValueErrorMessage', "Reserved file name. Choose another name and try again");
 export const trailingWhitespaceErrorMessage = localize('dacfx.trailingWhitespaceErrorMessage', "File name cannot end with a whitespace");
-export const tooLongFilenameErrorMessage = localize('dacfx.tooLongFilenameErrorMessage', "File name is over 255 characters");
+export const tooLongFilenameErrorMessage = localize('dacfx.tooLongFilenameErrorMessage', "File name is over 2^8-11 characters");
 export function deployPlanErrorMessage(errorMessage: string): string { return localize('dacfx.deployPlanErrorMessage', "Generating deploy plan failed '{0}'", errorMessage ? errorMessage : 'Unknown'); }
