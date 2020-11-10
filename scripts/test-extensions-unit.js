@@ -38,8 +38,8 @@ let argv = require('yargs')
 const VSCODEUSERDATADIR = tmp.dirSync({ prefix: 'adsuser' }).name;
 const VSCODEEXTENSIONSDIR = tmp.dirSync({ prefix: 'adsext' }).name;
 
-console.log(VSCODEUSERDATADIR);
-console.log(VSCODEEXTENSIONSDIR);
+console.log(`VSCODEUSERDATADIR : ${VSCODEUSERDATADIR}`);
+console.log(`VSCODEEXTENSIONSDIR : ${VSCODEEXTENSIONSDIR}`);
 
 if (!process.env.INTEGRATION_TEST_ELECTRON_PATH) {
 	process.env.INTEGRATION_TEST_ELECTRON_PATH = path.join(__dirname, '..', 'scripts', os.platform() === 'win32' ? 'code.bat' : 'code.sh');
