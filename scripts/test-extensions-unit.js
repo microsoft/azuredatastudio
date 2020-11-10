@@ -58,9 +58,7 @@ for (const ext of argv.extensions) {
 	console.log('*'.repeat(ext.length + 23));
 	console.log(`*** starting ${ext} tests ***`);
 	console.log('*'.repeat(ext.length + 23));
-
 	// set up environment
-
 	const VSCODEUSERDATADIR = tmp.dirSync({ prefix: `adsuser_${ext}` }).name;
 	const VSCODEEXTENSIONSDIR = tmp.dirSync({ prefix: `adsext_${ext}` }).name;
 
@@ -70,11 +68,10 @@ for (const ext of argv.extensions) {
 	const command = `${process.env.INTEGRATION_TEST_ELECTRON_PATH} --no-sandbox --extensionDevelopmentPath=${path.join(__dirname, '..', 'extensions', ext)} --extensionTestsPath=${path.join(__dirname, '..', 'extensions', ext, 'out', 'test')} --user-data-dir=${VSCODEUSERDATADIR} --extensions-dir=${VSCODEEXTENSIONSDIR} --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --nogpu`;
 	console.log(`Command used: ${command}`);
 	console.log(execSync(command, { stdio: 'inherit' }));
-}
 
-// clean up
-
-if (!process.env.NO_CLEANUP) {
-	fs.remove(VSCODEUSERDATADIR, { recursive: true }).catch(console.error);
-	fs.remove(VSCODEEXTENSIONSDIR, { recursive: true }).catch(console.error);
+	// clean up
+	if (!process.env.NO_CLEANUP) {
+		fs.remove(VSCODEUSERDATADIR, { recursive: true }).catch(console.error);
+		fs.remove(VSCODEEXTENSIONSDIR, { recursive: true }).catch(console.error);
+	}
 }
