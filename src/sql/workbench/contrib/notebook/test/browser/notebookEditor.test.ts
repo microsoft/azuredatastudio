@@ -65,9 +65,6 @@ class NotebookModelStub extends stubs.NotebookModelStub {
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
 	private _onActiveCellChanged = new Emitter<ICellModel>();
 
-	get cells(): ICellModel[] {
-		return super.cells;
-	}
 	public get contentChanged(): Event<NotebookContentChange> {
 		return this.contentChangedEmitter.event;
 	}
