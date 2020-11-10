@@ -6,4 +6,5 @@
 /src/extensions/resource-deployment/ @ranasaria
 /src/extensions/arc/ @ranasaria
 /src/extensions/azdata/ @ranasaria
-
+/extensions/dacpac/ @kisantia
+/extensions/schema-compare/ @kisantia
