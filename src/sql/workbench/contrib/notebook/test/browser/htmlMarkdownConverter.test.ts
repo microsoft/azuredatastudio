@@ -183,6 +183,9 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark><h1>&lt;test&gt;</h1></mark>', 'Non-HTML tag inside multiple html tags test failed to escape');
 		htmlString = '<p>&lt;style&gt</p>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '\\<style\\>', 'Style tag as a non-HTML tag test failed to escape');
+		htmlString = '&lt;test&gt <u>Underlined Text style</u> end';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '<test> <u>Underlined Text style</u> end', 'Non-HTML tag outside with style and underline test failed to escape');
+
 	});
 
 	test('Should transform table with no header', () => {
