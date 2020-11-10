@@ -188,18 +188,18 @@ suite('HTML Markdown Converter', function (): void {
 
 	});
 
-	test('Should transform table with no header', () => {
-		htmlString = '<table>\n<thead>\n<tr>\n<th></th>\n<th></th>\n<th></th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), `|  |  |  |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with no header failed');
-	});
+	// test('Should transform table with no header', () => {
+	// 	htmlString = '<table>\n<thead>\n<tr>\n<th></th>\n<th></th>\n<th></th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
+	// 	assert.equal(htmlMarkdownConverter.convert(htmlString), `|  |  |  |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with no header failed');
+	// });
 
-	test('Should transform table with missing headings', () => {
-		htmlString = '<table>\n<thead>\n<tr>\n<th>Test</th>\n<th></th>\n<th></th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test |  |  |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with missing headings failed');
-	});
+	// test('Should transform table with missing headings', () => {
+	// 	htmlString = '<table>\n<thead>\n<tr>\n<th>Test</th>\n<th></th>\n<th></th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
+	// 	assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test |  |  |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with missing headings failed');
+	// });
 
-	test('Should transform table with header', () => {
-		htmlString = '<table>\n<thead>\n<tr>\n<th>Test</th>\n<th>Test</th>\n<th>Test</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test | Test |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with header failed');
-	});
+	// test('Should transform table with header', () => {
+	// 	htmlString = '<table>\n<thead>\n<tr>\n<th>Test</th>\n<th>Test</th>\n<th>Test</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
+	// 	assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test | Test |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with header failed');
+	// });
 });
