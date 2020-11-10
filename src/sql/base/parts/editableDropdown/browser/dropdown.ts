@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/dropdownList';
 
-import { ToggleDropdownAction } from './actions';
 import { DropdownDataSource, DropdownFilter, DropdownModel, DropdownRenderer, DropdownController } from './dropdownTree';
 
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
