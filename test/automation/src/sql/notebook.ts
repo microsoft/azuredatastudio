@@ -120,10 +120,10 @@ export class NotebookToolbar {
 
 		let buttons: IElement[] = await this.code.waitForElements(NotebookToolbar.toolbarButtonSelector, false);
 		buttons.forEach(async button => {
-			if (button.className === NotebookToolbar.trustedButtonClass) { // notebook is already trusted
-				return;
-			} else if (button.className === NotebookToolbar.notTrustedButtonClass) {
+			if (button.className.includes('icon-shield-x')) {
 				await this.code.waitAndClick(NotebookToolbar.notTrustedButtonSelector);
+				return;
+			} else if (button.className.includes('icon-shield')) { // notebook is already trusted
 				return;
 			}
 		});
