@@ -139,7 +139,7 @@ export class HTMLMarkdownConverter {
 			replacement: function (content, node) {
 				node.childNodes.forEach(c => {
 					if (c.nodeType === Node.TEXT_NODE) {
-						c.nodeValue = escapeAngleBrackets(c.textContent, node);
+						c.nodeValue = escapeAngleBrackets(c.textContent);
 					} else if (c.nodeType === Node.ELEMENT_NODE) {
 						c.innerText = escapeAngleBrackets(c.textContent);
 					}
@@ -153,10 +153,10 @@ export class HTMLMarkdownConverter {
 				let hLevel = Number(node.nodeName.charAt(1));
 				let escapedText = escapeAngleBrackets(content);
 				if (options.headingStyle === 'setext' && hLevel < 3) {
-					let underline = repeat((hLevel === 1 ? '=' : '-'), escapedText.length);
+					let underline = '#'.repeat(hLevel);
 					return '\n\n' + escapedText + '\n' + underline + '\n\n';
 				} else {
-					return '\n\n' + repeat('#', hLevel) + ' ' + escapedText + '\n\n';
+					return '\n\n' + '#'.repeat(hLevel) + ' ' + escapedText + '\n\n';
 				}
 			}
 		});
@@ -220,7 +220,7 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 	return '';
 }
 
-export function escapeAngleBrackets(textContent: string, node?) {
+export function escapeAngleBrackets(textContent: string): string {
 	let text: string = textContent;
 	if (text.includes('<u>') || text.includes('<mark>') || (text.includes('style') && !text.includes('<style>'))) {
 		return text;
@@ -231,8 +231,4 @@ export function escapeAngleBrackets(textContent: string, node?) {
 		return mapTags[matched];
 	});
 	return escapedText;
-}
-
-function repeat(character, count) {
-	return Array(count + 1).join(character);
 }
