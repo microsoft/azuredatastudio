@@ -6,12 +6,13 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ApiWrapper } from '../../common/apiWrapper';
+import  * as Queries  from '../../prediction/queries';
 import * as TypeMoq from 'typemoq';
 import * as should from 'should';
 import { PredictService } from '../../prediction/predictService';
 import { QueryRunner } from '../../common/queryRunner';
 import { ImportedModel } from '../../modelManagement/interfaces';
-import { PredictParameters, DatabaseTable, TableColumn } from '../../prediction/interfaces';
+import { PredictParameters, DatabaseTable, TableColumn, PredictColumn } from '../../prediction/interfaces';
 import * as path from 'path';
 import * as os from 'os';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
@@ -114,11 +115,13 @@ describe('PredictService', () => {
 		const expected: TableColumn[] = [
 			{
 				columnName: 'c1',
-				dataType: 'INT'
+				dataType: 'INT',
+				maxLength: undefined
 			},
 			{
 				columnName: 'c2',
-				dataType: 'VARCHAR'
+				dataType: 'VARCHAR',
+				maxLength: 10
 			}
 		];
 		const table: DatabaseTable =
@@ -141,6 +144,11 @@ describe('PredictService', () => {
 					displayValue: 'int',
 					isNull: false,
 					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: '',
+					isNull: true,
+					invariantCultureDisplayValue: ''
 				}
 			], [
 				{
@@ -150,6 +158,11 @@ describe('PredictService', () => {
 				},
 				{
 					displayValue: 'varchar',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: '10',
 					isNull: false,
 					invariantCultureDisplayValue: ''
 				}
@@ -175,12 +188,14 @@ describe('PredictService', () => {
 				{
 					paramName: 'p1',
 					dataType: 'int',
-					columnName: ''
+					columnName: '',
+					maxLength: undefined
 				},
 				{
 					paramName: 'p2',
 					dataType: 'varchar',
-					columnName: ''
+					columnName: '',
+					maxLength: 10
 				}
 			],
 			outputColumns: [
@@ -297,5 +312,36 @@ describe('PredictService', () => {
 		const actual = await service.generatePredictScript(predictParams, undefined, tempFilePath);
 		should.notEqual(actual, undefined);
 		should.equal(actual.indexOf('FROM PREDICT(MODEL = 0X') > 0, true);
+	});
+
+	it('getInputColumnNames should user column max length for varchar type', async function (): Promise<void> {
+		const columns: PredictColumn[] = [
+			{
+				paramName: 'p1',
+				paramType: 'VARCHAR(MAX)',
+				columnName: 'c1',
+				dataType: 'VARCHAR',
+				maxLength: 20
+			},
+			{
+				paramName: 'p2',
+				paramType: 'VARCHAR(MAX)',
+				columnName: 'c2',
+				dataType: 'DATETIME',
+				maxLength: undefined
+			},
+			{
+				paramName: 'p3',
+				paramType: 'INT',
+				columnName: 'c2',
+				dataType: 'INT',
+				maxLength: undefined
+			},
+		];
+
+		const tableName = 'tbname';
+		let actual = Queries.getInputColumnNames(columns, tableName);
+		let expected =`CAST([tbname].[c1] AS VARCHAR(20)) AS p1,\n\tCAST([tbname].[c2] AS VARCHAR(100)) AS p2,\n\t[tbname].[c2] AS p3`;
+		should.deepEqual(actual, expected);
 	});
 });

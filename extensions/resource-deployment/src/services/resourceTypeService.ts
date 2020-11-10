@@ -3,30 +3,27 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import { createWriteStream, promises as fs } from 'fs';
 import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption } from '../interfaces';
-import { DeployAzureSQLVMWizard } from '../ui/deployAzureSQLVMWizard/deployAzureSQLVMWizard';
-import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
-import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
-import { NotebookWizard } from '../ui/notebookWizard/notebookWizard';
+import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption } from '../interfaces';
 import { AzdataService } from './azdataService';
 import { KubeService } from './kubeService';
 import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
+import * as loc from './../localizedConstants';
+import { ResourceTypeWizard } from '../ui/resourceTypeWizard';
 
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
-	startDeployment(provider: DeploymentProvider): void;
+	startDeployment(resourceType: ResourceType): void;
 }
 
 export class ResourceTypeService implements IResourceTypeService {
@@ -46,6 +43,7 @@ export class ResourceTypeService implements IResourceTypeService {
 					extensionResourceTypes.forEach((resourceType: ResourceType) => {
 						this.updatePathProperties(resourceType, extension.extensionPath);
 						resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
+						resourceType.getOkButtonText = (selectedOptions) => { return this.getOkButtonText(resourceType, selectedOptions); };
 						this._resourceTypes.push(resourceType);
 					});
 				}
@@ -61,8 +59,12 @@ export class ResourceTypeService implements IResourceTypeService {
 	}
 
 	private updatePathProperties(resourceType: ResourceType, extensionPath: string): void {
-		resourceType.icon.dark = path.join(extensionPath, resourceType.icon.dark);
-		resourceType.icon.light = path.join(extensionPath, resourceType.icon.light);
+		if (typeof resourceType.icon === 'string') {
+			resourceType.icon = path.join(extensionPath, resourceType.icon);
+		} else {
+			resourceType.icon.dark = path.join(extensionPath, resourceType.icon.dark);
+			resourceType.icon.light = path.join(extensionPath, resourceType.icon.light);
+		}
 		resourceType.providers.forEach((provider) => {
 			if (instanceOfNotebookDeploymentProvider(provider)) {
 				this.updateNotebookPath(provider, extensionPath);
@@ -77,6 +79,9 @@ export class ResourceTypeService implements IResourceTypeService {
 			}
 			else if ('azureSQLVMWizard' in provider) {
 				this.updateNotebookPath(provider.azureSQLVMWizard, extensionPath);
+			}
+			else if ('azureSQLDBWizard' in provider) {
+				this.updateNotebookPath(provider.azureSQLDBWizard, extensionPath);
 			}
 		});
 	}
@@ -125,7 +130,7 @@ export class ResourceTypeService implements IResourceTypeService {
 
 	private validateResourceType(resourceType: ResourceType, positionInfo: string, errorMessages: string[]): void {
 		this.validateNameDisplayName(resourceType, 'resource type', positionInfo, errorMessages);
-		if (!resourceType.icon || !resourceType.icon.dark || !resourceType.icon.light) {
+		if (!resourceType.icon || (typeof resourceType.icon === 'object' && (!resourceType.icon.dark || !resourceType.icon.light))) {
 			errorMessages.push(`Icon for resource type is not specified properly. ${positionInfo} `);
 		}
 
@@ -187,7 +192,8 @@ export class ResourceTypeService implements IResourceTypeService {
 					&& !instanceOfDownloadDeploymentProvider(provider)
 					&& !instanceOfWebPageDeploymentProvider(provider)
 					&& !instanceOfCommandDeploymentProvider(provider)
-					&& !instanceOfAzureSQLVMDeploymentProvider(provider)) {
+					&& !instanceOfAzureSQLVMDeploymentProvider(provider)
+					&& !instanceOfAzureSQLDBDeploymentProvider(provider)) {
 					errorMessages.push(`No deployment method defined for the provider, ${providerPositionInfo}`);
 				}
 
@@ -218,75 +224,34 @@ export class ResourceTypeService implements IResourceTypeService {
 	private getProvider(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined {
 		for (let i = 0; i < resourceType.providers.length; i++) {
 			const provider = resourceType.providers[i];
-			if (provider.when === undefined || provider.when.toString().toLowerCase() === 'true') {
+			if (processWhenClause(provider.when, selectedOptions)) {
 				return provider;
-			} else {
-				const expected = provider.when.replace(' ', '').split('&&').sort();
-				let actual: string[] = [];
-				selectedOptions.forEach(option => {
-					actual.push(`${option.option}=${option.value}`);
-				});
-				actual = actual.sort();
-
-				if (actual.length === expected.length) {
-					let matches = true;
-					for (let j = 0; j < actual.length; j++) {
-						if (actual[j] !== expected[j]) {
-							matches = false;
-							break;
-						}
-					}
-					if (matches) {
-						return provider;
-					}
-				}
 			}
 		}
 		return undefined;
 	}
 
-	public startDeployment(provider: DeploymentProvider): void {
-		const self = this;
-		if (instanceOfWizardDeploymentProvider(provider)) {
-			const wizard = new DeployClusterWizard(provider.bdcWizard, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService);
-			wizard.open();
-		} else if (instanceOfNotebookWizardDeploymentProvider(provider)) {
-			const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService, this.toolsService);
-			wizard.open();
-		} else if (instanceOfDialogDeploymentProvider(provider)) {
-			const dialog = new DeploymentInputDialog(this.notebookService, this.platformService, this.toolsService, provider.dialog);
-			dialog.open();
-		} else if (instanceOfNotebookDeploymentProvider(provider)) {
-			this.notebookService.openNotebook(provider.notebook);
-		} else if (instanceOfDownloadDeploymentProvider(provider)) {
-			const taskName = localize('resourceDeployment.DownloadAndLaunchTaskName', "Download and launch installer, URL: {0}", provider.downloadUrl);
-			azdata.tasks.startBackgroundOperation({
-				displayName: taskName,
-				description: taskName,
-				isCancelable: false,
-				operation: op => {
-					op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.DownloadingText', "Downloading from: {0}", provider.downloadUrl));
-					self.download(provider.downloadUrl).then(async (downloadedFile) => {
-						op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.DownloadCompleteText', "Successfully downloaded: {0}", downloadedFile));
-						op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.LaunchingProgramText', "Launching: {0}", downloadedFile));
-						await this.platformService.runCommand(downloadedFile, { sudo: true });
-						op.updateStatus(azdata.TaskStatus.Succeeded, localize('resourceDeployment.ProgramLaunchedText', "Successfully launched: {0}", downloadedFile));
-					}, (error) => {
-						op.updateStatus(azdata.TaskStatus.Failed, error);
-					});
+	/**
+	 * Get the ok button text based on the selected options
+	 */
+	private getOkButtonText(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): string | undefined {
+		if (resourceType.okButtonText) {
+			for (const possibleOption of resourceType.okButtonText) {
+				if (processWhenClause(possibleOption.when, selectedOptions)) {
+					return possibleOption.value;
 				}
-			});
-		} else if (instanceOfWebPageDeploymentProvider(provider)) {
-			vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(provider.webPageUrl));
-		} else if (instanceOfCommandDeploymentProvider(provider)) {
-			vscode.commands.executeCommand(provider.command);
-		} else if (instanceOfAzureSQLVMDeploymentProvider(provider)) {
-			const wizard = new DeployAzureSQLVMWizard(provider.azureSQLVMWizard, this.notebookService, this.toolsService);
-			wizard.open();
+			}
 		}
+		return loc.select;
 	}
 
-	private download(url: string): Promise<string> {
+
+	public startDeployment(resourceType: ResourceType): void {
+		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this);
+		wizard.open();
+	}
+
+	public download(url: string): Promise<string> {
 		const self = this;
 		const promise = new Promise<string>((resolve, reject) => {
 			https.get(url, async function (response) {
@@ -343,5 +308,28 @@ async function exists(path: string): Promise<boolean> {
 		return true;
 	} catch (e) {
 		return false;
+	}
+}
+
+/**
+ * processWhenClause takes in a when clause (either the word 'true' or a series of clauses in the format:
+ * '<type_name>=<value_name>' joined by '&&').
+ * If the when clause is true or undefined, return true as there is no clause to check.
+ * It evaluates each individual when clause by comparing the equivalent selected options (sorted in alphabetical order and formatted to match).
+ * If there is any selected option that doesn't match, return false.
+ * Return true if all clauses match.
+ */
+export function processWhenClause(when: string | undefined, selectedOptions: { option: string, value: string }[]): boolean {
+	if (when === undefined || when.toString().toLowerCase() === 'true') {
+		return true;
+	} else {
+		const expected = when.replace(/\s/g, '').split('&&').sort();
+		const actual = selectedOptions.map(option => `${option.option}=${option.value}`);
+		for (let whenClause of expected) {
+			if (actual.indexOf(whenClause) === -1) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

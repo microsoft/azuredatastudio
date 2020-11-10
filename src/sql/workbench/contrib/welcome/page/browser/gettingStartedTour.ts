@@ -171,7 +171,6 @@ export class GuidedTour extends Disposable {
 			bodyTag.innerText = body;
 			stepText.innerText = `${step} of ${tourData.length}`;
 			let button = new Button(btnContainer);
-			button.icon = '';
 			button.label = btnText;
 			btnContainer.appendChild(stepText);
 			flexContainer.appendChild(img);
@@ -289,7 +288,7 @@ export class GuidedTour extends Disposable {
 			firstTourElement.classList.add('ads-tour-show');
 			this._overlay.style.display = 'block';
 			const workbench = document.querySelector('.monaco-workbench') as HTMLElement;
-			dom.addClass(workbench, 'blur-background');
+			workbench.classList.add('blur-background');
 			this._overlayVisible.set(true);
 			this._overlay.focus();
 		}
@@ -306,7 +305,7 @@ export class GuidedTour extends Disposable {
 		if (this._overlay.style.display !== 'none') {
 			this._overlay.style.display = 'none';
 			const workbench = document.querySelector('.monaco-workbench') as HTMLElement;
-			dom.removeClass(workbench, 'blur-background');
+			workbench.classList.remove('blur-background');
 			this._overlayVisible.reset();
 		}
 	}

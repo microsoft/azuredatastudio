@@ -34,12 +34,12 @@ export default class DomComponent extends ComponentBase<azdata.DomProperties> im
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
+	ngAfterViewInit(): void {
 		this.createDomElement();
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
 			this.layout();
 		}));
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {

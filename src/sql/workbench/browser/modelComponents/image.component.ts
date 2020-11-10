@@ -30,11 +30,8 @@ export default class ImageComponent extends ComponentWithIconBase<azdata.ImageCo
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
 	ngAfterViewInit(): void {
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {

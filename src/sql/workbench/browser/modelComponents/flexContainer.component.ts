@@ -52,7 +52,7 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		this._justifyContent = '';	// default
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.baseInit();
 	}
 

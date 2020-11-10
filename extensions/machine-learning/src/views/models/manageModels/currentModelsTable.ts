@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../../common/constants';
-import { ModelViewBase, DeleteModelEventName, EditModelEventName } from '../modelViewBase';
+import { ModelViewBase, DeleteModelEventName, EditModelEventName, PredictWizardEventName } from '../modelViewBase';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import { ImportedModel } from '../../../modelManagement/interfaces';
 import { IDataComponent, IComponentSettings } from '../../interfaces';
@@ -20,12 +20,12 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 
 	private _table: azdata.DeclarativeTableComponent | undefined;
 	private _modelBuilder: azdata.ModelBuilder | undefined;
-	private _selectedModel: ImportedModel[] = [];
+	private _selectedModels: ImportedModel[] = [];
 	private _loader: azdata.LoadingComponent | undefined;
 	private _downloadedFile: ModelArtifact | undefined;
 	private _onModelSelectionChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	public readonly onModelSelectionChanged: vscode.Event<void> = this._onModelSelectionChanged.event;
-	public isEmpty: boolean = false;
+	public modelCounts: number = 0;
 
 	/**
 	 * Creates new view
@@ -40,7 +40,23 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._modelBuilder = modelBuilder;
-		let columns = [
+		let columns: azdata.DeclarativeTableColumn[] = [];
+		if (this._settings.selectable) {
+			columns.push(
+				{ // Action
+					displayName: '',
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: 50,
+					headerCssStyles: {
+						...constants.cssStyles.tableHeader
+					},
+					rowCssStyles: {
+						...constants.cssStyles.tableRow
+					},
+				});
+		}
+		columns.push(...[
 			{ // Name
 				displayName: constants.modelName,
 				ariaLabel: constants.modelName,
@@ -92,6 +108,20 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				rowCssStyles: {
 					...constants.cssStyles.tableRow
 				},
+			}
+		]);
+		if (this._settings.editable) {
+			columns.push(...[{ // Action
+				displayName: '',
+				valueType: azdata.DeclarativeDataType.component,
+				isReadOnly: true,
+				width: 50,
+				headerCssStyles: {
+					...constants.cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...constants.cssStyles.tableRow
+				},
 			},
 			{ // Action
 				displayName: '',
@@ -105,8 +135,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					...constants.cssStyles.tableRow
 				},
 			}
-		];
-		if (this._settings.editable) {
+			]);
 			columns.push(
 				{ // Action
 					displayName: '',
@@ -157,6 +186,10 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		return this._loader;
 	}
 
+	public set selectedModels(value: ImportedModel[]) {
+		this._selectedModels = value;
+	}
+
 	/**
 	 * Loads the data in the component
 	 */
@@ -167,8 +200,6 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 
 			if (this.importTable) {
 				models = await this.listModels(this.importTable);
-			} else {
-				this.showErrorMessage('No import table');
 			}
 			let tableData: any[][] = [];
 
@@ -176,9 +207,10 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				tableData = tableData.concat(models.map(model => this.createTableRow(model)));
 			}
 
-			this.isEmpty = models === undefined || models.length === 0;
-
+			this.modelCounts = models === undefined || models.length === 0 ? 0 : models.length;
 			this._table.data = tableData;
+		} else {
+			this.modelCounts = 0;
 		}
 		this.onModelSelected();
 		await this.onLoaded();
@@ -196,12 +228,16 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		}
 	}
 
+	public get isEmpty(): boolean {
+		return this.modelCounts === 0;
+	}
+
 	private createTableRow(model: ImportedModel): any[] {
 		let row: any[] = [model.modelName, model.created, model.version, model.framework];
 		if (this._modelBuilder) {
 			const selectButton = this.createSelectButton(model);
 			if (selectButton) {
-				row.push(selectButton);
+				row = [selectButton, model.modelName, model.created, model.version, model.framework];
 			}
 			const editButtons = this.createEditButtons(model);
 			if (editButtons && editButtons.length > 0) {
@@ -218,13 +254,13 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 
 			let onSelectItem = (checked: boolean) => {
 				if (!this._settings.multiSelect) {
-					this._selectedModel = [];
+					this._selectedModels = [];
 				}
-				const foundItem = this._selectedModel.find(x => x === model);
+				const foundItem = this._selectedModels.find(x => x === model);
 				if (checked && !foundItem) {
-					this._selectedModel.push(model);
+					this._selectedModels.push(model);
 				} else if (foundItem) {
-					this._selectedModel = this._selectedModel.filter(x => x !== model);
+					this._selectedModels = this._selectedModels.filter(x => x !== model);
 				}
 				this.onModelSelected();
 			};
@@ -234,7 +270,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					value: model.id,
 					width: 15,
 					height: 15,
-					checked: false
+					checked: this._selectedModels && this._selectedModels.find(x => x.id === model.id)
 				}).component();
 				checkbox.onChanged(() => {
 					onSelectItem(checkbox.checked || false);
@@ -246,7 +282,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					value: model.id,
 					width: 15,
 					height: 15,
-					checked: false
+					checked: this._selectedModels && this._selectedModels.find(x => x.id === model.id)
 				}).component();
 				radioButton.onDidClick(() => {
 					onSelectItem(radioButton.checked || false);
@@ -259,6 +295,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 
 	private createEditButtons(model: ImportedModel): azdata.Component[] | undefined {
 		let dropButton: azdata.ButtonComponent | undefined = undefined;
+		let predictButton: azdata.ButtonComponent | undefined = undefined;
 		let editButton: azdata.ButtonComponent | undefined = undefined;
 		if (this._modelBuilder && this._settings.editable) {
 			dropButton = this._modelBuilder.button().withProperties({
@@ -268,8 +305,8 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					dark: this.asAbsolutePath('images/dark/delete_inverse.svg'),
 					light: this.asAbsolutePath('images/light/delete.svg')
 				},
-				width: 15,
-				height: 15
+				width: 16,
+				height: 16
 			}).component();
 			dropButton.onDidClick(async () => {
 				try {
@@ -284,6 +321,19 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					this.showErrorMessage(`${constants.updateModelFailedError} ${constants.getErrorMessage(error)}`);
 				}
 			});
+			predictButton = this._modelBuilder.button().withProperties({
+				label: '',
+				title: constants.predictModel,
+				iconPath: {
+					dark: this.asAbsolutePath('images/dark/predict_inverse.svg'),
+					light: this.asAbsolutePath('images/light/predict.svg')
+				},
+				width: 16,
+				height: 16
+			}).component();
+			predictButton.onDidClick(async () => {
+				await this.sendDataRequest(PredictWizardEventName, [model]);
+			});
 
 			editButton = this._modelBuilder.button().withProperties({
 				label: '',
@@ -292,14 +342,14 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					dark: this.asAbsolutePath('images/dark/edit_inverse.svg'),
 					light: this.asAbsolutePath('images/light/edit.svg')
 				},
-				width: 15,
-				height: 15
+				width: 16,
+				height: 16
 			}).component();
 			editButton.onDidClick(async () => {
 				await this.sendDataRequest(EditModelEventName, model);
 			});
 		}
-		return editButton && dropButton ? [editButton, dropButton] : undefined;
+		return editButton && dropButton && predictButton ? [editButton, dropButton, predictButton] : undefined;
 	}
 
 	private async onModelSelected(): Promise<void> {
@@ -314,7 +364,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	 * Returns selected data
 	 */
 	public get data(): ImportedModel[] | undefined {
-		return this._selectedModel;
+		return this._selectedModels;
 	}
 
 	public async getDownloadedModel(): Promise<ModelArtifact | undefined> {

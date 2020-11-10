@@ -125,7 +125,7 @@ suite('CellToolbarActions', function (): void {
 			cellModelMock.setup(x => x.cellType).returns(() => 'code');
 			const action = new CellToggleMoreActions(instantiationService);
 			action.onInit(testContainer, contextMock.object);
-			assert.equal(action['_moreActions']['viewItems'][0]['_action']['_actions'].length, 15, 'Unexpected number of valid elements');
+			assert.equal(action['_moreActions']['viewItems'][0]['_action']['_actions'].length, 18, 'Unexpected number of valid elements');
 		});
 
 		test('CellToggleMoreActions with Markdown CellType', function (): void {
@@ -188,7 +188,8 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 		metadata: {
 			kernelspec: {
 				name: 'python',
-				language: 'python'
+				language: 'python',
+				display_name: 'Python 3'
 			}
 		},
 		nbformat: 4,
@@ -212,5 +213,5 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 		layoutChanged: undefined,
 		capabilitiesService: undefined
 	};
-	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, undefined);
+	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, undefined, undefined, undefined);
 }

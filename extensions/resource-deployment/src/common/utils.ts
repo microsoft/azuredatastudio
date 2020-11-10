@@ -53,3 +53,12 @@ export function throwUnless(condition: boolean, message?: string): asserts condi
 		throw new Error(message);
 	}
 }
+export async function tryExecuteAction<T>(action: () => T | PromiseLike<T>): Promise<{ result: T | undefined, error: any }> {
+	let error: any, result: T | undefined;
+	try {
+		result = await action();
+	} catch (e) {
+		error = e;
+	}
+	return { result, error };
+}

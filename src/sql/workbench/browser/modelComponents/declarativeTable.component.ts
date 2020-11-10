@@ -45,11 +45,8 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
 	ngAfterViewInit(): void {
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {
@@ -139,7 +136,13 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	private onCellDataChanged(newValue: string | number | boolean | any, rowIdx: number, colIdx: number): void {
 		this.data[rowIdx][colIdx].value = newValue;
-		this.setPropertyFromUI<any[][]>((props, value) => props.data = value, this.data);
+
+		if (this.properties.data) {
+			this.setPropertyFromUI<any[][]>((props, value) => props.data = value, this.data);
+		} else {
+			this.setPropertyFromUI<any[][]>((props, value) => props.dataValues = value, this.data);
+		}
+
 		let newCellData: azdata.TableCell = {
 			row: rowIdx,
 			column: colIdx,
@@ -212,6 +215,15 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		}
 
 		return '';
+	}
+
+	public getCheckAllColumnAriaLabel(colIdx: number): string {
+		return localize('checkAllColumnLabel', "check all checkboxes in column: {0}", this.columns[colIdx].displayName);
+	}
+
+	public getHeaderAriaLabel(colIdx: number): string {
+		const column = this.columns[colIdx];
+		return (column.ariaLabel) ? column.ariaLabel : column.displayName;
 	}
 
 	public getItemDescriptor(componentId: string): IComponentDescriptor {

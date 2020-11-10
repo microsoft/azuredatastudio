@@ -63,15 +63,12 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 		this._orientation = Orientation.Horizontal;
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.baseInit();
 	}
 
 	ngOnDestroy(): void {
 		this.baseDestroy();
-	}
-
-	ngAfterViewInit(): void {
 	}
 
 	/// IComponent implementation

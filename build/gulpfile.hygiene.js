@@ -179,6 +179,7 @@ const copyrightFilter = [
 	'!extensions/kusto/src/prompts/**',
 	'!extensions/notebook/resources/jupyter_config/**',
 	'!extensions/query-history/images/**',
+	'!extensions/sql/build/update-grammar.js',
 	'!**/*.gif',
 	'!**/*.xlf',
 	'!**/*.dacpac',

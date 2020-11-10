@@ -29,7 +29,7 @@ export const ConnectionUriRestoreIdAttributeName = 'restoreId';
 
 /**
  * Takes a string in the format of HH:MM:SS.MS and returns a number representing the time in
- * miliseconds
+ * milliseconds
  * @param value The string to convert to milliseconds
  * @return False is returned if the string is an invalid format,
  *		 the number of milliseconds in the time string is returned otherwise.

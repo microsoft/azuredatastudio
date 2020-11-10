@@ -2,14 +2,14 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.5.1",
+  "version": "0.6.3",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.22.0"
+    "azdata": ">=1.23.0"
   },
   "activationEvents": [
     "onCommand:arc.connectToController",
@@ -136,10 +136,8 @@
         "displayName": "%resource.type.azure.arc.display.name%",
         "description": "%resource.type.azure.arc.description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/data_controller.svg",
-          "dark": "./images/data_controller.svg"
-        },
+        "icon": "./images/data_controller.svg",
+        "tags": ["Hybrid", "SQL Server", "PostgreSQL"],
         "providers": [
           {
             "notebookWizard": {
@@ -511,10 +509,8 @@
         "displayName": "%resource.type.arc.sql.display.name%",
         "description": "%resource.type.arc.sql.description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/miaa.svg",
-          "dark": "./images/miaa.svg"
-        },
+        "icon": "./images/miaa.svg",
+        "tags": ["Hybrid", "SQL Server"],
         "providers": [
           {
             "notebookWizard": {
@@ -562,7 +558,6 @@
                           "variableName": "AZDATA_NB_VAR_SQL_INSTANCE_NAME",
                           "type": "text",
                           "defaultValue": "sqlinstance1",
-                          "description": "%arc.sql.invalid.instance.name%",
                           "required": true,
                           "textValidationRequired": true,
                           "textValidationRegex": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
@@ -572,7 +567,6 @@
                           "label": "%arc.sql.username%",
                           "variableName": "AZDATA_NB_VAR_SQL_USERNAME",
                           "type": "text",
-                          "description": "%arc.sql.invalid.username%",
                           "required": true,
                           "textValidationRequired": true,
                           "textValidationRegex": "^(?!sa$)",
@@ -676,10 +670,8 @@
         "displayName": "%resource.type.arc.postgres.display.name%",
         "description": "%resource.type.arc.postgres.description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/postgres.svg",
-          "dark": "./images/postgres.svg"
-        },
+        "icon": "./images/postgres.svg",
+        "tags": ["Hybrid", "PostgreSQL"],
         "providers": [
           {
             "notebookWizard": {
@@ -761,7 +753,10 @@
                           "label": "%arc.postgres.server.group.engine.version%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_ENGINE_VERSION",
                           "type": "options",
-                          "options" : ["11","12"],
+                          "options": [
+                            "11",
+                            "12"
+                          ],
                           "defaultValue": "12"
                         },
                         {
@@ -905,5 +900,10 @@
     "sinon": "^9.0.2",
     "typemoq": "2.1.0",
     "vscodetestcover": "^1.1.0"
+  },
+  "__metadata": {
+    "id": "68",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }

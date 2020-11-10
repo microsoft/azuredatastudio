@@ -81,14 +81,14 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._register(DOM.addDisposableListener(this._container, DOM.EventType.FOCUS, () => {
 			clearTimeout(this._classChangeTimeout);
 			this._classChangeTimeout = setTimeout(() => {
-				DOM.addClass(this._container, 'focused');
+				this._container.classList.add('focused');
 			}, 100);
 		}, true));
 
 		this._register(DOM.addDisposableListener(this._container, DOM.EventType.BLUR, () => {
 			clearTimeout(this._classChangeTimeout);
 			this._classChangeTimeout = setTimeout(() => {
-				DOM.removeClass(this._container, 'focused');
+				this._container.classList.remove('focused');
 			}, 100);
 		}, true));
 
@@ -99,7 +99,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.styleElement = DOM.createStyleSheet(this._container);
 		this._grid = new Slick.Grid<T>(this._tableContainer, this._data, this._columns, newOptions);
 		this.idPrefix = this._tableContainer.classList[0];
-		DOM.addClass(this._container, this.idPrefix);
+		this._container.classList.add(this.idPrefix);
 		if (configuration && configuration.sorter) {
 			this._sorter = configuration.sorter;
 			this._grid.onSort.subscribe((e, args) => {
@@ -239,6 +239,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	registerPlugin(plugin: Slick.Plugin<T>): void {
 		this._grid.registerPlugin(plugin);
+	}
+
+	unregisterPlugin(plugin: Slick.Plugin<T>): void {
+		this._grid.unregisterPlugin(plugin);
 	}
 
 	/**

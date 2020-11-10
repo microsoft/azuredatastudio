@@ -33,6 +33,7 @@
 	"vm_admin": "VM admin username",
 	"vm_password": "VM admin password",
 	"vm_password_confirm": "Confirm VM admin password",
+	"vm_password_validation_error_message": "VM password must be 12 to 123 characters in length and consists of upper case characters, lower case characters, numbers and special characters.",
 	"package_path": "Package file",
 	"package_path_description": "Path of the SQL Server package file(dacpac, bacpac) or compressed package file.",
 	"azure-info-section-title": "Azure information",

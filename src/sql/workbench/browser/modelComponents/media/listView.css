@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.modelview-listview-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	max-width: 150px;
+	min-width: 120px;
+	font-size: 100%;
+	font-weight: inherit;
+	overflow: auto;
+	padding: 0 0 0 0;
+	font-size: 12px;
+}
+
+.modelview-listview-container .modelview-listview-title {
+	margin: 0 5px 5px 0;
+	font-weight: bold;
+	line-height: 16px;
+	padding: 5px 0px 5px 5px;
+}
+
+.modelview-listview-container .listview-option {
+	line-height: 16px;
+	width: 95%;
+	padding: 5px 0px 5px 5px;
+}
+
+
+

@@ -1,0 +1,49 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.connection-dialog .monaco-list .monaco-list-row .custom-view-tree-node-item > .custom-view-tree-node-item-icon {
+	background-size: 16px;
+	background-position: left center;
+	background-repeat: no-repeat;
+	padding-right: 6px;
+	width: 16px;
+	height: 22px;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.connection-dialog .monaco-list .monaco-list-row .custom-view-tree-node-item > .custom-view-tree-node-item-icon.codicon {
+	margin-top: 3px;
+}
+
+.connection-dialog .monaco-list .monaco-list-row.selected .custom-view-tree-node-item > .custom-view-tree-node-item-icon.codicon {
+	color: currentColor !important;
+}
+
+.connection-dialog .monaco-list .monaco-list-row .custom-view-tree-node-item {
+	display: flex;
+	height: 22px;
+	line-height: 22px;
+	flex: 1;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	flex-wrap: nowrap;
+	padding-left: 3px;
+}
+
+.connection-dialog .monaco-list .monaco-list-row {
+	padding-right: 12px;
+	padding-left: 0px;
+}
+
+.connection-dialog .browse-tree-element {
+	height: 100%;
+	display: flex;
+	align-items: center;
+}
+
+.connection-dialog .browse-tree-element .icon {
+	margin-right: 5px;
+}

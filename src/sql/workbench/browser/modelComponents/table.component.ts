@@ -15,7 +15,7 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
@@ -23,17 +23,25 @@ import { CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/bro
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
-import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { slickGridDataItemColumnValueWithNoData, textFormatter, iconCssFormatter, CssIconCellValue } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
-import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { IUserFriendlyIcon, createIconCssClass, getIconKey } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
 	AutoFit = 1,	// columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
 	DataFit = 2		// columns use sizing based on cell data, horiz scroll bar present if more cells than visible in view area
+}
+
+enum ColumnType {
+	text = 0,
+	checkBox = 1,
+	button = 2,
+	icon = 3
 }
 
 @Component({
@@ -51,10 +59,12 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	private _checkboxColumns: CheckboxSelectColumn<{}>[] = [];
 	private _buttonsColumns: ButtonColumn<{}>[] = [];
 	private _pluginsRegisterStatus: boolean[] = [];
+	private _filterPlugin: HeaderFilter<Slick.SlickData>;
 	private _onCheckBoxChanged = new Emitter<ICheckboxCellActionEventArgs>();
 	private _onButtonClicked = new Emitter<ButtonClickEventArgs<{}>>();
 	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
 	public readonly onButtonClicked: vsEvent<ButtonClickEventArgs<{}>> = this._onButtonClicked.event;
+	private _iconCssMap: { [iconKey: string]: string } = {};
 
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -64,34 +74,22 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-
-	}
-
 	transformColumns(columns: string[] | azdata.TableColumn[]): Slick.Column<any>[] {
 		let tableColumns: any[] = <any[]>columns;
 		if (tableColumns) {
 			let mycolumns: Slick.Column<any>[] = [];
 			let index: number = 0;
+
 			(<any[]>columns).map(col => {
-				if (col.type && col.type === 1) {
+				if (col.type === ColumnType.checkBox) {
 					this.createCheckBoxPlugin(col, index);
-				}
-				else if (col.type && col.type === 2) {
+				} else if (col.type === ColumnType.button) {
 					this.createButtonPlugin(col);
+				} else if (col.type === ColumnType.icon) {
+					mycolumns.push(TableComponent.createIconColumn(col));
 				}
 				else if (col.value) {
-					mycolumns.push(<Slick.Column<any>>{
-						name: col.value,
-						id: col.value,
-						field: col.value,
-						width: col.width,
-						cssClass: col.cssClass,
-						headerCssClass: col.headerCssClass,
-						toolTip: col.toolTip,
-						formatter: textFormatter,
-					});
+					mycolumns.push(TableComponent.createTextColumn(col as azdata.TableColumn));
 				} else {
 					mycolumns.push(<Slick.Column<any>>{
 						name: <string>col,
@@ -114,16 +112,57 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 	}
 
-	public static transformData(rows: string[][], columns: any[]): { [key: string]: string }[] {
+	private static createIconColumn<T extends Slick.SlickData>(col: azdata.TableColumn): Slick.Column<T> {
+		return <Slick.Column<T>>{
+			name: col.name ?? col.value,
+			id: col.value,
+			field: col.value,
+			width: col.width,
+			cssClass: col.cssClass,
+			headerCssClass: col.headerCssClass,
+			toolTip: col.toolTip,
+			formatter: iconCssFormatter,
+			filterable: false
+		};
+	}
+
+	private static createTextColumn<T extends Slick.SlickData>(col: azdata.TableColumn): Slick.Column<T> {
+		return {
+			name: col.name ?? col.value,
+			id: col.value,
+			field: col.value,
+			width: col.width,
+			cssClass: col.cssClass,
+			headerCssClass: col.headerCssClass,
+			toolTip: col.toolTip,
+			formatter: textFormatter
+		};
+	}
+
+	public transformData(rows: (string | azdata.IconColumnCellValue)[][], columns: any[]): { [key: string]: string | CssIconCellValue }[] {
 		if (rows && columns) {
+
 			return rows.map(row => {
-				let object: { [key: string]: string } = {};
-				if (row.forEach) {
-					row.forEach((val, index) => {
-						let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
-						object[columnName] = val;
-					});
+				let object: { [key: string]: string | CssIconCellValue } = {};
+				if (!Array.isArray(row)) {
+					return object;
 				}
+
+				row.forEach((val, index) => {
+					let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
+					if (isIconColumnCellValue(val)) {
+						const icon: IUserFriendlyIcon = val.icon;
+						const iconKey: string = getIconKey(icon);
+						const iconCssClass = this._iconCssMap[iconKey] ?? createIconCssClass(icon);
+						if (!this._iconCssMap[iconKey]) {
+							this._iconCssMap[iconKey] = iconCssClass;
+						}
+
+						object[columnName] = { iconCssClass: iconCssClass, ariaLabel: val.ariaLabel };
+					} else {
+						object[columnName] = <string>val;
+					}
+				});
 				return object;
 			});
 		} else {
@@ -133,7 +172,30 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-			this._tableData = new TableDataView<Slick.SlickData>();
+			this._tableData = new TableDataView<Slick.SlickData>(
+				null,
+				null,
+				null,
+				(data: Slick.SlickData[]) => {
+					let columns = this._table.grid.getColumns();
+
+					for (let i = 0; i < columns.length; i++) {
+						let col: any = columns[i];
+						let filterValues: Array<any> = col.filterValues;
+						if (filterValues && filterValues.length > 0) {
+							return data.filter(item => {
+								let colValue = item[col.field];
+								if (colValue instanceof Array) {
+									return filterValues.find(x => colValue.indexOf(x) >= 0);
+								}
+								return filterValues.find(x => x === colValue);
+							});
+						}
+					}
+
+					return data;
+				}
+			);
 
 			let options = <Slick.GridOptions<any>>{
 				syncColumnCellResize: true,
@@ -171,6 +233,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				}
 			});
 		}
+		this.baseInit();
 	}
 
 	public validate(): Thenable<boolean> {
@@ -238,7 +301,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._tableData.clear();
-		this._tableData.push(TableComponent.transformData(this.data, this.columns));
+		this._tableData.push(this.transformData(this.data, this.columns));
 		this._tableColumns = this.transformColumns(this.columns);
 		this._table.columns = this._tableColumns;
 		this._table.setData(this._tableData);
@@ -250,6 +313,10 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		Object.keys(this._checkboxColumns).forEach(col => this.registerPlugins(col, this._checkboxColumns[col]));
 		Object.keys(this._buttonsColumns).forEach(col => this.registerPlugins(col, this._buttonsColumns[col]));
 
+		if (this.headerFilter === true) {
+			this.registerFilterPlugin();
+			this._tableData.clearFilter();
+		}
 		if (this.ariaRowCount === -1) {
 			this._table.removeAriaRowCount();
 		}
@@ -356,6 +423,36 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 	}
 
+
+	private registerFilterPlugin() {
+		const filterPlugin = new HeaderFilter<Slick.SlickData>();
+		this._register(attachButtonStyler(filterPlugin, this.themeService));
+		this._filterPlugin = filterPlugin;
+		this._filterPlugin.onFilterApplied.subscribe((e, args) => {
+			let filterValues = (<any>args).column.filterValues;
+			if (filterValues) {
+				this._tableData.filter();
+				this._table.grid.resetActiveCell();
+				this.data = this._tableData.getItems().map(dataObject => Object.values(dataObject));
+				this.layoutTable();
+			} else {
+				this._tableData.clearFilter();
+			}
+		});
+
+		this._filterPlugin.onCommand.subscribe((e, args: any) => {
+			this._tableData.sort({
+				sortAsc: args.command === 'sort-asc',
+				sortCol: args.column,
+				multiColumnSort: false,
+				grid: this._table.grid
+			});
+			this.layoutTable();
+		});
+
+		this._table.registerPlugin(filterPlugin);
+	}
+
 	public focus(): void {
 		if (this._table.grid.getDataLength() > 0) {
 			if (!this._table.grid.getActiveCell()) {
@@ -426,4 +523,24 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	public set updateCells(newValue: azdata.TableCell[]) {
 		this.setPropertyFromUI<azdata.TableCell[]>((properties, value) => { properties.updateCells = value; }, newValue);
 	}
+
+	public get headerFilter(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.headerFilter, false);
+	}
+
+	public doAction(action: string, ...args: any[]): void {
+		switch (action) {
+			case ModelViewAction.AppendData:
+				this.appendData(args[0]);
+		}
+	}
+	private appendData(data: any[][]) {
+		this._tableData.push(this.transformData(data, this.columns));
+		this.data = this._tableData.getItems().map(dataObject => Object.values(dataObject));
+		this.layoutTable();
+	}
+}
+
+function isIconColumnCellValue(obj: any | undefined): obj is azdata.IconColumnCellValue {
+	return !!(<azdata.IconColumnCellValue>obj)?.icon;
 }
