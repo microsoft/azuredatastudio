@@ -15,6 +15,7 @@ import { ViewBase } from 'sql/workbench/browser/modelComponents/viewBase';
 import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';
 
 import * as azdata from 'azdata';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-content',
@@ -36,9 +37,10 @@ export class ModelViewContent extends ViewBase implements OnInit, IModelView {
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IModelViewService) private modelViewService: IModelViewService
+		@Inject(IModelViewService) private modelViewService: IModelViewService,
+		@Inject(ILogService) logService
 	) {
-		super(changeRef);
+		super(changeRef, logService);
 	}
 
 	ngOnInit() {
