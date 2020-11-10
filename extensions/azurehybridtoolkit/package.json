@@ -15,14 +15,23 @@
   "contributes": {
     "commands": [
       {
-        "command": "hybridtoolkit.openbook",
-        "title": "%title.openJupyterBook%"
+        "command": "books.hybridbook",
+        "title": "%title.cloudHybridBooks%",
+        "category": "%books-preview-category%"
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "books.hybridbook",
+          "when": "view == providedBooksView"
+        }
+      ]
+    },
     "notebook.books": [
       {
         "name": "%title.cloudHybridBooks%",
-        "path": "notebooks/hybridjupyterbook"
+        "path": "notebooks/hybridbook"
       }
     ]
   },

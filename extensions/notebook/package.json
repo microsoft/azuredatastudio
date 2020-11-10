@@ -167,11 +167,6 @@
         "category": "%books-preview-category%"
       },
       {
-        "command": "books.hybridjupyterbook",
-        "title": "%title.SQLHybridToolkitBook%",
-        "category": "%books-preview-category%"
-      },
-      {
         "command": "books.command.openLocalizedBooks",
         "title": "%title.PreviewLocalizedBook%",
         "category": "%books-preview-category%"
@@ -366,10 +361,6 @@
           "when": "sqlserver2019"
         },
         {
-          "command": "books.hybridjupyterbook",
-          "when": "hybridjupyterbook"
-        },
-        {
           "command": "notebook.command.saveBook",
           "when": "false"
         },
@@ -484,10 +475,6 @@
         },
         {
           "command": "books.sqlserver2019",
-          "when": "view == providedBooksView"
-        },
-        {
-          "command": "books.hybridjupyterbook",
           "when": "view == providedBooksView"
         },
         {
