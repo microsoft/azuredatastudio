@@ -56,15 +56,15 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { IHostColorSchemeService } from 'vs/workbench/services/themes/common/hostColorSchemeService';
+import { ColorScheme } from 'vs/platform/theme/common/theme';
+import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 
 class NotebookModelStub extends stubs.NotebookModelStub {
 	public contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
 	private _onActiveCellChanged = new Emitter<ICellModel>();
 
-	get cells(): ICellModel[] {
-		return this.cells;
-	}
 	public get contentChanged(): Event<NotebookContentChange> {
 		return this.contentChangedEmitter.event;
 	}
@@ -84,8 +84,12 @@ class NotebookModelStub extends stubs.NotebookModelStub {
 	}
 }
 
-suite.skip('Test class NotebookEditor:', () => {
+suite('Test class NotebookEditor:', () => {
 	let instantiationService = <TestInstantiationService>workbenchInstantiationService();
+	instantiationService.stub(IHostColorSchemeService, {
+		colorScheme: ColorScheme.DARK,
+		onDidChangeColorScheme: new Emitter<void>().event
+	});
 	let workbenchThemeService = instantiationService.createInstance(WorkbenchThemeService);
 	let notebookEditor: NotebookEditor;
 	let testTitle: string;
@@ -169,7 +173,7 @@ suite.skip('Test class NotebookEditor:', () => {
 		});
 	}
 
-	test.skip('Verifies that getCellEditor() returns a valid text editor object for valid guid input', async () => {
+	test('Verifies that getCellEditor() returns a valid text editor object for valid guid input', async () => {
 		await setupNotebookEditor(notebookEditor, untitledNotebookInput);
 		const result = notebookEditor.getCellEditor(cellTextEditorGuid);
 		assert.strictEqual(result, queryTextEditor, 'notebookEditor.getCellEditor() should return an expected QueryTextEditor when a guid corresponding to that editor is passed in.');
@@ -451,6 +455,7 @@ suite.skip('Test class NotebookEditor:', () => {
 		});
 		untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
 		const notebookModel = <NotebookModelStub>await notebookEditor.getNotebookModel();
+		notebookModel['_cells'] = [new CellModel({ cell_type: 'code', source: '' }, { isTrusted: true, notebook: notebookModel })];
 		notebookEditor['registerModelChanges']();
 		notebookModel.cells[0]['_onCellModeChanged'].fire(true); //fire cellModeChanged event on the first sell of our test notebookModel
 		notebookModel.contentChangedEmitter.fire({ changeType: NotebookChangeType.Saved });

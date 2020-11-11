@@ -58,6 +58,12 @@ export class Notebook {
 		await this.code.dispatchKeybinding(winOrCtrl + '+shift+F5');
 	}
 
+	async clearResults(): Promise<void> {
+		await this.code.waitAndClick('.notebookEditor');
+		const clearResultsButton = '.editor-toolbar a[class="action-label codicon notebook-button icon-clear-results masked-icon"]';
+		await this.code.waitAndClick(clearResultsButton);
+	}
+
 	async waitForTypeInEditor(text: string) {
 		const editor = '.notebook-cell.active .monaco-editor';
 		await this.code.waitAndClick(editor);
@@ -74,9 +80,44 @@ export class Notebook {
 		return this.code.waitForTextContent(selector, undefined, c => accept(c.replace(/\u00a0/g, ' ')));
 	}
 
-	async waitForResults(): Promise<void> {
+	async waitForActiveCellResults(): Promise<void> {
 		const outputComponent = '.notebook-cell.active .notebook-output';
 		await this.code.waitForElement(outputComponent);
+	}
+
+	async waitForResults(cellIds: string[]): Promise<void> {
+		for (let i of cellIds) {
+			await this.code.waitForElement(`div.notebook-cell[id="${i}"] .notebook-output`);
+		}
+	}
+
+	async waitForAllResults(): Promise<void> {
+		let cellIds: string[] = [];
+		await this.code.waitForElements('div.notebook-cell', false, result => {
+			cellIds = result.map(cell => cell.attributes['id']);
+			return true;
+		});
+		await this.waitForResults(cellIds);
+	}
+
+	async waitForActiveCellResultsGone(): Promise<void> {
+		const outputComponent = '.notebook-cell.active .notebook-output';
+		await this.code.waitForElementGone(outputComponent);
+	}
+
+	async waitForResultsGone(cellIds: string[]): Promise<void> {
+		for (let i of cellIds) {
+			await this.code.waitForElementGone(`div.notebook-cell[id="${i}"] .notebook-output`);
+		}
+	}
+
+	async waitForAllResultsGone(): Promise<void> {
+		let cellIds: string[] = [];
+		await this.code.waitForElements('div.notebook-cell', false, result => {
+			cellIds = result.map(cell => cell.attributes['id']);
+			return true;
+		});
+		await this.waitForResultsGone(cellIds);
 	}
 }
 
