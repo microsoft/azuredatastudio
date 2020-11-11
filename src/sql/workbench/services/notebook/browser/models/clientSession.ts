@@ -15,6 +15,7 @@ import { IClientSession, IClientSessionOptions } from 'sql/workbench/services/no
 import { Deferred } from 'sql/base/common/promise';
 import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { SqlSession } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 
 type KernelChangeHandler = (kernel: nb.IKernelChangedArgs) => Promise<void>;
 /**
@@ -298,7 +299,8 @@ export class ClientSession implements IClientSession {
 	}
 
 	public async addConnection(connection: IConnectionProfile): Promise<void> {
-		await this._session.addConnection(connection);
+		// Only supporting multi-connection for SQL kernel for now
+		await (<SqlSession>this._session).addConnection(connection);
 	}
 
 	/**

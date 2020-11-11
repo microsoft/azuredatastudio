@@ -313,11 +313,6 @@ class SessionWrapper implements azdata.nb.ISession {
 		return this.doConfigureConnection(connection);
 	}
 
-	addConnection(connection: azdata.IConnectionProfile): Thenable<void> {
-		// TODO
-		return Promise.resolve();
-	}
-
 	private async doChangeKernel(kernelInfo: azdata.nb.IKernelSpec): Promise<azdata.nb.IKernel> {
 		let kernelDetails = await this._proxy.ext.$changeKernel(this._sessionDetails.sessionId, kernelInfo);
 		this._kernel = new KernelWrapper(this._proxy, kernelDetails);
