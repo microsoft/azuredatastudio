@@ -368,7 +368,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 			currentMatch: false,
 			loop: true
 		};
-		this._notebookModel.cells.forEach(cell => {
+		this._notebookModel.cells?.forEach(cell => {
 			this._register(cell.onCellModeChanged((state) => {
 				this._onFindStateChange(changeEvent).catch(onUnexpectedError);
 			}));
