@@ -58,9 +58,9 @@
 	"deploy.wizard.action":"Script to notebook",
 
 	"cores-limit.label": "Cores Limit",
-	"cores-limit.description": "The cores limit of the managed instance as an integer.",
+	"cores-limit.description": "The cores limit must be an integer.",
 	"cores-request.label": "Cores Request",
-	"cores-request.description": "The request for cores of the managed instance as an integer.",
+	"cores-request.description": "The requested cores must be an integer.",
 
 	"requested.cores.should.be.integer": "Requested cores must be an integer",
 	"cores.limit.should.be.integer": "Cores limit must be an integer",
