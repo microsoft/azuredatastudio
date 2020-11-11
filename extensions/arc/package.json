@@ -772,6 +772,10 @@
                           "description": "%arc.postgres.server.group.workers.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS",
                           "type": "number",
+                          "validations": [{
+                            "type": "is_integer",
+                            "description": "%should.be.integer%"
+                          }],
                           "defaultValue": "0",
                           "min": 0
                         },
@@ -779,6 +783,10 @@
                           "label": "%arc.postgres.server.group.port%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_PORT",
                           "type": "number",
+                          "validations": [{
+                            "type": "is_integer",
+                            "description": "%should.be.integer%"
+                          }],
                           "defaultValue": "5432",
                           "min": 1,
                           "max": 65535
