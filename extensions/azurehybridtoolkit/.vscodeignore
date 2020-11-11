@@ -1,0 +1,4 @@
+src/**
+out/**
+tsconfig.json
+yarn.lock
