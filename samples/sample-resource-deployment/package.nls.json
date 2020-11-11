@@ -57,13 +57,13 @@
 	"wizard.agreement.contosoCmd.eula":"contoso cmd license terms",
 	"deploy.wizard.action":"Script to notebook",
 
-	"arc.cores-limit.label": "Cores Limit",
-	"arc.sql.cores-limit.description": "The cores limit of the managed instance as an integer.",
-	"arc.cores-request.label": "Cores Request",
-	"arc.sql.cores-request.description": "The request for cores of the managed instance as an integer.",
+	"cores-limit.label": "Cores Limit",
+	"cores-limit.description": "The cores limit of the managed instance as an integer.",
+	"cores-request.label": "Cores Request",
+	"cores-request.description": "The request for cores of the managed instance as an integer.",
 
-	"requested.cores.should.be.integer": "requested cores must be an integer",
-	"cores.limit.should.be.integer": "cores limit must be an integer",
-	"requested.cores.less.than.or.equal.to.cores.limit": "requested cores must be <= cores limit",
-	"cores.limit.greater.than.or.equal.to.requested.cores": "cores limit must be >= requested cores"
+	"requested.cores.should.be.integer": "Requested cores must be an integer",
+	"cores.limit.should.be.integer": "Cores limit must be an integer",
+	"requested.cores.less.than.or.equal.to.cores.limit": "Requested cores must be <= cores limit",
+	"cores.limit.greater.than.or.equal.to.requested.cores": "Cores limit must be >= requested cores"
 }

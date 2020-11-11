@@ -50,9 +50,9 @@
 										{
 											"fields": [
                         {
-                          "label": "%arc.cores-limit.label%",
-                          "description": "%arc.sql.cores-limit.description%",
-                          "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                          "label": "%cores-limit.label%",
+                          "description": "%cores-limit.description%",
+                          "variableName": "AZDATA_NB_VAR_CORES_LIMIT",
                           "type": "number",
                           "defaultValue": 5,
                           "required": false,
@@ -63,15 +63,15 @@
                             },
                             {
                               "type": ">=",
-                              "target": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
+                              "target": "AZDATA_NB_VAR_CORES_REQUEST",
                               "description": "%cores.limit.greater.than.or.equal.to.requested.cores%"
                             }
                           ]
                         },
                         {
-                          "label": "%arc.cores-request.label%",
-                          "description": "%arc.sql.cores-request.description%",
-                          "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
+                          "label": "%cores-request.label%",
+                          "description": "%cores-request.description%",
+                          "variableName": "AZDATA_NB_VAR_CORES_REQUEST",
                           "type": "number",
                           "defaultValue": 2,
                           "required": false,
@@ -82,7 +82,7 @@
                             },
                             {
                               "type": "<=",
-                              "target": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                              "target": "AZDATA_NB_VAR_CORES_LIMIT",
                               "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
                             }
                           ]
