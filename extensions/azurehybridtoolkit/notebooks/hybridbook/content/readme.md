@@ -5,24 +5,24 @@ The **Azure SQL Hybrid Cloud Toolkit** is a [Jupyter Book](https://jupyterbook.o
 ## Goals and Methodology
 The toolkit better positions a customer with regards to planning, migrating, and thriving in a hybrid cloud environment by:
 
-* Providing SQL'zure users with reliable free software and content that is well-written and executable
+* Providing SQL Azure users with reliable free software and content that is well-written and executable
 * Greatly simplifying the integration of Azure Data services into an existing environment
-* Positioning Azure to be the natural cloud services choice with a low-friction experience 
+* Positioning Azure to be the natural cloud services choice with a low-friction experience
 * Notebooks are executable by a normal user (unless otherwise specificed) on minimal hardware
 * Most notebooks require some configuration. If so, the proper configurations should be clearly located towards the top of the notebook or cell, whichever is most appropriate
-* Modify the cells to meet the desired requirements 
+* Modify the cells to meet the desired requirements
 * By design, Notebooks are written to be executed from top-to-bottom. Therefore, each notebook has a specific task to perform and should focus only on that task. It may contain several cells to execute but it will adhere to the one-task per notebook paradigm
 
 **NOTE:** Executing notebooks could potentially create new Azure Resources which may incur charges to the Azure Subscription. Make sure the repercussions of executing any cells are understood.
 
 ## Prerequisites and Initial Setup
-The notebooks may leverage various modules from Python or Microsoft PowerShell and the OSS community. To execute the notebooks in this toolkit, start with the [Prerequisites and Initial Setup Notebook](Prerequisites/prereqs.ipynb) where all prerequisite modules will be checked and installed if not found in the execution environment. 
+The notebooks may leverage various modules from Python or Microsoft PowerShell and the OSS community. To execute the notebooks in this toolkit, start with the [Prerequisites and Initial Setup Notebook](Prerequisites/prereqs.ipynb) where all prerequisite modules will be checked and installed if not found in the execution environment.
 
 ## Chapters
-The toolkit has chapters on network configuration, on-premise SQL Server assessment, resource provisioning, and Azure migration. See below: 
+The toolkit has chapters on network configuration, on-premise SQL Server assessment, resource provisioning, and Azure migration. See below:
 * [Networking](networking/readme.md) - Setup secure Point-to-Site (P2S) or Site-to-Site (S2S) network connectivity to Microsoft Azure using a Virtual Private Network (VPN). This notebook serves as a building block for other notebooks as communicating securely between on-premise and Azure is essential for many tasks
-* [Assessments](Assessments/readme.md) - Notebooks that contain examples to determine whether a given database or SQL Server instance is ready to migrate by utilizing SQL Assessments. SQL instances are scanned based on a "best practices" set of rules. 
+* [Assessments](Assessments/readme.md) - Notebooks that contain examples to determine whether a given database or SQL Server instance is ready to migrate by utilizing SQL Assessments. SQL instances are scanned based on a "best practices" set of rules.
 * [Provisioning](provisioning/readme.md) - Creating and communicating with SQL Resources in Microsoft Azure. Includes common tasks such as creating SQL Virtual Machines or SQL Managed Instances in the cloud
-* [Data Portability](data-portability/readme.md) - Install a custom Azure function to facilitate importing and exporting cloud resources. The solution uses parallel tasks in Azure Batch to perform data storage work. Azure Batch is a process that runs large-scale parallel and high-performance computing jobs efficiently in Azure. 
+* [Data Portability](data-portability/readme.md) - Install a custom Azure function to facilitate importing and exporting cloud resources. The solution uses parallel tasks in Azure Batch to perform data storage work. Azure Batch is a process that runs large-scale parallel and high-performance computing jobs efficiently in Azure.
 * [High Availability and Disaster Recovery](hadr/readme.md) - Notebooks to leverage Azure SQL for business continuity in a hybrid cloud environment
 * [Offline Migration](offline-migration/readme.md) - Notebooks to perform various migrations
