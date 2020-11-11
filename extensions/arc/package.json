@@ -603,6 +603,34 @@
                           "required": true
                         },
                         {
+                          "label": "%arc.cores-request.label%",
+                          "description": "%arc.sql.cores-request.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
+                          "type": "number",
+                          "min": 1,
+                          "required": false,
+                          "validations": [
+                            {
+                              "type": "<=",
+                              "target": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                              "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
+                            }
+                          ]
+                        },
+                        {
+                          "label": "%arc.memory-request.label%",
+                          "description": "%arc.sql.memory-request.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
+                          "type": "number",
+                          "min": 2,
+                          "required": false,
+                          "validations": [{
+                            "type": "<=",
+                            "target": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
+                            "description": "%requested.memory.less.than.or.equal.to.memory.limit%"
+                          }]
+                        },
+                        {
                           "label": "%arc.storage-class.logs.label%",
                           "description": "%arc.sql.storage-class.logs.description%",
                           "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
@@ -635,34 +663,6 @@
                             "type": ">=",
                             "target": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
                             "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
-                          }]
-                        },
-                        {
-                          "label": "%arc.cores-request.label%",
-                          "description": "%arc.sql.cores-request.description%",
-                          "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
-                          "type": "number",
-                          "min": 1,
-                          "required": false,
-                          "validations": [
-                            {
-                              "type": "<=",
-                              "target": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
-                              "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
-                            }
-                          ]
-                        },
-                        {
-                          "label": "%arc.memory-request.label%",
-                          "description": "%arc.sql.memory-request.description%",
-                          "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
-                          "type": "number",
-                          "min": 2,
-                          "required": false,
-                          "validations": [{
-                            "type": "<=",
-                            "target": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
-                            "description": "%requested.memory.less.than.or.equal.to.memory.limit%"
                           }]
                         }
                       ]
