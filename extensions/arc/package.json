@@ -618,10 +618,6 @@
                           "required": false,
                           "validations": [
                             {
-                              "type": "is_integer",
-                              "description": "%cores.limit.should.be.integer%"
-                            },
-                            {
                               "type": ">=",
                               "target": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
                               "description": "%cores.limit.greater.than.or.equal.to.requested.cores%"
@@ -649,10 +645,6 @@
                           "min": 1,
                           "required": false,
                           "validations": [
-                            {
-                              "type": "is_integer",
-                              "description": "%requested.cores.should.be.integer%"
-                            },
                             {
                               "type": "<=",
                               "target": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
