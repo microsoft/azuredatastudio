@@ -75,7 +75,6 @@ export class TreeView extends Disposable implements ITreeView {
 	private messageElement!: HTMLDivElement;
 	private tree: Tree | undefined;
 	private treeLabels: ResourceLabels | undefined;
-	description: string | undefined;
 
 	public root: ITreeItem; // {{SQL CARBON EDIT}}
 	private elementsToRefresh: ITreeItem[] = [];
@@ -100,9 +99,6 @@ export class TreeView extends Disposable implements ITreeView {
 
 	private readonly _onDidChangeTitle: Emitter<string> = this._register(new Emitter<string>());
 	readonly onDidChangeTitle: Event<string> = this._onDidChangeTitle.event;
-
-	private readonly _onDidChangeDescription: Emitter<string> = this._register(new Emitter<string>());
-	readonly onDidChangeDescription: Event<string | undefined> = this._onDidChangeDescription.event;
 
 	private readonly _onDidCompleteRefresh: Emitter<void> = this._register(new Emitter<void>());
 

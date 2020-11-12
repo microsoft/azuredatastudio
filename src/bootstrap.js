@@ -16,12 +16,16 @@
 
 	// Browser
 	else {
-		globalThis.MonacoBootstrap = factory();
+		try {
+			globalThis.MonacoBootstrap = factory();
+		} catch (error) {
+			console.warn(error); // expected when e.g. running with sandbox: true (TODO@sandbox eventually consolidate this)
+		}
 	}
 }(this, function () {
-	const Module = typeof require === 'function' ? require('module') : undefined;
-	const path = typeof require === 'function' ? require('path') : undefined;
-	const fs = typeof require === 'function' ? require('fs') : undefined;
+	const Module = require('module');
+	const path = require('path');
+	const fs = require('fs');
 
 	//#region global bootstrapping
 
@@ -30,11 +34,9 @@
 
 	// Workaround for Electron not installing a handler to ignore SIGPIPE
 	// (https://github.com/electron/electron/issues/13254)
-	if (typeof process !== 'undefined') {
-		process.on('SIGPIPE', () => {
-			console.error(new Error('Unexpected SIGPIPE'));
-		});
-	}
+	process.on('SIGPIPE', () => {
+		console.error(new Error('Unexpected SIGPIPE'));
+	});
 
 	//#endregion
 
@@ -45,11 +47,6 @@
 	 * @param {string} appRoot
 	 */
 	function enableASARSupport(appRoot) {
-		if (!path || !Module) {
-			console.warn('enableASARSupport() is only available in node.js environments');
-			return;
-		}
-
 		let NODE_MODULES_PATH = appRoot ? path.join(appRoot, 'node_modules') : undefined;
 		if (!NODE_MODULES_PATH) {
 			NODE_MODULES_PATH = path.join(__dirname, '../node_modules');
@@ -87,32 +84,21 @@
 	//#region URI helpers
 
 	/**
-	 * @param {string} path
-	 * @param {{ isWindows?: boolean, scheme?: string, fallbackAuthority?: string }} config
+	 * @param {string} _path
 	 * @returns {string}
 	 */
-	function fileUriFromPath(path, config) {
-
-		// Since we are building a URI, we normalize any backlsash
-		// to slashes and we ensure that the path begins with a '/'.
-		let pathName = path.replace(/\\/g, '/');
+	function fileUriFromPath(_path) {
+		let pathName = path.resolve(_path).replace(/\\/g, '/');
 		if (pathName.length > 0 && pathName.charAt(0) !== '/') {
 			pathName = `/${pathName}`;
 		}
 
 		/** @type {string} */
 		let uri;
-
-		// Windows: in order to support UNC paths (which start with '//')
-		// that have their own authority, we do not use the provided authority
-		// but rather preserve it.
-		if (config.isWindows && pathName.startsWith('//')) {
-			uri = encodeURI(`${config.scheme || 'file'}:${pathName}`);
-		}
-
-		// Otherwise we optionally add the provided authority if specified
-		else {
-			uri = encodeURI(`${config.scheme || 'file'}://${config.fallbackAuthority || ''}${pathName}`);
+		if (process.platform === 'win32' && pathName.startsWith('//')) { // specially handle Windows UNC paths
+			uri = encodeURI(`file:${pathName}`);
+		} else {
+			uri = encodeURI(`file://${pathName}`);
 		}
 
 		return uri.replace(/#/g, '%23');
@@ -127,10 +113,6 @@
 	 * @returns {{locale?: string, availableLanguages: {[lang: string]: string;}, pseudo?: boolean }}
 	 */
 	function setupNLS() {
-		if (!path || !fs) {
-			console.warn('setupNLS() is only available in node.js environments');
-			return;
-		}
 
 		// Get the nls configuration into the process.env as early as possible.
 		let nlsConfig = { availableLanguages: {} };
@@ -181,14 +163,9 @@
 
 	/**
 	 * @param {{ portable: string; applicationName: string; }} product
-	 * @returns {{ portableDataPath: string; isPortable: boolean; }}
+	 * @returns {{portableDataPath: string;isPortable: boolean;}}
 	 */
 	function configurePortable(product) {
-		if (!path || !fs) {
-			console.warn('configurePortable() is only available in node.js environments');
-			return;
-		}
-
 		const appRoot = path.dirname(__dirname);
 
 		function getApplicationPath() {
@@ -251,11 +228,6 @@
 	// Prevents appinsights from monkey patching modules.
 	// This should be called before importing the applicationinsights module
 	function avoidMonkeyPatchFromAppInsights() {
-		if (typeof process === 'undefined') {
-			console.warn('avoidMonkeyPatchFromAppInsights() is only available in node.js environments');
-			return;
-		}
-
 		// @ts-ignore
 		process.env['APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL'] = true; // Skip monkey patching of 3rd party modules by appinsights
 		global['diagnosticsSource'] = {}; // Prevents diagnostic channel (which patches "require") from initializing entirely

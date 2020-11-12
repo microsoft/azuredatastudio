@@ -6,6 +6,7 @@
 import 'vs/css!./welcomePage';
 import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page';
 import { URI } from 'vs/base/common/uri';
+import * as strings from 'vs/base/common/strings';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as arrays from 'vs/base/common/arrays';
 import { WalkThroughInput } from 'vs/workbench/contrib/welcome/walkThrough/browser/walkThroughInput';
@@ -23,8 +24,7 @@ import { Schemas } from 'vs/base/common/network';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { getInstalledExtensions, IExtensionStatus, onExtensionChanged, isKeymapExtension } from 'vs/workbench/contrib/extensions/common/extensionsUtils';
 import { IExtensionManagementService, IExtensionGalleryService, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IWorkbenchExtensionEnablementService, EnablementState } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
-import { IExtensionRecommendationsService } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
+import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionRecommendationsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lifecycle';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
@@ -85,7 +85,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 						try {
 							const folder = await this.fileService.resolve(folderUri);
 							const files = folder.children ? folder.children.map(child => child.name) : [];
-							const file = files.sort().find(file => file.toLowerCase().startsWith('readme'));
+							const file = files.sort().find(file => strings.startsWith(file.toLowerCase(), 'readme'));
 							if (file) {
 								return joinPath(folderUri, file);
 							}
@@ -97,7 +97,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 					arrays.coalesceInPlace(readmes);
 					if (!this.editorService.activeEditor) {
 						if (readmes.length) {
-							const isMarkDown = (readme: URI) => readme.path.toLowerCase().endsWith('.md');
+							const isMarkDown = (readme: URI) => strings.endsWith(readme.path.toLowerCase(), '.md');
 							await Promise.all([
 								this.commandService.executeCommand('markdown.showPreview', null, readmes.filter(isMarkDown), { locked: true }),
 								this.editorService.openEditors(readmes.filter(readme => !isMarkDown(readme)).map(readme => ({ resource: readme }))),
@@ -663,7 +663,7 @@ class WelcomePage extends Disposable {
 			extensionId: extensionSuggestion.id,
 		});
 		this.instantiationService.invokeFunction(getInstalledExtensions).then(extensions => {
-			const installedExtension = extensions.find(extension => areSameExtensions(extension.identifier, { id: extensionSuggestion.id }));
+			const installedExtension = arrays.first(extensions, extension => areSameExtensions(extension.identifier, { id: extensionSuggestion.id }));
 			if (installedExtension && installedExtension.globallyEnabled) {
 				/* __GDPR__FRAGMENT__
 					"WelcomePageInstalled-1" : {

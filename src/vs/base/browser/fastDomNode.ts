@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as dom from 'vs/base/browser/dom';
+
 export class FastDomNode<T extends HTMLElement> {
 
 	public readonly domNode: T;
@@ -174,7 +176,7 @@ export class FastDomNode<T extends HTMLElement> {
 	}
 
 	public toggleClassName(className: string, shouldHaveIt?: boolean): void {
-		this.domNode.classList.toggle(className, shouldHaveIt);
+		dom.toggleClass(this.domNode, className, shouldHaveIt);
 		this._className = this.domNode.className;
 	}
 

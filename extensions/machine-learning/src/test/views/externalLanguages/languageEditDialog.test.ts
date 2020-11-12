@@ -35,7 +35,7 @@ describe('Edit External Languages Dialog', () => {
 		dialog.showDialog();
 
 		let updateCalled = false;
-		let promise = new Promise<void>(resolve => {
+		let promise = new Promise(resolve => {
 			parent.onUpdate(() => {
 				updateCalled = true;
 				parent.onUpdatedLanguage(languageUpdateModel);

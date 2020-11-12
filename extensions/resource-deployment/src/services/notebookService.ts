@@ -10,7 +10,7 @@ import { isString } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { NotebookPathInfo } from '../interfaces';
-import { getDateTimeString, getErrorMessage } from '../utils';
+import { getDateTimeString, getErrorMessage } from '../common/utils';
 import { IPlatformService } from './platformService';
 const localize = nls.loadMessageBundle();
 

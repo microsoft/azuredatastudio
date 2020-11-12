@@ -14,7 +14,7 @@ import { EventType as TouchEventType, Gesture } from 'vs/base/browser/touch';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { DataTransfers } from 'vs/base/browser/dnd';
 import { isFirefox } from 'vs/base/browser/browser';
-import { $, addDisposableListener, append, EventHelper, EventLike, EventType, removeTabIndexAndUpdateFocus } from 'vs/base/browser/dom';
+import { $, addClasses, addDisposableListener, append, EventHelper, EventLike, EventType, removeClasses, removeTabIndexAndUpdateFocus } from 'vs/base/browser/dom';
 
 export interface IBaseActionViewItemOptions {
 	draggable?: boolean;
@@ -304,7 +304,7 @@ export class ActionViewItem extends BaseActionViewItem {
 
 	updateClass(): void {
 		if (this.cssClass && this.label) {
-			this.label.classList.remove(...this.cssClass.split(' '));
+			removeClasses(this.label, this.cssClass);
 		}
 
 		if (this.options.icon) {
@@ -313,7 +313,7 @@ export class ActionViewItem extends BaseActionViewItem {
 			if (this.label) {
 				this.label.classList.add('codicon');
 				if (this.cssClass) {
-					this.label.classList.add(...this.cssClass.split(' '));
+					addClasses(this.label, this.cssClass);
 				}
 			}
 

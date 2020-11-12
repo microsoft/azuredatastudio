@@ -30,7 +30,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { EditUpdateCellResult } from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
-import { deepClone } from 'vs/base/common/objects';
+import { deepClone, assign } from 'vs/base/common/objects';
 import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
@@ -362,7 +362,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	async handleResultSet(self: EditDataGridPanel, event: any): Promise<void> {
 		// Clone the data before altering it to avoid impacting other subscribers
-		let resultSet = Object.assign({}, event.data);
+		let resultSet = assign({}, event.data);
 		if (!resultSet.complete) {
 			return;
 		}

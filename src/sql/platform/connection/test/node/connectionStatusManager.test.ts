@@ -13,8 +13,9 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { NullLogService } from 'vs/platform/log/common/log';
-import { NativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
+import { EnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { parseArgs, OPTIONS } from 'vs/platform/environment/node/argv';
+import { assign } from 'vs/base/common/objects';
 
 let connections: ConnectionStatusManager;
 let capabilitiesService: TestCapabilitiesService;
@@ -80,7 +81,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 		capabilitiesService = new TestCapabilitiesService();
 		connectionProfileObject = new ConnectionProfile(capabilitiesService, connectionProfile);
 
-		const environmentService = new NativeEnvironmentService(parseArgs(process.argv, OPTIONS));
+		const environmentService = new EnvironmentService(parseArgs(process.argv, OPTIONS));
 		connections = new ConnectionStatusManager(capabilitiesService, new NullLogService(), environmentService, new TestNotificationService());
 		connection1Id = Utils.generateUri(connectionProfile);
 		connection2Id = 'connection2Id';
@@ -169,7 +170,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 		let expectedConnectionId = 'new id';
 		connections.addConnection(connectionProfile, connection1Id);
 
-		let updatedConnection = Object.assign({}, connectionProfile, { groupId: expected, getOptionsKey: () => connectionProfile.getOptionsKey() + expected, id: expectedConnectionId });
+		let updatedConnection = assign({}, connectionProfile, { groupId: expected, getOptionsKey: () => connectionProfile.getOptionsKey() + expected, id: expectedConnectionId });
 		let actualId = connections.updateConnectionProfile(updatedConnection, connection1Id);
 
 		let newId = Utils.generateUri(updatedConnection);
@@ -244,7 +245,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 
 	test('getActiveConnectionProfiles should return a list of all the unique connections that the status manager knows about', () => {
 		// Add duplicate connections
-		let newConnection = Object.assign({}, connectionProfile);
+		let newConnection = assign({}, connectionProfile);
 		newConnection.id = 'test_id';
 		newConnection.serverName = 'new_server_name';
 		newConnection.options['databaseDisplayName'] = newConnection.databaseName;

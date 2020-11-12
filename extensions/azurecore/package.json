@@ -37,7 +37,7 @@
             "description": "%azure.resource.config.filter.description%"
           },
           "azure.tenant.config.filter": {
-            "type":"array",
+            "type": "array",
             "default": [],
             "description": "%azure.tenant.config.filter.description%"
           }
@@ -94,11 +94,6 @@
         "type": "object",
         "title": "Azure",
         "properties": {
-          "azure.enableArcFeatures": {
-            "type": "boolean",
-            "default": false,
-            "description": "%config.enableArcFeatures%"
-          },
           "azure.noSystemKeychain": {
             "type": "boolean",
             "default": true,
@@ -181,19 +176,17 @@
         }
       }
     ],
+    "connectionTreeProvider": [
+      {
+        "id": "connectionDialog/azureResourceExplorer",
+        "name": "%azure.resource.explorer.title%"
+      }
+    ],
     "dataExplorer": {
-      "dialog/connection": [
-        {
-          "id": "azureResourceExplorer_dialog",
-          "name": "%azure.resource.explorer.title%",
-          "when": "config.connection.dialog.browse"
-        }
-      ],
       "dataExplorer": [
         {
           "id": "azureResourceExplorer",
-          "name": "%azure.resource.explorer.title%",
-          "when": "!config.connection.dialog.browse"
+          "name": "%azure.resource.explorer.title%"
         }
       ]
     },
@@ -277,6 +270,28 @@
           "command": "azure.resource.startterminal",
           "when": "viewItem == azure.resource.itemType.account",
           "group": "azurecore"
+        }
+      ],
+      "connectionDialog/browseTree": [
+        {
+          "command": "azure.resource.selectsubscriptions",
+          "when": "contextValue == azure.resource.itemType.account",
+          "group": "navigation"
+        },
+        {
+          "command": "azure.resource.refresh",
+          "when": "contextValue == azure.resource.itemType.account",
+          "group": "navigation"
+        },
+        {
+          "command": "azure.resource.signin",
+          "when": "treeId == connectionDialog/azureResourceExplorer",
+          "group": "navigation"
+        },
+        {
+          "command": "azure.resource.refreshall",
+          "when": "treeId == connectionDialog/azureResourceExplorer",
+          "group": "navigation"
         }
       ]
     },

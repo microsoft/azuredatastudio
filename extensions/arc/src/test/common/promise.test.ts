@@ -11,6 +11,6 @@ describe('Deferred', () => {
 		deferred.then(() => {
 			done();
 		});
-		deferred.resolve(undefined);
+		deferred.resolve();
 	});
 });

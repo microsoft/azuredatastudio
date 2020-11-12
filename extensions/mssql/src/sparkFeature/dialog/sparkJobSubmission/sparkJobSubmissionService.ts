@@ -14,74 +14,112 @@ import * as request from 'request-light';
 
 export class SparkJobSubmissionService {
 	public async submitBatchJob(submissionArgs: SparkJobSubmissionInput): Promise<string> {
-		try {
-			let livyUrl: string = `https://${submissionArgs.host}:${submissionArgs.port}${submissionArgs.livyPath}/`;
+		let livyUrl: string = `https://${submissionArgs.host}:${submissionArgs.port}${submissionArgs.livyPath}/`;
 
-			// Get correct authentication headers
-			let headers = await this.getAuthenticationHeaders(submissionArgs);
+		// Get correct authentication headers
+		let headers = await this.getAuthenticationHeaders(submissionArgs);
 
-			let options: request.XHROptions = {
-				url: livyUrl,
-				type: 'POST',
-				strictSSL: !auth.getIgnoreSslVerificationConfigSetting(),
-				data: {
-					file: submissionArgs.sparkFile,
-					proxyUser: submissionArgs.user,
-					className: submissionArgs.mainClass,
-					name: submissionArgs.jobName
-				},
-				// authentication headers
-				headers: headers
-			};
+		let options: request.XHROptions = {
+			url: livyUrl,
+			type: 'POST',
+			strictSSL: !auth.getIgnoreSslVerificationConfigSetting(),
+			data: {
+				file: submissionArgs.config.sparkFile,
+				proxyUser: submissionArgs.user,
+				className: submissionArgs.config.mainClass,
+				name: submissionArgs.config.jobName
+			},
+			// authentication headers
+			headers: headers
+		};
 
-			// Set arguments
-			if (submissionArgs.jobArguments && submissionArgs.jobArguments.trim()) {
-				let argsList = submissionArgs.jobArguments.split(' ');
-				if (argsList.length > 0) {
-					options.data['args'] = argsList;
-				}
+		// Now set the other parameters based on the user configuration - see
+		// https://livy.incubator.apache.org/docs/latest/rest-api.html for more detailed information
+
+		// Set arguments
+		const args = submissionArgs.config.arguments?.trim();
+		if (arguments) {
+			const argsList = args.split(' ');
+			if (argsList.length > 0) {
+				options.data['args'] = argsList;
 			}
-
-			// Set jars files
-			if (submissionArgs.jarFileList && submissionArgs.jarFileList.trim()) {
-				let jarList = submissionArgs.jarFileList.split(';');
-				if (jarList.length > 0) {
-					options.data['jars'] = jarList;
-				}
-			}
-
-			// Set py files
-			if (submissionArgs.pyFileList && submissionArgs.pyFileList.trim()) {
-				let pyList = submissionArgs.pyFileList.split(';');
-				if (pyList.length > 0) {
-					options.data['pyFiles'] = pyList;
-				}
-			}
-
-			// Set other files
-			if (submissionArgs.otherFileList && submissionArgs.otherFileList.trim()) {
-				let otherList = submissionArgs.otherFileList.split(';');
-				if (otherList.length > 0) {
-					options.data['files'] = otherList;
-				}
-			}
-
-			options.data = JSON.stringify(options.data);
-
-			// Note this is currently required to be called each time since request-light is overwriting
-			// the setting passed in through the options. If/when that gets fixed this can be removed
-			request.configure(null, !auth.getIgnoreSslVerificationConfigSetting());
-
-			const response = JSON.parse((await request.xhr(options)).responseText);
-			if (response && utils.isValidNumber(response.id)) {
-				return response.id;
-			}
-
-			return Promise.reject(new Error(localize('sparkJobSubmission.LivyNoBatchIdReturned',
-				"No Spark job batch id is returned from response.{0}[Error] {1}", os.EOL, JSON.stringify(response))));
-		} catch (error) {
-			return Promise.reject(error);
 		}
+
+		// Set jars files
+		const jarFiles = submissionArgs.config.jarFiles?.trim();
+		if (jarFiles) {
+			const jarList = jarFiles.split(';');
+			if (jarList.length > 0) {
+				options.data['jars'] = jarList;
+			}
+		}
+
+		// Set py files
+		if (submissionArgs.config.pyFiles?.trim()) {
+			const pyList = submissionArgs.config.pyFiles.split(';');
+			if (pyList.length > 0) {
+				options.data['pyFiles'] = pyList;
+			}
+		}
+
+		// Set other files
+		const otherFiles = submissionArgs.config.otherFiles?.trim();
+		if (otherFiles) {
+			const otherList = otherFiles.split(';');
+			if (otherList.length > 0) {
+				options.data['files'] = otherList;
+			}
+		}
+
+		// Set driver memory
+		const driverMemory = submissionArgs.config.driverMemory?.trim();
+		if (driverMemory) {
+			options.data['driverMemory'] = driverMemory;
+		}
+
+		// Set driver cores
+		if (submissionArgs.config.driverCores) {
+			options.data['driverCores'] = submissionArgs.config.driverCores;
+		}
+
+		// Set executor memory
+		const executorMemory = submissionArgs.config.executorMemory?.trim();
+		if (executorMemory) {
+			options.data['executorMemory'] = executorMemory;
+		}
+
+		// Set executor cores
+		if (submissionArgs.config.executorCores) {
+			options.data['executorCores'] = submissionArgs.config.executorCores;
+		}
+
+		// Set executor count
+		if (submissionArgs.config.executorCount) {
+			options.data['numExecutors'] = submissionArgs.config.executorCount;
+		}
+
+		if (submissionArgs.config.queueName) {
+			options.data['queue'] = submissionArgs.config.queueName;
+		}
+		// Set driver memory
+		const configurationValues = submissionArgs.config.configValues?.trim();
+		if (configurationValues) {
+			options.data['conf'] = configurationValues;
+		}
+
+		options.data = JSON.stringify(options.data);
+
+		// Note this is currently required to be called each time since request-light is overwriting
+		// the setting passed in through the options. If/when that gets fixed this can be removed
+		request.configure(null, !auth.getIgnoreSslVerificationConfigSetting());
+
+		const response = JSON.parse((await request.xhr(options)).responseText);
+		if (response && utils.isValidNumber(response.id)) {
+			return response.id;
+		}
+
+		throw new Error(localize('sparkJobSubmission.LivyNoBatchIdReturned',
+			"No Spark job batch id is returned from response.{0}[Error] {1}", os.EOL, JSON.stringify(response)));
 	}
 
 	private async getAuthenticationHeaders(submissionArgs: SparkJobSubmissionInput) {
@@ -97,32 +135,28 @@ export class SparkJobSubmissionService {
 	}
 
 	public async getYarnAppId(submissionArgs: SparkJobSubmissionInput, livyBatchId: string): Promise<LivyLogResponse> {
-		try {
-			let livyUrl = `https://${submissionArgs.host}:${submissionArgs.port}${submissionArgs.livyPath}/${livyBatchId}/log`;
-			let headers = await this.getAuthenticationHeaders(submissionArgs);
+		let livyUrl = `https://${submissionArgs.host}:${submissionArgs.port}${submissionArgs.livyPath}/${livyBatchId}/log`;
+		let headers = await this.getAuthenticationHeaders(submissionArgs);
 
-			let options: request.XHROptions = {
-				url: livyUrl,
-				type: 'GET',
-				strictSSL: !auth.getIgnoreSslVerificationConfigSetting(),
-				// authentication headers
-				headers: headers
-			};
+		let options: request.XHROptions = {
+			url: livyUrl,
+			type: 'GET',
+			strictSSL: !auth.getIgnoreSslVerificationConfigSetting(),
+			// authentication headers
+			headers: headers
+		};
 
-			// Note this is currently required to be called each time since request-light is overwriting
-			// the setting passed in through the options. If/when that gets fixed this can be removed
-			request.configure(null, !auth.getIgnoreSslVerificationConfigSetting());
+		// Note this is currently required to be called each time since request-light is overwriting
+		// the setting passed in through the options. If/when that gets fixed this can be removed
+		request.configure(null, !auth.getIgnoreSslVerificationConfigSetting());
 
-			const response = JSON.parse((await request.xhr(options)).responseText);
-			if (response && response.log) {
-				return this.extractYarnAppIdFromLog(response.log);
-			}
-
-			return Promise.reject(localize('sparkJobSubmission.LivyNoLogReturned',
-				"No log is returned within response.{0}[Error] {1}", os.EOL, JSON.stringify(response)));
-		} catch (error) {
-			return Promise.reject(error);
+		const response = JSON.parse((await request.xhr(options)).responseText);
+		if (response && response.log) {
+			return this.extractYarnAppIdFromLog(response.log);
 		}
+
+		throw new Error(localize('sparkJobSubmission.LivyNoLogReturned',
+			"No log is returned within response.{0}[Error] {1}", os.EOL, JSON.stringify(response)));
 	}
 
 
@@ -148,6 +182,27 @@ export class SparkJobSubmissionService {
 	}
 }
 
+/**
+ * The configuration values for the spark job submission. See https://livy.incubator.apache.org/docs/latest/rest-api.html
+ * for more detailed information.
+ */
+export interface SparkJobSubmissionConfig {
+	readonly jobName: string,
+	readonly sparkFile: string,
+	readonly mainClass: string,
+	readonly arguments?: string,
+	readonly jarFiles?: string,
+	readonly pyFiles?: string,
+	readonly otherFiles?: string,
+	readonly driverMemory?: string,
+	readonly driverCores?: number,
+	readonly executorMemory?: string,
+	readonly executorCores?: number,
+	readonly executorCount?: number,
+	readonly queueName?: string,
+	readonly configValues?: string
+}
+
 export class SparkJobSubmissionInput {
 	public setSparkClusterInfo(sqlClusterConnection: SqlClusterConnection): void {
 		this._host = sqlClusterConnection.host;
@@ -159,28 +214,14 @@ export class SparkJobSubmissionInput {
 	}
 
 	constructor(
-		private readonly _jobName: string,
-		private readonly _sparkFile: string,
-		private readonly _mainClass: string,
-		private readonly _arguments: string,
-		private readonly _jarFileList: string,
-		private readonly _pyFileList: string,
-		private readonly _otherFileList: string,
+		public readonly config: SparkJobSubmissionConfig,
 		private _host?: string,
 		private _port?: number,
 		private _livyPath?: string,
 		private _user?: string,
 		private _password?: string,
-		private _isIntegratedAuth?: boolean) {
-	}
+		private _isIntegratedAuth?: boolean) { }
 
-	public get jobName(): string { return this._jobName; }
-	public get sparkFile(): string { return this._sparkFile; }
-	public get mainClass(): string { return this._mainClass; }
-	public get jobArguments(): string { return this._arguments; }
-	public get jarFileList(): string { return this._jarFileList; }
-	public get otherFileList(): string { return this._otherFileList; }
-	public get pyFileList(): string { return this._pyFileList; }
 	public get host(): string { return this._host; }
 	public get port(): number { return this._port; }
 	public get livyPath(): string { return this._livyPath; }
@@ -190,8 +231,8 @@ export class SparkJobSubmissionInput {
 }
 
 export enum SparkFileSource {
-	HDFS = <any>'HDFS',
-	Local = <any>'Local'
+	HDFS = 'HDFS',
+	Local = 'Local'
 }
 
 export class LivyLogResponse {

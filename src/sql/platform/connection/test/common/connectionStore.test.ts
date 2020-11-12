@@ -13,7 +13,7 @@ import { IConnectionProfile, ConnectionOptionSpecialType, ServiceOptionType } fr
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { TestCredentialsService } from 'sql/platform/credentials/test/common/testCredentialsService';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
-import { deepClone, deepFreeze } from 'vs/base/common/objects';
+import { deepClone, deepFreeze, assign } from 'vs/base/common/objects';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -154,7 +154,7 @@ suite('ConnectionStore', () => {
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
 		for (let i = 0; i < numCreds; i++) {
-			const cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
+			const cred = assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			const connectionProfile = new ConnectionProfile(capabilitiesService, cred);
 			await connectionStore.addRecentConnection(connectionProfile);
 			const current = connectionStore.getRecentlyUsedConnections();
@@ -190,7 +190,7 @@ suite('ConnectionStore', () => {
 		// Then expect the only 1 instance of that connection to be listed in the MRU
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
-		const cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + 1 });
+		const cred = assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + 1 });
 		const connectionProfile = new ConnectionProfile(capabilitiesService, cred);
 		await connectionStore.addRecentConnection(defaultNamedConnectionProfile);
 		await connectionStore.addRecentConnection(connectionProfile);
@@ -212,13 +212,13 @@ suite('ConnectionStore', () => {
 		// Given we save 1 connection with password and multiple other connections without
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
-		const integratedCred = Object.assign({}, defaultNamedProfile, {
+		const integratedCred = assign({}, defaultNamedProfile, {
 			serverName: defaultNamedProfile.serverName + 'Integrated',
 			authenticationType: 'Integrated',
 			userName: '',
 			password: ''
 		});
-		const noPwdCred = Object.assign({}, defaultNamedProfile, {
+		const noPwdCred = assign({}, defaultNamedProfile, {
 			serverName: defaultNamedProfile.serverName + 'NoPwd',
 			password: ''
 		});
@@ -322,7 +322,7 @@ suite('ConnectionStore', () => {
 
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
-		const connectionProfile: IConnectionProfile = Object.assign({}, defaultNamedProfile, { providerName: providerName });
+		const connectionProfile: IConnectionProfile = assign({}, defaultNamedProfile, { providerName: providerName });
 
 		assert.ok(!connectionStore.isPasswordRequired(connectionProfile));
 	});
@@ -333,7 +333,7 @@ suite('ConnectionStore', () => {
 		const credentialsService = new TestCredentialsService();
 
 		const password: string = 'asdf!@#$';
-		const connectionProfile: IConnectionProfile = Object.assign({}, defaultNamedProfile, { password });
+		const connectionProfile: IConnectionProfile = assign({}, defaultNamedProfile, { password });
 
 		const connectionStore = new ConnectionStore(storageService, configurationService,
 			credentialsService, capabilitiesService);
@@ -403,7 +403,7 @@ suite('ConnectionStore', () => {
 		const profile = deepClone(defaultNamedProfile);
 		profile.options['password'] = profile.password;
 		profile.id = 'testId';
-		let expectedProfile = Object.assign({}, profile);
+		let expectedProfile = assign({}, profile);
 		expectedProfile.password = '';
 		expectedProfile.options['password'] = '';
 		expectedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, expectedProfile).toIConnectionProfile();
@@ -416,7 +416,7 @@ suite('ConnectionStore', () => {
 		const configurationService = new TestConfigurationService();
 		const credentialsService = new TestCredentialsService();
 
-		const profile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, Object.assign({}, defaultNamedProfile, { password: undefined }));
+		const profile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, assign({}, defaultNamedProfile, { password: undefined }));
 
 		const credId = `Microsoft.SqlTools|itemtype:Profile|id:${profile.getConnectionInfoId()}`;
 		const password: string = 'asdf!@#$';
@@ -477,7 +477,7 @@ suite('ConnectionStore', () => {
 			credentialsService, capabilitiesService);
 
 		for (let i = 0; i < 5; i++) {
-			const cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
+			const cred = assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			const connectionProfile = new ConnectionProfile(capabilitiesService, cred);
 			await connectionStore.addRecentConnection(connectionProfile);
 			const current = connectionStore.getRecentlyUsedConnections();
@@ -485,7 +485,7 @@ suite('ConnectionStore', () => {
 		}
 
 		for (let i = 0; i < 5; i++) {
-			const cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
+			const cred = assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			const connectionProfile = new ConnectionProfile(capabilitiesService, cred);
 			connectionStore.removeRecentConnection(connectionProfile);
 			const current = connectionStore.getRecentlyUsedConnections();

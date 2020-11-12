@@ -107,7 +107,7 @@ abstract class ControllerDialogBase extends InitializingComponent {
 		return this.dialog;
 	}
 
-	public abstract validate(): Promise<boolean>;
+	public abstract async validate(): Promise<boolean>;
 
 	private handleCancel(): void {
 		this.completionPromise.resolve(undefined);

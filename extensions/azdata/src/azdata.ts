@@ -17,7 +17,7 @@ import { getErrorMessage, NoAzdataError, searchForCmd } from './common/utils';
 import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
 
-const enum AzdataDeployOption {
+export const enum AzdataDeployOption {
 	dontPrompt = 'dontPrompt',
 	prompt = 'prompt'
 }
@@ -37,7 +37,7 @@ export interface IAzdataTool extends azdataExt.IAzdataApi {
 /**
  * An object to interact with the azdata tool installed on the box.
  */
-export class AzdataTool implements IAzdataTool {
+export class AzdataTool implements azdataExt.IAzdataApi {
 
 	private _semVersion: SemVer;
 	constructor(private _path: string, version: string) {
@@ -49,20 +49,20 @@ export class AzdataTool implements IAzdataTool {
 	 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
 	 * Azdata has gotten reinstalled in the background after this IAzdataApi object was constructed.
 	 */
-	public getSemVersion() {
+	public async getSemVersion(): Promise<SemVer> {
 		return this._semVersion;
 	}
 
 	/**
 	 * gets the path where azdata tool is installed
 	 */
-	public getPath() {
+	public async getPath(): Promise<string> {
 		return this._path;
 	}
 
 	public arc = {
 		dc: {
-			create: async (namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string): Promise<azdataExt.AzdataOutput<void>> => {
+			create: (namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string): Promise<azdataExt.AzdataOutput<void>> => {
 				const args = ['arc', 'dc', 'create',
 					'--namespace', namespace,
 					'--name', name,
@@ -79,31 +79,31 @@ export class AzdataTool implements IAzdataTool {
 				return this.executeCommand<void>(args);
 			},
 			endpoint: {
-				list: async () => {
+				list: (): Promise<azdataExt.AzdataOutput<azdataExt.DcEndpointListResult[]>> => {
 					return this.executeCommand<azdataExt.DcEndpointListResult[]>(['arc', 'dc', 'endpoint', 'list']);
 				}
 			},
 			config: {
-				list: async () => {
+				list: (): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigListResult[]>> => {
 					return this.executeCommand<azdataExt.DcConfigListResult[]>(['arc', 'dc', 'config', 'list']);
 				},
-				show: async () => {
+				show: (): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigShowResult>> => {
 					return this.executeCommand<azdataExt.DcConfigShowResult>(['arc', 'dc', 'config', 'show']);
 				}
 			}
 		},
 		postgres: {
 			server: {
-				delete: async (name: string) => {
+				delete: (name: string): Promise<azdataExt.AzdataOutput<void>> => {
 					return this.executeCommand<void>(['arc', 'postgres', 'server', 'delete', '-n', name]);
 				},
-				list: async () => {
+				list: (): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerListResult[]>> => {
 					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list']);
 				},
-				show: async (name: string) => {
+				show: (name: string): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult>> => {
 					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name]);
 				},
-				edit: async (
+				edit: (
 					name: string,
 					args: {
 						adminPassword?: boolean,
@@ -118,7 +118,7 @@ export class AzdataTool implements IAzdataTool {
 						replaceEngineSettings?: boolean,
 						workers?: number
 					},
-					additionalEnvVars?: { [key: string]: string }) => {
+					additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<void>> => {
 					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', name];
 					if (args.adminPassword) { argsArray.push('--admin-password'); }
 					if (args.coresLimit !== undefined) { argsArray.push('--cores-limit', args.coresLimit); }
@@ -137,20 +137,20 @@ export class AzdataTool implements IAzdataTool {
 		},
 		sql: {
 			mi: {
-				delete: async (name: string) => {
+				delete: (name: string): Promise<azdataExt.AzdataOutput<void>> => {
 					return this.executeCommand<void>(['arc', 'sql', 'mi', 'delete', '-n', name]);
 				},
-				list: async () => {
+				list: (): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiListResult[]>> => {
 					return this.executeCommand<azdataExt.SqlMiListResult[]>(['arc', 'sql', 'mi', 'list']);
 				},
-				show: async (name: string) => {
+				show: (name: string): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiShowResult>> => {
 					return this.executeCommand<azdataExt.SqlMiShowResult>(['arc', 'sql', 'mi', 'show', '-n', name]);
 				}
 			}
 		}
 	};
 
-	public async login(endpoint: string, username: string, password: string): Promise<azdataExt.AzdataOutput<void>> {
+	public login(endpoint: string, username: string, password: string): Promise<azdataExt.AzdataOutput<void>> {
 		return this.executeCommand<void>(['login', '-e', endpoint, '-u', username], { 'AZDATA_PASSWORD': password });
 	}
 
@@ -225,7 +225,7 @@ export async function findAzdata(): Promise<IAzdataTool> {
 	try {
 		const azdata = await findSpecificAzdata();
 		await vscode.commands.executeCommand('setContext', azdataFound, true); // save a context key that azdata was found so that command for installing azdata is no longer available in commandPalette and that for updating it is.
-		Logger.log(loc.foundExistingAzdata(azdata.getPath(), azdata.getSemVersion().raw));
+		Logger.log(loc.foundExistingAzdata(await azdata.getPath(), (await azdata.getSemVersion()).raw));
 		return azdata;
 	} catch (err) {
 		Logger.log(loc.couldNotFindAzdata(err));
@@ -312,11 +312,11 @@ export async function checkAndInstallAzdata(userRequested: boolean = false): Pro
 export async function checkAndUpdateAzdata(currentAzdata?: IAzdataTool, userRequested: boolean = false): Promise<boolean> {
 	if (currentAzdata !== undefined) {
 		const newSemVersion = await discoverLatestAvailableAzdataVersion();
-		if (newSemVersion.compare(currentAzdata.getSemVersion()) === 1) {
-			Logger.log(loc.foundAzdataVersionToUpdateTo(newSemVersion.raw, currentAzdata.getSemVersion().raw));
+		if (newSemVersion.compare(await currentAzdata.getSemVersion()) === 1) {
+			Logger.log(loc.foundAzdataVersionToUpdateTo(newSemVersion.raw, (await currentAzdata.getSemVersion()).raw));
 			return await promptToUpdateAzdata(newSemVersion.raw, userRequested);
 		} else {
-			Logger.log(loc.currentlyInstalledVersionIsLatest(currentAzdata.getSemVersion().raw));
+			Logger.log(loc.currentlyInstalledVersionIsLatest((await currentAzdata.getSemVersion()).raw));
 		}
 	} else {
 		Logger.log(loc.updateCheckSkipped);
@@ -413,6 +413,17 @@ async function promptToUpdateAzdata(newVersion: string, userRequested: boolean =
 	return false;
 }
 
+
+
+/**
+ *	Returns true if Eula has been accepted.
+ *
+ * @param memento The memento that stores the eulaAccepted state
+ */
+export function isEulaAccepted(memento: vscode.Memento): boolean {
+	return !!memento.get<boolean>(eulaAccepted);
+}
+
 /**
  * Prompts user to accept EULA. Stores and returns the user response to EULA prompt.
  * @param memento - memento where the user response is stored.
@@ -506,7 +517,7 @@ async function installAzdataLinux(): Promise<void> {
 async function findSpecificAzdata(): Promise<IAzdataTool> {
 	const path = await ((process.platform === 'win32') ? searchForCmd('azdata.cmd') : searchForCmd('azdata'));
 	const versionOutput = await executeAzdataCommand(`"${path}"`, ['--version']);
-	return new AzdataTool(path!, parseVersion(versionOutput.stdout));
+	return new AzdataTool(path, parseVersion(versionOutput.stdout));
 }
 
 function getConfig(key: string): AzdataDeployOption | undefined {

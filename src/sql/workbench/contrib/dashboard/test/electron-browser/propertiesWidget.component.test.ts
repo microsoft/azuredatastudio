@@ -101,7 +101,7 @@ suite('Dashboard Properties Widget Tests', () => {
 
 		let testComponent = new PropertiesWidgetComponent(dashboardService.object, new TestChangeDetectorRef(), undefined, widgetConfig, testLogService);
 
-		return new Promise<void>(resolve => {
+		return new Promise(resolve => {
 			// because config parsing is done async we need to put our asserts on the thread stack
 			setImmediate(() => {
 				const propertyItems: PropertyItem[] = (testComponent as any).parseProperties(databaseInfo);

@@ -14,6 +14,7 @@ import { TestErrorMessageService } from 'sql/platform/errorMessage/test/common/t
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { AccountListRenderer } from 'sql/workbench/services/accountManagement/browser/accountListRenderer';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { NullLogService } from 'vs/platform/log/common/log';
 
 // TESTS ///////////////////////////////////////////////////////////////////
 suite('Account Management Dialog Controller Tests', () => {
@@ -70,7 +71,7 @@ suite('Account Management Dialog Controller Tests', () => {
 
 function createInstantiationService(addAccountFailureEmitter?: Emitter<string>): InstantiationService {
 	// Create a mock account dialog view model
-	let accountViewModel = new AccountViewModel(new TestAccountManagementService());
+	let accountViewModel = new AccountViewModel(new TestAccountManagementService(), new NullLogService());
 	let mockAccountViewModel = TypeMoq.Mock.ofInstance(accountViewModel);
 	let mockEvent = new Emitter<any>();
 	mockAccountViewModel.setup(x => x.addProviderEvent).returns(() => mockEvent.event);

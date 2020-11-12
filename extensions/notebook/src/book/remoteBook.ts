@@ -14,7 +14,7 @@ export abstract class RemoteBook {
 		this.remotePath = remotePath;
 	}
 
-	public abstract createLocalCopy(): Promise<void>;
+	public async abstract createLocalCopy(): Promise<void>;
 
 	public setLocalPath(): void {
 		// Save directory on User directory

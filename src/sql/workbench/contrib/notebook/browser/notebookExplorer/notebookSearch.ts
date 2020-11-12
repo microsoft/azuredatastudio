@@ -238,7 +238,7 @@ export class NotebookSearchView extends SearchView {
 	}
 
 	public startSearch(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: NotebookSearchWidget): Thenable<void> {
-		let progressComplete: (value: unknown) => void;
+		let progressComplete: () => void;
 		this.progressService.withProgress({ location: this.getProgressLocation(), delay: triggeredOnType ? 300 : 0 }, _progress => {
 			return new Promise(resolve => progressComplete = resolve);
 		});
@@ -256,10 +256,10 @@ export class NotebookSearchView extends SearchView {
 			this.state = SearchUIState.Idle;
 
 			// Complete up to 100% as needed
-			progressComplete(undefined);
+			progressComplete();
 
 			// Do final render, then expand if just 1 file with less than 50 matches
-			await this.onSearchResultsChanged();
+			this.onSearchResultsChanged();
 
 			const collapseResults = this.searchConfig.collapseResults;
 			if (collapseResults !== 'alwaysCollapse' && this.viewModel.searchResult.matches().length === 1) {
@@ -348,7 +348,7 @@ export class NotebookSearchView extends SearchView {
 				return onComplete(undefined);
 			} else {
 				this.updateActions();
-				progressComplete(undefined);
+				progressComplete();
 				this.viewModel.searchResult.clear();
 
 				return Promise.resolve();

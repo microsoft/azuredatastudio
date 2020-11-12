@@ -26,6 +26,8 @@ export function getRegionDisplayName(region?: string): string {
 			return loc.australiaSouthEast;
 		case AzureRegion.brazilsouth:
 			return loc.brazilSouth;
+		case AzureRegion.brazilsoutheast:
+			return loc.brazilSouthEast;
 		case AzureRegion.canadacentral:
 			return loc.canadaCentral;
 		case AzureRegion.canadaeast:
@@ -34,12 +36,16 @@ export function getRegionDisplayName(region?: string): string {
 			return loc.centralIndia;
 		case AzureRegion.centralus:
 			return loc.centralUS;
+		case AzureRegion.centraluseuap:
+			return loc.centralUSEUAP;
 		case AzureRegion.eastasia:
 			return loc.eastAsia;
 		case AzureRegion.eastus:
 			return loc.eastUS;
 		case AzureRegion.eastus2:
 			return loc.eastUS2;
+		case AzureRegion.eastus2euap:
+			return loc.eastUS2EUAP;
 		case AzureRegion.francecentral:
 			return loc.franceCentral;
 		case AzureRegion.francesouth:

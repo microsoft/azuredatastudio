@@ -167,11 +167,7 @@ export class StandardWheelEvent {
 
 				if (ev.deltaMode === ev.DOM_DELTA_LINE) {
 					// the deltas are expressed in lines
-					if (browser.isFirefox && !platform.isMacintosh) {
-						this.deltaY = -e.deltaY / 3;
-					} else {
-						this.deltaY = -e.deltaY;
-					}
+					this.deltaY = -e.deltaY;
 				} else {
 					this.deltaY = -e.deltaY / 40;
 				}
@@ -193,11 +189,7 @@ export class StandardWheelEvent {
 
 				if (ev.deltaMode === ev.DOM_DELTA_LINE) {
 					// the deltas are expressed in lines
-					if (browser.isFirefox && !platform.isMacintosh) {
-						this.deltaX = -e.deltaX / 3;
-					} else {
-						this.deltaX = -e.deltaX;
-					}
+					this.deltaX = -e.deltaX;
 				} else {
 					this.deltaX = -e.deltaX / 40;
 				}

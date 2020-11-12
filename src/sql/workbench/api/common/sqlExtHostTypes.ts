@@ -174,6 +174,7 @@ export enum ModelComponentTypes {
 	Hyperlink,
 	Image,
 	RadioCardGroup,
+	ListView,
 	TabbedPanel,
 	Separator,
 	PropertiesContainer
@@ -415,17 +416,6 @@ export enum AzureResource {
 export class TreeItem extends vsExtTypes.TreeItem {
 	payload?: IConnectionProfile;
 	providerHandle?: string;
-}
-
-export interface ServerInfoOption {
-	isBigDataCluster: boolean;
-	clusterEndpoints: ClusterEndpoint;
-}
-
-export interface ClusterEndpoint {
-	serviceName: string;
-	ipAddress: string;
-	port: number;
 }
 
 export class SqlThemeIcon {

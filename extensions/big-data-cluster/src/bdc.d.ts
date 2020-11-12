@@ -31,7 +31,9 @@ declare module 'bdc' {
 
 	export interface IClusterController {
 		getClusterConfig(): Promise<any>;
-		getKnoxUsername(clusterUsername: string): Promise<string>;
+		getKnoxUsername(defaultUsername: string): Promise<string>;
 		getEndPoints(promptConnect?: boolean): Promise<IEndPointsResponse>
+		username: string;
+		password: string;
 	}
 }

@@ -24,7 +24,7 @@ const files = [
 ];
 
 async function main() {
-	return new Promise<void>((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		const stream = vfs.src(files, { base: '.build', allowEmpty: true })
 			.pipe(es.through(file => {
 				const filePath = path.join(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY!,

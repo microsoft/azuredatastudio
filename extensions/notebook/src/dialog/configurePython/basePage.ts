@@ -17,15 +17,15 @@ export abstract class BasePage {
 	/**
 	 * This method constructs all the elements of the page.
 	 */
-	public abstract initialize(): Promise<boolean>;
+	public async abstract initialize(): Promise<boolean>;
 
 	/**
 	 * This method is called when the user is entering the page.
 	 */
-	public abstract onPageEnter(): Promise<void>;
+	public async abstract onPageEnter(): Promise<void>;
 
 	/**
 	 * This method is called when the user is leaving the page.
 	 */
-	public abstract onPageLeave(): Promise<boolean>;
+	public async abstract onPageLeave(): Promise<boolean>;
 }

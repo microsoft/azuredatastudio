@@ -44,11 +44,28 @@ export const registeredModelsTableName = 'registeredModelsTableName';
 export const rPathConfigKey = 'rPath';
 export const adsPythonBundleVersion = '0.0.1';
 
+// TSQL
+//
+
+// The data types that are supported to convert model's parameters to SQL data
+export const supportedDataTypes = [
+	'BIGINT',
+	'INT',
+	'SMALLINT',
+	'REAL',
+	'FLOAT',
+	'VARCHAR(MAX)',
+	'BIT'
+];
+export const varcharMax = 'VARCHAR(MAX)';
+export const varcharDefaultLength = 100;
+
 // Localized texts
 //
 export const msgYes = localize('msgYes', "Yes");
 export const msgNo = localize('msgNo', "No");
 export const managePackageCommandError = localize('mls.managePackages.error', "Package management is not supported for the server. Make sure you have Python or R installed.");
+export const notebookExtensionFailedError = localize('notebookExtensionFailedError', "The extension failed to load because of it's dependency to Notebook extension. Please check the output log for Notebook extension to get more details");
 export const verifyOdbcDriverError = localize('mls.verifyOdbcDriverError.error', "'{0}' is required  for package management. Please make sure it is installed and set up correctly.", supportedODBCDriver);
 export function taskFailedError(taskName: string, err: string): string { return localize('mls.taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
 export function cannotFindPython(path: string): string { return localize('mls.cannotFindPython.error', "Cannot find Python executable '{0}'. Please make sure Python is installed and configured correctly", path); }
@@ -133,6 +150,8 @@ export const extLangUpdateFailedError = localize('extLang.updateFailedError', "F
 
 export const modelUpdateFailedError = localize('models.modelUpdateFailedError', "Failed to update the model");
 export const modelsListEmptyMessage = localize('models.modelsListEmptyMessage', "No models yet");
+export const azureModelsListEmptyTitle = localize('models.azureModelsListEmptyTitle', "No models found");
+export const azureModelsListEmptyDescription = localize('models.azureModelsListEmptyDescription', "Select another Azure ML workspace");
 export const modelsListEmptyDescription = localize('models.modelsListEmptyDescription', "Use import wizard to add models to this table");
 export const databaseName = localize('databaseName', "Models database");
 export const databaseToStoreInfo = localize('databaseToStoreInfo', "Select a database to store the new model.");
@@ -175,7 +194,12 @@ export const azureModels = localize('models.azureModels', "Models");
 export const azureModelsTitle = localize('models.azureModelsTitle', "Azure models");
 export const localModelsTitle = localize('models.localModelsTitle', "Local models");
 export const modelSourcesTitle = localize('models.modelSourcesTitle', "Source location");
-export const modelSourcePageTitle = localize('models.modelSourcePageTitle', "Where is your model located?");
+export const modelSourcePageTitle = localize('models.modelSourcePageTitle', "Select model source type");
+export const localModelSourceDescriptionForImport = localize('models.localModelSourceDescriptionForImport', "‘File Upload’ is selected. This allows you to import a model file from your local machine into a model database in this SQL instance. Click ‘Next’ to continue.​");
+export const azureModelSourceDescriptionForImport = localize('models.azureModelSourceDescriptionForImport', "‘Azure Machine Learning’ is selected. This allows you to import models stored in Azure Machine Learning workspaces in a model database in this SQL instance. Click ‘Next’ to continue.​​");
+export const localModelSourceDescriptionForPredict = localize('models.localModelSourceDescriptionForPredict', "‘File Upload’ is selected. This allows you to upload a model file from your local machine.  Click ‘Next’ to continue.​​");
+export const importedModelSourceDescriptionForPredict = localize('models.importedModelSourceDescriptionForPredict', "‘Imported Models’ is selected. This allows you to choose from models stored in a model table in your database.  Click ‘Next’ to continue.​");
+export const azureModelSourceDescriptionForPredict = localize('models.azureModelSourceDescriptionForPredict', "‘Azure Machine Learning’ is selected. This allows you to choose from models stored in Azure Machine Learning workspaces. Click ‘Next’ to continue.​");
 export const modelImportTargetPageTitle = localize('models.modelImportTargetPageTitle', "Select or enter the location to import the models to");
 export const columnSelectionPageTitle = localize('models.columnSelectionPageTitle', "Map source data to model");
 export const modelDetailsPageTitle = localize('models.modelDetailsPageTitle', "Enter model details");
@@ -183,7 +207,7 @@ export const modelLocalSourceTitle = localize('models.modelLocalSourceTitle', "S
 export const modelLocalSourceTooltip = localize('models.modelLocalSourceTooltip', "File paths of the models to import");
 export const onnxNotSupportedError = localize('models.onnxNotSupportedError', "ONNX runtime is not supported in current server");
 export const currentModelsTitle = localize('models.currentModelsTitle', "Models");
-export const azureRegisterModel = localize('models.azureRegisterModel', "Deploy");
+export const importModelDoneButton = localize('models.importModelDoneButton', "Import");
 export const predictModel = localize('models.predictModel', "Predict");
 export const registerModelTitle = localize('models.RegisterWizard', "Import models");
 export const importedModelTitle = localize('models.importedModelTitle', "Imported models");
@@ -213,10 +237,11 @@ export const invalidModelImportTargetError = localize('models.invalidModelImport
 export const columnDataTypeMismatchWarning = localize('models.columnDataTypeMismatchWarning', "The data type of the source table column does not match the required input field’s type.");
 export const outputColumnDataTypeNotSupportedWarning = localize('models.outputColumnDataTypeNotSupportedWarning', "The data type of output column does not match the output field’s type.");
 export const modelNameRequiredError = localize('models.modelNameRequiredError', "Model name is required.");
+export const modelsRequiredError = localize('models.modelsRequiredError', "Please select at least one model to import.");
 export const updateModelFailedError = localize('models.updateModelFailedError', "Failed to update the model");
 export const modelSchemaIsAcceptedMessage = localize('models.modelSchemaIsAcceptedMessage', "Table meets requirements!");
 export const selectModelsTableMessage = localize('models.selectModelsTableMessage', "Select models table");
-export const modelSchemaIsNotAcceptedMessage = localize('models.modelSchemaIsNotAcceptedMessage', "Invalid table structure");
+export const modelSchemaIsNotAcceptedMessage = localize('models.modelSchemaIsNotAcceptedMessage', "Invalid table structure!");
 export function importModelFailedError(modelName: string | undefined, filePath: string | undefined): string { return localize('models.importModelFailedError', "Failed to register the model: {0} ,file: {1}", modelName || '', filePath || ''); }
 export function invalidImportTableError(databaseName: string | undefined, tableName: string | undefined): string { return localize('models.invalidImportTableError', "Invalid table for importing models. database name: {0} ,table name: {1}", databaseName || '', tableName || ''); }
 export function invalidImportTableSchemaError(databaseName: string | undefined, tableName: string | undefined): string { return localize('models.invalidImportTableSchemaError', "Table schema is not supported for model import. Database name: {0}, table name: {1}.", databaseName || '', tableName || ''); }

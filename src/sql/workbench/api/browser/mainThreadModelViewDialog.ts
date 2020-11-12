@@ -16,6 +16,7 @@ import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/wo
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import { assign } from 'vs/base/common/objects';
 import { TelemetryView, TelemetryAction } from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
@@ -72,7 +73,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	public $openDialog(handle: number, dialogName?: string): Thenable<void> {
 		let dialog = this.getDialog(handle);
-		const options = Object.assign({}, DefaultDialogOptions);
+		const options = assign({}, DefaultDialogOptions);
 		options.width = dialog.width;
 		this._dialogService.showDialog(dialog, dialogName, options);
 		return Promise.resolve();
@@ -224,7 +225,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 
 	public $openWizard(handle: number): Thenable<void> {
 		let wizard = this.getWizard(handle);
-		const options = Object.assign({}, DefaultWizardOptions);
+		const options = assign({}, DefaultWizardOptions);
 		options.width = wizard.width;
 		this._dialogService.showWizard(wizard, options);
 		return Promise.resolve();

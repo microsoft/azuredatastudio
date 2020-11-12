@@ -6,7 +6,7 @@
 import 'vs/css!./dialog';
 import * as nls from 'vs/nls';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { $, hide, show, EventHelper, clearNode, isAncestor, addDisposableListener, EventType } from 'vs/base/browser/dom';
+import { $, hide, show, EventHelper, clearNode, removeClasses, addClasses, removeNode, isAncestor, addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { domEvent } from 'vs/base/browser/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
@@ -234,23 +234,23 @@ export class Dialog extends Disposable {
 				}
 			}));
 
-			this.iconElement.classList.remove(...dialogErrorIcon.classNamesArray, ...dialogWarningIcon.classNamesArray, ...dialogInfoIcon.classNamesArray, ...Codicon.loading.classNamesArray);
+			removeClasses(this.iconElement, dialogErrorIcon.classNames, dialogWarningIcon.classNames, dialogInfoIcon.classNames, Codicon.loading.classNames);
 
 			switch (this.options.type) {
 				case 'error':
-					this.iconElement.classList.add(...dialogErrorIcon.classNamesArray);
+					addClasses(this.iconElement, dialogErrorIcon.classNames);
 					break;
 				case 'warning':
-					this.iconElement.classList.add(...dialogWarningIcon.classNamesArray);
+					addClasses(this.iconElement, dialogWarningIcon.classNames);
 					break;
 				case 'pending':
-					this.iconElement.classList.add(...Codicon.loading.classNamesArray, 'codicon-animation-spin');
+					addClasses(this.iconElement, Codicon.loading.classNames, 'codicon-animation-spin');
 					break;
 				case 'none':
 				case 'info':
 				case 'question':
 				default:
-					this.iconElement.classList.add(...dialogInfoIcon.classNamesArray);
+					addClasses(this.iconElement, dialogInfoIcon.classNames);
 					break;
 			}
 
@@ -277,8 +277,8 @@ export class Dialog extends Disposable {
 		if (this.styles) {
 			const style = this.styles;
 
-			const fgColor = style.dialogForeground;
-			const bgColor = style.dialogBackground;
+			const fgColor = style.dialogForeground ? `${style.dialogForeground}` : '';
+			const bgColor = style.dialogBackground ? `${style.dialogBackground}` : '';
 			const shadowColor = style.dialogShadow ? `0 0px 8px ${style.dialogShadow}` : '';
 			const border = style.dialogBorder ? `1px solid ${style.dialogBorder}` : '';
 
@@ -287,8 +287,8 @@ export class Dialog extends Disposable {
 			}
 
 			if (this.element) {
-				this.element.style.color = fgColor?.toString() ?? '';
-				this.element.style.backgroundColor = bgColor?.toString() ?? '';
+				this.element.style.color = fgColor;
+				this.element.style.backgroundColor = bgColor;
 				this.element.style.border = border;
 
 				if (this.buttonGroup) {
@@ -300,8 +300,8 @@ export class Dialog extends Disposable {
 				}
 
 				if (this.messageDetailElement && fgColor && bgColor) {
-					const messageDetailColor = fgColor.transparent(.9);
-					this.messageDetailElement.style.color = messageDetailColor.makeOpaque(bgColor).toString();
+					const messageDetailColor = Color.fromHex(fgColor).transparent(.9);
+					this.messageDetailElement.style.color = messageDetailColor.makeOpaque(Color.fromHex(bgColor)).toString();
 				}
 
 				if (this.iconElement) {
@@ -334,7 +334,7 @@ export class Dialog extends Disposable {
 	dispose(): void {
 		super.dispose();
 		if (this.modal) {
-			this.modal.remove();
+			removeNode(this.modal);
 			this.modal = undefined;
 		}
 

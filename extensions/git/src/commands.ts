@@ -1867,7 +1867,8 @@ export class CommandCenter {
 		});
 
 		const name = inputTagName.replace(/^\.|\/\.|\.\.|~|\^|:|\/$|\.lock$|\.lock\/|\\|\*|\s|^\s*$|\.$/g, '-');
-		await repository.tag(name, inputMessage);
+		const message = inputMessage || name;
+		await repository.tag(name, message);
 	}
 
 	@command('git.deleteTag', { repository: true })
