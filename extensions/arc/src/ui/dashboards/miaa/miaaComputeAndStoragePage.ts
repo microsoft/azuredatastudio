@@ -216,7 +216,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 
 		this.memoryLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
-			min: 0.25,
+			min: 2,
 			validationErrorMessage: loc.memoryLimitValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
@@ -234,7 +234,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 
 		this.memoryRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
-			min: 0.25,
+			min: 2,
 			validationErrorMessage: loc.memoryRequestValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
