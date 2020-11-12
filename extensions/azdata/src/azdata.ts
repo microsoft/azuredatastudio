@@ -239,52 +239,60 @@ export async function findAzdata(): Promise<IAzdataTool> {
  * runs the commands to install azdata, downloading the installation package if needed
  */
 export async function installAzdata(): Promise<void> {
-	const statusDisposable = vscode.window.setStatusBarMessage(loc.installingAzdata);
 	Logger.show();
 	Logger.log(loc.installingAzdata);
-	try {
-		switch (process.platform) {
-			case 'win32':
-				await downloadAndInstallAzdataWin32();
-				break;
-			case 'darwin':
-				await installAzdataDarwin();
-				break;
-			case 'linux':
-				await installAzdataLinux();
-				break;
-			default:
-				throw new Error(loc.platformUnsupported(process.platform));
+	await vscode.window.withProgress(
+		{
+			location: vscode.ProgressLocation.Notification,
+			title: loc.installingAzdata,
+			cancellable: false
+		},
+		async (_progress, _token): Promise<void> => {
+			switch (process.platform) {
+				case 'win32':
+					await downloadAndInstallAzdataWin32();
+					break;
+				case 'darwin':
+					await installAzdataDarwin();
+					break;
+				case 'linux':
+					await installAzdataLinux();
+					break;
+				default:
+					throw new Error(loc.platformUnsupported(process.platform));
+			}
 		}
-	} finally {
-		statusDisposable.dispose();
-	}
+	);
 }
 
 /**
  * Updates the azdata using os appropriate method
  */
 export async function updateAzdata(): Promise<void> {
-	const statusDisposable = vscode.window.setStatusBarMessage(loc.updatingAzdata);
 	Logger.show();
 	Logger.log(loc.updatingAzdata);
-	try {
-		switch (process.platform) {
-			case 'win32':
-				await downloadAndInstallAzdataWin32();
-				break;
-			case 'darwin':
-				await updateAzdataDarwin();
-				break;
-			case 'linux':
-				await installAzdataLinux();
-				break;
-			default:
-				throw new Error(loc.platformUnsupported(process.platform));
+	await vscode.window.withProgress(
+		{
+			location: vscode.ProgressLocation.Notification,
+			title: loc.updatingAzdata,
+			cancellable: false
+		},
+		async (_progress, _token): Promise<void> => {
+			switch (process.platform) {
+				case 'win32':
+					await downloadAndInstallAzdataWin32();
+					break;
+				case 'darwin':
+					await updateAzdataDarwin();
+					break;
+				case 'linux':
+					await installAzdataLinux();
+					break;
+				default:
+					throw new Error(loc.platformUnsupported(process.platform));
+			}
 		}
-	} finally {
-		statusDisposable.dispose();
-	}
+	);
 }
 
 /**
