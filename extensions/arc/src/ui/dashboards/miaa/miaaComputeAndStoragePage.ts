@@ -9,13 +9,12 @@ import * as azdataExt from 'azdata-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
-import { PostgresModel } from '../../../models/postgresModel';
 import { convertToGibibyteString } from '../../../common/utils';
+import { MiaaModel } from '../../../models/miaaModel';
 
-export class PostgresComputeAndStoragePage extends DashboardPage {
-	private workerContainer?: azdata.DivContainer;
+export class MiaaComputeAndStoragePage extends DashboardPage {
 
-	private workerBox?: azdata.InputBoxComponent;
+	private configurationContainer?: azdata.DivContainer;
 	private coresLimitBox?: azdata.InputBoxComponent;
 	private coresRequestBox?: azdata.InputBoxComponent;
 	private memoryLimitBox?: azdata.InputBoxComponent;
@@ -25,7 +24,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	private saveButton?: azdata.ButtonComponent;
 
 	private saveArgs: {
-		workers?: number,
 		coresLimit?: string,
 		coresRequest?: string,
 		memoryLimit?: string,
@@ -34,13 +32,13 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
-	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
+	constructor(protected modelView: azdata.ModelView, private _miaaModel: MiaaModel) {
 		super(modelView);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
 		this.initializeConfigurationBoxes();
 
-		this.disposables.push(this._postgresModel.onConfigUpdated(
+		this.disposables.push(this._miaaModel.onConfigUpdated(
 			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
 	}
 
@@ -49,7 +47,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	protected get id(): string {
-		return 'postgres-compute-and-storage';
+		return 'miaa-compute-and-storage';
 	}
 
 	protected get icon(): { dark: string; light: string; } {
@@ -71,24 +69,13 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 		}).component();
 		const infoComputeStorage_p2 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: loc.postgresComputeAndStorageDescriptionPartTwo,
-			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
-		}).component();
-
-		const workerNodeslink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-			label: loc.addingWokerNodes,
-			url: 'https://docs.microsoft.com/azure/azure-arc/data/scale-up-down-postgresql-hyperscale-server-group-using-cli',
-			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
-		}).component();
-
-		const infoComputeStorage_p3 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: loc.computeAndStorageDescriptionPartThree,
+			value: loc.miaaComputeAndStorageDescriptionPartTwo,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
 		const memoryVCoreslink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 			label: loc.scalingCompute,
-			url: 'https://docs.microsoft.com/azure/azure-arc/data/scale-up-down-postgresql-hyperscale-server-group-using-cli',
+			url: 'https://docs.microsoft.com/azure/azure-arc/data/configure-managed-instance',
 			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
@@ -110,22 +97,15 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const computeInfoAndLinks = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
 		computeInfoAndLinks.addItem(infoComputeStorage_p1, { CSSStyles: { 'margin-right': '5px' } });
 		computeInfoAndLinks.addItem(infoComputeStorage_p2, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(workerNodeslink, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(infoComputeStorage_p3, { CSSStyles: { 'margin-right': '5px' } });
 		computeInfoAndLinks.addItem(memoryVCoreslink, { CSSStyles: { 'margin-right': '5px' } });
 		computeInfoAndLinks.addItem(infoComputeStorage_p4, { CSSStyles: { 'margin-right': '5px' } });
 		computeInfoAndLinks.addItem(infoComputeStorage_p5, { CSSStyles: { 'margin-right': '5px' } });
 		computeInfoAndLinks.addItem(infoComputeStorage_p6, { CSSStyles: { 'margin-right': '5px' } });
 		content.addItem(computeInfoAndLinks, { CSSStyles: { 'min-height': '30px' } });
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: loc.workerNodes,
-			CSSStyles: { ...cssStyles.title, 'margin-top': '25px' }
-		}).component());
-
-		this.workerContainer = this.modelView.modelBuilder.divContainer().component();
-		this.workerContainer.addItems(this.createUserInputSection(), { CSSStyles: { 'min-height': '30px' } });
-		content.addItem(this.workerContainer, { CSSStyles: { 'min-height': '30px' } });
+		this.configurationContainer = this.modelView.modelBuilder.divContainer().component();
+		this.configurationContainer.addItems(this.createUserInputSection(), { CSSStyles: { 'min-height': '30px' } });
+		content.addItem(this.configurationContainer, { CSSStyles: { 'margin-top': '30px' } });
 
 		this.initialized = true;
 
@@ -147,29 +127,27 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 					await vscode.window.withProgress(
 						{
 							location: vscode.ProgressLocation.Notification,
-							title: loc.updatingInstance(this._postgresModel.info.name),
+							title: loc.updatingInstance(this._miaaModel.info.name),
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
 							try {
-								await this._azdataApi.azdata.arc.postgres.server.edit(
-									this._postgresModel.info.name, this.saveArgs);
+								await this._azdataApi.azdata.arc.sql.mi.edit(
+									this._miaaModel.info.name, this.saveArgs);
 							} catch (err) {
-								// If an error occurs while editing the instance then re-enable the save button since
-								// the edit wasn't successfully applied
 								this.saveButton!.enabled = true;
 								throw err;
 							}
-							await this._postgresModel.refresh();
+
+							await this._miaaModel.refresh();
 						}
 					);
 
-					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
+					vscode.window.showInformationMessage(loc.instanceUpdated(this._miaaModel.info.name));
 
 					this.discardButton!.enabled = false;
-
 				} catch (error) {
-					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
+					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._miaaModel.info.name, error));
 				}
 			}));
 
@@ -184,7 +162,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.discardButton.onDidClick(async () => {
 				this.discardButton!.enabled = false;
 				try {
-					this.editWorkerNodeCount();
 					this.editCores();
 					this.editMemory();
 				} catch (error) {
@@ -201,23 +178,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private initializeConfigurationBoxes() {
-		this.workerBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			readOnly: false,
-			validationErrorMessage: loc.workerValidationErrorMessage,
-			inputType: 'number',
-			placeHolder: loc.loading
-		}).component();
-
-		this.disposables.push(
-			this.workerBox.onTextChanged(() => {
-				if (!(this.handleOnTextChanged(this.workerBox!))) {
-					this.saveArgs.workers = undefined;
-				} else {
-					this.saveArgs.workers = parseInt(this.workerBox!.value!);
-				}
-			})
-		);
-
 		this.coresLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 1,
@@ -293,57 +253,18 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private createUserInputSection(): azdata.Component[] {
-		if (this._postgresModel.configLastUpdated) {
-			this.editWorkerNodeCount();
+		if (this._miaaModel.configLastUpdated) {
 			this.editCores();
 			this.editMemory();
 		}
 
 		return [
-			this.createWorkerNodesSectionContainer(),
-			this.createCoresMemorySection(),
 			this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox!),
 			this.createConfigurationSectionContainer(loc.coresLimit, this.coresLimitBox!),
 			this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox!),
 			this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!)
 
 		];
-	}
-
-	private createWorkerNodesSectionContainer(): azdata.FlexContainer {
-		const inputFlex = { flex: '0 1 150px' };
-		const keyFlex = { flex: `0 1 250px` };
-
-		const flexContainer = this.modelView.modelBuilder.flexContainer().withLayout({
-			flexWrap: 'wrap',
-			alignItems: 'center'
-		}).component();
-
-		const keyComponent = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: loc.workerNodeCount,
-			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
-		}).component();
-
-		const keyContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		keyContainer.addItem(keyComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
-
-		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			iconPath: IconPathHelper.information,
-			title: loc.workerNodesInformation,
-			width: '12px',
-			height: '12px',
-			enabled: false
-		}).component();
-
-		keyContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
-		flexContainer.addItem(keyContainer, keyFlex);
-
-		const inputContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		inputContainer.addItem(this.workerBox!, { CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '225px' } });
-
-		flexContainer.addItem(inputContainer, inputFlex);
-
-		return flexContainer;
 	}
 
 	private createConfigurationSectionContainer(key: string, input: azdata.Component): azdata.FlexContainer {
@@ -392,53 +313,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	}
 
-	private editWorkerNodeCount() {
-		// scale.shards was renamed to scale.workers. Check both for backwards compatibility.
-		let scale = this._postgresModel.config?.spec.scale;
-		let currentWorkers = scale?.workers ?? scale?.shards ?? 0;
-
-		this.workerBox!.min = currentWorkers;
-		this.workerBox!.placeHolder = currentWorkers.toString();
-		this.workerBox!.value = '';
-
-		this.saveArgs.workers = undefined;
-	}
-
-	private createCoresMemorySection(): azdata.DivContainer {
-		const titleFlex = { flex: `0 1 250px` };
-
-		const flexContainer = this.modelView.modelBuilder.flexContainer().withLayout({
-			flexWrap: 'wrap',
-			alignItems: 'center'
-		}).component();
-
-		const titleComponent = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: loc.configurationPerNode,
-			CSSStyles: { ...cssStyles.title, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-		}).component();
-
-		const titleContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		titleContainer.addItem(titleComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
-
-		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			iconPath: IconPathHelper.information,
-			title: loc.postgresConfigurationInformation,
-			width: '12px',
-			height: '12px',
-			enabled: false
-		}).component();
-
-		titleContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
-		flexContainer.addItem(titleContainer, titleFlex);
-
-		let configurationSection = this.modelView.modelBuilder.divContainer().component();
-		configurationSection.addItem(flexContainer);
-
-		return configurationSection;
-	}
-
-	private editCores() {
-		let currentCPUSize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
+	private editCores(): void {
+		let currentCPUSize = this._miaaModel.config?.spec?.requests?.vcores;
 
 		if (!currentCPUSize) {
 			currentCPUSize = '';
@@ -448,7 +324,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.coresRequestBox!.value = '';
 		this.saveArgs.coresRequest = undefined;
 
-		currentCPUSize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
+		currentCPUSize = this._miaaModel.config?.spec?.limits?.vcores;
 
 		if (!currentCPUSize) {
 			currentCPUSize = '';
@@ -459,9 +335,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.saveArgs.coresLimit = undefined;
 	}
 
-	private editMemory() {
+	private editMemory(): void {
 		let currentMemSizeConversion: string;
-		let currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
+		let currentMemorySize = this._miaaModel.config?.spec?.requests?.memory;
 
 		if (!currentMemorySize) {
 			currentMemSizeConversion = '';
@@ -474,7 +350,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.saveArgs.memoryRequest = undefined;
 
-		currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
+		currentMemorySize = this._miaaModel.config?.spec?.limits?.memory;
 
 		if (!currentMemorySize) {
 			currentMemSizeConversion = '';
@@ -489,7 +365,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private handleServiceUpdated() {
-		this.editWorkerNodeCount();
 		this.editCores();
 		this.editMemory();
 	}

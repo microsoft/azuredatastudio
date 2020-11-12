@@ -125,6 +125,19 @@ export function getAzdataApi(localAzdataDiscovered: Promise<IAzdataTool | undefi
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
 						return azdataToolService.localAzdata.arc.sql.mi.show(name);
+					},
+					edit: async (
+						name: string,
+						args: {
+							coresLimit?: string;
+							coresRequest?: string;
+							memoryLimit?: string;
+							memoryRequest?: string;
+							noWait?: boolean;
+						}) => {
+						await localAzdataDiscovered;
+						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
+						return azdataToolService.localAzdata.arc.sql.mi.edit(name, args);
 					}
 				}
 			}
