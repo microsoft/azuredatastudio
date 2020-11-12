@@ -77,7 +77,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 
 		this.pageObject.registerContent((view: azdata.ModelView) => {
 			this.view = view;
-			const tableWidth = 1126;
+			const tableWidth = 1060;
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
@@ -102,7 +102,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			};
 			const installedPathColumn: azdata.TableColumn = {
 				value: loc.discoverPathOrAdditionalInformationText,
-				width: 580
+				width: 435
 			};
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 				data: [],
