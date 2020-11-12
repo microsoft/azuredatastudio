@@ -7,5 +7,5 @@ import * as azdata from 'azdata';
 
 export abstract class AssessmentDialogComponent {
 
-	abstract async createComponent(view: azdata.ModelView): Promise<azdata.Component>;
+	abstract createComponent(view: azdata.ModelView): Promise<azdata.Component>;
 }

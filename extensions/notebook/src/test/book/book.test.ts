@@ -165,7 +165,7 @@ describe('BooksTreeViewTests', function () {
 
 			this.beforeAll(async () => {
 				bookTreeViewProvider = appContext.bookTreeViewProvider;
-				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+				let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 				await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				await bookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
 			});
@@ -271,7 +271,7 @@ describe('BooksTreeViewTests', function () {
 
 			this.beforeAll(async () => {
 				providedbookTreeViewProvider = appContext.providedBookTreeViewProvider;
-				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+				let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 				await Promise.race([providedbookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('ProvidedBooksTreeViewProvider did not initialize in time'); })]);
 				await providedbookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
 			});
@@ -354,7 +354,7 @@ describe('BooksTreeViewTests', function () {
 			this.beforeAll(async () => {
 				pinnedTreeViewProvider = appContext.pinnedBookTreeViewProvider;
 				bookTreeViewProvider = appContext.bookTreeViewProvider;
-				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+				let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 				await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				await Promise.race([pinnedTreeViewProvider.initialized, errorCase.then(() => { throw new Error('PinnedTreeViewProvider did not initialize in time'); })]);
 				await bookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
@@ -472,7 +472,7 @@ describe('BooksTreeViewTests', function () {
 						index: 0
 					};
 					bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-					let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+					let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 					await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				});
 
@@ -548,7 +548,7 @@ describe('BooksTreeViewTests', function () {
 						index: 0
 					};
 					bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-					let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+					let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 					await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				});
 
@@ -629,7 +629,7 @@ describe('BooksTreeViewTests', function () {
 					index: 0
 				}];
 				bookTreeViewProvider = new BookTreeViewProvider(folder, mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+				let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 				await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 			});
 
@@ -698,7 +698,7 @@ describe('BooksTreeViewTests', function () {
 
 					const mockExtensionContext = new MockExtensionContext();
 					bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-					let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+					let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 					await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				});
 
@@ -894,7 +894,7 @@ describe('BooksTreeViewTests', function () {
 
 					const mockExtensionContext = new MockExtensionContext();
 					bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-					let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+					let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 					await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				});
 
