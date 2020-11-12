@@ -8,6 +8,15 @@
 - title: Search
   search: true
 
+- title: Assessment
+  url: /Assessments/readme
+  not_numbered: true
+  expand_sections: false
+  sections:
+  - title: SQL Server Assessment Tool
+    url: Assessments/sql-server-assessment
+  - title: Compatibility Assessment
+    url: Assessments/compatibility-assessment
 - title: Networking
   url: /networking/readme
   not_numbered: true
@@ -19,15 +28,6 @@
     url: networking/p2svnet-creation
   - title: Create Site-to-Site VPN
     url: networking/s2svnet-creation
-- title: Assessments
-  url: /Assessments/readme
-  not_numbered: true
-  expand_sections: false
-  sections:
-  - title: SQL Server Best Practices Assessment
-    url: Assessments/sql-server-assessment
-  - title: Compatibility Assessment
-    url: Assessments/compatibility-assessment
 - title: Provisioning
   url: /provisioning/readme
   not_numbered: true
