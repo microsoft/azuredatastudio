@@ -129,9 +129,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	ngOnDestroy() {
 		this.dispose();
-		if (this.notebookService) {
-			//this.notebookService.removeNotebookEditor(this);
-		}
 	}
 
 	public get model(): NotebookModel | null {
@@ -303,14 +300,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		// Wait on provider information to be available before loading kernel and other information
 		await this.awaitNonDefaultProvider();
 		await this._model.requestModelLoad();
-		/*
-		this.detectChanges();
-		this.setContextKeyServiceWithProviderId(this._model.providerId);
-		await this._model.startSession(this._model.notebookManager, undefined, true);
-		this.fillInActionsForCurrentContext();
-		this.detectChanges();
-		*/
-		//await this._model.sessionLoadFinished;
 		await this._model.onClientSessionReady;
 		this.detectChanges();
 		this.fillInActionsForCurrentContext();
