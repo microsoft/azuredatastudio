@@ -13,6 +13,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 import { ImportDataModel } from '../models/api/import';
 import { Deferred } from '../common/promise';
+import { getConnectionName } from './utils';
 
 export class CreateProjectFromDatabaseDialog {
 	public dialog: azdata.window.Dialog;
@@ -29,7 +30,7 @@ export class CreateProjectFromDatabaseDialog {
 	private initDialogComplete!: Deferred<void>;
 	private initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
 
-	public createNewProjectCallBack: ((model: ImportDataModel) => any) | undefined;
+	public createNewProjectCallback: ((model: ImportDataModel) => any) | undefined;
 
 	constructor(private profile: azdata.IConnectionProfile | undefined) {
 		this.dialog = azdata.window.createModelViewDialog(constants.createProjectFromDatabaseDialogName);
@@ -48,7 +49,7 @@ export class CreateProjectFromDatabaseDialog {
 		await this.initDialogPromise;
 
 		if (this.profile) {
-			await this.updateConnectionComponents(this.getConnectionName(this.profile), this.profile.id, this.profile.databaseName!);
+			await this.updateConnectionComponents(getConnectionName(this.profile), this.profile.id, this.profile.databaseName!);
 		}
 	}
 
@@ -183,29 +184,12 @@ export class CreateProjectFromDatabaseDialog {
 			this.connectionId = connection.connectionId;
 
 			let connectionTextboxValue: string;
-			connectionTextboxValue = this.getConnectionName(connection);
+			connectionTextboxValue = getConnectionName(connection);
 
 			await this.updateConnectionComponents(connectionTextboxValue, this.connectionId, connection.options.database);
 		});
 
 		return this.selectConnectionButton;
-	}
-
-	private getConnectionName(connection: any): string {
-		// get connection name if there is one, otherwise set connection name in format that shows in OE
-		let connectionName: string;
-		if (connection.options['connectionName']) {
-			connectionName = connection.options['connectionName'];
-		} else {
-			let user = connection.options['user'];
-			if (!user) {
-				user = constants.defaultUser;
-			}
-
-			connectionName = `${connection.options['server']} (${user})`;
-		}
-
-		return connectionName;
 	}
 
 	private async updateConnectionComponents(connectionTextboxValue: string, connectionId: string, databaseName?: string) {
@@ -361,7 +345,7 @@ export class CreateProjectFromDatabaseDialog {
 		};
 
 		azdata.window.closeDialog(this.dialog);
-		await this.createNewProjectCallBack!(model);
+		await this.createNewProjectCallback!(model);
 
 		this.dispose();
 	}

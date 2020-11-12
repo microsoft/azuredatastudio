@@ -673,10 +673,10 @@ export class ProjectsController {
 	 * prompting the user for a name, file path location and extract target
 	 */
 	public async importNewDatabaseProject(context: azdata.IConnectionProfile | any): Promise<CreateProjectFromDatabaseDialog> {
-		let profile = this.getConnectionProfileFromContext(context);
+		const profile = this.getConnectionProfileFromContext(context);
 		let createProjectFromDatabaseDialog = this.getCreateProjectFromDatabaseDialog(profile);
 
-		createProjectFromDatabaseDialog.createNewProjectCallBack = async (model) => await this.createNewProjectCallBack(model);
+		createProjectFromDatabaseDialog.createNewProjectCallback = async (model) => await this.createNewProjectCallback(model);
 
 		await createProjectFromDatabaseDialog.openDialog();
 
@@ -687,7 +687,7 @@ export class ProjectsController {
 		return new CreateProjectFromDatabaseDialog(profile);
 	}
 
-	public async createNewProjectCallBack(model: ImportDataModel) {
+	public async createNewProjectCallback(model: ImportDataModel) {
 		try {
 			let newProjFolderUri = model.filePath;
 

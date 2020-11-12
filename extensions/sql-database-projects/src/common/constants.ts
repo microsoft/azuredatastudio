@@ -121,11 +121,11 @@ export const databaseProject = localize('databaseProject', "Database project");
 
 // Import Database Project dialog strings
 
-export const createProjectFromDatabaseDialogName = localize('createProjectFromDatabaseDialogName', "Import project");
-export const importDialogOkButtonText = localize('importDialogOkButtonText', "Import");
+export const createProjectFromDatabaseDialogName = localize('createProjectFromDatabaseDialogName', "Create Project From Database");
+export const importDialogOkButtonText = localize('importDialogOkButtonText', "Create");
 export const sourceDatabase = localize('sourceDatabase', "Source database");
 export const targetProject = localize('targetProject', "Target project");
-export const importSettings = localize('importSettings', "Import settings");
+export const importSettings = localize('importSettings', "Settings");
 export const projectNameLabel = localize('projectNameLabel', "Name");
 export const projectNamePlaceholderText = localize('projectNamePlaceholderText', "Enter project name");
 export const projectLocationLabel = localize('projectLocationLabel', "Location");

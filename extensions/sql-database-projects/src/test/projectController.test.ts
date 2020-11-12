@@ -471,14 +471,14 @@ describe('ProjectsController', function (): void {
 			const createProjectFromDatabaseDialog = TypeMoq.Mock.ofType(CreateProjectFromDatabaseDialog, undefined, undefined, undefined);
 			createProjectFromDatabaseDialog.callBase = true;
 			createProjectFromDatabaseDialog.setup(x => x.importClick()).returns(async () => {
-				await projController.object.createNewProjectCallBack( { serverId: 'My Id', database: 'My Database', projName: 'testProject', filePath: 'testLocation', version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'] });
+				await projController.object.createNewProjectCallback( { serverId: 'My Id', database: 'My Database', projName: 'testProject', filePath: 'testLocation', version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'] });
 				return Promise.resolve(undefined);
 			});
 
 			const projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
 			projController.setup(x => x.getCreateProjectFromDatabaseDialog(TypeMoq.It.isAny())).returns(() => createProjectFromDatabaseDialog.object);
-			projController.setup(x => x.createNewProjectCallBack(TypeMoq.It.isAny())).returns(() => {
+			projController.setup(x => x.createNewProjectCallback(TypeMoq.It.isAny())).returns(() => {
 				holler = createProjectFromDbHoller;
 				return Promise.resolve(undefined);
 			});

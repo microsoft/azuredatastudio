@@ -14,6 +14,7 @@ import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSet
 import { DeploymentOptions, SchemaObjectType } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
+import { getConnectionName } from './utils';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -482,18 +483,7 @@ export class PublishDatabaseDialog {
 			let connection = await azdata.connection.openConnectionDialog();
 			this.connectionId = connection.connectionId;
 
-			// show connection name if there is one, otherwise show connection in format that shows in OE
-			let connectionTextboxValue: string;
-			if (connection.options['connectionName']) {
-				connectionTextboxValue = connection.options['connectionName'];
-			} else {
-				let user = connection.options['user'];
-				if (!user) {
-					user = constants.defaultUser;
-				}
-
-				connectionTextboxValue = `${connection.options['server']} (${user})`;
-			}
+			let connectionTextboxValue: string = getConnectionName(connection);
 
 			this.updateConnectionComponents(connectionTextboxValue, this.connectionId);
 

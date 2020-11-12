@@ -101,7 +101,7 @@ describe('Create Project From Database Dialog', () => {
 			extractTarget: mssql.ExtractTarget['schemaObjectType']
 		};
 
-		dialog.createNewProjectCallBack = (m) => { model = m; };
+		dialog.createNewProjectCallback = (m) => { model = m; };
 		await dialog.importClick();
 
 		should(model!).deepEqual(expectedImportDataModel);
