@@ -5,41 +5,26 @@
 
 import * as vscode from 'vscode';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as constants from '../common/constants';
 
 /**
  * Returns the default location to save a dacpac or bacpac
  */
-export function defaultSaveLocation(): vscode.Uri | undefined {
-	return dacFxSaveLocationSettingIsValid() ? vscode.Uri.file(dacFxSaveLocationSetting()) : undefined;
-}
-
-/**
- * Get workspace configurations for this extension
- */
-function config(): vscode.WorkspaceConfiguration {
-	return vscode.workspace.getConfiguration(constants.dacFxConfigurationKey);
+export function defaultSaveLocation(): string {
+	return dacFxSaveLocationSettingIsValid() ? dacFxSaveLocationSetting() : os.homedir();
 }
 
 /**
  * Returns the workspace setting on the default location to save dacpacs and bacpacs
  */
 function dacFxSaveLocationSetting(): string {
-	return config()[constants.dacFxSaveLocationKey];
+	return vscode.workspace.getConfiguration(constants.dacFxConfigurationKey)[constants.dacFxSaveLocationKey];
 }
 
 /**
- * Returns if the default save location for dacpacs and bacpacs setting exists and is
- * a valid path
+ * Returns if the default save location for dacpacs and bacpacs setting exists and is a valid path
  */
 function dacFxSaveLocationSettingIsValid(): boolean {
-	return dacFxSaveLocationSettingExists() && fs.existsSync(dacFxSaveLocationSetting());
-}
-
-/**
- * Returns if a value for the default save location exists
- */
-function dacFxSaveLocationSettingExists(): boolean {
-	return dacFxSaveLocationSetting() !== undefined && dacFxSaveLocationSetting() !== null
-		&& dacFxSaveLocationSetting().trim() !== '';
+	return dacFxSaveLocationSetting() && dacFxSaveLocationSetting().trim() !== '' && fs.existsSync(dacFxSaveLocationSetting());
 }

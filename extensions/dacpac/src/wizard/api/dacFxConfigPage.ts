@@ -4,8 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
-import * as os from 'os';
 import * as path from 'path';
 import * as loc from '../../localizedConstants';
 import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
@@ -194,8 +192,7 @@ export abstract class DacFxConfigPage extends BasePage {
 		if (this.fileTextBox.value && path.dirname(this.fileTextBox.value)) {
 			return path.dirname(this.fileTextBox.value);
 		} else { // otherwise use the default save location setting or the home directory
-			const defaultLocation: vscode.Uri = defaultSaveLocation();
-			return defaultLocation ? defaultLocation.fsPath : os.homedir();
+			return defaultSaveLocation();
 		}
 	}
 
