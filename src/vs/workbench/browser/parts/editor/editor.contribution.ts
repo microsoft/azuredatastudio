@@ -539,13 +539,6 @@ appendEditorToolItem(
 // Editor Title Menu: Close (tabs disabled, dirty editor)
 appendEditorToolItem(
 	{
-		id: editorCommands.UNPIN_EDITOR_COMMAND_ID,
-		title: nls.localize('unpin', "Unpin"),
-		icon: { id: 'codicon/pinned' }
-	},
-	ContextKeyExpr.and(ContextKeyExpr.not('config.workbench.editor.showTabs'), ActiveEditorDirtyContext.toNegated(), ActiveEditorStickyContext),
-	1000000, // towards the far end
-	{
 		id: editorCommands.CLOSE_EDITOR_COMMAND_ID,
 		title: nls.localize('close', "Close"),
 		icon: { id: 'codicon/close-dirty' }

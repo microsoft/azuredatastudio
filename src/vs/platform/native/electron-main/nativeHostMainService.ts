@@ -435,15 +435,6 @@ export class NativeHostMainService implements INativeHostMainService {
 		return virtualMachineHint.value();
 	}
 
-	async getOS(): Promise<IOSProperties> {
-		return {
-			arch: arch(),
-			platform: platform(),
-			release: release(),
-			type: type()
-		};
-	}
-
 	//#endregion
 
 

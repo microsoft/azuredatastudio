@@ -104,7 +104,6 @@ export class SimpleNativeWorkbenchEnvironmentService implements INativeWorkbench
 	disableExtensions: boolean | string[] = [];
 	extensionDevelopmentLocationURI?: URI[] | undefined;
 	extensionTestsLocationURI?: URI | undefined;
-	logsPath: string = undefined!;
 	logLevel?: string | undefined;
 
 	args: NativeParsedArgs = Object.create(null);
