@@ -85,7 +85,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 						try {
 							const folder = await this.fileService.resolve(folderUri);
 							const files = folder.children ? folder.children.map(child => child.name) : [];
-							const file = files.sort().find(file => (file.toLowerCase().startsWith('readme')));
+							const file = files.sort().find(file => file.toLowerCase().startsWith('readme'));
 							if (file) {
 								return joinPath(folderUri, file);
 							}

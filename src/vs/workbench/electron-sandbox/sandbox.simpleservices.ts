@@ -98,6 +98,7 @@ export class SimpleNativeWorkbenchEnvironmentService implements INativeWorkbench
 	skipReleaseNotes: boolean = undefined!;
 	keyboardLayoutResource: URI = undefined!;
 	sync: 'on' | 'off' | undefined;
+	enableSyncByDefault: boolean = false;
 	debugExtensionHost: IExtensionHostDebugParams = undefined!;
 	isExtensionDevelopment: boolean = false;
 	disableExtensions: boolean | string[] = [];
@@ -108,6 +109,7 @@ export class SimpleNativeWorkbenchEnvironmentService implements INativeWorkbench
 	args: NativeParsedArgs = Object.create(null);
 
 	execPath: string = undefined!;
+	cliPath: string = undefined!;
 	appRoot: string = undefined!;
 	userHome: URI = undefined!;
 	appSettingsHome: URI = undefined!;
@@ -708,10 +710,6 @@ class SimpleIUserDataSyncStoreManagementService implements IUserDataSyncStoreMan
 }
 
 registerSingleton(IUserDataSyncStoreManagementService, SimpleIUserDataSyncStoreManagementService);
-
-//#endregion
-
-
 //#region Task
 
 class SimpleTaskService implements ITaskService {

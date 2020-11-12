@@ -1,10 +1,6 @@
 {
 	"information_for_contributors": [
-<<<<<<< HEAD
 		"This file has been converted from https://github.com/Microsoft/vscode-mssql/blob/main/syntaxes/SQL.plist",
-=======
-		"This file has been converted from https://github.com/microsoft/vscode-mssql/blob/master/syntaxes/SQL.plist",
->>>>>>> d58ebff71a6d6e5794240382580ae6b38aec8df6
 		"If you want to provide a fix or improvement, please create a pull request against the original repository.",
 		"Once accepted there, we are happy to receive an update request."
 	],
