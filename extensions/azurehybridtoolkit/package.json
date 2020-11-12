@@ -20,6 +20,10 @@
 		"url": "https://github.com/Microsoft/azuredatastudio.git"
   },
   "main": "./out/main",
+  "extensionDependencies": [
+    "Microsoft.mssql",
+    "Microsoft.notebook"
+  ],
   "contributes": {
     "commands": [
       {
