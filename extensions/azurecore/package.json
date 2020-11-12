@@ -22,7 +22,7 @@
     "resourceViewResources": [
       {
         "id": "azure-resources",
-        "name": "Azure",
+        "name": "%azure.resource.view.title%",
         "icon": "./resources/azure.svg"
       }
     ],
@@ -37,7 +37,7 @@
             "description": "%azure.resource.config.filter.description%"
           },
           "azure.tenant.config.filter": {
-            "type":"array",
+            "type": "array",
             "default": [],
             "description": "%azure.tenant.config.filter.description%"
           }
@@ -174,6 +174,10 @@
           "dark": "resources/dark/add_to_server_list_inverse.svg",
           "light": "resources/light/add_to_server_list.svg"
         }
+      },
+      {
+        "command": "azure.dataGrid.openInAzurePortal",
+        "title": "%azure.openInAzurePortal.title%"
       }
     ],
     "connectionTreeProvider": [
@@ -210,6 +214,10 @@
         },
         {
           "command": "azure.resource.connectsqlserver",
+          "when": "false"
+        },
+        {
+          "command": "azure.dataGrid.openInAzurePortal",
           "when": "false"
         }
       ],
@@ -270,6 +278,33 @@
           "command": "azure.resource.startterminal",
           "when": "viewItem == azure.resource.itemType.account",
           "group": "azurecore"
+        }
+      ],
+      "connectionDialog/browseTree": [
+        {
+          "command": "azure.resource.selectsubscriptions",
+          "when": "contextValue == azure.resource.itemType.account",
+          "group": "navigation"
+        },
+        {
+          "command": "azure.resource.refresh",
+          "when": "contextValue == azure.resource.itemType.account",
+          "group": "navigation"
+        },
+        {
+          "command": "azure.resource.signin",
+          "when": "treeId == connectionDialog/azureResourceExplorer",
+          "group": "navigation"
+        },
+        {
+          "command": "azure.resource.refreshall",
+          "when": "treeId == connectionDialog/azureResourceExplorer",
+          "group": "navigation"
+        }
+      ],
+      "dataGrid/item/context": [
+        {
+          "command": "azure.dataGrid.openInAzurePortal"
         }
       ]
     },

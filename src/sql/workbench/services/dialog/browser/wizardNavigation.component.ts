@@ -10,6 +10,8 @@ import { Wizard } from '../common/dialogTypes';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export class WizardNavigationParams implements IBootstrapParams {
 	wizard!: Wizard;
@@ -24,8 +26,8 @@ export class WizardNavigationParams implements IBootstrapParams {
 			<ng-container *ngFor="let item of _params.wizard.pages; let i = index">
 				<div class="wizardNavigation-pageNumber">
 					<div class="wizardNavigation-connector" [ngClass]="{'invisible': !hasTopConnector(i), 'active': isActive(i)}"></div>
-					<a [attr.href]="isActive(i) ? '' : null" [title]="item.title">
-						<span class="wizardNavigation-dot" [ngClass]="{'active': isActive(i), 'currentPage': isCurrentPage(i)}" (click)="navigate(i)">{{i+1}}</span>
+					<a [tabindex]="isActive(i) ? 0 : -1" [attr.href]="isActive(i) ? '' : null" [title]="item.title" (click)="navigate(i)" (keydown)="onKey($event,i)">
+						<span class="wizardNavigation-dot" [ngClass]="{'active': isActive(i), 'currentPage': isCurrentPage(i)}">{{i+1}}</span>
 					</a>
 					<div class="wizardNavigation-connector" [ngClass]="{'invisible': !hasBottomConnector(i), 'active': isActive(i)}"></div>
 				</div>
@@ -71,6 +73,15 @@ export class WizardNavigation implements AfterViewInit {
 	navigate(index: number): void {
 		if (this.isActive(index)) {
 			this._params.navigationHandler(index);
+		}
+	}
+
+	onKey(e: KeyboardEvent, index: number): void {
+		const event = new StandardKeyboardEvent(e);
+		if (event.equals(KeyCode.Space) || event.equals(KeyCode.Enter)) {
+			this.navigate(index);
+			e.preventDefault();
+			e.stopPropagation();
 		}
 	}
 

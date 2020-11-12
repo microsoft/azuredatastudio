@@ -140,7 +140,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 				TreeNodeContextKey.NodeType.isEqualTo('Table'),
 				TreeNodeContextKey.NodeType.isEqualTo('View'),
 				TreeNodeContextKey.NodeType.isEqualTo('Schema'),
-				TreeNodeContextKey.NodeType.isEqualTo('User'),
+				ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('User'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
 				TreeNodeContextKey.NodeType.isEqualTo('UserDefinedTableType'),
 				TreeNodeContextKey.NodeType.isEqualTo('StoredProcedure'),
 				TreeNodeContextKey.NodeType.isEqualTo('AggregateFunction'),

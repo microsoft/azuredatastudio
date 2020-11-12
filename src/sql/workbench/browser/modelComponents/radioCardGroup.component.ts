@@ -34,7 +34,7 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.baseInit();
 	}
 

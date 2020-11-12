@@ -119,7 +119,7 @@ export class ProjectsController {
 		try {
 			await this.netCoreTool.runDotnetCommand(options);
 
-			return path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
+			return project.dacpacOutputPath;
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
@@ -534,6 +534,30 @@ export class ProjectsController {
 		catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
+	}
+
+	public async validateExternalStreamingJob(node: dataworkspace.WorkspaceTreeItem): Promise<mssql.ValidateStreamingJobResult> {
+		const project: Project = this.getProjectFromContext(node);
+
+		let dacpacPath: string = project.dacpacOutputPath;
+
+		if (!await utils.exists(dacpacPath)) {
+			dacpacPath = await this.buildProject(project);
+		}
+
+		const streamingJobDefinition: string = (await fs.readFile(node.element.fileSystemUri.fsPath)).toString();
+
+		const dacFxService = await this.getDaxFxService();
+		const result: mssql.ValidateStreamingJobResult = await dacFxService.validateStreamingJob(dacpacPath, streamingJobDefinition);
+
+		if (result.success) {
+			vscode.window.showInformationMessage(constants.externalStreamingJobValidationPassed);
+		}
+		else {
+			vscode.window.showErrorMessage(result.errorMessage);
+		}
+
+		return result;
 	}
 
 	//#region Helper methods

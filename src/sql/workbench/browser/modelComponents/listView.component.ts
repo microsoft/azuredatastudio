@@ -39,10 +39,6 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
 	ngAfterViewInit(): void {
 		const vscodelistOption: IListOptions<azdata.ListViewOption> = {
 			keyboardSupport: true,
@@ -71,6 +67,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 				DOM.EventHelper.stop(e, true);
 			}
 		}));
+		this.baseInit();
 	}
 
 	setLayout(layout: any): void {

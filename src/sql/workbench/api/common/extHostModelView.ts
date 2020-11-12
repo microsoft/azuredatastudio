@@ -973,6 +973,13 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('placeHolder', v);
 	}
 
+	public get title(): string {
+		return this.properties['title'];
+	}
+	public set title(v: string) {
+		this.setProperty('title', v);
+	}
+
 	public get rows(): number {
 		return this.properties['rows'];
 	}
@@ -1020,6 +1027,13 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 	}
 	public set stopEnterPropagation(v: boolean) {
 		this.setProperty('stopEnterPropagation', v);
+	}
+
+	public get validationErrorMessage(): string {
+		return this.properties['validationErrorMessage'];
+	}
+	public set validationErrorMessage(v: string) {
+		this.setProperty('validationErrorMessage', v);
 	}
 
 	public get onTextChanged(): vscode.Event<any> {
@@ -1413,7 +1427,9 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		return emitter && emitter.event;
 	}
 
-
+	public appendData(v: any[][]): void {
+		this.doAction(ModelViewAction.AppendData, v);
+	}
 }
 
 class DropDownWrapper extends ComponentWrapper implements azdata.DropDownComponent {

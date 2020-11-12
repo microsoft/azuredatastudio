@@ -16,6 +16,7 @@ import { ModelStore } from 'sql/workbench/browser/modelComponents/modelStore';
 import { Event, Emitter } from 'vs/base/common/event';
 import { assign } from 'vs/base/common/objects';
 import { IModelStore, IComponentDescriptor, IComponent, ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
 
@@ -28,7 +29,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	protected rootDescriptor: IComponentDescriptor;
 	protected _onDestroy = new Emitter<void>();
 	public readonly onDestroy = this._onDestroy.event;
-	constructor(protected changeRef: ChangeDetectorRef) {
+	constructor(protected changeRef: ChangeDetectorRef, protected logService: ILogService) {
 		super();
 		this.modelStore = new ModelStore();
 	}
@@ -41,6 +42,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 
 	initializeModel(rootComponent: IComponentShape, validationCallback: (componentId: string) => Thenable<boolean>): void {
 		let descriptor = this.defineComponent(rootComponent);
+		this.logService.debug(`Initializing view ${this.id} with root component ${rootComponent.id}`);
 		this.rootDescriptor = descriptor;
 		this.modelStore.registerValidationCallback(validationCallback);
 		// Kick off the build by detecting changes to the model
@@ -50,8 +52,10 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	}
 
 	private defineComponent(component: IComponentShape): IComponentDescriptor {
+		this.logService.debug(`Defining component ${component.id} in view ${this.id}`);
 		let existingDescriptor = this.modelStore.getComponentDescriptor(component.id);
 		if (existingDescriptor) {
+			this.logService.debug(`Component ${component.id} already defined`);
 			return existingDescriptor;
 		}
 		let typeId = componentRegistry.getIdForTypeMapping(component.type);
@@ -60,12 +64,12 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 			throw new Error(nls.localize('componentTypeNotRegistered', "Could not find component for type {0}", ModelComponentTypes[component.type]));
 		}
 		let descriptor = this.modelStore.createComponentDescriptor(typeId, component.id);
-		this.setProperties(component.id, component.properties);
-		this.setLayout(component.id, component.layout);
-		this.registerEvent(component.id);
+		this.setProperties(component.id, component.properties, true);
+		this.setLayout(component.id, component.layout, true);
+		this.registerEvent(component.id, true);
 		if (component.itemConfigs) {
 			for (let item of component.itemConfigs) {
-				this.addToContainer(component.id, item);
+				this.addToContainer(component.id, item, undefined, true);
 			}
 		}
 
@@ -73,6 +77,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	}
 
 	private removeComponent(component: IComponentShape): void {
+		this.logService.debug(`Removing component ${component.id} from view ${this.id}`);
 		if (component.itemConfigs) {
 			for (let item of component.itemConfigs) {
 				this.removeFromContainer(component.id, item);
@@ -81,58 +86,80 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	}
 
 	clearContainer(componentId: string): void {
-		this.queueAction(componentId, (component) => component.clearContainer());
-	}
-
-	addToContainer(containerId: string, itemConfig: IItemConfig, index?: number): void {
-		// Do not return the promise as this should be non-blocking
-		this.queueAction(containerId, (component) => {
-			let childDescriptor = this.defineComponent(itemConfig.componentShape);
-			component.addToContainer(childDescriptor, itemConfig.config, index);
+		this.logService.debug(`Queuing action to clear component ${componentId}`);
+		this.queueAction(componentId, (component) => {
+			this.logService.debug(`Clearing component ${componentId}`);
+			component.clearContainer();
 		});
 	}
 
+	addToContainer(containerId: string, itemConfig: IItemConfig, index?: number, initial: boolean = false): void {
+		this.logService.debug(`Queueing action to add component ${itemConfig.componentShape.id} to container ${containerId}`);
+		// Do not return the promise as this should be non-blocking
+		this.queueAction(containerId, (component) => {
+			this.logService.debug(`Adding component ${itemConfig.componentShape.id} to container ${containerId}`);
+			let childDescriptor = this.defineComponent(itemConfig.componentShape);
+			component.addToContainer(childDescriptor, itemConfig.config, index);
+		}, initial);
+	}
+
 	removeFromContainer(containerId: string, itemConfig: IItemConfig): void {
+		this.logService.debug(`Queueing action to remove component ${itemConfig.componentShape.id} from container ${containerId}`);
 		let childDescriptor = this.modelStore.getComponentDescriptor(itemConfig.componentShape.id);
 		this.queueAction(containerId, (component) => {
+			this.logService.debug(`Removing component ${itemConfig.componentShape.id} from container ${containerId}`);
 			component.removeFromContainer(childDescriptor);
 			this.removeComponent(itemConfig.componentShape);
 		});
 	}
 
-	setLayout(componentId: string, layout: any): void {
+	setLayout(componentId: string, layout: any, initial: boolean = false): void {
 		if (!layout) {
 			return;
 		}
-		this.queueAction(componentId, (component) => component.setLayout(layout));
+		this.logService.debug(`Queuing action to set layout for component ${componentId}`);
+		this.queueAction(componentId, (component) => {
+			this.logService.debug(`Setting layout for component ${componentId}. Layout : ${JSON.stringify(layout)}`);
+			component.setLayout(layout);
+		}, initial);
 	}
 
 	setItemLayout(containerId: string, itemConfig: IItemConfig): void {
+		this.logService.debug(`Queuing action to set item layout for component ${itemConfig.componentShape.id} in container ${containerId}`);
 		let childDescriptor = this.modelStore.getComponentDescriptor(itemConfig.componentShape.id);
 		this.queueAction(containerId, (component) => {
+			this.logService.debug(`Setting item layout for component ${itemConfig.componentShape.id} in container ${containerId}. Layout : ${JSON.stringify(itemConfig.config)}`);
 			component.setItemLayout(childDescriptor, itemConfig.config);
 		});
 	}
 
-	setProperties(componentId: string, properties: { [key: string]: any; }): void {
+	setProperties(componentId: string, properties: { [key: string]: any; }, initial: boolean = false): void {
 		if (!properties) {
 			return;
 		}
-		this.queueAction(componentId, (component) => component.setProperties(properties));
+		this.logService.debug(`Queuing action to set properties for component ${componentId}`);
+		this.queueAction(componentId, (component) => {
+			this.logService.debug(`Setting properties for component ${componentId}. Properties : ${JSON.stringify(properties)}`);
+			component.setProperties(properties);
+		}, initial);
 	}
 
 	refreshDataProvider(componentId: string, item: any): void {
-		this.queueAction(componentId, (component) => component.refreshDataProvider(item));
-	}
-
-	private queueAction<T>(componentId: string, action: (component: IComponent) => T): void {
-		this.modelStore.eventuallyRunOnComponent(componentId, action).catch(err => {
-			// TODO add error handling
+		this.logService.debug(`Queuing action to refresh data provider for component ${componentId}`);
+		this.queueAction(componentId, (component) => {
+			this.logService.debug(`Refreshing data provider for component ${componentId}`);
+			component.refreshDataProvider(item);
 		});
 	}
 
-	registerEvent(componentId: string) {
+	private queueAction<T>(componentId: string, action: (component: IComponent) => T, initial: boolean = false): void {
+		this.modelStore.eventuallyRunOnComponent(componentId, action, initial);
+	}
+
+	registerEvent(componentId: string, initial: boolean = false) {
+		this.logService.debug(`Queuing action to register event handler for component ${componentId}`);
 		this.queueAction(componentId, (component) => {
+			this.logService.debug(`Registering event handler for component ${componentId}`);
 			this._register(component.registerEventHandler(e => {
 				let modelViewEvent: IModelViewEventArgs = assign({
 					componentId: componentId,
@@ -140,7 +167,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 				}, e);
 				this._onEventEmitter.fire(modelViewEvent);
 			}));
-		});
+		}, initial);
 	}
 
 	public get onEvent(): Event<IModelViewEventArgs> {
@@ -148,18 +175,26 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	}
 
 	public validate(componentId: string): Thenable<boolean> {
-		return new Promise(resolve => this.modelStore.eventuallyRunOnComponent(componentId, component => resolve(component.validate())));
+		return new Promise(resolve => this.modelStore.eventuallyRunOnComponent(componentId, component => resolve(component.validate()), false));
 	}
 
 	public setDataProvider(handle: number, componentId: string, context: any): any {
-		return this.queueAction(componentId, (component) => component.setDataProvider(handle, componentId, context));
+		return this.queueAction(componentId, (component) => component.setDataProvider(handle, componentId, context), false);
 	}
 
 	public focus(componentId: string): void {
-		return this.queueAction(componentId, (component) => component.focus());
+		this.logService.debug(`Queuing action to focus component ${componentId}`);
+		return this.queueAction(componentId, (component) => {
+			this.logService.debug(`Focusing component ${componentId}`);
+			component.focus();
+		});
 	}
 
 	public doAction(componentId: string, action: string, ...args: any[]): void {
-		return this.queueAction(componentId, (component) => component.doAction(action, ...args));
+		this.logService.debug(`Queuing action to do action ${action} for component ${componentId}`);
+		return this.queueAction(componentId, (component) => {
+			this.logService.debug(`Doing action ${action} for component ${componentId}`);
+			component.doAction(action, ...args);
+		});
 	}
 }

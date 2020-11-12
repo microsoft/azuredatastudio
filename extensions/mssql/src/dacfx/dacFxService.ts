@@ -119,4 +119,15 @@ export class DacFxService implements mssql.IDacFxService {
 			}
 		);
 	}
+
+	public validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<mssql.ValidateStreamingJobResult> {
+		const params: contracts.ValidateStreamingJobParams = { packageFilePath: packageFilePath, createStreamingJobTsql: createStreamingJobTsql };
+		return this.client.sendRequest(contracts.ValidateStreamingJobRequest.type, params).then(
+			undefined,
+			e => {
+				this.client.logFailedRequest(contracts.ValidateStreamingJobRequest.type, e);
+				return Promise.resolve(undefined);
+			}
+		);
+	}
 }

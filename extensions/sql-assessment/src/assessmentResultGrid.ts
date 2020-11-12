@@ -28,20 +28,48 @@ export class AssessmentResultGrid implements vscode.Disposable {
 	private descriptionCaption!: azdata.TextComponent;
 
 	private asmtType!: AssessmentType;
+	private targetTypeIcon: { [targetType: number]: azdata.IconColumnCellValue };
 
-	private readonly checkIdColOrder = 4;
-	private readonly targetColOrder = 0;
+
+	private readonly checkIdColOrder = 5;
+	private readonly targetColOrder = 1;
+	private readonly messageColOrder = 3;
 
 	public get component(): azdata.Component {
 		return this.rootContainer;
 	}
 
-	public constructor(view: azdata.ModelView) {
+	public constructor(view: azdata.ModelView, extensionContext: vscode.ExtensionContext) {
 		const headerCssClass = 'no-borders align-with-header';
+		this.targetTypeIcon = {
+			[azdata.sqlAssessment.SqlAssessmentTargetType.Database]: {
+				icon: {
+					dark: extensionContext.asAbsolutePath('resources/dark/database.svg'),
+					light: extensionContext.asAbsolutePath('resources/light/database.svg')
+				},
+				ariaLabel: localize('databaseIconLabel', "Database Icon")
+			},
+			[azdata.sqlAssessment.SqlAssessmentTargetType.Server]: {
+				icon: {
+					dark: extensionContext.asAbsolutePath('resources/dark/server.svg'),
+					light: extensionContext.asAbsolutePath('resources/light/server.svg')
+				},
+				ariaLabel: localize('serverIconLabel', "Server Icon")
+			}
+		};
+
 		this.table = view.modelBuilder.table()
 			.withProperties<azdata.TableComponentProperties>({
 				data: [],
 				columns: [
+					{
+						value: 'targetType',
+						name: '',
+						type: azdata.ColumnType.icon,
+						width: 10,
+						headerCssClass: headerCssClass,
+						toolTip: localize('asmt.column.targetType', "Target Type"),
+					},
 					{ value: LocalizedStrings.TARGET_COLUMN_NAME, headerCssClass: headerCssClass, width: 125 },
 					{ value: LocalizedStrings.SEVERITY_COLUMN_NAME, headerCssClass: headerCssClass, width: 100 },
 					{ value: LocalizedStrings.MESSAGE_COLUMN_NAME, headerCssClass: headerCssClass, width: 900 },
@@ -93,9 +121,9 @@ export class AssessmentResultGrid implements vscode.Disposable {
 
 	public async displayResult(asmtResult: azdata.SqlAssessmentResult, method: AssessmentType) {
 		this.asmtType = method;
-		this.dataItems = asmtResult.items;
+		this.dataItems = this.filterOutNotSupportedKind(asmtResult.items);
 		await this.table.updateProperties({
-			'data': asmtResult.items.map(item => this.convertToDataView(item))
+			'data': this.dataItems.map(item => this.convertToDataView(item))
 		});
 		this.rootContainer.setLayout({
 			flexFlow: 'column',
@@ -117,21 +145,35 @@ export class AssessmentResultGrid implements vscode.Disposable {
 		});
 	}
 
-	public async appendResult(asmtResult: azdata.SqlAssessmentResult): Promise<void> {
-		if (this.dataItems) {
-			this.dataItems.push(...asmtResult.items);
+	// we need to filter out warnings and error results since we don't have an appropriate way of displaying such messages.
+	// have to redone this once required functionality will be added to the core.
+	private filterOutNotSupportedKind(items: azdata.SqlAssessmentResultItem[]): azdata.SqlAssessmentResultItem[] {
+		if (this.asmtType === AssessmentType.AvailableRules) {
+			return items;
 		}
 
-		await this.table.updateProperties({
-			'data': this.dataItems.map(item => this.convertToDataView(item))
-		});
+		return items.filter(i => i.kind === azdata.sqlAssessment.SqlAssessmentResultItemKind.RealResult);
+	}
+
+	public async appendResult(asmtResult: azdata.SqlAssessmentResult): Promise<void> {
+		let filteredValues = this.filterOutNotSupportedKind(asmtResult.items);
+		if (this.dataItems) {
+			this.dataItems.push(...filteredValues);
+		}
+		this.table.appendData(filteredValues.map(item => this.convertToDataView(item)));
 	}
 
 	private async showDetails(rowNumber: number) {
 		const selectedRowValues = this.table.data[rowNumber];
-		const asmtResultItem = this.dataItems.find(item =>
-			item.targetName === selectedRowValues[this.targetColOrder]
-			&& item.checkId === selectedRowValues[this.checkIdColOrder]);
+		const asmtResultItem = this.asmtType === AssessmentType.InvokeAssessment
+			? this.dataItems.find(item =>
+				item.targetName === selectedRowValues[this.targetColOrder]
+				&& item.checkId === selectedRowValues[this.checkIdColOrder]
+				&& item.message === selectedRowValues[this.messageColOrder])
+			: this.dataItems.find(item =>
+				item.targetName === selectedRowValues[this.targetColOrder]
+				&& item.checkId === selectedRowValues[this.checkIdColOrder]);
+
 		if (!asmtResultItem) {
 			return;
 		}
@@ -253,6 +295,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 
 	private convertToDataView(asmtResult: azdata.SqlAssessmentResultItem): any[] {
 		return [
+			this.targetTypeIcon[asmtResult.targetType],
 			asmtResult.targetName,
 			asmtResult.level,
 			this.asmtType === AssessmentType.InvokeAssessment ? asmtResult.message : asmtResult.displayName,

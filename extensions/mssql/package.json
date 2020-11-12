@@ -20,6 +20,11 @@
     "postinstall": "node ./build/postinstall.js"
   },
   "contributes": {
+    "problemMatchers": [
+      {
+        "name": "tasks"
+      }
+    ],
     "commands": [
       {
         "command": "mssql.exportSqlAsNotebook",
@@ -474,7 +479,7 @@
       "notebook/toolbar": [
         {
           "command": "mssql.exportNotebookToSql",
-          "when": "config.notebook.showNotebookConvertActions && providerId == sql"
+          "when": "config.workbench.enablePreviewFeatures && providerId == sql"
         }
       ]
     },
@@ -488,11 +493,6 @@
               "field": "isCloud",
               "operator": "!=",
               "value": true
-            },
-            {
-              "field": "engineEditionId",
-              "operator": "!=",
-              "value": "11"
             }
           ],
           "databaseProperties": [
@@ -571,6 +571,11 @@
               "field": "isCloud",
               "operator": "==",
               "value": true
+            },
+            {
+              "field": "engineEditionId",
+              "operator": "!=",
+              "value": "11"
             }
           ],
           "databaseProperties": [
@@ -632,10 +637,6 @@
             {
               "displayName": "%cloud.databaseProperties.compatibilityLevel%",
               "value": "compatibilityLevel"
-            },
-            {
-              "displayName": "%cloud.databaseProperties.owner%",
-              "value": "owner"
             }
           ],
           "serverProperties": [

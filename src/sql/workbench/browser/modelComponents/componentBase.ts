@@ -5,7 +5,7 @@
 import 'vs/css!./media/flexContainer';
 
 import {
-	ChangeDetectorRef, ViewChildren, ElementRef, OnDestroy, OnInit, QueryList
+	ChangeDetectorRef, ViewChildren, ElementRef, OnDestroy, QueryList, AfterViewInit
 } from '@angular/core';
 
 import * as types from 'vs/base/common/types';
@@ -27,7 +27,7 @@ export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }
 }
 
-export abstract class ComponentBase<TPropertyBag extends azdata.ComponentProperties> extends Disposable implements IComponent, OnDestroy, OnInit {
+export abstract class ComponentBase<TPropertyBag extends azdata.ComponentProperties> extends Disposable implements IComponent, OnDestroy, AfterViewInit {
 	protected properties: { [key: string]: any; } = {};
 	private _valid: boolean = true;
 	protected _validations: (() => boolean | Thenable<boolean>)[] = [];
@@ -58,7 +58,7 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 		}
 	}
 
-	abstract ngOnInit(): void;
+	abstract ngAfterViewInit(): void;
 
 	protected baseDestroy(): void {
 		if (this.modelStore) {
@@ -308,7 +308,7 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 			if (event.eventType === ComponentEventType.validityChanged) {
 				this.validate();
 			}
-		}));
+		}), false);
 		this._changeRef.detectChanges();
 		this.onItemsUpdated();
 		return;

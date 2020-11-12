@@ -150,20 +150,19 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 							title: loc.updatingInstance(this._postgresModel.info.name),
 							cancellable: false
 						},
-						(_progress, _token) => {
-							return this._azdataApi.azdata.arc.postgres.server.edit(
+						async (_progress, _token): Promise<void> => {
+							await this._azdataApi.azdata.arc.postgres.server.edit(
 								this._postgresModel.info.name, this.saveArgs);
+							await this._postgresModel.refresh();
 						}
 					);
 
-					this._postgresModel.refresh();
-
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
+
+					this.discardButton!.enabled = false;
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
-				} finally {
-					this.discardButton!.enabled = false;
 				}
 			}));
 
@@ -203,7 +202,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this.workerBox!.onTextChanged(() => {
+			this.workerBox.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.workerBox!))) {
 					this.saveArgs.workers = undefined;
 				} else {
@@ -221,11 +220,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this.coresLimitBox!.onTextChanged(() => {
+			this.coresLimitBox.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.coresLimitBox!))) {
-					this.saveArgs.coresRequest = undefined;
+					this.saveArgs.coresLimit = undefined;
 				} else {
-					this.saveArgs.coresRequest = this.coresLimitBox!.value;
+					this.saveArgs.coresLimit = this.coresLimitBox!.value;
 				}
 			})
 		);
@@ -239,11 +238,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this.coresRequestBox!.onTextChanged(() => {
+			this.coresRequestBox.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.coresRequestBox!))) {
-					this.saveArgs.coresLimit = undefined;
+					this.saveArgs.coresRequest = undefined;
 				} else {
-					this.saveArgs.coresLimit = this.coresRequestBox!.value;
+					this.saveArgs.coresRequest = this.coresRequestBox!.value;
 				}
 			})
 		);
@@ -257,11 +256,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this.memoryLimitBox!.onTextChanged(() => {
+			this.memoryLimitBox.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.memoryLimitBox!))) {
-					this.saveArgs.memoryRequest = undefined;
+					this.saveArgs.memoryLimit = undefined;
 				} else {
-					this.saveArgs.memoryRequest = this.memoryLimitBox!.value + 'Gi';
+					this.saveArgs.memoryLimit = this.memoryLimitBox!.value + 'Gi';
 				}
 			})
 		);
@@ -275,11 +274,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this.memoryRequestBox!.onTextChanged(() => {
+			this.memoryRequestBox.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.memoryRequestBox!))) {
-					this.saveArgs.memoryLimit = undefined;
+					this.saveArgs.memoryRequest = undefined;
 				} else {
-					this.saveArgs.memoryLimit = this.memoryRequestBox!.value + 'Gi';
+					this.saveArgs.memoryRequest = this.memoryRequestBox!.value + 'Gi';
 				}
 			})
 		);
@@ -387,10 +386,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private editWorkerNodeCount() {
-		let currentShards = this._postgresModel.config?.spec.scale.shards;
+		// scale.shards was renamed to scale.workers. Check both for backwards compatibility.
+		let scale = this._postgresModel.config?.spec.scale;
+		let currentWorkers = scale?.workers ?? scale?.shards ?? 0;
 
-		this.workerBox!.min = currentShards;
-		this.workerBox!.placeHolder = currentShards!.toString();
+		this.workerBox!.min = currentWorkers;
+		this.workerBox!.placeHolder = currentWorkers.toString();
 		this.workerBox!.value = '';
 
 		this.saveArgs.workers = undefined;

@@ -57,6 +57,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.newTable', async (node: WorkspaceTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.table); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newView', async (node: WorkspaceTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.view); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newStoredProcedure', async (node: WorkspaceTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.storedProcedure); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.newExternalStreamingJob', async (node: WorkspaceTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.externalStreamingJob); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newItem', async (node: WorkspaceTreeItem) => { await this.projectsController.addItemPromptFromNode(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newFolder', async (node: WorkspaceTreeItem) => { await this.projectsController.addFolderPrompt(node); });
 
@@ -66,6 +67,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.delete', async (node: WorkspaceTreeItem) => { await this.projectsController.delete(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: WorkspaceTreeItem) => { await this.projectsController.exclude(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: WorkspaceTreeItem) => { await this.projectsController.changeTargetPlatform(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.validateExternalStreamingJob', async (node: WorkspaceTreeItem) => { await this.projectsController.validateExternalStreamingJob(node); });
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
 

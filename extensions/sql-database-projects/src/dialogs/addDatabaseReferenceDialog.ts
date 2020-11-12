@@ -323,8 +323,8 @@ export class AddDatabaseReferenceDialog {
 		const loadDacpacButton = this.view!.modelBuilder.button().withProperties({
 			ariaLabel: constants.loadDacpacButton,
 			iconPath: IconPathHelper.folder_blue,
-			height: '16px',
-			width: '16px'
+			height: '18px',
+			width: '18px'
 		}).component();
 
 		loadDacpacButton.onDidClick(async () => {

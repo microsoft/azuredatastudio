@@ -138,13 +138,13 @@ export class WizardModal extends Modal {
 		this._wizard.onPageAdded(page => {
 			this.registerPage(page);
 			this.updatePageNumbers();
-			this.showPage(this._wizard.currentPage, false).catch(err => onUnexpectedError(err));
+			this.showPage(this._wizard.currentPage, false, false, false).catch(err => onUnexpectedError(err));
 		});
 		this._wizard.onPageRemoved(page => {
 			let dialogPane = this._dialogPanes.get(page);
 			this._dialogPanes.delete(page);
 			this.updatePageNumbers();
-			this.showPage(this._wizard.currentPage, false).catch(err => onUnexpectedError(err));
+			this.showPage(this._wizard.currentPage, false, false, false).catch(err => onUnexpectedError(err));
 			dialogPane.dispose();
 		});
 		this.updatePageNumbers();
@@ -173,7 +173,7 @@ export class WizardModal extends Modal {
 		page.onUpdate(() => this.setButtonsForPage(this._wizard.currentPage));
 	}
 
-	public async showPage(index: number, validate: boolean = true, focus: boolean = false): Promise<void> {
+	public async showPage(index: number, validate: boolean = true, focus: boolean = false, readHeader: boolean = true): Promise<void> {
 		let pageToShow = this._wizard.pages[index];
 		if (!pageToShow) {
 			this.done(validate).catch(err => onUnexpectedError(err));
@@ -194,7 +194,7 @@ export class WizardModal extends Modal {
 			}
 		});
 
-		if (dialogPaneToShow) {
+		if (dialogPaneToShow && readHeader) {
 			status(`${dialogPaneToShow.pageNumberDisplayText} ${dialogPaneToShow.title}`);
 		}
 		this.setButtonsForPage(index);
