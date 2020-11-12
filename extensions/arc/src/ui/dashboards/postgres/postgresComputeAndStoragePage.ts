@@ -67,7 +67,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component());
 
 		const infoComputeStorage_p1 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: loc.computeAndStorageDescriptionPartOne,
+			value: loc.postgresComputeAndStorageDescriptionPartOne,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 		}).component();
 		const infoComputeStorage_p2 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
