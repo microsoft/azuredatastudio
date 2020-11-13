@@ -174,7 +174,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		return this._onEventEmitter.event;
 	}
 
-	public validate(componentId: string): Thenable<boolean> {
+	public validate(componentId: string): Promise<boolean> {
 		return new Promise(resolve => this.modelStore.eventuallyRunOnComponent(componentId, component => resolve(component.validate()), false));
 	}
 

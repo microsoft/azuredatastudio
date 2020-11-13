@@ -42,7 +42,7 @@ export interface IModelView extends IView {
 	refreshDataProvider(componentId: string, item: any): void;
 	registerEvent(componentId: string, initial?: boolean): void;
 	onEvent: Event<IModelViewEventArgs>;
-	validate(componentId: string): Thenable<boolean>;
+	validate(componentId: string): Promise<boolean>;
 	readonly onDestroy: Event<void>;
 	focus(componentId: string): void;
 	doAction(componentId: string, action: string, ...args: any[]): void;
