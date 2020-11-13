@@ -236,13 +236,6 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		this.baseInit();
 	}
 
-	public validate(): Thenable<boolean> {
-		return super.validate().then(valid => {
-			// TODO: table validation?
-			return valid;
-		});
-	}
-
 	ngOnDestroy(): void {
 		this.baseDestroy();
 	}

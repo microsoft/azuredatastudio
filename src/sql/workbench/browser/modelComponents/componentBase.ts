@@ -244,19 +244,18 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 		}
 	}
 
-	public validate(): Thenable<boolean> {
+	public async validate(): Promise<boolean> {
 		let validations = this._validations.map(validation => Promise.resolve(validation()));
-		return Promise.all(validations).then(values => {
-			let isValid = values.every(value => value === true);
-			if (this._valid !== isValid) {
-				this._valid = isValid;
-				this.fireEvent({
-					eventType: ComponentEventType.validityChanged,
-					args: this._valid
-				});
-			}
-			return isValid;
-		});
+		const validationResults = await Promise.all(validations);
+		const isValid = validationResults.every(value => value === true);
+		if (this._valid !== isValid) {
+			this._valid = isValid;
+			this.fireEvent({
+				eventType: ComponentEventType.validityChanged,
+				args: this._valid
+			});
+		}
+		return isValid;
 	}
 
 	public focus(): void {

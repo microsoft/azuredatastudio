@@ -78,12 +78,6 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 		this.baseInit();
 	}
 
-	public validate(): Thenable<boolean> {
-		return super.validate().then(valid => {
-			return valid;
-		});
-	}
-
 	ngOnDestroy(): void {
 		this.baseDestroy();
 	}
