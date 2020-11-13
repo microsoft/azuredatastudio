@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/dropdownList';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { DropdownDataSource, IDropDownListItem, SelectListRenderer, SELECT_OPTION_ENTRY_TEMPLATE_ID } from 'sql/base/parts/editableDropdown/browser/dropdownList';
+import { DropdownDataSource, IDropdownListItem, DropdownListRenderer, SELECT_OPTION_ENTRY_TEMPLATE_ID } from 'sql/base/parts/editableDropdown/browser/dropdownList';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
@@ -64,8 +64,7 @@ const errorMessage = nls.localize('editableDropdown.errorValidate', "Must be an 
 const defaults: IDropdownOptions = {
 	strictSelection: true,
 	maxHeight: 300,
-	errorMessage: errorMessage,
-	contextBorder: Color.fromHex('#696969')
+	errorMessage: errorMessage
 };
 
 export class Dropdown extends Disposable implements IListVirtualDelegate<string> {
@@ -73,7 +72,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	private _inputContainer: HTMLElement;
 	private _selectListContainer: HTMLElement;
 	private _input: InputBox;
-	private _selectList: List<IDropDownListItem>;
+	private _selectList: List<IDropdownListItem>;
 	private _options: IDropdownOptions;
 	private _dataSource = new DropdownDataSource();
 	public fireOnTextChange?: boolean;
@@ -170,7 +169,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			}
 		}));
 
-		this._selectList = new List('EditableDropdown', this._selectListContainer, this, [new SelectListRenderer()], {
+		this._selectList = new List('EditableDropdown', this._selectListContainer, this, [new DropdownListRenderer()], {
 			useShadows: false,
 			verticalScrollMode: ScrollbarVisibility.Visible,
 			keyboardSupport: true,
@@ -293,7 +292,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	}
 
 	private _hideList(): void {
-		this.contextViewService.hideContextView();
+		//this.contextViewService.hideContextView();
 		this._inputContainer.setAttribute('aria-expanded', 'false');
 	}
 
@@ -358,7 +357,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		this._selectList.style(style);
 		this._input.style(style);
 		this._selectListContainer.style.backgroundColor = style.contextBackground ? style.contextBackground.toString() : '';
-		this._selectListContainer.style.outline = `1px solid ${style.contextBorder || this._options.contextBorder}`;
+		this._selectListContainer.style.outline = `1px solid ${style.contextBorder}`;
 	}
 
 	private _inputValidator(value: string): IMessage | null {

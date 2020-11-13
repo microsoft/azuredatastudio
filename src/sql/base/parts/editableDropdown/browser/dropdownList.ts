@@ -10,34 +10,34 @@ const $ = DOM.$;
 
 export const SELECT_OPTION_ENTRY_TEMPLATE_ID = 'editableDropDownOption.entry.template';
 
-export interface ISelectListTemplateData {
+export interface IDropdownListTemplateData {
 	root: HTMLElement;
 	text: HTMLElement;
 }
 
-export interface IDropDownListItem {
+export interface IDropdownListItem {
 	text: string;
 }
 
-export class SelectListRenderer implements IListRenderer<IDropDownListItem, ISelectListTemplateData> {
+export class DropdownListRenderer implements IListRenderer<IDropdownListItem, IDropdownListTemplateData> {
 
 	get templateId(): string { return SELECT_OPTION_ENTRY_TEMPLATE_ID; }
 
-	renderTemplate(container: HTMLElement): ISelectListTemplateData {
-		const data: ISelectListTemplateData = Object.create(null);
+	renderTemplate(container: HTMLElement): IDropdownListTemplateData {
+		const data: IDropdownListTemplateData = Object.create(null);
 		data.root = container;
 		data.text = DOM.append(container, $('span.editable-drop-option-text'));
 		return data;
 	}
 
-	renderElement(element: IDropDownListItem, index: number, templateData: ISelectListTemplateData): void {
-		const data: ISelectListTemplateData = templateData;
+	renderElement(element: IDropdownListItem, index: number, templateData: IDropdownListTemplateData): void {
+		const data: IDropdownListTemplateData = templateData;
 		const text = element.text;
 		data.text.textContent = text;
 		data.text.title = text;
 	}
 
-	disposeTemplate(templateData: ISelectListTemplateData): void {
+	disposeTemplate(templateData: IDropdownListTemplateData): void {
 	}
 }
 
