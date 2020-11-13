@@ -68,8 +68,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 				strictSelection: false,
 				placeholder: '',
 				maxHeight: 125,
-				ariaLabel: '',
-				actionLabel: ''
+				ariaLabel: ''
 			};
 			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService,
 				dropdownOptions);
