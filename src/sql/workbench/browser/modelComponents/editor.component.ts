@@ -50,9 +50,10 @@ export default class EditorComponent extends ComponentBase<azdata.EditorProperti
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService,
 		@Inject(ILogService) private _logService: ILogService,
-		@Inject(IEditorService) private readonly editorService: IEditorService
+		@Inject(IEditorService) private readonly editorService: IEditorService,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
