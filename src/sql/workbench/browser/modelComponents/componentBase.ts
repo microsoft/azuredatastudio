@@ -21,7 +21,6 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IComponentDescriptor, IComponent, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
-import { onUnexpectedError } from 'vs/base/common/errors';
 
 export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 
