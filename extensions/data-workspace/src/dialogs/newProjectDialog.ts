@@ -130,7 +130,7 @@ export class NewProjectDialog extends DialogBase {
 			ariaLabel: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			height: '16px',
-			width: '16px'
+			width: '18px'
 		}).component();
 		this.register(browseFolderButton.onDidClick(async () => {
 			let folderUris = await vscode.window.showOpenDialog({

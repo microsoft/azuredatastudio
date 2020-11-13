@@ -119,7 +119,7 @@ export class OpenExistingDialog extends DialogBase {
 		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			ariaLabel: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
-			width: '16px',
+			width: '18px',
 			height: '16px',
 		}).component();
 		this.register(browseFolderButton.onDidClick(async () => {
