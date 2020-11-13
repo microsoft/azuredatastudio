@@ -4,14 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
-import * as os from 'os';
 import * as path from 'path';
 import * as loc from '../../localizedConstants';
 import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
 import { DacFxDataModel } from './models';
 import { BasePage } from './basePage';
 import { sanitizeStringForFilename, isValidBasename, isValidBasenameErrorMessage } from './utils';
+import { defaultSaveLocation } from '../common/fileLocationHelper';
 
 export abstract class DacFxConfigPage extends BasePage {
 	protected serverDropdown: azdata.DropDownComponent;
@@ -192,8 +191,8 @@ export abstract class DacFxConfigPage extends BasePage {
 		// use previous file location if there was one
 		if (this.fileTextBox.value && path.dirname(this.fileTextBox.value)) {
 			return path.dirname(this.fileTextBox.value);
-		} else { // otherwise use the folder open in the Explorer or the home directory
-			return vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : os.homedir();
+		} else { // otherwise use the default save location setting or the home directory
+			return defaultSaveLocation();
 		}
 	}
 

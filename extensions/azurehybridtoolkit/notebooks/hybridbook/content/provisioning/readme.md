@@ -1,0 +1,9 @@
+# Provisioning
+[Home](../readme.md)
+
+This chapter contains Notebooks that help provision new Azure SQL resources that can be used as migration targets for existing on-premises SQL instances and databases. Use alongside the planning notebooks to use existing resources as the basis for the best type of resource to create and how it should be configured.  You can use the notebooks and configure the settings manually or provide a provisioning plan created by the [Create Provisioning Plan](../provisioning/provisioning-plan.ipynb) notebook.
+
+## Notebooks in this Chapter
+- [Create Azure SQL Virtual Machine](create-sqlvm.ipynb) - SQL Server on Azure Virtual Machines enables to use full versions of SQL Server in the cloud without having to manage any on-premises hardware. The virtual machine image gallery allows to create a SQL Server VM with the right version, edition, and operating system
+- [Create Azure SQL Managed Instance](create-sqlmi.ipynb) - Azure SQL Managed Instance is the intelligent, scalable, cloud database service that combines the broadest SQL Server engine compatibility with all the benefits of a fully managed and evergreen platform as a service. An instance is a copy of the sqlservr.exe executable that runs as an operating system service
+- [Create Azure SQL Database](create-sqldb.ipynb) - Azure SQL Database is Microsoft's fully managed cloud relational database service in Microsoft Azure. It shares the same code base as traditional SQL Servers but with Microsoft's Cloud first strategy the newest features of SQL Server are actually released to Azure SQL Database first. Use this notebook when a need is systematic collection of data that stores data in tables
