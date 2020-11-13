@@ -22,6 +22,7 @@ class NewProjectDialogModel {
 }
 export class NewProjectDialog extends DialogBase {
 	public model: NewProjectDialogModel = new NewProjectDialogModel();
+	private workspaceTextBox: azdata.InputBoxComponent | undefined;
 
 	constructor(private workspaceService: IWorkspaceService) {
 		super(constants.NewProjectDialogTitle, 'NewProject');
@@ -109,10 +110,7 @@ export class NewProjectDialog extends DialogBase {
 			this.model.name = projectNameTextBox.value!;
 			projectNameTextBox.updateProperty('title', projectNameTextBox.value);
 
-			// update hover text if a new workspace will be created for this project
-			if (!vscode.workspace.workspaceFile) {
-				workspaceTextBox.updateProperty('title', path.join(this.model.location, this.model.name, `${this.model.name}.code-workspace`));
-			}
+			this.updateWorkspaceTexbox();
 		}));
 
 		const locationTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
@@ -125,13 +123,14 @@ export class NewProjectDialog extends DialogBase {
 		this.register(locationTextBox.onTextChanged(() => {
 			this.model.location = locationTextBox.value!;
 			locationTextBox.updateProperty('title', locationTextBox.value);
+			this.updateWorkspaceTexbox();
 		}));
 
 		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			ariaLabel: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			height: '16px',
-			width: '16px'
+			width: '18px'
 		}).component();
 		this.register(browseFolderButton.onDidClick(async () => {
 			let folderUris = await vscode.window.showOpenDialog({
@@ -147,10 +146,7 @@ export class NewProjectDialog extends DialogBase {
 			locationTextBox.value = selectedFolder;
 			this.model.location = selectedFolder;
 
-			// update hover text if a new workspace will be created for this project
-			if (!vscode.workspace.workspaceFile) {
-				workspaceTextBox.updateProperty('title', path.join(this.model.location, `${this.model.name}.code-workspace`));
-			}
+			this.updateWorkspaceTexbox();
 		}));
 
 		const workspaceDescription = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -158,7 +154,7 @@ export class NewProjectDialog extends DialogBase {
 			CSSStyles: { 'margin-top': '3px', 'margin-bottom': '10px' }
 		}).component();
 
-		const workspaceTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.workspaceTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.WorkspaceLocationTitle,
 			width: constants.DefaultInputWidth,
 			enabled: false,
@@ -167,7 +163,7 @@ export class NewProjectDialog extends DialogBase {
 		}).component();
 
 		const workspaceFlexContainer = view.modelBuilder.flexContainer()
-			.withItems([workspaceDescription, workspaceTextBox])
+			.withItems([workspaceDescription, this.workspaceTextBox])
 			.withLayout({ flexFlow: 'column' })
 			.component();
 
@@ -192,5 +188,13 @@ export class NewProjectDialog extends DialogBase {
 		]).component();
 		await view.initializeModel(form);
 		this.initDialogComplete?.resolve();
+	}
+
+	private updateWorkspaceTexbox(): void {
+		if (!vscode.workspace.workspaceFile) {
+			const location = this.model.location && this.model.name ? path.join(this.model.location, `${this.model.name}.code-workspace`) : '';
+			this.workspaceTextBox!.value = location;
+			this.workspaceTextBox!.title = location;
+		}
 	}
 }
