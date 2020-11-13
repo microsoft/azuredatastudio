@@ -144,7 +144,28 @@ export class PostgresParametersPage extends DashboardPage {
 		this.disposables.push(
 			this.resetButton.onDidClick(async () => {
 				this.resetButton!.enabled = false;
+				this.discardButton!.enabled = false;
 				try {
+					await vscode.window.withProgress(
+						{
+							location: vscode.ProgressLocation.Notification,
+							title: loc.updatingInstance(this._postgresModel.info.name),
+							cancellable: false
+						},
+						async (_progress, _token): Promise<void> => {
+							try {
+								await this._azdataApi.azdata.arc.postgres.server.edit(
+									this._postgresModel.info.name, { engineSettings: `'' -rf` });
+							} catch (err) {
+								// If an error occurs while resetting the instance then re-enable the reset button since
+								// the edit wasn't successfully applied
+								this.resetButton!.enabled = true;
+								throw err;
+							}
+							await this._postgresModel.refresh();
+						}
+
+					);
 
 					// TODO
 					//all
