@@ -26,6 +26,7 @@ import { assign } from 'vs/base/common/objects';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { isNumber } from 'vs/base/common/types';
 import { convertSize, convertSizeToNumber } from 'sql/base/browser/dom';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 @Component({
 	selector: 'modelview-inputBox',
@@ -204,7 +205,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.setInputProperties(this.inputElement);
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	private setInputProperties(input: InputBox): void {

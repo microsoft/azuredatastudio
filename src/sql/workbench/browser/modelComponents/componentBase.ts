@@ -20,6 +20,7 @@ import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IComponentDescriptor, IComponent, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 
@@ -95,7 +96,7 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 		this.properties = properties;
 		this.updateStyles();
 		this.layout();
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	// Helper Function to update single property
@@ -104,7 +105,7 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 			this.properties[key] = value;
 			this.updateStyles();
 			this.layout();
-			this.validate();
+			this.validate().catch(onUnexpectedError);
 		}
 	}
 
@@ -123,7 +124,7 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 			eventType: ComponentEventType.PropertiesChanged,
 			args: this.getProperties()
 		});
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	public get enabled(): boolean {
@@ -305,7 +306,7 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 		}
 		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => component.registerEventHandler(event => {
 			if (event.eventType === ComponentEventType.validityChanged) {
-				this.validate();
+				this.validate().catch(onUnexpectedError);
 			}
 		}), false);
 		this._changeRef.detectChanges();
@@ -331,7 +332,7 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 		this.items = [];
 		this.onItemsUpdated();
 		this._changeRef.detectChanges();
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {

@@ -106,7 +106,6 @@ export default class FileBrowserTreeComponent extends ComponentBase<azdata.FileB
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this.validate();
 		if (this.ownerUri) {
 			this.initialize();
 		}

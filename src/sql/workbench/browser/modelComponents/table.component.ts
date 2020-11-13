@@ -30,6 +30,7 @@ import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { IUserFriendlyIcon, createIconCssClass, getIconKey } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -337,7 +338,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 
 		this.layoutTable();
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	private updateTableCells(cellInfos): void {

@@ -21,6 +21,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { localize } from 'vs/nls';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 @Component({
 	selector: 'modelview-dropdown',
@@ -161,7 +162,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 
 		this._selectBox.selectElem.required = this.required;
 		this._editableDropdown.inputElement.required = this.required;
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	private getValues(): string[] {
