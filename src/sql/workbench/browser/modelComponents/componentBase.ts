@@ -323,7 +323,7 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 					this.validate();
 				}
 			});
-		}, false);
+		}, true);
 		this._changeRef.detectChanges();
 		this.onItemsUpdated();
 		return;
