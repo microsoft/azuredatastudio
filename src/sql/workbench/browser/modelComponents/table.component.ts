@@ -31,6 +31,7 @@ import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/pl
 import { IUserFriendlyIcon, createIconCssClass, getIconKey } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -71,8 +72,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService) {
+		super(changeRef, el, logService);
 	}
 
 	transformColumns(columns: string[] | azdata.TableColumn[]): Slick.Column<any>[] {

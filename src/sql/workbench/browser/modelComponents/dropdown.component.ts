@@ -22,6 +22,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { localize } from 'vs/nls';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-dropdown',
@@ -53,9 +54,10 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(IConfigurationService) private readonly configurationService: IConfigurationService
+		@Inject(IConfigurationService) private readonly configurationService: IConfigurationService,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 
 		if (this.configurationService) {
 			this._isInAccessibilityMode = this.configurationService.getValue('editor.accessibilitySupport') === 'on';
@@ -69,8 +71,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 				strictSelection: false,
 				placeholder: '',
 				maxHeight: 125,
-				ariaLabel: '',
-				actionLabel: ''
+				ariaLabel: ''
 			};
 			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService,
 				dropdownOptions);

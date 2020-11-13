@@ -27,6 +27,7 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 import { isNumber } from 'vs/base/common/types';
 import { convertSize, convertSizeToNumber } from 'sql/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-inputBox',
@@ -47,9 +48,10 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {

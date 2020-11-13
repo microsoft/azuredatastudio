@@ -28,6 +28,7 @@ import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	template: `
@@ -57,9 +58,10 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService,
-		@Inject(ITextModelService) private _textModelService: ITextModelService
+		@Inject(ITextModelService) private _textModelService: ITextModelService,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
