@@ -321,10 +321,9 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 			component.registerEventHandler(async event => {
 				if (event.eventType === ComponentEventType.validityChanged) {
 					this.logService.debug(`Running validation on container ${this.descriptor.id} because validity of child component ${componentDescriptor.id} changed`);
-					this.validate().catch(onUnexpectedError);
+					this.validate();
 				}
 			});
-			component.validate().catch(onUnexpectedError);
 		}, false);
 		this._changeRef.detectChanges();
 		this.onItemsUpdated();
