@@ -13,9 +13,11 @@ const winOrCtrl = process.platform === 'darwin' ? 'ctrl' : 'win';
 export class Notebook {
 
 	public readonly toolbar: NotebookToolbar;
+	public readonly view: NotebookView;
 
 	constructor(private code: Code, private quickAccess: QuickAccess, private quickInput: QuickInput, private editors: Editors) {
 		this.toolbar = new NotebookToolbar(code);
+		this.view = new NotebookView(code);
 	}
 
 	async openFile(fileName: string): Promise<void> {
@@ -94,5 +96,21 @@ export class NotebookToolbar {
 	async waitForKernel(kernel: string): Promise<void> {
 		const kernelDropdownValue = `${NotebookToolbar.toolbarSelector} select[id="kernel-dropdown"][title="${kernel}"]`;
 		await this.code.waitForElement(kernelDropdownValue, undefined, 3000); // wait up to 5 minutes for kernel change
+	}
+}
+
+export class NotebookView {
+	private static readonly inputBox = '.search-container input-box';
+	private static readonly actualResult = '.search-view .result-messages .message';
+
+	constructor(private code: Code) { }
+
+	async searchInNotebook(expr: string): Promise<string> {
+		await this.code.waitAndClick(NotebookView.inputBox);
+		const textArea = `${NotebookView.inputBox} select[title="Search"][class="input"]`;
+		await this.code.waitForSetValue(textArea, expr);
+		await this.code.dispatchKeybinding('enter');
+		const results = await this.code.waitForTextContent(`${NotebookView.actualResult} select[span]`);
+		return results;
 	}
 }

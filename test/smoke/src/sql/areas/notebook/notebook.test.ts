@@ -8,6 +8,12 @@ import { Application } from '../../../../../automation';
 export function setup() {
 	describe('Notebook', () => {
 
+		it('can search results in notebooks', async function () {
+			const app = this.app as Application;
+			await app.workbench.quickaccess.runCommand('Notebooks: Focus on Search Results View');
+			const results = await app.workbench.sqlNotebook.view.searchInNotebook('Hello');
+			if (results) { }
+		});
 
 		it('can open new notebook, configure Python, and execute one cell', async function () {
 			const app = this.app as Application;
@@ -22,7 +28,7 @@ export function setup() {
 
 			await app.workbench.sqlNotebook.runActiveCell();
 			await app.workbench.sqlNotebook.waitForResults();
-			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
+			//await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
 		});
 	});
 }
