@@ -71,6 +71,60 @@ export class PostgresParametersPage extends DashboardPage {
 		content.addItem(this.searchBox!, { CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' } });
 		// Add in content
 
+		const parametersTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+			width: '100%',
+			columns: [
+				{
+					displayName: 'Parameter Name',
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: '20%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				},
+				{
+					displayName: 'Value',
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: false,
+					width: '20%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: {
+						...cssStyles.tableRow,
+						'overflow': 'hidden',
+						'text-overflow': 'ellipsis',
+						'white-space': 'nowrap',
+						'max-width': '0'
+					}
+				},
+				{
+					displayName: 'Description',
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: '50%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: {
+						...cssStyles.tableRow,
+						'overflow': 'hidden',
+						'text-overflow': 'ellipsis',
+						'white-space': 'nowrap',
+						'max-width': '0'
+					}
+				},
+				{
+					displayName: 'Ellipse',
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: false,
+					width: '10%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				}
+			],
+			data: [
+				this.parameterComponents('TEST NAME', 'string')]
+		}).component();
+
+		content.addItem(parametersTable);
+
 
 		this.initialized = true;
 
@@ -211,6 +265,76 @@ export class PostgresParametersPage extends DashboardPage {
 			"archive_command", "archive_timeout", "log_directory", "log_file_mode", "log_filename", "restore_command",
 			"shared_preload_libraries", "synchronous_commit", "ssl", "unix_socket_permissions", "wal_level" */
 
+
+	}
+
+	private parameterComponents(name: string, type: string): any[] {
+
+		let data = [];
+		const parameterName = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: name,
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+		}).component();
+		data.push(parameterName);
+
+		let valueBox;
+		if (type === 'enum') {
+			valueBox = this.modelView.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+				values: [], //TODO
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+			}).component();
+		} else if (type === 'bool') {
+			valueBox = this.modelView.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+				label: 'On', //TODO
+				checked: true, //TODO
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+			}).component();
+		} else if (type === 'string') {
+			valueBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+				readOnly: false,
+				value: '', //TODO
+				CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '200px' }
+			}).component();
+		} else {
+			valueBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+				readOnly: false,
+				min: 0, //TODO
+				validationErrorMessage: '', //TODO
+				inputType: 'number',
+				value: '0', //TODO
+				CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '200px' }
+			}).component();
+		}
+
+		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
+		valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
+
+		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			iconPath: IconPathHelper.information,
+			title: '', //TODO
+			width: '12px',
+			height: '12px',
+			enabled: false
+		}).component();
+		valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
+		data.push(valueContainer);
+
+		const parameterDescription = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: 'TEST DESCRIPTION HERE ...............................ytgbyugvtyvctyrcvytjv ycrtctyv tyfty ftyuvuyvuy',
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+		}).component();
+		data.push(parameterDescription);
+
+		const resetParameter = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			iconPath: IconPathHelper.ellipse,
+			title: '', //TODO
+			width: '20px',
+			height: '20px',
+			enabled: false
+		}).component();
+		data.push(resetParameter);
+
+		return data;
 
 	}
 
