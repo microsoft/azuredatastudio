@@ -90,12 +90,15 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const computeInfoAndLinks = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
-		computeInfoAndLinks.addItem(infoComputeStorage_p1, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(memoryVCoreslink, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(infoComputeStorage_p4, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(infoComputeStorage_p5, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(infoComputeStorage_p6, { CSSStyles: { 'margin-right': '5px' } });
+		const computeInfoAndLinks = this.modelView.modelBuilder.flexContainer()
+			.withLayout({ flexWrap: 'wrap' })
+			.withItems([
+				infoComputeStorage_p1,
+				memoryVCoreslink,
+				infoComputeStorage_p4,
+				infoComputeStorage_p5,
+				infoComputeStorage_p6
+			], { CSSStyles: { 'margin-right': '5px' } }).component();
 		content.addItem(computeInfoAndLinks, { CSSStyles: { 'min-height': '30px' } });
 
 		this.configurationContainer = this.modelView.modelBuilder.divContainer().component();
