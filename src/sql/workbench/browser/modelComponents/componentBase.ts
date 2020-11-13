@@ -308,7 +308,6 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 			if (event.eventType === ComponentEventType.validityChanged) {
 				this.validate();
 			}
-			component.validate();
 		}), true);
 		this._changeRef.detectChanges();
 		this.onItemsUpdated();
