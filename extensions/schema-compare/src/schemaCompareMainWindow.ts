@@ -247,6 +247,10 @@ export class SchemaCompareMainWindow {
 				});
 
 				await view.initializeModel(this.flexModel);
+
+				// set layout so that source and target components are set to the correct width based on the CSSStyles
+				this.sourceTargetFlexLayout.setLayout({});
+
 				resolve();
 			});
 		});
