@@ -292,7 +292,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	}
 
 	private _hideList(): void {
-		//this.contextViewService.hideContextView();
+		this.contextViewService.hideContextView();
 		this._inputContainer.setAttribute('aria-expanded', 'false');
 	}
 
