@@ -96,7 +96,12 @@ export class NotebookWizardPage extends ResourceTypePage {
 			this.wizard.wizardObject.generateScriptButton.hidden = true;
 		}
 
+		// by default the generate button is disabled and will wait for the page validation to be enabled.
+		this.wizard.wizardObject.generateScriptButton.enabled = false;
+
 		if (this.pageInfo.isSummaryPage) {
+			//generate button is always enabled for summary page as there are no in page validations.
+			this.wizard.wizardObject.generateScriptButton.enabled = true;
 			await setModelValues(this._model.inputComponents, this.wizard.model);
 		}
 
