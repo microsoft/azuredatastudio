@@ -68,6 +68,9 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 				this._optionsList.setSelection([this._optionsList.getFocus()[0]]);
 				DOM.EventHelper.stop(e, true);
 			}
+			if (e.keyCode === KeyCode.Escape) {
+				(this._optionsList.getHTMLElement() as HTMLElement).blur();
+			}
 		}));
 		this.baseInit();
 	}
