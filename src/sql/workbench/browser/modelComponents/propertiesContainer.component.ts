@@ -15,6 +15,7 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dash
 import { PropertiesContainer, PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { PROPERTIES_CONTAINER_PROPERTY_NAME, PROPERTIES_CONTAINER_PROPERTY_VALUE } from 'vs/workbench/common/theme';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: `modelview-properties-container`,
@@ -30,8 +31,9 @@ export default class PropertiesContainerComponent extends ComponentBase<azdata.P
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {

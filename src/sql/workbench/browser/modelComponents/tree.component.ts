@@ -27,6 +27,7 @@ import { values } from 'vs/base/common/collections';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 class Root implements ITreeComponentItem {
 	label = {
@@ -57,9 +58,10 @@ export default class TreeComponent extends ComponentBase<azdata.TreeProperties> 
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IThemeService) private themeService: IThemeService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
