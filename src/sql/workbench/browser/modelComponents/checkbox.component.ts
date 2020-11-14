@@ -17,6 +17,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { isNumber } from 'vs/base/common/types';
 import { convertSize } from 'sql/base/browser/dom';
+import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
@@ -94,7 +95,7 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 		if (this.required) {
 			this._input.required = this.required;
 		}
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	// CSS-bound properties

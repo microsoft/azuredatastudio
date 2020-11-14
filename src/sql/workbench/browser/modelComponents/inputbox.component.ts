@@ -26,6 +26,7 @@ import { assign } from 'vs/base/common/objects';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { isNumber } from 'vs/base/common/types';
 import { convertSize, convertSizeToNumber } from 'sql/base/browser/dom';
+import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
@@ -157,27 +158,25 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		return this.multiline ? '' : 'none';
 	}
 
-	public validate(): Thenable<boolean> {
-		return super.validate().then(valid => {
-			const otherErrorMsg = valid || this.inputElement.value === '' ? undefined : this.validationErrorMessage;
-			valid = valid && this.inputElement.validate();
+	public async validate(): Promise<boolean> {
+		let valid = await super.validate();
+		const otherErrorMsg = valid || this.inputElement.value === '' ? undefined : this.validationErrorMessage;
+		valid = valid && this.inputElement.validate();
 
-			// set aria label based on validity of input
-			if (valid) {
-				this.inputElement.setAriaLabel(this.ariaLabel);
-			} else {
-				if (otherErrorMsg) {
-					this.inputElement.showMessage({ type: MessageType.ERROR, content: otherErrorMsg }, true);
-				}
-				if (this.ariaLabel) {
-					this.inputElement.setAriaLabel(nls.localize('period', "{0}. {1}", this.ariaLabel, this.inputElement.inputElement.validationMessage));
-				} else {
-					this.inputElement.setAriaLabel(this.inputElement.inputElement.validationMessage);
-				}
+		// set aria label based on validity of input
+		if (valid) {
+			this.inputElement.setAriaLabel(this.ariaLabel);
+		} else {
+			if (otherErrorMsg) {
+				this.inputElement.showMessage({ type: MessageType.ERROR, content: otherErrorMsg }, true);
 			}
-
-			return valid;
-		});
+			if (this.ariaLabel) {
+				this.inputElement.setAriaLabel(nls.localize('period', "{0}. {1}", this.ariaLabel, this.inputElement.inputElement.validationMessage));
+			} else {
+				this.inputElement.setAriaLabel(this.inputElement.inputElement.validationMessage);
+			}
+		}
+		return valid;
 	}
 
 	ngOnDestroy(): void {
@@ -208,7 +207,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.setInputProperties(this.inputElement);
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	private setInputProperties(input: InputBox): void {
