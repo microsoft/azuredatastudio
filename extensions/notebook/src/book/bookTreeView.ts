@@ -144,6 +144,20 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		await this.bookTocManager.updateBook(section, book);
 	}
 
+	async showCurrentBooks(book: BookTreeItem): Promise<void> {
+		const pickedBook = await vscode.window.showQuickPick(['test1', 'test2'], {
+			canPickMany: false,
+			placeHolder: 'Select a Jupyter Book'
+		});
+		if (pickedBook) {
+			if (book) { }
+		}
+		// const pickedBook = await vscode.window.showQuickPick(accounts.map(account => account.displayInfo.displayName), {
+		// 	canPickMany: false,
+		// 	placeHolder: localize('azure.pickAnAzureAccount', "Select an Azure account")
+		// });
+	}
+
 	async openBook(bookPath: string, urlToOpen?: string, showPreview?: boolean, isNotebook?: boolean): Promise<void> {
 		try {
 			// Convert path to posix style for easier comparisons
@@ -240,7 +254,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (!this.currentBook) {
 				this.currentBook = book;
 			}
-			this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+			this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this, canSelectMany: true });
 			this._bookViewer.onDidChangeVisibility(e => {
 				let openDocument = azdata.nb.activeNotebookEditor;
 				let notebookPath = openDocument?.document.uri;

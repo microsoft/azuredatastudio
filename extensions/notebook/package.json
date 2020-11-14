@@ -239,6 +239,10 @@
         "title": "%title.closeJupyterNotebook%"
       },
       {
+        "command": "notebook.command.moveNotebook",
+        "title": "%title.moveJupyterNotebook%"
+      },
+      {
         "command": "notebook.command.createBook",
         "title": "%title.createJupyterBook%",
         "category": "%books-preview-category%",
