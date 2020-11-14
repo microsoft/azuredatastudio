@@ -15,7 +15,7 @@ export interface ValidationResult {
 export type Validator = () => Promise<ValidationResult>;
 export type ValidationValueType = string | number | undefined;
 
-export type onValidation = (isValid: boolean) => Thenable<void>;
+export type onValidation = (isValid: boolean) => Promise<void>;
 export type ValueGetter = () => Promise<ValidationValueType>;
 export type TargetValueGetter = (variable: string) => Promise<ValidationValueType>;
 export type OnTargetValidityChangedGetter = (variable: string) => vscode.Event<boolean>;
