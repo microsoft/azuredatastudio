@@ -301,6 +301,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			this._selectList.splice(0, this._selectList.length, this._dataSource.filteredValues.map(v => { return { text: v }; }));
 		} catch (e) {
 			onUnexpectedError(e);
+			//test
 		}
 
 		let width = this._inputContainer.clientWidth;
