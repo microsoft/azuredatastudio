@@ -23,6 +23,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 	// array to store listners that are specific to the selected resource. To be cleared after change in selected resource.
 	private _currentResourceTypeDisposables: vscode.Disposable[] = [];
 	private _cardsCache: Map<string, azdata.RadioCard> = new Map();
+	// Initially, we want the focus to be on cards group when there is a selection on listview.
+	private focusCards = true;
 
 	constructor(
 		private resourceTypeService: IResourceTypeService,
@@ -145,7 +147,13 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._toDispose.push(listView.onDidClick((e) => {
 			this._resourceSearchBox.value = '';
 			this.filterResources();
-			listView.focus();
+			if (this.focusCards) {
+				this._cardGroup.focus();
+				// Setting the flag to false so that the listview focus stays on listview the next time when a selection is made.
+				this.focusCards = false;
+			} else {
+				listView.focus();
+			}
 		}));
 
 		return listView;
