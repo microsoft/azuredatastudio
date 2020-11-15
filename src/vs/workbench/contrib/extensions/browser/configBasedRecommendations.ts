@@ -30,7 +30,8 @@ export class ConfigBasedRecommendations extends ExtensionRecommendations {
 		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService,
 		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService,
 	) {
-		super();
+		// {{SQL CARBON EDIT}}
+		super(undefined);
 	}
 
 	protected async doActivate(): Promise<void> {

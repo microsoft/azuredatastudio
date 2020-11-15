@@ -240,7 +240,7 @@ export class NotebookSearchView extends SearchView {
 	public startSearch(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: NotebookSearchWidget): Thenable<void> {
 		let progressComplete: () => void;
 		this.progressService.withProgress({ location: this.getProgressLocation(), delay: triggeredOnType ? 300 : 0 }, _progress => {
-			return new Promise(resolve => progressComplete = resolve);
+			return new Promise<void>(resolve => progressComplete = resolve);
 		});
 
 		this.state = SearchUIState.Searching;

@@ -28,7 +28,7 @@ import { TestWorkbenchConfiguration } from 'vs/workbench/test/electron-browser/w
 class MockWorkbenchEnvironmentService extends NativeWorkbenchEnvironmentService {
 
 	constructor(public userEnv: IProcessEnvironment) {
-		super({ ...TestWorkbenchConfiguration, userEnv });
+		super({ ...TestWorkbenchConfiguration, userEnv }, undefined);
 	}
 }
 
@@ -57,6 +57,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			new TestContextService(),
+			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -88,6 +89,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			contextService,
+			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -119,6 +121,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			contextService,
+			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -152,6 +155,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			contextService,
+			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -185,6 +189,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			undefined,
+			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -214,6 +219,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			undefined,
+			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -236,6 +242,7 @@ suite('Insights Utils tests', function () {
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
 			new MockWorkbenchEnvironmentService({}),
+			undefined,
 			undefined,
 			undefined,
 			undefined,

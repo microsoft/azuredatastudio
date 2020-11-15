@@ -29,17 +29,17 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 	get recommendations(): ReadonlyArray<ExtensionRecommendation> { return this._recommendations; }
 
 	constructor(
-		promptedExtensionRecommendations: PromptedExtensionRecommendations,
-		@IProductService private readonly productService: IProductService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@INotificationService private readonly notificationService: INotificationService,
-		@ITelemetryService telemetryService: ITelemetryService,
-		@IStorageService private readonly storageService: IStorageService,
-		@IExtensionManagementService protected readonly extensionManagementService: IExtensionManagementService,
-		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService,
-		@IExtensionsWorkbenchService protected readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService: IStorageKeysSyncRegistryService
+		promptedExtensionRecommendations?: PromptedExtensionRecommendations,
+		@IProductService private readonly productService?: IProductService,
+		@IInstantiationService private readonly instantiationService?: IInstantiationService,
+		@IConfigurationService configurationService?: IConfigurationService,
+		@INotificationService private readonly notificationService?: INotificationService,
+		@ITelemetryService telemetryService?: ITelemetryService,
+		@IStorageService private readonly storageService?: IStorageService,
+		@IExtensionManagementService protected readonly extensionManagementService?: IExtensionManagementService,
+		@IAdsTelemetryService private readonly adsTelemetryService?: IAdsTelemetryService,
+		@IExtensionsWorkbenchService protected readonly extensionsWorkbenchService?: IExtensionsWorkbenchService,
+		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService?: IStorageKeysSyncRegistryService
 
 	) {
 		super(promptedExtensionRecommendations);

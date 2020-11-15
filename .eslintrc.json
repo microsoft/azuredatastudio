@@ -605,7 +605,12 @@
                     "**/{vs,sql}/editor/**",
                     "**/{vs,sql}/workbench/{common,browser,electron-sandbox}/**",
                     "**/{vs,sql}/workbench/api/{common,browser,electron-sandbox}/**",
-                    "**/{vs,sql}/workbench/services/**/{common,browser,electron-sandbox}/**"
+                    "**/{vs,sql}/workbench/services/**/{common,browser,electron-sandbox}/**",
+                    "vscode-textmate",
+                    "vscode-oniguruma",
+                    "iconv-lite-umd",
+                    "semver-umd",
+                    "jschardet"
                 ]
             },
             {
@@ -733,7 +738,12 @@
 					"angular2-grid",
 					"html-query-plan",
 					"turndown",
-					"mark.js"
+					"mark.js",
+		            "vscode-textmate",
+                    "vscode-oniguruma",
+                    "iconv-lite-umd",
+                    "semver-umd",
+                    "jschardet"
                 ]
             },
             {
@@ -762,7 +772,12 @@
                     "**/{vs,sql}/workbench/{common,browser,electron-sandbox}/**",
                     "**/{vs,sql}/workbench/api/{common,browser,electron-sandbox}/**",
                     "**/{vs,sql}/workbench/services/**/{common,browser,electron-sandbox}/**",
-                    "**/{vs,sql}/workbench/contrib/**/{common,browser,electron-sandbox}/**"
+                    "**/{vs,sql}/workbench/contrib/**/{common,browser,electron-sandbox}/**",
+                    "vscode-textmate",
+                    "vscode-oniguruma",
+                    "iconv-lite-umd",
+                    "semver-umd",
+                    "jschardet"
                 ]
             },
             {

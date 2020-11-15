@@ -214,7 +214,7 @@ suite('Account Management Service Tests:', () => {
 		// If: I add an account when the provider doesn't exist
 		// Then: It should not resolve
 		return Promise.race([
-			new Promise((resolve, reject) => setTimeout(() => resolve(), 100)),
+			new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 100)),
 			ams.addAccount('doesNotExist').then(() => { throw new Error('Promise resolved when the provider did not exist'); })
 		]);
 	});
@@ -283,7 +283,7 @@ suite('Account Management Service Tests:', () => {
 		// If: I get accounts when the provider doesn't exist
 		// Then: It should not resolve
 		return Promise.race([
-			new Promise((resolve, reject) => setTimeout(() => resolve(), 100)),
+			new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 100)),
 			ams.getAccountsForProvider('doesNotExist').then(() => { throw new Error('Promise resolved when the provider did not exist'); })
 		]);
 	});

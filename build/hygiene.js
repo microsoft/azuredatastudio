@@ -1,11 +1,8 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-const gulp = require('gulp');
 const filter = require('gulp-filter');
 const es = require('event-stream');
 const gulpeslint = require('gulp-eslint');
@@ -15,7 +12,6 @@ const vfs = require('vinyl-fs');
 const path = require('path');
 const fs = require('fs');
 const pall = require('p-all');
-const task = require('./lib/task');
 
 /**
  * Hygiene works by creating cascading subsets of all our files and
@@ -37,6 +33,7 @@ const all = [
 	'!**/node_modules/**',
 	'!build/actions/**/*.js' // {{ SQL CARBON EDIT }}
 ];
+module.exports.all = all;
 
 const indentationFilter = [
 	'**',
@@ -196,8 +193,9 @@ const jsHygieneFilter = [
 	'!src/vs/nls.build.js',
 	'!src/**/insane.js',
 	'!src/**/marked.js',
-	'!**/test/**'
+	'!**/test/**',
 ];
+module.exports.jsHygieneFilter = jsHygieneFilter;
 
 const tsHygieneFilter = [
 	'src/**/*.ts',
@@ -216,55 +214,14 @@ const tsHygieneFilter = [
 	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // {{SQL CARBON EDIT}} skip this because we have no plans on touching this and its not ours
 	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts' // {{SQL CARBON EDIT}} skip this because known issue
 ];
+module.exports.tsHygieneFilter = tsHygieneFilter;
 
 const copyrightHeaderLines = [
 	'/*---------------------------------------------------------------------------------------------',
 	' *  Copyright (c) Microsoft Corporation. All rights reserved.',
-	' *  Licensed under the Source EULA. See License.txt in the project root for license information.',
-	' *--------------------------------------------------------------------------------------------*/'
+	' *  Licensed under the MIT License. See License.txt in the project root for license information.',
+	' *--------------------------------------------------------------------------------------------*/',
 ];
-
-gulp.task('eslint', () => {
-	return vfs.src(all, { base: '.', follow: true, allowEmpty: true })
-		.pipe(filter(jsHygieneFilter.concat(tsHygieneFilter)))
-		.pipe(gulpeslint({
-			configFile: '.eslintrc.json',
-			rulePaths: ['./build/lib/eslint']
-		}))
-		.pipe(gulpeslint.formatEach('compact'))
-		.pipe(gulpeslint.results(results => {
-			if (results.warningCount > 0 || results.errorCount > 0) {
-				throw new Error('eslint failed with warnings and/or errors');
-			}
-		}));
-});
-
-function checkPackageJSON(actualPath) {
-	const actual = require(path.join(__dirname, '..', actualPath));
-	const rootPackageJSON = require('../package.json');
-
-	for (let depName in actual.dependencies) {
-		const depVersion = actual.dependencies[depName];
-		const rootDepVersion = rootPackageJSON.dependencies[depName];
-		if (!rootDepVersion) {
-			// missing in root is allowed
-			continue;
-		}
-		if (depVersion !== rootDepVersion) {
-			this.emit('error', `The dependency ${depName} in '${actualPath}' (${depVersion}) is different than in the root package.json (${rootDepVersion})`);
-		}
-	}
-}
-
-const checkPackageJSONTask = task.define('check-package-json', () => {
-	return gulp.src('package.json')
-		.pipe(es.through(function () {
-			checkPackageJSON.call(this, 'remote/package.json');
-			checkPackageJSON.call(this, 'remote/web/package.json');
-		}));
-});
-gulp.task(checkPackageJSONTask);
-
 
 function hygiene(some) {
 	let errorCount = 0;
@@ -284,30 +241,31 @@ function hygiene(some) {
 		const lines = file.contents.toString('utf8').split(/\r\n|\r|\n/);
 		file.__lines = lines;
 
-		lines
-			.forEach((line, i) => {
-				if (/^\s*$/.test(line)) {
-					// empty or whitespace lines are OK
-				} else if (/^[\t]*[^\s]/.test(line)) {
-					// good indent
-				} else if (/^[\t]* \*/.test(line)) {
-					// block comment using an extra space
-				} else {
-					console.error(file.relative + '(' + (i + 1) + ',1): Bad whitespace indentation');
-					errorCount++;
-				}
-			});
+		lines.forEach((line, i) => {
+			if (/^\s*$/.test(line)) {
+				// empty or whitespace lines are OK
+			} else if (/^[\t]*[^\s]/.test(line)) {
+				// good indent
+			} else if (/^[\t]* \*/.test(line)) {
+				// block comment using an extra space
+			} else {
+				console.error(
+					file.relative + '(' + (i + 1) + ',1): Bad whitespace indentation'
+				);
+				errorCount++;
+			}
+		});
 
 		this.emit('data', file);
 	});
 
 	const copyrights = es.through(function (file) {
-
 		const lines = file.__lines;
+
 		for (let i = 0; i < copyrightHeaderLines.length; i++) {
 			if (lines[i] !== copyrightHeaderLines[i]) {
-				console.error(file.relative + ': Missing or bad copyright statement');
-				errorCount++;
+				//console.error(file.relative + ': Missing or bad copyright statement');
+				//errorCount++;
 				break;
 			}
 		}
@@ -316,31 +274,38 @@ function hygiene(some) {
 	});
 
 	const formatting = es.map(function (file, cb) {
-		tsfmt.processString(file.path, file.contents.toString('utf8'), {
-			verify: false,
-			tsfmt: true,
-			// verbose: true,
-			// keep checkJS happy
-			editorconfig: undefined,
-			replace: undefined,
-			tsconfig: undefined,
-			tsconfigFile: undefined,
-			tsfmtFile: undefined,
-			vscode: undefined,
-			vscodeFile: undefined
-		}).then(result => {
-			let original = result.src.replace(/\r\n/gm, '\n');
-			let formatted = result.dest.replace(/\r\n/gm, '\n');
+		tsfmt
+			.processString(file.path, file.contents.toString('utf8'), {
+				verify: false,
+				tsfmt: true,
+				// verbose: true,
+				// keep checkJS happy
+				editorconfig: undefined,
+				replace: undefined,
+				tsconfig: undefined,
+				tsconfigFile: undefined,
+				tsfmtFile: undefined,
+				vscode: undefined,
+				vscodeFile: undefined,
+			})
+			.then(
+				(result) => {
+					let original = result.src.replace(/\r\n/gm, '\n');
+					let formatted = result.dest.replace(/\r\n/gm, '\n');
 
-			if (original !== formatted) {
-				console.error('File not formatted. Run the \'Format Document\' command to fix it:', file.relative);
-				errorCount++;
-			}
-			cb(null, file);
-
-		}, err => {
-			cb(err);
-		});
+					if (original !== formatted) {
+						console.error(
+							`File not formatted. Run the 'Format Document' command to fix it:`,
+							file.relative
+						);
+						errorCount++;
+					}
+					cb(null, file);
+				},
+				(err) => {
+					cb(err);
+				}
+			);
 	});
 
 	let input;
@@ -359,7 +324,7 @@ function hygiene(some) {
 	const productJsonFilter = filter('product.json', { restore: true });
 
 	const result = input
-		.pipe(filter(f => !f.stat.isDirectory()))
+		.pipe(filter((f) => !f.stat.isDirectory()))
 		.pipe(productJsonFilter)
 		.pipe(process.env['BUILD_SOURCEVERSION'] ? es.through() : productJson)
 		.pipe(productJsonFilter.restore)
@@ -368,74 +333,93 @@ function hygiene(some) {
 		.pipe(filter(copyrightFilter))
 		.pipe(copyrights);
 
-	const typescript = result
-		.pipe(filter(tsHygieneFilter))
-		.pipe(formatting);
+	const typescript = result.pipe(filter(tsHygieneFilter)).pipe(formatting);
 
 	const javascript = result
 		.pipe(filter(jsHygieneFilter.concat(tsHygieneFilter)))
-		.pipe(gulpeslint({
-			configFile: '.eslintrc.json',
-			rulePaths: ['./build/lib/eslint']
-		}))
+		.pipe(
+			gulpeslint({
+				configFile: '.eslintrc.json',
+				rulePaths: ['./build/lib/eslint'],
+			})
+		)
 		.pipe(gulpeslint.formatEach('compact'))
-		.pipe(gulpeslint.results(results => {
-			errorCount += results.warningCount;
-			errorCount += results.errorCount;
-		}));
+		.pipe(
+			gulpeslint.results((results) => {
+				errorCount += results.warningCount;
+				errorCount += results.errorCount;
+			})
+		);
 
 	let count = 0;
-	return es.merge(typescript, javascript)
-		.pipe(es.through(function (data) {
-			count++;
-			if (process.env['TRAVIS'] && count % 10 === 0) {
-				process.stdout.write('.');
+	return es.merge(typescript, javascript).pipe(
+		es.through(
+			function (data) {
+				count++;
+				if (process.env['TRAVIS'] && count % 10 === 0) {
+					process.stdout.write('.');
+				}
+				this.emit('data', data);
+			},
+			function () {
+				process.stdout.write('\n');
+				if (errorCount > 0) {
+					this.emit(
+						'error',
+						'Hygiene failed with ' +
+						errorCount +
+						` errors. Check 'build / gulpfile.hygiene.js'.`
+					);
+				} else {
+					this.emit('end');
+				}
 			}
-			this.emit('data', data);
-		}, function () {
-			process.stdout.write('\n');
-			if (errorCount > 0) {
-				this.emit('error', 'Hygiene failed with ' + errorCount + ' errors. Check \'build/gulpfile.hygiene.js\'.');
-			} else {
-				this.emit('end');
-			}
-		}));
+		)
+	);
 }
+
+module.exports.hygiene = hygiene;
 
 function createGitIndexVinyls(paths) {
 	const cp = require('child_process');
 	const repositoryPath = process.cwd();
 
-	const fns = paths.map(relativePath => () => new Promise((c, e) => {
-		const fullPath = path.join(repositoryPath, relativePath);
+	const fns = paths.map((relativePath) => () =>
+		new Promise((c, e) => {
+			const fullPath = path.join(repositoryPath, relativePath);
 
-		fs.stat(fullPath, (err, stat) => {
-			if (err && err.code === 'ENOENT') { // ignore deletions
-				return c(null);
-			} else if (err) {
-				return e(err);
-			}
-
-			cp.exec(`git show :${relativePath}`, { maxBuffer: 2000 * 1024, encoding: 'buffer' }, (err, out) => {
-				if (err) {
+			fs.stat(fullPath, (err, stat) => {
+				if (err && err.code === 'ENOENT') {
+					// ignore deletions
+					return c(null);
+				} else if (err) {
 					return e(err);
 				}
 
-				c(new VinylFile({
-					path: fullPath,
-					base: repositoryPath,
-					contents: out,
-					stat
-				}));
+				cp.exec(
+					`git show :${relativePath}`,
+					{ maxBuffer: 2000 * 1024, encoding: 'buffer' },
+					(err, out) => {
+						if (err) {
+							return e(err);
+						}
+
+						c(
+							new VinylFile({
+								path: fullPath,
+								base: repositoryPath,
+								contents: out,
+								stat,
+							})
+						);
+					}
+				);
 			});
-		});
-	}));
+		})
+	);
 
-	return pall(fns, { concurrency: 4 })
-		.then(r => r.filter(p => !!p));
+	return pall(fns, { concurrency: 4 }).then((r) => r.filter((p) => !!p));
 }
-
-gulp.task('hygiene', task.series(checkPackageJSONTask, () => hygiene()));
 
 // this allows us to run hygiene as a git pre-commit hook
 if (require.main === module) {
@@ -447,37 +431,43 @@ if (require.main === module) {
 	});
 
 	if (process.argv.length > 2) {
-		hygiene(process.argv.slice(2)).on('error', err => {
+		hygiene(process.argv.slice(2)).on('error', (err) => {
 			console.error();
 			console.error(err);
 			process.exit(1);
 		});
 	} else {
-		cp.exec('git diff --cached --name-only', { maxBuffer: 2000 * 1024 }, (err, out) => {
-			if (err) {
-				console.error();
-				console.error(err);
-				process.exit(1);
-				return;
+		cp.exec(
+			'git diff --cached --name-only',
+			{ maxBuffer: 2000 * 1024 },
+			(err, out) => {
+				if (err) {
+					console.error();
+					console.error(err);
+					process.exit(1);
+				}
+
+				const some = out.split(/\r?\n/).filter((l) => !!l);
+
+				if (some.length > 0) {
+					console.log('Reading git index versions...');
+
+					createGitIndexVinyls(some)
+						.then(
+							(vinyls) =>
+								new Promise((c, e) =>
+									hygiene(es.readArray(vinyls))
+										.on('end', () => c())
+										.on('error', e)
+								)
+						)
+						.catch((err) => {
+							console.error();
+							console.error(err);
+							process.exit(1);
+						});
+				}
 			}
-
-			const some = out
-				.split(/\r?\n/)
-				.filter(l => !!l);
-
-			if (some.length > 0) {
-				console.log('Reading git index versions...');
-
-				createGitIndexVinyls(some)
-					.then(vinyls => new Promise((c, e) => hygiene(es.readArray(vinyls))
-						.on('end', () => c())
-						.on('error', e)))
-					.catch(err => {
-						console.error();
-						console.error(err);
-						process.exit(1);
-					});
-			}
-		});
+		);
 	}
 }

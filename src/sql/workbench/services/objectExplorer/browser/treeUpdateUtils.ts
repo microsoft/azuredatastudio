@@ -283,7 +283,7 @@ export class TreeUpdateUtils {
 							reject(new Error(e.errorMessage));
 						}
 						if (e.connection.id === connection.id) {
-							resolve();
+							resolve(undefined);
 						}
 					});
 				});
