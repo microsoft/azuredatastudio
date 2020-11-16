@@ -442,6 +442,18 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.cellModel.active = true;
 		this._model.updateActiveCell(this.cellModel);
 	}
+
+	private findPathRelativeToContent(elementContent: string): string {
+		let notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
+		if (notebookFolder) {
+			let absolutePathURI = URI.parse(elementContent);
+			if (absolutePathURI?.scheme === 'file') {
+				let relativePath = path.relative(notebookFolder, absolutePathURI.fsPath);
+				return relativePath ? relativePath : '';
+			}
+		}
+		return '';
+	}
 }
 
 function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {
