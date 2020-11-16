@@ -88,6 +88,8 @@ export class ConnectionStore {
 					}
 					return { profile: credentialsItem, savedCred: !!savedCred };
 				});
+		} else if (credentialsItem.authenticationType === 'AzureMFA' && credentialsItem.azureAccount) {
+			return Promise.resolve({ profile: credentialsItem, savedCred: true });
 		} else {
 			// No need to look up the password
 			return Promise.resolve({ profile: credentialsItem, savedCred: credentialsItem.savePassword });
