@@ -4737,10 +4737,6 @@ declare module 'azdata' {
 			 * This is dynamic and is controlled by kernels, so cannot be more specific
 			 */
 			data: { [key: string]: any };
-			/**
-			 * Optional metadata, also a mime bundle
-			 */
-			metadata?: {};
 		}
 		export interface IDisplayData extends IDisplayResult {
 			output_type: 'display_data';
