@@ -147,10 +147,12 @@ export class ResourceTypeWizard {
 		pages.unshift(new ToolsAndEulaPage(this));
 		this.wizardObject!.pages = pages.map(p => p.pageObject);
 		this.pages = pages;
-		this.pages.forEach((page) => {
+		this.pages.forEach((page, idx) => {
 			page.pageObject.onValidityChanged((isValid: boolean) => {
-				// generateScriptButton is enabled only when the page is valid.
-				this.wizardObject.generateScriptButton.enabled = isValid;
+				if (idx === pages.length - 1) {
+					// generateScriptButton is enabled only when the last page is valid.
+					this.wizardObject.generateScriptButton.enabled = isValid;
+				}
 			});
 			page.initialize();
 		});
