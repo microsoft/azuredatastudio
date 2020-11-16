@@ -4740,9 +4740,7 @@ declare module 'azdata' {
 			/**
 			 * Optional metadata, also a mime bundle
 			 */
-			metadata?: {
-				resultSet?: ResultSetSummary;
-			};
+			metadata?: {};
 		}
 		export interface IDisplayData extends IDisplayResult {
 			output_type: 'display_data';
