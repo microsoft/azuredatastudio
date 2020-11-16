@@ -431,9 +431,16 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			vscode.window.showInformationMessage(msgWaitingForInstall);
 			return this._installCompletion.promise;
 		}
-
+		let pythonInstalledBeginTime = Date.now();
 		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled();
+		let pythonInstalledEndTime = Date.now();
+		let pythonInstalledTime = pythonInstalledEndTime - pythonInstalledBeginTime;
+		console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + pythonInstalledTime.toString() + 'ms to check if python is installed~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+		let packagesInstalledBeginTime = Date.now();
 		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
+		let packagesInstalledEndTime = Date.now();
+		let packagesInstalledTime = packagesInstalledEndTime - packagesInstalledBeginTime;
+		console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + packagesInstalledTime.toString() + 'ms to check if required packages are installed~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
 		if (!isPythonInstalled || !areRequiredPackagesInstalled) {
 			let pythonWizard = new ConfigurePythonWizard(this);
 			await pythonWizard.start(kernelDisplayName, true);
