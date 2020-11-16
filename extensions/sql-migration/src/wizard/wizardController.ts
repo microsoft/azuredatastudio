@@ -11,6 +11,7 @@ import { WIZARD_TITLE } from '../models/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
 import { SubscriptionSelectionPage } from './subscriptionSelectionPage';
+import { DatabaseBackupPage } from './databaseBackupPage';
 
 export class WizardController {
 	constructor(private readonly extensionContext: vscode.ExtensionContext) {
@@ -34,8 +35,8 @@ export class WizardController {
 		const sourceConfigurationPage = new SourceConfigurationPage(wizard, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
 		const subscriptionSelectionPage = new SubscriptionSelectionPage(wizard, stateModel);
-
-		const pages: MigrationWizardPage[] = [sourceConfigurationPage, skuRecommendationPage, subscriptionSelectionPage];
+		const databaseBackupPage = new DatabaseBackupPage(wizard, stateModel);
+		const pages: MigrationWizardPage[] = [sourceConfigurationPage, skuRecommendationPage, subscriptionSelectionPage, databaseBackupPage];
 
 		wizard.pages = pages.map(p => p.getwizardPage());
 
