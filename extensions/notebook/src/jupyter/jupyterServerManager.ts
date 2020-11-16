@@ -55,7 +55,12 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	public async startServer(kernelSpec: nb.IKernelSpec): Promise<void> {
 		try {
 			if (!this._jupyterServer) {
+				let doStartServerBeginTime = Date.now();
 				this._jupyterServer = await this.doStartServer(kernelSpec);
+				let doStartServerEndTime = Date.now();
+				let doStartServerTime = doStartServerEndTime - doStartServerBeginTime;
+				console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + doStartServerTime.toString() + 'ms for doStartServer method~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+
 				this.options.extensionContext.subscriptions.push(this);
 				let partialSettings = LocalJupyterServerManager.getLocalConnectionSettings(this._jupyterServer.uri);
 				this._serverSettings = partialSettings;
@@ -103,8 +108,16 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	}
 
 	private async doStartServer(kernelSpec: nb.IKernelSpec): Promise<IServerInstance> { // We can't find or create servers until the installation is complete
+		let getJupyterInstallBeginTime = Date.now();
 		let installation = this.options.jupyterInstallation;
+		let getJupyterInstallEndTime = Date.now();
+		let getJupyterInstallTime = getJupyterInstallEndTime - getJupyterInstallBeginTime;
+		console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + getJupyterInstallTime.toString() + 'ms to get Jupyter install~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+		let getPythonInstallBeginTime = Date.now();
 		await installation.promptForPythonInstall(kernelSpec.display_name);
+		let getPythonInstallEndTime = Date.now();
+		let getPythonInstallTime = getPythonInstallEndTime - getPythonInstallBeginTime;
+		console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + getPythonInstallTime.toString() + 'ms to get python install~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
 		vscode.commands.executeCommand(BuiltInCommands.SetContext, CommandContext.NotebookPythonInstalled, true);
 
 		// Calculate the path to use as the notebook-dir for Jupyter based on the path of the uri of the
@@ -117,6 +130,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		// /path2/nb2.ipynb
 		// /path2/nb3.ipynb
 		// ... will result in 2 notebook servers being started, one for /path1/ and one for /path2/
+		let getNotebookDirBeginTime = Date.now();
 		let notebookDir = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(this.documentPath))?.uri.fsPath;
 		if (!notebookDir) {
 			let docDir;
@@ -132,7 +146,9 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 				notebookDir = docDir;
 			}
 		}
-
+		let getNotebookDirEndTime = Date.now();
+		let getNotebookDirTime = getNotebookDirEndTime - getNotebookDirBeginTime;
+		console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + getNotebookDirTime.toString() + 'ms to get notebook dir~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
 		// TODO handle notification of start/stop status
 		// notebookContext.updateLoadingMessage(localizedConstants.msgJupyterStarting);
 
@@ -146,10 +162,21 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 
 		this._instanceOptions = serverInstanceOptions;
 
+		let createServerBeginTime = Date.now();
 		let server = this.factory.createInstance(serverInstanceOptions);
+		let createServerEndTime = Date.now();
+		let createServerTime = createServerEndTime - createServerBeginTime;
+		console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + createServerTime.toString() + 'ms to create server~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+		let configureServerBeginTime = Date.now();
 		await server.configure();
+		let configureServerEndTime = Date.now();
+		let configureServerTime = configureServerEndTime - configureServerBeginTime;
+		console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + configureServerTime.toString() + 'ms to configure server~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+		let startServerBeginTime = Date.now();
 		await server.start();
-
+		let startServerEndTime = Date.now();
+		let startServerTime = startServerEndTime - startServerBeginTime;
+		console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + startServerTime.toString() + 'ms to start server~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
 		return server;
 	}
 }

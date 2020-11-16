@@ -36,6 +36,7 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 	}
 
 	private doGetNotebookManager(notebookUri: vscode.Uri): nb.NotebookManager {
+		let startTime = Date.now();
 		let baseFolder = this.transformToBaseFolder(notebookUri?.fsPath?.toString());
 		let manager = this.managerTracker.get(baseFolder);
 		if (!manager) {
@@ -47,6 +48,9 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 			manager = new JupyterNotebookManager(serverManager);
 			this.managerTracker.set(baseFolder, manager);
 		}
+		let endTime = Date.now();
+		let timeElapsed = endTime - startTime;
+		console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + timeElapsed.toString() + 'ms to get the notebook manager~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
 		return manager;
 	}
 
