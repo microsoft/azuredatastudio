@@ -17,7 +17,7 @@ export class NativeEnablePreviewFeatures extends AbstractEnablePreviewFeatures {
 		@INotificationService notificationService: INotificationService,
 		@IHostService hostService: IHostService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@INativeHostService private readonly nativeHostService: INativeHostService
+		@INativeHostService private readonly electronService: INativeHostService
 	) {
 		super(storageService, notificationService, hostService, configurationService);
 
@@ -25,6 +25,6 @@ export class NativeEnablePreviewFeatures extends AbstractEnablePreviewFeatures {
 	}
 
 	protected getWindowCount(): Promise<number> {
-		return this.nativeHostService.getWindowCount();
+		return this.electronService.getWindowCount();
 	}
 }

@@ -223,7 +223,6 @@ export class CustomEditorInput extends LazilyResolvedWebviewEditorInput {
 		return newEditor;
 	}
 
-
 	public undo(): void {
 		assertIsDefined(this._modelRef);
 		this.undoRedoService.undo(this.resource);

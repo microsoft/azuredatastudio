@@ -6,7 +6,6 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IStringDictionary } from 'vs/base/common/collections';
 import { Event } from 'vs/base/common/event';
-// {{ SQL CARBON EDIT }}
 import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 
 export interface IExtensionsConfigContent {
@@ -31,7 +30,7 @@ export const enum ExtensionRecommendationReason {
 	Application,
 }
 
-export interface IExtensionRecommendationReason {
+export interface IExtensionRecommendationReson {
 	reasonId: ExtensionRecommendationReason;
 	reasonText: string;
 }
@@ -42,7 +41,7 @@ export interface IExtensionRecommendationsService {
 	readonly _serviceBrand: undefined;
 
 	readonly onDidChangeRecommendations: Event<void>;
-	getAllRecommendationsWithReason(): IStringDictionary<IExtensionRecommendationReason>;
+	getAllRecommendationsWithReason(): IStringDictionary<IExtensionRecommendationReson>;
 
 	getImportantRecommendations(): Promise<string[]>;
 	getOtherRecommendations(): Promise<string[]>;
@@ -51,9 +50,9 @@ export interface IExtensionRecommendationsService {
 	getConfigBasedRecommendations(): Promise<{ important: string[], others: string[] }>;
 	getWorkspaceRecommendations(): Promise<string[]>;
 	getKeymapRecommendations(): string[];
-	// {{ SQL CARBON EDIT }} - add our methods
-	promptRecommendedExtensionsByScenario(scenarioType: string): void;
-	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]>
+
+	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]>; // {{SQL CARBON EDIT}}
+	promptRecommendedExtensionsByScenario(scenarioType: string): void; // {{SQL CARBON EDIT}}
 }
 
 export type IgnoredRecommendationChangeNotification = {

@@ -43,6 +43,18 @@ function getParentWindowIfSameOrigin(w: Window): Window | null {
 	return w.parent;
 }
 
+function findIframeElementInParentWindow(parentWindow: Window, childWindow: Window): HTMLIFrameElement | null {
+	let parentWindowIframes = parentWindow.document.getElementsByTagName('iframe');
+	let iframe: HTMLIFrameElement;
+	for (let i = 0, len = parentWindowIframes.length; i < len; i++) {
+		iframe = parentWindowIframes[i];
+		if (iframe.contentWindow === childWindow) {
+			return iframe;
+		}
+	}
+	return null;
+}
+
 export class IframeUtils {
 
 	/**
@@ -60,7 +72,7 @@ export class IframeUtils {
 				if (parent) {
 					sameOriginWindowChainCache.push({
 						window: w,
-						iframeElement: w.frameElement || null
+						iframeElement: findIframeElementInParentWindow(parent, w)
 					});
 				} else {
 					sameOriginWindowChainCache.push({

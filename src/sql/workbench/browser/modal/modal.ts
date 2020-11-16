@@ -297,11 +297,11 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	private updateExpandMessageState() {
 		this._messageSummary!.style.cursor = this.shouldShowExpandMessageButton ? 'pointer' : 'default';
-		DOM.removeClass(this._messageSummary!, MESSAGE_EXPANDED_MODE_CLASS);
+		this._messageSummary!.classList.remove(MESSAGE_EXPANDED_MODE_CLASS);
 		if (this.shouldShowExpandMessageButton) {
 			DOM.append(this._detailsButtonContainer!, this._toggleMessageDetailButton!.element);
 		} else {
-			this._toggleMessageDetailButton!.element.remove();
+			DOM.removeNode(this._toggleMessageDetailButton!.element);
 		}
 	}
 
@@ -312,7 +312,7 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (this._messageDetailText) {
 			if (isExpanded) {
-				this._messageDetail!.remove();
+				DOM.removeNode(this._messageDetail!);
 			} else {
 				DOM.append(this._messageBody!, this._messageDetail!);
 			}
@@ -454,7 +454,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		});
 		if (buttonIndex > -1 && buttonIndex < this._footerButtons.length) {
 			let button = this._footerButtons[buttonIndex];
-			button.element.remove();
+			DOM.removeNode(button.element);
 			button.dispose();
 			this._footerButtons.splice(buttonIndex, 1);
 		}
@@ -493,7 +493,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				this._messageSummary!.title = message!;
 				this._messageDetail!.innerText = description;
 			}
-			this._messageDetail!.remove();
+			DOM.removeNode(this._messageDetail!);
 			this.messagesElementVisible = !!this._messageSummaryText;
 			this.updateExpandMessageState();
 		}
@@ -505,7 +505,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				DOM.prepend(this._modalContent!, this._messageElement!);
 			}
 		} else {
-			this._messageElement!.remove();
+			DOM.removeNode(this._messageElement!);
 			// Set the focus to first focus element if the focus is not within the dialog
 			if (!DOM.isAncestor(document.activeElement, this._bodyContainer!)) {
 				this.setInitialFocusedElement();

@@ -70,10 +70,8 @@
         "displayName": "%resource-type-sql-image-display-name%",
         "description": "%resource-type-sql-image-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/sql_server_container.svg",
-          "dark": "./images/sql_server_container_inverse.svg"
-        },
+        "icon": "./images/sql_server_container.svg",
+        "tags": ["On-premises", "SQL Server"],
         "options": [
           {
             "name": "version",
@@ -201,10 +199,8 @@
         "displayName": "%resource-type-sql-bdc-display-name%",
         "description": "%resource-type-sql-bdc-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/sql_bdc.svg",
-          "dark": "./images/sql_bdc_inverse.svg"
-        },
+        "icon": "./images/sql_bdc.svg",
+        "tags": ["On-premises", "SQL Server"],
         "options": [
           {
             "name": "version",
@@ -259,7 +255,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.0.0"
+                "version": "20.2.2"
               }
             ],
             "when": "target=new-aks&&version=bdc2019"
@@ -276,7 +272,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.0.0"
+                "version": "20.2.2"
               }
             ],
             "when": "target=existing-aks&&version=bdc2019"
@@ -293,7 +289,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.0.0"
+                "version": "20.2.2"
               }
             ],
             "when": "target=existing-kubeadm&&version=bdc2019"
@@ -310,7 +306,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.0.0"
+                "version": "20.2.2"
               }
             ],
             "when": "target=existing-aro&&version=bdc2019"
@@ -327,7 +323,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.0.0"
+                "version": "20.2.2"
               }
             ],
             "when": "target=existing-openshift&&version=bdc2019"
@@ -363,6 +359,7 @@
           "light": "./images/sql_server_on_windows.svg",
           "dark": "./images/sql_server_on_windows_inverse.svg"
         },
+        "tags": ["On-premises", "SQL Server"],
         "options": [
           {
             "name": "version",
@@ -397,11 +394,22 @@
         "displayName": "%azure-sqldb-display-name%",
         "description": "%azure-sqldb-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/azure-sql-db.svg",
-          "dark": "./images/azure-sql-db.svg"
-        },
-        "okButtonText": "%azure-sqldb-ok-button-text%",
+        "icon": "./images/azure-sql-db.svg",
+        "tags": ["SQL Server", "Cloud"],
+        "okButtonText": [
+          {
+            "value": "%azure-sqldb-notebook-ok-button-text%",
+            "when": "resource-type=single-database"
+          },
+          {
+            "value": "%azure-sqldb-portal-ok-button-text%",
+            "when": "resource-type=elastic-pool"
+          },
+          {
+            "value": "%azure-sqldb-portal-ok-button-text%",
+            "when": "resource-type=database-server"
+          }
+        ],
         "options": [
           {
             "name": "resource-type",
@@ -424,8 +432,14 @@
         ],
         "providers": [
           {
-            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLDatabase",
-            "requiredTools": [],
+            "azureSQLDBWizard":{
+              "notebook": "./notebooks/azuredb/create-sqldb.ipynb"
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli"
+              }
+            ],
             "when": "resource-type=single-database"
           },
           {
@@ -462,13 +476,11 @@
         "displayName": "%azure-sqlvm-display-name%",
         "description": "%azure-sqlvm-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/azure-sql-vm.svg",
-          "dark": "./images/azure-sql-vm.svg"
-        },
+        "icon": "./images/azure-sql-vm.svg",
+        "tags": ["SQL Server", "Cloud"],
         "providers": [
           {
-            "azureSQLVMWizard":{
+            "azureSQLVMWizard": {
               "notebook": "./notebooks/azurevm/create-sqlvm.ipynb"
             },
             "requiredTools": [
@@ -511,11 +523,13 @@
   "devDependencies": {
     "@types/mocha": "^5.2.5",
     "@types/semver": "^7.3.1",
+    "@types/sinon": "^9.0.8",
     "@types/yamljs": "0.2.30",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
+    "sinon": "^9.2.0",
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.1.0"
   }

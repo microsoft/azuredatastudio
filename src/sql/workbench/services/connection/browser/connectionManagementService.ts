@@ -46,6 +46,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { entries } from 'sql/base/common/collections';
 import { values } from 'vs/base/common/collections';
+import { assign } from 'vs/base/common/objects';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
@@ -572,8 +573,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		let iconProvider = this._iconProviders.get(connectionManagementInfo.providerId);
 		if (iconProvider) {
-			let serverInfo: azdata.ServerInfo = this.getServerInfo(connectionProfile.id);
-			let profile: interfaces.IConnectionProfile = connectionProfile.toIConnectionProfile();
+			const serverInfo: azdata.ServerInfo | undefined = this.getServerInfo(connectionProfile.id);
+			if (!serverInfo) {
+				this._logService.warn(`Could not find ServerInfo for connection ${connectionProfile.id} when updating icon`);
+				return;
+			}
+			const profile: interfaces.IConnectionProfile = connectionProfile.toIConnectionProfile();
 			iconProvider.getConnectionIconId(profile, serverInfo).then(iconId => {
 				if (iconId && this._mementoObj && this._mementoContext) {
 					if (!this._mementoObj.CONNECTION_ICON_ID) {
@@ -845,7 +850,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	// Request Senders
 	private async sendConnectRequest(connection: interfaces.IConnectionProfile, uri: string): Promise<boolean> {
-		let connectionInfo = Object.assign({}, {
+		let connectionInfo = assign({}, {
 			options: connection.options
 		});
 
@@ -1375,10 +1380,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (!profile) {
 			return undefined;
 		}
-
-		let serverInfo = profile.serverInfo;
-
-		return serverInfo;
+		return profile.serverInfo;
 	}
 
 	public getConnectionProfileById(profileId: string): interfaces.IConnectionProfile {

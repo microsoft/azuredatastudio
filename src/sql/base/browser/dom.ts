@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { endsWith } from 'sql/base/common/strings';
 import * as types from 'vs/base/common/types';
 
 export function isHidden(element: HTMLElement): boolean {
@@ -21,7 +22,7 @@ export function convertSize(size: number | string | undefined, defaultValue?: st
 		return defaultValue;
 	}
 	let convertedSize: string = size ? size.toString() : defaultValue;
-	if (!convertedSize.toLowerCase().endsWith('px') && !convertedSize.toLowerCase().endsWith('%')) {
+	if (!endsWith(convertedSize.toLowerCase(), 'px') && !endsWith(convertedSize.toLowerCase(), '%')) {
 		convertedSize = convertedSize + 'px';
 	}
 	return convertedSize;
@@ -33,9 +34,9 @@ export function convertSize(size: number | string | undefined, defaultValue?: st
  */
 export function convertSizeToNumber(size: number | string | undefined): number {
 	if (size && typeof (size) === 'string') {
-		if (size.toLowerCase().endsWith('px')) {
+		if (endsWith(size.toLowerCase(), 'px')) {
 			return +size.replace('px', '');
-		} else if (size.toLowerCase().endsWith('em')) {
+		} else if (endsWith(size.toLowerCase(), 'em')) {
 			return +size.replace('em', '') * 11;
 		}
 	} else if (!size) {

@@ -30,22 +30,22 @@ export class ClientSession implements IClientSession {
 	private _unhandledMessageEmitter = new Emitter<nb.IMessage>();
 	private _propertyChangedEmitter = new Emitter<'path' | 'name' | 'type'>();
 	private _notebookUri: URI;
-	private _type: string;
-	private _name: string;
+	private _type: string = '';
+	private _name: string = '';
 	private _isReady: boolean;
 	private _ready: Deferred<void>;
 	private _kernelChangeCompleted: Deferred<void>;
-	private _kernelDisplayName: string;
-	private _errorMessage: string;
-	private _cachedKernelSpec: nb.IKernelSpec;
+	private _kernelDisplayName: string = '';
+	private _errorMessage: string = '';
+	private _cachedKernelSpec: nb.IKernelSpec | undefined;
 	private _kernelChangeHandlers: KernelChangeHandler[] = [];
 	private _defaultKernel: nb.IKernelSpec;
 
 	//#endregion
 
-	private _serverLoadFinished: Promise<void>;
-	private _session: nb.ISession;
-	private isServerStarted: boolean;
+	private _serverLoadFinished: Promise<void> = Promise.resolve();
+	private _session: nb.ISession | undefined;
+	private isServerStarted: boolean = false;
 	private notebookManager: INotebookManager;
 	private _kernelConfigActions: ((kernelName: string) => Promise<any>)[] = [];
 	private _connectionId: string = '';
@@ -72,7 +72,7 @@ export class ClientSession implements IClientSession {
 		this._isReady = true;
 		this._ready.resolve();
 		if (!this.isInErrorState && this._session && this._session.kernel) {
-			await this.notifyKernelChanged(undefined, this._session.kernel);
+			await this.notifyKernelChanged(this._session.kernel);
 		}
 	}
 
@@ -173,7 +173,7 @@ export class ClientSession implements IClientSession {
 	public get propertyChanged(): Event<'path' | 'name' | 'type'> {
 		return this._propertyChangedEmitter.event;
 	}
-	public get kernel(): nb.IKernel | null {
+	public get kernel(): nb.IKernel | undefined {
 		return this._session ? this._session.kernel : undefined;
 	}
 	public get notebookUri(): URI {
@@ -210,7 +210,7 @@ export class ClientSession implements IClientSession {
 		return !!this._errorMessage;
 	}
 
-	public get cachedKernelSpec(): nb.IKernelSpec {
+	public get cachedKernelSpec(): nb.IKernelSpec | undefined {
 		return this._cachedKernelSpec;
 	}
 	//#endregion
@@ -219,29 +219,31 @@ export class ClientSession implements IClientSession {
 	/**
 	 * Change the current kernel associated with the document.
 	 */
-	async changeKernel(options: nb.IKernelSpec, oldValue?: nb.IKernel): Promise<nb.IKernel> {
+	async changeKernel(options: nb.IKernelSpec, oldValue?: nb.IKernel): Promise<nb.IKernel | undefined> {
 		this._kernelChangeCompleted = new Deferred<void>();
 		this._isReady = false;
 		let oldKernel = oldValue ? oldValue : this.kernel;
 
 		let kernel = await this.doChangeKernel(options);
 		try {
-			await kernel.ready;
+			await kernel?.ready;
 		} catch (error) {
 			// Cleanup some state before re-throwing
-			this._isReady = kernel.isReady;
+			this._isReady = kernel ? kernel.isReady : false;
 			this._kernelChangeCompleted.resolve();
 			throw error;
 		}
-		let newKernel = this._session ? kernel : this._session.kernel;
-		this._isReady = kernel.isReady;
+		let newKernel = this._session ? this._session.kernel : kernel;
+		this._isReady = kernel ? kernel.isReady : false;
 		await this.updateCachedKernelSpec();
 		// Send resolution events to listeners
-		await this.notifyKernelChanged(oldKernel, newKernel);
+		if (newKernel) {
+			await this.notifyKernelChanged(newKernel, oldKernel);
+		}
 		return kernel;
 	}
 
-	private async notifyKernelChanged(oldKernel: nb.IKernel, newKernel: nb.IKernel): Promise<void> {
+	private async notifyKernelChanged(newKernel: nb.IKernel, oldKernel?: nb.IKernel): Promise<void> {
 		let changeArgs: nb.IKernelChangedArgs = {
 			oldValue: oldKernel,
 			newValue: newKernel
@@ -267,8 +269,8 @@ export class ClientSession implements IClientSession {
 	/**
 	 * Helper method to either call ChangeKernel on current session, or start a new session
 	 */
-	private async doChangeKernel(options: nb.IKernelSpec): Promise<nb.IKernel> {
-		let kernel: nb.IKernel;
+	private async doChangeKernel(options: nb.IKernelSpec): Promise<nb.IKernel | undefined> {
+		let kernel: nb.IKernel | undefined;
 		if (this._session) {
 			kernel = await this._session.changeKernel(options);
 			await this.runKernelConfigActions(kernel.name);
@@ -289,7 +291,7 @@ export class ClientSession implements IClientSession {
 			// TODO is there any case where skipping causes errors? So far it seems like it gets called twice
 			return;
 		}
-		if (connection.id !== '-1' && connection.id !== this._connectionId) {
+		if (connection.id !== '-1' && connection.id !== this._connectionId && this._session) {
 			await this._session.configureConnection(connection);
 			this._connectionId = connection.id;
 		}

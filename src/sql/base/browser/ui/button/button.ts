@@ -24,18 +24,18 @@ export class Button extends vsButton {
 
 		this._register(DOM.addDisposableListener(this.element, DOM.EventType.MOUSE_DOWN, e => {
 			if (!DOM.hasClass(this.element, 'disabled') && e.button === 0) {
-				DOM.addClass(this.element, 'active');
+				this.element.classList.add('active');
 			}
 		}));
 
 		this._register(DOM.addDisposableListener(this.element, DOM.EventType.MOUSE_UP, e => {
 			DOM.EventHelper.stop(e);
-			DOM.removeClass(this.element, 'active');
+			this.element.classList.remove('active');
 		}));
 
 		this._register(DOM.addDisposableListener(this.element, DOM.EventType.MOUSE_LEAVE, e => {
 			DOM.EventHelper.stop(e);
-			DOM.removeClass(this.element, 'active');
+			this.element.classList.remove('active');
 		}));
 	}
 

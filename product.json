@@ -5,7 +5,7 @@
 	"dataFolderName": ".azuredatastudio",
 	"win32MutexName": "azuredatastudio",
 	"licenseName": "Microsoft EULA",
-	"licenseUrl": "https://github.com/microsoft/azuredatastudio/blob/main/LICENSE.txt",
+	"licenseUrl": "https://github.com/Microsoft/azuredatastudio/blob/main/LICENSE.txt",
 	"win32DirName": "Azure Data Studio",
 	"win32NameVersion": "Azure Data Studio",
 	"win32RegValueName": "azuredatastudio",
@@ -20,17 +20,17 @@
 	"darwinBundleIdentifier": "com.azuredatastudio.oss",
 	"linuxIconName": "com.azuredatastudio.oss",
 	"licenseFileName": "LICENSE.txt",
-	"reportIssueUrl": "https://github.com/microsoft/azuredatastudio/issues/new?labels=customer%20reported%20issue",
+	"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new?labels=customer%20reported%20issue",
 	"requestFeatureUrl": "https://go.microsoft.com/fwlink/?linkid=2118021",
 	"privacyStatementUrl": "https://privacy.microsoft.com/en-us/privacystatement",
-	"telemetryOptOutUrl": "https://github.com/microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting",
+	"telemetryOptOutUrl": "https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting",
 	"urlProtocol": "azuredatastudio",
 	"enableTelemetry": true,
 	"aiConfig": {
 		"asimovKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e"
 	},
 	"sendASmile": {
-		"reportIssueUrl": "https://github.com/microsoft/azuredatastudio/issues/new?labels=customer%20reported%20issue",
+		"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new?labels=customer%20reported%20issue",
 		"requestFeatureUrl": "https://go.microsoft.com/fwlink/?linkid=2118115"
 	},
 	"gettingStartedUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
@@ -79,7 +79,7 @@
 		{
 			"name": "Microsoft.sqlservernotebook",
 			"version": "0.3.8",
-			"repo": "https://github.com/microsoft/azuredatastudio"
+			"repo": "https://github.com/Microsoft/azuredatastudio"
 		}
 	],
 	"webBuiltInExtensions": []

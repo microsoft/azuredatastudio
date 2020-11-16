@@ -544,9 +544,7 @@
                     "vscode-textmate",
                     "vscode-oniguruma",
                     "iconv-lite-umd",
-                    "semver-umd",
-                    "tas-client-umd",
-                    "jschardet"
+                    "semver-umd"
                 ]
             },
             {
@@ -581,10 +579,7 @@
                     "sanitize-html",
                     "@angular/*",
                     "rxjs/**",
-                    "vscode-oniguruma",
-                    "iconv-lite-umd",
-                    "semver-umd",
-                    "jschardet"
+                    "vscode-oniguruma"
                 ]
             },
             {
@@ -604,8 +599,8 @@
                 "target": "**/{vs,sql}/workbench/services/**/electron-sandbox/**",
                 "restrictions": [
                     "vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/**/{common,browser,worker,electron-sandbox}/**",
+                    "vs/css!./**/*",
+                    "**/{vs,sql}/base/**/{common,browser,worker,electron-sandbox}/**",
                     "**/{vs,sql}/platform/**/{common,browser,electron-sandbox}/**",
                     "**/{vs,sql}/editor/**",
                     "**/{vs,sql}/workbench/{common,browser,electron-sandbox}/**",
@@ -744,7 +739,7 @@
 					"html-query-plan",
 					"turndown",
 					"mark.js",
-					"vscode-textmate",
+		            "vscode-textmate",
                     "vscode-oniguruma",
                     "iconv-lite-umd",
                     "semver-umd",
@@ -777,8 +772,8 @@
                     "**/{vs,sql}/workbench/{common,browser,electron-sandbox}/**",
                     "**/{vs,sql}/workbench/api/{common,browser,electron-sandbox}/**",
                     "**/{vs,sql}/workbench/services/**/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/workbench/contrib/**/{common,browser,electron-sandbox}/**",
-					"vscode-textmate",
+                    "**/{vs,sql}/workbench/contrib/**/{common,browser,electron-sandbox}/**",
+                    "vscode-textmate",
                     "vscode-oniguruma",
                     "iconv-lite-umd",
                     "semver-umd",

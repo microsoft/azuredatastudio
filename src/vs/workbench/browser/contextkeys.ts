@@ -21,6 +21,7 @@ import { PanelPositionContext } from 'vs/workbench/common/panel';
 import { getRemoteName } from 'vs/platform/remote/common/remoteHosts';
 import { IWorkingCopyService } from 'vs/workbench/services/workingCopy/common/workingCopyService';
 import { isNative } from 'vs/base/common/platform';
+
 export const WorkbenchStateContext = new RawContextKey<string>('workbenchState', undefined);
 export const WorkspaceFolderCountContext = new RawContextKey<number>('workspaceFolderCount', 0);
 export const EmptyWorkspaceSupportContext = new RawContextKey<boolean>('emptyWorkspaceSupport', true);

@@ -11,6 +11,7 @@ import { MainThreadModelViewShape } from 'sql/workbench/api/common/sqlExtHost.pr
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IComponentShape, IItemConfig, ComponentEventType, IComponentEventArgs, ModelComponentTypes, DeclarativeDataType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TitledFormItemLayout } from 'sql/workbench/browser/modelComponents/formContainer.component';
+import { assign } from 'vs/base/common/objects';
 
 interface InternalItemConfig {
 	toIItemConfig(): IItemConfig;
@@ -177,7 +178,7 @@ suite('ExtHostModelView Validation Tests', () => {
 				topLevelInputFormComponent,
 				{
 					components: [
-						Object.assign(groupInputFormComponent, { layout: groupInputLayout }),
+						assign(groupInputFormComponent, { layout: groupInputLayout }),
 						groupDropdownFormComponent
 					],
 					title: groupTitle

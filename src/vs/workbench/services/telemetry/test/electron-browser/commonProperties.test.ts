@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
 import * as path from 'vs/base/common/path';
@@ -28,7 +28,7 @@ suite('Telemetry - common properties', function () {
 		rimraf(parentDir, RimRafMode.MOVE).then(done, done);
 	});
 
-	test.skip('default', async function () { // {{SQL CARBON EDIT}} skip test
+	test('default', async function () {
 		await mkdirp(parentDir);
 		fs.writeFileSync(installSource, 'my.install.source');
 		const props = await resolveWorkbenchCommonProperties(testStorageService, commit, version, 'someMachineId', undefined, installSource);
@@ -56,7 +56,7 @@ suite('Telemetry - common properties', function () {
 		assert.ok(!('common.source' in props_1));
 	});
 
-	test.skip('lastSessionDate when aviablale', async function () { // {{SQL CARBON EDIT}} skip test
+	test('lastSessionDate when aviablale', async function () {
 
 		testStorageService.store('telemetry.lastSessionDate', new Date().toUTCString(), StorageScope.GLOBAL);
 
@@ -66,7 +66,7 @@ suite('Telemetry - common properties', function () {
 		assert.equal(props['common.isNewSession'], 0);
 	});
 
-	test.skip('values chance on ask', async function () { // {{SQL CARBON EDIT}} skip test
+	test('values chance on ask', async function () {
 		const props = await resolveWorkbenchCommonProperties(testStorageService, commit, version, 'someMachineId', undefined, installSource);
 		let value1 = props['common.sequence'];
 		let value2 = props['common.sequence'];

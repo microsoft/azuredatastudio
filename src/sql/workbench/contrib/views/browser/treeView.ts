@@ -75,7 +75,6 @@ export class TreeView extends Disposable implements ITreeView {
 	private messageElement!: HTMLDivElement;
 	private tree: Tree | undefined;
 	private treeLabels: ResourceLabels | undefined;
-	description: string | undefined;
 
 	public readonly root: ITreeItem;
 	private elementsToRefresh: ITreeItem[] = [];
@@ -213,6 +212,16 @@ export class TreeView extends Disposable implements ITreeView {
 		}
 
 		this._onDidChangeWelcomeState.fire();
+	}
+
+	private _description: string | undefined;
+	get description(): string | undefined {
+		return this._description;
+	}
+
+	set description(_description: string | undefined) {
+		this._description = _description;
+		this._onDidChangeDescription.fire(this._description);
 	}
 
 	private _message: string | undefined;
@@ -363,8 +372,8 @@ export class TreeView extends Disposable implements ITreeView {
 		this.domNode = DOM.$('.tree-explorer-viewlet-tree-view');
 		this.messageElement = DOM.append(this.domNode, DOM.$('.message'));
 		this.treeContainer = DOM.append(this.domNode, DOM.$('.customview-tree'));
-		DOM.addClass(this.treeContainer, 'file-icon-themable-tree');
-		DOM.addClass(this.treeContainer, 'show-file-icons');
+		this.treeContainer.classList.add('file-icon-themable-tree');
+		this.treeContainer.classList.add('show-file-icons');
 		const focusTracker = this._register(DOM.trackFocus(this.domNode));
 		this._register(focusTracker.onDidFocus(() => this.focused = true));
 		this._register(focusTracker.onDidBlur(() => this.focused = false));
@@ -507,7 +516,7 @@ export class TreeView extends Disposable implements ITreeView {
 	}
 
 	private showMessage(message: string): void {
-		DOM.removeClass(this.messageElement, 'hide');
+		this.messageElement.classList.remove('hide');
 		this.resetMessageElement();
 		this._messageValue = message;
 		if (!isFalsyOrWhitespace(this._message)) {
@@ -518,7 +527,7 @@ export class TreeView extends Disposable implements ITreeView {
 
 	private hideMessage(): void {
 		this.resetMessageElement();
-		DOM.addClass(this.messageElement, 'hide');
+		this.messageElement.classList.add('hide');
 		this.layout(this._height, this._width);
 	}
 
@@ -629,10 +638,10 @@ export class TreeView extends Disposable implements ITreeView {
 		const isTreeEmpty = !this.root.children || this.root.children.length === 0;
 		// Hide tree container only when there is a message and tree is empty and not refreshing
 		if (this._messageValue && isTreeEmpty && !this.refreshing) {
-			DOM.addClass(this.treeContainer, 'hide');
+			this.treeContainer.classList.add('hide');
 			this.domNode.setAttribute('tabindex', '0');
 		} else {
-			DOM.removeClass(this.treeContainer, 'hide');
+			this.treeContainer.classList.remove('hide');
 			this.domNode.removeAttribute('tabindex');
 		}
 	}
@@ -760,7 +769,7 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 	}
 
 	renderTemplate(container: HTMLElement): ITreeExplorerTemplateData {
-		DOM.addClass(container, 'custom-view-tree-node-item');
+		container.classList.add('custom-view-tree-node-item');
 
 		const icon = DOM.append(container, DOM.$('.custom-view-tree-node-item-icon'));
 

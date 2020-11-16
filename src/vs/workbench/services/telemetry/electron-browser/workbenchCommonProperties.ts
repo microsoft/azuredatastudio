@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
@@ -8,8 +8,6 @@ import { resolveCommonProperties } from 'vs/platform/telemetry/node/commonProper
 import { instanceStorageKey, firstSessionDateStorageKey, lastSessionDateStorageKey } from 'vs/platform/telemetry/common/telemetry';
 import { cleanRemoteAuthority } from 'vs/platform/telemetry/common/telemetryUtils';
 import { process } from 'vs/base/parts/sandbox/electron-sandbox/globals';
-
-import product from 'vs/platform/product/common/product'; // {{ SQL CARBON EDIT }}
 
 export async function resolveWorkbenchCommonProperties(
 	storageService: IStorageService,
@@ -40,24 +38,5 @@ export async function resolveWorkbenchCommonProperties(
 	// __GDPR__COMMON__ "common.remoteAuthority" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
 	result['common.remoteAuthority'] = cleanRemoteAuthority(remoteAuthority);
 
-	result['common.application.name'] = product.nameLong; // {{SQL CARBON EDIT}}
-	setUsageDates(storageService);
-
 	return result;
-}
-
-// {{SQL CARBON EDIT}}
-function setUsageDates(storageService: IStorageService): void {
-	// daily last usage date
-	const appStartDate = new Date('January 1, 2000');
-	const dailyLastUseDate = storageService.get('telemetry.dailyLastUseDate', StorageScope.GLOBAL, appStartDate.toUTCString());
-	storageService.store('telemetry.dailyLastUseDate', dailyLastUseDate, StorageScope.GLOBAL);
-
-	// weekly last usage date
-	const weeklyLastUseDate = storageService.get('telemetry.weeklyLastUseDate', StorageScope.GLOBAL, appStartDate.toUTCString());
-	storageService.store('telemetry.weeklyLastUseDate', weeklyLastUseDate, StorageScope.GLOBAL);
-
-	// monthly last usage date
-	const monthlyLastUseDate = storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL, appStartDate.toUTCString());
-	storageService.store('telemetry.monthlyLastUseDate', monthlyLastUseDate, StorageScope.GLOBAL);
 }

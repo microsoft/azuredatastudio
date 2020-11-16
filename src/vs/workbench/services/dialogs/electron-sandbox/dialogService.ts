@@ -225,7 +225,7 @@ class NativeDialogService implements IDialogService {
 				process.versions['node'],
 				process.versions['v8'],
 				`${osProps.type} ${osProps.arch} ${osProps.release}${isSnap ? ' snap' : ''}`,
-				this.productService.vscodeVersion
+				this.productService.vscodeVersion  // {{SQL CARBON EDIT}}
 			);
 		};
 

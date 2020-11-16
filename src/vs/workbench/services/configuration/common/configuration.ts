@@ -6,7 +6,7 @@
 import { ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
 import { URI } from 'vs/base/common/uri';
 
-export const FOLDER_CONFIG_FOLDER_NAME = '.azuredatastudio';
+export const FOLDER_CONFIG_FOLDER_NAME = '.azuredatastudio'; // {{SQL CARBON EDIT}}
 export const FOLDER_SETTINGS_NAME = 'settings';
 export const FOLDER_SETTINGS_PATH = `${FOLDER_CONFIG_FOLDER_NAME}/${FOLDER_SETTINGS_NAME}.json`;
 

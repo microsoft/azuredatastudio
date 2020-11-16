@@ -477,6 +477,7 @@ var AMDLoader;
             }
             var result = moduleId;
             var results;
+            // {{SQL CARBON EDIT}}
             if ((!AMDLoader.Utilities.endsWith(result, '.js') || result === 'chart.js' || result === 'mark.js') && !AMDLoader.Utilities.isAbsolutePath(result)) {
                 results = this._applyPaths(result);
                 for (var i = 0, len = results.length; i < len; i++) {

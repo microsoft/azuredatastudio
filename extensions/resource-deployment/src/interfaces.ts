@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
-import { OptionsSourceType } from './helpers/optionSources';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 
@@ -14,13 +14,15 @@ export interface ResourceType {
 	displayName: string;
 	description: string;
 	platforms: string[] | '*';
-	icon: { light: string; dark: string };
+	icon: { light: string; dark: string } | string;
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
 	agreement?: AgreementInfo;
 	displayIndex?: number;
-	okButtonText?: string;
+	okButtonText?: OkButtonTextValue[];
+	getOkButtonText(selectedOptions: { option: string, value: string }[]): string | undefined;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
+	tags?: string[];
 }
 
 export interface AgreementInfo {
@@ -37,6 +39,11 @@ export interface ResourceTypeOption {
 export interface ResourceTypeOptionValue {
 	name: string;
 	displayName: string;
+}
+
+export interface OkButtonTextValue {
+	value: string;
+	when: string;
 }
 
 export interface DialogDeploymentProvider extends DeploymentProviderBase {
@@ -71,6 +78,10 @@ export interface AzureSQLVMDeploymentProvider extends DeploymentProviderBase {
 	azureSQLVMWizard: AzureSQLVMWizardInfo;
 }
 
+export interface AzureSQLDBDeploymentProvider extends DeploymentProviderBase {
+	azureSQLDBWizard: AzureSQLDBWizardInfo;
+}
+
 export function instanceOfDialogDeploymentProvider(obj: any): obj is DialogDeploymentProvider {
 	return obj && 'dialog' in obj;
 }
@@ -103,12 +114,16 @@ export function instanceOfAzureSQLVMDeploymentProvider(obj: any): obj is AzureSQ
 	return obj && 'azureSQLVMWizard' in obj;
 }
 
+export function instanceOfAzureSQLDBDeploymentProvider(obj: any): obj is AzureSQLDBDeploymentProvider {
+	return obj && 'azureSQLDBWizard' in obj;
+}
+
 export interface DeploymentProviderBase {
 	requiredTools: ToolRequirementInfo[];
 	when: string;
 }
 
-export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider | AzureSQLVMDeploymentProvider;
+export type DeploymentProvider = DialogDeploymentProvider | BdcWizardDeploymentProvider | NotebookWizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider | AzureSQLVMDeploymentProvider | AzureSQLDBDeploymentProvider;
 
 export interface BdcWizardInfo {
 	notebook: string | NotebookPathInfo;
@@ -181,6 +196,10 @@ export interface AzureSQLVMWizardInfo {
 	notebook: string | NotebookPathInfo;
 }
 
+export interface AzureSQLDBWizardInfo {
+	notebook: string | NotebookPathInfo;
+}
+
 export type DialogInfo = NotebookBasedDialogInfo | CommandBasedDialogInfo;
 
 export function instanceOfNotebookBasedDialogInfo(obj: any): obj is NotebookBasedDialogInfo {
@@ -219,11 +238,9 @@ export type ComponentCSSStyles = {
 };
 
 export interface IOptionsSource {
-	readonly type: OptionsSourceType;
-	readonly variableNames: { [index: string]: string; };
-	getOptions(): Promise<string[] | azdata.CategoryValue[]>;
-	getVariableValue(variableName: string, input: string): Promise<string>;
-	getIsPassword(variableName: string): boolean;
+	provider?: IOptionsSourceProvider
+	readonly variableNames?: { [index: string]: string; };
+	readonly providerId: string;
 }
 
 

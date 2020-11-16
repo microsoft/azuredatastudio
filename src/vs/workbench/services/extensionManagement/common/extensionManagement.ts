@@ -8,10 +8,8 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { IExtension, IScannedExtension, ExtensionType, ITranslatedScannedExtension } from 'vs/platform/extensions/common/extensions';
 import { IExtensionManagementService, IGalleryExtension, IExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { URI } from 'vs/base/common/uri';
-import { IStringDictionary } from 'vs/base/common/collections'; // {{ SQL CARBON EDIT }}
 import { IWorkspace, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace'; // {{ SQL CARBON EDIT }}
-
-
+import { ExtensionRecommendationReason } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
 
 export const IExtensionManagementServerService = createDecorator<IExtensionManagementServerService>('extensionManagementServerService');
 
@@ -113,41 +111,9 @@ export interface IExtensionRecommendation {
 	sources: ExtensionRecommendationSource[];
 }
 
-export const enum ExtensionRecommendationReason {
-	Workspace,
-	File,
-	Executable,
-	WorkspaceConfig,
-	DynamicWorkspace,
-	Experimental,
-	Application,
-}
-
 export interface IExtensionRecommendationReason {
 	reasonId: ExtensionRecommendationReason;
 	reasonText: string;
-}
-
-export const IExtensionRecommendationsService = createDecorator<IExtensionRecommendationsService>('extensionRecommendationsService');
-
-export interface IExtensionRecommendationsService {
-	readonly _serviceBrand: undefined;
-
-	getAllRecommendationsWithReason(): IStringDictionary<IExtensionRecommendationReason>;
-	getImportantRecommendations(): Promise<IExtensionRecommendation[]>;
-	getOtherRecommendations(): Promise<IExtensionRecommendation[]>;
-	getFileBasedRecommendations(): IExtensionRecommendation[];
-	getExeBasedRecommendations(exe?: string): Promise<{ important: IExtensionRecommendation[], others: IExtensionRecommendation[] }>;
-	getConfigBasedRecommendations(): Promise<{ important: IExtensionRecommendation[], others: IExtensionRecommendation[] }>;
-	getWorkspaceRecommendations(): Promise<IExtensionRecommendation[]>;
-	getKeymapRecommendations(): IExtensionRecommendation[];
-
-	toggleIgnoredRecommendation(extensionId: string, shouldIgnore: boolean): void;
-	getIgnoredRecommendations(): ReadonlyArray<string>;
-	onRecommendationChange: Event<RecommendationChangeNotification>;
-
-	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]>; // {{SQL CARBON EDIT}}
-	promptRecommendedExtensionsByScenario(scenarioType: string): void; // {{SQL CARBON EDIT}}
 }
 
 export const IWebExtensionsScannerService = createDecorator<IWebExtensionsScannerService>('IWebExtensionsScannerService');

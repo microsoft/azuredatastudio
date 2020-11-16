@@ -10,7 +10,7 @@ describe('DeferredPromise', function (): void {
 
 	it('Resolves correctly', async function(): Promise<void> {
 		const deferred = new Deferred();
-		deferred.resolve(undefined);
+		deferred.resolve();
 		await should(deferred.promise).be.resolved();
 	});
 
@@ -25,6 +25,6 @@ describe('DeferredPromise', function (): void {
 		deferred.then( () => {
 			done();
 		});
-		deferred.resolve(undefined);
+		deferred.resolve();
 	});
 });

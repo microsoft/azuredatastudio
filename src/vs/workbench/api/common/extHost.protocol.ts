@@ -1605,6 +1605,7 @@ export interface ExtHostDebugServiceShape {
 	$acceptDebugSessionNameChanged(session: IDebugSessionDto, name: string): void;
 }
 
+
 export interface DecorationRequest {
 	readonly id: number;
 	readonly uri: UriComponents;

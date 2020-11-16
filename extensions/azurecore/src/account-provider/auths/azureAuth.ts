@@ -145,6 +145,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return account;
 	}
 
+	private verifyCorrectToken(responseToken: OAuthTokenResponse, account: AzureAccount): boolean {
+		return this.getUserKey(responseToken.tokenClaims) === account.key.accountId;
+	}
+
 	public async getAccountSecurityToken(account: AzureAccount, tenantId: string, azureResource: azdata.AzureResource): Promise<Token | undefined> {
 		if (account.isStale === true) {
 			Logger.log('Account was stale. No tokens being fetched.');
@@ -181,6 +185,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 			if (remainingTime < maxTolerance) {
 				const result = await this.refreshToken(tenant, resource, cachedTokens.refreshToken);
+
+				// Verify that the user logged into this account
+				if (!this.verifyCorrectToken(result, account)) {
+					return undefined;
+				}
 				accessToken = result.accessToken;
 			}
 			// Let's just return here.
@@ -203,6 +212,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 		// Let's try to convert the access token type, worst case we'll have to prompt the user to do an interactive authentication.
 		const result = await this.refreshToken(tenant, resource, baseTokens.refreshToken);
+		// Verify that the user logged into this account
+		if (!this.verifyCorrectToken(result, account)) {
+			return undefined;
+		}
 		if (result.accessToken) {
 			return {
 				...result.accessToken,
@@ -258,6 +271,26 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return this.getTokenHelper(tenant, resource, accessTokenString, refreshTokenString, expiresOnString);
 	}
 
+	public getUserKey(tokenClaims: TokenClaims): string {
+		// Personal accounts don't have an oid when logging into the `common` tenant, but when logging into their home tenant they end up having an oid.
+		// This makes the key for the same account be different.
+		// We need to special case personal accounts.
+
+		let userKey: string;
+		if (tokenClaims.idp === 'live.com') { // Personal account
+			userKey = tokenClaims.unique_name ?? tokenClaims.email ?? tokenClaims.sub;
+		} else {
+			userKey = tokenClaims.home_oid ?? tokenClaims.oid ?? tokenClaims.unique_name ?? tokenClaims.email ?? tokenClaims.sub;
+		}
+
+		if (!userKey) {
+			Logger.pii(tokenClaims);
+			throw new AzureAuthError(localize('azure.userKeyUndefined', "User key was undefined - could not create a userKey from the tokenClaims"), 'user key undefined', undefined);
+		}
+
+		return userKey;
+	}
+
 	public async getTokenHelper(tenant: Tenant, resource: Resource, accessTokenString: string, refreshTokenString: string, expiresOnString: string): Promise<OAuthTokenResponse> {
 		if (!accessTokenString) {
 			const msg = localize('azure.accessTokenEmpty', 'No access token returned from Microsoft OAuth');
@@ -265,16 +298,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 
 		const tokenClaims: TokenClaims = this.getTokenClaims(accessTokenString);
-		let userKey: string;
-
-		// Personal accounts don't have an oid when logging into the `common` tenant, but when logging into their home tenant they end up having an oid.
-		// This makes the key for the same account be different.
-		// We need to special case personal accounts.
-		if (tokenClaims.idp === 'live.com') { // Personal account
-			userKey = tokenClaims.unique_name ?? tokenClaims.email ?? tokenClaims.sub;
-		} else {
-			userKey = tokenClaims.home_oid ?? tokenClaims.oid ?? tokenClaims.unique_name ?? tokenClaims.email ?? tokenClaims.sub;
-		}
+		const userKey = this.getUserKey(tokenClaims);
 
 		if (!userKey) {
 			const msg = localize('azure.noUniqueIdentifier', "The user had no unique identifier within AAD");
@@ -415,7 +439,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (shouldOpen) {
 			const result = await this.login(tenant, resource);
 			result?.authComplete?.resolve();
-			return result?.response;
 		}
 		return undefined;
 	}

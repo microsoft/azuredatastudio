@@ -277,13 +277,13 @@ export class TreeUpdateUtils {
 					showDashboard: false
 				};
 				// Need to wait for the OE service to update its nodes in order to resolve the children
-				const nodesUpdatedPromise = new Promise<void>((resolve, reject) => {
+				const nodesUpdatedPromise = new Promise((resolve, reject) => {
 					objectExplorerService.onUpdateObjectExplorerNodes(e => {
 						if (e.errorMessage) {
 							reject(new Error(e.errorMessage));
 						}
 						if (e.connection.id === connection.id) {
-							resolve();
+							resolve(undefined);
 						}
 					});
 				});

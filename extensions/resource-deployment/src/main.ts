@@ -12,10 +12,12 @@ import { ResourceTypeService } from './services/resourceTypeService';
 import { ToolsService } from './services/toolsService';
 import { DeploymentInputDialog } from './ui/deploymentInputDialog';
 import { ResourceTypePickerDialog } from './ui/resourceTypePickerDialog';
+import * as rd from 'resource-deployment';
+import { getExtensionApi } from './api';
 
 const localize = nls.loadMessageBundle();
 
-export async function activate(context: vscode.ExtensionContext): Promise<void> {
+export async function activate(context: vscode.ExtensionContext): Promise<rd.IExtension> {
 	const platformService = new PlatformService(context.globalStoragePath);
 	await platformService.initialize();
 	const toolsService = new ToolsService(platformService);
@@ -27,7 +29,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		const errorMessage = localize('resourceDeployment.FailedToLoadExtension', "Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.", context.extensionPath);
 		vscode.window.showErrorMessage(errorMessage);
 		validationFailures.forEach(message => console.error(message));
-		return;
+		return <any>undefined;
 	}
 	/**
 	 * Opens a new ResourceTypePickerDialog
@@ -73,6 +75,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		const dialog = new DeploymentInputDialog(notebookService, platformService, toolsService, dialogInfo);
 		dialog.open();
 	});
+	return getExtensionApi();
 }
 
 // this method is called when your extension is deactivated

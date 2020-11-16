@@ -57,7 +57,7 @@ async function splitEditor() {
 }
 
 async function saveFileAndCloseAll(resource: vscode.Uri) {
-	const documentClosed = new Promise<void>((resolve, _reject) => {
+	const documentClosed = new Promise((resolve, _reject) => {
 		const d = vscode.notebook.onDidCloseNotebookDocument(e => {
 			if (e.uri.toString() === resource.toString()) {
 				d.dispose();
@@ -71,7 +71,7 @@ async function saveFileAndCloseAll(resource: vscode.Uri) {
 }
 
 async function saveAllFilesAndCloseAll(resource: vscode.Uri | undefined) {
-	const documentClosed = new Promise<void>((resolve, _reject) => {
+	const documentClosed = new Promise((resolve, _reject) => {
 		if (!resource) {
 			return resolve();
 		}
@@ -415,34 +415,6 @@ suite('Notebook API tests', () => {
 		assert.strictEqual(cellChangeEventRet.changes[0].items[0] === vscode.notebook.activeNotebookEditor!.document.cells[1], true);
 
 		await saveAllFilesAndCloseAll(resource);
-	});
-
-	test('edit API (replaceOutput, USE NotebookCellOutput-type)', async function () {
-		assertInitalState();
-		const resource = await createRandomFile('', undefined, 'first', '.vsctestnb');
-		await vscode.commands.executeCommand('vscode.openWith', resource, 'notebookCoreTest');
-
-		await vscode.notebook.activeNotebookEditor!.edit(editBuilder => {
-			editBuilder.replaceCellOutput(0, [new vscode.NotebookCellOutput([
-				new vscode.NotebookCellOutputItem('application/foo', 'bar'),
-				new vscode.NotebookCellOutputItem('application/json', { data: true }, { metadata: true }),
-			])]);
-		});
-
-		const document = vscode.notebook.activeNotebookEditor?.document!;
-		assert.strictEqual(document.isDirty, true);
-		assert.strictEqual(document.cells.length, 1);
-		assert.strictEqual(document.cells[0].outputs.length, 1);
-
-		// consuming is OLD api (for now)
-		const [output] = document.cells[0].outputs;
-
-		assert.strictEqual(output.outputKind, vscode.CellOutputKind.Rich);
-		assert.strictEqual((<vscode.CellDisplayOutput>output).data['application/foo'], 'bar');
-		assert.deepStrictEqual((<vscode.CellDisplayOutput>output).data['application/json'], { data: true });
-		assert.deepStrictEqual((<vscode.CellDisplayOutput>output).metadata, { custom: { 'application/json': { metadata: true } } });
-
-		await saveAllFilesAndCloseAll(undefined);
 	});
 
 	test('edit API (replaceOutput)', async function () {

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ModelViewBase, ModelSourceType } from '../modelViewBase';
+import { ModelViewBase, ModelSourceType, ModelActionType } from '../modelViewBase';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import { ModelSourcesComponent } from '../modelSourcesComponent';
 import { LocalModelsComponent } from '../localModelsComponent';
@@ -34,6 +34,7 @@ export class PredictWizard extends ModelViewBase {
 		parent?: ModelViewBase) {
 		super(apiWrapper, root);
 		this._parentView = parent;
+		this.modelActionType = ModelActionType.Predict;
 	}
 
 	/**

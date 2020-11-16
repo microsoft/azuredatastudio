@@ -435,6 +435,12 @@ export class Project {
 	 */
 	public async addProjectReference(settings: IProjectReferenceSettings): Promise<void> {
 		const projectReferenceEntry = new SqlProjectReferenceProjectEntry(settings);
+
+		// check if reference to this database already exists
+		if (this.databaseReferenceExists(projectReferenceEntry)) {
+			throw new Error(constants.databaseReferenceAlreadyExists);
+		}
+
 		await this.addToProjFile(projectReferenceEntry);
 	}
 
@@ -582,36 +588,36 @@ export class Project {
 		}
 	}
 
-	private addSystemDatabaseReferenceToProjFile(entry: SystemDatabaseReferenceProjectEntry): void {
+	private async addSystemDatabaseReferenceToProjFile(entry: SystemDatabaseReferenceProjectEntry): Promise<void> {
 		const systemDbReferenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 
 		// if it's a system database reference, we'll add an additional node with the SSDT location of the dacpac later
 		systemDbReferenceNode.setAttribute(constants.Condition, constants.NetCoreCondition);
 		systemDbReferenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
-		this.addDatabaseReferenceChildren(systemDbReferenceNode, entry);
+		await this.addDatabaseReferenceChildren(systemDbReferenceNode, entry);
 		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(systemDbReferenceNode);
 
 		// add a reference to the system dacpac in SSDT if it's a system db
 		const ssdtReferenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 		ssdtReferenceNode.setAttribute(constants.Condition, constants.NotNetCoreCondition);
 		ssdtReferenceNode.setAttribute(constants.Include, entry.ssdtPathForSqlProj());
-		this.addDatabaseReferenceChildren(ssdtReferenceNode, entry);
+		await this.addDatabaseReferenceChildren(ssdtReferenceNode, entry);
 		this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(ssdtReferenceNode);
 	}
 
-	private addDatabaseReferenceToProjFile(entry: IDatabaseReferenceProjectEntry): void {
+	private async addDatabaseReferenceToProjFile(entry: IDatabaseReferenceProjectEntry): Promise<void> {
 		if (entry instanceof SystemDatabaseReferenceProjectEntry) {
-			this.addSystemDatabaseReferenceToProjFile(<SystemDatabaseReferenceProjectEntry>entry);
+			await this.addSystemDatabaseReferenceToProjFile(<SystemDatabaseReferenceProjectEntry>entry);
 		} else if (entry instanceof SqlProjectReferenceProjectEntry) {
 			const referenceNode = this.projFileXmlDoc.createElement(constants.ProjectReference);
 			referenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
 			this.addProjectReferenceChildren(referenceNode, <SqlProjectReferenceProjectEntry>entry);
-			this.addDatabaseReferenceChildren(referenceNode, entry);
+			await this.addDatabaseReferenceChildren(referenceNode, entry);
 			this.findOrCreateItemGroup(constants.ProjectReference).appendChild(referenceNode);
 		} else {
 			const referenceNode = this.projFileXmlDoc.createElement(constants.ArtifactReference);
 			referenceNode.setAttribute(constants.Include, entry.pathForSqlProj());
-			this.addDatabaseReferenceChildren(referenceNode, entry);
+			await this.addDatabaseReferenceChildren(referenceNode, entry);
 			this.findOrCreateItemGroup(constants.ArtifactReference).appendChild(referenceNode);
 		}
 
@@ -621,11 +627,11 @@ export class Project {
 	}
 
 	private databaseReferenceExists(entry: IDatabaseReferenceProjectEntry): boolean {
-		const found = this.databaseReferences.find(reference => reference.fsUri.fsPath === entry.fsUri.fsPath) !== undefined;
+		const found = this.databaseReferences.find(reference => reference.pathForSqlProj() === entry.pathForSqlProj()) !== undefined;
 		return found;
 	}
 
-	private addDatabaseReferenceChildren(referenceNode: any, entry: IDatabaseReferenceProjectEntry): void {
+	private async addDatabaseReferenceChildren(referenceNode: any, entry: IDatabaseReferenceProjectEntry): Promise<void> {
 		const suppressMissingDependenciesErrorNode = this.projFileXmlDoc.createElement(constants.SuppressMissingDependenciesErrors);
 		const suppressMissingDependenciesErrorTextNode = this.projFileXmlDoc.createTextNode(entry.suppressMissingDependenciesErrors ? constants.True : constants.False);
 		suppressMissingDependenciesErrorNode.appendChild(suppressMissingDependenciesErrorTextNode);
@@ -638,7 +644,7 @@ export class Project {
 			referenceNode.appendChild(databaseSqlCmdVariableElement);
 
 			// add SQLCMD variable
-			this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).databaseName);
+			await this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).databaseSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).databaseVariableLiteralValue!);
 		} else if (entry.databaseVariableLiteralValue) {
 			const databaseVariableLiteralValueElement = this.projFileXmlDoc.createElement(constants.DatabaseVariableLiteralValue);
 			const databaseTextNode = this.projFileXmlDoc.createTextNode(entry.databaseVariableLiteralValue);
@@ -653,7 +659,7 @@ export class Project {
 			referenceNode.appendChild(serverSqlCmdVariableElement);
 
 			// add SQLCMD variable
-			this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).serverSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).serverName!);
+			await this.addSqlCmdVariable((<DacpacReferenceProjectEntry>entry).serverSqlCmdVariable!, (<DacpacReferenceProjectEntry>entry).serverName!);
 		}
 	}
 
@@ -803,7 +809,7 @@ export class Project {
 		}
 	}
 
-	private async addToProjFile(entry: ProjectEntry, xmlTag?: string) {
+	private async addToProjFile(entry: ProjectEntry, xmlTag?: string): Promise<void> {
 		switch (entry.type) {
 			case EntryType.File:
 				this.addFileToProjFile((<FileProjectEntry>entry).relativePath, xmlTag ? xmlTag : constants.Build);
@@ -812,7 +818,7 @@ export class Project {
 				this.addFolderToProjFile((<FileProjectEntry>entry).relativePath);
 				break;
 			case EntryType.DatabaseReference:
-				this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
+				await this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
 				break;
 			case EntryType.SqlCmdVariable:
 				this.addSqlCmdVariableToProjFile(<SqlCmdVariableProjectEntry>entry);

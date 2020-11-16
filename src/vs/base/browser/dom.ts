@@ -22,6 +22,15 @@ export function clearNode(node: HTMLElement): void {
 	}
 }
 
+/**
+ * @deprecated use `node.remove()` instead
+ */
+export function removeNode(node: HTMLElement): void {
+	if (node.parentNode) {
+		node.parentNode.removeChild(node);
+	}
+}
+
 export function isInDOM(node: Node | null): boolean {
 	while (node) {
 		if (node === document.body) {
