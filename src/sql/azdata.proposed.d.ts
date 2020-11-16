@@ -81,6 +81,10 @@ declare module 'azdata' {
 		export interface INotebookMetadata {
 			connection_name?: string;
 		}
+
+		export interface ICellMetadata {
+			connection_name?: string;
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'

@@ -4,25 +4,24 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/dropdownList';
-
-import { DropdownDataSource, DropdownFilter, DropdownModel, DropdownRenderer, DropdownController } from './dropdownTree';
-
-import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
-import { mixin } from 'vs/base/common/objects';
-import { InputBox, IInputBoxStyles } from 'sql/base/browser/ui/inputBox/inputBox';
-import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
+import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
+import { DropdownDataSource, IDropdownListItem, DropdownListRenderer, SELECT_OPTION_ENTRY_TEMPLATE_ID } from 'sql/base/parts/editableDropdown/browser/dropdownList';
 import * as DOM from 'vs/base/browser/dom';
-import { Disposable } from 'vs/base/common/lifecycle';
-import { Color } from 'vs/base/common/color';
-import * as nls from 'vs/nls';
-import { Event, Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode } from 'vs/base/common/keyCodes';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
+import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
+import { IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
+import { IListStyles, List } from 'vs/base/browser/ui/list/listWidget';
+import { Color } from 'vs/base/common/color';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { Emitter, Event } from 'vs/base/common/event';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { clamp } from 'vs/base/common/numbers';
+import { mixin } from 'vs/base/common/objects';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import * as nls from 'vs/nls';
+
 
 export interface IDropdownOptions extends IDropdownStyles {
 	/**
@@ -53,10 +52,6 @@ export interface IDropdownOptions extends IDropdownStyles {
 	 * Value to use as aria-label for the input box
 	 */
 	ariaLabel?: string;
-	/**
-	 * Label for the dropdown action
-	 */
-	actionLabel: string;
 }
 
 export interface IDropdownStyles {
@@ -69,22 +64,17 @@ const errorMessage = nls.localize('editableDropdown.errorValidate', "Must be an 
 const defaults: IDropdownOptions = {
 	strictSelection: true,
 	maxHeight: 300,
-	errorMessage: errorMessage,
-	contextBorder: Color.fromHex('#696969'),
-	actionLabel: nls.localize('dropdownAction.toggle', "Toggle dropdown")
+	errorMessage: errorMessage
 };
 
-export class Dropdown extends Disposable {
+export class Dropdown extends Disposable implements IListVirtualDelegate<string> {
 	private _el: HTMLElement;
 	private _inputContainer: HTMLElement;
-	private _treeContainer: HTMLElement;
+	private _selectListContainer: HTMLElement;
 	private _input: InputBox;
-	private _tree: ITree;
+	private _selectList: List<IDropdownListItem>;
 	private _options: IDropdownOptions;
 	private _dataSource = new DropdownDataSource();
-	private _filter = new DropdownFilter();
-	private _renderer = new DropdownRenderer();
-	private _controller = new DropdownController();
 	public fireOnTextChange?: boolean;
 
 	private _onBlur = this._register(new Emitter<void>());
@@ -114,7 +104,7 @@ export class Dropdown extends Disposable {
 
 		this._inputContainer = DOM.append(this._el, DOM.$('.dropdown-input.select-container'));
 		this._inputContainer.style.width = '100%';
-		this._treeContainer = DOM.$('.dropdown-tree');
+		this._selectListContainer = DOM.$('div');
 
 		this._input = new InputBox(this._inputContainer, contextViewService, {
 			validationOptions: {
@@ -138,7 +128,7 @@ export class Dropdown extends Disposable {
 
 		const inputTracker = this._register(DOM.trackFocus(this._input.inputElement));
 		inputTracker.onDidBlur(() => {
-			if (!this._tree.isDOMFocused()) {
+			if (!this._selectList.isDOMFocused()) {
 				this._onBlur.fire();
 			}
 		});
@@ -152,7 +142,7 @@ export class Dropdown extends Disposable {
 					e.stopPropagation();
 					break;
 				case KeyCode.Escape:
-					if (this._treeContainer.parentElement) {
+					if (this._isDropDownVisible) {
 						this._input.validate();
 						this._onBlur.fire();
 						this._hideList();
@@ -166,53 +156,76 @@ export class Dropdown extends Disposable {
 					e.stopPropagation();
 					break;
 				case KeyCode.DownArrow:
-					if (!this._treeContainer.parentElement) {
+					if (!this._isDropDownVisible) {
 						this._showList();
 					}
-					this._tree.domFocus();
-					this._tree.focusFirst();
+					setTimeout(() => {
+						this._selectList.domFocus();
+						this._selectList.focusFirst();
+					}, 0);
 					e.stopPropagation();
 					e.preventDefault();
 					break;
 			}
 		}));
 
-		this._tree = new Tree(this._treeContainer, {
-			dataSource: this._dataSource,
-			filter: this._filter,
-			renderer: this._renderer,
-			controller: this._controller
-		}, { paddingOnRow: false, indentPixels: 0, twistiePixels: 0 });
-
-		const treeTracker = this._register(DOM.trackFocus(this._tree.getHTMLElement()));
-
-		treeTracker.onDidBlur(() => {
-			if (!this._input.hasFocus()) {
-				this._onBlur.fire();
+		this._selectList = new List('EditableDropdown', this._selectListContainer, this, [new DropdownListRenderer()], {
+			useShadows: false,
+			verticalScrollMode: ScrollbarVisibility.Visible,
+			keyboardSupport: true,
+			mouseSupport: true,
+			accessibilityProvider: {
+				getAriaLabel: (element) => element.text,
+				getWidgetAriaLabel: () => nls.localize('selectBox', "Select Box"),
+				getRole: () => 'option',
+				getWidgetRole: () => 'listbox'
 			}
 		});
 
 		this.values = this._options.values;
-
-		this._controller.onSelectionChange(e => {
-			this.value = e.value;
-			this._onValueChange.fire(e.value);
-			this._input.focus();
+		this._register(this._selectList.onDidBlur(() => {
 			this._hideList();
-		});
+		}));
 
-		this._controller.onDropdownEscape(() => {
-			this._hideList();
-			// have to put this in the setTimeout to make sure the focus can be set properly when the context menu is opened by pressing the DownArrow key
-			setTimeout(() => {
-				this._input.focus();
-			}, 0);
-		});
+		this._register(this._selectList.onKeyDown((e) => {
+			const event = new StandardKeyboardEvent(e);
+			let handled: boolean = false;
+			switch (event.keyCode) {
+				case KeyCode.Escape:
+					this._hideList();
+					setTimeout(() => {
+						this._input.focus();
+					}, 0);
+					handled = true;
+					break;
+				case KeyCode.Enter:
+				case KeyCode.Space:
+					const focusedElements = this._selectList.getFocusedElements();
+					if (focusedElements.length !== 0) {
+						this._updateSelection(focusedElements[0].text);
+						handled = true;
+					}
+					break;
+				default:
+					return;
+			}
+			if (handled) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		}));
+		this._register(this._selectList.onMouseClick((e) => {
+			if (e.element) {
+				this._updateSelection(e.element.text);
+			}
+		}));
 
 		this._input.onDidChange(e => {
-			if (this._dataSource.options) {
-				this._filter.filterString = e;
-				this._layoutTree();
+			if (this._dataSource.values?.length > 0) {
+				this._dataSource.filter = e;
+				if (this._isDropDownVisible) {
+					this._updateDropDownList();
+				}
 			}
 			if (this.fireOnTextChange) {
 				this.value = e;
@@ -225,25 +238,52 @@ export class Dropdown extends Disposable {
 			this._input.validate();
 		});
 
-		this._register(this._tree);
+		this._register(this._selectList);
 		this._register(this._input);
+	}
+
+	getHeight(): number {
+		return 22;
+	}
+
+	getTemplateId(): string {
+		return SELECT_OPTION_ENTRY_TEMPLATE_ID;
+	}
+
+	private get _isDropDownVisible(): boolean {
+		return this._selectListContainer.classList.contains('visible');
+	}
+
+	private _setDropdownVisibility(visible: boolean): void {
+		if (visible) {
+			this._selectListContainer.classList.add('visible');
+		} else {
+			this._selectListContainer.classList.remove('visible');
+		}
+		this._selectListContainer.setAttribute('aria-hidden', `${!visible}`);
+	}
+
+	private _updateSelection(newValue: string): void {
+		this.value = newValue;
+		this._onValueChange.fire(newValue);
+		this._input.focus();
+		this._hideList();
 	}
 
 	private _showList(): void {
 		if (this._input.isEnabled()) {
 			this._inputContainer.setAttribute('aria-expanded', 'true');
 			this._onFocus.fire();
-			this._filter.filterString = '';
+			this._dataSource.filter = undefined;
 			this.contextViewService.showContextView({
 				getAnchor: () => this._inputContainer,
 				render: container => {
-					DOM.append(container, this._treeContainer);
-					this._layoutTree();
+					this._setDropdownVisibility(true);
+					DOM.append(container, this._selectListContainer);
+					this._updateDropDownList();
 					return {
 						dispose: () => {
-							// when we dispose we want to remove treecontainer so that it doesn't have a parent
-							// we often use the presense of a parent to detect if the tree is being shown
-							this._treeContainer.remove();
+							this._setDropdownVisibility(false);
 						}
 					};
 				}
@@ -256,51 +296,39 @@ export class Dropdown extends Disposable {
 		this._inputContainer.setAttribute('aria-expanded', 'false');
 	}
 
-	private _layoutTree(): void {
-		if (this._dataSource && this._dataSource.options && this._dataSource.options.length > 0) {
-			let filteredLength = this._dataSource.options.reduce((p, i) => {
-				if (this._filter.isVisible(undefined, i)) {
-					return p + 1;
-				} else {
-					return p;
-				}
-			}, 0);
-			let height = filteredLength * this._renderer.getHeight() > this._options.maxHeight! ? this._options.maxHeight! : filteredLength * this._renderer.getHeight();
-			this._treeContainer.style.height = height + 'px';
-			this.updateTreeWidth();
-			this._tree.layout(parseInt(this._treeContainer.style.height));
-			this._tree.refresh().catch(e => onUnexpectedError(e));
+	private _updateDropDownList(): void {
+		try {
+			this._selectList.splice(0, this._selectList.length, this._dataSource.filteredValues.map(v => { return { text: v }; }));
+		} catch (e) {
+			onUnexpectedError(e);
 		}
-	}
 
-	/**
-	 * Update the width of the context tree to better fit the contents.
-	 */
-	private updateTreeWidth(): void {
-		if (this._dataSource && this._dataSource.options) {
-			const longestOption = this._dataSource.options.reduce((previous, current) => {
-				return previous.value.length > current.value.length ? previous : current;
-			}, { value: '' });
-			this._widthControlElement.innerText = longestOption.value;
+		let width = this._inputContainer.clientWidth;
+		if (this._dataSource && this._dataSource.filteredValues) {
+			const longestOption = this._dataSource.filteredValues.reduce((previous, current) => {
+				return previous.length > current.length ? previous : current;
+			}, '');
+			this._widthControlElement.innerText = longestOption;
 
 			const inputContainerWidth = DOM.getContentWidth(this._inputContainer);
 			const longestOptionWidth = DOM.getTotalWidth(this._widthControlElement);
-			this._treeContainer.style.width = `${clamp(longestOptionWidth, inputContainerWidth, 500)}px`;
+			width = clamp(longestOptionWidth, inputContainerWidth, 500);
 		}
 
+		const height = Math.min((this._dataSource.filteredValues?.length ?? 0) * this.getHeight(), this._options.maxHeight ?? 500);
+		this._selectListContainer.style.width = `${width}px`;
+		this._selectListContainer.style.height = `${height}px`;
+		this._selectList.layout(height, width);
 	}
 
 	public set values(vals: string[] | undefined) {
 		if (vals) {
-			this._filter.filterString = '';
-			this._dataSource.options = vals.map(i => { return { value: i }; });
-			this.updateTreeWidth();
-			let height = this._dataSource.options.length * 22 > this._options.maxHeight! ? this._options.maxHeight! : this._dataSource.options.length * 22;
-			this._treeContainer.style.height = height + 'px';
-			this._tree.layout(parseInt(this._treeContainer.style.height));
-			this._tree.setInput(new DropdownModel()).catch(e => onUnexpectedError(e));
+			this._dataSource.filter = undefined;
+			this._dataSource.values = vals;
+			if (this._isDropDownVisible) {
+				this._updateDropDownList();
+			}
 			this._input.validate();
-
 		}
 	}
 
@@ -326,14 +354,14 @@ export class Dropdown extends Disposable {
 	}
 
 	style(style: IListStyles & IInputBoxStyles & IDropdownStyles) {
-		this._tree.style(style);
+		this._selectList.style(style);
 		this._input.style(style);
-		this._treeContainer.style.backgroundColor = style.contextBackground ? style.contextBackground.toString() : '';
-		this._treeContainer.style.outline = `1px solid ${style.contextBorder || this._options.contextBorder}`;
+		this._selectListContainer.style.backgroundColor = style.contextBackground ? style.contextBackground.toString() : '';
+		this._selectListContainer.style.outline = `1px solid ${style.contextBorder}`;
 	}
 
 	private _inputValidator(value: string): IMessage | null {
-		if (!this._input.hasFocus() && !this._tree.isDOMFocused() && this._dataSource.options && !this._dataSource.options.some(i => i.value === value)) {
+		if (!this._input.hasFocus() && !this._selectList.isDOMFocused() && this._dataSource.values && !this._dataSource.values.some(i => i === value)) {
 			if (this._options.strictSelection && this._options.errorMessage) {
 				return {
 					content: this._options.errorMessage,

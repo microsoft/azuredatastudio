@@ -39,6 +39,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _cellType: nb.CellType;
 	private _source: string | string[];
 	private _language: string;
+	private _savedConnectionName: string | undefined;
 	private _cellGuid: string;
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
@@ -55,10 +56,10 @@ export class CellModel extends Disposable implements ICellModel {
 	private _cellUri: URI;
 	private _connectionManagementService: IConnectionManagementService;
 	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
-	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; };
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
+	private _metadata: nb.ICellMetadata;
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
@@ -270,6 +271,10 @@ export class CellModel extends Disposable implements ICellModel {
 			return this._language;
 		}
 		return this._options.notebook.language;
+	}
+
+	public get savedConnectionName(): string | undefined {
+		return this._savedConnectionName;
 	}
 
 	public get cellGuid(): string {
@@ -804,6 +809,9 @@ export class CellModel extends Disposable implements ICellModel {
 			cellJson.metadata.tags = metadata.tags;
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount ? this.executionCount : null;
+			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
+				metadata.connection_name = this._savedConnectionName;
+			}
 		}
 		return cellJson as nb.ICellContents;
 	}
@@ -828,6 +836,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
+		this._savedConnectionName = this._metadata.connection_name;
 		if (cell.outputs) {
 			for (let output of cell.outputs) {
 				// For now, we're assuming it's OK to save these as-is with no modification

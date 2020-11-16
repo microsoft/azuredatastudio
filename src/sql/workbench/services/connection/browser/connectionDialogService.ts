@@ -42,7 +42,7 @@ export interface IConnectionComponentCallbacks {
 	onCreateNewServerGroup?: () => void;
 	onAdvancedProperties?: () => void;
 	onSetAzureTimeOut?: () => void;
-	onFetchDatabases?: (serverName: string, authenticationType: string, userName?: string, password?: string) => Promise<string[]>;
+	onFetchDatabases?: (serverName: string, authenticationType: string, userName?: string, password?: string, azureAccount?: string) => Promise<string[]>;
 	onAzureTenantSelection?: (azureTenantId?: string) => void;
 }
 
@@ -381,7 +381,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		newProfile.saveProfile = true;
 		newProfile.generateNewId();
 		// If connecting from a query editor set "save connection" to false
-		if (this._params && this._params.input && this._params.connectionType === ConnectionType.editor) {
+		if (this._params?.connectionType === ConnectionType.editor) {
 			newProfile.saveProfile = false;
 		}
 		return newProfile;
