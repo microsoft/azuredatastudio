@@ -158,6 +158,8 @@ export const lastUpdated = localize('arc.lastUpdated', "Last updated");
 export const noExternalEndpoint = localize('arc.noExternalEndpoint', "No External Endpoint has been configured so this information isn't available.");
 export const podsReady = localize('arc.podsReady', "pods ready");
 
+export function pgSettingRange(min: string, max: string): string { return localize('arc.pgSettingRange', "Allowed value should be: {0} - {1}", min, max); }
+export function pgSettingOptions(options: string): string { return localize('arc.pgSettingOptions', "Allowed value should be: {0}", options); }
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
 export function deletingInstance(name: string): string { return localize('arc.deletingInstance', "Deleting instance '{0}'...", name); }
 export function updatingInstance(name: string): string { return localize('arc.updatingInstance', "Updating instance '{0}'...", name); }

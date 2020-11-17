@@ -111,7 +111,7 @@ export class PostgresParametersPage extends DashboardPage {
 					}
 				},
 				{
-					displayName: 'Ellipse',
+					displayName: 'Reset To Default',
 					valueType: azdata.DeclarativeDataType.component,
 					isReadOnly: false,
 					width: '10%',
@@ -120,7 +120,8 @@ export class PostgresParametersPage extends DashboardPage {
 				}
 			],
 			data: [
-				this.parameterComponents('TEST NAME', 'string')]
+				this.parameterComponents('TEST NAME', 'string'),
+				this.parameterComponents('TEST NAME 2', 'real')]
 		}).component();
 
 		content.addItem(parametersTable);
@@ -278,10 +279,19 @@ export class PostgresParametersPage extends DashboardPage {
 		data.push(parameterName);
 
 		let valueBox;
+		let information;
 		if (type === 'enum') {
 			valueBox = this.modelView.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 				values: [], //TODO
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+			}).component();
+
+			information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+				iconPath: IconPathHelper.information,
+				title: loc.pgSettingOptions('enums'), //TODO
+				width: '12px',
+				height: '12px',
+				enabled: false
 			}).component();
 		} else if (type === 'bool') {
 			valueBox = this.modelView.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
@@ -289,11 +299,27 @@ export class PostgresParametersPage extends DashboardPage {
 				checked: true, //TODO
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
+
+			information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+				iconPath: IconPathHelper.information,
+				title: loc.pgSettingOptions('on,off'), //TODO
+				width: '12px',
+				height: '12px',
+				enabled: false
+			}).component();
 		} else if (type === 'string') {
 			valueBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 				readOnly: false,
 				value: '', //TODO
 				CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '200px' }
+			}).component();
+
+			information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+				iconPath: IconPathHelper.information,
+				title: loc.pgSettingOptions('[A-Za-z._]+'),
+				width: '12px',
+				height: '12px',
+				enabled: false
 			}).component();
 		} else {
 			valueBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
@@ -304,18 +330,18 @@ export class PostgresParametersPage extends DashboardPage {
 				value: '0', //TODO
 				CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '200px' }
 			}).component();
+
+			information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+				iconPath: IconPathHelper.information,
+				title: loc.pgSettingRange('min', 'max'), //TODO
+				width: '12px',
+				height: '12px',
+				enabled: false
+			}).component();
 		}
 
 		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 		valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
-
-		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			iconPath: IconPathHelper.information,
-			title: '', //TODO
-			width: '12px',
-			height: '12px',
-			enabled: false
-		}).component();
 		valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
 		data.push(valueContainer);
 
@@ -327,16 +353,32 @@ export class PostgresParametersPage extends DashboardPage {
 
 		const resetParameter = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			iconPath: IconPathHelper.ellipse,
-			title: '', //TODO
+			title: 'Reset to default', //TODO
 			width: '20px',
 			height: '20px',
-			enabled: false
+			enabled: true
 		}).component();
 		data.push(resetParameter);
 
 		return data;
 
 	}
+
+	private getPGSettings(): any {
+		// Get settings
+
+		return {
+			parameterName: 'name',
+			value: 'settings',
+			description: 'short_desc',
+			default: 'reset_val',
+			min: 'min_val',
+			max: 'max_val',
+			options: 'enumvals',
+			type: 'vartype'
+		};
+	}
+
 
 
 
