@@ -22,7 +22,6 @@ class NewProjectDialogModel {
 }
 export class NewProjectDialog extends DialogBase {
 	public model: NewProjectDialogModel = new NewProjectDialogModel();
-	private workspaceTextBox: azdata.InputBoxComponent | undefined;
 
 	constructor(private workspaceService: IWorkspaceService) {
 		super(constants.NewProjectDialogTitle, 'NewProject');
@@ -110,7 +109,7 @@ export class NewProjectDialog extends DialogBase {
 			this.model.name = projectNameTextBox.value!;
 			projectNameTextBox.updateProperty('title', projectNameTextBox.value);
 
-			this.updateWorkspaceTexbox();
+			this.updateWorkspaceInputbox(this.model.location, this.model.name);
 		}));
 
 		const locationTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
@@ -123,7 +122,7 @@ export class NewProjectDialog extends DialogBase {
 		this.register(locationTextBox.onTextChanged(() => {
 			this.model.location = locationTextBox.value!;
 			locationTextBox.updateProperty('title', locationTextBox.value);
-			this.updateWorkspaceTexbox();
+			this.updateWorkspaceInputbox(this.model.location, this.model.name);
 		}));
 
 		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -146,26 +145,8 @@ export class NewProjectDialog extends DialogBase {
 			locationTextBox.value = selectedFolder;
 			this.model.location = selectedFolder;
 
-			this.updateWorkspaceTexbox();
+			this.updateWorkspaceInputbox(this.model.location, this.model.name);
 		}));
-
-		const workspaceDescription = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: vscode.workspace.workspaceFile ? constants.AddProjectToCurrentWorkspace : constants.NewWorkspaceWillBeCreated,
-			CSSStyles: { 'margin-top': '3px', 'margin-bottom': '10px' }
-		}).component();
-
-		this.workspaceTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			ariaLabel: constants.WorkspaceLocationTitle,
-			width: constants.DefaultInputWidth,
-			enabled: false,
-			value: vscode.workspace.workspaceFile?.fsPath ?? '',
-			title: vscode.workspace.workspaceFile?.fsPath ?? '' // hovertext for if file path is too long to be seen in textbox
-		}).component();
-
-		const workspaceFlexContainer = view.modelBuilder.flexContainer()
-			.withItems([workspaceDescription, this.workspaceTextBox])
-			.withLayout({ flexFlow: 'column' })
-			.component();
 
 		const form = view.modelBuilder.formContainer().withFormItems([
 			{
@@ -181,20 +162,10 @@ export class NewProjectDialog extends DialogBase {
 				title: constants.ProjectLocationTitle,
 				required: true,
 				component: this.createHorizontalContainer(view, [locationTextBox, browseFolderButton])
-			}, {
-				title: constants.Workspace,
-				component: workspaceFlexContainer
-			}
+			},
+			this.createWorkspaceContainer(view)
 		]).component();
 		await view.initializeModel(form);
 		this.initDialogComplete?.resolve();
-	}
-
-	private updateWorkspaceTexbox(): void {
-		if (!vscode.workspace.workspaceFile) {
-			const location = this.model.location && this.model.name ? path.join(this.model.location, `${this.model.name}.code-workspace`) : '';
-			this.workspaceTextBox!.value = location;
-			this.workspaceTextBox!.title = location;
-		}
 	}
 }
