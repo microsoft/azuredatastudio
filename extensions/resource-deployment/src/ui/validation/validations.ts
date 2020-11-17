@@ -15,7 +15,7 @@ export interface ValidationResult {
 export type Validator = () => Promise<ValidationResult>;
 export type ValidationValueType = string | number | undefined;
 
-export type onValidation = (isValid: boolean) => Promise<void>;
+export type OnValidation = (isValid: boolean) => Promise<void>;
 export type ValueGetter = () => Promise<ValidationValueType>;
 export type TargetValueGetter = (variable: string) => Promise<ValidationValueType>;
 export type OnTargetValidityChangedGetter = (variable: string) => vscode.Event<boolean>;
@@ -70,7 +70,7 @@ export abstract class Validation {
 		await this._onValidation(isValid);
 	}
 
-	constructor(validation: ValidationInfo, protected _onValidation: onValidation, protected _valueGetter: ValueGetter, protected _targetValueGetter?: TargetValueGetter, protected _onTargetValidityChangedGetter?: OnTargetValidityChangedGetter, protected _onNewDisposableCreated?: (disposable: vscode.Disposable) => void) {
+	constructor(validation: ValidationInfo, protected _onValidation: OnValidation, protected _valueGetter: ValueGetter, protected _targetValueGetter?: TargetValueGetter, protected _onTargetValidityChangedGetter?: OnTargetValidityChangedGetter, protected _onNewDisposableCreated?: (disposable: vscode.Disposable) => void) {
 		this._description = validation.description;
 	}
 
@@ -80,7 +80,7 @@ export abstract class Validation {
 }
 
 export class IntegerValidation extends Validation {
-	constructor(validation: IntegerValidationInfo, validationMessageUpdater: onValidation, valueGetter: ValueGetter) {
+	constructor(validation: IntegerValidationInfo, validationMessageUpdater: OnValidation, valueGetter: ValueGetter) {
 		super(validation, validationMessageUpdater, valueGetter);
 	}
 
@@ -110,7 +110,7 @@ export class RegexValidation extends Validation {
 		return this._regex;
 	}
 
-	constructor(validation: RegexValidationInfo, validationMessageUpdater: onValidation, valueGetter: ValueGetter) {
+	constructor(validation: RegexValidationInfo, validationMessageUpdater: OnValidation, valueGetter: ValueGetter) {
 		super(validation, validationMessageUpdater, valueGetter);
 		throwUnless(validation.regex !== undefined);
 		this._regex = (typeof validation.regex === 'string') ? new RegExp(validation.regex) : validation.regex;
@@ -140,7 +140,7 @@ export abstract class Comparison extends Validation {
 		this._onNewDisposableCreated(onValidityChanged(isValid => onTargetValidityChangedAction(isValid)));
 	}
 
-	constructor(validation: ComparisonValidationInfo, onValidation: onValidation, valueGetter: ValueGetter, targetValueGetter: TargetValueGetter, protected _onTargetValidityChangedGetter: OnTargetValidityChangedGetter, protected _onNewDisposableCreated: (disposable: vscode.Disposable) => void) {
+	constructor(validation: ComparisonValidationInfo, onValidation: OnValidation, valueGetter: ValueGetter, targetValueGetter: TargetValueGetter, protected _onTargetValidityChangedGetter: OnTargetValidityChangedGetter, protected _onNewDisposableCreated: (disposable: vscode.Disposable) => void) {
 		super(validation, onValidation, valueGetter, targetValueGetter);
 		throwUnless(validation.target !== undefined);
 		this._target = validation.target;
@@ -185,12 +185,12 @@ export class GreaterThanOrEqualsValidation extends Comparison {
 	}
 }
 
-export function createValidation(validation: ValidationInfo, validationMessageUpdater: onValidation, valueGetter: ValueGetter, targetValueGetter?: TargetValueGetter, onTargetValidityChangedGetter?: OnTargetValidityChangedGetter, onDisposableCreated?: (disposable: vscode.Disposable) => void): Validation {
+export function createValidation(validation: ValidationInfo, onValidation: OnValidation, valueGetter: ValueGetter, targetValueGetter?: TargetValueGetter, onTargetValidityChangedGetter?: OnTargetValidityChangedGetter, onDisposableCreated?: (disposable: vscode.Disposable) => void): Validation {
 	switch (validation.type) {
-		case ValidationType.Regex: return new RegexValidation(<RegexValidationInfo>validation, validationMessageUpdater, valueGetter);
-		case ValidationType.IsInteger: return new IntegerValidation(<IntegerValidationInfo>validation, validationMessageUpdater, valueGetter);
-		case ValidationType.LessThanOrEqualsTo: return new LessThanOrEqualsValidation(<ComparisonValidationInfo>validation, validationMessageUpdater, valueGetter, targetValueGetter!, onTargetValidityChangedGetter!, onDisposableCreated!);
-		case ValidationType.GreaterThanOrEqualsTo: return new GreaterThanOrEqualsValidation(<ComparisonValidationInfo>validation, validationMessageUpdater, valueGetter, targetValueGetter!, onTargetValidityChangedGetter!, onDisposableCreated!);
+		case ValidationType.Regex: return new RegexValidation(<RegexValidationInfo>validation, onValidation, valueGetter);
+		case ValidationType.IsInteger: return new IntegerValidation(<IntegerValidationInfo>validation, onValidation, valueGetter);
+		case ValidationType.LessThanOrEqualsTo: return new LessThanOrEqualsValidation(<ComparisonValidationInfo>validation, onValidation, valueGetter, targetValueGetter!, onTargetValidityChangedGetter!, onDisposableCreated!);
+		case ValidationType.GreaterThanOrEqualsTo: return new GreaterThanOrEqualsValidation(<ComparisonValidationInfo>validation, onValidation, valueGetter, targetValueGetter!, onTargetValidityChangedGetter!, onDisposableCreated!);
 		default: throw new Error(`unknown validation type:${validation.type}`); //dev error
 	}
 }
