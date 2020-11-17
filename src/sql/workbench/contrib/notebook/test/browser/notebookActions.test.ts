@@ -15,7 +15,7 @@ import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/bro
 import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CellType } from 'sql/workbench/services/notebook/common/contracts';
 import * as TypeMoq from 'typemoq';
-import { Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationChangeEvent, IConfigurationOverrides, IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -41,7 +41,7 @@ class TestNotebookModel extends NotebookModelStub {
 	private _clientSession: TestClientSession = new TestClientSession();
 	public kernelChangedEmitter: Emitter<azdata.nb.IKernelChangedArgs> = new Emitter<azdata.nb.IKernelChangedArgs>();
 
-	public get kernelChanged() {
+	public get kernelChanged(): Event<azdata.nb.IKernelChangedArgs> {
 		return this.kernelChangedEmitter.event;
 	}
 
@@ -257,7 +257,7 @@ suite('Notebook Actions', function (): void {
 		assert.strictEqual(actualCmdId, NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID);
 	});
 
-	suite.skip('Kernels dropdown', async () => {
+	suite('Kernels dropdown', async () => {
 		let kernelsDropdown: KernelsDropdown;
 		let contextViewProvider: ContextViewProviderStub;
 		let container: HTMLElement;
@@ -285,7 +285,7 @@ suite('Notebook Actions', function (): void {
 			sandbox.restore();
 		});
 
-		suite('updateKernel', () => {
+		suite.skip('updateKernel', () => {
 			suite(`kernel not defined or ready and showAllKernels is true`, () => {
 				for (const kernel of [undefined, { isReady: false }] as azdata.nb.IKernel[]) {
 					for (const clientSessionErrorState of [true, false]) {
@@ -378,7 +378,7 @@ suite('Notebook Actions', function (): void {
 			});
 		});
 
-		suite(`doChangeKernel`, () => {
+		suite.skip(`doChangeKernel`, () => {
 			for (const displayName of [undefined, '', 'Arbitrary Kernel Name']) {
 				test(`verify for kernel displayName='${displayName}'`, () => {
 					const changeKernelStub = sandbox.stub(notebookModel, 'changeKernel');
