@@ -3,13 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as bdc from 'bdc';
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
-import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey } from './constants';
+import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, INTEGRATED_AUTH, KNOX_ENDPOINT_PORT, KNOX_ENDPOINT_SERVER } from './constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -114,13 +115,6 @@ interface RawEndpoint {
 	port?: number;
 }
 
-export interface IEndpoint {
-	serviceName: string;
-	description: string;
-	endpoint: string;
-	protocol: string;
-}
-
 export function getOSPlatformId(): string {
 	let platformId = undefined;
 	switch (process.platform) {
@@ -193,15 +187,15 @@ export function isEditorTitleFree(title: string): boolean {
 	return !hasTextDoc && !hasNotebookDoc;
 }
 
-export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] {
+export function getClusterEndpoints(serverInfo: azdata.ServerInfo): bdc.IEndpointModel[] {
 	let endpoints: RawEndpoint[] = serverInfo.options['clusterEndpoints'];
 	if (!endpoints || endpoints.length === 0) { return []; }
 
 	return endpoints.map(e => {
 		// If endpoint is missing, we're on CTP bits. All endpoints from the CTP serverInfo should be treated as HTTPS
 		let endpoint = e.endpoint ? e.endpoint : `https://${e.ipAddress}:${e.port}`;
-		let updatedEndpoint: IEndpoint = {
-			serviceName: e.serviceName,
+		let updatedEndpoint: bdc.IEndpointModel = {
+			name: e.serviceName,
 			description: e.description,
 			endpoint: endpoint,
 			protocol: e.protocol
@@ -209,7 +203,6 @@ export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] 
 		return updatedEndpoint;
 	});
 }
-
 
 export type HostAndIp = { host: string, port: string };
 
@@ -227,6 +220,26 @@ export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
 		host: authority,
 		port: undefined
 	};
+}
+
+export function isIntegratedAuth(connection: azdata.IConnectionProfile): boolean {
+	return connection.options[AUTHTYPE] && connection.options[AUTHTYPE].toLowerCase() === INTEGRATED_AUTH.toLowerCase();
+}
+
+export function isSparkKernel(kernelName: string): boolean {
+	return kernelName && kernelName.toLowerCase().indexOf('spark') > -1;
+}
+
+export function setHostAndPort(delimeter: string, connection: azdata.IConnectionProfile): void {
+	let originalHost = connection.options[KNOX_ENDPOINT_SERVER];
+	if (!originalHost) {
+		return;
+	}
+	let index = originalHost.indexOf(delimeter);
+	if (index > -1) {
+		connection.options[KNOX_ENDPOINT_SERVER] = originalHost.slice(0, index);
+		connection.options[KNOX_ENDPOINT_PORT] = originalHost.slice(index + 1);
+	}
 }
 
 export async function exists(path: string): Promise<boolean> {

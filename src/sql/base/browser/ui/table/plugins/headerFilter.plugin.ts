@@ -15,14 +15,14 @@ export interface IExtendedColumn<T> extends Slick.Column<T> {
 }
 
 export interface CommandEventArgs<T extends Slick.SlickData> {
-		grid: Slick.Grid<T>,
-		column: Slick.Column<T>,
-		command: string
+	grid: Slick.Grid<T>,
+	column: Slick.Column<T>,
+	command: string
 }
 
 export class HeaderFilter<T extends Slick.SlickData> {
 
-	public onFilterApplied = new Slick.Event();
+	public onFilterApplied = new Slick.Event<{ grid: Slick.Grid<T>, column: IExtendedColumn<T>}>();
 	public onCommand = new Slick.Event<CommandEventArgs<T>>();
 
 	private grid!: Slick.Grid<T>;
@@ -331,61 +331,56 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private handleApply(e: JQuery.Event<HTMLElement, null>, columnDef: Slick.Column<T>) {
 		this.hideMenu();
 
-		this.onFilterApplied.notify({ 'grid': this.grid, 'column': columnDef }, e, self);
+		this.onFilterApplied.notify({ grid: this.grid, column: columnDef }, e, self);
 		e.preventDefault();
 		e.stopPropagation();
 	}
 
 	private getFilterValues(dataView: Slick.DataProvider<T>, column: Slick.Column<T>): Array<any> {
-		const seen: Array<string> = [];
-		for (let i = 0; i < dataView.getLength(); i++) {
-			const value = dataView.getItem(i)[column.field!];
+		const seen: Set<string> = new Set();
+		dataView.getItems().forEach(items => {
+			const value = items[column.field!];
+			const valueArr = value instanceof Array ? value : [value];
+			valueArr.forEach(v => seen.add(v));
+		});
 
-			if (!seen.some(x => x === value)) {
-				seen.push(value);
-			}
-		}
-		return seen;
+		return Array.from(seen);
 	}
 
 	private getFilterValuesByInput($input: JQuery<HTMLElement>): Array<string> {
 		const column = $input.data('column'),
 			filter = $input.val() as string,
 			dataView = this.grid.getData() as Slick.DataProvider<T>,
-			seen: Array<any> = [];
+			seen: Set<any> = new Set();
 
-		for (let i = 0; i < dataView.getLength(); i++) {
-			const value = dataView.getItem(i)[column.field];
-
+		dataView.getItems().forEach(item => {
+			const value = item[column.field];
+			const valueArr = value instanceof Array ? value : [(!value ? '' : value)];
 			if (filter.length > 0) {
-				const itemValue = !value ? '' : value;
 				const lowercaseFilter = filter.toString().toLowerCase();
-				const lowercaseVal = itemValue.toString().toLowerCase();
-				if (!seen.some(x => x === value) && lowercaseVal.indexOf(lowercaseFilter) > -1) {
-					seen.push(value);
-				}
+				valueArr.map(v => v.toLowerCase()).forEach((lowerVal, index) => {
+					if (lowerVal.indexOf(lowercaseFilter) > -1) {
+						seen.add(valueArr[index]);
+					}
+				});
+			} else {
+				valueArr.forEach(v => seen.add(v));
 			}
-			else {
-				if (!seen.some(x => x === value)) {
-					seen.push(value);
-				}
-			}
-		}
+		});
 
-		return seen.sort((v) => { return v; });
+		return Array.from(seen).sort((v) => { return v; });
 	}
 
 	private getAllFilterValues(data: Array<Slick.SlickData>, column: Slick.Column<T>) {
-		const seen: Array<any> = [];
-		for (let i = 0; i < data.length; i++) {
-			const value = data[i][column.field!];
+		const seen: Set<any> = new Set();
 
-			if (!seen.some(x => x === value)) {
-				seen.push(value);
-			}
-		}
+		data.forEach(items => {
+			const value = items[column.field!];
+			const valueArr = value instanceof Array ? value : [value];
+			valueArr.forEach(v => seen.add(v));
+		});
 
-		return seen.sort((v) => { return v; });
+		return Array.from(seen).sort((v) => { return v; });
 	}
 
 	private handleMenuItemClick(e: JQuery.Event<HTMLElement, null>, command: string, columnDef: Slick.Column<T>) {

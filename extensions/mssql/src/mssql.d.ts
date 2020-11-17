@@ -339,6 +339,7 @@ export interface IDacFxService {
 	generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
 	generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 	getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
+	validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
 }
 
 export interface DacFxResult extends azdata.ResultStatus {
@@ -351,6 +352,9 @@ export interface GenerateDeployPlanResult extends DacFxResult {
 
 export interface DacFxOptionsResult extends azdata.ResultStatus {
 	deploymentOptions: DeploymentOptions;
+}
+
+export interface ValidateStreamingJobResult extends azdata.ResultStatus {
 }
 
 export interface ExportParams {

@@ -24,12 +24,19 @@ import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 import { withNullAsUndefined } from 'vs/base/common/types';
 
+const DefaultConnectionIconClass = 'server-page';
+
+export interface ConnectionProfileGroupDisplayOptions {
+	showColor: boolean;
+}
+
 class ConnectionProfileGroupTemplate extends Disposable {
 	private _root: HTMLElement;
 	private _nameContainer: HTMLElement;
 
 	constructor(
-		container: HTMLElement
+		container: HTMLElement,
+		private _option: ConnectionProfileGroupDisplayOptions
 	) {
 		super();
 		container.parentElement!.classList.add('server-group');
@@ -40,7 +47,8 @@ class ConnectionProfileGroupTemplate extends Disposable {
 
 	set(element: ConnectionProfileGroup) {
 		let rowElement = findParentElement(this._root, 'monaco-list-row');
-		if (rowElement) {
+		if (this._option.showColor && rowElement) {
+			rowElement.style.color = element.textColor;
 			if (element.color) {
 				rowElement.style.background = element.color;
 			} else {
@@ -60,10 +68,11 @@ export class ConnectionProfileGroupRenderer implements ITreeRenderer<ConnectionP
 
 	readonly templateId: string = ServerTreeRenderer.CONNECTION_GROUP_TEMPLATE_ID;
 
-	constructor(@IInstantiationService private readonly _instantiationService: IInstantiationService) { }
+	constructor(private _options: ConnectionProfileGroupDisplayOptions,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService) { }
 
 	renderTemplate(container: HTMLElement): ConnectionProfileGroupTemplate {
-		return this._instantiationService.createInstance(ConnectionProfileGroupTemplate, container);
+		return this._instantiationService.createInstance(ConnectionProfileGroupTemplate, container, this._options);
 	}
 	renderElement(node: ITreeNode<ConnectionProfileGroup, FuzzyScore>, index: number, template: ConnectionProfileGroupTemplate): void {
 		template.set(node.element);
@@ -92,7 +101,7 @@ class ConnectionProfileTemplate extends Disposable {
 		super();
 		container.parentElement!.classList.add('connection-profile');
 		this._root = dom.append(container, dom.$('.connection-tile'));
-		this._icon = dom.append(this._root, dom.$('div.icon server-page'));
+		this._icon = dom.append(this._root, dom.$('div.icon'));
 		this._connectionStatusBadge = dom.append(this._icon, dom.$('div.connection-status-badge'));
 		this._label = dom.append(this._root, dom.$('div.label'));
 	}
@@ -108,9 +117,8 @@ class ConnectionProfileTemplate extends Disposable {
 			}
 		}
 
-		let iconPath: IconPath | undefined = getIconPath(element, this._connectionManagementService);
+		const iconPath: IconPath | undefined = getIconPath(element, this._connectionManagementService);
 		renderServerIcon(this._icon, iconPath);
-
 		let label = element.title;
 		if (!element.isConnectionOptionsValid) {
 			label = localize('loading', "Loading...");
@@ -197,9 +205,11 @@ export class TreeNodeRenderer implements ITreeRenderer<TreeNode, FuzzyScore, Tre
 	renderTemplate(container: HTMLElement): TreeNodeTemplate {
 		return this._instantiationService.createInstance(TreeNodeTemplate, container);
 	}
+
 	renderElement(node: ITreeNode<TreeNode, FuzzyScore>, index: number, template: TreeNodeTemplate): void {
 		template.set(node.element);
 	}
+
 	disposeTemplate(templateData: TreeNodeTemplate): void {
 		templateData.dispose();
 	}
@@ -285,6 +295,13 @@ function getIconPath(connection: ConnectionProfile, connectionManagementService:
 function renderServerIcon(element: HTMLElement, iconPath?: IconPath): void {
 	if (!element) { return; }
 	if (iconPath) {
+		element.classList.remove(DefaultConnectionIconClass);
 		iconRenderer.putIcon(element, iconPath);
+	} else {
+		// use default connection icon if iconPath is not available
+		element.classList.add(DefaultConnectionIconClass);
+		// the icon css class is applied to the node by ID selector
+		// clear the id to avoid icon mismatch when drag&drop in OE tree because of element reusing by the tree component.
+		element.id = '';
 	}
 }

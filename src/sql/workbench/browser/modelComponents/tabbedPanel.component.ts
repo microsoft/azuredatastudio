@@ -52,17 +52,14 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(ILogService) private logService: ILogService
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
-	}
-
-	ngOnInit(): void {
-		this.baseInit();
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
 		this._register(attachTabbedPanelStyler(this._panel, this.themeService));
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {

@@ -1,0 +1,80 @@
+- title: Welcome
+  url: /readme
+  not_numbered: true
+- title: Prerequisites and Initial Setup
+  url: /prereqs
+  not_numbered: true
+
+- title: Search
+  search: true
+
+- title: Assessment
+  url: /Assessments/readme
+  not_numbered: true
+  expand_sections: false
+  sections:
+  - title: SQL Server Assessment Tool
+    url: Assessments/sql-server-assessment
+  - title: Compatibility Assessment
+    url: Assessments/compatibility-assessment
+- title: Networking
+  url: /networking/readme
+  not_numbered: true
+  expand_sections: false
+  sections:
+  - title: Download VPN Client Certificate
+    url: networking/download-VpnClient
+  - title: Create Point-to-Site VPN
+    url: networking/p2svnet-creation
+  - title: Create Site-to-Site VPN
+    url: networking/s2svnet-creation
+- title: Provisioning
+  url: /provisioning/readme
+  not_numbered: true
+  expand_sections: false
+  sections:
+  - title: Create Azure SQL Virtual Machine
+    url: provisioning/create-sqlvm
+  - title: Create Azure SQL Managed Instance
+    url: provisioning/create-sqlmi
+  - title: Create Azure SQL Database
+    url: provisioning/create-sqldb
+- title: Data Portability
+  url: /data-portability/readme
+  not_numbered: true
+  expand_sections: false
+  sections:
+  - title: Setup Data Portability
+    url: data-portability/setup-adp
+  - title: Export Azure SQL Server
+    url: data-portability/export-sql-server
+  - title: Import Azure SQL Server
+    url: data-portability/import-sql-server
+- title: High Availability and Disaster Recovery
+  url: /hadr/readme
+  not_numbered: true
+  expand_sections: false
+  sections:
+  - title: Backup Database to Blob Storage
+    url: hadr/backup-to-blob
+  - title: Add Azure Passive Secondary Replica
+    url: hadr/add-passive-secondary
+- title: Offline Migration
+  url: /offline-migration/readme
+  not_numbered: true
+  expand_sections: false
+  sections:
+  - title: Migrate Instance to Azure SQL VM
+    url: offline-migration/instance-to-VM
+  - title: Migrate Database to Azure SQL VM
+    url: offline-migration/db-to-VM
+  - title: Migrate Instance to Azure SQL MI
+    url: offline-migration/instance-to-MI
+  - title: Migrate Database to Azure SQL MI
+    url: offline-migration/db-to-MI
+  - title: Migrate Database to Azure SQL DB
+    url: offline-migration/db-to-SQLDB
+- title: Glossary
+  url: /glossary
+- title: Appendices
+  url: /appendices

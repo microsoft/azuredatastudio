@@ -213,8 +213,7 @@ export class RestoreDialog extends Modal {
 		this._databaseDropdown = new Dropdown(dropdownContainer, this._contextViewService,
 			{
 				strictSelection: false,
-				ariaLabel: LocalizedStrings.TARGETDATABASE,
-				actionLabel: localize('restoreDialog.toggleDatabaseNameDropdown', "Select Database Toggle Dropdown")
+				ariaLabel: LocalizedStrings.TARGETDATABASE
 			}
 		);
 		this._databaseDropdown.onValueChange(s => {

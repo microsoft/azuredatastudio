@@ -107,6 +107,10 @@ export class TabbedPanel extends Disposable {
 		this._register(DOM.addDisposableListener(this.header, DOM.EventType.FOCUS, e => this.focusCurrentTab()));
 	}
 
+	public get element(): HTMLElement {
+		return this.parent;
+	}
+
 	public dispose() {
 		this.header.remove();
 		this.tabList.remove();
@@ -213,8 +217,8 @@ export class TabbedPanel extends Disposable {
 		if (this._shownTabId) {
 			const shownTab = this._tabMap.get(this._shownTabId);
 			if (shownTab) {
-				DOM.removeClass(shownTab.label, 'active');
-				DOM.removeClass(shownTab.header, 'active');
+				shownTab.label.classList.remove('active');
+				shownTab.header.classList.remove('active');
 				shownTab.header.setAttribute('aria-selected', 'false');
 				if (shownTab.body) {
 					shownTab.body.remove();
@@ -242,15 +246,16 @@ export class TabbedPanel extends Disposable {
 		}
 		this.body.appendChild(tab.body);
 		this.body.setAttribute('aria-labelledby', tab.tab.identifier);
-		DOM.addClass(tab.label, 'active');
-		DOM.addClass(tab.header, 'active');
+		tab.label.classList.add('active');
+		tab.header.classList.add('active');
 		tab.header.setAttribute('aria-selected', 'true');
 		this._onTabChange.fire(id);
 		if (tab.tab.view.onShow) {
 			tab.tab.view.onShow();
 		}
 		if (this._currentDimensions) {
-			this._layoutCurrentTab(new DOM.Dimension(this._currentDimensions.width, this._currentDimensions.height - this.headersize));
+			const tabHeight = this._currentDimensions.height - (this._headerVisible ? this.headersize : 0);
+			this._layoutCurrentTab(new DOM.Dimension(this._currentDimensions.width, tabHeight));
 		}
 	}
 
@@ -318,6 +323,13 @@ export class TabbedPanel extends Disposable {
 	public style(styles: ITabbedPanelStyles): void {
 		const content: string[] = [];
 
+		if (styles.border) {
+			content.push(`
+			.tabbedPanel {
+				border-color: ${styles.border};
+			}`);
+		}
+
 		if (styles.titleActiveForeground && styles.titleActiveBorder) {
 			content.push(`
 			.tabbedPanel > .title .tabList .tab:hover .tabLabel,
@@ -325,10 +337,6 @@ export class TabbedPanel extends Disposable {
 				color: ${styles.titleActiveForeground};
 				border-bottom-color: ${styles.titleActiveBorder};
 				border-bottom-width: 2px;
-			}
-
-			.tabbedPanel > .title .tabList .tab-header.active {
-				outline: none;
 			}`);
 		}
 

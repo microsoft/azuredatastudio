@@ -284,7 +284,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		}
 	}
 
-	public runCustomValidations(componentId: string): boolean {
+	public runCustomValidations(componentId: string): Thenable<boolean> {
 		let component = this._componentBuilders.get(componentId).componentWrapper();
 		return component.runCustomValidations();
 	}
@@ -323,7 +323,7 @@ class ComponentBuilderImpl<T extends azdata.Component, TPropertyBag extends azda
 		return this;
 	}
 
-	withValidation(validation: (component: T) => boolean): azdata.ComponentBuilder<T, TPropertyBag> {
+	withValidation(validation: (component: T) => boolean | Thenable<boolean>): azdata.ComponentBuilder<T, TPropertyBag> {
 		this._component.customValidations.push(validation);
 		return this;
 	}
@@ -574,7 +574,7 @@ class ComponentWrapper implements azdata.Component {
 	public properties: { [key: string]: any } = {};
 	public layout: any;
 	public itemConfigs: InternalItemConfig[];
-	public customValidations: ((component: ThisType<ComponentWrapper>) => boolean)[] = [];
+	public customValidations: ((component: ThisType<ComponentWrapper>) => boolean | Thenable<boolean>)[] = [];
 	private _valid: boolean = true;
 	private _onValidityChangedEmitter = new Emitter<boolean>();
 	public readonly onValidityChanged = this._onValidityChangedEmitter.event;
@@ -808,14 +808,14 @@ class ComponentWrapper implements azdata.Component {
 		this._onErrorEmitter.fire(err);
 	}
 
-	public runCustomValidations(): boolean {
+	public async runCustomValidations(): Promise<boolean> {
 		let isValid = true;
 		try {
-			this.customValidations.forEach(validation => {
-				if (!validation(this)) {
+			await Promise.all(this.customValidations.map(async validation => {
+				if (!await validation(this)) {
 					isValid = false;
 				}
-			});
+			}));
 		} catch (e) {
 			isValid = false;
 		}
@@ -973,6 +973,13 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('placeHolder', v);
 	}
 
+	public get title(): string {
+		return this.properties['title'];
+	}
+	public set title(v: string) {
+		this.setProperty('title', v);
+	}
+
 	public get rows(): number {
 		return this.properties['rows'];
 	}
@@ -1020,6 +1027,13 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 	}
 	public set stopEnterPropagation(v: boolean) {
 		this.setProperty('stopEnterPropagation', v);
+	}
+
+	public get validationErrorMessage(): string {
+		return this.properties['validationErrorMessage'];
+	}
+	public set validationErrorMessage(v: string) {
+		this.setProperty('validationErrorMessage', v);
 	}
 
 	public get onTextChanged(): vscode.Event<any> {
@@ -1413,7 +1427,9 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		return emitter && emitter.event;
 	}
 
-
+	public appendData(v: any[][]): void {
+		this.doAction(ModelViewAction.AppendData, v);
+	}
 }
 
 class DropDownWrapper extends ComponentWrapper implements azdata.DropDownComponent {
@@ -1988,7 +2004,7 @@ class ModelViewImpl implements azdata.ModelView {
 		return this._proxy.$validate(this._handle, this._component.id);
 	}
 
-	public runCustomValidations(componentId: string): boolean {
+	public runCustomValidations(componentId: string): Thenable<boolean> {
 		return this._modelBuilder.runCustomValidations(componentId);
 	}
 }
@@ -2035,6 +2051,6 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	$runCustomValidations(handle: number, componentId: string): Thenable<boolean> {
 		const view = this._modelViews.get(handle);
-		return Promise.resolve(view.runCustomValidations(componentId));
+		return view.runCustomValidations(componentId);
 	}
 }

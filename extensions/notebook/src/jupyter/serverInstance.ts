@@ -174,12 +174,20 @@ export class PerFolderServerInstance implements IServerInstance {
 	}
 
 	private async copyKernelsToSystemJupyterDirs(): Promise<void> {
-		let kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
+		let kernelsExtensionSource: string;
+		if (this.options.install.runningOnSaw) {
+			kernelsExtensionSource = path.join(this.options.install.extensionPath, 'saw-kernels');
+		} else {
+			kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
+		}
 		this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
 		if (!(await utils.exists(this._systemJupyterDir))) {
 			await utils.mkDir(this._systemJupyterDir, this.options.install.outputChannel);
 		}
 		await fs.copy(kernelsExtensionSource, this._systemJupyterDir);
+		if (this.options.install.runningOnSaw) {
+			await this.options.install.updateKernelSpecPaths(this._systemJupyterDir);
+		}
 	}
 
 	private getSystemJupyterHomeDir(): string {
@@ -330,16 +338,6 @@ export class PerFolderServerInstance implements IServerInstance {
 		// Specify the global environment variables.
 		// Note: Get env from the install since it gets used elsewhere
 		let env = this.getEnvWithConfigPaths(install.execOptions.env);
-
-		// 'MSHOST_TELEMETRY_ENABLED' and 'MSHOST_ENVIRONMENT' environment variables are set
-		// for telemetry purposes used by PROSE in the process where the Jupyter kernel runs
-		if (vscode.workspace.getConfiguration('telemetry').get<boolean>('enableTelemetry', true)) {
-			env['MSHOST_TELEMETRY_ENABLED'] = true;
-		} else {
-			env['MSHOST_TELEMETRY_ENABLED'] = false;
-		}
-
-		env['MSHOST_ENVIRONMENT'] = 'ADSClient-' + vscode.version;
 
 		// Start the notebook process
 		let options: SpawnOptions = {

@@ -181,7 +181,8 @@ export enum ModelComponentTypes {
 }
 
 export enum ModelViewAction {
-	SelectTab = 'selectTab'
+	SelectTab = 'selectTab',
+	AppendData = 'appendData'
 }
 
 export enum ColumnSizingMode {
@@ -416,17 +417,6 @@ export enum AzureResource {
 export class TreeItem extends vsExtTypes.TreeItem {
 	payload?: IConnectionProfile;
 	providerHandle?: string;
-}
-
-export interface ServerInfoOption {
-	isBigDataCluster: boolean;
-	clusterEndpoints: ClusterEndpoint;
-}
-
-export interface ClusterEndpoint {
-	serviceName: string;
-	ipAddress: string;
-	port: number;
 }
 
 export class SqlThemeIcon {
@@ -821,7 +811,8 @@ export enum SchemaObjectType {
 export enum ColumnType {
 	text = 0,
 	checkBox = 1,
-	button = 2
+	button = 2,
+	icon = 3
 }
 
 export enum ActionOnCellCheckboxCheck {

@@ -35,14 +35,14 @@ export interface IModelView extends IView {
 	clearContainer(componentId: string): void;
 	addToContainer(containerId: string, item: IItemConfig, index?: number): void;
 	removeFromContainer(containerId: string, item: IItemConfig): void;
-	setLayout(componentId: string, layout: any): void;
+	setLayout(componentId: string, layout: any, initial?: boolean): void;
 	setItemLayout(componentId: string, item: IItemConfig): void;
-	setProperties(componentId: string, properties: { [key: string]: any }): void;
+	setProperties(componentId: string, properties: { [key: string]: any }, initial?: boolean): void;
 	setDataProvider(handle: number, componentId: string, context: any): void;
 	refreshDataProvider(componentId: string, item: any): void;
-	registerEvent(componentId: string): void;
+	registerEvent(componentId: string, initial?: boolean): void;
 	onEvent: Event<IModelViewEventArgs>;
-	validate(componentId: string): Thenable<boolean>;
+	validate(componentId: string): Promise<boolean>;
 	readonly onDestroy: Event<void>;
 	focus(componentId: string): void;
 	doAction(componentId: string, action: string, ...args: any[]): void;
