@@ -42,10 +42,10 @@ suite('Files - FileEditorInput', () => {
 		accessor = instantiationService.createInstance(TestServiceAccessor);
 	});
 
-	test.skip('Basics', async function () { // {{SQL CARBON EDIT}} skip test
-		let input = instantiationService.createInstance(FileEditorInput, toResource.call(this, '/foo/bar/file.js'), undefined, undefined, undefined);
-		const otherInput = instantiationService.createInstance(FileEditorInput, toResource.call(this, 'foo/bar/otherfile.js'), undefined, undefined, undefined);
-		const otherInputSame = instantiationService.createInstance(FileEditorInput, toResource.call(this, 'foo/bar/file.js'), undefined, undefined, undefined);
+	test('Basics', async function () { // {{SQL CARBON EDIT}} skip test
+		let input = createFileInput(toResource.call(this, '/foo/bar/file.js'));
+		const otherInput = createFileInput(toResource.call(this, 'foo/bar/otherfile.js'));
+		const otherInputSame = createFileInput(toResource.call(this, 'foo/bar/file.js'));
 
 		assert(input.matches(input));
 		assert(input.matches(otherInputSame));
