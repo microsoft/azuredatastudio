@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { OptionsInfo, FieldInfo } from '../interfaces';
+import { OptionsInfo, FieldInfo, instanceOfDynamicEnablementInfo } from '../interfaces';
 import { getErrorMessage } from '../common/utils';
 
 export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilder<azdata.LoadingComponent, azdata.LoadingComponentProperties> {
@@ -51,7 +51,7 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 					label: option.displayName,
 					checked: option.displayName === defaultValue,
 					name: option.name,
-					enabled: typeof this._fieldInfo.enabled === 'object' ? false : this._fieldInfo.enabled // Dynamic enablement is initially set to false
+					enabled: instanceOfDynamicEnablementInfo(this._fieldInfo.enabled) ? false : this._fieldInfo.enabled // Dynamic enablement is initially set to false
 				}).component();
 				if (radioOption.checked) {
 					this._currentRadioOption = radioOption;

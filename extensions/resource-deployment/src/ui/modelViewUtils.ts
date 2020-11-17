@@ -174,7 +174,7 @@ function createInputBoxField({ context, inputBoxType = 'text' }: { context: Fiel
 		max: context.fieldInfo.max,
 		placeHolder: context.fieldInfo.placeHolder,
 		width: context.fieldInfo.inputWidth,
-		enabled: typeof context.fieldInfo.enabled === 'object' ? false : context.fieldInfo.enabled, // Dynamic enablement is initially set to false
+		enabled: instanceOfDynamicEnablementInfo(context.fieldInfo.enabled) ? false : context.fieldInfo.enabled, // Dynamic enablement is initially set to false
 		validations: context.fieldValidations
 	});
 	addLabelInputPairToContainer(context.view, context.components, label, input.component, context.fieldInfo);
