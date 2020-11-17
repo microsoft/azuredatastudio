@@ -119,7 +119,47 @@ interface ContextBase {
 	onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo) => void;
 }
 
-function createInputBoxField({ context, isPasswordField = false, inputBoxType = 'text' }: { context: FieldContext; isPasswordField?: boolean; inputBoxType?: azdata.InputBoxInputType; }) {
+/**
+ * An object to define the properties of an InputBox
+ */
+interface InputBoxInfo {
+	/**
+	 * the type of inputBox, default value is 'text'
+	 */
+	type?: azdata.InputBoxInputType;
+	defaultValue?: string;
+	ariaLabel: string;
+	required?: boolean;
+	/**
+	 * the min value of this field when the type is 'number', value set is ignored if the type is not 'number'
+	 */
+	min?: number;
+	/**
+	 * the min value of this field when the type is 'number', value set is ignored if the type is not 'number'
+	 */
+	max?: number;
+	/**
+	 * an informational string to display in the inputBox when no value has been set.
+	 */
+	placeHolder?: string;
+	width?: string;
+	enabled?: boolean;
+	/**
+	 * an array of validation objects used to validate the inputBox
+	 */
+	validations?: Validation[];
+}
+
+/**
+ * A quick note on the naming convention for some functions in this module.
+ * 'Field' suffix is used for functions that create a label+input component pair and the one without this suffix just creates one of these items.
+ *
+ * Creates an inputBox using the properties defined in context.fieldInfo object
+ *
+ * @param context - the fieldContext object for this field
+ * @param inputBoxType - the type of inputBox
+ */
+function createInputBoxField({ context, inputBoxType = 'text' }: { context: FieldContext; inputBoxType?: azdata.InputBoxInputType; }) {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const input = createInputBox(context.view, {
 		type: inputBoxType,
@@ -137,18 +177,7 @@ function createInputBoxField({ context, isPasswordField = false, inputBoxType = 
 	return input;
 }
 
-export function createInputBox(view: azdata.ModelView, inputInfo: {
-	type?: azdata.InputBoxInputType,
-	defaultValue?: string,
-	ariaLabel: string,
-	required?: boolean,
-	min?: number,
-	max?: number,
-	placeHolder?: string,
-	width?: string,
-	enabled?: boolean,
-	validations?: Validation[]
-}): azdata.InputBoxComponent {
+export function createInputBox(view: azdata.ModelView, inputInfo: InputBoxInfo): azdata.InputBoxComponent {
 	return view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		value: inputInfo.defaultValue,
 		ariaLabel: inputInfo.ariaLabel,
@@ -182,8 +211,15 @@ export function createLabel(view: azdata.ModelView, info: { text: string, descri
 	return text;
 }
 
-export function createNumberInput(view: azdata.ModelView, info: { defaultValue?: string, ariaLabel: string, min?: number, max?: number, required?: boolean, width?: string, placeHolder?: string, enabled?: boolean, container?: azdata.window.Dialog | azdata.window.Wizard, validations?: Validation[] }): azdata.InputBoxComponent {
-	return createInputBox(view, Object.assign({ type: <azdata.InputBoxInputType>'number' }, info));
+/**
+ * Creates an inputBox component of 'number' type.
+ *
+ * @param view - the ModelView object used to create the inputBox
+ * @param info - an object to define the properties of the 'number' inputBox component. If the type property is set then it is overridden with 'number' type.
+ */
+export function createNumberInput(view: azdata.ModelView, info: InputBoxInfo): azdata.InputBoxComponent {
+	info.type = 'number'; // for the type to be 'number'
+	return createInputBox(view, info);
 }
 
 export function createCheckbox(view: azdata.ModelView, info: { initialValue: boolean, label: string, required?: boolean }): azdata.CheckBoxComponent {
@@ -379,7 +415,7 @@ async function processField(context: FieldContext): Promise<void> {
 	//populate the fieldValidations objects for each field based on the information from the fieldInfo
 	context.fieldValidations = context.fieldInfo.validations?.map((validation => createValidation(
 		validation,
-		async (isValid) => {
+		async (isValid: boolean) => {
 			const inputBox = (<azdata.InputBoxComponent>context.inputComponents[context.fieldInfo.variableName || context.fieldInfo.label].component);
 			const validationMessage = (isValid) ? '' : validation.description;
 			if (inputBox.validationErrorMessage !== validationMessage) { // unset validationErrorMessage if it is set
@@ -387,9 +423,9 @@ async function processField(context: FieldContext): Promise<void> {
 			}
 		},
 		() => getInputComponentValue(context.inputComponents[context.fieldInfo.variableName || context.fieldInfo.label]),  // callback to fetch the value of this field, and return the default value if the field value is undefined
-		(variable) => getInputComponentValue(context.inputComponents[variable]),  // callback to fetch the value of a variable corresponding to any field already defined.
-		(targetVariable) => (<azdata.InputBoxComponent>context.inputComponents[targetVariable].component).onValidityChanged,
-		(disposable) => context.onNewDisposableCreated(disposable)
+		(variable: string) => getInputComponentValue(context.inputComponents[variable]),  // callback to fetch the value of a variable corresponding to any field already defined.
+		(targetVariable: string) => (<azdata.InputBoxComponent>context.inputComponents[targetVariable].component).onValidityChanged,
+		(disposable: vscode.Disposable) => context.onNewDisposableCreated(disposable)
 	)));
 	switch (context.fieldInfo.type) {
 		case FieldType.Options:
@@ -547,7 +583,7 @@ function processNumberField(context: FieldContext): void {
 function processTextField(context: FieldContext): azdata.InputBoxComponent {
 	const isPasswordField = context.fieldInfo.type === FieldType.Password || context.fieldInfo.type === FieldType.SQLPassword;
 	const inputBoxType = isPasswordField ? 'password' : 'text';
-	const input = createInputBoxField({ context, isPasswordField, inputBoxType });
+	const input = createInputBoxField({ context, inputBoxType });
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, { component: input, isPassword: isPasswordField });
 	return input;
 
