@@ -11,6 +11,7 @@ import { removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
 import { URI } from 'vs/base/common/uri';
 import { IComponentDescriptor } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }
@@ -22,8 +23,9 @@ export abstract class ComponentWithIconBase<T extends azdata.ComponentWithIconPr
 	protected _iconPath: IUserFriendlyIcon;
 	constructor(
 		changeRef: ChangeDetectorRef,
-		el: ElementRef,) {
-		super(changeRef, el);
+		el: ElementRef,
+		logService: ILogService) {
+		super(changeRef, el, logService);
 	}
 
 	/// IComponent implementation

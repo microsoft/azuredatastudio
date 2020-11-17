@@ -9,18 +9,19 @@ import { ComponentBase, ContainerBase, ItemDescriptor } from 'sql/workbench/brow
 import { ModelStore } from 'sql/workbench/browser/modelComponents/modelStore';
 import { ChangeDetectorRef } from '@angular/core';
 import { IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { NullLogService } from 'vs/platform/log/common/log';
 
 
 class TestComponent extends ComponentBase<azdata.ComponentProperties> {
 	public descriptor: IComponentDescriptor;
 
 	constructor(public modelStore: IModelStore, id: string) {
-		super(undefined, undefined);
+		super(undefined, undefined, new NullLogService());
 		this.descriptor = modelStore.createComponentDescriptor('TestComponent', id);
 		this.baseInit();
 	}
 
-	ngOnInit() { }
+	ngAfterViewInit() { }
 	setLayout() { }
 
 	public addValidation(validation: () => boolean | Thenable<boolean>) {
@@ -32,7 +33,7 @@ class TestContainer extends ContainerBase<TestComponent> {
 	public descriptor: IComponentDescriptor;
 
 	constructor(public modelStore: IModelStore, id: string) {
-		super(undefined, undefined);
+		super(undefined, undefined, new NullLogService());
 		this.descriptor = modelStore.createComponentDescriptor('TestContainer', id);
 		this._changeRef = {
 			detectChanges: () => undefined
@@ -44,7 +45,7 @@ class TestContainer extends ContainerBase<TestComponent> {
 		return this.items;
 	}
 
-	ngOnInit() { }
+	ngAfterViewInit() { }
 	setLayout() { }
 
 	public addValidation(validation: () => boolean | Thenable<boolean>) {

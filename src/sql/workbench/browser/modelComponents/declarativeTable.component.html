@@ -1,45 +1,52 @@
-<table role=grid #container *ngIf="columns" class="declarative-table" [style.height]="getHeight()"
+<table role="grid" #container *ngIf="columns" class="declarative-table" [style.height]="getHeight()"
 	[style.width]="getWidth()" [attr.aria-label]="ariaLabel">
-	<thead>
-		<ng-container *ngFor="let column of columns; let c = index;">
-			<th class="declarative-table-header" aria-sort="none" [style.width]="getColumnWidth(column)"
-				[attr.aria-label]="column.ariaLabel" [ngStyle]="column.headerCssStyles" role="columnheader">
-				{{column.displayName}}
-				<checkbox *ngIf="isCheckBox(c)" [checked]="isHeaderChecked(c)"
-					(onChange)="onHeaderCheckBoxChanged($event,c)" label=""></checkbox>
-			</th>
-		</ng-container>
+	<thead role="rowgroup">
+		<tr role="row">
+			<ng-container *ngFor="let column of columns; let c = index;">
+				<th class="declarative-table-header" aria-sort="none" [style.width]="getColumnWidth(column)"
+					[ngStyle]="column.headerCssStyles"
+					[attr.aria-label]="getHeaderAriaLabel(c)">
+					{{column.displayName}}
+					<checkbox *ngIf="isCheckBox(c)" [checked]="isHeaderChecked(c)"
+					[aria-label]="getCheckAllColumnAriaLabel(c)" (onChange)="onHeaderCheckBoxChanged($event,c)"
+						label=""></checkbox>
+				</th>
+			</ng-container>
+		</tr>
 	</thead>
-	<ng-container *ngIf="data.length > 0">
-		<ng-container *ngFor="let row of data;let r = index;">
-			<tr class="declarative-table-row" [class.selected]="isRowSelected(r)">
-				<ng-container *ngFor="let cellData of row;let c = index;trackBy:trackByFnCols">
-					<td class="declarative-table-cell" [style.width]="getColumnWidth(c)"
-						[attr.aria-label]="getAriaLabel(r, c)"
-						[ngStyle]="mergeCss(columns[c].rowCssStyles, cellData.style)">
-						<checkbox *ngIf="isCheckBox(c)" label="" (onChange)="onCheckBoxChanged($event,r,c)"
-							[enabled]="isControlEnabled(c)" [checked]="isChecked(r,c)"
-							[ngStyle]="mergeCss(columns[c].rowCssStyles, cellData.style)">
-						</checkbox>
-						<select-box *ngIf="isSelectBox(c)" [options]="getOptions(c)"
-							(onDidSelect)="onSelectBoxChanged($event,r,c)"
-							[selectedOption]="getSelectedOptionDisplayName(r,c)">
-						</select-box>
-						<editable-select-box *ngIf="isEditableSelectBox(c)" [options]="getOptions(c)"
-							(onDidSelect)="onSelectBoxChanged($event,r,c)"
-							[selectedOption]="getSelectedOptionDisplayName(r,c)">
-						</editable-select-box>
-						<input-box *ngIf="isInputBox(c)" [value]="cellData.value"
-							(onDidChange)="onInputBoxChanged($event,r,c)"></input-box>
-						<span *ngIf="isLabel(c)" (click)="onCellClick(r)">
-							{{cellData.value}}
-						</span>
-						<model-component-wrapper *ngIf="isComponent(c) && getItemDescriptor(cellData.value)"
-							[descriptor]="getItemDescriptor(cellData.value)" [modelStore]="modelStore">
-						</model-component-wrapper>
-					</td>
-				</ng-container>
-			</tr>
+	<tbody role="rowgroup">
+		<ng-container *ngIf="data.length > 0">
+			<ng-container *ngFor="let row of data;let r = index;">
+				<tr class="declarative-table-row" [class.selected]="isRowSelected(r)" role="row">
+					<ng-container *ngFor="let cellData of row;let c = index;trackBy:trackByFnCols">
+						<td class="declarative-table-cell" [style.width]="getColumnWidth(c)"
+							[attr.aria-label]="getAriaLabel(r, c)"
+							[ngStyle]="mergeCss(columns[c].rowCssStyles, cellData.style)"
+							role="gridcell">
+							<checkbox *ngIf="isCheckBox(c)" label="" (onChange)="onCheckBoxChanged($event,r,c)"
+								[enabled]="isControlEnabled(c)" [checked]="isChecked(r,c)"
+								[ngStyle]="mergeCss(columns[c].rowCssStyles, cellData.style)">
+							</checkbox>
+							<select-box *ngIf="isSelectBox(c)" [options]="getOptions(c)"
+								(onDidSelect)="onSelectBoxChanged($event,r,c)"
+								[selectedOption]="getSelectedOptionDisplayName(r,c)">
+							</select-box>
+							<editable-select-box *ngIf="isEditableSelectBox(c)" [options]="getOptions(c)"
+								(onDidSelect)="onSelectBoxChanged($event,r,c)"
+								[selectedOption]="getSelectedOptionDisplayName(r,c)">
+							</editable-select-box>
+							<input-box *ngIf="isInputBox(c)" [value]="cellData.value"
+								(onDidChange)="onInputBoxChanged($event,r,c)"></input-box>
+							<span *ngIf="isLabel(c)" (click)="onCellClick(r)">
+								{{cellData.value}}
+							</span>
+							<model-component-wrapper *ngIf="isComponent(c) && getItemDescriptor(cellData.value)"
+								[descriptor]="getItemDescriptor(cellData.value)" [modelStore]="modelStore">
+							</model-component-wrapper>
+						</td>
+					</ng-container>
+				</tr>
+			</ng-container>
 		</ng-container>
-	</ng-container>
+	</tbody>
 </table>

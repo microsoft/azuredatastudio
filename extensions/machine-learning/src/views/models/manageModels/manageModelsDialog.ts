@@ -39,7 +39,7 @@ export class ManageModelsDialog extends ModelViewBase {
 			await this.sendDataRequest(RegisterModelEventName, this.currentLanguagesTab?.modelTable?.importTable);
 		});
 
-		let dialog = this.dialogView.createDialog(constants.importedModelTitle, [this.currentLanguagesTab]);
+		let dialog = this.dialogView.createDialog(constants.viewImportModelsTitle, [this.currentLanguagesTab]);
 		dialog.isWide = true;
 		dialog.customButtons = [registerModelButton];
 		this.mainViewPanel = dialog;

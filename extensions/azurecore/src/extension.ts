@@ -43,7 +43,7 @@ import * as loc from './localizedConstants';
 import * as constants from './constants';
 import { AzureResourceGroupService } from './azureResource/providers/resourceGroup/resourceGroupService';
 import { Logger } from './utils/Logger';
-import { FlatAzureResourceTreeProvider } from './azureResource/tree/flatTreeProvider';
+import { ConnectionDialogTreeProvider } from './azureResource/tree/connectionDialogTreeProvider';
 import { AzureDataGridProvider } from './azureDataGridProvider';
 
 let extensionContext: vscode.ExtensionContext;
@@ -85,12 +85,25 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
-	const flatAzureResourceTree = new FlatAzureResourceTreeProvider(appContext);
-	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', flatAzureResourceTree));
+	const connectionDialogTree = new ConnectionDialogTreeProvider(appContext);
+	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
-	registerAzureResourceCommands(appContext, azureResourceTree);
+	registerAzureResourceCommands(appContext, [azureResourceTree, connectionDialogTree]);
 	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
+	vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
+		const portalEndpoint = item.portalEndpoint;
+		const subscriptionId = item.subscriptionId;
+		const resourceGroup = item.resourceGroup;
+		const type = item.type;
+		const name = item.name;
+		if (portalEndpoint && subscriptionId && resourceGroup && type && name) {
+			await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
+		} else {
+			console.log(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
+			vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
+		}
+	});
 
 	return {
 		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean, selectedOnly: boolean = false): Thenable<azurecore.GetSubscriptionsResult> {

@@ -6,9 +6,9 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as constants from '../constants';
-import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
-import { BasePage } from './basePage';
 import * as nls from 'vscode-nls';
+import { BasePage } from './basePage';
+import { DeployAzureSQLVMWizardModel } from '../deployAzureSQLVMWizardModel';
 const localize = nls.loadMessageBundle();
 
 export class VmSettingsPage extends BasePage {
@@ -42,11 +42,11 @@ export class VmSettingsPage extends BasePage {
 
 	private _form!: azdata.FormContainer;
 
-	constructor(wizard: DeployAzureSQLVMWizard) {
+	constructor(private _model: DeployAzureSQLVMWizardModel) {
 		super(
 			constants.VmSettingsPageTitle,
 			'',
-			wizard
+			_model.wizard
 		);
 	}
 
@@ -71,28 +71,28 @@ export class VmSettingsPage extends BasePage {
 				.withFormItems(
 					[
 						{
-							component: this.wizard.createFormRowComponent(view, constants.VmNameTextBoxLabel, '', this._vmNameTextBox, true)
+							component: this._model.createFormRowComponent(view, constants.VmNameTextBoxLabel, '', this._vmNameTextBox, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.VmAdminUsernameTextBoxLabel, '', this._adminUsernameTextBox, true)
+							component: this._model.createFormRowComponent(view, constants.VmAdminUsernameTextBoxLabel, '', this._adminUsernameTextBox, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.VmAdminPasswordTextBoxLabel, '', this._adminPasswordTextBox, true)
+							component: this._model.createFormRowComponent(view, constants.VmAdminPasswordTextBoxLabel, '', this._adminPasswordTextBox, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.VmAdminConfirmPasswordTextBoxLabel, '', this._adminComfirmPasswordTextBox, true)
+							component: this._model.createFormRowComponent(view, constants.VmAdminConfirmPasswordTextBoxLabel, '', this._adminComfirmPasswordTextBox, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.VmImageDropdownLabel, '', this._vmImageDropdown, true)
+							component: this._model.createFormRowComponent(view, constants.VmImageDropdownLabel, '', this._vmImageDropdown, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.VmSkuDropdownLabel, '', this._vmImageSkuDropdown, true)
+							component: this._model.createFormRowComponent(view, constants.VmSkuDropdownLabel, '', this._vmImageSkuDropdown, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.VmVersionDropdownLabel, '', this._vmImageVersionDropdown, true)
+							component: this._model.createFormRowComponent(view, constants.VmVersionDropdownLabel, '', this._vmImageVersionDropdown, true)
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.VmSizeDropdownLabel, '', this._vmSizeDropdown, true)
+							component: this._model.createFormRowComponent(view, constants.VmSizeDropdownLabel, '', this._vmSizeDropdown, true)
 						},
 						{
 							component: this._vmSizeLearnMoreLink
@@ -144,7 +144,7 @@ export class VmSettingsPage extends BasePage {
 		}).component();
 
 		this._vmNameTextBox.onTextChanged((value) => {
-			this.wizard.model.vmName = value;
+			this._model.vmName = value;
 			this.activateRealTimeFormValidation();
 		});
 	}
@@ -154,7 +154,7 @@ export class VmSettingsPage extends BasePage {
 		}).component();
 
 		this._adminUsernameTextBox.onTextChanged((value) => {
-			this.wizard.model.vmUsername = value;
+			this._model.vmUsername = value;
 			this.activateRealTimeFormValidation();
 		});
 	}
@@ -165,7 +165,7 @@ export class VmSettingsPage extends BasePage {
 		}).component();
 
 		this._adminPasswordTextBox.onTextChanged((value) => {
-			this.wizard.model.vmPassword = value;
+			this._model.vmPassword = value;
 			this.activateRealTimeFormValidation();
 		});
 	}
@@ -185,7 +185,7 @@ export class VmSettingsPage extends BasePage {
 		}).component();
 
 		this._vmImageDropdown.onValueChanged((value) => {
-			this.wizard.model.vmImage = (this._vmImageDropdown.value as azdata.CategoryValue).name;
+			this._model.vmImage = (this._vmImageDropdown.value as azdata.CategoryValue).name;
 			this._vmImageSkuDropdown.loading = true;
 			this._vmImageVersionDropdown.loading = true;
 			this.populateVmImageSkuDropdown();
@@ -199,16 +199,16 @@ export class VmSettingsPage extends BasePage {
 		this._vmImageVersionDropdown.loading = true;
 
 		let url = `https://management.azure.com` +
-			`/subscriptions/${this.wizard.model.azureSubscription}` +
+			`/subscriptions/${this._model.azureSubscription}` +
 			`/providers/Microsoft.Compute` +
-			`/locations/${this.wizard.model.azureRegion}` +
+			`/locations/${this._model.azureRegion}` +
 			`/publishers/MicrosoftSQLServer` +
 			`/artifacttypes/vmimage/offers` +
 			`?api-version=2019-12-01`;
 
-		let response = await this.wizard.getRequest(url, true);
+		let response = await this._model.getRequest(url, true);
 		response.data = response.data.reverse();
-		this.wizard.addDropdownValues(
+		this._model.addDropdownValues(
 			this._vmImageDropdown,
 			response.data.filter((value: any) => {
 				return !new RegExp('-byol').test(value.name.toLowerCase());
@@ -227,7 +227,7 @@ export class VmSettingsPage extends BasePage {
 				})
 		);
 
-		this.wizard.model.vmImage = (this._vmImageDropdown.value as azdata.CategoryValue).name;
+		this._model.vmImage = (this._vmImageDropdown.value as azdata.CategoryValue).name;
 		this._vmImageDropdown.loading = false;
 		this.populateVmImageSkuDropdown();
 	}
@@ -237,7 +237,7 @@ export class VmSettingsPage extends BasePage {
 		}).component();
 
 		this._vmImageSkuDropdown.onValueChanged((value) => {
-			this.wizard.model.vmImageSKU = (this._vmImageSkuDropdown.value as azdata.CategoryValue).name;
+			this._model.vmImageSKU = (this._vmImageSkuDropdown.value as azdata.CategoryValue).name;
 			this.populateVmImageVersionDropdown();
 		});
 
@@ -246,16 +246,16 @@ export class VmSettingsPage extends BasePage {
 	private async populateVmImageSkuDropdown() {
 		this._vmImageSkuDropdown.loading = true;
 		let url = `https://management.azure.com` +
-			`/subscriptions/${this.wizard.model.azureSubscription}` +
+			`/subscriptions/${this._model.azureSubscription}` +
 			`/providers/Microsoft.Compute` +
-			`/locations/${this.wizard.model.azureRegion}` +
+			`/locations/${this._model.azureRegion}` +
 			`/publishers/MicrosoftSQLServer` +
-			`/artifacttypes/vmimage/offers/${this.wizard.model.vmImage}` +
+			`/artifacttypes/vmimage/offers/${this._model.vmImage}` +
 			`/skus?api-version=2019-12-01`;
 
-		let response = await this.wizard.getRequest(url, true);
+		let response = await this._model.getRequest(url, true);
 
-		this.wizard.addDropdownValues(
+		this._model.addDropdownValues(
 			this._vmImageSkuDropdown,
 			response.data.map((value: any) => {
 				return {
@@ -265,7 +265,7 @@ export class VmSettingsPage extends BasePage {
 			})
 		);
 
-		this.wizard.model.vmImageSKU = (this._vmImageSkuDropdown.value as azdata.CategoryValue).name;
+		this._model.vmImageSKU = (this._vmImageSkuDropdown.value as azdata.CategoryValue).name;
 		this._vmImageSkuDropdown.loading = false;
 		this.populateVmImageVersionDropdown();
 	}
@@ -275,24 +275,24 @@ export class VmSettingsPage extends BasePage {
 		}).component();
 
 		this._vmImageVersionDropdown.onValueChanged((value) => {
-			this.wizard.model.vmImageVersion = (this._vmImageVersionDropdown.value as azdata.CategoryValue).name;
+			this._model.vmImageVersion = (this._vmImageVersionDropdown.value as azdata.CategoryValue).name;
 		});
 	}
 
 	private async populateVmImageVersionDropdown() {
 		this._vmImageVersionDropdown.loading = true;
 		let url = `https://management.azure.com` +
-			`/subscriptions/${this.wizard.model.azureSubscription}` +
+			`/subscriptions/${this._model.azureSubscription}` +
 			`/providers/Microsoft.Compute` +
-			`/locations/${this.wizard.model.azureRegion}` +
+			`/locations/${this._model.azureRegion}` +
 			`/publishers/MicrosoftSQLServer` +
-			`/artifacttypes/vmimage/offers/${this.wizard.model.vmImage}` +
-			`/skus/${this.wizard.model.vmImageSKU}` +
+			`/artifacttypes/vmimage/offers/${this._model.vmImage}` +
+			`/skus/${this._model.vmImageSKU}` +
 			`/versions?api-version=2019-12-01`;
 
-		let response = await this.wizard.getRequest(url, true);
+		let response = await this._model.getRequest(url, true);
 
-		this.wizard.addDropdownValues(
+		this._model.addDropdownValues(
 			this._vmImageVersionDropdown,
 			response.data.map((value: any) => {
 				return {
@@ -302,7 +302,7 @@ export class VmSettingsPage extends BasePage {
 			})
 		);
 
-		this.wizard.model.vmImageVersion = (this._vmImageVersionDropdown.value as azdata.CategoryValue).name;
+		this._model.vmImageVersion = (this._vmImageVersionDropdown.value as azdata.CategoryValue).name;
 		this._vmImageVersionDropdown.loading = false;
 	}
 
@@ -313,7 +313,7 @@ export class VmSettingsPage extends BasePage {
 		}).component();
 
 		this._vmSizeDropdown.onValueChanged((value) => {
-			this.wizard.model.vmSize = (this._vmSizeDropdown.value as azdata.CategoryValue).name;
+			this._model.vmSize = (this._vmSizeDropdown.value as azdata.CategoryValue).name;
 		});
 
 		this._vmSizeLearnMoreLink = view.modelBuilder.hyperlink().withProperties(<azdata.HyperlinkComponent>{
@@ -326,12 +326,12 @@ export class VmSettingsPage extends BasePage {
 	private async populateVmSizeDropdown() {
 		this._vmSizeDropdown.loading = true;
 		let url = `https://management.azure.com` +
-			`/subscriptions/${this.wizard.model.azureSubscription}` +
+			`/subscriptions/${this._model.azureSubscription}` +
 			`/providers/Microsoft.Compute` +
 			`/skus?api-version=2019-04-01` +
-			`&$filter=location eq '${this.wizard.model.azureRegion}'`;
+			`&$filter=location eq '${this._model.azureRegion}'`;
 
-		let response = await this.wizard.getRequest(url, true);
+		let response = await this._model.getRequest(url, true);
 
 		let vmResouces: any[] = [];
 		response.data.value.map((res: any) => {
@@ -375,7 +375,7 @@ export class VmSettingsPage extends BasePage {
 			value: dropDownValues[0],
 			width: '480px'
 		});
-		this.wizard.model.vmSize = (this._vmSizeDropdown.value as azdata.CategoryValue).name;
+		this._model.vmSize = (this._vmSizeDropdown.value as azdata.CategoryValue).name;
 		this._vmSizeDropdown.loading = false;
 	}
 
@@ -389,7 +389,7 @@ export class VmSettingsPage extends BasePage {
 		 *  3. Cannot start with underscore and end with period or hyphen
 		 *  4. Virtual machine name cannot contain special characters \/""[]:|<>+=;,?*
 		 */
-		let vmname = this.wizard.model.vmName;
+		let vmname = this._model.vmName;
 		if (vmname.length < 1 && vmname.length > 15) {
 			errorMessages.push(localize('deployAzureSQLVM.VnameLengthError', "Virtual machine name must be between 1 and 15 characters long."));
 		}
@@ -418,7 +418,7 @@ export class VmSettingsPage extends BasePage {
 			'aspnet', 'backup', 'console', 'david', 'guest', 'john', 'owner', 'root', 'server', 'sql', 'support',
 			'support_388945a0', 'sys', 'test2', 'test3', 'user4', 'user5'
 		];
-		let username = this.wizard.model.vmUsername;
+		let username = this._model.vmUsername;
 		if (username.length < 1 || username.length > 20) {
 			errorMessages.push(localize('deployAzureSQLVM.VMUsernameLengthError', "Username must be between 1 and 20 characters long."));
 		}
@@ -433,9 +433,9 @@ export class VmSettingsPage extends BasePage {
 			errorMessages.push(localize('deployAzureSQLVM.VMUsernameReservedWordsError', "Username must not include reserved words."));
 		}
 
-		errorMessages.push(this.wizard.validatePassword(this.wizard.model.vmPassword));
+		errorMessages.push(this._model.validatePassword(this._model.vmPassword));
 
-		if (this.wizard.model.vmPassword !== this._adminComfirmPasswordTextBox.value) {
+		if (this._model.vmPassword !== this._adminComfirmPasswordTextBox.value) {
 			errorMessages.push(localize('deployAzureSQLVM.VMConfirmPasswordError', "Password and confirm password must match."));
 		}
 
@@ -443,19 +443,19 @@ export class VmSettingsPage extends BasePage {
 			errorMessages.push(localize('deployAzureSQLVM.vmDropdownSizeError', "Select a valid virtual machine size."));
 		}
 
-		this.wizard.showErrorMessage(errorMessages.join(EOL));
+		this._model.wizard.showErrorMessage(errorMessages.join(EOL));
 
 		return errorMessages.join(EOL);
 	}
 
 	protected async vmNameExists(vmName: string): Promise<boolean> {
 		const url = `https://management.azure.com` +
-			`/subscriptions/${this.wizard.model.azureSubscription}` +
-			`/resourceGroups/${this.wizard.model.azureResouceGroup}` +
+			`/subscriptions/${this._model.azureSubscription}` +
+			`/resourceGroups/${this._model.azureResouceGroup}` +
 			`/providers/Microsoft.Compute` +
 			`/virtualMachines?api-version=2019-12-01`;
 
-		let response = await this.wizard.getRequest(url, true);
+		let response = await this._model.getRequest(url, true);
 
 		let nameArray = response.data.value.map((v: any) => { return v.name; });
 		return (nameArray.includes(vmName));

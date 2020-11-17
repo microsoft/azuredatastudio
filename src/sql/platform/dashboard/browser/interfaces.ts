@@ -27,7 +27,8 @@ export enum ComponentEventType {
  * Actions that can be handled by ModelView components
  */
 export enum ModelViewAction {
-	SelectTab = 'selectTab'
+	SelectTab = 'selectTab',
+	AppendData = 'appendData'
 }
 
 /**
@@ -68,7 +69,7 @@ export interface IModelStore {
 	 * @param componentId unique identifier of the component
 	 * @param action some action to perform
 	 */
-	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): Promise<T>;
+	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T, initial: boolean): void;
 	/**
 	 * Register a callback that will validate components when given a component ID
 	 */
@@ -98,7 +99,7 @@ export interface IComponent extends IDisposable {
 	setProperties?: (properties: { [key: string]: any; }) => void;
 	enabled: boolean;
 	readonly valid?: boolean;
-	validate(): Thenable<boolean>;
+	validate(): Promise<boolean>;
 	setDataProvider(handle: number, componentId: string, context: any): void;
 	refreshDataProvider(item: any): void;
 	focus(): void;

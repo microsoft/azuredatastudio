@@ -1,0 +1,15 @@
+---
+permalink: /search
+title: "Search the site"
+search_page: true
+---
+
+<div class="search-content__inner-wrap">
+    <input type="text" id="lunr_search" class="search-input" tabindex="-1" placeholder="'Enter your search term...''" />
+    <div id="results" class="results"></div>
+</div>
+
+<script>
+    // Add the lunr store since we will now search it
+    {% include search/lunr/lunr-store.js %}
+</script>
