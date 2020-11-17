@@ -129,9 +129,7 @@ export class RegexValidation extends Validation {
 
 export abstract class Comparison extends Validation {
 	protected _target: string; // comparison object requires a target so override the base optional setting.
-	protected _onTargetValidityChangedGetter: OnTargetValidityChangedGetter; // comparison object requires an onTargetValidityChangedGetter defined so override the base optional setting.
-	protected _onNewDisposableCreated: (disposable: vscode.Disposable) => void; // comparison object requires an (disposable: vscode.Disposable) => void defined so override the base optional setting.
-	protected _listenerOnTargetValidityChangeAdded = false;
+	protected _ensureOnTargetValidityChangeListenerAdded = false;
 
 	get target(): string {
 		return this._target;
@@ -142,17 +140,15 @@ export abstract class Comparison extends Validation {
 		this._onNewDisposableCreated(onValidityChanged(isValid => onTargetValidityChangedAction(isValid)));
 	}
 
-	constructor(validation: ComparisonValidationInfo, validationMessageUpdater: onValidation, valueGetter: ValueGetter, targetValueGetter: TargetValueGetter, onTargetValidityChangedGetter: OnTargetValidityChangedGetter, onDisposableCreated: (disposable: vscode.Disposable) => void) {
-		super(validation, validationMessageUpdater, valueGetter, targetValueGetter);
-		this._onNewDisposableCreated = onDisposableCreated;
-		this._onTargetValidityChangedGetter = onTargetValidityChangedGetter;
+	constructor(validation: ComparisonValidationInfo, onValidation: onValidation, valueGetter: ValueGetter, targetValueGetter: TargetValueGetter, protected _onTargetValidityChangedGetter: OnTargetValidityChangedGetter, protected _onNewDisposableCreated: (disposable: vscode.Disposable) => void) {
+		super(validation, onValidation, valueGetter, targetValueGetter);
 		throwUnless(validation.target !== undefined);
 		this._target = validation.target;
 	}
 
 	private validateOnTargetValidityChange() {
-		if (!this._listenerOnTargetValidityChangeAdded) {
-			this._listenerOnTargetValidityChangeAdded = true;
+		if (!this._ensureOnTargetValidityChangeListenerAdded) {
+			this._ensureOnTargetValidityChangeListenerAdded = true;
 			this.onTargetValidityChanged(async (isTargetValid: boolean) => {
 				if (isTargetValid) { // if target is valid
 					await this.validate();
