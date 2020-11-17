@@ -100,6 +100,8 @@ export class NotebookWizardPage extends ResourceTypePage {
 			await setModelValues(this._model.inputComponents, this.wizard.model);
 		}
 
+		this.wizard.wizardObject.generateScriptButton.enabled = this.pageObject.valid;
+
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
 

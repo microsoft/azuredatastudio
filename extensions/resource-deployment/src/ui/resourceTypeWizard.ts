@@ -149,10 +149,8 @@ export class ResourceTypeWizard {
 		this.pages = pages;
 		this.pages.forEach((page, idx) => {
 			page.pageObject.onValidityChanged((isValid: boolean) => {
-				if (idx === pages.length - 1) {
-					// generateScriptButton is enabled only when the last page is valid.
-					this.wizardObject.generateScriptButton.enabled = isValid;
-				}
+				// generateScriptButton is enabled only when the page is valid.
+				this.wizardObject.generateScriptButton.enabled = isValid;
 			});
 			page.initialize();
 		});
