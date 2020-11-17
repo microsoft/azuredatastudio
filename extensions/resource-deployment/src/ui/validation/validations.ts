@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { throwUnless } from '../../common/utils';
+import { isUndefinedOrEmpty, throwUnless } from '../../common/utils';
 
 export interface ValidationResult {
 	valid: boolean;
@@ -54,7 +54,9 @@ export abstract class Validation {
 	get description(): string {
 		return this._description;
 	}
-
+	protected get onValidation(): OnValidation {
+		return this._onValidation;
+	}
 	// gets the validation result for this validation object
 	abstract validate(): Promise<ValidationResult>;
 
@@ -66,27 +68,20 @@ export abstract class Validation {
 		return this._targetValueGetter!(variable);
 	}
 
-	protected async onValidation(isValid: boolean): Promise<void> {
-		await this._onValidation(isValid);
-	}
-
 	constructor(validation: ValidationInfo, protected _onValidation: OnValidation, protected _valueGetter: ValueGetter, protected _targetValueGetter?: TargetValueGetter, protected _onTargetValidityChangedGetter?: OnTargetValidityChangedGetter, protected _onNewDisposableCreated?: (disposable: vscode.Disposable) => void) {
 		this._description = validation.description;
 	}
 
-	protected isUndefinedOrEmpty(value: ValidationValueType): boolean {
-		return value === undefined || (typeof value === 'string' && value.length === 0);
-	}
 }
 
 export class IntegerValidation extends Validation {
-	constructor(validation: IntegerValidationInfo, validationMessageUpdater: OnValidation, valueGetter: ValueGetter) {
-		super(validation, validationMessageUpdater, valueGetter);
+	constructor(validation: IntegerValidationInfo, onValidation: OnValidation, valueGetter: ValueGetter) {
+		super(validation, onValidation, valueGetter);
 	}
 
-	private async isInteger(): Promise<boolean> {
+	private async isIntegerOrEmptyOrUndefined(): Promise<boolean> {
 		const value = await this.getValue();
-		return (this.isUndefinedOrEmpty(value))
+		return (isUndefinedOrEmpty(value))
 			? true
 			: (typeof value === 'string')
 				? Number.isInteger(parseFloat(value))
@@ -94,7 +89,7 @@ export class IntegerValidation extends Validation {
 	}
 
 	async validate(): Promise<ValidationResult> {
-		const isValid = await this.isInteger();
+		const isValid = await this.isIntegerOrEmptyOrUndefined();
 		await this.onValidation(isValid);
 		return {
 			valid: isValid,
@@ -118,7 +113,7 @@ export class RegexValidation extends Validation {
 
 	async validate(): Promise<ValidationResult> {
 		const value = (await this.getValue())?.toString();
-		const isValid = this.isUndefinedOrEmpty(value) ? true : this.regex.test(value!);
+		const isValid = isUndefinedOrEmpty(value) ? true : this.regex.test(value!);
 		await this.onValidation(isValid);
 		return {
 			valid: isValid,
@@ -173,7 +168,7 @@ export class LessThanOrEqualsValidation extends Comparison {
 	async isComparisonSuccessful() {
 		const value = (await this.getValue());
 		const targetValue = (await this.getTargetValue(this.target));
-		return (this.isUndefinedOrEmpty(value) || this.isUndefinedOrEmpty(targetValue)) ? true : value! <= targetValue!;
+		return (isUndefinedOrEmpty(value) || isUndefinedOrEmpty(targetValue)) ? true : value! <= targetValue!;
 	}
 }
 
@@ -181,7 +176,7 @@ export class GreaterThanOrEqualsValidation extends Comparison {
 	async isComparisonSuccessful() {
 		const value = (await this.getValue());
 		const targetValue = (await this.getTargetValue(this.target));
-		return (this.isUndefinedOrEmpty(value) || this.isUndefinedOrEmpty(targetValue)) ? true : value! >= targetValue!;
+		return (isUndefinedOrEmpty(value) || isUndefinedOrEmpty(targetValue)) ? true : value! >= targetValue!;
 	}
 }
 
