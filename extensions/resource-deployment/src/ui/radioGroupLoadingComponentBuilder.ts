@@ -51,7 +51,7 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 					label: option.displayName,
 					checked: option.displayName === defaultValue,
 					name: option.name,
-					enabled: this._fieldInfo.enabled
+					enabled: typeof this._fieldInfo.enabled === 'object' ? false : this._fieldInfo.enabled // Dynamic enablement is initially set to false
 				}).component();
 				if (radioOption.checked) {
 					this._currentRadioOption = radioOption;
@@ -80,6 +80,12 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 
 	get checked(): azdata.RadioButtonComponent {
 		return this._currentRadioOption;
+	}
+
+	set enabled(enabled: boolean) {
+		this._optionsDivContainer.items.forEach(radioButton => {
+			radioButton.enabled = enabled;
+		});
 	}
 
 	get onValueChanged(): vscode.Event<void> {

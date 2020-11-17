@@ -7,7 +7,7 @@ import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { NotebookWizardPageInfo } from '../../interfaces';
-import { initializeWizardPage, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
+import { initializeWizardPage, InputComponent, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
 import { ResourceTypePage } from '../resourceTypePage';
 import { WizardPageInfo } from '../wizardPageInfo';
 import { NotebookWizardModel } from './notebookWizardModel';
@@ -59,7 +59,7 @@ export class NotebookWizardPage extends ResourceTypePage {
 			},
 			onNewInputComponentCreated: (
 				name: string,
-				inputComponentInfo: InputComponentInfo
+				inputComponentInfo: InputComponentInfo<InputComponent>
 			): void => {
 				if (name) {
 					this._model.inputComponents[name] = inputComponentInfo;

@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { FieldType, LabelPosition, SectionInfo } from '../../../interfaces';
 import * as localizedConstants from '../../../localizedConstants';
-import { createSection, getInputBoxComponent, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, InputComponentInfo, InputComponents, isValidSQLPassword, setModelValues, Validator } from '../../modelViewUtils';
+import { createSection, getInputBoxComponent, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, InputComponent, InputComponentInfo, InputComponents, isValidSQLPassword, setModelValues, Validator } from '../../modelViewUtils';
 import { ResourceTypePage } from '../../resourceTypePage';
 import { ValidationType } from '../../validation/validations';
 import * as VariableNames from '../constants';
@@ -219,7 +219,7 @@ export class ClusterSettingsPage extends ResourceTypePage {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo<InputComponent>): void => {
 					self.inputComponents[name] = inputComponentInfo;
 					self._model.inputComponents[name] = inputComponentInfo;
 				},
@@ -236,7 +236,7 @@ export class ClusterSettingsPage extends ResourceTypePage {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo<InputComponent>): void => {
 					self.inputComponents[name] = inputComponentInfo;
 					self._model.inputComponents[name] = inputComponentInfo;
 				},
@@ -253,7 +253,7 @@ export class ClusterSettingsPage extends ResourceTypePage {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo<InputComponent>): void => {
 					self.inputComponents[name] = inputComponentInfo;
 					self._model.inputComponents[name] = inputComponentInfo;
 				},
