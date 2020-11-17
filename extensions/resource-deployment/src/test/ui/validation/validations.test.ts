@@ -42,7 +42,7 @@ describe('Validation', () => {
 	beforeEach('validation setup', () => {
 		sinon.restore(); //cleanup all previously defined sinon mocks
 		inputBoxStub = sinon.stub(inputBox, 'updateProperty').resolves();
-		onValidityChangedEmitter = new vscode.EventEmitter<boolean>();
+		onValidityChangedEmitter = new vscode.EventEmitter<boolean>(); // recreate for every test so that any previous subscriptions on the event are cleared out.
 	});
 	describe('createValidation and validate input Box', () => {
 		testValidations.forEach(testObj => {

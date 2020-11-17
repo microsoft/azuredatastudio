@@ -21,7 +21,7 @@ import { IToolsService } from '../services/toolsService';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
-import { createValidation, validateInputBoxComponent, Validation } from './validation/validations';
+import { createValidation, validateInputBoxComponent, Validation, ValidationValueType } from './validation/validations';
 
 const localize = nls.loadMessageBundle();
 export type Validator = () => { valid: boolean, message: string };
@@ -1302,7 +1302,7 @@ export async function setModelValues(inputComponents: InputComponents, model: Mo
 	}));
 }
 
-async function getInputComponentValue(inputComponentInfo: InputComponentInfo): Promise<string | number | undefined> {
+async function getInputComponentValue(inputComponentInfo: InputComponentInfo): Promise<ValidationValueType> {
 	const input = inputComponentInfo.component;
 	if (input === undefined) {
 		return undefined;
