@@ -80,8 +80,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	private readonly _runningOnSAW: boolean;
 
-	private _kernelSpecsUpdated = false;
-
 	constructor(extensionPath: string, outputChannel: vscode.OutputChannel) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
