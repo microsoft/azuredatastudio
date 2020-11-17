@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { DialogBase } from './dialogBase';
 import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
@@ -16,6 +17,7 @@ export class OpenExistingDialog extends DialogBase {
 	public _workspaceFile: string = '';
 	public _targetTypeRadioCardGroup: azdata.RadioCardGroupComponent | undefined;
 	public _filePathTextBox: azdata.InputBoxComponent | undefined;
+	public formBuilder: azdata.FormBuilder | undefined;
 
 	private _targetTypes = [
 		{
@@ -114,6 +116,7 @@ export class OpenExistingDialog extends DialogBase {
 		this.register(this._filePathTextBox.onTextChanged(() => {
 			this._projectFile = this._filePathTextBox!.value!;
 			this._filePathTextBox!.updateProperty('title', this._projectFile);
+			this.updateWorkspaceInputbox(path.dirname(this._projectFile), path.basename(this._projectFile, path.extname(this._projectFile)));
 		}));
 
 		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -133,15 +136,17 @@ export class OpenExistingDialog extends DialogBase {
 		this.register(this._targetTypeRadioCardGroup.onSelectionChanged(({ cardId }) => {
 			if (cardId === constants.Project) {
 				this._filePathTextBox!.placeHolder = constants.ProjectFilePlaceholder;
+				this.formBuilder?.addFormItem(this.workspaceFormComponent!);
 			} else if (cardId === constants.Workspace) {
 				this._filePathTextBox!.placeHolder = constants.WorkspacePlaceholder;
+				this.formBuilder?.removeFormItem(this.workspaceFormComponent!);
 			}
 
 			// clear selected file textbox
 			this._filePathTextBox!.value = '';
 		}));
 
-		const form = view.modelBuilder.formContainer().withFormItems([
+		this.formBuilder = view.modelBuilder.formContainer().withFormItems([
 			{
 				title: constants.TypeTitle,
 				required: true,
@@ -150,9 +155,10 @@ export class OpenExistingDialog extends DialogBase {
 				title: constants.LocationSelectorTitle,
 				required: true,
 				component: this.createHorizontalContainer(view, [this._filePathTextBox, browseFolderButton])
-			}
-		]).component();
-		await view.initializeModel(form);
+			},
+			this.createWorkspaceContainer(view)
+		]);
+		await view.initializeModel(this.formBuilder?.component());
 		this.initDialogComplete?.resolve();
 	}
 
