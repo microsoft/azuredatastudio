@@ -156,7 +156,7 @@ export class TreeView extends Disposable implements ITreeView {
 	private tree: Tree | undefined;
 	private treeLabels: ResourceLabels | undefined;
 
-	private root: ITreeItem;
+	public root: ITreeItem;	// {{SQL CARBON EDIT}}
 	private elementsToRefresh: ITreeItem[] = [];
 
 	private readonly _onDidExpandItem: Emitter<ITreeItem> = this._register(new Emitter<ITreeItem>());

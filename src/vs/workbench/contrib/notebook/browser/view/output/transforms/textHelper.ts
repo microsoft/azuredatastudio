@@ -39,7 +39,7 @@ function generateViewMoreElement(outputs: string[], openerService: IOpenerServic
 					});
 				}
 
-				return;
+				return undefined;  // {{SQL CARBON EDIT}}
 			},
 			disposeables: new DisposableStore()
 		}
