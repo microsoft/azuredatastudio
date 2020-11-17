@@ -70,10 +70,10 @@ export class CreateProjectFromDatabaseDialog {
 			const sourceDatabaseFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			sourceDatabaseFormSection.addItems([connectionRow, databaseRow]);
 
-			const projectNameColumn = this.createProjectNameColumn(view);
-			const projectLocationColumn = this.createProjectLocationColumn(view);
+			const projectNameRow = this.createProjectNameRow(view);
+			const projectLocationRow = this.createProjectLocationRow(view);
 			const targetProjectFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			targetProjectFormSection.addItems([projectNameColumn, projectLocationColumn]);
+			targetProjectFormSection.addItems([projectNameRow, projectLocationRow]);
 
 			const folderStructureRow = this.createFolderStructureRow(view);
 			const importSettingsFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
@@ -126,7 +126,7 @@ export class CreateProjectFromDatabaseDialog {
 		const serverLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.server,
 			requiredIndicator: true,
-			width: cssStyles.importDialogLabelWidth
+			width: cssStyles.labelWidth
 		}).component();
 
 		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, sourceConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
@@ -139,7 +139,7 @@ export class CreateProjectFromDatabaseDialog {
 		this.sourceDatabaseDropDown = view.modelBuilder.dropDown().withProperties({
 			ariaLabel: constants.databaseNameLabel,
 			required: true,
-			width: cssStyles.importDialogTextboxWidth,
+			width: cssStyles.textboxWidth,
 			editable: true,
 			fireOnTextChange: true
 		}).component();
@@ -152,7 +152,7 @@ export class CreateProjectFromDatabaseDialog {
 		const databaseLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.databaseNameLabel,
 			requiredIndicator: true,
-			width: cssStyles.importDialogLabelWidth
+			width: cssStyles.labelWidth
 		}).component();
 
 		const databaseRow = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdata.DropDownComponent>this.sourceDatabaseDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
@@ -163,11 +163,12 @@ export class CreateProjectFromDatabaseDialog {
 	public setProjectName() {
 		this.projectNameTextBox!.value = newProjectTool.defaultProjectNameFromDb(<string>this.sourceDatabaseDropDown!.value);
 	}
+
 	private createSourceConnectionComponent(view: azdata.ModelView): azdata.InputBoxComponent {
 		this.sourceConnectionTextBox = view.modelBuilder.inputBox().withProperties({
 			value: '',
 			placeHolder: constants.selectConnection,
-			width: cssStyles.importDialogTextboxWidth,
+			width: cssStyles.textboxWidth,
 			enabled: false
 		}).component();
 
@@ -220,11 +221,11 @@ export class CreateProjectFromDatabaseDialog {
 		this.selectConnectionButton!.iconPath = IconPathHelper.connect;
 	}
 
-	private createProjectNameColumn(view: azdata.ModelView): azdata.FlexContainer {
+	private createProjectNameRow(view: azdata.ModelView): azdata.FlexContainer {
 		this.projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.projectNamePlaceholderText,
 			required: true,
-			width: cssStyles.importDialogProjectInfoTextboxWidth,
+			width: cssStyles.textboxWidth,
 			validationErrorMessage: constants.projectNameRequired
 		}).component();
 
@@ -236,36 +237,22 @@ export class CreateProjectFromDatabaseDialog {
 		const projectNameLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.projectNameLabel,
 			requiredIndicator: true,
-			width: cssStyles.importDialogLabelWidth
+			width: cssStyles.labelWidth
 		}).component();
 
-		const projectNameColumn = view.modelBuilder.flexContainer().withItems([projectNameLabel, this.projectNameTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'column' }).component();
+		const projectNameRow = view.modelBuilder.flexContainer().withItems([projectNameLabel, this.projectNameTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
-		return projectNameColumn;
+		return projectNameRow;
 	}
 
-	private createProjectLocationColumn(view: azdata.ModelView): azdata.FlexContainer {
-		const projectLocationRow = this.createProjectLocationComponent(view);
-
-		const projectLocationLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: constants.projectLocationLabel,
-			requiredIndicator: true,
-			width: cssStyles.importDialogLabelWidth
-		}).component();
-
-		const projectLocationColumn = view.modelBuilder.flexContainer().withItems([projectLocationLabel, projectLocationRow], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'column' }).component();
-
-		return projectLocationColumn;
-	}
-
-	private createProjectLocationComponent(view: azdata.ModelView): azdata.FlexContainer {
+	private createProjectLocationRow(view: azdata.ModelView): azdata.FlexContainer {
 		const browseFolderButton: azdata.Component = this.createBrowseFolderButton(view);
 
 		this.projectLocationTextBox = view.modelBuilder.inputBox().withProperties({
 			value: '',
 			ariaLabel: constants.projectLocationLabel,
 			placeHolder: constants.projectLocationPlaceholderText,
-			width: cssStyles.importDialogProjectInfoTextboxWidth,
+			width: cssStyles.textboxWidth,
 			validationErrorMessage: constants.projectLocationRequired
 		}).component();
 
@@ -274,7 +261,14 @@ export class CreateProjectFromDatabaseDialog {
 			this.tryEnableImportButton();
 		});
 
-		const projectLocationRow = view.modelBuilder.flexContainer().withItems([this.projectLocationTextBox, browseFolderButton], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const projectLocationLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: constants.projectLocationLabel,
+			requiredIndicator: true,
+			width: cssStyles.labelWidth
+		}).component();
+
+		const projectLocationRow = view.modelBuilder.flexContainer().withItems([projectLocationLabel, this.projectLocationTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		projectLocationRow.insertItem(browseFolderButton, 2, { CSSStyles: { 'margin-right': '0px' } });
 
 		return projectLocationRow;
 	}
@@ -313,7 +307,7 @@ export class CreateProjectFromDatabaseDialog {
 			value: constants.schemaObjectType,
 			ariaLabel: constants.folderStructureLabel,
 			required: true,
-			width: cssStyles.importDialogTextboxWidth
+			width: cssStyles.textboxWidth
 		}).component();
 
 		this.folderStructureDropDown.onValueChanged(() => {
@@ -323,7 +317,7 @@ export class CreateProjectFromDatabaseDialog {
 		const folderStructureLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.folderStructureLabel,
 			requiredIndicator: true,
-			width: cssStyles.importDialogLabelWidth
+			width: cssStyles.labelWidth
 		}).component();
 
 		const folderStructureRow = view.modelBuilder.flexContainer().withItems([folderStructureLabel, <azdata.DropDownComponent>this.folderStructureDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();

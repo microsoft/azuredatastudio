@@ -10,15 +10,11 @@ export namespace cssStyles {
 	export const tableRow = { ...text, 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none', 'font-size': '12px' };
 	export const titleFontSize = 13;
 
-	export const publishDialogLabelWidth = '205px';
-	export const publishDialogTextboxWidth = '190px';
+	export const labelWidth = '205px';
+	export const textboxWidth = '190px';
 
 	export const addDatabaseReferenceDialogLabelWidth = '215px';
 	export const addDatabaseReferenceInputboxWidth = '220px';
-
-	export const importDialogLabelWidth = '205px';
-	export const importDialogTextboxWidth = '190px';
-	export const importDialogProjectInfoTextboxWidth = '390px';
 
 	// font-styles
 	export namespace fontStyle {
