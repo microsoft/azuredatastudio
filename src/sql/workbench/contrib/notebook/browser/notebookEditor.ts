@@ -13,7 +13,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { NotebookModule } from 'sql/workbench/contrib/notebook/browser/notebook.module';
-import { NOTEBOOK_SELECTOR } from 'sql/workbench/contrib/notebook/browser/notebook.component';
+import { NOTEBOOKEDITOR_SELECTOR } from 'sql/workbench/contrib/notebook/browser/notebookEditor.component';
 import { INotebookParams, INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ACTION_IDS, NOTEBOOK_MAX_MATCHES, IFindNotebookController, FindWidget, IConfigurationChangedEvent } from 'sql/workbench/contrib/notebook/browser/find/notebookFindWidget';
@@ -235,7 +235,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 		this._instantiationService.invokeFunction(bootstrapAngular,
 			NotebookModule,
 			this._notebookContainer,
-			NOTEBOOK_SELECTOR,
+			NOTEBOOKEDITOR_SELECTOR,
 			params,
 			input
 		);
