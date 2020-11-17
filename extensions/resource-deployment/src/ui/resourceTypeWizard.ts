@@ -147,7 +147,7 @@ export class ResourceTypeWizard {
 		pages.unshift(new ToolsAndEulaPage(this));
 		this.wizardObject!.pages = pages.map(p => p.pageObject);
 		this.pages = pages;
-		this.pages.forEach((page, idx) => {
+		this.pages.forEach((page) => {
 			page.pageObject.onValidityChanged((isValid: boolean) => {
 				// generateScriptButton is enabled only when the page is valid.
 				this.wizardObject.generateScriptButton.enabled = isValid;
