@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import 'mocha';
 import * as should from 'should';
 import * as sinon from 'sinon';
-import { createValidation, GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, validateInputBoxComponent, Validation, ValidationType, ValidationValueType } from '../../../ui/validation/validations';
+import * as vscode from 'vscode';
+import { InputValueType } from '../../../ui/modelViewUtils';
+import { createValidation, GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, validateInputBoxComponent, Validation, ValidationType } from '../../../ui/validation/validations';
 
 const inputBox = <azdata.InputBoxComponent>{
 	updateProperty(key: string, value: any) { }
@@ -240,8 +241,8 @@ describe('Validation', () => {
 });
 
 interface TestObject {
-	value: ValidationValueType;
-	targetValue?: ValidationValueType;
+	value: InputValueType;
+	targetValue?: InputValueType;
 	expected: boolean;
 }
 
@@ -253,7 +254,7 @@ async function testValidation(validation: Validation, test: TestObject, validati
 		: should(validationResult.message).be.equal(validationDescription);
 }
 
-function getDisplayString(value: ValidationValueType) {
+function getDisplayString(value: InputValueType) {
 	return typeof value === 'string' ? `"${value}"` : value;
 }
 

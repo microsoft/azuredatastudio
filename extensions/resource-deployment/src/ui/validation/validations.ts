@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { isUndefinedOrEmpty, throwUnless } from '../../common/utils';
+import { InputValueType } from '../modelViewUtils';
 
 export interface ValidationResult {
 	valid: boolean;
@@ -13,11 +14,11 @@ export interface ValidationResult {
 }
 
 export type Validator = () => Promise<ValidationResult>;
-export type ValidationValueType = string | number | undefined;
+
 
 export type OnValidation = (isValid: boolean) => Promise<void>;
-export type ValueGetter = () => Promise<ValidationValueType>;
-export type TargetValueGetter = (variable: string) => Promise<ValidationValueType>;
+export type ValueGetter = () => Promise<InputValueType>;
+export type TargetValueGetter = (variable: string) => Promise<InputValueType>;
 export type OnTargetValidityChangedGetter = (variable: string) => vscode.Event<boolean>;
 
 export const enum ValidationType {
@@ -60,11 +61,11 @@ export abstract class Validation {
 	// gets the validation result for this validation object
 	abstract validate(): Promise<ValidationResult>;
 
-	protected getValue(): Promise<ValidationValueType> {
+	protected getValue(): Promise<InputValueType> {
 		return this._valueGetter();
 	}
 
-	protected getTargetValue(variable: string): Promise<ValidationValueType> {
+	protected getTargetValue(variable: string): Promise<InputValueType> {
 		return this._targetValueGetter!(variable);
 	}
 

@@ -21,11 +21,13 @@ import { IToolsService } from '../services/toolsService';
 import { WizardInfoBase } from './../interfaces';
 import { Model } from './model';
 import { RadioGroupLoadingComponentBuilder } from './radioGroupLoadingComponentBuilder';
-import { createValidation, validateInputBoxComponent, Validation, ValidationValueType } from './validation/validations';
+import { createValidation, validateInputBoxComponent, Validation } from './validation/validations';
 
 const localize = nls.loadMessageBundle();
+
 export type Validator = () => { valid: boolean, message: string };
-export type InputValueTransformer = (inputValue: string) => string | number | undefined | Promise<string | number | undefined>;
+export type InputValueType = string | number | undefined;
+export type InputValueTransformer = (inputValue: string) => InputValueType | Promise<InputValueType>;
 export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder;
 export type InputComponentInfo = {
 	component: InputComponent;
@@ -181,7 +183,7 @@ export function createInputBox(view: azdata.ModelView, inputInfo: InputBoxInfo):
 	return view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		value: inputInfo.defaultValue,
 		ariaLabel: inputInfo.ariaLabel,
-		inputType: inputInfo.type ?? 'text',
+		inputType: inputInfo.type || 'text',
 		required: inputInfo.required,
 		min: inputInfo.min,
 		max: inputInfo.max,
@@ -1302,7 +1304,7 @@ export async function setModelValues(inputComponents: InputComponents, model: Mo
 	}));
 }
 
-async function getInputComponentValue(inputComponentInfo: InputComponentInfo): Promise<ValidationValueType> {
+async function getInputComponentValue(inputComponentInfo: InputComponentInfo): Promise<InputValueType> {
 	const input = inputComponentInfo.component;
 	if (input === undefined) {
 		return undefined;
