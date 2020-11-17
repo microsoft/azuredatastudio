@@ -13,6 +13,7 @@ import { isUndefinedOrNull, isNumber } from 'vs/base/common/types';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IConnectionTreeService } from 'sql/workbench/services/connection/common/connectionTreeService';
 
 @extHostNamedCustomer(MainContext.MainThreadTreeViews)
 export class MainThreadTreeViews extends Disposable implements MainThreadTreeViewsShape {
@@ -25,7 +26,8 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 		@IViewsService private readonly viewsService: IViewsService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IExtensionService private readonly extensionService: IExtensionService,
-		@ILogService private readonly logService: ILogService
+		@ILogService private readonly logService: ILogService,
+		@IConnectionTreeService private readonly connectionTreeService: IConnectionTreeService
 	) {
 		super();
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostTreeViews);
@@ -46,6 +48,8 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 				viewer.dataProvider = dataProvider;
 				this.registerListeners(treeViewId, viewer);
 				this._proxy.$setVisible(treeViewId, viewer.visible);
+			} else if (treeViewId.includes('connectionDialog')) {
+				this.connectionTreeService.registerTreeProvider(treeViewId, dataProvider);
 			} else {
 				this.notificationService.error('No view is registered with id: ' + treeViewId);
 			}
@@ -73,6 +77,9 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 		if (viewer && dataProvider) {
 			const itemsToRefresh = dataProvider.getItemsToRefresh(itemsToRefreshByHandle);
 			return viewer.refresh(itemsToRefresh.length ? itemsToRefresh : undefined);
+		} else if (treeViewId.includes('connectionDialog')) {
+			const itemsToRefresh = dataProvider.getItemsToRefresh(itemsToRefreshByHandle);
+			return this.connectionTreeService.view?.refresh(itemsToRefresh.length ? itemsToRefresh : undefined);
 		}
 		return Promise.resolve();
 	}
