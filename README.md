@@ -137,4 +137,4 @@ Licensed under the [Source EULA](LICENSE.txt).
 [osx-zip]: https://go.microsoft.com/fwlink/?linkid=2145865
 [linux-zip]: https://go.microsoft.com/fwlink/?linkid=2145866
 [linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2146015
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2146016
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2145016
