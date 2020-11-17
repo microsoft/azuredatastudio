@@ -164,6 +164,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
+				} finally {
+					this.discardButton!.enabled = false;
 				}
 			}));
 
@@ -348,6 +350,18 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			flexWrap: 'wrap',
 			alignItems: 'center'
 		}).component();
+
+		const leftLine = this.modelView.modelBuilder.divContainer().withProperties({
+			CSSStyles: { 'max-height': nestingLineHeight, 'min-height': nestingLineHeight, 'max-width': '1px', 'border-left-style': 'solid', 'border-left-color': '#ccc' }
+		}).component();
+
+		flexContainer.addItem(leftLine, { CSSStyles: { 'align-self': 'flex-start' } });
+
+		const bottomLine = this.modelView.modelBuilder.divContainer().withProperties({
+			CSSStyles: { 'margin-right': '5px', 'min-width': '5px', 'border-bottom-style': 'solid', 'border-bottom-color': '#ccc' }
+		}).component();
+
+		flexContainer.addItem(bottomLine, bottomLineFlex);
 
 		const keyComponent = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: key,
