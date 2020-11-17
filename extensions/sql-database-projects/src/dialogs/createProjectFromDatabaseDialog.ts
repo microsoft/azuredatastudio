@@ -82,19 +82,26 @@ export class CreateProjectFromDatabaseDialog {
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
-						title: '',
+						title: constants.sourceDatabase,
 						components: [
 							{
 								component: sourceDatabaseFormSection,
-								title: constants.sourceDatabase
-							},
+							}
+						]
+					},
+					{
+						title: constants.targetProject,
+						components: [
 							{
 								component: targetProjectFormSection,
-								title: constants.targetProject
-							},
+							}
+						]
+					},
+					{
+						title: constants.importSettings,
+						components: [
 							{
 								component: importSettingsFormSection,
-								title: constants.importSettings
 							}
 						]
 					}
