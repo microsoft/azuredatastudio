@@ -17,7 +17,21 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
 		const form = view.modelBuilder.formContainer().withFormItems(
 			[
-				this.createBackupLocationComponent(view)
+				this.createBackupLocationComponent(view),
+				{
+					title: '',
+					component: this.networkShareContainer(view)
+				},
+				{
+					title: '',
+					component: this.blobContainer(view)
+				},
+				{
+					title: '',
+					component: this.fileShareContainer(view)
+				},
+				this.migrationCutoverContainer(view),
+				this.emailNotificationContainer(view),
 			]
 		);
 		await view.initializeModel(form.component());
@@ -58,7 +72,196 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		};
 	}
 
+	private fileShareContainer(view: azdata.ModelView): azdata.FlexContainer {
 
+		const subscriptionLabel = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_FILE_SHARE_SUBSCRIPTION_LABEL,
+			requiredIndicator: true,
+		}).component();
+		const subscriptionDropdown = view.modelBuilder.dropDown().withProps({
+		}).component();
+
+		const storageAccountLabel = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_FILE_SHARE_STORAGE_ACCOUNT_LABEL,
+			requiredIndicator: true,
+		}).component();
+		const storageAccountDropdown = view.modelBuilder.dropDown().withProps({
+		}).component();
+
+		const fileShareLabel = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_FILE_SHARE_LABEL,
+			requiredIndicator: true,
+		}).component();
+		const fileShareDropdown = view.modelBuilder.dropDown().withProps({
+		}).component();
+
+
+		const flexContainer = view.modelBuilder.flexContainer().withItems(
+			[
+				subscriptionLabel,
+				subscriptionDropdown,
+				storageAccountLabel,
+				storageAccountDropdown,
+				fileShareLabel,
+				fileShareDropdown
+			]
+		).withLayout({
+			flexFlow: 'column'
+		}).component();
+
+		return flexContainer;
+	}
+
+	private blobContainer(view: azdata.ModelView): azdata.FlexContainer {
+		const subscriptionLabel = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_BLOB_STORAGE_SUBSCRIPTION_LABEL,
+			requiredIndicator: true,
+		}).component();
+		const subscriptionDropdown = view.modelBuilder.dropDown().withProps({
+		}).component();
+
+		const storageAccountLabel = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_BLOB_STORAGE_ACCOUNT_LABEL,
+			requiredIndicator: true,
+		}).component();
+		const storageAccountDropdown = view.modelBuilder.dropDown().withProps({
+		}).component();
+
+		const containerLabel = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_BLOB_STORAGE_ACCOUNT_CONTAINER_LABEL,
+			requiredIndicator: true,
+		}).component();
+		const containerDropdown = view.modelBuilder.dropDown().withProps({
+		}).component();
+
+		const flexContainer = view.modelBuilder.flexContainer().withItems(
+			[
+				subscriptionLabel,
+				subscriptionDropdown,
+				storageAccountLabel,
+				storageAccountDropdown,
+				containerLabel,
+				containerDropdown
+			]
+		).withLayout({
+			flexFlow: 'column'
+		}).component();
+
+		return flexContainer;
+	}
+
+	private networkShareContainer(view: azdata.ModelView): azdata.FlexContainer {
+		const networkShareHelpText = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_HELP_TEXT,
+		}).component();
+
+		const networkShareLocationLabel = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_NETWORK_SHARE_LOCATION_LABEL,
+			requiredIndicator: true,
+		}).component();
+		const networkShareLocationText = view.modelBuilder.inputBox().withProps({
+			placeHolder: '\\\\Servername.domainname.com\\Backupfolder'
+		}).component();
+
+		const windowsUserAccountLabel = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_LABEL,
+			requiredIndicator: true,
+		}).component();
+		const windowsUserAccountText = view.modelBuilder.inputBox().withProps({
+			placeHolder: 'Domain\\username'
+		}).component();
+
+		const passwordLabel = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_LABEL,
+			requiredIndicator: true,
+		}).component();
+		const passwordText = view.modelBuilder.inputBox().withProps({
+			placeHolder: constants.DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_PLACEHOLDER
+		}).component();
+
+		const azureAccountHelpText = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HELP,
+		}).component();
+
+		const subscriptionLabel = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_NETWORK_SHARE_SUBSCRIPTION_LABEL,
+			requiredIndicator: true,
+		}).component();
+		const subscriptionDropdown = view.modelBuilder.dropDown().withProps({
+		}).component();
+
+		const storageAccountLabel = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_NETWORK_SHARE_NETWORK_STORAGE_ACCOUNT_LABEL,
+			requiredIndicator: true,
+		}).component();
+		const storageAccountDropdown = view.modelBuilder.dropDown().withProps({
+		}).component();
+
+		const flexContainer = view.modelBuilder.flexContainer().withItems(
+			[
+				networkShareHelpText,
+				networkShareLocationLabel,
+				networkShareLocationText,
+				windowsUserAccountLabel,
+				windowsUserAccountText,
+				passwordLabel,
+				passwordText,
+				azureAccountHelpText,
+				subscriptionLabel,
+				subscriptionDropdown,
+				storageAccountLabel,
+				storageAccountDropdown
+			]
+		).withLayout({
+			flexFlow: 'column'
+		}).component();
+
+		return flexContainer;
+	}
+
+	private emailNotificationContainer(view: azdata.ModelView): azdata.FormComponent {
+		const emailCheckbox = view.modelBuilder.checkBox().withProps({
+			label: constants.DATABASE_BACKUP_EMAIL_NOTIFICATION_CHECKBOX_LABEL
+		}).component();
+
+		return {
+			title: constants.DATABASE_BACKUP_EMAIL_NOTIFICATION_LABEL,
+			component: emailCheckbox
+		};
+	}
+
+	private migrationCutoverContainer(view: azdata.ModelView): azdata.FormComponent {
+		const description = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_MIGRATION_CUTOVER_DESCRIPTION
+		}).component();
+
+		const buttonGroup = 'cutoverContainer';
+
+		const automaticButton = view.modelBuilder.radioButton().withProps({
+			label: constants.DATABASE_BACKUP_MIGRATION_CUTOVER_AUTOMATIC_LABEL,
+			name: buttonGroup
+		}).component();
+
+		const manualButoon = view.modelBuilder.radioButton().withProps({
+			label: constants.DATABASE_BACKUP_MIGRATION_CUTOVER_MANUAL_LABEL,
+			name: buttonGroup
+		}).component();
+
+		const flexContainer = view.modelBuilder.flexContainer().withItems(
+			[
+				description,
+				automaticButton,
+				manualButoon
+			]
+		).withLayout({
+			flexFlow: 'column'
+		}).component();
+
+		return {
+			title: constants.DATABASE_BACKUP_MIGRATION_CUTOVER_LABEL,
+			component: flexContainer
+		};
+	}
 
 	public onPageEnter(): Promise<void> {
 		throw new Error('Method not implemented.');
