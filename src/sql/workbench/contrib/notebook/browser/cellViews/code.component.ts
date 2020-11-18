@@ -266,7 +266,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		}));
 
 		this.layout();
-		this.updateLanguageMode();
+		// this.updateLanguageMode();
 		if (this._cellModel.isCollapsed) {
 			this.onCellCollapse(true);
 		}
