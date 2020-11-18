@@ -128,8 +128,9 @@ export class CreateProjectFromDatabaseDialog {
 			requiredIndicator: true,
 			width: cssStyles.labelWidth
 		}).component();
+		serverLabel.updateCssStyles({ 'font-weight': 'bold' });
 
-		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, sourceConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, sourceConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px', 'margin-top': '-20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 		connectionRow.insertItem(selectConnectionButton, 2, { CSSStyles: { 'margin-right': '0px' } });
 
 		return connectionRow;
@@ -154,8 +155,9 @@ export class CreateProjectFromDatabaseDialog {
 			requiredIndicator: true,
 			width: cssStyles.labelWidth
 		}).component();
+		databaseLabel.updateCssStyles({ 'font-weight': 'bold' });
 
-		const databaseRow = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdata.DropDownComponent>this.sourceDatabaseDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const databaseRow = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdata.DropDownComponent>this.sourceDatabaseDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		return databaseRow;
 	}
@@ -239,8 +241,9 @@ export class CreateProjectFromDatabaseDialog {
 			requiredIndicator: true,
 			width: cssStyles.labelWidth
 		}).component();
+		projectNameLabel.updateCssStyles({ 'font-weight': 'bold' });
 
-		const projectNameRow = view.modelBuilder.flexContainer().withItems([projectNameLabel, this.projectNameTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const projectNameRow = view.modelBuilder.flexContainer().withItems([projectNameLabel, this.projectNameTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px', 'margin-top': '-20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		return projectNameRow;
 	}
@@ -266,8 +269,9 @@ export class CreateProjectFromDatabaseDialog {
 			requiredIndicator: true,
 			width: cssStyles.labelWidth
 		}).component();
+		projectLocationLabel.updateCssStyles({ 'font-weight': 'bold' });
 
-		const projectLocationRow = view.modelBuilder.flexContainer().withItems([projectLocationLabel, this.projectLocationTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const projectLocationRow = view.modelBuilder.flexContainer().withItems([projectLocationLabel, this.projectLocationTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 		projectLocationRow.insertItem(browseFolderButton, 2, { CSSStyles: { 'margin-right': '0px' } });
 
 		return projectLocationRow;
@@ -319,8 +323,9 @@ export class CreateProjectFromDatabaseDialog {
 			requiredIndicator: true,
 			width: cssStyles.labelWidth
 		}).component();
+		folderStructureLabel.updateCssStyles({ 'font-weight': 'bold' });
 
-		const folderStructureRow = view.modelBuilder.flexContainer().withItems([folderStructureLabel, <azdata.DropDownComponent>this.folderStructureDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const folderStructureRow = view.modelBuilder.flexContainer().withItems([folderStructureLabel, <azdata.DropDownComponent>this.folderStructureDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '-20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		return folderStructureRow;
 	}

@@ -20,6 +20,5 @@ export namespace cssStyles {
 	export namespace fontStyle {
 		export const normal = 'normal';
 		export const italics = 'italic';
-		export const bold = 'bold';
 	}
 }
