@@ -13,7 +13,6 @@ import * as nls from 'vscode-nls';
 import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption } from '../interfaces';
 import { DeployAzureSQLVMWizard } from '../ui/deployAzureSQLVMWizard/deployAzureSQLVMWizard';
 import { DeployAzureSQLDBWizard } from '../ui/deployAzureSQLDBWizard/deployAzureSQLDBWizard';
-import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
 import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
 import { NotebookWizard } from '../ui/notebookWizard/notebookWizard';
 import { AzdataService } from './azdataService';
@@ -22,13 +21,14 @@ import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
 import * as loc from './../localizedConstants';
+import { ResourceTypeWizard } from '../ui/resourceTypeWizard';
 
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
-	startDeployment(provider: DeploymentProvider): void;
+	startDeployment(resourceType: ResourceType, provider: DeploymentProvider): void;
 }
 
 export class ResourceTypeService implements IResourceTypeService {
@@ -251,10 +251,10 @@ export class ResourceTypeService implements IResourceTypeService {
 	}
 
 
-	public startDeployment(provider: DeploymentProvider): void {
+	public startDeployment(resourceType: ResourceType, provider: DeploymentProvider): void {
 		const self = this;
 		if (instanceOfWizardDeploymentProvider(provider)) {
-			const wizard = new DeployClusterWizard(provider.bdcWizard, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService);
+			const wizard = new ResourceTypeWizard(resourceType, provider, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService);
 			wizard.open();
 		} else if (instanceOfNotebookWizardDeploymentProvider(provider)) {
 			const wizard = new NotebookWizard(provider.notebookWizard, this.notebookService, this.platformService, this.toolsService);
