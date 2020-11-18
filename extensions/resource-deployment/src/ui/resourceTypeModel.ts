@@ -14,7 +14,7 @@ export abstract class ResourceTypeModel extends Model {
 	}
 
 	abstract initialize(): void;
-	abstract async onOk(): Promise<void>;
+	abstract onOk(): Promise<void>;
 	abstract onCancel(): void;
 	async onGenerateScript(): Promise<void> { }
 
