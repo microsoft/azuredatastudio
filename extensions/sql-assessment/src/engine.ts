@@ -131,7 +131,7 @@ export class AssessmentEngine {
 		let databaseListRequest = azdata.connection.listDatabases(this.connectionProfile.connectionId);
 
 		let assessmentResult: azdata.SqlAssessmentResult;
-		if (AssessmentType.InvokeAssessment) {
+		if (asmtType === AssessmentType.InvokeAssessment) {
 			TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.InvokeServerAssessment);
 			assessmentResult = await this.sqlAssessment.assessmentInvoke(this.connectionUri, azdata.sqlAssessment.SqlAssessmentTargetType.Server);
 
