@@ -3,17 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { assert } from 'console';
 import { Application } from '../../../../../automation';
 
 export function setup() {
 	describe('Notebook', () => {
-
-		it('can search results in notebooks', async function () {
-			const app = this.app as Application;
-			await app.workbench.quickaccess.runCommand('Notebooks: Focus on Search Results View');
-			const results = await app.workbench.sqlNotebook.view.searchInNotebook('Hello');
-			if (results) { }
-		});
 
 		it('can open new notebook, configure Python, and execute one cell', async function () {
 			const app = this.app as Application;
@@ -28,7 +22,23 @@ export function setup() {
 
 			await app.workbench.sqlNotebook.runActiveCell();
 			await app.workbench.sqlNotebook.waitForResults();
-			//await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
+			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
+		});
+
+		it('No search results if search query is empty', async function () {
+			const app = this.app as Application;
+			await app.workbench.quickaccess.runCommand('Notebooks: Focus on Search Results View');
+			const results = await app.workbench.sqlNotebook.view.searchInNotebook('');
+			assert(results.children !== undefined && results.children.length === 0);
+		});
+
+		it('Simple query search works correctly', async function () {
+			const app = this.app as Application;
+			// Adding a regex expression to not depend on specific results of files
+			const regexExpr = /[0-9]+( results in )[0-9]+( files - )/;
+			await app.workbench.quickaccess.runCommand('Notebooks: Focus on Search Results View');
+			const results = await app.workbench.sqlNotebook.view.searchInNotebook('hello');
+			assert(results.textContent !== '' && (results.textContent.match(regexExpr) || results.textContent.includes('No results found')));
 		});
 	});
 }

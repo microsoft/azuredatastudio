@@ -7,6 +7,7 @@ import { Code } from '../code';
 import { QuickAccess } from '../quickaccess';
 import { QuickInput } from '../quickinput';
 import { Editors } from '../editors';
+import { IElement } from '../driver';
 
 const winOrCtrl = process.platform === 'darwin' ? 'ctrl' : 'win';
 
@@ -100,17 +101,23 @@ export class NotebookToolbar {
 }
 
 export class NotebookView {
-	private static readonly inputBox = '.search-container input-box';
-	private static readonly actualResult = '.search-view .result-messages .message';
+	private static readonly inputBox = '.notebookExplorer-viewlet .search-widget .input-box';
+	private static actualResult = '.search-view .result-messages';
 
 	constructor(private code: Code) { }
 
-	async searchInNotebook(expr: string): Promise<string> {
-		await this.code.waitAndClick(NotebookView.inputBox);
-		const textArea = `${NotebookView.inputBox} select[title="Search"][class="input"]`;
-		await this.code.waitForSetValue(textArea, expr);
+	async searchInNotebook(expr: string): Promise<IElement> {
+		await this.waitForSetSearchValue(expr);
 		await this.code.dispatchKeybinding('enter');
-		const results = await this.code.waitForTextContent(`${NotebookView.actualResult} select[span]`);
-		return results;
+		let selector = `${NotebookView.actualResult} `;
+		if (expr) {
+			selector += '.message span';
+		}
+		return await this.code.waitForElement(selector, undefined);
+	}
+
+	async waitForSetSearchValue(text: string): Promise<void> {
+		const textArea = `${NotebookView.inputBox} textarea`;
+		await this.code.waitForTypeInEditor(textArea, text);
 	}
 }
