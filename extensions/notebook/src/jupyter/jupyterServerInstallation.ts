@@ -288,6 +288,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public async configurePackagePaths(): Promise<void> {
+		// Delete existing Python variables in ADS to prevent conflict with other installs
+		delete process.env['PYTHONPATH'];
+		delete process.env['PYTHONSTARTUP'];
+		delete process.env['PYTHONHOME'];
+
 		//Python source path up to bundle version
 		let pythonSourcePath = this._usingExistingPython
 			? this._pythonInstallationPath
@@ -328,11 +333,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
 			}
 		}
-
-		// Delete existing Python variables in ADS to prevent conflict with other installs
-		delete process.env['PYTHONPATH'];
-		delete process.env['PYTHONSTARTUP'];
-		delete process.env['PYTHONHOME'];
 
 		// Store the executable options to run child processes with env var without interfering parent env var.
 		let env = Object.assign({}, process.env);
