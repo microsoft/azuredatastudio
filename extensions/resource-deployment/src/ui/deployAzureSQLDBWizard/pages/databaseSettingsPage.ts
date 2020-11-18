@@ -9,6 +9,7 @@ import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 import * as constants from '../constants';
 import { BasePage } from './basePage';
 import * as nls from 'vscode-nls';
+import { createCheckbox, createFlexContainer, createLabel } from '../../modelViewUtils';
 const localize = nls.loadMessageBundle();
 
 export class DatabaseSettingsPage extends BasePage {
@@ -24,6 +25,10 @@ export class DatabaseSettingsPage extends BasePage {
 	private _collationTextbox!: azdata.InputBoxComponent;
 	private _collationTextRow!: azdata.FlexContainer;
 	private _IpInfoText!: azdata.TextComponent;
+	private _firewallToggleDropdown!: azdata.CheckBoxComponent;
+	private _firewallToggleLabel!: azdata.TextComponent;
+
+
 
 	private _form!: azdata.FormContainer;
 
@@ -39,6 +44,7 @@ export class DatabaseSettingsPage extends BasePage {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 			await Promise.all([
 				this.createIpAddressText(view),
+				this.createFirewallToggle(view),
 				this.createFirewallNameText(view),
 				this.createDatabaseNameText(view),
 				this.createCollationText(view)
@@ -51,6 +57,9 @@ export class DatabaseSettingsPage extends BasePage {
 						},
 						{
 							component: this._collationTextRow
+						},
+						{
+							component: createFlexContainer(view, [this._firewallToggleLabel, this._firewallToggleDropdown])
 						},
 						{
 							component: this._firewallRuleNameTextRow
@@ -128,6 +137,37 @@ export class DatabaseSettingsPage extends BasePage {
 		this._endIpAddressTextRow = this.wizard.createFormRowComponent(view, constants.EndIpAddressLabel, '', this._endIpAddressTextbox, true);
 	}
 
+	private createFirewallToggle(view: azdata.ModelView) {
+
+		this._firewallToggleDropdown = createCheckbox(view, {
+			initialValue: true,
+			label: '',
+			required: false
+		});
+
+		this._firewallToggleLabel = createLabel(view, {
+			text: constants.FirewallToggleLabel,
+			description: constants.FirewallRuleDescription,
+			required: false,
+			width: '250px',
+			cssStyles: {
+				'font-weight': '400',
+				'font-size': '13px',
+			}
+		});
+
+		this.wizard.model.newFirewallRule = true;
+
+		this._firewallToggleDropdown.onChanged((value) => {
+			let displayValue: 'block' | 'none' = (value) ? 'block' : 'none';
+			this.wizard.changeRowDisplay(this._firewallRuleNameTextRow, displayValue);
+			this.wizard.changeRowDisplay(this._endIpAddressTextRow, displayValue);
+			this.wizard.changeRowDisplay(this._startIpAddressTextRow, displayValue);
+			this.wizard.changeComponentDisplay(this._IpInfoText, displayValue);
+			this.wizard.model.newFirewallRule = value;
+		});
+	}
+
 	private createFirewallNameText(view: azdata.ModelView) {
 
 		this._firewallRuleNameTextbox = view.modelBuilder.inputBox().component();
@@ -173,25 +213,28 @@ export class DatabaseSettingsPage extends BasePage {
 		let databasename = this._databaseNameTextbox.value!;
 		let collationname = this._collationTextbox.value!;
 
-		if (!(ipRegex.test(startipvalue))) {
-			errorMessages.push(localize('deployAzureSQLDB.DBMinIpInvalidError', "Min Ip address is invalid"));
-		}
+		if (this.wizard.model.newFirewallRule) {
+			if (!(ipRegex.test(startipvalue))) {
+				errorMessages.push(localize('deployAzureSQLDB.DBMinIpInvalidError', "Min Ip address is invalid"));
+			}
 
-		if (!(ipRegex.test(endipvalue))) {
-			errorMessages.push(localize('deployAzureSQLDB.DBMaxIpInvalidError', "Max Ip address is invalid"));
-		}
+			if (!(ipRegex.test(endipvalue))) {
+				errorMessages.push(localize('deployAzureSQLDB.DBMaxIpInvalidError', "Max Ip address is invalid"));
+			}
 
-		if (/^\d+$/.test(firewallname)) {
-			errorMessages.push(localize('deployAzureSQLDB.DBFirewallOnlyNumericNameError', "Firewall name cannot contain only numbers."));
-		}
-		if (firewallname.length < 1 || firewallname.length > 100) {
-			errorMessages.push(localize('deployAzureSQLDB.DBFirewallLengthError', "Firewall name must be between 1 and 100 characters long."));
-		}
-		if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(firewallname)) {
-			errorMessages.push(localize('deployAzureSQLDB.DBFirewallSpecialCharError', "Firewall name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
-		}
-		if (/[A-Z]/g.test(firewallname)) {
-			errorMessages.push(localize('deployAzureSQLDB.DBFirewallUpperCaseError', "Upper case letters are not allowed for firealll name"));
+			if (/^\d+$/.test(firewallname)) {
+				errorMessages.push(localize('deployAzureSQLDB.DBFirewallOnlyNumericNameError', "Firewall name cannot contain only numbers."));
+			}
+			if (firewallname.length < 1 || firewallname.length > 100) {
+				errorMessages.push(localize('deployAzureSQLDB.DBFirewallLengthError', "Firewall name must be between 1 and 100 characters long."));
+			}
+			if (/[\\\/"\'\[\]:\|<>\+=;,\?\*@\&,]/g.test(firewallname)) {
+				errorMessages.push(localize('deployAzureSQLDB.DBFirewallSpecialCharError', "Firewall name cannot contain special characters \/\"\"[]:|<>+=;,?*@&, ."));
+			}
+			if (/[A-Z]/g.test(firewallname)) {
+				errorMessages.push(localize('deployAzureSQLDB.DBFirewallUpperCaseError', "Upper case letters are not allowed for firewall name"));
+			}
+
 		}
 
 		if (/^\d+$/.test(databasename)) {

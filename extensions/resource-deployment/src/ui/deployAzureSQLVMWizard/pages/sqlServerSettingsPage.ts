@@ -9,6 +9,7 @@ import * as constants from '../constants';
 import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 import { BasePage } from './basePage';
 import * as nls from 'vscode-nls';
+import * as localizedConstants from '../../../localizedConstants';
 const localize = nls.loadMessageBundle();
 
 export class SqlServerSettingsPage extends BasePage {
@@ -167,11 +168,11 @@ export class SqlServerSettingsPage extends BasePage {
 		this._sqlAuthenticationDropdown = view.modelBuilder.dropDown().withProperties(<azdata.DropDownComponent>{
 			values: [
 				{
-					displayName: localize('deployAzureSQLVM.EnableSqlAuthenticationYesOption', "Yes"),
+					displayName: localizedConstants.yes,
 					name: 'True'
 				},
 				{
-					displayName: localize('deployAzureSQLVM.EnableSqlAuthenticationNoOption', "No"),
+					displayName: localizedConstants.no,
 					name: 'False'
 				}
 			]
