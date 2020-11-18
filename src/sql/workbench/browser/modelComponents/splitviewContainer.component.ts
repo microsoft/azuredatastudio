@@ -73,16 +73,13 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 		this._orientation = Orientation.VERTICAL; // default
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-	}
-
 	ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
 	ngAfterViewInit(): void {
 		this._splitView = this._register(new SplitView(this._el.nativeElement, { orientation: this._orientation }));
+		this.baseInit();
 	}
 
 	private GetCorrespondingView(component: IComponent, orientation: Orientation): IView {

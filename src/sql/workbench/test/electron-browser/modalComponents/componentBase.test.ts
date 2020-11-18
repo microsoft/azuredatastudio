@@ -20,7 +20,7 @@ class TestComponent extends ComponentBase<azdata.ComponentProperties> {
 		this.baseInit();
 	}
 
-	ngOnInit() { }
+	ngAfterViewInit() { }
 	setLayout() { }
 
 	public addValidation(validation: () => boolean | Thenable<boolean>) {
@@ -44,7 +44,7 @@ class TestContainer extends ContainerBase<TestComponent> {
 		return this.items;
 	}
 
-	ngOnInit() { }
+	ngAfterViewInit() { }
 	setLayout() { }
 
 	public addValidation(validation: () => boolean | Thenable<boolean>) {

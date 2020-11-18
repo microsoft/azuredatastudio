@@ -61,12 +61,12 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
+	ngAfterViewInit(): void {
 		this._createEditor();
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
 			this.layout();
 		}));
+		this.baseInit();
 	}
 
 	private _createEditor(): void {

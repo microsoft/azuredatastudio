@@ -42,11 +42,6 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 		super(changeRef, el);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
-
-	}
-
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
 			this._input = new ListBox([], this.contextViewService);
@@ -80,6 +75,7 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 				});
 			}));
 		}
+		this.baseInit();
 	}
 
 	public validate(): Thenable<boolean> {
