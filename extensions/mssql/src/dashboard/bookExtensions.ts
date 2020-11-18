@@ -86,22 +86,25 @@ export interface BookContributionProvider {
 
 class AzdataExtensionBookContributionProvider extends Disposable implements BookContributionProvider {
 	private _contributions?: BookContribution[];
+	private _contributionCommands: vscode.Disposable[] = [];
 
 	public constructor(
 		public readonly extensionPath: string,
 	) {
 		super();
 
-		vscode.extensions.onDidChange(() => {
+		vscode.extensions.onDidChange(async () => {
 			const currentContributions = this.getCurrentContributions();
 			const existingContributions = this._contributions || undefined;
 			if (!arrays.equals(existingContributions, currentContributions, BookContributions.equal)) {
+				await this.unregisterCommands();
 				this._contributions = currentContributions;
+				await this.registerCommands();
 				this._onContributionsChanged.fire(this);
 			}
 		}, undefined, this._disposables);
 
-		this.registerCommands();
+		this.registerCommands().catch(err => console.log(`Error registering contributed book commands : ${err}`));
 	}
 
 	private readonly _onContributionsChanged = this._register(new vscode.EventEmitter<this>());
@@ -120,14 +123,23 @@ class AzdataExtensionBookContributionProvider extends Disposable implements Book
 			.reduce(BookContributions.merge, []);
 	}
 
-	private registerCommands(): void {
-		this.contributions.map(book => {
+	private async registerCommands(): Promise<void> {
+		await Promise.all(this.contributions.map(async book => {
 			let bookName: string = path.basename(book.path);
-			vscode.commands.executeCommand('setContext', bookName, true);
-			vscode.commands.registerCommand('books.' + bookName, async (urlToOpen?: string) => {
-				vscode.commands.executeCommand('bookTreeView.openBook', book.path, true, urlToOpen);
-			});
-		});
+			await vscode.commands.executeCommand('setContext', bookName, true);
+			this._contributionCommands.push(vscode.commands.registerCommand('books.' + bookName, async (urlToOpen?: string) => {
+				await vscode.commands.executeCommand('bookTreeView.openBook', book.path, true, urlToOpen);
+			}));
+		}));
+	}
+
+	private async unregisterCommands(): Promise<void> {
+		this._contributionCommands.forEach(command => command.dispose());
+		this._contributionCommands = [];
+		await Promise.all(this.contributions.map(async book => {
+			let bookName: string = path.basename(book.path);
+			await vscode.commands.executeCommand('setContext', bookName, false);
+		}));
 	}
 }
 
