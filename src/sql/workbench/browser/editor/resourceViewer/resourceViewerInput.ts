@@ -8,7 +8,7 @@ import * as nls from 'vs/nls';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
+import { DataGridProvider, IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { getDataGridFormatter } from 'sql/workbench/services/dataGridProvider/browser/dataGridProviderUtils';
@@ -23,6 +23,8 @@ export interface ColumnDefinition extends Slick.Column<azdata.DataGridItem> {
 export class ResourceViewerInput extends EditorInput {
 
 	public static ID: string = 'workbench.editorInput.resourceViewerInput';
+
+	private _dataGridProvider: DataGridProvider;
 	private _data: azdata.DataGridItem[] = [];
 	private _columns: ColumnDefinition[] = [];
 	private _loading: boolean = true;
@@ -36,8 +38,9 @@ export class ResourceViewerInput extends EditorInput {
 	public onDataChanged: Event<void> = this._onDataChanged.event;
 
 	constructor(private _providerId: string,
-		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService) {
+		@IDataGridProviderService dataGridProviderService: IDataGridProviderService) {
 		super();
+		this._dataGridProvider = dataGridProviderService.getDataGridProvider(this._providerId);
 		this.actionsColumn = new ButtonColumn<azdata.DataGridItem>({
 			id: 'actions',
 			iconCssClass: 'toggle-more',
@@ -52,7 +55,7 @@ export class ResourceViewerInput extends EditorInput {
 	}
 
 	public getName(): string {
-		return nls.localize('resourceViewerInput.resourceViewer', "Resource Viewer");
+		return this._dataGridProvider.title || nls.localize('resourceViewerInput.resourceViewer', "Resource Viewer");
 	}
 
 	public get data(): azdata.DataGridItem[] {
@@ -95,8 +98,12 @@ export class ResourceViewerInput extends EditorInput {
 		return this._loading;
 	}
 
+	public get title(): string {
+		return this._dataGridProvider.title;
+	}
+
 	private async fetchColumns(): Promise<void> {
-		const columns = await this._dataGridProviderService.getDataGridColumns(this._providerId);
+		const columns = await this._dataGridProvider.getDataGridColumns();
 		const columnDefinitions: ColumnDefinition[] = columns.map(col => {
 			return {
 				name: col.name,
@@ -119,7 +126,7 @@ export class ResourceViewerInput extends EditorInput {
 	}
 
 	private async fetchItems(): Promise<void> {
-		const items = await this._dataGridProviderService.getDataGridItems(this._providerId);
+		const items = await this._dataGridProvider.getDataGridItems();
 		this._data = items;
 		this._onDataChanged.fire();
 	}
