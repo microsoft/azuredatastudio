@@ -1427,7 +1427,9 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		return emitter && emitter.event;
 	}
 
-
+	public appendData(v: any[][]): void {
+		this.doAction(ModelViewAction.AppendData, v);
+	}
 }
 
 class DropDownWrapper extends ComponentWrapper implements azdata.DropDownComponent {

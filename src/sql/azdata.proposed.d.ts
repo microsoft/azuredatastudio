@@ -803,4 +803,12 @@ declare module 'azdata' {
 		 */
 		headerFilter?: boolean,
 	}
+
+	export interface TableComponent {
+
+		/**
+		 * Append data to an exsiting table data.
+		 */
+		appendData(data: any[][]);
+	}
 }
