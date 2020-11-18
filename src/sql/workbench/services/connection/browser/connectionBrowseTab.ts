@@ -134,7 +134,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 			new ProviderElementRenderer(),
 			this.instantiationService.createInstance(TreeItemRenderer, this.treeLabels),
 			this.instantiationService.createInstance(ConnectionProfileRenderer, true),
-			this.instantiationService.createInstance(ConnectionProfileGroupRenderer),
+			this.instantiationService.createInstance(ConnectionProfileGroupRenderer, { showColor: false }),
 			this.instantiationService.createInstance(TreeNodeRenderer),
 			new SavedConnectionsNodeRenderer()
 		];
@@ -214,6 +214,10 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		// it will be displayed as 'loading...', this event will be fired when a connection's provider becomes available.
 		this._register(this.capabilitiesService.onCapabilitiesRegistered(() => {
 			this.updateSavedConnectionsNode();
+		}));
+
+		this._register(this.themeService.onDidColorThemeChange(async () => {
+			await this.refresh();
 		}));
 	}
 
@@ -411,7 +415,7 @@ class DataSource implements IAsyncDataSource<TreeModel, TreeElement> {
 		} else if (element instanceof ConnectionProfile) {
 			return false;
 		} else if (element instanceof ConnectionProfileGroup) {
-			return element.hasChildren();
+			return true;
 		} else if (element instanceof TreeNode) {
 			return element.children.length > 0;
 		} else if (element instanceof SavedConnectionNode) {
