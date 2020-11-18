@@ -65,7 +65,6 @@ export interface NotebookConfig {
 	remoteBookDownloadTimeout: number;
 	showAllKernels: boolean;
 	showCellStatusBar: boolean;
-	showNotebookConvertActions: boolean;
 	sqlStopOnError: boolean;
 	trustedBooks: Array<string>;
 	useExistingPython: boolean;

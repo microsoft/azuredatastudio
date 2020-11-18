@@ -48,7 +48,6 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 								return <azdata.DataGridItem>{
 									id: item.id,
 									// Property values
-									nameLink: <azdata.DataGridHyperlinkInfo>{ displayText: item.name, linkOrCommand: 'https://microsoft.com' },
 									name: item.name,
 									resourceGroup: item.resourceGroup,
 									subscriptionId: item.subscriptionId,
@@ -75,7 +74,7 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 	public async getDataGridColumns(): Promise<azdata.DataGridColumn[]> {
 		return [
 			{ id: 'icon', type: 'image', field: 'iconPath', name: '', width: 25, sortable: false, filterable: false, resizable: false, tooltip: loc.typeIcon },
-			{ id: 'name', type: 'hyperlink', field: 'nameLink', name: loc.name, width: 150 },
+			{ id: 'name', type: 'text', field: 'name', name: loc.name, width: 150 },
 			{ id: 'type', type: 'text', field: 'typeDisplayName', name: loc.resourceType, width: 150 },
 			{ id: 'type', type: 'text', field: 'resourceGroup', name: loc.resourceGroup, width: 150 },
 			{ id: 'location', type: 'text', field: 'locationDisplayName', name: loc.location, width: 150 },

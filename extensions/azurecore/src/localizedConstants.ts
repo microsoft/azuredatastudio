@@ -73,4 +73,4 @@ export const sqlServerArc = localize('azurecore.sqlServerArc', "SQL Server - Azu
 export const azureArcPostgresServer = localize('azurecore.azureArcPostgres', "Azure Arc enabled PostgreSQL Hyperscale");
 
 export const unableToOpenAzureLink = localize('azure.unableToOpenAzureLink', "Unable to open link, missing required values");
-export const azureResourcesGridTitle = localize('azure.azureResourcesGridTitle', "Azure Resources");
+export const azureResourcesGridTitle = localize('azure.azureResourcesGridTitle', "Azure Resources (Preview)");
