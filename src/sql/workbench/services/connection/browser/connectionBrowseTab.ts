@@ -244,7 +244,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 export interface ITreeItemFromProvider {
 	readonly element: ITreeItem;
 	readonly treeId?: string;
-	getChildren?(): Promise<ITreeItemFromProvider[]>
+	getChildren?(): Promise<ITreeItemFromProvider[]>;
 }
 
 export function instanceOfITreeItemFromProvider(obj: any): obj is ITreeItemFromProvider {
@@ -425,7 +425,11 @@ class DataSource implements IAsyncDataSource<TreeModel, TreeElement> {
 
 	public get expandableTreeNodes(): TreeElement[] {
 		return this.treeNodes.filter(node => {
-			return instanceOfITreeItemFromProvider(node) && node.element.collapsibleState !== TreeItemCollapsibleState.None;
+			return (node instanceof TreeModel)
+				|| (node instanceof ConnectionDialogTreeProviderElement)
+				|| (node instanceof SavedConnectionNode)
+				|| (node instanceof ConnectionProfileGroup)
+				|| (instanceOfITreeItemFromProvider(node) && node.element.collapsibleState !== TreeItemCollapsibleState.None);
 		});
 	}
 
@@ -440,11 +444,7 @@ class DataSource implements IAsyncDataSource<TreeModel, TreeElement> {
 					children = (children as (ConnectionProfile | ConnectionProfileGroup)[]).filter(item => {
 						return (item instanceof ConnectionProfileGroup) || this._filterRegex.test(item.title);
 					});
-				} else if (
-					!(element instanceof TreeModel) &&
-					!(element instanceof TreeNode) &&
-					!(element instanceof ConnectionDialogTreeProviderElement)
-				) {
+				} else if (instanceOfITreeItemFromProvider(element)) {
 					children = (children as ITreeItemFromProvider[]).filter(item => {
 						return item.element.collapsibleState !== TreeItemCollapsibleState.None || this._filterRegex.test(item.element.label.label);
 					});

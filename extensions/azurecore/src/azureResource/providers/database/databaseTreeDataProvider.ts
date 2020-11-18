@@ -10,7 +10,7 @@ const localize = nls.loadMessageBundle();
 
 import { azureResource } from 'azureResource';
 import { AzureResourceItemType } from '../../../azureResource/constants';
-import { generateGuid } from '../../utils';
+import { generateGuid, isConnectionDialogBrowseViewEnabled } from '../../utils';
 import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 
@@ -28,12 +28,12 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 	protected getTreeItemForResource(database: azureResource.AzureResourceDatabase, account: Account): TreeItem {
 		return {
 			id: `databaseServer_${database.serverFullName}.database_${database.name}`,
-			label: `${database.name} (${database.serverName})`,
+			label: isConnectionDialogBrowseViewEnabled() ? `${database.serverName}/${database.name} (${AzureResourceDatabaseTreeDataProvider.containerLabel}, ${database.subscription.name})` : `${database.name} (${database.serverName})`,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_database_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/sql_database.svg')
 			},
-			collapsibleState: vscode.workspace.getConfiguration('connection').get<boolean>('dialog.browse') ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
+			collapsibleState: isConnectionDialogBrowseViewEnabled() ? vscode.TreeItemCollapsibleState.None : vscode.TreeItemCollapsibleState.Collapsed,
 			contextValue: AzureResourceItemType.database,
 			payload: {
 				id: generateGuid(),
