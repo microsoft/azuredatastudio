@@ -172,7 +172,8 @@ declare module 'azdata-ext' {
 				}
 			},
 			scale: {
-				shards: number // 1
+				shards: number, // 1 (shards was renamed to workers, kept here for backwards compatibility)
+				workers: number // 1
 			},
 			scheduling: {
 				default: {
