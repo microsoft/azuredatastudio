@@ -42,15 +42,13 @@ export class DataInfoComponent extends ViewBase {
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._descriptionComponent = modelBuilder.text().withProperties({
 			value: this._description,
-			width: 200
 		}).component();
 		this._labelComponent = modelBuilder.text().withProperties({
 			value: this._title,
-			width: 200
 		}).component();
 		this._labelContainer = modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			width: this._width,
+			width: 'auto',
 			height: this._height,
 			justifyContent: 'center',
 			alignItems: 'center',
