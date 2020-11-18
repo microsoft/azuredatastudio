@@ -92,7 +92,17 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	registerAzureResourceCommands(appContext, [azureResourceTree, connectionDialogTree]);
 	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
 	vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
-		await vscode.env.openExternal(vscode.Uri.parse('https://microsoft.com'));
+		const portalEndpoint = item.fieldValues.portalEndpoint;
+		const subscriptionId = item.fieldValues.subscriptionId;
+		const resourceGroup = item.fieldValues.resourceGroup;
+		const type = item.fieldValues.type;
+		const name = item.fieldValues.name;
+		if (portalEndpoint && subscriptionId && resourceGroup && type && name) {
+			await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
+		} else {
+			console.log(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
+			vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
+		}
 	});
 
 	return {
