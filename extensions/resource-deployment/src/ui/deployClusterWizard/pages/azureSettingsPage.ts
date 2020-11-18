@@ -11,7 +11,7 @@ import { createSection, getDropdownComponent, InputComponentInfo, InputComponent
 import { AksName_VariableName, Location_VariableName, ResourceGroup_VariableName, SubscriptionId_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
 import { AzureRegion } from 'azurecore';
 import { DeployClusterWizardModel } from '../deployClusterWizardModel';
-import { ResourceTypePage } from '../../resourceTypeWizard';
+import { ResourceTypePage } from '../../resourceTypePage';
 const localize = nls.loadMessageBundle();
 const MissingRequiredInformationErrorMessage = localize('deployCluster.MissingRequiredInfoError', "Please fill out the required fields marked with red asterisks.");
 

@@ -8,8 +8,8 @@ import * as os from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { KubeClusterContext } from '../../../services/kubeService';
+import { ResourceTypePage } from '../../resourceTypePage';
 import { ClusterContext_VariableName, KubeConfigPath_VariableName } from '../constants';
-import { ResourceTypePage } from '../../resourceTypeWizard';
 import { DeployClusterWizardModel } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
