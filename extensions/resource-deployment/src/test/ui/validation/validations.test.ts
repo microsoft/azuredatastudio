@@ -35,14 +35,14 @@ const testValidations = [
 	}
 ];
 
-suite('Validation', () => {
-	suite('createValidation and validate input Box', () => {
-		setup(() => {
+describe('Validation', () => {
+	describe('createValidation and validate input Box', () => {
+	beforeEach(() => {
 			sinon.restore(); //cleanup all previously defined sinon mocks
 			inputBoxStub = sinon.stub(inputBox, 'updateProperty').resolves();
 		});
 		testValidations.forEach(testObj => {
-			test(`validationType: ${testObj.type}`, async () => {
+			it(`validationType: ${testObj.type}`, async () => {
 				const validation = createValidation(testObj, async () => undefined, async (_varName: string) => undefined);
 				switch (testObj.type) {
 					case ValidationType.IsInteger: should(validation).be.instanceOf(IntegerValidation); break;
@@ -59,7 +59,7 @@ suite('Validation', () => {
 		});
 	});
 
-	suite('IntegerValidation', () => {
+	describe('IntegerValidation', () => {
 		// all the below test values are arbitrary representative values or sentinel values for integer validation
 		[
 			{ value: '342520596781', expected: true },
@@ -72,7 +72,7 @@ suite('Validation', () => {
 			{ value: NaN, expected: false },
 		].forEach((testObj) => {
 			const displayTestValue = getDisplayString(testObj.value);
-			test(`testValue:${displayTestValue}`, async () => {
+			it(`testValue:${displayTestValue}`, async () => {
 				const validationDescription = `value: ${displayTestValue} was not an integer`;
 				const validation = new IntegerValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription },
@@ -83,7 +83,7 @@ suite('Validation', () => {
 		});
 	});
 
-	suite('RegexValidation', () => {
+	describe('RegexValidation', () => {
 		const testRegex = '^[0-9]+$';
 		// tests
 		[
@@ -97,7 +97,7 @@ suite('Validation', () => {
 			{ value: undefined, expected: false },
 		].forEach(testOb => {
 			const displayTestValue = getDisplayString(testOb.value);
-			test(`regex: /${testRegex}/, testValue:${displayTestValue}, expect result: ${testOb.expected}`, async () => {
+			it(`regex: /${testRegex}/, testValue:${displayTestValue}, expect result: ${testOb.expected}`, async () => {
 				const validationDescription = `value:${displayTestValue} did not match the regex:/${testRegex}/`;
 				const validation = new RegexValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription, regex: testRegex },
@@ -108,7 +108,7 @@ suite('Validation', () => {
 		});
 	});
 
-	suite('LessThanOrEqualsValidation', () => {
+	describe('LessThanOrEqualsValidation', () => {
 		const targetVariableName = 'comparisonTarget';
 		// tests - when operands are mix of string and number then number comparison is performed
 		[
@@ -147,7 +147,7 @@ suite('Validation', () => {
 		].forEach(testObj => {
 			const displayTestValue = getDisplayString(testObj.value);
 			const displayTargetValue = getDisplayString(testObj.targetValue);
-			test(`testValue:${displayTestValue}, targetValue:${displayTargetValue}`, async () => {
+			it(`testValue:${displayTestValue}, targetValue:${displayTargetValue}`, async () => {
 				const validationDescription = `${displayTestValue} did not test as <= ${displayTargetValue}`;
 				const validation = new LessThanOrEqualsValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription, target: targetVariableName },
@@ -159,7 +159,7 @@ suite('Validation', () => {
 		});
 	});
 
-	suite('GreaterThanOrEqualsValidation', () => {
+	describe('GreaterThanOrEqualsValidation', () => {
 		const targetVariableName = 'comparisonTarget';
 		// tests - when operands are mix of string and number then number comparison is performed
 		[
@@ -190,7 +190,7 @@ suite('Validation', () => {
 		].forEach(testObj => {
 			const displayTestValue = getDisplayString(testObj.value);
 			const displayTargetValue = getDisplayString(testObj.targetValue);
-			test(`testValue:${displayTestValue}, targetValue:${displayTargetValue}`, async () => {
+			it(`testValue:${displayTestValue}, targetValue:${displayTargetValue}`, async () => {
 				const validationDescription = `${displayTestValue} did not test as >= ${displayTargetValue}`;
 				const validation = new GreaterThanOrEqualsValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription, target: targetVariableName },
