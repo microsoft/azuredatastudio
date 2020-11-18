@@ -96,8 +96,6 @@ export class ResourceViewerEditor extends EditorPane {
 
 		this._inputDisposables.clear();
 
-		this._resourceViewerTable.data = input.data;
-
 		input.plugins.forEach(plugin => {
 			this._resourceViewerTable.registerPlugin(plugin);
 			this._inputDisposables.add({
@@ -107,16 +105,24 @@ export class ResourceViewerEditor extends EditorPane {
 			});
 		});
 
-		this._resourceViewerTable.columns = input.columns;
 		this._inputDisposables.add(input.onColumnsChanged(columns => {
 			this._resourceViewerTable.columns = columns;
 		}));
+		this._resourceViewerTable.columns = input.columns;
+
 		this._inputDisposables.add(input.onDataChanged(() => {
 			this._resourceViewerTable.data = input.data;
 		}));
+		this._resourceViewerTable.data = input.data;
+
 		this._inputDisposables.add(input.actionsColumn.onClick(e => {
 			this.showContextMenu(e.position, e.item);
 		}));
+
+		this._inputDisposables.add(input.onLoadingChanged(loading => {
+			this._resourceViewerTable.loading = loading;
+		}));
+		this._resourceViewerTable.loading = input.loading;
 
 		this._actionBar.context = input;
 

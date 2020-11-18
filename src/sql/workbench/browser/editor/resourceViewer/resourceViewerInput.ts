@@ -25,10 +25,13 @@ export class ResourceViewerInput extends EditorInput {
 	public static ID: string = 'workbench.editorInput.resourceViewerInput';
 	private _data: azdata.DataGridItem[] = [];
 	private _columns: ColumnDefinition[] = [];
+	private _loading: boolean = true;
+
+	private _onLoadingChanged = new Emitter<boolean>();
+	public onLoadingChanged: Event<boolean> = this._onLoadingChanged.event;
 	private _onColumnsChanged = new Emitter<Slick.Column<azdata.DataGridItem>[]>();
 	public actionsColumn: ButtonColumn<azdata.DataGridItem>;
 	public onColumnsChanged: Event<Slick.Column<azdata.DataGridItem>[]> = this._onColumnsChanged.event;
-
 	private _onDataChanged = new Emitter<void>();
 	public onDataChanged: Event<void> = this._onDataChanged.event;
 
@@ -74,14 +77,22 @@ export class ResourceViewerInput extends EditorInput {
 	}
 
 	public async refresh(): Promise<void> {
+		this._loading = true;
+		this._onLoadingChanged.fire(this._loading);
 		await Promise.all([
 			this.fetchColumns(),
 			this.fetchItems()
 		]);
+		this._loading = false;
+		this._onLoadingChanged.fire(this._loading);
 	}
 
 	public get plugins(): Slick.Plugin<azdata.DataGridItem>[] {
 		return [this.actionsColumn];
+	}
+
+	public get loading(): boolean {
+		return this._loading;
 	}
 
 	private async fetchColumns(): Promise<void> {
