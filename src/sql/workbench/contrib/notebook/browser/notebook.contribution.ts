@@ -211,11 +211,6 @@ configurationRegistry.registerConfiguration({
 			'default': false,
 			'description': localize('notebook.showAllKernels', "(Preview) show all kernels for the current notebook provider.")
 		},
-		'notebook.showNotebookConvertActions': {
-			'type': 'boolean',
-			'default': false,
-			'description': localize('notebook.showNotebookConvertActions', "(Preview) Show buttons for converting a Notebook to and from SQL.")
-		},
 		'notebook.allowAzureDataStudioCommands': {
 			'type': 'boolean',
 			'default': false,
