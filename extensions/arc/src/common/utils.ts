@@ -67,7 +67,7 @@ export function getResourceTypeIcon(resourceType: string | undefined): IconPath 
 
 /**
  * Returns the text to display for known connection modes
- * @param connectionMode The string repsenting the connection mode
+ * @param connectionMode The string representing the connection mode
  */
 export function getConnectionModeDisplayText(connectionMode: string | undefined): string {
 	connectionMode = connectionMode ?? '';
@@ -286,4 +286,14 @@ export function throwUnless(condition: boolean, message?: string): asserts condi
 	if (!condition) {
 		throw new Error(message);
 	}
+}
+
+export async function tryExecuteAction<T>(action: () => T | PromiseLike<T>): Promise<{ result: T | undefined, error: any }> {
+	let error: any, result: T | undefined;
+	try {
+		result = await action();
+	} catch (e) {
+		error = e;
+	}
+	return { result, error };
 }
