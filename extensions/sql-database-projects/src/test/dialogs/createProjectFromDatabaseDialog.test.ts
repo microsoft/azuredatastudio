@@ -20,7 +20,7 @@ describe('Create Project From Database Dialog', () => {
 		sinon.stub(azdata.connection, 'listDatabases').resolves([]);
 		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
 		await dialog.openDialog();
-		should.notEqual(dialog.importTab, undefined);
+		should.notEqual(dialog.createProjectFromDatabaseTab, undefined);
 	});
 
 	it('Should enable ok button correctly with a connection profile', async function (): Promise<void> {
@@ -32,12 +32,12 @@ describe('Create Project From Database Dialog', () => {
 
 		// fill in project name and ok button should not be enabled
 		dialog.projectNameTextBox!.value = 'testProject';
-		dialog.tryEnableImportButton();
+		dialog.createButtonClick();
 		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because project location is not filled');
 
 		// fill in project location and ok button should be enabled
 		dialog.projectLocationTextBox!.value = 'testLocation';
-		dialog.tryEnableImportButton();
+		dialog.createButtonClick();
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled since all the required fields are filled');
 	});
 
@@ -49,27 +49,27 @@ describe('Create Project From Database Dialog', () => {
 
 		// fill in project name and ok button should not be enabled
 		dialog.projectNameTextBox!.value = 'testProject';
-		dialog.tryEnableImportButton();
+		dialog.createButtonClick();
 		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because source database details and project location are not filled');
 
 		// fill in project location and ok button not should be enabled
 		dialog.projectLocationTextBox!.value = 'testLocation';
-		dialog.tryEnableImportButton();
+		dialog.createButtonClick();
 		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because source database details are not filled');
 
 		// fill in server name and ok button not should be enabled
 		dialog.sourceConnectionTextBox!.value = 'testServer';
-		dialog.tryEnableImportButton();
+		dialog.createButtonClick();
 		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because source database is not filled');
 
 		// fill in database name and ok button should be enabled
 		dialog.sourceDatabaseDropDown!.value = 'testDatabase';
-		dialog.tryEnableImportButton();
+		dialog.createButtonClick();
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled since all the required fields are filled');
 
 		// update folder structure information and ok button should still be enabled
 		dialog.folderStructureDropDown!.value = 'Object Type';
-		dialog.tryEnableImportButton();
+		dialog.createButtonClick();
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled since all the required fields are filled');
 	});
 
@@ -102,7 +102,7 @@ describe('Create Project From Database Dialog', () => {
 		};
 
 		dialog.createNewProjectCallback = (m) => { model = m; };
-		await dialog.importClick();
+		await dialog.createButtonClick();
 
 		should(model!).deepEqual(expectedImportDataModel);
 	});

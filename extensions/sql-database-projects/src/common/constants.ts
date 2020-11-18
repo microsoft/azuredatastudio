@@ -119,13 +119,13 @@ export const otherServer = 'OtherServer';
 export const otherSeverVariable = 'OtherServer';
 export const databaseProject = localize('databaseProject', "Database project");
 
-// Import Database Project dialog strings
+// Create Project From Database dialog strings
 
 export const createProjectFromDatabaseDialogName = localize('createProjectFromDatabaseDialogName', "Create Project From Database");
-export const importDialogOkButtonText = localize('importDialogOkButtonText', "Create");
+export const createProjectDialogOkButtonText = localize('createProjectDialogOkButtonText', "Create");
 export const sourceDatabase = localize('sourceDatabase', "Source database");
 export const targetProject = localize('targetProject', "Target project");
-export const importSettings = localize('importSettings', "Settings");
+export const createProjectSettings = localize('createProjectSettings', "Settings");
 export const projectNameLabel = localize('projectNameLabel', "Name");
 export const projectNamePlaceholderText = localize('projectNamePlaceholderText', "Enter project name");
 export const projectLocationLabel = localize('projectLocationLabel', "Location");

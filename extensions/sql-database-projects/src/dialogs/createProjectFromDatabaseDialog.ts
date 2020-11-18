@@ -17,7 +17,7 @@ import { getConnectionName } from './utils';
 
 export class CreateProjectFromDatabaseDialog {
 	public dialog: azdata.window.Dialog;
-	public importTab: azdata.window.DialogTab;
+	public createProjectFromDatabaseTab: azdata.window.DialogTab;
 	public sourceConnectionTextBox: azdata.InputBoxComponent | undefined;
 	private selectConnectionButton: azdata.ButtonComponent | undefined;
 	public sourceDatabaseDropDown: azdata.DropDownComponent | undefined;
@@ -34,14 +34,14 @@ export class CreateProjectFromDatabaseDialog {
 
 	constructor(private profile: azdata.IConnectionProfile | undefined) {
 		this.dialog = azdata.window.createModelViewDialog(constants.createProjectFromDatabaseDialogName);
-		this.importTab = azdata.window.createTab(constants.createProjectFromDatabaseDialogName);
+		this.createProjectFromDatabaseTab = azdata.window.createTab(constants.createProjectFromDatabaseDialogName);
 	}
 
 	public async openDialog(): Promise<void> {
 		this.initializeDialog();
-		this.dialog.okButton.label = constants.importDialogOkButtonText;
+		this.dialog.okButton.label = constants.createProjectDialogOkButtonText;
 		this.dialog.okButton.enabled = false;
-		this.toDispose.push(this.dialog.okButton.onClick(async () => await this.importClick()));
+		this.toDispose.push(this.dialog.okButton.onClick(async () => await this.createButtonClick()));
 
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
@@ -58,12 +58,12 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	private initializeDialog(): void {
-		this.initializeImportTab();
-		this.dialog.content = [this.importTab];
+		this.initializeCreateProjectFromDatabaseTab();
+		this.dialog.content = [this.createProjectFromDatabaseTab];
 	}
 
-	private initializeImportTab(): void {
-		this.importTab.registerContent(async view => {
+	private initializeCreateProjectFromDatabaseTab(): void {
+		this.createProjectFromDatabaseTab.registerContent(async view => {
 
 			const connectionRow = this.createConnectionRow(view);
 			const databaseRow = this.createDatabaseRow(view);
@@ -76,8 +76,8 @@ export class CreateProjectFromDatabaseDialog {
 			targetProjectFormSection.addItems([projectNameRow, projectLocationRow]);
 
 			const folderStructureRow = this.createFolderStructureRow(view);
-			const importSettingsFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			importSettingsFormSection.addItems([folderStructureRow]);
+			const createProjectSettingsFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+			createProjectSettingsFormSection.addItems([folderStructureRow]);
 
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -98,10 +98,10 @@ export class CreateProjectFromDatabaseDialog {
 						]
 					},
 					{
-						title: constants.importSettings,
+						title: constants.createProjectSettings,
 						components: [
 							{
-								component: importSettingsFormSection,
+								component: createProjectSettingsFormSection,
 							}
 						]
 					}
@@ -147,7 +147,7 @@ export class CreateProjectFromDatabaseDialog {
 
 		this.sourceDatabaseDropDown.onValueChanged(() => {
 			this.setProjectName();
-			this.tryEnableImportButton();
+			this.tryEnableCreateButton();
 		});
 
 		const databaseLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -175,7 +175,7 @@ export class CreateProjectFromDatabaseDialog {
 		}).component();
 
 		this.sourceConnectionTextBox.onTextChanged(() => {
-			this.tryEnableImportButton();
+			this.tryEnableCreateButton();
 		});
 
 		return this.sourceConnectionTextBox;
@@ -233,7 +233,7 @@ export class CreateProjectFromDatabaseDialog {
 
 		this.projectNameTextBox.onTextChanged(() => {
 			this.projectNameTextBox!.value = this.projectNameTextBox!.value?.trim();
-			this.tryEnableImportButton();
+			this.tryEnableCreateButton();
 		});
 
 		const projectNameLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -261,7 +261,7 @@ export class CreateProjectFromDatabaseDialog {
 
 		this.projectLocationTextBox.onTextChanged(() => {
 			this.projectLocationTextBox!.placeHolder = this.projectLocationTextBox!.value;
-			this.tryEnableImportButton();
+			this.tryEnableCreateButton();
 		});
 
 		const projectLocationLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -315,7 +315,7 @@ export class CreateProjectFromDatabaseDialog {
 		}).component();
 
 		this.folderStructureDropDown.onValueChanged(() => {
-			this.tryEnableImportButton();
+			this.tryEnableCreateButton();
 		});
 
 		const folderStructureLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -330,8 +330,8 @@ export class CreateProjectFromDatabaseDialog {
 		return folderStructureRow;
 	}
 
-	// only enable Import button if all fields are filled
-	public tryEnableImportButton(): void {
+	// only enable Create button if all fields are filled
+	public tryEnableCreateButton(): void {
 		if (this.sourceConnectionTextBox!.value && this.sourceDatabaseDropDown!.value
 			&& this.projectNameTextBox!.value && this.projectLocationTextBox!.value) {
 			this.dialog.okButton.enabled = true;
@@ -340,7 +340,7 @@ export class CreateProjectFromDatabaseDialog {
 		}
 	}
 
-	public async importClick(): Promise<void> {
+	public async createButtonClick(): Promise<void> {
 		const model: ImportDataModel = {
 			serverId: this.connectionId!,
 			database: <string>this.sourceDatabaseDropDown!.value,
