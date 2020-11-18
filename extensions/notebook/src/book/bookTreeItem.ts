@@ -40,6 +40,8 @@ export class BookTreeItem extends vscode.TreeItem {
 	public readonly version: string;
 	public command: vscode.Command;
 	public resourceUri: vscode.Uri;
+	private _rootContentPath: string;
+	private _tableOfContentsPath: string;
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, book.treeItemCollapsibleState);
@@ -74,7 +76,9 @@ export class BookTreeItem extends vscode.TreeItem {
 			this.tooltip = `${this._uri}`;
 		}
 		else {
-			this.tooltip = this.book.type === BookTreeItemType.Book ? (this.book.version === BookVersion.v1 ? path.join(this.book.root, content) : this.book.root) : this.book.contentPath;
+			this._tableOfContentsPath = (this.book.type === BookTreeItemType.Book || this.contextValue === 'section') ? (this.book.version === BookVersion.v1 ? path.join(this.book.root, '_data', 'toc.yml') : path.join(this.book.root, '_toc.yml')) : undefined;
+			this._rootContentPath = this.book.version === BookVersion.v1 ? path.join(this.book.root, content) : this.book.root;
+			this.tooltip = this.book.type === BookTreeItemType.Book ? this._rootContentPath : this.book.contentPath;
 			this.resourceUri = vscode.Uri.file(this.book.root);
 		}
 	}
@@ -158,6 +162,14 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this.book.root;
 	}
 
+	public get rootContentPath(): string {
+		return this._rootContentPath;
+	}
+
+	public get tableOfContentsPath(): string {
+		return this._tableOfContentsPath;
+	}
+
 	public get tableOfContents(): IJupyterBookToc {
 		return this.book.tableOfContents;
 	}
@@ -176,6 +188,10 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	public readonly tooltip: string;
 
+	public set uri(uri: string) {
+		this._uri = uri;
+	}
+
 	/**
 	 * Helper method to find a child section with a specified URL
 	 * @param url The url of the section we're searching for
@@ -188,7 +204,7 @@ export class BookTreeItem extends vscode.TreeItem {
 	}
 
 	private findChildSectionRecur(section: JupyterBookSection, url: string): JupyterBookSection | undefined {
-		if (section.url && section.url === url) {
+		if ((section as IJupyterBookSectionV1).url && (section as IJupyterBookSectionV1).url === url || (section as IJupyterBookSectionV2).file && (section as IJupyterBookSectionV2).file === url) {
 			return section;
 		} else if (section.sections) {
 			for (const childSection of section.sections) {
