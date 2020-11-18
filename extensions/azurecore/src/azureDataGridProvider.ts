@@ -45,18 +45,17 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 							.map(item => {
 								return <azdata.DataGridItem>{
 									id: item.id,
-									fieldValues: {
-										nameLink: <azdata.DataGridHyperlinkInfo>{ displayText: item.name, linkOrCommand: 'https://microsoft.com' },
-										name: item.name,
-										resourceGroup: item.resourceGroup,
-										subscriptionId: item.subscriptionId,
-										subscriptionName: subscriptions.find(subscription => subscription.id === item.subscriptionId)?.name ?? item.subscriptionId,
-										locationDisplayName: utils.getRegionDisplayName(item.location),
-										type: item.type,
-										typeDisplayName: utils.getResourceTypeDisplayName(item.type),
-										iconPath: utils.getResourceTypeIcon(this._appContext, item.type),
-										portalEndpoint: account.properties.providerSettings.settings.portalEndpoint
-									}
+									// Property values
+									nameLink: <azdata.DataGridHyperlinkInfo>{ displayText: item.name, linkOrCommand: 'https://microsoft.com' },
+									name: item.name,
+									resourceGroup: item.resourceGroup,
+									subscriptionId: item.subscriptionId,
+									subscriptionName: subscriptions.find(subscription => subscription.id === item.subscriptionId)?.name ?? item.subscriptionId,
+									locationDisplayName: utils.getRegionDisplayName(item.location),
+									type: item.type,
+									typeDisplayName: utils.getResourceTypeDisplayName(item.type),
+									iconPath: utils.getResourceTypeIcon(this._appContext, item.type),
+									portalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 								};
 							});
 						items.push(...newItems);

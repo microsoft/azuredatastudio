@@ -52,7 +52,7 @@ export class ResourceViewerTable extends Disposable {
 			forceFitColumns: true
 		}));
 		this._resourceViewerTable.setSelectionModel(new RowSelectionModel());
-		let filterPlugin = new HeaderFilter<Slick.SlickData>();
+		let filterPlugin = new HeaderFilter<azdata.DataGridItem>();
 		this._register(attachButtonStyler(filterPlugin, this._themeService));
 		this._register(attachTableStyler(this._resourceViewerTable, this._themeService));
 		this._register(this._resourceViewerTable.onClick(this.onTableClick, this));
@@ -130,7 +130,7 @@ export class ResourceViewerTable extends Disposable {
 		const column = this._resourceViewerTable.columns[event.cell.cell] as ColumnDefinition;
 		if (column) {
 			const row = this._dataView.getItem(event.cell.row);
-			const value = row.fieldValues[column.field];
+			const value = row[column.field];
 			if (isHyperlinkCellValue(value)) {
 				if (isString(value.linkOrCommand)) {
 					try {
@@ -154,7 +154,7 @@ export class ResourceViewerTable extends Disposable {
  * Extracts the specified field into the expected object to be handled by SlickGrid and/or formatters as needed.
  */
 function dataGridColumnValueExtractor(value: azdata.DataGridItem, columnDef: ColumnDefinition): TextCellValue | HyperlinkCellValue {
-	const fieldValue = value.fieldValues[columnDef.field];
+	const fieldValue = value[columnDef.field];
 	if (columnDef.type === 'hyperlink') {
 		return fieldValue as HyperlinkCellValue;
 	} else {

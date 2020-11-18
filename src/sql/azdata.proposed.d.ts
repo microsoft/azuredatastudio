@@ -238,7 +238,7 @@ declare module 'azdata' {
 		/**
 		 * The other properties that will be displayed in the grid columns
 		 */
-		fieldValues: { [key: string]: string | DataGridHyperlinkInfo }
+		[key: string]: string | DataGridHyperlinkInfo;
 	}
 
 	/**
