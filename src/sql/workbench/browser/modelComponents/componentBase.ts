@@ -299,7 +299,9 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 
 	/// IComponent container-related implementation
 	public addToContainer(componentDescriptor: IComponentDescriptor, config: any, index?: number): void {
-		this.logService.debug(`Adding component ${componentDescriptor.id} to container ${this.descriptor.id}`);
+		if (componentDescriptor && this.descriptor) {
+			this.logService.debug(`Adding component ${componentDescriptor.id} to container ${this.descriptor.id}`);
+		}
 		if (!componentDescriptor) {
 			return;
 		}

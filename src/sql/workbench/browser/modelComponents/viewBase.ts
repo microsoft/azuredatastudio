@@ -108,8 +108,11 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		let childDescriptor = this.modelStore.getComponentDescriptor(itemConfig.componentShape.id);
 		this.queueAction(containerId, (component) => {
 			this.logService.debug(`Removing component ${itemConfig.componentShape.id} from container ${containerId}`);
-			component.removeFromContainer(childDescriptor);
+			if (component.removeFromContainer) {
+				component.removeFromContainer(childDescriptor);
+			}
 			this.removeComponent(itemConfig.componentShape);
+
 		});
 	}
 
