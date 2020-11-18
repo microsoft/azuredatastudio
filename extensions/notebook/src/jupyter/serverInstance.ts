@@ -114,7 +114,11 @@ export class PerFolderServerInstance implements IServerInstance {
 	}
 
 	public async start(): Promise<void> {
+		let startInternalBeginTime = Date.now();
 		await this.startInternal();
+		let startInternalEndTime = Date.now();
+		let startInternalTime = startInternalEndTime - startInternalBeginTime;
+		console.log('Start Internal: It took ' + startInternalTime.toString() + 'ms to start internal');
 	}
 
 	public async stop(): Promise<void> {
@@ -212,7 +216,11 @@ export class PerFolderServerInstance implements IServerInstance {
 		}
 		let notebookDirectory = this.getNotebookDirectory();
 		// Find a port in a given range. If run into trouble, try another port inside the given range
+		let findPortBeginTime = Date.now();
 		let port = await ports.strictFindFreePort(new ports.StrictPortFindOptions(defaultPort, defaultPort + 1000));
+		let findPortEndTime = Date.now();
+		let findPortTime = findPortEndTime - findPortBeginTime;
+		console.log('Start Internal: It took ' + findPortTime.toString() + 'ms to find port');
 		let token = await utils.getRandomToken();
 		this._uri = vscode.Uri.parse(`http://localhost:${port}/?token=${token}`);
 		this._port = port.toString();
@@ -220,13 +228,21 @@ export class PerFolderServerInstance implements IServerInstance {
 		this.notifyStarting(this.options.install, startCommand);
 
 		// Execute the command
+		let exeStartCommandBeginTime = Date.now();
 		await this.executeStartCommand(startCommand);
+		let exeStartCommandEndTime = Date.now();
+		let exeStartCommandTime = exeStartCommandEndTime - exeStartCommandBeginTime;
+		console.log('Start Internal: It took ' + exeStartCommandTime.toString() + 'ms to execute start command');
 	}
 
 	private executeStartCommand(startCommand: string): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			let install = this.options.install;
+			let spawnJupyterProcessBeginTime = Date.now();
 			this.childProcess = this.spawnJupyterProcess(install, startCommand);
+			let spawnJupyterProcessEndTime = Date.now();
+			let spawnJupyterProcessTime = spawnJupyterProcessEndTime - spawnJupyterProcessBeginTime;
+			console.log('Start Internal: It took ' + spawnJupyterProcessTime.toString() + 'ms to spawn Jupyter process');
 			let stdErrLog: string = '';
 			// Add listeners for the process exiting prematurely
 			let onErrorBeforeStartup = (err: any) => reject(err);
