@@ -91,8 +91,7 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 $serverName = "${externalEndpoint.ip},${externalEndpoint.port}";
 $conn = sqlsrv_connect($serverName, $connectionInfo);`),
 			new InputKeyValue(this.modelView.modelBuilder, 'Python', `dbname='master' user='${username}' host='${externalEndpoint.ip}' password='{your_password_here}' port='${externalEndpoint.port}' sslmode='true'`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Ruby', `host=${externalEndpoint.ip}; user=${username} password={your_password_here} port=${externalEndpoint.port} sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Web App', `Database=master; Data Source=${externalEndpoint.ip}; User Id=${username}; Password={your_password_here}`)
+			new InputKeyValue(this.modelView.modelBuilder, 'Ruby', `host=${externalEndpoint.ip}; user=${username} password={your_password_here} port=${externalEndpoint.port} sslmode=require`)
 		];
 	}
 
