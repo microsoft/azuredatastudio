@@ -16,6 +16,7 @@ export interface DBCellValue {
  */
 export interface ExecuteCommandInfo {
 	id: string;
+	displayText?: string;
 	args?: string[]
 }
 
@@ -48,7 +49,6 @@ export namespace DBCellValue {
 export function isHyperlinkCellValue(obj: any | undefined): obj is HyperlinkCellValue {
 	return !!(<HyperlinkCellValue>obj)?.linkOrCommand;
 }
-
 
 /**
  * Format xml field into a hyperlink and performs HTML entity encoding
@@ -107,8 +107,7 @@ export function imageFormatter(row: number | undefined, cell: any | undefined, v
 }
 
 /**
- * Provide slick grid cell with encoded ariaLabel and plain text.
- * text will be escaped by the textFormatter and ariaLabel will be consumed by slickgrid directly.
+ * Extracts the specified field into the expected object to be handled by SlickGrid and/or formatters as needed.
  */
 export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any): TextCellValue | HyperlinkCellValue {
 	let fieldValue = value[columnDef.field];
@@ -123,7 +122,6 @@ export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any
 			ariaLabel: fieldValue ? escape(fieldValue) : fieldValue
 		};
 	}
-
 }
 
 /**

@@ -91,6 +91,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
 	registerAzureResourceCommands(appContext, [azureResourceTree, connectionDialogTree]);
 	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
+	vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
+		await vscode.env.openExternal(vscode.Uri.parse('https://microsoft.com'));
+	});
 
 	return {
 		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean, selectedOnly: boolean = false): Thenable<azurecore.GetSubscriptionsResult> {
