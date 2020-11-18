@@ -36,8 +36,17 @@ export const SUBSCRIPTION_SELECTION_AZURE_PRODUCT_TITLE = localize('sql.migratio
 
 export const CONGRATULATIONS = localize('sql.migration.generic.congratulations', "Congratulations");
 
-// database backup page
 
+// Accounts page
+export const ACCOUNTS_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.account.title', "Add your Azure Account to Azure Data Studio");
+export const ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR = localize('sql.migration.wizard.account.noaccount.error', "There is no linked account. Please add an account.");
+export const ACCOUNT_ADD_BUTTON_LABEL = localize('sql.migration.wizard.account.add.button.label', "Add account");
+export function accountLinkedMessage(count: number) {
+	return localize('sql.migration.wizard.account.count.message', '{} account linked', count);
+}
+
+
+// database backup page
 export const DATABASE_BACKUP_PAGE_TITLE = localize('sql.migration.database.page.title', "Database Backup");
 export const DATABASE_BACKUP_PAGE_DESCRIPTION = localize('sql.migration.database.page.description', "Select the location where we can find your database backups (Full, Differential and Log) to use for migration.");
 export const DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL = localize('sql.migration.nc.network.share.radio.label', "My database backups are on a network share.");
