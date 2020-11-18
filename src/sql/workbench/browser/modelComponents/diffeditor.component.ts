@@ -27,6 +27,8 @@ import { SimpleProgressIndicator } from 'sql/workbench/services/progress/browser
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	template: `
@@ -56,9 +58,10 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService,
-		@Inject(ITextModelService) private _textModelService: ITextModelService
+		@Inject(ITextModelService) private _textModelService: ITextModelService,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
@@ -99,7 +102,7 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 			this._editorModel = model as TextDiffEditorModel;
 			this.updateModel();
 			this.layout();
-			this.validate();
+			this.validate().catch(onUnexpectedError);
 		});
 
 		this._register(this._editor);
@@ -171,7 +174,7 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		this._minimumHeight = this.minimumHeight;
 		this._title = this.title;
 		this.layout();
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	// CSS-bound properties

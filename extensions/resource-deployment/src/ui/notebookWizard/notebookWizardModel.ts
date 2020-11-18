@@ -57,10 +57,20 @@ export class NotebookWizardModel extends ResourceTypeModel {
 	public onCancel(): void {
 	}
 
-	public async onGenerateScript(): Promise<void> {
-		const notebook = await this.prepareNotebookAndEnvironment();
-		await this.openNotebook(notebook);
+	/**
+	 * Generates the notebook and returns true on successful generation
+	 **/
+	public async onGenerateScript(): Promise<boolean> {
+		const lastPage = this.wizard.lastPage! as NotebookWizardPage;
+		if (lastPage.validatePage()) {
+			const notebook = await this.prepareNotebookAndEnvironment();
+			await this.openNotebook(notebook);
+			return true;
+		} else {
+			return false;
+		}
 	}
+
 	public async onOk(): Promise<void> {
 		const notebook = await this.prepareNotebookAndEnvironment();
 		const openedNotebook = await this.openNotebook(notebook);

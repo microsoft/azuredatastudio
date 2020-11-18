@@ -16,6 +16,7 @@ import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/
 import { textLinkForeground, textLinkActiveForeground } from 'vs/platform/theme/common/colorRegistry';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import * as DOM from 'vs/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-hyperlink',
@@ -28,9 +29,10 @@ export default class HyperlinkComponent extends TitledComponent<azdata.Hyperlink
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(IOpenerService) private openerService: IOpenerService
+		@Inject(IOpenerService) private openerService: IOpenerService,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {

@@ -157,7 +157,8 @@ export class SchemaCompareMainWindow {
 
 				this.sourceName = getEndpointName(this.sourceEndpointInfo);
 				this.targetName = ' ';
-				this.sourceNameComponent = view.modelBuilder.table().withProperties({
+				this.sourceNameComponent = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+					data: [],
 					columns: [
 						{
 							value: this.sourceName,
@@ -167,7 +168,8 @@ export class SchemaCompareMainWindow {
 					]
 				}).component();
 
-				this.targetNameComponent = view.modelBuilder.table().withProperties({
+				this.targetNameComponent = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+					data: [],
 					columns: [
 						{
 							value: this.targetName,
