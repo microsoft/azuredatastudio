@@ -162,7 +162,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		this._parameters = [];
 		let tableData: any[][] = [];
 
-		if (this._table && table && table.tableName !== constants.selectTableTitle) {
+		if (this._table && table) {
 			if (this._forInput) {
 				let columns: TableColumn[];
 				try {
