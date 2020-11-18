@@ -230,7 +230,7 @@ describe('Jupyter Server Installation', function () {
 			version: '1.0.0'
 		}, {
 			name: 'powershell-kernel',
-			version: '0.1.3'
+			version: '0.1.4'
 		}];
 		let packages = installation.getRequiredPackagesForKernel(powershellDisplayName);
 		should(packages).be.deepEqual(expectedPackages);
