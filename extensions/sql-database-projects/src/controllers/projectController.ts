@@ -19,7 +19,7 @@ import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry, IDatabaseReferenceProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
-import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
+import { FolderNode, FileNode, ExternalStreamingJobFileNode } from '../models/tree/fileFolderTreeItem';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
@@ -204,7 +204,7 @@ export class ProjectsController {
 		try {
 			await this.netCoreTool.runDotnetCommand(options);
 
-			return path.join(project.projectFolderPath, 'bin', 'Debug', `${project.projectFileName}.dacpac`);
+			return project.dacpacOutputPath;
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
@@ -575,6 +575,31 @@ export class ProjectsController {
 		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
+	}
+
+
+	public async validateExternalStreamingJob(node: ExternalStreamingJobFileNode): Promise<mssql.ValidateStreamingJobResult> {
+		const project: Project = this.getProjectFromContext(node);
+
+		let dacpacPath: string = project.dacpacOutputPath;
+
+		if (!await utils.exists(dacpacPath)) {
+			dacpacPath = await this.buildProject(node);
+		}
+
+		const streamingJobDefinition: string = (await fs.readFile(node.fileSystemUri.fsPath)).toString();
+
+		const dacFxService = await this.getDaxFxService();
+		const result: mssql.ValidateStreamingJobResult = await dacFxService.validateStreamingJob(dacpacPath, streamingJobDefinition);
+
+		if (result.success) {
+			vscode.window.showInformationMessage(constants.externalStreamingJobValidationPassed);
+		}
+		else {
+			vscode.window.showErrorMessage(result.errorMessage);
+		}
+
+		return result;
 	}
 
 	//#region Helper methods

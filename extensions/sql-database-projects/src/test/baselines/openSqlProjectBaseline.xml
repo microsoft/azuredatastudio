@@ -75,6 +75,9 @@
     <Build Include="Views\User\Profile.sql" />
   </ItemGroup>
   <ItemGroup>
+    <Build Include="MyExternalStreamingJob.sql" Type="ExternalStreamingJob" />
+  </ItemGroup>
+  <ItemGroup>
     <SqlCmdVariable Include="ProdDatabaseName">
       <DefaultValue>MyProdDatabase</DefaultValue>
       <Value>$(SqlCmdVar__1)</Value>
