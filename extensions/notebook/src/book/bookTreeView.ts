@@ -145,17 +145,25 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async showCurrentBooks(book: BookTreeItem): Promise<void> {
-		const pickedBook = await vscode.window.showQuickPick(['test1', 'test2'], {
-			canPickMany: false,
-			placeHolder: 'Select a Jupyter Book'
-		});
-		if (pickedBook) {
-			if (book) { }
+		try {
+			let bookOptions: vscode.QuickPickItem[] = [];
+			this.books.forEach(book => {
+				if (!book.isNotebook) {
+					bookOptions.push({ label: book.bookItems[0].title, description: book.bookPath });
+				}
+			});
+			const pickedBook = await vscode.window.showQuickPick(bookOptions, {
+				canPickMany: false,
+				placeHolder: 'Select a Jupyter Book'
+			});
+			if (pickedBook && book) {
+				const updatedBook = this.books.filter(book => book.bookPath === pickedBook.description)[0];
+				this.bookTocManager.updateBook(book, updatedBook.bookItems[0]);
+			}
 		}
-		// const pickedBook = await vscode.window.showQuickPick(accounts.map(account => account.displayInfo.displayName), {
-		// 	canPickMany: false,
-		// 	placeHolder: localize('azure.pickAnAzureAccount', "Select an Azure account")
-		// });
+		catch (e) {
+			vscode.window.showErrorMessage(e instanceof Error ? e.message : e);
+		}
 	}
 
 	async openBook(bookPath: string, urlToOpen?: string, showPreview?: boolean, isNotebook?: boolean): Promise<void> {
@@ -189,6 +197,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				});
 			}
 		} catch (e) {
+			// if there is an error remove book from context
+			const index = this.books.findIndex(book => book.bookPath === bookPath);
+			if (index !== -1) {
+				this.books.splice(index, 1);
+			}
 			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
 		}
 	}

@@ -22,7 +22,7 @@ export function hasSections(node: JupyterBookSection): boolean {
 }
 
 export class BookTocManager implements IBookTocManager {
-	public tableofContents: IJupyterBookSectionV2[];
+	public tableofContents: JupyterBookSection[];
 	public newSection: JupyterBookSection = {};
 
 	constructor() {
@@ -140,12 +140,12 @@ export class BookTocManager implements IBookTocManager {
 	async addNotebook(notebook: BookTreeItem, book: BookTreeItem, isSection: boolean): Promise<void> {
 		//the book's contentPath contains the first file of the section, we get the dirname to identify the section's root path
 		const rootPath = isSection ? path.dirname(book.book.contentPath) : book.rootContentPath;
-		let notebookName = path.basename(notebook.book.contentPath);
-		await fs.move(notebook.book.contentPath, path.join(rootPath, notebookName));
+		const notebookPath = path.parse(notebook.book.contentPath);
+		await fs.move(notebook.book.contentPath, path.join(rootPath, notebookPath.base));
 		if (book.book.version === BookVersion.v1) {
-			this.newSection = { url: notebookName, title: notebookName };
+			this.newSection = { url: path.sep.concat(notebookPath.name), title: notebookPath.name };
 		} else if (book.book.version === BookVersion.v2) {
-			this.newSection = { file: notebookName, title: notebookName };
+			this.newSection = { file: path.sep.concat(notebookPath.name), title: notebookPath.name };
 		}
 	}
 
@@ -159,23 +159,26 @@ export class BookTocManager implements IBookTocManager {
 			if (book.contextValue === 'section') {
 				await this.addSection(element, book, true);
 				this.tableofContents = this.updateToc(book.tableOfContents.sections, book, this.newSection);
-				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity }));
+				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true }));
 			} else if (book.contextValue === 'savedBook') {
 				await this.addSection(element, book, false);
-				book.tableOfContents.sections.push(this.newSection);
-				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(book.tableOfContents, { lineWidth: Infinity }));
+				this.tableofContents = book.tableOfContents.sections;
+				this.tableofContents.push(this.newSection);
+				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true }));
 			}
 		}
 		else if (element.contextValue === 'savedNotebook') {
 			if (book.contextValue === 'savedBook') {
 				await this.addNotebook(element, book, false);
-				book.tableOfContents.sections.push(this.newSection);
-				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(book.tableOfContents, { lineWidth: Infinity }));
+				this.tableofContents = book.tableOfContents.sections;
+				this.tableofContents.push(this.newSection);
+				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true }));
 			} else if (book.contextValue === 'section') {
 				await this.addNotebook(element, book, true);
 				this.tableofContents = this.updateToc(book.tableOfContents.sections, book, this.newSection);
-				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity }));
+				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true }));
 			}
+			await vscode.commands.executeCommand('notebook.command.closeNotebook', element);
 		}
 	}
 }
