@@ -12,6 +12,7 @@ import { LocalModelsComponent } from './localModelsComponent';
 import { AzureModelsComponent } from './azureModelsComponent';
 import * as utils from '../../common/utils';
 import { CurrentModelsComponent } from './manageModels/currentModelsComponent';
+import { ImportedModel } from '../../modelManagement/interfaces';
 
 /**
  * View to pick model source
@@ -25,7 +26,8 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 	public azureModelsComponent: AzureModelsComponent | undefined;
 	public registeredModelsComponent: CurrentModelsComponent | undefined;
 
-	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = true) {
+	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = true,
+		private _selectedModels?: ImportedModel[] | undefined) {
 		super(apiWrapper, parent.root, parent);
 	}
 
@@ -46,6 +48,11 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 			editable: false
 		});
 		this.registeredModelsComponent.registerComponent(modelBuilder);
+
+		// Mark a model in the list as selected
+		if (this._selectedModels && this.registeredModelsComponent.modelTable) {
+			this.registeredModelsComponent.modelTable.selectedModels = this._selectedModels;
+		}
 		this._form = this._formBuilder.component();
 		return this._form;
 	}

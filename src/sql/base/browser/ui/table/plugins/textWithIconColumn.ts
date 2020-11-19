@@ -12,29 +12,32 @@ export interface TextWithIconColumnDefinition<T extends Slick.SlickData> extends
 	iconCssClassField?: string;
 }
 
-export interface TextWithIconColumnOptions {
+export interface TextWithIconColumnOptions<T extends Slick.SlickData> {
 	iconCssClassField?: string;
 	field?: string;
 	width?: number;
 	id?: string;
 	resizable?: boolean;
 	name?: string;
+	headerCssClass?: string;
+	formatter?: Slick.Formatter<T>
 }
 
 export class TextWithIconColumn<T extends Slick.SlickData> {
 
 	private _definition: TextWithIconColumnDefinition<T>;
 
-	constructor(options: TextWithIconColumnOptions) {
+	constructor(options: TextWithIconColumnOptions<T>) {
 		this._definition = {
 			id: options.id,
 			field: options.field,
 			resizable: options.resizable,
-			formatter: this.formatter,
+			formatter: options.formatter ?? this.formatter,
 			width: options.width,
 			name: options.name,
 			iconCssClassField: options.iconCssClassField,
-			cssClass: 'slick-icon-cell'
+			cssClass: 'slick-icon-cell',
+			headerCssClass: options.headerCssClass
 		};
 	}
 	private formatter(row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string {

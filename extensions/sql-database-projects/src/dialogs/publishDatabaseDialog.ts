@@ -460,8 +460,7 @@ export class PublishDatabaseDialog {
 
 			const data = this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars!);
 			(<azdata.DeclarativeTableComponent>this.sqlCmdVariablesTable)!.updateProperties({
-				dataValues: data,
-				data: [] // data is deprecated, but the table gets updated incorrectly if this isn't set to an empty array
+				dataValues: data
 			});
 
 			this.tryEnableGenerateScriptAndOkButtons();
@@ -511,7 +510,7 @@ export class PublishDatabaseDialog {
 
 	private async updateConnectionComponents(connectionTextboxValue: string, connectionId: string) {
 		this.targetConnectionTextBox!.value = connectionTextboxValue;
-		this.targetConnectionTextBox!.placeHolder = connectionTextboxValue;
+		this.targetConnectionTextBox!.updateProperty('title', connectionTextboxValue);
 
 		// populate database dropdown with the databases for this connection
 		if (connectionId) {
@@ -527,8 +526,8 @@ export class PublishDatabaseDialog {
 		let loadProfileButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
 			ariaLabel: constants.loadProfilePlaceholderText,
 			iconPath: IconPathHelper.folder_blue,
-			height: '16px',
-			width: '16px'
+			height: '18px',
+			width: '18px'
 		}).component();
 
 		loadProfileButton.onDidClick(async () => {
@@ -569,7 +568,7 @@ export class PublishDatabaseDialog {
 
 				const data = this.convertSqlCmdVarsToTableFormat(this.getSqlCmdVariablesForPublish());
 				await (<azdata.DeclarativeTableComponent>this.sqlCmdVariablesTable).updateProperties({
-					data: data
+					dataValues: data
 				});
 
 				if (Object.keys(result.sqlCmdVariables).length) {
@@ -584,7 +583,7 @@ export class PublishDatabaseDialog {
 
 				// show file path in text box and hover text
 				this.loadProfileTextBox!.value = fileUris[0].fsPath;
-				this.loadProfileTextBox!.placeHolder = fileUris[0].fsPath;
+				this.loadProfileTextBox!.updateProperty('title', fileUris[0].fsPath);
 			}
 		});
 

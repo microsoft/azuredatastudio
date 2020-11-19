@@ -23,12 +23,13 @@ export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.S
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
 // Project Provider
-export const projectTypeDisplayName = localize('projectTypeDisplayName', 'Database Project');
+export const sqlDatabaseProjectTypeId = 'sqldbproj';
+export const projectTypeDisplayName = localize('projectTypeDisplayName', "SQL Database");
+export const projectTypeDescription = localize('projectTypeDescription', "Design, edit, and publish schemas for SQL databases");
 
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';
-export const sqlDatabaseProjectsViewFocusCommand = 'sqlDatabaseProjectsView.focus';
 export const vscodeOpenCommand = 'vscode.open';
 
 // UI Strings
@@ -54,10 +55,6 @@ export const objectType = localize('objectType', "Object Type");
 export const schema = localize('schema', "Schema");
 export const schemaObjectType = localize('schemaObjectType', "Schema/Object Type");
 export const defaultProjectNameStarter = localize('defaultProjectNameStarter', "DatabaseProject");
-export const newDefaultProjectSaveLocation = localize('newDefaultProjectSaveLocation', "Would you like to update the default location to save new database projects?");
-export const invalidDefaultProjectSaveLocation = localize('invalidDefaultProjectSaveLocation', "Default location to save new database projects is invalid. Would you like to update it?");
-export const openWorkspaceSettings = localize('openWorkspaceSettings', "Yes, open Settings");
-export const doNotPromptAgain = localize('doNotPromptAgain', "Don't ask again");
 export const reloadProject = localize('reloadProject', "Would you like to reload your database project?");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
@@ -95,7 +92,7 @@ export const defaultUser = localize('default', "default");
 export const addDatabaseReferenceDialogName = localize('addDatabaseReferencedialogName', "Add database reference");
 export const addDatabaseReferenceOkButtonText = localize('addDatabaseReferenceOkButtonText', "Add reference");
 export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Type");
-export const projectRadioButtonTitle = localize('projectRadioButtonTitle', "Database project in folder");
+export const projectRadioButtonTitle = localize('projectRadioButtonTitle', "Project");
 export const systemDatabaseRadioButtonTitle = localize('systemDatabaseRadioButtonTitle', "System database");
 export const dacpacText = localize('dacpacText', "Data-tier application (.dacpac)");
 export const dacpacPlaceholder = localize('dacpacPlaceholder', "Select .dacpac");
@@ -149,6 +146,7 @@ export const ousiderFolderPath = localize('outsideFolderPath', "Items with absol
 export const parentTreeItemUnknown = localize('parentTreeItemUnknown', "Cannot access parent of provided tree item");
 export const prePostDeployCount = localize('prePostDeployCount', "To successfully build, update the project to have one pre-deployment script and/or one post-deployment script");
 export const invalidProjectReload = localize('invalidProjectReload', "Cannot access provided database project. Only valid, open database projects can be reloaded.");
+export const externalStreamingJobValidationPassed = localize('externalStreamingJobValidationPassed', "Validation of external streaming job passed.");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
@@ -184,6 +182,7 @@ export const scriptFriendlyName = localize('scriptFriendlyName', "Script");
 export const tableFriendlyName = localize('tableFriendlyName', "Table");
 export const viewFriendlyName = localize('viewFriendlyName', "View");
 export const storedProcedureFriendlyName = localize('storedProcedureFriendlyName', "Stored Procedure");
+export const externalStreamingJobFriendlyName = localize('externalStreamingJobFriendlyName', "External Streaming Job");
 export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "Script.PreDeployment");
 export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "Script.PostDeployment");
 
@@ -223,6 +222,8 @@ export const True = 'True';
 export const False = 'False';
 export const Private = 'Private';
 export const ProjectGuid = 'ProjectGuid';
+export const Type = 'Type';
+export const ExternalStreamingJob: string = 'ExternalStreamingJob';
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';
@@ -255,11 +256,6 @@ export const activeDirectoryInteractive = 'active directory interactive';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
 
-// Workspace settings for saving new database projects
-export const dbProjectConfigurationKey = 'sqlDatabaseProjects';
-export const projectSaveLocationKey = 'defaultProjectSaveLocation';
-export const showUpdatePromptKey = 'showUpdateSaveLocationPrompt';
-
 // Authentication types
 export const integratedAuth = 'Integrated';
 export const azureMfaAuth = 'AzureMFA';
@@ -270,6 +266,7 @@ export enum DatabaseProjectItemType {
 	project = 'databaseProject.itemType.project',
 	folder = 'databaseProject.itemType.folder',
 	file = 'databaseProject.itemType.file',
+	externalStreamingJob = 'databaseProject.itemType.file.externalStreamingJob',
 	referencesRoot = 'databaseProject.itemType.referencesRoot',
 	reference = 'databaseProject.itemType.reference',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',

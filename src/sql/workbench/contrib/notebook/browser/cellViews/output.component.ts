@@ -40,9 +40,8 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	private _initialized: boolean = false;
 	private _activeCellId: string;
 	private _componentInstance: IMimeComponent;
-	private _batchId?: number;
-	private _id?: number;
-	private _queryRunnerUri?: string;
+	private _batchId: number | undefined;
+	private _id: number | undefined;
 	public errorText: string;
 
 	constructor(
@@ -104,16 +103,12 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 		return this._componentInstance;
 	}
 
-	@Input() set batchId(value: number) {
+	@Input() set batchId(value: number | undefined) {
 		this._batchId = value;
 	}
 
-	@Input() set id(value: number) {
+	@Input() set id(value: number | undefined) {
 		this._id = value;
-	}
-
-	@Input() set queryRunnerUri(value: string) {
-		this._queryRunnerUri = value;
 	}
 
 	get trustedMode(): boolean {
@@ -188,11 +183,8 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			this._componentInstance.cellModel = this.cellModel;
 			this._componentInstance.cellOutput = this.cellOutput;
 			this._componentInstance.bundleOptions = options;
-			if (this._queryRunnerUri) {
-				this._componentInstance.batchId = this._batchId;
-				this._componentInstance.id = this._id;
-				this._componentInstance.queryRunnerUri = this._queryRunnerUri;
-			}
+			this._componentInstance.batchId = this._batchId;
+			this._componentInstance.id = this._id;
 			this._changeref.detectChanges();
 			let el = <HTMLElement>componentRef.location.nativeElement;
 

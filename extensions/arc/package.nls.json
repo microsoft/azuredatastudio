@@ -129,6 +129,11 @@
 	"arc.postgres.server.group.memory.limit.label": "Memory limit (GB per node)",
 	"arc.postgres.server.group.memory.limit.description": "The memory limit of the Postgres instance per node in GB.",
 	"arc.agreement": "I accept {0} and {1}.",
-	"arc.agreement.sql.terms.conditions":"Azure SQL managed instance - Azure Arc terms and conditions",
-	"arc.agreement.postgres.terms.conditions":"Azure Arc enabled PostgreSQL Hyperscale terms and conditions"
+	"arc.agreement.sql.terms.conditions": "Azure SQL managed instance - Azure Arc terms and conditions",
+	"arc.agreement.postgres.terms.conditions": "Azure Arc enabled PostgreSQL Hyperscale terms and conditions",
+	"should.be.integer": "Value must be an integer",
+	"requested.cores.less.than.or.equal.to.cores.limit": "Requested cores must be less than or equal to cores limit",
+	"cores.limit.greater.than.or.equal.to.requested.cores": "Cores limit must be greater than or equal to requested cores",
+	"requested.memory.less.than.or.equal.to.memory.limit": "Requested memory must be less than or equal to memory limit",
+	"memory.limit.greater.than.or.equal.to.requested.memory": "Memory limit must be greater than or equal to requested memory"
 }

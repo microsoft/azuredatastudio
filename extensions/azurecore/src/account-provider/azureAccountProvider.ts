@@ -88,6 +88,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 	private async _initialize(storedAccounts: azdata.Account[]): Promise<azdata.Account[]> {
 		const accounts: azdata.Account[] = [];
+		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
 		for (let account of storedAccounts) {
 			const azureAuth = this.getAuthMethod(account);
 			if (!azureAuth) {

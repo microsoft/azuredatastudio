@@ -200,30 +200,22 @@ export class SchemaCompareDialog {
 				this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 			});
 
-			this.sourceServerComponent = await this.createSourceServerDropdown();
-			await this.populateServerDropdown(false);
+			this.sourceServerComponent = this.createSourceServerDropdown();
 
-			this.sourceDatabaseComponent = await this.createSourceDatabaseDropdown();
-			if ((this.sourceServerDropdown.value as ConnectionDropdownValue)) {
-				await this.populateDatabaseDropdown((this.sourceServerDropdown.value as ConnectionDropdownValue).connection, false);
-			}
+			this.sourceDatabaseComponent = this.createSourceDatabaseDropdown();
 
-			this.targetServerComponent = await this.createTargetServerDropdown();
-			await this.populateServerDropdown(true);
+			this.targetServerComponent = this.createTargetServerDropdown();
 
-			this.targetDatabaseComponent = await this.createTargetDatabaseDropdown();
-			if ((this.targetServerDropdown.value as ConnectionDropdownValue)) {
-				await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection, true);
-			}
+			this.targetDatabaseComponent = this.createTargetDatabaseDropdown();
 
-			this.sourceDacpacComponent = await this.createFileBrowser(false, this.schemaCompareMainWindow.sourceEndpointInfo);
-			this.targetDacpacComponent = await this.createFileBrowser(true, this.schemaCompareMainWindow.targetEndpointInfo);
+			this.sourceDacpacComponent = this.createFileBrowser(false, this.schemaCompareMainWindow.sourceEndpointInfo);
+			this.targetDacpacComponent = this.createFileBrowser(true, this.schemaCompareMainWindow.targetEndpointInfo);
 
-			let sourceRadioButtons = await this.createSourceRadiobuttons();
-			let targetRadioButtons = await this.createTargetRadiobuttons();
+			let sourceRadioButtons = this.createSourceRadiobuttons();
+			let targetRadioButtons = this.createTargetRadiobuttons();
 
-			this.sourceNoActiveConnectionsText = await this.createNoActiveConnectionsText();
-			this.targetNoActiveConnectionsText = await this.createNoActiveConnectionsText();
+			this.sourceNoActiveConnectionsText = this.createNoActiveConnectionsText();
+			this.targetNoActiveConnectionsText = this.createNoActiveConnectionsText();
 
 			let sourceComponents = [];
 			let targetComponents = [];
@@ -483,6 +475,9 @@ export class SchemaCompareDialog {
 			}
 		});
 
+		// don't await so that dialog loading won't be blocked. Dropdown will show loading indicator until it is populated
+		this.populateServerDropdown(false);
+
 		return {
 			component: this.sourceServerDropdown,
 			title: loc.ServerDropdownLabel
@@ -509,6 +504,9 @@ export class SchemaCompareDialog {
 			}
 		});
 
+		// don't await so that dialog loading won't be blocked. Dropdown will show loading indicator until it is populated
+		this.populateServerDropdown(true);
+
 		return {
 			component: this.targetServerDropdown,
 			title: loc.ServerDropdownLabel
@@ -516,8 +514,9 @@ export class SchemaCompareDialog {
 	}
 
 	protected async populateServerDropdown(isTarget: boolean): Promise<void> {
-		let currentDropdown = isTarget ? this.targetServerDropdown : this.sourceServerDropdown;
-		let values = await this.getServerValues(isTarget);
+		const currentDropdown = isTarget ? this.targetServerDropdown : this.sourceServerDropdown;
+		currentDropdown.loading = true;
+		const values = await this.getServerValues(isTarget);
 
 		if (values && values.length > 0) {
 			await currentDropdown.updateProperties({
@@ -525,6 +524,10 @@ export class SchemaCompareDialog {
 				value: values[0]
 			});
 		}
+
+		currentDropdown.loading = false;
+
+		await this.populateDatabaseDropdown((currentDropdown.value as ConnectionDropdownValue).connection, isTarget);
 	}
 
 	protected async getServerValues(isTarget: boolean): Promise<{ connection: azdata.connection.ConnectionProfile, displayName: string, name: string }[]> {
@@ -630,7 +633,8 @@ export class SchemaCompareDialog {
 	}
 
 	protected async populateDatabaseDropdown(connectionProfile: azdata.connection.ConnectionProfile, isTarget: boolean): Promise<void> {
-		let currentDropdown = isTarget ? this.targetDatabaseDropdown : this.sourceDatabaseDropdown;
+		const currentDropdown = isTarget ? this.targetDatabaseDropdown : this.sourceDatabaseDropdown;
+		currentDropdown.loading = true;
 		await currentDropdown.updateProperties({ values: [], value: null });
 
 		let values = [];
@@ -647,6 +651,8 @@ export class SchemaCompareDialog {
 				value: values[0],
 			});
 		}
+
+		currentDropdown.loading = false;
 	}
 
 	protected async getDatabaseValues(connectionId: string, isTarget: boolean): Promise<string[]> {

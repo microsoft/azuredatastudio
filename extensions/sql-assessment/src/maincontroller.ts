@@ -31,7 +31,6 @@ export default class MainController {
 	}
 
 	public async activate(): Promise<boolean> {
-
 		this.sqlAssessment = ((await vscode.extensions.getExtension(mssql.extension.name)?.activate() as mssql.IExtension)).sqlAssessment;
 		this.engine = new AssessmentEngine(this.sqlAssessment);
 		this.registerModelViewProvider();

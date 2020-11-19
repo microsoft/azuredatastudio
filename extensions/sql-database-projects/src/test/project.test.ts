@@ -15,6 +15,7 @@ import { promises as fs } from 'fs';
 import { Project, EntryType, SystemDatabase, SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
 import { exists, convertSlashesForSqlProj } from '../common/utils';
 import { Uri, window } from 'vscode';
+import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 
 let projFilePath: string;
 
@@ -31,12 +32,14 @@ describe('Project: sqlproj content operations', function (): void {
 		const project: Project = await Project.openProject(projFilePath);
 
 		// Files and folders
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(5);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(6);
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
 
 		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User')).not.equal(undefined); // mixed ItemGroup folder
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Views\\User\\Profile.sql')).not.equal(undefined); // mixed ItemGroup file
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === '..\\Test\\Test.sql')).not.equal(undefined); // mixed ItemGroup file
+		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'MyExternalStreamingJob.sql')).not.equal(undefined); // entry with custom attribute
+
 
 		// SqlCmdVariables
 		should(Object.keys(project.sqlCmdVariables).length).equal(2);
@@ -88,26 +91,34 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.postDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PostDeployment1.sql')).not.equal(undefined, 'File Script.PostDeployment1.sql not read');
 		should(project.preDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment2.sql')).not.equal(undefined, 'File Script.PostDeployment2.sql not read');
 		should(project.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Tables\\Script.PostDeployment1.sql')).not.equal(undefined, 'File Tables\\Script.PostDeployment1.sql not read');
+
+		sinon.restore();
 	});
 
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {
 		const project = await Project.openProject(projFilePath);
 
 		const folderPath = 'Stored Procedures';
-		const filePath = path.join(folderPath, 'Fake Stored Proc.sql');
-		const fileContents = 'SELECT \'This is not actually a stored procedure.\'';
+		const scriptPath = path.join(folderPath, 'Fake Stored Proc.sql');
+		const scriptContents = 'SELECT \'This is not actually a stored procedure.\'';
+
+		const scriptPathTagged = path.join(folderPath, 'Fake External Streaming Job.sql');
+		const scriptContentsTagged = 'EXEC sys.sp_create_streaming_job \'job\', \'SELECT 7\'';
 
 		await project.addFolderItem(folderPath);
-		await project.addScriptItem(filePath, fileContents);
+		await project.addScriptItem(scriptPath, scriptContents);
+		await project.addScriptItem(scriptPathTagged, scriptContentsTagged, templates.externalStreamingJob);
 
 		const newProject = await Project.openProject(projFilePath);
 
 		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === convertSlashesForSqlProj(folderPath))).not.equal(undefined);
-		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(filePath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPathTagged))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPathTagged))?.sqlObjectType).equal(constants.ExternalStreamingJob);
 
-		const newFileContents = (await fs.readFile(path.join(newProject.projectFolderPath, filePath))).toString();
+		const newScriptContents = (await fs.readFile(path.join(newProject.projectFolderPath, scriptPath))).toString();
 
-		should(newFileContents).equal(fileContents);
+		should(newScriptContents).equal(scriptContents);
 	});
 
 	it('Should add Folder and Build entries to sqlproj with pre-existing scripts on disk', async function (): Promise<void> {
@@ -246,6 +257,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('test2.dacpac');
 		should(projFileText).containEql('<DatabaseSqlCmdVariable>test2Db</DatabaseSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="test2Db">');
+		should(projFileText).containEql('<DefaultValue>test2DbName</DefaultValue>');
 	});
 
 	it('Should add a dacpac reference to a different database in a different server correctly', async function (): Promise<void> {
@@ -270,8 +282,10 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('test3.dacpac');
 		should(projFileText).containEql('<DatabaseSqlCmdVariable>test3Db</DatabaseSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="test3Db">');
+		should(projFileText).containEql('<DefaultValue>test3DbName</DefaultValue>');
 		should(projFileText).containEql('<ServerSqlCmdVariable>otherServer</ServerSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="otherServer">');
+		should(projFileText).containEql('<DefaultValue>otherServerName</DefaultValue>');
 	});
 
 	it('Should add a project reference to the same database correctly', async function (): Promise<void> {
@@ -322,6 +336,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('project1');
 		should(projFileText).containEql('<DatabaseSqlCmdVariable>testdb</DatabaseSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="testdb">');
+		should(projFileText).containEql('<DefaultValue>testdbName</DefaultValue>');
 	});
 
 	it('Should add a project reference to a different database in a different server correctly', async function (): Promise<void> {
@@ -351,30 +366,136 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText).containEql('project1');
 		should(projFileText).containEql('<DatabaseSqlCmdVariable>testdb</DatabaseSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="testdb">');
+		should(projFileText).containEql('<DefaultValue>testdbName</DefaultValue>');
 		should(projFileText).containEql('<ServerSqlCmdVariable>otherServer</ServerSqlCmdVariable>');
 		should(projFileText).containEql('<SqlCmdVariable Include="otherServer">');
+		should(projFileText).containEql('<DefaultValue>otherServerName</DefaultValue>');
 	});
 
-	it('Should not allow adding duplicate database references', async function (): Promise<void> {
+	it('Should not allow adding duplicate dacpac references', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
 		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
-		await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false });
+
+		const dacpacReference: IDacpacReferenceSettings = { dacpacFileLocation: Uri.file('test.dacpac'), suppressMissingDependenciesErrors: false };
+		await project.addDatabaseReference(dacpacReference);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to test.dacpac');
+		should(project.databaseReferences[0].databaseName).equal('test', 'project.databaseReferences[0].databaseName should be test');
+
+		// try to add reference to test.dacpac again
+		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference(dacpacReference), constants.databaseReferenceAlreadyExists);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to test.dacpac again');
+	});
+
+	it('Should not allow adding duplicate system database references', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+
+		const systemDbReference: ISystemDatabaseReferenceSettings = { databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false };
+		await project.addSystemDatabaseReference(systemDbReference);
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
 		should(project.databaseReferences[0].databaseName).equal(constants.master, 'project.databaseReferences[0].databaseName should be master');
 
 		// try to add reference to master again
-		await testUtils.shouldThrowSpecificError(async () => await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false }), constants.databaseReferenceAlreadyExists);
+		await testUtils.shouldThrowSpecificError(async () => await project.addSystemDatabaseReference(systemDbReference), constants.databaseReferenceAlreadyExists);
 		should(project.databaseReferences.length).equal(1, 'There should only be one database reference after trying to add a reference to master again');
+	});
 
-		await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), suppressMissingDependenciesErrors: false });
-		should(project.databaseReferences.length).equal(2, 'There should be two database references after adding a reference to test.dacpac');
-		should(project.databaseReferences[1].databaseName).equal('test', 'project.databaseReferences[1].databaseName should be test');
+	it('Should not allow adding duplicate project references', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
 
-		// try to add reference to test.dacpac again
-		await testUtils.shouldThrowSpecificError(async () => await project.addDatabaseReference({ dacpacFileLocation: Uri.file('test.dacpac'), suppressMissingDependenciesErrors: false }), constants.databaseReferenceAlreadyExists);
-		should(project.databaseReferences.length).equal(2, 'There should be two database references after trying to add a reference to test.dacpac again');
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+
+		const projectReference: IProjectReferenceSettings = {
+			projectName: 'testProject',
+			projectGuid: '',
+			projectRelativePath: Uri.file('testProject.sqlproj'),
+			suppressMissingDependenciesErrors: false
+		};
+		await project.addProjectReference(projectReference);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to testProject.sqlproj');
+		should(project.databaseReferences[0].databaseName).equal('testProject', 'project.databaseReferences[0].databaseName should be testProject');
+
+		// try to add reference to testProject again
+		await testUtils.shouldThrowSpecificError(async () => await project.addProjectReference(projectReference), constants.databaseReferenceAlreadyExists);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to testProject again');
+	});
+
+	it('Should handle trying to add duplicate database references when slashes are different direction', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+
+		const projectReference: IProjectReferenceSettings = {
+			projectName: 'testProject',
+			projectGuid: '',
+			projectRelativePath: Uri.file('testFolder/testProject.sqlproj'),
+			suppressMissingDependenciesErrors: false
+		};
+		await project.addProjectReference(projectReference);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to testProject.sqlproj');
+		should(project.databaseReferences[0].databaseName).equal('testProject', 'project.databaseReferences[0].databaseName should be testProject');
+
+		// try to add reference to testProject again with slashes in the other direction
+		projectReference.projectRelativePath = Uri.file('testFolder\\testProject.sqlproj');
+		await testUtils.shouldThrowSpecificError(async () => await project.addProjectReference(projectReference), constants.databaseReferenceAlreadyExists);
+		should(project.databaseReferences.length).equal(1, 'There should be one database reference after trying to add a reference to testProject again');
+	});
+
+	it('Should update sqlcmd variable values if value changes', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+		const databaseVariable = 'test3Db';
+		const serverVariable = 'otherServer';
+
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
+		await project.addDatabaseReference({
+			dacpacFileLocation: Uri.file('test3.dacpac'),
+			databaseName: 'test3DbName',
+			databaseVariable: databaseVariable,
+			serverName: 'otherServerName',
+			serverVariable: serverVariable,
+			suppressMissingDependenciesErrors: false
+		});
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test3');
+		should(project.databaseReferences[0].databaseName).equal('test3', 'The database reference should be test3');
+		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'There should be 2 sqlcmdvars after adding the dacpac reference');
+
+		// make sure reference to test3.dacpac and SQLCMD variables were added
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).containEql('<SqlCmdVariable Include="test3Db">');
+		should(projFileText).containEql('<DefaultValue>test3DbName</DefaultValue>');
+		should(projFileText).containEql('<SqlCmdVariable Include="otherServer">');
+		should(projFileText).containEql('<DefaultValue>otherServerName</DefaultValue>');
+
+		// delete reference
+		await project.deleteDatabaseReference(project.databaseReferences[0]);
+		should(project.databaseReferences.length).equal(0, 'There should be no database references after deleting');
+		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'There should still be 2 sqlcmdvars after deleting the dacpac reference');
+
+		// add reference to the same dacpac again but with different values for the sqlcmd variables
+		await project.addDatabaseReference({
+			dacpacFileLocation: Uri.file('test3.dacpac'),
+			databaseName: 'newDbName',
+			databaseVariable: databaseVariable,
+			serverName: 'newServerName',
+			serverVariable: serverVariable,
+			suppressMissingDependenciesErrors: false
+		});
+		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to test3');
+		should(project.databaseReferences[0].databaseName).equal('test3', 'The database reference should be test3');
+		should(Object.keys(project.sqlCmdVariables).length).equal(2, 'There should still be 2 sqlcmdvars after adding the dacpac reference again with different sqlcmdvar values');
+
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText).containEql('<SqlCmdVariable Include="test3Db">');
+		should(projFileText).containEql('<DefaultValue>newDbName</DefaultValue>');
+		should(projFileText).containEql('<SqlCmdVariable Include="otherServer">');
+		should(projFileText).containEql('<DefaultValue>newServerName</DefaultValue>');
 	});
 
 	it('Should add pre and post deployment scripts as entries to sqlproj', async function (): Promise<void> {
@@ -461,43 +582,58 @@ describe('Project: round trip updates', function (): void {
 	});
 
 	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
-		await testUpdateInRoundTrip(baselines.SSDTProjectFileBaseline, baselines.SSDTProjectAfterUpdateBaseline, true, true);
+		await testUpdateInRoundTrip(baselines.SSDTProjectFileBaseline, baselines.SSDTProjectAfterUpdateBaseline);
 	});
 
 	it('Should update SSDT project with new system database references', async function (): Promise<void> {
-		await testUpdateInRoundTrip(baselines.SSDTUpdatedProjectBaseline, baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline, false, true);
+		await testUpdateInRoundTrip(baselines.SSDTUpdatedProjectBaseline, baselines.SSDTUpdatedProjectAfterSystemDbUpdateBaseline);
 	});
 
 	it('Should update SSDT project to work in ADS handling pre-exsiting targets', async function (): Promise<void> {
-		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithCleanTarget, baselines.SSDTProjectBaselineWithCleanTargetAfterUpdate, true, false);
+		await testUpdateInRoundTrip(baselines.SSDTProjectBaselineWithCleanTarget, baselines.SSDTProjectBaselineWithCleanTargetAfterUpdate);
+	});
+
+	it('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
+		sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.noString));
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+
+		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
+
+		should(await exists(sqlProjPath + '_backup')).equal(false);	// backup file should not be generated
+		should(project.importedTargets.length).equal(2); // additional target should not be added by updateProjectForRoundTrip method
+
+		sinon.restore();
+	});
+
+	it('Should not show warning message for non-SSDT projects that have the additional information for Build', async function (): Promise<void> {
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, folderPath);
+		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
+
+		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);	// no error thrown
+
+		should(project.importedTargets.length).equal(3); // additional target should exist by default
 	});
 });
 
-async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: string, testTargets: boolean, testReferences: boolean): Promise<void> {
+async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: string): Promise<void> {
+	const stub = sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
+
 	projFilePath = await testUtils.createTestSqlProjFile(fileBeforeupdate);
-	const project = await Project.openProject(projFilePath);
+	const project = await Project.openProject(projFilePath); // project gets updated if needed in openProject()
 
-	if (testTargets) {
-		await testUpdateTargetsImportsRoundTrip(project);
-	}
-
-	if (testReferences) {
-		await testAddReferencesInRoundTrip(project);
-	}
+	should(await exists(projFilePath + '_backup')).equal(true, 'Backup file should have been generated before the project was updated');
+	should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
 
 	let projFileText = (await fs.readFile(projFilePath)).toString();
 	should(projFileText).equal(fileAfterUpdate.trim());
+
+	should(stub.calledOnce).be.true('showWarningMessage should have been called exactly once');
+	sinon.restore();
 }
 
-async function testUpdateTargetsImportsRoundTrip(project: Project): Promise<void> {
-	should(project.importedTargets.length).equal(2);
-	await project.updateProjectForRoundTrip();
-	should(await exists(projFilePath + '_backup')).equal(true);	// backup file should be generated before the project is updated
-	should(project.importedTargets.length).equal(3);	// additional target added by updateProjectForRoundTrip method
-}
 
-async function testAddReferencesInRoundTrip(project: Project): Promise<void> {
-	// updating system db refs is separate from updating for roundtrip because new db refs could be added even after project is updated for roundtrip
-	should(project.containsSSDTOnlySystemDatabaseReferences()).equal(true);
-	await project.updateSystemDatabaseReferencesInProjFile();
-}
