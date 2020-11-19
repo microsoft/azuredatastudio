@@ -33,13 +33,11 @@ const localize = nls.loadMessageBundle();
 
 export type Validator = () => { valid: boolean, message: string };
 export type InputValueType = string | number | undefined;
-export type InputValueTransformer = (inputValue: string) => InputValueType | Promise<InputValueType>;
 export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder;
 export type InputComponentInfo<T extends InputComponent> = {
 	component: T;
 	getValue: () => Promise<InputValueType>;
 	onValueChanged: vscode.Event<void>;
-	inputValueTransformer?: InputValueTransformer;
 	isPassword?: boolean
 };
 
@@ -198,7 +196,7 @@ export function createInputBox(view: azdata.ModelView, inputInfo: InputBoxInfo):
 	}).withValidation(async (component) => await validateInputBoxComponent(component, inputInfo.validations)).component();
 	return {
 		component: component,
-		getValue: async (): Promise<InputValueType> => component.value || '',
+		getValue: async (): Promise<InputValueType> => component.value,
 		onValueChanged: component.onTextChanged
 	};
 }
@@ -479,7 +477,7 @@ async function processField(context: FieldContext): Promise<void> {
 			}
 		},
 		() => context.inputComponents[context.fieldInfo.variableName || context.fieldInfo.label].getValue(),  // callback to fetch the value of this field, and return the default value if the field value is undefined
-		(variable: string) => getInputComponentValue(context.inputComponents[variable]),  // callback to fetch the value of a variable corresponding to any field already defined.
+		(variable: string) => context.inputComponents[variable].getValue(),  // callback to fetch the value of a variable corresponding to any field already defined.
 		(targetVariable: string) => (<azdata.InputBoxComponent>context.inputComponents[targetVariable].component).onValidityChanged,
 		(disposable: vscode.Disposable) => context.onNewDisposableCreated(disposable)
 	)));
@@ -588,9 +586,11 @@ async function configureOptionsSourceSubfields(context: FieldContext, optionsSou
 	});
 	context.onNewInputComponentCreated(optionsSource.variableNames![variableKey], {
 		component: optionsComponent,
-		inputValueTransformer: async (optionValue: string) => {
+		isPassword: await optionsSourceProvider.getIsPassword!(variableKey),
+		getValue: async (): Promise<InputValueType> => {
+			const value = (typeof optionsComponent.value === 'string' ? optionsComponent.value : optionsComponent.value?.name) || '';
 			try {
-				return await optionsSourceProvider.getVariableValue!(variableKey, optionValue);
+				return await optionsSourceProvider.getVariableValue!(variableKey, value);
 			} catch (e) {
 				disableControlButtons(context.container);
 				context.container.message = {
@@ -620,7 +620,7 @@ function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDown
 	});
 	dropdown.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
-		getValue: async (): Promise<InputValueType> => typeof dropdown.value === 'string' ? dropdown.value : dropdown.value?.displayName || '',
+		getValue: async (): Promise<InputValueType> => typeof dropdown.value === 'string' ? dropdown.value : dropdown.value?.name,
 		onValueChanged: dropdown.onValueChanged,
 		component: dropdown
 	});
@@ -633,7 +633,7 @@ function processDateTimeTextField(context: FieldContext): void {
 	const input = createInputBoxField({ context });
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
 		component: input.component,
-		getValue: async (): Promise<InputValueType> => input.component.value || '',
+		getValue: async (): Promise<InputValueType> => input.component.value,
 		onValueChanged: input.component.onTextChanged
 	});
 }
@@ -642,9 +642,11 @@ function processNumberField(context: FieldContext): void {
 	const input = createInputBoxField({ context, inputBoxType: 'number' });
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
 		component: input.component,
-		getValue: input.getValue,
-		onValueChanged: input.onValueChanged,
-		inputValueTransformer: (value: string | number | undefined) => (typeof value === 'string') && value.length > 0 ? parseFloat(value) : value
+		getValue: async (): Promise<InputValueType> => {
+			const value = await input.getValue();
+			return typeof value === 'string' && value.length > 0 ? parseFloat(value) : value;
+		},
+		onValueChanged: input.onValueChanged
 	});
 }
 
@@ -732,16 +734,15 @@ function processHyperlinkedTextField(context: FieldContext): ReadOnlyFieldInputs
 
 function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
 	const readOnlyField = processReadonlyTextField(context, false /*allowEvaluation*/);
-	const onChangedEmitter = new vscode.EventEmitter<void>(); // Stub event since we don't currently supp
+	const onChangedEmitter = new vscode.EventEmitter<void>(); // Stub event since we don't currently support updating this when the dependent fields change
 	context.onNewDisposableCreated(onChangedEmitter);
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
 		component: readOnlyField.text!,
-		getValue: async (): Promise<InputValueType> => readOnlyField.text?.value || '',
-		onValueChanged: onChangedEmitter.event,
-		inputValueTransformer: async () => {
+		getValue: async (): Promise<InputValueType> => {
 			readOnlyField.text!.value = await substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
-			return readOnlyField.text?.value!;
-		}
+			return readOnlyField.text?.value;
+		},
+		onValueChanged: onChangedEmitter.event,
 	});
 	return readOnlyField;
 }
@@ -759,7 +760,7 @@ async function substituteVariableValues(inputComponents: InputComponents, inputV
 	await Promise.all(Object.keys(inputComponents)
 		.filter(key => key.startsWith(NoteBookEnvironmentVariablePrefix))
 		.map(async key => {
-			const value = (await getInputComponentValue(inputComponents[key])) ?? '<undefined>';
+			const value = (await inputComponents[key].getValue()) ?? '<undefined>';
 			const re: RegExp = new RegExp(`\\\$\\\(${key}\\\)`, 'gi');
 			inputValue = inputValue?.replace(re, value.toString());
 		})
@@ -775,7 +776,7 @@ function processCheckboxField(context: FieldContext): void {
 	const onChangedEvent = checkbox.onChanged(() => onChangedEmitter.fire());
 	context.onNewDisposableCreated(onChangedEvent);
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
-		getValue: async (): Promise<InputValueType> => checkbox.checked?.toString() || '',
+		getValue: async (): Promise<InputValueType> => checkbox.checked ? 'true' : 'false',
 		onValueChanged: onChangedEmitter.event,
 		component: checkbox
 	});
@@ -929,7 +930,7 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 	context.fieldInfo.labelPosition = LabelPosition.Left;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
 		component: radioGroupLoadingComponentBuilder,
-		getValue: async (): Promise<InputValueType> => radioGroupLoadingComponentBuilder.value || '',
+		getValue: async (): Promise<InputValueType> => radioGroupLoadingComponentBuilder.value,
 		onValueChanged: radioGroupLoadingComponentBuilder.onValueChanged,
 	});
 	addLabelInputPairToContainer(context.view, context.components, label, radioGroupLoadingComponentBuilder.component(), context.fieldInfo);
@@ -968,7 +969,7 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 		const newRGCheckbox = createCheckbox(context.view, { initialValue: false, label: loc.createNewResourceGroup });
 		context.onNewInputComponentCreated(context.fieldInfo.newResourceGroupFlagVariableName!, {
 			component: newRGCheckbox,
-			getValue: async (): Promise<InputValueType> => newRGCheckbox.checked?.toString() || '',
+			getValue: async (): Promise<InputValueType> => newRGCheckbox.checked ? 'true' : 'false',
 			onValueChanged: newRGCheckbox.onChanged
 		});
 		const newRGNameInput = createInputBox(context.view, { ariaLabel: loc.NewResourceGroupAriaLabel });
@@ -1088,7 +1089,7 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAcc
 	accountDropdown.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
 		component: accountDropdown,
-		getValue: async (): Promise<InputValueType> => (typeof accountDropdown.value === 'string' ? accountDropdown.value : accountDropdown.value?.displayName) || '',
+		getValue: async (): Promise<InputValueType> => typeof accountDropdown.value === 'string' ? accountDropdown.value : accountDropdown.value?.name,
 		onValueChanged: accountDropdown.onValueChanged
 	});
 	const signInButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.signIn, width: '100px' }).component();
@@ -1129,11 +1130,11 @@ function createAzureSubscriptionDropdown(
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.subscriptionVariableName || context.fieldInfo.label, {
 		component: subscriptionDropdown,
-		getValue: async (): Promise<InputValueType> => (typeof subscriptionDropdown.value === 'string' ? subscriptionDropdown.value : subscriptionDropdown.value?.displayName) || '',
-		onValueChanged: subscriptionDropdown.onValueChanged,
-		inputValueTransformer: (inputValue: string) => {
+		getValue: async (): Promise<InputValueType> => {
+			const inputValue = (typeof subscriptionDropdown.value === 'string' ? subscriptionDropdown.value : subscriptionDropdown.value?.name) || '';
 			return subscriptionValueToSubscriptionMap.get(inputValue)?.id || inputValue;
-		}
+		},
+		onValueChanged: subscriptionDropdown.onValueChanged
 	});
 	if (context.fieldInfo.displaySubscriptionVariableName) {
 		context.fieldInfo.subFields!.push({
@@ -1142,7 +1143,7 @@ function createAzureSubscriptionDropdown(
 		});
 		context.onNewInputComponentCreated(context.fieldInfo.displaySubscriptionVariableName!, {
 			component: subscriptionDropdown,
-			getValue: async (): Promise<InputValueType> => (typeof subscriptionDropdown.value === 'string' ? subscriptionDropdown.value : subscriptionDropdown.value?.displayName) || '',
+			getValue: async (): Promise<InputValueType> => typeof subscriptionDropdown.value === 'string' ? subscriptionDropdown.value : subscriptionDropdown.value?.name,
 			onValueChanged: subscriptionDropdown.onValueChanged,
 		});
 	}
@@ -1364,7 +1365,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 		});
 		context.onNewInputComponentCreated(context.fieldInfo.locationVariableName, {
 			component: locationDropdown,
-			getValue: async (): Promise<InputValueType> => (typeof locationDropdown.value === 'string' ? locationDropdown.value : locationDropdown.value?.displayName) || '',
+			getValue: async (): Promise<InputValueType> => typeof locationDropdown.value === 'string' ? locationDropdown.value : locationDropdown.value?.name,
 			onValueChanged: locationDropdown.onValueChanged,
 		});
 	}
@@ -1375,8 +1376,10 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 		});
 		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, {
 			component: locationDropdown,
-			inputValueTransformer: (value => apiService.azurecoreApi.getRegionDisplayName(value)),
-			getValue: async (): Promise<InputValueType> => (typeof locationDropdown.value === 'string' ? locationDropdown.value : locationDropdown.value?.displayName) || '',
+			getValue: async (): Promise<InputValueType> => {
+				const inputValue = (typeof locationDropdown.value === 'string' ? locationDropdown.value : locationDropdown.value?.displayName) || '';
+				return apiService.azurecoreApi.getRegionDisplayName(inputValue);
+			},
 			onValueChanged: locationDropdown.onValueChanged,
 		});
 	}
@@ -1413,32 +1416,9 @@ export function getPasswordMismatchMessage(fieldName: string): string {
 
 export async function setModelValues(inputComponents: InputComponents, model: Model): Promise<void> {
 	await Promise.all(Object.keys(inputComponents).map(async key => {
-		const value = await getInputComponentValue(inputComponents[key]);
+		const value = await inputComponents[key].getValue();
 		model.setPropertyValue(key, value);
 	}));
-}
-
-async function getInputComponentValue(inputComponentInfo: InputComponentInfo<InputComponent>): Promise<InputValueType> {
-	const input = inputComponentInfo.component;
-	if (input === undefined) {
-		return undefined;
-	}
-	let value: string | number | undefined;
-	if (input instanceof RadioGroupLoadingComponentBuilder) {
-		value = input.value;
-	} else if ('checked' in input) { // CheckBoxComponent
-		value = input.checked ? 'true' : 'false';
-	} else if ('value' in input) { // InputBoxComponent or DropDownComponent
-		const inputValue = input.value;
-		if (typeof inputValue === 'string' || typeof inputValue === 'undefined' || typeof inputValue === 'number') {
-			value = inputValue;
-		} else {
-			value = inputValue.name;
-		}
-	} else {
-		throw new Error(`Unknown input type with ID ${input.id}`);
-	}
-	return inputComponentInfo.inputValueTransformer ? await inputComponentInfo.inputValueTransformer(value ?? '') : value;
 }
 
 export function isInputBoxEmpty(input: azdata.InputBoxComponent): boolean {
