@@ -815,6 +815,19 @@ declare module 'azdata' {
 		title: string;
 	}
 
+	export namespace workspace {
+		/**
+		 * Creates and enters a workspace at the specified location
+		 */
+		export function createWorkspace(location: vscode.Uri, workspaceFile?: vscode.Uri): Promise<void>;
+
+		/**
+		 * Enters the workspace with the provided path
+		 * @param workspacefile
+		 */
+		export function enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+	}
+
 	export interface TableComponentProperties {
 		/**
 		 * Specifies whether to use headerFilter plugin
