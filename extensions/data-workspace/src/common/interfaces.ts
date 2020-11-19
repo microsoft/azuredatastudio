@@ -27,8 +27,14 @@ export interface IProjectProviderRegistry {
 	readonly providers: IProjectProvider[];
 
 	/**
+	 * Gets the project provider for the specified project extension
+	 * @param extension The file extension of the project
+	 */
+	getProviderByProjectExtension(extension: string): IProjectProvider | undefined;
+
+	/**
 	 * Gets the project provider for the specified project type
-	 * @param projectType The project type, file extension of the project
+	 * @param projectType The id of the project type
 	 */
 	getProviderByProjectType(projectType: string): IProjectProvider | undefined;
 }
@@ -45,7 +51,7 @@ export interface IWorkspaceService {
 	/**
 	 * Gets the project files in current workspace
 	 */
-	getProjectsInWorkspace(): Promise<vscode.Uri[]>;
+	getProjectsInWorkspace(): vscode.Uri[];
 
 	/**
 	 * Gets the project provider by project file
@@ -66,7 +72,27 @@ export interface IWorkspaceService {
 	removeProject(projectFile: vscode.Uri): Promise<void>;
 
 	/**
+	 * Creates a new project from workspace
+	 * @param name The name of the project
+	 * @param location The location of the project
+	 * @param projectTypeId The project type id
+	 */
+	createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
+
+	readonly isProjectProviderAvailable: boolean;
+
+	/**
 	 * Event fires when projects in workspace changes
 	 */
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void>;
+
+	/**
+	 * Verify that a workspace is open or if one isn't, ask user to pick whether a workspace should be automatically created
+	 */
+	validateWorkspace(): Promise<boolean>;
+
+	/**
+	 * Shows confirmation message that the extension host will be restarted and current workspace/file will be closed. If confirmed, the specified workspace will be entered.
+	 */
+	enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 }

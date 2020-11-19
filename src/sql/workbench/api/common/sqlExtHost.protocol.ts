@@ -658,7 +658,8 @@ export const SqlMainContext = {
 	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
 	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook'),
 	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
-	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement')
+	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement'),
+	MainThreadWorkspace: createMainId<MainThreadWorkspaceShape>('MainThreadWorkspace')
 };
 
 export const SqlExtHostContext = {
@@ -679,7 +680,8 @@ export const SqlExtHostContext = {
 	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
 	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook'),
 	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
-	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement')
+	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement'),
+	ExtHostWorkspace: createExtId<ExtHostWorkspaceShape>('ExtHostWorkspace')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -754,6 +756,16 @@ export interface ExtHostBackgroundTaskManagementShape {
 	$onTaskCanceled(operationId: string): void;
 	$registerTask(operationInfo: azdata.BackgroundOperationInfo): void;
 	$removeTask(operationId: string): void;
+}
+
+export interface ExtHostWorkspaceShape {
+	$createWorkspace(folder: vscode.Uri, workspaceFile: vscode.Uri): Promise<void>;
+	$enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+}
+
+export interface MainThreadWorkspaceShape {
+	$createWorkspace(folder: vscode.Uri, workspaceFile: vscode.Uri): Promise<void>;
+	$enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 }
 
 export interface MainThreadBackgroundTaskManagementShape extends IDisposable {

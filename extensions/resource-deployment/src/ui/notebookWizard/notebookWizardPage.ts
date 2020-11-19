@@ -100,6 +100,12 @@ export class NotebookWizardPage extends ResourceTypePage {
 			await setModelValues(this._model.inputComponents, this.wizard.model);
 		}
 
+		/**
+		 * Enabling or disabling the generate script button based on page validity.
+		 * Since it is a shared button, we have to run this logic every time the user enters the page to reflect the current page status.
+		 */
+		this.wizard.wizardObject.generateScriptButton.enabled = this.pageObject.valid;
+
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
 

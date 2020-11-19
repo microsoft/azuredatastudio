@@ -25,6 +25,12 @@ import { createValidation, validateInputBoxComponent, Validation } from './valid
 
 const localize = nls.loadMessageBundle();
 
+/*
+* A quick note on the naming convention for some functions in this module.
+* 'Field' suffix is used for functions that create a label+input component pair and the one without this suffix just creates one of these items.
+*
+*/
+
 export type Validator = () => { valid: boolean, message: string };
 export type InputValueType = string | number | undefined;
 export type InputValueTransformer = (inputValue: string) => InputValueType | Promise<InputValueType>;
@@ -155,9 +161,6 @@ interface InputBoxInfo {
 }
 
 /**
- * A quick note on the naming convention for some functions in this module.
- * 'Field' suffix is used for functions that create a label+input component pair and the one without this suffix just creates one of these items.
- *
  * Creates an inputBox using the properties defined in context.fieldInfo object
  *
  * @param context - the fieldContext object for this field
@@ -347,18 +350,17 @@ function hookUpDynamicEnablement(context: WizardPageContext): void {
 					console.error(`Could not find target component ${field.enabled.target} when hooking up dynamic enablement for ${field.label}`);
 					return;
 				}
-				targetComponent.onValueChanged(() => {
+				const updateFields = () => {
 					fieldComponent.component.enabled = targetComponent.getValue() === targetValue;
 					// We also need to update the required flag so that when the component is disabled it won't block the page from proceeding
 					if ('required' in fieldComponent.component) {
 						fieldComponent.component.required = fieldComponent.component.enabled === false ? false : field.required;
 					}
+				};
+				targetComponent.onValueChanged(() => {
+					updateFields();
 				});
-				// Initialize the state based on the current value of the component
-				fieldComponent.component.enabled = targetComponent.getValue() === targetValue;
-				if ('required' in fieldComponent.component) {
-					fieldComponent.component.required = fieldComponent.component.enabled === false ? false : field.required;
-				}
+				updateFields();
 			}
 		});
 	});
