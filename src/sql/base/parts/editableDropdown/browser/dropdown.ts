@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/dropdownList';
 
-import { ToggleDropdownAction } from './actions';
 import { DropdownDataSource, DropdownFilter, DropdownModel, DropdownRenderer, DropdownController } from './dropdownTree';
 
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
@@ -82,7 +81,6 @@ export class Dropdown extends Disposable {
 	private _input: InputBox;
 	private _tree: ITree;
 	private _options: IDropdownOptions;
-	private _toggleAction: ToggleDropdownAction;
 	private _dataSource = new DropdownDataSource();
 	private _filter = new DropdownFilter();
 	private _renderer = new DropdownRenderer();
@@ -114,15 +112,9 @@ export class Dropdown extends Disposable {
 		this._el = DOM.append(container, DOM.$('.monaco-dropdown'));
 		this._el.style.width = '100%';
 
-		this._inputContainer = DOM.append(this._el, DOM.$('.dropdown-input'));
+		this._inputContainer = DOM.append(this._el, DOM.$('.dropdown-input.select-container'));
 		this._inputContainer.style.width = '100%';
 		this._treeContainer = DOM.$('.dropdown-tree');
-
-		this._toggleAction = new ToggleDropdownAction(() => {
-			this._showList();
-			this._tree.domFocus();
-			this._tree.focusFirst();
-		}, this._options.actionLabel);
 
 		this._input = new InputBox(this._inputContainer, contextViewService, {
 			validationOptions: {
@@ -131,13 +123,14 @@ export class Dropdown extends Disposable {
 				validation: v => this._inputValidator(v)
 			},
 			placeholder: this._options.placeholder,
-			actions: [this._toggleAction],
 			ariaLabel: this._options.ariaLabel
 		});
 
 		// Clear title from input box element (defaults to placeholder value) since we don't want a tooltip for the selected value
 		// in the text box - we already have tooltips for each item in the dropdown itself.
 		this._input.inputElement.title = '';
+
+		this._inputContainer.setAttribute('role', 'combobox');
 
 		this._register(DOM.addDisposableListener(this._input.inputElement, DOM.EventType.CLICK, () => {
 			this._showList();
@@ -162,14 +155,14 @@ export class Dropdown extends Disposable {
 					if (this._treeContainer.parentElement) {
 						this._input.validate();
 						this._onBlur.fire();
-						this.contextViewService.hideContextView();
+						this._hideList();
 						e.stopPropagation();
 					}
 					break;
 				case KeyCode.Tab:
 					this._input.validate();
 					this._onBlur.fire();
-					this.contextViewService.hideContextView();
+					this._hideList();
 					e.stopPropagation();
 					break;
 				case KeyCode.DownArrow:
@@ -205,12 +198,15 @@ export class Dropdown extends Disposable {
 			this.value = e.value;
 			this._onValueChange.fire(e.value);
 			this._input.focus();
-			this.contextViewService.hideContextView();
+			this._hideList();
 		});
 
 		this._controller.onDropdownEscape(() => {
-			this._input.focus();
-			this.contextViewService.hideContextView();
+			this._hideList();
+			// have to put this in the setTimeout to make sure the focus can be set properly when the context menu is opened by pressing the DownArrow key
+			setTimeout(() => {
+				this._input.focus();
+			}, 0);
 		});
 
 		this._input.onDidChange(e => {
@@ -225,7 +221,7 @@ export class Dropdown extends Disposable {
 		});
 
 		this.onBlur(() => {
-			this.contextViewService.hideContextView();
+			this._hideList();
 			this._input.validate();
 		});
 
@@ -235,6 +231,7 @@ export class Dropdown extends Disposable {
 
 	private _showList(): void {
 		if (this._input.isEnabled()) {
+			this._inputContainer.setAttribute('aria-expanded', 'true');
 			this._onFocus.fire();
 			this._filter.filterString = '';
 			this.contextViewService.showContextView({
@@ -250,8 +247,13 @@ export class Dropdown extends Disposable {
 						}
 					};
 				}
-			});
+			}, this._inputContainer);
 		}
+	}
+
+	private _hideList(): void {
+		this.contextViewService.hideContextView();
+		this._inputContainer.setAttribute('aria-expanded', 'false');
 	}
 
 	private _layoutTree(): void {
@@ -320,7 +322,7 @@ export class Dropdown extends Disposable {
 
 	public blur() {
 		this._input.blur();
-		this.contextViewService.hideContextView();
+		this._hideList();
 	}
 
 	style(style: IListStyles & IInputBoxStyles & IDropdownStyles) {
@@ -350,7 +352,6 @@ export class Dropdown extends Disposable {
 
 	public set enabled(val: boolean) {
 		this._input.setEnabled(val);
-		this._toggleAction.enabled = val;
 	}
 
 	public get enabled(): boolean {
