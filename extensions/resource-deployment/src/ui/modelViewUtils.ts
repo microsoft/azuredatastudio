@@ -25,6 +25,12 @@ import { createValidation, validateInputBoxComponent, Validation } from './valid
 
 const localize = nls.loadMessageBundle();
 
+/*
+* A quick note on the naming convention for some functions in this module.
+* 'Field' suffix is used for functions that create a label+input component pair and the one without this suffix just creates one of these items.
+*
+*/
+
 export type Validator = () => { valid: boolean, message: string };
 export type InputValueType = string | number | undefined;
 export type InputValueTransformer = (inputValue: string) => InputValueType | Promise<InputValueType>;
@@ -153,9 +159,6 @@ interface InputBoxInfo {
 }
 
 /**
- * A quick note on the naming convention for some functions in this module.
- * 'Field' suffix is used for functions that create a label+input component pair and the one without this suffix just creates one of these items.
- *
  * Creates an inputBox using the properties defined in context.fieldInfo object
  *
  * @param context - the fieldContext object for this field
