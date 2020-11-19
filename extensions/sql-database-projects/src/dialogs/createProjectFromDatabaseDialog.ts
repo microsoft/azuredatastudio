@@ -51,6 +51,8 @@ export class CreateProjectFromDatabaseDialog {
 		if (this.profile) {
 			await this.updateConnectionComponents(getConnectionName(this.profile), this.profile.id, this.profile.databaseName!);
 		}
+
+		this.tryEnableCreateButton();
 	}
 
 	private dispose(): void {

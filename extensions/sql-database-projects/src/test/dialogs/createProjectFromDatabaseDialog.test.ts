@@ -32,12 +32,12 @@ describe('Create Project From Database Dialog', () => {
 
 		// fill in project name and ok button should not be enabled
 		dialog.projectNameTextBox!.value = 'testProject';
-		dialog.createButtonClick();
+		dialog.tryEnableCreateButton();
 		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because project location is not filled');
 
 		// fill in project location and ok button should be enabled
 		dialog.projectLocationTextBox!.value = 'testLocation';
-		dialog.createButtonClick();
+		dialog.tryEnableCreateButton();
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled since all the required fields are filled');
 	});
 
@@ -49,27 +49,27 @@ describe('Create Project From Database Dialog', () => {
 
 		// fill in project name and ok button should not be enabled
 		dialog.projectNameTextBox!.value = 'testProject';
-		dialog.createButtonClick();
+		dialog.tryEnableCreateButton();
 		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because source database details and project location are not filled');
 
 		// fill in project location and ok button not should be enabled
 		dialog.projectLocationTextBox!.value = 'testLocation';
-		dialog.createButtonClick();
+		dialog.tryEnableCreateButton();
 		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because source database details are not filled');
 
 		// fill in server name and ok button not should be enabled
 		dialog.sourceConnectionTextBox!.value = 'testServer';
-		dialog.createButtonClick();
+		dialog.tryEnableCreateButton();
 		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because source database is not filled');
 
 		// fill in database name and ok button should be enabled
 		dialog.sourceDatabaseDropDown!.value = 'testDatabase';
-		dialog.createButtonClick();
+		dialog.tryEnableCreateButton();
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled since all the required fields are filled');
 
 		// update folder structure information and ok button should still be enabled
 		dialog.folderStructureDropDown!.value = 'Object Type';
-		dialog.createButtonClick();
+		dialog.tryEnableCreateButton();
 		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled since all the required fields are filled');
 	});
 
