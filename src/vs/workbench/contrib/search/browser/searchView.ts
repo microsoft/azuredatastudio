@@ -1164,6 +1164,11 @@ export class SearchView extends ViewPane {
 		this.triggerQueryChange();
 	}
 
+	togglePreserveCase(): void {
+		this.searchWidget.replaceInput.setPreserveCase(!this.searchWidget.replaceInput.getPreserveCase());
+		this.triggerQueryChange();
+	}
+
 	setSearchParameters(args: IFindInFilesArgs = {}): void {
 		if (typeof args.isCaseSensitive === 'boolean') {
 			this.searchWidget.searchInput.setCaseSensitive(args.isCaseSensitive);
