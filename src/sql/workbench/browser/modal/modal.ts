@@ -71,6 +71,8 @@ export interface IModalOptions {
 	hasErrors?: boolean;
 	hasSpinner?: boolean;
 	spinnerTitle?: string;
+	suppressHeader?: boolean;
+	suppressFooter?: boolean;
 }
 
 const defaultOptions: IModalOptions = {
@@ -83,7 +85,9 @@ const defaultOptions: IModalOptions = {
 	hasBackButton: false,
 	hasTitleIcon: false,
 	hasErrors: false,
-	hasSpinner: false
+	hasSpinner: false,
+	suppressHeader: false,
+	suppressFooter: false
 };
 
 const tabbableElementsQuerySelector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]';

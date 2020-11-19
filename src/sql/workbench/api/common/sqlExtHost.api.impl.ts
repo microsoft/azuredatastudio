@@ -139,7 +139,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				},
 				connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<azdata.ConnectionResult> {
 					return extHostConnectionManagement.$connect(connectionProfile, saveConnection, showDashboard);
-				},
+				}
 			};
 
 			// Backcompat "sqlops" APIs
@@ -414,7 +414,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 					return extHostModalDialogs.createDialog(name);
 				},
 				// the 'width' parameter used to be boolean type named 'isWide', the optional boolean type for 'width' parameter is added for backward compatibility support of 'isWide' parameter.
-				createModelViewDialog(title: string, dialogName?: string, width?: boolean | azdata.window.DialogWidth, dialogStyle?: sqlExtHostTypes.DialogStyle, dialogPosition?: sqlExtHostTypes.DialogPosition): azdata.window.Dialog {
+				createModelViewDialog(title: string, dialogName?: string, width?: boolean | sqlExtHostTypes.DialogWidth, dialogStyle?: sqlExtHostTypes.DialogStyle, dialogPosition?: sqlExtHostTypes.DialogPosition): azdata.window.Dialog {
 					let dialogWidth: azdata.window.DialogWidth;
 					if (typeof width === 'boolean') {
 						dialogWidth = width === true ? 'wide' : 'narrow';

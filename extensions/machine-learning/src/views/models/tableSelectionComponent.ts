@@ -281,7 +281,6 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 		}
 
 		await this.onTableSelected();
-
 	}
 
 	private refreshTableComponent(): void {
