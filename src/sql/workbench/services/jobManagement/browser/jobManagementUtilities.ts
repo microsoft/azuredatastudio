@@ -57,11 +57,7 @@ export class JobManagementUtilities {
 	}
 
 	public static setRunnable(icon: HTMLElement, index: number) {
-		let temp = icon.className as unknown;
-		let classNameArr = temp as [];
-		if (classNameArr.find(x => x === 'non-runnable')) {
-			icon.className = icon.className.slice(0, index);
-		}
+		icon.classList.remove('non-runnable');
 	}
 
 	public static getActionIconClassName(startIcon: HTMLElement, stopIcon: HTMLElement, executionStatus: number) {
