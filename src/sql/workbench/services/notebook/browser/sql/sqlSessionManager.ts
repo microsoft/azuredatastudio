@@ -527,10 +527,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this._dataToSaveMap.set(key, data);
 			this._rowsMap.set(key, []);
 			this.sendIOPubMessage(data, set);
-			// When there is no streaming, the results are returned in one set and
-			// onResultSetUpdate is not called. Therefore we must call handleResultSetUpdate
-			// here to display all the rows.
-			// Note: when there is streaming, set.rowCount === 0
+			// If rows are returned in the initial result set, make sure to convert and send to notebook
 			if (set.rowCount > 0) {
 				this.handleResultSetUpdate(set);
 			}
