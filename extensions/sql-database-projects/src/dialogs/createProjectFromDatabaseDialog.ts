@@ -30,7 +30,7 @@ export class CreateProjectFromDatabaseDialog {
 	private initDialogComplete!: Deferred<void>;
 	private initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
 
-	public createNewProjectCallback: ((model: ImportDataModel) => any) | undefined;
+	public createProjectFromDatabaseCallback: ((model: ImportDataModel) => any) | undefined;
 
 	constructor(private profile: azdata.IConnectionProfile | undefined) {
 		this.dialog = azdata.window.createModelViewDialog(constants.createProjectFromDatabaseDialogName);
@@ -352,7 +352,7 @@ export class CreateProjectFromDatabaseDialog {
 		};
 
 		azdata.window.closeDialog(this.dialog);
-		await this.createNewProjectCallback!(model);
+		await this.createProjectFromDatabaseCallback!(model);
 
 		this.dispose();
 	}

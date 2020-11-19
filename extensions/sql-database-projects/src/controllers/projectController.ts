@@ -615,7 +615,7 @@ export class ProjectsController {
 		const profile = this.getConnectionProfileFromContext(context);
 		let createProjectFromDatabaseDialog = this.getCreateProjectFromDatabaseDialog(profile);
 
-		createProjectFromDatabaseDialog.createNewProjectCallback = async (model) => await this.createNewProjectCallback(model);
+		createProjectFromDatabaseDialog.createProjectFromDatabaseCallback = async (model) => await this.createProjectFromDatabaseCallback(model);
 
 		await createProjectFromDatabaseDialog.openDialog();
 
@@ -626,7 +626,7 @@ export class ProjectsController {
 		return new CreateProjectFromDatabaseDialog(profile);
 	}
 
-	public async createNewProjectCallback(model: ImportDataModel) {
+	public async createProjectFromDatabaseCallback(model: ImportDataModel) {
 		try {
 			const workspaceApi = utils.getDataWorkspaceExtensionApi();
 
