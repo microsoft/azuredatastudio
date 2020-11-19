@@ -750,6 +750,7 @@ export function getContextMenuActions(menuService: IMenuService, contextKeyServi
 		return instantiationService.createInstance(MenuItemExtensionAction, action);
 	})));
 	menu.dispose();
+	scopedContextKeyService.dispose();
 
 	return groups;
 }
@@ -2929,12 +2930,16 @@ export class DisableAllAction extends Action {
 		this._register(this.extensionsWorkbenchService.onChange(() => this.update()));
 	}
 
+	private getExtensionsToDisable(): IExtension[] {
+		return this.extensionsWorkbenchService.local.filter(e => e.type === ExtensionType.User && !!e.local && this.extensionEnablementService.isEnabled(e.local) && this.extensionEnablementService.canChangeEnablement(e.local));
+	}
+
 	private update(): void {
-		this.enabled = this.extensionsWorkbenchService.local.some(e => e.type === ExtensionType.User && !!e.local && this.extensionEnablementService.isEnabled(e.local) && this.extensionEnablementService.canChangeEnablement(e.local));
+		this.enabled = this.getExtensionsToDisable().length > 0;
 	}
 
 	run(): Promise<any> {
-		return this.extensionsWorkbenchService.setEnablement(this.extensionsWorkbenchService.local.filter(e => e.type === ExtensionType.User), EnablementState.DisabledGlobally);
+		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToDisable(), EnablementState.DisabledGlobally);
 	}
 }
 
@@ -2955,12 +2960,16 @@ export class DisableAllWorkspaceAction extends Action {
 		this._register(this.extensionsWorkbenchService.onChange(() => this.update(), this));
 	}
 
+	private getExtensionsToDisable(): IExtension[] {
+		return this.extensionsWorkbenchService.local.filter(e => e.type === ExtensionType.User && !!e.local && this.extensionEnablementService.isEnabled(e.local) && this.extensionEnablementService.canChangeEnablement(e.local));
+	}
+
 	private update(): void {
-		this.enabled = this.workspaceContextService.getWorkbenchState() !== WorkbenchState.EMPTY && this.extensionsWorkbenchService.local.some(e => e.type === ExtensionType.User && !!e.local && this.extensionEnablementService.isEnabled(e.local) && this.extensionEnablementService.canChangeEnablement(e.local));
+		this.enabled = this.workspaceContextService.getWorkbenchState() !== WorkbenchState.EMPTY && this.getExtensionsToDisable().length > 0;
 	}
 
 	run(): Promise<any> {
-		return this.extensionsWorkbenchService.setEnablement(this.extensionsWorkbenchService.local.filter(e => e.type === ExtensionType.User), EnablementState.DisabledWorkspace);
+		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToDisable(), EnablementState.DisabledWorkspace);
 	}
 }
 
@@ -2979,12 +2988,16 @@ export class EnableAllAction extends Action {
 		this._register(this.extensionsWorkbenchService.onChange(() => this.update()));
 	}
 
+	private getExtensionsToEnable(): IExtension[] {
+		return this.extensionsWorkbenchService.local.filter(e => !!e.local && this.extensionEnablementService.canChangeEnablement(e.local) && !this.extensionEnablementService.isEnabled(e.local));
+	}
+
 	private update(): void {
-		this.enabled = this.extensionsWorkbenchService.local.some(e => !!e.local && this.extensionEnablementService.canChangeEnablement(e.local) && !this.extensionEnablementService.isEnabled(e.local));
+		this.enabled = this.getExtensionsToEnable().length > 0;
 	}
 
 	run(): Promise<any> {
-		return this.extensionsWorkbenchService.setEnablement(this.extensionsWorkbenchService.local, EnablementState.EnabledGlobally);
+		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToEnable(), EnablementState.EnabledGlobally);
 	}
 }
 
@@ -3005,12 +3018,16 @@ export class EnableAllWorkspaceAction extends Action {
 		this._register(this.workspaceContextService.onDidChangeWorkbenchState(() => this.update(), this));
 	}
 
+	private getExtensionsToEnable(): IExtension[] {
+		return this.extensionsWorkbenchService.local.filter(e => !!e.local && this.extensionEnablementService.canChangeEnablement(e.local) && !this.extensionEnablementService.isEnabled(e.local));
+	}
+
 	private update(): void {
-		this.enabled = this.workspaceContextService.getWorkbenchState() !== WorkbenchState.EMPTY && this.extensionsWorkbenchService.local.some(e => !!e.local && this.extensionEnablementService.canChangeEnablement(e.local) && !this.extensionEnablementService.isEnabled(e.local));
+		this.enabled = this.workspaceContextService.getWorkbenchState() !== WorkbenchState.EMPTY && this.getExtensionsToEnable().length > 0;
 	}
 
 	run(): Promise<any> {
-		return this.extensionsWorkbenchService.setEnablement(this.extensionsWorkbenchService.local, EnablementState.EnabledWorkspace);
+		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToEnable(), EnablementState.EnabledWorkspace);
 	}
 }
 

@@ -29,7 +29,6 @@ const SELECT_OPTION_ENTRY_TEMPLATE_ID = 'selectOption.entry.template';
 interface ISelectListTemplateData {
 	root: HTMLElement;
 	text: HTMLElement;
-	itemDescription: HTMLElement;
 	decoratorRight: HTMLElement;
 	disposables: IDisposable[];
 }
@@ -44,8 +43,6 @@ class SelectListRenderer implements IListRenderer<ISelectOptionItem, ISelectList
 		data.root = container;
 		data.text = dom.append(container, $('.option-text'));
 		data.decoratorRight = dom.append(container, $('.option-decorator-right'));
-		data.itemDescription = dom.append(container, $('.option-text-description'));
-		data.itemDescription.classList.add('visually-hidden');
 
 		return data;
 	}
@@ -60,13 +57,6 @@ class SelectListRenderer implements IListRenderer<ISelectOptionItem, ISelectList
 		data.decoratorRight.innerText = (!!decoratorRight ? decoratorRight : '');
 		// {{SQL CARBON EDIT}}
 		data.text.setAttribute('aria-label', text);
-
-		if (typeof element.description === 'string') {
-			const itemDescriptionId = (text.replace(/ /g, '_').toLowerCase() + '_description_' + data.root.id);
-			data.text.setAttribute('aria-describedby', itemDescriptionId);
-			data.itemDescription.id = itemDescriptionId;
-			data.itemDescription.innerText = element.description;
-		}
 
 		// pseudo-select disabled option
 		if (isDisabled) {
@@ -716,7 +706,18 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 			keyboardSupport: false,
 			mouseSupport: false,
 			accessibilityProvider: {
-				getAriaLabel: (element) => element.text,
+				getAriaLabel: element => {
+					let label = element.text;
+					if (element.decoratorRight) {
+						label += `. ${element.decoratorRight}`;
+					}
+
+					if (element.description) {
+						label += `. ${element.description}`;
+					}
+
+					return label;
+				},
 				getWidgetAriaLabel: () => localize({ key: 'selectBox', comment: ['Behave like native select dropdown element.'] }, "Select Box"),
 				getRole: () => 'option',
 				getWidgetRole: () => 'listbox'

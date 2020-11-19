@@ -24,6 +24,8 @@ if (isWeb || typeof require === 'undefined' || typeof require.__$__nodeRequire !
 			vscodeVersion: '1.50.0-dev',
 			nameLong: 'Azure Data Studio Web Dev',
 			nameShort: 'Azure Data Studio Web Dev',
+			applicationName: 'code-oss',
+			dataFolderName: '.vscode-oss',
 			urlProtocol: 'azuredatastudio-oss',
 			extensionAllowedProposedApi: [
 				'ms-vscode.vscode-js-profile-flame',
