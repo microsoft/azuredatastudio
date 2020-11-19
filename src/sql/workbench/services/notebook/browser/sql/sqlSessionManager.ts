@@ -530,6 +530,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			// When there is no streaming, the results are returned in one set and
 			// onResultSetUpdate is not called. Therefore we must call handleResultSetUpdate
 			// here to display all the rows.
+			// Note: when there is streaming, set.rowCount === 0
 			if (set.rowCount > 0) {
 				this.handleResultSetUpdate(set);
 			}
