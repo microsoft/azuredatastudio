@@ -855,6 +855,7 @@ export function stripUTF8BOM(str: string): string {
 	return startsWithUTF8BOM(str) ? str.substr(1) : str;
 }
 
+// {{SQL CARBON EDIT}}
 /**
  * @deprecated ES6
  */
