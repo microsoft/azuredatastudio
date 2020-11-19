@@ -19,7 +19,6 @@ const radioOptionsInfo = <RadioOptionsInfo>{
 };
 
 let radioOptionsGroup: RadioOptionsGroup;
-const loadingSpy = sinon.spy(loadingComponent, 'loading', ['set']);
 
 describe('radioOptionsGroup', function (): void {
 	beforeEach(async () => {
@@ -37,12 +36,6 @@ describe('radioOptionsGroup', function (): void {
 		radioOptionsGroup.value!.should.equal('value2');
 		// verify all the radioButtons created in the group
 		verifyRadioGroup('value2');
-	});
-
-	it('verify loading property set during load', () => {
-		loadingSpy.set.calledTwice.should.be.true();
-		loadingSpy.set.getCall(0).args[0].should.be.true();
-		loadingSpy.set.getCall(1).args[0].should.be.false();
 	});
 
 	it('onClick', async () => {
