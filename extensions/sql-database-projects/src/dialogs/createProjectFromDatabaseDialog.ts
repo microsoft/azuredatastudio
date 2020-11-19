@@ -133,7 +133,7 @@ export class CreateProjectFromDatabaseDialog {
 		serverLabel.updateCssStyles({ 'font-weight': 'bold' });
 
 		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, sourceConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px', 'margin-top': '-20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-		connectionRow.insertItem(selectConnectionButton, 2, { CSSStyles: { 'margin-right': '0px' } });
+		connectionRow.insertItem(selectConnectionButton, 2, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '-10px', 'margin-top': '-20px' } });
 
 		return connectionRow;
 	}
@@ -274,7 +274,7 @@ export class CreateProjectFromDatabaseDialog {
 		projectLocationLabel.updateCssStyles({ 'font-weight': 'bold' });
 
 		const projectLocationRow = view.modelBuilder.flexContainer().withItems([projectLocationLabel, this.projectLocationTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-		projectLocationRow.insertItem(browseFolderButton, 2, { CSSStyles: { 'margin-right': '0px' } });
+		projectLocationRow.insertItem(browseFolderButton, 2, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '-10px' } });
 
 		return projectLocationRow;
 	}

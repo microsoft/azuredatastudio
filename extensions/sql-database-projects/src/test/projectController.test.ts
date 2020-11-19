@@ -449,7 +449,7 @@ describe('ProjectsController', function (): void {
 			});
 
 			let dialog = await projController.object.createProjectFromDatabase(undefined);
-			//await dialog.createButtonClick();
+			await dialog.createButtonClick();
 
 			should(holler).equal(createProjectFromDbHoller, 'executionCallback() is supposed to have been setup and called for create project from database scenario');
 		});
