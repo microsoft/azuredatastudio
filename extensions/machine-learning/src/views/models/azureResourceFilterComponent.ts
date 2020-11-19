@@ -136,6 +136,10 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 		await this.onAccountSelected();
 	}
 
+	public get accountIsValid(): boolean {
+		return this._azureAccounts !== undefined && this._azureAccounts.length > 0 && this._azureSubscriptions !== undefined && this._azureSubscriptions.length > 0;
+	}
+
 	/**
 	 * refreshes the view
 	 */

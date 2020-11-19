@@ -80,24 +80,24 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 				if (this.localModelsComponent && this.azureModelsComponent && this.registeredModelsComponent) {
 					this.azureModelsComponent.removeComponents(this._formBuilder);
 					this.registeredModelsComponent.removeComponents(this._formBuilder);
-					this.localModelsComponent.addComponents(this._formBuilder);
 					await this.localModelsComponent.refresh();
+					this.localModelsComponent.addComponents(this._formBuilder);
 				}
 
 			} else if (this.modelSourceType === ModelSourceType.Azure) {
 				if (this.localModelsComponent && this.azureModelsComponent && this.registeredModelsComponent) {
 					this.localModelsComponent.removeComponents(this._formBuilder);
+					await this.azureModelsComponent.refresh();
 					this.azureModelsComponent.addComponents(this._formBuilder);
 					this.registeredModelsComponent.removeComponents(this._formBuilder);
-					await this.azureModelsComponent.refresh();
 				}
 
 			} else if (this.modelSourceType === ModelSourceType.RegisteredModels) {
 				if (this.localModelsComponent && this.azureModelsComponent && this.registeredModelsComponent) {
 					this.localModelsComponent.removeComponents(this._formBuilder);
 					this.azureModelsComponent.removeComponents(this._formBuilder);
-					this.registeredModelsComponent.addComponents(this._formBuilder);
 					await this.registeredModelsComponent.refresh();
+					this.registeredModelsComponent.addComponents(this._formBuilder);
 				}
 			}
 		}
