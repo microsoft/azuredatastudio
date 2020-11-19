@@ -3,10 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as path from 'path';
-import * as os from 'os';
-import * as yamljs from 'yamljs';
 import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
+import * as yamljs from 'yamljs';
+import * as loc from '../localizedConstants';
+import { throwUnless } from './utils';
 
 export interface KubeClusterContext {
 	name: string;
@@ -40,6 +42,33 @@ export async function getKubeConfigClusterContexts(configFile: string): Promise<
 		});
 	}
 	return contexts;
+}
+
+/**
+ * searches for {@see previousClusterContext} in the array of {@see clusterContexts}.
+ * if {@see previousClusterContext} was truthy and it was found in {@see clusterContexts}
+ * 		then it returns {@see previousClusterContext}
+ * 		else it returns the current current cluster context from {@see clusterContexts} unless throwIfNotFound was set on input in which case an error is thrown instead.
+ * else it returns the current current cluster context from {@see clusterContexts}
+ *
+ *
+ * @param clusterContexts
+ * @param previousClusterContext
+ * @param throwIfNotFound
+ */
+export function getCurrentClusterContext(clusterContexts: KubeClusterContext[], previousClusterContext?: string, throwIfNotFound: boolean = false): string {
+	if (previousClusterContext) {
+		if (clusterContexts.filter(c => c.name === previousClusterContext).length > 0) { // if previous cluster context value is found in clusters then return that
+			return previousClusterContext;
+		} else {
+			if (throwIfNotFound) {
+				throw new Error(loc.clusterContextNotFound(previousClusterContext));
+			}
+		}
+	}
+	const currentClusterContext = clusterContexts.filter(c => c.isCurrentContext).pop()?.name;
+	throwUnless(currentClusterContext !== undefined, loc.noCurrentClusterContext);
+	return currentClusterContext;
 }
 
 export function getDefaultKubeConfigPath(): string {

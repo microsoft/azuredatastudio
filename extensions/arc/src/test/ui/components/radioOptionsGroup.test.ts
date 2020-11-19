@@ -8,7 +8,7 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import { getErrorMessage } from '../../../common/utils';
 import { RadioOptionsGroup, RadioOptionsInfo } from '../../../ui/components/radioOptionsGroup';
-import { loadingComponent, loadingError, modelView, radioButtons } from '../../mocks/fakeContainersAndBuilders';
+import { loadingComponent, loadingError, modelBuilder, radioButtons } from '../../mocks/fakeContainersAndBuilders';
 
 const radioOptionsInfo = <RadioOptionsInfo>{
 	values: [
@@ -23,7 +23,8 @@ const loadingSpy = sinon.spy(loadingComponent, 'loading', ['set']);
 
 describe('radioOptionsGroup', function (): void {
 	beforeEach(async () => {
-		radioOptionsGroup = new RadioOptionsGroup(modelView, (_disposable) => { });
+		radioOptionsGroup = new RadioOptionsGroup(modelBuilder, (_disposable) => { });
+		loadingSpy.set.restore(); // reset any state associate with the 'set' calls of the 'loading' property.
 		await radioOptionsGroup.load(async () => radioOptionsInfo);
 	});
 

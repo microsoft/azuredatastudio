@@ -85,6 +85,8 @@ export const passwordToController = localize('arc.passwordToController', "Provid
 export const controllerUrl = localize('arc.controllerUrl', "Controller URL");
 export const serverEndpoint = localize('arc.serverEndpoint', "Server Endpoint");
 export const controllerName = localize('arc.controllerName', "Name");
+export const controllerKubeConfig = localize('arc.controllerKubeConfig', "Kube Config File Path");
+export const controllerClusterContext = localize('arc.controllerClusterContext', "Cluster Context");
 export const defaultControllerName = localize('arc.defaultControllerName', "arc-dc");
 export const username = localize('arc.username', "Username");
 export const password = localize('arc.password', "Password");
@@ -202,3 +204,5 @@ export const variableValueFetchForUnsupportedVariable = (variableName: string) =
 export const isPasswordFetchForUnsupportedVariable = (variableName: string) => localize('getIsPassword.unknownVariableName', "Attempt to get isPassword for unknown variable:{0}", variableName);
 export const noControllerInfoFound = (name: string) => localize('noControllerInfoFound', "Controller Info could not be found with name: {0}", name);
 export const noPasswordFound = (controllerName: string) => localize('noPasswordFound', "Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.", controllerName);
+export const clusterContextNotFound = (clusterContext: string) => localize('clusterContextNotFound', "Cluster Context with name: {0} not found in the Kube config file", clusterContext);
+export const noCurrentClusterContext = localize('noCurrentClusterContext', "No current cluster context was found in the kube config file");

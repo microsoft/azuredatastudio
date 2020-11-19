@@ -5,19 +5,20 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { getErrorMessage } from '../../common/utils';
+import { IReadOnly } from '../dialogs/connectControllerDialog';
 
 export interface RadioOptionsInfo {
 	values?: string[],
 	defaultValue: string
 }
 
-export class RadioOptionsGroup {
+export class RadioOptionsGroup implements IReadOnly {
 	private _divContainer!: azdata.DivContainer;
 	private _loadingBuilder: azdata.LoadingComponentBuilder;
 	private _currentRadioOption!: azdata.RadioButtonComponent;
-	constructor(private _view: azdata.ModelView, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void) {
-		this._divContainer = this._view!.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
-		this._loadingBuilder = this._view!.modelBuilder.loadingComponent().withItem(this._divContainer);
+	constructor(private _modelBuilder: azdata.ModelBuilder, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void) {
+		this._divContainer = this._modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
+		this._loadingBuilder = this._modelBuilder.loadingComponent().withItem(this._divContainer);
 	}
 
 	public component(): azdata.LoadingComponent {
@@ -32,7 +33,7 @@ export class RadioOptionsGroup {
 			const options = optionsInfo.values!;
 			let defaultValue: string = optionsInfo.defaultValue!;
 			options.forEach((option: string) => {
-				const radioOption = this._view!.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
+				const radioOption = this._modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
 					label: option,
 					checked: option === defaultValue,
 					name: option,
@@ -52,17 +53,33 @@ export class RadioOptionsGroup {
 			});
 		}
 		catch (e) {
-			const errorLabel = this._view!.modelBuilder.text().withProperties({ value: getErrorMessage(e), CSSStyles: { 'color': 'Red' } }).component();
+			const errorLabel = this._modelBuilder.text().withProperties({ value: getErrorMessage(e), CSSStyles: { 'color': 'Red' } }).component();
 			this._divContainer.addItem(errorLabel);
 		}
 		this.component().loading = false;
 	}
 
 	get value(): string | undefined {
-		return this._currentRadioOption?.label;
+		return this._currentRadioOption?.value;
 	}
 
 	get checked(): azdata.RadioButtonComponent {
 		return this._currentRadioOption;
+	}
+
+	get readOnly(): boolean {
+		return this.enabled;
+	}
+
+	set readOnly(value: boolean) {
+		this.enabled = value;
+	}
+
+	get enabled(): boolean {
+		return this._divContainer.items.every(r => r.enabled);
+	}
+
+	set enabled(value: boolean) {
+		this._divContainer.items.forEach(r => r.enabled = value);
 	}
 }

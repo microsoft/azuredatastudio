@@ -38,7 +38,7 @@ const loadingBuilder = (<azdata.LoadingComponentBuilder><any>{
 
 export const loadingError = new Error('Error loading options');
 
-export const modelBuilder = {
+export const modelBuilder = <azdata.ModelBuilder><any>{
 	divContainer: () => divContainer,
 	loadingComponent: () => loadingBuilder,
 	radioButton: () => <any>{
