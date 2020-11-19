@@ -32,11 +32,11 @@
 	display: flex;
 	flex-direction: column;
 	text-align: center;
-	height: auto;
 	width: auto;
 	padding: 5px 5px 5px 5px;
-	min-height: 130px;
-	min-width: 130px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .horizontal .model-card .card-label {

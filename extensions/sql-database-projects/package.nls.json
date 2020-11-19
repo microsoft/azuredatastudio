@@ -8,7 +8,7 @@
 	"sqlDatabaseProjects.close": "Close Database Project",
 	"sqlDatabaseProjects.build": "Build",
 	"sqlDatabaseProjects.publish": "Publish",
-	"sqlDatabaseProjects.importDatabase": "Create Project From Database",
+	"sqlDatabaseProjects.createProjectFromDatabase": "Create Project From Database",
 	"sqlDatabaseProjects.properties": "Properties",
 	"sqlDatabaseProjects.schemaCompare": "Schema Compare",
 	"sqlDatabaseProjects.delete": "Delete",
@@ -33,7 +33,5 @@
 
 	"sqlDatabaseProjects.Settings": "Database Projects",
 	"sqlDatabaseProjects.netCoreInstallLocation": "Full path to .Net Core SDK on the machine.",
-	"sqlDatabaseProjects.defaultProjectSaveLocation": "Full path to folder where new database projects are saved by default.",
-	"sqlDatabaseProjects.showUpdateSaveLocationPrompt": "After creating a new database project, always prompt to update the location where new projects are saved by default.",
 	"sqlDatabaseProjects.welcome": "No database projects currently open.\n[New Project](command:sqlDatabaseProjects.new)\n[Open Project](command:sqlDatabaseProjects.open)\n[Create Project From Database](command:sqlDatabaseProjects.importDatabase)"
 }
