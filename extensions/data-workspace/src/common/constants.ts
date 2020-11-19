@@ -31,7 +31,7 @@ export const TypeTitle = localize('dataworkspace.Type', "Type");
 export const ProjectNameTitle = localize('dataworkspace.projectNameTitle', "Name");
 export const ProjectNamePlaceholder = localize('dataworkspace.projectNamePlaceholder', "Enter project name");
 export const ProjectLocationTitle = localize('dataworkspace.projectLocationTitle', "Location");
-export const ProjectLocationPlaceholder = localize('dataworkspace.projectLocationPlaceholder', "Enter project location");
+export const ProjectLocationPlaceholder = localize('dataworkspace.projectLocationPlaceholder', "Select location to create project");
 export const AddProjectToCurrentWorkspace = localize('dataworkspace.AddProjectToCurrentWorkspace', "This project will be added to the current workspace.");
 export const NewWorkspaceWillBeCreated = localize('dataworkspace.NewWorkspaceWillBeCreated', "A new workspace will be created for this project.");
 export const WorkspaceLocationTitle = localize('dataworkspace.workspaceLocationTitle', "Workspace location");
@@ -45,8 +45,8 @@ export const WorkspaceFileNotExistError = (workspaceFilePath: string): string =>
 export const Project = localize('dataworkspace.project', "Project");
 export const Workspace = localize('dataworkspace.workspace', "Workspace");
 export const LocationSelectorTitle = localize('dataworkspace.locationSelectorTitle', "Location");
-export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Enter project location");
-export const WorkspacePlaceholder = localize('dataworkspace.workspacePlaceholder', "Enter workspace location");
+export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Select project (.sqlproj) file");
+export const WorkspacePlaceholder = localize('dataworkspace.workspacePlaceholder', "Select workspace (.code-workspace) file");
 export const WorkspaceFileExtension = 'code-workspace';
 
 // Workspace settings for saving new projects
