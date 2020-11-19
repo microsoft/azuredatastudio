@@ -425,7 +425,7 @@ describe('ProjectsController', function (): void {
 		});
 	});
 
-	describe('Import operations and dialog', function (): void {
+	describe('Create project from database operations and dialog', function (): void {
 		it('Should create list of all files and folders correctly', async function (): Promise<void> {
 			const testFolderPath = await testUtils.createDummyFileStructure();
 
