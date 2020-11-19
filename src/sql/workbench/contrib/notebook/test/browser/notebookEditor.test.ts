@@ -87,7 +87,8 @@ class NotebookModelStub extends stubs.NotebookModelStub {
 suite('Test class NotebookEditor:', () => {
 	let instantiationService = <TestInstantiationService>workbenchInstantiationService();
 	instantiationService.stub(IHostColorSchemeService, {
-		colorScheme: ColorScheme.DARK,
+		dark: true,
+		highContrast: false,
 		onDidChangeColorScheme: new Emitter<void>().event
 	});
 	let workbenchThemeService = instantiationService.createInstance(WorkbenchThemeService);
