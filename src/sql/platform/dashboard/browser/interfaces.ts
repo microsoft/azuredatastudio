@@ -69,7 +69,7 @@ export interface IModelStore {
 	 * @param componentId unique identifier of the component
 	 * @param action some action to perform
 	 */
-	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T): Promise<T>;
+	eventuallyRunOnComponent<T>(componentId: string, action: (component: IComponent) => T, initial: boolean): void;
 	/**
 	 * Register a callback that will validate components when given a component ID
 	 */
