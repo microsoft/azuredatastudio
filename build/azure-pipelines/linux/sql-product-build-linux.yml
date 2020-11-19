@@ -156,6 +156,7 @@ steps:
       tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/logs-linux-x64.tar.gz adsuser*
     displayName: Archive Logs
     continueOnError: true
+    condition: succeededOrFailed()
 
   - script: |
       set -e
@@ -229,6 +230,7 @@ steps:
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
+    condition: succeededOrFailed()
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'
