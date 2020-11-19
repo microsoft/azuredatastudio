@@ -206,7 +206,7 @@ export class CreateProjectFromDatabaseDialog {
 
 	private async updateConnectionComponents(connectionTextboxValue: string, connectionId: string, databaseName?: string) {
 		this.sourceConnectionTextBox!.value = connectionTextboxValue;
-		this.sourceConnectionTextBox!.placeHolder = connectionTextboxValue;
+		this.sourceConnectionTextBox!.updateProperty('title', connectionTextboxValue);
 
 		// populate database dropdown with the databases for this connection
 		if (connectionId) {
@@ -262,7 +262,7 @@ export class CreateProjectFromDatabaseDialog {
 		}).component();
 
 		this.projectLocationTextBox.onTextChanged(() => {
-			this.projectLocationTextBox!.placeHolder = this.projectLocationTextBox!.value;
+			this.projectLocationTextBox!.updateProperty('title', this.projectLocationTextBox!.value);
 			this.tryEnableCreateButton();
 		});
 
@@ -300,8 +300,7 @@ export class CreateProjectFromDatabaseDialog {
 			}
 
 			this.projectLocationTextBox!.value = folderUris[0].fsPath;
-			this.projectLocationTextBox!.placeHolder = folderUris[0].fsPath;
-
+			this.projectLocationTextBox!.updateProperty('title', folderUris[0].fsPath);
 		});
 
 		return browseFolderButton;
