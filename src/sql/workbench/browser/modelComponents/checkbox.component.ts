@@ -17,6 +17,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { isNumber } from 'vs/base/common/types';
 import { convertSize } from 'sql/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-checkbox',
@@ -33,8 +34,9 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(ILogService) logService: ILogService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {

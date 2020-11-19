@@ -20,6 +20,7 @@ import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IComponentDescriptor, IComponent, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 
@@ -35,7 +36,8 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 
 	constructor(
 		protected _changeRef: ChangeDetectorRef,
-		protected _el: ElementRef) {
+		protected _el: ElementRef,
+		protected logService: ILogService) {
 		super();
 	}
 
@@ -280,17 +282,24 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 	@ViewChildren(ModelComponentWrapper) protected _componentWrappers: QueryList<ModelComponentWrapper>;
 	constructor(
 		_changeRef: ChangeDetectorRef,
-		_el: ElementRef
+		_el: ElementRef,
+		logService: ILogService
 	) {
-		super(_changeRef, _el);
+		super(_changeRef, _el, logService);
 		this.items = [];
-		this._validations.push(() => this.items.every(item => {
-			return this.modelStore.getComponent(item.descriptor.id)?.valid || false;
-		}));
+		this._validations.push(() => {
+			this.logService.debug(`Running container validation on component ${this.descriptor.id} to check validity of all child items`);
+			return this.items.every(item => {
+				const valid = this.modelStore.getComponent(item.descriptor.id)?.valid;
+				this.logService.debug(`Child item ${item.descriptor.id} validity is ${valid}`);
+				return valid || false;
+			});
+		});
 	}
 
 	/// IComponent container-related implementation
 	public addToContainer(componentDescriptor: IComponentDescriptor, config: any, index?: number): void {
+		this.logService.debug(`Adding component ${componentDescriptor.id} to container ${this.descriptor.id}`);
 		if (!componentDescriptor) {
 			return;
 		}
@@ -304,11 +313,17 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 		} else {
 			throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", index));
 		}
-		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => component.registerEventHandler(event => {
-			if (event.eventType === ComponentEventType.validityChanged) {
-				this.validate();
-			}
-		}), true);
+
+		this.logService.debug(`Queueing up action to register validation event handler on component ${componentDescriptor.id} in container ${this.descriptor.id}`);
+		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => {
+			this.logService.debug(`Registering validation event handler on component ${componentDescriptor.id} in container ${this.descriptor.id}`);
+			component.registerEventHandler(async event => {
+				if (event.eventType === ComponentEventType.validityChanged) {
+					this.logService.debug(`Running validation on container ${this.descriptor.id} because validity of child component ${componentDescriptor.id} changed`);
+					this.validate();
+				}
+			});
+		}, true);
 		this._changeRef.detectChanges();
 		this.onItemsUpdated();
 		return;
