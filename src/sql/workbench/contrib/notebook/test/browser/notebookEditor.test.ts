@@ -57,7 +57,6 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IHostColorSchemeService } from 'vs/workbench/services/themes/common/hostColorSchemeService';
-import { ColorScheme } from 'vs/platform/theme/common/theme';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 
 class NotebookModelStub extends stubs.NotebookModelStub {
