@@ -339,9 +339,11 @@
                           "confirmationRequired": true,
                           "confirmationLabel": "%vm_password_confirm%",
                           "required": true,
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])[A-Za-z\\d\\W_]{12,123}$",
-                          "textValidationDescription": "%vm_password_validation_error_message%"
+                          "validations" : [{
+                            "type": "regex_match",
+                            "regex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])[A-Za-z\\d\\W_]{12,123}$",
+                            "description": "%vm_password_validation_error_message%"
+                          }]
                         }
                       ]
                     },
