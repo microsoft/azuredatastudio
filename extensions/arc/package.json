@@ -226,9 +226,11 @@
                         {
                           "type": "text",
                           "label": "%arc.data.controller.arc.data.controller.namespace%",
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$",
-                          "textValidationDescription": "%arc.data.controller.arc.data.controller.namespace.validation.description%",
+                          "validations" : [{
+                            "type": "regex_match",
+                            "regex": "^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$",
+                            "description": "%arc.data.controller.arc.data.controller.namespace.validation.description%"
+                          }],
                           "defaultValue": "arc",
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE"
@@ -236,9 +238,11 @@
                         {
                           "type": "text",
                           "label": "%arc.data.controller.arc.data.controller.name%",
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^[a-z0-9]([-.a-z0-9]{0,251}[a-z0-9])?$",
-                          "textValidationDescription": "%arc.data.controller.arc.data.controller.name.validation.description%",
+                          "validations" : [{
+                            "type": "regex_match",
+                            "regex": "^[a-z0-9]([-.a-z0-9]{0,251}[a-z0-9])?$",
+                            "description": "%arc.data.controller.arc.data.controller.name.validation.description%"
+                          }],
                           "defaultValue": "arc-dc",
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME"
@@ -559,18 +563,22 @@
                           "type": "text",
                           "defaultValue": "sqlinstance1",
                           "required": true,
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
-                          "textValidationDescription": "%arc.sql.invalid.instance.name%"
+                          "validations" : [{
+                            "type": "regex_match",
+                            "regex": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
+                            "description": "%arc.sql.invalid.instance.name%"
+                          }]
                         },
                         {
                           "label": "%arc.sql.username%",
                           "variableName": "AZDATA_NB_VAR_SQL_USERNAME",
                           "type": "text",
                           "required": true,
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^(?!sa$)",
-                          "textValidationDescription": "%arc.sql.invalid.username%"
+                          "validations" : [{
+                            "type": "regex_match",
+                            "regex": "^(?!sa$)",
+                            "description": "%arc.sql.invalid.username%"
+                          }]
                         },
                         {
                           "label": "%arc.password%",
@@ -607,7 +615,14 @@
                           "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
                           "type": "number",
                           "min": 1,
-                          "required": false
+                          "required": false,
+                          "validations": [
+                            {
+                              "type": "<=",
+                              "target": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                              "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
+                            }
+                          ]
                         },
                         {
                           "label": "%arc.cores-limit.label%",
@@ -615,7 +630,14 @@
                           "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
                           "type": "number",
                           "min": 1,
-                          "required": false
+                          "required": false,
+                          "validations": [
+                            {
+                              "type": ">=",
+                              "target": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
+                              "description": "%cores.limit.greater.than.or.equal.to.requested.cores%"
+                            }
+                          ]
                         },
                         {
                           "label": "%arc.memory-request.label%",
@@ -623,7 +645,12 @@
                           "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
                           "type": "number",
                           "min": 2,
-                          "required": false
+                          "required": false,
+                          "validations": [{
+                            "type": "<=",
+                            "target": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
+                            "description": "%requested.memory.less.than.or.equal.to.memory.limit%"
+                          }]
                         },
                         {
                           "label": "%arc.memory-limit.label%",
@@ -631,7 +658,12 @@
                           "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
                           "type": "number",
                           "min": 2,
-                          "required": false
+                          "required": false,
+                          "validations": [{
+                            "type": ">=",
+                            "target": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
+                            "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
+                          }]
                         }
                       ]
                     }
@@ -719,9 +751,11 @@
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_NAME",
                           "type": "text",
                           "description": "%arc.postgres.server.group.name.validation.description%",
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^[a-z]([-a-z0-9]{0,10}[a-z0-9])?$",
-                          "textValidationDescription": "%arc.postgres.server.group.name.validation.description%",
+                          "validations" : [{
+                            "type": "regex_match",
+                            "regex": "^[a-z]([-a-z0-9]{0,10}[a-z0-9])?$",
+                            "description": "%arc.postgres.server.group.name.validation.description%"
+                          }],
                           "required": true
                         },
                         {
@@ -738,6 +772,10 @@
                           "description": "%arc.postgres.server.group.workers.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS",
                           "type": "number",
+                          "validations": [{
+                            "type": "is_integer",
+                            "description": "%should.be.integer%"
+                          }],
                           "defaultValue": "0",
                           "min": 0
                         },
@@ -745,6 +783,10 @@
                           "label": "%arc.postgres.server.group.port%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_PORT",
                           "type": "number",
+                          "validations": [{
+                            "type": "is_integer",
+                            "description": "%should.be.integer%"
+                          }],
                           "defaultValue": "5432",
                           "min": 1,
                           "max": 65535
@@ -825,28 +867,48 @@
                           "description": "%arc.postgres.server.group.cores.request.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_REQUEST",
                           "type": "number",
-                          "min": 1
+                          "min": 1,
+                          "validations": [{
+                            "type": "<=",
+                            "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_LIMIT",
+                            "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
+                          }]
                         },
                         {
                           "label": "%arc.postgres.server.group.cores.limit.label%",
                           "description": "%arc.postgres.server.group.cores.limit.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_LIMIT",
                           "type": "number",
-                          "min": 1
+                          "min": 1,
+                          "validations": [{
+                            "type": ">=",
+                            "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_REQUEST",
+                            "description": "%cores.limit.greater.than.or.equal.to.requested.cores%"
+                          }]
                         },
                         {
                           "label": "%arc.postgres.server.group.memory.request.label%",
                           "description": "%arc.postgres.server.group.memory.request.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_REQUEST",
                           "type": "number",
-                          "min": 0.25
+                          "min": 0.25,
+                          "validations": [{
+                            "type": "<=",
+                            "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_LIMIT",
+                            "description": "%requested.memory.less.than.or.equal.to.memory.limit%"
+                          }]
                         },
                         {
                           "label": "%arc.postgres.server.group.memory.limit.label%",
                           "description": "%arc.postgres.server.group.memory.limit.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_LIMIT",
                           "type": "number",
-                          "min": 0.25
+                          "min": 0.25,
+                          "validations": [{
+                            "type": ">=",
+                            "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_REQUEST",
+                            "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
+                          }]
                         }
                       ]
                     }
