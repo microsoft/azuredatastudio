@@ -41,6 +41,15 @@ export function setEnvironmentVariablesForInstallPaths(tools: ITool[], env: Node
 }
 
 /**
+ * returns true if input is undefined or empty
+ *
+ * @param input - input value to test
+ */
+export function isUndefinedOrEmpty(input: any): boolean {
+	return input === undefined || (typeof input === 'string' && input.length === 0);
+}
+
+/**
  * Throws an Error with given {@link message} unless {@link condition} is true.
  * This also tells the typescript compiler that the condition is 'truthy' in the remainder of the scope
  * where this function was called.
