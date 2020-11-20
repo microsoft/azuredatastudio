@@ -229,6 +229,12 @@ export class BrowserWorkbenchEnvironmentService implements IWorkbenchEnvironment
 		return `${uri.scheme}://${uri.authority}`;
 	}
 
+	@memoize
+	get filesToDiff(): IPath[] | undefined { return this.configuration.filesToDiff; }
+
+	@memoize
+	get filesToOpenOrCreate(): IPath[] | undefined { return this.configuration.filesToOpenOrCreate; }
+
 	get disableTelemetry(): boolean { return true; } // {{SQL CARBON EDIT}} permanently disable telemetry for web instead of perminently enable
 
 	get verbose(): boolean { return this.payload?.get('verbose') === 'true'; }
