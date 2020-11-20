@@ -173,6 +173,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			const existing = installedExtensions.find(i => areSameExtensions(identifier, i.identifier));
 			if (existing) {
 				options.isMachineScoped = options.isMachineScoped || existing.isMachineScoped;
+				options.isBuiltin = options.isBuiltin || existing.isBuiltin;
 				// operation = InstallOperation.Update; {{ SQL CARBON EDIT }}
 				if (identifierWithVersion.equals(new ExtensionIdentifierWithVersion(existing.identifier, existing.manifest.version))) {
 					try {

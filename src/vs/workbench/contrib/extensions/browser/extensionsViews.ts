@@ -38,7 +38,7 @@ import { IListContextMenuEvent } from 'vs/base/browser/ui/list/list';
 import { createErrorWithActions } from 'vs/base/common/errorsWithActions';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IAction, Action, Separator } from 'vs/base/common/actions';
-import { ExtensionIdentifier, ExtensionType, IExtensionDescription, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
+import { ExtensionIdentifier, ExtensionType, IExtensionDescription, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions'; // {{ SQL CARBON EDIT }}
 import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { SeverityIcon } from 'vs/platform/severityIcon/common/severityIcon';
