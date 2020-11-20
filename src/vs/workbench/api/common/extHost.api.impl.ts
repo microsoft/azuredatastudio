@@ -236,6 +236,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			},
 			deletePassword(key: string): Thenable<void> {
 				return extHostAuthentication.deletePassword(extension, key);
+			},
+			get onDidChangePassword(): Event<void> {
+				return extHostAuthentication.onDidChangePassword;
 			}
 		};
 
@@ -984,6 +987,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			onDidChangeNotebookEditorSelection: Event<vscode.NotebookEditorSelectionChangeEvent>;
 			onDidChangeNotebookEditorVisibleRanges: Event<vscode.NotebookEditorVisibleRangesChangeEvent>;
 		}) = {
+			openNotebookDocument: (uriComponents, viewType) => {
+				checkProposedApiEnabled(extension);
+				return extHostNotebook.openNotebookDocument(uriComponents, viewType);
+			},
 			get onDidOpenNotebookDocument(): Event<vscode.NotebookDocument> {
 				checkProposedApiEnabled(extension);
 				return extHostNotebook.onDidOpenNotebookDocument;

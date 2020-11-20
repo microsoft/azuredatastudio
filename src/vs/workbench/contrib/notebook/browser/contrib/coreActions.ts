@@ -5,6 +5,7 @@
 
 import * as glob from 'vs/base/common/glob';
 import { KeyChord, KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import * as platform from 'vs/base/common/platform';
 import { URI } from 'vs/base/common/uri';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 import { getIconClasses } from 'vs/editor/common/services/getIconClasses';
@@ -988,6 +989,12 @@ registerAction2(class extends NotebookCellAction {
 					id: MenuId.NotebookCellTitle,
 					when: NOTEBOOK_EDITOR_FOCUSED,
 					group: CellOverflowToolbarGroups.Copy,
+				},
+				keybinding: platform.isNative ? undefined : {
+					primary: KeyMod.CtrlCmd | KeyCode.KEY_C,
+					win: { primary: KeyMod.CtrlCmd | KeyCode.KEY_C, secondary: [KeyMod.CtrlCmd | KeyCode.Insert] },
+					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, ContextKeyExpr.not(InputFocusedContextKey)),
+					weight: KeybindingWeight.WorkbenchContrib
 				}
 			});
 	}
@@ -995,6 +1002,11 @@ registerAction2(class extends NotebookCellAction {
 	async runWithContext(accessor: ServicesAccessor, context: INotebookCellActionContext) {
 		const clipboardService = accessor.get<IClipboardService>(IClipboardService);
 		const notebookService = accessor.get<INotebookService>(INotebookService);
+		if (context.notebookEditor.hasOutputTextSelection()) {
+			document.execCommand('copy');
+			return;
+		}
+
 		clipboardService.writeText(context.cell.getText());
 		notebookService.setToCopy([context.cell.model], true);
 	}
@@ -1010,6 +1022,12 @@ registerAction2(class extends NotebookCellAction {
 					id: MenuId.NotebookCellTitle,
 					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_CELL_EDITABLE),
 					group: CellOverflowToolbarGroups.Copy,
+				},
+				keybinding: platform.isNative ? undefined : {
+					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, ContextKeyExpr.not(InputFocusedContextKey)),
+					primary: KeyMod.CtrlCmd | KeyCode.KEY_X,
+					win: { primary: KeyMod.CtrlCmd | KeyCode.KEY_X, secondary: [KeyMod.Shift | KeyCode.Delete] },
+					weight: KeybindingWeight.WorkbenchContrib
 				}
 			});
 	}
@@ -1039,6 +1057,13 @@ registerAction2(class extends NotebookAction {
 					id: MenuId.NotebookCellTitle,
 					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE),
 					group: CellOverflowToolbarGroups.Copy,
+				},
+				keybinding: platform.isNative ? undefined : {
+					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, ContextKeyExpr.not(InputFocusedContextKey)),
+					primary: KeyMod.CtrlCmd | KeyCode.KEY_V,
+					win: { primary: KeyMod.CtrlCmd | KeyCode.KEY_V, secondary: [KeyMod.Shift | KeyCode.Insert] },
+					linux: { primary: KeyMod.CtrlCmd | KeyCode.KEY_V, secondary: [KeyMod.Shift | KeyCode.Insert] },
+					weight: KeybindingWeight.EditorContrib
 				}
 			});
 	}

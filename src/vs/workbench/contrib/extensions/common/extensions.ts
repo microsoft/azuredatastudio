@@ -32,6 +32,7 @@ export const enum ExtensionState {
 
 export interface IExtension {
 	readonly type: ExtensionType;
+	readonly isBuiltin: boolean;
 	readonly state: ExtensionState;
 	readonly name: string;
 	readonly displayName: string;

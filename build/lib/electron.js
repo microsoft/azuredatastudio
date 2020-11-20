@@ -21,7 +21,7 @@ function darwinBundleDocumentType(extensions, icon) {
     return {
         name: product.nameLong + ' document',
         role: 'Editor',
-        ostypes: ["TEXT", "utxt", "TUTX", "****"],
+        ostypes: ['TEXT', 'utxt', 'TUTX', '****'],
         extensions: extensions,
         iconFile: icon
     };
