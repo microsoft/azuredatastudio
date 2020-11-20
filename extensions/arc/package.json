@@ -558,6 +558,17 @@
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_DISPLAY_LOCATION)"
                         }
                       ]
+                    },
+                    {
+                      "title": "%arc.data.controller.summary.controller%",
+                      "fields": [
+                        {
+                          "label": "%arc.data.controller.connectivitymode%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE)"
+                        }
+                      ]
                     }
                   ]
                 }

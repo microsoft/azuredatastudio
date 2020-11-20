@@ -63,6 +63,7 @@
 	"arc.data.controller.summary.resource.group": "Resource group",
 	"arc.data.controller.summary.data.controller.name": "Data controller name",
 	"arc.data.controller.summary.data.controller.namespace": "Data controller namespace",
+	"arc.data.controller.summary.controller": "Controller",
 	"arc.data.controller.summary.location": "Location",
 	"arc.data.controller.arc.data.controller.agreement": "I accept {0} and {1}.",
 	"microsoft.agreement.privacy.statement":"Microsoft Privacy Statement",
