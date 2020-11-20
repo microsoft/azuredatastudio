@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as DOM from 'vs/base/browser/dom';
 import { createElement, FormattedTextRenderOptions } from 'vs/base/browser/formattedTextRenderer';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IMarkdownString, parseHrefAndDimensions, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
@@ -19,6 +18,8 @@ import { markdownEscapeEscapedCodicons } from 'vs/base/common/codicons';
 import { resolvePath } from 'vs/base/common/resources';
 import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 import { renderCodicons } from 'vs/base/browser/codicons';
+import { Event } from 'vs/base/common/event';
+import { domEvent } from 'vs/base/browser/event';
 
 export interface MarkedOptions extends marked.MarkedOptions {
 	baseUrl?: never;
@@ -198,34 +199,31 @@ export function renderMarkdown(markdown: IMarkdownString, options: MarkdownRende
 		};
 	}
 
-	const actionHandler = options.actionHandler;
-	if (actionHandler) {
-		[DOM.EventType.CLICK, DOM.EventType.AUXCLICK].forEach(event => {
-			actionHandler.disposeables.add(DOM.addDisposableListener(element, event, (e: MouseEvent) => {
-				const mouseEvent = new StandardMouseEvent(e);
-				if (!mouseEvent.leftButton && !mouseEvent.middleButton) {
+	if (options.actionHandler) {
+		options.actionHandler.disposeables.add(Event.any<MouseEvent>(domEvent(element, 'click'), domEvent(element, 'auxclick'))(e => {
+			const mouseEvent = new StandardMouseEvent(e);
+			if (!mouseEvent.leftButton && !mouseEvent.middleButton) {
+				return;
+			}
+
+			let target: HTMLElement | null = mouseEvent.target;
+			if (target.tagName !== 'A') {
+				target = target.parentElement;
+				if (!target || target.tagName !== 'A') {
 					return;
 				}
-
-				let target: HTMLElement | null = mouseEvent.target;
-				if (target.tagName !== 'A') {
-					target = target.parentElement;
-					if (!target || target.tagName !== 'A') {
-						return;
-					}
+			}
+			try {
+				const href = target.dataset['href'];
+				if (href) {
+					options.actionHandler!.callback(href, mouseEvent);
 				}
-				try {
-					const href = target.dataset['href'];
-					if (href) {
-						actionHandler.callback(href, mouseEvent);
-					}
-				} catch (err) {
-					onUnexpectedError(err);
-				} finally {
-					mouseEvent.preventDefault();
-				}
-			}));
-		});
+			} catch (err) {
+				onUnexpectedError(err);
+			} finally {
+				mouseEvent.preventDefault();
+			}
+		}));
 	}
 
 	// Use our own sanitizer so that we can let through only spans.
