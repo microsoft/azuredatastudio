@@ -200,7 +200,7 @@
     "ts-loader": "^4.4.2",
     "tsec": "googleinterns/tsec",
     "typemoq": "^0.3.2",
-    "typescript": "^4.2.0-dev.20201104",
+    "typescript": "^4.2.0-dev.20201119",
     "typescript-formatter": "7.1.0",
     "underscore": "^1.8.2",
     "vinyl": "^2.0.0",
