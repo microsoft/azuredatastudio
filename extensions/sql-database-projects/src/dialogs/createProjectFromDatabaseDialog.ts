@@ -41,7 +41,7 @@ export class CreateProjectFromDatabaseDialog {
 		this.initializeDialog();
 		this.dialog.okButton.label = constants.createProjectDialogOkButtonText;
 		this.dialog.okButton.enabled = false;
-		this.toDispose.push(this.dialog.okButton.onClick(async () => await this.createButtonClick()));
+		this.toDispose.push(this.dialog.okButton.onClick(async () => await this.handleCreateButtonClick()));
 
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
@@ -341,7 +341,7 @@ export class CreateProjectFromDatabaseDialog {
 		}
 	}
 
-	public async createButtonClick(): Promise<void> {
+	public async handleCreateButtonClick(): Promise<void> {
 		const model: ImportDataModel = {
 			serverId: this.connectionId!,
 			database: <string>this.sourceDatabaseDropDown!.value,

@@ -653,7 +653,7 @@ export class ProjectsController {
 
 	public setFilePath(model: ImportDataModel) {
 		if (model.extractTarget === mssql.ExtractTarget.file) {
-			model.filePath = path.join(model.filePath, model.projName + '.sql'); // File extractTarget specifies the exact file rather than the containing folder
+			model.filePath = path.join(model.filePath, `${model.projName}.sql`); // File extractTarget specifies the exact file rather than the containing folder
 		}
 	}
 

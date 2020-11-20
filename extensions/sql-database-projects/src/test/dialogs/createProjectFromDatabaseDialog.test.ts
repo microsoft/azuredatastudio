@@ -102,7 +102,7 @@ describe('Create Project From Database Dialog', () => {
 		};
 
 		dialog.createProjectFromDatabaseCallback = (m) => { model = m; };
-		await dialog.createButtonClick();
+		await dialog.handleCreateButtonClick();
 
 		should(model!).deepEqual(expectedImportDataModel);
 	});

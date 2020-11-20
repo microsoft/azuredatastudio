@@ -435,7 +435,7 @@ describe('ProjectsController', function (): void {
 
 			const createProjectFromDatabaseDialog = TypeMoq.Mock.ofType(CreateProjectFromDatabaseDialog, undefined, undefined, undefined);
 			createProjectFromDatabaseDialog.callBase = true;
-			createProjectFromDatabaseDialog.setup(x => x.createButtonClick()).returns(async () => {
+			createProjectFromDatabaseDialog.setup(x => x.handleCreateButtonClick()).returns(async () => {
 				await projController.object.createProjectFromDatabaseCallback( { serverId: 'My Id', database: 'My Database', projName: 'testProject', filePath: 'testLocation', version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'] });
 				return Promise.resolve(undefined);
 			});
@@ -449,7 +449,7 @@ describe('ProjectsController', function (): void {
 			});
 
 			let dialog = await projController.object.createProjectFromDatabase(undefined);
-			await dialog.createButtonClick();
+			await dialog.handleCreateButtonClick();
 
 			should(holler).equal(createProjectFromDbHoller, 'executionCallback() is supposed to have been setup and called for create project from database scenario');
 		});
