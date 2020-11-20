@@ -238,6 +238,8 @@ export class BrowserWorkbenchEnvironmentService implements IWorkbenchEnvironment
 		return `${uri.scheme}://${uri.authority}`;
 	}
 
+	@memoize
+	get telemetryLogResource(): URI { return joinPath(this.options.logsPath, 'telemetry.log'); }
 	get disableTelemetry(): boolean { return true; } // {{SQL CARBON EDIT}} permanently disable telemetry for web instead of perminently enable
 
 	get verbose(): boolean { return this.payload?.get('verbose') === 'true'; }
