@@ -240,8 +240,8 @@ export function createCheckbox(view: azdata.ModelView, info: { initialValue: boo
 	}).component();
 }
 
-export function createDropdown(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string, editable?: boolean, required?: boolean, label: string }): azdata.DropDownComponent {
-	return view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+export function createDropdown(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string, editable?: boolean, required?: boolean, label: string }): InputComponentInfo<azdata.DropDownComponent> {
+	const dropdown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 		values: info.values,
 		value: info.defaultValue,
 		width: info.width,
@@ -250,6 +250,12 @@ export function createDropdown(view: azdata.ModelView, info: { defaultValue?: st
 		required: info.required,
 		ariaLabel: info.label
 	}).component();
+
+	return {
+		component: dropdown,
+		getValue: async (): Promise<InputValueType> => typeof dropdown.value === 'string' ? dropdown.value : dropdown.value?.name,
+		onValueChanged: dropdown.onValueChanged,
+	};
 }
 
 export function initializeDialog(dialogContext: DialogContext): void {
@@ -616,14 +622,10 @@ function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDown
 		required: context.fieldInfo.required,
 		label: context.fieldInfo.label
 	});
-	dropdown.fireOnTextChange = true;
-	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
-		getValue: async (): Promise<InputValueType> => typeof dropdown.value === 'string' ? dropdown.value : dropdown.value?.name,
-		onValueChanged: dropdown.onValueChanged,
-		component: dropdown
-	});
-	addLabelInputPairToContainer(context.view, context.components, label, dropdown, context.fieldInfo);
-	return dropdown;
+	dropdown.component.fireOnTextChange = true;
+	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, dropdown);
+	addLabelInputPairToContainer(context.view, context.components, label, dropdown.component, context.fieldInfo);
+	return dropdown.component;
 }
 
 function processDateTimeTextField(context: FieldContext): void {
@@ -1056,13 +1058,9 @@ async function processKubeStorageClassField(context: FieldContext): Promise<void
 		values: storageClasses,
 		defaultValue: defaultStorageClass
 	});
-	storageClassDropdown.fireOnTextChange = true;
-	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
-		component: storageClassDropdown,
-		getValue: async (): Promise<InputValueType> => (typeof storageClassDropdown.value === 'string' ? storageClassDropdown.value : storageClassDropdown.value?.displayName) || '',
-		onValueChanged: storageClassDropdown.onValueChanged
-	});
-	addLabelInputPairToContainer(context.view, context.components, label, storageClassDropdown, context.fieldInfo);
+	storageClassDropdown.component.fireOnTextChange = true;
+	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, storageClassDropdown);
+	addLabelInputPairToContainer(context.view, context.components, label, storageClassDropdown.component, context.fieldInfo);
 }
 
 
@@ -1084,20 +1082,16 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAcc
 		required: context.fieldInfo.required,
 		label: loc.account
 	});
-	accountDropdown.fireOnTextChange = true;
-	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
-		component: accountDropdown,
-		getValue: async (): Promise<InputValueType> => typeof accountDropdown.value === 'string' ? accountDropdown.value : accountDropdown.value?.name,
-		onValueChanged: accountDropdown.onValueChanged
-	});
+	accountDropdown.component.fireOnTextChange = true;
+	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, accountDropdown);
 	const signInButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.signIn, width: '100px' }).component();
 	const refreshButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.refresh, width: '100px' }).component();
-	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown, context.fieldInfo);
+	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown.component, context.fieldInfo);
 
 	const buttons = createFlexContainer(context.view!, [signInButton, refreshButton], true, undefined, undefined, undefined, { 'margin-right': '10px' });
 	context.components.push(buttons);
 	return {
-		accountDropdown: accountDropdown,
+		accountDropdown: accountDropdown.component,
 		signInButton: signInButton,
 		refreshAccountsButton: refreshButton
 	};
@@ -1121,15 +1115,15 @@ function createAzureSubscriptionDropdown(
 		required: context.fieldInfo.required,
 		label: loc.subscription
 	});
-	subscriptionDropdown.fireOnTextChange = true;
+	subscriptionDropdown.component.fireOnTextChange = true;
 	context.fieldInfo.subFields!.push({
 		label: label.value!,
 		variableName: context.fieldInfo.subscriptionVariableName
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.subscriptionVariableName || context.fieldInfo.label, {
-		component: subscriptionDropdown,
+		component: subscriptionDropdown.component,
 		getValue: async (): Promise<InputValueType> => {
-			const inputValue = (typeof subscriptionDropdown.value === 'string' ? subscriptionDropdown.value : subscriptionDropdown.value?.name) || '';
+			const inputValue = (await subscriptionDropdown.getValue())?.toString() || '';
 			return subscriptionValueToSubscriptionMap.get(inputValue)?.id || inputValue;
 		},
 		onValueChanged: subscriptionDropdown.onValueChanged
@@ -1139,14 +1133,10 @@ function createAzureSubscriptionDropdown(
 			label: label.value!,
 			variableName: context.fieldInfo.displaySubscriptionVariableName
 		});
-		context.onNewInputComponentCreated(context.fieldInfo.displaySubscriptionVariableName!, {
-			component: subscriptionDropdown,
-			getValue: async (): Promise<InputValueType> => typeof subscriptionDropdown.value === 'string' ? subscriptionDropdown.value : subscriptionDropdown.value?.name,
-			onValueChanged: subscriptionDropdown.onValueChanged,
-		});
+		context.onNewInputComponentCreated(context.fieldInfo.displaySubscriptionVariableName!, subscriptionDropdown);
 	}
-	addLabelInputPairToContainer(context.view, context.components, label, subscriptionDropdown, context.fieldInfo);
-	return subscriptionDropdown;
+	addLabelInputPairToContainer(context.view, context.components, label, subscriptionDropdown.component, context.fieldInfo);
+	return subscriptionDropdown.component;
 }
 
 async function handleSelectedAccountChanged(
@@ -1265,26 +1255,22 @@ function createAzureResourceGroupsDropdown(
 		required: context.fieldInfo.required,
 		label: loc.resourceGroup
 	});
-	resourceGroupDropdown.fireOnTextChange = true;
+	resourceGroupDropdown.component.fireOnTextChange = true;
 	context.fieldInfo.subFields!.push({
 		label: label.value!,
 		variableName: context.fieldInfo.resourceGroupVariableName
 	});
 	const rgValueChangedEmitter = new vscode.EventEmitter<void>();
 	resourceGroupDropdown.onValueChanged(() => rgValueChangedEmitter.fire());
-	context.onNewInputComponentCreated(context.fieldInfo.resourceGroupVariableName || context.fieldInfo.label, {
-		component: resourceGroupDropdown,
-		getValue: async (): Promise<InputValueType> => (typeof resourceGroupDropdown.value === 'string' ? resourceGroupDropdown.value : resourceGroupDropdown.value?.displayName) || '',
-		onValueChanged: resourceGroupDropdown.onValueChanged,
-	});
-	addLabelInputPairToContainer(context.view, context.components, label, resourceGroupDropdown, context.fieldInfo);
+	context.onNewInputComponentCreated(context.fieldInfo.resourceGroupVariableName || context.fieldInfo.label, resourceGroupDropdown);
+	addLabelInputPairToContainer(context.view, context.components, label, resourceGroupDropdown.component, context.fieldInfo);
 	subscriptionDropdown.onValueChanged(async selectedItem => {
 		const selectedAccount = !accountDropdown || !accountDropdown.value ? undefined : accountValueToAccountMap.get(accountDropdown.value.toString());
 		const selectedSubscription = subscriptionValueToSubscriptionMap.get(selectedItem.selected);
-		await handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown);
+		await handleSelectedSubscriptionChanged(context, selectedAccount, selectedSubscription, resourceGroupDropdown.component);
 		rgValueChangedEmitter.fire();
 	});
-	return resourceGroupDropdown;
+	return resourceGroupDropdown.component;
 }
 
 async function handleSelectedSubscriptionChanged(context: AzureAccountFieldContext, selectedAccount: azdata.Account | undefined, selectedSubscription: azureResource.AzureResourceSubscription | undefined, resourceGroupDropdown: azdata.DropDownComponent): Promise<void> {
@@ -1354,18 +1340,14 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 		label: loc.location,
 		values: locationValues
 	});
-	locationDropdown.fireOnTextChange = true;
+	locationDropdown.component.fireOnTextChange = true;
 	context.fieldInfo.subFields = context.fieldInfo.subFields || [];
 	if (context.fieldInfo.locationVariableName) {
 		context.fieldInfo.subFields!.push({
 			label: label.value!,
 			variableName: context.fieldInfo.locationVariableName
 		});
-		context.onNewInputComponentCreated(context.fieldInfo.locationVariableName, {
-			component: locationDropdown,
-			getValue: async (): Promise<InputValueType> => typeof locationDropdown.value === 'string' ? locationDropdown.value : locationDropdown.value?.name,
-			onValueChanged: locationDropdown.onValueChanged,
-		});
+		context.onNewInputComponentCreated(context.fieldInfo.locationVariableName, locationDropdown);
 	}
 	if (context.fieldInfo.displayLocationVariableName) {
 		context.fieldInfo.subFields!.push({
@@ -1373,16 +1355,16 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 			variableName: context.fieldInfo.displayLocationVariableName
 		});
 		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, {
-			component: locationDropdown,
+			component: locationDropdown.component,
 			getValue: async (): Promise<InputValueType> => {
-				const inputValue = (typeof locationDropdown.value === 'string' ? locationDropdown.value : locationDropdown.value?.displayName) || '';
+				const inputValue = (await locationDropdown.getValue())?.toString();
 				return apiService.azurecoreApi.getRegionDisplayName(inputValue);
 			},
 			onValueChanged: locationDropdown.onValueChanged,
 		});
 	}
-	addLabelInputPairToContainer(context.view, context.components, label, locationDropdown, context.fieldInfo);
-	return locationDropdown;
+	addLabelInputPairToContainer(context.view, context.components, label, locationDropdown.component, context.fieldInfo);
+	return locationDropdown.component;
 }
 
 export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {
