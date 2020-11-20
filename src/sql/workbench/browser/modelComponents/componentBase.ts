@@ -361,12 +361,12 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 	}
 
 	public layout(): void {
+		super.layout();
 		if (this._componentWrappers) {
 			this._componentWrappers.forEach(wrapper => {
 				wrapper.layout();
 			});
 		}
-		super.layout();
 	}
 
 	abstract setLayout(layout: any): void;

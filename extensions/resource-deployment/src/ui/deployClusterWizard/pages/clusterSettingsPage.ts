@@ -8,11 +8,12 @@ import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { FieldType, LabelPosition, SectionInfo } from '../../../interfaces';
-import { createSection, getInputBoxComponent, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, InputComponentInfo, InputComponents, isValidSQLPassword, setModelValues, Validator } from '../../modelViewUtils';
+import * as localizedConstants from '../../../localizedConstants';
+import { createSection, getInputBoxComponent, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, InputComponent, InputComponentInfo, InputComponents, isValidSQLPassword, setModelValues, Validator } from '../../modelViewUtils';
+import { ResourceTypePage } from '../../resourceTypePage';
+import { ValidationType } from '../../validation/validations';
 import * as VariableNames from '../constants';
 import { AuthenticationMode, DeployClusterWizardModel } from '../deployClusterWizardModel';
-import * as localizedConstants from '../../../localizedConstants';
-import { ResourceTypePage } from '../../resourceTypePage';
 const localize = nls.loadMessageBundle();
 
 const ConfirmPasswordName = 'ConfirmPassword';
@@ -40,9 +41,11 @@ export class ClusterSettingsPage extends ResourceTypePage {
 					required: true,
 					variableName: VariableNames.ClusterName_VariableName,
 					defaultValue: 'mssql-cluster',
-					textValidationRequired: true,
-					textValidationRegex: '^[a-z0-9]$|^[a-z0-9][a-z0-9-]*[a-z0-9]$',
-					textValidationDescription: clusterNameFieldDescription,
+					validations: [{
+						type: ValidationType.Regex,
+						regex: new RegExp('^[a-z0-9]$|^[a-z0-9][a-z0-9-]*[a-z0-9]$'),
+						description: clusterNameFieldDescription
+					}],
 					description: clusterNameFieldDescription
 				}, {
 					type: FieldType.Text,
@@ -216,7 +219,7 @@ export class ClusterSettingsPage extends ResourceTypePage {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo<InputComponent>): void => {
 					self.inputComponents[name] = inputComponentInfo;
 					self._model.inputComponents[name] = inputComponentInfo;
 				},
@@ -233,7 +236,7 @@ export class ClusterSettingsPage extends ResourceTypePage {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo<InputComponent>): void => {
 					self.inputComponents[name] = inputComponentInfo;
 					self._model.inputComponents[name] = inputComponentInfo;
 				},
@@ -250,7 +253,7 @@ export class ClusterSettingsPage extends ResourceTypePage {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo<InputComponent>): void => {
 					self.inputComponents[name] = inputComponentInfo;
 					self._model.inputComponents[name] = inputComponentInfo;
 				},

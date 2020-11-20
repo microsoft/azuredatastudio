@@ -5,13 +5,18 @@
 
 import * as dataworkspace from 'dataworkspace';
 import * as vscode from 'vscode';
-import { sqlprojExtension, projectTypeDisplayName } from '../common/constants';
+import { sqlprojExtension, projectTypeDisplayName, projectTypeDescription, sqlDatabaseProjectTypeId } from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
+import { ProjectsController } from '../controllers/projectController';
 import { Project } from '../models/project';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 
 export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvider {
+
+	constructor(private projectController: ProjectsController) {
+
+	}
 
 	/**
 	 * Gets the project tree data provider
@@ -39,9 +44,22 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	get supportedProjectTypes(): dataworkspace.IProjectType[] {
 		return [{
+			id: sqlDatabaseProjectTypeId,
 			projectFileExtension: sqlprojExtension.replace(/\./g, ''),
 			displayName: projectTypeDisplayName,
-			icon: IconPathHelper.databaseProject
+			description: projectTypeDescription,
+			icon: IconPathHelper.colorfulSqlProject
 		}];
+	}
+
+	/**
+	 * Create a project
+	 * @param name name of the project
+	 * @param location the parent directory
+	 * @returns Uri of the newly created project file
+	 */
+	async createProject(name: string, location: vscode.Uri): Promise<vscode.Uri> {
+		const projectFile = await this.projectController.createNewProject(name, location, true);
+		return vscode.Uri.file(projectFile);
 	}
 }
