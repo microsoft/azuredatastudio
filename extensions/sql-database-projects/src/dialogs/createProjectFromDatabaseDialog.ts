@@ -128,9 +128,9 @@ export class CreateProjectFromDatabaseDialog {
 		const serverLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.server,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth
+			width: cssStyles.labelWidth,
+			CSSStyles: cssStyles.fontWeightBold
 		}).component();
-		serverLabel.updateCssStyles({ 'font-weight': 'bold' });
 
 		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, sourceConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px', 'margin-top': '-20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 		connectionRow.insertItem(selectConnectionButton, 2, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '-10px', 'margin-top': '-20px' } });
@@ -155,9 +155,9 @@ export class CreateProjectFromDatabaseDialog {
 		const databaseLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.databaseNameLabel,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth
+			width: cssStyles.labelWidth,
+			CSSStyles: cssStyles.fontWeightBold
 		}).component();
-		databaseLabel.updateCssStyles({ 'font-weight': 'bold' });
 
 		const databaseRow = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdata.DropDownComponent>this.sourceDatabaseDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
@@ -241,9 +241,9 @@ export class CreateProjectFromDatabaseDialog {
 		const projectNameLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.projectNameLabel,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth
+			width: cssStyles.labelWidth,
+			CSSStyles: cssStyles.fontWeightBold
 		}).component();
-		projectNameLabel.updateCssStyles({ 'font-weight': 'bold' });
 
 		const projectNameRow = view.modelBuilder.flexContainer().withItems([projectNameLabel, this.projectNameTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px', 'margin-top': '-20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
@@ -269,9 +269,9 @@ export class CreateProjectFromDatabaseDialog {
 		const projectLocationLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.projectLocationLabel,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth
+			width: cssStyles.labelWidth,
+			CSSStyles: cssStyles.fontWeightBold
 		}).component();
-		projectLocationLabel.updateCssStyles({ 'font-weight': 'bold' });
 
 		const projectLocationRow = view.modelBuilder.flexContainer().withItems([projectLocationLabel, this.projectLocationTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 		projectLocationRow.insertItem(browseFolderButton, 2, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '-10px' } });
@@ -322,9 +322,9 @@ export class CreateProjectFromDatabaseDialog {
 		const folderStructureLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.folderStructureLabel,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth
+			width: cssStyles.labelWidth,
+			CSSStyles: cssStyles.fontWeightBold
 		}).component();
-		folderStructureLabel.updateCssStyles({ 'font-weight': 'bold' });
 
 		const folderStructureRow = view.modelBuilder.flexContainer().withItems([folderStructureLabel, <azdata.DropDownComponent>this.folderStructureDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '-20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 

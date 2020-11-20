@@ -630,7 +630,7 @@ export class ProjectsController {
 		try {
 			const workspaceApi = utils.getDataWorkspaceExtensionApi();
 
-			let newProjFolderUri = model.filePath;
+			const newProjFolderUri = model.filePath;
 
 			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
 			model.filePath = path.dirname(newProjFilePath);
