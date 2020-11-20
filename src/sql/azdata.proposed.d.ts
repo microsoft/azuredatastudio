@@ -270,9 +270,13 @@ declare module 'azdata' {
 
 	export interface HyperlinkComponent {
 		/**
-		 * An event called when the text is clicked
+		 * An event called when the hyperlink is clicked
 		 */
 		onDidClick: vscode.Event<any>;
+	}
+
+	export interface HyperlinkComponentProperties {
+		showLinkIcon?: boolean;
 	}
 
 	export interface DeclarativeTableColumn {
