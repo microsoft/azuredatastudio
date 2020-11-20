@@ -229,6 +229,7 @@ export class DashboardWidget {
 			iconHeight: '10px',
 			iconWidth: '10px'
 		}).component();
+
 		showMoreComponent.onDidClick(() => {
 			let showMore = showMoreComponent.label === constants.showMoreTitle;
 			if (showMore) {
@@ -237,12 +238,10 @@ export class DashboardWidget {
 					dark: this.asAbsolutePath('images/dark/showLess_inverse.svg'),
 					light: this.asAbsolutePath('images/light/showLess.svg'),
 				};
-				parentPanel.addItem(morePanel, {
-					CSSStyles: morePanelStyle
-				});
+				morePanel.updateCssStyles(Object.assign({}, morePanelStyle, { 'visibility': 'visible' }));
 			} else {
 				showMoreComponent.label = constants.showMoreTitle;
-				parentPanel.removeItem(morePanel);
+				morePanel.updateCssStyles(Object.assign({}, morePanelStyle, { 'visibility': 'hidden' }));
 				image.iconPath = {
 					dark: this.asAbsolutePath('images/dark/showMore_inverse.svg'),
 					light: this.asAbsolutePath('images/light/showMore.svg'),
@@ -266,6 +265,9 @@ export class DashboardWidget {
 
 		parentPanel.addItem(linkContainer, {
 			CSSStyles: {}
+		});
+		parentPanel.addItem(morePanel, {
+			CSSStyles: (Object.assign({}, morePanelStyle, { 'visibility': 'hidden' }))
 		});
 
 		return showMoreComponent;
