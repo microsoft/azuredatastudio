@@ -19,8 +19,9 @@ export abstract class DialogBase {
 	protected _dialogObject: azdata.window.Dialog;
 	protected initDialogComplete: Deferred<void> | undefined;
 	protected initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
-	protected workspaceFormComponent: azdata.FormComponent | undefined;
+	protected workspaceDescriptionFormComponent: azdata.FormComponent | undefined;
 	protected workspaceInputBox: azdata.InputBoxComponent | undefined;
+	protected workspaceInputFormComponent: azdata.FormComponent | undefined;
 
 	constructor(dialogTitle: string, dialogName: string, dialogWidth: azdata.window.DialogWidth = 600) {
 		this._dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, dialogWidth);
@@ -84,10 +85,10 @@ export abstract class DialogBase {
 	 * created if no workspace is currently open
 	 * @param view
 	 */
-	protected createWorkspaceContainer(view: azdata.ModelView): azdata.FormComponent {
+	protected createWorkspaceContainer(view: azdata.ModelView): void {
 		const workspaceDescription = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: vscode.workspace.workspaceFile ? constants.AddProjectToCurrentWorkspace : constants.NewWorkspaceWillBeCreated,
-			CSSStyles: { 'margin-top': '3px', 'margin-bottom': '10px' }
+			CSSStyles: { 'margin-top': '3px', 'margin-bottom': '0px' }
 		}).component();
 
 		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
@@ -118,28 +119,23 @@ export abstract class DialogBase {
 			this.workspaceInputBox!.value = selectedFile;
 		}));
 
-		let container: azdata.FlexContainer;
 
 		if (vscode.workspace.workspaceFile) {
-			container = view.modelBuilder.flexContainer()
-				.withItems([workspaceDescription, this.workspaceInputBox])
-				.withLayout({ flexFlow: 'column' })
-				.component();
+			this.workspaceInputFormComponent = {
+				component: this.workspaceInputBox
+			};
 		} else {
 			const horizontalContainer = this.createHorizontalContainer(view, [this.workspaceInputBox, browseFolderButton]);
-			container = view.modelBuilder.flexContainer()
-				.withItems([workspaceDescription, horizontalContainer])
-				.withLayout({ flexFlow: 'column' })
-				.component();
+			this.workspaceInputFormComponent = {
+				component: horizontalContainer
+			};
 		}
 
-		this.workspaceFormComponent = {
+		this.workspaceDescriptionFormComponent = {
 			title: constants.Workspace,
-			component: container,
+			component: workspaceDescription,
 			required: true
 		};
-
-		return this.workspaceFormComponent;
 	}
 
 	/**

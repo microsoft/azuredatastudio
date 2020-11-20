@@ -149,15 +149,18 @@ export class OpenExistingDialog extends DialogBase {
 		this.register(this._targetTypeRadioCardGroup.onSelectionChanged(({ cardId }) => {
 			if (cardId === constants.Project) {
 				this._filePathTextBox!.placeHolder = constants.ProjectFilePlaceholder;
-				this.formBuilder?.addFormItem(this.workspaceFormComponent!);
+				this.formBuilder?.addFormItem(this.workspaceDescriptionFormComponent!);
+				this.formBuilder?.addFormItem(this.workspaceInputFormComponent!);
 			} else if (cardId === constants.Workspace) {
 				this._filePathTextBox!.placeHolder = constants.WorkspacePlaceholder;
-				this.formBuilder?.removeFormItem(this.workspaceFormComponent!);
+				this.formBuilder?.removeFormItem(this.workspaceDescriptionFormComponent!);
+				this.formBuilder?.removeFormItem(this.workspaceInputFormComponent!);
 			}
 
 			// clear selected file textbox
 			this._filePathTextBox!.value = '';
 		}));
+		this.createWorkspaceContainer(view);
 
 		this.formBuilder = view.modelBuilder.formContainer().withFormItems([
 			{
@@ -169,7 +172,8 @@ export class OpenExistingDialog extends DialogBase {
 				required: true,
 				component: this.createHorizontalContainer(view, [this._filePathTextBox, browseFolderButton])
 			},
-			this.createWorkspaceContainer(view)
+			this.workspaceDescriptionFormComponent!,
+			this.workspaceInputFormComponent!
 		]);
 		await view.initializeModel(this.formBuilder?.component());
 		this.initDialogComplete?.resolve();

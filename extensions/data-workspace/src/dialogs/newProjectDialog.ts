@@ -164,6 +164,8 @@ export class NewProjectDialog extends DialogBase {
 			this.updateWorkspaceInputbox(path.join(this.model.location, this.model.name), this.model.name);
 		}));
 
+		this.createWorkspaceContainer(view);
+
 		const form = view.modelBuilder.formContainer().withFormItems([
 			{
 				title: constants.TypeTitle,
@@ -179,7 +181,8 @@ export class NewProjectDialog extends DialogBase {
 				required: true,
 				component: this.createHorizontalContainer(view, [locationTextBox, browseFolderButton])
 			},
-			this.createWorkspaceContainer(view)
+			this.workspaceDescriptionFormComponent!,
+			this.workspaceInputFormComponent!
 		]).component();
 		await view.initializeModel(form);
 		this.initDialogComplete?.resolve();
