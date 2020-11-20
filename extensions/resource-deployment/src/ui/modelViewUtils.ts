@@ -601,8 +601,6 @@ async function configureOptionsSourceSubfields(context: FieldContext, optionsSou
 				throw e;
 			}
 		},
-		isPassword: await optionsSourceProvider.getIsPassword!(variableKey),
-		getValue: async (): Promise<InputValueType> => (typeof optionsComponent.value === 'string' ? optionsComponent.value : optionsComponent.value?.displayName) || '',
 		onValueChanged: optionsComponent.onValueChanged
 	});
 }
@@ -740,7 +738,7 @@ function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
 		component: readOnlyField.text!,
 		getValue: async (): Promise<InputValueType> => {
 			readOnlyField.text!.value = await substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
-			return readOnlyField.text?.value;
+			return readOnlyField.text!.value;
 		},
 		onValueChanged: onChangedEmitter.event,
 	});
