@@ -8,7 +8,7 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import { getErrorMessage } from '../../../common/utils';
 import { RadioOptionsGroup, RadioOptionsInfo } from '../../../ui/components/radioOptionsGroup';
-import { loadingComponent, loadingError, modelView, radioButtons } from '../../mocks/fakeContainersAndBuilders';
+import { loadingError, modelView, radioButtons } from '../../mocks/fakeContainersAndBuilders';
 
 const radioOptionsInfo = <RadioOptionsInfo>{
 	values: [
