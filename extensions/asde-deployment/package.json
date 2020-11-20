@@ -296,7 +296,6 @@
                           "defaultValue": "westus",
                           "required": true,
                           "locationVariableName": "AZDATA_NB_VAR_ASDE_AZURE_LOCATION",
-                          "displayLocationVariableName": "AZDATA_NB_VAR_ASDE_AZURE_LOCATION_TEXT",
                           "locations": [
                             "australiaeast",
                             "australiasoutheast",

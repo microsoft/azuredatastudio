@@ -37,6 +37,7 @@ export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | a
 export type InputComponentInfo<T extends InputComponent> = {
 	component: T;
 	getValue: () => Promise<InputValueType>;
+	getDisplayValue?: () => Promise<string>;
 	onValueChanged: vscode.Event<void>;
 	isPassword?: boolean
 };
@@ -262,6 +263,7 @@ export function createDropdownInputInfo(view: azdata.ModelView, info: { defaultV
 	return {
 		component: dropdown,
 		getValue: async (): Promise<InputValueType> => typeof dropdown.value === 'string' ? dropdown.value : dropdown.value?.name,
+		getDisplayValue: async (): Promise<string> => (typeof dropdown.value === 'string' ? dropdown.value : dropdown.value?.displayName) || '',
 		onValueChanged: dropdown.onValueChanged,
 	};
 }
@@ -753,7 +755,7 @@ function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
 
 /**
  * Returns a string that interpolates all variable names in the {@param inputValue} string de-marked as $(VariableName)
- * substituted with their corresponding values.
+ * substituted with their corresponding values. Will use the display value of the target input values if possible.
  *
  * Only variables in the current model starting with {@see NoteBookEnvironmentVariablePrefix} are replaced.
  *
@@ -764,7 +766,7 @@ async function substituteVariableValues(inputComponents: InputComponents, inputV
 	await Promise.all(Object.keys(inputComponents)
 		.filter(key => key.startsWith(NoteBookEnvironmentVariablePrefix))
 		.map(async key => {
-			const value = (await inputComponents[key].getValue()) ?? '<undefined>';
+			const value = (await (inputComponents[key].getDisplayValue ? inputComponents[key].getDisplayValue!() : inputComponents[key].getValue())) ?? '<undefined>';
 			const re: RegExp = new RegExp(`\\\$\\\(${key}\\\)`, 'gi');
 			inputValue = inputValue?.replace(re, value.toString());
 		})
@@ -927,6 +929,7 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
 		component: radioGroupLoadingComponentBuilder,
 		getValue: async (): Promise<InputValueType> => radioGroupLoadingComponentBuilder.value,
+		getDisplayValue: async (): Promise<string> => radioGroupLoadingComponentBuilder.displayValue,
 		onValueChanged: radioGroupLoadingComponentBuilder.onValueChanged,
 	});
 	addLabelInputPairToContainer(context.view, context.components, label, radioGroupLoadingComponentBuilder.component(), context.fieldInfo);
@@ -1118,15 +1121,9 @@ function createAzureSubscriptionDropdown(
 			const inputValue = (await subscriptionDropdown.getValue())?.toString() || '';
 			return subscriptionValueToSubscriptionMap.get(inputValue)?.id || inputValue;
 		},
+		getDisplayValue: subscriptionDropdown.getDisplayValue,
 		onValueChanged: subscriptionDropdown.onValueChanged
 	});
-	if (context.fieldInfo.displaySubscriptionVariableName) {
-		context.fieldInfo.subFields!.push({
-			label: label.value!,
-			variableName: context.fieldInfo.displaySubscriptionVariableName
-		});
-		context.onNewInputComponentCreated(context.fieldInfo.displaySubscriptionVariableName!, subscriptionDropdown);
-	}
 	addLabelInputPairToContainer(context.view, context.components, label, subscriptionDropdown.component, context.fieldInfo);
 	return subscriptionDropdown.component;
 }
@@ -1340,22 +1337,6 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 			variableName: context.fieldInfo.locationVariableName
 		});
 		context.onNewInputComponentCreated(context.fieldInfo.locationVariableName, locationDropdown);
-	}
-	if (context.fieldInfo.displayLocationVariableName) {
-		context.fieldInfo.subFields!.push({
-			label: label.value!,
-			variableName: context.fieldInfo.displayLocationVariableName
-		});
-		// Create a special input component that maps the dropdown to the display name for the location
-		// so that we have two variables - one for the value and one for the display name
-		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, {
-			component: locationDropdown.component,
-			getValue: async (): Promise<InputValueType> => {
-				const inputValue = (await locationDropdown.getValue())?.toString();
-				return apiService.azurecoreApi.getRegionDisplayName(inputValue);
-			},
-			onValueChanged: locationDropdown.onValueChanged,
-		});
 	}
 	addLabelInputPairToContainer(context.view, context.components, label, locationDropdown.component, context.fieldInfo);
 	return locationDropdown.component;
