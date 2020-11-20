@@ -25,13 +25,16 @@ export interface MarkedOptions extends marked.MarkedOptions {
 }
 
 export interface MarkdownRenderOptions extends FormattedTextRenderOptions {
-	codeBlockRenderer?: (modeId: string, value: string) => Promise<string>;
+	codeBlockRenderer?: (modeId: string, value: string) => Promise<HTMLElement>;
 	codeBlockRenderCallback?: () => void;
 	baseUrl?: URI;
 }
 
 /**
- * Create html nodes for the given content element.
+ * Low-level way create a html element from a markdown string.
+ *
+ * **Note** that for most cases you should be using [`MarkdownRenderer`](./src/vs/editor/browser/core/markdownRenderer.ts)
+ * which comes with support for pretty code block rendering and which uses the default way of handling links.
  */
 export function renderMarkdown(markdown: IMarkdownString, options: MarkdownRenderOptions = {}, markedOptions: MarkedOptions = {}): HTMLElement {
 	const element = createElement(options);
@@ -161,9 +164,9 @@ export function renderMarkdown(markdown: IMarkdownString, options: MarkdownRende
 			// {{SQL CARBON EDIT}} - Promise.all not returning the strValue properly in original code? @todo anthonydresser 4/12/19 investigate a better way to do this.
 			const promise = value.then(strValue => {
 				withInnerHTML.then(e => {
-					const span = element.querySelector(`div[data-code="${id}"]`);
+					const span = <HTMLDivElement>element.querySelector(`div[data-code="${id}"]`);
 					if (span) {
-						span.innerHTML = strValue;
+						DOM.reset(span, values[0]);
 					}
 				}).catch(err => {
 					// ignore
