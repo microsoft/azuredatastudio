@@ -20,6 +20,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ComponentEventType, IModelStore, IComponentDescriptor, IComponent } from 'sql/platform/dashboard/browser/interfaces';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 function reviveWebviewOptions(options: vscode.WebviewOptions): vscode.WebviewOptions {
 	return {
@@ -57,17 +58,18 @@ export default class WebViewComponent extends ComponentBase<WebViewProperties> i
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IOpenerService) private readonly _openerService: IOpenerService,
 		@Inject(IWorkspaceContextService) private readonly _contextService: IWorkspaceContextService,
-		@Inject(IWebviewService) private readonly webviewService: IWebviewService
+		@Inject(IWebviewService) private readonly webviewService: IWebviewService,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
+	ngAfterViewInit(): void {
 		this._createWebview();
 		this._register(addDisposableListener(window, EventType.RESIZE, e => {
 			this.layout();
 		}));
+		this.baseInit();
 	}
 
 	private _createWebview(): void {

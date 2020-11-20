@@ -13,6 +13,8 @@ import { ViewBase } from './viewBase';
 export interface iconSettings {
 	width?: number,
 	height?: number,
+	containerWidth?: number,
+	containerHeight?: number,
 	css?: { [key: string]: string },
 	path?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri }
 }
@@ -24,12 +26,13 @@ export class DataInfoComponent extends ViewBase {
 	private _labelComponent: azdata.TextComponent | undefined;
 	private _descriptionComponent: azdata.TextComponent | undefined;
 	private _loadingComponent: azdata.LoadingComponent | undefined;
-	private _width: number = 100;
-	private _height: number = 100;
+	private _width: number = 200;
+	private _height: number = 200;
 	private _title: string = '';
 	private _description: string = '';
 	private _iconComponent: azdata.ImageComponent | undefined;
 	private _iconSettings: iconSettings | undefined;
+	private _defaultIconSize = 128;
 
 
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
@@ -38,14 +41,14 @@ export class DataInfoComponent extends ViewBase {
 
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._descriptionComponent = modelBuilder.text().withProperties({
-			width: 200
+			value: this._description,
 		}).component();
 		this._labelComponent = modelBuilder.text().withProperties({
-			width: 200
+			value: this._title,
 		}).component();
 		this._labelContainer = modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			width: this._width,
+			width: 'auto',
 			height: this._height,
 			justifyContent: 'center',
 			alignItems: 'center',
@@ -55,26 +58,26 @@ export class DataInfoComponent extends ViewBase {
 		if (!this._iconSettings) {
 			this._iconSettings = {
 				css: {},
-				height: 50,
-				width: 50,
+				height: this._defaultIconSize,
+				width: this._defaultIconSize,
 				path: ''
 				,
 			};
 		}
 
 		this._iconComponent = modelBuilder.image().withProperties({
-			width: 100,
-			height: 100,
-			iconWidth: this._iconSettings.width,
-			iconHeight: this._iconSettings.height,
+			width: this._iconSettings?.containerWidth ?? this._defaultIconSize,
+			height: this._iconSettings?.containerHeight ?? this._defaultIconSize,
+			iconWidth: this._iconSettings?.width ?? this._defaultIconSize,
+			iconHeight: this._iconSettings?.height ?? this._defaultIconSize,
 			title: this._title
 		}).component();
 		let iconContainer = modelBuilder.flexContainer().withLayout({
-			width: 100,
+			width: this._iconSettings?.containerWidth ?? this._defaultIconSize,
 		}).component();
 
 		iconContainer.addItem(this._iconComponent, {
-			CSSStyles: this._iconSettings.css
+			CSSStyles: this._iconSettings?.css ?? {}
 		});
 
 		this._labelContainer.addItem(iconContainer);

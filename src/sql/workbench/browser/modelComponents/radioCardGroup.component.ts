@@ -15,6 +15,7 @@ import 'vs/css!./media/verticalCard';
 
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { deepClone } from 'vs/base/common/objects';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./radioCardGroup.component.html'))
@@ -30,11 +31,12 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.baseInit();
 	}
 
@@ -113,6 +115,22 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 
 	public get iconHeight(): string | undefined {
 		return this.getProperties().iconHeight ?? undefined;
+	}
+
+	public get textHeight(): string | undefined {
+		return this.calculateTextContainerHeight();
+	}
+
+	public calculateTextContainerHeight(): string | undefined {
+		if (this.cardHeight.endsWith('px') && this.iconHeight.endsWith('px')) {
+			const padding = 30; // icon-container padding + text-container padding
+			let height = Number.parseInt(this.cardHeight.substr(0, this.cardHeight.length - 2)) - Number.parseInt(this.iconHeight.substr(0, this.cardHeight.length - 2));
+			height = height - padding;
+
+			return height.toString() + 'px';
+		} else {
+			return undefined;
+		}
 	}
 
 	public get selectedCardId(): string | undefined {

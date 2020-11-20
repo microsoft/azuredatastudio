@@ -17,6 +17,7 @@ import { equals as arrayEquals } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export enum DeclarativeDataType {
 	string = 'string',
@@ -40,16 +41,14 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
-	}
-
-	ngOnInit(): void {
-		this.baseInit();
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {
@@ -218,6 +217,15 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		}
 
 		return '';
+	}
+
+	public getCheckAllColumnAriaLabel(colIdx: number): string {
+		return localize('checkAllColumnLabel', "check all checkboxes in column: {0}", this.columns[colIdx].displayName);
+	}
+
+	public getHeaderAriaLabel(colIdx: number): string {
+		const column = this.columns[colIdx];
+		return (column.ariaLabel) ? column.ariaLabel : column.displayName;
 	}
 
 	public getItemDescriptor(componentId: string): IComponentDescriptor {

@@ -46,6 +46,7 @@
 		"Microsoft.arc",
 		"Microsoft.azdata",
 		"Microsoft.azuredatastudio-postgresql",
+		"Microsoft.azurehybridtoolkit",
 		"Microsoft.cms",
 		"Microsoft.dacpac",
 		"Microsoft.import",

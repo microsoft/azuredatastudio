@@ -75,8 +75,12 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			title: constants.azureModelWorkspace,
 			component: this._workspaces
 		}], {
-			horizontal: true
+			titleFontSize: '13px',
+			horizontal: true,
 		}).component();
+		this._form.setLayout({
+			padding: '0'
+		});
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {

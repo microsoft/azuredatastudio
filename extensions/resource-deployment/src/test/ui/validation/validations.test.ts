@@ -7,12 +7,15 @@ import * as azdata from 'azdata';
 import 'mocha';
 import * as should from 'should';
 import * as sinon from 'sinon';
-import { createValidation, GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, validateInputBoxComponent, Validation, ValidationType, ValidationValueType } from '../../../ui/validation/validations';
+import * as vscode from 'vscode';
+import { InputValueType } from '../../../ui/modelViewUtils';
+import { createValidation, GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, validateInputBoxComponent, Validation, ValidationType } from '../../../ui/validation/validations';
 
 const inputBox = <azdata.InputBoxComponent>{
 	updateProperty(key: string, value: any) { }
 };
 let inputBoxStub: sinon.SinonStub;
+const validationMessage = 'The field value is not valid';
 const testValidations = [
 	{
 		type: ValidationType.IsInteger,
@@ -34,32 +37,39 @@ const testValidations = [
 		target: 'field1'
 	}
 ];
+let onValidityChangedEmitter: vscode.EventEmitter<boolean>;
 
-suite('Validation', () => {
-	suite('createValidation and validate input Box', () => {
-		setup(() => {
-			sinon.restore(); //cleanup all previously defined sinon mocks
-			inputBoxStub = sinon.stub(inputBox, 'updateProperty').resolves();
-		});
+describe('Validation', () => {
+	beforeEach('validation setup', () => {
+		sinon.restore(); //cleanup all previously defined sinon mocks
+		inputBoxStub = sinon.stub(inputBox, 'updateProperty').resolves();
+		onValidityChangedEmitter = new vscode.EventEmitter<boolean>(); // recreate for every test so that any previous subscriptions on the event are cleared out.
+	});
+	describe('createValidation and validate input Box', () => {
 		testValidations.forEach(testObj => {
-			test(`validationType: ${testObj.type}`, async () => {
-				const validation = createValidation(testObj, async () => undefined, async (_varName: string) => undefined);
+			it(`validationType: ${testObj.type}`, async () => {
+				const validation = createValidation(
+					testObj,
+					async (isValid) => (isValid) ? inputBox.updateProperty('validationErrorMessage', undefined) : inputBox.updateProperty('validationErrorMessage', validationMessage),
+					async () => undefined,
+					async (_varName: string) => undefined,
+					(_variableName) => onValidityChangedEmitter.event,
+					(_disposable: vscode.Disposable) => { }
+				);
 				switch (testObj.type) {
 					case ValidationType.IsInteger: should(validation).be.instanceOf(IntegerValidation); break;
 					case ValidationType.Regex: should(validation).be.instanceOf(RegexValidation); break;
 					case ValidationType.LessThanOrEqualsTo: should(validation).be.instanceOf(LessThanOrEqualsValidation); break;
 					case ValidationType.GreaterThanOrEqualsTo: should(validation).be.instanceOf(GreaterThanOrEqualsValidation); break;
-					default: console.log(`unexpected validation type: ${testObj.type}`); break;
 				}
-				should(await validateInputBoxComponent(inputBox, [validation])).be.false();
+				should(await validateInputBoxComponent(inputBox, [validation])).be.true(); // undefined and '' values are valid so validation should return true. This allows for fields that are not required
 				should(inputBoxStub.calledOnce).be.true();
-				should(inputBoxStub.getCall(0).args[0]).equal('validationErrorMessage');
-				should(inputBoxStub.getCall(0).args[1]).equal(testObj.description);
+				should(inputBoxStub.getCall(0).args[1]).be.undefined();
 			});
 		});
 	});
 
-	suite('IntegerValidation', () => {
+	describe('IntegerValidation', () => {
 		// all the below test values are arbitrary representative values or sentinel values for integer validation
 		[
 			{ value: '342520596781', expected: true },
@@ -68,14 +78,16 @@ suite('Validation', () => {
 			{ value: 3.14, expected: false },
 			{ value: '3.14e2', expected: true },
 			{ value: 3.14e2, expected: true },
-			{ value: undefined, expected: false },
+			{ value: undefined, expected: true },
+			{ value: '', expected: true },
 			{ value: NaN, expected: false },
 		].forEach((testObj) => {
 			const displayTestValue = getDisplayString(testObj.value);
-			test(`testValue:${displayTestValue}`, async () => {
+			it(`testValue:${displayTestValue}`, async () => {
 				const validationDescription = `value: ${displayTestValue} was not an integer`;
 				const validation = new IntegerValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription },
+					async (isValid) => (isValid) ? inputBox.updateProperty('validationErrorMessage', undefined) : inputBox.updateProperty('validationErrorMessage', validationMessage),
 					async () => testObj.value
 				);
 				await testValidation(validation, testObj, validationDescription);
@@ -83,7 +95,7 @@ suite('Validation', () => {
 		});
 	});
 
-	suite('RegexValidation', () => {
+	describe('RegexValidation', () => {
 		const testRegex = '^[0-9]+$';
 		// tests
 		[
@@ -94,13 +106,15 @@ suite('Validation', () => {
 			{ value: '3.14e2', expected: false },
 			{ value: 3.14e2, expected: true }, // value of 3.14e2 literal is 342 which in string matches the testRegex
 			{ value: 'arbitraryString', expected: false },
-			{ value: undefined, expected: false },
+			{ value: undefined, expected: true },
+			{ value: '', expected: true },
 		].forEach(testOb => {
 			const displayTestValue = getDisplayString(testOb.value);
-			test(`regex: /${testRegex}/, testValue:${displayTestValue}, expect result: ${testOb.expected}`, async () => {
+			it(`regex: /${testRegex}/, testValue:${displayTestValue}, expect result: ${testOb.expected}`, async () => {
 				const validationDescription = `value:${displayTestValue} did not match the regex:/${testRegex}/`;
 				const validation = new RegexValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription, regex: testRegex },
+					async (isValid) => (isValid) ? inputBox.updateProperty('validationErrorMessage', undefined) : inputBox.updateProperty('validationErrorMessage', validationMessage),
 					async () => testOb.value
 				);
 				await testValidation(validation, testOb, validationDescription);
@@ -108,7 +122,7 @@ suite('Validation', () => {
 		});
 	});
 
-	suite('LessThanOrEqualsValidation', () => {
+	describe('LessThanOrEqualsValidation', () => {
 		const targetVariableName = 'comparisonTarget';
 		// tests - when operands are mix of string and number then number comparison is performed
 		[
@@ -137,29 +151,40 @@ suite('Validation', () => {
 			{ value: 342.15, targetValue: 342.15, expected: true },
 
 
-			// undefined values - if one operand is undefined result is always false
-			{ value: undefined, targetValue: '42', expected: false },
-			{ value: undefined, targetValue: 42, expected: false },
-			{ value: '42', targetValue: undefined, expected: false },
-			{ value: 42, targetValue: undefined, expected: false },
-			{ value: undefined, targetValue: undefined, expected: false },
+			// undefined values - if one operand is undefined result is always true - this is to allow fields that are not a required value to be valid.
+			{ value: undefined, targetValue: '42', expected: true },
+			{ value: undefined, targetValue: 42, expected: true },
+			{ value: '42', targetValue: undefined, expected: true },
+			{ value: 42, targetValue: undefined, expected: true },
+			{ value: undefined, targetValue: '', expected: true },
+			{ value: undefined, targetValue: undefined, expected: true },
 
+			// '' values - if one operand is '' result is always true - this is to allow fields that are not a required value to be valid.
+			{ value: '', targetValue: '42', expected: true },
+			{ value: '', targetValue: 42, expected: true },
+			{ value: '42', targetValue: '', expected: true },
+			{ value: 42, targetValue: '', expected: true },
+			{ value: '', targetValue: undefined, expected: true },
+			{ value: '', targetValue: '', expected: true },
 		].forEach(testObj => {
 			const displayTestValue = getDisplayString(testObj.value);
 			const displayTargetValue = getDisplayString(testObj.targetValue);
-			test(`testValue:${displayTestValue}, targetValue:${displayTargetValue}`, async () => {
+			it(`testValue:${displayTestValue}, targetValue:${displayTargetValue}`, async () => {
 				const validationDescription = `${displayTestValue} did not test as <= ${displayTargetValue}`;
 				const validation = new LessThanOrEqualsValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription, target: targetVariableName },
+					async (isValid) => (isValid) ? inputBox.updateProperty('validationErrorMessage', undefined) : inputBox.updateProperty('validationErrorMessage', validationMessage),
 					async () => testObj.value,
-					async (_variableName: string) => testObj.targetValue
+					async (_variableName: string) => testObj.targetValue,
+					(_variableName) => onValidityChangedEmitter.event,
+					(_disposable) => { } // do nothing with the disposable for the test.
 				);
 				await testValidation(validation, testObj, validationDescription);
 			});
 		});
 	});
 
-	suite('GreaterThanOrEqualsValidation', () => {
+	describe('GreaterThanOrEqualsValidation', () => {
 		const targetVariableName = 'comparisonTarget';
 		// tests - when operands are mix of string and number then number comparison is performed
 		[
@@ -181,21 +206,33 @@ suite('Validation', () => {
 			{ value: '342.15', targetValue: 342.15, expected: true },
 			{ value: 342.15, targetValue: 342.15, expected: true },
 
-			// undefined values - if one operand is undefined result is always false
-			{ value: undefined, targetValue: '42', expected: false },
-			{ value: undefined, targetValue: 42, expected: false },
-			{ value: '42', targetValue: undefined, expected: false },
-			{ value: 42, targetValue: undefined, expected: false },
-			{ value: undefined, targetValue: undefined, expected: false },
+			// undefined values - if one operand is undefined result is always false - this is to allow fields that are not a required value to be valid.
+			{ value: undefined, targetValue: '42', expected: true },
+			{ value: undefined, targetValue: 42, expected: true },
+			{ value: '42', targetValue: undefined, expected: true },
+			{ value: 42, targetValue: undefined, expected: true },
+			{ value: undefined, targetValue: '', expected: true },
+			{ value: undefined, targetValue: undefined, expected: true },
+
+			// '' values - if one operand is '' result is always false - this is to allow fields that are not a required value to be valid.
+			{ value: '', targetValue: '42', expected: true },
+			{ value: '', targetValue: 42, expected: true },
+			{ value: '42', targetValue: '', expected: true },
+			{ value: 42, targetValue: '', expected: true },
+			{ value: '', targetValue: undefined, expected: true },
+			{ value: '', targetValue: '', expected: true },
 		].forEach(testObj => {
 			const displayTestValue = getDisplayString(testObj.value);
 			const displayTargetValue = getDisplayString(testObj.targetValue);
-			test(`testValue:${displayTestValue}, targetValue:${displayTargetValue}`, async () => {
+			it(`testValue:${displayTestValue}, targetValue:${displayTargetValue}`, async () => {
 				const validationDescription = `${displayTestValue} did not test as >= ${displayTargetValue}`;
 				const validation = new GreaterThanOrEqualsValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription, target: targetVariableName },
+					async (isValid) => (isValid) ? inputBox.updateProperty('validationErrorMessage', undefined) : inputBox.updateProperty('validationErrorMessage', validationMessage),
 					async () => testObj.value,
-					async (_variableName: string) => testObj.targetValue
+					async (_variableName: string) => testObj.targetValue,
+					(_variableName) => onValidityChangedEmitter.event,
+					(_disposable) => { } // do nothing with the disposable for the test
 				);
 				await testValidation(validation, testObj, validationDescription);
 			});
@@ -204,8 +241,8 @@ suite('Validation', () => {
 });
 
 interface TestObject {
-	value: ValidationValueType;
-	targetValue?: ValidationValueType;
+	value: InputValueType;
+	targetValue?: InputValueType;
 	expected: boolean;
 }
 
@@ -217,7 +254,7 @@ async function testValidation(validation: Validation, test: TestObject, validati
 		: should(validationResult.message).be.equal(validationDescription);
 }
 
-function getDisplayString(value: ValidationValueType) {
+function getDisplayString(value: InputValueType) {
 	return typeof value === 'string' ? `"${value}"` : value;
 }
 

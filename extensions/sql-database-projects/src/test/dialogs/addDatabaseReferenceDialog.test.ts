@@ -5,6 +5,10 @@
 
 import * as should from 'should';
 import * as path from 'path';
+import * as sinon from 'sinon';
+import * as vscode from 'vscode';
+import * as TypeMoq from 'typemoq';
+import * as dataworkspace from 'dataworkspace';
 import * as baselines from '../baselines/baselines';
 import * as templates from '../../templates/templates';
 import * as testUtils from '../testUtils';
@@ -15,6 +19,16 @@ describe('Add Database Reference Dialog', () => {
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
+	});
+
+	beforeEach(function (): void {
+		const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
+		dataWorkspaceMock.setup(x => x.getProjectsInWorkspace()).returns(() => []);
+		sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object });
+	});
+
+	afterEach(function (): void {
+		sinon.restore();
 	});
 
 	it('Should open dialog successfully', async function (): Promise<void> {
@@ -29,10 +43,8 @@ describe('Add Database Reference Dialog', () => {
 		const dialog = new AddDatabaseReferenceDialog(project);
 		await dialog.openDialog();
 
-		should(dialog.dialog.okButton.enabled).equal(false);
+		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled since initial type of systemDb has default values filled');
 		should(dialog.currentReferenceType).equal(ReferenceType.systemDb);
-		dialog.tryEnableAddReferenceButton();
-		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled because there is a default value in the database name textbox');
 
 		// empty db name textbox
 		dialog.databaseNameTextbox!.value = '';

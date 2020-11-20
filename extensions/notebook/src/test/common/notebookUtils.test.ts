@@ -20,12 +20,16 @@ describe('notebookUtils Tests', function (): void {
 	let notebookUtils: NotebookUtils = new NotebookUtils();
 	let showErrorMessageSpy: sinon.SinonSpy;
 
-	beforeEach(function(): void {
+	beforeEach(function (): void {
 		showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 	});
 
-	afterEach(function(): void {
+	afterEach(function (): void {
 		sinon.restore();
+	});
+
+	this.beforeAll(async function (): Promise<void> {
+		await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 	});
 
 	this.afterAll(async function (): Promise<void> {
@@ -109,7 +113,7 @@ describe('notebookUtils Tests', function (): void {
 			sinon.replaceGetter(azdata.nb, 'activeNotebookEditor', () => undefined);
 			await notebookUtils.clearActiveCellOutput();
 			should(showErrorMessageSpy.calledOnce).be.true('showErrorMessage should be called exactly once');
-});
+		});
 
 		it('does not show error when notebook visible', async function (): Promise<void> {
 			let mockNotebookEditor = TypeMoq.Mock.ofType<azdata.nb.NotebookEditor>();

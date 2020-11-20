@@ -32,7 +32,7 @@ export class AssessmentEngine {
 	private connectionUri: string = '';
 	private connectionProfile!: azdata.connection.ConnectionProfile;
 	private lastInvokedResults!: SqlAssessmentResultInfo;
-	private historicalRecords!: SqlAssessmentRecord[];
+	private historicalRecords!: SqlAssessmentRecord[] | undefined;
 
 
 	constructor(service: mssql.ISqlAssessmentService) {
@@ -56,6 +56,7 @@ export class AssessmentEngine {
 	public async initialize(connectionId: string) {
 		this.connectionUri = await azdata.connection.getUriForConnection(connectionId);
 		this.connectionProfile = await azdata.connection.getCurrentConnection();
+		this.historicalRecords = undefined;
 	}
 
 	public async performAssessment(asmtType: AssessmentType, onResult: OnResultCallback): Promise<void> {
@@ -99,7 +100,7 @@ export class AssessmentEngine {
 			await this.loadHistory();
 		}
 
-		return this.historicalRecords;
+		return this.historicalRecords ?? [];
 	}
 
 	private async loadHistory(): Promise<void> {

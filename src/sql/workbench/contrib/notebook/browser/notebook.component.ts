@@ -369,8 +369,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private updateToolbarComponents() {
+		this._trustedAction.enabled = true;
 		if (this.model.trustedMode) {
-			this._trustedAction.enabled = true;
 			this._trustedAction.trusted = true;
 		}
 	}
@@ -557,7 +557,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private addButton(label: string, onDidClick?: () => void, enabled?: boolean): void {
 		const container = DOM.append(this.bookNav.nativeElement, DOM.$('.dialog-message-button'));
 		let button = new Button(container);
-		button.icon = '';
 		button.label = label;
 		if (onDidClick) {
 			this._register(button.onDidClick(onDidClick));

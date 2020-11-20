@@ -44,8 +44,7 @@ export class EditableDropDown extends AngularDisposable implements OnInit, OnCha
 			strictSelection: false,
 			placeholder: '',
 			maxHeight: 125,
-			ariaLabel: '',
-			actionLabel: ''
+			ariaLabel: ''
 		};
 		this._selectbox = new Dropdown(this._el.nativeElement, this.contextViewService, dropdownOptions);
 		this._selectbox.values = this.options;

@@ -338,7 +338,7 @@ export class KernelsDropdown extends SelectBox {
 				}
 				this.setOptions(kernels, index);
 			}
-		} else if (this.model.clientSession.isInErrorState) {
+		} else if (this.model.clientSession?.isInErrorState) {
 			kernels.unshift(noKernelName);
 			this.setOptions(kernels, 0);
 		}
@@ -402,7 +402,7 @@ export class AttachToDropdown extends SelectBox {
 		let kernelDisplayName: string = this.getKernelDisplayName();
 		if (kernelDisplayName) {
 			this.loadAttachToDropdown(this.model, kernelDisplayName, showSelectConnection);
-		} else if (this.model.clientSession.isInErrorState) {
+		} else if (this.model.clientSession?.isInErrorState) {
 			this.setOptions([localize('noContextAvailable', "None")], 0);
 		}
 	}
@@ -480,7 +480,7 @@ export class AttachToDropdown extends SelectBox {
 			}
 			let connection = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
 				{
-					connectionType: ConnectionType.temporary,
+					connectionType: ConnectionType.editor,
 					providers: providers
 				},
 				useProfile ? this.model.connectionProfile : undefined);

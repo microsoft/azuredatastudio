@@ -17,6 +17,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 class DivItem {
 	constructor(public descriptor: IComponentDescriptor, public config: azdata.DivItemLayout) { }
@@ -45,18 +46,16 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(forwardRef(() => Renderer2)) private renderer: Renderer2
+		@Inject(forwardRef(() => Renderer2)) private renderer: Renderer2,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 		this._overflowY = '';	// default
 	}
 
-	ngAfterViewInit() {
+	ngAfterViewInit(): void {
 		this.viewInitialized = true;
 		this.updateClickListener();
-	}
-
-	ngOnInit(): void {
 		this.baseInit();
 	}
 

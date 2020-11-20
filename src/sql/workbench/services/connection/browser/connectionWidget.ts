@@ -161,6 +161,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._previousGroupOption = this._serverGroupSelectBox.value;
 		this._container = DOM.append(container, DOM.$('div.connection-table'));
 		this._tableContainer = DOM.append(this._container, DOM.$('table.connection-table-content'));
+		this._tableContainer.setAttribute('role', 'presentation');
 		this.fillInConnectionForm(authTypeChanged);
 		this.registerListeners();
 		if (this._authTypeSelectBox) {
@@ -284,8 +285,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				strictSelection: false,
 				placeholder: this._defaultDatabaseName,
 				maxHeight: 125,
-				ariaLabel: databaseOption.displayName,
-				actionLabel: localize('connectionWidget.toggleDatabaseNameDropdown', "Select Database Toggle Dropdown")
+				ariaLabel: databaseOption.displayName
 			});
 		}
 	}
@@ -364,7 +364,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				this._databaseDropdownExpanded = true;
 				if (this.serverName) {
 					this._databaseNameInputBox.values = [this._loadingDatabaseName];
-					this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password).then(databases => {
+					this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password, this.azureAccount).then(databases => {
 						if (databases) {
 							this._databaseNameInputBox.values = databases.sort((a, b) => a.localeCompare(b));
 						} else {
