@@ -547,6 +547,10 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this._dataToSaveMap.set(key, data);
 			this._rowsMap.set(key, []);
 			this.sendIOPubMessage(data, set);
+			// If rows are returned in the initial result set, make sure to convert and send to notebook
+			if (set.rowCount > 0) {
+				this.handleResultSetUpdate(set);
+			}
 		}
 	}
 
