@@ -69,7 +69,7 @@ suite('SQL Future', function () {
 
 		queryRunner.setup(x => x.getQueryRows(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(subset));
 		sqlFuture.handleResultSet(resultSet);
-		await sqlFuture.queryAndConvertData(resultSet, 0);
+		await sqlFuture.handleDone();
 		sinon.assert.calledWith(handleSpy, expectedMsg);
 	});
 });
