@@ -4,6 +4,7 @@
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
     <TargetDatabaseName>targetDb</TargetDatabaseName>
     <DeployScriptFileName>DatabaseProject1.sql</DeployScriptFileName>
+    <![CDATA[[SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Test password, not actually used")]]>
     <TargetConnectionString>Data Source=testserver;User Id=testUser;Password=abcd123;Integrated Security=false;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True</TargetConnectionString>
     <ProfileVersionNumber>1</ProfileVersionNumber>
   </PropertyGroup>
