@@ -20,7 +20,7 @@ export abstract class DialogBase {
 	protected initDialogComplete: Deferred<void> | undefined;
 	protected initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
 	protected workspaceDescriptionFormComponent: azdata.FormComponent | undefined;
-	protected workspaceInputBox: azdata.InputBoxComponent | undefined;
+	public workspaceInputBox: azdata.InputBoxComponent | undefined;
 	protected workspaceInputFormComponent: azdata.FormComponent | undefined;
 
 	constructor(dialogTitle: string, dialogName: string, dialogWidth: azdata.window.DialogWidth = 600) {
