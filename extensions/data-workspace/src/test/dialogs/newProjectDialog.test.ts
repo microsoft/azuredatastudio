@@ -24,7 +24,7 @@ suite('New Project Dialog', function (): void {
 
 		dialog.model.name = 'TestProject';
 		dialog.model.location = '';
-		dialog.workspaceInputBox.value = 'test.code-workspace';
+		dialog.workspaceInputBox!.value = 'test.code-workspace';
 		should.equal(await dialog.validate(), false, 'Validation should fail because the parent directory does not exist');
 
 		// create a folder with the same name
@@ -47,19 +47,19 @@ suite('New Project Dialog', function (): void {
 
 		dialog.model.name = `TestProject_${new Date().getTime()}`;
 		dialog.model.location = os.tmpdir();
-		dialog.workspaceInputBox.value = 'test';
+		dialog.workspaceInputBox!.value = 'test';
 		should.equal(await dialog.validate(), false, 'Validation should fail because workspace does not end in code-workspace');
 
 		// use invalid folder
-		dialog.workspaceInputBox.value = 'invalidLocation/test.code-workspace';
+		dialog.workspaceInputBox!.value = 'invalidLocation/test.code-workspace';
 		should.equal(await dialog.validate(), false, 'Validation should fail because the folder is invalid');
 
 		// same folder as the project should be valid even if the project folder isn't created yet
-		dialog.workspaceInputBox.value = path.join(dialog.model.location, dialog.model.name, 'test.code-workspace');
+		dialog.workspaceInputBox!.value = path.join(dialog.model.location, dialog.model.name, 'test.code-workspace');
 		should.equal(await dialog.validate(), true, 'Validation should pass if the file location is the same folder as the project');
 
 		// change workspace name to something that should pass
-		dialog.workspaceInputBox.value = path.join(os.tmpdir(), 'test.code-workspace');
+		dialog.workspaceInputBox!.value = path.join(os.tmpdir(), 'test.code-workspace');
 		should.equal(await dialog.validate(), true, 'Validation should pass because the parent directory exists and the file extension is correct');
 	});
 
