@@ -257,6 +257,8 @@ export interface IModelViewDialogDetails {
 	customButtons: number[];
 	message: DialogMessage;
 	width: DialogWidth;
+	dialogStyle: DialogStyle;
+	dialogPosition: DialogPosition;
 }
 
 export interface IModelViewTabDetails {

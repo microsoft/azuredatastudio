@@ -188,8 +188,8 @@ export class CalloutDialog extends Modal {
 			DOM.append(inputContainer, browseButtonContainer);
 			DOM.append(browseButtonContainer, this._imageBrowseButton);
 
-			this._register(DOM.addDisposableListener(this._imageBrowseButton, DOM.EventType.CLICK, () => {
-				this.handleBrowse();
+			this._register(DOM.addDisposableListener(this._imageBrowseButton, DOM.EventType.CLICK, async () => {
+				await this.handleBrowse();
 			}, true));
 
 			DOM.append(pathRow, inputContainer);

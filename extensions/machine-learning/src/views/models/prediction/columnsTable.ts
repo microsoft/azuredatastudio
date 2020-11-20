@@ -342,7 +342,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			inputContainer.addItem(label, {
 				CSSStyles: {
 					'padding': '0px',
-					'padding-right': '5px',
+					'padding-right': '10px',
 					'margin': '0px'
 				}
 			});
@@ -393,18 +393,17 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			 * - Allow suppression of title / heading slot.
 			 * - Add support for position X/Y.
 			 * - Add support for markup inside Dialog.
-			 *
-			 *  */
-
+			 **/
 
 			let warningTab: azdata.window.DialogTab = azdata.window.createTab('tab1');
 			// init tab
 			// create layout
 			warningTab.registerContent(async view => {
-				let warningContent = view.modelBuilder.divContainer().component();
-				warningContent.addItem(view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+				let warningContentContainer = view.modelBuilder.divContainer().component();
+				let warningMessage = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 					value: 'hello world!'
-				}).component());
+				}).component();
+				warningContentContainer.addItem(warningMessage);
 			});
 			// set tab as content
 			dialog.content = [warningTab];

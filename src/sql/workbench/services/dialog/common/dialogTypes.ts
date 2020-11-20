@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
-import { DialogMessage, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { DialogMessage, DialogWidth, DialogStyle, DialogPosition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ModelViewPane {
 	private _valid: boolean = true;
@@ -43,6 +43,8 @@ export class Dialog extends ModelViewPane {
 	private static readonly CANCEL_BUTTON_LABEL = localize('dialogModalCancelButtonLabel', "Cancel");
 
 	public content: string | DialogTab[] = '';
+	public dialogStyle: DialogStyle;
+	public dialogPosition: DialogPosition;
 	public okButton: DialogButton = new DialogButton(Dialog.DONE_BUTTON_LABEL, true);
 	public cancelButton: DialogButton = new DialogButton(Dialog.CANCEL_BUTTON_LABEL, true);
 	public customButtons: DialogButton[] = [];
@@ -51,10 +53,16 @@ export class Dialog extends ModelViewPane {
 	private _message: DialogMessage | undefined;
 	private _closeValidator: CloseValidator | undefined;
 
-	constructor(public title: string, public width: DialogWidth, content?: string | DialogTab[]) {
+	constructor(public title: string, public width: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, content?: string | DialogTab[]) {
 		super();
 		if (content) {
 			this.content = content;
+		}
+		if (dialogStyle) {
+			this.dialogStyle = dialogStyle;
+		}
+		if (dialogPosition) {
+			this.dialogPosition = dialogPosition;
 		}
 	}
 

@@ -14,6 +14,7 @@ import * as azdata from 'azdata';
 import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { TabOrientation, DialogWidth, DialogStyle, DialogPosition } from 'sql/workbench/api/common/sqlExtHostTypes';
+// import { attachDialogStyler } from 'vs/platform/theme/common/styler';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', "Done");
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', "Cancel");
@@ -127,6 +128,8 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 	private _dialogName: string;
 	private _isWide: boolean;
 	private _width: DialogWidth;
+	private _dialogStyle: DialogStyle;
+	private _dialogPosition: DialogPosition;
 
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
@@ -139,6 +142,22 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 		this.okButton.onClick(() => {
 			this._operationHandler.createOperation();
 		});
+	}
+
+	public get dialogStyle(): azdata.window.DialogStyle {
+		return this._dialogStyle;
+	}
+
+	public set dialogStyle(value: azdata.window.DialogStyle) {
+		this._dialogStyle = value;
+	}
+
+	public get dialogPosition(): azdata.window.DialogPosition {
+		return this._dialogPosition;
+	}
+
+	public set dialogPosition(value: azdata.window.DialogPosition) {
+		this._dialogPosition = value;
 	}
 
 	public get width(): azdata.window.DialogWidth {
@@ -663,8 +682,19 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	}
 
 	public updateDialogContent(dialog: azdata.window.Dialog): void {
+		let dialogWidth: DialogWidth = 'narrow';
+		let dialogStyle: DialogStyle;
+		let dialogPosition: DialogPosition;
 		let handle = this.getHandle(dialog);
 		let tabs = dialog.content;
+
+		if (dialog.dialogStyle) {
+			dialogStyle = dialog.dialogStyle;
+		}
+		if (dialog.dialogPosition) {
+			dialogPosition = dialog.dialogPosition;
+		}
+
 		if (tabs && typeof tabs !== 'string') {
 			tabs.forEach(tab => this.updateTabContent(tab));
 		}
@@ -673,7 +703,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		}
 		this.updateButton(dialog.okButton);
 		this.updateButton(dialog.cancelButton);
-		let dialogWidth: DialogWidth = 'narrow';
+
 		if (dialog.isWide !== undefined) {
 			dialogWidth = dialog.isWide ? 'wide' : 'narrow';
 		} else if (dialog.width !== undefined) {
@@ -684,6 +714,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._proxy.$setDialogDetails(handle, {
 			title: dialog.title,
 			width: dialogWidth,
+			dialogStyle: dialogStyle,
+			dialogPosition: dialogPosition,
 			okButton: this.getHandle(dialog.okButton),
 			cancelButton: this.getHandle(dialog.cancelButton),
 			content: dialog.content && typeof dialog.content !== 'string' ? dialog.content.map(tab => this.getHandle(tab)) : dialog.content as string,
@@ -717,10 +749,19 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	}
 
 	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition): azdata.window.Dialog {
+
 		let dialog = new DialogImpl(this, this._extHostModelView, this._extHostTaskManagement, extension);
+
 		if (dialogName) {
 			dialog.dialogName = dialogName;
 		}
+		if (dialogStyle) {
+			dialog.dialogStyle = dialogStyle;
+		}
+		if (dialogPosition) {
+			dialog.dialogPosition = dialogPosition;
+		}
+
 		dialog.title = title;
 		dialog.width = width ?? 'narrow';
 		dialog.handle = this.getHandle(dialog);

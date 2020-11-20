@@ -75,6 +75,8 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		let dialog = this.getDialog(handle);
 		const options = assign({}, DefaultDialogOptions);
 		options.width = dialog.width;
+		options.dialogStyle = dialog.dialogStyle;
+		options.dialogPosition = dialog.dialogPosition;
 		this._dialogService.showDialog(dialog, dialogName, options);
 		return Promise.resolve();
 	}
@@ -88,7 +90,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	public $setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void> {
 		let dialog = this._dialogs.get(handle);
 		if (!dialog) {
-			dialog = new Dialog(details.title, details.width);
+			dialog = new Dialog(details.title, details.width, details.dialogStyle, details.dialogPosition);
 			let okButton = this.getButton(details.okButton);
 			let cancelButton = this.getButton(details.cancelButton);
 			dialog.okButton = okButton;

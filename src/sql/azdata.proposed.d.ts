@@ -625,6 +625,10 @@ declare module 'azdata' {
 			 * Width of the dialog
 			 */
 			width?: DialogWidth;
+
+			dialogStyle?: DialogStyle;
+
+			dialogPosition?: DialogPosition;
 		}
 
 		export interface Wizard {
