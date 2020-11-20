@@ -160,6 +160,7 @@ export class OpenExistingDialog extends DialogBase {
 			// clear selected file textbox
 			this._filePathTextBox!.value = '';
 		}));
+
 		this.createWorkspaceContainer(view);
 
 		this.formBuilder = view.modelBuilder.formContainer().withFormItems([

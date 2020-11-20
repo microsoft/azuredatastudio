@@ -25,7 +25,7 @@ suite('New Project Dialog', function (): void {
 		dialog.model.name = 'TestProject';
 		dialog.model.location = '';
 		dialog.workspaceInputBox.value = 'test.code-workspace';
-		should.equal(await dialog.validate(), false, 'Validation should fail becausee the parent directory does not exist');
+		should.equal(await dialog.validate(), false, 'Validation should fail because the parent directory does not exist');
 
 		// create a folder with the same name
 		const folderPath = path.join(os.tmpdir(), dialog.model.name);
@@ -48,7 +48,7 @@ suite('New Project Dialog', function (): void {
 		dialog.model.name = `TestProject_${new Date().getTime()}`;
 		dialog.model.location = os.tmpdir();
 		dialog.workspaceInputBox.value = 'test';
-		should.equal(await dialog.validate(), false, 'Validation should fail becausee workspace does not end in code-workspace');
+		should.equal(await dialog.validate(), false, 'Validation should fail because workspace does not end in code-workspace');
 
 		// use invalid folder
 		dialog.workspaceInputBox.value = 'invalidLocation/test.code-workspace';

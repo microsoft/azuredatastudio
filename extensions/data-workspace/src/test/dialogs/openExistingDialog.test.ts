@@ -62,7 +62,7 @@ suite('Open Existing Dialog', function (): void {
 
 		dialog._projectFile = await createProjectFile('testproj');
 		dialog.workspaceInputBox.value = 'test';
-		should.equal(await dialog.validate(), false, 'Validation should fail becausee workspace does not end in code-workspace');
+		should.equal(await dialog.validate(), false, 'Validation should fail because workspace does not end in code-workspace');
 
 		// use invalid folder
 		dialog.workspaceInputBox.value = 'invalidLocation/test.code-workspace';

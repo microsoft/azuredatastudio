@@ -119,12 +119,12 @@ export abstract class DialogBase {
 			this.workspaceInputBox!.value = selectedFile;
 		}));
 
-
 		if (vscode.workspace.workspaceFile) {
 			this.workspaceInputFormComponent = {
 				component: this.workspaceInputBox
 			};
 		} else {
+			// have browse button to help select where the workspace file should be created
 			const horizontalContainer = this.createHorizontalContainer(view, [this.workspaceInputBox, browseFolderButton]);
 			this.workspaceInputFormComponent = {
 				component: horizontalContainer
