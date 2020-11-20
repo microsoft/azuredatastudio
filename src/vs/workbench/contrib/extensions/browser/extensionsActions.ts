@@ -65,18 +65,6 @@ import { EXTENSIONS_CONFIG } from 'vs/workbench/services/extensionRecommendation
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage'; // {{SQL CARBON EDIT}}
 import product from 'vs/platform/product/common/product';
 
-export function toExtensionDescription(local: ILocalExtension): IExtensionDescription {
-	return {
-		identifier: new ExtensionIdentifier(local.identifier.id),
-		isBuiltin: local.type === ExtensionType.System,
-		isUserBuiltin: local.isBuiltin,
-		isUnderDevelopment: false,
-		extensionLocation: local.location,
-		...local.manifest,
-		uuid: local.identifier.uuid
-	};
-}
-
 const promptDownloadManually = (extension: IGalleryExtension | undefined, message: string, error: Error, instantiationService: IInstantiationService): Promise<any> => {
 	return instantiationService.invokeFunction(accessor => {
 		const productService = accessor.get(IProductService);
