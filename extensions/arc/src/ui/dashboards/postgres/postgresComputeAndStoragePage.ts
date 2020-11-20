@@ -76,7 +76,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		const workerNodeslink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-			label: loc.addingWokerNodes,
+			label: loc.addingWorkerNodes,
 			url: 'https://docs.microsoft.com/azure/azure-arc/data/scale-up-down-postgresql-hyperscale-server-group-using-cli',
 			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();

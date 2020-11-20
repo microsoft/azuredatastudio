@@ -76,10 +76,11 @@ export class RadioOptionsGroup implements IReadOnly {
 	}
 
 	get enabled(): boolean {
-		return this._divContainer.items.every(r => r.enabled);
+		return this._divContainer.items.every(r => r.enabled) && !!this._divContainer.enabled;
 	}
 
 	set enabled(value: boolean) {
 		this._divContainer.items.forEach(r => r.enabled = value);
+		this._divContainer.enabled = value;
 	}
 }

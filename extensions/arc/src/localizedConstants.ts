@@ -61,7 +61,7 @@ export const yes = localize('arc.yes', "Yes");
 export const no = localize('arc.no', "No");
 export const feedback = localize('arc.feedback', "Feedback");
 export const selectConnectionString = localize('arc.selectConnectionString', "Select from available client connection strings below.");
-export const addingWokerNodes = localize('arc.addingWokerNodes', "adding worker nodes");
+export const addingWorkerNodes = localize('arc.addingWorkerNodes', "adding worker nodes");
 export const workerNodesDescription = localize('arc.workerNodesDescription', "Expand your server group and scale your database by adding worker nodes.");
 export const postgresConfigurationInformation = localize('arc.postgres.configurationInformation', "You can configure the number of CPU cores and storage size that will apply to both worker nodes and coordinator node. Each worker node will have the same configuration. Adjust the number of CPU cores and memory settings for your server group.");
 export const workerNodesInformation = localize('arc.workerNodeInformation', "In preview it is not possible to reduce the number of worker nodes. Please refer to documentation linked above for more information.");
@@ -206,3 +206,5 @@ export const noControllerInfoFound = (name: string) => localize('noControllerInf
 export const noPasswordFound = (controllerName: string) => localize('noPasswordFound', "Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.", controllerName);
 export const clusterContextNotFound = (clusterContext: string) => localize('clusterContextNotFound', "Cluster Context with name: {0} not found in the Kube config file", clusterContext);
 export const noCurrentClusterContext = localize('noCurrentClusterContext', "No current cluster context was found in the kube config file");
+export const browse = localize('filePicker.browse', "Browse");
+export const select = localize('button.label', "Select");

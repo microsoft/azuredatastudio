@@ -16,6 +16,7 @@ import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
 import { getErrorMessage } from '../../common/utils';
 import { RadioOptionsGroup } from '../components/radioOptionsGroup';
 import { getCurrentClusterContext, getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../../common/kubeUtils';
+import { FilePicker } from '../components/filePicker';
 
 export type ConnectToControllerDialogModel = { controllerModel: ControllerModel, password: string };
 export interface IReadOnly {
@@ -27,7 +28,7 @@ abstract class ControllerDialogBase extends InitializingComponent {
 	protected dialog: azdata.window.Dialog;
 
 	protected urlInputBox!: azdata.InputBoxComponent;
-	protected kubeConfigInputBox!: azdata.InputBoxComponent;
+	protected kubeConfigInputBox!: FilePicker;
 	protected clusterContextRadioGroup!: RadioOptionsGroup;
 	protected nameInputBox!: azdata.InputBoxComponent;
 	protected usernameInputBox!: azdata.InputBoxComponent;
@@ -44,7 +45,7 @@ abstract class ControllerDialogBase extends InitializingComponent {
 				title: loc.controllerUrl,
 				required: true
 			}, {
-				component: this.kubeConfigInputBox,
+				component: this.kubeConfigInputBox.component(),
 				title: loc.controllerKubeConfig,
 				required: true
 			}, {
@@ -77,7 +78,12 @@ abstract class ControllerDialogBase extends InitializingComponent {
 				// If we have a model then we're editing an existing connection so don't let them modify the URL
 				readOnly: !!controllerInfo
 			}).component();
-		this.kubeConfigInputBox = this.modelBuilder.inputBox()
+		this.kubeConfigInputBox = new FilePicker(
+			this.modelBuilder,
+			controllerInfo?.kubeConfigFilePath || getDefaultKubeConfigPath(),
+			(disposable) => this._toDispose.push(disposable)
+		);
+		this.modelBuilder.inputBox()
 			.withProperties<azdata.InputBoxProperties>({
 				value: controllerInfo?.kubeConfigFilePath || getDefaultKubeConfigPath()
 			}).component();
