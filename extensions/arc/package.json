@@ -273,7 +273,7 @@
                           "defaultValue": "",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "direct"
+                            "value": "%arc.data.controller.direct%"
                           }
                         },
                         {
@@ -284,7 +284,7 @@
                           "defaultValue": "",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "direct"
+                            "value": "%arc.data.controller.direct%"
                           }
                         },
                         {
@@ -295,7 +295,7 @@
                           "defaultValue": "",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "direct"
+                            "value": "%arc.data.controller.direct%"
                           }
                         }
                       ]
