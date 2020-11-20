@@ -166,7 +166,7 @@ interface InputBoxInfo {
  */
 function createInputBoxField({ context, inputBoxType = 'text' }: { context: FieldContext; inputBoxType?: azdata.InputBoxInputType; }) {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
-	const input = createInputBox(context.view, {
+	const input = createInputBoxInputInfo(context.view, {
 		type: inputBoxType,
 		defaultValue: context.fieldInfo.defaultValue,
 		ariaLabel: context.fieldInfo.label,
@@ -182,7 +182,7 @@ function createInputBoxField({ context, inputBoxType = 'text' }: { context: Fiel
 	return input;
 }
 
-export function createInputBox(view: azdata.ModelView, inputInfo: InputBoxInfo): InputComponentInfo<azdata.InputBoxComponent> {
+export function createInputBoxInputInfo(view: azdata.ModelView, inputInfo: InputBoxInfo): InputComponentInfo<azdata.InputBoxComponent> {
 	const component = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		value: inputInfo.defaultValue,
 		ariaLabel: inputInfo.ariaLabel,
@@ -227,11 +227,19 @@ export function createLabel(view: azdata.ModelView, info: { text: string, descri
  * @param view - the ModelView object used to create the inputBox
  * @param info - an object to define the properties of the 'number' inputBox component. If the type property is set then it is overridden with 'number' type.
  */
-export function createNumberInput(view: azdata.ModelView, info: InputBoxInfo): InputComponentInfo<azdata.InputBoxComponent> {
+export function createNumberInputBoxInputInfo(view: azdata.ModelView, info: InputBoxInfo): InputComponentInfo<azdata.InputBoxComponent> {
 	info.type = 'number'; // for the type to be 'number'
-	return createInputBox(view, info);
+	return createInputBoxInputInfo(view, info);
 }
 
+export function createCheckboxInputInfo(view: azdata.ModelView, info: { initialValue: boolean, label: string, required?: boolean }): InputComponentInfo<azdata.CheckBoxComponent> {
+	const checkbox = createCheckbox(view, info);
+	return {
+		component: checkbox,
+		getValue: async () => checkbox.checked ? 'true' : 'false',
+		onValueChanged: checkbox.onChanged
+	};
+}
 export function createCheckbox(view: azdata.ModelView, info: { initialValue: boolean, label: string, required?: boolean }): azdata.CheckBoxComponent {
 	return view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
 		checked: info.initialValue,
@@ -240,7 +248,7 @@ export function createCheckbox(view: azdata.ModelView, info: { initialValue: boo
 	}).component();
 }
 
-export function createDropdown(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string, editable?: boolean, required?: boolean, label: string }): InputComponentInfo<azdata.DropDownComponent> {
+export function createDropdownInputInfo(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string, editable?: boolean, required?: boolean, label: string }): InputComponentInfo<azdata.DropDownComponent> {
 	const dropdown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 		values: info.values,
 		value: info.defaultValue,
@@ -455,7 +463,7 @@ export function createGroupContainer(view: azdata.ModelView, items: azdata.Compo
 	return view.modelBuilder.groupContainer().withItems(items).withLayout(layout).component();
 }
 
-function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata.Component[], label: azdata.Component, input: azdata.Component | undefined, fieldInfo: FieldInfo, additionalComponents?: azdata.Component[]) {
+function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata.Component[], label: azdata.Component, input: azdata.Component | undefined, fieldInfo: FieldInfo, additionalComponents?: azdata.Component[]): void {
 	const inputs: azdata.Component[] = [label];
 	if (input !== undefined) {
 		inputs.push(input);
@@ -585,7 +593,7 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 	}
 }
 
-async function configureOptionsSourceSubfields(context: FieldContext, optionsSource: IOptionsSource, variableKey: string, optionsComponent: RadioGroupLoadingComponentBuilder | azdata.DropDownComponent, optionsSourceProvider: IOptionsSourceProvider) {
+async function configureOptionsSourceSubfields(context: FieldContext, optionsSource: IOptionsSource, variableKey: string, optionsComponent: RadioGroupLoadingComponentBuilder | azdata.DropDownComponent, optionsSourceProvider: IOptionsSourceProvider): Promise<void> {
 	context.fieldInfo.subFields!.push({
 		label: context.fieldInfo.label,
 		variableName: optionsSource.variableNames![variableKey]
@@ -614,7 +622,7 @@ async function configureOptionsSourceSubfields(context: FieldContext, optionsSou
 function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDownComponent {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const options = context.fieldInfo.options as OptionsInfo;
-	const dropdown = createDropdown(context.view, {
+	const dropdown = createDropdownInputInfo(context.view, {
 		values: options.values,
 		defaultValue: options.defaultValue,
 		width: context.fieldInfo.inputWidth,
@@ -631,11 +639,7 @@ function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDown
 function processDateTimeTextField(context: FieldContext): void {
 	context.fieldInfo.defaultValue = context.fieldInfo.defaultValue + getDateTimeString();
 	const input = createInputBoxField({ context });
-	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
-		component: input.component,
-		getValue: async (): Promise<InputValueType> => input.component.value,
-		onValueChanged: input.component.onTextChanged
-	});
+	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, input);
 }
 
 function processNumberField(context: FieldContext): void {
@@ -657,8 +661,8 @@ function processTextField(context: FieldContext): InputComponentInfo<azdata.Inpu
 	input.isPassword = isPasswordField;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, input);
 	return input;
-
 }
+
 function processPasswordField(context: FieldContext): void {
 	const passwordInput = processTextField(context);
 
@@ -769,17 +773,9 @@ async function substituteVariableValues(inputComponents: InputComponents, inputV
 }
 
 function processCheckboxField(context: FieldContext): void {
-	const checkbox = createCheckbox(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: context.fieldInfo.label, required: context.fieldInfo.required });
-	context.components.push(checkbox);
-	const onChangedEmitter = new vscode.EventEmitter<void>();
-	context.onNewDisposableCreated(onChangedEmitter);
-	const onChangedEvent = checkbox.onChanged(() => onChangedEmitter.fire());
-	context.onNewDisposableCreated(onChangedEvent);
-	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
-		getValue: async (): Promise<InputValueType> => checkbox.checked ? 'true' : 'false',
-		onValueChanged: onChangedEmitter.event,
-		component: checkbox
-	});
+	const checkbox = createCheckboxInputInfo(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: context.fieldInfo.label, required: context.fieldInfo.required });
+	context.components.push(checkbox.component);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, checkbox);
 }
 
 /**
@@ -791,7 +787,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 	const buttonWidth = 100;
 
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
-	const input = createInputBox(context.view, {
+	const input = createInputBoxInputInfo(context.view, {
 		defaultValue: context.fieldInfo.defaultValue || '',
 		ariaLabel: context.fieldInfo.label,
 		required: context.fieldInfo.required,
@@ -966,15 +962,11 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 	const subscriptionDropdown = createAzureSubscriptionDropdown(context, subscriptionValueToSubscriptionMap);
 	const resourceGroupDropdown = createAzureResourceGroupsDropdown(context, accountDropdown, accountValueToAccountMap, subscriptionDropdown, subscriptionValueToSubscriptionMap);
 	if (context.fieldInfo.allowNewResourceGroup) {
-		const newRGCheckbox = createCheckbox(context.view, { initialValue: false, label: loc.createNewResourceGroup });
-		context.onNewInputComponentCreated(context.fieldInfo.newResourceGroupFlagVariableName!, {
-			component: newRGCheckbox,
-			getValue: async (): Promise<InputValueType> => newRGCheckbox.checked ? 'true' : 'false',
-			onValueChanged: newRGCheckbox.onChanged
-		});
-		const newRGNameInput = createInputBox(context.view, { ariaLabel: loc.NewResourceGroupAriaLabel });
+		const newRGCheckbox = createCheckboxInputInfo(context.view, { initialValue: false, label: loc.createNewResourceGroup });
+		context.onNewInputComponentCreated(context.fieldInfo.newResourceGroupFlagVariableName!, newRGCheckbox);
+		const newRGNameInput = createInputBoxInputInfo(context.view, { ariaLabel: loc.NewResourceGroupAriaLabel });
 		context.onNewInputComponentCreated(context.fieldInfo.newResourceGroupNameVariableName!, newRGNameInput);
-		context.components.push(newRGCheckbox);
+		context.components.push(newRGCheckbox.component);
 		context.components.push(newRGNameInput.component);
 		const setRGStatus = (newRG: boolean) => {
 			resourceGroupDropdown.required = !newRG;
@@ -985,8 +977,8 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 				newRGNameInput.component.value = '';
 			}
 		};
-		context.onNewDisposableCreated(newRGCheckbox.onChanged(() => {
-			setRGStatus(newRGCheckbox.checked!);
+		context.onNewDisposableCreated(newRGCheckbox.onValueChanged(() => {
+			setRGStatus(newRGCheckbox.component.checked!);
 		}));
 		setRGStatus(false);
 	}
@@ -1050,7 +1042,7 @@ async function processKubeStorageClassField(context: FieldContext): Promise<void
 		vscode.window.showErrorMessage(localize('resourceDeployment.errorFetchingStorageClasses', "Unexpected error fetching available kubectl storage classes : {0}", err.message ?? err));
 	}
 
-	const storageClassDropdown = createDropdown(context.view, {
+	const storageClassDropdown = createDropdownInputInfo(context.view, {
 		width: context.fieldInfo.inputWidth,
 		editable: true,
 		required: context.fieldInfo.required,
@@ -1076,7 +1068,7 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAcc
 		width: context.fieldInfo.labelWidth,
 		cssStyles: context.fieldInfo.labelCSSStyles
 	});
-	const accountDropdown = createDropdown(context.view, {
+	const accountDropdown = createDropdownInputInfo(context.view, {
 		width: context.fieldInfo.inputWidth,
 		editable: false,
 		required: context.fieldInfo.required,
@@ -1108,7 +1100,7 @@ function createAzureSubscriptionDropdown(
 		width: context.fieldInfo.labelWidth,
 		cssStyles: context.fieldInfo.labelCSSStyles
 	});
-	const subscriptionDropdown = createDropdown(context.view, {
+	const subscriptionDropdown = createDropdownInputInfo(context.view, {
 		defaultValue: (context.fieldInfo.required) ? undefined : '',
 		width: context.fieldInfo.inputWidth,
 		editable: false,
@@ -1248,7 +1240,7 @@ function createAzureResourceGroupsDropdown(
 		width: context.fieldInfo.labelWidth,
 		cssStyles: context.fieldInfo.labelCSSStyles
 	});
-	const resourceGroupDropdown = createDropdown(context.view, {
+	const resourceGroupDropdown = createDropdownInputInfo(context.view, {
 		defaultValue: (context.fieldInfo.required) ? undefined : '',
 		width: context.fieldInfo.inputWidth,
 		editable: false,
@@ -1332,7 +1324,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 		cssStyles: context.fieldInfo.labelCSSStyles
 	});
 	const locationValues = context.fieldInfo.locations?.map(l => { return { name: l, displayName: apiService.azurecoreApi.getRegionDisplayName(l) }; });
-	const locationDropdown = createDropdown(context.view, {
+	const locationDropdown = createDropdownInputInfo(context.view, {
 		defaultValue: locationValues?.find(l => l.name === context.fieldInfo.defaultValue),
 		width: context.fieldInfo.inputWidth,
 		editable: false,
@@ -1354,6 +1346,8 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 			label: label.value!,
 			variableName: context.fieldInfo.displayLocationVariableName
 		});
+		// Create a special input component that maps the dropdown to the display name for the location
+		// so that we have two variables - one for the value and one for the display name
 		context.onNewInputComponentCreated(context.fieldInfo.displayLocationVariableName, {
 			component: locationDropdown.component,
 			getValue: async (): Promise<InputValueType> => {
