@@ -166,7 +166,7 @@ export function renderMarkdown(markdown: IMarkdownString, options: MarkdownRende
 				withInnerHTML.then(e => {
 					const span = <HTMLDivElement>element.querySelector(`div[data-code="${id}"]`);
 					if (span) {
-						DOM.reset(span, values[0]);
+						span.innerHTML = strValue.innerHTML;
 					}
 				}).catch(err => {
 					// ignore

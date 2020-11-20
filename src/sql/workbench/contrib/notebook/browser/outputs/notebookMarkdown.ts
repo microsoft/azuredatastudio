@@ -6,7 +6,7 @@ import * as path from 'vs/base/common/path';
 
 import { URI } from 'vs/base/common/uri';
 import { IMarkdownString, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
-import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
+import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
 import * as marked from 'vs/base/common/marked/marked';
 import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
@@ -150,7 +150,7 @@ export class NotebookMarkdownRenderer {
 					withInnerHTML.then(e => {
 						const span = element.querySelector(`div[data-code="${id}"]`);
 						if (span) {
-							span.innerHTML = strValue;
+							span.innerHTML = strValue.innerHTML;
 						}
 					}).catch(err => {
 						// ignore
