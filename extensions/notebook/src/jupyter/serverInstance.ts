@@ -240,6 +240,7 @@ export class PerFolderServerInstance implements IServerInstance {
 			let install = this.options.install;
 			let spawnJupyterProcessBeginTime = Date.now();
 			this.childProcess = this.spawnJupyterProcess(install, startCommand);
+			console.log('Execute command: Child process is created here ' + Date.now().toString());
 			let spawnJupyterProcessEndTime = Date.now();
 			let spawnJupyterProcessTime = spawnJupyterProcessEndTime - spawnJupyterProcessBeginTime;
 			console.log('Start Internal: It took ' + spawnJupyterProcessTime.toString() + 'ms to spawn Jupyter process');
@@ -255,8 +256,12 @@ export class PerFolderServerInstance implements IServerInstance {
 			this.childProcess.on('exit', onExitBeforeStart);
 
 			// Add listener for the process to emit its web address
-			let handleStdout = (data: string | Buffer) => { install.outputChannel.appendLine(data.toString()); };
+			let handleStdout = (data: string | Buffer) => {
+				console.log('Execute command: Output is received here ' + Date.now().toString());
+				install.outputChannel.appendLine(data.toString());
+			};
 			let handleStdErr = (data: string | Buffer) => {
+				console.log('Execute command: Error is received here ' + Date.now().toString());
 				// For some reason, URL info is sent on StdErr
 				let [url, port] = this.matchUrlAndPort(data);
 				if (url) {

@@ -507,7 +507,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			}
 
 			let cmd = `"${pythonExePath ?? this.pythonExecutable}" -m pip list --format=json`;
+			console.log('Get Python packages starts here ' + cmd + ' ' + Date.now().toString());
 			let packagesInfo = await this.executeBufferedCommand(cmd);
+			console.log('Get Python packages ends here ' + Date.now().toString());
 			let packages: PythonPkgDetails[] = [];
 			if (packagesInfo) {
 				let parsedResult = <PythonPkgDetails[]>JSON.parse(packagesInfo);

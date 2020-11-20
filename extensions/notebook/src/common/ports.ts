@@ -22,10 +22,18 @@ export class StrictPortFindOptions {
 export async function strictFindFreePort(options: StrictPortFindOptions): Promise<number> {
 	let totalRetries = options.totalRetryLoops;
 	let startPort = getRandomInt(options.minPort, options.maxport);
+	let start = Date.now();
 	let port = await findFreePort(startPort, options.maxRetriesPerStartPort, options.timeout);
+	let end = Date.now();
+	let time = end - start;
+	console.log('It took: ' + time.toString() + 'ms to try the first port');
 	while (port === 0 && totalRetries > 0) {
 		startPort = getRandomInt(options.minPort, options.maxport);
+		let start = Date.now();
 		port = await findFreePort(startPort, options.maxRetriesPerStartPort, options.timeout);
+		let end = Date.now();
+		let time = end - start;
+		console.log('It took: ' + time.toString() + 'ms to try the next port');
 		totalRetries--;
 	}
 	return port;
@@ -61,6 +69,7 @@ export function findFreePort(startPort: number, giveUpAfter: number, timeout: nu
 			if (!done) {
 				done = true;
 				clearTimeout(timeoutHandle);
+				console.log('Return port number here ' + Date.now().toString());
 				return resolve(port);
 			}
 		});
@@ -68,6 +77,7 @@ export function findFreePort(startPort: number, giveUpAfter: number, timeout: nu
 }
 
 function doFindFreePort(startPort: number, giveUpAfter: number, clb: (port: number) => void): void {
+	console.log('Try to find port ' + startPort.toString());
 	if (giveUpAfter === 0) {
 		return clb(0);
 	}
@@ -76,6 +86,7 @@ function doFindFreePort(startPort: number, giveUpAfter: number, clb: (port: numb
 
 	// If we can connect to the port it means the port is already taken so we continue searching
 	client.once('connect', () => {
+		console.log('Receive connect message here ' + Date.now().toString());
 		dispose(client);
 
 		return doFindFreePort(startPort + 1, giveUpAfter - 1, clb);
@@ -86,6 +97,7 @@ function doFindFreePort(startPort: number, giveUpAfter: number, clb: (port: numb
 	});
 
 	client.once('error', (err: Error & { code?: string }) => {
+		console.log('Receive error message here ' + Date.now().toString());
 		dispose(client);
 
 		// If we receive any non ECONNREFUSED error, it means the port is used but we cannot connect
@@ -98,6 +110,7 @@ function doFindFreePort(startPort: number, giveUpAfter: number, clb: (port: numb
 	});
 
 	client.connect(startPort, '127.0.0.1');
+	console.log('Try to connect here ' + Date.now().toString());
 }
 
 function dispose(socket: net.Socket): void {
