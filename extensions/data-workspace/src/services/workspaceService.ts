@@ -45,12 +45,11 @@ export class WorkspaceService implements IWorkspaceService {
 	 * when the extension gets restarted
 	 * @param projectFileFsPath project to add to the workspace
 	 */
-	async CreateNewWorkspaceForProject(projectFileFsPath: string): Promise<void> {
+	async CreateNewWorkspaceForProject(projectFileFsPath: string, workspaceFile: vscode.Uri | undefined): Promise<void> {
 		// save temp project
 		await this._context.globalState.update(TempProject, [projectFileFsPath]);
 
 		// create a new workspace - the workspace file will be created in the same folder as the project
-		const workspaceFile = vscode.Uri.file(path.join(path.dirname(projectFileFsPath), `${path.parse(projectFileFsPath).name}.code-workspace`));
 		const projectFolder = vscode.Uri.file(path.dirname(projectFileFsPath));
 		await azdata.workspace.createWorkspace(projectFolder, workspaceFile);
 	}
@@ -95,14 +94,14 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 	}
 
-	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
+	async addProjectsToWorkspace(projectFiles: vscode.Uri[], workspaceFilePath?: vscode.Uri): Promise<void> {
 		if (!projectFiles || projectFiles.length === 0) {
 			return;
 		}
 
 		// a workspace needs to be open to add projects
 		if (!vscode.workspace.workspaceFile) {
-			await this.CreateNewWorkspaceForProject(projectFiles[0].fsPath);
+			await this.CreateNewWorkspaceForProject(projectFiles[0].fsPath, workspaceFilePath);
 
 			// this won't get hit since the extension host will get restarted, but helps with testing
 			return;
@@ -171,11 +170,11 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 	}
 
-	async createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri> {
+	async createProject(name: string, location: vscode.Uri, projectTypeId: string, workspaceFile?: vscode.Uri): Promise<vscode.Uri> {
 		const provider = ProjectProviderRegistry.getProviderByProjectType(projectTypeId);
 		if (provider) {
 			const projectFile = await provider.createProject(name, location);
-			this.addProjectsToWorkspace([projectFile]);
+			this.addProjectsToWorkspace([projectFile], workspaceFile);
 			this._onDidWorkspaceProjectsChange.fire();
 			return projectFile;
 		} else {

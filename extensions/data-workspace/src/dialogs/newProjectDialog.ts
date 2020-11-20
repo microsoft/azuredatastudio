@@ -43,6 +43,22 @@ export class NewProjectDialog extends DialogBase {
 				return false;
 			}
 
+			// workspace file should end in .code-workspace
+			const workspaceValid = this.workspaceInputBox!.value!.endsWith(constants.WorkspaceFileExtension);
+			if (!workspaceValid) {
+				this.showErrorMessage(constants.WorkspaceFileInvalidError(this.workspaceInputBox!.value!));
+				return false;
+			}
+
+			// if the workspace file is not going to be in the same folder as the newly created project, then check that it's a valid folder
+			if (path.join(this.model.location, this.model.name) !== path.dirname(this.workspaceInputBox!.value!)) {
+				const workspaceParentDirectoryExists = await directoryExist(path.dirname(this.workspaceInputBox!.value!));
+				if (!workspaceParentDirectoryExists) {
+					this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(this.workspaceInputBox!.value!));
+					return false;
+				}
+			}
+
 			return true;
 		}
 		catch (err) {
@@ -55,7 +71,7 @@ export class NewProjectDialog extends DialogBase {
 		try {
 			const validateWorkspace = await this.workspaceService.validateWorkspace();
 			if (validateWorkspace) {
-				await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId);
+				await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, vscode.Uri.file(this.workspaceInputBox!.value!));
 			}
 		}
 		catch (err) {
@@ -109,7 +125,7 @@ export class NewProjectDialog extends DialogBase {
 			this.model.name = projectNameTextBox.value!;
 			projectNameTextBox.updateProperty('title', projectNameTextBox.value);
 
-			this.updateWorkspaceInputbox(this.model.location, this.model.name);
+			this.updateWorkspaceInputbox(path.join(this.model.location, this.model.name), this.model.name);
 		}));
 
 		const locationTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
@@ -122,7 +138,7 @@ export class NewProjectDialog extends DialogBase {
 		this.register(locationTextBox.onTextChanged(() => {
 			this.model.location = locationTextBox.value!;
 			locationTextBox.updateProperty('title', locationTextBox.value);
-			this.updateWorkspaceInputbox(this.model.location, this.model.name);
+			this.updateWorkspaceInputbox(path.join(this.model.location, this.model.name), this.model.name);
 		}));
 
 		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -145,7 +161,7 @@ export class NewProjectDialog extends DialogBase {
 			locationTextBox.value = selectedFolder;
 			this.model.location = selectedFolder;
 
-			this.updateWorkspaceInputbox(this.model.location, this.model.name);
+			this.updateWorkspaceInputbox(path.join(this.model.location, this.model.name), this.model.name);
 		}));
 
 		const form = view.modelBuilder.formContainer().withFormItems([

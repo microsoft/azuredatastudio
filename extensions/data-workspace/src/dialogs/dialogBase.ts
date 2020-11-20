@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
+import { IconPathHelper } from '../common/iconHelper';
 
 interface Deferred<T> {
 	resolve: (result: T | Promise<T>) => void;
@@ -92,19 +93,50 @@ export abstract class DialogBase {
 		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.WorkspaceLocationTitle,
 			width: constants.DefaultInputWidth,
-			enabled: false,
+			enabled: !vscode.workspace.workspaceFile?.fsPath, // want it editable if no workspace is open
 			value: vscode.workspace.workspaceFile?.fsPath ?? '',
 			title: vscode.workspace.workspaceFile?.fsPath ?? '' // hovertext for if file path is too long to be seen in textbox
 		}).component();
 
-		const container = view.modelBuilder.flexContainer()
-			.withItems([workspaceDescription, this.workspaceInputBox])
-			.withLayout({ flexFlow: 'column' })
-			.component();
+		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			ariaLabel: constants.BrowseButtonText,
+			iconPath: IconPathHelper.folder,
+			height: '16px',
+			width: '18px'
+		}).component();
+		this.register(browseFolderButton.onDidClick(async () => {
+			let fileUri = await vscode.window.showSaveDialog({
+				defaultUri: vscode.Uri.file(this.workspaceInputBox!.value!),
+				filters: {
+					'workspace Files': [constants.WorkspaceFileExtension],
+				}
+			});
+			if (!fileUri) {
+				return;
+			}
+			const selectedFile = fileUri.fsPath;
+			this.workspaceInputBox!.value = selectedFile;
+		}));
+
+		let container: azdata.FlexContainer;
+
+		if (vscode.workspace.workspaceFile) {
+			container = view.modelBuilder.flexContainer()
+				.withItems([workspaceDescription, this.workspaceInputBox])
+				.withLayout({ flexFlow: 'column' })
+				.component();
+		} else {
+			const horizontalContainer = this.createHorizontalContainer(view, [this.workspaceInputBox, browseFolderButton]);
+			container = view.modelBuilder.flexContainer()
+				.withItems([workspaceDescription, horizontalContainer])
+				.withLayout({ flexFlow: 'column' })
+				.component();
+		}
 
 		this.workspaceFormComponent = {
 			title: constants.Workspace,
-			component: container
+			component: container,
+			required: true
 		};
 
 		return this.workspaceFormComponent;

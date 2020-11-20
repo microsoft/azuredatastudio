@@ -9,7 +9,7 @@ import * as path from 'path';
 import { DialogBase } from './dialogBase';
 import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
-import { fileExist } from '../common/utils';
+import { directoryExist, fileExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
 
 export class OpenExistingDialog extends DialogBase {
@@ -48,6 +48,19 @@ export class OpenExistingDialog extends DialogBase {
 					this.showErrorMessage(constants.ProjectFileNotExistError(this._projectFile));
 					return false;
 				}
+
+				// workspace file should end in .code-workspace
+				const workspaceValid = this.workspaceInputBox!.value!.endsWith(constants.WorkspaceFileExtension);
+				if (!workspaceValid) {
+					this.showErrorMessage(constants.WorkspaceFileInvalidError(this.workspaceInputBox!.value!));
+					return false;
+				}
+
+				const workspaceParentDirectoryExists = await directoryExist(path.dirname(this.workspaceInputBox!.value!));
+				if (!workspaceParentDirectoryExists) {
+					this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(this.workspaceInputBox!.value!));
+					return false;
+				}
 			} else if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
 				const fileExists = await fileExist(this._workspaceFile);
 				if (!fileExists) {
@@ -71,7 +84,7 @@ export class OpenExistingDialog extends DialogBase {
 			} else {
 				const validateWorkspace = await this.workspaceService.validateWorkspace();
 				if (validateWorkspace) {
-					await this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._projectFile)]);
+					await this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._projectFile)], vscode.Uri.file(this.workspaceInputBox!.value!));
 				}
 			}
 		}
