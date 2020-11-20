@@ -21,13 +21,13 @@ export class FilePicker implements IReadOnly {
 		modelBuilder: azdata.ModelBuilder,
 		initialPath: string, onNewDisposableCreated: (disposable: vscode.Disposable) => void
 	) {
-		const buttonWidth = 100;
+		const buttonWidth = 80;
 		this._filePathInputBox = modelBuilder.inputBox()
 			.withProperties<azdata.InputBoxProperties>({
 				value: initialPath,
-				readOnly: false
+				width: 350
 			}).component();
-		this._filePathInputBox.readOnly = true; //user entry is not allowed in this input box. as it is filled in by the filePickerButton
+
 		this._filePickerButton = modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
 				label: loc.browse,
@@ -50,11 +50,6 @@ export class FilePicker implements IReadOnly {
 			this._filePathInputBox.value = fileUri.fsPath;
 		}));
 		this._flexContainer = createFlexContainer(modelBuilder, [this._filePathInputBox, this._filePickerButton]);
-		modelBuilder.divContainer()
-			.withItems([this._filePathInputBox, this._filePickerButton])
-			.withProperties<azdata.DivContainerProperties>({
-				clickable: false
-			}).component();
 	}
 
 	component(): azdata.Component {
@@ -78,16 +73,16 @@ export class FilePicker implements IReadOnly {
 	}
 
 	get enabled(): boolean | undefined {
-		return this._filePickerButton.enabled && this._flexContainer.enabled;
+		return this._flexContainer.items.every(r => r.enabled) && this._flexContainer.enabled;
 	}
 
 	set enabled(value: boolean | undefined) {
-		this._filePickerButton.enabled = value;
+		this._flexContainer.items.forEach(r => r.enabled = value);
 		this._flexContainer.enabled = value;
 	}
 }
 
-export function createFlexContainer(modelBuilder: azdata.ModelBuilder, items: azdata.Component[], rowLayout: boolean = true, width?: string | number, height?: string | number, alignItems?: azdata.AlignItemsType, cssStyles?: { [key: string]: string }): azdata.FlexContainer {
+function createFlexContainer(modelBuilder: azdata.ModelBuilder, items: azdata.Component[], rowLayout: boolean = true, width?: string | number, height?: string | number, alignItems?: azdata.AlignItemsType, cssStyles?: { [key: string]: string }): azdata.FlexContainer {
 	const flexFlow = rowLayout ? 'row' : 'column';
 	alignItems = alignItems || (rowLayout ? 'center' : undefined);
 	const itemsStyle = rowLayout ? { CSSStyles: { 'margin-right': '5px', } } : {};

@@ -8,7 +8,7 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import { getErrorMessage } from '../../../common/utils';
 import { RadioOptionsGroup, RadioOptionsInfo } from '../../../ui/components/radioOptionsGroup';
-import { loadingError, modelBuilder, radioButtons } from '../../mocks/fakeContainersAndBuilders';
+import { loadingComponent, loadingError, modelBuilder, radioButtons } from '../../mocks/fakeContainersAndBuilders';
 
 const radioOptionsInfo = <RadioOptionsInfo>{
 	values: [
@@ -23,7 +23,7 @@ let radioOptionsGroup: RadioOptionsGroup;
 describe('radioOptionsGroup', function (): void {
 	beforeEach(async () => {
 		radioOptionsGroup = new RadioOptionsGroup(modelBuilder, (_disposable) => { });
-		await radioOptionsGroup.load(async () => radioOptionsInfo);
+			await radioOptionsGroup.load(async () => radioOptionsInfo);
 	});
 
 	afterEach(() => {
@@ -56,7 +56,18 @@ describe('radioOptionsGroup', function (): void {
 		should(label.CSSStyles!.color).not.be.undefined();
 		label.CSSStyles!.color.should.equal('Red');
 	});
+
+	it('getters and setters', async () => {
+		radioOptionsGroup.component().should.equal(loadingComponent);
+		[true, false, undefined].forEach(testValue => {
+			radioOptionsGroup.readOnly = testValue;
+			radioOptionsGroup.readOnly!.should.equal(testValue);
+			radioOptionsGroup.enabled = testValue;
+			radioOptionsGroup.enabled!.should.equal(testValue);
+		});
+	});
 });
+
 function verifyRadioGroup(checkedValue: string) {
 	radioButtons.length.should.equal(radioOptionsInfo.values!.length);
 	radioButtons.forEach(rb => {
