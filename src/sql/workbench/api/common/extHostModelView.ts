@@ -1326,6 +1326,13 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	public set title(title: string) {
 		this.setProperty('title', title);
 	}
+
+	public get requiredIndicator(): boolean {
+		return this.properties['requiredIndicator'];
+	}
+	public set requiredIndicator(requiredIndicator: boolean) {
+		this.setProperty('requiredIndicator', requiredIndicator);
+	}
 }
 
 class ImageComponentWrapper extends ComponentWithIconWrapper implements azdata.ImageComponentProperties {
