@@ -14,6 +14,11 @@ export interface IBookTocManager {
 	updateBook(element: BookTreeItem, book: BookTreeItem): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>
 }
+export enum tocOp {
+	Add,
+	Remove
+}
+
 const allowedFileExtensions: string[] = ['.md', '.ipynb'];
 const initMarkdown: string[] = ['index.md', 'introduction.md', 'intro.md', 'readme.md'];
 
@@ -74,18 +79,22 @@ export class BookTocManager implements IBookTocManager {
 		return toc;
 	}
 
-	updateToc(tableOfContents: JupyterBookSection[], findSection: BookTreeItem, addSection: JupyterBookSection): JupyterBookSection[] {
-		for (const section of tableOfContents) {
+	updateToc(operation: tocOp, tableOfContents: JupyterBookSection[], findSection: BookTreeItem, addedSection?: JupyterBookSection): JupyterBookSection[] {
+		for (const [index, section] of tableOfContents.entries()) {
 			if ((section as IJupyterBookSectionV1).url && path.dirname(section.url) === path.join(path.sep, path.dirname(findSection.uri)) || (section as IJupyterBookSectionV2).file && path.dirname((section as IJupyterBookSectionV2).file) === path.join(path.sep, path.dirname(findSection.uri))) {
-				if (tableOfContents[tableOfContents.length - 1].sections) {
-					tableOfContents[tableOfContents.length - 1].sections.push(addSection);
-				} else {
-					tableOfContents[tableOfContents.length - 1].sections = [addSection];
+				if (operation === tocOp.Add) {
+					if (tableOfContents[tableOfContents.length - 1].sections) {
+						tableOfContents[tableOfContents.length - 1].sections.push(section);
+					} else {
+						tableOfContents[tableOfContents.length - 1].sections = [section];
+					}
+				} else if (operation === tocOp.Remove) {
+					tableOfContents = tableOfContents.splice(index, 1);
 				}
 				break;
 			}
 			else if (hasSections(section)) {
-				return this.updateToc(section.sections, findSection, addSection);
+				return this.updateToc(operation, section.sections, findSection, addedSection);
 			}
 		}
 		return tableOfContents;
@@ -150,35 +159,42 @@ export class BookTocManager implements IBookTocManager {
 	}
 
 	/**
+	 * source and target
 	 * Moves the element to the book's folder and adds it to the table of contents.
 	 * @param element Notebook, Markdown File, or section that will be added to the book.
-	 * @param book Book or a BookSection that will be modified.
+	 * @param targetBook Book or a BookSection that will be modified.
 	*/
-	public async updateBook(element: BookTreeItem, book: BookTreeItem): Promise<void> {
-		if (element.contextValue === 'section' && book.book.version === element.book.version) {
-			if (book.contextValue === 'section') {
-				await this.addSection(element, book, true);
-				this.tableofContents = this.updateToc(book.tableOfContents.sections, book, this.newSection);
-				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true }));
-			} else if (book.contextValue === 'savedBook') {
-				await this.addSection(element, book, false);
-				this.tableofContents = book.tableOfContents.sections;
+	public async updateBook(element: BookTreeItem, targetBook: BookTreeItem): Promise<void> {
+		if (element.contextValue === 'section' && targetBook.book.version === element.book.version) {
+			if (targetBook.contextValue === 'section') {
+				await this.addSection(element, targetBook, true);
+				this.tableofContents = this.updateToc(tocOp.Add, targetBook.tableOfContents.sections, targetBook, this.newSection);
+				await fs.writeFile(targetBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true }));
+			} else if (targetBook.contextValue === 'savedBook') {
+				await this.addSection(element, targetBook, false);
+				this.tableofContents = targetBook.tableOfContents.sections;
 				this.tableofContents.push(this.newSection);
-				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true }));
+				await fs.writeFile(targetBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true }));
 			}
 		}
 		else if (element.contextValue === 'savedNotebook') {
-			if (book.contextValue === 'savedBook') {
-				await this.addNotebook(element, book, false);
-				this.tableofContents = book.tableOfContents.sections;
-				this.tableofContents.push(this.newSection);
-				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true }));
-			} else if (book.contextValue === 'section') {
-				await this.addNotebook(element, book, true);
-				this.tableofContents = this.updateToc(book.tableOfContents.sections, book, this.newSection);
-				await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true }));
+			if (element.book.tableOfContents.sections) {
+				// the notebook is part of a book so we need to modify its toc as well
+				const sourceBookTOC = this.updateToc(tocOp.Remove, element.tableOfContents.sections, element, undefined);
+				await fs.writeFile(element.tableOfContentsPath, yaml.safeDump(sourceBookTOC, { lineWidth: Infinity, noRefs: true }));
+			} else {
+				await vscode.commands.executeCommand('notebook.command.closeNotebook', element);
 			}
-			await vscode.commands.executeCommand('notebook.command.closeNotebook', element);
+			if (targetBook.contextValue === 'savedBook') {
+				await this.addNotebook(element, targetBook, false);
+				this.tableofContents = targetBook.sections;
+				this.tableofContents.push(this.newSection);
+				await fs.writeFile(targetBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true }));
+			} else if (targetBook.contextValue === 'section') {
+				await this.addNotebook(element, targetBook, true);
+				this.tableofContents = this.updateToc(tocOp.Add, targetBook.tableOfContents.sections, targetBook, this.newSection);
+				await fs.writeFile(targetBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true }));
+			}
 		}
 	}
 }

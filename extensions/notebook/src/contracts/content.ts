@@ -150,5 +150,5 @@ export interface IJupyterBookSectionV2 {
 }
 
 // type that supports new and old version
-export type JupyterBookSection = IJupyterBookSectionV1 | IJupyterBookSectionV2;
+export type JupyterBookSection = IJupyterBookSectionV2;
 

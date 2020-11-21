@@ -144,7 +144,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		await this.bookTocManager.updateBook(section, book);
 	}
 
-	async showCurrentBooks(book: BookTreeItem): Promise<void> {
+	async loadSectionsBook(book: BookModel): Promise<void> {
+
+	}
+
+	async showCurrentBooks(movingElement: BookTreeItem): Promise<void> {
 		try {
 			let bookOptions: vscode.QuickPickItem[] = [];
 			this.books.forEach(book => {
@@ -156,9 +160,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				canPickMany: false,
 				placeHolder: 'Select a Jupyter Book'
 			});
-			if (pickedBook && book) {
+
+			if (pickedBook && movingElement) {
 				const updatedBook = this.books.filter(book => book.bookPath === pickedBook.description)[0];
-				this.bookTocManager.updateBook(book, updatedBook.bookItems[0]);
+				if (movingElement.tableOfContents.sections) {
+					// this is for notebooks what about sections
+					if (movingElement.contextValue === 'savedNotebook') {
+						let sourceBook = this.books.filter(book => book.getNotebook(movingElement.book.contentPath));
+						movingElement.tableOfContents.sections = sourceBook[0].bookItems[0].sections;
+					}
+				}
+				this.bookTocManager.updateBook(movingElement, updatedBook.bookItems[0]);
 			}
 		}
 		catch (e) {

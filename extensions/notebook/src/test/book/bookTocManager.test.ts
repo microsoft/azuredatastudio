@@ -89,7 +89,7 @@ describe('BookTocManagerTests', function () {
 			}];
 			await bookTocManager.createBook(bookFolderPath, root2FolderPath);
 			should(equalTOC(bookTocManager.tableofContents[2].sections, expectedSection)).be.true;
-			should(bookTocManager.tableofContents[2].file).be.equal(path.join(subfolder, 'readme'));
+			should((bookTocManager.tableofContents[2] as IJupyterBookSectionV2).file).be.equal(path.join(subfolder, 'readme'));
 		});
 
 		it('should ignore invalid file extensions', async () => {

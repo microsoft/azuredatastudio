@@ -76,7 +76,7 @@ export class BookTreeItem extends vscode.TreeItem {
 			this.tooltip = `${this._uri}`;
 		}
 		else {
-			this._tableOfContentsPath = (this.book.type === BookTreeItemType.Book || this.contextValue === 'section') ? (this.book.version === BookVersion.v1 ? path.join(this.book.root, '_data', 'toc.yml') : path.join(this.book.root, '_toc.yml')) : undefined;
+			this._tableOfContentsPath = (this.book.type === BookTreeItemType.Book || this.contextValue === 'section' || (book.tableOfContents.sections && book.type === BookTreeItemType.Notebook)) ? (this.book.version === BookVersion.v1 ? path.join(this.book.root, '_data', 'toc.yml') : path.join(this.book.root, '_toc.yml')) : undefined;
 			this._rootContentPath = this.book.version === BookVersion.v1 ? path.join(this.book.root, content) : this.book.root;
 			this.tooltip = this.book.type === BookTreeItemType.Book ? this._rootContentPath : this.book.contentPath;
 			this.resourceUri = vscode.Uri.file(this.book.root);
