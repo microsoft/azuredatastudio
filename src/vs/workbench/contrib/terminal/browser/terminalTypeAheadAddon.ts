@@ -132,7 +132,7 @@ class StringReader {
 	 */
 	public eatChar(char: string) {
 		if (this.input[this.index] !== char) {
-			return;
+			return undefined;
 		}
 
 		this.index++;
@@ -144,7 +144,7 @@ class StringReader {
 	 */
 	public eatStr(substr: string) {
 		if (this.input.slice(this.index, substr.length) !== substr) {
-			return;
+			return undefined;
 		}
 
 		this.index += substr.length;
@@ -178,7 +178,7 @@ class StringReader {
 	public eatRe(re: RegExp) {
 		const match = re.exec(this.input.slice(this.index));
 		if (!match) {
-			return;
+			return undefined;
 		}
 
 		this.index += match[0].length;
