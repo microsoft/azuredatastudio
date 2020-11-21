@@ -316,7 +316,6 @@ export interface KubeClusterContextFieldInfo extends FieldInfo {
 	configFileVariableName?: string;
 }
 export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
-	displaySubscriptionVariableName?: string;
 	subscriptionVariableName?: string;
 	resourceGroupVariableName?: string;
 	allowNewResourceGroup?: boolean;
@@ -326,7 +325,6 @@ export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
 
 export interface AzureLocationsFieldInfo extends FieldInfo {
 	locationVariableName?: string;
-	displayLocationVariableName?: string;
 	locations?: string[]
 }
 

@@ -49,8 +49,8 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 					: op as azdata.CategoryValue;
 				const radioOption = this._view!.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
 					label: option.displayName,
+					value: option.name,
 					checked: option.displayName === defaultValue,
-					name: option.name,
 					enabled: instanceOfDynamicEnablementInfo(this._fieldInfo.enabled) ? false : this._fieldInfo.enabled // Dynamic enablement is initially set to false
 				}).component();
 				if (radioOption.checked) {
@@ -75,7 +75,11 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 	}
 
 	get value(): string | undefined {
-		return this._currentRadioOption?.label;
+		return this._currentRadioOption?.value || this._currentRadioOption?.label;
+	}
+
+	get displayValue(): string {
+		return this._currentRadioOption.label || '';
 	}
 
 	get checked(): azdata.RadioButtonComponent {

@@ -210,7 +210,6 @@
                           "type": "azure_account",
                           "required": true,
                           "subscriptionVariableName": "AZDATA_NB_VAR_ARC_SUBSCRIPTION",
-                          "displaySubscriptionVariableName": "AZDATA_NB_VAR_ARC_DISPLAY_SUBSCRIPTION",
                           "resourceGroupVariableName": "AZDATA_NB_VAR_ARC_RESOURCE_GROUP"
                         },
                         {
@@ -219,7 +218,6 @@
                           "defaultValue": "eastus",
                           "required": true,
                           "locationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION",
-                          "displayLocationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_DISPLAY_LOCATION",
                           "locations": [
                             "australiaeast",
                             "centralus",
@@ -273,7 +271,7 @@
                           "defaultValue": "",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "%arc.data.controller.direct%"
+                            "value": "direct"
                           }
                         },
                         {
@@ -284,7 +282,7 @@
                           "defaultValue": "",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "%arc.data.controller.direct%"
+                            "value": "direct"
                           }
                         },
                         {
@@ -295,7 +293,7 @@
                           "defaultValue": "",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "%arc.data.controller.direct%"
+                            "value": "direct"
                           }
                         }
                       ]
@@ -542,7 +540,7 @@
                           "label": "%arc.data.controller.summary.subscription%",
                           "type": "readonly_text",
                           "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DISPLAY_SUBSCRIPTION)",
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_SUBSCRIPTION)",
                           "inputWidth": "600"
                         },
                         {
@@ -555,7 +553,7 @@
                           "label": "%arc.data.controller.summary.location%",
                           "type": "readonly_text",
                           "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_DISPLAY_LOCATION)"
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION)"
                         }
                       ]
                     },
