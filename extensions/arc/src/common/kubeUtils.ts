@@ -6,7 +6,7 @@
 import * as path from 'path';
 import * as os from 'os';
 import * as yamljs from 'yamljs';
-import * as fs from 'fs';
+import * as util from 'util';
 import * as loc from '../localizedConstants';
 import { throwUnless } from './utils';
 
@@ -16,8 +16,7 @@ export interface KubeClusterContext {
 }
 
 export async function getKubeConfigClusterContexts(configFile: string): Promise<KubeClusterContext[]> {
-	await fs.promises.access(configFile);
-	const config = yamljs.load(configFile);
+	const config: any = await util.promisify(yamljs.load)(configFile);
 	const rawContexts = <any[]>config['contexts'];
 	throwUnless(rawContexts && rawContexts.length, loc.noContextFound(configFile));
 	const currentContext = <string>config['current-context'];
