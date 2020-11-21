@@ -11,6 +11,7 @@ import { Disposable, IDisposable, toDisposable, DisposableStore, dispose } from 
 import { ResourceMap } from 'vs/base/common/map';
 import { ISaveOptions, IRevertOptions } from 'vs/workbench/common/editor';
 import { ITextSnapshot } from 'vs/editor/common/model';
+import { CancellationToken } from 'vs/base/common/cancellation';
 import { Schemas } from 'vs/base/common/network'; // {{SQL CARBON EDIT}} @chlafreniere need to block working copies of notebook editors from being tracked
 
 export const enum WorkingCopyCapabilities {
@@ -99,8 +100,10 @@ export interface IWorkingCopy {
 	 *
 	 * Providers of working copies should use `IBackupFileService.resolve(workingCopy.resource)`
 	 * to retrieve the backup metadata associated when loading the working copy.
+	 *
+	 * @param token support for cancellation
 	 */
-	backup(): Promise<IWorkingCopyBackup>;
+	backup(token: CancellationToken): Promise<IWorkingCopyBackup>;
 
 	/**
 	 * Asks the working copy to save. If the working copy was dirty, it is
