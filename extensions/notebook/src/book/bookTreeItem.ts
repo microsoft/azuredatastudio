@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { JupyterBookSection, IJupyterBookToc, IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
+import { JupyterBookSection, IJupyterBookToc } from '../contracts/content';
 import * as loc from '../common/localizedConstants';
 import { isBookItemPinned } from '../common/utils';
 import { BookVersion } from './bookModel';
@@ -114,13 +114,10 @@ export class BookTreeItem extends vscode.TreeItem {
 		let i = --index;
 		while (i > -1) {
 			let pathToNotebook: string;
-			if (this.book.version === BookVersion.v2 && (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file) {
+			if (this.book.tableOfContents.sections[i].file) {
 				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				pathToNotebook = path.posix.join(this.book.root, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
-			} else if ((this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url) {
-				pathToNotebook = path.posix.join(this.book.root, content, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
+				pathToNotebook = this.book.version === BookVersion.v2 ? path.posix.join(this.book.root, this.book.tableOfContents.sections[i].file.concat('.ipynb')) : path.posix.join(this.book.root, content, this.book.tableOfContents.sections[i].file.concat('.ipynb'));
 			}
-
 			// eslint-disable-next-line no-sync
 			if (fs.existsSync(pathToNotebook)) {
 				this._previousUri = pathToNotebook;
@@ -134,13 +131,10 @@ export class BookTreeItem extends vscode.TreeItem {
 		let i = ++index;
 		while (i < this.book.tableOfContents.sections.length) {
 			let pathToNotebook: string;
-			if (this.book.version === BookVersion.v2 && (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file) {
+			if (this.book.tableOfContents.sections[i].file) {
 				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				pathToNotebook = path.posix.join(this.book.root, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
-			} else if ((this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url) {
-				pathToNotebook = path.posix.join(this.book.root, content, (this.book.tableOfContents.sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
+				pathToNotebook = this.book.version === BookVersion.v2 ? path.posix.join(this.book.root, this.book.tableOfContents.sections[i].file.concat('.ipynb')) : path.posix.join(this.book.root, content, this.book.tableOfContents.sections[i].file.concat('.ipynb'));
 			}
-
 			// eslint-disable-next-line no-sync
 			if (fs.existsSync(pathToNotebook)) {
 				this._nextUri = pathToNotebook;
@@ -204,7 +198,7 @@ export class BookTreeItem extends vscode.TreeItem {
 	}
 
 	private findChildSectionRecur(section: JupyterBookSection, url: string): JupyterBookSection | undefined {
-		if ((section as IJupyterBookSectionV1).url && (section as IJupyterBookSectionV1).url === url || (section as IJupyterBookSectionV2).file && (section as IJupyterBookSectionV2).file === url) {
+		if (section.file && section.file === url) {
 			return section;
 		} else if (section.sections) {
 			for (const childSection of section.sections) {

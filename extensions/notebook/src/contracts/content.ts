@@ -86,7 +86,7 @@ export interface IJupyterBookSectionV1 {
 	/**
 	 * Contains a list of more entries that make up the chapter's/section's sub-sections
 	 */
-	sections?: IJupyterBookSectionV1[];
+	sections?: JupyterBookSection[];
 	/**
 	 * If the section shouldn't have a number in the sidebar
 	 */
@@ -134,7 +134,7 @@ export interface IJupyterBookSectionV2 {
 	/**
 	 * Contains a list of more entries that make up the chapter's/section's sub-sections
 	 */
-	sections?: IJupyterBookSectionV2[];
+	sections?: JupyterBookSection[];
 	/**
 	 * If the section shouldn't have a number in the sidebar
 	 */
@@ -145,10 +145,9 @@ export interface IJupyterBookSectionV2 {
 	expand_sections?: boolean;
 	/**
 	 * External link
-	 */
+	*/
 	url?: string;
 }
 
-// type that supports new and old version
-export type JupyterBookSection = IJupyterBookSectionV2;
+export interface JupyterBookSection extends IJupyterBookSectionV1, IJupyterBookSectionV2 { }
 

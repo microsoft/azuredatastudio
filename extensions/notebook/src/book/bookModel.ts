@@ -11,8 +11,8 @@ import * as path from 'path';
 import * as fileServices from 'fs';
 import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
-import { IJupyterBookToc, JupyterBookSection, IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
-import { convertFromV1 } from '../book/bookTocConverter';
+import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
+import { BookVersionHandler } from './bookVersionHandler';
 
 const fsPromises = fileServices.promises;
 const content = 'content';
@@ -31,6 +31,7 @@ export class BookModel {
 	private _bookVersion: BookVersion;
 	private _rootPath: string;
 	private _errorMessage: string;
+	private _versionHandler: BookVersionHandler = new BookVersionHandler();
 
 	constructor(
 		public readonly bookPath: string,
@@ -39,6 +40,7 @@ export class BookModel {
 		private _extensionContext: vscode.ExtensionContext,
 		public readonly notebookRootPath?: string) {
 		this._bookItems = [];
+		this._versionHandler = new BookVersionHandler();
 	}
 
 	public async initializeContents(): Promise<void> {
@@ -156,7 +158,7 @@ export class BookModel {
 					title: config.title,
 					contentPath: this._tableOfContentsPath,
 					root: this._rootPath,
-					tableOfContents: { sections: this.parseJupyterSections(tableOfContents) },
+					tableOfContents: { sections: this.parseJupyterSections(this._bookVersion, tableOfContents) },
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
 					treeItemCollapsibleState: collapsibleState,
@@ -183,8 +185,8 @@ export class BookModel {
 	public async getSections(tableOfContents: IJupyterBookToc, sections: JupyterBookSection[], root: string, book: BookTreeItemFormat): Promise<BookTreeItem[]> {
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
-			if (sections[i].url || (sections[i] as IJupyterBookSectionV2).file) {
-				if (sections[i].url && ((sections[i] as IJupyterBookSectionV1).external || book.version === BookVersion.v2)) {
+			if (sections[i].file) {
+				if (sections[i].url) {
 					let externalLink: BookTreeItem = new BookTreeItem({
 						title: sections[i].title,
 						contentPath: undefined,
@@ -204,21 +206,14 @@ export class BookModel {
 
 					notebooks.push(externalLink);
 				} else {
-					let pathToNotebook: string;
-					let pathToMarkdown: string;
-					if (book.version === BookVersion.v2) {
-						pathToNotebook = path.join(book.root, (sections[i] as IJupyterBookSectionV2).file.concat('.ipynb'));
-						pathToMarkdown = path.join(book.root, (sections[i] as IJupyterBookSectionV2).file.concat('.md'));
-					} else if (sections[i].url) {
-						pathToNotebook = path.join(book.root, content, (sections[i] as IJupyterBookSectionV1).url.concat('.ipynb'));
-						pathToMarkdown = path.join(book.root, content, (sections[i] as IJupyterBookSectionV1).url.concat('.md'));
-					}
+					const pathToNotebook: string = book.version === BookVersion.v1 ? path.join(book.root, content, sections[i].file.concat('.ipynb')) : path.join(book.root, sections[i].file.concat('.ipynb'));
+					const pathToMarkdown: string = book.version === BookVersion.v1 ? path.join(book.root, content, sections[i].file.concat('.md')) : path.join(book.root, sections[i].file.concat('.md'));
 
 					// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
 					// Following Jupyter Books behavior for now
 					if (await fs.pathExists(pathToNotebook)) {
 						let notebook = new BookTreeItem({
-							title: sections[i].title ? sections[i].title : (sections[i] as IJupyterBookSectionV2).file,
+							title: sections[i].title ? sections[i].title : sections[i].file,
 							contentPath: pathToNotebook,
 							root: root,
 							tableOfContents: tableOfContents,
@@ -249,7 +244,7 @@ export class BookModel {
 						}
 					} else if (await fs.pathExists(pathToMarkdown)) {
 						let markdown: BookTreeItem = new BookTreeItem({
-							title: sections[i].title ? sections[i].title : (sections[i] as IJupyterBookSectionV2).file,
+							title: sections[i].title ? sections[i].title : sections[i].file,
 							contentPath: pathToMarkdown,
 							root: root,
 							tableOfContents: tableOfContents,
@@ -281,10 +276,10 @@ export class BookModel {
 	 * Recursively parses out a section of a Jupyter Book.
 	 * @param section The input data to parse
 	 */
-	private parseJupyterSections(section: any[]): JupyterBookSection[] {
+	private parseJupyterSections(version: string, section: any[]): JupyterBookSection[] {
 		try {
 			return section.reduce((acc, val) => Array.isArray(val.sections) ?
-				acc.concat(convertFromV1(val)).concat(this.parseJupyterSections(val.sections)) : acc.concat(convertFromV1(val)), []);
+				acc.concat(this._versionHandler.convertFrom(version, val)).concat(this.parseJupyterSections(version, val.sections)) : acc.concat(this._versionHandler.convertFrom(version, val)), []);
 		} catch (e) {
 			this._errorMessage = loc.invalidTocFileError();
 			if (section.length > 0) {

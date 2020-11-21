@@ -16,7 +16,6 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/content';
 import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager } from './bookTocManager';
@@ -302,7 +301,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					const sectionToOpen = bookRoot.findChildSection(urlToOpen);
 					urlPath = sectionToOpen?.url;
 				} else {
-					urlPath = this.currentBook.version === BookVersion.v1 ? (this.currentBook.bookItems[0].tableOfContents.sections[0] as IJupyterBookSectionV1).url : (this.currentBook.bookItems[0].tableOfContents.sections[0] as IJupyterBookSectionV2).file;
+					urlPath = this.currentBook.bookItems[0].tableOfContents.sections[0].file;
 				}
 			}
 			if (urlPath) {
