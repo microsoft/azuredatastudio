@@ -992,7 +992,7 @@ export class SearchView extends ViewPane {
 		}
 
 		const actionsPosition = this.searchConfig.actionsPosition;
-		dom.toggleClass(this.getContainer(), SearchView.ACTIONS_RIGHT_CLASS_NAME, actionsPosition === 'right');
+		this.getContainer().classList.toggle(SearchView.ACTIONS_RIGHT_CLASS_NAME, actionsPosition === 'right');
 
 		this.searchWidget.setWidth(this.size.width - 28 /* container margin */);
 
