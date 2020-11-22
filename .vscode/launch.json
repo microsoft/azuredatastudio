@@ -141,9 +141,12 @@
 			}
 		},
 		{
-			"type": "chrome",
+			"type": "pwa-chrome",
 			"request": "launch",
-			"name": "Launch ADS (Web, Chrome) (TBD)",
+			"outFiles": [],
+			"outFiles": [],
+			"perScriptSourcemaps": "yes",
+			"name": "VS Code (Web, Chrome)",
 			"url": "http://localhost:8080",
 			"preLaunchTask": "Run web",
 			"presentation": {
@@ -154,6 +157,8 @@
 		{
 			"type": "pwa-msedge",
 			"request": "launch",
+			"outFiles": [],
+			"perScriptSourcemaps": "yes",
 			"name": "VS Code (Web, Edge)",
 			"url": "http://localhost:8080",
 			"pauseForSourceMap": false,
