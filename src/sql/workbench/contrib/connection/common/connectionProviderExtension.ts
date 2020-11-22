@@ -11,7 +11,7 @@ import { localize } from 'vs/nls';
 import * as resources from 'vs/base/common/resources';
 import { ConnectionProviderProperties, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import type { IDisposable } from 'vs/base/common/lifecycle';
 import { isArray } from 'vs/base/common/types';
 

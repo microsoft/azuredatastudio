@@ -12,7 +12,7 @@ import * as lifecycle from 'vs/base/common/lifecycle';
 import * as ext from 'vs/workbench/common/contributions';
 import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
 import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
-import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { ToggleTasksAction } from 'sql/workbench/contrib/tasks/browser/tasksActions';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';

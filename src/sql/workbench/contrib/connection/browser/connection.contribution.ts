@@ -18,7 +18,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { integrated, azureMFA } from 'sql/platform/connection/common/constants';
 import { AuthenticationType } from 'sql/workbench/services/connection/browser/connectionWidget';
-import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);

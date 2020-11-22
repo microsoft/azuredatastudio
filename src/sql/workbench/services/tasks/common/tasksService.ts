@@ -8,7 +8,7 @@ import { TaskNode, TaskStatus, TaskExecutionMode } from 'sql/workbench/services/
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
-import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
+import { ILifecycleService } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { localize } from 'vs/nls';
 import Severity from 'vs/base/common/severity';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
