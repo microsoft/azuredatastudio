@@ -26,11 +26,49 @@ export enum State {
 	EXIT,
 }
 
+export enum MigrationCutover {
+	MANUAL,
+	AUTOMATIC
+}
+
+export enum NetworkContainerType {
+	FILE_SHARE,
+	BLOB_CONTAINER,
+	NETWORK_SHARE
+}
+
+export interface NetworkShare {
+	networkShareLocation: string;
+	windowsUser: string;
+	password: string;
+	storageSubscriptionId: string;
+	storageAccountId: string;
+}
+
+export interface BlobContainer {
+	subscriptionId: string;
+	storageAccountId: string;
+	containerId: string;
+}
+
+export interface FileShare {
+	subscriptionId: string;
+	storageAccountId: string;
+	fileShareId: string;
+}
+export interface DatabaseBackupModel {
+	emailNotification: boolean;
+	migrationCutover: MigrationCutover;
+	networkContainerType: NetworkContainerType;
+	networkContainer: NetworkShare | BlobContainer | FileShare;
+}
 export interface Model {
 	readonly sourceConnection: azdata.connection.Connection;
 	readonly currentState: State;
 	gatheringInformationError: string | undefined;
 	skuRecommendations: SKURecommendations | undefined;
+	azureAccount: azdata.Account | undefined;
+	databaseBackup: DatabaseBackupModel | undefined;
 }
 
 export interface StateChangeEvent {
@@ -44,6 +82,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _gatheringInformationError: string | undefined;
 	private _skuRecommendations: SKURecommendations | undefined;
 	private _assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined;
+	private _azureAccount: azdata.Account | undefined;
+	private _databaseBackup: DatabaseBackupModel | undefined;
 
 	constructor(
 		private readonly _extensionContext: vscode.ExtensionContext,
@@ -51,6 +91,22 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		public readonly migrationService: mssql.ISqlMigrationService
 	) {
 		this._currentState = State.INIT;
+	}
+
+	public get azureAccount(): azdata.Account | undefined {
+		return this._azureAccount;
+	}
+
+	public set azureAccount(account: azdata.Account | undefined) {
+		this._azureAccount = account;
+	}
+
+	public get databaseBackup(): DatabaseBackupModel | undefined {
+		return this._databaseBackup;
+	}
+
+	public set databaseBackup(dbBackup: DatabaseBackupModel | undefined) {
+		this._databaseBackup = dbBackup;
 	}
 
 	public get sourceConnection(): azdata.connection.Connection {
