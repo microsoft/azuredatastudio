@@ -38,22 +38,22 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		this._azureAccountsDropdown = view.modelBuilder.dropDown().withProperties({}).component();
 
 		this._azureAccountsDropdown.onValueChanged(async (value) => {
-			//this.azureAccount = this._accountsMap.get(value.selected)!;
+			this.migrationStateModel.azureAccount = this._accountsMap.get(value.selected)!;
 		});
 
-		const signInButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const addAccountButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: constants.ACCOUNT_ADD_BUTTON_LABEL,
 			width: '100px'
 		}).component();
 
-		signInButton.onDidClick(async (event) => {
+		addAccountButton.onDidClick(async (event) => {
 			await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 			await this.populateAzureAccountsDropdown();
 		});
 
 		const flexContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
-		}).withItems([this._azureAccountsDropdown, signInButton], { CSSStyles: { 'margin-right': '5px', } }).component();
+		}).withItems([this._azureAccountsDropdown, addAccountButton], { CSSStyles: { 'margin-right': '5px', } }).component();
 
 		return {
 			title: '',
@@ -79,18 +79,38 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			return accountCategoryValue;
 		});
 
-		//this.azureAccount = accounts[0];
+		this.migrationStateModel.azureAccount = accounts[0];
 		this._azureAccountsDropdown.loading = false;
 	}
 
 
 
 	public onPageEnter(): Promise<void> {
-		throw new Error('Method not implemented.');
+		this.wizard.registerNavigationValidator((pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+				return true;
+			}
+
+			if (this._azureAccountsDropdown.value === constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR) {
+				this.wizard.message = {
+					text: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
+			return true;
+		});
+
+		return Promise.resolve();
 	}
+
 	public onPageLeave(): Promise<void> {
-		throw new Error('Method not implemented.');
+		this.wizard.registerNavigationValidator((pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+			return true;
+		});
+		return Promise.resolve();
 	}
+
 	protected handleStateChange(e: StateChangeEvent): Promise<void> {
 		throw new Error('Method not implemented.');
 	}

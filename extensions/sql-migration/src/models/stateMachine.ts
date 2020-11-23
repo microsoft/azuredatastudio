@@ -61,6 +61,7 @@ export interface DatabaseBackupModel {
 	migrationCutover: MigrationCutover;
 	networkContainerType: NetworkContainerType;
 	networkContainer: NetworkShare | BlobContainer | FileShare;
+	azureSecurityToken: string;
 }
 export interface Model {
 	readonly sourceConnection: azdata.connection.Connection;
@@ -82,8 +83,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _gatheringInformationError: string | undefined;
 	private _skuRecommendations: SKURecommendations | undefined;
 	private _assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined;
-	private _azureAccount: azdata.Account | undefined;
-	private _databaseBackup: DatabaseBackupModel | undefined;
+	private _azureAccount!: azdata.Account;
+	private _databaseBackup!: DatabaseBackupModel;
 
 	constructor(
 		private readonly _extensionContext: vscode.ExtensionContext,
@@ -91,21 +92,22 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		public readonly migrationService: mssql.ISqlMigrationService
 	) {
 		this._currentState = State.INIT;
+		this.databaseBackup = {} as DatabaseBackupModel;
 	}
 
-	public get azureAccount(): azdata.Account | undefined {
+	public get azureAccount(): azdata.Account {
 		return this._azureAccount;
 	}
 
-	public set azureAccount(account: azdata.Account | undefined) {
+	public set azureAccount(account: azdata.Account) {
 		this._azureAccount = account;
 	}
 
-	public get databaseBackup(): DatabaseBackupModel | undefined {
+	public get databaseBackup(): DatabaseBackupModel {
 		return this._databaseBackup;
 	}
 
-	public set databaseBackup(dbBackup: DatabaseBackupModel | undefined) {
+	public set databaseBackup(dbBackup: DatabaseBackupModel) {
 		this._databaseBackup = dbBackup;
 	}
 
