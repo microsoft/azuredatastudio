@@ -1220,13 +1220,15 @@ export interface ISuggestDataDto {
 export const enum ISuggestResultDtoField {
 	defaultRanges = 'a',
 	completions = 'b',
-	isIncomplete = 'c'
+	isIncomplete = 'c',
+	duration = 'd',
 }
 
 export interface ISuggestResultDto {
 	[ISuggestResultDtoField.defaultRanges]: { insert: IRange, replace: IRange; };
 	[ISuggestResultDtoField.completions]: ISuggestDataDto[];
 	[ISuggestResultDtoField.isIncomplete]: undefined | true;
+	[ISuggestResultDtoField.duration]: number;
 	x?: number;
 }
 
