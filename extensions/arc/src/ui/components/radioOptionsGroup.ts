@@ -35,7 +35,6 @@ export class RadioOptionsGroup {
 				const radioOption = this._view!.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
 					label: option,
 					checked: option === defaultValue,
-					name: option,
 					value: option,
 					enabled: true
 				}).component();

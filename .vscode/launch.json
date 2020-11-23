@@ -227,13 +227,16 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.bat"
 			},
 			"osx": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
+				"runtimeExecutable": "${workspaceFolder}/../arct.sh"
 			},
 			"linux": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
 			},
 			"webRoot": "${workspaceFolder}",
-			"timeout": 45000
+			"timeout": 45000,
+			"env": {
+				"ADS_TEST_GREP": "radio"
+			},
 		},
 		{
 			"type": "chrome",
