@@ -69,7 +69,8 @@ export const workerNodesInformation = localize('arc.workerNodeInformation', "In 
 export const vCores = localize('arc.vCores', "vCores");
 export const ram = localize('arc.ram', "RAM");
 export const refresh = localize('arc.refresh', "Refresh");
-export const resetToDefault = localize('arc.resetToDefault', "Reset all to default");
+export const resetAllToDefault = localize('arc.resetAllToDefault', "Reset all to default");
+export const resetToDefault = localize('arc.resetToDefault', "Reset to default");
 export const troubleshoot = localize('arc.troubleshoot', "Troubleshoot");
 export const clickTheNewSupportRequestButton = localize('arc.clickTheNewSupportRequestButton', "Click the new support request button to file a support request in the Azure Portal.");
 export const running = localize('arc.running', "Running");
@@ -94,6 +95,7 @@ export const rememberPassword = localize('arc.rememberPassword', "Remember Passw
 export const connect = localize('arc.connect', "Connect");
 export const cancel = localize('arc.cancel', "Cancel");
 export const ok = localize('arc.ok', "Ok");
+export const on = localize('arc.on', "On");
 export const notConfigured = localize('arc.notConfigured', "Not Configured");
 
 // Database States - see https://docs.microsoft.com/sql/relational-databases/databases/database-states
@@ -122,7 +124,7 @@ export const databaseName = localize('arc.databaseName', "Database name");
 export const enterNewPassword = localize('arc.enterNewPassword', "Enter a new password");
 export const confirmNewPassword = localize('arc.confirmNewPassword', "Confirm the new password");
 export const learnAboutPostgresClients = localize('arc.learnAboutPostgresClients', "Learn more about Azure PostgreSQL Hyperscale client interfaces");
-export const nodeParametersDescription = localize('arc.nodeParametersDescription', " These server parameters can be set to custom (non-default) values. Search to find parameters.");
+export const nodeParametersDescription = localize('arc.nodeParametersDescription', " These server parameters of the Coordinator node and the Worker nodes can be set to custom (non-default) values. Search to find parameters.");
 export const learnAboutNodeParameters = localize('arc.learnAboutNodeParameters', "Learn more about database engine settings for Azure Arc enabled PostgreSQL Hyperscale");
 export const noNodeParametersFound = localize('arc.noNodeParametersFound', "No worker server parameters found...");
 export const searchToFilter = localize('arc.searchToFilter', "Search to filter items...");
@@ -158,8 +160,8 @@ export const lastUpdated = localize('arc.lastUpdated', "Last updated");
 export const noExternalEndpoint = localize('arc.noExternalEndpoint', "No External Endpoint has been configured so this information isn't available.");
 export const podsReady = localize('arc.podsReady', "pods ready");
 
-export function pgSettingRange(min: string, max: string): string { return localize('arc.pgSettingRange', "Allowed value should be: {0} - {1}", min, max); }
-export function pgSettingOptions(options: string): string { return localize('arc.pgSettingOptions', "Allowed value should be: {0}", options); }
+export function rangeSetting(min: string, max: string): string { return localize('arc.rangeSetting', "Allowed value should be: {0} - {1}", min, max); }
+export function optionsSetting(options: string): string { return localize('arc.optionsSetting', "Allowed value should be: {0}", options); }
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
 export function deletingInstance(name: string): string { return localize('arc.deletingInstance', "Deleting instance '{0}'...", name); }
 export function updatingInstance(name: string): string { return localize('arc.updatingInstance', "Updating instance '{0}'...", name); }
@@ -183,6 +185,7 @@ export function updated(when: string): string { return localize('arc.updated', "
 // Errors
 export const connectionRequired = localize('arc.connectionRequired', "A connection is required to show all properties. Click refresh to re-enter connection information");
 export const couldNotFindControllerRegistration = localize('arc.couldNotFindControllerRegistration', "Could not find controller registration.");
+export function outOfRange(min: string, max: string): string { return localize('arc.outOfRange', "The number must be in range {0} - {1}", min, max); }
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
 export function openDashboardFailed(error: any): string { return localize('arc.openDashboardFailed', "Error opening dashboard. {0}", getErrorMessage(error)); }
 export function instanceDeletionFailed(name: string, error: any): string { return localize('arc.instanceDeletionFailed', "Failed to delete instance {0}. {1}", name, getErrorMessage(error)); }

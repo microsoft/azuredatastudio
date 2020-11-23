@@ -18,6 +18,8 @@ export class PostgresParametersPage extends DashboardPage {
 	private saveButton?: azdata.ButtonComponent;
 	private resetButton?: azdata.ButtonComponent;
 
+	private engineSettings = `'`;
+	private engineSettingUpdates?: Map<string, string>;
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
@@ -26,6 +28,8 @@ export class PostgresParametersPage extends DashboardPage {
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
 		this.initializeSearchBox();
+
+		this.engineSettingUpdates = new Map();
 
 		this.disposables.push(this._postgresModel.onConfigUpdated(
 			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
@@ -149,20 +153,30 @@ export class PostgresParametersPage extends DashboardPage {
 							title: loc.updatingInstance(this._postgresModel.info.name),
 							cancellable: false
 						},
-						(_progress, _token) => {
-							return this._azdataApi.azdata.arc.postgres.server.edit(
-								this._postgresModel.info.name, {});		// TODO
+						async (_progress, _token): Promise<void> => {
+							//Edit multiple
+							// azdata arc postgres server edit -n <server group name> -e '<parameter name>=<parameter value>, <parameter name>=<parameter value>,...'
+							try {
+								this.engineSettingUpdates!.forEach((value: string) => {
+									this.engineSettings += value + ', ';
+								});
+								await this._azdataApi.azdata.arc.postgres.server.edit(
+									this._postgresModel.info.name, { engineSettings: this.engineSettings + `'` });
+							} catch (err) {
+								// If an error occurs while editing the instance then re-enable the save button since
+								// the edit wasn't successfully applied
+								this.saveButton!.enabled = true;
+								throw err;
+							}
+							await this._postgresModel.refresh();
 						}
 					);
 
-					//Edit multiple
-					// azdata arc postgres server edit -n <server group name> -e '<parameter name>="<parameter value>"", <parameter name>="<parameter value>"",...'
-
-
-
-					this._postgresModel.refresh();
-
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
+
+					this.engineSettings = `'`;
+					this.engineSettingUpdates!.clear();
+					this.discardButton!.enabled = false;
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
@@ -181,6 +195,7 @@ export class PostgresParametersPage extends DashboardPage {
 				this.discardButton!.enabled = false;
 				try {
 					// TODO
+					this.engineSettingUpdates!.clear();
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
@@ -190,9 +205,8 @@ export class PostgresParametersPage extends DashboardPage {
 
 		// Reset
 		this.resetButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.resetToDefault,
+			label: loc.resetAllToDefault,
 			iconPath: IconPathHelper.reset,
-			CSSStyles: { 'transform': 'scaleX(-1)' },
 			enabled: true
 		}).component();
 
@@ -208,9 +222,11 @@ export class PostgresParametersPage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
+							//all
+							// azdata arc postgres server edit -n <server group name> -e '' -re
 							try {
 								await this._azdataApi.azdata.arc.postgres.server.edit(
-									this._postgresModel.info.name, { engineSettings: `'' -rf` });
+									this._postgresModel.info.name, { engineSettings: `'' -re` });
 							} catch (err) {
 								// If an error occurs while resetting the instance then re-enable the reset button since
 								// the edit wasn't successfully applied
@@ -221,13 +237,6 @@ export class PostgresParametersPage extends DashboardPage {
 						}
 
 					);
-
-					// TODO
-					//all
-					// azdata arc postgres server edit -n <server group name> -e '' -re
-					//indv
-					// azdata arc postgres server edit -n postgres01 -e shared_buffers=
-
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.refreshFailed(error));
 				}
@@ -270,98 +279,145 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private parameterComponents(name: string, type: string): any[] {
-
 		let data = [];
+
+		// Set parameter name
 		const parameterName = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: name,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 		data.push(parameterName);
 
-		let valueBox;
-		let information;
+		// Container to hold input component and information bubble
+		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
+
+		// Information bubble title to be set depening on type of input
+		let information = this.modelView.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+			iconPath: IconPathHelper.information,
+			width: '12px',
+			height: '12px',
+			enabled: false
+		}).component();
+
 		if (type === 'enum') {
-			valueBox = this.modelView.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+			// If type is enum, component should be drop down menu
+			let valueBox = this.modelView.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 				values: [], //TODO
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
+			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
 
-			information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-				iconPath: IconPathHelper.information,
-				title: loc.pgSettingOptions('enums'), //TODO
-				width: '12px',
-				height: '12px',
-				enabled: false
-			}).component();
+			this.disposables.push(
+				valueBox.onValueChanged(() => {
+					this.engineSettingUpdates!.set(name, String(valueBox.value));
+
+				})
+			);
+
+			information.updateProperty('title', loc.optionsSetting('enums'));	//TODO
 		} else if (type === 'bool') {
-			valueBox = this.modelView.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
-				label: 'On', //TODO
+			// If type is bool, component should be checkbox to turn on or off
+			let valueBox = this.modelView.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+				label: loc.on,
 				checked: true, //TODO
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
+			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
 
-			information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-				iconPath: IconPathHelper.information,
-				title: loc.pgSettingOptions('on,off'), //TODO
-				width: '12px',
-				height: '12px',
-				enabled: false
-			}).component();
+			this.disposables.push(
+				valueBox.onChanged(() => {
+					if (valueBox.checked) {
+						this.engineSettingUpdates!.set(name, 'on');
+					} else {
+						this.engineSettingUpdates!.set(name, 'off');
+					}
+				})
+			);
+
+			information.updateProperty('title', loc.optionsSetting('on,off'));	//TODO
 		} else if (type === 'string') {
-			valueBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			// If type is string, component should be text inputbox
+			// How to add validation: .withValidation(component => component.value?.search('[0-9]') == -1)
+			let valueBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 				readOnly: false,
 				value: '', //TODO
 				CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '200px' }
 			}).component();
+			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
 
-			information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-				iconPath: IconPathHelper.information,
-				title: loc.pgSettingOptions('[A-Za-z._]+'),
-				width: '12px',
-				height: '12px',
-				enabled: false
-			}).component();
+			this.disposables.push(
+				valueBox.onTextChanged(() => {
+					this.engineSettingUpdates!.set(name, valueBox.value!);
+				})
+			);
+
+			information.updateProperty('title', loc.optionsSetting(loc.optionsSetting('[A-Za-z._]+')));	//TODO
 		} else {
-			valueBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			// If type is real or interger, component should be inputbox set to inputType of number. Max and min values also set.
+			let valueBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 				readOnly: false,
 				min: 0, //TODO
-				validationErrorMessage: '', //TODO
+				max: 10000,
+				validationErrorMessage: loc.outOfRange('min', 'max'), //TODO
 				inputType: 'number',
 				value: '0', //TODO
 				CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '200px' }
 			}).component();
+			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
 
-			information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-				iconPath: IconPathHelper.information,
-				title: loc.pgSettingRange('min', 'max'), //TODO
-				width: '12px',
-				height: '12px',
-				enabled: false
-			}).component();
+			this.disposables.push(
+				valueBox.onTextChanged(() => {
+					this.engineSettingUpdates!.set(name, valueBox.value!);
+				})
+			);
+
+			information.updateProperty('title', loc.optionsSetting(loc.rangeSetting('min', 'max')));	//TODO
 		}
 
-		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
 		valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
 		data.push(valueContainer);
 
 		const parameterDescription = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: 'TEST DESCRIPTION HERE ...............................ytgbyugvtyvctyrcvytjv ycrtctyv tyfty ftyuvuyvuy',
+			value: 'TEST DESCRIPTION HERE ...............................ytgbyugvtyvctyrcvytjv ycrtctyv tyfty ftyuvuyvuy', // TODO
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 		data.push(parameterDescription);
 
+		// Can reset individual component
 		const resetParameter = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			iconPath: IconPathHelper.ellipse,
-			title: 'Reset to default', //TODO
+			title: loc.resetToDefault,
 			width: '20px',
 			height: '20px',
 			enabled: true
 		}).component();
 		data.push(resetParameter);
 
-		return data;
 
+		// azdata arc postgres server edit -n postgres01 -e shared_buffers=
+		this.disposables.push(
+			resetParameter.onDidClick(async () => {
+				try {
+					await vscode.window.withProgress(
+						{
+							location: vscode.ProgressLocation.Notification,
+							title: loc.updatingInstance(this._postgresModel.info.name),
+							cancellable: false
+						},
+						(_progress, _token) => {
+							return this._azdataApi.azdata.arc.postgres.server.edit(
+								this._postgresModel.info.name, { engineSettings: name + '=' });
+						}
+					);
+
+					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
+
+				} catch (error) {
+					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
+				}
+			}));
+
+		return data;
 	}
 
 	private getPGSettings(): any {
