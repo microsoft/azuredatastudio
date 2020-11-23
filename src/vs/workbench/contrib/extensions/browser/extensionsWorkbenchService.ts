@@ -34,7 +34,7 @@ import * as resources from 'vs/base/common/resources';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IFileService } from 'vs/platform/files/common/files';
-import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, isLanguagePackExtension, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
+import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { getExtensionKind } from 'vs/workbench/services/extensions/common/extensionsUtil';
@@ -545,7 +545,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		@IIgnoredExtensionsManagementService private readonly extensionsSyncManagementService: IIgnoredExtensionsManagementService,
 		@IUserDataAutoSyncService private readonly userDataAutoSyncService: IUserDataAutoSyncService,
 		@IProductService private readonly productService: IProductService,
-		@IOpenerService private readonly openerService: IOpenerService // {{SQL CARBON EDIT}}
+		@IOpenerService private readonly openerService: IOpenerService, // {{SQL CARBON EDIT}}
+		@IExtensionManagementService private readonly extensionService: IExtensionManagementService
 	) {
 		super();
 		if (extensionManagementServerService.localExtensionManagementServer) {
