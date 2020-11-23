@@ -17,7 +17,7 @@ import {
 	IExtensionManagementService, IExtensionGalleryService, ILocalExtension, IGalleryExtension, IQueryOptions,
 	InstallExtensionEvent, DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, InstallOperation, DefaultIconPath
 } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer, IWorkbenchExtensioManagementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, getMaliciousExtensionsSet, groupByExtension, ExtensionIdentifierWithVersion, getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
@@ -530,7 +530,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 	constructor(
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IEditorService private readonly editorService: IEditorService,
-		@IExtensionManagementService private readonly extensionService: IExtensionManagementService,
+		@IWorkbenchExtensioManagementService private readonly extensionManagementService: IWorkbenchExtensioManagementService,
 		@IExtensionGalleryService private readonly galleryService: IExtensionGalleryService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
@@ -650,7 +650,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		const options: IQueryOptions = CancellationToken.isCancellationToken(arg1) ? {} : arg1;
 		const token: CancellationToken = CancellationToken.isCancellationToken(arg1) ? arg1 : arg2;
 		options.text = options.text ? this.resolveQueryText(options.text) : options.text;
-		return this.extensionService.getExtensionsReport()
+		return this.extensionManagementService.getExtensionsReport()
 			.then(report => {
 				const maliciousSet = getMaliciousExtensionsSet(report);
 
@@ -990,7 +990,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			location: ProgressLocation.Extensions,
 			title: nls.localize('uninstallingExtension', 'Uninstalling extension....'),
 			source: `${toUninstall.identifier.id}`
-		}, () => this.extensionService.uninstall(toUninstall).then(() => undefined));
+		}, () => this.extensionManagementService.uninstall(toUninstall).then(() => undefined));
 	}
 
 	installVersion(extension: IExtension, version: string): Promise<IExtension> {
@@ -1029,7 +1029,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		return this.progressService.withProgress({
 			location: ProgressLocation.Extensions,
 			source: `${toReinstall.identifier.id}`
-		}, () => this.extensionService.reinstallFromGallery(toReinstall).then(() => this.local.filter(local => areSameExtensions(local.identifier, extension.identifier))[0]));
+		}, () => this.extensionManagementService.reinstallFromGallery(toReinstall).then(() => this.local.filter(local => areSameExtensions(local.identifier, extension.identifier))[0]));
 	}
 
 	isExtensionIgnoredToSync(extension: IExtension): boolean {
@@ -1072,9 +1072,9 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 	}
 
 	private async installFromVSIX(vsix: URI): Promise<IExtension> {
-		const manifest = await this.extensionService.getManifest(vsix);
+		const manifest = await this.extensionManagementService.getManifest(vsix);
 		const existingExtension = this.local.find(local => areSameExtensions(local.identifier, { id: getGalleryExtensionId(manifest.publisher, manifest.name) }));
-		const { identifier } = await this.extensionService.install(vsix);
+		const { identifier } = await this.extensionManagementService.install(vsix);
 
 		if (existingExtension && existingExtension.latestVersion !== manifest.version) {
 			this.ignoreAutoUpdate(new ExtensionIdentifierWithVersion(identifier, manifest.version));
@@ -1087,8 +1087,11 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		this.installing.push(extension);
 		this._onChange.fire(extension);
 		try {
-			const extensionService = extension.server && extension.local && !isLanguagePackExtension(extension.local.manifest) ? extension.server.extensionManagementService : this.extensionService;
-			await extensionService.installFromGallery(gallery);
+			if (extension.state === ExtensionState.Installed && extension.local) {
+				await this.extensionManagementService.updateFromGallery(gallery, extension.local);
+			} else {
+				await this.extensionManagementService.installFromGallery(gallery);
+			}
 			const ids: string[] | undefined = extension.identifier.uuid ? [extension.identifier.uuid] : undefined;
 			const names: string[] | undefined = extension.identifier.uuid ? undefined : [extension.identifier.id];
 			this.queryGallery({ names, ids, pageSize: 1 }, CancellationToken.None);
