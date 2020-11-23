@@ -55,7 +55,8 @@ export class NotebookViewsGridComponent implements OnInit {
 
 		setTimeout(() => {
 			self._grid = GridStack.init({
-				alwaysShowResizeHandle: false
+				alwaysShowResizeHandle: false,
+				styleInHead: true
 			});
 
 			this.cells.forEach((cell) => self._grid);
