@@ -828,7 +828,7 @@ export class PredictionTimeline {
 		return this.cursor;
 	}
 
-	public clearCursor() {  // {{SQL CARBON}} - fix build break
+	public clearCursor() {
 		this.cursor = undefined;
 	}
 
