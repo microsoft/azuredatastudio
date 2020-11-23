@@ -405,35 +405,20 @@ export class DashboardWidget {
 			width: maxWidth + 10,
 			justifyContent: 'flex-start'
 		}).component();
-		const linkComponent = view.modelBuilder.hyperlink().withProperties({
-			label: linkMetaData.title,
-			url: linkMetaData.link,
+		const linkComponent = view.modelBuilder.hyperlink().withProps({
+			label: linkMetaData.title!,
+			url: linkMetaData.link!,
+			showLinkIcon: true,
 			CSSStyles: {
 				'font-size': '14px',
 				'margin': '0px'
 			}
-		}).component();
-		const image = view.modelBuilder.image().withProperties({
-			width: '10px',
-			height: '10px',
-			iconPath: {
-				dark: this.asAbsolutePath('images/linkIcon.svg'),
-				light: this.asAbsolutePath('images/linkIcon.svg'),
-			},
-			iconHeight: '10px',
-			iconWidth: '10px'
 		}).component();
 		linkContainer.addItem(linkComponent, {
 			CSSStyles: {
 				'font-size': '14px',
 				'line-height': '18px',
 				'padding': '0 5px 0 0',
-			}
-		});
-		linkContainer.addItem(image, {
-			CSSStyles: {
-				'padding': '5px 5px 0 0',
-				'height': '10px',
 			}
 		});
 		labelsContainer.addItems([linkContainer, descriptionComponent], {

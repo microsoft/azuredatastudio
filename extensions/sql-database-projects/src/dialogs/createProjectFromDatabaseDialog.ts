@@ -117,6 +117,7 @@ export class CreateProjectFromDatabaseDialog {
 
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
+			this.selectConnectionButton?.focus();
 			this.initDialogComplete?.resolve();
 		});
 	}
