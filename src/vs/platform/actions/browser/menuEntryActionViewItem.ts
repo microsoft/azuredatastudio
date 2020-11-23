@@ -7,7 +7,7 @@ import { createCSSRule, asCSSUrl, ModifierKeyEmitter } from 'vs/base/browser/dom
 import { domEvent } from 'vs/base/browser/event';
 import { IAction, Separator } from 'vs/base/common/actions';
 import { IdGenerator } from 'vs/base/common/idGenerator';
-import { IDisposable, toDisposable, MutableDisposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { IDisposable, toDisposable, MutableDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle'; // {{SQL CARBON EDIT}}
 import { localize } from 'vs/nls';
 import { ICommandAction, IMenu, IMenuActionOptions, MenuItemAction, SubmenuItemAction, Icon } from 'vs/platform/actions/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -251,11 +251,10 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 	constructor(
 		public _action: MenuItemAction,
 		@IKeybindingService labeledkeybindingService: IKeybindingService,
-		@IContextMenuService labeledcontextMenuService: IContextMenuService,
 		@INotificationService protected _notificationService: INotificationService,
 		private readonly _defaultCSSClassToAdd: string = ''
 	) {
-		super(_action, labeledkeybindingService, _notificationService, labeledcontextMenuService);
+		super(_action, labeledkeybindingService, _notificationService);
 	}
 
 	updateLabel(): void {
