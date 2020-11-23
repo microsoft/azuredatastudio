@@ -239,12 +239,8 @@
         "title": "%title.closeJupyterNotebook%"
       },
       {
-        "command": "notebook.command.moveNotebook",
-        "title": "%title.moveJupyterNotebook%"
-      },
-      {
-        "command": "notebook.command.moveSection",
-        "title": "%title.moveJupyterSection%"
+        "command": "notebook.command.moveTo",
+        "title": "%title.moveTo%"
       },
       {
         "command": "notebook.command.createBook",
@@ -393,11 +389,7 @@
           "when": "false"
         },
         {
-          "command": "notebook.command.moveNotebook",
-          "when": "false"
-        },
-        {
-          "command": "notebook.command.moveSection",
+          "command": "notebook.command.moveTo",
           "when": "false"
         },
         {
@@ -473,12 +465,8 @@
           "when": "view == bookTreeView && viewItem == savedNotebook"
         },
         {
-          "command": "notebook.command.moveNotebook",
-          "when": "view == bookTreeView && viewItem == savedNotebook || view == bookTreeView && viewItem == section"
-        },
-        {
-          "command": "notebook.command.moveSection",
-          "when": "view == bookTreeView && viewItem == section"
+          "command": "notebook.command.moveTo",
+          "when": "view == bookTreeView && viewItem == savedNotebook || view == bookTreeView && viewItem == section || view == bookTreeView && viewItem == pinnedNotebook"
         },
         {
           "command": "notebook.command.pinNotebook",

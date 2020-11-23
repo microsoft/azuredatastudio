@@ -7,11 +7,12 @@ import { BookTreeItem } from './bookTreeItem';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs-extra';
 import { JupyterBookSection } from '../contracts/content';
-//import { BookVersion } from './bookModel';
+import { BookVersionHandler } from './bookVersionHandler';
 import * as vscode from 'vscode';
+import { BookVersion } from './bookModel';
 
 export interface IBookTocManager {
-	updateBook(element: BookTreeItem, book: BookTreeItem): Promise<void>;
+	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>
 }
 export enum tocOp {
@@ -29,6 +30,7 @@ export function hasSections(node: JupyterBookSection): boolean {
 export class BookTocManager implements IBookTocManager {
 	public tableofContents: JupyterBookSection[];
 	public newSection: JupyterBookSection = {};
+	private _versionHandler = new BookVersionHandler();
 
 	constructor() {
 	}
@@ -79,17 +81,18 @@ export class BookTocManager implements IBookTocManager {
 		return toc;
 	}
 
-	updateToc(operation: tocOp, tableOfContents: JupyterBookSection[], findSection: BookTreeItem, addedSection?: JupyterBookSection): JupyterBookSection[] {
-		for (const [index, section] of tableOfContents.entries()) {
-			if (section.file && path.dirname(section.file) === path.join(path.sep, path.dirname(findSection.uri))) {
+	updateToc(operation: tocOp, tableOfContents: JupyterBookSection[], findSection: JupyterBookSection, addedSection?: JupyterBookSection): JupyterBookSection[] {
+		for (let [index, section] of tableOfContents.entries()) {
+			if ((section.file && path.dirname(section.file) === path.dirname((findSection as JupyterBookSection).file) ||
+				section.url && path.dirname(section.url) === path.dirname((findSection as JupyterBookSection).file)) && findSection.title === section.title) {
 				if (operation === tocOp.Add) {
-					if (tableOfContents[tableOfContents.length - 1].sections) {
-						tableOfContents[tableOfContents.length - 1].sections.push(section);
+					if (tableOfContents[index].sections) {
+						tableOfContents[index].sections.push(addedSection);
 					} else {
-						tableOfContents[tableOfContents.length - 1].sections = [section];
+						tableOfContents[index].sections = [addedSection];
 					}
 				} else if (operation === tocOp.Remove) {
-					tableOfContents = tableOfContents.splice(index, 1);
+					tableOfContents.splice(index, 1);
 				}
 				break;
 			}
@@ -119,13 +122,15 @@ export class BookTocManager implements IBookTocManager {
 	async addSection(section: BookTreeItem, book: BookTreeItem, isSection: boolean): Promise<void> {
 		this.newSection.title = section.title;
 		//the book contentPath contains the first file of the section, we get the dirname to identify the section's root path
-		const rootPath = isSection ? path.dirname(book.book.contentPath) : book.rootContentPath;
+		//const rootPath = isSection ? path.dirname(book.book.contentPath) : book.rootContentPath;
+		const rootPath = book.rootContentPath;
 		// TODO: the uri contains the first notebook or markdown file in the TOC format. If we are in a section,
 		// we want to include the intermediary directories between the book's root and the section
-		const uri = isSection ? path.join(path.basename(rootPath), path.relative(section.rootContentPath, section.book.contentPath)) : path.sep.concat(path.relative(section.rootContentPath, section.book.contentPath));
-		this.newSection.file = uri;
+		const uri = path.sep.concat(path.relative(section.rootContentPath, section.book.contentPath));
+		this.newSection.file = path.join(path.parse(uri).dir, path.parse(uri).name);
 		let movedSections: JupyterBookSection[] = [];
-		const files = section.sections as JupyterBookSection[];
+		let files = section.sections as JupyterBookSection[];
+		await fs.move(section.book.contentPath, path.join(rootPath, uri));
 		for (const elem of files) {
 			await fs.promises.mkdir(path.join(rootPath, path.dirname(elem.file)), { recursive: true });
 			const pathToMarkdown = path.join(section.rootContentPath, elem.file + '.md');
@@ -135,7 +140,7 @@ export class BookTocManager implements IBookTocManager {
 			} else if (await fs.pathExists(pathToMarkdown)) {
 				await fs.move(pathToMarkdown, path.join(rootPath, elem.file + '.md'));
 			}
-			movedSections.push({ file: isSection ? path.join(path.basename(rootPath), elem.file) : elem.file, title: elem.title });
+			movedSections.push({ file: elem.file, title: elem.title });
 		}
 		this.newSection.sections = movedSections;
 	}
@@ -154,32 +159,50 @@ export class BookTocManager implements IBookTocManager {
 	 * @param element Notebook, Markdown File, or section that will be added to the book.
 	 * @param targetBook Book or a BookSection that will be modified.
 	*/
-	public async updateBook(element: BookTreeItem, targetBook: BookTreeItem): Promise<void> {
-		if (element.contextValue === 'section' && targetBook.contextValue === 'section') {
-			await this.addSection(element, targetBook, true);
-			this.tableofContents = this.updateToc(tocOp.Add, targetBook.tableOfContents.sections, targetBook, this.newSection);
-		} else if (element.contextValue === 'section' && targetBook.contextValue === 'savedBook') {
-			await this.addSection(element, targetBook, false);
-			this.tableofContents = targetBook.tableOfContents.sections;
-			this.tableofContents.push(this.newSection);
+	public async updateBook(element: BookTreeItem, targetBook: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
+		if (element.contextValue === 'section') {
+			const findSection = { file: element.book.page.file, title: element.book.page.title };
+			const file = yaml.safeLoad((await fs.readFile(element.tableOfContentsPath, 'utf8')));
+			let sourceBookToc = this.updateToc(tocOp.Remove, file, findSection);
+			if (element.book.version === BookVersion.v1) {
+				sourceBookToc = this._versionHandler.convertTocTo(sourceBookToc);
+			}
+			await fs.writeFile(element.tableOfContentsPath, yaml.safeDump(sourceBookToc, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+
+			if (targetSection) {
+				await this.addSection(element, targetBook, true);
+				this.tableofContents = this.updateToc(tocOp.Add, targetBook.sections, targetSection, this.newSection);
+			}
+			else {
+				await this.addSection(element, targetBook, false);
+				this.tableofContents = targetBook.sections;
+				this.tableofContents.push(this.newSection);
+			}
 		}
 		else if (element.contextValue === 'savedNotebook') {
 			if (element.book.tableOfContents.sections) {
 				// the notebook is part of a book so we need to modify its toc as well
-				const sourceBookTOC = this.updateToc(tocOp.Remove, element.tableOfContents.sections, element, undefined);
-				await fs.writeFile(element.tableOfContentsPath, yaml.safeDump(sourceBookTOC, { lineWidth: Infinity, noRefs: true }));
+				const findSection = { file: element.book.page.file, title: element.book.page.title };
+				let sourceBookTOC = this.updateToc(tocOp.Remove, element.tableOfContents.sections, findSection, undefined);
+				if (element.book.version === BookVersion.v1) {
+					sourceBookTOC = this._versionHandler.convertTocTo(sourceBookTOC);
+				}
+				await fs.writeFile(element.tableOfContentsPath, yaml.safeDump(sourceBookTOC, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 			} else {
 				await vscode.commands.executeCommand('notebook.command.closeNotebook', element);
 			}
-			if (targetBook.contextValue === 'savedBook') {
+			if (!targetSection) {
 				await this.addNotebook(element, targetBook, false);
 				this.tableofContents = targetBook.sections;
 				this.tableofContents.push(this.newSection);
-			} else if (targetBook.contextValue === 'section') {
+			} else {
 				await this.addNotebook(element, targetBook, true);
-				this.tableofContents = this.updateToc(tocOp.Add, targetBook.tableOfContents.sections, targetBook, this.newSection);
+				this.tableofContents = this.updateToc(tocOp.Add, targetBook.sections, targetSection, this.newSection);
 			}
 		}
-		await fs.writeFile(targetBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true }));
+		if (targetBook.version === BookVersion.v1) {
+			this.tableofContents = this._versionHandler.convertTocTo(this.tableofContents);
+		}
+		await fs.writeFile(targetBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 	}
 }

@@ -19,6 +19,7 @@ import * as glob from 'fast-glob';
 import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager } from './bookTocManager';
+import { JupyterBookSection } from '../contracts/content';
 
 const content = 'content';
 
@@ -139,37 +140,54 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		await this.bookTocManager.createBook(bookPath, contentPath);
 	}
 
-	async editBook(book: BookTreeItem, section: BookTreeItem): Promise<void> {
-		await this.bookTocManager.updateBook(section, book);
-	}
-
-	async loadSectionsBook(book: BookModel): Promise<void> {
-
-	}
-
-	async showCurrentBooks(movingElement: BookTreeItem): Promise<void> {
+	async editBook(movingElement: BookTreeItem): Promise<void> {
 		try {
 			let bookOptions: vscode.QuickPickItem[] = [];
+			let pickedSection: vscode.QuickPickItem;
+			let updateBook: BookTreeItem;
+			let bookSections: JupyterBookSection[];
 			this.books.forEach(book => {
 				if (!book.isNotebook) {
-					bookOptions.push({ label: book.bookItems[0].title, description: book.bookPath });
+					bookOptions.push({ label: book.bookItems[0].title, detail: book.bookPath });
 				}
 			});
-			const pickedBook = await vscode.window.showQuickPick(bookOptions, {
+			let pickedBook = await vscode.window.showQuickPick(bookOptions, {
 				canPickMany: false,
 				placeHolder: 'Select a Jupyter Book'
 			});
 
 			if (pickedBook && movingElement) {
-				const updatedBook = this.books.filter(book => book.bookPath === pickedBook.description)[0];
-				if (movingElement.tableOfContents.sections) {
-					// this is for notebooks what about sections
-					if (movingElement.contextValue === 'savedNotebook') {
-						let sourceBook = this.books.filter(book => book.getNotebook(movingElement.book.contentPath));
-						movingElement.tableOfContents.sections = sourceBook[0].bookItems[0].sections;
+				updateBook = this.books.filter(book => book.bookPath === pickedBook.detail)[0].bookItems[0];
+				bookSections = updateBook.sections;
+				while (bookSections?.length > 0) {
+					bookOptions = [{ label: 'Add to this level' }];
+					bookSections.forEach(section => {
+						if (section.sections) {
+							bookOptions.push({ label: section.title, detail: section.file });
+						}
+					});
+					bookSections = [];
+					if (bookOptions.length > 1) {
+						pickedSection = await vscode.window.showQuickPick(bookOptions, {
+							canPickMany: false,
+							placeHolder: 'Select a Jupyter Book Section'
+						});
+						if (pickedSection.detail) {
+							bookSections = updateBook.findChildSection(pickedSection.detail).sections;
+						}
 					}
 				}
-				this.bookTocManager.updateBook(movingElement, updatedBook.bookItems[0]);
+				if (pickedSection) {
+					const targetSection = pickedSection.label !== 'Add to this level' ? updateBook.findChildSection(pickedSection.detail) : undefined;
+					if (movingElement.tableOfContents.sections) {
+						// this is for notebooks what about sections
+						if (movingElement.contextValue === 'savedNotebook') {
+							let sourceBook = this.books.filter(book => book.getNotebook(movingElement.book.contentPath));
+							movingElement.tableOfContents.sections = sourceBook[0].bookItems[0].sections;
+						}
+					}
+					this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
+				}
 			}
 		}
 		catch (e) {

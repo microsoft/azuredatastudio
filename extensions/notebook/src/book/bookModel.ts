@@ -276,7 +276,7 @@ export class BookModel {
 	 * Recursively parses out a section of a Jupyter Book.
 	 * @param section The input data to parse
 	 */
-	private parseJupyterSections(version: string, section: any[]): JupyterBookSection[] {
+	public parseJupyterSections(version: string, section: any[]): JupyterBookSection[] {
 		try {
 			return section.reduce((acc, val) => Array.isArray(val.sections) ?
 				acc.concat(this._versionHandler.convertFrom(version, val)).concat(this.parseJupyterSections(version, val.sections)) : acc.concat(this._versionHandler.convertFrom(version, val)), []);
