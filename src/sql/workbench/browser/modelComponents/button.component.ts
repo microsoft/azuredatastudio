@@ -187,6 +187,14 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		}
 	}
 
+	protected get defaultIconHeight(): number {
+		return 15;
+	}
+
+	protected get defaultIconWidth(): number {
+		return 15;
+	}
+
 	// CSS-bound properties
 
 	private get label(): string {
