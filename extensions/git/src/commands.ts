@@ -99,6 +99,20 @@ class MergeItem implements QuickPickItem {
 	}
 }
 
+class RebaseItem implements QuickPickItem {
+
+	get label(): string { return this.ref.name || ''; }
+	get description(): string { return this.ref.name || ''; }
+
+	constructor(protected ref: Ref) { }
+
+	async run(repository: Repository): Promise<void> {
+		if (this.ref?.name) {
+			await repository.rebase(this.ref.name);
+		}
+	}
+}
+
 class CreateBranchItem implements QuickPickItem {
 
 	constructor(private cc: CommandCenter) { }
@@ -1849,6 +1863,33 @@ export class CommandCenter {
 		const picks = [...heads, ...remoteHeads];
 		const placeHolder = localize('select a branch to merge from', 'Select a branch to merge from');
 		const choice = await window.showQuickPick<MergeItem>(picks, { placeHolder });
+
+		if (!choice) {
+			return;
+		}
+
+		await choice.run(repository);
+	}
+
+	@command('git.rebase', { repository: true })
+	async rebase(repository: Repository): Promise<void> {
+		const config = workspace.getConfiguration('git');
+		const checkoutType = config.get<string>('checkoutType') || 'all';
+		const includeRemotes = checkoutType === 'all' || checkoutType === 'remote';
+
+		const heads = repository.refs.filter(ref => ref.type === RefType.Head)
+			.filter(ref => ref.name || ref.commit);
+
+		const remoteHeads = (includeRemotes ? repository.refs.filter(ref => ref.type === RefType.RemoteHead) : [])
+			.filter(ref => ref.name || ref.commit);
+
+		// set upstream branch as first
+		const upstreamName = repository?.HEAD?.upstream?.name;
+		const upstreamRemote = repository?.HEAD?.upstream?.remote;
+		const picks = [...heads, ...remoteHeads].sort(ref => ref.name === `${upstreamRemote}/${upstreamName}` && ref.remote === upstreamRemote ? -1 : 0).map(ref => new RebaseItem(ref as Branch));
+
+		const placeHolder = localize('select a branch to rebase onto', 'Select a branch to rebase onto');
+		const choice = await window.showQuickPick<RebaseItem>(picks, { placeHolder });
 
 		if (!choice) {
 			return;
