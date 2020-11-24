@@ -26,7 +26,6 @@ let radioOptionsGroup: RadioOptionsGroup;
 describe('radioOptionsGroup', function (): void {
 	beforeEach(async () => {
 		const { mockModelView, mockRadioButtonBuilder, mockDivBuilder } = createModelViewMock();
-
 		mockRadioButtonBuilder.reset(); // reset any previous mock so that we can set our own.
 		setupMockComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties>(
 			(props) => new FakeRadioButton(props),
