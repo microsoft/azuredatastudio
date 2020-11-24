@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as util from 'util';
 import * as yamljs from 'yamljs';
 import * as loc from '../localizedConstants';
 import { throwUnless } from './utils';
@@ -16,31 +16,21 @@ export interface KubeClusterContext {
 }
 
 export async function getKubeConfigClusterContexts(configFile: string): Promise<KubeClusterContext[]> {
-	try {
-		await fs.promises.access(configFile);
-	} catch (error) {
-		if (error && error.code === 'ENOENT') {
-			return [];
-		}
-		else {
-			throw error;
-		}
-	}
-	const config = yamljs.load(configFile);
+	const config: any = await util.promisify(yamljs.load)(configFile);
 	const rawContexts = <any[]>config['contexts'];
+	throwUnless(rawContexts && rawContexts.length, loc.noContextFound(configFile));
 	const currentContext = <string>config['current-context'];
+	throwUnless(currentContext, loc.noCurrentContextFound(configFile));
 	const contexts: KubeClusterContext[] = [];
-	if (currentContext && rawContexts && rawContexts.length > 0) {
-		rawContexts.forEach(rawContext => {
-			const name = <string>rawContext['name'];
-			if (name) {
-				contexts.push({
-					name: name,
-					isCurrentContext: name === currentContext
-				});
-			}
-		});
-	}
+	rawContexts.forEach(rawContext => {
+		const name = <string>rawContext['name'];
+		if (name) {
+			contexts.push({
+				name: name,
+				isCurrentContext: name === currentContext
+			});
+		}
+	});
 	return contexts;
 }
 

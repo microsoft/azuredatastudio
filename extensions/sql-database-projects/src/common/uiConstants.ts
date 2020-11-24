@@ -8,10 +8,11 @@ export namespace cssStyles {
 	export const text = { 'user-select': 'text', 'cursor': 'text' };
 	export const tableHeader = { ...text, 'text-align': 'left', 'border': 'none', 'font-size': '12px', 'font-weight': 'normal', 'color': '#666666' };
 	export const tableRow = { ...text, 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none', 'font-size': '12px' };
+	export const fontWeightBold = { 'font-weight': 'bold' };
 	export const titleFontSize = 13;
 
-	export const publishDialogLabelWidth = '205px';
-	export const publishDialogTextboxWidth = '190px';
+	export const labelWidth = '205px';
+	export const textboxWidth = '190px';
 
 	export const addDatabaseReferenceDialogLabelWidth = '215px';
 	export const addDatabaseReferenceInputboxWidth = '220px';

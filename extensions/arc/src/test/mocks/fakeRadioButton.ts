@@ -13,7 +13,6 @@ export class FakeRadioButton implements azdata.RadioButtonComponent {
 	onDidClick = this._onDidClickEmitter.event;
 
 	constructor(props: azdata.RadioButtonProperties) {
-		this.name = props.name;
 		this.label = props.label;
 		this.value = props.value;
 		this.checked = props.checked;
@@ -21,7 +20,6 @@ export class FakeRadioButton implements azdata.RadioButtonComponent {
 	}
 
 	//#region RadioButtonProperties implementation
-	name?: string;
 	label?: string;
 	value?: string;
 	checked?: boolean;

@@ -124,15 +124,14 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		if (this._currentButtonType !== this.buttonType) {
 			this.initButton();
 		}
-		if (this._infoButtonContainer) {
-			let button = this._button as InfoButton;
-			button.buttonMaxHeight = this.properties.height;
-			button.buttonMaxWidth = this.properties.width;
-			button.description = this.properties.description;
-			button.iconClass = createIconCssClass(this.properties.iconPath);
-			button.iconHeight = this.properties.iconHeight;
-			button.iconWidth = this.properties.iconWidth;
-			button.title = this.properties.title;
+		if (this._button instanceof InfoButton) {
+			this._button.buttonMaxHeight = this.properties.height;
+			this._button.buttonMaxWidth = this.properties.width;
+			this._button.description = this.properties.description;
+			this._button.iconClass = createIconCssClass(this.properties.iconPath);
+			this._button.iconHeight = this.properties.iconHeight;
+			this._button.iconWidth = this.properties.iconWidth;
+			this._button.title = this.properties.title;
 		} else {
 			this._button.enabled = this.enabled;
 			this._button.label = this.label;
@@ -154,6 +153,12 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 			if (this.height) {
 				this._button.setHeight(convertSize(this.height.toString()));
 			}
+
+			if (this.iconPath) {
+				this._button.element.style.backgroundSize = `${this.getIconWidth()} ${this.getIconHeight()}`;
+				this._button.element.style.paddingLeft = this.getIconWidth();
+			}
+
 		}
 
 		this.updateIcon();

@@ -282,7 +282,7 @@ export function convertToGibibyteString(value: string): string {
  * @param condition
  * @param message
  */
-export function throwUnless(condition: boolean, message?: string): asserts condition {
+export function throwUnless(condition: any, message?: string): asserts condition {
 	if (!condition) {
 		throw new Error(message);
 	}

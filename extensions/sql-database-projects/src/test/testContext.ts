@@ -147,3 +147,26 @@ export function createContext(): TestContext {
 		dacFxService: TypeMoq.Mock.ofType(MockDacFxService)
 	};
 }
+
+// Mock test data
+export const mockConnectionProfile: azdata.IConnectionProfile = {
+	connectionName: 'My Connection',
+	serverName: 'My Server',
+	databaseName: 'My Database',
+	userName: 'My User',
+	password: 'My Pwd',
+	authenticationType: 'SqlLogin',
+	savePassword: false,
+	groupFullName: 'My groupName',
+	groupId: 'My GroupId',
+	providerName: 'My Server',
+	saveProfile: true,
+	id: 'My Id',
+	options: {
+		server: 'My Server',
+		database: 'My Database',
+		user: 'My User',
+		password: 'My Pwd',
+		authenticationType: 'SqlLogin'
+	}
+};

@@ -13,10 +13,12 @@ export interface RadioOptionsInfo {
 }
 
 export class RadioOptionsGroup implements IReadOnly {
+	static id: number = 1;
 	private _divContainer!: azdata.DivContainer;
 	private _loadingBuilder: azdata.LoadingComponentBuilder;
 	private _currentRadioOption!: azdata.RadioButtonComponent;
-	constructor(private _modelBuilder: azdata.ModelBuilder, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void) {
+
+	constructor(private _modelBuilder: azdata.ModelBuilder, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void, private _groupName: string = `RadioOptionsGroup${RadioOptionsGroup.id++}`) {
 		this._divContainer = this._modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
 		this._loadingBuilder = this._modelBuilder.loadingComponent().withItem(this._divContainer);
 	}
@@ -36,7 +38,7 @@ export class RadioOptionsGroup implements IReadOnly {
 				const radioOption = this._modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
 					label: option,
 					checked: option === defaultValue,
-					name: option,
+					name: this._groupName,
 					value: option,
 					enabled: true
 				}).component();
@@ -44,9 +46,9 @@ export class RadioOptionsGroup implements IReadOnly {
 					this._currentRadioOption = radioOption;
 				}
 				this._onNewDisposableCreated(radioOption.onDidClick(() => {
-					this._divContainer.items
-						.filter(otherOption => otherOption !== radioOption)
-						.forEach(otherOption => (otherOption as azdata.RadioButtonComponent).checked = false);
+					// this._divContainer.items
+					// 	.filter(otherOption => otherOption !== radioOption)
+					// 	.forEach(otherOption => (otherOption as azdata.RadioButtonComponent).checked = false);
 					this._currentRadioOption = radioOption;
 				}));
 				this._divContainer.addItem(radioOption);

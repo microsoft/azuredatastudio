@@ -208,3 +208,5 @@ export const clusterContextNotFound = (clusterContext: string) => localize('clus
 export const noCurrentClusterContext = localize('noCurrentClusterContext', "No current cluster context was found in the kube config file");
 export const browse = localize('filePicker.browse', "Browse");
 export const select = localize('button.label', "Select");
+export const noContextFound = (configFile: string) => localize('noContextFound', "No 'contexts' found in the config file: {0}", configFile);
+export const noCurrentContextFound = (configFile: string) => localize('noCurrentContextFound', "No context is marked as 'current-context' in the config file: {0}", configFile);
