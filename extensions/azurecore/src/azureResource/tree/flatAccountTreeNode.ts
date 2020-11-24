@@ -148,8 +148,6 @@ class FlatAccountTreeNodeLoader {
 
 	private _isLoading: boolean = false;
 	private _nodes: TreeNode[];
-	private _previousEventTime: number | undefined;
-
 	private readonly _onNewResourcesAvailable = new vscode.EventEmitter<void>();
 	public readonly onNewResourcesAvailable = this._onNewResourcesAvailable.event;
 	private readonly _onLoadingStatusChanged = new vscode.EventEmitter<void>();
@@ -176,7 +174,6 @@ class FlatAccountTreeNodeLoader {
 			return;
 		}
 		this._isLoading = true;
-		this._previousEventTime = undefined;
 		this._nodes = [];
 		this._onLoadingStatusChanged.fire();
 		let newNodesAvailable = false;
