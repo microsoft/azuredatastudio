@@ -44,7 +44,6 @@ describe('KubeUtils', function (): void {
 
 	describe('get Kube Config Cluster Contexts', () => {
 		it('success', async () => {
-			sinon.stub(fs.promises, 'access').withArgs(configFile).resolves(); //resolving access to file, mocks its existence
 			sinon.stub(yamljs, 'load').returns(<any>kubeConfig);
 			const verifyContexts = (contexts: KubeClusterContext[], testName: string) => {
 				contexts.length.should.equal(2, `test: ${testName} failed`);
@@ -55,9 +54,9 @@ describe('KubeUtils', function (): void {
 			};
 			verifyContexts(await getKubeConfigClusterContexts(configFile), 'getKubeConfigClusterContexts');
 		});
-		it('throws error when unable to access file with non ENOENT error', async () => {
+		it('throws error when unable to load config file', async () => {
 			const error = new Error('unknown error accessing file');
-			sinon.stub(yamljs, 'load').throws(error); //rejecting access to file, fakes its non-existence
+			sinon.stub(yamljs, 'load').throws(error); //erroring config file load
 			((await tryExecuteAction(() => getKubeConfigClusterContexts(configFile))).error).should.equal(error, `test: getKubeConfigClusterContexts failed`);
 		});
 	});

@@ -72,7 +72,6 @@ describe('radioOptionsGroup', function (): void {
 		should(label.CSSStyles!.color).not.be.undefined();
 		label.CSSStyles!.color.should.equal('Red');
 	});
-
 });
 
 function verifyRadioGroup() {
