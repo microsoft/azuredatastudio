@@ -147,11 +147,27 @@ export class PerFolderServerInstance implements IServerInstance {
 	}
 
 	private async configureJupyter(): Promise<void> {
+		let createFoldersStartTime = Date.now();
 		await this.createInstanceFolders();
+		let createFoldersEndTime = Date.now();
+		let createFoldersTime = createFoldersEndTime - createFoldersStartTime;
+		console.log('Config Jupyter: It took ' + createFoldersTime.toString() + 'ms to create folders');
 		let resourcesFolder = path.join(this.options.install.extensionPath, 'resources', constants.jupyterConfigRootFolder);
+		let copyConfigStartTime = Date.now();
 		await this.copyInstanceConfig(resourcesFolder);
+		let copyConfigEndTime = Date.now();
+		let copyConfigTime = copyConfigEndTime - copyConfigStartTime;
+		console.log('Config Jupyter: It took ' + copyConfigTime.toString() + 'ms to copy instance config');
+		let copyJsStartTime = Date.now();
 		await this.CopyCustomJs(resourcesFolder);
+		let copyJsEndTime = Date.now();
+		let copyJsTime = copyJsEndTime - copyJsStartTime;
+		console.log('Config Jupyter: It took ' + copyJsTime.toString() + 'ms to copy custom js');
+		let copyKernelsStartTime = Date.now();
 		await this.copyKernelsToSystemJupyterDirs();
+		let copyKernelsEndTime = Date.now();
+		let copyKernelsTime = copyKernelsEndTime - copyKernelsStartTime;
+		console.log('Config Jupyter: It took ' + copyKernelsTime.toString() + 'ms to copy kernels to system jupyter dirs');
 	}
 
 	private async createInstanceFolders(): Promise<void> {
