@@ -95,6 +95,11 @@ export default class LoadingComponent extends ComponentBase<azdata.LoadingCompon
 		this.layout();
 	}
 
+	public removeFromContainer(_componentDescriptor: IComponentDescriptor): void {
+		this._component = undefined;
+		this.layout();
+	}
+
 	public getStatusText(): string {
 		return this.loading ? this.loadingText : this.loadingCompletedText;
 	}

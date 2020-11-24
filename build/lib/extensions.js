@@ -216,7 +216,6 @@ const externalExtensions = [
     'azurehybridtoolkit',
     'cms',
     'dacpac',
-    'data-workspace',
     'import',
     'kusto',
     'liveshare',

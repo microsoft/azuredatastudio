@@ -53,6 +53,7 @@ export class Project {
 	public static async openProject(projectFilePath: string): Promise<Project> {
 		const proj = new Project(projectFilePath);
 		await proj.readProjFile();
+		await proj.updateProjectForRoundTrip();
 
 		return proj;
 	}
@@ -60,7 +61,7 @@ export class Project {
 	/**
 	 * Reads the project setting and contents from the file
 	 */
-	public async readProjFile() {
+	public async readProjFile(): Promise<void> {
 		this.resetProject();
 
 		const projFileText = await fs.readFile(this.projectFilePath);
@@ -178,7 +179,7 @@ export class Project {
 		}
 	}
 
-	private resetProject() {
+	private resetProject(): void {
 		this.files = [];
 		this.importedTargets = [];
 		this.databaseReferences = [];
@@ -189,11 +190,27 @@ export class Project {
 		this.projFileXmlDoc = undefined;
 	}
 
-	public async updateProjectForRoundTrip() {
-		await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
-		await this.updateImportToSupportRoundTrip();
-		await this.updatePackageReferenceInProjFile();
-		await this.updateAfterCleanTargetInProjFile();
+	public async updateProjectForRoundTrip(): Promise<void> {
+		if (this.importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences()) {
+			return;
+		}
+
+		if (!this.importedTargets.includes(constants.NetCoreTargets)) {
+			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
+				await this.updateImportToSupportRoundTrip();
+				await this.updatePackageReferenceInProjFile();
+				await this.updateAfterCleanTargetInProjFile();
+				await this.updateSystemDatabaseReferencesInProjFile();
+			}
+		} else if (this.containsSSDTOnlySystemDatabaseReferences()) {
+			const result = await window.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
+				await this.updateSystemDatabaseReferencesInProjFile();
+			}
+		}
 	}
 
 	private async updateImportToSupportRoundTrip(): Promise<void> {
@@ -460,7 +477,7 @@ export class Project {
 	 * @param name name of the variable
 	 * @param defaultValue
 	 */
-	public async addSqlCmdVariable(name: string, defaultValue: string) {
+	public async addSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
 		const sqlCmdVariableEntry = new SqlCmdVariableProjectEntry(name, defaultValue);
 		await this.addToProjFile(sqlCmdVariableEntry);
 	}
@@ -851,7 +868,7 @@ export class Project {
 		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
-	private async removeFromProjFile(entries: ProjectEntry | ProjectEntry[]) {
+	private async removeFromProjFile(entries: ProjectEntry | ProjectEntry[]): Promise<void> {
 		if (entries instanceof ProjectEntry) {
 			entries = [entries];
 		}
@@ -876,7 +893,7 @@ export class Project {
 		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
-	private async serializeToProjFile(projFileContents: any) {
+	private async serializeToProjFile(projFileContents: any): Promise<void> {
 		let xml = new xmldom.XMLSerializer().serializeToString(projFileContents);
 		xml = xmlFormat(xml, <any>{ collapseContent: true, indentation: '  ', lineSeparator: os.EOL }); // TODO: replace <any>
 

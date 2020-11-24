@@ -31,7 +31,7 @@ function code() {
 	node build/lib/builtInExtensions.js
 
 	# Build
-	test -d out || ./node_modules/.bin/gulp compile
+	test -d out || ./node_modules/.bin/gulp compile --max_old_space_size=4095
 
 	# Configuration
 	export NODE_ENV=development
