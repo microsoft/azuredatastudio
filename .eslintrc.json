@@ -213,7 +213,8 @@
                     "azdata",
                     "**/{vs,sql}/base/common/**",
                     "**/{vs,sql}/base/parts/*/common/**",
-                    "**/{vs,sql}/platform/*/common/**"
+                    "**/{vs,sql}/platform/*/common/**",
+		    "semver-umd"
                 ]
             },
             {
