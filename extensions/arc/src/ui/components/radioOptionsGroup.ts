@@ -47,8 +47,8 @@ export class RadioOptionsGroup implements IReadOnly {
 				}
 				this._onNewDisposableCreated(radioOption.onDidClick(() => {
 					if (this._currentRadioOption !== radioOption) {
-						// uncheck the previously saved radio option, the ui gets handled correctly due the use of the 'groupName',
-						// however, the checked properties do not get updated, while stuff works even if we left the previous option checked in our object,
+						// uncheck the previously saved radio option, the ui gets handled correctly even if we did not do this due to the use of the 'groupName',
+						// however, the checked properties on the radio button do not get updated, so while the stuff works even if we left the previous option checked,
 						// it is just better to keep things clean.
 						this._currentRadioOption.checked = false;
 						this._currentRadioOption = radioOption;
@@ -66,10 +66,6 @@ export class RadioOptionsGroup implements IReadOnly {
 
 	get value(): string | undefined {
 		return this._currentRadioOption?.value;
-	}
-
-	get checked(): azdata.RadioButtonComponent {
-		return this._currentRadioOption;
 	}
 
 	get readOnly(): boolean | undefined {

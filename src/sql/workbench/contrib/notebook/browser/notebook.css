@@ -55,6 +55,8 @@
 .notebookEditor .in-preview .actions-container .action-item .notebook-button:before {
 	display: flex;
 	height: 100%;
+	padding-right: 0px;
+	background-size: contain;
 }
 
 .notebookEditor
