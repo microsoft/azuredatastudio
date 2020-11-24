@@ -162,7 +162,7 @@ describe('Manage Package Dialog', () => {
 			withValidation: () => radioButtonBuilder,
 			withProps: () => radioButtonBuilder
 		};
-		let inputBox: () => azdata.InputBoxComponent = () => Object.assign({}, componentBase, {
+		let inputBox: () => azdata.InputBoxComponent = () => <azdata.InputBoxComponent>Object.assign({}, componentBase, {
 			onTextChanged: undefined!,
 			onEnterKeyPressed: undefined!,
 			value: ''

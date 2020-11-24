@@ -3,18 +3,26 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as should from 'should';
 import * as sinon from 'sinon';
 import { FilePicker } from '../../../ui/components/filePicker';
-import { browseButton, browseButtonEmitter, filePathInputBox, flexContainer, modelBuilder } from '../../mocks/fakeContainersAndBuilders';
+import { createModelViewMock } from '../../stubs';
 
 let filePicker: FilePicker;
 const initialPath = '/path/to/.kube/config';
 const newFilePath = '/path/to/new/.kube/config';
+let filePathInputBox: azdata.InputBoxComponent;
+let browseButton: azdata.ButtonComponent;
+let flexContainer: azdata.FlexContainer;
+const browseButtonEmitter = new vscode.EventEmitter<undefined>();
 describe('filePicker', function (): void {
 	beforeEach(async () => {
-		filePicker = new FilePicker(modelBuilder, initialPath, (_disposable) => { });
+		const { mockModelBuilder, mockInputBoxBuilder, mockButtonBuilder } = createModelViewMock();
+		filePicker = new FilePicker(mockModelBuilder.object, initialPath, (_disposable) => { });
+		filePathInputBox = mockInputBoxBuilder.object.component();
+		browseButton = mockButtonBuilder.object.component();
 	});
 
 	afterEach(() => {
