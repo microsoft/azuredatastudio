@@ -13,6 +13,8 @@ export function createModelViewMock() {
 	const mockInputBoxBuilder = setupMockComponentBuilder<azdata.InputBoxComponent, azdata.InputBoxProperties>();
 	const mockRadioButtonBuilder = setupMockComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties>();
 	const mockDivBuilder = setupMockContainerBuilder<azdata.DivContainer, azdata.DivContainerProperties, azdata.DivBuilder>();
+	const mockLoadingBuilder = setupMockLoadingBuilder();
+	mockModelBuilder.setup(b => b.loadingComponent()).returns(() => mockLoadingBuilder.object);
 	mockModelBuilder.setup(b => b.text()).returns(() => mockTextBuilder.object);
 	mockModelBuilder.setup(b => b.inputBox()).returns(() => mockInputBoxBuilder.object);
 	mockModelBuilder.setup(b => b.radioButton()).returns(() => mockRadioButtonBuilder.object);
@@ -22,6 +24,16 @@ export function createModelViewMock() {
 	return { mockModelView, mockModelBuilder, mockTextBuilder, mockInputBoxBuilder, mockRadioButtonBuilder, mockDivBuilder };
 }
 
+function setupMockLoadingBuilder(
+	loadingBuilderGetter?: (item: azdata.Component) => azdata.LoadingComponentBuilder,
+	mockLoadingBuilder?: TypeMoq.IMock<azdata.LoadingComponentBuilder>
+): TypeMoq.IMock<azdata.LoadingComponentBuilder> {
+	mockLoadingBuilder = mockLoadingBuilder ?? setupMockComponentBuilder<azdata.LoadingComponent, azdata.LoadingComponentProperties, azdata.LoadingComponentBuilder>();
+	let item: azdata.Component;
+	mockLoadingBuilder.setup(b => b.withItem(TypeMoq.It.isAny())).callback((_item) => item = _item).returns(() => loadingBuilderGetter ? loadingBuilderGetter(item) : mockLoadingBuilder!.object);
+	return mockLoadingBuilder;
+}
+
 export function setupMockComponentBuilder<T extends azdata.Component, P extends azdata.ComponentProperties, B extends azdata.ComponentBuilder<T, P> = azdata.ComponentBuilder<T, P>>(
 	componentGetter?: (props: P) => T,
 	mockComponentBuilder?: TypeMoq.IMock<B>,
@@ -29,13 +41,13 @@ export function setupMockComponentBuilder<T extends azdata.Component, P extends 
 	mockComponentBuilder = mockComponentBuilder ?? TypeMoq.Mock.ofType<B>();
 	const returnComponent = TypeMoq.Mock.ofType<T>();
 	// Need to setup 'then' for when a mocked object is resolved otherwise the test will hang : https://github.com/florinn/typemoq/issues/66
-	returnComponent.setup((x: any) => x.then).returns(() => undefined);
+	returnComponent.setup((x: any) => x.then).returns(() => { });
 	let compProps: P;
-	mockComponentBuilder.setup(b => b.withProperties(TypeMoq.It.isAny())).callback((props) => {
-		compProps = props;
-		return mockComponentBuilder!.object;
+	mockComponentBuilder.setup(b => b.withProperties(TypeMoq.It.isAny())).callback((props: P) => compProps = props).returns(() => mockComponentBuilder!.object);
+	mockComponentBuilder.setup(b => b.component()).returns(() => {
+		return componentGetter ? componentGetter(compProps) : Object.assign<T, P>(Object.assign({}, returnComponent.object), compProps);
 	});
-	mockComponentBuilder.setup(b => b.component()).returns(() => componentGetter ? componentGetter(compProps) : returnComponent.object);
+
 	// For now just have these be passthrough - can hook up additional functionality later if needed
 	mockComponentBuilder.setup(b => b.withValidation(TypeMoq.It.isAny())).returns(() => mockComponentBuilder!.object);
 	return mockComponentBuilder;

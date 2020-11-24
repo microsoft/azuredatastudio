@@ -235,7 +235,7 @@
 			"webRoot": "${workspaceFolder}",
 			"timeout": 45000,
 			"env": {
-				"ADS_TEST_GREP": "radio"
+				"ADS_TEST_GREP": "load throws"
 			},
 		},
 		{

@@ -16,8 +16,11 @@ export class RadioOptionsGroup {
 	private _loadingBuilder: azdata.LoadingComponentBuilder;
 	private _currentRadioOption!: azdata.RadioButtonComponent;
 	constructor(private _view: azdata.ModelView, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void) {
-		this._divContainer = this._view!.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
-		this._loadingBuilder = this._view!.modelBuilder.loadingComponent().withItem(this._divContainer);
+		const divBuilder = this._view.modelBuilder.divContainer();
+		const divBuilderWithProperties = divBuilder.withProperties<azdata.DivContainerProperties>({ clickable: false });
+		this._divContainer = divBuilderWithProperties.component();
+		const loadingComponentBuilder = this._view.modelBuilder.loadingComponent();
+		this._loadingBuilder = loadingComponentBuilder.withItem(this._divContainer);
 	}
 
 	public component(): azdata.LoadingComponent {
