@@ -78,6 +78,7 @@ export interface NativeParsedArgs {
 	'force-user-env'?: boolean;
 	'sync'?: 'on' | 'off';
 	'__sandbox'?: boolean;
+	'logsPath'?: string;
 
 	// {{SQL CARBON EDIT}} Start
 	aad?: boolean;

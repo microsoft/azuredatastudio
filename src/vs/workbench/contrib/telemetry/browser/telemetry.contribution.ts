@@ -31,7 +31,7 @@ type TelemetryData = {
 	ext: string;
 	path: number;
 	reason?: number;
-	whitelistedjson?: string;
+	allowlistedjson?: string;
 };
 
 type FileTelemetryDataFragment = {
@@ -39,13 +39,13 @@ type FileTelemetryDataFragment = {
 	ext: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
 	path: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
 	reason?: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
-	whitelistedjson?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+	allowlistedjson?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
 };
 
 export class TelemetryContribution extends Disposable implements IWorkbenchContribution {
 
-	private static WHITELIST_JSON = ['package.json', 'package-lock.json', 'tsconfig.json', 'jsconfig.json', 'bower.json', '.eslintrc.json', 'tslint.json', 'composer.json'];
-	private static WHITELIST_WORKSPACE_JSON = ['settings.json', 'extensions.json', 'tasks.json', 'launch.json'];
+	private static ALLOWLIST_JSON = ['package.json', 'package-lock.json', 'tsconfig.json', 'jsconfig.json', 'bower.json', '.eslintrc.json', 'tslint.json', 'composer.json'];
+	private static ALLOWLIST_WORKSPACE_JSON = ['settings.json', 'extensions.json', 'tasks.json', 'launch.json'];
 
 	constructor(
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
@@ -202,11 +202,11 @@ export class TelemetryContribution extends Disposable implements IWorkbenchContr
 			ext,
 			path: hash(path),
 			reason,
-			whitelistedjson: undefined as string | undefined
+			allowlistedjson: undefined as string | undefined
 		};
 
-		if (ext === '.json' && TelemetryContribution.WHITELIST_JSON.indexOf(fileName) > -1) {
-			telemetryData['whitelistedjson'] = fileName;
+		if (ext === '.json' && TelemetryContribution.ALLOWLIST_JSON.indexOf(fileName) > -1) {
+			telemetryData['allowlistedjson'] = fileName;
 		}
 
 		return telemetryData;

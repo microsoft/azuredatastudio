@@ -308,7 +308,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 			},
 			'window.enableExperimentalProxyLoginDialog': {
 				'type': 'boolean',
-				'default': false,
+				'default': true,
 				'scope': ConfigurationScope.APPLICATION,
 				'description': nls.localize('window.enableExperimentalProxyLoginDialog', "Enables a new login dialog for proxy authentication. Requires a restart to take effect."),
 			}

@@ -44,7 +44,7 @@
 	//#region Add support for using node_modules.asar
 
 	/**
-	 * @param {string} appRoot
+	 * @param {string | undefined} appRoot
 	 */
 	function enableASARSupport(appRoot) {
 		let NODE_MODULES_PATH = appRoot ? path.join(appRoot, 'node_modules') : undefined;
@@ -110,7 +110,7 @@
 	//#region NLS helpers
 
 	/**
-	 * @returns {{locale?: string, availableLanguages: {[lang: string]: string;}, pseudo?: boolean }}
+	 * @returns {{locale?: string, availableLanguages: {[lang: string]: string;}, pseudo?: boolean } | undefined}
 	 */
 	function setupNLS() {
 
@@ -163,9 +163,14 @@
 
 	/**
 	 * @param {{ portable: string; applicationName: string; }} product
-	 * @returns {{portableDataPath: string;isPortable: boolean;}}
+	 * @returns {{ portableDataPath: string; isPortable: boolean; } | undefined}
 	 */
 	function configurePortable(product) {
+		if (!path || !fs) {
+			console.warn('configurePortable() is only available in node.js environments');
+			return;
+		}
+
 		const appRoot = path.dirname(__dirname);
 
 		function getApplicationPath() {

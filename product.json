@@ -80,6 +80,7 @@
 		{
 			"name": "Microsoft.sqlservernotebook",
 			"version": "0.3.8",
+			"version": "1.50.2",
 			"repo": "https://github.com/Microsoft/azuredatastudio"
 		}
 	],

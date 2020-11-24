@@ -8,11 +8,6 @@ import { IStringDictionary } from 'vs/base/common/collections';
 import { Event } from 'vs/base/common/event';
 import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 
-export interface IExtensionsConfigContent {
-	recommendations: string[];
-	unwantedRecommendations: string[];
-}
-
 export type DynamicRecommendation = 'dynamic';
 export type ConfigRecommendation = 'config';
 export type ExecutableRecommendation = 'executable';

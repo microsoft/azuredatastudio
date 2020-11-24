@@ -54,6 +54,7 @@ const indentationFilter = [
 	'!src/vs/base/node/terminateProcess.sh',
 	'!src/vs/base/node/cpuUsage.sh',
 	'!test/unit/assert.js',
+	'!resources/linux/snap/electron-launch',
 
 	// except specific folders
 	'!test/automation/out/**',
@@ -136,7 +137,6 @@ const copyrightFilter = [
 	'!**/*.js.map',
 	'!build/**/*.init',
 	'!resources/linux/snap/snapcraft.yaml',
-	'!resources/linux/snap/electron-launch',
 	'!resources/win32/bin/code.js',
 	'!resources/web/code-web.js',
 	'!resources/completions/**',

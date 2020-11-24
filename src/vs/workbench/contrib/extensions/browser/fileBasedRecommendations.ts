@@ -11,7 +11,7 @@ import { ExtensionRecommendationReason, IExtensionIgnoredRecommendationsService 
 import { IExtensionsViewPaneContainer, IExtensionsWorkbenchService, IExtension } from 'vs/workbench/contrib/extensions/common/extensions';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { localize } from 'vs/nls';
-import { StorageScope, IStorageService } from 'vs/platform/storage/common/storage';
+import { StorageScope, IStorageService, StorageTarget } from 'vs/platform/storage/common/storage';
 import { ImportantExtensionTip, IProductService } from 'vs/platform/product/common/productService';
 import { forEach, IStringDictionary } from 'vs/base/common/collections';
 import { ITextModel } from 'vs/editor/common/model';
@@ -26,6 +26,7 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { setImmediate } from 'vs/base/common/platform';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IExtensionRecommendationNotificationService, RecommendationsNotificationResult, RecommendationSource } from 'vs/platform/extensionRecommendations/common/extensionRecommendations';
+import { distinct } from 'vs/base/common/arrays';
 
 type FileExtensionSuggestionClassification = {
 	userReaction: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
@@ -33,6 +34,7 @@ type FileExtensionSuggestionClassification = {
 };
 
 const promptedRecommendationsStorageKey = 'fileBasedRecommendations/promptedRecommendations';
+const promptedFileExtensionsStorageKey = 'fileBasedRecommendations/promptedFileExtensions';
 const recommendationsStorageKey = 'extensionsAssistant/recommendations';
 const searchMarketplace = localize('searchMarketplace', "Search Marketplace");
 const milliSecondsInADay = 1000 * 60 * 60 * 24;
@@ -164,7 +166,7 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 		}
 
 		const language = model.getLanguageIdentifier().language;
-		const fileExtension = extname(uri);
+		const fileExtension = extname(uri).toLowerCase();
 		if (this.processedLanguages.includes(language) && this.processedFileExtensions.includes(fileExtension)) {
 			return;
 		}
@@ -269,69 +271,75 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 	private addToPromptedRecommendations(exeName: string, extensions: string[]) {
 		const promptedRecommendations = this.getPromptedRecommendations();
 		promptedRecommendations[exeName] = extensions;
-		this.storageService.store(promptedRecommendationsStorageKey, JSON.stringify(promptedRecommendations), StorageScope.GLOBAL);
+		this.storageService.store2(promptedRecommendationsStorageKey, JSON.stringify(promptedRecommendations), StorageScope.GLOBAL, StorageTarget.USER);
+	}
+
+	private getPromptedFileExtensions(): string[] {
+		return JSON.parse(this.storageService.get(promptedFileExtensionsStorageKey, StorageScope.GLOBAL, '[]'));
+	}
+
+	private addToPromptedFileExtensions(fileExtension: string) {
+		const promptedFileExtensions = this.getPromptedFileExtensions();
+		promptedFileExtensions.push(fileExtension);
+		this.storageService.store2(promptedFileExtensionsStorageKey, JSON.stringify(distinct(promptedFileExtensions)), StorageScope.GLOBAL, StorageTarget.USER);
 	}
 
 	private async promptRecommendedExtensionForFileExtension(fileExtension: string, installed: IExtension[]): Promise<void> {
-		// {{SQL CARBON EDIT}} - Turn off file extension-based extensions until we have a scenario that requires this.  The queryGallery isn't working correctly in ADS now.
-		let enableRecommendation: boolean = false;
-		if (!enableRecommendation) {
-			return;
-		}
 		const fileExtensionSuggestionIgnoreList = <string[]>JSON.parse(this.storageService.get('extensionsAssistant/fileExtensionsSuggestionIgnore', StorageScope.GLOBAL, '[]'));
 		if (fileExtensionSuggestionIgnoreList.indexOf(fileExtension) > -1) {
 			return;
-		} else {
-			const fileExtensionSuggestionIgnoreList = <string[]>JSON.parse(this.storageService.get('extensionsAssistant/fileExtensionsSuggestionIgnore', StorageScope.GLOBAL, '[]'));
-			if (fileExtensionSuggestionIgnoreList.indexOf(fileExtension) > -1) {
-				return;
-			}
-
-			const text = `ext:${fileExtension}`;
-			const pager = await this.extensionsWorkbenchService.queryGallery({ text, pageSize: 100 }, CancellationToken.None);
-			if (pager.firstPage.length === 0) {
-				return;
-			}
-
-			const installedExtensionsIds = installed.reduce((result, i) => { result.add(i.identifier.id.toLowerCase()); return result; }, new Set<string>());
-			if (pager.firstPage.some(e => installedExtensionsIds.has(e.identifier.id.toLowerCase()))) {
-				return;
-			}
-
-			this.notificationService.prompt(
-				Severity.Info,
-				localize('showLanguageExtensions', "The Marketplace has extensions that can help with '.{0}' files", fileExtension),
-				[{
-					label: searchMarketplace,
-					run: () => {
-						this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'ok', fileExtension });
-						this.viewletService.openViewlet('workbench.view.extensions', true)
-							.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
-							.then(viewlet => {
-								viewlet.search(`ext:${fileExtension}`);
-								viewlet.focus();
-							});
-					}
-				}, {
-					label: localize('dontShowAgainExtension', "Don't Show Again for '.{0}' files", fileExtension),
-					run: () => {
-						fileExtensionSuggestionIgnoreList.push(fileExtension);
-						this.storageService.store(
-							'extensionsAssistant/fileExtensionsSuggestionIgnore',
-							JSON.stringify(fileExtensionSuggestionIgnoreList),
-							StorageScope.GLOBAL
-						);
-						this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'neverShowAgain', fileExtension });
-					}
-				}],
-				{
-					sticky: true,
-					onCancel: () => {
-						this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'cancelled', fileExtension });
-					}
-				}
-			);
 		}
+
+		const promptedFileExtensions = this.getPromptedFileExtensions();
+		if (promptedFileExtensions.includes(fileExtension)) {
+			return;
+		}
+
+		const text = `ext:${fileExtension}`;
+		const pager = await this.extensionsWorkbenchService.queryGallery({ text, pageSize: 100 }, CancellationToken.None);
+		if (pager.firstPage.length === 0) {
+			return;
+		}
+
+		const installedExtensionsIds = installed.reduce((result, i) => { result.add(i.identifier.id.toLowerCase()); return result; }, new Set<string>());
+		if (pager.firstPage.some(e => installedExtensionsIds.has(e.identifier.id.toLowerCase()))) {
+			return;
+		}
+
+		this.notificationService.prompt(
+			Severity.Info,
+			localize('showLanguageExtensions', "The Marketplace has extensions that can help with '.{0}' files", fileExtension),
+			[{
+				label: searchMarketplace,
+				run: () => {
+					this.addToPromptedFileExtensions(fileExtension);
+					this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'ok', fileExtension });
+					this.viewletService.openViewlet('workbench.view.extensions', true)
+						.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
+						.then(viewlet => {
+							viewlet.search(`ext:${fileExtension}`);
+							viewlet.focus();
+						});
+				}
+			}, {
+				label: localize('dontShowAgainExtension', "Don't Show Again for '.{0}' files", fileExtension),
+				run: () => {
+					fileExtensionSuggestionIgnoreList.push(fileExtension);
+					this.storageService.store2(
+						'extensionsAssistant/fileExtensionsSuggestionIgnore',
+						JSON.stringify(fileExtensionSuggestionIgnoreList),
+						StorageScope.GLOBAL,
+						StorageTarget.USER);
+					this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'neverShowAgain', fileExtension });
+				}
+			}],
+			{
+				sticky: true,
+				onCancel: () => {
+					this.telemetryService.publicLog2<{ userReaction: string, fileExtension: string }, FileExtensionSuggestionClassification>('fileExtensionSuggestion:popup', { userReaction: 'cancelled', fileExtension });
+				}
+			}
+		);
 	}
 
 	private filterIgnoredOrNotAllowed(recommendationsToSuggest: string[]): string[] {
@@ -366,6 +374,6 @@ export class FileBasedRecommendations extends ExtensionRecommendations {
 	private storeCachedRecommendations(): void {
 		const storedRecommendations: IStringDictionary<number> = {};
 		this.fileBasedRecommendations.forEach((value, key) => storedRecommendations[key] = value.recommendedTime);
-		this.storageService.store(recommendationsStorageKey, JSON.stringify(storedRecommendations), StorageScope.GLOBAL);
+		this.storageService.store2(recommendationsStorageKey, JSON.stringify(storedRecommendations), StorageScope.GLOBAL, StorageTarget.MACHINE);
 	}
 }

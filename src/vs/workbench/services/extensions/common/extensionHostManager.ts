@@ -267,7 +267,8 @@ export class ExtensionHostManager extends Disposable {
 				authority: {
 					authority: remoteAuthority,
 					host: pieces[0],
-					port: parseInt(pieces[1], 10)
+					port: parseInt(pieces[1], 10),
+					connectionToken: undefined
 				}
 			});
 		}
