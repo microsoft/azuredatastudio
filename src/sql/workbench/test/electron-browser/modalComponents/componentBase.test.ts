@@ -60,7 +60,7 @@ suite('ComponentBase Tests', () => {
 	let modelStore: IModelStore;
 
 	setup(() => {
-		modelStore = new ModelStore();
+		modelStore = new ModelStore(new NullLogService());
 		testComponent = new TestComponent(modelStore, 'testComponent');
 		testComponent2 = new TestComponent(modelStore, 'testComponent2');
 		testContainer = new TestContainer(modelStore, 'testContainer');
