@@ -21,11 +21,11 @@ const radioOptionsInfo = <RadioOptionsInfo>{
 };
 const divItems: azdata.Component[] = [];
 let radioOptionsGroup: RadioOptionsGroup;
-
+let loadingComponent: azdata.LoadingComponent;
 
 describe('radioOptionsGroup', function (): void {
 	beforeEach(async () => {
-		const { mockModelView, mockRadioButtonBuilder, mockDivBuilder } = createModelViewMock();
+		const { mockModelBuilder, mockRadioButtonBuilder, mockDivBuilder, mockLoadingBuilder } = createModelViewMock();
 		mockRadioButtonBuilder.reset(); // reset any previous mock so that we can set our own.
 		setupMockComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties>(
 			(props) => new FakeRadioButton(props),
@@ -41,8 +41,9 @@ describe('radioOptionsGroup', function (): void {
 			},
 			mockDivBuilder
 		);
-		radioOptionsGroup = new RadioOptionsGroup(mockModelView.object, (_disposable) => { });
+		radioOptionsGroup = new RadioOptionsGroup(mockModelBuilder.object, (_disposable) => { });
 		await radioOptionsGroup.load(async () => radioOptionsInfo);
+		loadingComponent = mockLoadingBuilder.object.component();
 	});
 
 	it('verify construction and load', async () => {

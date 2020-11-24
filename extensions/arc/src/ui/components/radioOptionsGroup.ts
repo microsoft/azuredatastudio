@@ -49,6 +49,8 @@ export class RadioOptionsGroup implements IReadOnly {
 					// this._divContainer.items
 					// 	.filter(otherOption => otherOption !== radioOption)
 					// 	.forEach(otherOption => (otherOption as azdata.RadioButtonComponent).checked = false);
+					console.log(`TCL:: new current radio option:`, JSON.stringify(radioOption, undefined, '\t'));
+					console.log(`TCL:: ~ file: radioOptionsGroup.ts ~ line 90 ~ RadioOptionsGroup ~ this._onNewDisposableCreated ~ radioOption`, radioOption);
 					this._currentRadioOption = radioOption;
 				}));
 				this._divContainer.addItem(radioOption);

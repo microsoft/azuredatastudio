@@ -21,7 +21,7 @@ export function createModelViewMock() {
 	mockModelBuilder.setup(b => b.divContainer()).returns(() => mockDivBuilder.object);
 	const mockModelView = TypeMoq.Mock.ofType<azdata.ModelView>();
 	mockModelView.setup(mv => mv.modelBuilder).returns(() => mockModelBuilder.object);
-	return { mockModelView, mockModelBuilder, mockTextBuilder, mockInputBoxBuilder, mockRadioButtonBuilder, mockDivBuilder };
+	return { mockModelView, mockModelBuilder, mockTextBuilder, mockInputBoxBuilder, mockRadioButtonBuilder, mockDivBuilder, mockLoadingBuilder };
 }
 
 function setupMockLoadingBuilder(
