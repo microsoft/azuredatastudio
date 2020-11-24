@@ -55,6 +55,7 @@ export interface FileShare {
 	subscriptionId: string;
 	storageAccountId: string;
 	fileShareId: string;
+	resourceGroupId: string;
 }
 export interface DatabaseBackupModel {
 	emailNotification: boolean;

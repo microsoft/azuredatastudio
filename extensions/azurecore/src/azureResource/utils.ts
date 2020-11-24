@@ -5,9 +5,11 @@
 
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
+import axios, { AxiosRequestConfig } from 'axios';
 import * as azdata from 'azdata';
 import { GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult } from 'azurecore';
 import { azureResource } from 'azureResource';
+import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { AppContext } from '../appContext';
 import { AzureResourceServiceNames } from './constants';
@@ -283,4 +285,36 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
 		result.errors.push(error);
 	}
 	return result;
+}
+
+export async function makeGetRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, url: string): Promise<any> {
+	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
+		throw new Error(localize('azure.accounts.getSubscriptions.invalidParamsError', "Invalid account"));
+	}
+	if (!subscription.tenant) {
+		throw new Error(localize('azure.accounts.runResourceQuery.errors.noTenantSpecifiedForSubscription', "Invalid tenant for subscription"));
+	}
+	const securityToken = await azdata.accounts.getAccountSecurityToken(
+		account,
+		subscription.tenant!,
+		azdata.AzureResource.ResourceManagement
+	);
+	const config: AxiosRequestConfig = {
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${securityToken.token}`
+		},
+		validateStatus: () => true // Never throw
+	};
+	const response = await axios.get(url, config);
+	if (response.status !== 200) {
+		let errorMessage: string[] = [];
+		errorMessage.push(response.status.toString());
+		errorMessage.push(response.statusText);
+		if (response.data && response.data.error) {
+			errorMessage.push(`${response.data.error.code} : ${response.data.error.message}`);
+		}
+		throw new Error(errorMessage.join(EOL));
+	}
+	return response;
 }

@@ -8,6 +8,9 @@ import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
 
 export class AzurecoreApiStub implements azurecore.IExtension {
+	runGetRequest(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _url: string): Promise<any> {
+		throw new Error('Method not implemented.');
+	}
 	runGraphQuery<T extends azureResource.AzureGraphResource>(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors: boolean, _query: string): Promise<azurecore.ResourceQueryResult<T>> {
 		throw new Error('Method not implemented.');
 	}

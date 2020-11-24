@@ -65,3 +65,27 @@ export async function getAvailableStorageAccounts(account: azdata.Account, subsc
 	const result = await api.runGraphQuery<StorageAccount>(account, [subscription], false, `where type == "${azureResource.AzureResourceType.storageAccount}"`);
 	return result.resources;
 }
+
+export type FileShares = AzureProduct;
+export async function getFileShares(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<FileShares[]> {
+	const api = await getAzureCoreAPI();
+	const url = `https://management.azure.com` +
+		`/subscriptions/${subscription.id}` +
+		`/resourceGroups/${storageAccount.resourceGroup}` +
+		`/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}` +
+		`/fileServices/default/shares?api-version=2019-06-01`;
+	console.log(url);
+	return (await api.runGetRequest(account, subscription, url)).data.value;
+}
+
+export type BlobContainer = AzureProduct;
+export async function getBlobContainers(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<BlobContainer[]> {
+	const api = await getAzureCoreAPI();
+	const url = `https://management.azure.com` +
+		`/subscriptions/${subscription.id}` +
+		`/resourceGroups/${storageAccount.resourceGroup}` +
+		`/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}` +
+		`/blobServices/default/containers?api-version=2019-06-01`;
+	const response = (await api.runGetRequest(account, subscription, url)).data.value;
+	return response;
+}
