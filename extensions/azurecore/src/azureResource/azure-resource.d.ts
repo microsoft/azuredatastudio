@@ -18,7 +18,8 @@ declare module 'azureResource' {
 			kustoClusters = 'microsoft.kusto/clusters',
 			azureArcPostgresServer = 'microsoft.azuredata/postgresinstances',
 			postgresServer = 'microsoft.dbforpostgresql/servers',
-			azureArcService = 'microsoft.azuredata/datacontrollers'
+			azureArcService = 'microsoft.azuredata/datacontrollers',
+			storageAccount = 'microsoft.storage/storageaccounts',
 		}
 
 		export interface IAzureResourceProvider extends DataProvider {

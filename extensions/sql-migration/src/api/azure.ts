@@ -58,3 +58,10 @@ export async function getAvailableSqlVMs(account: azdata.Account, subscription: 
 	const result = await api.runGraphQuery<SqlVMServer>(account, [subscription], false, `where type == "${azureResource.AzureResourceType.virtualMachines}" and properties.storageProfile.imageReference.publisher == "microsoftsqlserver"`);
 	return result.resources;
 }
+
+export type StorageAccount = AzureProduct;
+export async function getAvailableStorageAccounts(account: azdata.Account, subscription: Subscription): Promise<StorageAccount[]> {
+	const api = await getAzureCoreAPI();
+	const result = await api.runGraphQuery<StorageAccount>(account, [subscription], false, `where type == "${azureResource.AzureResourceType.storageAccount}"`);
+	return result.resources;
+}

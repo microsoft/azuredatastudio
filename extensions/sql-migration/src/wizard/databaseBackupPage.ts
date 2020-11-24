@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { getSubscriptions, Subscription } from '../api/azure';
+import { getAvailableStorageAccounts, getSubscriptions, Subscription } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { BlobContainer, FileShare, MigrationCutover, MigrationStateModel, NetworkContainerType, NetworkShare, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../models/strings';
@@ -117,8 +117,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._fileShareSubscriptionDropdown = view.modelBuilder.dropDown().withProps({
 			required: true,
 		}).component();
-		this._fileShareSubscriptionDropdown.onValueChanged((value) => {
+		this._fileShareSubscriptionDropdown.onValueChanged(async (value) => {
 			this._fileShare.subscriptionId = (this._fileShareSubscriptionDropdown.value as azdata.CategoryValue).name;
+			await this.loadFileShareStorageDropdown();
 		});
 
 		const storageAccountLabel = view.modelBuilder.text().withProps({
@@ -128,8 +129,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._fileShareStorageAccountDropdown = view.modelBuilder.dropDown().withProps({
 			required: true
 		}).component();
-		this._fileShareStorageAccountDropdown.onValueChanged((value) => {
+		this._fileShareStorageAccountDropdown.onValueChanged(async (value) => {
 			this._fileShare.storageAccountId = (this._fileShareStorageAccountDropdown.value as azdata.CategoryValue).name;
+			await this.loadFileShareDropdown();
 		});
 
 		const fileShareLabel = view.modelBuilder.text().withProps({
@@ -168,8 +170,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._blobContainerSubscriptionDropdown = view.modelBuilder.dropDown().withProps({
 			required: true
 		}).component();
-		this._blobContainerSubscriptionDropdown.onValueChanged((value) => {
+		this._blobContainerSubscriptionDropdown.onValueChanged(async (value) => {
 			this._blob.subscriptionId = (this._blobContainerSubscriptionDropdown.value as azdata.CategoryValue).name;
+			await this.loadblobStorageDropdown();
 		});
 
 		const storageAccountLabel = view.modelBuilder.text().withProps({
@@ -277,8 +280,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareContainerSubscriptionDropdown = view.modelBuilder.dropDown().withProps({
 			required: true
 		}).component();
-		this._networkShareContainerSubscriptionDropdown.onValueChanged((value) => {
+		this._networkShareContainerSubscriptionDropdown.onValueChanged(async (value) => {
 			this._networkShare.storageSubscriptionId = (this._networkShareContainerSubscriptionDropdown.value as azdata.CategoryValue).name;
+			await this.loadNetworkShareStorageDropdown();
 		});
 
 		const storageAccountLabel = view.modelBuilder.text().withProps({
@@ -398,25 +402,84 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private async getSubscriptionValues() {
 		this._networkShareContainerSubscriptionDropdown.loading = true;
 		this._fileShareSubscriptionDropdown.loading = true;
-		this._blobContainerBlobDropdown.loading = true;
+		this._blobContainerSubscriptionDropdown.loading = true;
+		this._networkShareContainerStorageAccountDropdown.loading = true;
+
 
 		let subscriptions = await getSubscriptions(this.migrationStateModel.azureAccount);
 		subscriptions.forEach((subscription) => {
 			this._subscriptionMap.set(subscription.id, subscription);
 			this._subscriptionDropdownValues.push({
-				name: subscription.name,
+				name: subscription.id,
 				displayName: subscription.name + ' - ' + subscription.id,
 			});
 		});
 
 		this._fileShareSubscriptionDropdown.values = this._subscriptionDropdownValues;
 		this._networkShareContainerSubscriptionDropdown.values = this._subscriptionDropdownValues;
-		this._blobContainerBlobDropdown.values = this._subscriptionDropdownValues;
+		this._blobContainerSubscriptionDropdown.values = this._subscriptionDropdownValues;
 
 		this._networkShareContainerSubscriptionDropdown.loading = false;
 		this._fileShareSubscriptionDropdown.loading = false;
-		this._blobContainerBlobDropdown.loading = false;
+		this._blobContainerSubscriptionDropdown.loading = false;
+
+		this._networkShare.storageSubscriptionId = this._subscriptionDropdownValues[0].name;
+		this._fileShare.subscriptionId = this._subscriptionDropdownValues[0].name;
+		this._blob.subscriptionId = this._subscriptionDropdownValues[0].name;
+
+		await this.loadNetworkShareStorageDropdown();
+		await this.loadFileShareStorageDropdown();
+		await this.loadblobStorageDropdown();
 	}
 
+	private async loadNetworkShareStorageDropdown() {
+		this._networkShareContainerStorageAccountDropdown.loading = true;
+		const storageAccounts = await getAvailableStorageAccounts(this.migrationStateModel.azureAccount, this._subscriptionMap.get(this._networkShare.storageSubscriptionId)!);
+		this._networkShareContainerStorageAccountDropdown.values = storageAccounts.map(s => <azdata.CategoryValue>{ name: s.id, displayName: s.name });
+		if (storageAccounts.length) {
+			this._networkShare.storageSubscriptionId = storageAccounts[0].id;
+		} else {
+			this._networkShareContainerStorageAccountDropdown.values = [{
+				displayName: 'No storage accounts found',
+				name: ''
+			}];
+		}
+		this._networkShareContainerStorageAccountDropdown.loading = false;
+	}
 
+	private async loadFileShareStorageDropdown() {
+		this._fileShareStorageAccountDropdown.loading = true;
+		const storageAccounts = await getAvailableStorageAccounts(this.migrationStateModel.azureAccount, this._subscriptionMap.get(this._fileShare.subscriptionId)!);
+		this._fileShareStorageAccountDropdown.values = storageAccounts.map(s => <azdata.CategoryValue>{ name: s.id, displayName: s.name });
+		if (storageAccounts.length) {
+			this._fileShare.storageAccountId = storageAccounts[0].id;
+		} else {
+			this._fileShareStorageAccountDropdown.values = [{
+				displayName: 'No storage accounts found',
+				name: ''
+			}];
+		}
+		await this.loadFileShareDropdown();
+		this._fileShareStorageAccountDropdown.loading = false;
+	}
+
+	private async loadblobStorageDropdown() {
+		this._blobContainerStorageAccountDropdown.loading = true;
+		const storageAccounts = await getAvailableStorageAccounts(this.migrationStateModel.azureAccount, this._subscriptionMap.get(this._blob.subscriptionId)!);
+		this._blobContainerStorageAccountDropdown.values = storageAccounts.map(s => <azdata.CategoryValue>{ name: s.id, displayName: s.name });
+		if (storageAccounts.length) {
+			this._blob.storageAccountId = storageAccounts[0].id;
+		} else {
+			this._blobContainerStorageAccountDropdown.values = [{
+				displayName: 'No storage accounts found',
+				name: ''
+			}];
+		}
+		this._blobContainerStorageAccountDropdown.loading = false;
+	}
+
+	private async loadFileShareDropdown() {
+		this._fileShareFileShareDropdown.loading = true;
+		this._fileShareFileShareDropdown.loading = false;
+	}
 }
