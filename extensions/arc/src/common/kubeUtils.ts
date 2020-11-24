@@ -22,6 +22,7 @@ export function getKubeConfigClusterContexts(configFile: string): Promise<KubeCl
 	const contexts: KubeClusterContext[] = [];
 	rawContexts.forEach(rawContext => {
 		const name = <string>rawContext['name'];
+		throwUnless(name, loc.noNameInContext(configFile));
 		if (name) {
 			contexts.push({
 				name: name,
