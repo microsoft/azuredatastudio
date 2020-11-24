@@ -144,7 +144,7 @@ actionRegistry.registerWorkbenchAction(
 		CopyQueryWithResultsKeyboardAction,
 		CopyQueryWithResultsKeyboardAction.ID,
 		CopyQueryWithResultsKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_M }
+		{ primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_C }
 	),
 	CopyQueryWithResultsKeyboardAction.LABEL
 );

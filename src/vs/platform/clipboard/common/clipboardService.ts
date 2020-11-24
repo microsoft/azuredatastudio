@@ -8,13 +8,22 @@ import { URI } from 'vs/base/common/uri';
 
 export const IClipboardService = createDecorator<IClipboardService>('clipboardService');
 
+// {{SQL CARBON EDIT}}
+export interface ClipboardData {
+	text?: string;
+	html?: string;
+	rtf?: string;
+	bookmark?: string;
+}
+
 export interface IClipboardService {
 
 	readonly _serviceBrand: undefined;
 	/**
 	 * Writes data to the system clipboard.
 	 */
-	write(data: any, type?: string): Promise<void>;
+	// {{SQL CARBON EDIT}}
+	write(data: ClipboardData, type?: string): Promise<void>;
 
 	/**
 	 * Writes text to the system clipboard.

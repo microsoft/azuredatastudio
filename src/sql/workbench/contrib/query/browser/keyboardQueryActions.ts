@@ -145,7 +145,6 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
 	) {
 		super(id, label);
-		this.enabled = true;
 	}
 
 	public async getFormattedResults(editor): Promise<any> {
@@ -183,7 +182,7 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 			}
 		}
 
-		return { result: allResults, html: allHtmlResults };
+		return { result: allResults, htmlResult: allHtmlResults };
 	}
 
 	public async run(): Promise<void> {
@@ -194,12 +193,11 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 
 			let data = {
 				text: `${queryText}\n\n${allResults.result}`,
-				html: `${escape(queryText).replace(/\r\n|\n|\r/gm, '<br />')}${allResults.html}`
+				html: `${escape(queryText).replace(/\r\n|\n|\r/gm, '<br />')}${allResults.htmlResult}`
 			};
 
-			this._clipboardService.write(data);
+			await this._clipboardService.write(data);
 		}
-		return Promise.resolve(null);
 	}
 }
 
