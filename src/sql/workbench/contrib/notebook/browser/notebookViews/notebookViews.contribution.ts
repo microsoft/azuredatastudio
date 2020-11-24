@@ -19,7 +19,7 @@ const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigExtensio
 
 configurationRegistry.registerConfiguration({
 	'id': 'notebookViews',
-	'title': 'Notebook Views',
+	'title': localize('notebookViews.title', "Notebook Views"),
 	'type': 'object',
 	'properties': properties
 });
