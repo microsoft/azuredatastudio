@@ -88,6 +88,10 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	clearContainer(componentId: string): void {
 		this.logService.debug(`Queuing action to clear component ${componentId}`);
 		this.queueAction(componentId, (component) => {
+			if (!component.clearContainer) {
+				this.logService.warn(`Trying to clear container ${componentId} but does not implement clearContainer!`);
+				return;
+			}
 			this.logService.debug(`Clearing component ${componentId}`);
 			component.clearContainer();
 		});
@@ -97,6 +101,10 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		this.logService.debug(`Queueing action to add component ${itemConfig.componentShape.id} to container ${containerId}`);
 		// Do not return the promise as this should be non-blocking
 		this.queueAction(containerId, (component) => {
+			if (!component.addToContainer) {
+				this.logService.warn(`Container ${containerId} is trying to add component ${itemConfig.componentShape.id} but does not implement addToContainer!`);
+				return;
+			}
 			this.logService.debug(`Adding component ${itemConfig.componentShape.id} to container ${containerId}`);
 			let childDescriptor = this.defineComponent(itemConfig.componentShape);
 			component.addToContainer(childDescriptor, itemConfig.config, index);
@@ -107,6 +115,10 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		this.logService.debug(`Queueing action to remove component ${itemConfig.componentShape.id} from container ${containerId}`);
 		let childDescriptor = this.modelStore.getComponentDescriptor(itemConfig.componentShape.id);
 		this.queueAction(containerId, (component) => {
+			if (!component.removeFromContainer) {
+				this.logService.warn(`Container ${containerId} is trying to remove component ${itemConfig.componentShape.id} but does not implement removeFromContainer!`);
+				return;
+			}
 			this.logService.debug(`Removing component ${itemConfig.componentShape.id} from container ${containerId}`);
 			component.removeFromContainer(childDescriptor);
 			this.removeComponent(itemConfig.componentShape);
@@ -174,7 +186,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		return this._onEventEmitter.event;
 	}
 
-	public validate(componentId: string): Thenable<boolean> {
+	public validate(componentId: string): Promise<boolean> {
 		return new Promise(resolve => this.modelStore.eventuallyRunOnComponent(componentId, component => resolve(component.validate()), false));
 	}
 

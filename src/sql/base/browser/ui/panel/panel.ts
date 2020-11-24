@@ -337,10 +337,6 @@ export class TabbedPanel extends Disposable {
 				color: ${styles.titleActiveForeground};
 				border-bottom-color: ${styles.titleActiveBorder};
 				border-bottom-width: 2px;
-			}
-
-			.tabbedPanel > .title .tabList .tab-header.active {
-				outline: none;
 			}`);
 		}
 

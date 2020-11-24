@@ -13,6 +13,7 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { Separator } from 'sql/base/browser/ui/separator/separator';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: `modelview-separator`,
@@ -29,8 +30,9 @@ export default class SeparatorComponent extends ComponentBase<azdata.SeparatorCo
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {

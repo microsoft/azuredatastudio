@@ -40,5 +40,20 @@ export function setup() {
 			await app.workbench.sqlNotebook.waitForKernel('Python 3');
 			await app.workbench.sqlNotebook.waitForAllResults();
 		});
+
+		it('can open untrusted notebook, trust, save, and reopen trusted notebook', async function () {
+			const app = this.app as Application;
+			await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
+			await app.workbench.sqlNotebook.waitForKernel('SQL');
+			await app.workbench.sqlNotebook.waitForNotTrustedIcon();
+			await app.workbench.sqlNotebook.trustNotebook();
+			await app.workbench.sqlNotebook.waitForTrustedIcon();
+			await app.workbench.quickaccess.runCommand('workbench.action.files.save');
+			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
+
+			await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
+			await app.workbench.sqlNotebook.waitForTrustedIcon();
+			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
+		});
 	});
 }

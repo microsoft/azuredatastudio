@@ -19,6 +19,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-listBox',
@@ -38,8 +39,9 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IClipboardService) private clipboardService: IClipboardService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
@@ -78,12 +80,6 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 		this.baseInit();
 	}
 
-	public validate(): Thenable<boolean> {
-		return super.validate().then(valid => {
-			return valid;
-		});
-	}
-
 	ngOnDestroy(): void {
 		this.baseDestroy();
 	}
@@ -97,8 +93,6 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._input.setOptions(this.values.map(value => { return { text: value }; }), this.selectedRow);
-
-		this.validate();
 	}
 
 	// CSS-bound properties

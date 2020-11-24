@@ -65,9 +65,9 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(ILogService) private readonly logService: ILogService
+		@Inject(ILogService) readonly logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 		this._flexFlow = '';	// default
 		this._justifyContent = '';	// default
 		this._orientation = Orientation.VERTICAL; // default

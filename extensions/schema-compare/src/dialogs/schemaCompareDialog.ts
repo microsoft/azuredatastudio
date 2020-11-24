@@ -526,6 +526,8 @@ export class SchemaCompareDialog {
 		}
 
 		currentDropdown.loading = false;
+
+		await this.populateDatabaseDropdown((currentDropdown.value as ConnectionDropdownValue).connection, isTarget);
 	}
 
 	protected async getServerValues(isTarget: boolean): Promise<{ connection: azdata.connection.ConnectionProfile, displayName: string, name: string }[]> {

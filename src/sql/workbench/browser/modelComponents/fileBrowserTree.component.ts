@@ -15,6 +15,7 @@ import { FileBrowserViewModel } from 'sql/workbench/services/fileBrowser/common/
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { FileBrowserTreeView } from 'sql/workbench/services/fileBrowser/browser/fileBrowserTreeView';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-fileBrowserTree',
@@ -35,8 +36,9 @@ export default class FileBrowserTreeComponent extends ComponentBase<azdata.FileB
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService) {
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
@@ -89,13 +91,6 @@ export default class FileBrowserTreeComponent extends ComponentBase<azdata.FileB
 		}
 	}
 
-	public validate(): Thenable<boolean> {
-		return super.validate().then(valid => {
-			// TODO: tree validation?
-			return valid;
-		});
-	}
-
 	ngOnDestroy(): void {
 		this.baseDestroy();
 	}
@@ -113,7 +108,6 @@ export default class FileBrowserTreeComponent extends ComponentBase<azdata.FileB
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this.validate();
 		if (this.ownerUri) {
 			this.initialize();
 		}

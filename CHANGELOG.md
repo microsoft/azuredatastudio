@@ -1,5 +1,15 @@
 # Change Log
 
+## Version 1.24.0
+* Release date: November 12, 2020
+* Release status: General Availability
+* SQL Project improvements
+* Notebook improvements, including in WYSIWYG editor enhancements
+* Azure Arc improvements
+* Azure SQL Deployment UX improvements
+* Azure Browse Connections Preview
+* Bug Fixes
+
 ## Version 1.23.0
 * Release date: October 14, 2020
 * Release status: General Availability

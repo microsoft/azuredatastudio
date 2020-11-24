@@ -1,9 +1,10 @@
 # Assessments
 
-
 [Home](../readme.md)
 
-## Notebooks in this Chapter
-- [SQL Server Best Practices Assessment](sql-server-assessment.ipynb) - Use the SQL Server Assessment API to review the configuration of instances by name or dynamically by specifying the instance of a Central Management Server. SQL Assessment API provides a mechanism to evaluate the configuration of your SQL Server for best practices. The API is delivered with a ruleset containing best practice rules suggested by SQL Server Team. This ruleset is enhancing with the release of new versions but at the same time, the API is built with the intent to give a highly customizable and extensible solution. So, users can tune the default rules and create their own ones. SQL Assessment API is useful when you want to make sure your SQL Server configuration is in line with recommended best practices. After an initial assessment, configuration stability can be tracked by regularly scheduled assessments. 
+Preparing for the cloud requires a crawl-walk-run mentality. The first step, or crawl, towards hybrid migration is determining the fitness of existing on-premise resources. An assessment is an analysis performed against a chosen SQL Server object such as a Server or Database instance. It is recommended to fix any issues found by the analysis prior to migrating a database from on-premise to Azure. 
 
-- [Compatibility Assessment](compatibility-assessment.ipynb) - Coming soon
+## Notebooks in this Chapter
+- [SQL Server Best Practices Assessment](sql-server-assessment.ipynb) - demonstrates the use of the [SQL Server Assessment API](https://docs.microsoft.com/en-us/sql/sql-assessment-api/sql-assessment-api-overview), a tool to review the configuration of a SQL Server and Databases for best practices. 
+
+- [Compatibility Assessment](compatibility-assessment.ipynb) - Analzye an on-premises SQL Server instance or database for compatibility for migration to SQL Azure. The assessment will provide guidance on features not currently supported in Azure and remediation actions that can be taken to prepare for migration.

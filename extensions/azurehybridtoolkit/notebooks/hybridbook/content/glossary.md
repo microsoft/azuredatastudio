@@ -1,4 +1,6 @@
 # Glossary
+[Home](readme.md)
+
 A list of terms and their definitions can be found below
 
 * **ADS** - *Azure Data Studio* is a desktop tool for managing Azure Data resources in the cloud, on-premises, or hybrid environments. 
@@ -31,4 +33,5 @@ A list of terms and their definitions can be found below
 * **SQL Assessment API** - evaluates a SQL instance configuration for best practices
 * **SQL Virtual Machine** - an IaaS Azure offer that provisions and manages virtual machine with SQL Server installed
 * **SQL Managed Instance** - a PaaS Azure offer for SQL Server that is ran on Azure infrastructure. Microsoft will manage the complexities of the infrastructure for the user  
+* **SMO** - SQL Management Objects are "objects designed for programmatic management of Microsoft SQL Server" ([Microsoft](https://docs.microsoft.com/en-us/sql/relational-databases/server-management-objects-smo/overview-smo))
 * **VPN** - a *virtual private network* is a collection of computing resources that organizes and extends a private network configuration over the public Internet, normally using some kind of encryption for security and privacy. 

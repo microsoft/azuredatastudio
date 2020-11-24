@@ -8,6 +8,15 @@
 - title: Search
   search: true
 
+- title: Assessment
+  url: /Assessments/readme
+  not_numbered: true
+  expand_sections: false
+  sections:
+  - title: SQL Server Assessment Tool
+    url: Assessments/sql-server-assessment
+  - title: Compatibility Assessment
+    url: Assessments/compatibility-assessment
 - title: Networking
   url: /networking/readme
   not_numbered: true
@@ -19,15 +28,6 @@
     url: networking/p2svnet-creation
   - title: Create Site-to-Site VPN
     url: networking/s2svnet-creation
-- title: Assessments
-  url: /Assessments/readme
-  not_numbered: true
-  expand_sections: false
-  sections:
-  - title: SQL Server Best Practices Assessment
-    url: Assessments/sql-server-assessment
-  - title: Compatibility Assessment
-    url: Assessments/compatibility-assessment
 - title: Provisioning
   url: /provisioning/readme
   not_numbered: true
@@ -57,8 +57,6 @@
   sections:
   - title: Backup Database to Blob Storage
     url: hadr/backup-to-blob
-  - title: Add Azure Passive Secondary Replica
-    url: hadr/add-passive-secondary
 - title: Offline Migration
   url: /offline-migration/readme
   not_numbered: true
@@ -68,10 +66,6 @@
     url: offline-migration/instance-to-VM
   - title: Migrate Database to Azure SQL VM
     url: offline-migration/db-to-VM
-  - title: Migrate Instance to Azure SQL MI
-    url: offline-migration/instance-to-MI
-  - title: Migrate Database to Azure SQL MI
-    url: offline-migration/db-to-MI
   - title: Migrate Database to Azure SQL DB
     url: offline-migration/db-to-SQLDB
 - title: Glossary

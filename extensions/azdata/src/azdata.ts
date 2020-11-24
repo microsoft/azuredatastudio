@@ -121,16 +121,16 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 					additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<void>> => {
 					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', name];
 					if (args.adminPassword) { argsArray.push('--admin-password'); }
-					if (args.coresLimit !== undefined) { argsArray.push('--cores-limit', args.coresLimit); }
-					if (args.coresRequest !== undefined) { argsArray.push('--cores-request', args.coresRequest); }
-					if (args.engineSettings !== undefined) { argsArray.push('--engine-settings', args.engineSettings); }
-					if (args.extensions !== undefined) { argsArray.push('--extensions', args.extensions); }
-					if (args.memoryLimit !== undefined) { argsArray.push('--memory-limit', args.memoryLimit); }
-					if (args.memoryRequest !== undefined) { argsArray.push('--memory-request', args.memoryRequest); }
+					if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
+					if (args.coresRequest) { argsArray.push('--cores-request', args.coresRequest); }
+					if (args.engineSettings) { argsArray.push('--engine-settings', args.engineSettings); }
+					if (args.extensions) { argsArray.push('--extensions', args.extensions); }
+					if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
+					if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
 					if (args.noWait) { argsArray.push('--no-wait'); }
-					if (args.port !== undefined) { argsArray.push('--port', args.port.toString()); }
+					if (args.port) { argsArray.push('--port', args.port.toString()); }
 					if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
-					if (args.workers !== undefined) { argsArray.push('--workers', args.workers.toString()); }
+					if (args.workers) { argsArray.push('--workers', args.workers.toString()); }
 					return this.executeCommand<void>(argsArray, additionalEnvVars);
 				}
 			}
@@ -145,6 +145,23 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 				},
 				show: (name: string): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiShowResult>> => {
 					return this.executeCommand<azdataExt.SqlMiShowResult>(['arc', 'sql', 'mi', 'show', '-n', name]);
+				},
+				edit: (
+					name: string,
+					args: {
+						coresLimit?: string,
+						coresRequest?: string,
+						memoryLimit?: string,
+						memoryRequest?: string,
+						noWait?: boolean,
+					}): Promise<azdataExt.AzdataOutput<void>> => {
+					const argsArray = ['arc', 'sql', 'mi', 'edit', '-n', name];
+					if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
+					if (args.coresRequest) { argsArray.push('--cores-request', args.coresRequest); }
+					if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
+					if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
+					if (args.noWait) { argsArray.push('--no-wait'); }
+					return this.executeCommand<void>(argsArray);
 				}
 			}
 		}

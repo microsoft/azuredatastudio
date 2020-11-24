@@ -1,6 +1,6 @@
-# Azure SQL Hybrid Cloud Toolkit Jupyter Book Extension for Azure Data Studio
+# Azure SQL Hybrid Cloud Toolkit *(preview)*
 
-Welcome to the Azure SQL Hybrid Cloud Toolkit Jupyter Book Extension for Azure Data Studio! This extension opens a Jupyter Book that has several utilities for Azure SQL such as migration assessments and setting up networking connectivity.
+Adds a Jupyter Book that has several utilities for Azure SQL Hybrid Cloud.
 
 ## Code of Conduct
 

@@ -11,7 +11,7 @@ import * as fileTree from './fileFolderTreeItem';
 import { Project, EntryType, FileProjectEntry } from '../project';
 import * as utils from '../../common/utils';
 import { DatabaseReferencesTreeItem } from './databaseReferencesTreeItem';
-import { DatabaseProjectItemType, RelativeOuterPath, ExternalStreamingJob } from '../../common/constants';
+import { DatabaseProjectItemType, RelativeOuterPath, ExternalStreamingJob, sqlprojExtension } from '../../common/constants';
 import { IconPathHelper } from '../../common/iconHelper';
 
 /**
@@ -25,7 +25,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	fileSystemUri: vscode.Uri;
 
 	constructor(project: Project) {
-		super(vscode.Uri.parse(path.basename(project.projectFilePath)), undefined);
+		super(vscode.Uri.parse(path.basename(project.projectFilePath, sqlprojExtension)), undefined);
 
 		this.project = project;
 		this.fileSystemUri = vscode.Uri.file(project.projectFilePath);

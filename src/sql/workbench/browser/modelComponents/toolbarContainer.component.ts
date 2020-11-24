@@ -11,6 +11,7 @@ import {
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export enum Orientation {
 	Horizontal = 'horizontal',
@@ -58,8 +59,9 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService) {
+		super(changeRef, el, logService);
 		this._orientation = Orientation.Horizontal;
 	}
 

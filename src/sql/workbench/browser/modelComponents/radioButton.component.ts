@@ -14,6 +14,7 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-radioButton',
@@ -31,8 +32,9 @@ export default class RadioButtonComponent extends ComponentBase<azdata.RadioButt
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService) {
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {

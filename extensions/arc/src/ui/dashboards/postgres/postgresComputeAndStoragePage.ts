@@ -67,11 +67,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component());
 
 		const infoComputeStorage_p1 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: loc.computeAndStorageDescriptionPartOne,
+			value: loc.postgresComputeAndStorageDescriptionPartOne,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 		}).component();
 		const infoComputeStorage_p2 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: loc.computeAndStorageDescriptionPartTwo,
+			value: loc.postgresComputeAndStorageDescriptionPartTwo,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
@@ -107,15 +107,19 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const computeInfoAndLinks = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
-		computeInfoAndLinks.addItem(infoComputeStorage_p1, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(infoComputeStorage_p2, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(workerNodeslink, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(infoComputeStorage_p3, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(memoryVCoreslink, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(infoComputeStorage_p4, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(infoComputeStorage_p5, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(infoComputeStorage_p6, { CSSStyles: { 'margin-right': '5px' } });
+		const computeInfoAndLinks = this.modelView.modelBuilder.flexContainer()
+			.withLayout({ flexWrap: 'wrap' })
+			.withItems([
+				infoComputeStorage_p1,
+				infoComputeStorage_p2,
+				workerNodeslink,
+				infoComputeStorage_p3,
+				memoryVCoreslink,
+				infoComputeStorage_p4,
+				infoComputeStorage_p5,
+				infoComputeStorage_p6
+			], { CSSStyles: { 'margin-right': '5px' } })
+			.component();
 		content.addItem(computeInfoAndLinks, { CSSStyles: { 'min-height': '30px' } });
 
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -151,8 +155,15 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
-							await this._azdataApi.azdata.arc.postgres.server.edit(
-								this._postgresModel.info.name, this.saveArgs);
+							try {
+								await this._azdataApi.azdata.arc.postgres.server.edit(
+									this._postgresModel.info.name, this.saveArgs);
+							} catch (err) {
+								// If an error occurs while editing the instance then re-enable the save button since
+								// the edit wasn't successfully applied
+								this.saveButton!.enabled = true;
+								throw err;
+							}
 							await this._postgresModel.refresh();
 						}
 					);
@@ -415,7 +426,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			iconPath: IconPathHelper.information,
-			title: loc.configurationInformation,
+			title: loc.postgresConfigurationInformation,
 			width: '12px',
 			height: '12px',
 			enabled: false

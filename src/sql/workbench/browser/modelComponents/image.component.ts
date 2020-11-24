@@ -13,6 +13,7 @@ import * as azdata from 'azdata';
 import { ITitledComponent } from 'sql/workbench/browser/modelComponents/interfaces';
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-image',
@@ -26,8 +27,9 @@ export default class ImageComponent extends ComponentWithIconBase<azdata.ImageCo
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService) {
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {

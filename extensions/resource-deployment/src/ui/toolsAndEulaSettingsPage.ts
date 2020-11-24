@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ResourceTypeOptionValue, ToolStatus } from '../interfaces';
+import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ResourceTypeOptionValue, ToolRequirementInfo, ToolStatus } from '../interfaces';
 import { createFlexContainer } from './modelViewUtils';
 import * as loc from '../localizedConstants';
 import { IToolsService } from '../services/toolsService';
@@ -77,7 +77,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 
 		this.pageObject.registerContent((view: azdata.ModelView) => {
 			this.view = view;
-			const tableWidth = 1126;
+			const tableWidth = 1060;
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
@@ -102,7 +102,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			};
 			const installedPathColumn: azdata.TableColumn = {
 				value: loc.discoverPathOrAdditionalInformationText,
-				width: 580
+				width: 435
 			};
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 				data: [],
@@ -358,9 +358,9 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 
 
 	/**
- *
- * @param enable - if true the UiControls are set to be enabled, if not they are set to be disabled.
- */
+	 *
+	 * @param enable - if true the UiControls are set to be enabled, if not they are set to be disabled.
+	 */
 	private setUiControlsEnabled(enable: boolean): void {
 		this._agreementContainer.enabled = enable;
 		this._optionsContainer.enabled = enable;
@@ -368,8 +368,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		// select and install tools buttons are controlled separately
 	}
 
-
-	protected async onComplete(): Promise<void> {
+	public async onLeave(): Promise<void> {
 		this.toolsService.toolsForCurrentProvider = this._tools;
 	}
 
@@ -388,7 +387,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		return this._eulaValidationSucceeded;
 	}
 
-	private get toolRequirements() {
+	private get toolRequirements(): ToolRequirementInfo[] {
 		return this.wizard.provider.requiredTools;
 	}
 

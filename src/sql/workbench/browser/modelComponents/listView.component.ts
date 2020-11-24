@@ -17,6 +17,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IListRenderer, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./listView.component.html'))
@@ -35,8 +36,9 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {

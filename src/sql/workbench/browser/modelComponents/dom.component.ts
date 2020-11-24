@@ -15,6 +15,7 @@ import * as DOM from 'vs/base/browser/dom';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	template: '',
@@ -29,9 +30,10 @@ export default class DomComponent extends ComponentBase<azdata.DomProperties> im
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {

@@ -14,6 +14,7 @@ import { FormLayout, FormItemLayout } from 'azdata';
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export interface TitledFormItemLayout {
 	title: string;
@@ -95,8 +96,9 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService) {
+		super(changeRef, el, logService);
 	}
 
 	ngOnDestroy(): void {

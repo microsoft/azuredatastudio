@@ -1,8 +1,10 @@
 # Appendices
+[Home](readme.md)
+
 ## Appendix: Locations
 See the <a href="https://azure.microsoft.com/en-us/global-infrastructure/locations/">Azure locations</a> page for a complete list of Azure regions along with their general physical location. The following is a list of common North American location settings for this guide:
 
-### US Regions
+### Regions
 | Setting | Location |
 | ------------ | --------- |
 | Central US | Iowa |

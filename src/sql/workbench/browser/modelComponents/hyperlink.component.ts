@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/hyperlink';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
 	OnDestroy, AfterViewInit, ElementRef
@@ -16,10 +17,11 @@ import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/
 import { textLinkForeground, textLinkActiveForeground } from 'vs/platform/theme/common/colorRegistry';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import * as DOM from 'vs/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-hyperlink',
-	template: `<a [href]="url" [title]="title" [attr.aria-label]="ariaLabel" target="blank">{{label}}</a>`
+	template: `<a [href]="url" [title]="title" [attr.aria-label]="ariaLabel" target="blank" [class]="cssClass">{{label}}</a>`
 })
 export default class HyperlinkComponent extends TitledComponent<azdata.HyperlinkComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -28,9 +30,10 @@ export default class HyperlinkComponent extends TitledComponent<azdata.Hyperlink
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(IOpenerService) private openerService: IOpenerService
+		@Inject(IOpenerService) private openerService: IOpenerService,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
@@ -40,6 +43,10 @@ export default class HyperlinkComponent extends TitledComponent<azdata.Hyperlink
 
 	ngOnDestroy(): void {
 		this.baseDestroy();
+	}
+
+	public get cssClass(): string {
+		return this.showLinkIcon ? 'link-with-icon' : '';
 	}
 
 	public setLayout(layout: any): void {
@@ -60,6 +67,10 @@ export default class HyperlinkComponent extends TitledComponent<azdata.Hyperlink
 
 	public get url(): string {
 		return this.getPropertyOrDefault<string>((props) => props.url, '');
+	}
+
+	public get showLinkIcon(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.showLinkIcon, false);
 	}
 
 	public onClick(e: MouseEvent): void {

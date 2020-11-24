@@ -46,9 +46,9 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(ILogService) private logService: ILogService,
+		@Inject(ILogService) logService: ILogService,
 		@Inject(IThemeService) private themeService: IThemeService) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
