@@ -9,12 +9,12 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { HideCellAction, RunCellAction, ViewCellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/notebookViews/actions';
-import { NotebookViewService } from 'sql/workbench/services/notebook/browser/models/notebookViewService';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { CellChangeEventType, DEFAULT_VIEW_CARD_HEIGHT, DEFAULT_VIEW_CARD_WIDTH, INotebookView, INotebookViewCellMetadata } from 'sql/workbench/services/notebook/browser/models/notebookViewModel';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/models/notebookViewsExtension';
 
 @Component({
 	selector: 'view-card-component',
@@ -29,7 +29,7 @@ export class ViewCardComponent implements OnInit {
 
 	@Input() cell: ICellModel;
 	@Input() model: NotebookModel;
-	@Input() extension: NotebookViewService;
+	@Input() extension: NotebookViewsExtension;
 	@Input() ready: boolean;
 	@Output() onChange: EventEmitter<any> = new EventEmitter();
 

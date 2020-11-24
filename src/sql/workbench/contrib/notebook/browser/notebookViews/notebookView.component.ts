@@ -21,7 +21,6 @@ import { MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { NotebookViewService } from 'sql/workbench/services/notebook/browser/models/notebookViewService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { localize } from 'vs/nls';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
@@ -39,6 +38,7 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { NotebookViewsGridComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewGrid.component';
 import { INotebookView } from 'sql/workbench/services/notebook/browser/models/notebookViewModel';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/models/notebookViewsExtension';
 
 export const PLACEHOLDER_SELECTOR: string = 'notebook-view-component';
 
@@ -50,7 +50,7 @@ export const PLACEHOLDER_SELECTOR: string = 'notebook-view-component';
 export class NotebookViewComponent extends AngularDisposable implements INotebookEditor {
 	@Input() model: NotebookModel;
 	@Input() activeView: INotebookView;
-	@Input() extension: NotebookViewService;
+	@Input() extension: NotebookViewsExtension;
 
 	@ViewChild('container', { read: ElementRef }) private container: ElementRef;
 	@ViewChild('viewsToolbar', { read: ElementRef }) private viewsToolbar: ElementRef;

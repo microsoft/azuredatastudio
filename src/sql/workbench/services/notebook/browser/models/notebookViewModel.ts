@@ -2,9 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+import { INotebookViewCell, NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/models/notebookViewsExtension';
 import { INotebookModel, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { INotebookViewCell, NotebookViewService } from 'sql/workbench/services/notebook/browser/models/notebookViewService';
 import { Emitter, Event } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 
@@ -50,6 +49,7 @@ export interface INotebookView {
 	nameAvailable(name: string): boolean;
 	hideCell(cell: ICellModel): void;
 	moveCell(cell: ICellModel, x: number, y: number): void;
+	resizeCell(cell: ICellModel, width: number, height: number): void;
 	getCell(guid: string): Readonly<ICellModel>;
 	insertCell(cell: ICellModel): void;
 	save(): void;
@@ -66,7 +66,7 @@ export class NotebookViewModel implements INotebookView {
 		guid: string,
 		protected _name: string,
 		protected _notebook: INotebookModel,
-		private _notebookViewService: NotebookViewService
+		private _notebookViewService: NotebookViewsExtension
 	) {
 		this.guid = guid;
 	}
@@ -137,6 +137,10 @@ export class NotebookViewModel implements INotebookView {
 
 	public moveCell(cell: ICellModel, x: number, y: number) {
 		this._notebookViewService.updateCell(cell, this, { x, y });
+	}
+
+	public resizeCell(cell: ICellModel, width: number, height: number) {
+		this._notebookViewService.updateCell(cell, this, { width, height });
 	}
 
 	public save() {

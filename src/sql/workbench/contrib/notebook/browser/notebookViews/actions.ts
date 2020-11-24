@@ -6,7 +6,6 @@
 import { Action } from 'vs/base/common/actions';
 import { ViewOptionsModal } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { NotebookViewService } from 'sql/workbench/services/notebook/browser/models/notebookViewService';
 import { localize } from 'vs/nls';
 import { InsertCellsModal } from 'sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal';
 import { ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
@@ -24,7 +23,7 @@ import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/acti
 import { Separator } from 'sql/base/browser/ui/separator/separator';
 import { ToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
 import { INotebookView } from 'sql/workbench/services/notebook/browser/models/notebookViewModel';
-//import { window } from 'vscode';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/models/notebookViewsExtension';
 
 export class ViewSettingsAction extends Action {
 	private static readonly ID = 'viewSettings';
@@ -32,7 +31,7 @@ export class ViewSettingsAction extends Action {
 	private static readonly ICON = 'notebook-button settings masked-icon';
 
 	constructor(
-		private _context: NotebookViewService,
+		private _context: NotebookViewsExtension,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 	) {
 		super(ViewSettingsAction.ID, ViewSettingsAction.LABEL, ViewSettingsAction.ICON);
@@ -57,7 +56,7 @@ export class DeleteViewAction extends Action {
 	private static readonly ICON = 'notebook-button delete masked-icon';
 
 	constructor(
-		private _extension: NotebookViewService,
+		private _extension: NotebookViewsExtension,
 		@IDialogService private readonly dialogService: IDialogService
 	) {
 		super(DeleteViewAction.ID, DeleteViewAction.LABEL, DeleteViewAction.ICON);
@@ -101,7 +100,7 @@ export class InsertCellAction extends Action {
 
 	constructor(
 		private onInsert: (cell: ICellModel) => void,
-		private _context: NotebookViewService,
+		private _context: NotebookViewsExtension,
 		private _containerRef: ViewContainerRef,
 		private _componentFactoryResolver: ComponentFactoryResolver,
 		@IInstantiationService private _instantiationService: IInstantiationService,

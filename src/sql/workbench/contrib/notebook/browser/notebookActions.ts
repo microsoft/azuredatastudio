@@ -29,10 +29,10 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
-import { NotebookViewService } from 'sql/workbench/services/notebook/browser/models/notebookViewService';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IActionProvider } from 'vs/base/browser/ui/dropdown/dropdown';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/models/notebookViewsExtension';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -174,7 +174,7 @@ export abstract class ToggleableAction extends Action {
 export class NotebookViewsOptions implements IActionProvider {
 	private _options: Action[];
 	private model: NotebookModel;
-	private views: NotebookViewService;
+	private views: NotebookViewsExtension;
 	private readonly _optionsUpdated = new Emitter<boolean>();
 
 	constructor(
@@ -200,7 +200,7 @@ export class NotebookViewsOptions implements IActionProvider {
 
 	updateModel(model: INotebookModel): void {
 		this.model = model as NotebookModel;
-		this.views = new NotebookViewService(this.model);
+		this.views = new NotebookViewsExtension(this.model);
 		this.updateView();
 	}
 
@@ -236,7 +236,7 @@ export class NotebookViewsOptions implements IActionProvider {
 export class DashboardViewAction extends Action {
 	constructor(
 		id: string, label: string, cssClass: string,
-		private views: NotebookViewService,
+		private views: NotebookViewsExtension,
 		@INotebookService private _notebookService: INotebookService,
 	) {
 		super(id, label, cssClass);
@@ -290,7 +290,7 @@ export class CreateNotebookView extends Action {
 	public async run(context: URI): Promise<boolean> {
 		if (context) {
 			const editor = this._notebookService.findNotebookEditor(context);
-			const extension = new NotebookViewService(editor.model);
+			const extension = new NotebookViewsExtension(editor.model);
 
 			const newView = extension.createNewView();
 			extension.setActiveView(newView);

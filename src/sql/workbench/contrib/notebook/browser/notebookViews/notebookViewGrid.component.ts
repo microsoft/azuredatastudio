@@ -3,20 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./gridstack';
+import 'vs/css!./notebookviews';
 import { Component, OnInit, ViewChildren, QueryList, Input, Inject, forwardRef, ChangeDetectorRef } from '@angular/core';
 import { ViewCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewCard.component';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-
-import 'vs/css!./gridstack';
-import 'vs/css!./notebookviews';
-
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { NotebookViewService, INotebookViewCell } from 'sql/workbench/services/notebook/browser/models/notebookViewService';
-
 import { GridStack } from 'gridstack';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
 import { CellChangeEvent } from 'sql/workbench/services/notebook/browser/models/notebookViewModel';
+import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
+import { INotebookParams } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookViewCell, NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/models/notebookViewsExtension';
 
 @Component({
 	selector: 'notebook-views-grid-component',
@@ -25,7 +24,7 @@ import { CellChangeEvent } from 'sql/workbench/services/notebook/browser/models/
 export class NotebookViewsGridComponent implements OnInit {
 	@Input() cells: ICellModel[];
 	@Input() model: NotebookModel;
-	@Input() extension: NotebookViewService;
+	@Input() extension: NotebookViewsExtension;
 
 	@ViewChildren(ViewCardComponent) private _items: QueryList<ViewCardComponent>;
 

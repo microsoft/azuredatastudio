@@ -5,11 +5,11 @@
 
 import { INotebookModel, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { generateUuid } from 'vs/base/common/uuid';
-import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { Emitter, Event } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { INotebookView, INotebookViewCellMetadata, INotebookViewMetadata, NotebookViewModel } from 'sql/workbench/services/notebook/browser/models/notebookViewModel';
-
+//import { AutoDash } from 'sql/workbench/contrib/notebook/browser/notebookViews/autoDash';
+import { NotebookMetadataService } from 'sql/workbench/services/notebook/browser/notebookMetadataService';
 
 export interface INotebookViewCell {
 	readonly guid?: string;
@@ -20,37 +20,7 @@ export interface INotebookViewCell {
 	height?: number;
 }
 
-export class NotebookMetadataService {
-	readonly version = 1;
-	readonly serviceName = 'azuredatastudio';
-	readonly serviceNamespace = 'extensions';
-
-	public getNotebookMetadata(notebook: INotebookModel): INotebookViewMetadata {
-		const metadata = notebook.getMetaValue(this.serviceNamespace) || {};
-		return metadata[this.serviceName] as INotebookViewMetadata;
-	}
-
-	public setNotebookMetadata(notebook: INotebookModel, metadata: INotebookViewMetadata) {
-		const meta = {};
-		meta[this.serviceName] = metadata;
-		notebook.setMetaValue(this.serviceNamespace, meta);
-		notebook.serializationStateChanged(NotebookChangeType.MetadataChanged);
-	}
-
-	public getCellMetadata(cell: ICellModel): INotebookViewCellMetadata {
-		const namespaceMeta = cell.metadata[this.serviceNamespace] || {};
-		return namespaceMeta[this.serviceName];
-	}
-
-	public setCellMetadata(cell: ICellModel, metadata: INotebookViewCellMetadata) {
-		const meta = {};
-		meta[this.serviceName] = metadata;
-		cell.metadata[this.serviceNamespace] = meta;
-		cell.sendChangeToNotebook(NotebookChangeType.CellsModified);
-	}
-}
-
-export class NotebookViewService extends NotebookMetadataService {
+export class NotebookViewsExtension extends NotebookMetadataService {
 	readonly maxNameIterationAttempts = 100;
 	readonly extension = 'azuredatastudio';
 	readonly version = 1;
@@ -105,6 +75,9 @@ export class NotebookViewService extends NotebookMetadataService {
 
 		const view = new NotebookViewModel(viewGuid, viewName, this._notebook, this);
 		view.initialize();
+
+		//const service = new AutoDash();
+		//service.generateLayout(view);
 
 		this._metadata.views.push(view);
 

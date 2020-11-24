@@ -18,7 +18,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { attachButtonStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { ServiceOption } from 'azdata';
-import { NotebookViewService } from 'sql/workbench/services/notebook/browser/models/notebookViewService';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import * as _html2canvas from 'html2canvas';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
@@ -27,6 +26,7 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { inputBorder, inputValidationInfoBorder } from 'vs/platform/theme/common/colorRegistry';
 import { localize } from 'vs/nls';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/models/notebookViewsExtension';
 
 const html2canvas: any = _html2canvas;
 
@@ -36,7 +36,7 @@ export class CellOptionsModel {
 	constructor(
 		optionsMetadata: ServiceOption[],
 		private onInsert: (cell: ICellModel) => any,
-		private _context: NotebookViewService,
+		private _context: NotebookViewsExtension,
 	) {
 		optionsMetadata.forEach(optionMetadata => {
 			let defaultValue = this.getDisplayValue(optionMetadata, optionMetadata.defaultValue);
@@ -104,7 +104,7 @@ export class InsertCellsModal extends Modal {
 
 	constructor(
 		private onInsert: (cell: ICellModel) => any,
-		private _context: NotebookViewService,
+		private _context: NotebookViewsExtension,
 		private _containerRef: ViewContainerRef,
 		private _componentFactoryResolver: ComponentFactoryResolver,
 		@ILogService logService: ILogService,

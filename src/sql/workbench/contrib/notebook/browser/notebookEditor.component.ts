@@ -19,7 +19,6 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { NotebookViewService } from 'sql/workbench/services/notebook/browser/models/notebookViewService';
 import { Deferred } from 'sql/base/common/promise';
 import { find } from 'vs/base/common/arrays';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
@@ -29,6 +28,7 @@ import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewIt
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { NOTEBOOK_VIEWS_ENABLED_PROPERTY } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.contribution';
 import { INotebookView } from 'sql/workbench/services/notebook/browser/models/notebookViewModel';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/models/notebookViewsExtension';
 
 export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 
@@ -43,7 +43,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 
 	public model: NotebookModel;
-	public extension: NotebookViewService;
+	public extension: NotebookViewsExtension;
 	public activeView: INotebookView;
 	public viewMode: ViewMode;
 
@@ -114,7 +114,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 		this.model = this._register(model);
 		await this.model.loadContents(trusted);
 
-		this.extension = new NotebookViewService(this.model);
+		this.extension = new NotebookViewsExtension(this.model);
 		this.viewMode = this.getViewMode();
 
 		this._register(model.viewModeChanged((mode) => this.onViewModeChanged()));
