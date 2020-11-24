@@ -6,11 +6,9 @@ import * as nls from 'vs/nls';
 
 import { Action } from 'vs/base/common/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-//import { DataService } from 'sql/workbench/services/query/common/dataService';
-//import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 
 import * as azdata from 'azdata';
-//import { EOL } from 'os';
+import { escape } from 'sql/base/common/strings';
 
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -134,15 +132,13 @@ export class RunCurrentQueryKeyboardAction extends Action {
 	}
 }
 
-export class CopyCurrentQueryWithResultsKeyboardAction extends Action {
-	public static ID = 'copyCurrentQueryWithResultsKeyboardAction';
-	public static LABEL = nls.localize('copyCurrentQueryWithResultsKeyboardAction', "Copy Query With Results");
+export class CopyQueryWithResultsKeyboardAction extends Action {
+	public static ID = 'copyQueryWithResultsKeyboardAction';
+	public static LABEL = nls.localize('copyQueryWithResultsKeyboardAction', "Copy Query With Results");
 
 	constructor(
 		id: string,
 		label: string,
-		//private dataService: DataService,
-		//private _queryRunner: QueryRunner,
 		@IEditorService private _editorService: IEditorService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
@@ -151,75 +147,56 @@ export class CopyCurrentQueryWithResultsKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public async run(): Promise<void> {
-		const editor = this._editorService.activeEditorPane;
-		if (editor instanceof QueryEditor) {
-			//this._clipboardService.writeText(editor.getSelectionText());
-			let queryrunner = this.queryModelService.getQueryRunner(editor.input.uri);
-			let allResults = '';
+	public async getFormattedResults(editor): Promise<any> {
+		let queryRunner = this.queryModelService.getQueryRunner(editor.input.uri);
+		let allResults = '';
+		let allHtmlResults = '';
 
-			for (let i = 0; i < queryrunner.batchSets[0].resultSetSummaries.length; i++) {
-				let resultSummary = queryrunner.batchSets[0].resultSetSummaries[i];
-				let result = await this.queryModelService.getQueryRunner(editor.input.uri).getQueryRows(0, resultSummary.rowCount, resultSummary.batchId, resultSummary.id);
-				let rows: Map<number, Map<number, string>> = new Map(); // Maps row index -> column index -> actual row value
+		if (queryRunner && queryRunner.batchSets.length > 0) {
+			for (let i = 0; i < queryRunner.batchSets[0].resultSetSummaries.length; i++) {
+				let resultSummary = queryRunner.batchSets[0].resultSetSummaries[i];
+				let result = await queryRunner.getQueryRows(0, resultSummary.rowCount, resultSummary.batchId, resultSummary.id);
+				let tableHeaders = resultSummary.columnInfo.map((col, i) => (col.columnName));
+				let htmlTableHeaders = resultSummary.columnInfo.map((col, i) => (`<th style="border:solid black 1.0pt; whiteSpace:nowrap">${escape(col.columnName)}</th>`));
+				let copyString = '\n';
+				let htmlCopyString = '<tr>';
 
-				// Iterate over the rows to paste into the copy string
-				for (let rowIndex: number = 0; rowIndex < result.rows.length; rowIndex++) {
-					let row = result.rows[rowIndex];
-					// Remove newlines if requested
-					let cells = row.map(x => x.displayValue);
-
-					let idx = 0;
-					for (let cell of cells) {
-						let map = rows.get(rowIndex);
-						if (!map) {
-							map = new Map();
-							rows.set(rowIndex, map);
-						}
-
-						map.set(idx, cell);
-						idx++;
-					}
-				}
-				//this._queryRunner.getQueryRows(0, 10, 0, 0);
-				//editor.input.results.state.toString()
-				//let c = editor.input.results.state.gridPanelState.tableStates[0];
-				let copyString = '';
-				for (let rowEntry of rows) {
-					let rowMap = rowEntry[1];
-					for (let rowIdx = 0; rowIdx < rowMap.size; rowIdx++) {
-
-						let value = rowMap.get(rowIdx);
+				for (let rowEntry of result.rows) {
+					for (let colIdx = 0; colIdx < rowEntry.length; colIdx++) {
+						let value = rowEntry[colIdx].displayValue;
 						if (value) {
-							copyString = copyString.concat(value);
+							copyString = `${copyString}${value}\t`;
+							htmlCopyString = `${htmlCopyString}<td style="border:solid black 1.0pt;white-space:nowrap">${escape(value)}</td>`;
 						}
-						copyString = copyString.concat('\t');
 					}
 					// Removes the tab seperator from the end of a row
 					copyString = copyString.slice(0, -1 * '\t'.length) + '\n';
+					htmlCopyString = htmlCopyString + '</tr>';
 				}
 
-				allResults = allResults + copyString + '\n\n';
+				allResults = `${allResults}${tableHeaders.join('\t')}${copyString}\n`;
+				allHtmlResults = `${allHtmlResults}<div><br/><br/>
+				<table cellPadding="5" cellSpacing="1" style="border:1;border-color:Black;font-family:Segoe UI;font-size:12px;border-collapse:collapse">
+				<tr style="background-color:DarkGray">${htmlTableHeaders.join('')}</tr>${htmlCopyString}
+				</table></div>`;
 			}
+		}
 
-			/*let tablesHtml = '';
-			tableResults.forEach((tableResult, i) => {
-				// isChart is null for tables / false for tables that are dataset for charts
-				if (tableResult.isChart !== true) {
-					const tableHtml = generateTableHtml(tableResult, i);
-					tablesHtml += tableHtml;
-				}
-			});*/
+		return { result: allResults, html: allHtmlResults };
+	}
 
-			//this._clipboardService.writeText(editor.getAllText() + EOL + allResults);
+	public async run(): Promise<void> {
+		const editor = this._editorService.activeEditorPane;
+		if (editor instanceof QueryEditor) {
+			let allResults = await this.getFormattedResults(editor);
+			let queryText = editor.getAllText();
 
 			let data = {
-				text: `${editor.getSelectionText() ? editor.getSelectionText() : editor.getAllText()} \n\n ${allResults}`,
-				html: '"<div><br/><br/><header>Table0</header><table cellPadding="5" cellSpacing="1" style="border:1;border-color:Black;font-family:Segoe UI;font-size:12px;border-collapse:collapse"><tr style="background-color:DarkGray"><th style="border:solid black 1.0pt;white-space:nowrap">StartTime</th><th style="border:solid black 1.0pt;white-space:nowrap">EndTime</th><th style="border:solid black 1.0pt;white-space:nowrap">EpisodeId</th><th style="border:solid black 1.0pt;white-space:nowrap">EventId</th><th style="border:solid black 1.0pt;white-space:nowrap">State</th><th style="border:solid black 1.0pt;white-space:nowrap">EventType</th><th style="border:solid black 1.0pt;white-space:nowrap">InjuriesDirect</th><th style="border:solid black 1.0pt;white-space:nowrap">InjuriesIndirect</th><th style="border:solid black 1.0pt;white-space:nowrap">DeathsDirect</th><th style="border:solid black 1.0pt;white-space:nowrap">DeathsIndirect</th><th style="border:solid black 1.0pt;white-space:nowrap">DamageProperty</th><th style="border:solid black 1.0pt;white-space:nowrap">DamageCrops</th><th style="border:solid black 1.0pt;white-space:nowrap">Source</th><th style="border:solid black 1.0pt;white-space:nowrap">BeginLocation</th><th style="border:solid black 1.0pt;white-space:nowrap">EndLocation</th><th style="border:solid black 1.0pt;white-space:nowrap">BeginLat</th><th style="border:solid black 1.0pt;white-space:nowrap">BeginLon</th><th style="border:solid black 1.0pt;white-space:nowrap">EndLat</th><th style="border:solid black 1.0pt;white-space:nowrap">EndLon</th><th style="border:solid black 1.0pt;white-space:nowrap">EpisodeNarrative</th><th style="border:solid black 1.0pt;white-space:nowrap">EventNarrative</th><th style="border:solid black 1.0pt;white-space:nowrap">StormSummary</th></tr><tr><td style="border:solid black 1.0pt;white-space:nowrap">2007-09-29T08:11:00Z</td><td style="border:solid black 1.0pt;white-space:nowrap">2007-09-29T08:11:00Z</td><td style="border:solid black 1.0pt;white-space:nowrap">11091</td><td style="border:solid black 1.0pt;white-space:nowrap">61032</td><td style="border:solid black 1.0pt;white-space:nowrap">ATLANTIC SOUTH</td><td style="border:solid black 1.0pt;white-space:nowrap">Waterspout</td><td style="border:solid black 1.0pt;white-space:nowrap">0</td><td style="border:solid black 1.0pt;white-space:nowrap">0</td><td style="border:solid black 1.0pt;white-space:nowrap">0</td><td style="border:solid black 1.0pt;white-space:nowrap">0</td><td style="border:solid black 1.0pt;white-space:nowrap">0</td><td style="border:solid black 1.0pt;white-space:nowrap">0</td><td style="border:solid black 1.0pt;white-space:nowrap">Trained Spotter</td><td style="border:solid black 1.0pt;white-space:nowrap">MELBOURNE BEACH</td><td style="border:solid black 1.0pt;white-space:nowrap">MELBOURNE BEACH</td><td style="border:solid black 1.0pt;white-space:nowrap">28.0393</td><td style="border:solid black 1.0pt;white-space:nowrap">-80.6048</td><td style="border:solid black 1.0pt;white-space:nowrap">28.0393</td><td style="border:solid black 1.0pt;white-space:nowrap">-80.6048</td><td style="border:solid black 1.0pt;white-space:nowrap">Showers and thunderstorms lingering along the coast produced waterspouts in Brevard County.</td><td style="border:solid black 1.0pt;white-space:nowrap">A waterspout formed in the Atlantic southeast of Melbourne Beach and briefly moved toward shore.</td><td style="border:solid black 1.0pt;white-space:nowrap">{&quot;TotalDamages&quot;:0,&quot;StartTime&quot;:&quot;2007-09-29T08:11:00.0000000Z&quot;,&quot;EndTime&quot;:&quot;2007-09-29T08:11:00.0000000Z&quot;,&quot;Details&quot;:{&quot;Description&quot;:&quot;A waterspout formed in the Atlantic southeast of Melbourne Beach and briefly moved toward shore.&quot;,&quot;Location&quot;:&quot;ATLANTIC SOUTH&quot;}}</td></tr></table></div>"'
+				text: `${queryText}\n\n${allResults.result}`,
+				html: `${escape(queryText).replace(/\r\n|\n|\r/gm, '<br />')}${allResults.html}`
 			};
-			//`${}`
+
 			this._clipboardService.write(data);
-			//editor.runCurrentQuery();
 		}
 		return Promise.resolve(null);
 	}

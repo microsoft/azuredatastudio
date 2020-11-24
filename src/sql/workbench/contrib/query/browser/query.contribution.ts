@@ -19,7 +19,7 @@ import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResult
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
-	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, CopyCurrentQueryWithResultsKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
+	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, CopyQueryWithResultsKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
 } from 'sql/workbench/contrib/query/browser/keyboardQueryActions';
 import * as gridActions from 'sql/workbench/contrib/editData/browser/gridActions';
 import * as gridCommands from 'sql/workbench/contrib/editData/browser/gridCommands';
@@ -141,12 +141,12 @@ actionRegistry.registerWorkbenchAction(
 
 actionRegistry.registerWorkbenchAction(
 	SyncActionDescriptor.create(
-		CopyCurrentQueryWithResultsKeyboardAction,
-		CopyCurrentQueryWithResultsKeyboardAction.ID,
-		CopyCurrentQueryWithResultsKeyboardAction.LABEL,
+		CopyQueryWithResultsKeyboardAction,
+		CopyQueryWithResultsKeyboardAction.ID,
+		CopyQueryWithResultsKeyboardAction.LABEL,
 		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_M }
 	),
-	CopyCurrentQueryWithResultsKeyboardAction.LABEL
+	CopyQueryWithResultsKeyboardAction.LABEL
 );
 
 actionRegistry.registerWorkbenchAction(
