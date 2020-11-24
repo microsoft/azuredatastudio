@@ -187,7 +187,7 @@ export class MiaaModel extends ResourceModel {
 					if (connectionProfile.userName) {
 						const result = await azdata.connection.connect(connectionProfile, false, false);
 						if (!result.connected) {
-							vscode.window.showErrorMessage(loc.connectToSqlFailed(connectionProfile.serverName, result.errorMessage));
+							vscode.window.showErrorMessage(loc.connectToMSSqlFailed(connectionProfile.serverName, result.errorMessage));
 							const connectToSqlDialog = new ConnectToMiaaSqlDialog(this._controllerModel, this);
 							connectToSqlDialog.showDialog(this.info.name, connectionProfile);
 							connectionProfile = await connectToSqlDialog.waitForClose();

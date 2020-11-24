@@ -4,9 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { Deferred } from '../../common/promise';
 import * as loc from '../../localizedConstants';
+import { createCredentialId } from '../../common/utils';
+import { credentialNamespace } from '../../constants';
 import { InitializingComponent } from '../components/initializingComponent';
+import { ResourceModel } from '../../models/resourceModel';
+import { ControllerModel } from '../../models/controllerModel';
 
 export abstract class ConnectToSqlDialog extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
@@ -18,12 +23,12 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 
 	protected _completionPromise = new Deferred<azdata.IConnectionProfile | undefined>();
 
-	constructor() {
+	constructor(private _controllerModel: ControllerModel, protected _model: ResourceModel) {
 		super();
 	}
 
 	public showDialog(instanceName: string, connectionProfile?: azdata.IConnectionProfile): azdata.window.Dialog {
-		const dialog = azdata.window.createModelViewDialog(loc.connectToSql(instanceName));
+		const dialog = azdata.window.createModelViewDialog(loc.connectToMSSql(instanceName));
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
 			this.modelBuilder = view.modelBuilder;
@@ -83,7 +88,47 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 		return dialog;
 	}
 
-	public async abstract validate(): Promise<boolean>;
+	public async validate(): Promise<boolean> {
+		if (!this.serverNameInputBox.value || !this.usernameInputBox.value || !this.passwordInputBox.value) {
+			return false;
+		}
+		const connectionProfile: azdata.IConnectionProfile = {
+			serverName: this.serverNameInputBox.value,
+			databaseName: '',
+			authenticationType: 'SqlLogin',
+			providerName: this.providerName,
+			connectionName: '',
+			userName: this.usernameInputBox.value,
+			password: this.passwordInputBox.value,
+			savePassword: !!this.rememberPwCheckBox.checked,
+			groupFullName: undefined,
+			saveProfile: true,
+			id: '',
+			groupId: undefined,
+			options: {}
+		};
+		const result = await azdata.connection.connect(connectionProfile, false, false);
+		if (result.connected) {
+			connectionProfile.id = result.connectionId;
+			const credentialProvider = await azdata.credentials.getProvider(credentialNamespace);
+			if (connectionProfile.savePassword) {
+				await credentialProvider.saveCredential(createCredentialId(this._controllerModel.info.id, this._model.info.resourceType, this._model.info.name), connectionProfile.password);
+			} else {
+				await credentialProvider.deleteCredential(createCredentialId(this._controllerModel.info.id, this._model.info.resourceType, this._model.info.name));
+			}
+			this._completionPromise.resolve(connectionProfile);
+			return true;
+		}
+		else {
+			vscode.window.showErrorMessage(this.connectionFailedMessage(this.serverNameInputBox.value, result.errorMessage));
+			this._completionPromise.reject();
+			return false;
+		}
+	}
+
+	protected abstract get providerName(): string;
+
+	protected abstract connectionFailedMessage(serverName: string, error: any): string;
 
 	private handleCancel(): void {
 		this._completionPromise.resolve(undefined);
