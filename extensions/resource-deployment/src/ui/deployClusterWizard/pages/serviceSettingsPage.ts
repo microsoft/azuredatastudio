@@ -254,9 +254,10 @@ export class ServiceSettingsPage extends ResourceTypePage {
 				width: inputWidth,
 				required: false
 			});
+
 		const storagePoolDataStorageClassInputInfo = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.storagePoolDataStorageClass', "Storage pool's data storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
-		const storagePoolDataStorageClaimSizeInput = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.storagePoolDataStorageClaimSize', "Storage pool's data storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
-		const storagePoolLogsStorageClassInput = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.storagePoolLogsStorageClass', "Storage pool's logs storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
+		const storagePoolDataStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.storagePoolDataStorageClaimSize', "Storage pool's data storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
+		const storagePoolLogsStorageClassInputInfo = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.storagePoolLogsStorageClass', "Storage pool's logs storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
 		const storagePoolLogsStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.storagePoolLogsStorageClaimSize', "Storage pool's logs storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
 
 		const dataPoolLabel = createLabel(view,
@@ -277,6 +278,7 @@ export class ServiceSettingsPage extends ResourceTypePage {
 				width: inputWidth,
 				required: false
 			});
+
 		const sqlServerMasterDataStorageClassInputInfo = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.sqlServerMasterDataStorageClass', "SQL Server master's data storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
 		const sqlServerMasterDataStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.sqlServerMasterDataStorageClaimSize', "SQL Server master's data storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
 		const sqlServerMasterLogsStorageClassInputInfo = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.sqlServerMasterLogsStorageClass', "SQL Server master's logs storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
@@ -287,8 +289,8 @@ export class ServiceSettingsPage extends ResourceTypePage {
 		this.onNewInputComponentCreated(VariableNames.ControllerLogsStorageClassName_VariableName, controllerLogsStorageClassInputInfo);
 		this.onNewInputComponentCreated(VariableNames.ControllerLogsStorageSize_VariableName, controllerLogsStorageClaimSizeInputInfo);
 		this.onNewInputComponentCreated(VariableNames.HDFSDataStorageClassName_VariableName, storagePoolDataStorageClassInputInfo);
-		this.onNewInputComponentCreated(VariableNames.HDFSDataStorageSize_VariableName, storagePoolDataStorageClaimSizeInput);
-		this.onNewInputComponentCreated(VariableNames.HDFSLogsStorageClassName_VariableName, storagePoolLogsStorageClassInput);
+		this.onNewInputComponentCreated(VariableNames.HDFSDataStorageSize_VariableName, storagePoolDataStorageClaimSizeInputInfo);
+		this.onNewInputComponentCreated(VariableNames.HDFSLogsStorageClassName_VariableName, storagePoolLogsStorageClassInputInfo);
 		this.onNewInputComponentCreated(VariableNames.HDFSLogsStorageSize_VariableName, storagePoolLogsStorageClaimSizeInputInfo);
 		this.onNewInputComponentCreated(VariableNames.DataPoolDataStorageClassName_VariableName, dataPoolDataStorageClassInputInfo);
 		this.onNewInputComponentCreated(VariableNames.DataPoolDataStorageSize_VariableName, dataPoolDataStorageClaimSizeInputInfo);
