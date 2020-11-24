@@ -227,16 +227,13 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.bat"
 			},
 			"osx": {
-				"runtimeExecutable": "${workspaceFolder}/../arct.sh"
+				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
 			},
 			"linux": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
 			},
 			"webRoot": "${workspaceFolder}",
-			"timeout": 45000,
-			"env": {
-				"ADS_TEST_GREP": "load throws"
-			},
+			"timeout": 45000
 		},
 		{
 			"type": "chrome",
