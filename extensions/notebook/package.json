@@ -466,7 +466,7 @@
         },
         {
           "command": "notebook.command.moveTo",
-          "when": "view == bookTreeView && viewItem == savedNotebook || view == bookTreeView && viewItem == section || view == bookTreeView && viewItem == pinnedNotebook"
+          "when": "view == bookTreeView && viewItem == savedNotebook || view == bookTreeView && viewItem == section"
         },
         {
           "command": "notebook.command.pinNotebook",

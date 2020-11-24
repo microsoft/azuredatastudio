@@ -153,40 +153,45 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			});
 			let pickedBook = await vscode.window.showQuickPick(bookOptions, {
 				canPickMany: false,
-				placeHolder: 'Select a Jupyter Book'
+				placeHolder: loc.labelBookFolder
 			});
 
 			if (pickedBook && movingElement) {
 				updateBook = this.books.filter(book => book.bookPath === pickedBook.detail)[0].bookItems[0];
-				bookSections = updateBook.sections;
-				while (bookSections?.length > 0) {
-					bookOptions = [{ label: 'Add to this level' }];
-					bookSections.forEach(section => {
-						if (section.sections) {
-							bookOptions.push({ label: section.title, detail: section.file });
-						}
-					});
-					bookSections = [];
-					if (bookOptions.length > 1) {
-						pickedSection = await vscode.window.showQuickPick(bookOptions, {
-							canPickMany: false,
-							placeHolder: 'Select a Jupyter Book Section'
+				if (updateBook) {
+					bookSections = updateBook.sections;
+					while (bookSections?.length > 0) {
+						bookOptions = [{ label: loc.labelAddToLevel, detail: pickedSection ? pickedSection.detail : '' }];
+						bookSections.forEach(section => {
+							if (section.sections) {
+								bookOptions.push({ label: section.title, detail: section.file });
+							}
 						});
-						if (pickedSection.detail) {
-							bookSections = updateBook.findChildSection(pickedSection.detail).sections;
+						bookSections = [];
+						if (bookOptions.length > 1) {
+							pickedSection = await vscode.window.showQuickPick(bookOptions, {
+								canPickMany: false,
+								placeHolder: loc.labelBookSection
+							});
+							if (pickedSection.label && pickedSection.label === loc.labelAddToLevel) {
+								break;
+							}
+							else if (pickedSection.detail) {
+								bookSections = updateBook.findChildSection(pickedSection.detail).sections;
+							}
 						}
 					}
-				}
-				if (pickedSection) {
-					const targetSection = pickedSection.label !== 'Add to this level' ? updateBook.findChildSection(pickedSection.detail) : undefined;
-					if (movingElement.tableOfContents.sections) {
-						// this is for notebooks what about sections
-						if (movingElement.contextValue === 'savedNotebook') {
-							let sourceBook = this.books.filter(book => book.getNotebook(movingElement.book.contentPath));
-							movingElement.tableOfContents.sections = sourceBook[0].bookItems[0].sections;
+					if (pickedSection) {
+						const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
+						if (movingElement.tableOfContents.sections) {
+							// this is for notebooks what about sections
+							if (movingElement.contextValue === 'savedNotebook') {
+								let sourceBook = this.books.filter(book => book.getNotebook(movingElement.book.contentPath));
+								movingElement.tableOfContents.sections = sourceBook[0].bookItems[0].sections;
+							}
 						}
+						this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
 					}
-					this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
 				}
 			}
 		}

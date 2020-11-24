@@ -3,14 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ValueGetterInvocation } from 'typemoq/_all';
 import { JupyterBookSection, IJupyterBookSectionV1, IJupyterBookSectionV2 } from '../contracts/content';
 import { BookVersion } from './bookModel';
 
 export class BookVersionHandler {
 
 	constructor() { }
-	public newToc: JupyterBookSection[];
 
 	public convertFrom(version: string, tableOfContents: JupyterBookSection): JupyterBookSection {
 		if (version === BookVersion.v1) {
@@ -36,52 +34,53 @@ export class BookVersionHandler {
 		}
 	}
 
-	public convertTo(version: string, tableOfContents: JupyterBookSection): JupyterBookSection {
+	public convertTo(version: string, section: JupyterBookSection): JupyterBookSection {
 		if (version === BookVersion.v1) {
-			return Object.assign(tableOfContents, {
-				title: tableOfContents.title,
-				url: tableOfContents.url ? tableOfContents.url : tableOfContents.file,
-				sections: tableOfContents.sections,
-				expand_sections: tableOfContents.expand_sections,
-				search: tableOfContents.search,
-				divider: tableOfContents.divider,
-				header: tableOfContents.header,
-				external: tableOfContents.url ? true : false
-			});
-		} else {
-			return Object.assign(tableOfContents, {
-				title: tableOfContents.title,
-				file: (tableOfContents as IJupyterBookSectionV2).file,
-				url: tableOfContents.url,
-				sections: tableOfContents.sections,
-				expand_sections: tableOfContents.expand_sections
-			});
-		}
-	}
-
-	public convertTocTo(tableOfContents: JupyterBookSection[]): JupyterBookSection[] {
-		let newToc = new Array<JupyterBookSection>(tableOfContents.length);
-
-		for (const [index, section] of tableOfContents.entries()) {
-			newToc[index] = this.dfs(section);
-		}
-		return newToc;
-	}
-
-	public dfs(section: JupyterBookSection): JupyterBookSection {
-		if (section.sections === undefined || section.sections?.length === 0) {
-			return { title: section.title, url: section.file };
-		} else {
-			let newSection = {} as JupyterBookSection;
-			newSection['title'] = section.title;
-			newSection['url'] = section.file;
-			newSection.sections = [] as JupyterBookSection[];
-			for (let s of section.sections) {
-				const child = this.dfs(s);
-				newSection.sections.push(child);
+			if (section.sections && section.sections.length > 0) {
+				let temp: JupyterBookSection = {};
+				temp.title = section.title;
+				temp.url = section.url ? section.url : section.file;
+				temp.sections = [];
+				for (let s of section.sections) {
+					const child = this.convertTo(version, s);
+					temp.sections.push(child);
+				}
+				return temp;
+			} else {
+				let newSection: JupyterBookSection = {};
+				newSection.title = section.title;
+				newSection.url = section.url ? section.url : section.file;
+				newSection.sections = section.sections;
+				newSection.expand_sections = section.expand_sections;
+				newSection.search = section.search;
+				newSection.divider = section.divider;
+				newSection.header = section.header;
+				newSection.external = section.external;
+				return newSection;
 			}
-			return newSection;
 		}
+		else if (version === BookVersion.v2) {
+			if (section.sections && section.sections.length > 0) {
+				let temp: JupyterBookSection = {};
+				temp.title = section.title;
+				temp.file = section.url ? section.url : section.file;
+				temp.sections = [];
+				for (let s of section.sections) {
+					const child = this.convertTo(version, s);
+					temp.sections.push(child);
+				}
+				return temp;
+			} else {
+				let newSection: JupyterBookSection = {};
+				newSection.title = section.title;
+				newSection.file = section.url ? section.url : section.file;
+				newSection.sections = section.sections;
+				newSection.expand_sections = section.expand_sections;
+				newSection.header = section.header;
+				newSection.url = section.external ? section.url : undefined;
+				return newSection;
+			}
+		}
+		return {};
 	}
-
 }

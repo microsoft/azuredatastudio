@@ -31,6 +31,8 @@ export function msgBookPinned(book: string): string { return localize('msgBookPi
 export function msgBookUnpinned(book: string): string { return localize('msgBookUnpinned', "Book {0} is no longer pinned in this workspace", book); }
 export const missingTocError = localize('bookInitializeFailed', "Failed to find a Table of Contents file in the specified book.");
 export const noBooksSelectedError = localize('noBooksSelected', "No books are currently selected in the viewlet.");
+export const labelBookSection = localize('labelBookSection', "Select Book Section");
+export const labelAddToLevel = localize('labelAddToLevel', "Add to this level");
 
 export function missingFileError(title: string): string { return localize('missingFileError', "Missing file : {0}", title); }
 export function invalidTocFileError(): string { return localize('InvalidError.tocFile', "Invalid toc file"); }
