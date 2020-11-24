@@ -22,8 +22,8 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 		super();
 	}
 
-	public showDialog(instanceName: string, connectionProfile?: azdata.IConnectionProfile): azdata.window.Dialog {
-		const dialog = azdata.window.createModelViewDialog(loc.connectToSql(instanceName));
+	public showDialog(dialogTitle: string, connectionProfile?: azdata.IConnectionProfile): azdata.window.Dialog {
+		const dialog = azdata.window.createModelViewDialog(dialogTitle);
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
 			this.modelBuilder = view.modelBuilder;

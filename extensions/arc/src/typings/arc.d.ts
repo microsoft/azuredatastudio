@@ -23,6 +23,10 @@ declare module 'arc' {
 		userName?: string
 	};
 
+	export type PGResourceInfo = ResourceInfo & {
+		userName?: string
+	};
+
 	export type ResourceInfo = {
 		name: string,
 		resourceType: ResourceType | string,

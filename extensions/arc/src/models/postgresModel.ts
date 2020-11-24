@@ -3,27 +3,40 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ResourceInfo } from 'arc';
+import { PGResourceInfo } from 'arc';
+import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
+import { ConnectToPGSqlDialog } from '../ui/dialogs/connectPGDialog';
+import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel, Registration } from './controllerModel';
+import { createCredentialId, parseIpAndPort, UserCancelledError } from '../common/utils';
+import { credentialNamespace } from '../constants';
 import { ResourceModel } from './resourceModel';
 import { Deferred } from '../common/promise';
-import { parseIpAndPort } from '../common/utils';
+
+export type EngineSettingsModel = { name: string };
 
 export class PostgresModel extends ResourceModel {
 	private _config?: azdataExt.PostgresServerShowResult;
+	private _engineSettings: EngineSettingsModel[] = [];
 	private readonly _azdataApi: azdataExt.IExtension;
 
+	// The saved connection information
+	private _connectionProfile: azdata.IConnectionProfile | undefined = undefined;
+
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.PostgresServerShowResult>();
+	private readonly _onEngineSettingsUpdated = new vscode.EventEmitter<EngineSettingsModel[]>();
 	public onConfigUpdated = this._onConfigUpdated.event;
+	public onEngineSettingsUpdated = this._onEngineSettingsUpdated.event;
 	public configLastUpdated?: Date;
+	public engineSettingsLastUpdated?: Date;
 
 	private _refreshPromise?: Deferred<void>;
 
-	constructor(private _controllerModel: ControllerModel, info: ResourceInfo, registration: Registration) {
-		super(info, registration);
+	constructor(private _controllerModel: ControllerModel, private _pgInfo: PGResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
+		super(_pgInfo, registration);
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
 
@@ -95,6 +108,14 @@ export class PostgresModel extends ResourceModel {
 			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name)).result;
 			this.configLastUpdated = new Date();
 			this._onConfigUpdated.fire(this._config);
+
+			// If we have an external endpoint configured then fetch the engine settings now
+			if (this._config.status.externalEndpoint) {
+				this.getEngineSettings();
+			}
+
+
+
 			this._refreshPromise.resolve();
 		} catch (err) {
 			this._refreshPromise.reject(err);
@@ -102,5 +123,86 @@ export class PostgresModel extends ResourceModel {
 		} finally {
 			this._refreshPromise = undefined;
 		}
+	}
+
+	private async getEngineSettings(): Promise<void> {
+		await this.getConnectionProfile();
+		if (this._connectionProfile) {
+			// TODO
+
+			this.engineSettingsLastUpdated = new Date();
+		}
+	}
+
+	/**
+	 * Loads the saved connection profile associated with this model. Will prompt for one if
+	 * we don't have one or can't find it (it was deleted)
+	 */
+	private async getConnectionProfile(): Promise<void> {
+		if (this._connectionProfile) {
+			return;
+		}
+
+		const ipAndPort = parseIpAndPort(this.config?.status.externalEndpoint || '');
+		let connectionProfile: azdata.IConnectionProfile | undefined = {
+			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
+			databaseName: '',
+			authenticationType: 'SqlLogin',
+			providerName: 'PGSQL',
+			connectionName: '',
+			userName: this._pgInfo.userName || '',
+			password: '',
+			savePassword: true,
+			groupFullName: undefined,
+			saveProfile: true,
+			id: '',
+			groupId: undefined,
+			options: {}
+		};
+
+		// If we have the ID stored then try to retrieve the password from previous connections
+		if (this.info.connectionId) {
+			try {
+				const credentialProvider = await azdata.credentials.getProvider(credentialNamespace);
+				const credentials = await credentialProvider.readCredential(createCredentialId(this._controllerModel.info.id, this.info.resourceType, this.info.name));
+				if (credentials.password) {
+					// Try to connect to verify credentials are still valid
+					connectionProfile.password = credentials.password;
+					// If we don't have a username for some reason then just continue on and we'll prompt for the username below
+					if (connectionProfile.userName) {
+						const result = await azdata.connection.connect(connectionProfile, false, false);
+						if (!result.connected) {
+							/* vscode.window.showErrorMessage(loc.connectToSqlFailed(connectionProfile.serverName, result.errorMessage));
+							const connectToSqlDialog = new ConnectToPGSqlDialog(this._controllerModel, this);
+							connectToSqlDialog.showDialog(loc.connectToPGSql(this.info.name), connectionProfile);
+							connectionProfile = await connectToSqlDialog.waitForClose(); */
+						}
+					}
+				}
+			} catch (err) {
+				console.warn(`Unexpected error fetching password for MIAA instance ${err}`);
+				// ignore - something happened fetching the password so just reprompt
+			}
+		}
+
+		if (!connectionProfile?.userName || !connectionProfile?.password) {
+			// Need to prompt user for password since we don't have one stored
+			/* const connectToSqlDialog = new ConnectToPGSqlDialog(this._controllerModel, this);
+			connectToSqlDialog.showDialog(loc.connectToPGSql(this.info.name), connectionProfile);
+			connectionProfile = await connectToSqlDialog.waitForClose(); */
+		}
+
+		if (connectionProfile) {
+			this.updateConnectionProfile(connectionProfile);
+		} else {
+			throw new UserCancelledError();
+		}
+	}
+
+	private async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
+		this._connectionProfile = connectionProfile;
+		this.info.connectionId = connectionProfile.id;
+		this._pgInfo.userName = connectionProfile.userName;
+		await this._treeDataProvider.saveControllers();
 	}
 }

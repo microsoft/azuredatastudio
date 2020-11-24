@@ -50,7 +50,7 @@ export class ConnectToPGSqlDialog extends ConnectToSqlDialog {
 			return true;
 		}
 		else {
-			vscode.window.showErrorMessage(loc.connectToSqlFailed(this.serverNameInputBox.value, result.errorMessage));
+			vscode.window.showErrorMessage(loc.connectToPGSqlFailed(this.serverNameInputBox.value, result.errorMessage));
 			return false;
 		}
 	}

@@ -13,10 +13,13 @@ import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresParametersPage extends DashboardPage {
 	private searchBox?: azdata.InputBoxComponent;
+	private parametersTable!: azdata.DeclarativeTableComponent;
+	private parameterContainer?: azdata.DivContainer;
 
 	private discardButton?: azdata.ButtonComponent;
 	private saveButton?: azdata.ButtonComponent;
 	private resetButton?: azdata.ButtonComponent;
+	private connectToServerButton?: azdata.ButtonComponent;
 
 	private engineSettings = `'`;
 	private engineSettingUpdates?: Map<string, string>;
@@ -31,8 +34,9 @@ export class PostgresParametersPage extends DashboardPage {
 
 		this.engineSettingUpdates = new Map();
 
-		this.disposables.push(this._postgresModel.onConfigUpdated(
-			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
+		this.disposables.push(
+			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())),
+			this._postgresModel.onEngineSettingsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEngineSettingsUpdated())));
 	}
 
 	protected get title(): string {
@@ -75,7 +79,13 @@ export class PostgresParametersPage extends DashboardPage {
 		content.addItem(this.searchBox!, { CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' } });
 		// Add in content
 
-		const parametersTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+
+		this.connectToServerButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.connectToServer,
+			enabled: true
+		}).component();
+
+		this.parametersTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
 			columns: [
 				{
@@ -128,7 +138,13 @@ export class PostgresParametersPage extends DashboardPage {
 				this.parameterComponents('TEST NAME 2', 'real')]
 		}).component();
 
-		content.addItem(parametersTable);
+
+
+		content.addItem(this.connectToServerButton, { CSSStyles: { 'max-width': '125px' } });
+
+		this.parameterContainer = this.modelView.modelBuilder.divContainer().component();
+		//this.handleEnginerSettingsUpdated();
+		//content.addItem(this.parameterContainer);
 
 
 		this.initialized = true;
@@ -433,6 +449,19 @@ export class PostgresParametersPage extends DashboardPage {
 			options: 'enumvals',
 			type: 'vartype'
 		};
+	}
+
+	private handleEngineSettingsUpdated(): void {
+		// If we were able to get the databases it means we have a good connection so update the username too
+		/* this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
+		this.refreshDisplayedProperties();
+		this._databasesTable.data = this._miaaModel.databases.map(d => [d.name, getDatabaseStateDisplayText(d.status)]);
+		this._databasesTableLoading.loading = !this._miaaModel.databasesLastUpdated;*/
+
+
+		if (this._postgresModel.engineSettingsLastUpdated) {
+			this.connectToServerButton!.updateCssStyles({ display: 'none' });
+		}
 	}
 
 

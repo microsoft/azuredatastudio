@@ -50,7 +50,7 @@ export class ConnectToMiaaSqlDialog extends ConnectToSqlDialog {
 			return true;
 		}
 		else {
-			vscode.window.showErrorMessage(loc.connectToSqlFailed(this.serverNameInputBox.value, result.errorMessage));
+			vscode.window.showErrorMessage(loc.connectToMSSqlFailed(this.serverNameInputBox.value, result.errorMessage));
 			return false;
 		}
 	}
