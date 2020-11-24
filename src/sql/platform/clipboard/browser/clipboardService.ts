@@ -26,7 +26,7 @@ export class BrowserClipboardService implements IClipboardService {
 	}
 
 	write(data: string): Promise<void> {
-		return this._vsClipboardService.writeText(data);	// throw not implem
+		return this._vsClipboardService.writeText(data);
 	}
 
 	writeText(text: string): Promise<void> {

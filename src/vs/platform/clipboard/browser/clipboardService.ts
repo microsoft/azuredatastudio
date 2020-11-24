@@ -15,7 +15,7 @@ export class BrowserClipboardService implements IClipboardService {
 
 	async write(data: any, type?: string): Promise<void> {
 		throw new Error('Not Implemented');
-	}	// throw not implemented
+	}
 
 	async writeText(text: string, type?: string): Promise<void> {
 
