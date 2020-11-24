@@ -9,11 +9,6 @@ import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platf
 export const NOTEBOOK_VIEWS_ENABLED_PROPERTY = 'notebookViews.enabled';
 
 const properties = {};
-properties[NOTEBOOK_VIEWS_ENABLED_PROPERTY] = {
-	'type': 'boolean',
-	'default': false,
-	'description': localize('notebookViews.enabled', "(Preview) enable notebook views")
-};
 
 const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration);
 
