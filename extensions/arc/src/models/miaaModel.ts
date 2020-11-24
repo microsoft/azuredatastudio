@@ -189,7 +189,7 @@ export class MiaaModel extends ResourceModel {
 						if (!result.connected) {
 							vscode.window.showErrorMessage(loc.connectToMSSqlFailed(connectionProfile.serverName, result.errorMessage));
 							const connectToSqlDialog = new ConnectToMiaaSqlDialog(this._controllerModel, this);
-							connectToSqlDialog.showDialog(this.info.name, connectionProfile);
+							connectToSqlDialog.showDialog(loc.connectToMSSql(this.info.name), connectionProfile);
 							connectionProfile = await connectToSqlDialog.waitForClose();
 						}
 					}
@@ -203,7 +203,7 @@ export class MiaaModel extends ResourceModel {
 		if (!connectionProfile?.userName || !connectionProfile?.password) {
 			// Need to prompt user for password since we don't have one stored
 			const connectToSqlDialog = new ConnectToMiaaSqlDialog(this._controllerModel, this);
-			connectToSqlDialog.showDialog(this.info.name, connectionProfile);
+			connectToSqlDialog.showDialog(loc.connectToMSSql(this.info.name), connectionProfile);
 			connectionProfile = await connectToSqlDialog.waitForClose();
 		}
 
