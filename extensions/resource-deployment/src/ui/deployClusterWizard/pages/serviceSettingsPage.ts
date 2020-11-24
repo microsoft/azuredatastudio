@@ -313,7 +313,7 @@ export class ServiceSettingsPage extends ResourceTypePage {
 					],
 					dataValues: [
 						[{ value: controllerLabel }, { value: controllerDataStorageClassInputInfo.component }, { value: controllerDataStorageClaimSizeInputInfo.component }, { value: controllerLogsStorageClassInputInfo.component }, { value: controllerLogsStorageClaimSizeInputInfo.component }],
-						[{ value: storagePoolLabel }, { value: storagePoolDataStorageClassInputInfo.component }, { value: storagePoolDataStorageClaimSizeInput.component }, { value: storagePoolLogsStorageClassInput.component }, { value: storagePoolLogsStorageClaimSizeInputInfo.component }],
+						[{ value: storagePoolLabel }, { value: storagePoolDataStorageClassInputInfo.component }, { value: storagePoolDataStorageClaimSizeInputInfo.component }, { value: storagePoolLogsStorageClassInputInfo.component }, { value: storagePoolLogsStorageClaimSizeInputInfo.component }],
 						[{ value: dataPoolLabel }, { value: dataPoolDataStorageClassInputInfo.component }, { value: dataPoolDataStorageClaimSizeInputInfo.component }, { value: dataPoolLogsStorageClassInputInfo.component }, { value: dataPoolLogsStorageClaimSizeInputInfo.component }],
 						[{ value: sqlServerMasterLabel }, { value: sqlServerMasterDataStorageClassInputInfo.component }, { value: sqlServerMasterDataStorageClaimSizeInputInfo.component }, { value: sqlServerMasterLogsStorageClassInputInfo.component }, { value: sqlServerMasterLogsStorageClaimSizeInputInfo.component }]
 					],
