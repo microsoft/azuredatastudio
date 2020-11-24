@@ -9,7 +9,7 @@ import { RemoteBookController, IAsset } from '../book/remoteBookController';
 import * as utils from '../common/utils';
 import * as vscode from 'vscode';
 
-const tigerToolboxRepo = 'repos/microsoft/tigertoolbox';
+const dafaultRepos = ['repos/microsoft/tigertoolbox', 'repos/azure-samples/synapse'];
 const urlGithubRE = /^(?:https:\/\/(?:github\.com|api\.github\.com\/repos)|(?:\/)?(?:\/)?repos)([\w-.?!=&%*+:@\/]*)/g;
 
 function apiGitHub(url: string): string {
@@ -54,7 +54,7 @@ export class RemoteBookDialog {
 			this.remoteLocationDropdown.onValueChanged(e => this.onRemoteLocationChanged());
 
 			this.githubRepoDropdown = this.view.modelBuilder.dropDown().withProperties({
-				values: [tigerToolboxRepo],
+				values: dafaultRepos,
 				value: '',
 				editable: true,
 				fireOnTextChange: true,
