@@ -14,13 +14,15 @@ import { HTMLReportBuilder } from '../htmlReportGenerator';
 import { AssessmentResultGrid } from '../assessmentResultGrid';
 import { LocalizedStrings } from '../localized';
 import { TelemetryReporter, SqlAssessmentTelemetryView, SqlTelemetryActions } from '../telemetry';
+import { EOL } from 'os';
 
 const localize = nls.loadMessageBundle();
 
 export class SqlAssessmentMainTab extends SqlAssessmentTab {
-	private assessmentPropertiesContainer!: azdata.PropertiesContainerComponent;
 	private apiVersionPropItem: azdata.PropertiesContainerItem;
 	private defaultRulesetPropItem: azdata.PropertiesContainerItem;
+	private serverProps: azdata.PropertiesContainerItem[] = [];
+
 	private invokeAssessmentLabel: string = localize('invokeAssessmentLabelServer', "Invoke assessment");
 	private getItemsLabel: string = localize('getAssessmentItemsServer', "View applicable rules");
 	private btnExportAsScript!: azdata.ButtonComponent;
@@ -29,7 +31,6 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 	private engine: AssessmentEngine;
 	private toDispose: vscode.Disposable[] = [];
 	private resultGrid!: AssessmentResultGrid;
-
 
 
 	public constructor(extensionContext: vscode.ExtensionContext, engine: AssessmentEngine) {
@@ -64,12 +65,11 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 				height: '100%',
 
 			}).component();
+		await this.createServerProperties(view);
 
-		rootContainer.addItem(await this.createPropertiesSection(view), { flex: '0 0 auto' });
 		rootContainer.addItem(await this.createToolbar(view), {
 			flex: '0 0 auto', CSSStyles: {
 				'border-top': '3px solid rgb(221, 221, 221)',
-				'margin-top': '20px',
 				'height': '32px'
 			}
 		});
@@ -78,74 +78,22 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		rootContainer.addItem(this.resultGrid.component, {
 			flex: '1 1 auto',
 			CSSStyles: {
-				'padding-bottom': '15px'
+				'padding-bottom': '10px'
 			}
 		});
 
 		return rootContainer;
 	}
 
-	private async createPropertiesSection(view: azdata.ModelView): Promise<azdata.FlexContainer> {
+	private async createServerProperties(view: azdata.ModelView): Promise<void> {
 		const serverInfo = await azdata.connection.getServerInfo(view.connection.connectionId);
 		const connectionProfile = await azdata.connection.getCurrentConnection();
-
-		const propertiesContainer = view.modelBuilder.flexContainer()
-			.withLayout({
-				flexFlow: 'row',
-				justifyContent: 'flex-start'
-			}).component();
-
-		const apiInformationContainer = view.modelBuilder.flexContainer()
-			.withLayout({
-				flexFlow: 'column',
-				alignContent: 'flex-start'
-			}).component();
-		apiInformationContainer.addItem(
-			view.modelBuilder.text().withProperties({ value: LocalizedStrings.SECTION_TITLE_API }).component(), {
-			CSSStyles: { 'font-size': 'larger' }
-		});
-
-		this.assessmentPropertiesContainer = view.modelBuilder.propertiesContainer()
-			.withProperties<azdata.PropertiesContainerComponentProperties>({
-				propertyItems: [
-					this.apiVersionPropItem,
-					this.defaultRulesetPropItem]
-			}).component();
-
-		apiInformationContainer.addItem(this.assessmentPropertiesContainer, {
-			CSSStyles: {
-				'margin-left': '20px'
-			}
-		});
-
-		const sqlServerContainer = view.modelBuilder.flexContainer()
-			.withLayout({
-				flexFlow: 'column',
-				alignContent: 'flex-start'
-			}).component();
-		sqlServerContainer.addItem(
-			view.modelBuilder.text().withProperties({ value: LocalizedStrings.SECTION_TITLE_SQL_SERVER }).component(), {
-			CSSStyles: { 'font-size': 'larger' }
-		});
-		sqlServerContainer.addItem(
-			view.modelBuilder.propertiesContainer()
-				.withProperties<azdata.PropertiesContainerComponentProperties>({
-					propertyItems: [
-						{ displayName: LocalizedStrings.SERVER_VERSION, value: serverInfo.serverVersion },
-						{ displayName: LocalizedStrings.SERVER_INSTANCENAME, value: connectionProfile.serverName },
-						{ displayName: LocalizedStrings.SERVER_EDITION, value: serverInfo.serverEdition },
-						{ displayName: LocalizedStrings.SERVER_OSVERSION, value: serverInfo.osVersion },
-					]
-				}).component(), {
-			CSSStyles: {
-				'margin-left': '20px'
-			}
-		});
-
-		propertiesContainer.addItem(apiInformationContainer, { flex: '0 0 300px', CSSStyles: { 'margin-left': '10px' } });
-		propertiesContainer.addItem(sqlServerContainer, { flex: '1 1 auto' });
-
-		return propertiesContainer;
+		this.serverProps = [
+			{ displayName: LocalizedStrings.SERVER_VERSION, value: serverInfo.serverVersion },
+			{ displayName: LocalizedStrings.SERVER_INSTANCENAME, value: connectionProfile.serverName },
+			{ displayName: LocalizedStrings.SERVER_EDITION, value: serverInfo.serverEdition },
+			{ displayName: LocalizedStrings.SERVER_OSVERSION, value: serverInfo.osVersion },
+		];
 	}
 
 	private async createToolbar(view: azdata.ModelView): Promise<azdata.ToolbarContainer> {
@@ -158,11 +106,14 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 				dark: this.extensionContext.asAbsolutePath('resources/dark/database.svg'),
 				light: this.extensionContext.asAbsolutePath('resources/light/database.svg')
 			};
+		const iconSize: number = 16;
 
 		const btnInvokeAssessment = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
 				label: this.invokeAssessmentLabel,
 				iconPath: targetIconPath,
+				iconHeight: iconSize,
+				iconWidth: iconSize
 			}).component();
 		const btnInvokeAssessmentLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnInvokeAssessment)
@@ -193,6 +144,8 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 			.withProperties<azdata.ButtonProperties>({
 				label: this.getItemsLabel,
 				iconPath: targetIconPath,
+				iconHeight: iconSize,
+				iconWidth: iconSize
 			}).component();
 		const btnGetAssessmentItemsLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnGetAssessmentItems)
@@ -222,11 +175,13 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		this.btnExportAsScript = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
 				label: localize('btnExportAsScript', "Export as script"),
+				enabled: false,
 				iconPath: {
 					dark: this.extensionContext.asAbsolutePath('resources/dark/newquery_inverse.svg'),
 					light: this.extensionContext.asAbsolutePath('resources/light/newquery.svg')
 				},
-				enabled: false
+				iconHeight: iconSize,
+				iconWidth: iconSize
 			}).component();
 		this.toDispose.push(this.btnExportAsScript.onDidClick(async () => {
 			this.engine.generateAssessmentScript();
@@ -235,11 +190,13 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		this.btnHTMLExport = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
 				label: localize('btnGeneratehtmlreport', "Create HTML Report"),
+				enabled: false,
 				iconPath: {
 					dark: this.extensionContext.asAbsolutePath('resources/dark/book_inverse.svg'),
 					light: this.extensionContext.asAbsolutePath('resources/light/book.svg')
 				},
-				enabled: false
+				iconHeight: iconSize,
+				iconWidth: iconSize
 			}).component();
 
 		this.toDispose.push(this.btnHTMLExport.onDidClick(async () => {
@@ -272,12 +229,52 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 					dark: this.extensionContext.asAbsolutePath('resources/dark/configuredashboard_inverse.svg'),
 					light: this.extensionContext.asAbsolutePath('resources/light/configuredashboard.svg')
 				},
+				iconHeight: iconSize,
+				iconWidth: iconSize
 			}).component();
 
 		this.toDispose.push(btnViewSamples.onDidClick(() => {
 			TelemetryReporter.sendActionEvent(SqlAssessmentTelemetryView, SqlTelemetryActions.LearnMoreAssessmentLink);
 			vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/sql-assessment-api'));
 		}));
+
+		let btnAPIDetails = view.modelBuilder.button()
+			.withProperties<azdata.ButtonProperties>({
+				label: LocalizedStrings.SECTION_TITLE_API,
+				iconPath: {
+					dark: this.extensionContext.asAbsolutePath('resources/dark/status_info.svg'),
+					light: this.extensionContext.asAbsolutePath('resources/light/status_info.svg')
+				},
+				iconHeight: iconSize,
+				iconWidth: iconSize
+			}).component();
+		this.toDispose.push(btnAPIDetails.onDidClick(async () => {
+			let infoArray: azdata.PropertiesContainerItem[] = [];
+
+			if (this.apiVersionPropItem.value) {
+				infoArray.push(this.apiVersionPropItem);
+			}
+
+			if (this.defaultRulesetPropItem.value) {
+				infoArray.push(this.defaultRulesetPropItem);
+			}
+
+			infoArray.push(...this.serverProps);
+			const message = localize('msgBoxAsmtInfo', "SQL Assessment Information") + EOL + EOL +
+				infoArray.map(v => `${v.displayName}: ${v.value}`).join(EOL);
+
+			const copy: vscode.MessageItem = { title: localize('msgBoxCopyBtn', "Copy") };
+			const ok: vscode.MessageItem = { isCloseAffordance: true, title: localize('ok', "OK") };
+
+			const response = await vscode.window.showInformationMessage(message, { modal: true }, copy, ok);
+			if (response === copy) {
+				await vscode.env.clipboard.writeText(message);
+				vscode.window.showInformationMessage(localize('msgBoxCopied', 'SQL Assessment Information copied'));
+			}
+		}));
+
+		btnGetAssessmentItemsLoading.loading = false;
+		btnInvokeAssessmentLoading.loading = false;
 
 		return view.modelBuilder.toolbarContainer()
 			.withToolbarItems(
@@ -286,7 +283,8 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 					{ component: btnGetAssessmentItemsLoading },
 					{ component: this.btnExportAsScript },
 					{ component: this.btnHTMLExport },
-					{ component: btnViewSamples }
+					{ component: btnViewSamples },
+					{ component: btnAPIDetails }
 				]
 			).component();
 	}
@@ -294,10 +292,6 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 	private displayResults(result: azdata.SqlAssessmentResult, assessmentType: AssessmentType): void {
 		this.apiVersionPropItem.value = result.apiVersion;
 		this.defaultRulesetPropItem.value = result.items?.length > 0 ? result.items[0].rulesetVersion : '';
-		this.assessmentPropertiesContainer.propertyItems = [
-			this.apiVersionPropItem,
-			this.defaultRulesetPropItem
-		];
 
 		this.resultGrid.displayResult(result, assessmentType);
 		this.btnExportAsScript.enabled = this.btnHTMLExport.enabled = assessmentType === AssessmentType.InvokeAssessment;

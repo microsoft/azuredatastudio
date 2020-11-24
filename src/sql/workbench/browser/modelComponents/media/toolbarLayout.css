@@ -51,17 +51,17 @@
 }
 
 .modelview-toolbar-container .modelview-toolbar-component modelview-button .monaco-text-button.icon {
-	padding-left: 19px;
-	background-size: 15px;
+	padding-left: 19px !important;
+	background-size: 15px !important;
 	margin-right: 0.3em;
 }
 
 /* Vertical button handling */
 .modelview-toolbar-container.toolbar-vertical  .modelview-toolbar-component modelview-button .monaco-text-button.icon {
-	padding: 20px 16px 20px 16px;
-	background-size: 20px;
+	padding: 20px 16px 20px 16px !important;
+	background-size: 20px !important;
 	margin-right: 0.3em;
-	background-position: 50% 50%;
+	background-position: 50% 50% !important;
 
 }
 

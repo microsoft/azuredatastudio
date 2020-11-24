@@ -43,7 +43,7 @@ describe('ControllerModel', function (): void {
 		});
 
 		it('Reads password from cred store', async function (): Promise<void> {
-			const password = 'password123';
+			const password = 'password123'; // [SuppressMessage("Microsoft.Security", "CS001:SecretInline", Justification="Test password, not actually used")]
 
 			// Set up cred store to return our password
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
