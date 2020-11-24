@@ -49,17 +49,17 @@ describe('radioOptionsGroup', function (): void {
 	it('verify construction and load', async () => {
 		should(radioOptionsGroup).not.be.undefined();
 		should(radioOptionsGroup.value).not.be.undefined();
-		radioOptionsGroup.value!.should.equal('value2');
+		radioOptionsGroup.value!.should.equal('value2', 'radio options group should be the default checked value');
 		// verify all the radioButtons created in the group
-		verifyRadioGroup('value2');
+		verifyRadioGroup();
 	});
 
 	it('onClick', async () => {
-		//click the radioButton corresponding to 'value1'
+		// click the radioButton corresponding to 'value1'
 		(divItems as FakeRadioButton[]).filter(r => r.value === 'value1').pop()!.click();
-		radioOptionsGroup.value!.should.equal('value1');
+		radioOptionsGroup.value!.should.equal('value1', 'radio options group should correspond to the radioButton that we clicked');
 		// verify all the radioButtons created in the group
-		verifyRadioGroup('value1');
+		verifyRadioGroup();
 	});
 
 	it('load throws', async () => {
@@ -85,7 +85,7 @@ describe('radioOptionsGroup', function (): void {
 	});
 });
 
-function verifyRadioGroup(checkedValue: string) {
+function verifyRadioGroup() {
 	const radioButtons = divItems as FakeRadioButton[];
 	radioButtons.length.should.equal(radioOptionsInfo.values!.length);
 	radioButtons.forEach(rb => {
@@ -95,8 +95,5 @@ function verifyRadioGroup(checkedValue: string) {
 		rb.label!.should.equal(rb.value);
 		rb.enabled!.should.be.true();
 	});
-	const checked = radioButtons.filter(r => r.checked);
-	checked.length.should.equal(1);
-	checked.pop()!.value!.should.equal(checkedValue);
 }
 

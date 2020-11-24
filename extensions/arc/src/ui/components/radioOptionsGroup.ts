@@ -46,12 +46,13 @@ export class RadioOptionsGroup implements IReadOnly {
 					this._currentRadioOption = radioOption;
 				}
 				this._onNewDisposableCreated(radioOption.onDidClick(() => {
-					// this._divContainer.items
-					// 	.filter(otherOption => otherOption !== radioOption)
-					// 	.forEach(otherOption => (otherOption as azdata.RadioButtonComponent).checked = false);
-					console.log(`TCL:: new current radio option:`, JSON.stringify(radioOption, undefined, '\t'));
-					console.log(`TCL:: ~ file: radioOptionsGroup.ts ~ line 90 ~ RadioOptionsGroup ~ this._onNewDisposableCreated ~ radioOption`, radioOption);
-					this._currentRadioOption = radioOption;
+					if (this._currentRadioOption !== radioOption) {
+						// uncheck the previously saved radio option, the ui gets handled correctly due the use of the 'groupName',
+						// however, the checked properties do not get updated, while stuff works even if we left the previous option checked in our object,
+						// it is just better to keep things clean.
+						this._currentRadioOption.checked = false;
+						this._currentRadioOption = radioOption;
+					}
 				}));
 				this._divContainer.addItem(radioOption);
 			});

@@ -5,7 +5,6 @@
 
 import * as os from 'os';
 import * as path from 'path';
-//import * as util from 'util';
 import * as yamljs from 'yamljs';
 import * as loc from '../localizedConstants';
 import { throwUnless } from './utils';
@@ -24,6 +23,7 @@ export function getKubeConfigClusterContexts(configFile: string): Promise<KubeCl
 	const contexts: KubeClusterContext[] = [];
 	rawContexts.forEach(rawContext => {
 		const name = <string>rawContext['name'];
+		throwUnless(name, loc.noNameInContext(configFile));
 		if (name) {
 			contexts.push({
 				name: name,
