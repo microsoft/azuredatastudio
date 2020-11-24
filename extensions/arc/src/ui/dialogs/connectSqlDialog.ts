@@ -120,7 +120,7 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 			return true;
 		}
 		else {
-			vscode.window.showErrorMessage(this.connectionFailedMessage(this.serverNameInputBox.value, result.errorMessage));
+			vscode.window.showErrorMessage(this.connectionFailedMessage(result.errorMessage));
 			this._completionPromise.reject();
 			return false;
 		}
@@ -128,7 +128,7 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 
 	protected abstract get providerName(): string;
 
-	protected abstract connectionFailedMessage(serverName: string, error: any): string;
+	protected abstract connectionFailedMessage(error: any): string;
 
 	private handleCancel(): void {
 		this._completionPromise.resolve(undefined);

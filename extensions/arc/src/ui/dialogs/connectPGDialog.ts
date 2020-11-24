@@ -18,7 +18,7 @@ export class ConnectToPGSqlDialog extends ConnectToSqlDialog {
 		return 'PGSQL';
 	}
 
-	protected connectionFailedMessage(serverName: string, error: any): string {
-		return loc.connectToPGSqlFailed(serverName, error);
+	protected connectionFailedMessage(error: any): string {
+		return loc.connectToPGSqlFailed(this.serverNameInputBox.value!, error);
 	}
 }

@@ -18,7 +18,7 @@ export class ConnectToMiaaSqlDialog extends ConnectToSqlDialog {
 		return 'MSSQL';
 	}
 
-	protected connectionFailedMessage(serverName: string, error: any): string {
-		return loc.connectToMSSqlFailed(serverName, error);
+	protected connectionFailedMessage(error: any): string {
+		return loc.connectToMSSqlFailed(this.serverNameInputBox.value!, error);
 	}
 }
