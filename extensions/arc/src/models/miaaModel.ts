@@ -11,7 +11,7 @@ import { Deferred } from '../common/promise';
 import { createCredentialId, parseIpAndPort, UserCancelledError } from '../common/utils';
 import { credentialNamespace } from '../constants';
 import * as loc from '../localizedConstants';
-import { ConnectToSqlDialog } from '../ui/dialogs/connectSqlDialog';
+import { ConnectToMiaaSqlDialog } from '../ui/dialogs/connectMiaaDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
@@ -188,8 +188,8 @@ export class MiaaModel extends ResourceModel {
 						const result = await azdata.connection.connect(connectionProfile, false, false);
 						if (!result.connected) {
 							vscode.window.showErrorMessage(loc.connectToSqlFailed(connectionProfile.serverName, result.errorMessage));
-							const connectToSqlDialog = new ConnectToSqlDialog(this._controllerModel, this);
-							connectToSqlDialog.showDialog(connectionProfile);
+							const connectToSqlDialog = new ConnectToMiaaSqlDialog(this._controllerModel, this);
+							connectToSqlDialog.showDialog(this.info.name, connectionProfile);
 							connectionProfile = await connectToSqlDialog.waitForClose();
 						}
 					}
@@ -202,8 +202,8 @@ export class MiaaModel extends ResourceModel {
 
 		if (!connectionProfile?.userName || !connectionProfile?.password) {
 			// Need to prompt user for password since we don't have one stored
-			const connectToSqlDialog = new ConnectToSqlDialog(this._controllerModel, this);
-			connectToSqlDialog.showDialog(connectionProfile);
+			const connectToSqlDialog = new ConnectToMiaaSqlDialog(this._controllerModel, this);
+			connectToSqlDialog.showDialog(this.info.name, connectionProfile);
 			connectionProfile = await connectToSqlDialog.waitForClose();
 		}
 
