@@ -20,14 +20,14 @@ export type EngineSettingsModel = { name: string };
 
 export class PostgresModel extends ResourceModel {
 	private _config?: azdataExt.PostgresServerShowResult;
-	private _engineSettings: EngineSettingsModel[] = [];
+	public _engineSettings: EngineSettingsModel[] = [];
 	private readonly _azdataApi: azdataExt.IExtension;
 
 	// The saved connection information
 	private _connectionProfile: azdata.IConnectionProfile | undefined = undefined;
 
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.PostgresServerShowResult>();
-	private readonly _onEngineSettingsUpdated = new vscode.EventEmitter<EngineSettingsModel[]>();
+	public readonly _onEngineSettingsUpdated = new vscode.EventEmitter<EngineSettingsModel[]>();
 	public onConfigUpdated = this._onConfigUpdated.event;
 	public onEngineSettingsUpdated = this._onEngineSettingsUpdated.event;
 	public configLastUpdated?: Date;
@@ -111,7 +111,7 @@ export class PostgresModel extends ResourceModel {
 
 			// If we have an external endpoint configured then fetch the engine settings now
 			if (this._config.status.externalEndpoint) {
-				this.getEngineSettings();
+				//this.getEngineSettings();
 			}
 
 
@@ -125,7 +125,7 @@ export class PostgresModel extends ResourceModel {
 		}
 	}
 
-	private async getEngineSettings(): Promise<void> {
+	public async getEngineSettings(): Promise<void> {
 		await this.getConnectionProfile();
 		if (this._connectionProfile) {
 			// TODO
@@ -172,10 +172,10 @@ export class PostgresModel extends ResourceModel {
 					if (connectionProfile.userName) {
 						const result = await azdata.connection.connect(connectionProfile, false, false);
 						if (!result.connected) {
-							/* vscode.window.showErrorMessage(loc.connectToSqlFailed(connectionProfile.serverName, result.errorMessage));
+							vscode.window.showErrorMessage(loc.connectToPGSqlFailed(connectionProfile.serverName, result.errorMessage));
 							const connectToSqlDialog = new ConnectToPGSqlDialog(this._controllerModel, this);
 							connectToSqlDialog.showDialog(loc.connectToPGSql(this.info.name), connectionProfile);
-							connectionProfile = await connectToSqlDialog.waitForClose(); */
+							connectionProfile = await connectToSqlDialog.waitForClose();
 						}
 					}
 				}
@@ -187,9 +187,9 @@ export class PostgresModel extends ResourceModel {
 
 		if (!connectionProfile?.userName || !connectionProfile?.password) {
 			// Need to prompt user for password since we don't have one stored
-			/* const connectToSqlDialog = new ConnectToPGSqlDialog(this._controllerModel, this);
+			const connectToSqlDialog = new ConnectToPGSqlDialog(this._controllerModel, this);
 			connectToSqlDialog.showDialog(loc.connectToPGSql(this.info.name), connectionProfile);
-			connectionProfile = await connectToSqlDialog.waitForClose(); */
+			connectionProfile = await connectToSqlDialog.waitForClose();
 		}
 
 		if (connectionProfile) {

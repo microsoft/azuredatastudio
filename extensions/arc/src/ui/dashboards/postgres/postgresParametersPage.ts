@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as loc from '../../../localizedConstants';
+import { UserCancelledError } from '../../../common/utils';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
@@ -15,6 +16,7 @@ export class PostgresParametersPage extends DashboardPage {
 	private searchBox?: azdata.InputBoxComponent;
 	private parametersTable!: azdata.DeclarativeTableComponent;
 	private parameterContainer?: azdata.DivContainer;
+	private _parametersTableLoading!: azdata.LoadingComponent;
 
 	private discardButton?: azdata.ButtonComponent;
 	private saveButton?: azdata.ButtonComponent;
@@ -30,6 +32,7 @@ export class PostgresParametersPage extends DashboardPage {
 		super(modelView);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
+		this.initializeConnectButton();
 		this.initializeSearchBox();
 
 		this.engineSettingUpdates = new Map();
@@ -74,16 +77,9 @@ export class PostgresParametersPage extends DashboardPage {
 		const infoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
 		infoAndLink.addItem(info, { CSSStyles: { 'margin-right': '5px' } });
 		infoAndLink.addItem(link);
-		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '25px' } });
+		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '20px' } });
 
-		content.addItem(this.searchBox!, { CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' } });
-		// Add in content
-
-
-		this.connectToServerButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.connectToServer,
-			enabled: true
-		}).component();
+		content.addItem(this.searchBox!, { CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'margin-bottom': '20px' } });
 
 		this.parametersTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
@@ -138,14 +134,24 @@ export class PostgresParametersPage extends DashboardPage {
 				this.parameterComponents('TEST NAME 2', 'real')]
 		}).component();
 
-
-
-		content.addItem(this.connectToServerButton, { CSSStyles: { 'max-width': '125px' } });
+		this._parametersTableLoading = this.modelView.modelBuilder.loadingComponent().component();
 
 		this.parameterContainer = this.modelView.modelBuilder.divContainer().component();
+		this.selectComponent();
+
+
+
+		//this.handleEngineSettingsUpdated();
+
+
+		content.addItem(this.parameterContainer);
+
+
+
+
 		//this.handleEnginerSettingsUpdated();
 		//content.addItem(this.parameterContainer);
-
+		//content.addItem(this.connectToServerButton, { CSSStyles: { 'max-width': '125px' } });
 
 		this.initialized = true;
 
@@ -265,6 +271,41 @@ export class PostgresParametersPage extends DashboardPage {
 		]).component();
 	}
 
+	private initializeConnectButton() {
+		this.connectToServerButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: loc.connectToServer,
+			enabled: false,
+			CSSStyles: { 'max-width': '125px' }
+		}).component();
+
+		this.disposables.push(
+			this.connectToServerButton!.onDidClick(async () => {
+				try {
+					await this._postgresModel.getEngineSettings().catch(err => {
+						// If an error occurs show a message so the user knows something failed but still
+						// fire the event so callers can know to update (e.g. so dashboards don't show the
+						// loading icon forever)
+						if (err instanceof UserCancelledError) {
+							vscode.window.showWarningMessage(loc.connectionRequired); //TODO
+						} else {
+							vscode.window.showErrorMessage(loc.fetchDatabasesFailed(this._postgresModel.info.name, err)); //TODO
+						}
+						this._postgresModel.engineSettingsLastUpdated = new Date();
+						this._postgresModel._onEngineSettingsUpdated.fire(this._postgresModel._engineSettings);
+						throw err;
+
+					});
+
+				} catch (error) {
+					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
+				} finally {
+					this.connectToServerButton!.enabled = false;
+					this.connectToServerButton!.updateCssStyles({ display: 'none' });
+					this.parameterContainer!.addItem(this.parametersTable);
+				}
+			}));
+	}
+
 	private initializeSearchBox() {
 		this.searchBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
@@ -290,7 +331,6 @@ export class PostgresParametersPage extends DashboardPage {
 		/* To not be modified
 			"archive_command", "archive_timeout", "log_directory", "log_file_mode", "log_filename", "restore_command",
 			"shared_preload_libraries", "synchronous_commit", "ssl", "unix_socket_permissions", "wal_level" */
-
 
 	}
 
@@ -409,7 +449,6 @@ export class PostgresParametersPage extends DashboardPage {
 		}).component();
 		data.push(resetParameter);
 
-
 		// azdata arc postgres server edit -n postgres01 -e shared_buffers=
 		this.disposables.push(
 			resetParameter.onDidClick(async () => {
@@ -436,8 +475,8 @@ export class PostgresParametersPage extends DashboardPage {
 		return data;
 	}
 
+	// Maybe place in postgres model
 	private getPGSettings(): any {
-		// Get settings
 
 		return {
 			parameterName: 'name',
@@ -451,6 +490,15 @@ export class PostgresParametersPage extends DashboardPage {
 		};
 	}
 
+	private selectComponent() {
+		if (!this._postgresModel.engineSettingsLastUpdated) {
+			this.parameterContainer!.addItem(this.connectToServerButton!, { CSSStyles: { 'max-width': '125px' } });
+			this.parameterContainer!.addItem(this._parametersTableLoading!);
+		} else {
+			this.parameterContainer!.addItem(this.parametersTable!);
+		}
+	}
+
 	private handleEngineSettingsUpdated(): void {
 		// If we were able to get the databases it means we have a good connection so update the username too
 		/* this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
@@ -459,9 +507,24 @@ export class PostgresParametersPage extends DashboardPage {
 		this._databasesTableLoading.loading = !this._miaaModel.databasesLastUpdated;*/
 
 
+		//this.handleEnginerSettingsUpdated();
+		//content.addItem(this.parameterContainer);
+		//content.addItem(this.connectToServerButton, { CSSStyles: { 'max-width': '125px' } });
+
+		// Assign the loading component after it has data
+		//this._parametersTableLoading.component = this.parametersTable;
+
+
+		//this.parameterContainer.addItem(this._parametersTableLoading.component);
+
+
+
 		if (this._postgresModel.engineSettingsLastUpdated) {
-			this.connectToServerButton!.updateCssStyles({ display: 'none' });
+
 		}
+
+
+		//this.parameterContainer.addItem(this._parametersTableLoading.component);
 	}
 
 
@@ -469,5 +532,9 @@ export class PostgresParametersPage extends DashboardPage {
 
 	private handleServiceUpdated() {
 		// TODO
+		if (this._postgresModel.configLastUpdated) {
+			this.connectToServerButton!.enabled = true;
+			this._parametersTableLoading!.loading = false;
+		}
 	}
 }
