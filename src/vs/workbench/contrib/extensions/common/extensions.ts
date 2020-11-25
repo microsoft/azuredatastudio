@@ -20,7 +20,8 @@ export const VIEWLET_ID = 'workbench.view.extensions';
 export const EXTENSIONS_CONFIG = '.azuredatastudio/extensions.json';
 
 export interface IExtensionsViewPaneContainer extends IViewPaneContainer {
-	search(text: string, refresh?: boolean): void;
+	search(text: string): void;
+	refresh(): void;
 }
 
 export const enum ExtensionState {
@@ -99,14 +100,12 @@ export interface IExtensionsWorkbenchService {
 export const ConfigurationKey = 'extensions';
 export const AutoUpdateConfigurationKey = 'extensions.autoUpdate';
 export const AutoCheckUpdatesConfigurationKey = 'extensions.autoCheckUpdates';
-export const ShowRecommendationsOnlyOnDemandKey = 'extensions.showRecommendationsOnlyOnDemand';
 export const CloseExtensionDetailsOnViewChangeKey = 'extensions.closeExtensionDetailsOnViewChange';
 
 export interface IExtensionsConfiguration {
 	autoUpdate: boolean;
 	autoCheckUpdates: boolean;
 	ignoreRecommendations: boolean;
-	showRecommendationsOnlyOnDemand: boolean;
 	closeExtensionDetailsOnViewChange: boolean;
 	// {{SQL CARBON EDIT}}
 	extensionsPolicy: string;

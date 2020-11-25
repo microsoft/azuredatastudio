@@ -22,7 +22,7 @@ import {
 	ClearExtensionsInputAction, ChangeSortAction, UpdateAllAction, CheckForUpdatesAction, DisableAllAction, EnableAllAction,
 	EnableAutoUpdateAction, DisableAutoUpdateAction, ShowBuiltInExtensionsAction, InstallVSIXAction, SearchCategoryAction,
 	/*RecentlyPublishedExtensionsAction, */ShowInstalledExtensionsAction, ShowOutdatedExtensionsAction, ShowDisabledExtensionsAction,
-	ShowEnabledExtensionsAction, PredefinedExtensionFilterAction
+	ShowEnabledExtensionsAction, PredefinedExtensionFilterAction, RefreshExtensionsAction
 } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
 import { OpenExtensionAuthoringDocsAction } from 'sql/workbench/contrib/extensions/browser/extensionsActions'; // {{ SQL CARBON EDIT }}
 import { IExtensionManagementService, IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -542,6 +542,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 
 		return [
 			new SubmenuAction('workbench.extensions.action.filterExtensions', localize('filterExtensions', "Filter Extensions..."), filterActions, 'codicon-filter'),
+			this.instantiationService.createInstance(RefreshExtensionsAction, RefreshExtensionsAction.ID, RefreshExtensionsAction.LABEL),
 			this.instantiationService.createInstance(ClearExtensionsInputAction, ClearExtensionsInputAction.ID, ClearExtensionsInputAction.LABEL, this.onSearchChange, this.searchBox ? this.searchBox.getValue() : ''),
 		];
 	}
@@ -567,14 +568,14 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		return actions;
 	}
 
-	search(value: string, refresh: boolean = false): void {
-		if (this.searchBox) {
-			if (this.searchBox.getValue() !== value) {
-				this.searchBox.setValue(value);
-			} else if (refresh) {
-				this.doSearch();
-			}
+	search(value: string): void {
+		if (this.searchBox && this.searchBox.getValue() !== value) {
+			this.searchBox.setValue(value);
 		}
+	}
+
+	refresh(): void {
+		this.doSearch(true);
 	}
 
 	private triggerSearch(): void {
@@ -603,7 +604,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		super.saveState();
 	}
 
-	private doSearch(): Promise<void> {
+	private doSearch(refresh?: boolean): Promise<void> {
 		const value = this.normalizedQuery();
 		const isRecommendedExtensionsQuery = ExtensionsListView.isRecommendedExtensionsQuery(value);
 		this.searchInstalledExtensionsContextKey.set(ExtensionsListView.isInstalledExtensionsQuery(value));
@@ -617,7 +618,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		this.defaultViewsContextKey.set(!value);
 
 		return this.progress(Promise.all(this.panes.map(view =>
-			(<ExtensionsListView>view).show(this.normalizedQuery())
+			(<ExtensionsListView>view).show(this.normalizedQuery(), refresh)
 				.then(model => this.alertSearchResult(model.length, view.id))
 		))).then(() => undefined);
 	}

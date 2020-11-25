@@ -271,7 +271,7 @@ suite.skip('ExtensionRecommendationsService Test', () => { // {{SQL CARBON EDIT}
 
 		instantiationService.stub(INotificationService, new TestNotificationService2());
 
-		testConfigurationService.setUserConfiguration(ConfigurationKey, { ignoreRecommendations: false, showRecommendationsOnlyOnDemand: false });
+		testConfigurationService.setUserConfiguration(ConfigurationKey, { ignoreRecommendations: false });
 		instantiationService.stub(IModelService, <IModelService>{
 			getModels(): any { return []; },
 			onModelAdded: onModelAddedEvent.event
@@ -379,6 +379,16 @@ suite.skip('ExtensionRecommendationsService Test', () => { // {{SQL CARBON EDIT}
 	test('ExtensionRecommendationsService: No Prompt for valid workspace recommendations if ignoreRecommendations is set', () => {
 		testConfigurationService.setUserConfiguration(ConfigurationKey, { ignoreRecommendations: true });
 		return testNoPromptForValidRecommendations(mockTestData.validRecommendedExtensions);
+	});
+
+	test('ExtensionRecommendationsService: No Prompt for valid workspace recommendations if ignoreRecommendations is set', () => {
+		testConfigurationService.setUserConfiguration(ConfigurationKey, { ignoreRecommendations: true });
+		return setUpFolderWorkspace('myFolder', mockTestData.validRecommendedExtensions).then(() => {
+			testObject = instantiationService.createInstance(ExtensionRecommendationsService);
+			return testObject.activationPromise.then(() => {
+				assert.ok(!prompted);
+			});
+		});
 	});
 
 	test('ExtensionRecommendationsService: No Prompt for valid workspace recommendations if showRecommendationsOnlyOnDemand is set', () => {

@@ -104,7 +104,7 @@ export interface IWindowSettings {
 	openFilesInNewWindow: 'on' | 'off' | 'default';
 	openFoldersInNewWindow: 'on' | 'off' | 'default';
 	openWithoutArgumentsInNewWindow: 'on' | 'off';
-	restoreWindows: 'all' | 'folders' | 'one' | 'none';
+	restoreWindows: 'preserve' | 'all' | 'folders' | 'one' | 'none';
 	restoreFullscreen: boolean;
 	zoomLevel: number;
 	titleBarStyle: 'native' | 'custom';
@@ -124,7 +124,7 @@ export function getTitleBarStyle(configurationService: IConfigurationService, en
 		return 'custom';
 	}
 
-	const configuration = configurationService.getValue<IWindowSettings>('window');
+	const configuration = configurationService.getValue<IWindowSettings | undefined>('window');
 
 	const isDev = !environment.isBuilt || isExtensionDevelopment;
 	if (isMacintosh && isDev) {

@@ -1790,11 +1790,11 @@ export class ShowInstalledExtensionsAction extends Action {
 		super(id, label, undefined, true);
 	}
 
-	run(refresh?: boolean): Promise<void> {
+	run(): Promise<void> {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
 			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
 			.then(viewlet => {
-				viewlet.search('@installed ', refresh);
+				viewlet.search('@installed ');
 				viewlet.focus();
 			});
 	}
@@ -1864,6 +1864,28 @@ export class ClearExtensionsInputAction extends ClearExtensionsSearchResultsActi
 		this.enabled = !!value;
 	}
 
+}
+
+export class RefreshExtensionsAction extends Action {
+
+	static readonly ID = 'workbench.extensions.action.refreshExtension';
+	static readonly LABEL = localize('refreshExtension', "Refresh");
+
+	constructor(
+		id: string,
+		label: string,
+		@IViewsService private readonly viewsService: IViewsService
+	) {
+		super(id, label, 'codicon-refresh', true);
+	}
+
+	async run(): Promise<void> {
+		const viewPaneContainer = this.viewsService.getActiveViewPaneContainerWithId(VIEWLET_ID);
+		if (viewPaneContainer) {
+			const extensionsViewPaneContainer = viewPaneContainer as IExtensionsViewPaneContainer;
+			extensionsViewPaneContainer.refresh();
+		}
+	}
 }
 
 export class ShowBuiltInExtensionsAction extends Action {
@@ -1996,7 +2018,7 @@ export class ShowRecommendedExtensionsAction extends Action {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
 			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
 			.then(viewlet => {
-				viewlet.search('@recommended ', true);
+				viewlet.search('@recommended ');
 				viewlet.focus();
 			});
 	}
@@ -2873,6 +2895,7 @@ export class InstallVSIXAction extends Action {
 					title: localize('installFromVSIX', "Install from VSIX"),
 					filters: [{ name: 'VSIX Extensions', extensions: ['vsix'] }],
 					canSelectFiles: true,
+					canSelectMany: true,
 					openLabel: mnemonicButtonLabel(localize({ key: 'installButton', comment: ['&& denotes a mnemonic'] }, "&&Install"))
 				});
 
