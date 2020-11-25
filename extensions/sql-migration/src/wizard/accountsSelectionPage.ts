@@ -20,11 +20,12 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
-		const form = view.modelBuilder.formContainer().withFormItems(
-			[
-				await this.createAzureAccountsDropdown(view)
-			]
-		);
+		const form = view.modelBuilder.formContainer()
+			.withFormItems(
+				[
+					await this.createAzureAccountsDropdown(view)
+				]
+			);
 		await view.initializeModel(form.component());
 		await this.populateAzureAccountsDropdown();
 		return;
@@ -32,25 +33,30 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 	private async createAzureAccountsDropdown(view: azdata.ModelView): Promise<azdata.FormComponent> {
 
-		this._azureAccountsDropdown = view.modelBuilder.dropDown().withProperties({}).component();
+		this._azureAccountsDropdown = view.modelBuilder.dropDown().component();
 
 		this._azureAccountsDropdown.onValueChanged(async (value) => {
 			this.migrationStateModel.azureAccount = this._accountsMap.get(value.selected)!;
 		});
 
-		const addAccountButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: constants.ACCOUNT_ADD_BUTTON_LABEL,
-			width: '100px'
-		}).component();
+		const addAccountButton = view.modelBuilder.button()
+			.withProperties<azdata.ButtonProperties>({
+				label: constants.ACCOUNT_ADD_BUTTON_LABEL,
+				width: '100px'
+			})
+			.component();
 
 		addAccountButton.onDidClick(async (event) => {
 			await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 			await this.populateAzureAccountsDropdown();
 		});
 
-		const flexContainer = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column'
-		}).withItems([this._azureAccountsDropdown, addAccountButton], { CSSStyles: { 'margin': '10px', } }).component();
+		const flexContainer = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'column'
+			})
+			.withItems([this._azureAccountsDropdown, addAccountButton], { CSSStyles: { 'margin': '10px', } })
+			.component();
 
 		return {
 			title: '',

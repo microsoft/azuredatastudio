@@ -56,17 +56,18 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._fileShareContainer
 		]).component();
 
-		const form = view.modelBuilder.formContainer().withFormItems(
-			[
-				this.createBackupLocationComponent(view),
-				{
-					title: '',
-					component: networkContainer
-				},
-				this.migrationCutoverContainer(view),
-				this.emailNotificationContainer(view),
-			]
-		);
+		const form = view.modelBuilder.formContainer()
+			.withFormItems(
+				[
+					this.createBackupLocationComponent(view),
+					{
+						title: '',
+						component: networkContainer
+					},
+					this.migrationCutoverContainer(view),
+					this.emailNotificationContainer(view),
+				]
+			);
 		await view.initializeModel(form.component());
 		this.toggleNetworkContainerFields(NetworkContainerType.NETWORK_SHARE, this._networkShare);
 		return;
@@ -75,25 +76,28 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private createBackupLocationComponent(view: azdata.ModelView): azdata.FormComponent {
 		const buttonGroup = 'networkContainer';
 
-		const networkShareButton = view.modelBuilder.radioButton().withProps({
-			name: buttonGroup,
-			label: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL,
-			checked: true
-		}).component();
+		const networkShareButton = view.modelBuilder.radioButton()
+			.withProps({
+				name: buttonGroup,
+				label: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL,
+				checked: true
+			}).component();
 
 		networkShareButton.onDidClick((e) => this.toggleNetworkContainerFields(NetworkContainerType.NETWORK_SHARE, this._networkShare));
 
-		const blobContainerButton = view.modelBuilder.radioButton().withProps({
-			name: buttonGroup,
-			label: constants.DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL,
-		}).component();
+		const blobContainerButton = view.modelBuilder.radioButton()
+			.withProps({
+				name: buttonGroup,
+				label: constants.DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL,
+			}).component();
 
 		blobContainerButton.onDidClick((e) => this.toggleNetworkContainerFields(NetworkContainerType.BLOB_CONTAINER, this._blob));
 
-		const fileShareButton = view.modelBuilder.radioButton().withProps({
-			name: buttonGroup,
-			label: constants.DATABASE_BACKUP_NC_FILE_SHARE_RADIO_LABEL,
-		}).component();
+		const fileShareButton = view.modelBuilder.radioButton()
+			.withProps({
+				name: buttonGroup,
+				label: constants.DATABASE_BACKUP_NC_FILE_SHARE_RADIO_LABEL,
+			}).component();
 
 		fileShareButton.onDidClick((e) => this.toggleNetworkContainerFields(NetworkContainerType.FILE_SHARE, this._fileShare));
 
@@ -127,66 +131,75 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			await this.loadFileShareStorageDropdown();
 		});
 
-		const storageAccountLabel = view.modelBuilder.text().withProps({
-			value: constants.DATABASE_BACKUP_FILE_SHARE_STORAGE_ACCOUNT_LABEL,
-			requiredIndicator: true,
-		}).component();
-		this._fileShareStorageAccountDropdown = view.modelBuilder.dropDown().withProps({
-			required: true
-		}).component();
+		const storageAccountLabel = view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_FILE_SHARE_STORAGE_ACCOUNT_LABEL,
+				requiredIndicator: true,
+			}).component();
+		this._fileShareStorageAccountDropdown = view.modelBuilder.dropDown()
+			.withProps({
+				required: true
+			}).component();
 		this._fileShareStorageAccountDropdown.onValueChanged(async (value) => {
 			this._fileShare.storageAccountId = (this._fileShareStorageAccountDropdown.value as azdata.CategoryValue).name;
 			await this.loadFileShareDropdown();
 		});
 
-		const fileShareLabel = view.modelBuilder.text().withProps({
-			value: constants.DATABASE_BACKUP_FILE_SHARE_LABEL,
-			requiredIndicator: true,
-		}).component();
-		this._fileShareFileShareDropdown = view.modelBuilder.dropDown().withProps({
-			required: true
-		}).component();
+		const fileShareLabel = view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_FILE_SHARE_LABEL,
+				requiredIndicator: true,
+			}).component();
+		this._fileShareFileShareDropdown = view.modelBuilder.dropDown()
+			.withProps({
+				required: true
+			}).component();
 		this._fileShareFileShareDropdown.onValueChanged((value) => {
 			this._fileShare.fileShareId = (this._fileShareFileShareDropdown.value as azdata.CategoryValue).name;
 		});
 
 
-		const flexContainer = view.modelBuilder.flexContainer().withItems(
-			[
-				subscriptionLabel,
-				this._fileShareSubscriptionDropdown,
-				storageAccountLabel,
-				this._fileShareStorageAccountDropdown,
-				fileShareLabel,
-				this._fileShareFileShareDropdown
-			]
-		).withLayout({
-			flexFlow: 'column'
-		}).component();
+		const flexContainer = view.modelBuilder.flexContainer()
+			.withItems(
+				[
+					subscriptionLabel,
+					this._fileShareSubscriptionDropdown,
+					storageAccountLabel,
+					this._fileShareStorageAccountDropdown,
+					fileShareLabel,
+					this._fileShareFileShareDropdown
+				]
+			).withLayout({
+				flexFlow: 'column'
+			}).component();
 
 		return flexContainer;
 	}
 
 	private createBlobContainer(view: azdata.ModelView): azdata.FlexContainer {
-		const subscriptionLabel = view.modelBuilder.text().withProps({
-			value: constants.DATABASE_BACKUP_BLOB_STORAGE_SUBSCRIPTION_LABEL,
-			requiredIndicator: true,
-		}).component();
-		this._blobContainerSubscriptionDropdown = view.modelBuilder.dropDown().withProps({
-			required: true
-		}).component();
+		const subscriptionLabel = view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_BLOB_STORAGE_SUBSCRIPTION_LABEL,
+				requiredIndicator: true,
+			}).component();
+		this._blobContainerSubscriptionDropdown = view.modelBuilder.dropDown()
+			.withProps({
+				required: true
+			}).component();
 		this._blobContainerSubscriptionDropdown.onValueChanged(async (value) => {
 			this._blob.subscriptionId = (this._blobContainerSubscriptionDropdown.value as azdata.CategoryValue).name;
 			await this.loadblobStorageDropdown();
 		});
 
-		const storageAccountLabel = view.modelBuilder.text().withProps({
-			value: constants.DATABASE_BACKUP_BLOB_STORAGE_ACCOUNT_LABEL,
-			requiredIndicator: true,
-		}).component();
-		this._blobContainerStorageAccountDropdown = view.modelBuilder.dropDown().withProps({
-			required: true
-		}).component();
+		const storageAccountLabel = view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_BLOB_STORAGE_ACCOUNT_LABEL,
+				requiredIndicator: true,
+			}).component();
+		this._blobContainerStorageAccountDropdown = view.modelBuilder.dropDown()
+			.withProps({
+				required: true
+			}).component();
 		this._blobContainerStorageAccountDropdown.onValueChanged(async (value) => {
 			this._blob.storageAccountId = (this._blobContainerStorageAccountDropdown.value as azdata.CategoryValue).name;
 			await this.loadBlobContainerDropdown();
@@ -196,108 +209,124 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			value: constants.DATABASE_BACKUP_BLOB_STORAGE_ACCOUNT_CONTAINER_LABEL,
 			requiredIndicator: true,
 		}).component();
-		this._blobContainerBlobDropdown = view.modelBuilder.dropDown().withProps({
-			required: true
-		}).component();
+		this._blobContainerBlobDropdown = view.modelBuilder.dropDown()
+			.withProps({
+				required: true
+			}).component();
 		this._blobContainerBlobDropdown.onValueChanged((value) => {
 			this._blob.containerId = (this._blobContainerBlobDropdown.value as azdata.CategoryValue).name;
 		});
 
-		const flexContainer = view.modelBuilder.flexContainer().withItems(
-			[
-				subscriptionLabel,
-				this._blobContainerSubscriptionDropdown,
-				storageAccountLabel,
-				this._blobContainerStorageAccountDropdown,
-				containerLabel,
-				this._blobContainerBlobDropdown
-			]
-		).withLayout({
-			flexFlow: 'column'
-		}).component();
+		const flexContainer = view.modelBuilder.flexContainer()
+			.withItems(
+				[
+					subscriptionLabel,
+					this._blobContainerSubscriptionDropdown,
+					storageAccountLabel,
+					this._blobContainerStorageAccountDropdown,
+					containerLabel,
+					this._blobContainerBlobDropdown
+				]
+			).withLayout({
+				flexFlow: 'column'
+			}).component();
 
 		return flexContainer;
 	}
 
 	private createNetworkShareContainer(view: azdata.ModelView): azdata.FlexContainer {
-		const networkShareHelpText = view.modelBuilder.text().withProps({
-			value: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_HELP_TEXT,
-		}).component();
+		const networkShareHelpText = view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_HELP_TEXT,
+			}).component();
 
-		const networkShareLocationLabel = view.modelBuilder.text().withProps({
-			value: constants.DATABASE_BACKUP_NETWORK_SHARE_LOCATION_LABEL,
-			requiredIndicator: true,
-		}).component();
-		this._networkShareLocationText = view.modelBuilder.inputBox().withProps({
-			placeHolder: '\\\\Servername.domainname.com\\Backupfolder',
-			required: true
-		}).withValidation((component) => {
-			if (component.value) {
-				if (!/^(\\)(\\[\w\.-_]+){2,}(\\?)$/.test(component.value)) {
-					return false;
+		const networkShareLocationLabel = view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_NETWORK_SHARE_LOCATION_LABEL,
+				requiredIndicator: true,
+			}).component();
+		this._networkShareLocationText = view.modelBuilder.inputBox()
+			.withProps({
+				placeHolder: '\\\\Servername.domainname.com\\Backupfolder',
+				required: true
+			})
+			.withValidation((component) => {
+				if (component.value) {
+					if (!/^(\\)(\\[\w\.-_]+){2,}(\\?)$/.test(component.value)) {
+						return false;
+					}
 				}
-			}
-			return true;
-		}).component();
+				return true;
+			}).component();
 		this._networkShareLocationText.onTextChanged((value) => {
 			this._networkShare.networkShareLocation = value;
 		});
 
-		const windowsUserAccountLabel = view.modelBuilder.text().withProps({
-			value: constants.DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_LABEL,
-			requiredIndicator: true,
-		}).component();
-		this._windowsUserAccountText = view.modelBuilder.inputBox().withProps({
-			placeHolder: 'Domain\\username',
-			required: true
-		}).withValidation((component) => {
-			if (component.value) {
-				if (!/^[a-zA-Z][a-zA-Z0-9\-\.]{0,61}[a-zA-Z]\\\w[\w\.\- ]*$/.test(component.value)) {
-					return false;
+		const windowsUserAccountLabel = view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_LABEL,
+				requiredIndicator: true,
+			}).component();
+		this._windowsUserAccountText = view.modelBuilder.inputBox()
+			.withProps({
+				placeHolder: 'Domain\\username',
+				required: true
+			})
+			.withValidation((component) => {
+				if (component.value) {
+					if (!/^[a-zA-Z][a-zA-Z0-9\-\.]{0,61}[a-zA-Z]\\\w[\w\.\- ]*$/.test(component.value)) {
+						return false;
+					}
 				}
-			}
-			return true;
-		}).component();
+				return true;
+			}).component();
 		this._windowsUserAccountText.onTextChanged((value) => {
 			this._networkShare.windowsUser = value;
 		});
 
-		const passwordLabel = view.modelBuilder.text().withProps({
-			value: constants.DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_LABEL,
-			requiredIndicator: true,
-		}).component();
-		this._passwordText = view.modelBuilder.inputBox().withProps({
-			placeHolder: constants.DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_PLACEHOLDER,
-			inputType: 'password',
-			required: true
-		}).component();
+		const passwordLabel = view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_LABEL,
+				requiredIndicator: true,
+			}).component();
+		this._passwordText = view.modelBuilder.inputBox()
+			.withProps({
+				placeHolder: constants.DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_PLACEHOLDER,
+				inputType: 'password',
+				required: true
+			}).component();
 		this._passwordText.onTextChanged((value) => {
 			this._networkShare.password = value;
 		});
 
-		const azureAccountHelpText = view.modelBuilder.text().withProps({
-			value: constants.DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HELP,
-		}).component();
+		const azureAccountHelpText = view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HELP,
+			}).component();
 
-		const subscriptionLabel = view.modelBuilder.text().withProps({
-			value: constants.DATABASE_BACKUP_NETWORK_SHARE_SUBSCRIPTION_LABEL,
-			requiredIndicator: true,
-		}).component();
-		this._networkShareContainerSubscriptionDropdown = view.modelBuilder.dropDown().withProps({
-			required: true
-		}).component();
+		const subscriptionLabel = view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_NETWORK_SHARE_SUBSCRIPTION_LABEL,
+				requiredIndicator: true,
+			}).component();
+		this._networkShareContainerSubscriptionDropdown = view.modelBuilder.dropDown()
+			.withProps({
+				required: true
+			}).component();
 		this._networkShareContainerSubscriptionDropdown.onValueChanged(async (value) => {
 			this._networkShare.storageSubscriptionId = (this._networkShareContainerSubscriptionDropdown.value as azdata.CategoryValue).name;
 			await this.loadNetworkShareStorageDropdown();
 		});
 
-		const storageAccountLabel = view.modelBuilder.text().withProps({
-			value: constants.DATABASE_BACKUP_NETWORK_SHARE_NETWORK_STORAGE_ACCOUNT_LABEL,
-			requiredIndicator: true,
-		}).component();
-		this._networkShareContainerStorageAccountDropdown = view.modelBuilder.dropDown().withProps({
-			required: true
-		}).component();
+		const storageAccountLabel = view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_NETWORK_SHARE_NETWORK_STORAGE_ACCOUNT_LABEL,
+				requiredIndicator: true,
+			}).component();
+		this._networkShareContainerStorageAccountDropdown = view.modelBuilder.dropDown()
+			.withProps({
+				required: true
+			}).component();
 		this._networkShareContainerStorageAccountDropdown.onValueChanged((value) => {
 			this._networkShare.storageAccountId = (this._networkShareContainerStorageAccountDropdown.value as azdata.CategoryValue).name;
 		});
