@@ -137,7 +137,11 @@
         "description": "%resource.type.azure.arc.description%",
         "platforms": "*",
         "icon": "./images/data_controller.svg",
-        "tags": ["Hybrid", "SQL Server", "PostgreSQL"],
+        "tags": [
+          "Hybrid",
+          "SQL Server",
+          "PostgreSQL"
+        ],
         "providers": [
           {
             "notebookWizard": {
@@ -591,7 +595,10 @@
         "description": "%resource.type.arc.sql.description%",
         "platforms": "*",
         "icon": "./images/miaa.svg",
-        "tags": ["Hybrid", "SQL Server"],
+        "tags": [
+          "Hybrid",
+          "SQL Server"
+        ],
         "providers": [
           {
             "notebookWizard": {
@@ -780,7 +787,10 @@
         "description": "%resource.type.arc.postgres.description%",
         "platforms": "*",
         "icon": "./images/postgres.svg",
-        "tags": ["Hybrid", "PostgreSQL"],
+        "tags": [
+          "Hybrid",
+          "PostgreSQL"
+        ],
         "providers": [
           {
             "notebookWizard": {
@@ -1024,7 +1034,8 @@
   "dependencies": {
     "request": "^2.88.0",
     "uuid": "^8.3.0",
-    "vscode-nls": "^4.1.2"
+    "vscode-nls": "^4.1.2",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
@@ -1032,6 +1043,7 @@
     "@types/request": "^2.48.3",
     "@types/sinon": "^9.0.4",
     "@types/uuid": "^8.3.0",
+    "@types/yamljs": "^0.2.31",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
