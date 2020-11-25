@@ -57,6 +57,8 @@
 		"Microsoft.schema-compare",
 		"Microsoft.sql-assessment",
 		"Microsoft.datavirtualization",
+		"Microsoft.sql-database-projects",
+		"Microsoft.machine-learning",
 		"Redgate.sql-prompt",
 		"Redgate.sql-search",
 		"IDERA.sqldm-performance-insights",
