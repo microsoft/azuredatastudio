@@ -9,7 +9,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { localize } from 'vs/nls';
 import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -105,7 +105,7 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 								'NeverShowAgainButton',
 								visualizerExtensionNotificationService
 							);
-							this.storageService.store(storageKey, true, StorageScope.GLOBAL);
+							this.storageService.store(storageKey, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
 						}
 					}],
 					{

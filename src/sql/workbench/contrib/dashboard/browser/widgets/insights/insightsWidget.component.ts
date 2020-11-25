@@ -28,7 +28,7 @@ import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IntervalTimer, createCancelablePromise } from 'vs/base/common/async';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -189,7 +189,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 			};
 			this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", currentTime.toLocaleTimeString(), currentTime.toLocaleDateString());
 			this._changeRef.detectChanges();
-			this.storageService.store(this._getStorageKey(), JSON.stringify(store), StorageScope.GLOBAL);
+			this.storageService.store(this._getStorageKey(), JSON.stringify(store), StorageScope.GLOBAL, StorageTarget.MACHINE);
 		}
 		return result;
 	}

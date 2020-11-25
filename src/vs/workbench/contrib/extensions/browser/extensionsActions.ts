@@ -66,7 +66,7 @@ import { ActionWithDropdownActionViewItem, IActionWithDropdownActionViewItemOpti
 import { IContextMenuProvider } from 'vs/base/browser/contextmenu';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as Constants from 'vs/workbench/contrib/logs/common/logConstants';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage'; // {{SQL CARBON EDIT}}
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage'; // {{SQL CARBON EDIT}}
 import product from 'vs/platform/product/common/product';
 
 const promptDownloadManually = (extension: IGalleryExtension | undefined, message: string, error: Error, instantiationService: IInstantiationService): Promise<any> => {
@@ -2942,7 +2942,7 @@ export class InstallVSIXAction extends Action {
 									label: localize('thirdPartyExt.dontShowAgain', 'Don\'t Show Again'),
 									isSecondary: true,
 									run: () => {
-										this.storageService.store(vsix.fsPath, true, StorageScope.GLOBAL);
+										this.storageService.store(vsix.fsPath, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
 										resolve(true);
 									}
 								}
