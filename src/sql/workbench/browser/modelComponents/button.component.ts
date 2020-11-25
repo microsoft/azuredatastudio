@@ -157,6 +157,10 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 			if (this.iconPath) {
 				this._button.element.style.backgroundSize = `${this.getIconWidth()} ${this.getIconHeight()}`;
 				this._button.element.style.paddingLeft = this.getIconWidth();
+				// If we have an icon but no specified height then default to the height of the icon so we're sure it fits
+				if (this.height === undefined) {
+					this._button.setHeight(convertSize(this.getIconHeight().toString()));
+				}
 			}
 
 		}
