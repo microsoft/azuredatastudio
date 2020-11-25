@@ -14,6 +14,7 @@ import { localize } from 'vs/nls';
 import { URI as uri } from 'vs/base/common/uri';
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
+import { ILabelService } from 'vs/platform/label/common/label';
 
 export interface IVariableResolveContext {
 	getFolderUri(folderName: string): uri | undefined;
@@ -27,17 +28,20 @@ export interface IVariableResolveContext {
 
 export class AbstractVariableResolverService implements IConfigurationResolverService {
 
+	static readonly VARIABLE_LHS = '${';
 	static readonly VARIABLE_REGEXP = /\$\{(.*?)\}/g;
 
 	declare readonly _serviceBrand: undefined;
 
 	private _context: IVariableResolveContext;
+	private _labelService?: ILabelService;
 	private _envVariables?: IProcessEnvironment;
 	protected _contributedVariables: Map<string, () => Promise<string | undefined>> = new Map();
 
 
-	constructor(_context: IVariableResolveContext, _envVariables?: IProcessEnvironment, private _ignoreEditorVariables = false) {
+	constructor(_context: IVariableResolveContext, _labelService?: ILabelService, _envVariables?: IProcessEnvironment, private _ignoreEditorVariables = false) {
 		this._context = _context;
+		this._labelService = _labelService;
 		if (_envVariables) {
 			if (isWindows) {
 				// windows env variables are case insensitive
@@ -127,6 +131,10 @@ export class AbstractVariableResolverService implements IConfigurationResolverSe
 
 		// loop through all variables occurrences in 'value'
 		const replaced = value.replace(AbstractVariableResolverService.VARIABLE_REGEXP, (match: string, variable: string) => {
+			// disallow attempted nesting, see #77289
+			if (variable.includes(AbstractVariableResolverService.VARIABLE_LHS)) {
+				return match;
+			}
 
 			let resolvedValue = this.evaluateSingleVariable(match, variable, folderUri, commandValueMapping);
 
@@ -138,6 +146,10 @@ export class AbstractVariableResolverService implements IConfigurationResolverSe
 		});
 
 		return replaced;
+	}
+
+	private fsPath(displayUri: uri): string {
+		return this._labelService ? this._labelService.getUriLabel(displayUri, { noPrefix: true }) : displayUri.fsPath;
 	}
 
 	private evaluateSingleVariable(match: string, variable: string, folderUri: uri | undefined, commandValueMapping: IStringDictionary<string> | undefined): string {
@@ -221,14 +233,14 @@ export class AbstractVariableResolverService implements IConfigurationResolverSe
 				switch (variable) {
 					case 'workspaceRoot':
 					case 'workspaceFolder':
-						return normalizeDriveLetter(getFolderUri().fsPath);
+						return normalizeDriveLetter(this.fsPath(getFolderUri()));
 
 					case 'cwd':
-						return ((folderUri || argument) ? normalizeDriveLetter(getFolderUri().fsPath) : process.cwd());
+						return ((folderUri || argument) ? normalizeDriveLetter(this.fsPath(getFolderUri())) : process.cwd());
 
 					case 'workspaceRootFolderName':
 					case 'workspaceFolderBasename':
-						return paths.basename(getFolderUri().fsPath);
+						return paths.basename(this.fsPath(getFolderUri()));
 
 					case 'lineNumber':
 						if (this._ignoreEditorVariables) {
@@ -261,7 +273,7 @@ export class AbstractVariableResolverService implements IConfigurationResolverSe
 							return match;
 						}
 						if (folderUri || argument) {
-							return paths.normalize(paths.relative(getFolderUri().fsPath, getFilePath()));
+							return paths.relative(this.fsPath(getFolderUri()), getFilePath());
 						}
 						return getFilePath();
 
@@ -271,7 +283,8 @@ export class AbstractVariableResolverService implements IConfigurationResolverSe
 						}
 						const dirname = paths.dirname(getFilePath());
 						if (folderUri || argument) {
-							return paths.normalize(paths.relative(getFolderUri().fsPath, dirname));
+							const relative = paths.relative(this.fsPath(getFolderUri()), dirname);
+							return relative.length === 0 ? '.' : relative;
 						}
 						return dirname;
 
@@ -300,12 +313,21 @@ export class AbstractVariableResolverService implements IConfigurationResolverSe
 						const basename = paths.basename(getFilePath());
 						return (basename.slice(0, basename.length - paths.extname(basename).length));
 
+					case 'fileDirnameBasename':
+						if (this._ignoreEditorVariables) {
+							return match;
+						}
+						return paths.basename(paths.dirname(getFilePath()));
+
 					case 'execPath':
 						const ep = this._context.getExecPath();
 						if (ep) {
 							return ep;
 						}
 						return match;
+
+					case 'pathSeparator':
+						return paths.sep;
 
 					default:
 						try {

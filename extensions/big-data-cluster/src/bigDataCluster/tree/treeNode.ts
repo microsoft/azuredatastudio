@@ -187,7 +187,7 @@ export abstract class TreeNode {
 		}
 	}
 
-	public abstract async getChildren(): Promise<TreeNode[]>;
+	public abstract getChildren(): Promise<TreeNode[]>;
 	public abstract getTreeItem(): vscode.TreeItem;
 	public abstract getNodeInfo(): azdata.NodeInfo;
 }

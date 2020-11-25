@@ -12,7 +12,7 @@ import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/co
 import { IConnectionProfile, ProfileMatcher } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
@@ -46,7 +46,8 @@ export class ConnectionStore {
 			this.mru = [];
 		}
 
-		this.storageService.onWillSaveState(() => this.storageService.store(RECENT_CONNECTIONS_STATE_KEY, JSON.stringify(this.mru), StorageScope.GLOBAL));
+		this.storageService.onWillSaveState(() =>
+			this.storageService.store(RECENT_CONNECTIONS_STATE_KEY, JSON.stringify(this.mru), StorageScope.GLOBAL, StorageTarget.MACHINE));
 	}
 
 	/**

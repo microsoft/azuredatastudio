@@ -13,7 +13,7 @@ export class TestChildProcessPromise<T> implements cp.ChildProcessPromise {
 
 	constructor() {
 		this._promise = new Promise<T>((resolve, reject) => {
-			this.resolve = resolve;
+			this.resolve = <any>resolve;
 			this.reject = reject;
 		});
 	}

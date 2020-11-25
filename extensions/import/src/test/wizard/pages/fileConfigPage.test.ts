@@ -86,7 +86,7 @@ describe('File config page', function () {
 
 	it('checking if all components are initialized properly', async function () {
 
-		await new Promise(function (resolve) {
+		await new Promise<void>(function (resolve) {
 			page.registerContent(async (view) => {
 				fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, fileConfigPage);
@@ -234,7 +234,7 @@ describe('File config page', function () {
 		sinon.stub(azdata.dataprotocol, 'getProvider').returns(mockQueryProvider.object);
 		mockQueryProvider.setup(x => x.runQueryAndReturn(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => { return schemaQueryResult; });
 
-		await new Promise(function (resolve) {
+		await new Promise<void>(function (resolve) {
 			page.registerContent(async (view) => {
 				fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, fileConfigPage);

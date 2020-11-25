@@ -5,7 +5,7 @@
 
 import * as nls from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
-import { toResource, IEditorCommandsContext, SideBySideEditor, IEditorIdentifier, SaveReason, SideBySideEditorInput, EditorsOrder } from 'vs/workbench/common/editor';
+import { EditorResourceAccessor, IEditorCommandsContext, SideBySideEditor, IEditorIdentifier, SaveReason, SideBySideEditorInput, EditorsOrder } from 'vs/workbench/common/editor';
 import { IWindowOpenable, IOpenWindowOptions, isWorkspaceToOpen, IOpenEmptyWindowOptions } from 'vs/platform/windows/common/windows';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -44,6 +44,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
 import { openEditorWith } from 'vs/workbench/services/editor/common/editorOpenWith';
+import { isPromiseCanceledError } from 'vs/base/common/errors';
 
 // Commands
 
@@ -135,10 +136,20 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 			const untitledResources = resources.filter(resource => resource.scheme === Schemas.untitled);
 			const fileResources = resources.filter(resource => resource.scheme !== Schemas.untitled);
 
-			const resolved = await fileService.resolveAll(fileResources.map(resource => ({ resource })));
-			const editors = resolved.filter(r => r.stat && r.success && !r.stat.isDirectory).map(r => ({
-				resource: r.stat!.resource
-			})).concat(...untitledResources.map(untitledResource => ({ resource: untitledResource })));
+			const items = await Promise.all(fileResources.map(async resource => {
+				const item = explorerService.findClosest(resource);
+				if (item) {
+					// Explorer already resolved the item, no need to go to the file service #109780
+					return item;
+				}
+
+				return await fileService.resolve(resource);
+			}));
+			const files = items.filter(i => !i.isDirectory);
+			const editors = files.map(f => ({
+				resource: f.resource,
+				options: { pinned: true }
+			})).concat(...untitledResources.map(untitledResource => ({ resource: untitledResource, options: { pinned: true } })));
 
 			await editorService.openEditors(editors, SIDE_GROUP);
 		}
@@ -147,7 +158,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingWeight.WorkbenchContrib + 10,
-	when: ContextKeyExpr.and(ExplorerFocusCondition, ExplorerFolderContext.toNegated()),
+	when: ContextKeyExpr.and(FilesExplorerFocusCondition, ExplorerFolderContext.toNegated()),
 	primary: KeyCode.Enter,
 	mac: {
 		primary: KeyMod.CtrlCmd | KeyCode.DownArrow
@@ -158,7 +169,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		const resources = explorerService.getContext(true);
 
 		if (resources.length) {
-			await editorService.openEditors(resources.map(r => ({ resource: r.resource, options: { preserveFocus: false } })));
+			await editorService.openEditors(resources.map(r => ({ resource: r.resource, options: { preserveFocus: false, pinned: true } })));
 		}
 	}
 });
@@ -193,11 +204,11 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 			const editorLabel = nls.localize('modifiedLabel', "{0} (in file) ↔ {1}", name, name);
 
 			try {
-				await TextFileContentProvider.open(uri, COMPARE_WITH_SAVED_SCHEMA, editorLabel, editorService);
+				await TextFileContentProvider.open(uri, COMPARE_WITH_SAVED_SCHEMA, editorLabel, editorService, { pinned: true });
 				// Dispose once no more diff editor is opened with the scheme
 				if (registerEditorListener) {
 					providerDisposables.push(editorService.onDidVisibleEditorsChange(() => {
-						if (!editorService.editors.some(editor => !!toResource(editor, { supportSideBySide: SideBySideEditor.SECONDARY, filterByScheme: COMPARE_WITH_SAVED_SCHEMA }))) {
+						if (!editorService.editors.some(editor => !!EditorResourceAccessor.getCanonicalUri(editor, { supportSideBySide: SideBySideEditor.SECONDARY, filterByScheme: COMPARE_WITH_SAVED_SCHEMA }))) {
 							providerDisposables = dispose(providerDisposables);
 						}
 					}));
@@ -234,7 +245,8 @@ CommandsRegistry.registerCommand({
 		if (resources.length === 2) {
 			return editorService.openEditor({
 				leftResource: resources[0],
-				rightResource: resources[1]
+				rightResource: resources[1],
+				options: { pinned: true }
 			});
 		}
 
@@ -252,7 +264,8 @@ CommandsRegistry.registerCommand({
 		if (globalResourceToCompare && rightResource) {
 			editorService.openEditor({
 				leftResource: globalResourceToCompare,
-				rightResource
+				rightResource,
+				options: { pinned: true }
 			});
 		}
 	}
@@ -306,7 +319,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	handler: async (accessor) => {
 		const editorService = accessor.get(IEditorService);
 		const activeInput = editorService.activeEditor;
-		const resource = activeInput ? activeInput.resource : null;
+		const resource = EditorResourceAccessor.getOriginalUri(activeInput, { supportSideBySide: SideBySideEditor.PRIMARY });
 		const resources = resource ? [resource] : [];
 		await resourcesToClipboard(resources, false, accessor.get(IClipboardService), accessor.get(INotificationService), accessor.get(ILabelService));
 	}
@@ -404,7 +417,7 @@ async function saveSelectedEditors(accessor: ServicesAccessor, options?: ISaveEd
 		const resource = focusedCodeEditor.getModel()?.uri;
 
 		// Check that the resource of the model was not saved already
-		if (resource && !editors.some(({ editor }) => isEqual(toResource(editor, { supportSideBySide: SideBySideEditor.PRIMARY }), resource))) {
+		if (resource && !editors.some(({ editor }) => isEqual(EditorResourceAccessor.getCanonicalUri(editor, { supportSideBySide: SideBySideEditor.PRIMARY }), resource))) {
 			const model = textFileService.files.get(resource);
 			if (!model?.isReadonly()) {
 				await textFileService.save(resource, options);
@@ -433,7 +446,9 @@ async function doSaveEditors(accessor: ServicesAccessor, editors: IEditorIdentif
 	try {
 		await editorService.save(editors, options);
 	} catch (error) {
-		notificationService.error(nls.localize({ key: 'genericSaveError', comment: ['{0} is the resource that failed to save and {1} the error message'] }, "Failed to save '{0}': {1}", editors.map(({ editor }) => editor.getName()).join(', '), toErrorMessage(error, false)));
+		if (!isPromiseCanceledError(error)) {
+			notificationService.error(nls.localize({ key: 'genericSaveError', comment: ['{0} is the resource that failed to save and {1} the error message'] }, "Failed to save '{0}': {1}", editors.map(({ editor }) => editor.getName()).join(', '), toErrorMessage(error, false)));
+		}
 	}
 }
 

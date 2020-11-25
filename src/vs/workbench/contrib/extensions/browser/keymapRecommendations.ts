@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionRecommendations, ExtensionRecommendation, PromptedExtensionRecommendations } from 'vs/workbench/contrib/extensions/browser/extensionRecommendations';
+import { ExtensionRecommendations, ExtensionRecommendation } from 'vs/workbench/contrib/extensions/browser/extensionRecommendations';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { ExtensionRecommendationReason } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { ExtensionRecommendationReason, IExtensionRecommendationReson } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
 
 export class KeymapRecommendations extends ExtensionRecommendations {
 
@@ -13,18 +13,16 @@ export class KeymapRecommendations extends ExtensionRecommendations {
 	get recommendations(): ReadonlyArray<ExtensionRecommendation> { return this._recommendations; }
 
 	constructor(
-		promptedExtensionRecommendations: PromptedExtensionRecommendations,
 		@IProductService private readonly productService: IProductService,
 	) {
-		super(promptedExtensionRecommendations);
+		super();
 	}
 
 	protected async doActivate(): Promise<void> {
 		if (this.productService.keymapExtensionTips) {
 			this._recommendations = this.productService.keymapExtensionTips.map(extensionId => (<ExtensionRecommendation>{
 				extensionId: extensionId.toLowerCase(),
-				source: 'application',
-				reason: {
+				reason: <IExtensionRecommendationReson>{ // {{SQL CARBON EDIT}}
 					reasonId: ExtensionRecommendationReason.Application,
 					reasonText: ''
 				}

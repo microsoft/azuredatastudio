@@ -13,7 +13,7 @@ import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiati
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { isString } from 'vs/base/common/types';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { ResourceViewResourcesExtensionHandler } from 'sql/workbench/contrib/resourceViewer/common/resourceViewerViewExtensionPoint';
 import { ResourceViewerView } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerView';
 import { ResourceViewerViewlet } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerViewlet';

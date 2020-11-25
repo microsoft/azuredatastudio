@@ -72,7 +72,7 @@ suite('Notebook Editor Model', function (): void {
 	const logService = new NullLogService();
 	const notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
 	let memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
-	memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
+	memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
 	let testinstantiationService = new TestInstantiationService();
 	testinstantiationService.stub(IStorageService, new TestStorageService());
 	testinstantiationService.stub(IProductService, { quality: 'stable' });

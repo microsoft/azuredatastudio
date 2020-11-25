@@ -214,6 +214,10 @@ export class Button extends Disposable {
 	focus(): void {
 		this._element.focus();
 	}
+
+	hasFocus(): boolean {
+		return this._element === document.activeElement;
+	}
 }
 
 export class ButtonGroup extends Disposable {

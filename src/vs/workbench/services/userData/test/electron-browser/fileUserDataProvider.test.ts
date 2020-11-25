@@ -13,14 +13,14 @@ import { NullLogService } from 'vs/platform/log/common/log';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { FileUserDataProvider } from 'vs/workbench/services/userData/common/fileUserDataProvider';
-import { joinPath, dirname } from 'vs/base/common/resources';
+import { joinPath } from 'vs/base/common/resources';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { DiskFileSystemProvider } from 'vs/platform/files/node/diskFileSystemProvider';
 import { DisposableStore, IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { BrowserWorkbenchEnvironmentService } from 'vs/workbench/services/environment/browser/environmentService';
 import { Emitter, Event } from 'vs/base/common/event';
-import { timeout } from 'vs/base/common/async';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { TestProductService } from 'vs/workbench/test/browser/workbenchTestServices';
 
 suite('FileUserDataProvider', () => {
 
@@ -42,7 +42,7 @@ suite('FileUserDataProvider', () => {
 		disposables.add(testObject.registerProvider(Schemas.file, diskFileSystemProvider));
 
 		const workspaceId = 'workspaceId';
-		environmentService = new BrowserWorkbenchEnvironmentService({ remoteAuthority: 'remote', workspaceId, logsPath: URI.file('logFile') });
+		environmentService = new BrowserWorkbenchEnvironmentService({ remoteAuthority: 'remote', workspaceId, logsPath: URI.file('logFile') }, TestProductService);
 
 		rootResource = URI.file(path.join(os.tmpdir(), 'vsctests', uuid.generateUuid()));
 		userDataHomeOnDisk = joinPath(rootResource, 'user');
@@ -315,7 +315,7 @@ suite('FileUserDataProvider - Watching', () => {
 
 	setup(() => {
 
-		environmentService = new BrowserWorkbenchEnvironmentService({ remoteAuthority: 'remote', workspaceId: 'workspaceId', logsPath: URI.file('logFile') });
+		environmentService = new BrowserWorkbenchEnvironmentService({ remoteAuthority: 'remote', workspaceId: 'workspaceId', logsPath: URI.file('logFile') }, TestProductService);
 
 		const rootResource = URI.file(path.join(os.tmpdir(), 'vsctests', uuid.generateUuid()));
 		localUserDataResource = joinPath(rootResource, 'user');
@@ -413,20 +413,6 @@ suite('FileUserDataProvider - Watching', () => {
 			resource: target,
 			type: FileChangeType.DELETED
 		}]);
-	});
-
-	test('event is not triggered if file is not under user data', async () => {
-		const target = joinPath(dirname(localUserDataResource), 'settings.json');
-		let triggered = false;
-		testObject.onDidFilesChange(() => triggered = true);
-		fileEventEmitter.fire([{
-			resource: target,
-			type: FileChangeType.DELETED
-		}]);
-		await timeout(0);
-		if (triggered) {
-			assert.fail('event should not be triggered');
-		}
 	});
 
 	test('backup file created change event', done => {

@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as platform from 'vs/base/common/platform';
-import type { IKeyValueStorage, IExperimentationTelemetry, IExperimentationFilterProvider, ExperimentationService as TASClient } from 'tas-client';
+import type { IKeyValueStorage, IExperimentationTelemetry, IExperimentationFilterProvider, ExperimentationService as TASClient } from 'tas-client-umd';
 import { MementoObject, Memento } from 'vs/workbench/common/memento';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { ITelemetryData } from 'vs/base/common/actions';
 import { ITASExperimentService } from 'vs/workbench/services/experiment/common/experimentService';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
@@ -201,12 +201,12 @@ export class ExperimentService implements ITASExperimentService {
 		);
 
 		const memento = new Memento(ExperimentService.MEMENTO_ID, this.storageService);
-		const keyValueStorage = new MementoKeyValueStorage(memento.getMemento(StorageScope.GLOBAL));
+		const keyValueStorage = new MementoKeyValueStorage(memento.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE));
 
 		const telemetry = new ExperimentServiceTelemetry(this.telemetryService);
 
 		const tasConfig = this.productService.tasConfig!;
-		const tasClient = new (await import('tas-client')).ExperimentationService({
+		const tasClient = new (await import('tas-client-umd')).ExperimentationService({
 			filterProviders: [filterProvider],
 			telemetry: telemetry,
 			storageKey: storageKey,

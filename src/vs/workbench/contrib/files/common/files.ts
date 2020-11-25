@@ -5,7 +5,7 @@
 
 import { URI } from 'vs/base/common/uri';
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
-import { IWorkbenchEditorConfiguration, IEditorIdentifier, IEditorInput, toResource, SideBySideEditor } from 'vs/workbench/common/editor';
+import { IWorkbenchEditorConfiguration, IEditorIdentifier, IEditorInput, EditorResourceAccessor, SideBySideEditor } from 'vs/workbench/common/editor';
 import { IFilesConfiguration as PlatformIFilesConfiguration, FileChangeType, IFileService } from 'vs/platform/files/common/files';
 import { ContextKeyExpr, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ITextModelContentProvider } from 'vs/editor/common/services/resolverService';
@@ -65,7 +65,8 @@ export interface IExplorerView {
 	setTreeInput(): Promise<void>;
 	itemsCopied(tats: ExplorerItem[], cut: boolean, previousCut: ExplorerItem[] | undefined): void;
 	setEditable(stat: ExplorerItem, isEditing: boolean): Promise<void>;
-	focusNextIfItemFocused(item: ExplorerItem): void;
+	focusNeighbourIfItemFocused(item: ExplorerItem): void;
+	isItemVisible(item: ExplorerItem): boolean;
 }
 
 export const IExplorerService = createDecorator<IExplorerService>('explorerService');
@@ -116,6 +117,7 @@ export interface IFilesConfiguration extends PlatformIFilesConfiguration, IWorkb
 	explorer: {
 		openEditors: {
 			visible: number;
+			sortOrder: 'editorOrder' | 'alphabetical';
 		};
 		autoReveal: boolean | 'focusNoScroll';
 		enableDragAndDrop: boolean;
@@ -230,16 +232,15 @@ export class TextFileContentProvider extends Disposable implements ITextModelCon
 
 export class OpenEditor implements IEditorIdentifier {
 
+	private id: number;
+	private static COUNTER = 0;
+
 	constructor(private _editor: IEditorInput, private _group: IEditorGroup) {
-		// noop
+		this.id = OpenEditor.COUNTER++;
 	}
 
 	get editor() {
 		return this._editor;
-	}
-
-	get editorIndex() {
-		return this._group.getIndexOfEditor(this.editor);
 	}
 
 	get group() {
@@ -251,7 +252,7 @@ export class OpenEditor implements IEditorIdentifier {
 	}
 
 	getId(): string {
-		return `openeditor:${this.groupId}:${this.editorIndex}:${this.editor.getName()}:${this.editor.getDescription()}`;
+		return `openeditor:${this.groupId}:${this.id}`;
 	}
 
 	isPreview(): boolean {
@@ -263,6 +264,6 @@ export class OpenEditor implements IEditorIdentifier {
 	}
 
 	getResource(): URI | undefined {
-		return toResource(this.editor, { supportSideBySide: SideBySideEditor.PRIMARY });
+		return EditorResourceAccessor.getOriginalUri(this.editor, { supportSideBySide: SideBySideEditor.PRIMARY });
 	}
 }
