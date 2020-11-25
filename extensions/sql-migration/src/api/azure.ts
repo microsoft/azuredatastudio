@@ -76,7 +76,7 @@ export async function getFileShares(account: azdata.Account, subscription: Subsc
 		`/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}` +
 		`/fileServices/default/shares?api-version=2019-06-01`;
 
-	let result = await api.runGetRequest(account, subscription, true, url);
+	let result = await api.makeHttpGetRequest(account, subscription, true, url);
 	let fileShares = [];
 	if (result.response.data?.value) {
 		fileShares = result.response.data.value;
@@ -94,7 +94,7 @@ export async function getBlobContainers(account: azdata.Account, subscription: S
 		`/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}` +
 		`/blobServices/default/containers?api-version=2019-06-01`;
 
-	let result = await api.runGetRequest(account, subscription, true, url);
+	let result = await api.makeHttpGetRequest(account, subscription, true, url);
 	let blobContainers = [];
 	if (result.response.data?.value) {
 		blobContainers = result.response.data.value;

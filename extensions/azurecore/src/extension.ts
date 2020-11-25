@@ -136,11 +136,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			query: string): Promise<azurecore.ResourceQueryResult<T>> {
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, query);
 		},
-		runGetRequest(account: azdata.Account,
+		makeHttpGetRequest(account: azdata.Account,
 			subscription: azureResource.AzureResourceSubscription,
 			ignoreErrors: boolean,
 			url: string) {
-			return azureResourceUtils.makeGetRequest(account, subscription, ignoreErrors, url);
+			return azureResourceUtils.makeHttpGetRequest(account, subscription, ignoreErrors, url);
 		}
 	};
 }

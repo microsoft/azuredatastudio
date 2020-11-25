@@ -288,7 +288,7 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
 	return result;
 }
 
-export async function makeGetRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false, url: string): Promise<GetRequestResult> {
+export async function makeHttpGetRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false, url: string): Promise<GetRequestResult> {
 	const result: GetRequestResult = { response: {}, errors: [] };
 
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
