@@ -1570,7 +1570,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		// data property though since the caller would still expect that to contain
 		// the Component objects they created
 		const properties = assign({}, this.properties);
-		if (properties.data) {
+		if (properties.data?.length > 0) {
 			properties.data = properties.data.map((row: any[]) => row.map(cell => {
 				if (cell instanceof ComponentWrapper) {
 					// First ensure that we register the component using addItem
@@ -1582,6 +1582,20 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 				}
 				return cell;
 			}));
+		} else {
+			if (properties.dataValues) {
+				properties.dataValues = properties.dataValues.map((row: azdata.DeclarativeTableCellValue[]) => row.map(cell => {
+					if (cell.value instanceof ComponentWrapper) {
+						// First ensure that we register the component using addItem
+						// such that it gets added to the ModelStore. We don't want to
+						// make the table component an actual container since that exposes
+						// a lot of functionality we don't need.
+						this.addItem(cell.value);
+						return { value: cell.value.id, ariaLabel: cell.ariaLabel, style: cell.style };
+					}
+					return cell;
+				}));
+			}
 		}
 		return properties;
 	}
