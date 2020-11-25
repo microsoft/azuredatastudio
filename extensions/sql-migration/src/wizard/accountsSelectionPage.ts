@@ -11,9 +11,7 @@ import * as constants from '../models/strings';
 
 export class AccountsSelectionPage extends MigrationWizardPage {
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
-	//private azureAccount!: azdata.Account;
 	private _accountsMap!: Map<string, azdata.Account>;
-	//private disposables: Disposable[] = [];
 
 	// For future reference: DO NOT EXPOSE WIZARD DIRECTLY THROUGH HERE.
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
@@ -31,7 +29,6 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		await this.populateAzureAccountsDropdown();
 		return;
 	}
-
 
 	private async createAzureAccountsDropdown(view: azdata.ModelView): Promise<azdata.FormComponent> {
 
@@ -53,7 +50,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 		const flexContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
-		}).withItems([this._azureAccountsDropdown, addAccountButton], { CSSStyles: { 'margin-right': '5px', } }).component();
+		}).withItems([this._azureAccountsDropdown, addAccountButton], { CSSStyles: { 'margin': '10px', } }).component();
 
 		return {
 			title: '',
@@ -82,8 +79,6 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		this.migrationStateModel.azureAccount = accounts[0];
 		this._azureAccountsDropdown.loading = false;
 	}
-
-
 
 	public onPageEnter(): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo: azdata.window.WizardPageChangeInfo) => {

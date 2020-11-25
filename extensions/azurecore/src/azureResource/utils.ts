@@ -305,7 +305,7 @@ export async function makeGetRequest(account: azdata.Account, subscription: azur
 		}
 		result.errors.push(error);
 	}
-	if (!result.errors.length) {
+	if (result.errors.length > 0) {
 		return result;
 	}
 
@@ -324,7 +324,7 @@ export async function makeGetRequest(account: azdata.Account, subscription: azur
 		}
 		result.errors.push(error);
 	}
-	if (!result.errors.length) {
+	if (result.errors.length > 0) {
 		return result;
 	}
 
