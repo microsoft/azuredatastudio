@@ -22,7 +22,6 @@ import { ExtensionRecommendation } from 'vs/workbench/contrib/extensions/browser
 import { ConfigBasedRecommendations } from 'vs/workbench/contrib/extensions/browser/configBasedRecommendations';
 import { StaticRecommendations } from 'sql/workbench/contrib/extensions/browser/staticRecommendations';
 import { ScenarioRecommendations } from 'sql/workbench/contrib/extensions/browser/scenarioRecommendations';
-import { ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/platform/extensions/common/extensions';
 import { IExtensionRecommendationNotificationService } from 'vs/platform/extensionRecommendations/common/extensionRecommendations';
 import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement'; // {{ SQL CARBON EDIT }}
 
@@ -115,7 +114,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 	}
 
 	private isEnabled(): boolean {
-		return this.galleryService.isEnabled() && !this.environmentService.extensionDevelopmentLocationURI && this.configurationService.getValue<string>(ExtensionsPolicyKey) !== ExtensionsPolicy.allowNone;
+		return this.galleryService.isEnabled() && !this.environmentService.extensionDevelopmentLocationURI;
 	}
 
 	private async activateProactiveRecommendations(): Promise<void> {

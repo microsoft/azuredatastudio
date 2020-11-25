@@ -2957,7 +2957,7 @@ export class InstallVSIXAction extends Action {
 						{ sticky: true }
 					);
 				}
-				await this.instantiationService.createInstance(ShowInstalledExtensionsAction, ShowInstalledExtensionsAction.ID, ShowInstalledExtensionsAction.LABEL).run(true);
+				await this.instantiationService.createInstance(ShowInstalledExtensionsAction, ShowInstalledExtensionsAction.ID, ShowInstalledExtensionsAction.LABEL).run();
 			});
 		} else {
 			this.notificationService.error(localize('InstallVSIXAction.allowNone', 'Your extension policy does not allow downloading extensions. Please change your extension policy and try again.'));
