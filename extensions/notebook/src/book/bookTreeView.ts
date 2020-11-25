@@ -144,8 +144,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		try {
 			let bookOptions: vscode.QuickPickItem[] = [];
 			let pickedSection: vscode.QuickPickItem;
-			let updateBook: BookTreeItem;
-			let bookSections: JupyterBookSection[];
 			this.books.forEach(book => {
 				if (!book.isNotebook) {
 					bookOptions.push({ label: book.bookItems[0].title, detail: book.bookPath });
@@ -157,9 +155,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			});
 
 			if (pickedBook && movingElement) {
-				updateBook = this.books.filter(book => book.bookPath === pickedBook.detail)[0].bookItems[0];
+				const updateBook = this.books.find(book => book.bookPath === pickedBook.detail).bookItems[0];
 				if (updateBook) {
-					bookSections = updateBook.sections;
+					let bookSections = updateBook.sections;
 					while (bookSections?.length > 0) {
 						bookOptions = [{ label: loc.labelAddToLevel, detail: pickedSection ? pickedSection.detail : '' }];
 						bookSections.forEach(section => {
@@ -186,8 +184,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						if (movingElement.tableOfContents.sections) {
 							// this is for notebooks what about sections
 							if (movingElement.contextValue === 'savedNotebook') {
-								let sourceBook = this.books.filter(book => book.getNotebook(movingElement.book.contentPath));
-								movingElement.tableOfContents.sections = sourceBook[0].bookItems[0].sections;
+								let sourceBook = this.books.find(book => book.getNotebook(movingElement.book.contentPath));
+								movingElement.tableOfContents.sections = sourceBook.bookItems[0].sections;
 							}
 						}
 						this.bookTocManager.updateBook(movingElement, updateBook, targetSection);

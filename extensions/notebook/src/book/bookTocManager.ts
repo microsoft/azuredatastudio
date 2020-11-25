@@ -15,10 +15,6 @@ export interface IBookTocManager {
 	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>
 }
-export enum tocOp {
-	Add,
-	Remove
-}
 
 const allowedFileExtensions: string[] = ['.md', '.ipynb'];
 const initMarkdown: string[] = ['index.md', 'introduction.md', 'intro.md', 'readme.md'];
@@ -94,6 +90,8 @@ export class BookTocManager implements IBookTocManager {
 			newToc[index] = this.buildTOC(version, section, findSection, addSection);
 		}
 		await fs.writeFile(tocPath, yaml.safeDump(newToc, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+		this.newSection = {};
+		this.tableofContents = [];
 	}
 
 	private buildTOC(version: string, section: JupyterBookSection, findSection: JupyterBookSection, addSection: JupyterBookSection): JupyterBookSection {
@@ -143,7 +141,8 @@ export class BookTocManager implements IBookTocManager {
 		let files = section.sections as JupyterBookSection[];
 		await fs.move(path.dirname(section.book.contentPath), path.join(rootPath, path.parse(uri).dir));
 		for (const elem of files) {
-			movedSections.push({ file: targetSection ? path.join(path.dirname(targetSection.file), elem.file) : elem.file, title: elem.title });
+			//TODO: support for nested section
+			movedSections.push({ file: targetSection ? path.join(path.dirname(targetSection.file), elem.file) : elem.file, title: elem.title, sections: elem.sections });
 		}
 		this.newSection.sections = movedSections;
 		if (book.version === BookVersion.v1) {
@@ -171,6 +170,7 @@ export class BookTocManager implements IBookTocManager {
 	 * @param targetSection Book section that'll be modified.
 	*/
 	public async updateBook(element: BookTreeItem, targetBook: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
+		// TODO: Modify the book's current table of contents so it doesn't throw an error
 		if (element.contextValue === 'section') {
 			// if the element that we want to move is a section, then we need to modify the sourceBook toc and remove the section before moving the files.
 			const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };

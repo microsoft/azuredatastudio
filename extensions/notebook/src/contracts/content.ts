@@ -145,7 +145,7 @@ export interface IJupyterBookSectionV2 {
 	expand_sections?: boolean;
 	/**
 	 * External link
-	*/
+	 */
 	url?: string;
 }
 
