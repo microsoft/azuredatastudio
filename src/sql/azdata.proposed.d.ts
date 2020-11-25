@@ -419,7 +419,7 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableCellValue {
-		value: string | number | boolean;
+		value: string | number | boolean | Component;
 		ariaLabel?: string;
 		style?: CssStyles
 	}

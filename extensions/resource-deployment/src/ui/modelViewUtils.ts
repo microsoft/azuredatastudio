@@ -36,6 +36,7 @@ export type InputValueType = string | number | undefined;
 export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder;
 export type InputComponentInfo<T extends InputComponent> = {
 	component: T;
+	labelComponent?: azdata.TextComponent;
 	getValue: () => Promise<InputValueType>;
 	getDisplayValue?: () => Promise<string>;
 	onValueChanged: vscode.Event<void>;
@@ -179,6 +180,7 @@ function createInputBoxField({ context, inputBoxType = 'text' }: { context: Fiel
 		enabled: instanceOfDynamicEnablementInfo(context.fieldInfo.enabled) ? false : context.fieldInfo.enabled, // Dynamic enablement is initially set to false
 		validations: context.fieldValidations
 	});
+	input.labelComponent = label;
 	addLabelInputPairToContainer(context.view, context.components, label, input.component, context.fieldInfo);
 	return input;
 }
@@ -370,9 +372,13 @@ async function hookUpDynamicEnablement(context: WizardPageContext): Promise<void
 				const updateFields = async () => {
 					const targetComponentValue = await targetComponent.getValue();
 					fieldComponent.component.enabled = targetComponentValue === targetValue;
+					const isRequired = fieldComponent.component.enabled === false ? false : field.required;
+					if (fieldComponent.labelComponent) {
+						fieldComponent.labelComponent.requiredIndicator = isRequired;
+					}
 					// We also need to update the required flag so that when the component is disabled it won't block the page from proceeding
 					if ('required' in fieldComponent.component) {
-						fieldComponent.component.required = fieldComponent.component.enabled === false ? false : field.required;
+						fieldComponent.component.required = isRequired;
 					}
 				};
 				targetComponent.onValueChanged(() => {
@@ -632,6 +638,7 @@ function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDown
 		required: context.fieldInfo.required,
 		label: context.fieldInfo.label
 	});
+	dropdown.labelComponent = label;
 	dropdown.component.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, dropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, dropdown.component, context.fieldInfo);
@@ -798,6 +805,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 		enabled: typeof context.fieldInfo.enabled === 'boolean' ? context.fieldInfo.enabled : false,
 		validations: context.fieldValidations
 	});
+	input.labelComponent = label;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, input);
 	input.component.enabled = false;
 	const browseFileButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.browse, width: buttonWidth }).component();
@@ -928,6 +936,7 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 	context.fieldInfo.labelPosition = LabelPosition.Left;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
 		component: radioGroupLoadingComponentBuilder,
+		labelComponent: label,
 		getValue: async (): Promise<InputValueType> => radioGroupLoadingComponentBuilder.value,
 		getDisplayValue: async (): Promise<string> => radioGroupLoadingComponentBuilder.displayValue,
 		onValueChanged: radioGroupLoadingComponentBuilder.onValueChanged,
@@ -1053,6 +1062,7 @@ async function processKubeStorageClassField(context: FieldContext): Promise<void
 		values: storageClasses,
 		defaultValue: defaultStorageClass
 	});
+	storageClassDropdown.labelComponent = label;
 	storageClassDropdown.component.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, storageClassDropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, storageClassDropdown.component, context.fieldInfo);
@@ -1078,6 +1088,7 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAcc
 		label: loc.account
 	});
 	accountDropdown.component.fireOnTextChange = true;
+	accountDropdown.labelComponent = label;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, accountDropdown);
 	const signInButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.signIn, width: '100px' }).component();
 	const refreshButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.refresh, width: '100px' }).component();
@@ -1111,6 +1122,7 @@ function createAzureSubscriptionDropdown(
 		label: loc.subscription
 	});
 	subscriptionDropdown.component.fireOnTextChange = true;
+	subscriptionDropdown.labelComponent = label;
 	context.fieldInfo.subFields!.push({
 		label: label.value!,
 		variableName: context.fieldInfo.subscriptionVariableName
@@ -1245,6 +1257,7 @@ function createAzureResourceGroupsDropdown(
 		label: loc.resourceGroup
 	});
 	resourceGroupDropdown.component.fireOnTextChange = true;
+	resourceGroupDropdown.labelComponent = label;
 	context.fieldInfo.subFields!.push({
 		label: label.value!,
 		variableName: context.fieldInfo.resourceGroupVariableName
@@ -1330,6 +1343,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 		values: locationValues
 	});
 	locationDropdown.component.fireOnTextChange = true;
+	locationDropdown.labelComponent = label;
 	context.fieldInfo.subFields = context.fieldInfo.subFields || [];
 	if (context.fieldInfo.locationVariableName) {
 		context.fieldInfo.subFields!.push({

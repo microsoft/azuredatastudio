@@ -8,7 +8,6 @@ import * as path from 'path';
 import * as yamljs from 'yamljs';
 import * as loc from '../localizedConstants';
 import { throwUnless } from './utils';
-
 export interface KubeClusterContext {
 	name: string;
 	isCurrentContext: boolean;

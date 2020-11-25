@@ -85,7 +85,7 @@ export class ModelManagementController extends ControllerBase {
 
 		// Open view
 		//
-		await view.open();
+		view.open();
 		await view.refresh();
 		return view;
 	}
@@ -120,7 +120,7 @@ export class ModelManagementController extends ControllerBase {
 			await view.refresh();
 			return view;
 		} else {
-			this._apiWrapper.showErrorMessage(constants.onnxNotSupportedError);
+			apiWrapper.showErrorMessage(constants.onnxNotSupportedError);
 			return undefined;
 		}
 	}
