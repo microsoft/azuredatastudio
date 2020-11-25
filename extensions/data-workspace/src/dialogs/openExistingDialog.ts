@@ -9,7 +9,7 @@ import * as path from 'path';
 import { DialogBase } from './dialogBase';
 import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
-import { directoryExist, fileExist } from '../common/utils';
+import { fileExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
 
 export class OpenExistingDialog extends DialogBase {
@@ -45,26 +45,17 @@ export class OpenExistingDialog extends DialogBase {
 			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Project) {
 				const fileExists = await fileExist(this._projectFile);
 				if (!fileExists) {
-					this.showErrorMessage(constants.ProjectFileNotExistError(this._projectFile));
+					this.showErrorMessage(constants.FileNotExistError(constants.Project.toLowerCase(), this._projectFile));
 					return false;
 				}
 
-				// workspace file should end in .code-workspace
-				const workspaceValid = this.workspaceInputBox!.value!.endsWith(constants.WorkspaceFileExtension);
-				if (!workspaceValid) {
-					this.showErrorMessage(constants.WorkspaceFileInvalidError(this.workspaceInputBox!.value!));
-					return false;
-				}
-
-				const workspaceParentDirectoryExists = await directoryExist(path.dirname(this.workspaceInputBox!.value!));
-				if (!workspaceParentDirectoryExists) {
-					this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(this.workspaceInputBox!.value!));
+				if (!await this.validateWorkspace(false)) {
 					return false;
 				}
 			} else if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
 				const fileExists = await fileExist(this._workspaceFile);
 				if (!fileExists) {
-					this.showErrorMessage(constants.WorkspaceFileNotExistError(this._workspaceFile));
+					this.showErrorMessage(constants.FileNotExistError(constants.Workspace.toLowerCase(), this._workspaceFile));
 					return false;
 				}
 			}

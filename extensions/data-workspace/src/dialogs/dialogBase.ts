@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
+import { directoryExist } from '../common/utils';
 
 interface Deferred<T> {
 	resolve: (result: T | Promise<T>) => void;
@@ -149,5 +150,24 @@ export abstract class DialogBase {
 			this.workspaceInputBox!.value = fileLocation;
 			this.workspaceInputBox!.title = fileLocation;
 		}
+	}
+
+	protected async validateWorkspace(sameFolderAsNewProject: boolean): Promise<boolean> {
+		// workspace file should end in .code-workspace
+		const workspaceValid = this.workspaceInputBox!.value!.endsWith(constants.WorkspaceFileExtension);
+		if (!workspaceValid) {
+			this.showErrorMessage(constants.WorkspaceFileInvalidError(this.workspaceInputBox!.value!));
+			return false;
+		}
+
+		// if the workspace file is not going to be in the same folder as the newly created project, then check that it's a valid folder
+		if (!sameFolderAsNewProject) {
+			const workspaceParentDirectoryExists = await directoryExist(path.dirname(this.workspaceInputBox!.value!));
+			if (!workspaceParentDirectoryExists) {
+				this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(this.workspaceInputBox!.value!));
+				return false;
+			}
+		}
+		return true;
 	}
 }

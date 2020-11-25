@@ -43,20 +43,9 @@ export class NewProjectDialog extends DialogBase {
 				return false;
 			}
 
-			// workspace file should end in .code-workspace
-			const workspaceValid = this.workspaceInputBox!.value!.endsWith(constants.WorkspaceFileExtension);
-			if (!workspaceValid) {
-				this.showErrorMessage(constants.WorkspaceFileInvalidError(this.workspaceInputBox!.value!));
+			const sameFolderAsNewProject = path.join(this.model.location, this.model.name) === path.dirname(this.workspaceInputBox!.value!);
+			if (!await this.validateWorkspace(sameFolderAsNewProject)) {
 				return false;
-			}
-
-			// if the workspace file is not going to be in the same folder as the newly created project, then check that it's a valid folder
-			if (path.join(this.model.location, this.model.name) !== path.dirname(this.workspaceInputBox!.value!)) {
-				const workspaceParentDirectoryExists = await directoryExist(path.dirname(this.workspaceInputBox!.value!));
-				if (!workspaceParentDirectoryExists) {
-					this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(this.workspaceInputBox!.value!));
-					return false;
-				}
 			}
 
 			return true;
