@@ -12,6 +12,7 @@ import { azureResource } from 'azureResource';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { AppContext } from '../appContext';
+import { invalidAzureAccount, invalidTenant, unableToFetchTokenError } from '../localizedConstants';
 import { AzureResourceServiceNames } from './constants';
 import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionService } from './interfaces';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
@@ -108,7 +109,7 @@ export function equals(one: any, other: any): boolean {
 export async function getResourceGroups(appContext: AppContext, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false): Promise<GetResourceGroupsResult> {
 	const result: GetResourceGroupsResult = { resourceGroups: [], errors: [] };
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants) || !subscription) {
-		const error = new Error(localize('azure.accounts.getResourceGroups.invalidParamsError', "Invalid account or subscription"));
+		const error = new Error(invalidAzureAccount);
 		if (!ignoreErrors) {
 			throw error;
 		}
@@ -148,7 +149,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 	query: string): Promise<ResourceQueryResult<T>> {
 	const result: ResourceQueryResult<T> = { resources: [], errors: [] };
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
-		const error = new Error(localize('azure.accounts.runResourceQuery.errors.invalidAccount', "Invalid account"));
+		const error = new Error(invalidAzureAccount);
 		if (!ignoreErrors) {
 			throw error;
 		}
@@ -159,7 +160,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 	// Check our subscriptions to ensure we have valid ones
 	subscriptions.forEach(subscription => {
 		if (!subscription.tenant) {
-			const error = new Error(localize('azure.accounts.runResourceQuery.errors.noTenantSpecifiedForSubscription', "Invalid tenant for subscription"));
+			const error = new Error(invalidTenant);
 			if (!ignoreErrors) {
 				throw error;
 			}
@@ -190,7 +191,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 			resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 		} catch (err) {
 			console.error(err);
-			const error = new Error(localize('azure.accounts.runResourceQuery.errors.unableToFetchToken', "Unable to get token for tenant {0}", tenant.id));
+			const error = new Error(unableToFetchTokenError(tenant.id));
 			result.errors.push(error);
 			continue;
 		}
@@ -229,7 +230,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 export async function getSubscriptions(appContext: AppContext, account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> {
 	const result: GetSubscriptionsResult = { subscriptions: [], errors: [] };
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
-		const error = new Error(localize('azure.accounts.getSubscriptions.invalidParamsError', "Invalid account"));
+		const error = new Error(invalidAzureAccount);
 		if (!ignoreErrors) {
 			throw error;
 		}
@@ -263,7 +264,7 @@ export async function getSubscriptions(appContext: AppContext, account?: azdata.
 export async function getSelectedSubscriptions(appContext: AppContext, account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> {
 	const result: GetSubscriptionsResult = { subscriptions: [], errors: [] };
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
-		const error = new Error(localize('azure.accounts.getSelectedSubscriptions.invalidParamsError', "Invalid account"));
+		const error = new Error(invalidAzureAccount);
 		if (!ignoreErrors) {
 			throw error;
 		}
@@ -291,7 +292,7 @@ export async function makeGetRequest(account: azdata.Account, subscription: azur
 	const result: GetRequestResult = { response: {}, errors: [] };
 
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
-		const error = new Error(localize('azure.accounts.getSubscriptions.invalidParamsError', "Invalid account"));
+		const error = new Error(invalidAzureAccount);
 		if (!ignoreErrors) {
 			throw error;
 		}
@@ -299,7 +300,7 @@ export async function makeGetRequest(account: azdata.Account, subscription: azur
 	}
 
 	if (!subscription.tenant) {
-		const error = new Error(localize('azure.accounts.runResourceQuery.errors.noTenantSpecifiedForSubscription', "Invalid tenant for subscription"));
+		const error = new Error(invalidTenant);
 		if (!ignoreErrors) {
 			throw error;
 		}
@@ -318,7 +319,7 @@ export async function makeGetRequest(account: azdata.Account, subscription: azur
 		);
 	} catch (err) {
 		console.error(err);
-		const error = new Error(localize('azure.accounts.runResourceQuery.errors.unableToFetchToken', "Unable to get token for tenant {0}", subscription.tenant));
+		const error = new Error(unableToFetchTokenError(subscription.tenant));
 		if (!ignoreErrors) {
 			throw error;
 		}
