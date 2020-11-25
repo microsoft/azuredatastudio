@@ -3449,7 +3449,6 @@ declare module 'azdata' {
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
-		[x: string]: string | undefined;
 		onTextChanged: vscode.Event<any>;
 		/**
 		 * Event that's fired whenever enter is pressed within the input box
