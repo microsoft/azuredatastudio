@@ -7,6 +7,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { entries } from 'sql/base/common/collections';
 import { IComponentDescriptor, IModelStore, IComponent } from 'sql/platform/dashboard/browser/interfaces';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 class ComponentDescriptor implements IComponentDescriptor {
 	constructor(public readonly id: string, public readonly type: string) {
@@ -22,7 +23,7 @@ export class ModelStore implements IModelStore {
 	private _componentMappings: { [x: string]: IComponent } = {};
 	private _componentActions: { [x: string]: { initial: ModelStoreAction<any>[], actions: Deferred<IComponent> } } = {};
 	private _validationCallbacks: ((componentId: string) => Thenable<boolean>)[] = [];
-	constructor() {
+	constructor(private _logService: ILogService) {
 	}
 
 	public createComponentDescriptor(type: string, id: string): IComponentDescriptor {
@@ -36,12 +37,14 @@ export class ModelStore implements IModelStore {
 	}
 
 	registerComponent(component: IComponent): void {
+		this._logService.debug(`Registering component ${component.descriptor.id}`);
 		let id = component.descriptor.id;
 		this._componentMappings[id] = component;
 		this.runPendingActions(id, component);
 	}
 
 	unregisterComponent(component: IComponent): void {
+		this._logService.debug(`Unregistering component ${component.descriptor.id}`);
 		let id = component.descriptor.id;
 		this._componentMappings[id] = undefined;
 		this._componentActions[id] = undefined;
