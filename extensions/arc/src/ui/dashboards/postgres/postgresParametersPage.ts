@@ -139,19 +139,7 @@ export class PostgresParametersPage extends DashboardPage {
 		this.parameterContainer = this.modelView.modelBuilder.divContainer().component();
 		this.selectComponent();
 
-
-
-		//this.handleEngineSettingsUpdated();
-
-
 		content.addItem(this.parameterContainer);
-
-
-
-
-		//this.handleEnginerSettingsUpdated();
-		//content.addItem(this.parameterContainer);
-		//content.addItem(this.connectToServerButton, { CSSStyles: { 'max-width': '125px' } });
 
 		this.initialized = true;
 
@@ -209,7 +197,7 @@ export class PostgresParametersPage extends DashboardPage {
 		this.discardButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.discardText,
 			iconPath: IconPathHelper.discard,
-			enabled: false
+			enabled: true //TODO
 		}).component();
 
 		this.disposables.push(
@@ -217,6 +205,8 @@ export class PostgresParametersPage extends DashboardPage {
 				this.discardButton!.enabled = false;
 				try {
 					// TODO
+					this.parametersTable.data = [
+						this.parameterComponents('TEST NAME', 'string')];
 					this.engineSettingUpdates!.clear();
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
@@ -320,7 +310,7 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private filterParameters() {
-
+		//TODO
 	}
 
 	private createParametersTable() {
@@ -358,7 +348,8 @@ export class PostgresParametersPage extends DashboardPage {
 		if (type === 'enum') {
 			// If type is enum, component should be drop down menu
 			let valueBox = this.modelView.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
-				values: [], //TODO
+				values: [], //TODO,
+				value: '', //TODO
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
@@ -500,35 +491,10 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private handleEngineSettingsUpdated(): void {
-		// If we were able to get the databases it means we have a good connection so update the username too
-		/* this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
-		this.refreshDisplayedProperties();
-		this._databasesTable.data = this._miaaModel.databases.map(d => [d.name, getDatabaseStateDisplayText(d.status)]);
-		this._databasesTableLoading.loading = !this._miaaModel.databasesLastUpdated;*/
-
-
-		//this.handleEnginerSettingsUpdated();
-		//content.addItem(this.parameterContainer);
-		//content.addItem(this.connectToServerButton, { CSSStyles: { 'max-width': '125px' } });
-
-		// Assign the loading component after it has data
-		//this._parametersTableLoading.component = this.parametersTable;
-
-
-		//this.parameterContainer.addItem(this._parametersTableLoading.component);
-
-
-
 		if (this._postgresModel.engineSettingsLastUpdated) {
 
 		}
-
-
-		//this.parameterContainer.addItem(this._parametersTableLoading.component);
 	}
-
-
-
 
 	private handleServiceUpdated() {
 		// TODO
