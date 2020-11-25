@@ -14,6 +14,11 @@ export interface KubeClusterContext {
 	isCurrentContext: boolean;
 }
 
+/**
+ * returns the cluster context defined in the {@see configFile}
+ *
+ * @param configFile
+ */
 export function getKubeConfigClusterContexts(configFile: string): Promise<KubeClusterContext[]> {
 	const config: any = yamljs.load(configFile);
 	const rawContexts = <any[]>config['contexts'];
@@ -38,8 +43,8 @@ export function getKubeConfigClusterContexts(configFile: string): Promise<KubeCl
  * searches for {@see previousClusterContext} in the array of {@see clusterContexts}.
  * if {@see previousClusterContext} was truthy and it was found in {@see clusterContexts}
  * 		then it returns {@see previousClusterContext}
- * 		else it returns the current current cluster context from {@see clusterContexts} unless throwIfNotFound was set on input in which case an error is thrown instead.
- * else it returns the current current cluster context from {@see clusterContexts}
+ * 		else it returns the current cluster context from {@see clusterContexts} unless throwIfNotFound was set on input in which case an error is thrown instead.
+ * else it returns the current cluster context from {@see clusterContexts}
  *
  *
  * @param clusterContexts
@@ -48,7 +53,7 @@ export function getKubeConfigClusterContexts(configFile: string): Promise<KubeCl
  */
 export function getCurrentClusterContext(clusterContexts: KubeClusterContext[], previousClusterContext?: string, throwIfNotFound: boolean = false): string {
 	if (previousClusterContext) {
-		if (clusterContexts.filter(c => c.name === previousClusterContext).length > 0) { // if previous cluster context value is found in clusters then return that
+		if (clusterContexts.filter(c => c.name === previousClusterContext).length > 0) { // if previous cluster context value is found in clusters then return that value
 			return previousClusterContext;
 		} else {
 			if (throwIfNotFound) {
@@ -56,11 +61,16 @@ export function getCurrentClusterContext(clusterContexts: KubeClusterContext[], 
 			}
 		}
 	}
+
+	// if not previousClusterContext or throwIfNotFound was false when previousCLusterContext was not found in the clusterContexts
 	const currentClusterContext = clusterContexts.filter(c => c.isCurrentContext).pop()?.name;
 	throwUnless(currentClusterContext !== undefined, loc.noCurrentClusterContext);
 	return currentClusterContext;
 }
 
+/**
+ * returns the default kube config file path
+ */
 export function getDefaultKubeConfigPath(): string {
 	return path.join(os.homedir(), '.kube', 'config');
 }

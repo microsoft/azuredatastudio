@@ -68,19 +68,19 @@ export class RadioOptionsGroup implements IReadOnly {
 		return this._currentRadioOption?.value;
 	}
 
-	get readOnly(): boolean | undefined {
+	get readOnly(): boolean {
 		return this.enabled;
 	}
 
-	set readOnly(value: boolean | undefined) {
+	set readOnly(value: boolean) {
 		this.enabled = value;
 	}
 
-	get enabled(): boolean | undefined {
-		return this._divContainer.items.every(r => r.enabled) && this._divContainer.enabled;
+	get enabled(): boolean {
+		return !!this._divContainer.enabled && this._divContainer.items.every(r => r.enabled);
 	}
 
-	set enabled(value: boolean | undefined) {
+	set enabled(value: boolean) {
 		this._divContainer.items.forEach(r => r.enabled = value);
 		this._divContainer.enabled = value;
 	}

@@ -60,9 +60,7 @@ function setupMockComponentBuilderAndComponent<T extends azdata.Component, P ext
 	componentGetter?: ((props: P) => T)
 ) {
 	mockComponentBuilder = mockComponentBuilder ?? TypeMoq.Mock.ofType<B>();
-	const mockComponent = TypeMoq.Mock.ofType<T>();
-	// Need to setup 'then' for when a mocked object is resolved otherwise the test will hang : https://github.com/florinn/typemoq/issues/66
-	mockComponent.setup((x: any) => x.then).returns(() => { });
+	const mockComponent = createComponentMock<T>();
 	let compProps: P;
 	mockComponentBuilder.setup(b => b.withProperties(TypeMoq.It.isAny())).callback((props: P) => compProps = props).returns(() => mockComponentBuilder!.object);
 	mockComponentBuilder.setup(b => b.component()).returns(() => {
@@ -74,12 +72,23 @@ function setupMockComponentBuilderAndComponent<T extends azdata.Component, P ext
 	return { mockComponentBuilder, mockComponent };
 }
 
+function createComponentMock<T extends azdata.Component>() {
+	const mockComponent = TypeMoq.Mock.ofType<T>();
+	// Need to setup 'then' for when a mocked object is resolved otherwise the test will hang : https://github.com/florinn/typemoq/issues/66
+	mockComponent.setup((x: any) => x.then).returns(() => { });
+	return mockComponent;
+}
+
 export function setupMockContainerBuilder<T extends azdata.Container<any, any>, P extends azdata.ComponentProperties, B extends azdata.ContainerBuilder<T, any, any, any> = azdata.ContainerBuilder<T, any, any, any>>(
 	mockContainerBuilder?: TypeMoq.IMock<B>
 ): TypeMoq.IMock<B> {
-	mockContainerBuilder = mockContainerBuilder ?? setupMockComponentBuilder<T, P, B>();
+	const items: azdata.Component[] = [];
+	const mockContainer = createComponentMock<T>(); // T is azdata.Container type so this creates a azdata.Container mock
+	mockContainer.setup(c => c.items).returns(() => items);
+	mockContainerBuilder = mockContainerBuilder ?? setupMockComponentBuilder<T, P, B>((_props) => mockContainer.object);
+
+	mockContainerBuilder.setup(b => b.withItems(TypeMoq.It.isAny(), TypeMoq.It.isAny())).callback((_items, _itemsStyle) => items.push(..._items)).returns(() => mockContainerBuilder!.object);
 	// For now just have these be passthrough - can hook up additional functionality later if needed
-	mockContainerBuilder.setup(b => b.withItems(TypeMoq.It.isAny(), undefined)).returns(() => mockContainerBuilder!.object);
 	mockContainerBuilder.setup(b => b.withLayout(TypeMoq.It.isAny())).returns(() => mockContainerBuilder!.object);
 	return mockContainerBuilder;
 }

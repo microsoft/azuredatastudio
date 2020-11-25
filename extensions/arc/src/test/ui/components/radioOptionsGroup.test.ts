@@ -74,13 +74,20 @@ describe('radioOptionsGroup', function (): void {
 		label.CSSStyles!.color.should.equal('Red');
 	});
 
-	it('getters and setters', async () => {
-		radioOptionsGroup.component().should.equal(loadingComponent);
-		[true, false, undefined].forEach(testValue => {
-			radioOptionsGroup.readOnly = testValue;
-			radioOptionsGroup.readOnly!.should.equal(testValue);
-			radioOptionsGroup.enabled = testValue;
-			radioOptionsGroup.enabled!.should.equal(testValue);
+	describe('getters and setters', async () => {
+		it(`component getter`, () => {
+			radioOptionsGroup.component().should.deepEqual(loadingComponent);
+		});
+
+		[true, false].forEach(testValue => {
+			it(`Test readOnly with testValue: ${testValue}`, () => {
+				radioOptionsGroup.readOnly = testValue;
+				radioOptionsGroup.readOnly!.should.equal(testValue);
+			});
+			it(`Test enabled with testValue: ${testValue}`, () => {
+				radioOptionsGroup.enabled = testValue;
+				radioOptionsGroup.enabled!.should.equal(testValue);
+			});
 		});
 	});
 });

@@ -44,9 +44,9 @@ export class FilePicker implements IReadOnly {
 			});
 
 			if (!fileUris || fileUris.length === 0) {
-				return; // TODO: Should we throw here?
+				return; // TODO: Should we throw here. It is unclear whey showOpenDialog above will return undefined or an empty array
 			}
-			const fileUri = fileUris[0];
+			const fileUri = fileUris[0]; //we allow the user to select only one file in the dialog
 			this._filePathInputBox.value = fileUri.fsPath;
 		}));
 		this._flexContainer = createFlexContainer(modelBuilder, [this._filePathInputBox, this._filePickerButton]);
@@ -64,19 +64,19 @@ export class FilePicker implements IReadOnly {
 		return this._filePathInputBox?.value;
 	}
 
-	get readOnly(): boolean | undefined {
+	get readOnly(): boolean {
 		return this.enabled;
 	}
 
-	set readOnly(value: boolean | undefined) {
+	set readOnly(value: boolean) {
 		this.enabled = value;
 	}
 
-	get enabled(): boolean | undefined {
-		return this._flexContainer.items.every(r => r.enabled) && this._flexContainer.enabled;
+	get enabled(): boolean {
+		return !!this._flexContainer.enabled && this._flexContainer.items.every(r => r.enabled);
 	}
 
-	set enabled(value: boolean | undefined) {
+	set enabled(value: boolean) {
 		this._flexContainer.items.forEach(r => r.enabled = value);
 		this._flexContainer.enabled = value;
 	}

@@ -55,7 +55,7 @@ describe('KubeUtils', function (): void {
 		});
 		it('throws error when unable to load config file', async () => {
 			const error = new Error('unknown error accessing file');
-			sinon.stub(yamljs, 'load').throws(error); //erroring config file load
+			sinon.stub(yamljs, 'load').throws(error); // simulate an error thrown from config file load
 			((await tryExecuteAction(() => getKubeConfigClusterContexts(configFile))).error).should.equal(error, `test: getKubeConfigClusterContexts failed`);
 		});
 	});

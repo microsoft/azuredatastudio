@@ -4,9 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as should from 'should';
 import * as sinon from 'sinon';
+import * as vscode from 'vscode';
+import { Deferred } from '../../../common/promise';
 import { FilePicker } from '../../../ui/components/filePicker';
 import { createModelViewMock } from '../../stubs';
 
@@ -19,10 +20,11 @@ let flexContainer: azdata.FlexContainer;
 const browseButtonEmitter = new vscode.EventEmitter<undefined>();
 describe('filePicker', function (): void {
 	beforeEach(async () => {
-		const { mockModelBuilder, mockInputBoxBuilder, mockButtonBuilder } = createModelViewMock();
+		const { mockModelBuilder, mockInputBoxBuilder, mockButtonBuilder, mockFlexBuilder } = createModelViewMock(browseButtonEmitter);
 		filePicker = new FilePicker(mockModelBuilder.object, initialPath, (_disposable) => { });
 		filePathInputBox = mockInputBoxBuilder.object.component();
 		browseButton = mockButtonBuilder.object.component();
+		flexContainer = mockFlexBuilder.object.component();
 	});
 
 	afterEach(() => {
@@ -31,20 +33,35 @@ describe('filePicker', function (): void {
 
 	it('browse Button chooses new FilePath', async () => {
 		should(filePathInputBox.value).should.not.be.undefined();
-		filePathInputBox.value!.should.equal(initialPath);
+		filePicker.value!.should.equal(initialPath);
 		flexContainer.items.should.deepEqual([filePathInputBox, browseButton]);
-		sinon.stub(vscode.window, 'showOpenDialog').resolves([<vscode.Uri>{ fsPath: newFilePath }]);
+		const deferred = new Deferred();
+		sinon.stub(vscode.window, 'showOpenDialog').callsFake((_options) =>
+			Promise.resolve([<vscode.Uri>{ fsPath: newFilePath }])
+				.then((_value => {
+					deferred.resolve();
+					return _value;
+				})
+				)
+		);
 		browseButtonEmitter.fire(undefined); //simulate the click of the browseButton
-		filePathInputBox.value!.should.equal(newFilePath);
+		await deferred;
+		filePicker.value!.should.equal(newFilePath);
 	});
 
-	it('getters and setters', async () => {
-		filePicker.component().should.equal(filePathInputBox);
-		[true, false, undefined].forEach(testValue => {
-			filePicker.readOnly = testValue;
-			filePicker.readOnly!.should.equal(testValue);
-			filePicker.enabled = testValue;
-			filePicker.enabled!.should.equal(testValue);
+	describe('getters and setters', async () => {
+		it('component getter', () => {
+			should(filePicker.component()).equal(flexContainer);
+		});
+		[true, false].forEach(testValue => {
+			it(`Test readOnly with testValue: ${testValue}`, () => {
+				filePicker.readOnly = testValue;
+				filePicker.readOnly!.should.equal(testValue);
+			});
+			it(`Test enabled with testValue: ${testValue}`, () => {
+				filePicker.enabled = testValue;
+				filePicker.enabled!.should.equal(testValue);
+			});
 		});
 	});
 });
