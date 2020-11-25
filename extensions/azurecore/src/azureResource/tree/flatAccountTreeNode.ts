@@ -117,7 +117,10 @@ export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 						}
 					}
 				}
-				dataResources = dataResources.sort((a, b) => { return a.resourceNode.treeItem.label.localeCompare(b.resourceNode.treeItem.label); });
+				dataResources = dataResources.sort((a, b) => {
+					let label = <any>a.resourceNode.treeItem.label;
+					return label.localeCompare(b.resourceNode.treeItem.label);
+				});
 				this.updateCache(dataResources);
 				this._isClearingCache = false;
 			} else {
