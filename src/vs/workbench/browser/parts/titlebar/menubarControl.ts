@@ -266,7 +266,7 @@ export abstract class MenubarControl extends Disposable {
 			}
 		]);
 
-		this.storageService.store2('menubar/accessibleMenubarNotified', true, StorageScope.GLOBAL, StorageTarget.USER);
+		this.storageService.store('menubar/accessibleMenubarNotified', true, StorageScope.GLOBAL, StorageTarget.USER);
 	}
 }
 

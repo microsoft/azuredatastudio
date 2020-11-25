@@ -967,7 +967,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 	}
 
 	private setStoredPinnedViewContainersValue(value: string): void {
-		this.storageService.store2(ActivitybarPart.PINNED_VIEW_CONTAINERS, value, StorageScope.GLOBAL, StorageTarget.USER);
+		this.storageService.store(ActivitybarPart.PINNED_VIEW_CONTAINERS, value, StorageScope.GLOBAL, StorageTarget.USER);
 	}
 
 	private getPlaceholderViewContainers(): IPlaceholderViewContainer[] {
@@ -999,7 +999,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 	}
 
 	private setStoredPlaceholderViewContainersValue(value: string): void {
-		this.storageService.store2(ActivitybarPart.PLACEHOLDER_VIEW_CONTAINERS, value, StorageScope.GLOBAL, StorageTarget.MACHINE);
+		this.storageService.store(ActivitybarPart.PLACEHOLDER_VIEW_CONTAINERS, value, StorageScope.GLOBAL, StorageTarget.MACHINE);
 	}
 
 	private get homeBarVisibilityPreference(): boolean {
@@ -1007,7 +1007,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 	}
 
 	private set homeBarVisibilityPreference(value: boolean) {
-		this.storageService.store2(ActivitybarPart.HOME_BAR_VISIBILITY_PREFERENCE, value, StorageScope.GLOBAL, StorageTarget.USER);
+		this.storageService.store(ActivitybarPart.HOME_BAR_VISIBILITY_PREFERENCE, value, StorageScope.GLOBAL, StorageTarget.USER);
 	}
 
 	private get accountsVisibilityPreference(): boolean {
@@ -1015,7 +1015,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 	}
 
 	private set accountsVisibilityPreference(value: boolean) {
-		this.storageService.store2(ACCOUNTS_VISIBILITY_PREFERENCE_KEY, value, StorageScope.GLOBAL, StorageTarget.USER);
+		this.storageService.store(ACCOUNTS_VISIBILITY_PREFERENCE_KEY, value, StorageScope.GLOBAL, StorageTarget.USER);
 	}
 
 	private migrateFromOldCachedViewContainersValue(): void {

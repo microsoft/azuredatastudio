@@ -66,7 +66,6 @@ import 'vs/workbench/electron-browser/desktop.main';
 
 import 'vs/workbench/services/integrity/node/integrityService';
 import 'vs/workbench/services/search/electron-browser/searchService';
-import 'vs/workbench/services/output/electron-browser/outputChannelModelService';
 import 'vs/workbench/services/textfile/electron-browser/nativeTextFileService';
 import 'vs/workbench/services/keybinding/electron-browser/nativeKeymapService';
 import 'vs/workbench/services/extensions/electron-browser/extensionService';
@@ -130,6 +129,9 @@ registerSingleton(IQueryHistoryService, QueryHistoryService);
 
 
 //#region --- workbench contributions
+
+// Output
+import 'vs/workbench/contrib/output/electron-browser/outputChannelModelService';
 
 // Tags
 import 'vs/workbench/contrib/tags/electron-browser/workspaceTagsService';
