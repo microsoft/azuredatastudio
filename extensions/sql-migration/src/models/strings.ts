@@ -78,6 +78,6 @@ export const DATABASE_BACKUP_MIGRATION_CUTOVER_AUTOMATIC_LABEL = localize('sql.m
 export const DATABASE_BACKUP_MIGRATION_CUTOVER_MANUAL_LABEL = localize('sql.migration.databse.migration.cutover.manual.label', "Manually cutover when migration is complete");
 export const DATABASE_BACKUP_EMAIL_NOTIFICATION_LABEL = localize('sql.migration.database.backup.email.notification.label', "Email notifications");
 export const DATABASE_BACKUP_EMAIL_NOTIFICATION_CHECKBOX_LABEL = localize('sql.migration.database.backup.email.notification.checkbox.label', "Notify me when migration is complete");
-
+export const NO_SUBSCRIPTION_FOUND = localize('sql.migration.no.subscription.found', "No subscription found");
 
 

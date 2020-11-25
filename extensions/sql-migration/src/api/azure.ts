@@ -74,8 +74,7 @@ export async function getFileShares(account: azdata.Account, subscription: Subsc
 		`/resourceGroups/${storageAccount.resourceGroup}` +
 		`/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}` +
 		`/fileServices/default/shares?api-version=2019-06-01`;
-	console.log(url);
-	return (await api.runGetRequest(account, subscription, url)).data.value;
+	return (await api.runGetRequest(account, subscription, false, url)).response.data.value;
 }
 
 export type BlobContainer = AzureProduct;
@@ -86,6 +85,6 @@ export async function getBlobContainers(account: azdata.Account, subscription: S
 		`/resourceGroups/${storageAccount.resourceGroup}` +
 		`/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}` +
 		`/blobServices/default/containers?api-version=2019-06-01`;
-	const response = (await api.runGetRequest(account, subscription, url)).data.value;
+	const response = (await api.runGetRequest(account, subscription, false, url)).response.data.value;
 	return response;
 }

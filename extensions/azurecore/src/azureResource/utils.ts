@@ -7,7 +7,7 @@ import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import axios, { AxiosRequestConfig } from 'axios';
 import * as azdata from 'azdata';
-import { GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult } from 'azurecore';
+import { GetRequestResult, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult } from 'azurecore';
 import { azureResource } from 'azureResource';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
@@ -287,18 +287,47 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
 	return result;
 }
 
-export async function makeGetRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, url: string): Promise<any> {
+export async function makeGetRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false, url: string): Promise<GetRequestResult> {
+	const result: GetRequestResult = { response: {}, errors: [] };
+
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
-		throw new Error(localize('azure.accounts.getSubscriptions.invalidParamsError', "Invalid account"));
+		const error = new Error(localize('azure.accounts.getSubscriptions.invalidParamsError', "Invalid account"));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
 	}
+
 	if (!subscription.tenant) {
-		throw new Error(localize('azure.accounts.runResourceQuery.errors.noTenantSpecifiedForSubscription', "Invalid tenant for subscription"));
+		const error = new Error(localize('azure.accounts.runResourceQuery.errors.noTenantSpecifiedForSubscription', "Invalid tenant for subscription"));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
 	}
-	const securityToken = await azdata.accounts.getAccountSecurityToken(
-		account,
-		subscription.tenant!,
-		azdata.AzureResource.ResourceManagement
-	);
+	if (!result.errors.length) {
+		return result;
+	}
+
+	let securityToken: { token: string, tokenType?: string };
+	try {
+		securityToken = await azdata.accounts.getAccountSecurityToken(
+			account,
+			subscription.tenant!,
+			azdata.AzureResource.ResourceManagement
+		);
+	} catch (err) {
+		console.error(err);
+		const error = new Error(localize('azure.accounts.runResourceQuery.errors.unableToFetchToken', "Unable to get token for tenant {0}", subscription.tenant));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+	if (!result.errors.length) {
+		return result;
+	}
+
 	const config: AxiosRequestConfig = {
 		headers: {
 			'Content-Type': 'application/json',
@@ -306,7 +335,9 @@ export async function makeGetRequest(account: azdata.Account, subscription: azur
 		},
 		validateStatus: () => true // Never throw
 	};
+
 	const response = await axios.get(url, config);
+
 	if (response.status !== 200) {
 		let errorMessage: string[] = [];
 		errorMessage.push(response.status.toString());
@@ -314,7 +345,14 @@ export async function makeGetRequest(account: azdata.Account, subscription: azur
 		if (response.data && response.data.error) {
 			errorMessage.push(`${response.data.error.code} : ${response.data.error.message}`);
 		}
-		throw new Error(errorMessage.join(EOL));
+		const error = new Error(errorMessage.join(EOL));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
 	}
-	return response;
+
+	result.response = response;
+
+	return result;
 }

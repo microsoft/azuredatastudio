@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { azureResource } from 'azureResource';
 import { getAvailableStorageAccounts, getBlobContainers, getFileShares, getSubscriptions, StorageAccount, Subscription } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { BlobContainer, FileShare, MigrationCutover, MigrationStateModel, NetworkContainerType, NetworkShare, StateChangeEvent } from '../models/stateMachine';
@@ -407,8 +408,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._blobContainerSubscriptionDropdown.loading = true;
 		this._networkShareContainerStorageAccountDropdown.loading = true;
 
+		let subscriptions: azureResource.AzureResourceSubscription[] = [];
 
-		let subscriptions = await getSubscriptions(this.migrationStateModel.azureAccount);
+		try {
+			subscriptions = await getSubscriptions(this.migrationStateModel.azureAccount);
+		} catch (error) {
+			console.log(error);
+		}
+
 		subscriptions.forEach((subscription) => {
 			this._subscriptionMap.set(subscription.id, subscription);
 			this._subscriptionDropdownValues.push({
@@ -416,6 +423,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				displayName: subscription.name + ' - ' + subscription.id,
 			});
 		});
+
+		if (!this._subscriptionDropdownValues) {
+			this._subscriptionDropdownValues = [
+				{
+					displayName: constants.NO_SUBSCRIPTION_FOUND,
+					name: ''
+				}
+			];
+		}
 
 		this._fileShareSubscriptionDropdown.values = this._subscriptionDropdownValues;
 		this._networkShareContainerSubscriptionDropdown.values = this._subscriptionDropdownValues;
