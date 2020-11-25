@@ -172,7 +172,7 @@ export class OpenExistingDialog extends DialogBase {
 	}
 
 	public async workspaceBrowse(): Promise<void> {
-		const filters: { [name: string]: string[] } = { [constants.Workspace]: [constants.WorkspaceFileExtension] };
+		const filters: { [name: string]: string[] } = { [constants.Workspace]: [constants.WorkspaceFileExtension.substring(1)] }; // filter already adds a period before the extension
 		const fileUris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
 			canSelectFolders: false,
