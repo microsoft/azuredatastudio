@@ -144,6 +144,9 @@ import 'vs/workbench/contrib/splash/electron-browser/partsSplash.contribution';
 // Webview
 import 'vs/workbench/contrib/webview/electron-browser/webview.contribution';
 
+// Dialogs
+import 'vs/workbench/contrib/dialogs/electron-sandbox/dialog.contribution';
+
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //
