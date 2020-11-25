@@ -130,9 +130,17 @@ export class JupyterSessionManager implements nb.SessionManager {
 			// no-op
 			return Promise.reject(new Error(localize('errorStartBeforeReady', "Cannot start a session, the manager is not yet initialized")));
 		}
+		let sessionImplStartTime = Date.now();
 		let sessionImpl = await this._sessionManager.startNew(options);
+		let sessionImplEndTime = Date.now();
+		let sessionImplTime = sessionImplEndTime - sessionImplStartTime;
+		console.log('Start Session: It took ' + sessionImplTime.toString() + 'ms for @jupyterlab service to start new session');
 		let jupyterSession = new JupyterSession(sessionImpl, this._installation, skipSettingEnvironmentVars, this._pythonEnvVarPath);
+		let consoleCompleteStartTime = Date.now();
 		await jupyterSession.messagesComplete;
+		let consoleCompleteEndTime = Date.now();
+		let consoleCompleteTime = consoleCompleteEndTime - consoleCompleteStartTime;
+		console.log('Start Session: It took ' + consoleCompleteTime.toString() + 'ms to wait for messages complete in jupyter session');
 		let index = JupyterSessionManager._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
 			JupyterSessionManager._sessions.splice(index);

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 // This code is based on @jupyterlab/packages/apputils/src/clientsession.tsx
-
+/* eslint-disable no-console */
 import { nb } from 'azdata';
 import { URI } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -66,12 +66,12 @@ export class ClientSession implements IClientSession {
 			await this._serverLoadFinished;
 			let startServerEndTime = Date.now();
 			let startServerTime = startServerEndTime - startServerBeginTime;
-			// console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + startServerTime.toString() + 'ms to start the server~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+			console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + startServerTime.toString() + 'ms to start the server~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
 			let beginStartSessionTime = Date.now();
 			await this.initializeSession();
 			let endStartSessionTime = Date.now();
 			let startSessionTime = endStartSessionTime - beginStartSessionTime;
-			// console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + startSessionTime.toString() + 'ms to start the session~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+			console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + startSessionTime.toString() + 'ms to start the session~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
 			await this.updateCachedKernelSpec();
 		} catch (err) {
 			this._errorMessage = getErrorMessage(err) || localize('clientSession.unknownError', "An error occurred while starting the notebook session");
@@ -104,7 +104,11 @@ export class ClientSession implements IClientSession {
 				await this.notebookManager.sessionManager.ready;
 			}
 			if (this._defaultKernel) {
+				let startSessionStartTime = Date.now();
 				await this.startSessionInstance(this._defaultKernel.name);
+				let startSessionEndTime = Date.now();
+				let startSessionTime = startSessionEndTime - startSessionStartTime;
+				console.log('Start Session: It took ' + startSessionTime.toString() + 'ms to start session instance');
 			}
 		}
 	}
@@ -113,11 +117,15 @@ export class ClientSession implements IClientSession {
 		let session: nb.ISession;
 		try {
 			// TODO #3164 should use URI instead of path for startNew
+			let startNewStartTime = Date.now();
 			session = await this.notebookManager.sessionManager.startNew({
 				path: this.notebookUri.fsPath,
 				kernelName: kernelName
 				// TODO add kernel name if saved in the document
 			});
+			let startNewEndTime = Date.now();
+			let startNewTime = startNewEndTime - startNewStartTime;
+			console.log('Start Session: It took ' + startNewTime.toString() + 'ms to start new session');
 			session.defaultKernelLoaded = true;
 		} catch (err) {
 			// TODO move registration
@@ -133,7 +141,11 @@ export class ClientSession implements IClientSession {
 			}
 		}
 		this._session = session;
+		let runActionsStartTime = Date.now();
 		await this.runKernelConfigActions(kernelName);
+		let runActionsEndTime = Date.now();
+		let runActionsTime = runActionsEndTime - runActionsStartTime;
+		console.log('Start Session: It took ' + runActionsTime.toString() + 'ms to run kernel config actions');
 		this._statusChangedEmitter.fire(session);
 	}
 
