@@ -101,10 +101,11 @@ export class HTMLMarkdownConverter {
 				const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
 				let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
 				node.innerText = escapeAngleBrackets(node.innerText);
+				content = escapeAngleBrackets(content);
 				if (relativePath) {
 					return `[${node.innerText}](${relativePath})`;
 				}
-				return `[${node.innerText}](${node.href})`;
+				return `[${content}](${node.href})`;
 			}
 		});
 		this.turndownService.addRule('listItem', {
@@ -137,14 +138,22 @@ export class HTMLMarkdownConverter {
 		this.turndownService.addRule('p', {
 			filter: 'p',
 			replacement: function (content, node) {
+				let isAnchorElement: boolean = false;
 				node.childNodes.forEach(c => {
 					if (c.nodeType === Node.TEXT_NODE) {
 						c.nodeValue = escapeAngleBrackets(c.textContent);
 					} else if (c.nodeType === Node.ELEMENT_NODE) {
 						c.innerText = escapeAngleBrackets(c.textContent);
+						if (c.nodeName === 'A') {
+							isAnchorElement = true;
+						}
 					}
 				});
-				return '\n\n' + node.innerHTML.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&nbsp;/gi, '') + '\n\n';
+				if (isAnchorElement) {
+					return content;
+				} else {
+					return '\n\n' + node.innerHTML.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&nbsp;/gi, '') + '\n\n';
+				}
 			}
 		});
 		this.turndownService.addRule('heading', {
