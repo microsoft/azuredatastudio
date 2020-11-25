@@ -65,10 +65,13 @@ export class OpenDocumentLinkCommand implements Command {
 		return OpenDocumentLinkCommand.execute(this.engine, args);
 	}
 
-	public static async execute(engine: MarkdownEngine, args: OpenDocumentLinkArgs) {
+	public static async execute(engine: MarkdownEngine, args: OpenDocumentLinkArgs): Promise<void> {
 		const fromResource = vscode.Uri.parse('').with(args.fromResource);
-		const targetResource = fromResource.scheme === 'file' && isString(args.path) ? vscode.Uri.file(args.path) : vscode.Uri.parse('').with(args.path); // {{ SQL CARBON EDIT }} Fix markdown relative links https://github.com/microsoft/azuredatastudio/issues/11657
+
+		const targetResource = reviveUri(args.parts);
+
 		const column = this.getViewColumn(fromResource);
+
 		const didOpen = await this.tryOpen(engine, targetResource, args, column);
 		if (didOpen) {
 			return;
@@ -151,7 +154,7 @@ export class OpenDocumentLinkCommand implements Command {
 }
 
 function reviveUri(parts: any) {
-	if (parts.scheme === 'file') {
+	if (parts.scheme === 'file' && isString(parts.path)) {  // {{ SQL CARBON EDIT }} Fix markdown relative links https://github.com/microsoft/azuredatastudio/issues/11657
 		return vscode.Uri.file(parts.path);
 	}
 	return vscode.Uri.parse('').with(parts);

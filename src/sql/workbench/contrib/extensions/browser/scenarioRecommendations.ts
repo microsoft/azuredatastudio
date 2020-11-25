@@ -18,7 +18,6 @@ import { visualizerExtensions } from 'sql/workbench/contrib/extensions/common/co
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { InstallRecommendedExtensionsByScenarioAction, ShowRecommendedExtensionsByScenarioAction } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
-import { IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 
 const choiceNever = localize('neverShowAgain', "Don't Show Again");
@@ -38,8 +37,7 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 		@IStorageService private readonly storageService?: IStorageService,
 		@IExtensionManagementService protected readonly extensionManagementService?: IExtensionManagementService,
 		@IAdsTelemetryService private readonly adsTelemetryService?: IAdsTelemetryService,
-		@IExtensionsWorkbenchService protected readonly extensionsWorkbenchService?: IExtensionsWorkbenchService,
-		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService?: IStorageKeysSyncRegistryService
+		@IExtensionsWorkbenchService protected readonly extensionsWorkbenchService?: IExtensionsWorkbenchService
 
 	) {
 		super(promptedExtensionRecommendations);

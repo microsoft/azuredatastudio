@@ -184,7 +184,7 @@ export class TelemetryContribution extends Disposable implements IWorkbenchContr
 		for (const folder of folders) {
 			if (isEqualOrParent(resource, folder.toResource('.azuredatastudio'))) { // {{SQL CARBON EDIT}}
 				const filename = basename(resource);
-				if (TelemetryContribution.WHITELIST_WORKSPACE_JSON.indexOf(filename) > -1) {
+				if (TelemetryContribution.ALLOWLIST_WORKSPACE_JSON.indexOf(filename) > -1) {
 					return `.azuredatastudio/${filename}`; // {{SQL CARBON EDIT}}
 				}
 			}

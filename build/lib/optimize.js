@@ -61,7 +61,7 @@ function loader(src, bundledFileHeader, bundleLoader) {
             isFirst = false;
             this.emit('data', new VinylFile({
                 path: 'fake',
-                base: '',
+                base: '.',
                 contents: Buffer.from(bundledFileHeader)
             }));
             this.emit('data', data);
@@ -92,7 +92,7 @@ function toConcatStream(src, bundledFileHeader, sources, dest, fileContentMapper
     }
     const treatedSources = sources.map(function (source) {
         const root = source.path ? REPO_ROOT_PATH.replace(/\\/g, '/') : '';
-        const base = source.path ? root + `/${src}` : '';
+        const base = source.path ? root + `/${src}` : '.';
         const path = source.path ? root + '/' + source.path.replace(/\\/g, '/') : 'fake';
         const contents = source.path ? fileContentMapper(source.contents, path) : source.contents;
         return new VinylFile({

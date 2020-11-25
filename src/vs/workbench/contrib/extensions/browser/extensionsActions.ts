@@ -12,7 +12,7 @@ import { Event } from 'vs/base/common/event';
 import * as json from 'vs/base/common/json';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { dispose } from 'vs/base/common/lifecycle';
-import { IExtension, ExtensionState, IExtensionsWorkbenchService, VIEWLET_ID, IExtensionsViewPaneContainer, AutoUpdateConfigurationKey, IExtensionContainer, TOGGLE_IGNORE_EXTENSION_ACTION_ID, INSTALL_EXTENSION_FROM_VSIX_COMMAND_ID } from 'vs/workbench/contrib/extensions/common/extensions';
+import { IExtension, ExtensionState, IExtensionsWorkbenchService, VIEWLET_ID, IExtensionsViewPaneContainer, AutoUpdateConfigurationKey, IExtensionContainer, TOGGLE_IGNORE_EXTENSION_ACTION_ID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { ExtensionsConfigurationInitialContent } from 'vs/workbench/contrib/extensions/common/extensionsFileTemplate';
 import { IGalleryExtension, IExtensionGalleryService, INSTALL_ERROR_MALICIOUS, INSTALL_ERROR_INCOMPATIBLE, IGalleryExtensionVersion, ILocalExtension, INSTALL_ERROR_NOT_SUPPORTED, InstallOptions, InstallOperation } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
@@ -273,6 +273,7 @@ export abstract class AbstractInstallAction extends ExtensionAction {
 		@IExtensionService private readonly runtimeExtensionService: IExtensionService,
 		@IWorkbenchThemeService private readonly workbenchThemeService: IWorkbenchThemeService,
 		@ILabelService private readonly labelService: ILabelService,
+		@INotificationService private readonly notificationService: INotificationService
 	) {
 		super(id, label, cssClass, false);
 		this.update();
@@ -298,23 +299,19 @@ export abstract class AbstractInstallAction extends ExtensionAction {
 		alert(localize('installExtensionStart', "Installing extension {0} started. An editor is now open with more details on this extension", this.extension.displayName));
 
 		const extension = await this.install(this.extension);
-		if (extension?.local) {
-			alert(localize('installExtensionComplete', "Installing extension {0} is completed.", this.extension.displayName));
 
-			// {{SQL CARBON EDIT}} Add extension object check since ADS third party extensions will be directed to a download page
-			// and the extension object will be undefined.
-			if (extension && extension.local) {
-				const runningExtension = await this.getRunningExtension(extension.local);
-				if (runningExtension && !(runningExtension.activationEvents && runningExtension.activationEvents.some(activationEent => activationEent.startsWith('onLanguage')))) {
-					let action = await SetColorThemeAction.create(this.workbenchThemeService, this.instantiationService, extension)
-						|| await SetFileIconThemeAction.create(this.workbenchThemeService, this.instantiationService, extension)
-						|| await SetProductIconThemeAction.create(this.workbenchThemeService, this.instantiationService, extension);
-					if (action) {
-						try {
-							return action.run({ showCurrentTheme: true, ignoreFocusLost: true });
-						} finally {
-							action.dispose();
-						}
+		if (extension && extension?.local) {
+			alert(localize('installExtensionComplete', "Installing extension {0} is completed.", this.extension.displayName));
+			const runningExtension = await this.getRunningExtension(extension.local);
+			if (runningExtension && !(runningExtension.activationEvents && runningExtension.activationEvents.some(activationEent => activationEent.startsWith('onLanguage')))) {
+				let action = await SetColorThemeAction.create(this.workbenchThemeService, this.instantiationService, extension)
+					|| await SetFileIconThemeAction.create(this.workbenchThemeService, this.instantiationService, extension)
+					|| await SetProductIconThemeAction.create(this.workbenchThemeService, this.instantiationService, extension);
+				if (action) {
+					try {
+						return action.run({ showCurrentTheme: true, ignoreFocusLost: true });
+					} finally {
+						action.dispose();
 					}
 				}
 			}
@@ -322,24 +319,27 @@ export abstract class AbstractInstallAction extends ExtensionAction {
 
 	}
 
-	private async install(extension: IExtension): Promise<IExtension | void> {
+	private async install(extension: IExtension): Promise<IExtension | undefined> {
 		try {
 			return await this.extensionsWorkbenchService.install(extension, this.getInstallOptions());
 		} catch (error) {
 			// {{SQL CARBON EDIT}}
 			// Prompt the user that the current ADS version is not compatible with the extension,
 			// return here as in this scenario it doesn't make sense for the user to download manually.
-			if (err && err.code === INSTALL_ERROR_INCOMPATIBLE) {
-				return this.notificationService.error(err);
+			if (error && error.code === INSTALL_ERROR_INCOMPATIBLE) {
+				this.notificationService.error(error);
+				return undefined;
 			}
 
 			if (!extension.gallery) {
-				return this.notificationService.error(err);
+				this.notificationService.error(error);
+				return undefined;
 			}
 
-			console.error(err);
+			console.error(error);
 
-			return promptDownloadManually(extension.gallery, localize('failedToInstall', "Failed to install \'{0}\'.", extension.identifier.id), err, this.instantiationService);
+			await this.instantiationService.createInstance(PromptExtensionInstallFailureAction, extension, InstallOperation.Install, error).run();
+			return undefined;
 		}
 	}
 
@@ -379,9 +379,10 @@ export class InstallAction extends AbstractInstallAction {
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@IUserDataAutoSyncEnablementService protected readonly userDataAutoSyncEnablementService: IUserDataAutoSyncEnablementService,
 		@IUserDataSyncResourceEnablementService protected readonly userDataSyncResourceEnablementService: IUserDataSyncResourceEnablementService,
+		@INotificationService readonly localNotificationService: INotificationService
 	) {
 		super(`extensions.installAndSync`, localize('install', "Install"), InstallAction.Class,
-			extensionsWorkbenchService, instantiationService, runtimeExtensionService, workbenchThemeService, labelService);
+			extensionsWorkbenchService, instantiationService, runtimeExtensionService, workbenchThemeService, labelService, localNotificationService);
 		this.updateLabel();
 		this._register(labelService.onDidChangeFormatters(() => this.updateLabel(), this));
 		this._register(Event.any(userDataAutoSyncEnablementService.onDidChangeEnablement,
@@ -434,9 +435,10 @@ export class InstallAndSyncAction extends AbstractInstallAction {
 		@IProductService productService: IProductService,
 		@IUserDataAutoSyncEnablementService private readonly userDataAutoSyncEnablementService: IUserDataAutoSyncEnablementService,
 		@IUserDataSyncResourceEnablementService private readonly userDataSyncResourceEnablementService: IUserDataSyncResourceEnablementService,
+		@INotificationService readonly localNotificationService: INotificationService
 	) {
 		super(`extensions.installAndSync`, localize('install', "Install"), InstallAndSyncAction.Class,
-			extensionsWorkbenchService, instantiationService, runtimeExtensionService, workbenchThemeService, labelService);
+			extensionsWorkbenchService, instantiationService, runtimeExtensionService, workbenchThemeService, labelService, localNotificationService);
 		this.tooltip = localize('install everywhere tooltip', "Install this extension in all your synced {0} instances", productService.nameLong);
 		this._register(Event.any(userDataAutoSyncEnablementService.onDidChangeEnablement,
 			Event.filter(userDataSyncResourceEnablementService.onDidChangeResourceEnablement, e => e[0] === SyncResource.Extensions))(() => this.update()));
@@ -697,6 +699,7 @@ export class UpdateAction extends ExtensionAction {
 	constructor(
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@INotificationService private notificationService: INotificationService
 	) {
 		super(`extensions.update`, '', UpdateAction.DisabledClass, false);
 		this.update();

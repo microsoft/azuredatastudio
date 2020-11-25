@@ -14,7 +14,7 @@ import * as TaskConfig from '../common/taskConfiguration';
 import { ProcessTaskSystem } from 'vs/workbench/contrib/tasks/node/processTaskSystem';
 import { ProcessRunnerDetector } from 'vs/workbench/contrib/tasks/node/processRunnerDetector';
 import { AbstractTaskService } from 'vs/workbench/contrib/tasks/browser/abstractTaskService';
-import { TaskFilter, ITaskService } from 'vs/workbench/contrib/tasks/common/taskService';
+import { ITaskService, TaskFilter } from 'vs/workbench/contrib/tasks/common/taskService';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { TerminalTaskSystem } from 'vs/workbench/contrib/tasks/browser/terminalTaskSystem';
 import { IConfirmationResult, IDialogService } from 'vs/platform/dialogs/common/dialogs';
@@ -46,6 +46,9 @@ import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+// {{ SQL CARBON EDIT }}
+// integration with tasks view panel
+import { ITaskService as ISqlTaskService } from 'sql/workbench/services/tasks/common/tasksService';
 
 interface WorkspaceFolderConfigurationResult {
 	workspaceFolder: IWorkspaceFolder;
@@ -85,7 +88,8 @@ export class TaskService extends AbstractTaskService {
 		@ITextModelService textModelResolverService: ITextModelService,
 		@IPreferencesService preferencesService: IPreferencesService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
-		@ILogService logService: ILogService) {
+		@ILogService logService: ILogService,
+		@ISqlTaskService sqlTaskService: ISqlTaskService) { // {{SQL CARBON EDIT}}
 		super(configurationService,
 			markerService,
 			outputService,
@@ -115,7 +119,8 @@ export class TaskService extends AbstractTaskService {
 			textModelResolverService,
 			preferencesService,
 			viewDescriptorService,
-			logService);
+			logService,
+			sqlTaskService); // {{SQL CARBON EDIT}}
 		this._register(lifecycleService.onBeforeShutdown(event => event.veto(this.beforeShutdown())));
 	}
 

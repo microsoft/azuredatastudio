@@ -43,7 +43,7 @@ function getDefaultUserDataPath() {
 	}
 
 	// {{SQL CARBON EDIT}} hard-code Azure Data Studio
-	return path.join(getAppDataPath(platform), 'azuredatastudio');
+	return path.join(appDataPath, 'azuredatastudio');
 }
 
 exports.getDefaultUserDataPath = getDefaultUserDataPath;

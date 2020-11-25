@@ -120,7 +120,7 @@ function createScopedContextKeyService(contextKeyService: IContextKeyService, wi
 
 const multiSelectModifierSettingKey = 'workbench.list.multiSelectModifier';
 const openModeSettingKey = 'workbench.list.openMode';
-const horizontalScrollingKey = 'workbench.list.horizontalScrolling';
+export const horizontalScrollingKey = 'workbench.list.horizontalScrolling'; // {{SQL CARBON EDIT}}
 const keyboardNavigationSettingKey = 'workbench.list.keyboardNavigation';
 const automaticKeyboardNavigationSettingKey = 'workbench.list.automaticKeyboardNavigation';
 const treeIndentKey = 'workbench.tree.indent';

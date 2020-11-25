@@ -659,21 +659,21 @@ export interface IDiffEditorOptions extends IEditorOptions {
 	 * Adding option to reverse coloring in diff editor
 	 */
 	reverse?: boolean;
+
 	/**
-	 * Original editor should be have code lens enabled?
+	 * Should the diff editor enable code lens?
 	 * Defaults to false.
 	 */
-	originalCodeLens?: boolean;
-	/**
-	 * Modified editor should be have code lens enabled?
-	 * Defaults to false.
-	 */
-	modifiedCodeLens?: boolean;
+	diffCodeLens?: boolean;
 	/**
 	 * Is the diff editor inside another editor
 	 * Defaults to false
 	 */
 	isInEmbeddedEditor?: boolean;
+	/**
+	 * Control the wrapping of the diff editor.
+	 */
+	diffWordWrap?: 'off' | 'on' | 'inherit';
 }
 
 //#endregion
@@ -849,6 +849,21 @@ class SimpleEditorOption<K1 extends EditorOption, V> implements IEditorOption<K1
 	}
 }
 
+/**
+ * @internal
+ */
+export function boolean(value: any, defaultValue: boolean): boolean {
+	if (typeof value === 'undefined') {
+		return defaultValue;
+	}
+	if (value === 'false') {
+		// treat the string 'false' as false
+		return false;
+	}
+	return Boolean(value);
+}
+
+
 class EditorBooleanOption<K1 extends EditorOption> extends SimpleEditorOption<K1, boolean> {
 
 	public static boolean(value: any, defaultValue: boolean): boolean {
@@ -969,6 +984,19 @@ class EditorStringOption<K1 extends EditorOption> extends SimpleEditorOption<K1,
 	public validate(input: any): string {
 		return EditorStringOption.string(input, this.defaultValue);
 	}
+}
+
+/**
+ * @internal
+ */
+export function stringSet<T>(value: T | undefined, defaultValue: T, allowedValues: ReadonlyArray<T>): T {
+	if (typeof value !== 'string') {
+		return defaultValue;
+	}
+	if (allowedValues.indexOf(value) === -1) {
+		return defaultValue;
+	}
+	return value;
 }
 
 class EditorStringEnumOption<K1 extends EditorOption, V extends string> extends SimpleEditorOption<K1, V> {
