@@ -56,7 +56,7 @@ declare module 'dataworkspace' {
 		 * @param name Create a project
 		 * @param location the parent directory of the project
 		 */
-		createProject(name: string, location: vscode.Uri): Promise<vscode.Uri>;
+		createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
 
 		/**
 		 * Gets the supported project types

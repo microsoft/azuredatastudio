@@ -54,7 +54,13 @@ describe('ProjectsController', function (): void {
 				const projController = new ProjectsController();
 				const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
 
-				const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), false, 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
+				const projFilePath = await projController.createNewProject({
+					newProjName: 'TestProjectName',
+					folderUri: vscode.Uri.file(projFileDir),
+					makeOwnFolder: false,
+					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
+					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'
+				});
 
 				let projFileText = (await fs.readFile(projFilePath)).toString();
 
@@ -436,7 +442,15 @@ describe('ProjectsController', function (): void {
 			const createProjectFromDatabaseDialog = TypeMoq.Mock.ofType(CreateProjectFromDatabaseDialog, undefined, undefined, undefined);
 			createProjectFromDatabaseDialog.callBase = true;
 			createProjectFromDatabaseDialog.setup(x => x.handleCreateButtonClick()).returns(async () => {
-				await projController.object.createProjectFromDatabaseCallback( { serverId: 'My Id', database: 'My Database', projName: 'testProject', filePath: 'testLocation', version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'] });
+				await projController.object.createProjectFromDatabaseCallback({
+					serverId: 'My Id',
+					database: 'My Database',
+					projName: 'testProject',
+					filePath: 'testLocation',
+					version: '1.0.0.0',
+					extractTarget: mssql.ExtractTarget['schemaObjectType']
+				});
+
 				return Promise.resolve(undefined);
 			});
 

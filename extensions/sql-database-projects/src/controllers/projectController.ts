@@ -56,25 +56,25 @@ export class ProjectsController {
 	 * @param folderUri
 	 * @param projectGuid
 	 */
-	public async createNewProject(newProjName: string, folderUri: vscode.Uri, makeOwnFolder: boolean, projectGuid?: string): Promise<string> {
-		if (projectGuid && !UUID.isUUID(projectGuid)) {
-			throw new Error(`Specified GUID is invalid: '${projectGuid}'`);
+	public async createNewProject(creationParams: NewProjectParams): Promise<string> {
+		if (creationParams.projectGuid && !UUID.isUUID(creationParams.projectGuid)) {
+			throw new Error(`Specified GUID is invalid: '${creationParams.projectGuid}'`);
 		}
 
 		const macroDict: Record<string, string> = {
-			'PROJECT_NAME': newProjName,
-			'PROJECT_GUID': projectGuid ?? UUID.generateUuid().toUpperCase()
+			'PROJECT_NAME': creationParams.newProjName,
+			'PROJECT_GUID': creationParams.projectGuid ?? UUID.generateUuid().toUpperCase()
 		};
 
 		let newProjFileContents = this.macroExpansion(templates.newSqlProjectTemplate, macroDict);
 
-		let newProjFileName = newProjName;
+		let newProjFileName = creationParams.newProjName;
 
 		if (!newProjFileName.toLowerCase().endsWith(constants.sqlprojExtension)) {
 			newProjFileName += constants.sqlprojExtension;
 		}
 
-		const newProjFilePath = makeOwnFolder ? path.join(folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName) : path.join(folderUri.fsPath, newProjFileName);
+		const newProjFilePath = creationParams.makeOwnFolder ? path.join(creationParams.folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName) : path.join(creationParams.folderUri.fsPath, newProjFileName);
 
 		let fileExists = false;
 		try {
@@ -632,7 +632,13 @@ export class ProjectsController {
 
 			const newProjFolderUri = model.filePath;
 
-			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
+			const newProjFilePath = await this.createNewProject({
+				newProjName: model.projName,
+				folderUri: vscode.Uri.file(newProjFolderUri),
+				projectTypeId: constants.emptySqlDatabaseProjectTypeId,
+				makeOwnFolder: true
+			});
+
 			model.filePath = path.dirname(newProjFilePath);
 			this.setFilePath(model);
 
@@ -717,4 +723,12 @@ export class ProjectsController {
 	}
 
 	//#endregion
+}
+
+export interface NewProjectParams {
+	newProjName: string;
+	folderUri: vscode.Uri;
+	projectTypeId: string;
+	makeOwnFolder: boolean;
+	projectGuid?: string;
 }

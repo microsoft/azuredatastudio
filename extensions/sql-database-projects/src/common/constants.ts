@@ -23,9 +23,13 @@ export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.S
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
 // Project Provider
-export const sqlDatabaseProjectTypeId = 'sqldbproj';
-export const projectTypeDisplayName = localize('projectTypeDisplayName', "SQL Database");
-export const projectTypeDescription = localize('projectTypeDescription', "Design, edit, and publish schemas for SQL databases");
+export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
+export const emptyProjectTypeDisplayName = localize('projectTypeDisplayName', "SQL Database");
+export const emptyProjectTypeDescription = localize('projectTypeDescription', "Design, edit, and publish schemas for SQL databases from scratch");
+
+export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
+export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Database Edge");
+export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces ready to go for SQL Edge databases");
 
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';

@@ -16,6 +16,7 @@ import { PublishDatabaseDialog } from '../../dialogs/publishDatabaseDialog';
 import { Project } from '../../models/project';
 import { ProjectsController } from '../../controllers/projectController';
 import { IPublishSettings, IGenerateScriptSettings } from '../../models/IPublishSettings';
+import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
 
 describe.skip('Publish Database Dialog', () => {
 	before(async function (): Promise<void> {
@@ -27,7 +28,14 @@ describe.skip('Publish Database Dialog', () => {
 		const projController = new ProjectsController();
 		const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
 
-		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), true, 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
+		const projFilePath = await projController.createNewProject({
+			newProjName: 'TestProjectName',
+			folderUri: vscode.Uri.file(projFileDir),
+			projectTypeId: emptySqlDatabaseProjectTypeId,
+			makeOwnFolder: true,
+			projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'
+		});
+
 		const project = new Project(projFilePath);
 		const publishDatabaseDialog = new PublishDatabaseDialog(project);
 		publishDatabaseDialog.openDialog();
@@ -39,7 +47,14 @@ describe.skip('Publish Database Dialog', () => {
 		const projFolder = `TestProject_${new Date().getTime()}`;
 		const projFileDir = path.join(os.tmpdir(), projFolder);
 
-		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), true, 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
+		const projFilePath = await projController.createNewProject({
+			newProjName: 'TestProjectName',
+			folderUri: vscode.Uri.file(projFileDir),
+			projectTypeId: emptySqlDatabaseProjectTypeId,
+			makeOwnFolder: true,
+			projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'
+		});
+
 		const project = new Project(projFilePath);
 
 		const publishDatabaseDialog = new PublishDatabaseDialog(project);
@@ -55,7 +70,7 @@ describe.skip('Publish Database Dialog', () => {
 
 		let profile: IPublishSettings | IGenerateScriptSettings | undefined;
 
-		const expectedPublish: IPublishSettings  = {
+		const expectedPublish: IPublishSettings = {
 			databaseName: 'MockDatabaseName',
 			connectionUri: 'Mock|Connection|Uri',
 			upgradeExisting: true,
