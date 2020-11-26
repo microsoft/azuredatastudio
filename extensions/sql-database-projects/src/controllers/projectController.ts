@@ -251,7 +251,7 @@ export class ProjectsController {
 			}
 		}
 
-		const itemType = templates.projectScriptTypeMap()[itemTypeName.toLocaleLowerCase()];
+		const itemType = templates.get(itemTypeName);
 		const absolutePathToParent = path.join(project.projectFolderPath, relativePath);
 		let itemObjectName = await this.promptForNewObjectName(itemType, project, absolutePathToParent, constants.sqlFileExtension);
 

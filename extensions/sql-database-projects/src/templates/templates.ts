@@ -25,16 +25,12 @@ export const postDeployScript: string = 'postDeployScript';
 
 let scriptTypeMap: Record<string, ProjectScriptType> = {};
 
-export function projectScriptTypeMap(): Record<string, ProjectScriptType> {
+export function get(key: string): ProjectScriptType {
 	if (Object.keys(scriptTypeMap).length === 0) {
 		throw new Error('Templates must be loaded from file before attempting to use.');
 	}
 
-	return scriptTypeMap;
-}
-
-export function get(key: string): ProjectScriptType {
-	return projectScriptTypeMap()[key.toLocaleLowerCase()];
+	return scriptTypeMap[key.toLocaleLowerCase()];
 }
 
 let scriptTypes: ProjectScriptType[] = [];
@@ -60,7 +56,7 @@ export async function loadTemplates(templateFolderPath: string) {
 	]);
 
 	for (const scriptType of scriptTypes) {
-		if (Object.keys(projectScriptTypeMap).find(s => s === scriptType.type.toLocaleLowerCase() || s === scriptType.friendlyName.toLocaleLowerCase())) {
+		if (Object.keys(scriptTypeMap).find(s => s === scriptType.type.toLocaleLowerCase() || s === scriptType.friendlyName.toLocaleLowerCase())) {
 			throw new Error(`Script type map already contains ${scriptType.type} or its friendlyName.`);
 		}
 
