@@ -32,7 +32,6 @@ describe.skip('Publish Database Dialog', () => {
 			newProjName: 'TestProjectName',
 			folderUri: vscode.Uri.file(projFileDir),
 			projectTypeId: emptySqlDatabaseProjectTypeId,
-			makeOwnFolder: true,
 			projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'
 		});
 
@@ -51,7 +50,6 @@ describe.skip('Publish Database Dialog', () => {
 			newProjName: 'TestProjectName',
 			folderUri: vscode.Uri.file(projFileDir),
 			projectTypeId: emptySqlDatabaseProjectTypeId,
-			makeOwnFolder: true,
 			projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'
 		});
 

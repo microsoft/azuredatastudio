@@ -57,7 +57,6 @@ describe('ProjectsController', function (): void {
 				const projFilePath = await projController.createNewProject({
 					newProjName: 'TestProjectName',
 					folderUri: vscode.Uri.file(projFileDir),
-					makeOwnFolder: false,
 					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
 					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'
 				});
