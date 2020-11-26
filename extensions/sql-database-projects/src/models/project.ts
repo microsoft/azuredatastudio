@@ -282,19 +282,26 @@ export class Project {
 	 * @param contents Contents to be written to the new file
 	 */
 	public async addScriptItem(relativeFilePath: string, contents?: string, itemType?: string): Promise<FileProjectEntry> {
+		// check if file already exists
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 
+		if (await utils.exists(absoluteFilePath)) {
+			throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
+		}
+
+		// create the file
 		if (contents) {
 			await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
 			await fs.writeFile(absoluteFilePath, contents);
 		}
 
-		//Check that file actually exists
+		// check that file was successfully created
 		let exists = await utils.exists(absoluteFilePath);
 		if (!exists) {
 			throw new Error(constants.noFileExist(absoluteFilePath));
 		}
 
+		// update sqlproj XML
 		const fileEntry = this.createFileProjectEntry(relativeFilePath, EntryType.File);
 
 		let xmlTag;

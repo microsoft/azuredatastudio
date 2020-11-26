@@ -33,6 +33,10 @@ export function projectScriptTypeMap(): Record<string, ProjectScriptType> {
 	return scriptTypeMap;
 }
 
+export function get(key: string): ProjectScriptType {
+	return projectScriptTypeMap()[key.toLocaleLowerCase()];
+}
+
 let scriptTypes: ProjectScriptType[] = [];
 
 export function projectScriptTypes(): ProjectScriptType[] {
@@ -63,6 +67,22 @@ export async function loadTemplates(templateFolderPath: string) {
 		scriptTypeMap[scriptType.type.toLocaleLowerCase()] = scriptType;
 		scriptTypeMap[scriptType.friendlyName.toLocaleLowerCase()] = scriptType;
 	}
+}
+
+export function macroExpansion(template: string, macroDict: Record<string, string>): string {
+	const macroIndicator = '@@';
+	let output = template;
+
+	for (const macro in macroDict) {
+		// check if value contains the macroIndicator, which could break expansion for successive macros
+		if (macroDict[macro].includes(macroIndicator)) {
+			throw new Error(`Macro value ${macroDict[macro]} is invalid because it contains ${macroIndicator}`);
+		}
+
+		output = output.replace(new RegExp(macroIndicator + macro + macroIndicator, 'g'), macroDict[macro]);
+	}
+
+	return output;
 }
 
 async function loadObjectTypeInfo(key: string, friendlyName: string, templateFolderPath: string, fileName: string) {

@@ -66,7 +66,7 @@ export class ProjectsController {
 			'PROJECT_GUID': creationParams.projectGuid ?? UUID.generateUuid().toUpperCase()
 		};
 
-		let newProjFileContents = this.macroExpansion(templates.newSqlProjectTemplate, macroDict);
+		let newProjFileContents = templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
 
 		let newProjFileName = creationParams.newProjName;
 
@@ -74,21 +74,16 @@ export class ProjectsController {
 			newProjFileName += constants.sqlprojExtension;
 		}
 
-		const newProjFilePath = creationParams.makeOwnFolder ? path.join(creationParams.folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName) : path.join(creationParams.folderUri.fsPath, newProjFileName);
+		const newProjFilePath = path.join(creationParams.folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName);
 
-		let fileExists = false;
-		try {
-			await fs.access(newProjFilePath);
-			fileExists = true;
-		}
-		catch { } // file doesn't already exist
-
-		if (fileExists) {
+		if (await utils.exists(newProjFilePath)) {
 			throw new Error(constants.projectAlreadyExists(newProjFileName, path.parse(newProjFilePath).dir));
 		}
 
 		await fs.mkdir(path.dirname(newProjFilePath), { recursive: true });
 		await fs.writeFile(newProjFilePath, newProjFileContents);
+
+		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 
 		return newProjFilePath;
 	}
@@ -266,18 +261,10 @@ export class ProjectsController {
 			return; // user cancelled
 		}
 
-		const newFileText = this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
+		const newFileText = templates.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
 		const relativeFilePath = path.join(relativePath, itemObjectName + constants.sqlFileExtension);
 
 		try {
-			// check if file already exists
-			const absoluteFilePath = path.join(project.projectFolderPath, relativeFilePath);
-			const fileExists = await utils.exists(absoluteFilePath);
-
-			if (fileExists) {
-				throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
-			}
-
 			const newEntry = await project.addScriptItem(relativeFilePath, newFileText, itemType.type);
 
 			await vscode.commands.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
@@ -460,6 +447,12 @@ export class ProjectsController {
 		return addDatabaseReferenceDialog;
 	}
 
+	/**
+	 * Adds a database reference to a project, after selections have been made in the dialog
+	 * @param project project to which to add the database reference
+	 * @param settings settings for the database reference
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
 	public async addDatabaseReferenceCallback(project: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings, context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		try {
 			if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
@@ -494,6 +487,11 @@ export class ProjectsController {
 		}
 	}
 
+	/**
+	 * Validates the contents of an external streaming job's query against the last-built dacpac.
+	 * If no dacpac exists at the output path, one will be built first.
+	 * @param node a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
 	public async validateExternalStreamingJob(node: dataworkspace.WorkspaceTreeItem): Promise<mssql.ValidateStreamingJobResult> {
 		const project: Project = this.getProjectFromContext(node);
 
@@ -547,6 +545,24 @@ export class ProjectsController {
 		}
 	}
 
+	private async addTemplateFiles(newProjFilePath: string, projectTypeId: string): Promise<void> {
+		if (projectTypeId === constants.emptySqlDatabaseProjectTypeId || newProjFilePath === '') {
+			return;
+		}
+
+		if (projectTypeId === constants.edgeSqlDatabaseProjectTypeId) {
+			const project = await Project.openProject(newProjFilePath);
+
+			await this.createFileFromTemplate(project, templates.get(templates.table), 'Table1.sql', { 'OBJECT_NAME': 'Table1' });
+			await this.createFileFromTemplate(project, templates.get(templates.externalStreamingJob), 'StreamingJob1.sql', { 'OBJECT_NAME': 'StreamingJob1' });
+		}
+	}
+
+	private async createFileFromTemplate(project: Project, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Record<string, string>): Promise<void> {
+		const newFileText = templates.macroExpansion(itemType.templateScript, expansionMacros);
+		await project.addScriptItem(relativePath, newFileText, itemType.type);
+	}
+
 	private getProjectFromContext(context: Project | BaseProjectTreeItem | dataworkspace.WorkspaceTreeItem): Project {
 		if ('element' in context) {
 			return context.element.root.project;
@@ -570,21 +586,7 @@ export class ProjectsController {
 		return (ext.exports as mssql.IExtension).dacFx;
 	}
 
-	private macroExpansion(template: string, macroDict: Record<string, string>): string {
-		const macroIndicator = '@@';
-		let output = template;
 
-		for (const macro in macroDict) {
-			// check if value contains the macroIndicator, which could break expansion for successive macros
-			if (macroDict[macro].includes(macroIndicator)) {
-				throw new Error(`Macro value ${macroDict[macro]} is invalid because it contains ${macroIndicator}`);
-			}
-
-			output = output.replace(new RegExp(macroIndicator + macro + macroIndicator, 'g'), macroDict[macro]);
-		}
-
-		return output;
-	}
 
 	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: Project, folderPath: string, fileExtension?: string): Promise<string | undefined> {
 		const suggestedName = itemType.friendlyName.replace(/\s+/g, '');
@@ -635,8 +637,7 @@ export class ProjectsController {
 			const newProjFilePath = await this.createNewProject({
 				newProjName: model.projName,
 				folderUri: vscode.Uri.file(newProjFolderUri),
-				projectTypeId: constants.emptySqlDatabaseProjectTypeId,
-				makeOwnFolder: true
+				projectTypeId: constants.emptySqlDatabaseProjectTypeId
 			});
 
 			model.filePath = path.dirname(newProjFilePath);
@@ -729,6 +730,5 @@ export interface NewProjectParams {
 	newProjName: string;
 	folderUri: vscode.Uri;
 	projectTypeId: string;
-	makeOwnFolder: boolean;
 	projectGuid?: string;
 }

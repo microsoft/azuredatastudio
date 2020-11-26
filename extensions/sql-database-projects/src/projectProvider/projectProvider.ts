@@ -5,7 +5,7 @@
 
 import * as dataworkspace from 'dataworkspace';
 import * as vscode from 'vscode';
-import { sqlprojExtension, emptyProjectTypeDisplayName, emptyProjectTypeDescription, emptySqlDatabaseProjectTypeId } from '../common/constants';
+import * as constants from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
@@ -44,10 +44,17 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	get supportedProjectTypes(): dataworkspace.IProjectType[] {
 		return [{
-			id: emptySqlDatabaseProjectTypeId,
-			projectFileExtension: sqlprojExtension.replace(/\./g, ''),
-			displayName: emptyProjectTypeDisplayName,
-			description: emptyProjectTypeDescription,
+			id: constants.emptySqlDatabaseProjectTypeId,
+			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
+			displayName: constants.emptyProjectTypeDisplayName,
+			description: constants.emptyProjectTypeDescription,
+			icon: IconPathHelper.colorfulSqlProject
+		},
+		{
+			id: constants.edgeSqlDatabaseProjectTypeId,
+			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
+			displayName: constants.edgeProjectTypeDisplayName,
+			description: constants.edgeProjectTypeDescription,
 			icon: IconPathHelper.colorfulSqlProject
 		}];
 	}
@@ -56,14 +63,14 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * Create a project
 	 * @param name name of the project
 	 * @param location the parent directory
+	 * @param projectTypeId the ID of the project/template
 	 * @returns Uri of the newly created project file
 	 */
 	async createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri> {
 		const projectFile = await this.projectController.createNewProject({
 			newProjName: name,
 			folderUri: location,
-			projectTypeId: projectTypeId,
-			makeOwnFolder: true
+			projectTypeId: projectTypeId
 		});
 
 		return vscode.Uri.file(projectFile);
