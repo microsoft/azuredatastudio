@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';	// {{SQL CARBON EDIT}}
 import { URI } from 'vs/base/common/uri';
 import { isMacintosh } from 'vs/base/common/platform';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
@@ -19,6 +19,11 @@ export class NativeClipboardService implements IClipboardService {
 	constructor(
 		@INativeHostService private readonly nativeHostService: INativeHostService
 	) { }
+
+	// {{SQL CARBON EDIT}}
+	async write(data: ClipboardData, type?: 'selection' | 'clipboard'): Promise<void> {
+		return this.electronService.writeClipboardData(data, type);
+	}
 
 	async writeText(text: string, type?: 'selection' | 'clipboard'): Promise<void> {
 		return this.nativeHostService.writeClipboardText(text, type);
