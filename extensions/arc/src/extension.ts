@@ -38,9 +38,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 		}
 		const dialog = new ConnectToControllerDialog(treeDataProvider);
 		dialog.showDialog();
-		const model = await dialog.waitForClose();
-		if (model) {
+		try {
+			const model = await dialog.waitForClose();
 			await treeDataProvider.addOrUpdateController(model.controllerModel, model.password);
+		} catch (err) {
+			console.log(`Error connecting to Controller dashboard ${err}`);
 		}
 	});
 
@@ -59,9 +61,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 	vscode.commands.registerCommand('arc.editConnection', async (treeNode: ControllerTreeNode) => {
 		const dialog = new ConnectToControllerDialog(treeDataProvider);
 		dialog.showDialog(treeNode.model.info, await treeDataProvider.getPassword(treeNode.model.info));
-		const model = await dialog.waitForClose();
-		if (model) {
+		try {
+			const model = await dialog.waitForClose();
 			await treeDataProvider.addOrUpdateController(model.controllerModel, model.password, true);
+		} catch (err) {
+			console.log(`Error connecting to Controller dashboard ${err}`);
 		}
 	});
 

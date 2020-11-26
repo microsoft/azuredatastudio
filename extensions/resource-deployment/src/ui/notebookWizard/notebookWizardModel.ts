@@ -12,6 +12,7 @@ import { DeploymentType, NotebookWizardDeploymentProvider, NotebookWizardInfo } 
 import { IPlatformService } from '../../services/platformService';
 import { NotebookWizardAutoSummaryPage } from './notebookWizardAutoSummaryPage';
 import { NotebookWizardPage } from './notebookWizardPage';
+import { ErrorType, ErrorWithType } from 'resource-deployment';
 
 export class NotebookWizardModel extends ResourceTypeModel {
 	private _inputComponents: InputComponents = {};
@@ -58,16 +59,27 @@ export class NotebookWizardModel extends ResourceTypeModel {
 	}
 
 	/**
-	 * Generates the notebook and returns true on successful generation
+	 * Generates the notebook and returns true if generation was done and so the wizard should be closed.
 	 **/
 	public async onGenerateScript(): Promise<boolean> {
 		const lastPage = this.wizard.lastPage! as NotebookWizardPage;
 		if (lastPage.validatePage()) {
-			const notebook = await this.prepareNotebookAndEnvironment();
-			await this.openNotebook(notebook);
-			return true;
+			let notebook: Notebook;
+			try {
+				notebook = await this.prepareNotebookAndEnvironment();
+			} catch (e) {
+				const isUserCancelled = (e: any) => e instanceof Error && 'type' in e && (<ErrorWithType>e).type === ErrorType.userCancelled;
+				// user cancellation is a normal scenario, we just bail out of the wizard without actually opening the notebook, so rethrow for any other case
+				if (!isUserCancelled(e)) {
+					throw e;
+				}
+			}
+			if (notebook!) { // open the notebook if it was successfully prepared
+				await this.openNotebook(notebook!);
+			}
+			return true; // generation done (or cancelled at user request) so close the wizard
 		} else {
-			return false;
+			return false; // validation failed so do not attempt to generate the notebook and do not close the wizard
 		}
 	}
 
@@ -82,7 +94,7 @@ export class NotebookWizardModel extends ResourceTypeModel {
 		return await this.notebookService.openNotebookWithContent(notebookPath, JSON.stringify(notebook, undefined, 4));
 	}
 
-	private async prepareNotebookAndEnvironment() {
+	private async prepareNotebookAndEnvironment(): Promise<Notebook> {
 		await setModelValues(this.inputComponents, this);
 		const env: NodeJS.ProcessEnv = process.env;
 		this.setEnvironmentVariables(env, (varName) => {

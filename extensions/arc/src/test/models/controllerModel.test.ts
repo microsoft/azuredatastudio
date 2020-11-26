@@ -11,7 +11,7 @@ import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 import { v4 as uuid } from 'uuid';
 import * as vscode from 'vscode';
-import { UserCancelledError } from '../../common/utils';
+import { UserCancelledError } from '../../common/api';
 import { ControllerModel } from '../../models/controllerModel';
 import { ConnectToControllerDialog } from '../../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../../ui/tree/azureArcTreeDataProvider';
@@ -36,8 +36,9 @@ describe('ControllerModel', function (): void {
 		});
 
 		it('Rejected with expected error when user cancels', async function (): Promise<void> {
+			const cancellationError = new UserCancelledError();
 			// Returning an undefined model here indicates that the dialog closed without clicking "Ok" - usually through the user clicking "Cancel"
-			sinon.stub(ConnectToControllerDialog.prototype, 'waitForClose').returns(Promise.resolve(undefined));
+			sinon.stub(ConnectToControllerDialog.prototype, 'waitForClose').rejects(cancellationError);
 			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
 			await should(model.azdataLogin()).be.rejectedWith(new UserCancelledError());
 		});

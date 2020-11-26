@@ -4,11 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as arc from 'arc';
+import * as rd from 'resource-deployment';
 import { PasswordToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerTreeNode } from '../ui/tree/controllerTreeNode';
-import { UserCancelledError } from './utils';
 
+export class UserCancelledError extends Error implements rd.ErrorWithType {
+	public get type(): rd.ErrorType {
+		return rd.ErrorType.userCancelled;
+	}
+}
 export function arcApi(treeDataProvider: AzureArcTreeDataProvider): arc.IExtension {
 	return {
 		getRegisteredDataControllers: () => getRegisteredDataControllers(treeDataProvider),
@@ -16,13 +21,11 @@ export function arcApi(treeDataProvider: AzureArcTreeDataProvider): arc.IExtensi
 		reacquireControllerPassword: (controllerInfo: arc.ControllerInfo) => reacquireControllerPassword(treeDataProvider, controllerInfo)
 	};
 }
+
 export async function reacquireControllerPassword(treeDataProvider: AzureArcTreeDataProvider, controllerInfo: arc.ControllerInfo): Promise<string> {
 	const dialog = new PasswordToControllerDialog(treeDataProvider);
 	dialog.showDialog(controllerInfo);
 	const model = await dialog.waitForClose();
-	if (!model) {
-		throw new UserCancelledError();
-	}
 	return model.password;
 }
 
