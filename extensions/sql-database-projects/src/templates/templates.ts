@@ -15,6 +15,9 @@ export const script: string = 'script';
 export const table: string = 'table';
 export const view: string = 'view';
 export const storedProcedure: string = 'storedProcedure';
+export const dataSource: string = 'dataSource';
+export const fileFormat: string = 'fileFormat';
+export const externalStream: string = 'externalStream';
 export const externalStreamingJob: string = 'externalStreamingJob';
 
 export const folder: string = 'folder';
@@ -52,6 +55,9 @@ export async function loadTemplates(templateFolderPath: string) {
 		loadObjectTypeInfo(storedProcedure, constants.storedProcedureFriendlyName, templateFolderPath, 'newTsqlStoredProcedureTemplate.sql'),
 		loadObjectTypeInfo(preDeployScript, constants.preDeployScriptFriendlyName, templateFolderPath, 'newTsqlPreDeployScriptTemplate.sql'),
 		loadObjectTypeInfo(postDeployScript, constants.postDeployScriptFriendlyName, templateFolderPath, 'newTsqlPostDeployScriptTemplate.sql'),
+		loadObjectTypeInfo(dataSource, constants.dataSource, templateFolderPath, 'newTsqlDataSourceTemplate.sql'),
+		loadObjectTypeInfo(fileFormat, constants.fileFormat, templateFolderPath, 'newTsqlFileFormatTemplate.sql'),
+		loadObjectTypeInfo(externalStream, constants.externalStream, templateFolderPath, 'newTsqlExternalStreamTemplate.sql'),
 		loadObjectTypeInfo(externalStreamingJob, constants.externalStreamingJobFriendlyName, templateFolderPath, 'newTsqlExternalStreamingJobTemplate.sql')
 	]);
 
@@ -81,9 +87,11 @@ export function macroExpansion(template: string, macroDict: Record<string, strin
 	return output;
 }
 
-async function loadObjectTypeInfo(key: string, friendlyName: string, templateFolderPath: string, fileName: string) {
+async function loadObjectTypeInfo(key: string, friendlyName: string, templateFolderPath: string, fileName: string): Promise<string> {
 	const template = await loadTemplate(templateFolderPath, fileName);
 	scriptTypes.push(new ProjectScriptType(key, friendlyName, template));
+
+	return key;
 }
 
 async function loadTemplate(templateFolderPath: string, fileName: string): Promise<string> {
