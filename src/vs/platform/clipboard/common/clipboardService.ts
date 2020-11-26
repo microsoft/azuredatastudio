@@ -8,8 +8,8 @@ import { URI } from 'vs/base/common/uri';
 
 export const IClipboardService = createDecorator<IClipboardService>('clipboardService');
 
-// {{SQL CARBON EDIT}}
-export interface ClipboardData {
+// Added type https://www.electronjs.org/docs/api/clipboard#clipboardwritedata-type
+export interface ClipboardData {	// {{SQL CARBON EDIT}}
 	text?: string;
 	html?: string;
 	rtf?: string;
@@ -22,8 +22,7 @@ export interface IClipboardService {
 	/**
 	 * Writes data to the system clipboard.
 	 */
-	// {{SQL CARBON EDIT}}
-	write(data: ClipboardData, type?: string): Promise<void>;
+	write(data: ClipboardData, type?: string): Promise<void>;	// {{SQL CARBON EDIT}}
 
 	/**
 	 * Writes text to the system clipboard.

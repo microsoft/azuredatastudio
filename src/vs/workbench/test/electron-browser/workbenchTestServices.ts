@@ -222,7 +222,7 @@ export class TestElectronService implements IElectronService {
 	async toggleDevTools(): Promise<void> { }
 	async resolveProxy(url: string): Promise<string | undefined> { return undefined; }
 	async readClipboardText(type?: 'selection' | 'clipboard' | undefined): Promise<string> { return ''; }
-	async writeClipboardData(data: any, type?: 'selection' | 'clipboard' | undefined): Promise<void> { }
+	async writeClipboardData(data: any, type?: 'selection' | 'clipboard' | undefined): Promise<void> { }	// {{SQL CARBON EDIT}}
 	async writeClipboardText(text: string, type?: 'selection' | 'clipboard' | undefined): Promise<void> { }
 	async readClipboardFindText(): Promise<string> { return ''; }
 	async writeClipboardFindText(text: string): Promise<void> { }

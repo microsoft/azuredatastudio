@@ -22,7 +22,7 @@ import { EditDataEditor } from 'sql/workbench/contrib/editData/browser/editDataE
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 const singleQuote = '\'';
 
@@ -147,7 +147,7 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 		super(id, label);
 	}
 
-	public async getFormattedResults(editor): Promise<any> {
+	public async getFormattedResults(editor): Promise<ClipboardData> {
 		let queryRunner = this.queryModelService.getQueryRunner(editor.input.uri);
 		let allResults = '';
 		let allHtmlResults = '';
@@ -182,7 +182,7 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 			}
 		}
 
-		return { result: allResults, htmlResult: allHtmlResults };
+		return { text: allResults, html: allHtmlResults };
 	}
 
 	public async run(): Promise<void> {
@@ -192,8 +192,8 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 			let queryText = editor.getAllText();
 
 			let data = {
-				text: `${queryText}\n\n${allResults.result}`,
-				html: `${escape(queryText).replace(/\r\n|\n|\r/gm, '<br />')}${allResults.htmlResult}`
+				text: `${queryText}\n\n${allResults.text}`,
+				html: `${escape(queryText).replace(/\r\n|\n|\r/gm, '<br />')}${allResults.html}`
 			};
 
 			await this._clipboardService.write(data);
