@@ -93,6 +93,7 @@ export interface ICommonElectronService {
 	writeClipboardText(text: string, type?: 'selection' | 'clipboard'): Promise<void>;
 	readClipboardFindText(): Promise<string>;
 	writeClipboardFindText(text: string): Promise<void>;
+	writeClipboardData(data: any, type?: 'selection' | 'clipboard'): Promise<void>;	// {{SQL CARBON EDIT}}
 	writeClipboardBuffer(format: string, buffer: Uint8Array, type?: 'selection' | 'clipboard'): Promise<void>;
 	readClipboardBuffer(format: string): Promise<Uint8Array>;
 	hasClipboard(format: string, type?: 'selection' | 'clipboard'): Promise<boolean>;
