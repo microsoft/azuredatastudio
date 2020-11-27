@@ -308,7 +308,7 @@ export class CalloutDialog extends Modal {
 		let options: IOpenDialogOptions = {
 			openLabel: undefined,
 			canSelectFiles: true,
-			canSelectFolders: true,
+			canSelectFolders: false,
 			canSelectMany: false,
 			defaultUri: URI.file(this.getUserHome()),
 			title: undefined
