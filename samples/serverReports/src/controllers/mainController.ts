@@ -11,7 +11,6 @@ import ControllerBase from './controllerBase';
 import { promises } from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import * as openurl from 'openurl';
 
 
 /**
@@ -38,7 +37,7 @@ export default class MainController extends ControllerBase {
 	}
 
 	private openurl(link: string): void {
-		openurl.open(link);
+		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(link));
 	}
 
 	private async onExecute(connection: azdata.IConnectionProfile, fileName: string): Promise<void> {
