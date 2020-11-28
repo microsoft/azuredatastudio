@@ -8,7 +8,7 @@
 import * as azdata from 'azdata';
 import * as Utils from '../utils';
 import ControllerBase from './controllerBase';
-import * as fs from 'fs';
+import { promises } from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as openurl from 'openurl';
@@ -41,18 +41,25 @@ export default class MainController extends ControllerBase {
 		openurl.open(link);
 	}
 
-	private onExecute(connection: azdata.IConnectionProfile, fileName: string): void {
+	private async onExecute(connection: azdata.IConnectionProfile, fileName: string): Promise<void> {
 		// Command to start/stop autorefresh and run the query
-		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'type-of-contention', connection.id, true);
-		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'metadata-contention', connection.id, true);
-		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'allocation-contention', connection.id, true);
-		let sqlContent = fs.readFileSync(path.join(__dirname, '..', 'sql', fileName)).toString();
-		vscode.workspace.openTextDocument({ language: 'sql', content: sqlContent }).then(doc => {
-			vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, false).then(() => {
-				let filePath = doc.uri.toString();
-				azdata.queryeditor.connect(filePath, connection.id).then(() => azdata.queryeditor.runQuery(filePath, undefined, false));
-			});
-		});
+		let connectionUri = await azdata.connection.getUriForConnection(connection.id);
+		let connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(connection.providerName, azdata.DataProviderType.ConnectionProvider);
+		connectionProvider.changeDatabase(connectionUri, 'tempdb');
+		let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connection.providerName, azdata.DataProviderType.QueryProvider);
+		let sqlContent: string = await promises.readFile(path.join(__dirname, '..', 'sql', fileName), {encoding: 'utf8'});
+		let seResult = await queryProvider.runQueryAndReturn(connectionUri, sqlContent);
+		if (seResult.rowCount > 0 && seResult.rows[0][0].displayValue === '0') {
+			vscode.window.showInformationMessage(seResult.rows[0][1].displayValue);
+			let setRefreshState = ( fileName === 'startEvent.sql' ) ? true : false;
+			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'type-of-contention', connection.id, setRefreshState);
+			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'metadata-contention', connection.id, setRefreshState);
+			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'allocation-contention', connection.id, setRefreshState);
+		} else if (seResult.rowCount > 0 && seResult.rows[0][0].displayValue === '1') {
+			vscode.window.showErrorMessage(seResult.rows[0][1].displayValue);
+		} else {
+			vscode.window.showErrorMessage('Something has gone wrong, better error msg here.');
+		}
 	}
 
 	private stopAutoRefresh(connection: azdata.IConnectionProfile): void {
