@@ -157,6 +157,7 @@ describe('ProjectsController', function (): void {
 
 			it('Should delete nested ProjectEntry from node', async function (): Promise<void> {
 				let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
+
 				const setupResult = await setupDeleteExcludeTest(proj);
 				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
 

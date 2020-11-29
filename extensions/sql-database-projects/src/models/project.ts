@@ -285,7 +285,7 @@ export class Project {
 		// check if file already exists
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 
-		if (await utils.exists(absoluteFilePath)) {
+		if (contents !== undefined && contents !== '' && await utils.exists(absoluteFilePath)) {
 			throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
 		}
 

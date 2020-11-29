@@ -47,6 +47,8 @@ export function projectScriptTypes(): ProjectScriptType[] {
 }
 
 export async function loadTemplates(templateFolderPath: string) {
+	reset();
+
 	await Promise.all([
 		Promise.resolve(newSqlProjectTemplate = await loadTemplate(templateFolderPath, 'newSqlProjectTemplate.xml')),
 		loadObjectTypeInfo(script, constants.scriptFriendlyName, templateFolderPath, 'newTsqlScriptTemplate.sql'),
@@ -55,9 +57,9 @@ export async function loadTemplates(templateFolderPath: string) {
 		loadObjectTypeInfo(storedProcedure, constants.storedProcedureFriendlyName, templateFolderPath, 'newTsqlStoredProcedureTemplate.sql'),
 		loadObjectTypeInfo(preDeployScript, constants.preDeployScriptFriendlyName, templateFolderPath, 'newTsqlPreDeployScriptTemplate.sql'),
 		loadObjectTypeInfo(postDeployScript, constants.postDeployScriptFriendlyName, templateFolderPath, 'newTsqlPostDeployScriptTemplate.sql'),
-		loadObjectTypeInfo(dataSource, constants.dataSource, templateFolderPath, 'newTsqlDataSourceTemplate.sql'),
-		loadObjectTypeInfo(fileFormat, constants.fileFormat, templateFolderPath, 'newTsqlFileFormatTemplate.sql'),
-		loadObjectTypeInfo(externalStream, constants.externalStream, templateFolderPath, 'newTsqlExternalStreamTemplate.sql'),
+		loadObjectTypeInfo(dataSource, constants.dataSourceFriendlyName, templateFolderPath, 'newTsqlDataSourceTemplate.sql'),
+		loadObjectTypeInfo(fileFormat, constants.fileFormatFriendlyName, templateFolderPath, 'newTsqlFileFormatTemplate.sql'),
+		loadObjectTypeInfo(externalStream, constants.externalStreamFriendlyName, templateFolderPath, 'newTsqlExternalStreamTemplate.sql'),
 		loadObjectTypeInfo(externalStreamingJob, constants.externalStreamingJobFriendlyName, templateFolderPath, 'newTsqlExternalStreamingJobTemplate.sql')
 	]);
 
