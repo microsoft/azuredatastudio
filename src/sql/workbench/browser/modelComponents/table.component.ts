@@ -533,14 +533,18 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 	private appendData(data: any[][]) {
 		const tableHasFocus = isAncestor(document.activeElement, <HTMLElement>this._inputContainer.nativeElement);
-		const wasFocused = tableHasFocus && this._table.grid.getDataLength() > 0 && this._table.grid.getActiveCell();
+		const currentActiveCell = this._table.grid.getActiveCell();
+		const wasFocused = tableHasFocus && this._table.grid.getDataLength() > 0 && currentActiveCell;
 
 		this._tableData.push(this.transformData(data, this.columns));
 		this.data = this._tableData.getItems().map(dataObject => Object.values(dataObject));
 		this.layoutTable();
 
 		if (wasFocused) {
-			this.focus();
+			if (!this._table.grid.getActiveCell()) {
+				this._table.grid.setActiveCell(currentActiveCell.row, currentActiveCell.cell);
+			}
+			this._table.grid.getActiveCellNode().focus();
 		}
 	}
 }
