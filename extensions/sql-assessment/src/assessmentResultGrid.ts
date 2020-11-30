@@ -161,7 +161,6 @@ export class AssessmentResultGrid implements vscode.Disposable {
 			this.dataItems.push(...filteredValues);
 		}
 		this.table.appendData(filteredValues.map(item => this.convertToDataView(item)));
-		this.table.focus();
 	}
 
 	private async showDetails(rowNumber: number) {
