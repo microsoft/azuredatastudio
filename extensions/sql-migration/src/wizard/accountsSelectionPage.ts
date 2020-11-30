@@ -11,12 +11,10 @@ import * as constants from '../models/strings';
 
 export class AccountsSelectionPage extends MigrationWizardPage {
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
-	private _accountsMap!: Map<string, azdata.Account>;
+	private _accountsMap: Map<string, azdata.Account> = new Map();
 
-	// For future reference: DO NOT EXPOSE WIZARD DIRECTLY THROUGH HERE.
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.ACCOUNTS_SELECTION_PAGE_TITLE), migrationStateModel);
-		this._accountsMap = new Map();
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -30,7 +28,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		await this.populateAzureAccountsDropdown();
 	}
 
-	private async createAzureAccountsDropdown(view: azdata.ModelView): Promise<azdata.FormComponent> {
+	private createAzureAccountsDropdown(view: azdata.ModelView): azdata.FormComponent {
 
 		this._azureAccountsDropdown = view.modelBuilder.dropDown().component();
 
