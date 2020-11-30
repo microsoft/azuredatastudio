@@ -45,6 +45,8 @@ export class Dialog extends ModelViewPane {
 	public content: string | DialogTab[] = '';
 	public dialogStyle: DialogStyle;
 	public dialogPosition: DialogPosition;
+	public suppressHeader: boolean;
+	public suppressFooter: boolean;
 	public okButton: DialogButton = new DialogButton(Dialog.DONE_BUTTON_LABEL, true);
 	public cancelButton: DialogButton = new DialogButton(Dialog.CANCEL_BUTTON_LABEL, true);
 	public customButtons: DialogButton[] = [];
@@ -53,7 +55,7 @@ export class Dialog extends ModelViewPane {
 	private _message: DialogMessage | undefined;
 	private _closeValidator: CloseValidator | undefined;
 
-	constructor(public title: string, public width: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, content?: string | DialogTab[]) {
+	constructor(public title: string, public width: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, suppressHeader?: boolean, suppressFooter?: boolean, content?: string | DialogTab[]) {
 		super();
 		if (content) {
 			this.content = content;
@@ -63,6 +65,12 @@ export class Dialog extends ModelViewPane {
 		}
 		if (dialogPosition) {
 			this.dialogPosition = dialogPosition;
+		}
+		if (suppressHeader) {
+			this.suppressHeader = suppressHeader;
+		}
+		if (suppressFooter) {
+			this.suppressFooter = suppressFooter;
 		}
 	}
 

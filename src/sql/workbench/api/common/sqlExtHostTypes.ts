@@ -259,6 +259,8 @@ export interface IModelViewDialogDetails {
 	width: DialogWidth;
 	dialogStyle: DialogStyle;
 	dialogPosition: DialogPosition;
+	suppressHeader: boolean;
+	suppressFooter: boolean;
 }
 
 export interface IModelViewTabDetails {
@@ -300,7 +302,7 @@ export interface IModelViewWizardDetails {
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
-export type DialogStyle = 'normal' | 'flyout' | 'callout';
+export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
 
 export type DialogPosition = 'left' | 'right' | 'above' | 'below' | undefined;
 

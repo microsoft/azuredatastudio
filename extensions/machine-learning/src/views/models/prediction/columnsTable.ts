@@ -15,7 +15,6 @@ import { ModelParameter, ModelParameters } from '../../../modelManagement/interf
  * View to render azure models in a table
  */
 export class ColumnsTable extends ModelViewBase implements IDataComponent<PredictColumn[]> {
-	protected _isOpen: boolean = false;
 	private _table: azdata.DeclarativeTableComponent | undefined;
 	private _parameters: PredictColumn[] = [];
 	private _loader: azdata.LoadingComponent;
@@ -207,7 +206,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			}).component();
 			const warningButton = this.createWarningButton();
 			warningButton.onDidClick(() => {
-				this.openDialog(constants.outputColumnDataTypeNotSupportedWarning, 'output table row dialog', 'narrow', 'callout', 'left');
+				this.openDialog(constants.columnDataTypeMismatchWarningHeading, 'output table row dialog', constants.outputColumnDataTypeNotSupportedWarning, constants.learnMoreLink, 'https://www.bing.com/');
 			});
 			const css = {
 				'padding-top': '5px',
@@ -300,7 +299,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			}).component();
 			const warningButton = this.createWarningButton();
 			warningButton.onDidClick(() => {
-				this.openDialog(constants.columnDataTypeMismatchWarning, 'input table row dialog', 'narrow', 'callout', 'left');
+				this.openDialog(constants.columnDataTypeMismatchWarningHeading, 'input table row dialog', constants.columnDataTypeMismatchWarning, constants.learnMoreLink, 'https://www.bing.com/');
 			});
 
 			const css = {
@@ -372,7 +371,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		const warningButton = this._modelBuilder.button().withProperties({
 			width: '16px',
 			height: '16px',
-			title: 'Click to review warning details',
+			title: constants.columnDataTypeMismatchWarningHelper,
 			iconPath: {
 				dark: this.asAbsolutePath('images/warning.svg'),
 				light: this.asAbsolutePath('images/warning.svg'),
@@ -384,32 +383,42 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		return warningButton;
 	}
 
-	public async openDialog(title: string, dialogName?: string, width?: azdata.window.DialogWidth, dialogStyle?: azdata.window.DialogStyle, dialogPosition?: azdata.window.DialogPosition) {
-		if (!this._isOpen) {
-			this._isOpen = true;
-			let dialog = azdata.window.createModelViewDialog(title, dialogName, width, dialogStyle, dialogPosition);
-			/**	TODO
-			 * - Add support for body text instead of title.
-			 * - Allow suppression of title / heading slot.
-			 * - Add support for position X/Y.
-			 * - Add support for markup inside Dialog.
-			 **/
+	public async openDialog(title: string, dialogName?: string, calloutMessageText?: string, calloutMessageLinkText?: string, calloutMessageLinkUrl?: string) {
+		let dialog = azdata.window.createModelViewDialog(title, dialogName, 'narrow', 'calloutCompact', 'left', false, true);
+		let warningTab: azdata.window.DialogTab = azdata.window.createTab('tab1');
+		// init tab
+		// create layout
+		warningTab.registerContent(async view => {
+			let warningContentContainer = view.modelBuilder.divContainer().withProperties({
+				CSSStyles: {}
+			}).component();
+			let messageTextComponent = view.modelBuilder.text().withProperties({
+				value: calloutMessageText,
+				CSSStyles: {
+					'font-size': '12px',
+					'line-height': '16px',
+					'margin': '0 0 12px 0'
+				}
+			}).component();
+			warningContentContainer.addItem(messageTextComponent);
 
-			let warningTab: azdata.window.DialogTab = azdata.window.createTab('tab1');
-			// init tab
-			// create layout
-			warningTab.registerContent(async view => {
-				let warningContentContainer = view.modelBuilder.divContainer().component();
-				let warningMessage = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: 'hello world!'
+			if (calloutMessageLinkText && calloutMessageLinkUrl) {
+				const messageLinkComponent = view.modelBuilder.hyperlink().withProperties({
+					label: calloutMessageLinkText,
+					url: calloutMessageLinkUrl,
+					CSSStyles: {
+						'font-size': '13px',
+						'margin': '0px'
+					}
 				}).component();
-				warningContentContainer.addItem(warningMessage);
-			});
-			// set tab as content
-			dialog.content = [warningTab];
+				warningContentContainer.addItem(messageLinkComponent);
+			}
+			await view.initializeModel(warningContentContainer);
+		});
+		// set tab as content
+		dialog.content = [warningTab];
 
-			azdata.window.openDialog(dialog);
-		}
+		azdata.window.openDialog(dialog);
 	}
 
 	/**

@@ -629,6 +629,10 @@ declare module 'azdata' {
 			dialogStyle?: DialogStyle;
 
 			dialogPosition?: DialogPosition;
+
+			suppressHeader?: boolean;
+
+			suppressFooter?: boolean;
 		}
 
 		export interface Wizard {
@@ -644,7 +648,7 @@ declare module 'azdata' {
 
 		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
-		export type DialogStyle = 'normal' | 'flyout' | 'callout';
+		export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
 
 		export type DialogPosition = 'left' | 'right' | 'above' | 'below' | undefined;
 
@@ -655,8 +659,10 @@ declare module 'azdata' {
 		 * @param width width of the dialog, default is 'wide'
 		 * @param dialogStyle Defines the dialog style, default is 'Flyout'
 		 * @param dialogPosition Defines the dialog position, default is null
+		 * @param suppressHeader Prevents render of Dialog header
+		 * @param suppressFooter Prevents render of Dialog
 		 */
-		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition): Dialog;
+		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, suppressHeader?: boolean, suppressFooter?: boolean): Dialog;
 
 		/**
 		 * Create a wizard with the given title and width
