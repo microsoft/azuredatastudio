@@ -111,6 +111,7 @@ export class PostgresModel extends ResourceModel {
 
 			// If we have an external endpoint configured then fetch the engine settings now
 			if (this._config.status.externalEndpoint) {
+
 				//this.getEngineSettings();
 			}
 

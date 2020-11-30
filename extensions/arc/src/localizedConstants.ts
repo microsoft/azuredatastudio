@@ -82,6 +82,7 @@ export const indirect = localize('arc.indirect', "Indirect");
 export const loading = localize('arc.loading', "Loading...");
 export const refreshToEnterCredentials = localize('arc.refreshToEnterCredentials', "Refresh node to enter credentials");
 export const noInstancesAvailable = localize('arc.noInstancesAvailable', "No instances available");
+export const makeAConnection = localize('arc.makeAConnection', "Make a Connection");
 export const connectToController = localize('arc.connectToController', "Connect to Existing Controller");
 export function connectToMSSql(name: string): string { return localize('arc.connectToMSSql', "Connect to SQL managed instance - Azure Arc ({0})", name); }
 export function connectToPGSql(name: string): string { return localize('arc.connectToPGSql', "Connect to PostgreSQL Hyperscale - Azure Arc ({0})", name); }
@@ -185,6 +186,7 @@ export function updated(when: string): string { return localize('arc.updated', "
 
 // Errors
 export const connectionRequired = localize('arc.connectionRequired', "A connection is required to show all properties. Click refresh to re-enter connection information");
+export const pgConnectionRequired = localize('arc.pgConnectionRequired', "A connection is required to show and set database engine settings.");
 export const couldNotFindControllerRegistration = localize('arc.couldNotFindControllerRegistration', "Could not find controller registration.");
 export function outOfRange(min: string, max: string): string { return localize('arc.outOfRange', "The number must be in range {0} - {1}", min, max); }
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
@@ -200,6 +202,7 @@ export function fetchConfigFailed(name: string, error: any): string { return loc
 export function fetchEndpointsFailed(name: string, error: any): string { return localize('arc.fetchEndpointsFailed', "An unexpected error occurred retrieving the endpoints for '{0}'. {1}", name, getErrorMessage(error)); }
 export function fetchRegistrationsFailed(name: string, error: any): string { return localize('arc.fetchRegistrationsFailed', "An unexpected error occurred retrieving the registrations for '{0}'. {1}", name, getErrorMessage(error)); }
 export function fetchDatabasesFailed(name: string, error: any): string { return localize('arc.fetchDatabasesFailed', "An unexpected error occurred retrieving the databases for '{0}'. {1}", name, getErrorMessage(error)); }
+export function fetchEngineSettingsFailed(name: string, error: any): string { return localize('arc.fetchEngineSettingsFailed', "An unexpected error occurred retrieving the engine settings for '{0}'. {1}", name, getErrorMessage(error)); }
 export function instanceDeletionWarning(name: string): string { return localize('arc.instanceDeletionWarning', "Warning! Deleting an instance is permanent and cannot be undone. To delete the instance '{0}' type the name '{0}' below to proceed.", name); }
 export function invalidInstanceDeletionName(name: string): string { return localize('arc.invalidInstanceDeletionName', "The value '{0}' does not match the instance name. Try again or press escape to exit", name); }
 export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for {0}", name); }

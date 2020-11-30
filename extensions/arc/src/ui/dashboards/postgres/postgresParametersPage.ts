@@ -263,35 +263,32 @@ export class PostgresParametersPage extends DashboardPage {
 
 	private initializeConnectButton() {
 		this.connectToServerButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.connectToServer,
+			label: loc.makeAConnection,
 			enabled: false,
 			CSSStyles: { 'max-width': '125px' }
 		}).component();
 
 		this.disposables.push(
 			this.connectToServerButton!.onDidClick(async () => {
+				this.connectToServerButton!.enabled = false;
 				try {
 					await this._postgresModel.getEngineSettings().catch(err => {
 						// If an error occurs show a message so the user knows something failed but still
 						// fire the event so callers can know to update (e.g. so dashboards don't show the
 						// loading icon forever)
 						if (err instanceof UserCancelledError) {
-							vscode.window.showWarningMessage(loc.connectionRequired); //TODO
-						} else {
-							vscode.window.showErrorMessage(loc.fetchDatabasesFailed(this._postgresModel.info.name, err)); //TODO
+							vscode.window.showWarningMessage(loc.pgConnectionRequired);
 						}
 						this._postgresModel.engineSettingsLastUpdated = new Date();
 						this._postgresModel._onEngineSettingsUpdated.fire(this._postgresModel._engineSettings);
+						this.connectToServerButton!.enabled = true;
 						throw err;
-
 					});
 
-				} catch (error) {
-					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
-				} finally {
-					this.connectToServerButton!.enabled = false;
 					this.connectToServerButton!.updateCssStyles({ display: 'none' });
 					this.parameterContainer!.addItem(this.parametersTable);
+				} catch (error) {
+					vscode.window.showErrorMessage(loc.fetchEngineSettingsFailed(this._postgresModel.info.name, error));
 				}
 			}));
 	}
@@ -491,9 +488,7 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private handleEngineSettingsUpdated(): void {
-		if (this._postgresModel.engineSettingsLastUpdated) {
-
-		}
+		//TODO
 	}
 
 	private handleServiceUpdated() {
