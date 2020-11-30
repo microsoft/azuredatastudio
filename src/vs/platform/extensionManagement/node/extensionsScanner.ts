@@ -272,12 +272,16 @@ export class ExtensionsScanner extends Disposable {
 	}
 
 	private async scanDevSystemExtensions(): Promise<ILocalExtension[]> {
-		const devSystemExtensionsList = this.getDevSystemExtensionsList();
-		if (devSystemExtensionsList.length) {
-			const result = await this.scanExtensionsInDir(this.devSystemExtensionsPath, ExtensionType.System);
-			this.logService.trace('Scanned dev system extensions:', result.length);
-			return result.filter(r => devSystemExtensionsList.some(id => areSameExtensions(r.identifier, { id })));
-		} else {
+		try {
+			const devSystemExtensionsList = this.getDevSystemExtensionsList();
+			if (devSystemExtensionsList.length) {
+				const result = await this.scanExtensionsInDir(this.devSystemExtensionsPath, ExtensionType.System);
+				this.logService.trace('Scanned dev system extensions:', result.length);
+				return result.filter(r => devSystemExtensionsList.some(id => areSameExtensions(r.identifier, { id })));
+			} else {
+				return [];
+			}
+		} catch (ex) {
 			return [];
 		}
 	}
