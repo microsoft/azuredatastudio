@@ -447,38 +447,42 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		try {
 			subscriptions = await getSubscriptions(this.migrationStateModel.azureAccount);
-		} catch (error) {
-			console.log(error);
-		}
-
-		subscriptions.forEach((subscription) => {
-			this._subscriptionMap.set(subscription.id, subscription);
-			this._subscriptionDropdownValues.push({
-				name: subscription.id,
-				displayName: subscription.name + ' - ' + subscription.id,
+			subscriptions.forEach((subscription) => {
+				this._subscriptionMap.set(subscription.id, subscription);
+				this._subscriptionDropdownValues.push({
+					name: subscription.id,
+					displayName: subscription.name + ' - ' + subscription.id,
+				});
 			});
-		});
 
-		if (!this._subscriptionDropdownValues) {
-			this._subscriptionDropdownValues = [
-				{
-					displayName: constants.NO_SUBSCRIPTIONS_FOUND,
-					name: ''
-				}
-			];
+			if (!this._subscriptionDropdownValues) {
+				this._subscriptionDropdownValues = [
+					{
+						displayName: constants.NO_SUBSCRIPTIONS_FOUND,
+						name: ''
+					}
+				];
+			}
+
+			this._fileShareSubscriptionDropdown.values = this._subscriptionDropdownValues;
+			this._networkShareContainerSubscriptionDropdown.values = this._subscriptionDropdownValues;
+			this._blobContainerSubscriptionDropdown.values = this._subscriptionDropdownValues;
+
+			this._networkShare.storageSubscriptionId = this._subscriptionDropdownValues[0].name;
+			this._fileShare.subscriptionId = this._subscriptionDropdownValues[0].name;
+			this._blob.subscriptionId = this._subscriptionDropdownValues[0].name;
+
+		} catch (error) {
+
+			console.log(error);
+			this.setEmptyDropdownPlaceHolder(this._fileShareSubscriptionDropdown, constants.NO_SUBSCRIPTIONS_FOUND);
+			this.setEmptyDropdownPlaceHolder(this._networkShareContainerSubscriptionDropdown, constants.NO_SUBSCRIPTIONS_FOUND);
+			this.setEmptyDropdownPlaceHolder(this._blobContainerSubscriptionDropdown, constants.NO_SUBSCRIPTIONS_FOUND);
 		}
-
-		this._fileShareSubscriptionDropdown.values = this._subscriptionDropdownValues;
-		this._networkShareContainerSubscriptionDropdown.values = this._subscriptionDropdownValues;
-		this._blobContainerSubscriptionDropdown.values = this._subscriptionDropdownValues;
 
 		this._networkShareContainerSubscriptionDropdown.loading = false;
 		this._fileShareSubscriptionDropdown.loading = false;
 		this._blobContainerSubscriptionDropdown.loading = false;
-
-		this._networkShare.storageSubscriptionId = this._subscriptionDropdownValues[0].name;
-		this._fileShare.subscriptionId = this._subscriptionDropdownValues[0].name;
-		this._blob.subscriptionId = this._subscriptionDropdownValues[0].name;
 
 		await this.loadNetworkShareStorageDropdown();
 		await this.loadFileShareStorageDropdown();

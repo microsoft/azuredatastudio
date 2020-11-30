@@ -35,7 +35,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		this._azureAccountsDropdown = view.modelBuilder.dropDown().component();
 
 		this._azureAccountsDropdown.onValueChanged(async (value) => {
-			this.migrationStateModel.azureAccount = this._accountsMap.get(value.selected)!;
+			this.migrationStateModel.azureAccount = this._accountsMap.get((this._azureAccountsDropdown.value as azdata.CategoryValue).name)!;
 		});
 
 		const addAccountButton = view.modelBuilder.button()
@@ -75,9 +75,9 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		this._azureAccountsDropdown.values = accounts.map((account): azdata.CategoryValue => {
 			let accountCategoryValue = {
 				displayName: account.displayInfo.displayName,
-				name: account.displayInfo.displayName
+				name: account.displayInfo.userId
 			};
-			this._accountsMap.set(accountCategoryValue.displayName, account);
+			this._accountsMap.set(accountCategoryValue.name, account);
 			return accountCategoryValue;
 		});
 
