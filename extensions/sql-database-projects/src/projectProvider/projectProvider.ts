@@ -58,7 +58,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * @param location the parent directory
 	 * @returns Uri of the newly created project file
 	 */
-	async createProject(name: string, location: vscode.Uri): Promise<vscode.Uri> {
+	async createProject(name: string, location: vscode.Uri, _: string): Promise<vscode.Uri> {
 		const projectFile = await this.projectController.createNewProject(name, location, true);
 		return vscode.Uri.file(projectFile);
 	}
