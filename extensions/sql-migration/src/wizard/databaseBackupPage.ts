@@ -70,7 +70,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			);
 		await view.initializeModel(form.component());
 		this.toggleNetworkContainerFields(NetworkContainerType.NETWORK_SHARE, this._networkShare);
-		return;
 	}
 
 	private createBackupLocationComponent(view: azdata.ModelView): azdata.FormComponent {
@@ -411,19 +410,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this.wizard.registerNavigationValidator((pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			return true;
 		});
-		return;
 	}
 
 	public async onPageLeave(): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			return true;
 		});
-
-		return;
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
-		return;
 	}
 
 	private toggleNetworkContainerFields(containerType: NetworkContainerType, networkContainer: NetworkShare | BlobContainer | FileShare): void {
@@ -441,7 +436,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._passwordText.updateProperties({
 			required: containerType === NetworkContainerType.NETWORK_SHARE
 		});
-		return;
 	}
 
 	private async getSubscriptionValues(): Promise<void> {
@@ -489,7 +483,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		await this.loadNetworkShareStorageDropdown();
 		await this.loadFileShareStorageDropdown();
 		await this.loadblobStorageDropdown();
-		return;
 	}
 
 	private async loadNetworkShareStorageDropdown(): Promise<void> {
@@ -510,7 +503,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 		}
 		this._networkShareContainerStorageAccountDropdown.loading = false;
-		return;
 	}
 
 	private async loadFileShareStorageDropdown(): Promise<void> {
@@ -533,7 +525,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}
 		this._fileShareStorageAccountDropdown.loading = false;
 		await this.loadFileShareDropdown();
-		return;
 	}
 
 	private async loadblobStorageDropdown(): Promise<void> {
@@ -554,7 +545,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}
 		this._blobContainerStorageAccountDropdown.loading = false;
 		await this.loadBlobContainerDropdown();
-		return;
 	}
 
 	private async loadStorageAccounts(subscriptionId: string): Promise<StorageAccount[]> {
@@ -580,7 +570,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 		}
 		this._fileShareFileShareDropdown.loading = false;
-		return;
 	}
 
 	private async loadBlobContainerDropdown(): Promise<void> {
@@ -598,7 +587,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 		}
 		this._blobContainerBlobDropdown.loading = false;
-		return;
 	}
 
 	private setEmptyDropdownPlaceHolder(dropDown: azdata.DropDownComponent, placeholder: string): void {
@@ -606,6 +594,5 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			displayName: placeholder,
 			name: ''
 		}];
-		return;
 	}
 }
