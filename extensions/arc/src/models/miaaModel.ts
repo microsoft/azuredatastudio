@@ -42,6 +42,10 @@ export class MiaaModel extends ResourceModel {
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
 
+	public get azdataAdditionalEnvVars() {
+		return this._controllerModel.azdataAdditionalEnvVars;
+	}
+
 	/**
 	 * The username used to connect to this instance
 	 */
@@ -78,7 +82,7 @@ export class MiaaModel extends ResourceModel {
 		try {
 			await this._controllerModel.azdataLogin();
 			try {
-				const result = await this._azdataApi.azdata.arc.sql.mi.show(this.info.name);
+				const result = await this._azdataApi.azdata.arc.sql.mi.show(this.info.name, this.azdataAdditionalEnvVars);
 				this._config = result.result;
 				this.configLastUpdated = new Date();
 				this._onConfigUpdated.fire(this._config);

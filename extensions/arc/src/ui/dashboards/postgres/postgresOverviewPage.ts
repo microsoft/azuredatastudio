@@ -157,7 +157,8 @@ export class PostgresOverviewPage extends DashboardPage {
 								adminPassword: true,
 								noWait: true
 							},
-							{ 'AZDATA_PASSWORD': password });
+							Object.assign(this._postgresModel.azdataAdditionalEnvVars, { 'AZDATA_PASSWORD': password })
+						);
 						vscode.window.showInformationMessage(loc.passwordReset);
 					}
 				} catch (error) {
@@ -185,7 +186,7 @@ export class PostgresOverviewPage extends DashboardPage {
 								cancellable: false
 							},
 							(_progress, _token) => {
-								return this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name);
+								return this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name, this._postgresModel.azdataAdditionalEnvVars);
 							}
 						);
 						await this._controllerModel.refreshTreeNode();

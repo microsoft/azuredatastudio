@@ -27,6 +27,10 @@ export class PostgresModel extends ResourceModel {
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
 
+	public get azdataAdditionalEnvVars() {
+		return this._controllerModel.azdataAdditionalEnvVars;
+	}
+
 	/** Returns the configuration of Postgres */
 	public get config(): azdataExt.PostgresServerShowResult | undefined {
 		return this._config;
@@ -92,7 +96,7 @@ export class PostgresModel extends ResourceModel {
 
 		try {
 			await this._controllerModel.azdataLogin();
-			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name)).result;
+			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name, this.azdataAdditionalEnvVars)).result;
 			this.configLastUpdated = new Date();
 			this._onConfigUpdated.fire(this._config);
 			this._refreshPromise.resolve();

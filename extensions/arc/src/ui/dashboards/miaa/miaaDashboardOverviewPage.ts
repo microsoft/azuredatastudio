@@ -206,7 +206,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 								cancellable: false
 							},
 							(_progress, _token) => {
-								return this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name);
+								return this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name, this._miaaModel.azdataAdditionalEnvVars);
 							}
 						);
 						await this._controllerModel.refreshTreeNode();

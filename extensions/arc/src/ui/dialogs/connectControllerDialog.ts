@@ -271,7 +271,15 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 		}
 		const azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 		try {
-			await azdataApi.azdata.login(this.urlInputBox.value!, this.usernameInputBox.value!, this.passwordInputBox.value);
+			await azdataApi.azdata.login(
+				this.urlInputBox.value!,
+				this.usernameInputBox.value!,
+				this.passwordInputBox.value,
+				{
+					'KUBECONFIG': this.kubeConfigInputBox.value!,
+					'KUBECTL_CONTEXT': this.clusterContextRadioGroup.value!
+				}
+			);
 		} catch (e) {
 			if (getErrorMessage(e).match(/Wrong username or password/i)) {
 				this.dialog.message = {
