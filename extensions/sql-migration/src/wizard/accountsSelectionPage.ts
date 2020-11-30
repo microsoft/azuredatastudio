@@ -28,7 +28,6 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			);
 		await view.initializeModel(form.component());
 		await this.populateAzureAccountsDropdown();
-		return;
 	}
 
 	private async createAzureAccountsDropdown(view: azdata.ModelView): Promise<azdata.FormComponent> {
@@ -64,7 +63,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		};
 	}
 
-	private async populateAzureAccountsDropdown() {
+	private async populateAzureAccountsDropdown(): Promise<void> {
 		this._azureAccountsDropdown.loading = true;
 		let accounts = await azdata.accounts.getAllAccounts();
 
@@ -86,7 +85,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		this._azureAccountsDropdown.loading = false;
 	}
 
-	public onPageEnter(): Promise<void> {
+	public async onPageEnter(): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
@@ -102,17 +101,16 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			return true;
 		});
 
-		return Promise.resolve();
+		return;
 	}
 
-	public onPageLeave(): Promise<void> {
+	public async onPageLeave(): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			return true;
 		});
-		return Promise.resolve();
+		return;
 	}
 
-	protected handleStateChange(e: StateChangeEvent): Promise<void> {
-		throw new Error('Method not implemented.');
+	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 }
