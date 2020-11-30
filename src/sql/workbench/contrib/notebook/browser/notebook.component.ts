@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+/* eslint-disable no-console */
 import { nb } from 'azdata';
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList } from '@angular/core';
 
@@ -308,13 +308,34 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private async loadModel(): Promise<void> {
 		// Wait on provider information to be available before loading kernel and other information
+		let kernelStartTime = Date.now();
+		let providerStartTime = Date.now();
 		await this.awaitNonDefaultProvider();
+		let providerEndTime = Date.now();
+		let providerTime = providerEndTime - providerStartTime;
+		console.log('Total await non default provider time is ' + providerTime.toString() + 'ms ');
+		let modelLoadStartTime = Date.now();
 		await this._model.requestModelLoad();
+		let modelLoadEndTime = Date.now();
+		let modelLoadTime = modelLoadEndTime - modelLoadStartTime;
+		console.log('Total model load time is ' + modelLoadTime.toString() + 'ms');
 		this.detectChanges();
+
 		this.setContextKeyServiceWithProviderId(this._model.providerId);
+		let sessionStartTime = Date.now();
 		await this._model.startSession(this._model.notebookManager, undefined, true);
+		let sessionEndTime = Date.now();
+		let sessionReadyTime = sessionEndTime - sessionStartTime;
+		console.log('Total client session ready time is ' + sessionReadyTime.toString() + 'ms');
+		let fillStartTime = Date.now();
 		this.fillInActionsForCurrentContext();
+		let fillEndTime = Date.now();
+		let fillTime = fillEndTime - fillStartTime;
+		console.log('Total fill in actions for current context time is ' + fillTime.toString() + 'ms');
 		this.detectChanges();
+		let kernelEndTime = Date.now();
+		let kernelReadyTime = kernelEndTime - kernelStartTime;
+		console.log('Total kernel ready time is ' + kernelReadyTime.toString() + 'ms');
 	}
 
 	private async createModelAndLoadContents(): Promise<void> {
