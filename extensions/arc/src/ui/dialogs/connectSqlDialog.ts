@@ -121,7 +121,6 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 		}
 		else {
 			vscode.window.showErrorMessage(this.connectionFailedMessage(result.errorMessage));
-			this._completionPromise.reject(result.errorMessage);
 			return false;
 		}
 	}
