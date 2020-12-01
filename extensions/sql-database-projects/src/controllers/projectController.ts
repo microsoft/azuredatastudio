@@ -553,13 +553,13 @@ export class ProjectsController {
 		if (projectTypeId === constants.edgeSqlDatabaseProjectTypeId) {
 			const project = await Project.openProject(newProjFilePath);
 
-			await this.createFileFromTemplate(project, templates.get(templates.table), 'Table1.sql', { 'OBJECT_NAME': 'Table1' });
+			await this.createFileFromTemplate(project, templates.get(templates.table), 'DataTable.sql', { 'OBJECT_NAME': 'DataTable' });
 			await this.createFileFromTemplate(project, templates.get(templates.dataSource), 'EdgeHubInputDataSource.sql', { 'OBJECT_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'edgehub://' });
 			await this.createFileFromTemplate(project, templates.get(templates.dataSource), 'SqlOutputDataSource.sql', { 'OBJECT_NAME': 'SqlOutputDataSource', 'LOCATION': 'sqlserver://tcp:.,1433' });
-			await this.createFileFromTemplate(project, templates.get(templates.fileFormat), 'FileFormat1.sql', { 'OBJECT_NAME': 'FileFormat1' });
-			await this.createFileFromTemplate(project, templates.get(templates.externalStream), 'EdgeHubInputStream.sql', { 'OBJECT_NAME': 'EdgeHubInputStream', 'DATA_SOURCE_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'input', 'OPTIONS': ',\n\tFILE_FORMAT = FileFormat1' });
-			await this.createFileFromTemplate(project, templates.get(templates.externalStream), 'SqlOutputStream.sql', { 'OBJECT_NAME': 'SqlOutputStream', 'DATA_SOURCE_NAME': 'SqlOutputDataSource', 'LOCATION': 'TSQLStreaming.dbo.Table1', 'OPTIONS': '' });
-			await this.createFileFromTemplate(project, templates.get(templates.externalStreamingJob), 'StreamingJob1.sql', { 'OBJECT_NAME': 'StreamingJob1' });
+			await this.createFileFromTemplate(project, templates.get(templates.fileFormat), 'StreamFileFormat.sql', { 'OBJECT_NAME': 'StreamFileFormat' });
+			await this.createFileFromTemplate(project, templates.get(templates.externalStream), 'EdgeHubInputStream.sql', { 'OBJECT_NAME': 'EdgeHubInputStream', 'DATA_SOURCE_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'input', 'OPTIONS': ',\n\tFILE_FORMAT = StreamFileFormat' });
+			await this.createFileFromTemplate(project, templates.get(templates.externalStream), 'SqlOutputStream.sql', { 'OBJECT_NAME': 'SqlOutputStream', 'DATA_SOURCE_NAME': 'SqlOutputDataSource', 'LOCATION': 'TSQLStreaming.dbo.DataTable', 'OPTIONS': '' });
+			await this.createFileFromTemplate(project, templates.get(templates.externalStreamingJob), 'EdgeStreamingJob.sql', { 'OBJECT_NAME': 'EdgeStreamingJob' });
 		}
 	}
 
