@@ -87,7 +87,8 @@ export function createAsar(folderPath: string, unpackGlobs: string[], destFilena
 			// The file goes outside of xx.asar, in a folder xx.asar.unpacked
 			const relative = path.relative(folderPath, file.path);
 			this.queue(new VinylFile({
-				base: '.',
+				cwd: folderPath,
+				base: folderPath,
 				path: path.join(destFilename + '.unpacked', relative),
 				stat: file.stat,
 				contents: file.contents
@@ -116,7 +117,8 @@ export function createAsar(folderPath: string, unpackGlobs: string[], destFilena
 			out.length = 0;
 
 			this.queue(new VinylFile({
-				base: '.',
+				cwd: folderPath,
+				base: folderPath,
 				path: destFilename,
 				contents: contents
 			}));

@@ -278,7 +278,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	private createActionItemProvider(action: Action): IActionViewItem {
 		// Create ActionItem for actions contributed by extensions
 		if (action instanceof MenuItemAction) {
-			return new LabeledMenuItemActionItem(action, this.keybindingService, this.notificationService);
+			return new LabeledMenuItemActionItem(action, this.keybindingService, this.notificationService, 'dashboard-toolbar');
 		}
 		return undefined;
 	}

@@ -22,7 +22,7 @@ export class NativeClipboardService implements IClipboardService {
 
 	// {{SQL CARBON EDIT}}
 	async write(data: ClipboardData, type?: 'selection' | 'clipboard'): Promise<void> {
-		return this.electronService.writeClipboardData(data, type);
+		return this.nativeHostService.writeClipboardData(data, type);
 	}
 
 	async writeText(text: string, type?: 'selection' | 'clipboard'): Promise<void> {
