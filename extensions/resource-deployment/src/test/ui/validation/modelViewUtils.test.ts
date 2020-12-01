@@ -91,8 +91,8 @@ describe('WizardPage', () => {
 		const mockInputBoxBuilder = createMockComponentBuilder<azdata.InputBoxComponent>(stubInputBox);
 		// Used to ensure that we wait until the enabled state is updated for our mocked components before continuing
 		let enabledDeferred = new Deferred();
-		mockModelBuilder.setup(b => b.checkBox()).returns(() => mockCheckboxBuilder.builder.object);
-		mockModelBuilder.setup(b => b.inputBox()).returns(() => mockInputBoxBuilder.builder.object);
+		mockModelBuilder.setup(b => b.checkBox()).returns(() => mockCheckboxBuilder.mockBuilder.object);
+		mockModelBuilder.setup(b => b.inputBox()).returns(() => mockInputBoxBuilder.mockBuilder.object);
 
 		initializeWizardPage(testWizardPage);
 		await contentRegistered.promise;

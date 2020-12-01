@@ -107,9 +107,9 @@ export class TestChildProcessPromise<T> implements cp.ChildProcessPromise {
 	}
 }
 
-export type MockComponentAndComponentBuilder<C, B> = {
+export type ComponentAndMockComponentBuilder<C, B> = {
 	component: C,
-	builder: TypeMoq.IMock<B>
+	mockBuilder: TypeMoq.IMock<B>
 };
 
 export function createModelViewMock(): {
@@ -121,8 +121,8 @@ export function createModelViewMock(): {
 	const mockTextBuilder = createMockComponentBuilder<azdata.TextComponent>();
 	const mockGroupContainerBuilder = createMockContainerBuilder<azdata.GroupContainer>();
 	const mockFormContainerBuilder = createMockFormContainerBuilder();
-	mockModelBuilder.setup(b => b.text()).returns(() => mockTextBuilder.builder.object);
-	mockModelBuilder.setup(b => b.groupContainer()).returns(() => mockGroupContainerBuilder.builder.object);
+	mockModelBuilder.setup(b => b.text()).returns(() => mockTextBuilder.mockBuilder.object);
+	mockModelBuilder.setup(b => b.groupContainer()).returns(() => mockGroupContainerBuilder.mockBuilder.object);
 	mockModelBuilder.setup(b => b.formContainer()).returns(() => mockFormContainerBuilder.object);
 	mockModelView.setup(mv => mv.modelBuilder).returns(() => mockModelBuilder.object);
 	return {
@@ -131,7 +131,7 @@ export function createModelViewMock(): {
 	};
 }
 
-export function createMockComponentBuilder<C extends azdata.Component, B extends azdata.ComponentBuilder<C, any> = azdata.ComponentBuilder<C, any>>(component?: C): MockComponentAndComponentBuilder<C, B> {
+export function createMockComponentBuilder<C extends azdata.Component, B extends azdata.ComponentBuilder<C, any> = azdata.ComponentBuilder<C, any>>(component?: C): ComponentAndMockComponentBuilder<C, B> {
 	const mockComponentBuilder = TypeMoq.Mock.ofType<B>();
 	// Create a mocked dynamic component if we don't have a stub instance to use.
 	// Note that we don't use ofInstance here for the component because there's some limitations around properties that I was
@@ -149,22 +149,22 @@ export function createMockComponentBuilder<C extends azdata.Component, B extends
 	mockComponentBuilder.setup(b => b.component()).returns(() => component! /*mockComponent.object*/);
 	return {
 		component: component!,
-		builder: mockComponentBuilder
+		mockBuilder: mockComponentBuilder
 	};
 }
 
-export function createMockContainerBuilder<C extends azdata.Container<any, any>, B extends azdata.ContainerBuilder<C, any, any, any> = azdata.ContainerBuilder<C, any, any, any>>(): MockComponentAndComponentBuilder<C, B> {
+export function createMockContainerBuilder<C extends azdata.Container<any, any>, B extends azdata.ContainerBuilder<C, any, any, any> = azdata.ContainerBuilder<C, any, any, any>>(): ComponentAndMockComponentBuilder<C, B> {
 	const mockContainerBuilder = createMockComponentBuilder<C, B>();
 	// For now just have these be passthrough - can hook up additional functionality later if needed
-	mockContainerBuilder.builder.setup(b => b.withItems(TypeMoq.It.isAny(), undefined)).returns(() => mockContainerBuilder.builder.object);
-	mockContainerBuilder.builder.setup(b => b.withLayout(TypeMoq.It.isAny())).returns(() => mockContainerBuilder.builder.object);
+	mockContainerBuilder.mockBuilder.setup(b => b.withItems(TypeMoq.It.isAny(), undefined)).returns(() => mockContainerBuilder.mockBuilder.object);
+	mockContainerBuilder.mockBuilder.setup(b => b.withLayout(TypeMoq.It.isAny())).returns(() => mockContainerBuilder.mockBuilder.object);
 	return mockContainerBuilder;
 }
 
 export function createMockFormContainerBuilder(): TypeMoq.IMock<azdata.FormBuilder> {
 	const mockContainerBuilder = createMockContainerBuilder<azdata.FormContainer, azdata.FormBuilder>();
-	mockContainerBuilder.builder.setup(b => b.withFormItems(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => mockContainerBuilder.builder.object);
-	return mockContainerBuilder.builder;
+	mockContainerBuilder.mockBuilder.setup(b => b.withFormItems(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => mockContainerBuilder.mockBuilder.object);
+	return mockContainerBuilder.mockBuilder;
 }
 
 export class StubInputBox implements azdata.InputBoxComponent {
