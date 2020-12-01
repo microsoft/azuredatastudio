@@ -305,7 +305,7 @@ const newCommands: ApiCommand[] = [
 			ApiCommandArgument.Uri,
 			new ApiCommandArgument<vscode.ViewColumn | typeConverters.TextEditorOpenOptions | undefined, [number?, ITextEditorOptions?] | undefined>('columnOrOptions', 'Either the column in which to open or editor options, see vscode.TextDocumentShowOptions',
 				v => v === undefined || typeof v === 'number' || typeof v === 'object',
-				v => !v ? v : typeof v === 'number' ? [v, undefined] : [typeConverters.ViewColumn.from(v.viewColumn), typeConverters.TextEditorOpenOptions.from(v)]
+				v => <any>(!v ? v : typeof v === 'number' ? [v, undefined] : [typeConverters.ViewColumn.from(v.viewColumn), typeConverters.TextEditorOpenOptions.from(v)]) // {{ SQL CARBON EDIT }} Fixing type mismatch causing build break.
 			).optional(),
 			ApiCommandArgument.String.with('label', '').optional()
 
