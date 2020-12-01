@@ -197,9 +197,13 @@ export class CalloutDialog extends Modal {
 
 			this._register(this._imageRemoteRadioButton.onClicked(e => {
 				this._imageBrowseButton.style.display = 'none';
+				this._imageUrlLabel.innerText = this.urlPlaceholder;
+				this._imageUrlInputBox.setPlaceHolder(this.urlPlaceholder);
 			}));
 			this._register(this._imageLocalRadioButton.onClicked(e => {
 				this._imageBrowseButton.style.display = 'block';
+				this._imageUrlLabel.innerText = this.pathPlaceholder;
+				this._imageUrlInputBox.setPlaceHolder(this.pathPlaceholder);
 			}));
 			DOM.append(pathRow, inputContainer);
 
