@@ -413,7 +413,7 @@ export class ContextKeyEqualsExpr implements IContextKeyExpression {
 	}
 
 	public serialize(): string {
-		return this.key + ' == \'' + this.value + '\'';
+		return `${this.key} == '${this.value}'`;
 	}
 
 	public keys(): string[] {
@@ -482,7 +482,7 @@ export class ContextKeyInExpr implements IContextKeyExpression {
 	}
 
 	public serialize(): string {
-		return this.key + ' in \'' + this.valueKey + '\'';
+		return `${this.key} in '${this.valueKey}'`;
 	}
 
 	public keys(): string[] {
@@ -600,7 +600,7 @@ export class ContextKeyNotEqualsExpr implements IContextKeyExpression {
 	}
 
 	public serialize(): string {
-		return this.key + ' != \'' + this.value + '\'';
+		return `${this.key} != '${this.value}'`;
 	}
 
 	public keys(): string[] {
@@ -656,7 +656,7 @@ export class ContextKeyNotExpr implements IContextKeyExpression {
 	}
 
 	public serialize(): string {
-		return '!' + this.key;
+		return `!${this.key}`;
 	}
 
 	public keys(): string[] {
