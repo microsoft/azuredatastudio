@@ -24,8 +24,8 @@ export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
 // Project Provider
 export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
-export const emptyProjectTypeDisplayName = localize('projectTypeDisplayName', "SQL Database");
-export const emptyProjectTypeDescription = localize('projectTypeDescription', "Design, edit, and publish schemas for SQL databases from scratch");
+export const emptyProjectTypeDisplayName = localize('emptyProjectTypeDisplayName', "SQL Database");
+export const emptyProjectTypeDescription = localize('emptyProjectTypeDescription', "Design, edit, and publish schemas for SQL databases from scratch");
 
 export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
 export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Database Edge");
