@@ -24,6 +24,17 @@
     "Microsoft.mssql"
   ],
   "contributes": {
+    "configuration": [
+      {
+        "title": "%dacFx.settings%",
+        "properties": {
+          "dacFx.defaultSaveLocation": {
+            "type": "string",
+            "description": "%dacFx.defaultSaveLocation%"
+          }
+        }
+      }
+    ],
     "commands": [
       {
         "command": "dacFx.start",

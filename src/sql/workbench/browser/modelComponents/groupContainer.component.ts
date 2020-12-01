@@ -17,6 +17,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-groupContainer',
@@ -44,20 +45,17 @@ export default class GroupContainer extends ContainerBase<GroupLayout, GroupCont
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
-		this.collapsed = false;
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService) {
+		super(changeRef, el, logService);
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.baseInit();
 	}
 
 	ngOnDestroy(): void {
 		this.baseDestroy();
-	}
-
-	ngAfterViewInit(): void {
 	}
 
 	onKeyDown(event: KeyboardEvent): void {

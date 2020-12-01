@@ -339,16 +339,6 @@ export class PerFolderServerInstance implements IServerInstance {
 		// Note: Get env from the install since it gets used elsewhere
 		let env = this.getEnvWithConfigPaths(install.execOptions.env);
 
-		// 'MSHOST_TELEMETRY_ENABLED' and 'MSHOST_ENVIRONMENT' environment variables are set
-		// for telemetry purposes used by PROSE in the process where the Jupyter kernel runs
-		if (vscode.workspace.getConfiguration('telemetry').get<boolean>('enableTelemetry', true)) {
-			env['MSHOST_TELEMETRY_ENABLED'] = true;
-		} else {
-			env['MSHOST_TELEMETRY_ENABLED'] = false;
-		}
-
-		env['MSHOST_ENVIRONMENT'] = 'ADSClient-' + vscode.version;
-
 		// Start the notebook process
 		let options: SpawnOptions = {
 			shell: true,

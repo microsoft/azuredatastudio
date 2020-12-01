@@ -56,7 +56,16 @@ export class FakeAzdataApi implements azdataExt.IAzdataApi {
 				mi: {
 					delete(_name: string): Promise<azdataExt.AzdataOutput<void>> { throw new Error('Method not implemented.'); },
 					async list(): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiListResult[]>> { return <any>{ result: self.miaaInstances }; },
-					show(_name: string): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiShowResult>> { throw new Error('Method not implemented.'); }
+					show(_name: string): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiShowResult>> { throw new Error('Method not implemented.'); },
+					edit(
+						_name: string,
+						_args: {
+							coresLimit?: string,
+							coresRequest?: string,
+							memoryLimit?: string,
+							memoryRequest?: string,
+							noWait?: boolean
+						}): Promise<azdataExt.AzdataOutput<void>> { throw new Error('Method not implemented.'); }
 				}
 			}
 		};

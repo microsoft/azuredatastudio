@@ -3,10 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { EOL } from 'os';
 import * as nls from 'vscode-nls';
+import { getErrorMessage } from './common/utils';
 import { ResourceTypeCategories } from './constants';
 import { FieldType, OptionsType } from './interfaces';
-
 const localize = nls.loadMessageBundle();
 
 export const account = localize('azure.account', "Azure Account");
@@ -45,6 +46,10 @@ export const multipleValidationErrors = localize("validation.multipleValidationE
 
 export const scriptToNotebook = localize('ui.ScriptToNotebookButton', "Script");
 export const deployNotebook = localize('ui.DeployButton', "Run");
+export const viewErrorDetail = localize('resourceDeployment.ViewErrorDetail', "View error detail");
+export const failedToOpenNotebook = (error: any) => localize('resourceDeployment.FailedToOpenNotebook', "An error occurred opening the output notebook. {1}{2}.", EOL, getErrorMessage(error));
+export const backgroundExecutionFailed = (taskName: string) => localize('resourceDeployment.BackgroundExecutionFailed', "The task \"{0}\" has failed.", taskName);
+export const taskFailedWithNoOutputNotebook = (taskName: string) => localize('resourceDeployment.TaskFailedWithNoOutputNotebook', "The task \"{0}\" failed and no output Notebook was generated.", taskName);
 
 export function getResourceTypeCategoryLocalizedString(resourceTypeCategory: string): string {
 	switch (resourceTypeCategory) {
@@ -64,3 +69,13 @@ export function getResourceTypeCategoryLocalizedString(resourceTypeCategory: str
 			return resourceTypeCategory;
 	}
 }
+
+export const descriptionText = localize('resourceDeployment.Description', "Description");
+export const toolText = localize('resourceDeployment.Tool', "Tool");
+export const statusText = localize('resourceDeployment.Status', "Status");
+export const versionText = localize('resourceDeployment.Version', "Version");
+export const requiredVersionText = localize('resourceDeployment.RequiredVersion', "Required Version");
+export const discoverPathOrAdditionalInformationText = localize('resourceDeployment.discoverPathOrAdditionalInformation', "Discovered Path or Additional Information");
+export const requiredToolsText = localize('resourceDeployment.requiredTools', "Required tools");
+export const installToolsText = localize('resourceDeployment.InstallTools', "Install tools");
+export const optionsText = localize('resourceDeployment.Options', "Options");

@@ -75,8 +75,12 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			title: constants.azureModelWorkspace,
 			component: this._workspaces
 		}], {
-			horizontal: true
+			titleFontSize: '13px',
+			horizontal: true,
 		}).component();
+		this._form.setLayout({
+			padding: '0'
+		});
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
@@ -130,6 +134,10 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			this._accounts.value = undefined;
 		}
 		await this.onAccountSelected();
+	}
+
+	public get accountIsValid(): boolean {
+		return this._azureAccounts !== undefined && this._azureAccounts.length > 0 && this._azureSubscriptions !== undefined && this._azureSubscriptions.length > 0;
 	}
 
 	/**

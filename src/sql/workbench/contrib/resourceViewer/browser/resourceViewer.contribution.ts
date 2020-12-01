@@ -54,7 +54,8 @@ class ResourceViewerContributor implements IWorkbenchContribution {
 		@IConfigurationService readonly configurationService: IConfigurationService,
 		@IProductService readonly productService: IProductService
 	) {
-		if (productService.quality !== 'stable' && productService.quality !== 'saw' && configurationService.getValue('workbench.enablePreviewFeatures')) {
+		// Only show for insiders and dev
+		if (['insiders', ''].includes(productService.quality ?? '') && configurationService.getValue('workbench.enablePreviewFeatures')) {
 			registerResourceViewerContainer();
 		}
 	}

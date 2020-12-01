@@ -67,11 +67,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component());
 
 		const infoComputeStorage_p1 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: loc.computeAndStorageDescriptionPartOne,
+			value: loc.postgresComputeAndStorageDescriptionPartOne,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 		}).component();
 		const infoComputeStorage_p2 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: loc.computeAndStorageDescriptionPartTwo,
+			value: loc.postgresComputeAndStorageDescriptionPartTwo,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
@@ -107,21 +107,28 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const computeInfoAndLinks = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
-		computeInfoAndLinks.addItem(infoComputeStorage_p1, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(infoComputeStorage_p2, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(workerNodeslink, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(infoComputeStorage_p3, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(memoryVCoreslink, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(infoComputeStorage_p4, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(infoComputeStorage_p5, { CSSStyles: { 'margin-right': '5px' } });
-		computeInfoAndLinks.addItem(infoComputeStorage_p6, { CSSStyles: { 'margin-right': '5px' } });
+		const computeInfoAndLinks = this.modelView.modelBuilder.flexContainer()
+			.withLayout({ flexWrap: 'wrap' })
+			.withItems([
+				infoComputeStorage_p1,
+				infoComputeStorage_p2,
+				workerNodeslink,
+				infoComputeStorage_p3,
+				memoryVCoreslink,
+				infoComputeStorage_p4,
+				infoComputeStorage_p5,
+				infoComputeStorage_p6
+			], { CSSStyles: { 'margin-right': '5px' } })
+			.component();
 		content.addItem(computeInfoAndLinks, { CSSStyles: { 'min-height': '30px' } });
 
-
+		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: loc.workerNodes,
+			CSSStyles: { ...cssStyles.title, 'margin-top': '25px' }
+		}).component());
 
 		this.workerContainer = this.modelView.modelBuilder.divContainer().component();
-		this.handleServiceUpdated();
+		this.workerContainer.addItems(this.createUserInputSection(), { CSSStyles: { 'min-height': '30px' } });
 		content.addItem(this.workerContainer, { CSSStyles: { 'min-height': '30px' } });
 
 		this.initialized = true;
@@ -140,12 +147,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.disposables.push(
 			this.saveButton.onDidClick(async () => {
 				this.saveButton!.enabled = false;
-				this.discardButton!.enabled = false;
-				this.workerBox!.value = '';
-				this.coresRequestBox!.value = '';
-				this.coresLimitBox!.value = '';
-				this.memoryRequestBox!.value = '';
-				this.memoryLimitBox!.value = '';
 				try {
 					await vscode.window.withProgress(
 						{
@@ -154,13 +155,22 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
-							await this._azdataApi.azdata.arc.postgres.server.edit(
-								this._postgresModel.info.name, this.saveArgs);
+							try {
+								await this._azdataApi.azdata.arc.postgres.server.edit(
+									this._postgresModel.info.name, this.saveArgs);
+							} catch (err) {
+								// If an error occurs while editing the instance then re-enable the save button since
+								// the edit wasn't successfully applied
+								this.saveButton!.enabled = true;
+								throw err;
+							}
 							await this._postgresModel.refresh();
 						}
 					);
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
+
+					this.discardButton!.enabled = false;
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
@@ -198,7 +208,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.workerBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			validationErrorMessage: loc.workerValidationErrorMessage,
-			inputType: 'number'
+			inputType: 'number',
+			placeHolder: loc.loading
 		}).component();
 
 		this.disposables.push(
@@ -215,7 +226,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 1,
 			validationErrorMessage: loc.coresValidationErrorMessage,
-			inputType: 'number'
+			inputType: 'number',
+			placeHolder: loc.loading
 		}).component();
 
 		this.disposables.push(
@@ -232,7 +244,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 1,
 			validationErrorMessage: loc.coresValidationErrorMessage,
-			inputType: 'number'
+			inputType: 'number',
+			placeHolder: loc.loading
 		}).component();
 
 		this.disposables.push(
@@ -249,7 +262,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 0.25,
 			validationErrorMessage: loc.memoryLimitValidationErrorMessage,
-			inputType: 'number'
+			inputType: 'number',
+			placeHolder: loc.loading
 		}).component();
 
 		this.disposables.push(
@@ -266,7 +280,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 0.25,
 			validationErrorMessage: loc.memoryRequestValidationErrorMessage,
-			inputType: 'number'
+			inputType: 'number',
+			placeHolder: loc.loading
 		}).component();
 
 		this.disposables.push(
@@ -279,6 +294,24 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			})
 		);
 
+	}
+
+	private createUserInputSection(): azdata.Component[] {
+		if (this._postgresModel.configLastUpdated) {
+			this.editWorkerNodeCount();
+			this.editCores();
+			this.editMemory();
+		}
+
+		return [
+			this.createWorkerNodesSectionContainer(),
+			this.createCoresMemorySection(),
+			this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox!),
+			this.createConfigurationSectionContainer(loc.coresLimit, this.coresLimitBox!),
+			this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox!),
+			this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!)
+
+		];
 	}
 
 	private createWorkerNodesSectionContainer(): azdata.FlexContainer {
@@ -393,7 +426,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			iconPath: IconPathHelper.information,
-			title: loc.configurationInformation,
+			title: loc.postgresConfigurationInformation,
 			width: '12px',
 			height: '12px',
 			enabled: false
@@ -460,30 +493,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private handleServiceUpdated() {
-		if (this._postgresModel.configLastUpdated) {
-			this.editWorkerNodeCount();
-			this.editCores();
-			this.editMemory();
-
-			// Workaround https://github.com/microsoft/azuredatastudio/issues/13134
-			// by only adding these once the model has data. After the bug is fixed,
-			// use loading indicators instead of keeping the page blank.
-			if (this.workerContainer?.items.length === 0) {
-				this.workerContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-					value: loc.workerNodes,
-					CSSStyles: { ...cssStyles.title, 'margin-top': '25px' }
-				}).component());
-
-				this.workerContainer.addItems([
-					this.createWorkerNodesSectionContainer(),
-					this.createCoresMemorySection(),
-					this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox!),
-					this.createConfigurationSectionContainer(loc.coresLimit, this.coresLimitBox!),
-					this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox!),
-					this.createConfigurationSectionContainer(loc.memoryLimit, this.memoryLimitBox!)
-
-				]);
-			}
-		}
+		this.editWorkerNodeCount();
+		this.editCores();
+		this.editMemory();
 	}
 }

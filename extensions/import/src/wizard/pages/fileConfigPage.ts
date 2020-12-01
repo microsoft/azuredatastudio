@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ImportPage } from '../api/importPage';
 import * as constants from '../../common/constants';
+import * as fs from 'fs';
 
 export class FileConfigPage extends ImportPage {
 
@@ -228,9 +229,13 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	private async createFileBrowser(): Promise<azdata.FormComponent> {
-		this.fileTextBox = this.view.modelBuilder.inputBox().withProperties({
-			required: true
+		this.fileTextBox = this.view.modelBuilder.inputBox().withProps({
+			required: true,
+			validationErrorMessage: constants.invalidFileLocationError
+		}).withValidation((component) => {
+			return fs.existsSync(component.value);
 		}).component();
+
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: constants.browseFilesText,
 		}).component();

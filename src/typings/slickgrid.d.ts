@@ -1584,6 +1584,7 @@ declare namespace Slick {
 			public setPagingOptions(args: PagingOptions): void;
 			public getPagingInfo(): PagingOptions;
 			public getItems(): T[];
+			public getFilteredItems(): T[]; // manually adding this type - it's present in the definition but not the typings file from DefinitelyTyped
 			public setItems(data: T[], objectIdProperty?: string): void;
 			public setFilter(filterFn: (item: T, args: any) => boolean): void;	// todo: typeof(args)
 			public sort(comparer: Function, ascending: boolean): void;		// todo: typeof(comparer), should be the same callback as Array.sort

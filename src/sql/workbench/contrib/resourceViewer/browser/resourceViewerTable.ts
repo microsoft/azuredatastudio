@@ -49,8 +49,7 @@ export class ResourceViewerTable extends Disposable {
 				this._dataView.sort(args);
 			}
 		}, {
-			dataItemColumnValueExtractor: dataGridColumnValueExtractor,
-			forceFitColumns: true
+			dataItemColumnValueExtractor: dataGridColumnValueExtractor
 		}));
 
 		this._resourceViewerTable.setSelectionModel(new RowSelectionModel());
@@ -95,6 +94,7 @@ export class ResourceViewerTable extends Disposable {
 
 	public set columns(columns: Slick.Column<Slick.SlickData>[]) {
 		this._resourceViewerTable.columns = columns;
+		this._resourceViewerTable.autosizeColumns();
 	}
 
 	public set loading(isLoading: boolean) {
@@ -111,6 +111,11 @@ export class ResourceViewerTable extends Disposable {
 
 	public unregisterPlugin(plugin: Slick.Plugin<azdata.DataGridItem>): void {
 		this._resourceViewerTable.unregisterPlugin(plugin);
+	}
+
+	public layout(): void {
+		this._resourceViewerTable.resizeCanvas();
+		this._resourceViewerTable.autosizeColumns();
 	}
 
 	public focus(): void {

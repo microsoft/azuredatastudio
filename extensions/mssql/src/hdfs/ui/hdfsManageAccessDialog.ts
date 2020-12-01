@@ -348,7 +348,6 @@ export class ManageAccessDialog {
 			width: width,
 			headerCssStyles: {
 				'border': 'none',
-				'background-color': '#FFFFFF',
 				'padding': '0px',
 				...cssStyles.permissionsTableHeaderCss
 			},

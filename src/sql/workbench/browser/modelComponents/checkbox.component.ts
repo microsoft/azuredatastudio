@@ -17,6 +17,8 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { isNumber } from 'vs/base/common/types';
 import { convertSize } from 'sql/base/browser/dom';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-checkbox',
@@ -33,13 +35,9 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(ILogService) logService: ILogService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
-	}
-
-	ngOnInit(): void {
-		this.baseInit();
-
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
@@ -62,6 +60,7 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 			this._register(attachCheckboxStyler(this._input, this.themeService));
 			this._validations.push(() => !this.required || this.checked);
 		}
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {
@@ -96,7 +95,7 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 		if (this.required) {
 			this._input.required = this.required;
 		}
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	// CSS-bound properties

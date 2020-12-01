@@ -25,7 +25,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	private _downloadedFile: ModelArtifact | undefined;
 	private _onModelSelectionChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	public readonly onModelSelectionChanged: vscode.Event<void> = this._onModelSelectionChanged.event;
-	public isEmpty: boolean = false;
+	public modelCounts: number = 0;
 
 	/**
 	 * Creates new view
@@ -40,7 +40,23 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._modelBuilder = modelBuilder;
-		let columns = [
+		let columns: azdata.DeclarativeTableColumn[] = [];
+		if (this._settings.selectable) {
+			columns.push(
+				{ // Action
+					displayName: '',
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: 50,
+					headerCssStyles: {
+						...constants.cssStyles.tableHeader
+					},
+					rowCssStyles: {
+						...constants.cssStyles.tableRow
+					},
+				});
+		}
+		columns.push(...[
 			{ // Name
 				displayName: constants.modelName,
 				ariaLabel: constants.modelName,
@@ -92,6 +108,20 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				rowCssStyles: {
 					...constants.cssStyles.tableRow
 				},
+			}
+		]);
+		if (this._settings.editable) {
+			columns.push(...[{ // Action
+				displayName: '',
+				valueType: azdata.DeclarativeDataType.component,
+				isReadOnly: true,
+				width: 50,
+				headerCssStyles: {
+					...constants.cssStyles.tableHeader
+				},
+				rowCssStyles: {
+					...constants.cssStyles.tableRow
+				},
 			},
 			{ // Action
 				displayName: '',
@@ -105,22 +135,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					...constants.cssStyles.tableRow
 				},
 			}
-		];
-		if (this._settings.editable) {
-			columns.push(
-				{ // Action
-					displayName: '',
-					valueType: azdata.DeclarativeDataType.component,
-					isReadOnly: true,
-					width: 50,
-					headerCssStyles: {
-						...constants.cssStyles.tableHeader
-					},
-					rowCssStyles: {
-						...constants.cssStyles.tableRow
-					},
-				}
-			);
+			]);
 			columns.push(
 				{ // Action
 					displayName: '',
@@ -192,9 +207,10 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				tableData = tableData.concat(models.map(model => this.createTableRow(model)));
 			}
 
-			this.isEmpty = models === undefined || models.length === 0;
-
+			this.modelCounts = models === undefined || models.length === 0 ? 0 : models.length;
 			this._table.data = tableData;
+		} else {
+			this.modelCounts = 0;
 		}
 		this.onModelSelected();
 		await this.onLoaded();
@@ -212,12 +228,16 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		}
 	}
 
+	public get isEmpty(): boolean {
+		return this.modelCounts === 0;
+	}
+
 	private createTableRow(model: ImportedModel): any[] {
 		let row: any[] = [model.modelName, model.created, model.version, model.framework];
 		if (this._modelBuilder) {
 			const selectButton = this.createSelectButton(model);
 			if (selectButton) {
-				row.push(selectButton);
+				row = [selectButton, model.modelName, model.created, model.version, model.framework];
 			}
 			const editButtons = this.createEditButtons(model);
 			if (editButtons && editButtons.length > 0) {

@@ -331,7 +331,7 @@ import 'vs/workbench/contrib/terminal/browser/terminalView';
 import 'vs/workbench/contrib/relauncher/browser/relauncher.contribution';
 
 // Tasks
-// import 'vs/workbench/contrib/tasks/browser/task.contribution'; {{SQL CARBON EDIT}}
+import 'vs/workbench/contrib/tasks/browser/task.contribution';
 
 // Remote
 import 'vs/workbench/contrib/remote/common/remote.contribution';
