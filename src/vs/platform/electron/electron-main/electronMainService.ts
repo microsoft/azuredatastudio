@@ -369,6 +369,11 @@ export class ElectronMainService implements IElectronMainService {
 		return clipboard.writeText(text, type);
 	}
 
+	// {{SQL CARBON EDIT}}
+	async writeClipboardData(windowId: number | undefined, data: any, type?: 'selection' | 'clipboard'): Promise<void> {
+		return clipboard.write(data, type);
+	}
+
 	async readClipboardFindText(windowId: number | undefined,): Promise<string> {
 		return clipboard.readFindText();
 	}
