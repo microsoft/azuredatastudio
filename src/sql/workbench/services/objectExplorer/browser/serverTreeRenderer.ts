@@ -231,10 +231,6 @@ export class ServerTreeRenderer implements IRenderer {
 	}
 
 	private renderConnectionProfileGroup(connectionProfileGroup: ConnectionProfileGroup, templateData: IConnectionProfileGroupTemplateData): void {
-		// add expanded class to rowElement to show expanding arrow
-		let rowElement = this.findParentElement(templateData.root, 'monaco-tree-row');
-		rowElement.classList.add('expanded');
-
 		let groupElement = this.findParentElement(templateData.root, 'server-group');
 		if (groupElement) {
 			if (connectionProfileGroup.color) {
