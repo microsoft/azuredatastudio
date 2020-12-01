@@ -3,43 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.vs .dropdown-arrow.codicon {
-	background-image: url("dropdownarrow.svg");
-}
-
-.vs-dark .dropdown-arrow.codicon,
-.hc-black .dropdown-arrow.codicon {
-	background-image: url("dropdownarrow_inverse.svg");
-}
-
 .monaco-dropdown-width-control-element {
 	position: absolute;
 	left: -10000px;
 	visibility: hidden;
 }
 
-.monaco-dropdown .monaco-action-bar .action-label.codicon.dropdown-arrow {
-	padding: 0;
-	background-size: 10px;
-	background-position: 50%;
-}
-
-.monaco-dropdown .monaco-action-bar .action-item {
-	margin: 0;
-}
-
-.dropdown-tree .list-row {
-	width: 100%;
-	box-sizing: border-box;
-}
-
-.dropdown-tree .content {
-	width: 100%;
-}
-
-.dropdown-tree .list-row .label {
-	width: 100%;
-	display: inline-block;
+.editable-drop-option-text {
+	padding-left: 6px;
+	padding-right: 4px;
 	text-overflow: ellipsis;
+	display: inline-block;
+	width: 100%;
 	overflow: hidden;
 }

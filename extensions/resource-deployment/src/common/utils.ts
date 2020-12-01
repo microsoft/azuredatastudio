@@ -41,6 +41,15 @@ export function setEnvironmentVariablesForInstallPaths(tools: ITool[], env: Node
 }
 
 /**
+ * returns true if input is undefined or empty
+ *
+ * @param input - input value to test
+ */
+export function isUndefinedOrEmpty(input: any): boolean {
+	return input === undefined || (typeof input === 'string' && input.length === 0);
+}
+
+/**
  * Throws an Error with given {@link message} unless {@link condition} is true.
  * This also tells the typescript compiler that the condition is 'truthy' in the remainder of the scope
  * where this function was called.
@@ -52,4 +61,13 @@ export function throwUnless(condition: boolean, message?: string): asserts condi
 	if (!condition) {
 		throw new Error(message);
 	}
+}
+export async function tryExecuteAction<T>(action: () => T | PromiseLike<T>): Promise<{ result: T | undefined, error: any }> {
+	let error: any, result: T | undefined;
+	try {
+		result = await action();
+	} catch (e) {
+		error = e;
+	}
+	return { result, error };
 }

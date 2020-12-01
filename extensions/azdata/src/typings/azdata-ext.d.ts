@@ -125,7 +125,12 @@ declare module 'azdata-ext' {
 		},
 		spec: {
 			limits?: {
-				vcores?: number // 4
+				memory?: string // "10Gi"
+				vcores?: string // "4"
+			},
+			requests?: {
+				memory?: string // "10Gi"
+				vcores?: string // "4"
 			}
 			service: {
 				type: string // "NodePort"
@@ -264,7 +269,17 @@ declare module 'azdata-ext' {
 				mi: {
 					delete(name: string): Promise<AzdataOutput<void>>,
 					list(): Promise<AzdataOutput<SqlMiListResult[]>>,
-					show(name: string): Promise<AzdataOutput<SqlMiShowResult>>
+					show(name: string): Promise<AzdataOutput<SqlMiShowResult>>,
+					edit(
+						name: string,
+						args: {
+							coresLimit?: string,
+							coresRequest?: string,
+							memoryLimit?: string,
+							memoryRequest?: string,
+							noWait?: boolean,
+						}
+					): Promise<AzdataOutput<void>>
 				}
 			}
 		},

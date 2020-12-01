@@ -53,12 +53,12 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 		});
 
 		this._emptyModelsComponent = new DataInfoComponent(this._apiWrapper, this);
-		this._emptyModelsComponent.width = 300;
+		this._emptyModelsComponent.width = 200;
 		this._emptyModelsComponent.height = 250;
 		this._emptyModelsComponent.iconSettings = {
-			css: { 'padding-top': '20px' },
-			width: 100,
-			height: 100
+			css: { 'padding-top': '30px' },
+			width: 128,
+			height: 128
 		};
 
 		this._emptyModelsComponent.registerComponent(modelBuilder);
@@ -93,7 +93,7 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
 		this.removeComponents(formBuilder);
-		if (this.azureFilterComponent?.data?.account) {
+		if (this.azureFilterComponent?.accountIsValid) {
 			this.addAzureComponents(formBuilder);
 		} else {
 			this.addAzureSignInComponents(formBuilder);

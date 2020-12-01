@@ -5,7 +5,7 @@
 
 import {
 	Component, Input, Inject, forwardRef, ComponentFactoryResolver, ViewChild,
-	ElementRef, OnInit, ChangeDetectorRef, ReflectiveInjector, Injector, ComponentRef
+	ElementRef, ChangeDetectorRef, ReflectiveInjector, Injector, ComponentRef, AfterViewInit
 } from '@angular/core';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
@@ -40,7 +40,7 @@ export interface ModelComponentParams extends IBootstrapParams {
 		</ng-template>
 	`
 })
-export class ModelComponentWrapper extends AngularDisposable implements OnInit {
+export class ModelComponentWrapper extends AngularDisposable implements AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -74,11 +74,8 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		}
 	}
 
-	ngOnInit() {
-		this._register(this.themeService.onDidColorThemeChange(event => this.updateTheme(event)));
-	}
-
 	ngAfterViewInit() {
+		this._register(this.themeService.onDidColorThemeChange(event => this.updateTheme(event)));
 		this.updateTheme(this.themeService.getColorTheme());
 		if (this.componentHost) {
 			this.loadComponent();

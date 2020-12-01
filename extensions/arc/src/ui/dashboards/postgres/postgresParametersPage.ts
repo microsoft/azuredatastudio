@@ -263,7 +263,7 @@ export class PostgresParametersPage extends DashboardPage {
 
 	private initializeConnectButton() {
 		this.connectToServerButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: loc.makeAConnection,
+			label: loc.connectToServer,
 			enabled: false,
 			CSSStyles: { 'max-width': '125px' }
 		}).component();
@@ -272,24 +272,37 @@ export class PostgresParametersPage extends DashboardPage {
 			this.connectToServerButton!.onDidClick(async () => {
 				this.connectToServerButton!.enabled = false;
 				try {
-					await this._postgresModel.getEngineSettings().catch(err => {
-						// If an error occurs show a message so the user knows something failed but still
-						// fire the event so callers can know to update (e.g. so dashboards don't show the
-						// loading icon forever)
-						if (err instanceof UserCancelledError) {
-							vscode.window.showWarningMessage(loc.pgConnectionRequired);
-						}
-						this._postgresModel.engineSettingsLastUpdated = new Date();
-						this._postgresModel._onEngineSettingsUpdated.fire(this._postgresModel._engineSettings);
+					if (!vscode.extensions.getExtension('microsoft.azuredatastudio-postgresql')) {
+						vscode.window.showErrorMessage('Need PostgreSQL extension for Azure Data Studio. Please Install from extensions gallery.');
 						this.connectToServerButton!.enabled = true;
-						throw err;
-					});
+					} else {
+						await this._postgresModel.getEngineSettings().catch(err => {
+							// If an error occurs show a message so the user knows something failed but still
+							// fire the event so callers can know to update (e.g. so dashboards don't show the
+							// loading icon forever)
+							if (err instanceof UserCancelledError) {
+								vscode.window.showWarningMessage(loc.pgConnectionRequired);
+							}
+							this._postgresModel.engineSettingsLastUpdated = new Date();
+							this._postgresModel._onEngineSettingsUpdated.fire(this._postgresModel._engineSettings);
+							this.connectToServerButton!.enabled = true;
+							throw err;
+						});
 
-					this.connectToServerButton!.updateCssStyles({ display: 'none' });
-					this.parameterContainer!.addItem(this.parametersTable);
+						this.connectToServerButton!.updateCssStyles({ display: 'none' });
+						this.parameterContainer!.addItem(this.parametersTable);
+					}
+
+
+
+
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.fetchEngineSettingsFailed(this._postgresModel.info.name, error));
 				}
+
+
+
+
 			}));
 	}
 
@@ -474,7 +487,8 @@ export class PostgresParametersPage extends DashboardPage {
 			min: 'min_val',
 			max: 'max_val',
 			options: 'enumvals',
-			type: 'vartype'
+			type: 'vartype',
+			row: 'data[]'
 		};
 	}
 

@@ -22,6 +22,7 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 	private _tableSelectionComponent: TableSelectionComponent | undefined;
 	private _columns: ColumnsTable | undefined;
 	private _modelParameters: ModelParameters | undefined;
+	private _tableLoadingPromise: Promise<void> | undefined;
 
 	/**
 	 * Creates a new view
@@ -42,7 +43,11 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 				databaseTitle: constants.columnDatabase,
 				tableTitle: constants.columnTable,
 				databaseInfo: constants.columnDatabaseInfo,
-				tableInfo: constants.columnTableInfo
+				tableInfo: constants.columnTableInfo,
+				defaultDbName: constants.selectDatabaseTitle,
+				defaultTableName: constants.selectTableTitle,
+				useImportModelCache: false,
+				layout: 'horizontal'
 			});
 		this._tableSelectionComponent.registerComponent(modelBuilder);
 		this._tableSelectionComponent.onSelectedChanged(async () => {
@@ -99,6 +104,10 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 		});
 	}
 
+	public get isDataValue(): boolean {
+		return this._tableSelectionComponent !== undefined && this._tableSelectionComponent?.isDataValid;
+	}
+
 	/**
 	 * loads data in the components
 	 */
@@ -132,11 +141,21 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 	}
 
 	private async onTableSelected(): Promise<void> {
-		await this.loadWithTable(this.databaseTable);
+		if (this._tableSelectionComponent !== undefined && this._tableSelectionComponent.isDataValid) {
+			await this.loadWithTable(this.databaseTable);
+		}
 	}
 
 	public async loadWithTable(table: DatabaseTable): Promise<void> {
-		await this._columns?.loadInputs(this._modelParameters, table);
+		if (this._tableLoadingPromise) {
+			try {
+				await this._tableLoadingPromise;
+			} catch {
+			}
+		}
+		this._tableLoadingPromise = this._columns?.loadInputs(this._modelParameters, table);
+		await this._tableLoadingPromise;
+		this._tableLoadingPromise = undefined;
 	}
 
 	private get databaseTable(): DatabaseTable {

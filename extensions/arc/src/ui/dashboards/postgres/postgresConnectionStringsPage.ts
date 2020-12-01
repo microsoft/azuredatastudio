@@ -82,8 +82,7 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 			new InputKeyValue(this.modelView.modelBuilder, 'PHP', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require`),
 			new InputKeyValue(this.modelView.modelBuilder, 'psql', `psql "host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require"`),
 			new InputKeyValue(this.modelView.modelBuilder, 'Python', `dbname='postgres' user='postgres' host='${endpoint.ip}' password='{your_password_here}' port='${endpoint.port}' sslmode='true'`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Ruby', `host=${endpoint.ip}; dbname=postgres user=postgres password={your_password_here} port=${endpoint.port} sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Web App', `Database=postgres; Data Source=${endpoint.ip}; User Id=postgres; Password={your_password_here}`)
+			new InputKeyValue(this.modelView.modelBuilder, 'Ruby', `host=${endpoint.ip}; dbname=postgres user=postgres password={your_password_here} port=${endpoint.port} sslmode=require`)
 		];
 	}
 

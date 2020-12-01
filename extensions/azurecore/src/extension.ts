@@ -89,7 +89,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
-	registerAzureResourceCommands(appContext, [azureResourceTree, connectionDialogTree]);
+	registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree);
 	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
 	vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
 		const portalEndpoint = item.portalEndpoint;

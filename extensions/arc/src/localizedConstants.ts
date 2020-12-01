@@ -64,7 +64,7 @@ export const feedback = localize('arc.feedback', "Feedback");
 export const selectConnectionString = localize('arc.selectConnectionString', "Select from available client connection strings below.");
 export const addingWokerNodes = localize('arc.addingWokerNodes', "adding worker nodes");
 export const workerNodesDescription = localize('arc.workerNodesDescription', "Expand your server group and scale your database by adding worker nodes.");
-export const configurationInformation = localize('arc.configurationInformation', "You can configure the number of CPU cores and storage size that will apply to both worker nodes and coordinator node. Each worker node will have the same configuration. Adjust the number of CPU cores and memory settings for your server group.");
+export const postgresConfigurationInformation = localize('arc.postgres.configurationInformation', "You can configure the number of CPU cores and storage size that will apply to both worker nodes and coordinator node. Each worker node will have the same configuration. Adjust the number of CPU cores and memory settings for your server group.");
 export const workerNodesInformation = localize('arc.workerNodeInformation', "In preview it is not possible to reduce the number of worker nodes. Please refer to documentation linked above for more information.");
 export const vCores = localize('arc.vCores', "vCores");
 export const ram = localize('arc.ram', "RAM");
@@ -82,7 +82,7 @@ export const indirect = localize('arc.indirect', "Indirect");
 export const loading = localize('arc.loading', "Loading...");
 export const refreshToEnterCredentials = localize('arc.refreshToEnterCredentials', "Refresh node to enter credentials");
 export const noInstancesAvailable = localize('arc.noInstancesAvailable', "No instances available");
-export const makeAConnection = localize('arc.makeAConnection', "Make a Connection");
+export const connectToServer = localize('arc.connecToServer', "Connect to Server");
 export const connectToController = localize('arc.connectToController', "Connect to Existing Controller");
 export function connectToMSSql(name: string): string { return localize('arc.connectToMSSql', "Connect to SQL managed instance - Azure Arc ({0})", name); }
 export function connectToPGSql(name: string): string { return localize('arc.connectToPGSql', "Connect to PostgreSQL Hyperscale - Azure Arc ({0})", name); }
@@ -131,8 +131,9 @@ export const learnAboutNodeParameters = localize('arc.learnAboutNodeParameters',
 export const noNodeParametersFound = localize('arc.noNodeParametersFound', "No worker server parameters found...");
 export const searchToFilter = localize('arc.searchToFilter', "Search to filter items...");
 export const scalingCompute = localize('arc.scalingCompute', "scaling compute vCores and memory.");
-export const computeAndStorageDescriptionPartOne = localize('arc.computeAndStorageDescriptionPartOne', "You can scale your Azure Arc enabled");
-export const computeAndStorageDescriptionPartTwo = localize('arc.computeAndStorageDescriptionPartTwo', "PostgreSQL Hyperscale server group by");
+export const postgresComputeAndStorageDescriptionPartOne = localize('arc.postgresComputeAndStorageDescriptionPartOne', "You can scale your Azure Arc enabled");
+export const miaaComputeAndStorageDescriptionPartOne = localize('arc.miaaComputeAndStorageDescriptionPartOne', "You can scale your Azure SQL managed instance - Azure Arc by");
+export const postgresComputeAndStorageDescriptionPartTwo = localize('arc.postgres.computeAndStorageDescriptionPartTwo', "PostgreSQL Hyperscale server group by");
 export const computeAndStorageDescriptionPartThree = localize('arc.computeAndStorageDescriptionPartThree', "without downtime and by");
 export const computeAndStorageDescriptionPartFour = localize('arc.computeAndStorageDescriptionPartFour', "Before doing so, you need to ensure");
 export const computeAndStorageDescriptionPartFive = localize('arc.computeAndStorageDescriptionPartFive', "there are sufficient resources available");
@@ -217,3 +218,6 @@ export const variableValueFetchForUnsupportedVariable = (variableName: string) =
 export const isPasswordFetchForUnsupportedVariable = (variableName: string) => localize('getIsPassword.unknownVariableName', "Attempt to get isPassword for unknown variable:{0}", variableName);
 export const noControllerInfoFound = (name: string) => localize('noControllerInfoFound', "Controller Info could not be found with name: {0}", name);
 export const noPasswordFound = (controllerName: string) => localize('noPasswordFound', "Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.", controllerName);
+export const noContextFound = (configFile: string) => localize('noContextFound', "No 'contexts' found in the config file: {0}", configFile);
+export const noCurrentContextFound = (configFile: string) => localize('noCurrentContextFound', "No context is marked as 'current-context' in the config file: {0}", configFile);
+export const noNameInContext = (configFile: string) => localize('noNameInContext', "No name field was found in a cluster context in the config file: {0}", configFile);

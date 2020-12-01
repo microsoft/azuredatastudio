@@ -50,17 +50,18 @@ export default class EditorComponent extends ComponentBase<azdata.EditorProperti
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService,
 		@Inject(ILogService) private _logService: ILogService,
-		@Inject(IEditorService) private readonly editorService: IEditorService
+		@Inject(IEditorService) private readonly editorService: IEditorService,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
+	ngAfterViewInit(): void {
 		this._createEditor().catch((e) => this._logService.error(e));
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
 			this.layout();
 		}));
+		this.baseInit();
 	}
 
 	private async _createEditor(): Promise<void> {

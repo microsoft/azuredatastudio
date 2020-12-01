@@ -3,7 +3,9 @@
 # Syntax can be found here: https://docs.github.com/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-code-owners#codeowners-syntax
 
 /src/sql/*.d.ts @alanrenmsft @Charles-Gagnon @ranasaria
-/src/extensions/resource-deployment/ @ranasaria
-/src/extensions/arc/ @ranasaria
-/src/extensions/azdata/ @ranasaria
-
+/extensions/resource-deployment/ @ranasaria
+/extensions/arc/ @ranasaria
+/extensions/azdata/ @ranasaria
+/extensions/dacpac/ @kisantia
+/extensions/schema-compare/ @kisantia
+/extensions/sql-database-projects/ @Benjin @kisantia

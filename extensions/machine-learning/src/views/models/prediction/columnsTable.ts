@@ -162,7 +162,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		this._parameters = [];
 		let tableData: any[][] = [];
 
-		if (this._table && table && table.tableName !== constants.selectTableTitle) {
+		if (this._table && table) {
 			if (this._forInput) {
 				let columns: TableColumn[];
 				try {
@@ -231,7 +231,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			outputContainer.addItem(nameInput, {
 				CSSStyles: {
 					'padding': '0px',
-					'padding-right': '5px',
+					'padding-right': '10px',
 					'margin': '0px'
 				}
 			});
@@ -353,8 +353,8 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				width: 50,
 				height: 50,
 				iconPath: {
-					dark: this.asAbsolutePath('images/arrow.svg'),
-					light: this.asAbsolutePath('images/arrow.svg')
+					dark: this.asAbsolutePath('images/dark/arrow.svg'),
+					light: this.asAbsolutePath('images/light/arrow.svg')
 				},
 				iconWidth: 20,
 				iconHeight: 20,
@@ -368,15 +368,15 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 
 	private createWarningButton(message: string): azdata.ButtonComponent {
 		const warningButton = this._modelBuilder.button().withProperties({
-			width: '10px',
-			height: '10px',
+			width: '16px',
+			height: '16px',
 			title: message,
 			iconPath: {
-				dark: this.asAbsolutePath('images/dark/warning_notification_inverse.svg'),
-				light: this.asAbsolutePath('images/light/warning_notification.svg'),
+				dark: this.asAbsolutePath('images/warning.svg'),
+				light: this.asAbsolutePath('images/warning.svg'),
 			},
-			iconHeight: '10px',
-			iconWidth: '10px'
+			iconHeight: '16px',
+			iconWidth: '16px'
 		}).component();
 
 		return warningButton;

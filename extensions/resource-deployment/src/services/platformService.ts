@@ -13,7 +13,7 @@ import { OsDistribution, OsRelease } from '../interfaces';
 import { getErrorMessage } from '../common/utils';
 
 const localize = nls.loadMessageBundle();
-const extensionOutputChannel = localize('resourceDeployment.outputChannel', "Deployments");
+export const extensionOutputChannel = localize('resourceDeployment.outputChannel', "Deployments");
 const sudoPromptTitle = 'AzureDataStudio';
 /**
  * Abstract of platform dependencies
@@ -244,7 +244,6 @@ export class PlatformService implements IPlatformService {
 			windowsHide: true
 		};
 		const child = cp.spawn(command, [], spawnOptions);
-
 		// Add listeners to print stdout and stderr and exit code
 		child.on('exit', (code: number | null, signal: string | null) => {
 			if (code !== null) {
@@ -258,7 +257,6 @@ export class PlatformService implements IPlatformService {
 			this.outputDataChunk(data, outputChannel, localize('platformService.RunCommand.stdout', "    stdout: "));
 		});
 		child.stderr!.on('data', (data: string | Buffer) => { this.outputDataChunk(data, outputChannel, localize('platformService.RunCommand.stderr', "    stderr: ")); });
-
 		await child;
 		return stdoutData.join('');
 	}
