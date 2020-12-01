@@ -18,8 +18,7 @@ suite('IssueReporter', () => {
 			includeWorkspaceInfo: true,
 			includeProcessInfo: true,
 			includeExtensions: true,
-			includeSearchedExtensions: true,
-			includeSettingsSearchDetails: true,
+			includeExperiments: true,
 			issueType: 0
 		});
 	});
