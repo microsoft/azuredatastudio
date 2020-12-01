@@ -75,7 +75,11 @@ const mockDatabaseServers: azureResource.AzureResourceDatabaseServer[] = [
 		fullName: 'mock database server full name 1',
 		loginName: 'mock login',
 		defaultDatabaseName: 'master',
-		subscriptionId: 'mock_subscription'
+		subscription: {
+			id: 'mock_subscription',
+			name: 'mock_subscription'
+		},
+		resourceGroup: 'rg1'
 	},
 	{
 		name: 'mock database server 2',
@@ -83,7 +87,11 @@ const mockDatabaseServers: azureResource.AzureResourceDatabaseServer[] = [
 		fullName: 'mock database server full name 2',
 		loginName: 'mock login',
 		defaultDatabaseName: 'master',
-		subscriptionId: 'mock_subscription'
+		subscription: {
+			id: 'mock_subscription',
+			name: 'mock_subscription'
+		},
+		resourceGroup: 'rg2'
 	}
 ];
 

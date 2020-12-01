@@ -12,6 +12,7 @@ import { LocalModelsComponent } from './localModelsComponent';
 import { AzureModelsComponent } from './azureModelsComponent';
 import * as utils from '../../common/utils';
 import { CurrentModelsComponent } from './manageModels/currentModelsComponent';
+import { ImportedModel } from '../../modelManagement/interfaces';
 
 /**
  * View to pick model source
@@ -25,7 +26,8 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 	public azureModelsComponent: AzureModelsComponent | undefined;
 	public registeredModelsComponent: CurrentModelsComponent | undefined;
 
-	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = true) {
+	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = true,
+		private _selectedModels?: ImportedModel[] | undefined) {
 		super(apiWrapper, parent.root, parent);
 	}
 
@@ -46,6 +48,11 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 			editable: false
 		});
 		this.registeredModelsComponent.registerComponent(modelBuilder);
+
+		// Mark a model in the list as selected
+		if (this._selectedModels && this.registeredModelsComponent.modelTable) {
+			this.registeredModelsComponent.modelTable.selectedModels = this._selectedModels;
+		}
 		this._form = this._formBuilder.component();
 		return this._form;
 	}
@@ -73,24 +80,24 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 				if (this.localModelsComponent && this.azureModelsComponent && this.registeredModelsComponent) {
 					this.azureModelsComponent.removeComponents(this._formBuilder);
 					this.registeredModelsComponent.removeComponents(this._formBuilder);
-					this.localModelsComponent.addComponents(this._formBuilder);
 					await this.localModelsComponent.refresh();
+					this.localModelsComponent.addComponents(this._formBuilder);
 				}
 
 			} else if (this.modelSourceType === ModelSourceType.Azure) {
 				if (this.localModelsComponent && this.azureModelsComponent && this.registeredModelsComponent) {
 					this.localModelsComponent.removeComponents(this._formBuilder);
+					await this.azureModelsComponent.refresh();
 					this.azureModelsComponent.addComponents(this._formBuilder);
 					this.registeredModelsComponent.removeComponents(this._formBuilder);
-					await this.azureModelsComponent.refresh();
 				}
 
 			} else if (this.modelSourceType === ModelSourceType.RegisteredModels) {
 				if (this.localModelsComponent && this.azureModelsComponent && this.registeredModelsComponent) {
 					this.localModelsComponent.removeComponents(this._formBuilder);
 					this.azureModelsComponent.removeComponents(this._formBuilder);
-					this.registeredModelsComponent.addComponents(this._formBuilder);
 					await this.registeredModelsComponent.refresh();
+					this.registeredModelsComponent.addComponents(this._formBuilder);
 				}
 			}
 		}

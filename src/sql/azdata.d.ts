@@ -4688,22 +4688,26 @@ declare module 'azdata' {
 		export interface ICellContents {
 			cell_type: CellType;
 			source: string | string[];
-			metadata?: {
-				language?: string;
-				tags?: string[];
-				azdata_cell_guid?: string;
-			};
+			metadata?: ICellMetadata;
 			execution_count?: number;
 			outputs?: ICellOutput[];
 		}
 
 		export type CellType = 'code' | 'markdown' | 'raw';
 
+		export interface ICellMetadata {
+			language?: string;
+			tags?: string[];
+			azdata_cell_guid?: string;
+		}
+
 		export interface ICellOutput {
 			output_type: OutputTypeName;
-			metadata?: {
-				azdata_chartOptions?: any;
-			};
+			metadata?: ICellOutputMetadata;
+		}
+
+		export interface ICellOutputMetadata {
+			azdata_chartOptions?: any;
 		}
 
 		/**
@@ -4733,10 +4737,6 @@ declare module 'azdata' {
 			 * This is dynamic and is controlled by kernels, so cannot be more specific
 			 */
 			data: { [key: string]: any };
-			/**
-			 * Optional metadata, also a mime bundle
-			 */
-			metadata?: {};
 		}
 		export interface IDisplayData extends IDisplayResult {
 			output_type: 'display_data';

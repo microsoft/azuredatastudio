@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import * as sudo from 'sudo-prompt';
 import * as loc from '../localizedConstants';
@@ -87,7 +86,7 @@ export async function executeCommand(command: string, args: string[], additional
 export async function executeSudoCommand(command: string): Promise<ProcessOutput> {
 	return new Promise((resolve, reject) => {
 		Logger.log(loc.executingCommand(`sudo ${command}`, []));
-		sudo.exec(command, { name: vscode.env.appName }, (error, stdout, stderr) => {
+		sudo.exec(command, { name: 'Azure Data Studio' }, (error, stdout, stderr) => {
 			stdout = stdout?.toString() ?? '';
 			stderr = stderr?.toString() ?? '';
 			if (stdout) {

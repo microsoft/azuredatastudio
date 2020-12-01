@@ -29,6 +29,8 @@ import { assign } from 'vs/base/common/objects';
 import { serializableToMap } from 'sql/base/common/map';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
 import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -57,7 +59,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@ISerializationService private _serializationService: ISerializationService,
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
 		@IAssessmentService private _assessmentService: IAssessmentService,
-		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService
+		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		super();
 		if (extHostContext) {
@@ -469,14 +472,23 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		return undefined;
 	}
 
-	public $registerDataGridProvider(providerId: string, handle: number): void {
+	public $registerDataGridProvider(providerId: string, title: string, handle: number): void {
 		const self = this;
 		this._dataGridProviderService.registerProvider(providerId, <azdata.DataGridProvider>{
 			providerId: providerId,
+			title: title,
 			getDataGridItems(): Thenable<azdata.DataGridItem[]> {
+				self._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.GetDataGridItems)
+					.withAdditionalProperties({
+						provider: providerId
+					}).send();
 				return self._proxy.$getDataGridItems(handle);
 			},
 			getDataGridColumns(): Thenable<azdata.DataGridColumn[]> {
+				self._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.GetDataGridColumns)
+					.withAdditionalProperties({
+						provider: providerId
+					}).send();
 				return self._proxy.$getDataGridColumns(handle);
 			}
 		});

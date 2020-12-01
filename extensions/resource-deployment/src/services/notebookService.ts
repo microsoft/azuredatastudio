@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { EOL } from 'os';
+
 import * as path from 'path';
-import { isString } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { NotebookPathInfo } from '../interfaces';
 import { getDateTimeString, getErrorMessage } from '../common/utils';
+import { NotebookPathInfo } from '../interfaces';
 import { IPlatformService } from './platformService';
+import * as loc from '../localizedConstants';
 const localize = nls.loadMessageBundle();
 
 export interface Notebook {
@@ -41,6 +41,7 @@ export interface INotebookService {
 	executeNotebook(notebook: any, env?: NodeJS.ProcessEnv): Promise<NotebookExecutionResult>;
 	backgroundExecuteNotebook(taskName: string | undefined, notebookInfo: string | NotebookPathInfo | Notebook, tempNotebookPrefix: string, platformService: IPlatformService, env?: NodeJS.ProcessEnv): void;
 }
+
 
 export class NotebookService implements INotebookService {
 
@@ -145,21 +146,20 @@ export class NotebookService implements INotebookService {
 				} else {
 					op.updateStatus(azdata.TaskStatus.Failed, result.errorMessage);
 					if (result.outputNotebook) {
-						const viewErrorDetail = localize('resourceDeployment.ViewErrorDetail', "View error detail");
-						const taskFailedMessage = localize('resourceDeployment.BackgroundExecutionFailed', "The task \"{0}\" has failed.", taskName);
-						const selectedOption = await vscode.window.showErrorMessage(taskFailedMessage, viewErrorDetail);
+						const taskFailedMessage = loc.backgroundExecutionFailed(taskName);
+						const selectedOption = await vscode.window.showErrorMessage(taskFailedMessage, loc.viewErrorDetail);
 						platformService.logToOutputChannel(taskFailedMessage);
-						if (selectedOption === viewErrorDetail) {
+						if (selectedOption === loc.viewErrorDetail) {
 							try {
 								await this.openNotebookWithContent(`${tempNotebookPrefix}-${getDateTimeString()}`, result.outputNotebook);
 							} catch (error) {
-								const openNotebookError = localize('resourceDeployment.FailedToOpenNotebook', "An error occurred opening the output notebook. {1}{2}.", EOL, getErrorMessage(error));
+								const openNotebookError = loc.failedToOpenNotebook(error);
 								platformService.logToOutputChannel(openNotebookError);
 								vscode.window.showErrorMessage(openNotebookError);
 							}
 						}
 					} else {
-						const errorMessage = localize('resourceDeployment.TaskFailedWithNoOutputNotebook', "The task \"{0}\" failed and no output Notebook was generated.", taskName);
+						const errorMessage = loc.taskFailedWithNoOutputNotebook(taskName);
 						platformService.logToOutputChannel(errorMessage);
 						vscode.window.showErrorMessage(errorMessage);
 					}
@@ -192,7 +192,7 @@ export class NotebookService implements INotebookService {
 	 */
 	getNotebookPath(notebook: string | NotebookPathInfo): string {
 		let notebookPath;
-		if (notebook && !isString(notebook)) {
+		if (notebook && (typeof notebook !== 'string')) {
 			const platform = this.platformService.platform();
 			if (platform === 'win32') {
 				notebookPath = notebook.win32;
@@ -234,3 +234,4 @@ export class NotebookService implements INotebookService {
 		});
 	}
 }
+

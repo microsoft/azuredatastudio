@@ -10,7 +10,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class FileNotebookInput extends NotebookInput {
 	public static ID: string = 'workbench.editorinputs.fileNotebookInput';
@@ -22,10 +21,9 @@ export class FileNotebookInput extends NotebookInput {
 		@ITextModelService textModelService: ITextModelService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@INotebookService notebookService: INotebookService,
-		@IExtensionService extensionService: IExtensionService,
-		@INotificationService notificationService: INotificationService
+		@IExtensionService extensionService: IExtensionService
 	) {
-		super(title, resource, textInput, textModelService, instantiationService, notebookService, extensionService, notificationService);
+		super(title, resource, textInput, textModelService, instantiationService, notebookService, extensionService);
 	}
 
 	public get textInput(): FileEditorInput {

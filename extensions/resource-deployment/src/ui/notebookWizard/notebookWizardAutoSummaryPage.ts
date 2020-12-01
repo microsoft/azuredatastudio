@@ -7,7 +7,7 @@ import * as nls from 'vscode-nls';
 
 import { SubFieldInfo, FieldType, FontWeight, LabelPosition, SectionInfo } from '../../interfaces';
 import { createSection, DefaultInputWidth, DefaultLabelWidth, DefaultFieldAlignItems, DefaultFieldWidth, DefaultFieldHeight } from '../modelViewUtils';
-import { NotebookWizard } from './notebookWizard';
+import { NotebookWizardModel } from './notebookWizardModel';
 import { NotebookWizardPage } from './notebookWizardPage';
 
 const localize = nls.loadMessageBundle();
@@ -17,11 +17,11 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 	private form!: azdata.FormBuilder;
 	private view!: azdata.ModelView;
 
-	constructor(wizard: NotebookWizard, _pageIndex: number) {
-		super(wizard,
+	constructor(_model: NotebookWizardModel, _pageIndex: number) {
+		super(_model,
 			_pageIndex,
-			wizard.wizardInfo.pages[_pageIndex].title || localize('notebookWizard.autoSummaryPageTitle', "Review your configuration"),
-			wizard.wizardInfo.pages[_pageIndex].description || ''
+			_model.wizardInfo.pages[_pageIndex].title || localize('notebookWizard.autoSummaryPageTitle', "Review your configuration"),
+			_model.wizardInfo.pages[_pageIndex].description || ''
 		);
 	}
 
@@ -43,14 +43,14 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 		});
 		this.formItems = [];
 
-		const fieldWidth = this.pageInfo.fieldWidth || this.wizard.wizardInfo.fieldWidth || DefaultFieldWidth;
-		const fieldHeight = this.pageInfo.fieldHeight || this.wizard.wizardInfo.fieldHeight || DefaultFieldHeight;
-		const fieldAlignItems = this.pageInfo.fieldAlignItems || this.wizard.wizardInfo.fieldAlignItems || DefaultFieldAlignItems;
-		const labelWidth = this.pageInfo.labelWidth || this.wizard.wizardInfo.labelWidth || DefaultLabelWidth;
-		const labelPosition = this.pageInfo.labelPosition || this.wizard.wizardInfo.labelPosition || LabelPosition.Left;
-		const inputWidth = this.pageInfo.inputWidth || this.wizard.wizardInfo.inputWidth || DefaultInputWidth;
+		const fieldWidth = this.pageInfo.fieldWidth || this._model.wizardInfo.fieldWidth || DefaultFieldWidth;
+		const fieldHeight = this.pageInfo.fieldHeight || this._model.wizardInfo.fieldHeight || DefaultFieldHeight;
+		const fieldAlignItems = this.pageInfo.fieldAlignItems || this._model.wizardInfo.fieldAlignItems || DefaultFieldAlignItems;
+		const labelWidth = this.pageInfo.labelWidth || this._model.wizardInfo.labelWidth || DefaultLabelWidth;
+		const labelPosition = this.pageInfo.labelPosition || this._model.wizardInfo.labelPosition || LabelPosition.Left;
+		const inputWidth = this.pageInfo.inputWidth || this._model.wizardInfo.inputWidth || DefaultInputWidth;
 
-		const filteredPages = this.wizard.wizardInfo.pages.filter((undefined, index) => index < this._pageIndex);
+		const filteredPages = this._model.wizardInfo.pages.filter((undefined, index) => index < this._pageIndex);
 		for (const pageInfo of filteredPages) {
 			const summarySectionInfo: SectionInfo = {
 				labelPosition: labelPosition,
@@ -80,7 +80,7 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 					component: await createSection({
 						container: this.wizard.wizardObject,
 						toolsService: this.wizard.toolsService,
-						inputComponents: this.wizard.inputComponents,
+						inputComponents: this._model.inputComponents,
 						sectionInfo: summarySectionInfo,
 						view: this.view,
 						onNewDisposableCreated: () => { },

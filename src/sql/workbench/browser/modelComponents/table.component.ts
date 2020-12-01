@@ -17,24 +17,33 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
+import { getContentHeight, getContentWidth, Dimension, isAncestor } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
-import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { slickGridDataItemColumnValueWithNoData, textFormatter, iconCssFormatter, CssIconCellValue } from 'sql/base/browser/ui/table/formatters';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
-import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { IUserFriendlyIcon, createIconCssClass, getIconKey } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
 	AutoFit = 1,	// columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
 	DataFit = 2		// columns use sizing based on cell data, horiz scroll bar present if more cells than visible in view area
+}
+
+enum ColumnType {
+	text = 0,
+	checkBox = 1,
+	button = 2,
+	icon = 3
 }
 
 @Component({
@@ -57,18 +66,15 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	private _onButtonClicked = new Emitter<ButtonClickEventArgs<{}>>();
 	public readonly onCheckBoxChanged: vsEvent<ICheckboxCellActionEventArgs> = this._onCheckBoxChanged.event;
 	public readonly onButtonClicked: vsEvent<ButtonClickEventArgs<{}>> = this._onButtonClicked.event;
+	private _iconCssMap: { [iconKey: string]: string } = {};
 
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
-		super(changeRef, el);
-	}
-
-	ngOnInit(): void {
-		this.baseInit();
-
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService) {
+		super(changeRef, el, logService);
 	}
 
 	transformColumns(columns: string[] | azdata.TableColumn[]): Slick.Column<any>[] {
@@ -76,24 +82,17 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		if (tableColumns) {
 			let mycolumns: Slick.Column<any>[] = [];
 			let index: number = 0;
+
 			(<any[]>columns).map(col => {
-				if (col.type && col.type === 1) {
+				if (col.type === ColumnType.checkBox) {
 					this.createCheckBoxPlugin(col, index);
-				}
-				else if (col.type && col.type === 2) {
+				} else if (col.type === ColumnType.button) {
 					this.createButtonPlugin(col);
+				} else if (col.type === ColumnType.icon) {
+					mycolumns.push(TableComponent.createIconColumn(col));
 				}
 				else if (col.value) {
-					mycolumns.push(<Slick.Column<any>>{
-						name: col.value,
-						id: col.value,
-						field: col.value,
-						width: col.width,
-						cssClass: col.cssClass,
-						headerCssClass: col.headerCssClass,
-						toolTip: col.toolTip,
-						formatter: textFormatter,
-					});
+					mycolumns.push(TableComponent.createTextColumn(col as azdata.TableColumn));
 				} else {
 					mycolumns.push(<Slick.Column<any>>{
 						name: <string>col,
@@ -116,16 +115,57 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 	}
 
-	public static transformData(rows: string[][], columns: any[]): { [key: string]: string }[] {
+	private static createIconColumn<T extends Slick.SlickData>(col: azdata.TableColumn): Slick.Column<T> {
+		return <Slick.Column<T>>{
+			name: col.name ?? col.value,
+			id: col.value,
+			field: col.value,
+			width: col.width,
+			cssClass: col.cssClass,
+			headerCssClass: col.headerCssClass,
+			toolTip: col.toolTip,
+			formatter: iconCssFormatter,
+			filterable: false
+		};
+	}
+
+	private static createTextColumn<T extends Slick.SlickData>(col: azdata.TableColumn): Slick.Column<T> {
+		return {
+			name: col.name ?? col.value,
+			id: col.value,
+			field: col.value,
+			width: col.width,
+			cssClass: col.cssClass,
+			headerCssClass: col.headerCssClass,
+			toolTip: col.toolTip,
+			formatter: textFormatter
+		};
+	}
+
+	public transformData(rows: (string | azdata.IconColumnCellValue)[][], columns: any[]): { [key: string]: string | CssIconCellValue }[] {
 		if (rows && columns) {
+
 			return rows.map(row => {
-				let object: { [key: string]: string } = {};
-				if (row.forEach) {
-					row.forEach((val, index) => {
-						let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
-						object[columnName] = val;
-					});
+				let object: { [key: string]: string | CssIconCellValue } = {};
+				if (!Array.isArray(row)) {
+					return object;
 				}
+
+				row.forEach((val, index) => {
+					let columnName: string = (columns[index].value) ? columns[index].value : <string>columns[index];
+					if (isIconColumnCellValue(val)) {
+						const icon: IUserFriendlyIcon = val.icon;
+						const iconKey: string = getIconKey(icon);
+						const iconCssClass = this._iconCssMap[iconKey] ?? createIconCssClass(icon);
+						if (!this._iconCssMap[iconKey]) {
+							this._iconCssMap[iconKey] = iconCssClass;
+						}
+
+						object[columnName] = { iconCssClass: iconCssClass, ariaLabel: val.ariaLabel };
+					} else {
+						object[columnName] = <string>val;
+					}
+				});
 				return object;
 			});
 		} else {
@@ -196,13 +236,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				}
 			});
 		}
-	}
-
-	public validate(): Thenable<boolean> {
-		return super.validate().then(valid => {
-			// TODO: table validation?
-			return valid;
-		});
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {
@@ -263,7 +297,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._tableData.clear();
-		this._tableData.push(TableComponent.transformData(this.data, this.columns));
+		this._tableData.push(this.transformData(this.data, this.columns));
 		this._tableColumns = this.transformColumns(this.columns);
 		this._table.columns = this._tableColumns;
 		this._table.setData(this._tableData);
@@ -306,7 +340,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 
 		this.layoutTable();
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	private updateTableCells(cellInfos): void {
@@ -489,4 +523,32 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	public get headerFilter(): boolean {
 		return this.getPropertyOrDefault<boolean>((props) => props.headerFilter, false);
 	}
+
+	public doAction(action: string, ...args: any[]): void {
+		switch (action) {
+			case ModelViewAction.AppendData:
+				this.appendData(args[0]);
+		}
+	}
+
+	private appendData(data: any[][]) {
+		const tableHasFocus = isAncestor(document.activeElement, <HTMLElement>this._inputContainer.nativeElement);
+		const currentActiveCell = this._table.grid.getActiveCell();
+		const wasFocused = tableHasFocus && this._table.grid.getDataLength() > 0 && currentActiveCell;
+
+		this._tableData.push(this.transformData(data, this.columns));
+		this.data = this._tableData.getItems().map(dataObject => Object.values(dataObject));
+		this.layoutTable();
+
+		if (wasFocused) {
+			if (!this._table.grid.getActiveCell()) {
+				this._table.grid.setActiveCell(currentActiveCell.row, currentActiveCell.cell);
+			}
+			this._table.grid.getActiveCellNode().focus();
+		}
+	}
+}
+
+function isIconColumnCellValue(obj: any | undefined): obj is azdata.IconColumnCellValue {
+	return !!(<azdata.IconColumnCellValue>obj)?.icon;
 }

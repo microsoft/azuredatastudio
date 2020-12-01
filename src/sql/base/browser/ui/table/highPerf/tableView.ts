@@ -173,7 +173,7 @@ export class TableView<T> implements IDisposable {
 		this.domNode.setAttribute('aria-rowcount', '0');
 		this.domNode.setAttribute('aria-readonly', 'true');
 
-		DOM.addClass(this.domNode, this.domId);
+		this.domNode.classList.add(this.domId);
 		this.domNode.tabIndex = 0;
 
 		DOM.toggleClass(this.domNode, 'mouse-support', typeof options.mouseSupport === 'boolean' ? options.mouseSupport : true);
@@ -568,7 +568,7 @@ export class TableView<T> implements IDisposable {
 			const cell = this.cache.alloc(column.id);
 			row.cells[index] = cell;
 			if (column.cellClass) {
-				DOM.addClass(cell.domNode!, column.cellClass);
+				cell.domNode!.classList.add(column.cellClass);
 			}
 			row.row.appendChild(cell.domNode!);
 		}

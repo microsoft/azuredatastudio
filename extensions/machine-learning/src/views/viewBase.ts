@@ -24,6 +24,7 @@ export const LocalPathsEventName = 'localPaths';
  * Base class for views
  */
 export abstract class ViewBase extends EventEmitterCollection {
+	protected _toDispose: vscode.Disposable[] = [];
 	protected _mainViewPanel: azdata.window.Dialog | azdata.window.Wizard | undefined;
 	public viewPanel: azdata.window.ModelViewPanel | undefined;
 	public connection: azdata.connection.ConnectionProfile | undefined;
@@ -197,4 +198,9 @@ export abstract class ViewBase extends EventEmitterCollection {
 	}
 
 	public abstract refresh(): Promise<void>;
+
+	public dispose(): void {
+		super.dispose();
+		this._toDispose.forEach(disposable => disposable.dispose());
+	}
 }

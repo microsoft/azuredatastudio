@@ -66,8 +66,24 @@ declare module 'azdata' {
 
 		export interface IExecuteResult {
 			data: any;
-			batchId?: number;
-			id?: number;
+		}
+
+		export interface IExecuteResultUpdate {
+			output_type: string;
+			resultSet: ResultSetSummary;
+			data: any;
+		}
+
+		export interface ICellOutputMetadata {
+			resultSet?: ResultSetSummary;
+		}
+
+		export interface INotebookMetadata {
+			connection_name?: string;
+		}
+
+		export interface ICellMetadata {
+			connection_name?: string;
 		}
 	}
 
@@ -131,7 +147,11 @@ declare module 'azdata' {
 		DataGridProvider = 'DataGridProvider'
 	}
 
+	/**
+	 * The type of the DataGrid column
+	 */
 	export type DataGridColumnType = 'hyperlink' | 'text' | 'image';
+
 	/**
 	 * A column in a data grid
 	 */
@@ -183,6 +203,38 @@ declare module 'azdata' {
 	}
 
 	/**
+	 * Info for a command to execute
+	 */
+	export interface ExecuteCommandInfo {
+		/**
+		 * The ID of the command to execute
+		 */
+		id: string;
+		/**
+		 * The text to display for the action
+		 */
+		displayText?: string;
+		/**
+		 * The optional args to pass to the command
+		 */
+		args?: any[];
+	}
+
+	/**
+	 * Info for displaying a hyperlink value in a Data Grid table
+	 */
+	export interface DataGridHyperlinkInfo {
+		/**
+		 * The text to display for the link
+		 */
+		displayText: string;
+		/**
+		 * The URL to open or command to execute
+		 */
+		linkOrCommand: string | ExecuteCommandInfo;
+	}
+
+	/**
 	 * An item for displaying in a data grid
 	 */
 	export interface DataGridItem {
@@ -190,14 +242,11 @@ declare module 'azdata' {
 		 * A unique identifier for this item
 		 */
 		id: string;
+
 		/**
-		 * The optional icon to display for this item
+		 * The other properties that will be displayed in the grid columns
 		 */
-		iconPath?: string;
-		/**
-		 * The other properties that will be displayed in the grid
-		 */
-		[key: string]: any;
+		[key: string]: string | DataGridHyperlinkInfo;
 	}
 
 	/**
@@ -212,13 +261,22 @@ declare module 'azdata' {
 		 * Gets the list of data grid columns for this provider
 		 */
 		getDataGridColumns(): Thenable<DataGridColumn[]>;
+
+		/**
+		 * The user visible string to use for the title of the grid
+		 */
+		title: string;
 	}
 
 	export interface HyperlinkComponent {
 		/**
-		 * An event called when the text is clicked
+		 * An event called when the hyperlink is clicked
 		 */
 		onDidClick: vscode.Event<any>;
+	}
+
+	export interface HyperlinkComponentProperties {
+		showLinkIcon?: boolean;
 	}
 
 	export interface DeclarativeTableColumn {
@@ -361,7 +419,7 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableCellValue {
-		value: string | number | boolean;
+		value: string | number | boolean | Component;
 		ariaLabel?: string;
 		style?: CssStyles
 	}
@@ -503,6 +561,10 @@ declare module 'azdata' {
 	export interface InputBoxProperties extends ComponentProperties {
 		validationErrorMessage?: string;
 		readOnly?: boolean;
+		/**
+		* This title will show when hovered over
+		*/
+		title?: string;
 	}
 
 	export interface CheckBoxProperties {
@@ -757,10 +819,46 @@ declare module 'azdata' {
 		title: string;
 	}
 
+	export namespace workspace {
+		/**
+		 * Creates and enters a workspace at the specified location
+		 */
+		export function createWorkspace(location: vscode.Uri, workspaceFile?: vscode.Uri): Promise<void>;
+
+		/**
+		 * Enters the workspace with the provided path
+		 * @param workspacefile
+		 */
+		export function enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+	}
+
 	export interface TableComponentProperties {
 		/**
 		 * Specifies whether to use headerFilter plugin
 		 */
 		headerFilter?: boolean,
+	}
+
+	export interface TableComponent {
+		/**
+		 * Append data to an exsiting table data.
+		 */
+		appendData(data: any[][]);
+	}
+
+	export interface IconColumnCellValue {
+		icon: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		ariaLabel: string;
+	}
+
+	export enum ColumnType {
+		icon = 3
+	}
+
+	export interface TableColumn {
+		/**
+		* The text to display on the column heading. 'value' property will be used, if not specified
+		**/
+		name?: string;
 	}
 }

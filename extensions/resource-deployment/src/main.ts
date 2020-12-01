@@ -42,7 +42,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<rd.IEx
 		if (!defaultResourceType) {
 			vscode.window.showErrorMessage(localize('resourceDeployment.UnknownResourceType', "The resource type: {0} is not defined", defaultResourceTypeName));
 		} else {
-			const dialog = new ResourceTypePickerDialog(toolsService, resourceTypeService, defaultResourceType, resourceTypeNameFilters);
+			const dialog = new ResourceTypePickerDialog(resourceTypeService, defaultResourceType, resourceTypeNameFilters);
 			dialog.open();
 		}
 	};

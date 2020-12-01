@@ -46,6 +46,7 @@
 		"Microsoft.arc",
 		"Microsoft.azdata",
 		"Microsoft.azuredatastudio-postgresql",
+		"Microsoft.azurehybridtoolkit",
 		"Microsoft.cms",
 		"Microsoft.dacpac",
 		"Microsoft.import",
@@ -56,6 +57,8 @@
 		"Microsoft.schema-compare",
 		"Microsoft.sql-assessment",
 		"Microsoft.datavirtualization",
+		"Microsoft.sql-database-projects",
+		"Microsoft.machine-learning",
 		"Redgate.sql-prompt",
 		"Redgate.sql-search",
 		"IDERA.sqldm-performance-insights",
@@ -78,7 +81,7 @@
 	"builtInExtensions": [
 		{
 			"name": "Microsoft.sqlservernotebook",
-			"version": "0.3.8",
+			"version": "0.3.9",
 			"repo": "https://github.com/Microsoft/azuredatastudio"
 		}
 	],

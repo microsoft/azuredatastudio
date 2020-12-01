@@ -271,12 +271,12 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 			this._updateButtons();
 
 			setTimeout(() => {
-				dom.addClass(this._domNode, 'visible');
+				this._domNode.classList.add('visible');
 				this._domNode.setAttribute('aria-hidden', 'false');
 				if (!animate) {
-					dom.addClass(this._domNode, 'noanimation');
+					this._domNode.classList.add('noanimation');
 					setTimeout(() => {
-						dom.removeClass(this._domNode, 'noanimation');
+						this._domNode.classList.remove('noanimation');
 					}, 200);
 				}
 			}, 0);
@@ -290,7 +290,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 
 			this._updateButtons();
 
-			dom.removeClass(this._domNode, 'visible');
+			this._domNode.classList.remove('visible');
 			this._domNode.setAttribute('aria-hidden', 'true');
 			if (focusTheEditor) {
 				this._notebookController.focus();

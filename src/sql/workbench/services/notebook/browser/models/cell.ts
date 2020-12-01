@@ -12,7 +12,7 @@ import { localize } from 'vs/nls';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -28,6 +28,7 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -38,12 +39,14 @@ export class CellModel extends Disposable implements ICellModel {
 	private _cellType: nb.CellType;
 	private _source: string | string[];
 	private _language: string;
+	private _savedConnectionName: string | undefined;
 	private _cellGuid: string;
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
 	private _renderedOutputTextContent: string[] = [];
 	private _isEditMode: boolean;
 	private _onOutputsChanged = new Emitter<IOutputChangedEvent>();
+	private _onTableUpdated = new Emitter<ITableUpdatedEvent>();
 	private _onCellModeChanged = new Emitter<boolean>();
 	private _onExecutionStateChanged = new Emitter<CellExecutionState>();
 	private _isTrusted: boolean;
@@ -56,7 +59,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; };
+	private _metadata: nb.ICellMetadata;
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
@@ -66,7 +69,6 @@ export class CellModel extends Disposable implements ICellModel {
 	private _showPreview: boolean = true;
 	private _showMarkdown: boolean = false;
 	private _cellSourceChanged: boolean = false;
-	private _gridDataConversionComplete: Promise<void>[] = [];
 	private _defaultToWYSIWYG: boolean;
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
@@ -111,6 +113,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get onOutputsChanged(): Event<IOutputChangedEvent> {
 		return this._onOutputsChanged.event;
+	}
+
+	public get onTableUpdated(): Event<ITableUpdatedEvent> {
+		return this._onTableUpdated.event;
 	}
 
 	public get onCellModeChanged(): Event<boolean> {
@@ -267,6 +273,10 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._options.notebook.language;
 	}
 
+	public get savedConnectionName(): string | undefined {
+		return this._savedConnectionName;
+	}
+
 	public get cellGuid(): string {
 		return this._cellGuid;
 	}
@@ -355,6 +365,12 @@ export class CellModel extends Disposable implements ICellModel {
 		if (this.cellType !== CellTypes.Code) {
 			return;
 		}
+
+		/**
+		 * The value will not be updated if there is already a parameter cell in the Notebook.
+		**/
+		value = this.notebookModel?.cells?.find(cell => cell.isParameter) ? false : value;
+
 		let stateChanged = this._isParameter !== value;
 		this._isParameter = value;
 
@@ -435,8 +451,6 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public async runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean> {
 		try {
-			// Clear grid data conversion promises from previous execution results
-			this._gridDataConversionComplete = [];
 			if (!this.active && this !== this.notebookModel.activeCell) {
 				this.notebookModel.updateActiveCell(this);
 				this.active = true;
@@ -530,6 +544,8 @@ export class CellModel extends Disposable implements ICellModel {
 		} finally {
 			this.disposeFuture();
 			this.fireExecutionStateChanged();
+			// Serialize cell output once the cell is done executing
+			this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 			this.notifyExecutionComplete();
 		}
 
@@ -603,9 +619,7 @@ export class CellModel extends Disposable implements ICellModel {
 			shouldScroll: !!shouldScroll
 		};
 		this._onOutputsChanged.fire(outputEvent);
-		if (this.outputs.length !== 0) {
-			this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
-		} else {
+		if (this.outputs.length === 0) {
 			this.sendChangeToNotebook(NotebookChangeType.CellOutputCleared);
 		}
 	}
@@ -618,25 +632,6 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get outputs(): Array<nb.ICellOutput> {
 		return this._outputs;
-	}
-
-	public updateOutputData(batchId: number, id: number, data: any) {
-		for (let i = 0; i < this._outputs.length; i++) {
-			if (this._outputs[i].output_type === 'execute_result'
-				&& (<nb.IExecuteResult>this._outputs[i]).batchId === batchId
-				&& (<nb.IExecuteResult>this._outputs[i]).id === id) {
-				(<nb.IExecuteResult>this._outputs[i]).data = data;
-				break;
-			}
-		}
-	}
-
-	public get gridDataConversionComplete(): Promise<void> {
-		return Promise.all(this._gridDataConversionComplete).then();
-	}
-
-	public addGridDataConversionPromise(complete: Promise<void>): void {
-		this._gridDataConversionComplete.push(complete);
 	}
 
 	public get renderedOutputTextContent(): string[] {
@@ -659,9 +654,49 @@ export class CellModel extends Disposable implements ICellModel {
 	private handleIOPub(msg: nb.IIOPubMessage): void {
 		let msgType = msg.header.msg_type;
 		let output: nb.ICellOutput;
+		let added = false;
 		switch (msgType) {
 			case 'execute_result':
+				output = msg.content as nb.ICellOutput;
+				output.output_type = msgType;
+				// Check if the table already exists
+				for (let i = 0; i < this._outputs.length; i++) {
+					if (this._outputs[i].output_type === 'execute_result') {
+						let resultSet: ResultSetSummary = this._outputs[i].metadata.resultSet;
+						let newResultSet: ResultSetSummary = output.metadata.resultSet;
+						if (resultSet.batchId === newResultSet.batchId && resultSet.id === newResultSet.id) {
+							// If it does, update output with data resource and html table
+							(<nb.IExecuteResult>this._outputs[i]).data = (<nb.IExecuteResult>output).data;
+							this._outputs[i].metadata = output.metadata;
+							added = true;
+							break;
+						}
+					}
+				}
+				break;
+			case 'execute_result_update':
+				let update = msg.content as nb.IExecuteResultUpdate;
+				// Send update to gridOutput component
+				this._onTableUpdated.fire({
+					resultSet: update.resultSet,
+					rows: update.data
+				});
+				break;
 			case 'display_data':
+				output = msg.content as nb.ICellOutput;
+				output.output_type = msgType;
+				// Display message outputs before grid outputs
+				if (this._outputs.length > 0) {
+					for (let i = 0; i < this._outputs.length; i++) {
+						if (this._outputs[i].output_type === 'execute_result') {
+							this._outputs.splice(i, 0, this.rewriteOutputUrls(output));
+							this.fireOutputsChanged();
+							added = true;
+							break;
+						}
+					}
+				}
+				break;
 			case 'stream':
 			case 'error':
 				output = msg.content as nb.ICellOutput;
@@ -692,25 +727,10 @@ export class CellModel extends Disposable implements ICellModel {
 		//     targets.push(model.length - 1);
 		//     this._displayIdMap.set(displayId, targets);
 		// }
-		if (output) {
+		if (output && !added) {
 			// deletes transient node in the serialized JSON
 			delete output['transient'];
-			// display message outputs before grid outputs
-			if (output.output_type === 'display_data' && this._outputs.length > 0) {
-				let added = false;
-				for (let i = 0; i < this._outputs.length; i++) {
-					if (this._outputs[i].output_type === 'execute_result') {
-						this._outputs.splice(i, 0, this.rewriteOutputUrls(output));
-						added = true;
-						break;
-					}
-				}
-				if (!added) {
-					this._outputs.push(this.rewriteOutputUrls(output));
-				}
-			} else {
-				this._outputs.push(this.rewriteOutputUrls(output));
-			}
+			this._outputs.push(this.rewriteOutputUrls(output));
 			// Only scroll on 1st output being added
 			let shouldScroll = this._outputs.length === 1;
 			this.fireOutputsChanged(shouldScroll);
@@ -789,6 +809,9 @@ export class CellModel extends Disposable implements ICellModel {
 			cellJson.metadata.tags = metadata.tags;
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount ? this.executionCount : null;
+			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
+				metadata.connection_name = this._savedConnectionName;
+			}
 		}
 		return cellJson as nb.ICellContents;
 	}
@@ -801,11 +824,10 @@ export class CellModel extends Disposable implements ICellModel {
 		this.executionCount = cell.execution_count;
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata || {};
-
-		if (this._metadata.tags && this._metadata.tags.some(x => x === HideInputTag || x === ParametersTag || x === InjectedParametersTag) && this._cellType === CellTypes.Code) {
-			this._isCollapsed = true;
-			this._isParameter = true;
-			this._isInjectedParameter = true;
+		if (this._metadata.tags && this._cellType === CellTypes.Code) {
+			this._isCollapsed = this._metadata.tags.some(x => x === HideInputTag);
+			this._isParameter = this._metadata.tags.some(x => x === ParametersTag);
+			this._isInjectedParameter = this._metadata.tags.some(x => x === InjectedParametersTag);
 		} else {
 			this._isCollapsed = false;
 			this._isParameter = false;
@@ -814,6 +836,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
+		this._savedConnectionName = this._metadata.connection_name;
 		if (cell.outputs) {
 			for (let output of cell.outputs) {
 				// For now, we're assuming it's OK to save these as-is with no modification

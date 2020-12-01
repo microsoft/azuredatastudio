@@ -6,9 +6,10 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as constants from '../constants';
-import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
 import { BasePage } from './basePage';
 import * as nls from 'vscode-nls';
+import { DeployAzureSQLVMWizardModel } from '../deployAzureSQLVMWizardModel';
+import * as localizedConstants from '../../../localizedConstants';
 const localize = nls.loadMessageBundle();
 
 export class SqlServerSettingsPage extends BasePage {
@@ -28,11 +29,11 @@ export class SqlServerSettingsPage extends BasePage {
 
 	private _form!: azdata.FormContainer;
 
-	constructor(wizard: DeployAzureSQLVMWizard) {
+	constructor(private _model: DeployAzureSQLVMWizardModel) {
 		super(
 			constants.SqlServerSettingsPageTitle,
 			'',
-			wizard
+			_model.wizard
 		);
 
 	}
@@ -50,13 +51,13 @@ export class SqlServerSettingsPage extends BasePage {
 				.withFormItems(
 					[
 						{
-							component: this.wizard.createFormRowComponent(view, constants.SqlConnectivityTypeDropdownLabel, '', this._sqlConnectivityDropdown, true)
+							component: this._model.createFormRowComponent(view, constants.SqlConnectivityTypeDropdownLabel, '', this._sqlConnectivityDropdown, true)
 						},
 						{
 							component: this._portTextRow
 						},
 						{
-							component: this.wizard.createFormRowComponent(view, constants.SqlEnableSQLAuthenticationLabel, '', this._sqlAuthenticationDropdown, true)
+							component: this._model.createFormRowComponent(view, constants.SqlEnableSQLAuthenticationLabel, '', this._sqlAuthenticationDropdown, true)
 						},
 						{
 							component: this._sqlAuthenticationTextRow
@@ -83,7 +84,7 @@ export class SqlServerSettingsPage extends BasePage {
 
 		this.liveValidation = false;
 
-		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
+		this._model.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
 			}
@@ -100,7 +101,7 @@ export class SqlServerSettingsPage extends BasePage {
 	}
 
 	public async onLeave(): Promise<void> {
-		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+		this._model.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
 	}
@@ -130,17 +131,17 @@ export class SqlServerSettingsPage extends BasePage {
 				}
 			}).component();
 
-		this.wizard.model.sqlConnectivityType = (this._sqlConnectivityDropdown.value as azdata.CategoryValue).name;
+		this._model.sqlConnectivityType = (this._sqlConnectivityDropdown.value as azdata.CategoryValue).name;
 
 		this._sqlConnectivityDropdown.onValueChanged((value) => {
 
 			let connectivityValue = (this._sqlConnectivityDropdown.value as azdata.CategoryValue).name;
-			this.wizard.model.sqlConnectivityType = connectivityValue;
+			this._model.sqlConnectivityType = connectivityValue;
 
 			if (connectivityValue === 'local') {
-				this.wizard.changeRowDisplay(this._portTextRow, 'none');
+				this._model.changeRowDisplay(this._portTextRow, 'none');
 			} else {
-				this.wizard.changeRowDisplay(this._portTextRow, 'block');
+				this._model.changeRowDisplay(this._portTextRow, 'block');
 			}
 		});
 
@@ -155,11 +156,11 @@ export class SqlServerSettingsPage extends BasePage {
 		}).component();
 
 		this._portTextBox.onTextChanged((value) => {
-			this.wizard.model.port = value;
+			this._model.port = value;
 			this.activateRealTimeFormValidation();
 		});
 
-		this._portTextRow = this.wizard.createFormRowComponent(view, constants.SqlPortLabel, '', this._portTextBox, true);
+		this._portTextRow = this._model.createFormRowComponent(view, constants.SqlPortLabel, '', this._portTextBox, true);
 	}
 
 	private createSqlAuthentication(view: azdata.ModelView) {
@@ -167,11 +168,11 @@ export class SqlServerSettingsPage extends BasePage {
 		this._sqlAuthenticationDropdown = view.modelBuilder.dropDown().withProperties(<azdata.DropDownComponent>{
 			values: [
 				{
-					displayName: localize('deployAzureSQLVM.EnableSqlAuthenticationYesOption', "Yes"),
+					displayName: localizedConstants.yes,
 					name: 'True'
 				},
 				{
-					displayName: localize('deployAzureSQLVM.EnableSqlAuthenticationNoOption', "No"),
+					displayName: localizedConstants.no,
 					name: 'False'
 				}
 			]
@@ -180,39 +181,39 @@ export class SqlServerSettingsPage extends BasePage {
 		this._sqlAuthenticationDropdown.onValueChanged((value) => {
 			let dropdownValue = (this._sqlAuthenticationDropdown.value as azdata.CategoryValue).name;
 			let displayValue: 'block' | 'none' = dropdownValue === 'True' ? 'block' : 'none';
-			this.wizard.changeRowDisplay(this._sqlAuthenticationTextRow, displayValue);
-			this.wizard.changeRowDisplay(this._sqlAuthenticationPasswordTextRow, displayValue);
-			this.wizard.changeRowDisplay(this._sqlAuthenticationPasswordConfirmationTextRow, displayValue);
-			this.wizard.model.enableSqlAuthentication = dropdownValue;
+			this._model.changeRowDisplay(this._sqlAuthenticationTextRow, displayValue);
+			this._model.changeRowDisplay(this._sqlAuthenticationPasswordTextRow, displayValue);
+			this._model.changeRowDisplay(this._sqlAuthenticationPasswordConfirmationTextRow, displayValue);
+			this._model.enableSqlAuthentication = dropdownValue;
 		});
 
-		this.wizard.model.enableSqlAuthentication = (this._sqlAuthenticationDropdown.value as azdata.CategoryValue).name;
+		this._model.enableSqlAuthentication = (this._sqlAuthenticationDropdown.value as azdata.CategoryValue).name;
 
 
 		this._sqlAuthenticationTextbox = view.modelBuilder.inputBox().component();
 
-		this._sqlAuthenticationTextRow = this.wizard.createFormRowComponent(view, constants.SqlAuthenticationUsernameLabel, '', this._sqlAuthenticationTextbox, true);
+		this._sqlAuthenticationTextRow = this._model.createFormRowComponent(view, constants.SqlAuthenticationUsernameLabel, '', this._sqlAuthenticationTextbox, true);
 
 		this._sqlAuthenticationPasswordTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			inputType: 'password'
 		}).component();
 
-		this._sqlAuthenticationPasswordTextRow = this.wizard.createFormRowComponent(view, constants.SqlAuthenticationPasswordLabel, '', this._sqlAuthenticationPasswordTextbox, true);
+		this._sqlAuthenticationPasswordTextRow = this._model.createFormRowComponent(view, constants.SqlAuthenticationPasswordLabel, '', this._sqlAuthenticationPasswordTextbox, true);
 
 		this._sqlAuthenticationPasswordConfirmationTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
 			inputType: 'password'
 		}).component();
 
-		this._sqlAuthenticationPasswordConfirmationTextRow = this.wizard.createFormRowComponent(view, constants.SqlAuthenticationConfirmPasswordLabel, '', this._sqlAuthenticationPasswordConfirmationTextbox, true);
+		this._sqlAuthenticationPasswordConfirmationTextRow = this._model.createFormRowComponent(view, constants.SqlAuthenticationConfirmPasswordLabel, '', this._sqlAuthenticationPasswordConfirmationTextbox, true);
 
 
 		this._sqlAuthenticationTextbox.onTextChanged((value) => {
-			this.wizard.model.sqlAuthenticationUsername = value;
+			this._model.sqlAuthenticationUsername = value;
 			this.activateRealTimeFormValidation();
 		});
 
 		this._sqlAuthenticationPasswordTextbox.onTextChanged((value) => {
-			this.wizard.model.sqlAuthenticationPassword = value;
+			this._model.sqlAuthenticationPassword = value;
 			this.activateRealTimeFormValidation();
 		});
 
@@ -234,7 +235,7 @@ export class SqlServerSettingsPage extends BasePage {
 				errorMessages.push(localize('deployAzureSQLVM.SqlUsernameSpecialCharError', "Username cannot contain special characters \/\"\"[]:|<>+=;,?* ."));
 			}
 
-			errorMessages.push(this.wizard.validatePassword(this._sqlAuthenticationPasswordTextbox.value!));
+			errorMessages.push(this._model.validatePassword(this._sqlAuthenticationPasswordTextbox.value!));
 
 			if (this._sqlAuthenticationPasswordTextbox.value !== this._sqlAuthenticationPasswordConfirmationTextbox.value) {
 				errorMessages.push(localize('deployAzureSQLVM.SqlConfirmPasswordError', "Password and confirm password must match."));
@@ -242,7 +243,7 @@ export class SqlServerSettingsPage extends BasePage {
 		}
 
 
-		this.wizard.showErrorMessage(errorMessages.join(EOL));
+		this._model.wizard.showErrorMessage(errorMessages.join(EOL));
 
 		return errorMessages.join(EOL);
 	}

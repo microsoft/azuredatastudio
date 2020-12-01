@@ -331,7 +331,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService,
 			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
-		}, this.profile, this.logService, this.notificationService, this.adstelemetryService, this.capabilitiesService);
+		}, this.profile, this.logService, this.notificationService, this.adstelemetryService, this.connectionManagementService, this._configurationService, this.capabilitiesService);
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		this._register(model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
 		this._register(model.contentChanged((change) => this.handleContentChanged(change)));
@@ -369,8 +369,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private updateToolbarComponents() {
+		this._trustedAction.enabled = true;
 		if (this.model.trustedMode) {
-			this._trustedAction.enabled = true;
 			this._trustedAction.trusted = true;
 		}
 	}
@@ -429,7 +429,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 			let attachToContainer = document.createElement('li');
 			let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
-				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
+				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this._configurationService);
 			attachToDropdown.render(attachToContainer);
 			attachSelectBoxStyler(attachToDropdown, this.themeService);
 
@@ -493,7 +493,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 			let attachToContainer = document.createElement('div');
 			let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelReady,
-				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
+				this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService, this._configurationService);
 			attachToDropdown.render(attachToContainer);
 			attachSelectBoxStyler(attachToDropdown, this.themeService);
 
@@ -557,7 +557,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private addButton(label: string, onDidClick?: () => void, enabled?: boolean): void {
 		const container = DOM.append(this.bookNav.nativeElement, DOM.$('.dialog-message-button'));
 		let button = new Button(container);
-		button.icon = '';
 		button.label = label;
 		if (onDidClick) {
 			this._register(button.onDidClick(onDidClick));

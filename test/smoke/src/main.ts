@@ -75,6 +75,11 @@ if (screenshotsPath) {
 	mkdirp.sync(screenshotsPath);
 }
 
+const logPath = opts.log ? path.resolve(opts.log) : null;
+if (logPath) {
+	mkdirp.sync(path.dirname(logPath));
+}
+
 function fail(errorMessage): void {
 	console.error(errorMessage);
 	process.exit(1);

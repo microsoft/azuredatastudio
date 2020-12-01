@@ -161,7 +161,7 @@ class Trait<T> implements IDisposable {
 	}
 
 	unrender(container: HTMLElement): void {
-		DOM.removeClass(container, this._trait);
+		container.classList.remove(this._trait);
 	}
 
 	/**

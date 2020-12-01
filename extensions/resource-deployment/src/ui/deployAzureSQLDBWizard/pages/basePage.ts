@@ -3,9 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WizardPageBase } from '../../wizardPageBase';
-import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
+import { ResourceTypePage } from '../../resourceTypePage';
 
-export abstract class BasePage extends WizardPageBase<DeployAzureSQLDBWizard> {
+export abstract class BasePage extends ResourceTypePage {
 	public abstract initialize(): void;
 }

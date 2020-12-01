@@ -65,7 +65,10 @@ describe('Predict Wizard', () => {
 			{
 				name: 'group',
 				id: '3',
-				subscriptionId: 's1'
+				subscription: {
+					id: 's1',
+					name: 's1'
+				}
 			}
 		];
 		let workspaces: Workspace[] = [
@@ -137,50 +140,50 @@ describe('Predict Wizard', () => {
 		};
 
 		view.on(ListModelsEventName, (args) => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListModelsEventName), { inputArgs: args,  data: localModels });
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListModelsEventName), { inputArgs: args, data: localModels });
 		});
 		view.on(ListAccountsEventName, (args) => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAccountsEventName), { inputArgs: args,  data: accounts });
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAccountsEventName), { inputArgs: args, data: accounts });
 		});
 		view.on(ListSubscriptionsEventName, (args) => {
 
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListSubscriptionsEventName), { inputArgs: args,  data: subscriptions });
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListSubscriptionsEventName), { inputArgs: args, data: subscriptions });
 		});
 		view.on(ListGroupsEventName, (args) => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListGroupsEventName), { inputArgs: args,  data: groups });
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListGroupsEventName), { inputArgs: args, data: groups });
 		});
 		view.on(ListWorkspacesEventName, (args) => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListWorkspacesEventName), { inputArgs: args,  data: workspaces });
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListWorkspacesEventName), { inputArgs: args, data: workspaces });
 		});
 		view.on(ListAzureModelsEventName, (args) => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { inputArgs: args,  data: models });
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListAzureModelsEventName), { inputArgs: args, data: models });
 		});
 		view.on(ListDatabaseNamesEventName, (args) => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListDatabaseNamesEventName), { inputArgs: args,  data: dbNames });
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListDatabaseNamesEventName), { inputArgs: args, data: dbNames });
 		});
 		view.on(ListTableNamesEventName, (args) => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListTableNamesEventName), { inputArgs: args,  data: tableNames });
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListTableNamesEventName), { inputArgs: args, data: tableNames });
 		});
 		view.on(ListColumnNamesEventName, (args) => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListColumnNamesEventName), { inputArgs: args,  data: columnNames });
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(ListColumnNamesEventName), { inputArgs: args, data: columnNames });
 		});
 		view.on(LoadModelParametersEventName, (args) => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(LoadModelParametersEventName), { inputArgs: args,  data: modelParameters });
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(LoadModelParametersEventName), { inputArgs: args, data: modelParameters });
 		});
 		view.on(DownloadAzureModelEventName, (args) => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(DownloadAzureModelEventName), { inputArgs: args,  data: 'path' });
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(DownloadAzureModelEventName), { inputArgs: args, data: 'path' });
 		});
 		view.on(DownloadRegisteredModelEventName, (args) => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(DownloadRegisteredModelEventName), { inputArgs: args,  data: 'path' });
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(DownloadRegisteredModelEventName), { inputArgs: args, data: 'path' });
 		});
 		view.on(VerifyImportTableEventName, (args) => {
-			view.sendCallbackRequest(ViewBase.getCallbackEventName(VerifyImportTableEventName), { inputArgs: args,  data: view.importTable });
+			view.sendCallbackRequest(ViewBase.getCallbackEventName(VerifyImportTableEventName), { inputArgs: args, data: view.importTable });
 		});
 		if (view.modelBrowsePage) {
 			view.modelBrowsePage.modelSourceType = ModelSourceType.Azure;
 		}
 		await view.refresh();
-		should.notEqual(view.azureModelsComponent?.data, undefined);
+		should.notEqual(view.azureModelsComponent?.data, undefined, 'Data from Azure component should not be null');
 
 		if (view.modelBrowsePage) {
 			view.modelBrowsePage.modelSourceType = ModelSourceType.RegisteredModels;
@@ -188,19 +191,21 @@ describe('Predict Wizard', () => {
 		await view.refresh();
 		testContext.onClick.fire(undefined);
 
-		should.equal(view.modelSourcePage?.data, ModelSourceType.RegisteredModels);
-		should.notEqual(view.localModelsComponent?.data, undefined);
-		should.notEqual(view.modelBrowsePage?.registeredModelsComponent?.data, undefined);
+
+		should.equal(view.modelSourcePage?.data, ModelSourceType.RegisteredModels, 'Model source should be registered models');
+		should.notEqual(view.localModelsComponent?.data, undefined, 'Data from local model component should not be null');
+		should.notEqual(view.modelBrowsePage?.registeredModelsComponent?.data, undefined, 'Data from registered model component should not be null');
 		if (view.modelBrowsePage?.registeredModelsComponent?.data) {
-			should.equal(view.modelBrowsePage.registeredModelsComponent.data.length, 1);
+			should.equal(view.modelBrowsePage.registeredModelsComponent.data.length, 1, 'Data from registered model component should not be empty');
 		}
 
 
-		should.notEqual(await view.getModelFileName(), undefined);
+		should.notEqual(await view.getModelFileName(), undefined, 'Model file name should not be null');
 		await view.columnsSelectionPage?.onEnter();
+		await view.columnsSelectionPage?.inputColumnsComponent?.loadWithTable(tableNames[0]);
 
-		should.notEqual(view.columnsSelectionPage?.data, undefined);
-		should.equal(view.columnsSelectionPage?.data?.inputColumns?.length, modelParameters.inputs.length, modelParameters.inputs[0].name);
-		should.equal(view.columnsSelectionPage?.data?.outputColumns?.length, modelParameters.outputs.length);
+		should.notEqual(view.columnsSelectionPage?.data, undefined, 'Data from column selection component should not be null');
+		should.equal(view.columnsSelectionPage?.data?.inputColumns?.length, modelParameters.inputs.length, `unexpected number of inputs. ${view.columnsSelectionPage?.data?.inputColumns?.length}`);
+		should.equal(view.columnsSelectionPage?.data?.outputColumns?.length, modelParameters.outputs.length, `unexpected number of outputs. ${view.columnsSelectionPage?.data?.outputColumns?.length}`);
 	});
 });

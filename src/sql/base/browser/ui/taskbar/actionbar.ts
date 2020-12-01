@@ -62,7 +62,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		this._domNode.className = 'monaco-action-bar';
 
 		if (options.animated !== false) {
-			DOM.addClass(this._domNode, 'animated');
+			this._domNode.classList.add('animated');
 		}
 
 		let isVertical = this._options.orientation === ActionsOrientation.VERTICAL;

@@ -108,3 +108,16 @@ code-component .hide-component-button {
 	background-position: center;
 	background-color: transparent;
 }
+
+code-component .parameter {
+	bottom: 0;
+	margin-right: 15px;
+	position: absolute;
+	right: 0;
+}
+
+code-component .parameter span {
+	display: inline-block;
+	padding: 3px 7px;
+	text-align: center;
+}

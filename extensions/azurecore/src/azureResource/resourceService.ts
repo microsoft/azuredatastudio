@@ -54,7 +54,7 @@ export class AzureResourceService {
 		});
 	}
 
-	public async getChildren(resourceProviderId: string, element: azureResource.IAzureResourceNode): Promise<IAzureResourceNodeWithProviderId[]> {
+	public async getChildren(resourceProviderId: string, element: azureResource.IAzureResourceNode, browseConnectionMode: boolean = false): Promise<IAzureResourceNodeWithProviderId[]> {
 		await this.ensureResourceProvidersRegistered();
 
 		if (!(resourceProviderId in this._resourceProviders)) {
@@ -62,6 +62,7 @@ export class AzureResourceService {
 		}
 
 		const treeDataProvider = this._treeDataProviders[resourceProviderId];
+		treeDataProvider.browseConnectionMode = browseConnectionMode;
 		const children = await treeDataProvider.getChildren(element);
 
 		return children.map((child) => <IAzureResourceNodeWithProviderId>{

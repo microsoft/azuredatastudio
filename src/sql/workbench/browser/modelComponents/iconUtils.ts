@@ -52,3 +52,7 @@ function getIconUri(iconPath: string | URI): URI {
 		return URI.revive(iconPath);
 	}
 }
+
+export function getIconKey(iconPath: IUserFriendlyIcon): string {
+	return getLightIconUri(iconPath).toString(true) + getDarkIconUri(iconPath)?.toString(true);
+}

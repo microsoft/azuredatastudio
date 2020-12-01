@@ -82,7 +82,8 @@ export class JupyterKernel implements nb.IKernel {
 		let specImpl = await this.kernelImpl.getSpec();
 		return {
 			name: specImpl.name,
-			display_name: specImpl.display_name
+			display_name: specImpl.display_name,
+			language: specImpl.language
 		};
 	}
 

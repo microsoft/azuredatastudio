@@ -77,7 +77,10 @@ const defaultVal = [
 	{
 		name: 'Tasks',
 		widget: {
-			'tasks-widget': ['newQuery', 'mssqlCluster.task.newNotebook', { name: 'restore', when: 'connectionProvider == \'MSSQL\' && !mssql:iscloud && mssql:engineedition != 11' }]
+			'tasks-widget': [
+				'newQuery',
+				'mssqlCluster.task.newNotebook',
+				{ name: 'restore', when: 'connectionProvider == \'MSSQL\' && !mssql:iscloud && mssql:engineedition != 11 || connectionProvider == \'PGSQL\'' }]
 		},
 		gridItemConfig: {
 			sizex: 1,

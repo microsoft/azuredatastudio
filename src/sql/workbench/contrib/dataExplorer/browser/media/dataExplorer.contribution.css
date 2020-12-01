@@ -9,7 +9,12 @@
 	background-color: rgba(255, 255, 255, 0.4);
 }
 
-/* Activity Bar */
+/* Checked */
 .monaco-workbench .activitybar .monaco-action-bar .checked .action-label.dataExplorer {
 	background-color: rgb(255, 255, 255); /* this is a patch, will need to find a better long term fix*/
+}
+
+/* Hovered */
+.monaco-workbench .activitybar .monaco-action-bar .action-label.dataExplorer:hover {
+	background-color: rgb(255, 255, 255);
 }

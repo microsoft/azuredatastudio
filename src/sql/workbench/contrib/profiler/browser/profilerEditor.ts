@@ -301,16 +301,16 @@ export class ProfilerEditor extends EditorPane {
 		profilerTableContainer.style.position = 'relative';
 		let theme = this.themeService.getColorTheme();
 		if (theme.type === ColorScheme.DARK) {
-			DOM.addClass(profilerTableContainer, VS_DARK_THEME);
+			profilerTableContainer.classList.add(VS_DARK_THEME);
 		} else if (theme.type === ColorScheme.HIGH_CONTRAST) {
-			DOM.addClass(profilerTableContainer, VS_HC_THEME);
+			profilerTableContainer.classList.add(VS_HC_THEME);
 		}
 		this.themeService.onDidColorThemeChange(e => {
 			DOM.removeClasses(profilerTableContainer, VS_DARK_THEME, VS_HC_THEME);
 			if (e.type === ColorScheme.DARK) {
-				DOM.addClass(profilerTableContainer, VS_DARK_THEME);
+				profilerTableContainer.classList.add(VS_DARK_THEME);
 			} else if (e.type === ColorScheme.HIGH_CONTRAST) {
-				DOM.addClass(profilerTableContainer, VS_HC_THEME);
+				profilerTableContainer.classList.add(VS_HC_THEME);
 			}
 		});
 		this._profilerTableEditor = this._instantiationService.createInstance(ProfilerTableEditor);

@@ -8,6 +8,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { coalesce } from 'vs/base/common/arrays';
+import { ILogService } from 'vs/platform/log/common/log';
 
 /**
  * View model for account dialog
@@ -23,7 +24,7 @@ export class AccountViewModel {
 	private _updateAccountListEmitter: Emitter<UpdateAccountListEventParams>;
 	public get updateAccountListEvent(): Event<UpdateAccountListEventParams> { return this._updateAccountListEmitter.event; }
 
-	constructor(@IAccountManagementService private _accountManagementService: IAccountManagementService) {
+	constructor(@IAccountManagementService private _accountManagementService: IAccountManagementService, @ILogService private _logService: ILogService) {
 		// Create our event emitters
 		this._addProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
 		this._removeProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
@@ -41,24 +42,29 @@ export class AccountViewModel {
 	 * and fires an event after each provider/accounts has been loaded.
 	 *
 	 */
-	public initialize(): Promise<AccountProviderAddedEventParams[]> {
+	public async initialize(): Promise<AccountProviderAddedEventParams[]> {
 		// Load a baseline of the account provider metadata and accounts
 		// 1) Get all the providers from the account management service
 		// 2) For each provider, get the accounts
 		// 3) Build parameters to add a provider and return it
-		return this._accountManagementService.getAccountProviderMetadata()
-			.then(providers => {
-				const promises = providers.map(provider => {
-					return this._accountManagementService.getAccountsForProvider(provider.id)
-						.then(accounts => <AccountProviderAddedEventParams>{
-							addedProvider: provider,
-							initialAccounts: accounts
-						}, () => undefined);
-				});
-				return Promise.all(promises).then(accounts => coalesce(accounts));
-			}, () => {
-				/* Swallow failures and just pretend we don't have any providers */
-				return [];
-			});
+		try {
+			const metadata = await this._accountManagementService.getAccountProviderMetadata();
+			const accounts = await Promise.all(metadata.map(async providerMetadata => {
+				try {
+					const accounts = await this._accountManagementService.getAccountsForProvider(providerMetadata.id);
+					return <AccountProviderAddedEventParams>{
+						addedProvider: providerMetadata,
+						initialAccounts: accounts
+					};
+				} catch (err) {
+					this._logService.warn(`Error getting accounts for provider ${providerMetadata.id} : ${err}`);
+					return undefined;
+				}
+			}));
+			return coalesce(accounts);
+		} catch (err) {
+			this._logService.warn(`Error getting account provider metadata : ${err}`);
+			return [];
+		}
 	}
 }

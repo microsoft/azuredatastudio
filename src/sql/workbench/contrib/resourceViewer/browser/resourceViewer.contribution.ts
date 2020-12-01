@@ -12,9 +12,17 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { isString } from 'vs/base/common/types';
-import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
+import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { ResourceViewResourcesExtensionHandler } from 'sql/workbench/contrib/resourceViewer/common/resourceViewerViewExtensionPoint';
+import { ResourceViewerView } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerView';
+import { ResourceViewerViewlet } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerViewlet';
+import { RESOURCE_VIEWER_VIEW_CONTAINER_ID, RESOURCE_VIEWER_VIEW_ID } from 'sql/workbench/contrib/resourceViewer/common/resourceViewer';
+import { Codicon } from 'vs/base/common/codicons';
+import { localize } from 'vs/nls';
+import { Extensions as ViewContainerExtensions, IViewsRegistry, IViewContainersRegistry, ViewContainerLocation } from 'vs/workbench/common/views';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 CommandsRegistry.registerCommand({
 	id: 'resourceViewer.openResourceViewer',
@@ -41,39 +49,29 @@ Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(ResourceViewResourcesExtensionHandler, LifecyclePhase.Ready);
 
-// TODO: chgagnon disabling until the resource viewer is feature complete
-// class ResourceViewerContributor implements IWorkbenchContribution {
-// 	constructor(
-// 		@IExtensionService private readonly extensionService: IExtensionService
-// 	) {
-// 		this.checkForArc();
-// 	}
+class ResourceViewerContributor implements IWorkbenchContribution {
+	constructor(
+		@IConfigurationService readonly configurationService: IConfigurationService,
+		@IProductService readonly productService: IProductService
+	) {
+		// Only show for insiders and dev
+		if (['insiders', ''].includes(productService.quality ?? '') && configurationService.getValue('workbench.enablePreviewFeatures')) {
+			registerResourceViewerContainer();
+		}
+	}
+}
 
-// 	private async checkForArc(): Promise<void> {
-// 		if (await this.extensionService.getExtension('Microsoft.arc')) {
-// 			registerResourceViewerContainer();
-// 		} else {
-// 			const disposable = this.extensionService.onDidChangeExtensions(async () => {
-// 				if (await this.extensionService.getExtension('Microsoft.arc')) {
-// 					registerResourceViewerContainer();
-// 					disposable.dispose();
-// 				}
-// 			});
-// 		}
-// 	}
-// }
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(ResourceViewerContributor, LifecyclePhase.Ready);
 
-// Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(ResourceViewerContributor, LifecyclePhase.Ready);
+function registerResourceViewerContainer() {
+	const viewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
+		id: RESOURCE_VIEWER_VIEW_CONTAINER_ID,
+		name: localize('resourceViewer', "Resource Viewer"),
+		ctorDescriptor: new SyncDescriptor(ResourceViewerViewlet),
+		icon: Codicon.database.classNames,
+		alwaysUseContainerInfo: true
+	}, ViewContainerLocation.Sidebar);
 
-// function registerResourceViewerContainer() {
-// 	const viewContainer = Registry.as<IViewContainersRegistry>(ViewExtensions.ViewContainersRegistry).registerViewContainer({
-// 		id: RESOURCE_VIEWER_VIEW_CONTAINER_ID,
-// 		name: localize('resourceViewer', "Resource Viewer"),
-// 		ctorDescriptor: new SyncDescriptor(ResourceViewerViewlet),
-// 		icon: Codicon.database.classNames,
-// 		alwaysUseContainerInfo: true
-// 	}, ViewContainerLocation.Sidebar);
-
-// 	const viewsRegistry = Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry);
-// 	viewsRegistry.registerViews([{ id: RESOURCE_VIEWER_VIEW_ID, name: localize('resourceViewer', "Resource Viewer"), containerIcon: Codicon.database.classNames, ctorDescriptor: new SyncDescriptor(ResourceViewerView), canToggleVisibility: false, canMoveView: false }], viewContainer);
-// }
+	const viewsRegistry = Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry);
+	viewsRegistry.registerViews([{ id: RESOURCE_VIEWER_VIEW_ID, name: localize('resourceViewer', "Resource Viewer"), containerIcon: Codicon.database.classNames, ctorDescriptor: new SyncDescriptor(ResourceViewerView), canToggleVisibility: false, canMoveView: false }], viewContainer);
+}

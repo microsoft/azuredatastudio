@@ -221,7 +221,7 @@ export class ListBox extends SelectBox {
 					let spanElement: HTMLElement = (this.message.formatContent
 						? renderFormattedText(this.message.content, renderOptions)
 						: renderText(this.message.content, renderOptions)) as any;
-					dom.addClass(spanElement, this.classForType(this.message.type));
+					spanElement.classList.add(this.classForType(this.message.type));
 
 					const styles = this.stylesForType(this.message.type);
 					spanElement.style.backgroundColor = styles.background ? styles.background.toString() : '';

@@ -67,11 +67,11 @@ export class QueryHistoryRenderer implements IRenderer {
 		if (element && element.info) {
 			templateData.icon.className = 'query-history-icon';
 			if (element.info.status === QueryStatus.Succeeded) {
-				dom.addClass(templateData.icon, QueryHistoryRenderer.SUCCESS_CLASS);
+				templateData.icon.classList.add(QueryHistoryRenderer.SUCCESS_CLASS);
 				taskStatus = localize('succeeded', "succeeded");
 			}
 			else if (element.info.status === QueryStatus.Failed) {
-				dom.addClass(templateData.icon, QueryHistoryRenderer.FAIL_CLASS);
+				templateData.icon.classList.add(QueryHistoryRenderer.FAIL_CLASS);
 				taskStatus = localize('failed', "failed");
 			}
 

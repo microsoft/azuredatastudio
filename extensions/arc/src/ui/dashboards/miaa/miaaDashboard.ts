@@ -10,6 +10,7 @@ import { ControllerModel } from '../../../models/controllerModel';
 import * as loc from '../../../localizedConstants';
 import { MiaaConnectionStringsPage } from './miaaConnectionStringsPage';
 import { MiaaModel } from '../../../models/miaaModel';
+import { MiaaComputeAndStoragePage } from './miaaComputeAndStoragePage';
 
 export class MiaaDashboard extends Dashboard {
 
@@ -27,12 +28,14 @@ export class MiaaDashboard extends Dashboard {
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
 		const overviewPage = new MiaaDashboardOverviewPage(modelView, this._controllerModel, this._miaaModel);
 		const connectionStringsPage = new MiaaConnectionStringsPage(modelView, this._controllerModel, this._miaaModel);
+		const computeAndStoragePage = new MiaaComputeAndStoragePage(modelView, this._miaaModel);
 		return [
 			overviewPage.tab,
 			{
 				title: loc.settings,
 				tabs: [
-					connectionStringsPage.tab
+					connectionStringsPage.tab,
+					computeAndStoragePage.tab
 				]
 			},
 		];

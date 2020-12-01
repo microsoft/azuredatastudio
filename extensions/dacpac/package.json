@@ -24,6 +24,17 @@
     "Microsoft.mssql"
   ],
   "contributes": {
+    "configuration": [
+      {
+        "title": "%dacFx.settings%",
+        "properties": {
+          "dacFx.defaultSaveLocation": {
+            "type": "string",
+            "description": "%dacFx.defaultSaveLocation%"
+          }
+        }
+      }
+    ],
     "commands": [
       {
         "command": "dacFx.start",
@@ -64,6 +75,12 @@
           "command": "dacFx.start",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Folder && nodeLabel == 'Databases' && mssql:engineedition != 11",
           "group": "export"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "dacFx.start",
+          "when": "mssql:engineedition != 11"
         }
       ]
     }

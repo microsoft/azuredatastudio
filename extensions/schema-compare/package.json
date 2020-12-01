@@ -2,7 +2,7 @@
   "name": "schema-compare",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
@@ -71,6 +71,12 @@
           "command": "schemaCompare.start",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Server && mssql:engineedition != 11",
           "group": "export"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "schemaCompare.start",
+          "when": "mssql:engineedition != 11"
         }
       ]
     }

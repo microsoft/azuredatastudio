@@ -42,7 +42,10 @@ const groups: azureResource.AzureResourceResourceGroup[] = [
 	{
 		name: 'group',
 		id: '3',
-		subscriptionId: 's1'
+		subscription: {
+			id: 's1',
+			name: 's1'
+		}
 	}
 ];
 const workspaces: Workspace[] = [

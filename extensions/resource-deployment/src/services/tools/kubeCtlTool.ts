@@ -67,10 +67,12 @@ export class KubeCtlTool extends ToolBase {
 	}
 
 	public async getStorageClasses(): Promise<{ storageClasses: string[], defaultStorageClass: string }> {
-		const storageClasses: KubeStorageClass[] = JSON.parse(await this.platformService.runCommand('kubectl get sc -o json')).items;
+		// Ignore any values without metadata - that should never happen but if it doesn't we don't have anything useful to do with it anyways
+		const storageClasses = (JSON.parse(await this.platformService.runCommand('kubectl get sc -o json')).items as KubeStorageClass[])
+			.filter(sc => sc.metadata);
 		return {
 			storageClasses: storageClasses.map(sc => sc.metadata.name),
-			defaultStorageClass: storageClasses.find(sc => sc.metadata.annotations['storageclass.kubernetes.io/is-default-class'] === 'true')?.metadata.name ?? ''
+			defaultStorageClass: storageClasses.find(sc => sc.metadata.annotations?.['storageclass.kubernetes.io/is-default-class'] === 'true')?.metadata.name ?? ''
 		};
 	}
 

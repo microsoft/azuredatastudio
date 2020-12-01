@@ -13,5 +13,8 @@
 			</div>
 		</div>
 		<collapse-component *ngIf="cellModel.cellType === 'code' && cellModel.source && cellModel.source.length > 1" [cellModel]="cellModel" [activeCellId]="activeCellId"></collapse-component>
+		<div #parameter class="parameter" *ngIf="cellModel.cellType === 'code' && cellModel.isParameter">
+			<span>{{parametersText}}</span>
+		</div>
 	</div>
 </div>

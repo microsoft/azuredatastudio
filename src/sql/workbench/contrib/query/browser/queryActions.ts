@@ -607,8 +607,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 			this._dropdown = new Dropdown(this._databaseListDropdown, contextViewProvider, {
 				strictSelection: true,
 				placeholder: this._selectDatabaseString,
-				ariaLabel: this._selectDatabaseString,
-				actionLabel: nls.localize('listDatabases.toggleDatabaseNameDropdown', "Select Database Toggle Dropdown")
+				ariaLabel: this._selectDatabaseString
 			});
 			this._register(this._dropdown.onValueChange(s => this.databaseSelected(s)));
 			this._register(this._dropdown.onFocus(() => this.onDropdownFocus()));

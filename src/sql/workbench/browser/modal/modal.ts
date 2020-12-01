@@ -297,7 +297,7 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	private updateExpandMessageState() {
 		this._messageSummary!.style.cursor = this.shouldShowExpandMessageButton ? 'pointer' : 'default';
-		DOM.removeClass(this._messageSummary!, MESSAGE_EXPANDED_MODE_CLASS);
+		this._messageSummary!.classList.remove(MESSAGE_EXPANDED_MODE_CLASS);
 		if (this.shouldShowExpandMessageButton) {
 			DOM.append(this._detailsButtonContainer!, this._toggleMessageDetailButton!.element);
 		} else {

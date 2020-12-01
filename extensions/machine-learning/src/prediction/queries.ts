@@ -5,10 +5,11 @@
 
 import * as utils from '../common/utils';
 import { PredictColumn, DatabaseTable } from './interfaces';
+import * as constants from '../common/constants';
 
 export function getTableColumnsScript(databaseTable: DatabaseTable): string {
 	return `
-SELECT COLUMN_NAME,DATA_TYPE
+SELECT COLUMN_NAME,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH
 FROM INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_NAME='${utils.doubleEscapeSingleQuotes(databaseTable.tableName)}'
 AND TABLE_SCHEMA='${utils.doubleEscapeSingleQuotes(databaseTable.schema)}'
@@ -57,13 +58,13 @@ export function getPredictScriptWithModelBytes(
 	modelBytes: string,
 	columns: PredictColumn[],
 	outputColumns: PredictColumn[],
-	databaseNameTable: DatabaseTable): string {
+	sourceTable: DatabaseTable): string {
 	return `
 WITH predict_input
 AS (
 	SELECT TOP 1000
 	${getInputColumnNames(columns, 'pi')}
-FROM [${utils.doubleEscapeSingleBrackets(databaseNameTable.databaseName)}].[${databaseNameTable.schema}].[${utils.doubleEscapeSingleBrackets(databaseNameTable.tableName)}] AS pi
+FROM [${utils.doubleEscapeSingleBrackets(sourceTable.databaseName)}].[${sourceTable.schema}].[${utils.doubleEscapeSingleBrackets(sourceTable.tableName)}] AS pi
 )
 SELECT
 ${getPredictColumnNames(columns, 'predict_input')},
@@ -78,11 +79,14 @@ ${getOutputParameters(outputColumns)}
 export function getEscapedColumnName(tableName: string, columnName: string): string {
 	return `[${utils.doubleEscapeSingleBrackets(tableName)}].[${utils.doubleEscapeSingleBrackets(columnName)}]`;
 }
+
 export function getInputColumnNames(columns: PredictColumn[], tableName: string) {
 
 	return columns.map(c => {
 		const column = getEscapedColumnName(tableName, c.columnName);
-		let columnName = c.dataType !== c.paramType ? `CAST(${column} AS ${c.paramType})`
+		const maxLength = c.maxLength !== undefined ? c.maxLength : constants.varcharDefaultLength;
+		let paramType = c.paramType === constants.varcharMax ? `VARCHAR(${maxLength})` : c.paramType;
+		let columnName = c.dataType !== c.paramType ? `CAST(${column} AS ${paramType})`
 			: `${column}`;
 		return `${columnName} AS ${c.paramName}`;
 	}).join(',\n	');

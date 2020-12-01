@@ -8,6 +8,7 @@ import * as os from 'os';
 import * as constants from './constants';
 import * as path from 'path';
 import * as glob from 'fast-glob';
+import * as dataworkspace from 'dataworkspace';
 import * as mssql from '../../../mssql';
 import { promises as fs } from 'fs';
 
@@ -217,7 +218,7 @@ export function isValidSqlCmdVariableName(name: string | undefined): boolean {
 	return true;
 }
 
-/*
+/**
  * Recursively gets all the sqlproj files at any depth in a folder
  * @param folderPath
  */
@@ -231,6 +232,19 @@ export async function getSqlProjectFilesInFolder(folderPath: string): Promise<st
 }
 
 /**
+ * Get all the projects in the workspace that are sqlproj
+ */
+export function getSqlProjectsInWorkspace(): vscode.Uri[] {
+	const api = getDataWorkspaceExtensionApi();
+	return api.getProjectsInWorkspace().filter((p: vscode.Uri) => path.extname(p.fsPath) === constants.sqlprojExtension);
+}
+
+export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
+	const extension = vscode.extensions.getExtension(dataworkspace.extension.name)!;
+	return extension.exports;
+}
+
+/*
  * Returns the default deployment options from DacFx
  */
 export async function GetDefaultDeploymentOptions(): Promise<mssql.DeploymentOptions> {

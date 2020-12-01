@@ -47,8 +47,8 @@ export class ConnectionController implements IConnectionComponentController {
 			onCreateNewServerGroup: () => this.onCreateNewServerGroup(),
 			onAdvancedProperties: () => this.handleOnAdvancedProperties(),
 			onSetAzureTimeOut: () => this.handleonSetAzureTimeOut(),
-			onFetchDatabases: (serverName: string, authenticationType: string, userName?: string, password?: string) => this.onFetchDatabases(
-				serverName, authenticationType, userName, password).then(result => {
+			onFetchDatabases: (serverName: string, authenticationType: string, userName?: string, password?: string, azureAccount?: string) => this.onFetchDatabases(
+				serverName, authenticationType, userName, password, azureAccount).then(result => {
 					return result;
 				}),
 			onAzureTenantSelection: (azureTenantId?: string) => this.onAzureTenantSelection(azureTenantId),
@@ -56,7 +56,7 @@ export class ConnectionController implements IConnectionComponentController {
 		this._providerName = providerName;
 	}
 
-	protected async onFetchDatabases(serverName: string, authenticationType: string, userName?: string, password?: string): Promise<string[]> {
+	protected async onFetchDatabases(serverName: string, authenticationType: string, userName?: string, password?: string, azureAccount?: string): Promise<string[]> {
 		let tempProfile = this._model;
 		tempProfile.serverName = serverName;
 		tempProfile.authenticationType = authenticationType;
@@ -64,6 +64,7 @@ export class ConnectionController implements IConnectionComponentController {
 		tempProfile.password = password;
 		tempProfile.groupFullName = '';
 		tempProfile.saveProfile = false;
+		tempProfile.azureAccount = azureAccount;
 		let uri = this._connectionManagementService.getConnectionUri(tempProfile);
 		if (this._databaseCache.has(uri)) {
 			let cachedDatabases: string[] = this._databaseCache.get(uri);

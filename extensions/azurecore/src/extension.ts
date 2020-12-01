@@ -43,8 +43,8 @@ import * as loc from './localizedConstants';
 import * as constants from './constants';
 import { AzureResourceGroupService } from './azureResource/providers/resourceGroup/resourceGroupService';
 import { Logger } from './utils/Logger';
-import { TokenCredentials } from '@azure/ms-rest-js';
-import { FlatAzureResourceTreeProvider } from './azureResource/tree/flatTreeProvider';
+import { ConnectionDialogTreeProvider } from './azureResource/tree/connectionDialogTreeProvider';
+import { AzureDataGridProvider } from './azureDataGridProvider';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -85,66 +85,23 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
-	const flatAzureResourceTree = new FlatAzureResourceTreeProvider(appContext);
-	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', flatAzureResourceTree));
+	const connectionDialogTree = new ConnectionDialogTreeProvider(appContext);
+	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
-	registerAzureResourceCommands(appContext, azureResourceTree);
-
-	const typesClause = [
-		azureResource.AzureResourceType.sqlDatabase,
-		azureResource.AzureResourceType.sqlServer,
-		azureResource.AzureResourceType.sqlManagedInstance,
-		azureResource.AzureResourceType.postgresServer,
-		azureResource.AzureResourceType.azureArcService,
-		azureResource.AzureResourceType.azureArcSqlManagedInstance,
-		azureResource.AzureResourceType.azureArcPostgresServer
-	].map(type => `type == "${type}"`).join(' or ');
-	azdata.dataprotocol.registerDataGridProvider({
-		providerId: constants.dataGridProviderId,
-		getDataGridItems: async () => {
-			const accounts = await azdata.accounts.getAllAccounts();
-			const items: any[] = [];
-			await Promise.all(accounts.map(async (account) => {
-				await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {
-					try {
-						const tokenResponse = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
-						const token = tokenResponse.token;
-						const tokenType = tokenResponse.tokenType;
-						const credential = new TokenCredentials(token, tokenType);
-						const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
-						const subscriptions = await subscriptionService.getSubscriptions(account, credential, tenant.id);
-						try {
-							const newItems = (await azureResourceUtils.runResourceQuery(account, subscriptions, true, `where ${typesClause}`)).resources
-								.map(item => {
-									return {
-										...item,
-										subscriptionName: subscriptions.find(subscription => subscription.id === item.subscriptionId)?.name ?? item.subscriptionId,
-										locationDisplayName: utils.getRegionDisplayName(item.location),
-										typeDisplayName: utils.getResourceTypeDisplayName(item.type),
-										iconPath: utils.getResourceTypeIcon(appContext, item.type)
-									};
-								});
-							items.push(...newItems);
-						} catch (err) {
-							console.log(err);
-						}
-					} catch (err) {
-						console.log(err);
-					}
-				}));
-			}));
-			return items;
-		},
-		getDataGridColumns: async () => {
-			return [
-				{ id: 'icon', type: 'image', field: 'iconPath', name: '', width: 25, sortable: false, filterable: false, resizable: false, tooltip: loc.typeIcon },
-				{ id: 'name', type: 'text', field: 'name', name: loc.name, width: 150 },
-				{ id: 'type', type: 'text', field: 'typeDisplayName', name: loc.resourceType, width: 150 },
-				{ id: 'type', type: 'text', field: 'resourceGroup', name: loc.resourceGroup, width: 150 },
-				{ id: 'location', type: 'text', field: 'locationDisplayName', name: loc.location, width: 150 },
-				{ id: 'subscriptionId', type: 'text', field: 'subscriptionName', name: loc.subscription, width: 150 }
-			];
+	registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree);
+	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
+	vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
+		const portalEndpoint = item.portalEndpoint;
+		const subscriptionId = item.subscriptionId;
+		const resourceGroup = item.resourceGroup;
+		const type = item.type;
+		const name = item.name;
+		if (portalEndpoint && subscriptionId && resourceGroup && type && name) {
+			await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
+		} else {
+			console.log(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
+			vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
 		}
 	});
 

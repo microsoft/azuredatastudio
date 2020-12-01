@@ -973,6 +973,13 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('placeHolder', v);
 	}
 
+	public get title(): string {
+		return this.properties['title'];
+	}
+	public set title(v: string) {
+		this.setProperty('title', v);
+	}
+
 	public get rows(): number {
 		return this.properties['rows'];
 	}
@@ -1020,6 +1027,13 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 	}
 	public set stopEnterPropagation(v: boolean) {
 		this.setProperty('stopEnterPropagation', v);
+	}
+
+	public get validationErrorMessage(): string {
+		return this.properties['validationErrorMessage'];
+	}
+	public set validationErrorMessage(v: string) {
+		this.setProperty('validationErrorMessage', v);
 	}
 
 	public get onTextChanged(): vscode.Event<any> {
@@ -1312,6 +1326,13 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	public set title(title: string) {
 		this.setProperty('title', title);
 	}
+
+	public get requiredIndicator(): boolean {
+		return this.properties['requiredIndicator'];
+	}
+	public set requiredIndicator(requiredIndicator: boolean) {
+		this.setProperty('requiredIndicator', requiredIndicator);
+	}
 }
 
 class ImageComponentWrapper extends ComponentWithIconWrapper implements azdata.ImageComponentProperties {
@@ -1413,7 +1434,9 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		return emitter && emitter.event;
 	}
 
-
+	public appendData(v: any[][]): void {
+		this.doAction(ModelViewAction.AppendData, v);
+	}
 }
 
 class DropDownWrapper extends ComponentWrapper implements azdata.DropDownComponent {
@@ -1554,7 +1577,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		// data property though since the caller would still expect that to contain
 		// the Component objects they created
 		const properties = assign({}, this.properties);
-		if (properties.data) {
+		if (properties.data?.length > 0) {
 			properties.data = properties.data.map((row: any[]) => row.map(cell => {
 				if (cell instanceof ComponentWrapper) {
 					// First ensure that we register the component using addItem
@@ -1566,6 +1589,20 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 				}
 				return cell;
 			}));
+		} else {
+			if (properties.dataValues) {
+				properties.dataValues = properties.dataValues.map((row: azdata.DeclarativeTableCellValue[]) => row.map(cell => {
+					if (cell.value instanceof ComponentWrapper) {
+						// First ensure that we register the component using addItem
+						// such that it gets added to the ModelStore. We don't want to
+						// make the table component an actual container since that exposes
+						// a lot of functionality we don't need.
+						this.addItem(cell.value);
+						return { value: cell.value.id, ariaLabel: cell.ariaLabel, style: cell.style };
+					}
+					return cell;
+				}));
+			}
 		}
 		return properties;
 	}

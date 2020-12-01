@@ -206,7 +206,7 @@ export default class AccountStore implements IAccountStore {
 		if (!accounts) {
 			accounts = [];
 		}
-
+		this.logService.debug(`Read accounts from memento ${JSON.stringify(accounts)}`);
 		// Make a deep copy of the account list to ensure that the memento list isn't obliterated
 		accounts = deepClone(accounts);
 

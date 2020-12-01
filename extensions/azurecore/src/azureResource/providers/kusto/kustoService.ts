@@ -29,8 +29,12 @@ export class KustoResourceService extends ResourceServiceBase<KustoGraphData, az
 			fullName: resource.properties.uri.replace('https://', ''),
 			loginName: '',
 			defaultDatabaseName: '',
-			subscriptionId: resource.subscriptionId,
-			tenant: resource.tenantId
+			subscription: {
+				id: resource.subscriptionId,
+				name: resource.subscriptionName
+			},
+			tenant: resource.tenantId,
+			resourceGroup: resource.resourceGroup
 		};
 	}
 }

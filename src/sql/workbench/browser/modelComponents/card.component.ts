@@ -19,6 +19,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export interface ActionDescriptor {
 	label: string;
@@ -66,13 +67,13 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 	@ViewChild('cardDiv', { read: ElementRef }) private cardDiv: ElementRef;
 	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 	}
 
-	ngOnInit(): void {
-		this.baseInit();
+	ngAfterViewInit(): void {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.onkeydown(this._el.nativeElement, (e: StandardKeyboardEvent) => {
@@ -81,7 +82,7 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 				DOM.EventHelper.stop(e, true);
 			}
 		});
-
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {

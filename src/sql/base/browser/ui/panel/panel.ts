@@ -217,8 +217,8 @@ export class TabbedPanel extends Disposable {
 		if (this._shownTabId) {
 			const shownTab = this._tabMap.get(this._shownTabId);
 			if (shownTab) {
-				DOM.removeClass(shownTab.label, 'active');
-				DOM.removeClass(shownTab.header, 'active');
+				shownTab.label.classList.remove('active');
+				shownTab.header.classList.remove('active');
 				shownTab.header.setAttribute('aria-selected', 'false');
 				if (shownTab.body) {
 					shownTab.body.remove();
@@ -246,8 +246,8 @@ export class TabbedPanel extends Disposable {
 		}
 		this.body.appendChild(tab.body);
 		this.body.setAttribute('aria-labelledby', tab.tab.identifier);
-		DOM.addClass(tab.label, 'active');
-		DOM.addClass(tab.header, 'active');
+		tab.label.classList.add('active');
+		tab.header.classList.add('active');
 		tab.header.setAttribute('aria-selected', 'true');
 		this._onTabChange.fire(id);
 		if (tab.tab.view.onShow) {
@@ -337,10 +337,6 @@ export class TabbedPanel extends Disposable {
 				color: ${styles.titleActiveForeground};
 				border-bottom-color: ${styles.titleActiveBorder};
 				border-bottom-width: 2px;
-			}
-
-			.tabbedPanel > .title .tabList .tab-header.active {
-				outline: none;
 			}`);
 		}
 
