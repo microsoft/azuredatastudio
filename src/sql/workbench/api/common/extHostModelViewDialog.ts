@@ -14,7 +14,6 @@ import * as azdata from 'azdata';
 import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { TabOrientation, DialogWidth, DialogStyle, DialogPosition } from 'sql/workbench/api/common/sqlExtHostTypes';
-// import { attachDialogStyler } from 'vs/platform/theme/common/styler';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', "Done");
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', "Cancel");
@@ -130,6 +129,8 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 	private _width: DialogWidth;
 	private _dialogStyle: DialogStyle;
 	private _dialogPosition: DialogPosition;
+	private _suppressHeader: boolean;
+	private _suppressFooter: boolean;
 
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
@@ -158,6 +159,22 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 
 	public set dialogPosition(value: azdata.window.DialogPosition) {
 		this._dialogPosition = value;
+	}
+
+	public get suppressHeader(): boolean {
+		return this._suppressHeader;
+	}
+
+	public set suppressHeader(value: boolean) {
+		this._suppressHeader = value;
+	}
+
+	public get suppressFooter(): boolean {
+		return this._suppressFooter;
+	}
+
+	public set suppressFooter(value: boolean) {
+		this._suppressFooter = value;
 	}
 
 	public get width(): azdata.window.DialogWidth {
@@ -685,6 +702,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		let dialogWidth: DialogWidth = 'narrow';
 		let dialogStyle: DialogStyle;
 		let dialogPosition: DialogPosition;
+		let suppressHeader: boolean;
+		let suppressFooter: boolean;
 		let handle = this.getHandle(dialog);
 		let tabs = dialog.content;
 
@@ -694,7 +713,12 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		if (dialog.dialogPosition) {
 			dialogPosition = dialog.dialogPosition;
 		}
-
+		if (dialog.suppressHeader) {
+			suppressHeader = dialog.suppressHeader;
+		}
+		if (dialog.suppressFooter) {
+			suppressFooter = dialog.suppressFooter;
+		}
 		if (tabs && typeof tabs !== 'string') {
 			tabs.forEach(tab => this.updateTabContent(tab));
 		}
@@ -716,6 +740,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			width: dialogWidth,
 			dialogStyle: dialogStyle,
 			dialogPosition: dialogPosition,
+			suppressHeader: suppressHeader,
+			suppressFooter: suppressFooter,
 			okButton: this.getHandle(dialog.okButton),
 			cancelButton: this.getHandle(dialog.cancelButton),
 			content: dialog.content && typeof dialog.content !== 'string' ? dialog.content.map(tab => this.getHandle(tab)) : dialog.content as string,
@@ -748,7 +774,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._onClickCallbacks.set(handle, callback);
 	}
 
-	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition): azdata.window.Dialog {
+	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, suppressHeader?: boolean, suppressFooter?: boolean): azdata.window.Dialog {
 
 		let dialog = new DialogImpl(this, this._extHostModelView, this._extHostTaskManagement, extension);
 
@@ -761,6 +787,10 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		if (dialogPosition) {
 			dialog.dialogPosition = dialogPosition;
 		}
+		dialog.suppressHeader = suppressHeader;
+		dialog.suppressFooter = suppressFooter;
+
+
 
 		dialog.title = title;
 		dialog.width = width ?? 'narrow';

@@ -29,6 +29,10 @@
 	position: absolute;
 	width: 452px;
 }
+.modal.callout-dialog.compact .modal-dialog {
+	width: 288px;
+}
+
 .modal.callout-dialog .modal-content.arrow:before {
 	border-width: 1em;
 	border-style: solid;
@@ -182,6 +186,13 @@
 
 .modal.callout-dialog .modal-body {
 	padding: 8px 24px;
+}
+
+.modal.callout-dialog.compact .modal-header {
+	padding: 16px 24px 4px 24px;
+}
+.modal.callout-dialog.compact .modal-body {
+	padding: 4px 24px 16px 24px;
 }
 
 /* modl body content style(excluding dialogErrorMessage section) for angulr component dialog */

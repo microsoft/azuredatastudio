@@ -56,7 +56,7 @@ export interface IModalDialogStyles {
 }
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
-export type DialogStyle = 'normal' | 'flyout' | 'callout';
+export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
 export type DialogPosition = 'left' | 'right' | 'above' | 'below' | undefined;
 
 export interface IModalOptions {
@@ -180,19 +180,21 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	/**
 	 * Build and render the modal, will call {@link Modal#renderBody}
+	 * If suppressHeader and suppressFooter, do nothing.
 	 */
 	public render() {
 		let builderClass = '.modal.fade';
 		builderClass += this._modalOptions.dialogStyle === 'flyout' ? '.flyout-dialog'
 			: this._modalOptions.dialogStyle === 'callout' ? '.callout-dialog'
-				: '';
+				: this._modalOptions.dialogStyle === 'calloutCompact' ? '.callout-dialog.compact'
+					: '';
 
 		this._bodyContainer = DOM.$(`${builderClass}`, { role: 'dialog', 'aria-label': this._title });
 		const top = this.layoutService.offset?.top ?? 0;
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
 
-		if (this._modalOptions.dialogStyle === 'callout') {
+		if (this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact') {
 			let arrowClass = `.arrow.from-${this._modalOptions.dialogPosition}`;
 			this._modalContent = DOM.append(this._modalDialog, DOM.$(`.modal-content${arrowClass}`));
 
@@ -211,25 +213,29 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalDialog.classList.add(`${this._modalOptions.width}-dialog`);
 		}
 
-		if (this._modalOptions.dialogStyle === 'callout') {
+		if (this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact') {
 			this._register(DOM.addDisposableListener(this._bodyContainer, DOM.EventType.CLICK, (e) => this.handleClickOffModal(e)));
 		}
 
 		if (!isUndefinedOrNull(this._title)) {
-			this._modalHeaderSection = DOM.append(this._modalContent, DOM.$('.modal-header'));
-			if (this._modalOptions.hasBackButton) {
-				const container = DOM.append(this._modalHeaderSection, DOM.$('.modal-go-back'));
-				this._backButton = new Button(container);
-				this._backButton.icon = 'backButtonIcon';
-				this._backButton.title = localize('modal.back', "Back");
-			}
+			if (!this._modalOptions.suppressHeader) {
+				this._modalHeaderSection = DOM.append(this._modalContent, DOM.$('.modal-header'));
+				if (this._modalOptions.hasBackButton) {
+					const container = DOM.append(this._modalHeaderSection, DOM.$('.modal-go-back'));
+					this._backButton = new Button(container);
+					this._backButton.icon = 'backButtonIcon';
+					this._backButton.title = localize('modal.back', "Back");
+				}
 
-			if (this._modalOptions.hasTitleIcon) {
-				this._modalTitleIcon = DOM.append(this._modalHeaderSection, DOM.$('.modal-title-icon'));
-			}
+				if (this._modalOptions.hasTitleIcon) {
+					this._modalTitleIcon = DOM.append(this._modalHeaderSection, DOM.$('.modal-title-icon'));
+				}
 
-			this._modalTitle = DOM.append(this._modalHeaderSection, DOM.$('h1.modal-title'));
-			this._modalTitle.innerText = this._title;
+				this._modalTitle = DOM.append(this._modalHeaderSection, DOM.$('h1.modal-title'));
+				this._modalTitle.innerText = this._title;
+			} else {
+				// Do nothing
+			}
 		}
 
 		if (!this._modalOptions.isAngular && this._modalOptions.hasErrors) {
@@ -270,15 +276,17 @@ export abstract class Modal extends Disposable implements IThemable {
 		this.renderBody(this._modalBodySection);
 
 		// This modal footer section refers to the footer of of the dialog
-		if (!this._modalOptions.isAngular) {
-			this._modalFooterSection = DOM.append(this._modalContent, DOM.$('.modal-footer'));
-			if (this._modalOptions.hasSpinner) {
-				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
-				this._spinnerElement.setAttribute('title', this._modalOptions.spinnerTitle ?? '');
-				DOM.hide(this._spinnerElement);
+		if (!this._modalOptions.suppressFooter) {
+			if (!this._modalOptions.isAngular) {
+				this._modalFooterSection = DOM.append(this._modalContent, DOM.$('.modal-footer'));
+				if (this._modalOptions.hasSpinner) {
+					this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
+					this._spinnerElement.setAttribute('title', this._modalOptions.spinnerTitle ?? '');
+					DOM.hide(this._spinnerElement);
+				}
+				this._leftFooter = DOM.append(this._modalFooterSection, DOM.$('.left-footer'));
+				this._rightFooter = DOM.append(this._modalFooterSection, DOM.$('.right-footer'));
 			}
-			this._leftFooter = DOM.append(this._modalFooterSection, DOM.$('.left-footer'));
-			this._rightFooter = DOM.append(this._modalFooterSection, DOM.$('.right-footer'));
 		}
 	}
 
@@ -609,7 +617,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	public style(styles: IModalDialogStyles): void {
 		this._dialogForeground = styles.dialogForeground;
 		this._dialogBorder = styles.dialogBorder;
-		if (this._modalOptions.dialogStyle === 'callout') {
+		if (this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact') {
 			this._dialogHeaderAndFooterBackground = styles.dialogBodyBackground;
 		} else {
 			this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground;
