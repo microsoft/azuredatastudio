@@ -152,6 +152,13 @@
       }
     ],
     "menus": {
+      "view/title": [
+        {
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
+          "when": "view == dataworkspace.views.main",
+          "group": "secondary"
+        }
+      ],
       "commandPalette": [
         {
           "command": "sqlDatabaseProjects.newScript",
