@@ -162,9 +162,9 @@ suite('HTML Markdown Converter', function (): void {
 
 	test('Should keep < > tag', () => {
 		htmlString = '&lt;test&gt';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<test>', 'Non-HTML tag test failed to escape');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '\\<test\\>', 'Non-HTML tag test failed to escape');
 		htmlString = '&lt;test&gt<span style="background:red">message</span>&lt;test&gt';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<test><span style="background:red">message</span><test>', 'Non-HTML tag inside span tag test failed to escape');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '\\<test\\><span style="background:red">message</span>\\<test\\>', 'Non-HTML tag inside span tag test failed to escape');
 		htmlString = '<h1>&lt;test&gt;<h1>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '# \\<test\\>', 'Non-HTML tag inside H1 tag test failed to escape');
 		htmlString = '<h2>&lt;test&gt;<h2>';
@@ -178,19 +178,19 @@ suite('HTML Markdown Converter', function (): void {
 		htmlString = '<em>&lt;Italicize test&gt;</em>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '_\\<Italicize test\\>_', 'Basic italicize non-HTML tag test failed to escape');
 		htmlString = '<u>&lt;Underline_test&gt;</u> ';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<u><Underline\\_test></u>', 'Basic underline non-HTML tag test failed to escape');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '<u>\\<Underline\\_test\\></u>', 'Basic underline non-HTML tag test failed to escape');
 		htmlString = '<ul><li>&lt;test&gt;</li></ul>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '- \\<test\\>', 'Basic unordered list non-HTML tag item test failed to escape');
 		htmlString = '<ol><li>&lt;test&gt;</li></ol>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '1. \\<test\\>', 'Basic ordered list non-HTML tag item test failed to escape');
 		htmlString = '<mark>&lt;test&gt;</mark>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark><test></mark>', 'Basic highlighting Non-HTML tag test failed to escape');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark>\\<test\\></mark>', 'Basic highlighting Non-HTML tag test failed to escape');
 		htmlString = '<mark><h1>&lt;test&gt;</h1></mark>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark>\n\n# \\<test\\>\n\n</mark>', 'Non-HTML tag inside multiple html tags test failed to escape');
 		htmlString = '<p>&lt;style&gt</p>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '\\<style\\>', 'Style tag as a non-HTML tag test failed to escape');
 		htmlString = '&lt;test&gt <u>Underlined Text style</u> end';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<test> <u>Underlined Text style</u> end', 'Non-HTML tag outside with style and underline test failed to escape');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '\\<test\\> <u>Underlined Text style</u> end', 'Non-HTML tag outside with style and underline test failed to escape');
 
 	});
 
