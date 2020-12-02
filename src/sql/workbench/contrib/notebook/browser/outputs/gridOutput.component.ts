@@ -126,7 +126,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 				columnNames.push(i.name);
 			}
 			// Checks to see if data source is ordered properly based on schema
-			if (source.schema.fields[0].name !== Object.keys(source.data[0])[0]) {
+			if (columnNames !== Object.keys(source.data[0])) {
 				// Order each row based on the schema
 				for (let row of source.data) {
 					let reorderedData = {};
