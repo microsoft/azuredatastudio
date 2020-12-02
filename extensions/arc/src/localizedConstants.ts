@@ -162,6 +162,7 @@ export const details = localize('arc.details', "Details");
 export const lastUpdated = localize('arc.lastUpdated', "Last updated");
 export const noExternalEndpoint = localize('arc.noExternalEndpoint', "No External Endpoint has been configured so this information isn't available.");
 export const podsReady = localize('arc.podsReady', "pods ready");
+export const connectToPostgresDescription = localize('arc.connectToPostgresDescription', "A connection to server is required to show and set database engine settings. Make sure to have installed PostgreSQL extension for Azure Data Studio.");
 
 export function rangeSetting(min: string, max: string): string { return localize('arc.rangeSetting', "Allowed value should be: {0} - {1}", min, max); }
 export function optionsSetting(options: string): string { return localize('arc.optionsSetting', "Allowed value should be: {0}", options); }
@@ -199,6 +200,7 @@ export function databaseCreationFailed(name: string, error: any): string { retur
 export function connectToControllerFailed(url: string, error: any): string { return localize('arc.connectToControllerFailed', "Could not connect to controller {0}. {1}", url, getErrorMessage(error)); }
 export function connectToMSSqlFailed(serverName: string, error: any): string { return localize('arc.connectToMSSqlFailed', "Could not connect to SQL managed instance - Azure Arc Instance {0}. {1}", serverName, getErrorMessage(error)); }
 export function connectToPGSqlFailed(serverName: string, error: any): string { return localize('arc.connectToPGSqlFailed', "Could not connect to PostgreSQL Hyperscale - Azure Arc Instance {0}. {1}", serverName, getErrorMessage(error)); }
+export function missingExtension(extensionName: string): string { return localize('arc.missingExtension', "Need {0} extension for Azure Data Studio. Please Install from extensions gallery.", extensionName); }
 export function fetchConfigFailed(name: string, error: any): string { return localize('arc.fetchConfigFailed', "An unexpected error occurred retrieving the config for '{0}'. {1}", name, getErrorMessage(error)); }
 export function fetchEndpointsFailed(name: string, error: any): string { return localize('arc.fetchEndpointsFailed', "An unexpected error occurred retrieving the endpoints for '{0}'. {1}", name, getErrorMessage(error)); }
 export function fetchRegistrationsFailed(name: string, error: any): string { return localize('arc.fetchRegistrationsFailed', "An unexpected error occurred retrieving the registrations for '{0}'. {1}", name, getErrorMessage(error)); }

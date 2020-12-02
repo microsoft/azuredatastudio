@@ -262,6 +262,7 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private initializeConnectButton() {
+
 		this.connectToServerButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.connectToServer,
 			enabled: false,
@@ -273,7 +274,7 @@ export class PostgresParametersPage extends DashboardPage {
 				this.connectToServerButton!.enabled = false;
 				try {
 					if (!vscode.extensions.getExtension('microsoft.azuredatastudio-postgresql')) {
-						vscode.window.showErrorMessage('Need PostgreSQL extension for Azure Data Studio. Please Install from extensions gallery.');
+						vscode.window.showErrorMessage(loc.missingExtension('PostgreSQL'));
 						this.connectToServerButton!.enabled = true;
 					} else {
 						await this._postgresModel.getEngineSettings().catch(err => {
@@ -289,7 +290,7 @@ export class PostgresParametersPage extends DashboardPage {
 							throw err;
 						});
 
-						this.connectToServerButton!.updateCssStyles({ display: 'none' });
+						this.parameterContainer!.clearItems();
 						this.parameterContainer!.addItem(this.parametersTable);
 					}
 
@@ -298,6 +299,8 @@ export class PostgresParametersPage extends DashboardPage {
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.fetchEngineSettingsFailed(this._postgresModel.info.name, error));
+				} finally {
+
 				}
 
 
@@ -494,6 +497,15 @@ export class PostgresParametersPage extends DashboardPage {
 
 	private selectComponent() {
 		if (!this._postgresModel.engineSettingsLastUpdated) {
+			/* const connectToServerInfo = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+				value: loc.connectToPostgresDescription,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+			}).component();
+			this.parameterContainer!.addItem(connectToServerInfo); */
+			this.parameterContainer!.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+				value: loc.connectToPostgresDescription,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+			}).component());
 			this.parameterContainer!.addItem(this.connectToServerButton!, { CSSStyles: { 'max-width': '125px' } });
 			this.parameterContainer!.addItem(this._parametersTableLoading!);
 		} else {
