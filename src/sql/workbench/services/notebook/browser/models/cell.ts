@@ -28,7 +28,6 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -662,12 +661,9 @@ export class CellModel extends Disposable implements ICellModel {
 				// Check if the table already exists
 				for (let i = 0; i < this._outputs.length; i++) {
 					if (this._outputs[i].output_type === 'execute_result') {
-						let resultSet: ResultSetSummary = this._outputs[i].metadata.resultSet;
-						let newResultSet: ResultSetSummary = output.metadata.resultSet;
-						if (resultSet.batchId === newResultSet.batchId && resultSet.id === newResultSet.id) {
+						if (this._outputs[i].metadata.batchId === output.metadata.batchId && this._outputs[i].metadata.id === output.metadata.id) {
 							// If it does, update output with data resource and html table
 							(<nb.IExecuteResult>this._outputs[i]).data = (<nb.IExecuteResult>output).data;
-							this._outputs[i].metadata = output.metadata;
 							added = true;
 							break;
 						}

@@ -598,7 +598,8 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			content: <nb.IExecuteResult>{
 				output_type: 'execute_result',
 				metadata: {
-					resultSet: resultSet
+					batchId: resultSet.batchId,
+					id: resultSet.id
 				},
 				execution_count: this._executionCount,
 				data: data

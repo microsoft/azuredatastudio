@@ -75,7 +75,8 @@ declare module 'azdata' {
 		}
 
 		export interface ICellOutputMetadata {
-			resultSet?: ResultSetSummary;
+			batchId?: number;
+			id?: number;
 		}
 
 		export interface INotebookMetadata {
