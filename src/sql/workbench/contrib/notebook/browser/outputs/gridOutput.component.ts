@@ -162,7 +162,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 					let currentIndex = typeof Number(index);
 					let nextIndex = typeof Number(rowKeys[currentIndex + 1]);
 					if (currentIndex === 'number' && rowKeys[nextIndex] < (rowKeys.length - 1)) {
-						//check to see if next element is number (confirm table is already ordered)
+						// Check to see if next element is number (confirms table is already ordered)
 						if (!(nextIndex === 'number')) {
 							this._notificationService.error(localize('orderFailed', "Not able to have mix of numbers and string column names"));
 						}
