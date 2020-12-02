@@ -80,8 +80,18 @@ export class TransformMarkdownAction extends Action {
 				let nodeName = selectionFocusNode?.parentNode?.nodeName?.toLowerCase();
 				let backgroundColor = selectionFocusNode?.parentElement?.style?.backgroundColor;
 				if (nodeName === 'mark') {
-					// If the parent node is mark, remove that mark node and replace it with its child
-					selectionFocusNode.parentNode.parentNode.replaceChild(selectionFocusNode, selectionFocusNode.parentNode);
+					let oldParent = selectionFocusNode.parentNode;
+					let newParent = selectionFocusNode.parentNode.parentNode;
+					let oldParentNextSibling = oldParent.nextSibling;
+					// Remove mark element, reparent
+					while (oldParent.childNodes.length > 0) {
+						// If no next sibling, then old parent was the final child node, so we can append
+						if (!oldParentNextSibling) {
+							newParent.appendChild(oldParent.firstChild);
+						} else {
+							newParent.insertBefore(oldParent.firstChild, oldParentNextSibling);
+						}
+					}
 					// Empty span required to force an input so that HTML change is seen from text cell component
 					// This span doesn't have any effect on the markdown generated.
 					document.execCommand('formatBlock', false, 'span');
