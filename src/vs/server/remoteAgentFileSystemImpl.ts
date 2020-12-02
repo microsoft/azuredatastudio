@@ -14,7 +14,7 @@ import { RemoteAgentConnectionContext } from 'vs/platform/remote/common/remoteAg
 import { DiskFileSystemProvider, IWatcherOptions } from 'vs/platform/files/node/diskFileSystemProvider';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { posix } from 'vs/base/common/path';
-import { ServerEnvironmentService } from 'vs/server/remoteExtensionHostAgent';
+import { ServerEnvironmentService } from 'vs/server/serverEnvironmentService';
 import { ReadableStreamEventPayload } from 'vs/base/common/stream';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 

@@ -15,10 +15,9 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { createRemoteURITransformer } from 'vs/server/remoteUriTransformer';
 import { ILogService } from 'vs/platform/log/common/log';
 import product from 'vs/platform/product/common/product';
-import { ServerEnvironmentService } from 'vs/server/remoteExtensionHostAgent';
-import { parsePathArg } from 'vs/platform/environment/node/environmentService';
+import { ServerEnvironmentService } from 'vs/server/serverEnvironmentService';
 import { extname, dirname, join, normalize } from 'vs/base/common/path';
-import { WEB_WORKER_IFRAME } from 'vs/workbench/services/extensions/common/webWorkerIframe';
+import { FileAccess } from 'vs/base/common/network';
 
 const textMimeType = {
 	'.html': 'text/html',
@@ -69,7 +68,7 @@ export async function serveFile(logService: ILogService, req: http.IncomingMessa
 	}
 }
 
-const APP_ROOT = dirname(URI.parse(require.toUrl('')).fsPath);
+const APP_ROOT = dirname(FileAccess.asFileUri('', require).fsPath);
 
 export class WebClientServer {
 
@@ -179,27 +178,31 @@ export class WebClientServer {
 			return value.replace(/"/g, '&quot;');
 		}
 
-		const webUserDataDir = this._environmentService.args['web-user-data-dir'];
-		const webUserDataHome = URI.file(parsePathArg(webUserDataDir, process) || this._environmentService.userDataPath);
+		let _wrapWebWorkerExtHostInIframe: undefined | false = undefined;
+		if (this._environmentService.driverHandle) {
+			// integration tests run at a time when the built output is not yet published to the CDN
+			// so we must disable the iframe wrapping because the iframe URL will give a 404
+			_wrapWebWorkerExtHostInIframe = false;
+		}
 
-		const filePath = URI.parse(require.toUrl(this._environmentService.isBuilt ? 'vs/code/browser/workbench/workbench.html' : 'vs/code/browser/workbench/workbench-dev.html')).fsPath;
+		const filePath = FileAccess.asFileUri(this._environmentService.isBuilt ? 'vs/code/browser/workbench/workbench.html' : 'vs/code/browser/workbench/workbench-dev.html', require).fsPath;
 		const data = (await util.promisify(fs.readFile)(filePath)).toString()
 			.replace('{{WORKBENCH_WEB_CONFIGURATION}}', escapeAttribute(JSON.stringify({
 				folderUri: (workspacePath && isFolder) ? transformer.transformOutgoing(URI.file(workspacePath)) : undefined,
 				workspaceUri: (workspacePath && !isFolder) ? transformer.transformOutgoing(URI.file(workspacePath)) : undefined,
 				remoteAuthority,
 				webviewEndpoint: this._webviewEndpoint,
+				_wrapWebWorkerExtHostInIframe,
 				driver: this._environmentService.driverHandle === 'web' ? true : undefined
-			})))
-			.replace('{{REMOTE_USER_DATA_URI}}', escapeAttribute(JSON.stringify(transformer.transformOutgoing(webUserDataHome))));
+			})));
 
 		const cspDirectives = [
 			'default-src \'self\';',
 			'img-src \'self\' https: data: blob:;',
 			'media-src \'none\';',
-			`script-src 'self' 'unsafe-eval' https://az416426.vo.msecnd.net ${this._getScriptCspHashes(data).join(' ')} '${WEB_WORKER_IFRAME.sha}' http://${remoteAuthority};`,
+			`script-src 'self' 'unsafe-eval' https://az416426.vo.msecnd.net ${this._getScriptCspHashes(data).join(' ')} 'sha256-O98pkmgtvUCQGVoddaGy891K52PVRnySDRxRszVLPNQ=' http://${remoteAuthority};`, // the sha is the same as in src/vs/workbench/services/extensions/worker/httpWebWorkerExtensionHostIframe.html
 			'child-src \'self\';',
-			'frame-src \'self\' https://*.vscode-webview-test.com data:;',
+			'frame-src \'self\' https://*.vscode-webview-test.com https://vscodeweb.azureedge.net data:;',
 			'worker-src \'self\' data:;',
 			'style-src \'self\' \'unsafe-inline\';',
 			'connect-src \'self\' ws: wss: https:;',
@@ -318,7 +321,7 @@ export class WebClientServer {
 		// add to map of known callbacks
 		this._mapCallbackUriToRequestId.set(requestId, URI.from({ scheme: vscodeScheme || product.urlProtocol, authority: vscodeAuthority, path: vscodePath, query, fragment: vscodeFragment }).toJSON());
 
-		return serveFile(this._logService, req, res, URI.parse(require.toUrl('vs/code/browser/workbench/callback.html')).fsPath, { 'Content-Type': 'text/html' });
+		return serveFile(this._logService, req, res, FileAccess.asFileUri('vs/code/browser/workbench/callback.html', require).fsPath, { 'Content-Type': 'text/html' });
 	}
 
 	/**

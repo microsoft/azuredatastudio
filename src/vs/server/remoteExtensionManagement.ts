@@ -2,10 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import { PersistentProtocol, ProtocolConstants, ISocket } from 'vs/base/parts/ipc/common/ipc.net';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { ILogService } from 'vs/platform/log/common/log';
+import { getLogLevel, ILogService } from 'vs/platform/log/common/log';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { ConfigurationService } from 'vs/platform/configuration/common/configurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -28,15 +28,17 @@ import { DiskFileSystemProvider } from 'vs/platform/files/node/diskFileSystemPro
 import { Schemas } from 'vs/base/common/network';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { ServerEnvironmentService } from 'vs/server/remoteExtensionHostAgent';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
+import { SpdLogService } from 'vs/platform/log/node/spdlogService';
+import { RemoteExtensionLogFileName } from 'vs/workbench/services/remote/common/remoteAgentService';
+import { ServerEnvironmentService, ServerParsedArgs } from 'vs/server/serverEnvironmentService';
 
 export interface IExtensionsManagementProcessInitData {
 	args: NativeParsedArgs;
 }
 
-function printTime(ms: number): string {
+export function printTime(ms: number): string {
 	let h = 0;
 	let m = 0;
 	let s = 0;
@@ -148,22 +150,31 @@ export class ManagementConnection {
 	}
 }
 
-export function shouldSpawnCli(argv: NativeParsedArgs): boolean {
-	return !!argv['list-extensions']
-		|| !!argv['install-extension']
-		|| !!argv['uninstall-extension']
-		|| !!argv['locate-extension'];
+function eventuallyExit(code: number): void {
+	setTimeout(() => process.exit(code), 0);
 }
 
-export async function run(argv: NativeParsedArgs, environmentService: ServerEnvironmentService, logService: ILogService): Promise<boolean> {
-	if (!shouldSpawnCli(argv)) {
-		return false;
-	}
+export function run(args: ServerParsedArgs, REMOTE_DATA_FOLDER: string): void {
+	const environmentService = new ServerEnvironmentService(args);
+	const logService: ILogService = new SpdLogService(RemoteExtensionLogFileName, environmentService.logsPath, getLogLevel(environmentService));
+	logService.trace(`Remote configuration data at ${REMOTE_DATA_FOLDER}`);
+	logService.trace('process arguments:', args);
 
+	_run(args, environmentService, logService)
+		.then(() => eventuallyExit(0))
+		.then(null, err => {
+			logService.error(err.message || err.stack || err);
+			eventuallyExit(1);
+		});
+}
+
+async function _run(argv: ServerParsedArgs, environmentService: ServerEnvironmentService, logService: ILogService): Promise<boolean> {
 	const disposables = new DisposableStore();
 	const services = new ServiceCollection();
 
 	services.set(IEnvironmentService, environmentService);
+	services.set(INativeEnvironmentService, environmentService);
+
 	services.set(ILogService, logService);
 	services.set(IProductService, { _serviceBrand: undefined, ...product });
 

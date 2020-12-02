@@ -6,7 +6,7 @@ import * as cp from 'child_process';
 import * as net from 'net';
 import { getNLSConfiguration } from 'vs/server/remoteLanguagePacks';
 import { uriTransformerPath } from 'vs/server/remoteUriTransformer';
-import { getPathFromAmdModule } from 'vs/base/common/amd';
+import { FileAccess } from 'vs/base/common/network';
 import { join, delimiter } from 'vs/base/common/path';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { IRemoteConsoleLog } from 'vs/base/common/console';
@@ -16,7 +16,43 @@ import { getShellEnvironment } from 'vs/code/node/shellEnv';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRemoteExtensionHostStartParams } from 'vs/platform/remote/common/remoteAgentConnection';
 import { IExtHostReadyMessage, IExtHostSocketMessage, IExtHostReduceGraceTimeMessage } from 'vs/workbench/services/extensions/common/extensionHostProtocol';
-import { ServerEnvironmentService } from 'vs/server/remoteExtensionHostAgent';
+import { ServerEnvironmentService } from 'vs/server/serverEnvironmentService';
+import { IProcessEnvironment, isWindows } from 'vs/base/common/platform';
+
+export async function buildUserEnvironment(startParamsEnv: { [key: string]: string | null } = {}, language: string, environmentService: ServerEnvironmentService, logService: ILogService): Promise<IProcessEnvironment> {
+	const nlsConfig = await getNLSConfiguration(language, environmentService.userDataPath);
+	// {{SQL CARBON }}
+	//const userShellEnv = await resolveShellEnv(logService, environmentService.args, process.env);
+	const userShellEnv = await getShellEnvironment(logService, environmentService);
+	const binFolder = environmentService.isBuilt ? join(environmentService.appRoot, 'bin') : join(environmentService.appRoot, 'resources', 'server', 'bin-dev');
+	const processEnv = process.env;
+	let PATH = startParamsEnv['PATH'] || userShellEnv['PATH'] || processEnv['PATH'];
+	if (PATH) {
+		PATH = binFolder + delimiter + PATH;
+	} else {
+		PATH = binFolder;
+	}
+	const env: IProcessEnvironment = {
+		...processEnv,
+		...userShellEnv,
+		...{
+			AMD_ENTRYPOINT: 'vs/server/remoteExtensionHostProcess',
+			PIPE_LOGGING: 'true',
+			VERBOSE_LOGGING: 'true',
+			VSCODE_EXTHOST_WILL_SEND_SOCKET: 'true',
+			VSCODE_HANDLES_UNCAUGHT_ERRORS: 'true',
+			VSCODE_LOG_STACK: 'false',
+			VSCODE_NLS_CONFIG: JSON.stringify(nlsConfig, undefined, 0),
+			BROWSER: join(binFolder, 'helpers', isWindows ? 'browser.cmd' : 'browser.sh')
+		},
+		...startParamsEnv
+	};
+
+	setCaseInsensitive(env, 'PATH', PATH);
+	removeNulls(env);
+
+	return env;
+}
 
 export class ExtensionHostConnection {
 
@@ -124,43 +160,17 @@ export class ExtensionHostConnection {
 
 	public async start(startParams: IRemoteExtensionHostStartParams): Promise<void> {
 		try {
-			const nlsConfig = await getNLSConfiguration(startParams.language, this._environmentService.userDataPath);
-
 			let execArgv: string[] = [];
 			if (startParams.port && !(<any>process).pkg) {
 				execArgv = [`--inspect${startParams.break ? '-brk' : ''}=0.0.0.0:${startParams.port}`];
 			}
 
-			const userShellEnv = await getShellEnvironment(this._logService, this._environmentService);
-			const processEnv = process.env;
-			const binFolder = this._environmentService.isBuilt ? join(this._environmentService.appRoot, 'bin') : join(this._environmentService.appRoot, 'resources', 'server', 'bin-dev');
-			const startParamsEnv = startParams.env || {};
-			let PATH = startParamsEnv['PATH'] || userShellEnv['PATH'] || processEnv['PATH'];
-			if (PATH) {
-				PATH = binFolder + delimiter + PATH;
-			} else {
-				PATH = binFolder;
-			}
+			const env = await buildUserEnvironment(startParams.env, startParams.language, this._environmentService, this._logService);
 			const opts = {
-				env: <{ [key: string]: string }>{
-					...processEnv,
-					...userShellEnv,
-					...{
-						AMD_ENTRYPOINT: 'vs/server/remoteExtensionHostProcess',
-						PIPE_LOGGING: 'true',
-						VERBOSE_LOGGING: 'true',
-						VSCODE_EXTHOST_WILL_SEND_SOCKET: 'true',
-						VSCODE_HANDLES_UNCAUGHT_ERRORS: 'true',
-						VSCODE_LOG_STACK: 'false',
-						VSCODE_NLS_CONFIG: JSON.stringify(nlsConfig, undefined, 0),
-					},
-					...startParamsEnv
-				},
+				env,
 				execArgv,
 				silent: true
 			};
-			setCaseInsensitive(opts.env, 'PATH', PATH);
-			removeNulls(opts.env);
 
 			// Run Extension Host as fork of current process
 			const args = ['--type=extensionHost', `--uriTransformerPath=${uriTransformerPath}`];
@@ -168,7 +178,7 @@ export class ExtensionHostConnection {
 			if (useHostProxy !== undefined) {
 				args.push(`--useHostProxy=${useHostProxy}`);
 			}
-			this._extensionHostProcess = cp.fork(getPathFromAmdModule(require, 'bootstrap-fork'), args, opts);
+			this._extensionHostProcess = cp.fork(FileAccess.asFileUri('bootstrap-fork', require).fsPath, args, opts);
 			const pid = this._extensionHostProcess.pid;
 			this._log(`<${pid}> Launched Extension Host Process.`);
 
