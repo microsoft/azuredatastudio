@@ -120,23 +120,30 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		if (!this._table) {
 			let source = <IDataResource><any>this._bundleOptions.data[this.mimeType];
 			let columnNames: Array<string> = [];
-			let index = 0;
+			let columnIndex = [];
+			let rowIndex = 0;
 			// Get schema list
 			for (let i of source.schema.fields) {
 				columnNames.push(i.name);
+				columnIndex.push(source.schema.fields.indexOf(i));
 			}
-			// Checks to see if data source is ordered properly based on schema
-			if (columnNames !== Object.keys(source.data[0])) {
-				// Order each row based on the schema
-				for (let row of source.data) {
-					let reorderedData = {};
-					for (let key of columnNames) {
-						reorderedData[key] = row[key];
+			// Checks to see if data source is ordered properly based on schema'
+			// SQL notebooks does not use columnName as key (instead uses indices)
+			// so we need to add condition for SQL notebooks to not be reordered
+			if (source.data.length > 0) {
+				if (columnNames !== Object.keys(source.data[0]) && Object.keys(source.data[0])[0] !== '0') {
+					// Order each row based on the schema
+					for (let row of source.data) {
+						let reorderedData = {};
+						for (let key of columnNames) {
+							reorderedData[key] = row[key];
+						}
+						rowIndex = source.data.indexOf(row);
+						source.data[rowIndex] = reorderedData;
 					}
-					index = source.data.indexOf(row);
-					source.data[index] = reorderedData;
 				}
 			}
+
 			let state = new GridTableState(0, 0);
 			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, this.cellOutput, state);
 			let outputElement = <HTMLElement>this.output.nativeElement;
