@@ -70,7 +70,7 @@ export class TransformMarkdownAction extends Action {
 				while (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() && selectionFocusNode?.parentNode?.nodeName?.toLowerCase() !== 'mark') {
 					selectionFocusNode = selectionFocusNode.parentNode;
 				}
-				// Find if element is wrapped in <span background-color="yellow"
+				// Find if element is wrapped in <span background-color="yellow">
 				if (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() !== 'mark') {
 					selectionFocusNode = document.getSelection()?.focusNode;
 					while (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() && selectionFocusNode?.parentNode?.nodeName?.toLowerCase() !== 'span' && selectionFocusNode?.parentElement?.style?.backgroundColor !== 'yellow') {
