@@ -21,7 +21,7 @@ export class HTMLMarkdownConverter {
 	}
 
 	private setTurndownOptions() {
-		this.turndownService.keep(['u', 'mark', 'style']);
+		this.turndownService.keep(['u', 'style']);
 		this.turndownService.use(turndownPluginGfm.gfm);
 		this.turndownService.addRule('pre', {
 			filter: 'pre',
@@ -75,7 +75,8 @@ export class HTMLMarkdownConverter {
 		this.turndownService.addRule('span', {
 			filter: 'span',
 			replacement: function (content, node) {
-				let escapedText = escapeAngleBrackets(node.textContent);
+				// let previousTextContent = node.textContent;
+				// let escapedText = escapeAngleBrackets(node.textContent);
 				// There are certain properties that either don't have equivalents in markdown or whose transformations
 				// don't have actions defined in WYSIWYG yet. To unblock users, leaving these elements alone (including their child elements)
 				// Note: the initial list was generated from our TSG Jupyter Book
@@ -111,7 +112,7 @@ export class HTMLMarkdownConverter {
 					beginString = '<u>' + beginString;
 					endString += '</u>';
 				}
-				return beginString + escapedText + endString;
+				return beginString + content + endString;
 			}
 		});
 		this.turndownService.addRule('img', {
@@ -174,18 +175,17 @@ export class HTMLMarkdownConverter {
 		this.turndownService.addRule('p', {
 			filter: 'p',
 			replacement: function (content, node) {
-				let isAnchorElement: boolean = false;
+				let mustEscape = false;
 				node.childNodes.forEach(c => {
 					if (c.nodeType === Node.TEXT_NODE) {
+						let previousNodeValue = c.nodeValue;
 						c.nodeValue = escapeAngleBrackets(c.textContent);
-					} else if (c.nodeType === Node.ELEMENT_NODE) {
-						c.innerText = escapeAngleBrackets(c.textContent);
-						if (c.nodeName === 'A') {
-							isAnchorElement = true;
+						if (previousNodeValue !== c.nodeValue) {
+							mustEscape = true;
 						}
 					}
 				});
-				if (isAnchorElement) {
+				if (!mustEscape) {
 					return content;
 				} else {
 					return '\n\n' + node.innerHTML.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&nbsp;/gi, '') + '\n\n';

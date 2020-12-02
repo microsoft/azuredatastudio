@@ -227,6 +227,8 @@ suite('HTML Markdown Converter', function (): void {
 	test('Should transform <i> and <em> tags', () => {
 		htmlString = '<i>test string</i>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '_test string_', 'Basic italic test failed');
+		htmlString = '<p><i>test string</i></p>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_test string_', 'Basic italic test failed');
 		htmlString = '<i style="background-color: yellow">test string</i>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '_<mark>test string</mark>_', 'Highlight italic test failed');
 		htmlString = '<i style="background-color: yellow"><b>test string</b></i>';
