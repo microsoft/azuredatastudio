@@ -40,7 +40,7 @@ import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
 import { assign } from 'vs/base/common/objects';
-
+import { equals } from 'vs/base/common/arrays';
 @Component({
 	selector: GridOutputComponent.SELECTOR,
 	template: `<div #output class="notebook-cellTable"></div>`
@@ -61,7 +61,8 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IThemeService) private readonly themeService: IThemeService
+		@Inject(IThemeService) private readonly themeService: IThemeService,
+		@INotificationService private _notificationService: INotificationService,
 	) {
 		super();
 	}
@@ -119,29 +120,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		}
 		if (!this._table) {
 			let source = <IDataResource><any>this._bundleOptions.data[this.mimeType];
-			let columnNames: Array<string> = [];
-			let rowIndex = 0;
-			// Get schema list of grid
-			for (let i of source.schema.fields) {
-				columnNames.push(i.name);
-			}
-			// Check to see if data source is ordered properly based on schema
-			// SQL notebooks do not use columnName as key (instead uses indices)
-			// So we add a condition for SQL notebooks to not be reordered
-			if (source.data.length > 0) {
-				if (columnNames !== Object.keys(source.data[0]) && Object.keys(source.data[0])[0] !== '0') {
-					// Order each row based on the schema
-					for (let row of source.data) {
-						let reorderedData = {};
-						for (let key of columnNames) {
-							reorderedData[key] = row[key];
-						}
-						rowIndex = source.data.indexOf(row);
-						source.data[rowIndex] = reorderedData;
-					}
-				}
-			}
-
+			this.reorderGridData(source);
 			let state = new GridTableState(0, 0);
 			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, this.cellOutput, state);
 			let outputElement = <HTMLElement>this.output.nativeElement;
@@ -167,8 +146,43 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			this._layoutCalledOnce = true;
 		}
 	}
+	reorderGridData(source: IDataResource) {
+		let rowIndex = 0;
+		// Get schema list of grid
+		const columnNames: string[] = source.schema.fields.map(field => field.name);
+		if (source.data.length > 0) {
+			// Check to see if data source is ordered properly based on schema
+			let rowKeys = Object.keys(source.data[0]);
+			if (!equals(columnNames, rowKeys)) {
+				// SQL notebooks does not use columnName as key (instead uses indices)
+				// Indicies indicate the row is ordered properly
+				// We check the data to know if it is in index form or string form
+				for (let index of rowKeys) {
+					// Check to see if first row keys are in index format (numbers)
+					let currentIndex = typeof Number(index);
+					let nextIndex = typeof Number(rowKeys[currentIndex + 1]);
+					if (currentIndex === 'number' && rowKeys[nextIndex] < (rowKeys.length - 1)) {
+						//check to see if next element is number (confirm table is already ordered)
+						if (!(nextIndex === 'number')) {
+							this._notificationService.error(localize('orderFailed', "Not able to have mix of numbers and string column names"));
+						}
+						// Only reorder data in form of strings (as index ordered tables are already ordered)
+					} else if (typeof (index) === 'string') {
+						// Order each row based on the schema
+						for (let row of source.data) {
+							let reorderedData = {};
+							for (let key of columnNames) {
+								reorderedData[key] = row[key];
+							}
+							rowIndex = source.data.indexOf(row);
+							source.data[rowIndex] = reorderedData;
+						}
+					}
+				}
+			}
+		}
+	}
 }
-
 class DataResourceTable extends GridTableBase<any> {
 
 	private _gridDataProvider: DataResourceDataProvider;
