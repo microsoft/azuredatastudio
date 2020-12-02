@@ -20,7 +20,7 @@ import * as editorBrowser from 'vs/editor/browser/editorBrowser';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { DiffReview } from 'vs/editor/browser/widget/diffReview';
-import { IDiffEditorOptions, IEditorOptions, EditorLayoutInfo, EditorOption, EditorOptions, EditorFontLigatures, stringSet } from 'vs/editor/common/config/editorOptions';
+import { IDiffEditorOptions, IEditorOptions, EditorLayoutInfo, EditorOption, EditorOptions, EditorFontLigatures, stringSet as validateStringSetOption, boolean as validateBooleanOption } from 'vs/editor/common/config/editorOptions';
 import { IPosition, Position } from 'vs/editor/common/core/position';
 import { IRange, Range } from 'vs/editor/common/core/range';
 import { ISelection, Selection } from 'vs/editor/common/core/selection';
@@ -204,8 +204,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 
 	private _ignoreTrimWhitespace: boolean;
 	private _originalIsEditable: boolean;
-	private _originalCodeLens: boolean;
-	private _modifiedCodeLens: boolean;
+	private _diffCodeLens: boolean;
 	private _diffWordWrap: 'off' | 'on' | 'inherit';
 
 	private _renderSideBySide: boolean;
@@ -287,8 +286,6 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 
 		this._originalIsEditable = validateBooleanOption(options.originalEditable, false);
 		this._diffCodeLens = validateBooleanOption(options.diffCodeLens, false);
-		this._diffWordWrap = validateDiffWordWrap(options.diffWordWrap, 'inherit');
-
 		this._diffWordWrap = validateDiffWordWrap(options.diffWordWrap, 'inherit');
 
 		if (typeof options.isInEmbeddedEditor !== 'undefined') {
@@ -730,15 +727,8 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 			this._beginUpdateDecorations();
 		}
 
-		if (typeof newOptions.originalEditable !== 'undefined') {
-			this._originalIsEditable = Boolean(newOptions.originalEditable);
-		}
-		if (typeof newOptions.originalCodeLens !== 'undefined') {
-			this._originalCodeLens = Boolean(newOptions.originalCodeLens);
-		}
-		if (typeof newOptions.modifiedCodeLens !== 'undefined') {
-			this._modifiedCodeLens = Boolean(newOptions.modifiedCodeLens);
-		}
+		this._originalIsEditable = validateBooleanOption(newOptions.originalEditable, this._originalIsEditable);
+		this._diffCodeLens = validateBooleanOption(newOptions.diffCodeLens, this._diffCodeLens);
 		this._diffWordWrap = validateDiffWordWrap(newOptions.diffWordWrap, this._diffWordWrap);
 
 		this._modifiedEditor.updateOptions(this._adjustOptionsForRightHandSide(newOptions));
@@ -1157,11 +1147,6 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 
 	private _adjustOptionsForRightHandSide(options: editorBrowser.IDiffEditorConstructionOptions): editorBrowser.IEditorConstructionOptions {
 		const result = this._adjustOptionsForSubEditor(options);
-		if (this._diffWordWrap === 'inherit') {
-			result.wordWrap = this._wordWrap;
-		} else {
-			result.wordWrap = this._diffWordWrap;
-		}
 		if (this._diffWordWrap === 'inherit') {
 			result.wordWrap = this._wordWrap;
 		} else {
@@ -2502,7 +2487,7 @@ class InlineViewZonesComputer extends ViewZonesComputer {
 }
 
 function validateDiffWordWrap(value: 'off' | 'on' | 'inherit' | undefined, defaultValue: 'off' | 'on' | 'inherit'): 'off' | 'on' | 'inherit' {
-	return stringSet<'off' | 'on' | 'inherit'>(value, defaultValue, ['off', 'on', 'inherit']);
+	return validateStringSetOption<'off' | 'on' | 'inherit'>(value, defaultValue, ['off', 'on', 'inherit']);
 }
 
 function isChangeOrInsert(lineChange: editorCommon.IChange): boolean {

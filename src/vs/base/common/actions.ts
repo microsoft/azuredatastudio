@@ -37,7 +37,7 @@ export interface IAction extends IDisposable {
 export interface IActionRunner extends IDisposable {
 	run(action: IAction, context?: any): Promise<any>;
 	readonly onDidRun: Event<IRunEvent>;
-	readonly onDidBeforeRun: Event<IRunEvent>;
+	readonly onBeforeRun: Event<IRunEvent>;
 }
 
 export interface IActionViewItem extends IDisposable {
@@ -197,8 +197,8 @@ export interface IRunEvent {
 
 export class ActionRunner extends Disposable implements IActionRunner {
 
-	private _onDidBeforeRun = this._register(new Emitter<IRunEvent>());
-	readonly onDidBeforeRun: Event<IRunEvent> = this._onDidBeforeRun.event;
+	private _onBeforeRun = this._register(new Emitter<IRunEvent>());
+	readonly onBeforeRun: Event<IRunEvent> = this._onBeforeRun.event;
 
 	private _onDidRun = this._register(new Emitter<IRunEvent>());
 	readonly onDidRun: Event<IRunEvent> = this._onDidRun.event;
@@ -208,7 +208,7 @@ export class ActionRunner extends Disposable implements IActionRunner {
 			return Promise.resolve(null);
 		}
 
-		this._onDidBeforeRun.fire({ action: action });
+		this._onBeforeRun.fire({ action: action });
 
 		try {
 			const result = await this.runAction(action, context);
