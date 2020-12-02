@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { FieldType, LabelPosition, SectionInfo } from '../../../interfaces';
-import { createSection, getDropdownComponent, InputComponentInfo, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
+import { createSection, getDropdownComponent, InputComponent, InputComponentInfo, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
 import { AksName_VariableName, Location_VariableName, ResourceGroup_VariableName, SubscriptionId_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
 import { AzureRegion } from 'azurecore';
 import { DeployClusterWizardModel } from '../deployClusterWizardModel';
@@ -132,7 +132,7 @@ export class AzureSettingsPage extends ResourceTypePage {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+				onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo<InputComponent>): void => {
 					self.inputComponents[name] = inputComponentInfo;
 					self._model.inputComponents[name] = inputComponentInfo;
 				},

@@ -336,6 +336,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._cells = [];
 			if (contents) {
 				this._defaultLanguageInfo = contents.metadata?.language_info;
+				// If language info was serialized in the notebook, attempt to use that to decrease time
+				// required until colorization occurs
+				if (this._defaultLanguageInfo) {
+					this.updateLanguageInfo(this._defaultLanguageInfo);
+				}
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
 				this._savedConnectionName = this.getSavedConnectionName(contents);
 				if (contents.metadata) {

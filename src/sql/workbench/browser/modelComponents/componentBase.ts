@@ -354,7 +354,8 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 		super.setProperties(properties);
 		this.items.forEach(item => {
 			let component = this.modelStore.getComponent(item.descriptor.id);
-			if (component) {
+			// Let child components control their own enabled status if we don't have one specifically set
+			if (component && properties.enabled !== undefined) {
 				component.enabled = this.enabled;
 			}
 		});

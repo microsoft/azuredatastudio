@@ -2,14 +2,14 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.23.0"
+    "azdata": ">=1.25.0"
   },
   "activationEvents": [
     "onCommand:arc.connectToController",
@@ -137,7 +137,11 @@
         "description": "%resource.type.azure.arc.description%",
         "platforms": "*",
         "icon": "./images/data_controller.svg",
-        "tags": ["Hybrid", "SQL Server", "PostgreSQL"],
+        "tags": [
+          "Hybrid",
+          "SQL Server",
+          "PostgreSQL"
+        ],
         "providers": [
           {
             "notebookWizard": {
@@ -196,7 +200,7 @@
                   ]
                 },
                 {
-                  "title": "%arc.data.controller.data.controller.create.title%",
+                  "title": "%arc.data.controller.data.controller.create.azureconfig.title%",
                   "sections": [
                     {
                       "title": "%arc.data.controller.project.details.title%",
@@ -210,11 +214,99 @@
                           "type": "azure_account",
                           "required": true,
                           "subscriptionVariableName": "AZDATA_NB_VAR_ARC_SUBSCRIPTION",
-                          "displaySubscriptionVariableName": "AZDATA_NB_VAR_ARC_DISPLAY_SUBSCRIPTION",
                           "resourceGroupVariableName": "AZDATA_NB_VAR_ARC_RESOURCE_GROUP"
+                        },
+                        {
+                          "type": "azure_locations",
+                          "label": "%arc.data.controller.arc.data.controller.location%",
+                          "defaultValue": "eastus",
+                          "required": true,
+                          "locationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION",
+                          "locations": [
+                            "australiaeast",
+                            "centralus",
+                            "eastus",
+                            "eastus2",
+                            "francecentral",
+                            "japaneast",
+                            "koreacentral",
+                            "northeurope",
+                            "southeastasia",
+                            "uksouth",
+                            "westeurope",
+                            "westus2"
+                          ]
                         }
                       ]
                     },
+                    {
+                      "title": "%arc.data.controller.connectivitymode%",
+                      "fields": [
+                        {
+                          "type": "readonly_text",
+                          "label": "%arc.data.controller.data.controller.connectivitymode.description%",
+                          "labelWidth": "600px"
+                        },
+                        {
+                          "type": "options",
+                          "label": "%arc.data.controller.connectivitymode%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                          "options": {
+                            "values": [
+                              {
+                                "name": "indirect",
+                                "displayName": "%arc.data.controller.indirect%"
+                              },
+                              {
+                                "name": "direct",
+                                "displayName": "%arc.data.controller.direct%"
+                              }
+                            ],
+                            "defaultValue": "%arc.data.controller.indirect%",
+                            "optionsType": "radio"
+                          }
+                        },
+                        {
+                          "label": "%arc.data.controller.spnclient%",
+                          "variableName": "AZDATA_NB_VAR_SPN_CLIENT_ID",
+                          "type": "text",
+                          "required": true,
+                          "defaultValue": "",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "direct"
+                          }
+                        },
+                        {
+                          "label": "%arc.data.controller.spnclientsecret%",
+                          "variableName": "AZDATA_NB_VAR_SPN_CLIENT_SECRET",
+                          "type": "password",
+                          "required": true,
+                          "defaultValue": "",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "direct"
+                          }
+                        },
+                        {
+                          "label": "%arc.data.controller.spntenant%",
+                          "variableName": "AZDATA_NB_VAR_SPN_CLIENT_TENANTID",
+                          "type": "text",
+                          "required": true,
+                          "defaultValue": "",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "direct"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "%arc.data.controller.data.controller.create.controllerconfig.title%",
+                  "sections": [
                     {
                       "title": "%arc.data.controller.data.controller.details.title%",
                       "fields": [
@@ -253,28 +345,6 @@
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_STORAGE_CLASS",
                           "type": "kube_storage_class",
                           "required": true
-                        },
-                        {
-                          "type": "azure_locations",
-                          "label": "%arc.data.controller.arc.data.controller.location%",
-                          "defaultValue": "eastus",
-                          "required": true,
-                          "locationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION",
-                          "displayLocationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_DISPLAY_LOCATION",
-                          "locations": [
-                            "australiaeast",
-                            "centralus",
-                            "eastus",
-                            "eastus2",
-                            "francecentral",
-                            "japaneast",
-                            "koreacentral",
-                            "northeurope",
-                            "southeastasia",
-                            "uksouth",
-                            "westeurope",
-                            "westus2"
-                          ]
                         }
                       ]
                     },
@@ -459,22 +529,10 @@
                       "title": "%arc.data.controller.summary.azure%",
                       "fields": [
                         {
-                          "label": "%arc.data.controller.summary.data.controller.namespace%",
-                          "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE)"
-                        },
-                        {
-                          "label": "%arc.data.controller.summary.data.controller.name%",
-                          "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME)"
-                        },
-                        {
                           "label": "%arc.data.controller.summary.subscription%",
                           "type": "readonly_text",
                           "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DISPLAY_SUBSCRIPTION)",
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_SUBSCRIPTION)",
                           "inputWidth": "600"
                         },
                         {
@@ -487,7 +545,30 @@
                           "label": "%arc.data.controller.summary.location%",
                           "type": "readonly_text",
                           "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_DISPLAY_LOCATION)"
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION)"
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%arc.data.controller.summary.controller%",
+                      "fields": [
+                        {
+                          "label": "%arc.data.controller.summary.data.controller.namespace%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE)"
+                        },
+                        {
+                          "label": "%arc.data.controller.summary.data.controller.name%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME)"
+                        },
+                        {
+                          "label": "%arc.data.controller.connectivitymode%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE)"
                         }
                       ]
                     }
@@ -514,7 +595,10 @@
         "description": "%resource.type.arc.sql.description%",
         "platforms": "*",
         "icon": "./images/miaa.svg",
-        "tags": ["Hybrid", "SQL Server"],
+        "tags": [
+          "Hybrid",
+          "SQL Server"
+        ],
         "providers": [
           {
             "notebookWizard": {
@@ -703,7 +787,10 @@
         "description": "%resource.type.arc.postgres.description%",
         "platforms": "*",
         "icon": "./images/postgres.svg",
-        "tags": ["Hybrid", "PostgreSQL"],
+        "tags": [
+          "Hybrid",
+          "PostgreSQL"
+        ],
         "providers": [
           {
             "notebookWizard": {
@@ -947,7 +1034,8 @@
   "dependencies": {
     "request": "^2.88.0",
     "uuid": "^8.3.0",
-    "vscode-nls": "^4.1.2"
+    "vscode-nls": "^4.1.2",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
@@ -955,6 +1043,7 @@
     "@types/request": "^2.48.3",
     "@types/sinon": "^9.0.4",
     "@types/uuid": "^8.3.0",
+    "@types/yamljs": "^0.2.31",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",

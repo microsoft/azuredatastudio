@@ -211,6 +211,10 @@ export function instanceOfCommandBasedDialogInfo(obj: any): obj is CommandBasedD
 	return obj && 'command' in obj;
 }
 
+export function instanceOfDynamicEnablementInfo(obj: any): obj is DynamicEnablementInfo {
+	return (<DynamicEnablementInfo>obj)?.target !== undefined && (<DynamicEnablementInfo>obj)?.value !== undefined;
+}
+
 export interface DialogInfoBase {
 	title: string;
 	name: string;
@@ -250,6 +254,11 @@ export interface OptionsInfo {
 	source?: IOptionsSource,
 	defaultValue: string,
 	optionsType?: OptionsType
+}
+
+export interface DynamicEnablementInfo {
+	target: string,
+	value: string
 }
 
 export interface FieldInfoBase {
@@ -296,7 +305,7 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	fontWeight?: FontWeight;
 	links?: azdata.LinkArea[];
 	editable?: boolean; // for editable drop-down,
-	enabled?: boolean;
+	enabled?: boolean | DynamicEnablementInfo;
 	isEvaluated?: boolean;
 	valueLookup?: string; // for fetching dropdown options
 	validationLookup?: string // for fetching text field validations
@@ -307,7 +316,6 @@ export interface KubeClusterContextFieldInfo extends FieldInfo {
 	configFileVariableName?: string;
 }
 export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
-	displaySubscriptionVariableName?: string;
 	subscriptionVariableName?: string;
 	resourceGroupVariableName?: string;
 	allowNewResourceGroup?: boolean;
@@ -317,7 +325,6 @@ export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
 
 export interface AzureLocationsFieldInfo extends FieldInfo {
 	locationVariableName?: string;
-	displayLocationVariableName?: string;
 	locations?: string[]
 }
 
