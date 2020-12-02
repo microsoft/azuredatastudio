@@ -3090,14 +3090,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.5.0",
-							"lastUpdated": "11/06/2020",
+							"version": "0.6.0",
+							"lastUpdated": "11/09/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/machine-learning/machine-learning-0.5.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/machine-learning/machine-learning-0.6.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3127,7 +3127,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.23.0"
+									"value": ">=1.25.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
