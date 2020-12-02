@@ -384,10 +384,8 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 	}
 
 	public async openDialog(title: string, dialogName?: string, calloutMessageText?: string, calloutMessageLinkText?: string, calloutMessageLinkUrl?: string) {
-		let dialog = azdata.window.createModelViewDialog(title, dialogName, 'narrow', 'calloutCompact', 'left', false, true);
+		let dialog = azdata.window.createModelViewDialog(title, dialogName, 'narrow', 'calloutCompact', 'left', false, true, { xOffset: 304, yOffset: 30 });
 		let warningTab: azdata.window.DialogTab = azdata.window.createTab('tab1');
-		// init tab
-		// create layout
 		warningTab.registerContent(async view => {
 			let warningContentContainer = view.modelBuilder.divContainer().withProperties({
 				CSSStyles: {}

@@ -8,7 +8,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as DOM from 'vs/base/browser/dom';
 import * as styler from 'vs/platform/theme/common/styler';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { IDialogXYOffset, Modal } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -81,6 +81,7 @@ export class CalloutDialog extends Modal {
 		title: string,
 		posX: number,
 		posY: number,
+		dialogXYOffset: IDialogXYOffset,
 		@IFileDialogService private readonly _fileDialogService: IFileDialogService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
@@ -105,7 +106,8 @@ export class CalloutDialog extends Modal {
 				dialogStyle: 'callout',
 				dialogPosition: 'below',
 				positionX: posX,
-				positionY: posY
+				positionY: posY,
+				dialogXYOffset: dialogXYOffset
 			});
 
 		this._selectionComplete = new Deferred<ICalloutDialogOptions>();

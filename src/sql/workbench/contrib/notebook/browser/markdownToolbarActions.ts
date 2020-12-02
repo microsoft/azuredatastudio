@@ -177,7 +177,8 @@ export class MarkdownTextTransformer {
 		}
 
 		if (!this._callout) {
-			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutStyle, title, posX, posY);
+			const dialogXYOffset = { xOffset: 22, yOffset: 24 };
+			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutStyle, title, posX, posY, dialogXYOffset);
 			this._callout.render();
 		}
 		let calloutOptions = await this._callout.open();

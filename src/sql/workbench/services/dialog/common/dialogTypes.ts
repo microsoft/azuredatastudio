@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
-import { DialogMessage, DialogWidth, DialogStyle, DialogPosition } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { DialogMessage, DialogWidth, DialogStyle, DialogPosition, IDialogXYOffset } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ModelViewPane {
 	private _valid: boolean = true;
@@ -47,6 +47,7 @@ export class Dialog extends ModelViewPane {
 	public dialogPosition: DialogPosition;
 	public suppressHeader: boolean;
 	public suppressFooter: boolean;
+	public dialogXYOffset: IDialogXYOffset;
 	public okButton: DialogButton = new DialogButton(Dialog.DONE_BUTTON_LABEL, true);
 	public cancelButton: DialogButton = new DialogButton(Dialog.CANCEL_BUTTON_LABEL, true);
 	public customButtons: DialogButton[] = [];
@@ -55,7 +56,7 @@ export class Dialog extends ModelViewPane {
 	private _message: DialogMessage | undefined;
 	private _closeValidator: CloseValidator | undefined;
 
-	constructor(public title: string, public width: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, suppressHeader?: boolean, suppressFooter?: boolean, content?: string | DialogTab[]) {
+	constructor(public title: string, public width: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, suppressHeader?: boolean, suppressFooter?: boolean, dialogXYOffset?: IDialogXYOffset, content?: string | DialogTab[]) {
 		super();
 		if (content) {
 			this.content = content;
@@ -71,6 +72,9 @@ export class Dialog extends ModelViewPane {
 		}
 		if (suppressFooter) {
 			this.suppressFooter = suppressFooter;
+		}
+		if (dialogXYOffset) {
+			this.dialogXYOffset = dialogXYOffset;
 		}
 	}
 

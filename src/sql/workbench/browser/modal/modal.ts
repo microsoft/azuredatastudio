@@ -58,6 +58,10 @@ export interface IModalDialogStyles {
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
 export type DialogPosition = 'left' | 'right' | 'above' | 'below' | undefined;
+export interface IDialogXYOffset {
+	xOffset: number;
+	yOffset: number;
+}
 
 export interface IModalOptions {
 	dialogStyle?: DialogStyle;
@@ -73,6 +77,7 @@ export interface IModalOptions {
 	spinnerTitle?: string;
 	suppressHeader?: boolean;
 	suppressFooter?: boolean;
+	dialogXYOffset?: IDialogXYOffset;
 }
 
 const defaultOptions: IModalOptions = {
@@ -87,7 +92,8 @@ const defaultOptions: IModalOptions = {
 	hasErrors: false,
 	hasSpinner: false,
 	suppressHeader: false,
-	suppressFooter: false
+	suppressFooter: false,
+	dialogXYOffset: undefined
 };
 
 const tabbableElementsQuerySelector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]';
@@ -199,8 +205,13 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalContent = DOM.append(this._modalDialog, DOM.$(`.modal-content${arrowClass}`));
 
 			if (this._modalOptions.dialogPosition === 'below') {
-				this._modalDialog.style.left = `${this._modalOptions.positionX - 22}px`;
-				this._modalDialog.style.top = `${this._modalOptions.positionY + 24}px`;
+				this._modalDialog.style.left = `${this._modalOptions.positionX - this._modalOptions.dialogXYOffset.xOffset}px`;
+				this._modalDialog.style.top = `${this._modalOptions.positionY + this._modalOptions.dialogXYOffset.xOffset}px`;
+			}
+
+			if (this._modalOptions.dialogPosition === 'left') {
+				this._modalDialog.style.left = `${this._modalOptions.positionX - this._modalOptions.dialogXYOffset.xOffset}px`;
+				this._modalDialog.style.top = `${this._modalOptions.positionY - this._modalOptions.dialogXYOffset.yOffset}px`;
 			}
 
 		} else {

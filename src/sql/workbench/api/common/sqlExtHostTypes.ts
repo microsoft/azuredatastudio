@@ -261,6 +261,7 @@ export interface IModelViewDialogDetails {
 	dialogPosition: DialogPosition;
 	suppressHeader: boolean;
 	suppressFooter: boolean;
+	dialogXYOffset: IDialogXYOffset;
 }
 
 export interface IModelViewTabDetails {
@@ -305,6 +306,11 @@ export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
 
 export type DialogPosition = 'left' | 'right' | 'above' | 'below' | undefined;
+
+export interface IDialogXYOffset {
+	xOffset: number;
+	yOffset: number;
+}
 
 export enum MessageLevel {
 	Error = 0,

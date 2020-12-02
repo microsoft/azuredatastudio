@@ -79,8 +79,8 @@ export class ApiWrapper {
 		return azdata.window.createTab(title);
 	}
 
-	public createModelViewDialog(title: string, dialogName?: string, width?: azdata.window.DialogWidth, dialogStyle?: azdata.window.DialogStyle, dialogPosition?: azdata.window.DialogPosition, suppressHeader?: boolean, suppressFooter?: boolean): azdata.window.Dialog {
-		return azdata.window.createModelViewDialog(title, dialogName, width, dialogStyle, dialogPosition, suppressHeader, suppressFooter);
+	public createModelViewDialog(title: string, dialogName?: string, width?: azdata.window.DialogWidth, dialogStyle?: azdata.window.DialogStyle, dialogPosition?: azdata.window.DialogPosition, suppressHeader?: boolean, suppressFooter?: boolean, dialogXYOffset?: azdata.window.IDialogXYOffset): azdata.window.Dialog {
+		return azdata.window.createModelViewDialog(title, dialogName, width, dialogStyle, dialogPosition, suppressHeader, suppressFooter, dialogXYOffset);
 	}
 
 	public createWizard(title: string): azdata.window.Wizard {

@@ -633,6 +633,8 @@ declare module 'azdata' {
 			suppressHeader?: boolean;
 
 			suppressFooter?: boolean;
+
+			dialogXYOffset?: IDialogXYOffset;
 		}
 
 		export interface Wizard {
@@ -652,6 +654,11 @@ declare module 'azdata' {
 
 		export type DialogPosition = 'left' | 'right' | 'above' | 'below' | undefined;
 
+		export interface IDialogXYOffset {
+			xOffset: number;
+			yOffset: number;
+		}
+
 		/**
 		 * Create a dialog with the given title
 		 * @param title The title of the dialog, displayed at the top
@@ -661,8 +668,9 @@ declare module 'azdata' {
 		 * @param dialogPosition Defines the dialog position, default is null
 		 * @param suppressHeader Prevents render of Dialog header
 		 * @param suppressFooter Prevents render of Dialog
+		 * @param dialogXYOffset Custom offset for positioning callout
 		 */
-		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, suppressHeader?: boolean, suppressFooter?: boolean): Dialog;
+		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, suppressHeader?: boolean, suppressFooter?: boolean, dialogXYOffset?: IDialogXYOffset): Dialog;
 
 		/**
 		 * Create a wizard with the given title and width
