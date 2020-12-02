@@ -21,7 +21,7 @@ export class HTMLMarkdownConverter {
 	}
 
 	private setTurndownOptions() {
-		this.turndownService.keep(['u', 'style']);
+		this.turndownService.keep(['style']);
 		this.turndownService.use(turndownPluginGfm.gfm);
 		this.turndownService.addRule('pre', {
 			filter: 'pre',
@@ -33,26 +33,6 @@ export class HTMLMarkdownConverter {
 			filter: 'mark',
 			replacement: (content, node) => {
 				return '<mark>' + content + '</mark>';
-			}
-		});
-		this.turndownService.addRule('strong', {
-			filter: ['strong', 'b'],
-			replacement: function (content, node, options) {
-				if (!content.trim()) {
-					return '';
-				}
-				content = addHighlightIfYellowBgExists(node, content);
-				return options.strongDelimiter + content + options.strongDelimiter;
-			}
-		});
-		this.turndownService.addRule('emphasis', {
-			filter: ['em', 'i'],
-			replacement: function (content, node, options) {
-				if (!content.trim()) {
-					return '';
-				}
-				content = addHighlightIfYellowBgExists(node, content);
-				return options.emDelimiter + content + options.emDelimiter;
 			}
 		});
 		this.turndownService.addRule('underline', {
@@ -209,6 +189,7 @@ export class HTMLMarkdownConverter {
 			filter: ['strong', 'b'],
 			replacement: function (content, node, options) {
 				content = escapeAngleBrackets(content);
+				content = addHighlightIfYellowBgExists(node, content);
 				if (!content.trim()) { return ''; }
 				return options.strongDelimiter + content + options.strongDelimiter;
 			}
@@ -217,6 +198,7 @@ export class HTMLMarkdownConverter {
 			filter: ['em', 'i'],
 			replacement: function (content, node, options) {
 				content = escapeAngleBrackets(content);
+				content = addHighlightIfYellowBgExists(node, content);
 				if (!content.trim()) { return ''; }
 				return options.emDelimiter + content + options.emDelimiter;
 			}

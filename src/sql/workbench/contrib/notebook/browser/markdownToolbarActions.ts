@@ -70,9 +70,23 @@ export class TransformMarkdownAction extends Action {
 				while (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() && selectionFocusNode?.parentNode?.nodeName?.toLowerCase() !== 'mark') {
 					selectionFocusNode = selectionFocusNode.parentNode;
 				}
-				if (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() === 'mark') {
+				// Find if element is wrapped in <span background-color="yellow"
+				if (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() !== 'mark') {
+					selectionFocusNode = document.getSelection()?.focusNode;
+					while (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() && selectionFocusNode?.parentNode?.nodeName?.toLowerCase() !== 'span' && selectionFocusNode?.parentElement?.style?.backgroundColor !== 'yellow') {
+						selectionFocusNode = selectionFocusNode.parentNode;
+					}
+				}
+				let nodeName = selectionFocusNode?.parentNode?.nodeName?.toLowerCase();
+				let backgroundColor = selectionFocusNode?.parentElement?.style?.backgroundColor;
+				if (nodeName === 'mark') {
 					// If the parent node is mark, remove that mark node and replace it with its child
 					selectionFocusNode.parentNode.parentNode.replaceChild(selectionFocusNode, selectionFocusNode.parentNode);
+					// Empty span required to force an input so that HTML change is seen from text cell component
+					// This span doesn't have any effect on the markdown generated.
+					document.execCommand('formatBlock', false, 'span');
+				} else if (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() === 'span' && backgroundColor === 'yellow') {
+					selectionFocusNode.parentElement.style.backgroundColor = '';
 					// Empty span required to force an input so that HTML change is seen from text cell component
 					// This span doesn't have any effect on the markdown generated.
 					document.execCommand('formatBlock', false, 'span');
