@@ -157,7 +157,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 						async (_progress, _token): Promise<void> => {
 							try {
 								await this._azdataApi.azdata.arc.postgres.server.edit(
-									this._postgresModel.info.name, this.saveArgs);
+									this._postgresModel.info.name,
+									this.saveArgs,
+									this._postgresModel.engineVersion!);
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied
