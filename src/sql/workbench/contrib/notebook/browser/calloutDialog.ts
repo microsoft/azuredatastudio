@@ -151,7 +151,7 @@ export class CalloutDialog extends Modal {
 			this._imageLocalRadioButton = new RadioButton(radioButtonGroup, {
 				label: this.localImageLabel,
 				enabled: true,
-				checked: false
+				checked: true
 			});
 			this._imageRemoteRadioButton = new RadioButton(radioButtonGroup, {
 				label: this.remoteImageLabel,
@@ -189,9 +189,22 @@ export class CalloutDialog extends Modal {
 			DOM.append(browseButtonContainer, this._imageBrowseButton);
 
 			this._register(DOM.addDisposableListener(this._imageBrowseButton, DOM.EventType.CLICK, async () => {
-				await this.handleBrowse();
+				let selectedUri = await this.handleBrowse();
+				if (selectedUri) {
+					this._imageUrlInputBox.value = selectedUri.fsPath;
+				}
 			}, true));
 
+			this._register(this._imageRemoteRadioButton.onClicked(e => {
+				this._imageBrowseButton.style.display = 'none';
+				this._imageUrlLabel.innerText = this.urlPlaceholder;
+				this._imageUrlInputBox.setPlaceHolder(this.urlPlaceholder);
+			}));
+			this._register(this._imageLocalRadioButton.onClicked(e => {
+				this._imageBrowseButton.style.display = 'block';
+				this._imageUrlLabel.innerText = this.pathPlaceholder;
+				this._imageUrlInputBox.setPlaceHolder(this.pathPlaceholder);
+			}));
 			DOM.append(pathRow, inputContainer);
 
 			let embedRow = DOM.$('.row');
@@ -295,15 +308,18 @@ export class CalloutDialog extends Modal {
 		return process.env.HOME || process.env.USERPROFILE;
 	}
 
-	private async handleBrowse(): Promise<void> {
+	private async handleBrowse(): Promise<URI | void> {
 		let options: IOpenDialogOptions = {
 			openLabel: undefined,
 			canSelectFiles: true,
-			canSelectFolders: true,
+			canSelectFolders: false,
 			canSelectMany: false,
 			defaultUri: URI.file(this.getUserHome()),
 			title: undefined
 		};
-		await this._fileDialogService.showOpenDialog(options);
+		let imgeUri: URI[] = await this._fileDialogService.showOpenDialog(options);
+		if (imgeUri.length > 0) {
+			return imgeUri[0];
+		}
 	}
 }
