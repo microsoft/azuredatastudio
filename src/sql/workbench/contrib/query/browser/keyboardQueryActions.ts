@@ -157,7 +157,7 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 				let resultSummary = queryRunner.batchSets[0].resultSetSummaries[i];
 				let result = await queryRunner.getQueryRows(0, resultSummary.rowCount, resultSummary.batchId, resultSummary.id);
 				let tableHeaders = resultSummary.columnInfo.map((col, i) => (col.columnName));
-				let htmlTableHeaders = resultSummary.columnInfo.map((col, i) => (`<th style="border:solid black 1.0pt; whiteSpace:nowrap">${escape(col.columnName)}</th>`));
+				let htmlTableHeaders = resultSummary.columnInfo.map((col, i) => (`<th style="border:solid black 1.0pt;whiteSpace:nowrap">${escape(col.columnName)}</th>`));
 				let copyString = '\n';
 				let htmlCopyString = '<tr>';
 
@@ -193,7 +193,7 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 
 			let data = {
 				text: `${queryText}\n\n${allResults.text}`,
-				html: `${escape(queryText).replace(/\r\n|\n|\r/gm, '<br />')}${allResults.html}`
+				html: `<div style="font-family: Consolas, 'Courier New', monospace;font-weight: normal;font-size: 14px;line-height: 19px;">${escape(queryText).replace(/\r\n|\n|\r/gm, '<br/>')}</div>${allResults.html}`
 			};
 
 			await this._clipboardService.write(data);
