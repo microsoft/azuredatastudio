@@ -120,16 +120,14 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		if (!this._table) {
 			let source = <IDataResource><any>this._bundleOptions.data[this.mimeType];
 			let columnNames: Array<string> = [];
-			let columnIndex = [];
 			let rowIndex = 0;
-			// Get schema list
+			// Get schema list of grid
 			for (let i of source.schema.fields) {
 				columnNames.push(i.name);
-				columnIndex.push(source.schema.fields.indexOf(i));
 			}
-			// Checks to see if data source is ordered properly based on schema'
-			// SQL notebooks does not use columnName as key (instead uses indices)
-			// so we need to add condition for SQL notebooks to not be reordered
+			// Check to see if data source is ordered properly based on schema
+			// SQL notebooks do not use columnName as key (instead uses indices)
+			// So we add a condition for SQL notebooks to not be reordered
 			if (source.data.length > 0) {
 				if (columnNames !== Object.keys(source.data[0]) && Object.keys(source.data[0])[0] !== '0') {
 					// Order each row based on the schema
