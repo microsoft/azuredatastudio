@@ -6,6 +6,7 @@
 import { ControllerInfo, ResourceType } from 'arc';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
+import { UserCancelledError } from '../common/api';
 import * as loc from '../localizedConstants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
@@ -66,8 +67,12 @@ export class ControllerModel {
 				const dialog = new ConnectToControllerDialog(this.treeDataProvider);
 				dialog.showDialog(this.info, this._password);
 				const model = await dialog.waitForClose();
-				await this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
-				this._password = model.password;
+				if (model) {
+					await this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
+					this._password = model.password;
+				} else {
+					throw new UserCancelledError(loc.userCancelledError);
+				}
 			}
 		}
 

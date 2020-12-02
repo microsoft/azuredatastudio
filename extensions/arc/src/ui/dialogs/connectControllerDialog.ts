@@ -8,13 +8,12 @@ import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import { v4 as uuid } from 'uuid';
 import * as vscode from 'vscode';
-import { UserCancelledError } from '../../common/api';
 import { Deferred } from '../../common/promise';
-import { getErrorMessage } from '../../common/utils';
 import * as loc from '../../localizedConstants';
 import { ControllerModel } from '../../models/controllerModel';
 import { InitializingComponent } from '../components/initializingComponent';
 import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
+import { getErrorMessage } from '../../common/utils';
 
 export type ConnectToControllerDialogModel = { controllerModel: ControllerModel, password: string };
 abstract class ControllerDialogBase extends InitializingComponent {
@@ -73,7 +72,7 @@ abstract class ControllerDialogBase extends InitializingComponent {
 			}).component();
 	}
 
-	protected completionPromise = new Deferred<ConnectToControllerDialogModel>();
+	protected completionPromise = new Deferred<ConnectToControllerDialogModel | undefined>();
 	protected id!: string;
 	protected resources: ResourceInfo[] = [];
 
@@ -111,10 +110,10 @@ abstract class ControllerDialogBase extends InitializingComponent {
 	public abstract async validate(): Promise<boolean>;
 
 	private handleCancel(): void {
-		this.completionPromise.reject(new UserCancelledError(loc.userCancelledError));
+		this.completionPromise.resolve(undefined);
 	}
 
-	public waitForClose(): Promise<ConnectToControllerDialogModel> {
+	public waitForClose(): Promise<ConnectToControllerDialogModel | undefined> {
 		return this.completionPromise.promise;
 	}
 }

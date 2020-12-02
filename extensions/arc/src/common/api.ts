@@ -5,6 +5,7 @@
 
 import * as arc from 'arc';
 import * as rd from 'resource-deployment';
+import * as loc from '../localizedConstants';
 import { PasswordToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerTreeNode } from '../ui/tree/controllerTreeNode';
@@ -26,6 +27,9 @@ export async function reacquireControllerPassword(treeDataProvider: AzureArcTree
 	const dialog = new PasswordToControllerDialog(treeDataProvider);
 	dialog.showDialog(controllerInfo);
 	const model = await dialog.waitForClose();
+	if (!model) {
+		throw new UserCancelledError(loc.userCancelledError);
+	}
 	return model.password;
 }
 

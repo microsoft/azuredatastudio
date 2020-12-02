@@ -64,18 +64,18 @@ export class NotebookWizardModel extends ResourceTypeModel {
 	public async onGenerateScript(): Promise<boolean> {
 		const lastPage = this.wizard.lastPage! as NotebookWizardPage;
 		if (lastPage.validatePage()) {
-			let notebook: Notebook;
+			let notebook: Notebook | undefined;
 			try {
 				notebook = await this.prepareNotebookAndEnvironment();
 			} catch (e) {
-				const isUserCancelled = (e: any) => e instanceof Error && 'type' in e && (<ErrorWithType>e).type === ErrorType.userCancelled;
+				const isUserCancelled = e instanceof Error && 'type' in e && (<ErrorWithType>e).type === ErrorType.userCancelled;
 				// user cancellation is a normal scenario, we just bail out of the wizard without actually opening the notebook, so rethrow for any other case
-				if (!isUserCancelled(e)) {
+				if (!isUserCancelled) {
 					throw e;
 				}
 			}
-			if (notebook!) { // open the notebook if it was successfully prepared
-				await this.openNotebook(notebook!);
+			if (notebook) { // open the notebook if it was successfully prepared
+				await this.openNotebook(notebook);
 			}
 			return true; // generation done (or cancelled at user request) so close the wizard
 		} else {
