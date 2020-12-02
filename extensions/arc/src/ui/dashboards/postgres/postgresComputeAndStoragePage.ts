@@ -225,7 +225,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.coresLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 1,
-			validationErrorMessage: loc.coresValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
