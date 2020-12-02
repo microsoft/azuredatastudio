@@ -76,7 +76,16 @@ export class BookTreeItem extends vscode.TreeItem {
 			this.tooltip = `${this._uri}`;
 		}
 		else {
-			this._tableOfContentsPath = (this.book.type === BookTreeItemType.Book || this.contextValue === 'section' || (book.tableOfContents.sections && book.type === BookTreeItemType.Notebook)) ? (this.book.version === BookVersion.v1 ? path.join(this.book.root, '_data', 'toc.yml') : path.join(this.book.root, '_toc.yml')) : undefined;
+			// if it's a section, book or a notebook's book then we set the table of contents path.
+			if (this.book.type === BookTreeItemType.Book || this.contextValue === 'section' || (book.tableOfContents.sections && book.type === BookTreeItemType.Notebook)) {
+				if (this.book.version === BookVersion.v1) {
+					this._tableOfContentsPath = path.join(this.book.root, '_data', 'toc.yml');
+				} else {
+					this._tableOfContentsPath = path.join(this.book.root, '_toc.yml');
+				}
+			} else {
+				this._tableOfContentsPath = undefined;
+			}
 			this._rootContentPath = this.book.version === BookVersion.v1 ? path.join(this.book.root, content) : this.book.root;
 			this.tooltip = this.book.type === BookTreeItemType.Book ? this._rootContentPath : this.book.contentPath;
 			this.resourceUri = vscode.Uri.file(this.book.root);
@@ -116,7 +125,8 @@ export class BookTreeItem extends vscode.TreeItem {
 			let pathToNotebook: string;
 			if (this.book.tableOfContents.sections[i].file) {
 				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				pathToNotebook = this.book.version === BookVersion.v2 ? path.posix.join(this.book.root, this.book.tableOfContents.sections[i].file.concat('.ipynb')) : path.posix.join(this.book.root, content, this.book.tableOfContents.sections[i].file.concat('.ipynb'));
+				pathToNotebook = this.book.version === BookVersion.v2 ? path.posix.join(this.book.root, this.book.tableOfContents.sections[i].file) : path.posix.join(this.book.root, content, this.book.tableOfContents.sections[i].file);
+				pathToNotebook = pathToNotebook.concat('.ipynb');
 			}
 			// eslint-disable-next-line no-sync
 			if (fs.existsSync(pathToNotebook)) {
@@ -133,7 +143,8 @@ export class BookTreeItem extends vscode.TreeItem {
 			let pathToNotebook: string;
 			if (this.book.tableOfContents.sections[i].file) {
 				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				pathToNotebook = this.book.version === BookVersion.v2 ? path.posix.join(this.book.root, this.book.tableOfContents.sections[i].file.concat('.ipynb')) : path.posix.join(this.book.root, content, this.book.tableOfContents.sections[i].file.concat('.ipynb'));
+				pathToNotebook = this.book.version === BookVersion.v2 ? path.posix.join(this.book.root, this.book.tableOfContents.sections[i].file) : path.posix.join(this.book.root, content, this.book.tableOfContents.sections[i].file);
+				pathToNotebook = pathToNotebook.concat('.ipynb');
 			}
 			// eslint-disable-next-line no-sync
 			if (fs.existsSync(pathToNotebook)) {
@@ -184,6 +195,10 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	public set uri(uri: string) {
 		this._uri = uri;
+	}
+
+	public set sections(sections: any[]) {
+		this._sections = sections;
 	}
 
 	/**

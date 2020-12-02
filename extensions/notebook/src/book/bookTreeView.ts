@@ -19,7 +19,6 @@ import * as glob from 'fast-glob';
 import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager } from './bookTocManager';
-import { JupyterBookSection } from '../contracts/content';
 
 const content = 'content';
 
@@ -182,12 +181,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					if (pickedSection) {
 						const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
 						if (movingElement.tableOfContents.sections) {
-							// this is for notebooks what about sections
 							if (movingElement.contextValue === 'savedNotebook') {
 								let sourceBook = this.books.find(book => book.getNotebook(movingElement.book.contentPath));
 								movingElement.tableOfContents.sections = sourceBook.bookItems[0].sections;
 							}
 						}
+						this.bookTocManager.updateBookModel(this.books.find(book => book.bookPath === movingElement.book.root), movingElement);
 						this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
 					}
 				}

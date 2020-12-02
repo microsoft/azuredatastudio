@@ -25,6 +25,7 @@ import { AppContext } from '../../common/appContext';
 
 export interface IExpectedBookItem {
 	title: string;
+	file?: string;
 	url?: string;
 	sections?: any[];
 	external?: boolean;
@@ -34,7 +35,11 @@ export interface IExpectedBookItem {
 
 export function equalBookItems(book: BookTreeItem, expectedBook: IExpectedBookItem, errorMsg?: string): void {
 	should(book.title).equal(expectedBook.title, `Book titles do not match, expected ${expectedBook?.title} and got ${book?.title}`);
-	should(path.posix.parse(book.uri)).deepEqual(path.posix.parse(expectedBook.url));
+	if(expectedBook.file){
+		should(path.posix.parse(book.uri)).deepEqual(path.posix.parse(expectedBook.file));
+	} else {
+		should(path.posix.parse(book.uri)).deepEqual(path.posix.parse(expectedBook.url));
+	}
 	if (expectedBook.previousUri || expectedBook.nextUri) {
 		let prevUri = book.previousUri ? book.previousUri.toLocaleLowerCase() : undefined;
 		let expectedPrevUri = expectedBook.previousUri ? expectedBook.previousUri.replace(/\\/g, '/') : undefined;
@@ -75,25 +80,25 @@ describe('BooksTreeViewTests', function () {
 			expectedNotebook1 = {
 				// tslint:disable-next-line: quotemark
 				title: 'Notebook1',
-				url: '/notebook1',
+				file: '/notebook1',
 				previousUri: undefined,
 				nextUri: notebook2File.toLocaleLowerCase()
 			};
 			expectedNotebook2 = {
 				title: 'Notebook2',
-				url: '/notebook2',
+				file: '/notebook2',
 				previousUri: notebook1File.toLocaleLowerCase(),
 				nextUri: notebook3File.toLocaleLowerCase()
 			};
 			expectedNotebook3 = {
 				title: 'Notebook3',
-				url: '/notebook3',
+				file: '/notebook3',
 				previousUri: notebook2File.toLocaleLowerCase(),
 				nextUri: undefined
 			};
 			expectedMarkdown = {
 				title: 'Markdown',
-				url: '/markdown'
+				file: '/markdown'
 			};
 			expectedExternalLink = {
 				title: 'GitHub',
@@ -609,7 +614,7 @@ describe('BooksTreeViewTests', function () {
 			before(async () => {
 				expectedNotebook2 = {
 					title: 'Notebook2',
-					url: '/notebook2',
+					file: '/notebook2',
 					previousUri: undefined,
 					nextUri: undefined
 				};

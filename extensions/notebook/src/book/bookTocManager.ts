@@ -9,11 +9,12 @@ import * as fs from 'fs-extra';
 import { JupyterBookSection } from '../contracts/content';
 import { BookVersionHandler } from './bookVersionHandler';
 import * as vscode from 'vscode';
-import { BookVersion } from './bookModel';
+import { BookModel, BookVersion } from './bookModel';
 
 export interface IBookTocManager {
 	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
-	createBook(bookContentPath: string, contentFolder: string): Promise<void>
+	updateBookModel(book: BookModel, element: BookTreeItem): Promise<void>;
+	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
 }
 
 const allowedFileExtensions: string[] = ['.md', '.ipynb'];
@@ -78,7 +79,7 @@ export class BookTocManager implements IBookTocManager {
 	}
 
 	/**
-	 * Modifies a tableOfContents
+	 * Reads and modifies the table of contents file of the target book.
 	 * @param tableOfContents Current table of contents of a book.
 	 * @param findSection The section that will be modified.
 	 * @param addSection The section that'll be added to the target section. If it's undefined then the target section (findSection) is removed from the table of contents.
@@ -87,7 +88,10 @@ export class BookTocManager implements IBookTocManager {
 		const toc = yaml.safeLoad((await fs.readFile(tocPath, 'utf8')));
 		let newToc = new Array<JupyterBookSection>(toc.length);
 		for (const [index, section] of toc.entries()) {
-			newToc[index] = this.buildTOC(version, section, findSection, addSection);
+			let newSection = this.buildTOC(version, section, findSection, addSection);
+			if (newSection) {
+				newToc[index] = newSection;
+			}
 		}
 		await fs.writeFile(tocPath, yaml.safeDump(newToc, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 		this.newSection = {};
@@ -163,6 +167,18 @@ export class BookTocManager implements IBookTocManager {
 		}
 	}
 
+	public async updateBookModel(book: BookModel, element: BookTreeItem): Promise<void> {
+		const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };
+		let newToc = new Array<JupyterBookSection>(book.bookItems[0].sections.length);
+		for (const [index, section] of book.bookItems[0].sections.entries()) {
+			let newSection = this.buildTOC(book.version, section, findSection, undefined);
+			if (newSection) {
+				newToc[index] = newSection;
+			}
+		}
+		book.bookItems[0].sections = newToc;
+	}
+
 	/**
 	 * Moves the element to the book's folder and adds it to the table of contents.
 	 * @param element Notebook, Markdown File, or section that will be added to the book.
@@ -170,12 +186,10 @@ export class BookTocManager implements IBookTocManager {
 	 * @param targetSection Book section that'll be modified.
 	*/
 	public async updateBook(element: BookTreeItem, targetBook: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
-		// TODO: Modify the book's current table of contents so it doesn't throw an error
 		if (element.contextValue === 'section') {
 			// if the element that we want to move is a section, then we need to modify the sourceBook toc and remove the section before moving the files.
 			const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };
 			await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
-
 			if (targetSection) {
 				// moving section files to target book directory
 				await this.addSection(element, targetBook, targetSection);

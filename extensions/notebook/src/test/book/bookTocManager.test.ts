@@ -339,7 +339,7 @@ describe('BookTocManagerTests', function () {
 				});
 
 				it('Add section to book', async () => {
-					await bookTocManager.updateBook(bookSection, book);
+					await bookTocManager.updateBook(bookSection, book, undefined);
 					const listFiles = await fs.promises.readdir(run.book.bookContentFolderPath);
 					const tocFile = await fs.promises.readFile(run.book.tocPath, 'utf8');
 					let toc = yaml.safeLoad(tocFile);

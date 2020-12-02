@@ -10,30 +10,42 @@ export class BookVersionHandler {
 
 	constructor() { }
 
-	public convertFrom(version: string, tableOfContents: JupyterBookSection): JupyterBookSection {
+	/**
+	 * Parses a section to JupyterSection, which is the union of  Jupyter Book v1 and v2 interfaces.
+	 * There are conflicting properties between v1 and v2 Jupyter Book toc properties,
+	 * this method converts v1 to v2 while keeping the v1 properties that do not exist in v2.
+	 * @param version Version of the section that will be converted
+	 * @param section The section that'll be converted.
+	*/
+	public convertFrom(version: string, section: JupyterBookSection): JupyterBookSection {
 		if (version === BookVersion.v1) {
-			return Object.assign(tableOfContents, {
-				title: tableOfContents.title,
-				file: (tableOfContents as IJupyterBookSectionV1).external ? undefined : tableOfContents.url,
-				url: (tableOfContents as IJupyterBookSectionV1).external ? tableOfContents.url : undefined,
-				sections: tableOfContents.sections,
-				expand_sections: tableOfContents.expand_sections,
-				search: (tableOfContents as IJupyterBookSectionV1).search,
-				divider: (tableOfContents as IJupyterBookSectionV1).divider,
-				header: (tableOfContents as IJupyterBookSectionV1).header,
-				external: (tableOfContents as IJupyterBookSectionV1).external
-			});
+			return {
+				title: section.title,
+				file: (section as IJupyterBookSectionV1).external ? undefined : section.url,
+				url: (section as IJupyterBookSectionV1).external ? section.url : undefined,
+				sections: section.sections,
+				expand_sections: section.expand_sections,
+				search: (section as IJupyterBookSectionV1).search,
+				divider: (section as IJupyterBookSectionV1).divider,
+				header: (section as IJupyterBookSectionV1).header,
+				external: (section as IJupyterBookSectionV1).external
+			};
 		} else {
-			return Object.assign(tableOfContents, {
-				title: tableOfContents.title,
-				file: (tableOfContents as IJupyterBookSectionV2).file,
-				url: tableOfContents.url,
-				sections: tableOfContents.sections,
-				expand_sections: tableOfContents.expand_sections
-			});
+			return {
+				title: section.title,
+				file: (section as IJupyterBookSectionV2).file,
+				url: section.url,
+				sections: section.sections,
+				expand_sections: section.expand_sections
+			};
 		}
 	}
 
+	/**
+	 * Converts the JupyterSection to either Jupyter Book v1 or v2.
+	 * @param version Version of the section that will be converted
+	 * @param section The section that'll be converted.
+	*/
 	public convertTo(version: string, section: JupyterBookSection): JupyterBookSection {
 		if (version === BookVersion.v1) {
 			if (section.sections && section.sections.length > 0) {
