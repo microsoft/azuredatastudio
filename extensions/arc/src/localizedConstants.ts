@@ -139,7 +139,6 @@ export const coresRequest = localize('arc.coresRequest', "CPU request:");
 export const memoryLimit = localize('arc.memoryLimit', "Memory limit (in GB):");
 export const memoryRequest = localize('arc.memoryRequest', "Memory request (in GB):");
 export const workerValidationErrorMessage = localize('arc.workerValidationErrorMessage', "The number of workers cannot be decreased.");
-export const coresValidationErrorMessage = localize('arc.coresValidationErrorMessage', "Valid CPU resource quantities are strictly positive.");
 export const memoryRequestValidationErrorMessage = localize('arc.memoryRequestValidationErrorMessage', "Memory request must be at least 0.25Gib");
 export const memoryLimitValidationErrorMessage = localize('arc.memoryLimitValidationErrorMessage', "Memory limit must be at least 0.25Gib");
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
