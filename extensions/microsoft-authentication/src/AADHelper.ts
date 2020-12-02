@@ -273,7 +273,7 @@ export class AzureActiveDirectoryService {
 		}
 
 		return new Promise(async (resolve, reject) => {
-			if (vscode.env.uiKind === vscode.UIKind.Web) {
+			if (vscode.env.remoteName !== undefined) {
 				resolve(this.loginWithoutLocalServer(scope));
 				return;
 			}
