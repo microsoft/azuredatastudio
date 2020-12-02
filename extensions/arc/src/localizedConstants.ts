@@ -172,6 +172,7 @@ export function numVCores(vCores: string | undefined): string {
 	}
 }
 export function updated(when: string): string { return localize('arc.updated', "Updated {0}", when); }
+export function validationMin(min: number): string { return localize('arc.validationMin', "Value must be greater than or equal to {0}.", min); }
 
 // Errors
 export const connectionRequired = localize('arc.connectionRequired', "A connection is required to show all properties. Click refresh to re-enter connection information");

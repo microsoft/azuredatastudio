@@ -243,7 +243,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.coresRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 1,
-			validationErrorMessage: loc.coresValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
@@ -448,6 +447,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
+		this.coresRequestBox!.validationErrorMessage = loc.validationMin(this.coresRequestBox!.min!);
 		this.coresRequestBox!.placeHolder = currentCPUSize;
 		this.coresRequestBox!.value = '';
 		this.saveArgs.coresRequest = undefined;
@@ -458,6 +458,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
+		this.coresLimitBox!.validationErrorMessage = loc.validationMin(this.coresLimitBox!.min!);
 		this.coresLimitBox!.placeHolder = currentCPUSize;
 		this.coresLimitBox!.value = '';
 		this.saveArgs.coresLimit = undefined;
