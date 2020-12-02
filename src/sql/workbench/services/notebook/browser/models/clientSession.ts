@@ -66,12 +66,12 @@ export class ClientSession implements IClientSession {
 			await this._serverLoadFinished;
 			let startServerEndTime = Date.now();
 			let startServerTime = startServerEndTime - startServerBeginTime;
-			console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + startServerTime.toString() + 'ms to start the server~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+			console.log('Total: It took ' + startServerTime.toString() + 'ms to start the server');
 			let beginStartSessionTime = Date.now();
 			await this.initializeSession();
 			let endStartSessionTime = Date.now();
 			let startSessionTime = endStartSessionTime - beginStartSessionTime;
-			console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~It took ' + startSessionTime.toString() + 'ms to start the session~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+			console.log('Total: It took ' + startSessionTime.toString() + 'ms to start the session');
 			await this.updateCachedKernelSpec();
 		} catch (err) {
 			this._errorMessage = getErrorMessage(err) || localize('clientSession.unknownError', "An error occurred while starting the notebook session");

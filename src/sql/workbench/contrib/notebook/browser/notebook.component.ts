@@ -263,8 +263,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			await this.createModelAndLoadContents();
 			this._modelReadyDeferred.resolve(this._model);
 			this.notebookService.addNotebookEditor(this);
+			let managerStartTime = Date.now();
 			await this.setNotebookManager();
+			let managerEndTime = Date.now();
+			let managerTime = managerEndTime - managerStartTime;
+			console.log('Total: It took ' + managerTime.toString() + 'ms to set the notebook manager');
+			let loadStartTime = Date.now();
 			await this.loadModel();
+			let loadEndTime = Date.now();
+			let loadTime = loadEndTime - loadStartTime;
+			console.log('Total: It took ' + loadTime.toString() + 'ms to load model (server + session)');
 		} catch (error) {
 			if (error) {
 				// Offer to create a file from the error if we have a file not found and the name is valid
@@ -313,12 +321,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await this.awaitNonDefaultProvider();
 		let providerEndTime = Date.now();
 		let providerTime = providerEndTime - providerStartTime;
-		console.log('Total await non default provider time is ' + providerTime.toString() + 'ms ');
+		console.log('Load model: It took ' + providerTime.toString() + 'ms to await non default provider');
 		let modelLoadStartTime = Date.now();
 		await this._model.requestModelLoad();
 		let modelLoadEndTime = Date.now();
 		let modelLoadTime = modelLoadEndTime - modelLoadStartTime;
-		console.log('Total model load time is ' + modelLoadTime.toString() + 'ms');
+		console.log('Load model: It took ' + modelLoadTime.toString() + 'ms to request model load');
 		this.detectChanges();
 
 		this.setContextKeyServiceWithProviderId(this._model.providerId);
@@ -326,16 +334,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await this._model.startSession(this._model.notebookManager, undefined, true);
 		let sessionEndTime = Date.now();
 		let sessionReadyTime = sessionEndTime - sessionStartTime;
-		console.log('Total client session ready time is ' + sessionReadyTime.toString() + 'ms');
+		console.log('Load model: It took ' + sessionReadyTime.toString() + 'ms to start session ');
 		let fillStartTime = Date.now();
 		this.fillInActionsForCurrentContext();
 		let fillEndTime = Date.now();
 		let fillTime = fillEndTime - fillStartTime;
-		console.log('Total fill in actions for current context time is ' + fillTime.toString() + 'ms');
+		// console.log('Total fill in actions for current context time is ' + fillTime.toString() + 'ms');
 		this.detectChanges();
 		let kernelEndTime = Date.now();
 		let kernelReadyTime = kernelEndTime - kernelStartTime;
-		console.log('Total kernel ready time is ' + kernelReadyTime.toString() + 'ms');
+		// console.log('Total kernel ready time is ' + kernelReadyTime.toString() + 'ms');
 	}
 
 	private async createModelAndLoadContents(): Promise<void> {
@@ -377,7 +385,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private async awaitNonDefaultProvider(): Promise<void> {
 		// Wait on registration for now. Long-term would be good to cache and refresh
+		let registrationStartTime = Date.now();
 		await this.notebookService.registrationComplete;
+		let registrationEndTime = Date.now();
+		let registrationTime = registrationEndTime - registrationStartTime;
+		console.log('Total: It took ' + registrationTime.toString() + 'ms to wait for notebook service registration complete');
 		this.model.standardKernels = this._notebookParams.input.standardKernels;
 		// Refresh the provider if we had been using default
 		let providerInfo = await this._notebookParams.providerInfo;
