@@ -205,3 +205,4 @@ export const noPasswordFound = (controllerName: string) => localize('noPasswordF
 export const noContextFound = (configFile: string) => localize('noContextFound', "No 'contexts' found in the config file: {0}", configFile);
 export const noCurrentContextFound = (configFile: string) => localize('noCurrentContextFound', "No context is marked as 'current-context' in the config file: {0}", configFile);
 export const noNameInContext = (configFile: string) => localize('noNameInContext', "No name field was found in a cluster context in the config file: {0}", configFile);
+export const userCancelledError = localize('userCancelledError', "User cancelled the dialog");
