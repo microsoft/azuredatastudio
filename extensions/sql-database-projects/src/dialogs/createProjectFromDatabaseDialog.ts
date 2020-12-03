@@ -228,6 +228,7 @@ export class CreateProjectFromDatabaseDialog {
 	private createProjectNameRow(view: azdata.ModelView): azdata.FlexContainer {
 		this.projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.projectNamePlaceholderText,
+			placeHolder: constants.projectNamePlaceholderText,
 			required: true,
 			width: cssStyles.createProjectFromDatabaseTextboxWidth,
 			validationErrorMessage: constants.projectNameRequired
@@ -323,7 +324,7 @@ export class CreateProjectFromDatabaseDialog {
 			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();
 
-		const folderStructureRow = view.modelBuilder.flexContainer().withItems([folderStructureLabel, <azdata.DropDownComponent>this.folderStructureDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-left': '0px', 'margin-right': '10px', 'margin-top': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const folderStructureRow = view.modelBuilder.flexContainer().withItems([folderStructureLabel, <azdata.DropDownComponent>this.folderStructureDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		return folderStructureRow;
 	}
