@@ -111,7 +111,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 	}
 
 	private handleKeyDown(e: KeyboardEvent, args: Slick.OnKeyDownEventArgs<T>): void {
-		if (this._grid.getColumns()[args.cell].id !== this._options.columnId
+		if (this._grid.getColumns()[args.cell] && this._grid.getColumns()[args.cell].id !== this._options.columnId
 			|| !(this.getCheckboxPropertyValue(args.row).enabled)
 		) {
 			return;
@@ -147,7 +147,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 
 	private handleClick(e: Event, args: Slick.OnClickEventArgs<T>): void {
 		// clicking on a row select checkbox
-		if (this._grid.getColumns()[args.cell].id === this._options.columnId && jQuery(e.target!).is('input[type="checkbox"]')) {
+		if (this._grid.getColumns()[args.cell] && this._grid.getColumns()[args.cell].id === this._options.columnId && jQuery(e.target!).is('input[type="checkbox"]')) {
 			// if editing, try to commit
 			if (this._grid.getEditorLock().isActive() && !this._grid.getEditorLock().commitCurrentEdit()) {
 				e.preventDefault();
