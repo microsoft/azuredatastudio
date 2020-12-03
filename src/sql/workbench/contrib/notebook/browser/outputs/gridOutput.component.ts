@@ -148,7 +148,6 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 }
 
 function reorderGridData(source: IDataResource): void {
-	let rowIndex = 0;
 	// Get Column Names list from the data resource schema
 	const columnNames: string[] = source.schema.fields.map(field => field.name);
 	if (source.data.length > 0) {
@@ -163,29 +162,28 @@ function reorderGridData(source: IDataResource): void {
 			// We check the data to know if it is in index form or string form
 			for (let rowKey in rowKeys) {
 				// Check to see if first row keys are in index format (numbers)
-				let currentIndex = typeof Number(rowKeys[rowKey]);
-				let nextIndex = typeof Number(rowKeys[rowKey + 1]);
+				let currentIndex = Number(rowKeys[rowKey]);
+				let nextIndex = Number(rowKeys[rowKey]) + 1;
 				// We are only testing to make sure that the entire row is in index format
 				// We assume that index format data keys are in order based on the data resource schema
 				// Edge case: If the index format is out of order, then we would not have the ability to match
 				// random indexes with the column names list
-				if (currentIndex === 'number' && rowKeys[rowKey + 1] < (rowKeys.length - 1)) {
+				if (typeof currentIndex === 'number' && !Number.isNaN(currentIndex)) {
 					// Check to see if next element is number (confirms table is already ordered and in index format)
-					if (!(nextIndex === 'number')) {
+					if (!(typeof nextIndex === 'number' && nextIndex !== NaN)) {
 						// There should not be mix of numbers and strings as row keys
 						return;
 					}
 					// Only reorder data in form of strings (as index ordered tables are already ordered)
-				} else if (typeof (rowKey) === 'string') {
+				} else {
 					// Order each row based on the schema
-					for (let row of source.data) {
+					source.data.forEach((row, index) => {
 						let reorderedData = {};
 						for (let key of columnNames) {
 							reorderedData[key] = row[key];
 						}
-						rowIndex = source.data.indexOf(row);
-						source.data[rowIndex] = reorderedData;
-					}
+						source.data[index] = reorderedData;
+					});
 				}
 			}
 		}
