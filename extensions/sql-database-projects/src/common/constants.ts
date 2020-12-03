@@ -23,9 +23,13 @@ export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.S
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
 // Project Provider
-export const sqlDatabaseProjectTypeId = 'sqldbproj';
-export const projectTypeDisplayName = localize('projectTypeDisplayName', "SQL Database");
-export const projectTypeDescription = localize('projectTypeDescription', "Design, edit, and publish schemas for SQL databases");
+export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
+export const emptyProjectTypeDisplayName = localize('emptyProjectTypeDisplayName', "SQL Database");
+export const emptyProjectTypeDescription = localize('emptyProjectTypeDescription', "Develop and publish schemas for SQL databases starting from an empty project");
+
+export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
+export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Edge");
+export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for SQL Edge");
 
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
@@ -196,6 +200,9 @@ export const scriptFriendlyName = localize('scriptFriendlyName', "Script");
 export const tableFriendlyName = localize('tableFriendlyName', "Table");
 export const viewFriendlyName = localize('viewFriendlyName', "View");
 export const storedProcedureFriendlyName = localize('storedProcedureFriendlyName', "Stored Procedure");
+export const dataSourceFriendlyName = localize('dataSource', "Data Source");
+export const fileFormatFriendlyName = localize('fileFormat', "File Format");
+export const externalStreamFriendlyName = localize('externalStream', "External Stream");
 export const externalStreamingJobFriendlyName = localize('externalStreamingJobFriendlyName', "External Streaming Job");
 export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "Script.PreDeployment");
 export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "Script.PostDeployment");
