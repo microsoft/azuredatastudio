@@ -39,7 +39,7 @@ export type SqlManagedInstance = AzureProduct;
 export async function getAvailableManagedInstanceProducts(account: azdata.Account, subscription: Subscription): Promise<SqlManagedInstance[]> {
 	const api = await getAzureCoreAPI();
 
-	const result = await api.runGraphQuery<SqlManagedInstance>(account, [subscription], false, `where type == "${azureResource.AzureResourceType.sqlManagedInstance}"`);
+	const result = await api.getSqlManagedInstances(account, [subscription], false);
 	return result.resources;
 }
 
@@ -47,7 +47,7 @@ export type SqlServer = AzureProduct;
 export async function getAvailableSqlServers(account: azdata.Account, subscription: Subscription): Promise<SqlServer[]> {
 	const api = await getAzureCoreAPI();
 
-	const result = await api.runGraphQuery<SqlServer>(account, [subscription], false, `where type == "${azureResource.AzureResourceType.sqlServer}"`);
+	const result = await api.getSqlServers(account, [subscription], false);
 	return result.resources;
 }
 
@@ -55,14 +55,14 @@ export type SqlVMServer = AzureProduct;
 export async function getAvailableSqlVMs(account: azdata.Account, subscription: Subscription): Promise<SqlVMServer[]> {
 	const api = await getAzureCoreAPI();
 
-	const result = await api.runGraphQuery<SqlVMServer>(account, [subscription], false, `where type == "${azureResource.AzureResourceType.virtualMachines}" and properties.storageProfile.imageReference.publisher == "microsoftsqlserver"`);
+	const result = await api.getSqlVMServer(account, [subscription], false);
 	return result.resources;
 }
 
 export type StorageAccount = AzureProduct;
 export async function getAvailableStorageAccounts(account: azdata.Account, subscription: Subscription): Promise<StorageAccount[]> {
 	const api = await getAzureCoreAPI();
-	const result = await api.runGraphQuery<StorageAccount>(account, [subscription], false, `where type == "${azureResource.AzureResourceType.storageAccount}"`);
+	const result = await api.getStorageAccounts(account, [subscription], false);
 	sortResourceArrayByName(result.resources);
 	return result.resources;
 }

@@ -129,6 +129,26 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			}
 			return providers;
 		},
+		getSqlManagedInstances(account: azdata.Account,
+			subscriptions: azureResource.AzureResourceSubscription[],
+			ignoreErrors: boolean): Promise<azurecore.GetSqlManagedInstancesResult> {
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.sqlManagedInstance}"`);
+		},
+		getSqlServers(account: azdata.Account,
+			subscriptions: azureResource.AzureResourceSubscription[],
+			ignoreErrors: boolean): Promise<azurecore.GetSqlServersResult> {
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.sqlServer}"`);
+		},
+		getSqlVMServer(account: azdata.Account,
+			subscriptions: azureResource.AzureResourceSubscription[],
+			ignoreErrors: boolean): Promise<azurecore.GetSqlVMServerResult> {
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.virtualMachines}" and properties.storageProfile.imageReference.publisher == "microsoftsqlserver"`);
+		},
+		getStorageAccounts(account: azdata.Account,
+			subscriptions: azureResource.AzureResourceSubscription[],
+			ignoreErrors: boolean): Promise<azurecore.GetStorageAccountResult> {
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.storageAccount}"`);
+		},
 		getRegionDisplayName: utils.getRegionDisplayName,
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: azdata.Account,
 			subscriptions: azureResource.AzureResourceSubscription[],

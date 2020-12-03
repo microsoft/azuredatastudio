@@ -8,6 +8,18 @@ import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
 
 export class AzurecoreApiStub implements azurecore.IExtension {
+	getSqlManagedInstances(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Thenable<azurecore.GetSqlManagedInstancesResult> {
+		throw new Error('Method not implemented.');
+	}
+	getSqlServers(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Thenable<azurecore.GetSqlServersResult> {
+		throw new Error('Method not implemented.');
+	}
+	getSqlVMServer(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Thenable<azurecore.GetSqlVMServerResult> {
+		throw new Error('Method not implemented.');
+	}
+	getStorageAccounts(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Thenable<azurecore.GetStorageAccountResult> {
+		throw new Error('Method not implemented.');
+	}
 	makeHttpGetRequest(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _ignoreErrors: boolean, _url: string): Promise<any> {
 		throw new Error('Method not implemented.');
 	}

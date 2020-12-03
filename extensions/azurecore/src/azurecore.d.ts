@@ -68,6 +68,10 @@ declare module 'azurecore' {
 	export interface IExtension {
 		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean, selectedOnly?: boolean): Thenable<GetSubscriptionsResult>;
 		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Thenable<GetResourceGroupsResult>;
+		getSqlManagedInstances(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Thenable<GetSqlManagedInstancesResult>;
+		getSqlServers(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Thenable<GetSqlServersResult>;
+		getSqlVMServer(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Thenable<GetSqlVMServerResult>;
+		getStorageAccounts(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Thenable<GetStorageAccountResult>;
 		/**
 		 * Converts a region value (@see AzureRegion) into the localized Display Name
 		 * @param region The region value
@@ -81,6 +85,10 @@ declare module 'azurecore' {
 
 	export type GetSubscriptionsResult = { subscriptions: azureResource.AzureResourceSubscription[], errors: Error[] };
 	export type GetResourceGroupsResult = { resourceGroups: azureResource.AzureResourceResourceGroup[], errors: Error[] };
+	export type GetSqlManagedInstancesResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
+	export type GetSqlServersResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
+	export type GetSqlVMServerResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
+	export type GetStorageAccountResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
 
 	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
 	export type HttpGetRequestResult = { response: any, errors: Error[] };
