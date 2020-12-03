@@ -127,7 +127,7 @@ export class Main {
 	}
 
 	// {{SQL CARBON EDIT}} -- make public
-	public async installExtensions(extensions: string[], force: boolean, doNotSync: boolean): Promise<void> {
+	public async installExtensions(extensions: string[], builtinExtensionIds: string[], isMachineScoped: boolean, force: boolean): Promise<void> {
 		const failed: string[] = [];
 		const installedExtensionsManifests: IExtensionManifest[] = [];
 		if (extensions.length) {
