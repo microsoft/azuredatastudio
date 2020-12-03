@@ -630,21 +630,24 @@ export class ProjectsController {
 		try {
 			const workspaceApi = utils.getDataWorkspaceExtensionApi();
 
-			const newProjFolderUri = model.filePath;
+			const validateWorkspace = await workspaceApi.validateWorkspace();
+			if (validateWorkspace) {
+				const newProjFolderUri = model.filePath;
 
-			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
-			model.filePath = path.dirname(newProjFilePath);
-			this.setFilePath(model);
+				const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
+				model.filePath = path.dirname(newProjFilePath);
+				this.setFilePath(model);
 
-			const project = await Project.openProject(newProjFilePath);
-			await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
-			let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
+				const project = await Project.openProject(newProjFilePath);
+				await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
+				let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
-			await project.addToProject(fileFolderList); // Add generated file structure to the project
+				await project.addToProject(fileFolderList); // Add generated file structure to the project
 
-			// add project to workspace
-			workspaceApi.showProjectsView();
-			await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
+				// add project to workspace
+				workspaceApi.showProjectsView();
+				await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
+			}
 		}
 		catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
