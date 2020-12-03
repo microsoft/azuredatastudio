@@ -61,7 +61,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IThemeService) private readonly themeService: IThemeService,
+		@Inject(IThemeService) private readonly themeService: IThemeService
 	) {
 		super();
 	}
