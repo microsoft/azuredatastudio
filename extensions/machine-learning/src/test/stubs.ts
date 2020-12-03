@@ -8,16 +8,16 @@ import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
 
 export class AzurecoreApiStub implements azurecore.IExtension {
-	getSqlManagedInstances(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Thenable<azurecore.GetSqlManagedInstancesResult> {
+	getSqlManagedInstances(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Promise<azurecore.GetSqlManagedInstancesResult> {
 		throw new Error('Method not implemented.');
 	}
-	getSqlServers(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Thenable<azurecore.GetSqlServersResult> {
+	getSqlServers(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Promise<azurecore.GetSqlServersResult> {
 		throw new Error('Method not implemented.');
 	}
-	getSqlVMServer(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Thenable<azurecore.GetSqlVMServerResult> {
+	getSqlVMServer(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Promise<azurecore.GetSqlVMServerResult> {
 		throw new Error('Method not implemented.');
 	}
-	getStorageAccounts(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Thenable<azurecore.GetStorageAccountResult> {
+	getStorageAccounts(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountResult> {
 		throw new Error('Method not implemented.');
 	}
 	makeHttpGetRequest(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _ignoreErrors: boolean, _url: string): Promise<any> {
@@ -26,10 +26,10 @@ export class AzurecoreApiStub implements azurecore.IExtension {
 	runGraphQuery<T extends azureResource.AzureGraphResource>(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors: boolean, _query: string): Promise<azurecore.ResourceQueryResult<T>> {
 		throw new Error('Method not implemented.');
 	}
-	getSubscriptions(_account?: azdata.Account | undefined, _ignoreErrors?: boolean | undefined, _selectedOnly?: boolean | undefined): Thenable<azurecore.GetSubscriptionsResult> {
+	getSubscriptions(_account?: azdata.Account | undefined, _ignoreErrors?: boolean | undefined, _selectedOnly?: boolean | undefined): Promise<azurecore.GetSubscriptionsResult> {
 		throw new Error('Method not implemented.');
 	}
-	getResourceGroups(_account?: azdata.Account | undefined, _subscription?: azureResource.AzureResourceSubscription | undefined, _ignoreErrors?: boolean | undefined): Thenable<azurecore.GetResourceGroupsResult> {
+	getResourceGroups(_account?: azdata.Account | undefined, _subscription?: azureResource.AzureResourceSubscription | undefined, _ignoreErrors?: boolean | undefined): Promise<azurecore.GetResourceGroupsResult> {
 		throw new Error('Method not implemented.');
 	}
 	getRegionDisplayName(_region?: string | undefined): string {

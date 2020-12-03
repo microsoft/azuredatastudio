@@ -42,12 +42,7 @@ export const ACCOUNTS_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.acco
 export const ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR = localize('sql.migration.wizard.account.noaccount.error', "There is no linked account. Please add an account.");
 export const ACCOUNT_ADD_BUTTON_LABEL = localize('sql.migration.wizard.account.add.button.label', "Add account");
 export function accountLinkedMessage(count: number): string {
-	switch (count) {
-		case 1:
-			return localize('sql.migration.wizard.account.count.single.message', '{} account linked', count);
-		default:
-			return localize('sql.migration.wizard.account.count.multiple.message', '{} accounts linked', count);
-	}
+	return count === 1 ? localize('sql.migration.wizard.account.count.single.message', '{} account linked', count) : localize('sql.migration.wizard.account.count.multiple.message', '{} accounts linked', count);
 }
 
 

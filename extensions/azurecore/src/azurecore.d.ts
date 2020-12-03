@@ -66,12 +66,12 @@ declare module 'azurecore' {
 	}
 
 	export interface IExtension {
-		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean, selectedOnly?: boolean): Thenable<GetSubscriptionsResult>;
-		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Thenable<GetResourceGroupsResult>;
-		getSqlManagedInstances(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Thenable<GetSqlManagedInstancesResult>;
-		getSqlServers(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Thenable<GetSqlServersResult>;
-		getSqlVMServer(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Thenable<GetSqlVMServerResult>;
-		getStorageAccounts(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Thenable<GetStorageAccountResult>;
+		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean, selectedOnly?: boolean): Promise<GetSubscriptionsResult>;
+		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<GetResourceGroupsResult>;
+		getSqlManagedInstances(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlManagedInstancesResult>;
+		getSqlServers(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlServersResult>;
+		getSqlVMServer(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlVMServerResult>;
+		getStorageAccounts(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetStorageAccountResult>;
 		/**
 		 * Converts a region value (@see AzureRegion) into the localized Display Name
 		 * @param region The region value
