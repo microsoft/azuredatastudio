@@ -150,45 +150,41 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 function reorderGridData(source: IDataResource): void {
 	// Get Column Names list from the data resource schema
 	const columnNames: string[] = source.schema.fields.map(field => field.name);
+	// Check to see if data source is ordered properly based on schema
+	// Papermill executed notebooks with KQL for instance will organize the
+	// row data in alphabetical order as a result the outputted grid will be
+	// unordered and not based on the data resource schema
 	if (source.data.length > 0) {
-		// Check to see if data source is ordered properly based on schema
-		// Papermill executed notebooks with KQL for instance will organize the
-		// row data in alphabetical order as a result the outputted grid will be
-		// unordered and not based on the data resource schema
 		let rowKeys = Object.keys(source.data[0]);
 		if (!equals(columnNames, rowKeys)) {
-			// SQL notebooks does not use columnName as key (instead uses indices)
+			// SQL notebooks do not use columnName as key (instead use indices)
 			// Indicies indicate the row is ordered properly
-			// We check the data to know if it is in index form or string form
-			for (let rowKey in rowKeys) {
-				// Check to see if first row keys are in index format (numbers)
-				let currentIndex = Number(rowKeys[rowKey]);
-				let nextIndex = Number(rowKeys[rowKey]) + 1;
-				// We are only testing to make sure that the entire row is in index format
-				// We assume that index format data keys are in order based on the data resource schema
-				// Edge case: If the index format is out of order, then we would not have the ability to match
-				// random indexes with the column names list
-				if (typeof currentIndex === 'number' && !Number.isNaN(currentIndex)) {
-					// Check to see if next element is number (confirms table is already ordered and in index format)
-					if (!(typeof nextIndex === 'number' && nextIndex !== NaN)) {
-						// There should not be mix of numbers and strings as row keys
-						return;
-					}
-					// Only reorder data in form of strings (as index ordered tables are already ordered)
-				} else {
-					// Order each row based on the schema
-					source.data.forEach((row, index) => {
-						let reorderedData = {};
-						for (let key of columnNames) {
-							reorderedData[key] = row[key];
-						}
-						source.data[index] = reorderedData;
-					});
+			// We must check the data to know if it is in index form
+			let isValidOrder = false;
+			for (let index = 0; index < rowKeys.length - 1; index++) {
+				// Index form (all numbers, start at 0 and increase by 1)
+				let value = Number(rowKeys[index]);
+				if (isNaN(value) || value !== index) {
+					// break if key is not a number or in index form
+					isValidOrder = true;
+					break;
 				}
+			}
+			// Only reorder data that is not in index form
+			if (isValidOrder) {
+				source.data.forEach((row, index) => {
+					// Order each row based on the schema
+					let reorderedData = {};
+					for (let key of columnNames) {
+						reorderedData[key] = row[key];
+					}
+					source.data[index] = reorderedData;
+				});
 			}
 		}
 	}
 }
+
 class DataResourceTable extends GridTableBase<any> {
 
 	private _gridDataProvider: DataResourceDataProvider;
