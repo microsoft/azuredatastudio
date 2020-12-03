@@ -76,8 +76,8 @@ export const unableToOpenAzureLink = localize('azure.unableToOpenAzureLink', "Un
 export const azureResourcesGridTitle = localize('azure.azureResourcesGridTitle', "Azure Resources (Preview)");
 
 // Azure Request Errors
-export const invalidAzureAccount = localize('azure.request.errors.invalidParamsError', "Invalid account");
-export const invalidTenant = localize('azure.request.errors.noTenantSpecifiedForSubscription', "Invalid tenant for subscription");
+export const invalidAzureAccount = localize('azurecore.invalidAzureAccount', "Invalid account");
+export const invalidTenant = localize('azurecore.invalidTenant', "Invalid tenant for subscription");
 export function unableToFetchTokenError(tenant: string): string {
-	return localize('azure.request.errors.unableToFetchToken', "Unable to get token for tenant {0}", tenant);
+	return localize('azurecore.unableToFetchToken', "Unable to get token for tenant {0}", tenant);
 }
