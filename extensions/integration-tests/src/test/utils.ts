@@ -180,6 +180,27 @@ export async function runQuery(query: string, ownerUri: string): Promise<azdata.
 
 }
 
+export async function retryFunction(fn: () => Promise<any>, retryCount: number): Promise<any> {
+	let result: any;
+	while (retryCount > 0) {
+		--retryCount;
+
+		try {
+			result = await fn();
+			if (result) {
+				return result;
+			}
+		}
+		catch {
+			// exception will be thrown by the SQL Tools Service if no results is returned
+			// ignore it.
+		}
+
+		await sleep(5000);
+	}
+}
+
+
 export async function assertThrowsAsync(fn: () => Promise<any>, msg: string): Promise<void> {
 	let f = () => {
 		// Empty
