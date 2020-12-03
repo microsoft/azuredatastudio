@@ -32,6 +32,11 @@ import { Disposable } from 'vs/base/common/lifecycle';
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
 
+export interface QueryResultId {
+	batchId: number;
+	id: number;
+}
+
 export class CellModel extends Disposable implements ICellModel {
 	public id: string;
 
@@ -42,6 +47,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _cellGuid: string;
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
+	private _outputsIdMap: Map<nb.ICellOutput, QueryResultId> = new Map<nb.ICellOutput, QueryResultId>();
 	private _renderedOutputTextContent: string[] = [];
 	private _isEditMode: boolean;
 	private _onOutputsChanged = new Emitter<IOutputChangedEvent>();
@@ -237,6 +243,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._cellType = type;
 			// Regardless, get rid of outputs; this matches Jupyter behavior
 			this._outputs = [];
+			this._outputsIdMap.clear();
 		}
 	}
 
@@ -514,6 +521,7 @@ export class CellModel extends Disposable implements ICellModel {
 							try {
 								// Need to reset outputs here (kernels do this on their own)
 								this._outputs = [];
+								this._outputsIdMap.clear();
 								let commandExecuted = this._commandService?.executeCommand(result.commandId, result.args);
 								// This will ensure that the run button turns into a stop button
 								this.fireExecutionStateChanged();
@@ -607,6 +615,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public clearOutputs(): void {
 		this._outputs = [];
+		this._outputsIdMap.clear();
 		this.fireOutputsChanged();
 
 		this.executionCount = undefined;
@@ -631,6 +640,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get outputs(): Array<nb.ICellOutput> {
 		return this._outputs;
+	}
+
+	public getOutputId(output: nb.ICellOutput): QueryResultId | undefined {
+		return this._outputsIdMap.get(output);
 	}
 
 	public get renderedOutputTextContent(): string[] {
@@ -661,13 +674,18 @@ export class CellModel extends Disposable implements ICellModel {
 				// Check if the table already exists
 				for (let i = 0; i < this._outputs.length; i++) {
 					if (this._outputs[i].output_type === 'execute_result') {
-						if (this._outputs[i].metadata.batchId === output.metadata.batchId && this._outputs[i].metadata.id === output.metadata.id) {
+						let currentOutputId: QueryResultId = this._outputsIdMap.get(this._outputs[i]);
+						if (currentOutputId.batchId === (<QueryResultId>msg.metadata).batchId
+							&& currentOutputId.id === (<QueryResultId>msg.metadata).id) {
 							// If it does, update output with data resource and html table
 							(<nb.IExecuteResult>this._outputs[i]).data = (<nb.IExecuteResult>output).data;
 							added = true;
 							break;
 						}
 					}
+				}
+				if (!added) {
+					this._outputsIdMap.set(output, { batchId: (<QueryResultId>msg.metadata).batchId, id: (<QueryResultId>msg.metadata).id });
 				}
 				break;
 			case 'execute_result_update':

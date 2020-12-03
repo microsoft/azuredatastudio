@@ -40,6 +40,7 @@ import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
 import { assign } from 'vs/base/common/objects';
+import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -94,16 +95,13 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		this._cellOutput = value;
 	}
 
-	@Input() set batchId(value: number | undefined) {
-		this._batchId = value;
-	}
-
-	@Input() set id(value: number | undefined) {
-		this._id = value;
-	}
-
 	ngOnInit() {
 		if (this.cellModel) {
+			let outputId: QueryResultId = this.cellModel.getOutputId(this._cellOutput);
+			if (outputId) {
+				this._batchId = outputId.batchId;
+				this._id = outputId.id;
+			}
 			this._register(this.cellModel.onTableUpdated(e => {
 				if (e.resultSet.batchId === this._batchId && e.resultSet.id === this._id) {
 					this.updateResult(e.resultSet, e.rows);

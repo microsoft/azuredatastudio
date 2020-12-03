@@ -74,11 +74,6 @@ declare module 'azdata' {
 			data: any;
 		}
 
-		export interface ICellOutputMetadata {
-			batchId?: number;
-			id?: number;
-		}
-
 		export interface INotebookMetadata {
 			connection_name?: string;
 		}
