@@ -62,7 +62,6 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IThemeService) private readonly themeService: IThemeService,
-		@INotificationService private _notificationService: INotificationService,
 	) {
 		super();
 	}
@@ -120,7 +119,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		}
 		if (!this._table) {
 			let source = <IDataResource><any>this._bundleOptions.data[this.mimeType];
-			this.reorderGridData(source);
+			reorderGridData(source);
 			let state = new GridTableState(0, 0);
 			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, this.cellOutput, state);
 			let outputElement = <HTMLElement>this.output.nativeElement;
@@ -146,37 +145,46 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			this._layoutCalledOnce = true;
 		}
 	}
-	reorderGridData(source: IDataResource) {
-		let rowIndex = 0;
-		// Get schema list of grid
-		const columnNames: string[] = source.schema.fields.map(field => field.name);
-		if (source.data.length > 0) {
-			// Check to see if data source is ordered properly based on schema
-			let rowKeys = Object.keys(source.data[0]);
-			if (!equals(columnNames, rowKeys)) {
-				// SQL notebooks does not use columnName as key (instead uses indices)
-				// Indicies indicate the row is ordered properly
-				// We check the data to know if it is in index form or string form
-				for (let index of rowKeys) {
-					// Check to see if first row keys are in index format (numbers)
-					let currentIndex = typeof Number(index);
-					let nextIndex = typeof Number(rowKeys[currentIndex + 1]);
-					if (currentIndex === 'number' && rowKeys[nextIndex] < (rowKeys.length - 1)) {
-						// Check to see if next element is number (confirms table is already ordered)
-						if (!(nextIndex === 'number')) {
-							this._notificationService.error(localize('orderFailed', "Not able to have mix of numbers and string column names"));
+}
+
+function reorderGridData(source: IDataResource): void {
+	let rowIndex = 0;
+	// Get Column Names list from the data resource schema
+	const columnNames: string[] = source.schema.fields.map(field => field.name);
+	if (source.data.length > 0) {
+		// Check to see if data source is ordered properly based on schema
+		// Papermill executed notebooks with KQL for instance will organize the
+		// row data in alphabetical order as a result the outputted grid will be
+		// unordered and not based on the data resource schema
+		let rowKeys = Object.keys(source.data[0]);
+		if (!equals(columnNames, rowKeys)) {
+			// SQL notebooks does not use columnName as key (instead uses indices)
+			// Indicies indicate the row is ordered properly
+			// We check the data to know if it is in index form or string form
+			for (let rowKey in rowKeys) {
+				// Check to see if first row keys are in index format (numbers)
+				let currentIndex = typeof Number(rowKeys[rowKey]);
+				let nextIndex = typeof Number(rowKeys[rowKey + 1]);
+				// We are only testing to make sure that the entire row is in index format
+				// We assume that index format data keys are in order based on the data resource schema
+				// Edge case: If the index format is out of order, then we would not have the ability to match
+				// random indexes with the column names list
+				if (currentIndex === 'number' && rowKeys[rowKey + 1] < (rowKeys.length - 1)) {
+					// Check to see if next element is number (confirms table is already ordered and in index format)
+					if (!(nextIndex === 'number')) {
+						// There should not be mix of numbers and strings as row keys
+						return;
+					}
+					// Only reorder data in form of strings (as index ordered tables are already ordered)
+				} else if (typeof (rowKey) === 'string') {
+					// Order each row based on the schema
+					for (let row of source.data) {
+						let reorderedData = {};
+						for (let key of columnNames) {
+							reorderedData[key] = row[key];
 						}
-						// Only reorder data in form of strings (as index ordered tables are already ordered)
-					} else if (typeof (index) === 'string') {
-						// Order each row based on the schema
-						for (let row of source.data) {
-							let reorderedData = {};
-							for (let key of columnNames) {
-								reorderedData[key] = row[key];
-							}
-							rowIndex = source.data.indexOf(row);
-							source.data[rowIndex] = reorderedData;
-						}
+						rowIndex = source.data.indexOf(row);
+						source.data[rowIndex] = reorderedData;
 					}
 				}
 			}
