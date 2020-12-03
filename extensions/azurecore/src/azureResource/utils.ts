@@ -288,6 +288,9 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
 	return result;
 }
 
+/**
+ * makes a GET request to Azure REST apis. Currently, it only supports GET ARM queries.
+ */
 export async function makeHttpGetRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false, url: string): Promise<HttpGetRequestResult> {
 	const result: HttpGetRequestResult = { response: {}, errors: [] };
 

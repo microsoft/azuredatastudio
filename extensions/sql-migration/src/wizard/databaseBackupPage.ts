@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import { azureResource } from 'azureResource';
+import { EOL } from 'os';
 import { getAvailableStorageAccounts, getBlobContainers, getFileShares, getSubscriptions, StorageAccount, Subscription } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { BlobContainer, FileShare, MigrationCutover, MigrationStateModel, NetworkContainerType, NetworkShare, StateChangeEvent } from '../models/stateMachine';
@@ -408,14 +409,55 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	public async onPageEnter(): Promise<void> {
 		await this.getSubscriptionValues();
 		this.wizard.registerNavigationValidator((pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+				this.wizard.message = { text: '' };
+				return true;
+			}
+			const errors: string[] = [];
+			switch (this.migrationStateModel.databaseBackup.networkContainerType) {
+				case NetworkContainerType.NETWORK_SHARE:
+					if ((<azdata.CategoryValue>this._networkShareContainerSubscriptionDropdown.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
+						errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
+					}
+					if ((<azdata.CategoryValue>this._networkShareContainerStorageAccountDropdown.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
+						errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
+					}
+					break;
+				case NetworkContainerType.BLOB_CONTAINER:
+					if ((<azdata.CategoryValue>this._blobContainerSubscriptionDropdown.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
+						errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
+					}
+					if ((<azdata.CategoryValue>this._blobContainerStorageAccountDropdown.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
+						errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
+					}
+					if ((<azdata.CategoryValue>this._blobContainerBlobDropdown.value).displayName === constants.NO_BLOBCONTAINERS_FOUND) {
+						errors.push(constants.INVALID_BLOBCONTAINER_ERROR);
+					}
+					break;
+				case NetworkContainerType.FILE_SHARE:
+					if ((<azdata.CategoryValue>this._fileShareSubscriptionDropdown.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
+						errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
+					}
+					if ((<azdata.CategoryValue>this._fileShareStorageAccountDropdown.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
+						errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
+					}
+					if ((<azdata.CategoryValue>this._fileShareFileShareDropdown.value).displayName === constants.NO_FILESHARES_FOUND) {
+						errors.push(constants.INVALID_FILESHARE_ERROR);
+					}
+					break;
+			}
+			if (errors.length !== 0) {
+				this.wizard.message = {
+					text: errors.join(EOL),
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
 			return true;
 		});
 	}
 
 	public async onPageLeave(): Promise<void> {
-		this.wizard.registerNavigationValidator((pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
-			return true;
-		});
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {

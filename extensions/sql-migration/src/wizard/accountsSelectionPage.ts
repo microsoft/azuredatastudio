@@ -86,6 +86,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 	public async onPageEnter(): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+				this.wizard.message = { text: '' };
 				return true;
 			}
 
@@ -103,10 +104,6 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(): Promise<void> {
-		this.wizard.registerNavigationValidator((pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
-			return true;
-		});
-		return;
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
