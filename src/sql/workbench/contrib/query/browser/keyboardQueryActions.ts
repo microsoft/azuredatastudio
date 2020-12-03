@@ -164,10 +164,8 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 				for (let rowEntry of result.rows) {
 					for (let colIdx = 0; colIdx < rowEntry.length; colIdx++) {
 						let value = rowEntry[colIdx].displayValue;
-						if (value) {
-							copyString = `${copyString}${value}\t`;
-							htmlCopyString = `${htmlCopyString}<td style="border:solid black 1.0pt;white-space:nowrap">${escape(value)}</td>`;
-						}
+						copyString = `${copyString}${value}\t`;
+						htmlCopyString = `${htmlCopyString}<td style="border:solid black 1.0pt;white-space:nowrap">${escape(value)}</td>`;
 					}
 					// Removes the tab seperator from the end of a row
 					copyString = copyString.slice(0, -1 * '\t'.length) + '\n';
