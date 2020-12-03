@@ -2,14 +2,14 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.23.0"
+    "azdata": ">=1.25.0"
   },
   "activationEvents": [
     "onCommand:arc.connectToController",
@@ -529,18 +529,6 @@
                       "title": "%arc.data.controller.summary.azure%",
                       "fields": [
                         {
-                          "label": "%arc.data.controller.summary.data.controller.namespace%",
-                          "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE)"
-                        },
-                        {
-                          "label": "%arc.data.controller.summary.data.controller.name%",
-                          "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME)"
-                        },
-                        {
                           "label": "%arc.data.controller.summary.subscription%",
                           "type": "readonly_text",
                           "isEvaluated": true,
@@ -564,6 +552,18 @@
                     {
                       "title": "%arc.data.controller.summary.controller%",
                       "fields": [
+                        {
+                          "label": "%arc.data.controller.summary.data.controller.namespace%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE)"
+                        },
+                        {
+                          "label": "%arc.data.controller.summary.data.controller.name%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME)"
+                        },
                         {
                           "label": "%arc.data.controller.connectivitymode%",
                           "type": "readonly_text",
