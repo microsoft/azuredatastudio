@@ -25,6 +25,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
+import { IPathService } from 'vs/workbench/services/path/common/pathService';
 
 export type CalloutStyle = 'LINK' | 'IMAGE' | 'TABLE';
 
@@ -82,6 +83,7 @@ export class CalloutDialog extends Modal {
 		posX: number,
 		posY: number,
 		dialogXYOffset: IDialogXYOffset,
+		@IPathService private readonly _pathService: IPathService,
 		@IFileDialogService private readonly _fileDialogService: IFileDialogService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
@@ -306,8 +308,9 @@ export class CalloutDialog extends Modal {
 		this.dispose();
 	}
 
-	private getUserHome(): string {
-		return process.env.HOME || process.env.USERPROFILE;
+	private async getUserHome(): Promise<string> {
+		const userHomeUri = await this._pathService.userHome();
+		return userHomeUri.path;
 	}
 
 	private async handleBrowse(): Promise<URI | void> {
@@ -316,7 +319,7 @@ export class CalloutDialog extends Modal {
 			canSelectFiles: true,
 			canSelectFolders: false,
 			canSelectMany: false,
-			defaultUri: URI.file(this.getUserHome()),
+			defaultUri: URI.file(await this.getUserHome()),
 			title: undefined
 		};
 		let imgeUri: URI[] = await this._fileDialogService.showOpenDialog(options);
