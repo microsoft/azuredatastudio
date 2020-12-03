@@ -126,7 +126,8 @@ export class Main {
 		extensions.forEach(e => console.log(getId(e.manifest, showVersions)));
 	}
 
-	private async installExtensions(extensions: string[], builtinExtensionIds: string[], isMachineScoped: boolean, force: boolean): Promise<void> {
+	// {{SQL CARBON EDIT}} -- make public
+	public async installExtensions(extensions: string[], force: boolean, doNotSync: boolean): Promise<void> {
 		const failed: string[] = [];
 		const installedExtensionsManifests: IExtensionManifest[] = [];
 		if (extensions.length) {
