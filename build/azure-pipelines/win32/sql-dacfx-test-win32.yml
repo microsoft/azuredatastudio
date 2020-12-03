@@ -51,7 +51,7 @@ steps:
     $AppNameShort = $AppProductJson.nameShort
     exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; .\scripts\sql-schemacompare-test-integration.bat }
   continueOnError: true
-  condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
+  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
   displayName: Run unstable integration tests
   env:
     BDC_BACKEND_USERNAME: $(ads-integration-test-bdc-server-username)
