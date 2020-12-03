@@ -32,7 +32,7 @@ export function getPackageInfo(packageJson: any): IPackageInfo {
  * @param msg The error message to map
  */
 export function getTelemetryErrorType(msg: string): string {
-	if (msg.indexOf('Object reference not set to an instance of an object') !== -1) {
+	if (msg && msg.indexOf('Object reference not set to an instance of an object') !== -1) {
 		return 'ObjectReferenceNotSet';
 	}
 	else {

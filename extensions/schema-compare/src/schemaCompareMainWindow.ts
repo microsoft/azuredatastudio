@@ -295,11 +295,11 @@ export class SchemaCompareMainWindow {
 		}
 		this.comparisonResult = await service.schemaCompare(this.operationId, this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
 		if (!this.comparisonResult || !this.comparisonResult.success) {
-			TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFailed', undefined, getTelemetryErrorType(this.comparisonResult.errorMessage))
+			TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFailed', undefined, getTelemetryErrorType(this.comparisonResult?.errorMessage))
 				.withAdditionalProperties({
 					operationId: this.comparisonResult.operationId
 				}).send();
-			this.apiWrapper.showErrorMessage(loc.compareErrorMessage(this.comparisonResult.errorMessage));
+			this.apiWrapper.showErrorMessage(loc.compareErrorMessage(this.comparisonResult?.errorMessage));
 			return;
 		}
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFinished')
@@ -647,7 +647,7 @@ export class SchemaCompareMainWindow {
 		});
 	}
 
-	private async cancelCompare() {
+	public async cancelCompare() {
 
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareCancelStarted')
 			.withAdditionalProperties({
@@ -671,7 +671,7 @@ export class SchemaCompareMainWindow {
 					.withAdditionalProperties({
 						'operationId': this.operationId
 					}).send();
-				vscode.window.showErrorMessage(loc.cancelErrorMessage(result.errorMessage));
+				this.apiWrapper.showErrorMessage(loc.cancelErrorMessage(result.errorMessage));
 			}
 			TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareCancelEnded')
 				.withAdditionalProperties({
@@ -691,26 +691,30 @@ export class SchemaCompareMainWindow {
 		}).component();
 
 		this.generateScriptButton.onDidClick(async (click) => {
-			TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptStarted')
-				.withAdditionalProperties({
-					'startTime': Date.now().toString(),
-					'operationId': this.comparisonResult.operationId
-				}).send();
-			const service = await this.getService();
-			const result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.script);
-			if (!result || !result.success) {
-				TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptFailed', undefined, getTelemetryErrorType(result.errorMessage))
-					.withAdditionalProperties({
-						'operationId': this.comparisonResult.operationId
-					}).send();
-				vscode.window.showErrorMessage(loc.generateScriptErrorMessage(result.errorMessage));
-			}
-			TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptEnded')
-				.withAdditionalProperties({
-					'endTime': Date.now().toString(),
-					'operationId': this.comparisonResult.operationId
-				}).send();
+			await this.generateScript();
 		});
+	}
+
+	public async generateScript(): Promise<void> {
+		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptStarted')
+			.withAdditionalProperties({
+				'startTime': Date.now().toString(),
+				'operationId': this.comparisonResult.operationId
+			}).send();
+		const service = await this.getService();
+		const result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.script);
+		if (!result || !result.success) {
+			TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptFailed', undefined, getTelemetryErrorType(result.errorMessage))
+				.withAdditionalProperties({
+					'operationId': this.comparisonResult.operationId
+				}).send();
+			this.apiWrapper.showErrorMessage(loc.generateScriptErrorMessage(result.errorMessage));
+		}
+		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptEnded')
+			.withAdditionalProperties({
+				'endTime': Date.now().toString(),
+				'operationId': this.comparisonResult.operationId
+			}).send();
 	}
 
 	private createOptionsButton(view: azdata.ModelView) {
@@ -741,43 +745,47 @@ export class SchemaCompareMainWindow {
 			},
 		}).component();
 
+		this.applyButton.onDidClick(async (click) => {
+			await this.publishChanges();
+		});
+	}
+
+	public async publishChanges(): Promise<void> {
+
 		// need only yes button - since the modal dialog has a default cancel
 		const yesString = loc.YesButtonText;
-		this.applyButton.onDidClick(async (click) => {
+		await this.apiWrapper.showWarningMessage(loc.applyConfirmation, { modal: true }, yesString).then(async (result) => {
+			if (result === yesString) {
+				TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyStarted')
+					.withAdditionalProperties({
+						'startTime': Date.now().toString(),
+						'operationId': this.comparisonResult.operationId
+					}).send();
 
-			vscode.window.showWarningMessage(loc.applyConfirmation, { modal: true }, yesString).then(async (result) => {
-				if (result === yesString) {
-					TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyStarted')
+				// disable apply and generate script buttons because the results are no longer valid after applying the changes
+				this.setButtonsForRecompare();
+
+				const service = await this.getService();
+				const result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
+				if (!result || !result.success) {
+					TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result.errorMessage))
 						.withAdditionalProperties({
-							'startTime': Date.now().toString(),
 							'operationId': this.comparisonResult.operationId
 						}).send();
+					this.apiWrapper.showErrorMessage(loc.applyErrorMessage(result.errorMessage));
 
-					// disable apply and generate script buttons because the results are no longer valid after applying the changes
-					this.setButtonsForRecompare();
-
-					const service = await this.getService();
-					const result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
-					if (!result || !result.success) {
-						TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result.errorMessage))
-							.withAdditionalProperties({
-								'operationId': this.comparisonResult.operationId
-							}).send();
-						vscode.window.showErrorMessage(loc.applyErrorMessage(result.errorMessage));
-
-						// reenable generate script and apply buttons if apply failed
-						this.generateScriptButton.enabled = true;
-						this.generateScriptButton.title = loc.generateScriptEnabledMessage;
-						this.applyButton.enabled = true;
-						this.applyButton.title = loc.applyEnabledMessage;
-					}
-					TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyEnded')
-						.withAdditionalProperties({
-							'endTime': Date.now().toString(),
-							'operationId': this.comparisonResult.operationId
-						}).send();
+					// reenable generate script and apply buttons if apply failed
+					this.generateScriptButton.enabled = true;
+					this.generateScriptButton.title = loc.generateScriptEnabledMessage;
+					this.applyButton.enabled = true;
+					this.applyButton.title = loc.applyEnabledMessage;
 				}
-			});
+				TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyEnded')
+					.withAdditionalProperties({
+						'endTime': Date.now().toString(),
+						'operationId': this.comparisonResult.operationId
+					}).send();
+			}
 		});
 	}
 
@@ -922,52 +930,56 @@ export class SchemaCompareMainWindow {
 		}).component();
 
 		this.openScmpButton.onDidClick(async (click) => {
-			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpStarted');
-			const rootPath = getRootPath();
-			let fileUris = await vscode.window.showOpenDialog(
-				{
-					canSelectFiles: true,
-					canSelectFolders: false,
-					canSelectMany: false,
-					defaultUri: vscode.Uri.file(rootPath),
-					openLabel: loc.open,
-					filters: {
-						'scmp Files': ['scmp'],
-					}
-				}
-			);
-
-			if (!fileUris || fileUris.length === 0) {
-				return;
-			}
-
-			let fileUri = fileUris[0];
-			const service = await this.getService();
-			let startTime = Date.now();
-			const result = await service.schemaCompareOpenScmp(fileUri.fsPath);
-			if (!result || !result.success) {
-				TelemetryReporter.sendErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpFailed', undefined, getTelemetryErrorType(result.errorMessage));
-				vscode.window.showErrorMessage(loc.openScmpErrorMessage(result.errorMessage));
-				return;
-			}
-
-			this.sourceEndpointInfo = await this.constructEndpointInfo(result.sourceEndpointInfo, loc.sourceTitle, this.apiWrapper);
-			this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, loc.targetTitle, this.apiWrapper);
-
-			this.updateSourceAndTarget();
-			this.setDeploymentOptions(result.deploymentOptions);
-			this.scmpSourceExcludes = result.excludedSourceElements;
-			this.scmpTargetExcludes = result.excludedTargetElements;
-			this.sourceTargetSwitched = result.originalTargetName !== this.targetEndpointInfo.databaseName;
-
-			// clear out any old results
-			this.resetForNewCompare();
-
-			TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpEnded')
-				.withAdditionalProperties({
-					elapsedTime: (Date.now() - startTime).toString()
-				}).send();
+			await this.openScmp();
 		});
+	}
+
+	public async openScmp(): Promise<void> {
+		TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpStarted');
+		const rootPath = getRootPath();
+		let fileUris = await this.apiWrapper.showOpenDialog(
+			{
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				defaultUri: vscode.Uri.file(rootPath),
+				openLabel: loc.open,
+				filters: {
+					'scmp Files': ['scmp'],
+				}
+			}
+		);
+
+		if (!fileUris || fileUris.length === 0) {
+			return;
+		}
+
+		let fileUri = fileUris[0];
+		const service = await this.getService();
+		let startTime = Date.now();
+		const result = await service.schemaCompareOpenScmp(fileUri.fsPath);
+		if (!result || !result.success) {
+			TelemetryReporter.sendErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpFailed', undefined, getTelemetryErrorType(result.errorMessage));
+			this.apiWrapper.showErrorMessage(loc.openScmpErrorMessage(result.errorMessage));
+			return;
+		}
+
+		this.sourceEndpointInfo = await this.constructEndpointInfo(result.sourceEndpointInfo, loc.sourceTitle, this.apiWrapper);
+		this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, loc.targetTitle, this.apiWrapper);
+
+		this.updateSourceAndTarget();
+		this.setDeploymentOptions(result.deploymentOptions);
+		this.scmpSourceExcludes = result.excludedSourceElements;
+		this.scmpTargetExcludes = result.excludedTargetElements;
+		this.sourceTargetSwitched = result.originalTargetName !== this.targetEndpointInfo.databaseName;
+
+		// clear out any old results
+		this.resetForNewCompare();
+
+		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpEnded')
+			.withAdditionalProperties({
+				elapsedTime: (Date.now() - startTime).toString()
+			}).send();
 	}
 
 	private async constructEndpointInfo(endpoint: mssql.SchemaCompareEndpointInfo, caller: string, apiWrapper: ApiWrapper): Promise<mssql.SchemaCompareEndpointInfo> {
@@ -1007,42 +1019,46 @@ export class SchemaCompareMainWindow {
 		}).component();
 
 		this.saveScmpButton.onDidClick(async (click) => {
-			const rootPath = getRootPath();
-			const filePath = await vscode.window.showSaveDialog(
-				{
-					defaultUri: vscode.Uri.file(rootPath),
-					saveLabel: loc.save,
-					filters: {
-						'scmp Files': ['scmp'],
-					}
-				}
-			);
-
-			if (!filePath) {
-				return;
-			}
-
-			// convert include/exclude maps to arrays of object ids
-			let sourceExcludes: mssql.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalSourceExcludes);
-			let targetExcludes: mssql.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalTargetExcludes);
-
-			let startTime = Date.now();
-			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmp');
-			const service = await this.getService();
-			const result = await service.schemaCompareSaveScmp(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions, filePath.fsPath, sourceExcludes, targetExcludes);
-			if (!result || !result.success) {
-				TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmpFailed', undefined, getTelemetryErrorType(result.errorMessage))
-					.withAdditionalProperties({
-						operationId: this.comparisonResult.operationId
-					}).send();
-				vscode.window.showErrorMessage(loc.saveScmpErrorMessage(result.errorMessage));
-			}
-			TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmpEnded')
-				.withAdditionalProperties({
-					elapsedTime: (Date.now() - startTime).toString(),
-					operationId: this.comparisonResult.operationId
-				});
+			await this.saveScmp();
 		});
+	}
+
+	public async saveScmp(): Promise<void> {
+		const rootPath = getRootPath();
+		const filePath = await this.apiWrapper.showSaveDialog(
+			{
+				defaultUri: vscode.Uri.file(rootPath),
+				saveLabel: loc.save,
+				filters: {
+					'scmp Files': ['scmp'],
+				}
+			}
+		);
+
+		if (!filePath) {
+			return;
+		}
+
+		// convert include/exclude maps to arrays of object ids
+		let sourceExcludes: mssql.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalSourceExcludes);
+		let targetExcludes: mssql.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalTargetExcludes);
+
+		let startTime = Date.now();
+		TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmp');
+		const service = await this.getService();
+		const result = await service.schemaCompareSaveScmp(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions, filePath.fsPath, sourceExcludes, targetExcludes);
+		if (!result || !result.success) {
+			TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmpFailed', undefined, getTelemetryErrorType(result.errorMessage))
+				.withAdditionalProperties({
+					operationId: this.comparisonResult.operationId
+				}).send();
+			this.apiWrapper.showErrorMessage(loc.saveScmpErrorMessage(result.errorMessage));
+		}
+		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmpEnded')
+			.withAdditionalProperties({
+				elapsedTime: (Date.now() - startTime).toString(),
+				operationId: this.comparisonResult.operationId
+			});
 	}
 
 	/**
@@ -1071,7 +1087,7 @@ export class SchemaCompareMainWindow {
 	}
 
 	private async getService(): Promise<mssql.ISchemaCompareService> {
-		if (isNullOrUndefined(this.schemaCompareService)) {
+		if (this.schemaCompareService === null || this.schemaCompareService === undefined) {
 			this.schemaCompareService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		}
 		return this.schemaCompareService;

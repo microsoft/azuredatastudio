@@ -45,4 +45,12 @@ export class ApiWrapper {
 			return vscode.window.showWarningMessage(message, ...items);
 		}
 	}
+
+	public showOpenDialog(options: vscode.OpenDialogOptions): Thenable<vscode.Uri[] | undefined> {
+		return vscode.window.showOpenDialog(options);
+	}
+
+	public showSaveDialog(options: vscode.SaveDialogOptions): Thenable<vscode.Uri | undefined> {
+		return vscode.window.showSaveDialog(options);
+	}
 }

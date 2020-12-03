@@ -49,6 +49,208 @@ describe('SchemaCompareMainWindow.start', function (): void {
 		should(result.getComparisonResult().operationId === 'Test Operation Id');
 	});
 
+	it('Should show error if publish changes fails', async function (): Promise<void> {
+		let testContext = createContext();
+		let service = createServiceMock();
+		let messageShown = false;
+		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			success: false,
+			errorMessage: ''
+		}));
+
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('Yes'));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			messageShown = true;
+			return Promise.resolve('');
+		});
+		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.execute();
+		await schemaCompareResult.publishChanges();
+		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		should.equal(messageShown, true);
+	});
+
+	it('Should show not error if publish changes succeed', async function (): Promise<void> {
+		let testContext = createContext();
+		let service = createServiceMock();
+		let messageShown = false;
+		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			success: true,
+			errorMessage: ''
+		}));
+
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('Yes'));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			messageShown = true;
+			return Promise.resolve('');
+		});
+		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.execute();
+		await schemaCompareResult.publishChanges();
+		should.equal(messageShown, false);
+	});
+
+	it('Should show error if openScmp fails', async function (): Promise<void> {
+		let testContext = createContext();
+		let service = createServiceMock();
+		let files: vscode.Uri[] = [vscode.Uri.parse('file:///test')];
+		let messageShown = false;
+		service.setup(x => x.schemaCompareOpenScmp(TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			sourceEndpointInfo: undefined,
+			targetEndpointInfo: undefined,
+			originalTargetName: 'string',
+			originalConnectionString: '',
+			deploymentOptions: undefined,
+			excludedSourceElements: [],
+			excludedTargetElements: [],
+			success: false,
+			errorMessage: ''
+		}));
+
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('Yes'));
+		testContext.apiWrapper.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve(files));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			messageShown = true;
+			return Promise.resolve('');
+		});
+		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.openScmp();
+		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		should.equal(messageShown, true);
+	});
+
+	it('Should show error if saveScmp fails', async function (): Promise<void> {
+		let testContext = createContext();
+		let service = createServiceMock();
+		let file: vscode.Uri = vscode.Uri.parse('file:///test');
+		let messageShown = false;
+		service.setup(x => x.schemaCompareSaveScmp(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			sourceEndpointInfo: undefined,
+			targetEndpointInfo: undefined,
+			originalTargetName: 'string',
+			originalConnectionString: '',
+			deploymentOptions: undefined,
+			excludedSourceElements: [],
+			excludedTargetElements: [],
+			success: false,
+			errorMessage: ''
+		}));
+
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('Yes'));
+		testContext.apiWrapper.setup(x => x.showSaveDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve(file));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			messageShown = true;
+			return Promise.resolve('');
+		});
+		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.execute();
+		await schemaCompareResult.saveScmp();
+		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		should.equal(messageShown, true);
+	});
+
+
+	it('Should show error if generateScript fails', async function (): Promise<void> {
+		let testContext = createContext();
+		let service = createServiceMock();
+
+		let messageShown = false;
+		service.setup(x => x.schemaCompareGenerateScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			success: false,
+			errorMessage: ''
+		}));
+
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('Yes'));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			messageShown = true;
+			return Promise.resolve('');
+		});
+		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.execute();
+		await schemaCompareResult.generateScript();
+		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		should.equal(messageShown, true);
+	});
+
+	it('Should show error if cancel fails', async function (): Promise<void> {
+		let testContext = createContext();
+		let service = createServiceMock();
+
+		let messageShown = false;
+		service.setup(x => x.schemaCompareCancel(TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			success: false,
+			errorMessage: ''
+		}));
+
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('Yes'));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			messageShown = true;
+			return Promise.resolve('');
+		});
+		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.execute();
+		await schemaCompareResult.cancelCompare();
+		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		should.equal(messageShown, true);
+	});
+
+	it('Should show not error if user does not want to publish', async function (): Promise<void> {
+		let testContext = createContext();
+		let service = createServiceMock();
+		let messageShown = false;
+		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			success: false,
+			errorMessage: ''
+		}));
+
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('No'));
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+			messageShown = true;
+			return Promise.resolve('');
+		});
+		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.execute();
+		await schemaCompareResult.publishChanges();
+
+		should.equal(messageShown, false);
+	});
+
+	function createServiceMock() {
+		let sc = new SchemaCompareTestService();
+		let service = TypeMoq.Mock.ofInstance(new SchemaCompareTestService());
+		service.setup(x => x.schemaCompareGetDefaultOptions()).returns(x => sc.schemaCompareGetDefaultOptions());
+		service.setup(x => x.schemaCompare(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => sc.schemaCompare('', undefined, undefined, undefined, undefined));
+		return service;
+	}
+
 	it('Should start with the source as undefined', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
@@ -63,7 +265,7 @@ describe('SchemaCompareMainWindow.start', function (): void {
 		let sc = new SchemaCompareTestService();
 
 		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
-		await result.start({connectionProfile: mockIConnectionProfile});
+		await result.start({ connectionProfile: mockIConnectionProfile });
 
 		should.notEqual(result.sourceEndpointInfo, undefined);
 		should.equal(result.sourceEndpointInfo.endpointType, mssql.SchemaCompareEndpointType.Database);
@@ -145,7 +347,7 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		await result.execute();
 
 		//Generate script button and apply button should be disabled for dacpac comparison
-		result.verifyButtonsState( {
+		result.verifyButtonsState({
 			compareButtonState: true,
 			optionsButtonState: true,
 			switchButtonState: true,
@@ -156,7 +358,7 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 			selectTargetButtonState: true,
 			generateScriptButtonState: false,
 			applyButtonState: false
-		} );
+		});
 	});
 
 	it('Should disable script button and apply button for Schema Compare service for database', async function (): Promise<void> {
@@ -174,7 +376,7 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		await result.execute();
 
 		//Generate script button and apply button should be enabled for database comparison
-		result.verifyButtonsState( {
+		result.verifyButtonsState({
 			compareButtonState: true,
 			optionsButtonState: true,
 			switchButtonState: true,
@@ -185,7 +387,7 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 			selectTargetButtonState: true,
 			generateScriptButtonState: true,
 			applyButtonState: true
-		} );
+		});
 	});
 
 });
@@ -207,12 +409,12 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = {...endpointInfo};
-		result.targetEndpointInfo = {...endpointInfo};
+		result.sourceEndpointInfo = { ...endpointInfo };
+		result.targetEndpointInfo = { ...endpointInfo };
 
 		result.updateSourceAndTarget();
 
-		result.verifyButtonsState( {
+		result.verifyButtonsState({
 			compareButtonState: false,
 			optionsButtonState: false,
 			switchButtonState: false,
@@ -223,7 +425,7 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 			selectTargetButtonState: true,
 			generateScriptButtonState: false,
 			applyButtonState: false
-		} );
+		});
 	});
 
 	it('Should set buttons appropriately when source endpoint is empty and target endpoint is populated', async function (): Promise<void> {
@@ -236,12 +438,12 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 
 		should(result.getComparisonResult() === undefined);
 
-		result.sourceEndpointInfo = {...endpointInfo};
+		result.sourceEndpointInfo = { ...endpointInfo };
 		result.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 
 		result.updateSourceAndTarget();
 
-		result.verifyButtonsState( {
+		result.verifyButtonsState({
 			compareButtonState: false,
 			optionsButtonState: false,
 			switchButtonState: true,
@@ -252,7 +454,7 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 			selectTargetButtonState: true,
 			generateScriptButtonState: false,
 			applyButtonState: false
-		} );
+		});
 	});
 
 	it('Should set buttons appropriately when source and target endpoints are populated', async function (): Promise<void> {
@@ -270,7 +472,7 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 
 		result.updateSourceAndTarget();
 
-		result.verifyButtonsState( {
+		result.verifyButtonsState({
 			compareButtonState: true,
 			optionsButtonState: true,
 			switchButtonState: true,
@@ -281,7 +483,7 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 			selectTargetButtonState: true,
 			generateScriptButtonState: false,
 			applyButtonState: false
-		} );
+		});
 	});
 
 });

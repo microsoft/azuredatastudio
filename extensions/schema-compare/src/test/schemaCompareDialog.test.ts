@@ -13,6 +13,7 @@ import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { createContext, TestContext } from './testContext';
 import { setDacpacEndpointInfo } from './testUtils';
 import { SchemaCompareMainWindowTest } from './testSchemaCompareMainWindow';
+import { SchemaCompareTestService } from './testSchemaCompareService';
 
 // Mock test data
 const mocksource: string = 'source.dacpac';
@@ -53,7 +54,7 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 		await dialog.execute();
 
 		// Confirm that ok button got clicked
-		schemaCompareResult.verifyButtonsState( {
+		schemaCompareResult.verifyButtonsState({
 			compareButtonState: true,
 			optionsButtonState: true,
 			switchButtonState: true,
@@ -64,6 +65,6 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 			selectTargetButtonState: true,
 			generateScriptButtonState: false,
 			applyButtonState: false
-		} );
+		});
 	});
 });
