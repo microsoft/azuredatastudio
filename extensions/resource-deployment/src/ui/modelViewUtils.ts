@@ -371,7 +371,8 @@ async function hookUpDynamicEnablement(context: WizardPageContext): Promise<void
 				}
 				const updateFields = async () => {
 					const targetComponentValue = await targetComponent.getValue();
-					fieldComponent.component.enabled = targetComponentValue === targetValue;
+					const valuesMatch = targetComponentValue === targetValue;
+					fieldComponent.component.enabled = valuesMatch;
 					const isRequired = fieldComponent.component.enabled === false ? false : field.required;
 					if (fieldComponent.labelComponent) {
 						fieldComponent.labelComponent.requiredIndicator = isRequired;
@@ -379,6 +380,12 @@ async function hookUpDynamicEnablement(context: WizardPageContext): Promise<void
 					// We also need to update the required flag so that when the component is disabled it won't block the page from proceeding
 					if ('required' in fieldComponent.component) {
 						fieldComponent.component.required = isRequired;
+					}
+					// When we disable the field then remove the placeholder if it exists so it's clear this field isn't needed
+					// We only do this for dynamic enablement since if a field is disabled through the JSON directly then it can't
+					// be modified anyways and so just should not use a placeholder value if they don't want one
+					if ('placeHolder' in fieldComponent.component) {
+						fieldComponent.component.placeHolder = valuesMatch ? field.placeHolder : '';
 					}
 				};
 				targetComponent.onValueChanged(() => {
