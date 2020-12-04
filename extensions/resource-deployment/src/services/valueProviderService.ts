@@ -9,10 +9,10 @@ import * as loc from '../localizedConstants';
 class ValueProviderService {
 	private _valueProviderStore = new Map<string, rd.IValueProvider>();
 	registerValueProvider(provider: rd.IValueProvider): void {
-		if (this._valueProviderStore.has(provider.providerId)) {
-			throw new Error(loc.valueProviderAlreadyDefined(provider.providerId));
+		if (this._valueProviderStore.has(provider.id)) {
+			throw new Error(loc.valueProviderAlreadyDefined(provider.id));
 		}
-		this._valueProviderStore.set(provider.providerId, provider);
+		this._valueProviderStore.set(provider.id, provider);
 	}
 
 	getValueProvider(providerId: string): rd.IValueProvider {

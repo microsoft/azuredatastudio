@@ -110,7 +110,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	// depends on this extension too. It's fine to wait a bit for that to finish before registering the provider
 	vscode.extensions.getExtension(resourceDeployment.extension.name).activate().then((api: resourceDeployment.IExtension) => {
 		api.registerValueProvider({
-			providerId: 'subscription-id-to-tenant-id',
+			id: 'subscription-id-to-tenant-id',
 			getValue: async (triggerValue: string) => {
 				if (triggerValue === '') {
 					return '';

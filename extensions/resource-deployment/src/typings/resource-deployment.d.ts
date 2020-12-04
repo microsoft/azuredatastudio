@@ -17,14 +17,14 @@ declare module 'resource-deployment' {
 		name = 'Microsoft.resource-deployment'
 	}
 	export interface IOptionsSourceProvider {
-		readonly optionsSourceId: string,
+		readonly id: string,
 		getOptions(): Promise<string[] | azdata.CategoryValue[]> | string[] | azdata.CategoryValue[];
 		getVariableValue?: (variableName: string, input: string) => Promise<string> | string;
 		getIsPassword?: (variableName: string) => boolean | Promise<boolean>;
 	}
 
 	export interface IValueProvider {
-		readonly providerId: string,
+		readonly id: string,
 		getValue(triggerValue: string): Promise<string>;
 	}
 
