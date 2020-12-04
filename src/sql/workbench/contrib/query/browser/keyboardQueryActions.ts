@@ -157,7 +157,7 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 				let resultSummary = queryRunner.batchSets[0].resultSetSummaries[i];
 				let result = await queryRunner.getQueryRows(0, resultSummary.rowCount, resultSummary.batchId, resultSummary.id);
 				let tableHeaders = resultSummary.columnInfo.map((col, i) => (col.columnName));
-				let htmlTableHeaders = resultSummary.columnInfo.map((col, i) => (`<td style="border:1.0px solid black;padding:3pt;font-size:9pt;font-weight: bold;">${escape(col.columnName)}</td>`));
+				let htmlTableHeaders = `<thead><tr style="background-color:DarkGray">${resultSummary.columnInfo.map((col, i) => (`<th style="border:1.0px solid black;padding:3pt;font-size:9pt;font-weight: bold;">${escape(col.columnName)}</th>`)).join('')}</tr></thead>`;
 				let copyString = '\n';
 				let htmlCopyString = '';
 
@@ -176,7 +176,7 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 				allResults = `${allResults}${tableHeaders.join('\t')}${copyString}\n`;
 				allHtmlResults = `${allHtmlResults}<div><br/><br/>
 				<table cellPadding="5" cellSpacing="1" style="border:1;border-color:Black;font-family:Segoe UI;font-size:12px;border-collapse:collapse">
-				<tr style="background-color:DarkGray">${htmlTableHeaders.join('')}</tr>${htmlCopyString}
+				${htmlTableHeaders}${htmlCopyString}
 				</table></div>`;
 			}
 		}
