@@ -160,18 +160,18 @@ function reorderGridData(source: IDataResource): void {
 			// SQL notebooks do not use columnName as key (instead use indices)
 			// Indicies indicate the row is ordered properly
 			// We must check the data to know if it is in index form
-			let isValidOrder = false;
+			let notIndexOrder = false;
 			for (let index = 0; index < rowKeys.length - 1; index++) {
 				// Index form (all numbers, start at 0 and increase by 1)
 				let value = Number(rowKeys[index]);
 				if (isNaN(value) || value !== index) {
 					// break if key is not a number or in index form
-					isValidOrder = true;
+					notIndexOrder = true;
 					break;
 				}
 			}
 			// Only reorder data that is not in index form
-			if (isValidOrder) {
+			if (notIndexOrder) {
 				source.data.forEach((row, index) => {
 					// Order each row based on the schema
 					let reorderedData = {};
