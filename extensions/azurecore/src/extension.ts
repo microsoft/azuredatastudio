@@ -115,13 +115,24 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 				if (triggerValue === '') {
 					return '';
 				}
-				const accounts = await azdata.accounts.getAllAccounts();
+				let accounts: azdata.Account[] = [];
+				try {
+					accounts = await azdata.accounts.getAllAccounts();
+				} catch (err) {
+					console.warn(`Error fetching accounts for subscription-id-to-tenant-id provider : ${err}`);
+					return '';
+				}
+
 				for (const account of accounts) {
-					const subs = await azureResourceUtils.getSubscriptions(appContext, account);
+					// Ignore any errors - they'll be logged in the called function and we still want to look
+					// at any subscriptions that are returned - worst case we'll just return an empty string if we didn't
+					// find the matching subscription
+					const subs = await azureResourceUtils.getSubscriptions(appContext, account, true);
 					const sub = subs.subscriptions.find(sub => sub.id === triggerValue);
 					if (sub) {
 						return sub.tenant;
 					}
+
 				}
 				console.error(`Unable to find subscription with ID ${triggerValue} when mapping subscription ID to tenant ID`);
 				return '';
