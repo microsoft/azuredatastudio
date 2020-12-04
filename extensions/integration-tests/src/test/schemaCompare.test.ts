@@ -269,20 +269,14 @@ suite('Schema compare integration test suite @DacFx@', () => {
 });
 
 async function getConnectionUri(server: TestServerProfile): Promise<string> {
-	let result = await utils.retryFunction(async () => {
-		await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
 
-		let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
-		assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
+	// Connext to server
+	let connectionId = await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
+	assert(connectionId, `Failed to connect to "${server.serverName}"`);
 
-		let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
-		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
-
-		const ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
-		return ownerUri;
-	}, 5);
-
-	return result;
+	// Get connection uri
+	const ownerUri = await azdata.connection.getUriForConnection(connectionId);
+	return ownerUri;
 }
 
 function assertIncludeExcludeResult(result: mssql.SchemaCompareIncludeExcludeResult, expectedSuccess: boolean, expectedBlockingDependenciesLength: number, expectedAffectedDependenciesLength: number): void {

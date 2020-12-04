@@ -35,9 +35,15 @@ export async function connectToServer(connectionInfo: TestConnectionInfo, timeou
 		options: {}
 	};
 	await ensureConnectionViewOpened();
-	let result = <azdata.ConnectionResult>await azdata.connection.connect(connectionProfile);
-	assert(result.connected, `Failed to connect to "${connectionProfile.serverName}", error code: ${result.errorCode}, error message: ${result.errorMessage}`);
 
+	// Try connecting 3 times
+	let result = await retryFunction(
+		async () => {
+			let connection = <azdata.ConnectionResult>await azdata.connection.connect(connectionProfile);
+			assert(connection?.connected, `Failed to connect to "${connectionProfile.serverName}", error code: ${connection.errorCode}, error message: ${connection.errorMessage}`);
+			return connection;
+
+		}, 3);
 	//workaround
 	//wait for OE to load
 	await pollTimeout(async () => {
@@ -182,22 +188,24 @@ export async function runQuery(query: string, ownerUri: string): Promise<azdata.
 
 export async function retryFunction(fn: () => Promise<any>, retryCount: number): Promise<any> {
 	let result: any;
-	while (retryCount > 0) {
-		--retryCount;
-
+	let attempts: number = 1;
+	while (attempts <= retryCount) {
 		try {
 			result = await fn();
-			if (result) {
-				return result;
+			console.error(`utils.retryFunction: Attempt #${attempts} from ${retryCount} succeed. result: ${result}`);
+			break;
+		}
+		catch (e) {
+			console.error(`utils.retryFunction: Attempt #${attempts} from ${retryCount} failed. Error: ${e}`);
+			if (attempts === retryCount) {
+				throw e;
 			}
 		}
-		catch {
-			// exception will be thrown by the SQL Tools Service if no results is returned
-			// ignore it.
-		}
 
-		await sleep(5000);
+		await sleep(10000);
+		attempts++;
 	}
+	return result;
 }
 
 
