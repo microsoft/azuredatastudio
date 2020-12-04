@@ -18,7 +18,7 @@ import { createContext, TestContext } from './testContext';
 
 let testContext: TestContext;
 
-describe('utils: Tests to verify getEndpointName', function (): void {
+describe('utils: Tests to verify getEndpointName @DacFx@', function (): void {
 	it('Should generate correct endpoint information', () => {
 		let endpointInfo: mssql.SchemaCompareEndpointInfo;
 

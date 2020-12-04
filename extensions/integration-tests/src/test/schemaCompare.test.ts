@@ -25,7 +25,7 @@ const SERVER_CONNECTION_TIMEOUT: number = 3000;
 const retryCount = 24; // 2 minutes
 const folderPath = path.join(os.tmpdir(), 'SchemaCompareTest');
 
-suite('Schema compare integration test suite', () => {
+suite('Schema compare integration test suite @DacFx@', () => {
 	suiteSetup(async function () {
 		let attempts: number = 20;
 		while (attempts > 0) {

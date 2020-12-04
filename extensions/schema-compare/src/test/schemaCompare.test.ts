@@ -28,7 +28,7 @@ before(function (): void {
 	testContext = createContext();
 });
 
-describe('SchemaCompareMainWindow.start', function (): void {
+describe('SchemaCompareMainWindow.start @DacFx@s', function (): void {
 	before(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
