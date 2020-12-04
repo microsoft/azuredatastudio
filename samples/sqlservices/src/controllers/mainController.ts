@@ -239,18 +239,37 @@ export default class MainController implements vscode.Disposable {
 				form2Model
 			]).component();
 
-		let table = view.modelBuilder.table().withProperties({
+		const checkedRows: number[] = [2];
+
+		let table = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 			data: [
-				['1', '2', '2'],
-				['4', '5', '6'],
-				['7', '8', '9']
-			], columns: ['c1', 'c2', 'c3'],
+				['1', '2', '2', { enabled: false, checked: false }],
+				['4', '5', '6', false],
+				['7', '8', '9', { enabled: true, checked: true }]
+			],
+			columns: [
+				{ value: 'c1' },
+				{ value: 'c2' },
+				{ value: 'c3' }, {
+					value: 'checkbox',
+					type: azdata.ColumnType.checkBox,
+					options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
+				}],
 			height: 250,
 			selectedRows: [0]
 		}).component();
 		table.onRowSelected(e => {
 			// TODO:
 		});
+		table.onCellAction((arg: azdata.ICheckboxCellActionEventArgs) => {
+			if (arg.checked) {
+				checkedRows.push(arg.row);
+			} else {
+				checkedRows.splice(checkedRows.indexOf(arg.row), 1);
+			}
+			vscode.window.showInformationMessage('checked rows: ' + checkedRows.join(','));
+		});
+
 		let listBox = view.modelBuilder.listBox().withProperties({
 			values: ['1', '2', '3'],
 			selectedRow: 2
