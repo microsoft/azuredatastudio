@@ -93,8 +93,8 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 		sinon.stub(azdata.connection, 'connect').returns(<any>Promise.resolve(connection));
 		sinon.stub(azdata.connection, 'getUriForConnection').returns(<any>Promise.resolve(undefined));
 		sinon.stub(azdata.connection, 'getConnections').returns(<any>Promise.resolve(getConnectionsResults));
-		sinon.stub(vscode.window, 'showWarningMessage').callsFake(() => {
-			throw new Error('');
+		sinon.stub(vscode.window, 'showWarningMessage').callsFake((message) => {
+			throw new Error(message);
 		});
 
 		await shouldThrowSpecificError(async () => await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test'), getConnectionString);
@@ -109,7 +109,10 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 		sinon.stub(azdata.connection, 'connect').returns(<any>Promise.resolve(connection));
 		sinon.stub(azdata.connection, 'getUriForConnection').returns(<any>Promise.resolve(undefined));
 		sinon.stub(azdata.connection, 'getConnections').returns(<any>Promise.resolve(getConnectionsResults));
-		sinon.stub(vscode.window, 'showWarningMessage').throwsArg(0);
+		sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(loc.YesButtonText));
+		sinon.stub(vscode.window, 'showErrorMessage').callsFake((message) => {
+			throw new Error(message);
+		});
 
 		await shouldThrowSpecificError(async () => await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test'), connection.errorMessage);
 	});
@@ -122,9 +125,14 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 
 		sinon.stub(azdata.connection, 'connect').returns(<any>Promise.resolve(connection));
 		sinon.stub(azdata.connection, 'getUriForConnection').returns(<any>Promise.resolve(undefined));
-		sinon.stub(azdata.connection, 'openConnectionDialog').returns(<any>Promise.resolve(undefined));
+		sinon.stub(azdata.connection, 'openConnectionDialog').returns(<any>Promise.resolve({
+			connectionId: 'id'
+		}));
 		sinon.stub(azdata.connection, 'getConnections').returns(<any>Promise.resolve(getConnectionsResults));
 		sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(loc.YesButtonText));
+		sinon.stub(vscode.window, 'showErrorMessage').callsFake((message) => {
+			throw new Error(message);
+		});
 
 		await shouldThrowSpecificError(async () => await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test'), connection.errorMessage);
 	});

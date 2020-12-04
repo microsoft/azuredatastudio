@@ -105,15 +105,6 @@ describe('SchemaCompareMainWindow.results', function (): void {
 
 	this.afterEach(() => {
 		sinon.restore();
-		if (showErrorMessageSpy) {
-			showErrorMessageSpy.restore();
-		}
-		if (showWarningMessageStub) {
-			showWarningMessageStub.restore();
-		}
-		if (showOpenDialogStub) {
-			showOpenDialogStub.restore();
-		}
 	});
 
 	this.beforeEach(() => {
@@ -291,18 +282,6 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 
 	this.afterEach(() => {
 		sinon.restore();
-		if (showErrorMessageSpy) {
-			showErrorMessageSpy.restore();
-		}
-		if (showErrorMessageStub) {
-			showErrorMessageStub.restore();
-		}
-		if (showWarningMessageStub) {
-			showWarningMessageStub.restore();
-		}
-		if (showOpenDialogStub) {
-			showOpenDialogStub.restore();
-		}
 	});
 
 	this.beforeEach(() => {
@@ -312,8 +291,8 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 	it('Should fail for failing Schema Compare service', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService(testStateScmp.FAILURE);
 
-		showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').callsFake(() => {
-			throw new Error('');
+		showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').callsFake((message) => {
+			throw new Error(message);
 		});
 
 		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object);
