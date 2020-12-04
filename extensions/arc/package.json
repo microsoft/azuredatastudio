@@ -296,9 +296,9 @@
                           "required": true,
                           "defaultValue": "",
                           "enabled": false,
-                          "dependentField": {
-                            "target": "AZDATA_NB_VAR_ARC_SUBSCRIPTION",
-                            "providerId": "subscription-to-tenant-id"
+                          "valueProvider": {
+                            "providerId": "subscription-id-to-tenant-id",
+                            "triggerField": "AZDATA_NB_VAR_ARC_SUBSCRIPTION"
                           }
                         }
                       ]

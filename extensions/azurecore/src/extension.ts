@@ -106,19 +106,24 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		}
 	});
 
+	// Don't block on this since there's a bit of a circular dependency here with the extension activation since resource deployment
+	// depends on this extension too. It's fine to wait a bit for that to finish before registering the provider
 	vscode.extensions.getExtension(resourceDeployment.extension.name).activate().then((api: resourceDeployment.IExtension) => {
-		api.registerDependentFieldProvider({
-			providerId: 'subscription-to-tenant-id',
-			getValue: async (dependentFieldValue: string) => {
+		api.registerValueProvider({
+			providerId: 'subscription-id-to-tenant-id',
+			getValue: async (triggerValue: string) => {
+				if (triggerValue === '') {
+					return '';
+				}
 				const accounts = await azdata.accounts.getAllAccounts();
 				for (const account of accounts) {
 					const subs = await azureResourceUtils.getSubscriptions(appContext, account);
-					const sub = subs.subscriptions.find(sub => sub.id === dependentFieldValue);
+					const sub = subs.subscriptions.find(sub => sub.id === triggerValue);
 					if (sub) {
 						return sub.tenant;
 					}
 				}
-				console.error(`Unable to find subscription with ID ${dependentFieldValue} when mapping subscription ID to tenant ID`);
+				console.error(`Unable to find subscription with ID ${triggerValue} when mapping subscription ID to tenant ID`);
 				return '';
 			}
 		});

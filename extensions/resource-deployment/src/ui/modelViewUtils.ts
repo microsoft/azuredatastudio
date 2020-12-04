@@ -14,7 +14,7 @@ import { getDateTimeString, getErrorMessage, throwUnless } from '../common/utils
 import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, instanceOfDynamicEnablementInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
-import { dependentFieldProviderService } from '../services/dependentFieldService';
+import { valueProviderService } from '../services/valueProviderService';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
 import { optionsSourcesService } from '../services/optionSourcesService';
 import { KubeCtlTool, KubeCtlToolName } from '../services/tools/kubeCtlTool';
@@ -336,7 +336,7 @@ export function initializeWizardPage(context: WizardPageContext): void {
 			});
 		}));
 		await hookUpDynamicEnablement(context);
-		await hookUpDependentValues(context);
+		await hookUpValueProviders(context);
 		const formBuilder = view.modelBuilder.formContainer().withFormItems(
 			sections.map(section => { return { title: '', component: section }; }),
 			{
@@ -396,21 +396,21 @@ async function hookUpDynamicEnablement(context: WizardPageContext): Promise<void
 	}));
 }
 
-async function hookUpDependentValues(context: WizardPageContext): Promise<void> {
+async function hookUpValueProviders(context: WizardPageContext): Promise<void> {
 	await Promise.all(context.pageInfo.sections.map(async section => {
 		if (!section.fields) {
 			return;
 		}
 		await Promise.all(section.fields.map(async field => {
-			if (field.dependentField) {
+			if (field.valueProvider) {
 				const fieldKey = field.variableName || field.label;
 				const fieldComponent = context.inputComponents[fieldKey];
-				const targetComponent = context.inputComponents[field.dependentField.target];
+				const targetComponent = context.inputComponents[field.valueProvider.triggerField];
 				if (!targetComponent) {
-					console.error(`Could not find target component ${field.dependentField.target} when hooking up dynamic enablement for ${field.label}`);
+					console.error(`Could not find target component ${field.valueProvider.triggerField} when hooking up value providers for ${field.label}`);
 					return;
 				}
-				const provider = dependentFieldProviderService.getDependentFieldProvider(field.dependentField.providerId);
+				const provider = valueProviderService.getValueProvider(field.valueProvider.providerId);
 				const updateFields = async () => {
 					const targetComponentValue = await targetComponent.getValue();
 					const newFieldValue = await provider.getValue(targetComponentValue?.toString() ?? '');

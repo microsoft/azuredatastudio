@@ -23,9 +23,9 @@ declare module 'resource-deployment' {
 		getIsPassword?: (variableName: string) => boolean | Promise<boolean>;
 	}
 
-	export interface IDependentFieldProvider {
+	export interface IValueProvider {
 		readonly providerId: string,
-		getValue(dependentFieldValue: string): Promise<string>;
+		getValue(triggerValue: string): Promise<string>;
 	}
 
 	/**
@@ -37,6 +37,6 @@ declare module 'resource-deployment' {
 
 	export interface IExtension {
 		registerOptionsSourceProvider(provider: IOptionsSourceProvider): void,
-		registerDependentFieldProvider(provider: IDependentFieldProvider): void
+		registerValueProvider(provider: IValueProvider): void
 	}
 }
