@@ -86,4 +86,5 @@ export const INVALID_SUBSCRIPTION_ERROR = localize('sql.migration.invalid.subscr
 export const INVALID_STORAGE_ACCOUNT_ERROR = localize('sql.migration.invalid.storageAccout.error', "Please select a valid storage account to proceed");
 export const INVALID_FILESHARE_ERROR = localize('sql.migration.invalid.fileShare.error', "Please select a valid file share to proceed");
 export const INVALID_BLOBCONTAINER_ERROR = localize('sql.migration.invalid.blobContainer.error', "Please select a valid blob container to proceed");
-
+export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.network.share.location', "Invalid network share location format");
+export const INVALID_USER_ACCOUNT = localize('sql.migration.invalid.user.account', "Invalid user account format");

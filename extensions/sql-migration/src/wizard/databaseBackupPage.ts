@@ -248,7 +248,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareLocationText = view.modelBuilder.inputBox()
 			.withProps({
 				placeHolder: '\\\\Servername.domainname.com\\Backupfolder',
-				required: true
+				required: true,
+				validationErrorMessage: constants.INVALID_NETWORK_SHARE_LOCATION
 			})
 			.withValidation((component) => {
 				if (component.value) {
@@ -270,7 +271,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._windowsUserAccountText = view.modelBuilder.inputBox()
 			.withProps({
 				placeHolder: 'Domain\\username',
-				required: true
+				required: true,
+				validationErrorMessage: constants.INVALID_USER_ACCOUNT
 			})
 			.withValidation((component) => {
 				if (component.value) {
