@@ -610,7 +610,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			const fileShares = await getFileShares(this.migrationStateModel.azureAccount, this._subscriptionMap.get(this._fileShare.subscriptionId)!, this._storageAccountMap.get(storageAccountId)!);
 			if (fileShares && fileShares.length) {
 				this._fileShareFileShareDropdown.values = fileShares.map(f => <azdata.CategoryValue>{ name: f.id, displayName: f.name });
-				this._fileShare.fileShareId = fileShares[0].id;
+				this._fileShare.fileShareId = fileShares[0].id!;
 			} else {
 				this.setEmptyDropdownPlaceHolder(this._fileShareFileShareDropdown, constants.NO_FILESHARES_FOUND);
 			}
@@ -627,7 +627,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			const blobContainer = await getBlobContainers(this.migrationStateModel.azureAccount, this._subscriptionMap.get(this._blob.subscriptionId)!, this._storageAccountMap.get(storageAccountId)!);
 			if (blobContainer && blobContainer.length) {
 				this._blobContainerBlobDropdown.values = blobContainer.map(f => <azdata.CategoryValue>{ name: f.id, displayName: f.name });
-				this._blob.containerId = blobContainer[0].id;
+				this._blob.containerId = blobContainer[0].id!;
 			} else {
 				this.setEmptyDropdownPlaceHolder(this._blobContainerBlobDropdown, constants.NO_BLOBCONTAINERS_FOUND);
 			}

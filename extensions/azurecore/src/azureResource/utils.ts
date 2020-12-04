@@ -7,7 +7,7 @@ import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import axios, { AxiosRequestConfig } from 'axios';
 import * as azdata from 'azdata';
-import { HttpGetRequestResult, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult } from 'azurecore';
+import { HttpGetRequestResult, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult } from 'azurecore';
 import { azureResource } from 'azureResource';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
@@ -16,6 +16,7 @@ import { invalidAzureAccount, invalidTenant, unableToFetchTokenError } from '../
 import { AzureResourceServiceNames } from './constants';
 import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionService } from './interfaces';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
+import { StorageManagementClient } from '@azure/arm-storage';
 
 const localize = nls.loadMessageBundle();
 
@@ -360,3 +361,116 @@ export async function makeHttpGetRequest(account: azdata.Account, subscription: 
 
 	return result;
 }
+
+export async function getBlobContainers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccounts: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetBlobContainersResult> {
+	let result: GetBlobContainersResult = { blobContainer: undefined, errors: [] };
+
+	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
+		const error = new Error(invalidAzureAccount);
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+
+	if (!subscription.tenant) {
+		const error = new Error(invalidTenant);
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+	if (result.errors.length > 0) {
+		return result;
+	}
+
+	let securityToken: { token: string, tokenType?: string };
+	let credential: TokenCredentials;
+	try {
+		securityToken = await azdata.accounts.getAccountSecurityToken(
+			account,
+			subscription.tenant!,
+			azdata.AzureResource.ResourceManagement
+		);
+		const token = securityToken.token;
+		const tokenType = securityToken.tokenType;
+		credential = new TokenCredentials(token, tokenType);
+
+	} catch (err) {
+		console.error(err);
+		const error = new Error(unableToFetchTokenError(subscription.tenant));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+
+	try {
+		const client = new StorageManagementClient(<any>credential, subscription.id);
+		result.blobContainer = await client.blobContainers.list(storageAccounts.resourceGroup, storageAccounts.name);
+	} catch (err) {
+		console.error(err);
+		if (!ignoreErrors) {
+			throw err;
+		}
+		result.errors.push(err);
+	}
+	return result;
+}
+
+export async function getFileShares(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccounts: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetFileSharesResult> {
+	let result: GetFileSharesResult = { fileShares: undefined, errors: [] };
+
+	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
+		const error = new Error(invalidAzureAccount);
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+
+	if (!subscription.tenant) {
+		const error = new Error(invalidTenant);
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+	if (result.errors.length > 0) {
+		return result;
+	}
+
+	let securityToken: { token: string, tokenType?: string };
+	let credential: TokenCredentials;
+	try {
+		securityToken = await azdata.accounts.getAccountSecurityToken(
+			account,
+			subscription.tenant!,
+			azdata.AzureResource.ResourceManagement
+		);
+		const token = securityToken.token;
+		const tokenType = securityToken.tokenType;
+		credential = new TokenCredentials(token, tokenType);
+
+	} catch (err) {
+		console.error(err);
+		const error = new Error(unableToFetchTokenError(subscription.tenant));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+
+	try {
+		const client = new StorageManagementClient(<any>credential, subscription.id);
+		result.fileShares = await client.fileShares.list(storageAccounts.resourceGroup, storageAccounts.name);
+	} catch (err) {
+		console.error(err);
+		if (!ignoreErrors) {
+			throw err;
+		}
+		result.errors.push(err);
+	}
+	return result;
+}
+

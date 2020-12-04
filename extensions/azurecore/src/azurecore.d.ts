@@ -6,6 +6,8 @@
 declare module 'azurecore' {
 	import * as azdata from 'azdata';
 	import { azureResource } from 'azureResource';
+	import { BlobContainersListResponse, FileSharesListResponse } from '@azure/arm-storage/esm/models';
+
 	/**
 	 * Covers defining what the azurecore extension exports to other extensions
 	 *
@@ -72,6 +74,8 @@ declare module 'azurecore' {
 		getSqlServers(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlServersResult>;
 		getSqlVMServer(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlVMServerResult>;
 		getStorageAccounts(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetStorageAccountResult>;
+		getBlobContainers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetBlobContainersResult>;
+		getFileShares(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetFileSharesResult>;
 		/**
 		 * Converts a region value (@see AzureRegion) into the localized Display Name
 		 * @param region The region value
@@ -89,6 +93,8 @@ declare module 'azurecore' {
 	export type GetSqlServersResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
 	export type GetSqlVMServerResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
 	export type GetStorageAccountResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
+	export type GetBlobContainersResult = {blobContainer: BlobContainersListResponse, errors: Error[]};
+	export type GetFileSharesResult = {fileShares: FileSharesListResponse, errors: Error[]};
 
 	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
 	export type HttpGetRequestResult = { response: any, errors: Error[] };

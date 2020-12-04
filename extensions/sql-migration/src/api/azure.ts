@@ -67,44 +67,29 @@ export async function getAvailableStorageAccounts(account: azdata.Account, subsc
 	return result.resources;
 }
 
-export type FileShares = AzureProduct;
+export type FileShares = azureResource.FileShares;
 export async function getFileShares(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<FileShares[]> {
 	const api = await getAzureCoreAPI();
-	const url = `https://management.azure.com` +
-		`/subscriptions/${subscription.id}` +
-		`/resourceGroups/${storageAccount.resourceGroup}` +
-		`/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}` +
-		`/fileServices/default/shares?api-version=2019-06-01`;
-
-	let result = await api.makeHttpGetRequest(account, subscription, true, url);
-	let fileShares = [];
-	if (result.response.data?.value) {
-		fileShares = result.response.data.value;
-	}
+	let result = await api.getFileShares(account, subscription, storageAccount, true);
+	let fileShares = result.fileShares;
 	sortResourceArrayByName(fileShares);
 	return fileShares;
 }
 
-export type BlobContainer = AzureProduct;
+export type BlobContainer = azureResource.BlobContainer;
 export async function getBlobContainers(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<BlobContainer[]> {
 	const api = await getAzureCoreAPI();
-	const url = `https://management.azure.com` +
-		`/subscriptions/${subscription.id}` +
-		`/resourceGroups/${storageAccount.resourceGroup}` +
-		`/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}` +
-		`/blobServices/default/containers?api-version=2019-06-01`;
-
-	let result = await api.makeHttpGetRequest(account, subscription, true, url);
-	let blobContainers = [];
-	if (result.response.data?.value) {
-		blobContainers = result.response.data.value;
-	}
+	let result = await api.getBlobContainers(account, subscription, storageAccount, true);
+	let blobContainers = result.blobContainer;
 	sortResourceArrayByName(blobContainers);
 	return blobContainers;
 }
 
-function sortResourceArrayByName(resourceArray: AzureProduct[]) {
-	resourceArray.sort((a, b) => {
+function sortResourceArrayByName(resourceArray: AzureProduct[] | BlobContainer[] | FileShares[]): void {
+	if (!resourceArray) {
+		return;
+	}
+	resourceArray.sort((a: any, b: any) => {
 		if (a.name < b.name) {
 			return -1;
 		}

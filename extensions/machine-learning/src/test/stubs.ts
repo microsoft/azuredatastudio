@@ -8,6 +8,12 @@ import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
 
 export class AzurecoreApiStub implements azurecore.IExtension {
+	getFileShares(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _storageAccount: azureResource.AzureGraphResource, _ignoreErrors?: boolean): Promise<azurecore.GetFileSharesResult> {
+		throw new Error('Method not implemented.');
+	}
+	getBlobContainers(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _storageAccount: azureResource.AzureGraphResource, _ignoreErrors?: boolean): Promise<azurecore.GetBlobContainersResult> {
+		throw new Error('Method not implemented.');
+	}
 	getSqlManagedInstances(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Promise<azurecore.GetSqlManagedInstancesResult> {
 		throw new Error('Method not implemented.');
 	}

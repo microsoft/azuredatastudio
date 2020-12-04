@@ -149,6 +149,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean): Promise<azurecore.GetStorageAccountResult> {
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.storageAccount}"`);
 		},
+		getBlobContainers(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			storageAccount: azureResource.AzureGraphResource,
+			ignoreErrors: boolean): Promise<azurecore.GetBlobContainersResult> {
+			return azureResourceUtils.getBlobContainers(account, subscription, storageAccount, ignoreErrors);
+		},
+		getFileShares(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			storageAccount: azureResource.AzureGraphResource,
+			ignoreErrors: boolean): Promise<azurecore.GetFileSharesResult> {
+			return azureResourceUtils.getFileShares(account, subscription, storageAccount, ignoreErrors);
+		},
 		getRegionDisplayName: utils.getRegionDisplayName,
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: azdata.Account,
 			subscriptions: azureResource.AzureResourceSubscription[],
