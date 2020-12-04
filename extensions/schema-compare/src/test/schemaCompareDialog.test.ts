@@ -13,7 +13,6 @@ import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { createContext, TestContext } from './testContext';
 import { setDacpacEndpointInfo } from './testUtils';
 import { SchemaCompareMainWindowTest } from './testSchemaCompareMainWindow';
-import { SchemaCompareTestService } from './testSchemaCompareService';
 
 // Mock test data
 const mocksource: string = 'source.dacpac';
@@ -33,7 +32,7 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 	});
 
 	it('Should be correct when created.', async function (): Promise<void> {
-		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, undefined, mockExtensionContext.object);
+		let schemaCompareResult = new SchemaCompareMainWindow(undefined, mockExtensionContext.object);
 		let dialog = new SchemaCompareDialog(schemaCompareResult);
 		await dialog.openDialog();
 
@@ -43,7 +42,7 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 	});
 
 	it('Simulate ok button- with both endpoints set to dacpac', async function (): Promise<void> {
-		let schemaCompareResult = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, undefined, mockExtensionContext.object);
+		let schemaCompareResult = new SchemaCompareMainWindowTest(undefined, mockExtensionContext.object);
 		await schemaCompareResult.start(undefined);
 		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
 		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);

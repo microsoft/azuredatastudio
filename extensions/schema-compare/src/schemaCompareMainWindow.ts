@@ -14,7 +14,6 @@ import { TelemetryReporter, TelemetryViews } from './telemetry';
 import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath } from './utils';
 import { SchemaCompareDialog } from './dialogs/schemaCompareDialog';
 import { isNullOrUndefined } from 'util';
-import { ApiWrapper } from './common/apiWrapper';
 
 // Do not localize this, this is used to decide the icon for the editor.
 // TODO : In future icon should be decided based on language id (scmp) and not resource name
@@ -69,7 +68,7 @@ export class SchemaCompareMainWindow {
 	public sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
 	public targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
 
-	constructor(private apiWrapper: ApiWrapper, private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext) {
+	constructor(private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Delete] = loc.deleteAction;
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Change] = loc.changeAction;
@@ -87,7 +86,7 @@ export class SchemaCompareMainWindow {
 		let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
 		let sourceDacpac = context as string;
 		if (profile) {
-			let ownerUri = await this.apiWrapper.getUriForConnection((profile.id));
+			let ownerUri = await azdata.connection.getUriForConnection((profile.id));
 			this.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
 				serverDisplayName: `${profile.serverName} ${profile.userName}`,
@@ -299,7 +298,7 @@ export class SchemaCompareMainWindow {
 				.withAdditionalProperties({
 					operationId: this.comparisonResult.operationId
 				}).send();
-			this.apiWrapper.showErrorMessage(loc.compareErrorMessage(this.comparisonResult?.errorMessage));
+			vscode.window.showErrorMessage(loc.compareErrorMessage(this.comparisonResult?.errorMessage));
 			return;
 		}
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFinished')
@@ -671,7 +670,7 @@ export class SchemaCompareMainWindow {
 					.withAdditionalProperties({
 						'operationId': this.operationId
 					}).send();
-				this.apiWrapper.showErrorMessage(loc.cancelErrorMessage(result.errorMessage));
+				vscode.window.showErrorMessage(loc.cancelErrorMessage(result.errorMessage));
 			}
 			TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareCancelEnded')
 				.withAdditionalProperties({
@@ -708,7 +707,7 @@ export class SchemaCompareMainWindow {
 				.withAdditionalProperties({
 					'operationId': this.comparisonResult.operationId
 				}).send();
-			this.apiWrapper.showErrorMessage(loc.generateScriptErrorMessage(result.errorMessage));
+			vscode.window.showErrorMessage(loc.generateScriptErrorMessage(result.errorMessage));
 		}
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareGenerateScriptEnded')
 			.withAdditionalProperties({
@@ -754,7 +753,7 @@ export class SchemaCompareMainWindow {
 
 		// need only yes button - since the modal dialog has a default cancel
 		const yesString = loc.YesButtonText;
-		await this.apiWrapper.showWarningMessage(loc.applyConfirmation, { modal: true }, yesString).then(async (result) => {
+		await vscode.window.showWarningMessage(loc.applyConfirmation, { modal: true }, yesString).then(async (result) => {
 			if (result === yesString) {
 				TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyStarted')
 					.withAdditionalProperties({
@@ -772,7 +771,7 @@ export class SchemaCompareMainWindow {
 						.withAdditionalProperties({
 							'operationId': this.comparisonResult.operationId
 						}).send();
-					this.apiWrapper.showErrorMessage(loc.applyErrorMessage(result.errorMessage));
+					vscode.window.showErrorMessage(loc.applyErrorMessage(result.errorMessage));
 
 					// reenable generate script and apply buttons if apply failed
 					this.generateScriptButton.enabled = true;
@@ -937,7 +936,7 @@ export class SchemaCompareMainWindow {
 	public async openScmp(): Promise<void> {
 		TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpStarted');
 		const rootPath = getRootPath();
-		let fileUris = await this.apiWrapper.showOpenDialog(
+		let fileUris = await vscode.window.showOpenDialog(
 			{
 				canSelectFiles: true,
 				canSelectFolders: false,
@@ -960,12 +959,12 @@ export class SchemaCompareMainWindow {
 		const result = await service.schemaCompareOpenScmp(fileUri.fsPath);
 		if (!result || !result.success) {
 			TelemetryReporter.sendErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareOpenScmpFailed', undefined, getTelemetryErrorType(result.errorMessage));
-			this.apiWrapper.showErrorMessage(loc.openScmpErrorMessage(result.errorMessage));
+			vscode.window.showErrorMessage(loc.openScmpErrorMessage(result.errorMessage));
 			return;
 		}
 
-		this.sourceEndpointInfo = await this.constructEndpointInfo(result.sourceEndpointInfo, loc.sourceTitle, this.apiWrapper);
-		this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, loc.targetTitle, this.apiWrapper);
+		this.sourceEndpointInfo = await this.constructEndpointInfo(result.sourceEndpointInfo, loc.sourceTitle);
+		this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, loc.targetTitle);
 
 		this.updateSourceAndTarget();
 		this.setDeploymentOptions(result.deploymentOptions);
@@ -982,12 +981,12 @@ export class SchemaCompareMainWindow {
 			}).send();
 	}
 
-	private async constructEndpointInfo(endpoint: mssql.SchemaCompareEndpointInfo, caller: string, apiWrapper: ApiWrapper): Promise<mssql.SchemaCompareEndpointInfo> {
+	private async constructEndpointInfo(endpoint: mssql.SchemaCompareEndpointInfo, caller: string): Promise<mssql.SchemaCompareEndpointInfo> {
 		let ownerUri;
 		let endpointInfo;
 		if (endpoint && endpoint.endpointType === mssql.SchemaCompareEndpointType.Database) {
 			// only set endpoint info if able to connect to the database
-			ownerUri = await verifyConnectionAndGetOwnerUri(endpoint, caller, apiWrapper);
+			ownerUri = await verifyConnectionAndGetOwnerUri(endpoint, caller);
 		}
 		if (ownerUri) {
 			endpointInfo = endpoint;
@@ -1025,7 +1024,7 @@ export class SchemaCompareMainWindow {
 
 	public async saveScmp(): Promise<void> {
 		const rootPath = getRootPath();
-		const filePath = await this.apiWrapper.showSaveDialog(
+		const filePath = await vscode.window.showSaveDialog(
 			{
 				defaultUri: vscode.Uri.file(rootPath),
 				saveLabel: loc.save,
@@ -1052,7 +1051,7 @@ export class SchemaCompareMainWindow {
 				.withAdditionalProperties({
 					operationId: this.comparisonResult.operationId
 				}).send();
-			this.apiWrapper.showErrorMessage(loc.saveScmpErrorMessage(result.errorMessage));
+			vscode.window.showErrorMessage(loc.saveScmpErrorMessage(result.errorMessage));
 		}
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSaveScmpEnded')
 			.withAdditionalProperties({

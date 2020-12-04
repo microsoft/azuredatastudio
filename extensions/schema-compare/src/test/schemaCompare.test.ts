@@ -4,13 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import * as TypeMoq from 'typemoq';
 import * as loc from '../localizedConstants';
 import 'mocha';
-import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
+import * as sinon from 'sinon';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { SchemaCompareTestService, testStateScmp } from './testSchemaCompareService';
 import { createContext, TestContext } from './testContext';
@@ -28,15 +27,24 @@ before(function (): void {
 	testContext = createContext();
 });
 
+afterEach(function (): void {
+	sinon.restore();
+});
+
 describe('SchemaCompareMainWindow.start', function (): void {
 	before(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
 	});
+
+	this.afterEach(() => {
+		sinon.restore();
+	});
+
 	it('Should be correct when created.', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
-		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object);
 		await result.start(undefined);
 
 		should(result.getComparisonResult() === undefined);
@@ -49,212 +57,10 @@ describe('SchemaCompareMainWindow.start', function (): void {
 		should(result.getComparisonResult().operationId === 'Test Operation Id');
 	});
 
-	it('Should show error if publish changes fails', async function (): Promise<void> {
-		let testContext = createContext();
-		let service = createServiceMock();
-		let messageShown = false;
-		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
-			success: false,
-			errorMessage: ''
-		}));
-
-		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('Yes'));
-		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
-			messageShown = true;
-			return Promise.resolve('');
-		});
-		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, service.object, mockExtensionContext.object);
-		await schemaCompareResult.start(undefined);
-
-		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
-		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
-		await schemaCompareResult.execute();
-		await schemaCompareResult.publishChanges();
-		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-		should.equal(messageShown, true);
-	});
-
-	it('Should show not error if publish changes succeed', async function (): Promise<void> {
-		let testContext = createContext();
-		let service = createServiceMock();
-		let messageShown = false;
-		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
-			success: true,
-			errorMessage: ''
-		}));
-
-		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('Yes'));
-		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
-			messageShown = true;
-			return Promise.resolve('');
-		});
-		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, service.object, mockExtensionContext.object);
-		await schemaCompareResult.start(undefined);
-
-		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
-		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
-		await schemaCompareResult.execute();
-		await schemaCompareResult.publishChanges();
-		should.equal(messageShown, false);
-	});
-
-	it('Should show error if openScmp fails', async function (): Promise<void> {
-		let testContext = createContext();
-		let service = createServiceMock();
-		let files: vscode.Uri[] = [vscode.Uri.parse('file:///test')];
-		let messageShown = false;
-		service.setup(x => x.schemaCompareOpenScmp(TypeMoq.It.isAny())).returns(() => Promise.resolve({
-			sourceEndpointInfo: undefined,
-			targetEndpointInfo: undefined,
-			originalTargetName: 'string',
-			originalConnectionString: '',
-			deploymentOptions: undefined,
-			excludedSourceElements: [],
-			excludedTargetElements: [],
-			success: false,
-			errorMessage: ''
-		}));
-
-		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('Yes'));
-		testContext.apiWrapper.setup(x => x.showOpenDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve(files));
-		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
-			messageShown = true;
-			return Promise.resolve('');
-		});
-		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, service.object, mockExtensionContext.object);
-		await schemaCompareResult.start(undefined);
-
-		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
-		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
-		await schemaCompareResult.openScmp();
-		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-		should.equal(messageShown, true);
-	});
-
-	it('Should show error if saveScmp fails', async function (): Promise<void> {
-		let testContext = createContext();
-		let service = createServiceMock();
-		let file: vscode.Uri = vscode.Uri.parse('file:///test');
-		let messageShown = false;
-		service.setup(x => x.schemaCompareSaveScmp(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
-			sourceEndpointInfo: undefined,
-			targetEndpointInfo: undefined,
-			originalTargetName: 'string',
-			originalConnectionString: '',
-			deploymentOptions: undefined,
-			excludedSourceElements: [],
-			excludedTargetElements: [],
-			success: false,
-			errorMessage: ''
-		}));
-
-		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('Yes'));
-		testContext.apiWrapper.setup(x => x.showSaveDialog(TypeMoq.It.isAny())).returns(() => Promise.resolve(file));
-		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
-			messageShown = true;
-			return Promise.resolve('');
-		});
-		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, service.object, mockExtensionContext.object);
-		await schemaCompareResult.start(undefined);
-
-		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
-		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
-		await schemaCompareResult.execute();
-		await schemaCompareResult.saveScmp();
-		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-		should.equal(messageShown, true);
-	});
-
-
-	it('Should show error if generateScript fails', async function (): Promise<void> {
-		let testContext = createContext();
-		let service = createServiceMock();
-
-		let messageShown = false;
-		service.setup(x => x.schemaCompareGenerateScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
-			success: false,
-			errorMessage: ''
-		}));
-
-		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('Yes'));
-		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
-			messageShown = true;
-			return Promise.resolve('');
-		});
-		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, service.object, mockExtensionContext.object);
-		await schemaCompareResult.start(undefined);
-
-		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
-		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
-		await schemaCompareResult.execute();
-		await schemaCompareResult.generateScript();
-		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-		should.equal(messageShown, true);
-	});
-
-	it('Should show error if cancel fails', async function (): Promise<void> {
-		let testContext = createContext();
-		let service = createServiceMock();
-
-		let messageShown = false;
-		service.setup(x => x.schemaCompareCancel(TypeMoq.It.isAny())).returns(() => Promise.resolve({
-			success: false,
-			errorMessage: ''
-		}));
-
-		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('Yes'));
-		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
-			messageShown = true;
-			return Promise.resolve('');
-		});
-		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, service.object, mockExtensionContext.object);
-		await schemaCompareResult.start(undefined);
-
-		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
-		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
-		await schemaCompareResult.execute();
-		await schemaCompareResult.cancelCompare();
-		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-		should.equal(messageShown, true);
-	});
-
-	it('Should show not error if user does not want to publish', async function (): Promise<void> {
-		let testContext = createContext();
-		let service = createServiceMock();
-		let messageShown = false;
-		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
-			success: false,
-			errorMessage: ''
-		}));
-
-		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('No'));
-		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
-			messageShown = true;
-			return Promise.resolve('');
-		});
-		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, service.object, mockExtensionContext.object);
-		await schemaCompareResult.start(undefined);
-
-		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
-		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
-		await schemaCompareResult.execute();
-		await schemaCompareResult.publishChanges();
-
-		should.equal(messageShown, false);
-	});
-
-	function createServiceMock() {
-		let sc = new SchemaCompareTestService();
-		let service = TypeMoq.Mock.ofInstance(new SchemaCompareTestService());
-		service.setup(x => x.schemaCompareGetDefaultOptions()).returns(x => sc.schemaCompareGetDefaultOptions());
-		service.setup(x => x.schemaCompare(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => sc.schemaCompare('', undefined, undefined, undefined, undefined));
-		return service;
-	}
-
 	it('Should start with the source as undefined', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
-		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object);
 		await result.start(undefined);
 
 		should.equal(result.sourceEndpointInfo, undefined);
@@ -264,7 +70,7 @@ describe('SchemaCompareMainWindow.start', function (): void {
 	it('Should start with the source as database', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
-		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object);
 		await result.start({ connectionProfile: mockIConnectionProfile });
 
 		should.notEqual(result.sourceEndpointInfo, undefined);
@@ -277,7 +83,7 @@ describe('SchemaCompareMainWindow.start', function (): void {
 	it('Should start with the source as dacpac.', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
-		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object);
 		const dacpacPath = mockFilePath;
 		await result.start(dacpacPath);
 
@@ -287,7 +93,195 @@ describe('SchemaCompareMainWindow.start', function (): void {
 		should.equal(result.targetEndpointInfo, undefined);
 	});
 });
+let showErrorMessageSpy: any;
+let showWarningMessageStub: any;
+let showOpenDialogStub: any;
 
+describe('SchemaCompareMainWindow.results', function (): void {
+	before(() => {
+		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
+	});
+
+	this.afterEach(() => {
+		sinon.restore();
+		if (showErrorMessageSpy) {
+			showErrorMessageSpy.restore();
+		}
+		if (showWarningMessageStub) {
+			showWarningMessageStub.restore();
+		}
+		if (showOpenDialogStub) {
+			showOpenDialogStub.restore();
+		}
+	});
+
+	this.beforeEach(() => {
+		sinon.restore();
+		showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
+	});
+
+	it('Should show error if publish changes fails', async function (): Promise<void> {
+		let service = createServiceMock();
+		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			success: false,
+			errorMessage: ''
+		}));
+
+		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Yes'));
+
+		let schemaCompareResult = new SchemaCompareMainWindow(service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.execute();
+		await schemaCompareResult.publishChanges();
+
+		should(showErrorMessageSpy.calledOnce).be.true();
+	});
+
+	it('Should show not error if publish changes succeed', async function (): Promise<void> {
+		let service = createServiceMock();
+		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			success: true,
+			errorMessage: ''
+		}));
+		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Yes'));
+		let schemaCompareResult = new SchemaCompareMainWindow(service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.execute();
+		await schemaCompareResult.publishChanges();
+		should(showErrorMessageSpy.notCalled).be.true();
+	});
+
+	it('Should show error if openScmp fails', async function (): Promise<void> {
+		let service = createServiceMock();
+		let files: vscode.Uri[] = [vscode.Uri.parse('file:///test')];
+		service.setup(x => x.schemaCompareOpenScmp(TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			sourceEndpointInfo: undefined,
+			targetEndpointInfo: undefined,
+			originalTargetName: 'string',
+			originalConnectionString: '',
+			deploymentOptions: undefined,
+			excludedSourceElements: [],
+			excludedTargetElements: [],
+			success: false,
+			errorMessage: ''
+		}));
+
+		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Yes'));
+		showOpenDialogStub = sinon.stub(vscode.window, 'showOpenDialog').returns(<any>Promise.resolve(files));
+
+		let schemaCompareResult = new SchemaCompareMainWindow(service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.openScmp();
+
+		should(showErrorMessageSpy.calledOnce).be.true();
+	});
+
+	it('Should show error if saveScmp fails', async function (): Promise<void> {
+		let service = createServiceMock();
+		let file: vscode.Uri = vscode.Uri.parse('file:///test');
+		service.setup(x => x.schemaCompareSaveScmp(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			sourceEndpointInfo: undefined,
+			targetEndpointInfo: undefined,
+			originalTargetName: 'string',
+			originalConnectionString: '',
+			deploymentOptions: undefined,
+			excludedSourceElements: [],
+			excludedTargetElements: [],
+			success: false,
+			errorMessage: ''
+		}));
+
+		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Yes'));
+		showOpenDialogStub = sinon.stub(vscode.window, 'showSaveDialog').returns(<any>Promise.resolve(file));
+		let schemaCompareResult = new SchemaCompareMainWindow(service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.execute();
+		await schemaCompareResult.saveScmp();
+
+		should(showErrorMessageSpy.calledOnce).be.true();
+	});
+
+
+	it('Should show error if generateScript fails', async function (): Promise<void> {
+		let service = createServiceMock();
+		service.setup(x => x.schemaCompareGenerateScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			success: false,
+			errorMessage: ''
+		}));
+
+		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Yes'));
+		let schemaCompareResult = new SchemaCompareMainWindow(service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.execute();
+		await schemaCompareResult.generateScript();
+
+		should(showErrorMessageSpy.calledOnce).be.true();
+	});
+
+	it('Should show error if cancel fails', async function (): Promise<void> {
+		let service = createServiceMock();
+		service.setup(x => x.schemaCompareCancel(TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			success: false,
+			errorMessage: ''
+		}));
+
+		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Yes'));
+		let schemaCompareResult = new SchemaCompareMainWindow(service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.execute();
+		await schemaCompareResult.cancelCompare();
+
+		should(showErrorMessageSpy.calledOnce).be.true();
+	});
+
+	it('Should show not error if user does not want to publish', async function (): Promise<void> {
+		let service = createServiceMock();
+		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			success: true,
+			errorMessage: ''
+		}));
+
+		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('No'));
+		let schemaCompareResult = new SchemaCompareMainWindow(service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.execute();
+		await schemaCompareResult.publishChanges();
+
+		should(showErrorMessageSpy.notCalled).be.true();
+	});
+
+	function createServiceMock() {
+		let sc = new SchemaCompareTestService();
+		let service = TypeMoq.Mock.ofInstance(new SchemaCompareTestService());
+		service.setup(x => x.schemaCompareGetDefaultOptions()).returns(x => sc.schemaCompareGetDefaultOptions());
+		service.setup(x => x.schemaCompare(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => sc.schemaCompare('', undefined, undefined, undefined, undefined));
+		return service;
+	}
+});
+
+let showErrorMessageStub: any;
 describe('SchemaCompareMainWindow.execute', function (): void {
 	before(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
@@ -295,16 +289,34 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		testContext = createContext();
 	});
 
-	beforeEach(function (): void {
-		testContext.apiWrapper.reset();
+	this.afterEach(() => {
+		sinon.restore();
+		if (showErrorMessageSpy) {
+			showErrorMessageSpy.restore();
+		}
+		if (showErrorMessageStub) {
+			showErrorMessageStub.restore();
+		}
+		if (showWarningMessageStub) {
+			showWarningMessageStub.restore();
+		}
+		if (showOpenDialogStub) {
+			showOpenDialogStub.restore();
+		}
+	});
+
+	this.beforeEach(() => {
+		sinon.restore();
 	});
 
 	it('Should fail for failing Schema Compare service', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService(testStateScmp.FAILURE);
 
-		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
-		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').callsFake(() => {
+			throw new Error('');
+		});
 
+		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object);
 		await result.start(undefined);
 
 		should(result.getComparisonResult() === undefined);
@@ -318,8 +330,7 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 	it('Should exit for failing Schema Compare service', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService(testStateScmp.FAILURE);
 
-		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns(() => Promise.resolve(''));
-		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object);
 
 		await result.start(undefined);
 
@@ -329,13 +340,12 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		result.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 
 		await result.execute();
-		testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	it('Should disable script button and apply button for Schema Compare service for dacpac', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService(testStateScmp.SUCCESS_NOT_EQUAL);
 
-		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object);
 
 		await result.start(undefined);
 
@@ -364,7 +374,7 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 	it('Should disable script button and apply button for Schema Compare service for database', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService(testStateScmp.SUCCESS_NOT_EQUAL);
 
-		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object);
 
 		await result.start(undefined);
 
@@ -403,7 +413,7 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 		let sc = new SchemaCompareTestService();
 		let endpointInfo: mssql.SchemaCompareEndpointInfo;
 
-		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object);
 
 		await result.start(undefined);
 
@@ -432,7 +442,7 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 		let sc = new SchemaCompareTestService();
 		let endpointInfo: mssql.SchemaCompareEndpointInfo;
 
-		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object);
 
 		await result.start(undefined);
 
@@ -461,7 +471,7 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 		let sc = new SchemaCompareTestService();
 		let endpointInfo: mssql.SchemaCompareEndpointInfo;
 
-		let result = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, sc, mockExtensionContext.object);
+		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object);
 
 		await result.start(undefined);
 
