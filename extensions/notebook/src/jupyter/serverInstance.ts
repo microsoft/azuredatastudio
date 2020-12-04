@@ -143,11 +143,11 @@ export class PerFolderServerInstance implements IServerInstance {
 	}
 
 	private async configureJupyter(): Promise<void> {
-		await this.createInstanceFolders();
+		this.createInstanceFolders();
 		let resourcesFolder = path.join(this.options.install.extensionPath, 'resources', constants.jupyterConfigRootFolder);
-		await this.copyInstanceConfig(resourcesFolder);
-		await this.CopyCustomJs(resourcesFolder);
-		await this.copyKernelsToSystemJupyterDirs();
+		this.copyInstanceConfig(resourcesFolder);
+		this.CopyCustomJs(resourcesFolder);
+		this.copyKernelsToSystemJupyterDirs();
 	}
 
 	private async createInstanceFolders(): Promise<void> {
