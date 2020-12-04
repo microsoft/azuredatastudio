@@ -97,7 +97,6 @@ describe('WizardPage', () => {
 		initializeWizardPage(testWizardPage);
 		await contentRegistered.promise;
 		await enabledDeferred.promise;
-		console.log(stubInputBox.enabled);
 		should(stubInputBox.enabled).be.false('Input box should be disabled by default');
 		enabledDeferred = new Deferred();
 		stubCheckbox.checked = true;
