@@ -269,7 +269,7 @@ export function createDropdownInputInfo(view: azdata.ModelView, info: { defaultV
 	return {
 		component: dropdown,
 		getValue: async (): Promise<InputValueType> => typeof dropdown.value === 'string' ? dropdown.value : dropdown.value?.name,
-		setValue: (value: InputValueType) => dropdown.value = value?.toString(),
+		setValue: (value: InputValueType) => setDropdownValue(dropdown, value?.toString()),
 		getDisplayValue: async (): Promise<string> => (typeof dropdown.value === 'string' ? dropdown.value : dropdown.value?.displayName) || '',
 		onValueChanged: dropdown.onValueChanged,
 	};
@@ -1172,7 +1172,7 @@ function createAzureSubscriptionDropdown(
 			const inputValue = (await subscriptionDropdown.getValue())?.toString() || '';
 			return subscriptionValueToSubscriptionMap.get(inputValue)?.id || inputValue;
 		},
-		setValue: (value: InputValueType) => subscriptionDropdown.component.value = value?.toString(),
+		setValue: (value: InputValueType) => setDropdownValue(subscriptionDropdown.component, value?.toString()),
 		getDisplayValue: subscriptionDropdown.getDisplayValue,
 		onValueChanged: subscriptionDropdown.onValueChanged
 	});
@@ -1432,5 +1432,20 @@ export async function setModelValues(inputComponents: InputComponents, model: Mo
 
 export function isInputBoxEmpty(input: azdata.InputBoxComponent): boolean {
 	return input.value === undefined || input.value === '';
+}
+
+/**
+ * Sets the dropdown value to the corresponding value from the list of current values, converting
+ * into a CategoryValue if necessary (using the name field).
+ * @param dropdown The dropdown component to set the value for
+ * @param value The value to set - either the direct string value or the name of the CategoryValue to use
+ */
+function setDropdownValue(dropdown: azdata.DropDownComponent, value: string = ''): void {
+	const values = dropdown.values ?? [];
+	if (typeof values[0] === 'object') {
+		dropdown.value = (<azdata.CategoryValue[]>values).find(v => v.name === value);
+	} else {
+		dropdown.value = value;
+	}
 }
 
