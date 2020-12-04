@@ -93,8 +93,8 @@ declare module 'azurecore' {
 	export type GetSqlServersResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
 	export type GetSqlVMServerResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
 	export type GetStorageAccountResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
-	export type GetBlobContainersResult = {blobContainer: BlobContainersListResponse, errors: Error[]};
-	export type GetFileSharesResult = {fileShares: FileSharesListResponse, errors: Error[]};
+	export type GetBlobContainersResult = {blobContainer: BlobContainersListResponse | undefined, errors: Error[]};
+	export type GetFileSharesResult = {fileShares: FileSharesListResponse | undefined, errors: Error[]};
 
 	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
 	export type HttpGetRequestResult = { response: any, errors: Error[] };

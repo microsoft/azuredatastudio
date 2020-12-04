@@ -67,33 +67,31 @@ export async function getAvailableStorageAccounts(account: azdata.Account, subsc
 	return result.resources;
 }
 
-export type FileShares = azureResource.FileShares;
-export async function getFileShares(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<FileShares[]> {
+export async function getFileShares(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<azureResource.FileShare[]> {
 	const api = await getAzureCoreAPI();
 	let result = await api.getFileShares(account, subscription, storageAccount, true);
 	let fileShares = result.fileShares;
-	sortResourceArrayByName(fileShares);
-	return fileShares;
+	sortResourceArrayByName(fileShares!);
+	return fileShares!;
 }
 
-export type BlobContainer = azureResource.BlobContainer;
-export async function getBlobContainers(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<BlobContainer[]> {
+export async function getBlobContainers(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<azureResource.BlobContainer[]> {
 	const api = await getAzureCoreAPI();
 	let result = await api.getBlobContainers(account, subscription, storageAccount, true);
 	let blobContainers = result.blobContainer;
-	sortResourceArrayByName(blobContainers);
-	return blobContainers;
+	sortResourceArrayByName(blobContainers!);
+	return blobContainers!;
 }
 
-function sortResourceArrayByName(resourceArray: AzureProduct[] | BlobContainer[] | FileShares[]): void {
+function sortResourceArrayByName(resourceArray: AzureProduct[] | azureResource.FileShare[] | azureResource.BlobContainer[] | undefined): void {
 	if (!resourceArray) {
 		return;
 	}
-	resourceArray.sort((a: any, b: any) => {
-		if (a.name < b.name) {
+	resourceArray.sort((a: AzureProduct | azureResource.BlobContainer | azureResource.FileShare, b: AzureProduct | azureResource.BlobContainer | azureResource.FileShare) => {
+		if (a.name! < b.name!) {
 			return -1;
 		}
-		if (a.name > b.name) {
+		if (a.name! > b.name!) {
 			return 1;
 		}
 		return 0;

@@ -30,7 +30,16 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 	private createAzureAccountsDropdown(view: azdata.ModelView): azdata.FormComponent {
 
-		this._azureAccountsDropdown = view.modelBuilder.dropDown().component();
+		this._azureAccountsDropdown = view.modelBuilder.dropDown().withValidation((c) => {
+			if ((<azdata.CategoryValue>c.value).displayName === constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR) {
+				this.wizard.message = {
+					text: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
+			return true;
+		}).component();
 
 		this._azureAccountsDropdown.onValueChanged(async (value) => {
 			this.migrationStateModel.azureAccount = this._accountsMap.get((this._azureAccountsDropdown.value as azdata.CategoryValue).name)!;
@@ -66,7 +75,10 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		let accounts = await azdata.accounts.getAllAccounts();
 
 		if (accounts.length === 0) {
-			this._azureAccountsDropdown.value = constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR;
+			this._azureAccountsDropdown.value = {
+				displayName: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,
+				name: ''
+			};
 			return;
 		}
 
@@ -84,23 +96,6 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
-		this.wizard.registerNavigationValidator((pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
-			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
-				this.wizard.message = { text: '' };
-				return true;
-			}
-
-			if (this._azureAccountsDropdown.value === constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR) {
-				this.wizard.message = {
-					text: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,
-					level: azdata.window.MessageLevel.Error
-				};
-				return false;
-			}
-			return true;
-		});
-
-		return;
 	}
 
 	public async onPageLeave(): Promise<void> {

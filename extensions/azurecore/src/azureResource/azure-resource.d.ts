@@ -80,7 +80,7 @@ declare module 'azureResource' {
 		export interface BlobContainer extends ListContainerItem {
 		}
 
-		export interface FileShares extends FileShareItem {
+		export interface FileShare extends FileShareItem {
 		}
 	}
 }
