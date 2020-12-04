@@ -4,11 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as rd from 'resource-deployment';
+import { dependentFieldProviderService } from './services/dependentFieldService';
 import { optionsSourcesService } from './services/optionSourcesService';
 
 export function getExtensionApi(): rd.IExtension {
 	return {
-		registerOptionsSourceProvider: (provider: rd.IOptionsSourceProvider) => optionsSourcesService.registerOptionsSourceProvider(provider)
+		registerOptionsSourceProvider: (provider: rd.IOptionsSourceProvider) => optionsSourcesService.registerOptionsSourceProvider(provider),
+		registerDependentFieldProvider: (provider: rd.IDependentFieldProvider) => dependentFieldProviderService.registerDependentFieldProvider(provider)
 	};
 }
 

@@ -295,9 +295,10 @@
                           "type": "text",
                           "required": true,
                           "defaultValue": "",
-                          "enabled": {
-                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "direct"
+                          "enabled": false,
+                          "dependentField": {
+                            "target": "AZDATA_NB_VAR_ARC_SUBSCRIPTION",
+                            "providerId": "subscription-to-tenant-id"
                           }
                         }
                       ]

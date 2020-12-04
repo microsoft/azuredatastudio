@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import * as resourceDeployment from 'resource-deployment';
 
 import { AppContext } from './appContext';
 import { AzureAccountProviderService } from './account-provider/azureAccountProviderService';
@@ -86,8 +87,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
 	const connectionDialogTree = new ConnectionDialogTreeProvider(appContext);
-	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
+	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
 	registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree);
 	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
@@ -103,6 +104,24 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			console.log(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
 			vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
 		}
+	});
+
+	vscode.extensions.getExtension(resourceDeployment.extension.name).activate().then((api: resourceDeployment.IExtension) => {
+		api.registerDependentFieldProvider({
+			providerId: 'subscription-to-tenant-id',
+			getValue: async (dependentFieldValue: string) => {
+				const accounts = await azdata.accounts.getAllAccounts();
+				for (const account of accounts) {
+					const subs = await azureResourceUtils.getSubscriptions(appContext, account);
+					const sub = subs.subscriptions.find(sub => sub.id === dependentFieldValue);
+					if (sub) {
+						return sub.tenant;
+					}
+				}
+				console.error(`Unable to find subscription with ID ${dependentFieldValue} when mapping subscription ID to tenant ID`);
+				return '';
+			}
+		});
 	});
 
 	return {
