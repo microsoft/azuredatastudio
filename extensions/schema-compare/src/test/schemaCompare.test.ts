@@ -244,6 +244,102 @@ describe('SchemaCompareMainWindow.results', function (): void {
 		should(showErrorMessageSpy.calledOnce).be.true();
 	});
 
+	it('Should show error if IncludeExcludeNode fails', async function (): Promise<void> {
+		let service = createServiceMock();
+		service.setup(x => x.schemaCompareIncludeExcludeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			success: false,
+			errorMessage: '',
+			affectedDependencies: [],
+			blockingDependencies: [{
+				updateAction: 2,
+				differenceType: 0,
+				name: 'SqlTable',
+				sourceValue: ['dbo', 'table1'],
+				targetValue: null,
+				parent: null,
+				children: [{
+					updateAction: 2,
+					differenceType: 0,
+					name: 'SqlSimpleColumn',
+					sourceValue: ['dbo', 'table1', 'id'],
+					targetValue: null,
+					parent: null,
+					children: [],
+					sourceScript: '',
+					targetScript: null,
+					included: false
+				}],
+				sourceScript: 'CREATE TABLE [dbo].[table1](id int)',
+				targetScript: null,
+				included: true
+			}]
+		}));
+
+		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(''));
+		let schemaCompareResult = new SchemaCompareMainWindow(service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.execute();
+		await schemaCompareResult.applyIncludeExclude({
+			row: 0,
+			column: 0,
+			columnName: 1,
+			checked: true
+		});
+
+		should(showWarningMessageStub.calledOnce).be.true();
+	});
+
+	it('Should not show warning if IncludeExcludeNode succeed', async function (): Promise<void> {
+		let service = createServiceMock();
+		service.setup(x => x.schemaCompareIncludeExcludeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			success: true,
+			errorMessage: '',
+			affectedDependencies: [],
+			blockingDependencies: [{
+				updateAction: 2,
+				differenceType: 0,
+				name: 'SqlTable',
+				sourceValue: ['dbo', 'table1'],
+				targetValue: null,
+				parent: null,
+				children: [{
+					updateAction: 2,
+					differenceType: 0,
+					name: 'SqlSimpleColumn',
+					sourceValue: ['dbo', 'table1', 'id'],
+					targetValue: null,
+					parent: null,
+					children: [],
+					sourceScript: '',
+					targetScript: null,
+					included: false
+				}],
+				sourceScript: 'CREATE TABLE [dbo].[table1](id int)',
+				targetScript: null,
+				included: true
+			}]
+		}));
+
+		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(''));
+		let schemaCompareResult = new SchemaCompareMainWindow(service.object, mockExtensionContext.object);
+		await schemaCompareResult.start(undefined);
+
+		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
+		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		await schemaCompareResult.execute();
+		await schemaCompareResult.applyIncludeExclude({
+			row: 0,
+			column: 0,
+			columnName: 1,
+			checked: false
+		});
+
+		should(showWarningMessageStub.notCalled).be.true();
+	});
+
 	it('Should show not error if user does not want to publish', async function (): Promise<void> {
 		let service = createServiceMock();
 		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
@@ -264,7 +360,7 @@ describe('SchemaCompareMainWindow.results', function (): void {
 	});
 
 	function createServiceMock() {
-		let sc = new SchemaCompareTestService();
+		let sc = new SchemaCompareTestService(testStateScmp.SUCCESS_NOT_EQUAL);
 		let service = TypeMoq.Mock.ofInstance(new SchemaCompareTestService());
 		service.setup(x => x.schemaCompareGetDefaultOptions()).returns(x => sc.schemaCompareGetDefaultOptions());
 		service.setup(x => x.schemaCompare(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => sc.schemaCompare('', undefined, undefined, undefined, undefined));

@@ -406,69 +406,76 @@ export class SchemaCompareMainWindow {
 		this.tablelistenersToDispose.push(this.differencesTable.onCellAction(async (rowState) => {
 			let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 			if (checkboxState) {
-				// show an info notification the first time when trying to exclude to notify the user that it may take some time to calculate affected dependencies
-				if (this.showIncludeExcludeWaitingMessage) {
-					this.showIncludeExcludeWaitingMessage = false;
-					vscode.window.showInformationMessage(loc.includeExcludeInfoMessage);
-				}
-
-				let diff = this.comparisonResult.differences[checkboxState.row];
-				const result = await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
-				let checkboxesToChange = [];
-				if (result.success) {
-					this.saveExcludeState(checkboxState);
-
-					// dependencies could have been included or excluded as a result, so save their exclude states
-					result.affectedDependencies.forEach(difference => {
-						// find the row of the difference and set its checkbox
-						const diffEntryKey = this.createDiffEntryKey(difference);
-						if (this.diffEntryRowMap.has(diffEntryKey)) {
-							const row = this.diffEntryRowMap.get(diffEntryKey);
-							checkboxesToChange.push({ row: row, column: 2, columnName: 'Include', checked: difference.included });
-							const dependencyCheckBoxState: azdata.ICheckboxCellActionEventArgs = {
-								checked: difference.included,
-								row: row,
-								column: 2,
-								columnName: undefined
-							};
-							this.saveExcludeState(dependencyCheckBoxState);
-						}
-					});
-				} else {
-					// failed because of dependencies
-					if (result.blockingDependencies) {
-						// show the first dependent that caused this to fail in the warning message
-						const diffEntryName = this.createName(diff.sourceValue ? diff.sourceValue : diff.targetValue);
-						const firstDependentName = this.createName(result.blockingDependencies[0].sourceValue ? result.blockingDependencies[0].sourceValue : result.blockingDependencies[0].targetValue);
-						let cannotExcludeMessage: string;
-						let cannotIncludeMessage: string;
-						if (firstDependentName) {
-							cannotExcludeMessage = loc.cannotExcludeMessageDependent(diffEntryName, firstDependentName);
-							cannotIncludeMessage = loc.cannotIncludeMessageDependent(diffEntryName, firstDependentName);
-						} else {
-							cannotExcludeMessage = loc.cannotExcludeMessage(diffEntryName);
-							cannotIncludeMessage = loc.cannotIncludeMessage(diffEntryName);
-						}
-						vscode.window.showWarningMessage(checkboxState.checked ? cannotIncludeMessage : cannotExcludeMessage);
-					} else {
-						vscode.window.showWarningMessage(result.errorMessage);
-					}
-
-					// set checkbox back to previous state
-					checkboxesToChange.push({ row: checkboxState.row, column: checkboxState.column, columnName: 'Include', checked: !checkboxState.checked });
-				}
-
-				if (checkboxesToChange.length > 0) {
-					this.differencesTable.updateCells = checkboxesToChange;
-				}
+				await this.applyIncludeExclude(checkboxState);
 			}
 		}));
+	}
+
+	public async applyIncludeExclude(checkboxState: azdata.ICheckboxCellActionEventArgs): Promise<void> {
+		const service = await this.getService();
+		// show an info notification the first time when trying to exclude to notify the user that it may take some time to calculate affected dependencies
+		if (this.showIncludeExcludeWaitingMessage) {
+			this.showIncludeExcludeWaitingMessage = false;
+			vscode.window.showInformationMessage(loc.includeExcludeInfoMessage);
+		}
+
+		let diff = this.comparisonResult.differences[checkboxState.row];
+		const result = await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
+		let checkboxesToChange = [];
+		if (result.success) {
+			this.saveExcludeState(checkboxState);
+
+			// dependencies could have been included or excluded as a result, so save their exclude states
+			result.affectedDependencies.forEach(difference => {
+				// find the row of the difference and set its checkbox
+				const diffEntryKey = this.createDiffEntryKey(difference);
+				if (this.diffEntryRowMap.has(diffEntryKey)) {
+					const row = this.diffEntryRowMap.get(diffEntryKey);
+					checkboxesToChange.push({ row: row, column: 2, columnName: 'Include', checked: difference.included });
+					const dependencyCheckBoxState: azdata.ICheckboxCellActionEventArgs = {
+						checked: difference.included,
+						row: row,
+						column: 2,
+						columnName: undefined
+					};
+					this.saveExcludeState(dependencyCheckBoxState);
+				}
+			});
+		} else {
+			// failed because of dependencies
+			if (result.blockingDependencies) {
+				// show the first dependent that caused this to fail in the warning message
+				const diffEntryName = this.createName(diff.sourceValue ? diff.sourceValue : diff.targetValue);
+				const firstDependentName = this.createName(result.blockingDependencies[0].sourceValue ? result.blockingDependencies[0].sourceValue : result.blockingDependencies[0].targetValue);
+				let cannotExcludeMessage: string;
+				let cannotIncludeMessage: string;
+				if (firstDependentName) {
+					cannotExcludeMessage = loc.cannotExcludeMessageDependent(diffEntryName, firstDependentName);
+					cannotIncludeMessage = loc.cannotIncludeMessageDependent(diffEntryName, firstDependentName);
+				} else {
+					cannotExcludeMessage = loc.cannotExcludeMessage(diffEntryName);
+					cannotIncludeMessage = loc.cannotIncludeMessage(diffEntryName);
+				}
+				vscode.window.showWarningMessage(checkboxState.checked ? cannotIncludeMessage : cannotExcludeMessage);
+			} else {
+				vscode.window.showWarningMessage(result.errorMessage);
+			}
+
+			// set checkbox back to previous state
+			checkboxesToChange.push({ row: checkboxState.row, column: checkboxState.column, columnName: 'Include', checked: !checkboxState.checked });
+		}
+
+		if (checkboxesToChange.length > 0) {
+			this.differencesTable.updateCells = checkboxesToChange;
+		}
 	}
 
 	// save state based on source name if present otherwise target name (parity with SSDT)
 	private saveExcludeState(rowState: azdata.ICheckboxCellActionEventArgs) {
 		if (rowState) {
-			this.differencesTable.data[rowState.row][2] = rowState.checked;
+			if (this.differencesTable.data[rowState.row]?.length > 2) {
+				this.differencesTable.data[rowState.row][2] = rowState.checked;
+			}
 			let diff = this.comparisonResult.differences[rowState.row];
 			let key = (diff.sourceValue && diff.sourceValue.length > 0) ? this.createName(diff.sourceValue) : this.createName(diff.targetValue);
 			if (key) {
