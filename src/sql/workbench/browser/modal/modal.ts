@@ -17,7 +17,6 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { Button } from 'sql/base/browser/ui/button/button';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { localize } from 'vs/nls';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
@@ -27,6 +26,9 @@ import { IThemable } from 'vs/base/common/styler';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { alert } from 'vs/base/browser/ui/aria/aria';
+import { IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { editorWidgetForeground, contrastBorder, editorBackground } from 'vs/platform/theme/common/colorRegistry';
+import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 
 export enum MessageLevel {
 	Error = 0,
@@ -626,22 +628,36 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Called by the theme registry on theme change to style the component
 	 */
 	public style(styles: IModalDialogStyles): void {
-		this._dialogForeground = styles.dialogForeground;
-		this._dialogBorder = styles.dialogBorder;
+		this._dialogForeground = styles.dialogForeground ? styles.dialogForeground : this.getThemeColor(editorWidgetForeground);
+
+		this._dialogBorder = styles.dialogBorder ? styles.dialogBorder : this.getThemeColor(contrastBorder);
+
 		if (this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact') {
-			this._dialogHeaderAndFooterBackground = styles.dialogBodyBackground;
+			this._dialogHeaderAndFooterBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : this.getThemeColor(SIDE_BAR_BACKGROUND);
+
 		} else {
-			this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground;
+			this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground ? styles.dialogHeaderAndFooterBackground : this.getThemeColor(SIDE_BAR_BACKGROUND);
 		}
-		this._dialogBodyBackground = styles.dialogBodyBackground;
+
+		this._dialogBodyBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : this.getThemeColor(editorBackground);
+
 		this.applyStyles();
 	}
 
+	public getThemeColor(themeColorName: string): Color {
+		let themeColor: Color;
+		registerThemingParticipant((theme) => {
+			themeColor = theme.getColor(themeColorName);
+		});
+		return themeColor;
+	}
+
 	private applyStyles(): void {
-		const foreground = this._dialogForeground ? this._dialogForeground.toString() : '';
+		const foreground = this._dialogForeground.toString();
 		const border = this._dialogBorder ? this._dialogBorder.toString() : '';
-		const headerAndFooterBackground = this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : '';
-		const bodyBackground = this._dialogBodyBackground ? this._dialogBodyBackground.toString() : '';
+		const headerAndFooterBackground = this._dialogHeaderAndFooterBackground.toString();
+		const bodyBackground = this._dialogBodyBackground.toString();
+
 		const footerBorderTopWidth = border ? '1px' : '';
 		const footerBorderTopStyle = border ? 'solid' : '';
 		const calloutStyle: CSSStyleDeclaration = this._modalDialog.style;
@@ -656,7 +672,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalDialog.style.borderStyle = border ? 'solid' : '';
 			this._modalDialog.style.borderColor = border;
 
-			calloutStyle.setProperty('--border', `${border}`);
+			calloutStyle.setProperty('--border', `${bodyBackground}`);
 			calloutStyle.setProperty('--bodybackground', `${bodyBackground}`);
 			calloutStyle.setProperty('--foreground', `
 				${foregroundRgb.rgba.r},
