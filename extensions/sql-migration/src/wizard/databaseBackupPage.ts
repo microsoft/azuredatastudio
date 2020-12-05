@@ -38,6 +38,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _subscriptionMap: Map<string, Subscription> = new Map();
 	private _storageAccountMap: Map<string, StorageAccount> = new Map();
 
+	private _errors: string[] = [];
+
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_PAGE_TITLE), migrationStateModel);
 		this.wizardPage.description = constants.DATABASE_BACKUP_PAGE_DESCRIPTION;
@@ -125,6 +127,16 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}).component();
 		this._fileShareSubscriptionDropdown = view.modelBuilder.dropDown().withProps({
 			required: true,
+		}).withValidation((c) => {
+			if (this.migrationStateModel.databaseBackup.networkContainerType === NetworkContainerType.FILE_SHARE) {
+				if ((<azdata.CategoryValue>c.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
+					this.addErrorMessage(constants.INVALID_SUBSCRIPTION_ERROR);
+					return false;
+				} else {
+					this.removeErrorMessage(constants.INVALID_SUBSCRIPTION_ERROR);
+				}
+			}
+			return true;
 		}).component();
 		this._fileShareSubscriptionDropdown.onValueChanged(async (value) => {
 			this._fileShare.subscriptionId = (this._fileShareSubscriptionDropdown.value as azdata.CategoryValue).name;
@@ -139,6 +151,16 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._fileShareStorageAccountDropdown = view.modelBuilder.dropDown()
 			.withProps({
 				required: true
+			}).withValidation((c) => {
+				if (this.migrationStateModel.databaseBackup.networkContainerType === NetworkContainerType.FILE_SHARE) {
+					if ((<azdata.CategoryValue>c.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
+						this.addErrorMessage(constants.INVALID_STORAGE_ACCOUNT_ERROR);
+						return false;
+					} else {
+						this.removeErrorMessage(constants.INVALID_STORAGE_ACCOUNT_ERROR);
+					}
+				}
+				return true;
 			}).component();
 		this._fileShareStorageAccountDropdown.onValueChanged(async (value) => {
 			this._fileShare.storageAccountId = (this._fileShareStorageAccountDropdown.value as azdata.CategoryValue).name;
@@ -153,6 +175,16 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._fileShareFileShareDropdown = view.modelBuilder.dropDown()
 			.withProps({
 				required: true
+			}).withValidation((c) => {
+				if (this.migrationStateModel.databaseBackup.networkContainerType === NetworkContainerType.FILE_SHARE) {
+					if ((<azdata.CategoryValue>c.value).displayName === constants.NO_FILESHARES_FOUND) {
+						this.addErrorMessage(constants.INVALID_FILESHARE_ERROR);
+						return false;
+					} else {
+						this.removeErrorMessage(constants.INVALID_FILESHARE_ERROR);
+					}
+				}
+				return true;
 			}).component();
 		this._fileShareFileShareDropdown.onValueChanged((value) => {
 			this._fileShare.fileShareId = (this._fileShareFileShareDropdown.value as azdata.CategoryValue).name;
@@ -185,6 +217,17 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._blobContainerSubscriptionDropdown = view.modelBuilder.dropDown()
 			.withProps({
 				required: true
+			}).withValidation((c) => {
+				if (this.migrationStateModel.databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
+					if (
+						(<azdata.CategoryValue>c.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
+						this.addErrorMessage(constants.INVALID_SUBSCRIPTION_ERROR);
+						return false;
+					} else {
+						this.removeErrorMessage(constants.INVALID_SUBSCRIPTION_ERROR);
+					}
+				}
+				return true;
 			}).component();
 		this._blobContainerSubscriptionDropdown.onValueChanged(async (value) => {
 			this._blob.subscriptionId = (this._blobContainerSubscriptionDropdown.value as azdata.CategoryValue).name;
@@ -199,6 +242,16 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._blobContainerStorageAccountDropdown = view.modelBuilder.dropDown()
 			.withProps({
 				required: true
+			}).withValidation((c) => {
+				if (this.migrationStateModel.databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
+					if ((<azdata.CategoryValue>c.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
+						this.addErrorMessage(constants.INVALID_STORAGE_ACCOUNT_ERROR);
+						return false;
+					} else {
+						this.removeErrorMessage(constants.INVALID_STORAGE_ACCOUNT_ERROR);
+					}
+				}
+				return true;
 			}).component();
 		this._blobContainerStorageAccountDropdown.onValueChanged(async (value) => {
 			this._blob.storageAccountId = (this._blobContainerStorageAccountDropdown.value as azdata.CategoryValue).name;
@@ -212,6 +265,16 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._blobContainerBlobDropdown = view.modelBuilder.dropDown()
 			.withProps({
 				required: true
+			}).withValidation((c) => {
+				if (this.migrationStateModel.databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
+					if ((<azdata.CategoryValue>c.value).displayName === constants.NO_BLOBCONTAINERS_FOUND) {
+						this.addErrorMessage(constants.INVALID_BLOBCONTAINER_ERROR);
+						return false;
+					} else {
+						this.removeErrorMessage(constants.INVALID_BLOBCONTAINER_ERROR);
+					}
+				}
+				return true;
 			}).component();
 		this._blobContainerBlobDropdown.onValueChanged((value) => {
 			this._blob.containerId = (this._blobContainerBlobDropdown.value as azdata.CategoryValue).name;
@@ -314,6 +377,16 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareContainerSubscriptionDropdown = view.modelBuilder.dropDown()
 			.withProps({
 				required: true
+			}).withValidation((c) => {
+				if (this.migrationStateModel.databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+					if ((<azdata.CategoryValue>c.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
+						this.addErrorMessage(constants.INVALID_SUBSCRIPTION_ERROR);
+						return false;
+					} else {
+						this.removeErrorMessage(constants.INVALID_SUBSCRIPTION_ERROR);
+					}
+				}
+				return true;
 			}).component();
 		this._networkShareContainerSubscriptionDropdown.onValueChanged(async (value) => {
 			this._networkShare.storageSubscriptionId = (this._networkShareContainerSubscriptionDropdown.value as azdata.CategoryValue).name;
@@ -328,6 +401,16 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareContainerStorageAccountDropdown = view.modelBuilder.dropDown()
 			.withProps({
 				required: true
+			}).withValidation((c) => {
+				if (this.migrationStateModel.databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+					if ((<azdata.CategoryValue>c.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
+						this.addErrorMessage(constants.INVALID_STORAGE_ACCOUNT_ERROR);
+						return false;
+					} else {
+						this.removeErrorMessage(constants.INVALID_STORAGE_ACCOUNT_ERROR);
+					}
+				}
+				return true;
 			}).component();
 		this._networkShareContainerStorageAccountDropdown.onValueChanged((value) => {
 			this._networkShare.storageAccountId = (this._networkShareContainerStorageAccountDropdown.value as azdata.CategoryValue).name;
@@ -410,53 +493,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	public async onPageEnter(): Promise<void> {
 		await this.getSubscriptionValues();
-		this.wizard.registerNavigationValidator((pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
-			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
-				this.wizard.message = { text: '' };
-				return true;
-			}
-			const errors: string[] = [];
-			switch (this.migrationStateModel.databaseBackup.networkContainerType) {
-				case NetworkContainerType.NETWORK_SHARE:
-					if ((<azdata.CategoryValue>this._networkShareContainerSubscriptionDropdown.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
-						errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
-					}
-					if ((<azdata.CategoryValue>this._networkShareContainerStorageAccountDropdown.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
-						errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
-					}
-					break;
-				case NetworkContainerType.BLOB_CONTAINER:
-					if ((<azdata.CategoryValue>this._blobContainerSubscriptionDropdown.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
-						errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
-					}
-					if ((<azdata.CategoryValue>this._blobContainerStorageAccountDropdown.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
-						errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
-					}
-					if ((<azdata.CategoryValue>this._blobContainerBlobDropdown.value).displayName === constants.NO_BLOBCONTAINERS_FOUND) {
-						errors.push(constants.INVALID_BLOBCONTAINER_ERROR);
-					}
-					break;
-				case NetworkContainerType.FILE_SHARE:
-					if ((<azdata.CategoryValue>this._fileShareSubscriptionDropdown.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
-						errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
-					}
-					if ((<azdata.CategoryValue>this._fileShareStorageAccountDropdown.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
-						errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
-					}
-					if ((<azdata.CategoryValue>this._fileShareFileShareDropdown.value).displayName === constants.NO_FILESHARES_FOUND) {
-						errors.push(constants.INVALID_FILESHARE_ERROR);
-					}
-					break;
-			}
-			if (errors.length !== 0) {
-				this.wizard.message = {
-					text: errors.join(EOL),
-					level: azdata.window.MessageLevel.Error
-				};
-				return false;
-			}
-			return true;
-		});
 	}
 
 	public async onPageLeave(): Promise<void> {
@@ -531,6 +567,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		await this.loadNetworkShareStorageDropdown();
 		await this.loadFileShareStorageDropdown();
 		await this.loadblobStorageDropdown();
+		this._networkShareContainerSubscriptionDropdown.validate();
+		this._networkShareContainerStorageAccountDropdown.validate();
 	}
 
 	private async loadNetworkShareStorageDropdown(): Promise<void> {
@@ -642,5 +680,23 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			displayName: placeholder,
 			name: ''
 		}];
+	}
+
+	private addErrorMessage(message: string) {
+		if (!this._errors.includes(message)) {
+			this._errors.push(message);
+		}
+		this.wizard.message = {
+			text: this._errors.join(EOL),
+			level: azdata.window.MessageLevel.Error
+		};
+	}
+
+	private removeErrorMessage(message: string) {
+		this._errors = this._errors.filter(e => e !== message);
+		this.wizard.message = {
+			text: this._errors.join(EOL),
+			level: azdata.window.MessageLevel.Error
+		};
 	}
 }
