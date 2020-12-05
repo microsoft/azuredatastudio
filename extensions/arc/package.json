@@ -297,7 +297,7 @@
                           "defaultValue": "",
                           "enabled": false,
                           "valueProvider": {
-                            "id": "subscription-id-to-tenant-id",
+                            "providerId": "subscription-id-to-tenant-id",
                             "triggerField": "AZDATA_NB_VAR_ARC_SUBSCRIPTION"
                           }
                         }
