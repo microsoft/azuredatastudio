@@ -315,7 +315,6 @@
                           "type": "text",
                           "required": true,
                           "defaultValue": "",
-                          "placeHolder": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                           "enabled": false,
                           "valueProvider": {
                             "providerId": "subscription-id-to-tenant-id",
