@@ -298,14 +298,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		// Load the password if it's not already loaded
 		return this._connectionStore.addSavedPassword(connection).then(async result => {
 			let newConnection = result.profile;
-			let foundPassword = result.savedCred;
+			let hasSavedCred = result.savedCred;
 
 			// If there is no password, try to load it from an existing connection
-			if (!foundPassword && this._connectionStore.isPasswordRequired(newConnection)) {
+			if (!hasSavedCred && this._connectionStore.isPasswordRequired(newConnection)) {
 				let existingConnection = this._connectionStatusManager.findConnectionProfile(connection);
 				if (existingConnection && existingConnection.connectionProfile) {
 					newConnection.password = existingConnection.connectionProfile.password;
-					foundPassword = true;
+					hasSavedCred = true;
 				}
 			}
 
@@ -313,7 +313,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			let tokenFillSuccess = await this.fillInOrClearAzureToken(newConnection);
 
 			// If the password is required and still not loaded show the dialog
-			if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
+			if ((!hasSavedCred && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
 				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options);
 			} else {
 				// Try to connect
