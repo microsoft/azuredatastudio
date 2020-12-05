@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+<<<<<<< HEAD:src/sql/workbench/contrib/query/browser/media/optimizedGridPanel.css
 .grid-panel.optimized {
 	width: 100%;
 	height: 100%;
@@ -12,3 +13,8 @@
 	width: 100%;
 	height: 100%;
 }
+=======
+import * as nls from 'vscode-nls';
+
+export const localize = nls.loadMessageBundle();
+>>>>>>> origin/2728-Kusto_Functions:extensions/kusto/src/localize.ts

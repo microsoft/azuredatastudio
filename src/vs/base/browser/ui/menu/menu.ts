@@ -216,6 +216,15 @@ export class Menu extends ActionBar {
 			return true;
 		});
 
+		actions = actions.filter(a => {
+			if (options.submenuIds?.has(a.id)) {
+				console.warn(`Found submenu cycle: ${a.id}`);
+				return false;
+			}
+
+			return true;
+		});
+
 		this.push(actions, { icon: true, label: true, isMenu: true });
 
 		container.appendChild(this.scrollableElement.getDomNode());

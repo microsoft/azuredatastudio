@@ -65,7 +65,7 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 
 		// special-case handling for MSSQL data provider
 		const connInfo = this.dashboardService.connectionManagementService.connectionInfo;
-		if (connInfo && connInfo.providerId === mssqlProviderName) {
+		if (connInfo && connInfo.providerId === mssqlProviderName) { //TODOKusto: Need a dashboard for Kusto. Provider caps needed.
 			// revert back to default database
 			this._letDashboardPromise = this.dashboardService.connectionManagementService.changeDatabase('master').then();
 		} else {

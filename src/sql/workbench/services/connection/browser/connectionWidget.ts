@@ -74,6 +74,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _connectionNameInputBox: InputBox;
 	protected _databaseNameInputBox: Dropdown;
 	protected _advancedButton: Button;
+	// TODOKusto: Restrict AzureMFA and AzureMFAAndUser for Kusto.
 	private static readonly _authTypes: AuthenticationType[] =
 		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin];
 	private static readonly _osByName = {
