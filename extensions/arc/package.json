@@ -315,10 +315,10 @@
                           "type": "text",
                           "required": true,
                           "defaultValue": "",
-                          "placeHolder": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                          "enabled": {
-                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "direct"
+                          "enabled": false,
+                          "valueProvider": {
+                            "providerId": "subscription-id-to-tenant-id",
+                            "triggerField": "AZDATA_NB_VAR_ARC_SUBSCRIPTION"
                           },
                           "validations" : [{
                             "type": "regex_match",

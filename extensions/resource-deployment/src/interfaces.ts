@@ -261,6 +261,11 @@ export interface DynamicEnablementInfo {
 	value: string
 }
 
+export interface ValueProviderInfo {
+	providerId: string,
+	triggerField: string
+}
+
 export interface FieldInfoBase {
 	labelWidth?: string;
 	inputWidth?: string;
@@ -307,9 +312,8 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean | DynamicEnablementInfo;
 	isEvaluated?: boolean;
-	valueLookup?: string; // for fetching dropdown options
-	validationLookup?: string // for fetching text field validations
 	validations?: ValidationInfo[];
+	valueProvider?: ValueProviderInfo;
 }
 
 export interface KubeClusterContextFieldInfo extends FieldInfo {
