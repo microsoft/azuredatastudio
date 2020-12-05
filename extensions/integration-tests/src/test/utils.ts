@@ -186,14 +186,11 @@ export async function runQuery(query: string, ownerUri: string): Promise<azdata.
 
 }
 
-export async function retryFunction(fn: () => Promise<any>, retryCount: number): Promise<any> {
-	let result: any;
+export async function retryFunction<T>(fn: () => Promise<T>, retryCount: number): Promise<T> {
 	let attempts: number = 1;
 	while (attempts <= retryCount) {
 		try {
-			result = await fn();
-			console.error(`utils.retryFunction: Attempt #${attempts} from ${retryCount} succeed. result: ${result}`);
-			break;
+			return await fn();
 		}
 		catch (e) {
 			console.error(`utils.retryFunction: Attempt #${attempts} from ${retryCount} failed. Error: ${e}`);
@@ -205,7 +202,7 @@ export async function retryFunction(fn: () => Promise<any>, retryCount: number):
 		await sleep(10000);
 		attempts++;
 	}
-	return result;
+	throw new Error(`utils.retryFunction: Failed after ${attempts} attempts`);
 }
 
 
