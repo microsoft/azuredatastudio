@@ -13,8 +13,6 @@ import { GridStack } from 'gridstack';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
 import { CellChangeEvent } from 'sql/workbench/services/notebook/browser/models/notebookViewModel';
-import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
-import { INotebookParams } from 'sql/workbench/services/notebook/browser/notebookService';
 import { INotebookViewCell, NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/models/notebookViewsExtension';
 
 @Component({
