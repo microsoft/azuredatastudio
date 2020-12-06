@@ -356,7 +356,6 @@ export class CreateProjectFromDatabaseDialog {
 	private createWorkspaceContainerRow(view: azdata.ModelView): azdata.FlexContainer {
 		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties({
 			ariaLabel: constants.workspaceLocationTitle,
-			//width: cssStyles.textboxWidth,
 			enabled: false,
 			value: vscode.workspace.workspaceFile?.fsPath ?? '',
 			title: vscode.workspace.workspaceFile?.fsPath ?? '' // hovertext for if file path is too long to be seen in textbox
@@ -364,7 +363,7 @@ export class CreateProjectFromDatabaseDialog {
 
 		const workspaceLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: vscode.workspace.workspaceFile ? constants.addProjectToCurrentWorkspace : constants.newWorkspaceWillBeCreated,
-			CSSStyles: { 'margin-top': '3px', 'margin-bottom': '10px' }
+			CSSStyles: { 'margin-top': '3px', 'margin-bottom': '5px' }
 		}).component();
 
 		const workspaceContainerRow = view.modelBuilder.flexContainer().withItems([workspaceLabel, this.workspaceInputBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '0px' } }).withLayout({ flexFlow: 'column' }).component();
