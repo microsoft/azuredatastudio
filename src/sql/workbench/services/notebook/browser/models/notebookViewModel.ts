@@ -44,7 +44,6 @@ export interface INotebookView {
 	cells: Readonly<ICellModel[]>;
 	hiddenCells: Readonly<ICellModel[]>;
 	name: string;
-
 	initialize(): void;
 	nameAvailable(name: string): boolean;
 	hideCell(cell: ICellModel): void;
@@ -57,9 +56,9 @@ export interface INotebookView {
 }
 
 export class NotebookViewModel implements INotebookView {
-	public readonly guid: string;
-
 	private _onDeleted = new Emitter<INotebookView>();
+
+	public readonly guid: string;
 	public readonly onDeleted = this._onDeleted.event;
 
 	constructor(
@@ -96,26 +95,25 @@ export class NotebookViewModel implements INotebookView {
 	}
 
 	public set name(name: string) {
-		if (this._notebookViewService.viewNameIsTaken(name)) {
+		if (this.name !== name && this._notebookViewService.viewNameIsTaken(name)) {
 			throw new ViewNameTakenError(localize('notebookView.nameTaken', 'A view with the name {0} already exists in this notebook.', name));
 		}
 		this._name = name;
 	}
 
 	public nameAvailable(name: string): boolean {
-		return !this._notebookViewService.viewNameIsTaken(name) || name === this.name;
+		return !this._notebookViewService.viewNameIsTaken(name);
 	}
 
 	public getCellMetadata(cell: ICellModel): INotebookViewCell {
 		const meta = this._notebookViewService.getCellMetadata(cell);
-		return meta.views.find(view => view.guid === this.guid);
+		return meta?.views?.find(view => view.guid === this.guid);
 	}
 
 	public get hiddenCells(): Readonly<ICellModel[]> {
 		return this.cells.filter(cell => {
-			const meta = this._notebookViewService.getCellMetadata(cell);
-			const cellData = meta.views.find(view => view.guid === this.guid);
-			return cellData.hidden;
+			const cellData = this.getCellMetadata(cell);
+			return cellData?.hidden;
 		});
 	}
 

@@ -26,7 +26,6 @@ export class ViewOptionsModal extends Modal {
 	private _submitButton: Button;
 	private _cancelButton: Button;
 	private _optionsMap: { [name: string]: InputBox | Checkbox } = {};
-
 	private _viewNameInput: InputBox;
 
 	constructor(
@@ -75,7 +74,7 @@ export class ViewOptionsModal extends Modal {
 					if (!value) {
 						return ({ type: MessageType.ERROR, content: localize('viewOptionsModal.missingRequireField', "This field is required.") });
 					}
-					if (!this._view.nameAvailable(value)) {
+					if (this._view.name !== value && !this._view.nameAvailable(value)) {
 						return ({ type: MessageType.ERROR, content: localize('viewOptionsModal.nameTaken', "This view name has already been taken.") });
 					}
 					return undefined;
