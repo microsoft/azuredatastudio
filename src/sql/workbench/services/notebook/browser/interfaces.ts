@@ -12,6 +12,7 @@ export interface FutureInternal extends nb.IFuture {
 }
 
 export namespace notebookConstants {
+	export const KUSTO_CONNECTION_PROVIDER = 'KUSTO';
 	export const SQL = 'SQL';
 	export const SQL_CONNECTION_PROVIDER = mssqlProviderName;
 	export const sqlKernel: string = localize('sqlKernel', "SQL");
