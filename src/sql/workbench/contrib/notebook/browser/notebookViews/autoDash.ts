@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { nb } from 'azdata';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookView } from 'sql/workbench/services/notebook/browser/models/notebookViewModel';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
@@ -56,12 +57,12 @@ class CellDisplayGroup extends DisplayGroup<ICellModel> {
 		let visInfo = new VisInfo<ICellModel>();
 		visInfo.cell = cell;
 
-		if (cell.cellType !== CellTypes.Code && !this.isHeader(cell)) {
+		if ((cell.cellType !== CellTypes.Code && !this.isHeader(cell)) || (cell.cellType === CellTypes.Code && !this.hasGraph(cell))) {
 			visInfo.display = false;
 			return visInfo;
 		}
 
-		if (!cell.outputs || !cell.outputs.length) {
+		if (cell.cellType === CellTypes.Code && (!cell.outputs || !cell.outputs.length)) {
 			visInfo.display = false;
 			return visInfo;
 		}
@@ -74,6 +75,10 @@ class CellDisplayGroup extends DisplayGroup<ICellModel> {
 
 	isHeader(cell: ICellModel): boolean {
 		return cell.cellType === 'markdown' && cell.source.length === 1 && cell.source[0].startsWith('#');
+	}
+
+	hasGraph(cell: ICellModel): boolean {
+		return !!cell.outputs.find((o: nb.IDisplayResult) => o?.output_type === 'display_data' && o?.data);
 	}
 }
 
@@ -109,8 +114,8 @@ export class AutoDash extends Disposable {
 				initialView.hideCell(v.cell);
 			}
 
-			initialView.moveCell(v.cell, 0, idx * 7);
-			initialView.resizeCell(v.cell, 12, 7);
+			initialView.moveCell(v.cell, 0, idx * 5);
+			initialView.resizeCell(v.cell, 12, 5);
 			idx++;
 		});
 
