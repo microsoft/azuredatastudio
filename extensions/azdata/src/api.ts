@@ -102,10 +102,11 @@ export function getAzdataApi(localAzdataDiscovered: Promise<IAzdataTool | undefi
 							replaceEngineSettings?: boolean;
 							workers?: number;
 						},
+						engineVersion?: string,
 						additionalEnvVars?: { [key: string]: string; }) => {
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata.arc.postgres.server.edit(name, args, additionalEnvVars);
+						return azdataToolService.localAzdata.arc.postgres.server.edit(name, args, engineVersion, additionalEnvVars);
 					}
 				}
 			},

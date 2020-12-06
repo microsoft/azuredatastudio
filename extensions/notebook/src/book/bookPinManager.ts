@@ -52,7 +52,7 @@ export class BookPinManager implements IBookPinManager {
 		let bookPathToChange: string = notebook.book.contentPath;
 
 		let pinnedBooks: IBookNotebook[] = getPinnedNotebooks();
-		let existingBookIndex = pinnedBooks.map(pinnedBookPath => path.normalize(pinnedBookPath?.notebookPath)).indexOf(bookPathToChange);
+		let existingBookIndex = pinnedBooks.map(pinnedBookPath => path.normalize(pinnedBookPath?.notebookPath)).indexOf(path.normalize(bookPathToChange));
 
 		if (existingBookIndex !== -1 && operation === PinBookOperation.Unpin) {
 			pinnedBooks.splice(existingBookIndex, 1);
