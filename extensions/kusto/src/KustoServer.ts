@@ -33,6 +33,8 @@ export class KustoServer {
 			const installationStart = Date.now();
 			const path = await this.download(context); // TodoKusto: Remove this commented line once the Kusto service layer has been published to Github. Until then copy manually for debugging.
 			// const path = "e:\\repos\\azuredatastudio\\extensions\\kusto\\sqltoolsservice\\Windows\\2.0.0-release.15\\MicrosoftKustoServiceLayer.exe";
+			//const path = "c:\\workspaceNov\\azuredatastudio\\extensions\\kusto\\sqltoolsservice\\Windows\\2.0.0-release.15\\MicrosoftKustoServiceLayer.exe";
+			//const path = "c:\\kustoBinaries\\2.0.0-release.15\\MicrosoftKustoServiceLayer.exe";
 			const installationComplete = Date.now();
 			let serverOptions = generateServerOptions(context.extensionContext.logPath, path);
 			let clientOptions = getClientOptions(context);
