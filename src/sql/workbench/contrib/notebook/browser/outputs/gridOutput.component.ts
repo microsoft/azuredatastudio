@@ -41,7 +41,6 @@ import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
 import { assign } from 'vs/base/common/objects';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
-
 import { equals } from 'vs/base/common/arrays';
 @Component({
 	selector: GridOutputComponent.SELECTOR,
