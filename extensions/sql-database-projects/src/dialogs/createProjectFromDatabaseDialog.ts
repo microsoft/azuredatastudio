@@ -363,7 +363,7 @@ export class CreateProjectFromDatabaseDialog {
 
 		const workspaceLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: vscode.workspace.workspaceFile ? constants.addProjectToCurrentWorkspace : constants.newWorkspaceWillBeCreated,
-			CSSStyles: { 'margin-top': '3px', 'margin-bottom': '5px' }
+			CSSStyles: { 'margin-top': '-10px', 'margin-bottom': '5px' }
 		}).component();
 
 		const workspaceContainerRow = view.modelBuilder.flexContainer().withItems([workspaceLabel, this.workspaceInputBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '0px' } }).withLayout({ flexFlow: 'column' }).component();
