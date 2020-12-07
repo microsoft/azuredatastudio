@@ -1,4 +1,4 @@
-name: On Issue Open
+name: On Label
 on:
   issues:
     types: [labeled]
