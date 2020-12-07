@@ -186,11 +186,13 @@ async function publish(commit: string, quality: string, platform: string, type: 
 
 	if (blobExists) {
 		console.log(`Blob ${quality}, ${blobName} already exists, not publishing again.`);
-	} else {
-		console.log('Uploading blobs to Azure storage...');
-		await uploadBlob(blobService, quality, blobName, file);
-		console.log('Blobs successfully uploaded.');
+		return;
 	}
+	console.log('Uploading blobs to Azure storage...');
+
+	await uploadBlob(blobService, quality, blobName, file);
+
+	console.log('Blobs successfully uploaded.');
 
 	const config = await getConfig(quality);
 
