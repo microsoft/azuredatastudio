@@ -157,8 +157,8 @@ export class NotebookMarkdownRenderer {
 					});
 				});
 
-				if (options.codeBlockRenderCallback) {
-					promise.then(options.codeBlockRenderCallback);
+				if (options.asyncRenderCallback) {
+					promise.then(options.asyncRenderCallback);
 				}
 
 				return `<div class="code" data-code="${id}">${escape(code)}</div>`;
