@@ -11,7 +11,7 @@ const suite = 'Extension Integration Tests';
 const mochaOptions: any = {
 	ui: 'tdd',
 	useColors: true,
-	timeout: 300000
+	timeout: 60000
 };
 
 // set relevant mocha options from the environment
