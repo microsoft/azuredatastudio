@@ -13,6 +13,7 @@ export default () => `
 	<div class="welcomePage">
 		<div class="ads-homepage splash">
 			<div class="gradient">
+				<div class="content-container">
 				<div class="ads-homepage-section tool-tip">
 					<div class="tool-tip-container" id="tool-tip-container-wide">
 						<a role="img" tabindex=0 class="ads-welcome-page-link" aria-label="${previewImgDescription}" title="${previewImgDescription}" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
@@ -22,12 +23,13 @@ export default () => `
 					<div class="row start">
 						<div class="header-top-nav">
 							<div class="flex">
-								<div class="icon sm"></div>
-								<div class="title">
-									<div class="caption-container">
-										<span class="icon xs"></span><h1 class="caption"></h1>
-									</div>
-									<div id="welcome-page-button-container" class="flex btn-container">
+								<div class="caption-container" style="display: flex;">
+									<div class="icon"></div>
+									<div class="flex flex-d-column">
+										<h1 class="caption flex flex-w-wrap">Azure Data Studio Dev</h1>
+										<div class="title">
+											<div id="welcome-page-button-container" class="flex btn-container"></div>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -73,8 +75,9 @@ export default () => `
 						</div>
 					</div>
 				</div>
+				</div>
 			</div>
-			<div class="ads-homepage-section middle-section content row ads-grid">
+			<div class="ads-homepage-section middle-section content row content-container">
 				<div class="resources-container">
 					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
 					<div class="tabs">
@@ -146,7 +149,7 @@ export default () => `
 					</div>
 				</div>
 			</div>
-			<div class="ads-homepage-section content extensions">
+			<div class="ads-homepage-section content extensions content-container">
 				<div class="flex flex-j-between">
 					<h2>${escape(localize('welcomePage.extensions', "Extensions"))}</h2>
 					<a role="button" class="link-show-all flex ads-welcome-page-link" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>

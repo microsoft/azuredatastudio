@@ -296,7 +296,8 @@ class WelcomePage extends Disposable {
 			attributes: true,
 			attributeFilter: ['style']
 		});
-		const defaultBreakpoints = { SM: 480, MD: 640, LG: 1024, XL: 1365 };
+
+		const defaultBreakpoints = { XS: 435, SM: 608, MD: 824, LG: 906, XL: 1192 };
 		const startingWidth = parseInt(welcomeContainerContainer.style.width);
 		adsHomepage.classList.add('XS');
 		Object.keys(defaultBreakpoints).forEach(function (breakpoint) {
@@ -434,7 +435,6 @@ class WelcomePage extends Disposable {
 		guidedTourNotificationContainer.classList.add('guided-tour-banner');
 		containerLeft.classList.add(...flexClassesLeft);
 		containerRight.classList.add(...flexClassesRight);
-		icon.classList.add('diamond-icon');
 		removeTourBtn.classList.add(...removeBtnClasses);
 		p.appendChild(b);
 		p.innerText = localize('WelcomePage.TakeATour', "Would you like to take a quick tour of Azure Data Studio?");
