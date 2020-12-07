@@ -48,7 +48,7 @@ suite('ExtHostDecorations', function () {
 
 		// never returns
 		extHostDecorations.registerDecorationProvider({
-			onDidChange: Event.None,
+			onDidChangeFileDecorations: Event.None, // {{SQL CARBON EDIT}} Build break fix
 			provideFileDecoration() {
 				calledA = true;
 				return new Promise(() => { });
@@ -57,7 +57,7 @@ suite('ExtHostDecorations', function () {
 
 		// always returns
 		extHostDecorations.registerDecorationProvider({
-			onDidChange: Event.None,
+			onDidChangeFileDecorations: Event.None, // {{SQL CARBON EDIT}} Build break fix
 			provideFileDecoration() {
 				calledB = true;
 				return new Promise(resolve => resolve({ badge: 'H', tooltip: 'Hello' }));
