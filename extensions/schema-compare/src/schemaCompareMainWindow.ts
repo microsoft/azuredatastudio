@@ -51,8 +51,8 @@ export class SchemaCompareMainWindow {
 	private SchemaCompareActionMap: Map<Number, string>;
 	private operationId: string;
 	protected comparisonResult: mssql.SchemaCompareResult;
-	private sourceNameComponent: azdata.TableComponent;
-	private targetNameComponent: azdata.TableComponent;
+	private sourceNameComponent: azdata.InputBoxComponent;
+	private targetNameComponent: azdata.InputBoxComponent;
 	private deploymentOptions: mssql.DeploymentOptions;
 	private schemaCompareOptionDialog: SchemaCompareOptionsDialog;
 	private tablelistenersToDispose: vscode.Disposable[] = [];
@@ -157,26 +157,16 @@ export class SchemaCompareMainWindow {
 
 				this.sourceName = getEndpointName(this.sourceEndpointInfo);
 				this.targetName = ' ';
-				this.sourceNameComponent = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
-					data: [],
-					columns: [
-						{
-							value: this.sourceName,
-							headerCssClass: 'no-borders',
-							toolTip: this.sourceName
-						},
-					]
+				this.sourceNameComponent = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+					value: this.sourceName,
+					title: this.sourceName,
+					enabled: false
 				}).component();
 
-				this.targetNameComponent = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
-					data: [],
-					columns: [
-						{
-							value: this.targetName,
-							headerCssClass: 'no-borders',
-							toolTip: this.targetName
-						},
-					]
+				this.targetNameComponent = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+					value: this.targetName,
+					title: this.targetName,
+					enabled: false
 				}).component();
 
 				this.resetButtons(ResetButtonState.noSourceTarget);
@@ -218,10 +208,10 @@ export class SchemaCompareMainWindow {
 
 				sourceTargetLabels.addItem(sourceLabel, { CSSStyles: { 'width': '55%', 'margin-left': '15px', 'font-size': 'larger', 'font-weight': 'bold' } });
 				sourceTargetLabels.addItem(targetLabel, { CSSStyles: { 'width': '45%', 'font-size': 'larger', 'font-weight': 'bold' } });
-				this.sourceTargetFlexLayout.addItem(this.sourceNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
+				this.sourceTargetFlexLayout.addItem(this.sourceNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px', 'margin-right': '10px' } });
 				this.sourceTargetFlexLayout.addItem(this.selectSourceButton, { CSSStyles: { 'margin-top': '10px' } });
 				this.sourceTargetFlexLayout.addItem(arrowLabel, { CSSStyles: { 'width': '10%', 'font-size': 'larger', 'text-align-last': 'center' } });
-				this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
+				this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px', 'margin-right': '10px' } });
 				this.sourceTargetFlexLayout.addItem(this.selectTargetButton, { CSSStyles: { 'margin-top': '10px' } });
 
 				this.loader = view.modelBuilder.loadingComponent().component();
@@ -259,21 +249,14 @@ export class SchemaCompareMainWindow {
 		this.sourceName = getEndpointName(this.sourceEndpointInfo);
 		this.targetName = getEndpointName(this.targetEndpointInfo);
 
-		this.sourceNameComponent.updateProperty('columns', [
-			{
-				value: this.sourceName,
-				headerCssClass: 'no-borders',
-				toolTip: this.sourceName
-			},
-		]);
-		this.targetNameComponent.updateProperty('columns', [
-			{
-				value: this.targetName,
-				headerCssClass: 'no-borders',
-				toolTip: this.targetName
-			},
-		]);
-
+		this.sourceNameComponent.updateProperties({
+			value: this.sourceName,
+			title: this.sourceName
+		});
+		this.targetNameComponent.updateProperties({
+			value: this.targetName,
+			title: this.targetName
+		});
 		if (!this.sourceName || !this.targetName || this.sourceName === ' ' || this.targetName === ' ') {
 			this.resetButtons(ResetButtonState.noSourceTarget);
 		} else {
@@ -856,23 +839,13 @@ export class SchemaCompareMainWindow {
 			[this.sourceName, this.targetName] = [this.targetName, this.sourceName];
 
 			this.sourceNameComponent.updateProperties({
-				columns: [
-					{
-						value: this.sourceName,
-						headerCssClass: 'no-borders',
-						toolTip: this.sourceName
-					},
-				]
+				value: this.sourceName,
+				title: this.sourceName
 			});
 
 			this.targetNameComponent.updateProperties({
-				columns: [
-					{
-						value: this.targetName,
-						headerCssClass: 'no-borders',
-						toolTip: this.targetName
-					},
-				]
+				value: this.targetName,
+				title: this.targetName
 			});
 
 			// remember that source target have been toggled
