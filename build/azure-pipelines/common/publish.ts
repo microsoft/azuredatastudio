@@ -43,6 +43,7 @@ function createDefaultConfig(quality: string): Config {
 }
 
 function getConfig(quality: string): Promise<Config> {
+	console.log(`Getting config for quality ${quality}`);
 	const client = new DocumentClient(process.env['AZURE_DOCUMENTDB_ENDPOINT']!, { masterKey: process.env['AZURE_DOCUMENTDB_MASTERKEY'] });
 	const collection = 'dbs/builds/colls/config';
 	const query = {
@@ -86,6 +87,7 @@ function createOrUpdate(commit: string, quality: string, platform: string, type:
 		updateTries++;
 
 		return new Promise<void>((c, e) => {
+			console.log(`Querying existing documents to update...`);
 			client.queryDocuments(collection, updateQuery, { enableCrossPartitionQuery: true }).toArray((err, results) => {
 				if (err) { return e(err); }
 				if (results.length !== 1) { return e(new Error('No documents')); }
@@ -101,6 +103,7 @@ function createOrUpdate(commit: string, quality: string, platform: string, type:
 					release.updates[platform] = type;
 				}
 
+				console.log(`Replacing existing document with updated version`);
 				client.replaceDocument(release._self, release, err => {
 					if (err && err.code === 409 && updateTries < 5) { return c(update()); }
 					if (err) { return e(err); }
@@ -113,6 +116,7 @@ function createOrUpdate(commit: string, quality: string, platform: string, type:
 	}
 
 	return retry(() => new Promise<void>((c, e) => {
+		console.log(`Attempting to create document`);
 		client.createDocument(collection, release, err => {
 			if (err && err.code === 409) { return c(update()); }
 			if (err) { return e(err); }
