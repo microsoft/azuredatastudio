@@ -116,7 +116,7 @@ describe('SchemaCompareMainWindow.results', function (): void {
 		let service = createServiceMock();
 		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
 			success: false,
-			errorMessage: ''
+			errorMessage: 'error1'
 		}));
 
 		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Yes'));
@@ -130,6 +130,7 @@ describe('SchemaCompareMainWindow.results', function (): void {
 		await schemaCompareResult.publishChanges();
 
 		should(showErrorMessageSpy.calledOnce).be.true();
+		should.equal(showErrorMessageSpy.getCall(0).args[0], loc.applyErrorMessage('error1'));
 	});
 
 	it('Should show not error if publish changes succeed', async function (): Promise<void> {
@@ -161,7 +162,7 @@ describe('SchemaCompareMainWindow.results', function (): void {
 			excludedSourceElements: [],
 			excludedTargetElements: [],
 			success: false,
-			errorMessage: ''
+			errorMessage: 'error1'
 		}));
 
 		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Yes'));
@@ -175,6 +176,7 @@ describe('SchemaCompareMainWindow.results', function (): void {
 		await schemaCompareResult.openScmp();
 
 		should(showErrorMessageSpy.calledOnce).be.true();
+		should.equal(showErrorMessageSpy.getCall(0).args[0], loc.openScmpErrorMessage('error1'));
 	});
 
 	it('Should show error if saveScmp fails', async function (): Promise<void> {
@@ -189,7 +191,7 @@ describe('SchemaCompareMainWindow.results', function (): void {
 			excludedSourceElements: [],
 			excludedTargetElements: [],
 			success: false,
-			errorMessage: ''
+			errorMessage: 'error1'
 		}));
 
 		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Yes'));
@@ -203,6 +205,7 @@ describe('SchemaCompareMainWindow.results', function (): void {
 		await schemaCompareResult.saveScmp();
 
 		should(showErrorMessageSpy.calledOnce).be.true();
+		should.equal(showErrorMessageSpy.getCall(0).args[0], loc.saveScmpErrorMessage('error1'));
 	});
 
 
@@ -210,7 +213,7 @@ describe('SchemaCompareMainWindow.results', function (): void {
 		let service = createServiceMock();
 		service.setup(x => x.schemaCompareGenerateScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
 			success: false,
-			errorMessage: ''
+			errorMessage: 'error1'
 		}));
 
 		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Yes'));
@@ -223,13 +226,14 @@ describe('SchemaCompareMainWindow.results', function (): void {
 		await schemaCompareResult.generateScript();
 
 		should(showErrorMessageSpy.calledOnce).be.true();
+		should.equal(showErrorMessageSpy.getCall(0).args[0], loc.generateScriptErrorMessage('error1'));
 	});
 
 	it('Should show error if cancel fails', async function (): Promise<void> {
 		let service = createServiceMock();
 		service.setup(x => x.schemaCompareCancel(TypeMoq.It.isAny())).returns(() => Promise.resolve({
 			success: false,
-			errorMessage: ''
+			errorMessage: 'error1'
 		}));
 
 		showWarningMessageStub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve('Yes'));
@@ -242,6 +246,7 @@ describe('SchemaCompareMainWindow.results', function (): void {
 		await schemaCompareResult.cancelCompare();
 
 		should(showErrorMessageSpy.calledOnce).be.true();
+		should.equal(showErrorMessageSpy.getCall(0).args[0], loc.cancelErrorMessage('error1'));
 	});
 
 	it('Should show error if IncludeExcludeNode fails', async function (): Promise<void> {
@@ -340,7 +345,7 @@ describe('SchemaCompareMainWindow.results', function (): void {
 		should(showWarningMessageStub.notCalled).be.true();
 	});
 
-	it('Should show not error if user does not want to publish', async function (): Promise<void> {
+	it('Should not show error if user does not want to publish', async function (): Promise<void> {
 		let service = createServiceMock();
 		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
 			success: true,
