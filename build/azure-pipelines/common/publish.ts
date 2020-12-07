@@ -246,14 +246,16 @@ async function publish(commit: string, quality: string, platform: string, type: 
 	await createOrUpdate(commit, quality, platform, type, release, asset, isUpdate);
 }
 
+const RETRY_TIMES = 10;
 async function retry<T>(fn: () => Promise<T>): Promise<T> {
-	for (let run = 1; run <= 10; run++) {
+	for (let run = 1; run <= RETRY_TIMES; run++) {
 		try {
 			return await fn();
 		} catch (err) {
 			if (!/ECONNRESET/.test(err.message)) {
 				throw err;
 			}
+			console.warn(`Caught error ${err} - ${run}/${RETRY_TIMES}`);
 		}
 	}
 
