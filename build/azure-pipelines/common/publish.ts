@@ -52,13 +52,13 @@ function getConfig(quality: string): Promise<Config> {
 		]
 	};
 
-	return new Promise<Config>((c, e) => {
+	return retry(() => new Promise<Config>((c, e) => {
 		client.queryDocuments(collection, query, { enableCrossPartitionQuery: true }).toArray((err, results) => {
 			if (err && err.code !== 409) { return e(err); }
 
 			c(!results || results.length === 0 ? createDefaultConfig(quality) : results[0] as any as Config);
 		});
-	});
+	}));
 }
 
 interface Asset {
