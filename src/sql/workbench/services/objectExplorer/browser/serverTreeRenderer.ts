@@ -45,7 +45,7 @@ export interface IObjectExplorerTemplateData {
 export class ServerTreeRenderer implements IRenderer {
 
 	public static CONNECTION_HEIGHT = 23;
-	public static CONNECTION_GROUP_HEIGHT = 23;
+	public static CONNECTION_GROUP_HEIGHT = 33;
 	public static CONNECTION_TEMPLATE_ID = 'connectionProfile';
 	public static CONNECTION_GROUP_TEMPLATE_ID = 'connectionProfileGroup';
 	public static OBJECTEXPLORER_HEIGHT = 23;

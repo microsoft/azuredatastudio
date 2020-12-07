@@ -104,8 +104,8 @@
 
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content.server-group {
 	padding-right: 20px;
-	padding-top: 2px;
-	padding-bottom: 2px;
+	padding-top: 5px;
+	padding-bottom: 5px;
 }
 
 /* OE and connection label */
