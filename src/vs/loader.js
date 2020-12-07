@@ -619,7 +619,7 @@ var AMDLoader;
         };
         return OnlyOnceScriptLoader;
     }());
-    var trustedTypesPolyfill = new /** @class */(function () {
+    var trustedTypesPolyfill = new /** @class */ (function () {
         function class_1() {
         }
         class_1.prototype.installIfNeeded = function () {
@@ -674,7 +674,7 @@ var AMDLoader;
         BrowserScriptLoader.prototype.load = function (moduleManager, scriptSrc, callback, errorback) {
             if (/^node\|/.test(scriptSrc)) {
                 var opts = moduleManager.getConfig().getOptionsLiteral();
-                var nodeRequire = (opts.nodeRequire || AMDLoader.global.nodeRequire);
+                var nodeRequire = ensureRecordedNodeRequire(moduleManager.getRecorder(), (opts.nodeRequire || AMDLoader.global.nodeRequire));
                 var pieces = scriptSrc.split('|');
                 var moduleExports_1 = null;
                 try {
@@ -816,7 +816,7 @@ var AMDLoader;
         NodeScriptLoader.prototype.load = function (moduleManager, scriptSrc, callback, errorback) {
             var _this = this;
             var opts = moduleManager.getConfig().getOptionsLiteral();
-            var nodeRequire = (opts.nodeRequire || AMDLoader.global.nodeRequire);
+            var nodeRequire = ensureRecordedNodeRequire(moduleManager.getRecorder(), (opts.nodeRequire || AMDLoader.global.nodeRequire));
             var nodeInstrumenter = (opts.nodeInstrumenter || function (c) { return c; });
             this._init(nodeRequire);
             this._initNodeRequire(nodeRequire, moduleManager);
@@ -1023,6 +1023,24 @@ var AMDLoader;
         NodeScriptLoader._SUFFIX = '\n});';
         return NodeScriptLoader;
     }());
+    function ensureRecordedNodeRequire(recorder, _nodeRequire) {
+        if (_nodeRequire.__$__isRecorded) {
+            // it is already recorded
+            return _nodeRequire;
+        }
+        var nodeRequire = function nodeRequire(what) {
+            recorder.record(33 /* NodeBeginNativeRequire */, what);
+            try {
+                return _nodeRequire(what);
+            }
+            finally {
+                recorder.record(34 /* NodeEndNativeRequire */, what);
+            }
+        };
+        nodeRequire.__$__isRecorded = true;
+        return nodeRequire;
+    }
+    AMDLoader.ensureRecordedNodeRequire = ensureRecordedNodeRequire;
     function createScriptLoader(env) {
         return new OnlyOnceScriptLoader(env);
     }
@@ -1854,18 +1872,10 @@ var AMDLoader;
     };
     function init() {
         if (typeof AMDLoader.global.require !== 'undefined' || typeof require !== 'undefined') {
-            var _nodeRequire_1 = (AMDLoader.global.require || require);
-            if (typeof _nodeRequire_1 === 'function' && typeof _nodeRequire_1.resolve === 'function') {
+            var _nodeRequire = (AMDLoader.global.require || require);
+            if (typeof _nodeRequire === 'function' && typeof _nodeRequire.resolve === 'function') {
                 // re-expose node's require function
-                var nodeRequire = function (what) {
-                    moduleManager.getRecorder().record(33 /* NodeBeginNativeRequire */, what);
-                    try {
-                        return _nodeRequire_1(what);
-                    }
-                    finally {
-                        moduleManager.getRecorder().record(34 /* NodeEndNativeRequire */, what);
-                    }
-                };
+                var nodeRequire = AMDLoader.ensureRecordedNodeRequire(moduleManager.getRecorder(), _nodeRequire);
                 AMDLoader.global.nodeRequire = nodeRequire;
                 RequireFunc.nodeRequire = nodeRequire;
                 RequireFunc.__$__nodeRequire = nodeRequire;
