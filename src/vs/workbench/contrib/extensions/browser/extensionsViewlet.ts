@@ -9,7 +9,7 @@ import { timeout, Delayer } from 'vs/base/common/async';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { Disposable, MutableDisposable } from 'vs/base/common/lifecycle';
-import { Event as EventOf, Emitter } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IAction, Action, Separator, SubmenuAction } from 'vs/base/common/actions';
 import { IViewlet } from 'vs/workbench/common/viewlet';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
@@ -62,6 +62,7 @@ import { SIDE_BAR_DRAG_AND_DROP_BACKGROUND } from 'vs/workbench/common/theme';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { WorkbenchStateContext } from 'vs/workbench/browser/contextkeys';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { isWeb } from 'vs/base/common/platform';
 
 const DefaultViewsContext = new RawContextKey<boolean>('defaultExtensionViews', true);
 const SearchMarketplaceExtensionsContext = new RawContextKey<boolean>('searchMarketplaceExtensions', false);
@@ -70,6 +71,7 @@ const SearchOutdatedExtensionsContext = new RawContextKey<boolean>('searchOutdat
 const SearchEnabledExtensionsContext = new RawContextKey<boolean>('searchEnabledExtensions', false);
 const SearchDisabledExtensionsContext = new RawContextKey<boolean>('searchDisabledExtensions', false);
 const HasInstalledExtensionsContext = new RawContextKey<boolean>('hasInstalledExtensions', true);
+const HasInstalledWebExtensionsContext = new RawContextKey<boolean>('hasInstalledWebExtensions', false);
 const BuiltInExtensionsContext = new RawContextKey<boolean>('builtInExtensions', false);
 const SearchBuiltInExtensionsContext = new RawContextKey<boolean>('searchBuiltInExtensions', false);
 const RecommendedExtensionsContext = new RawContextKey<boolean>('recommendedExtensions', false);
@@ -81,7 +83,8 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 	constructor(
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@ILabelService private readonly labelService: ILabelService,
-		@IViewDescriptorService viewDescriptorService: IViewDescriptorService
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
+		@IContextKeyService private readonly contextKeyService: IContextKeyService
 	) {
 		this.container = viewDescriptorService.getViewContainerById(VIEWLET_ID)!;
 		this.registerViews();
@@ -136,19 +139,51 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			servers.push(this.extensionManagementServerService.remoteExtensionManagementServer);
 		}
 		const getViewName = (viewTitle: string, server: IExtensionManagementServer): string => {
-			return servers.length > 1 ? `${server.label} - ${viewTitle}` : viewTitle;
+			if (servers.length > 1) {
+				// In Web, use view title as is for remote server, when web extension server is enabled and no web extensions are installed
+				if (isWeb && server === this.extensionManagementServerService.remoteExtensionManagementServer &&
+					this.extensionManagementServerService.webExtensionManagementServer && !this.contextKeyService.getContextKeyValue<boolean>('hasInstalledWebExtensions')) {
+					return viewTitle;
+				}
+				return `${server.label} - ${viewTitle}`;
+			}
+			return viewTitle;
 		};
+		let installedWebExtensionsContextChangeEvent = Event.None;
+		if (this.extensionManagementServerService.webExtensionManagementServer && this.extensionManagementServerService.remoteExtensionManagementServer) {
+			const interestingContextKeys = new Set();
+			interestingContextKeys.add('hasInstalledWebExtensions');
+			installedWebExtensionsContextChangeEvent = Event.filter(this.contextKeyService.onDidChangeContext, e => e.affectsSome(interestingContextKeys));
+		}
+		const serverLabelChangeEvent = Event.any(this.labelService.onDidChangeFormatters, installedWebExtensionsContextChangeEvent);
 		for (const server of servers) {
 			const getInstalledViewName = (): string => getViewName(localize('installed', "Installed"), server);
-			const onDidChangeServerLabel: EventOf<void> = EventOf.map(this.labelService.onDidChangeFormatters, () => undefined);
+			const onDidChangeTitle = Event.map<void, string>(serverLabelChangeEvent, () => getInstalledViewName());
+			const id = servers.length > 1 ? `workbench.views.extensions.${server.id}.installed` : `workbench.views.extensions.installed`;
+			const isWebServer = server === this.extensionManagementServerService.webExtensionManagementServer;
+			if (!isWebServer) {
+				/* Empty installed extensions view */
+				viewDescriptors.push({
+					id: `${id}.empty`,
+					get name() { return getInstalledViewName(); },
+					weight: 100,
+					order: 1,
+					when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.not('hasInstalledExtensions')),
+					/* Empty installed extensions view shall have fixed height */
+					ctorDescriptor: new SyncDescriptor(ServerInstalledExtensionsView, [{ server, fixedHeight: true, onDidChangeTitle }]),
+					/* Empty installed extensions views shall not be allowed to hidden */
+					canToggleVisibility: false
+				});
+			}
+			/* Installed extensions view */
 			viewDescriptors.push({
-				id: servers.length > 1 ? `workbench.views.extensions.${server.id}.installed` : `workbench.views.extensions.installed`,
+				id,
 				get name() { return getInstalledViewName(); },
-				ctorDescriptor: new SyncDescriptor(ServerInstalledExtensionsView, [{ server, fixedHeight: true, onDidChangeTitle: EventOf.map<void, string>(onDidChangeServerLabel, () => getInstalledViewName()) }]),
-				when: ContextKeyExpr.has('defaultExtensionViews'),
 				weight: 100,
 				order: 1,
-				/* Installed extensions views shall not be hidden when there are more than one server */
+				when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), isWebServer ? ContextKeyExpr.has('hasInstalledWebExtensions') : ContextKeyExpr.has('hasInstalledExtensions')),
+				ctorDescriptor: new SyncDescriptor(ServerInstalledExtensionsView, [{ server, onDidChangeTitle }]),
+				/* Installed extensions views shall not be allowed to hidden when there are more than one server */
 				canToggleVisibility: servers.length === 1
 			});
 		}
@@ -165,6 +200,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.not('hasInstalledExtensions')),
 			weight: 60,
 			order: 2,
+			canToggleVisibility: false
 		});
 
 		/*
@@ -191,7 +227,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			viewDescriptors.push({
 				id: 'workbench.views.extensions.enabled',
 				name: localize('enabledExtensions', "Enabled"),
-				ctorDescriptor: new SyncDescriptor(EnabledExtensionsView, [{ fixedHeight: true }]),
+				ctorDescriptor: new SyncDescriptor(EnabledExtensionsView, []),
 				when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions')),
 				hideByDefault: true,
 				weight: 40,
@@ -206,7 +242,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			viewDescriptors.push({
 				id: 'workbench.views.extensions.disabled',
 				name: localize('disabledExtensions', "Disabled"),
-				ctorDescriptor: new SyncDescriptor(DisabledExtensionsView, [{ fixedHeight: true }]),
+				ctorDescriptor: new SyncDescriptor(DisabledExtensionsView, []),
 				when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions')),
 				hideByDefault: true,
 				weight: 10,
@@ -339,7 +375,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IExtensionsViewPaneContainer {
 
 	private readonly _onSearchChange: Emitter<string> = this._register(new Emitter<string>());
-	private readonly onSearchChange: EventOf<string> = this._onSearchChange.event;
+	private readonly onSearchChange: Event<string> = this._onSearchChange.event;
 	private defaultViewsContextKey: IContextKey<boolean>;
 	private searchMarketplaceExtensionsContextKey: IContextKey<boolean>;
 	private searchInstalledExtensionsContextKey: IContextKey<boolean>;
@@ -347,6 +383,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 	private searchEnabledExtensionsContextKey: IContextKey<boolean>;
 	private searchDisabledExtensionsContextKey: IContextKey<boolean>;
 	private hasInstalledExtensionsContextKey: IContextKey<boolean>;
+	private hasInstalledWebExtensionsContextKey: IContextKey<boolean>;
 	private builtInExtensionsContextKey: IContextKey<boolean>;
 	private searchBuiltInExtensionsContextKey: IContextKey<boolean>;
 	private recommendedExtensionsContextKey: IContextKey<boolean>;
@@ -363,7 +400,8 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		@IProgressService private readonly progressService: IProgressService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService,
-		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
+		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
+		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IViewletService private readonly viewletService: IViewletService,
@@ -388,6 +426,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		this.searchEnabledExtensionsContextKey = SearchEnabledExtensionsContext.bindTo(contextKeyService);
 		this.searchDisabledExtensionsContextKey = SearchDisabledExtensionsContext.bindTo(contextKeyService);
 		this.hasInstalledExtensionsContextKey = HasInstalledExtensionsContext.bindTo(contextKeyService);
+		this.hasInstalledWebExtensionsContextKey = HasInstalledWebExtensionsContext.bindTo(contextKeyService);
 		this.builtInExtensionsContextKey = BuiltInExtensionsContext.bindTo(contextKeyService);
 		this.searchBuiltInExtensionsContextKey = SearchBuiltInExtensionsContext.bindTo(contextKeyService);
 		this.recommendedExtensionsContextKey = RecommendedExtensionsContext.bindTo(contextKeyService);
@@ -399,6 +438,16 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 				this.updateTitleArea();
 			}
 		}, this));
+
+		if (extensionManagementServerService.webExtensionManagementServer) {
+			this._register(extensionsWorkbenchService.onChange(() => {
+				// show installed web extensions view only when it is not visible
+				// Do not hide the view automatically when it is visible
+				if (!this.hasInstalledWebExtensionsContextKey.get()) {
+					this.updateInstalledWebExtensionsContext();
+				}
+			}));
+		}
 
 		this.sortActions = [
 			// this._register(this.instantiationService.createInstance(ChangeSortAction, 'extensions.sort.install', localize('sort by installs', "Install Count"), this.onSearchChange, 'installs')), // {{SQL CARBON EDIT}}
@@ -432,12 +481,9 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 			provideResults: (query: string) => Query.suggestions(query)
 		}, placeholder, 'extensions:searchinput', { placeholderText: placeholder, value: searchValue }));
 
+		this.updateInstalledExtensionsContexts();
 		if (this.searchBox.getValue()) {
 			this.triggerSearch();
-		} else {
-			this.extensionManagementService.getInstalled().then(result => {
-				this.hasInstalledExtensionsContextKey.set(result.some(r => !r.isBuiltin));
-			});
 		}
 
 		this._register(attachSuggestEnabledInputBoxStyler(this.searchBox, this.themeService));
@@ -585,9 +631,18 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 	}
 
 	async refresh(): Promise<void> {
-		const result = await this.extensionManagementService.getInstalled();
-		this.hasInstalledExtensionsContextKey.set(result.some(r => !r.isBuiltin));
+		await this.updateInstalledExtensionsContexts();
 		this.doSearch(true);
+	}
+
+	private async updateInstalledExtensionsContexts(): Promise<void> {
+		const result = await this.extensionsWorkbenchService.queryLocal();
+		this.hasInstalledExtensionsContextKey.set(result.some(r => !r.isBuiltin));
+		this.updateInstalledWebExtensionsContext();
+	}
+
+	private updateInstalledWebExtensionsContext(): void {
+		this.hasInstalledWebExtensionsContextKey.set(!!this.extensionManagementServerService.webExtensionManagementServer && this.extensionsWorkbenchService.installed.some(r => r.server === this.extensionManagementServerService.webExtensionManagementServer));
 	}
 
 	private triggerSearch(): void {
@@ -628,6 +683,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		this.recommendedExtensionsContextKey.set(isRecommendedExtensionsQuery);
 		this.searchMarketplaceExtensionsContextKey.set(!!value && !ExtensionsListView.isLocalExtensionsQuery(value) && !isRecommendedExtensionsQuery);
 		this.defaultViewsContextKey.set(!value);
+		this.updateInstalledWebExtensionsContext();
 
 		return this.progress(Promise.all(this.panes.map(view =>
 			(<ExtensionsListView>view).show(this.normalizedQuery(), refresh)

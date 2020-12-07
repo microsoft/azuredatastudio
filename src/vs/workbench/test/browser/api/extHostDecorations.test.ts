@@ -46,7 +46,8 @@ suite('ExtHostDecorations', function () {
 		let calledB = false;
 
 		// never returns
-		extHostDecorations.registerDecorationProvider({
+		extHostDecorations.registerFileDecorationProvider({
+
 			provideFileDecoration() {
 				calledA = true;
 				return new Promise(() => { });
@@ -54,7 +55,8 @@ suite('ExtHostDecorations', function () {
 		}, nullExtensionDescription.identifier);
 
 		// always returns
-		extHostDecorations.registerDecorationProvider({
+		extHostDecorations.registerFileDecorationProvider({
+
 			provideFileDecoration() {
 				calledB = true;
 				return new Promise(resolve => resolve({ badge: 'H', tooltip: 'Hello' }));
