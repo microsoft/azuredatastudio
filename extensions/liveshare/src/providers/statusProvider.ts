@@ -40,7 +40,7 @@ export class StatusProvider {
 						connectionOptions['serverName'] = args.profile.options['server'];
 						connectionOptions['databaseName'] = args.profile.options['database'];
 						connectionOptions['userName'] = 'liveshare';
-						connectionOptions['password'] = 'liveshare';
+						connectionOptions['password'] = 'liveshare'; // [SuppressMessage("Microsoft.Security", "CS001:SecretInline", Justification="Stub value for testing")]
 						connectionOptions['authenticationType'] = 'liveshare';
 						connectionOptions['savePassword'] = false;
 						connectionOptions['saveProfile'] = false;
