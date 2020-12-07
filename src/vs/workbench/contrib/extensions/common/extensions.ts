@@ -21,7 +21,7 @@ export const EXTENSIONS_CONFIG = '.azuredatastudio/extensions.json';
 
 export interface IExtensionsViewPaneContainer extends IViewPaneContainer {
 	search(text: string): void;
-	refresh(): void;
+	refresh(): Promise<void>;
 }
 
 export const enum ExtensionState {
