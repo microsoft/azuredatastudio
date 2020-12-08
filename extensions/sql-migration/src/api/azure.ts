@@ -55,7 +55,7 @@ export type SqlVMServer = AzureProduct;
 export async function getAvailableSqlVMs(account: azdata.Account, subscription: Subscription): Promise<SqlVMServer[]> {
 	const api = await getAzureCoreAPI();
 
-	const result = await api.getSqlVMServer(account, [subscription], false);
+	const result = await api.getSqlVMServers(account, [subscription], false);
 	return result.resources;
 }
 

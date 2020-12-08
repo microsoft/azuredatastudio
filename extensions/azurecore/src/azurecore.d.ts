@@ -72,7 +72,7 @@ declare module 'azurecore' {
 		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<GetResourceGroupsResult>;
 		getSqlManagedInstances(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlManagedInstancesResult>;
 		getSqlServers(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlServersResult>;
-		getSqlVMServer(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlVMServerResult>;
+		getSqlVMServers(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlVMServersResult>;
 		getStorageAccounts(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetStorageAccountResult>;
 		getBlobContainers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetBlobContainersResult>;
 		getFileShares(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetFileSharesResult>;
@@ -91,7 +91,7 @@ declare module 'azurecore' {
 	export type GetResourceGroupsResult = { resourceGroups: azureResource.AzureResourceResourceGroup[], errors: Error[] };
 	export type GetSqlManagedInstancesResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
 	export type GetSqlServersResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
-	export type GetSqlVMServerResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
+	export type GetSqlVMServersResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
 	export type GetStorageAccountResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
 	export type GetBlobContainersResult = {blobContainer: BlobContainersListResponse | undefined, errors: Error[]};
 	export type GetFileSharesResult = {fileShares: FileSharesListResponse | undefined, errors: Error[]};

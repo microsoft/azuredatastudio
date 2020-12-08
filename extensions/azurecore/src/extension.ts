@@ -139,9 +139,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean): Promise<azurecore.GetSqlServersResult> {
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.sqlServer}"`);
 		},
-		getSqlVMServer(account: azdata.Account,
+		getSqlVMServers(account: azdata.Account,
 			subscriptions: azureResource.AzureResourceSubscription[],
-			ignoreErrors: boolean): Promise<azurecore.GetSqlVMServerResult> {
+			ignoreErrors: boolean): Promise<azurecore.GetSqlVMServersResult> {
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.virtualMachines}" and properties.storageProfile.imageReference.publisher == "microsoftsqlserver"`);
 		},
 		getStorageAccounts(account: azdata.Account,

@@ -20,7 +20,7 @@ export class AzurecoreApiStub implements azurecore.IExtension {
 	getSqlServers(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Promise<azurecore.GetSqlServersResult> {
 		throw new Error('Method not implemented.');
 	}
-	getSqlVMServer(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Promise<azurecore.GetSqlVMServerResult> {
+	getSqlVMServers(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Promise<azurecore.GetSqlVMServersResult> {
 		throw new Error('Method not implemented.');
 	}
 	getStorageAccounts(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountResult> {
