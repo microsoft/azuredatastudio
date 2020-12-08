@@ -25,7 +25,7 @@ before(function (): void {
 	testContext = createContext();
 });
 
-describe('SchemaCompareDialog.openDialog', function (): void {
+describe('SchemaCompareDialog.openDialog @DacFx@', function (): void {
 	before(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
