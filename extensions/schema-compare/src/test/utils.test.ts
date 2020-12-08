@@ -20,7 +20,7 @@ import * as sinon from 'sinon';
 
 let testContext: TestContext;
 
-describe('utils: Tests to verify getEndpointName', function (): void {
+describe('utils: Tests to verify getEndpointName @DacFx@', function (): void {
 	afterEach(() => {
 		sinon.restore();
 	});
