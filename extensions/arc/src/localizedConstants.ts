@@ -139,7 +139,6 @@ export const coresRequest = localize('arc.coresRequest', "CPU request:");
 export const memoryLimit = localize('arc.memoryLimit', "Memory limit (in GB):");
 export const memoryRequest = localize('arc.memoryRequest', "Memory request (in GB):");
 export const workerValidationErrorMessage = localize('arc.workerValidationErrorMessage', "The number of workers cannot be decreased.");
-export const coresValidationErrorMessage = localize('arc.coresValidationErrorMessage', "Valid CPU resource quantities are strictly positive.");
 export const memoryRequestValidationErrorMessage = localize('arc.memoryRequestValidationErrorMessage', "Memory request must be at least 0.25Gib");
 export const memoryLimitValidationErrorMessage = localize('arc.memoryLimitValidationErrorMessage', "Memory limit must be at least 0.25Gib");
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
@@ -172,6 +171,7 @@ export function numVCores(vCores: string | undefined): string {
 	}
 }
 export function updated(when: string): string { return localize('arc.updated', "Updated {0}", when); }
+export function validationMin(min: number): string { return localize('arc.validationMin', "Value must be greater than or equal to {0}.", min); }
 
 // Errors
 export const connectionRequired = localize('arc.connectionRequired', "A connection is required to show all properties. Click refresh to re-enter connection information");
@@ -202,3 +202,7 @@ export const variableValueFetchForUnsupportedVariable = (variableName: string) =
 export const isPasswordFetchForUnsupportedVariable = (variableName: string) => localize('getIsPassword.unknownVariableName', "Attempt to get isPassword for unknown variable:{0}", variableName);
 export const noControllerInfoFound = (name: string) => localize('noControllerInfoFound', "Controller Info could not be found with name: {0}", name);
 export const noPasswordFound = (controllerName: string) => localize('noPasswordFound', "Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.", controllerName);
+export const noContextFound = (configFile: string) => localize('noContextFound', "No 'contexts' found in the config file: {0}", configFile);
+export const noCurrentContextFound = (configFile: string) => localize('noCurrentContextFound', "No context is marked as 'current-context' in the config file: {0}", configFile);
+export const noNameInContext = (configFile: string) => localize('noNameInContext', "No name field was found in a cluster context in the config file: {0}", configFile);
+export const userCancelledError = localize('userCancelledError', "User cancelled the dialog");

@@ -14,6 +14,7 @@ import { getDateTimeString, getErrorMessage, throwUnless } from '../common/utils
 import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, instanceOfDynamicEnablementInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
+import { valueProviderService } from '../services/valueProviderService';
 import { getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../services/kubeService';
 import { optionsSourcesService } from '../services/optionSourcesService';
 import { KubeCtlTool, KubeCtlToolName } from '../services/tools/kubeCtlTool';
@@ -36,7 +37,9 @@ export type InputValueType = string | number | undefined;
 export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder;
 export type InputComponentInfo<T extends InputComponent> = {
 	component: T;
+	labelComponent?: azdata.TextComponent;
 	getValue: () => Promise<InputValueType>;
+	setValue: (value: InputValueType) => void;
 	getDisplayValue?: () => Promise<string>;
 	onValueChanged: vscode.Event<void>;
 	isPassword?: boolean
@@ -179,6 +182,7 @@ function createInputBoxField({ context, inputBoxType = 'text' }: { context: Fiel
 		enabled: instanceOfDynamicEnablementInfo(context.fieldInfo.enabled) ? false : context.fieldInfo.enabled, // Dynamic enablement is initially set to false
 		validations: context.fieldValidations
 	});
+	input.labelComponent = label;
 	addLabelInputPairToContainer(context.view, context.components, label, input.component, context.fieldInfo);
 	return input;
 }
@@ -198,6 +202,7 @@ export function createInputBoxInputInfo(view: azdata.ModelView, inputInfo: Input
 	return {
 		component: component,
 		getValue: async (): Promise<InputValueType> => component.value,
+		setValue: (value: InputValueType) => component.value = value?.toString(),
 		onValueChanged: component.onTextChanged
 	};
 }
@@ -238,6 +243,7 @@ export function createCheckboxInputInfo(view: azdata.ModelView, info: { initialV
 	return {
 		component: checkbox,
 		getValue: async () => checkbox.checked ? 'true' : 'false',
+		setValue: (value: InputValueType) => checkbox.checked = value?.toString().toLowerCase() === 'true' ? true : false,
 		onValueChanged: checkbox.onChanged
 	};
 }
@@ -263,6 +269,7 @@ export function createDropdownInputInfo(view: azdata.ModelView, info: { defaultV
 	return {
 		component: dropdown,
 		getValue: async (): Promise<InputValueType> => typeof dropdown.value === 'string' ? dropdown.value : dropdown.value?.name,
+		setValue: (value: InputValueType) => setDropdownValue(dropdown, value?.toString()),
 		getDisplayValue: async (): Promise<string> => (typeof dropdown.value === 'string' ? dropdown.value : dropdown.value?.displayName) || '',
 		onValueChanged: dropdown.onValueChanged,
 	};
@@ -329,6 +336,7 @@ export function initializeWizardPage(context: WizardPageContext): void {
 			});
 		}));
 		await hookUpDynamicEnablement(context);
+		await hookUpValueProviders(context);
 		const formBuilder = view.modelBuilder.formContainer().withFormItems(
 			sections.map(section => { return { title: '', component: section }; }),
 			{
@@ -369,11 +377,51 @@ async function hookUpDynamicEnablement(context: WizardPageContext): Promise<void
 				}
 				const updateFields = async () => {
 					const targetComponentValue = await targetComponent.getValue();
-					fieldComponent.component.enabled = targetComponentValue === targetValue;
+					const valuesMatch = targetComponentValue === targetValue;
+					fieldComponent.component.enabled = valuesMatch;
+					const isRequired = fieldComponent.component.enabled === false ? false : field.required;
+					if (fieldComponent.labelComponent) {
+						fieldComponent.labelComponent.requiredIndicator = isRequired;
+					}
 					// We also need to update the required flag so that when the component is disabled it won't block the page from proceeding
 					if ('required' in fieldComponent.component) {
-						fieldComponent.component.required = fieldComponent.component.enabled === false ? false : field.required;
+						fieldComponent.component.required = isRequired;
 					}
+					// When we disable the field then remove the placeholder if it exists so it's clear this field isn't needed
+					// We only do this for dynamic enablement since if a field is disabled through the JSON directly then it can't
+					// be modified anyways and so just should not use a placeholder value if they don't want one
+					if ('placeHolder' in fieldComponent.component) {
+						fieldComponent.component.placeHolder = valuesMatch ? field.placeHolder : '';
+					}
+				};
+				targetComponent.onValueChanged(() => {
+					updateFields();
+				});
+				await updateFields();
+			}
+		}));
+	}));
+}
+
+async function hookUpValueProviders(context: WizardPageContext): Promise<void> {
+	await Promise.all(context.pageInfo.sections.map(async section => {
+		if (!section.fields) {
+			return;
+		}
+		await Promise.all(section.fields.map(async field => {
+			if (field.valueProvider) {
+				const fieldKey = field.variableName || field.label;
+				const fieldComponent = context.inputComponents[fieldKey];
+				const targetComponent = context.inputComponents[field.valueProvider.triggerField];
+				if (!targetComponent) {
+					console.error(`Could not find target component ${field.valueProvider.triggerField} when hooking up value providers for ${field.label}`);
+					return;
+				}
+				const provider = valueProviderService.getValueProvider(field.valueProvider.providerId);
+				const updateFields = async () => {
+					const targetComponentValue = await targetComponent.getValue();
+					const newFieldValue = await provider.getValue(targetComponentValue?.toString() ?? '');
+					fieldComponent.setValue(newFieldValue);
 				};
 				targetComponent.onValueChanged(() => {
 					updateFields();
@@ -617,6 +665,7 @@ async function configureOptionsSourceSubfields(context: FieldContext, optionsSou
 				throw e;
 			}
 		},
+		setValue: (_value: InputValueType) => { throw new Error('Setting value of radio group isn\'t currently supported'); },
 		onValueChanged: optionsComponent.onValueChanged
 	});
 }
@@ -632,6 +681,7 @@ function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDown
 		required: context.fieldInfo.required,
 		label: context.fieldInfo.label
 	});
+	dropdown.labelComponent = label;
 	dropdown.component.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, dropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, dropdown.component, context.fieldInfo);
@@ -652,6 +702,7 @@ function processNumberField(context: FieldContext): void {
 			const value = await input.getValue();
 			return typeof value === 'string' && value.length > 0 ? parseFloat(value) : value;
 		},
+		setValue: (value: InputValueType) => input.component.value = value?.toString(),
 		onValueChanged: input.onValueChanged
 	});
 }
@@ -748,6 +799,7 @@ function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
 			readOnlyField.text!.value = await substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
 			return readOnlyField.text!.value;
 		},
+		setValue: (value: InputValueType) => readOnlyField.text!.value = value?.toString(),
 		onValueChanged: onChangedEmitter.event,
 	});
 	return readOnlyField;
@@ -798,6 +850,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 		enabled: typeof context.fieldInfo.enabled === 'boolean' ? context.fieldInfo.enabled : false,
 		validations: context.fieldValidations
 	});
+	input.labelComponent = label;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, input);
 	input.component.enabled = false;
 	const browseFileButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.browse, width: buttonWidth }).component();
@@ -928,7 +981,9 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 	context.fieldInfo.labelPosition = LabelPosition.Left;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
 		component: radioGroupLoadingComponentBuilder,
+		labelComponent: label,
 		getValue: async (): Promise<InputValueType> => radioGroupLoadingComponentBuilder.value,
+		setValue: (value: InputValueType) => { throw new Error('Setting value of radio group isn\'t currently supported'); },
 		getDisplayValue: async (): Promise<string> => radioGroupLoadingComponentBuilder.displayValue,
 		onValueChanged: radioGroupLoadingComponentBuilder.onValueChanged,
 	});
@@ -1053,6 +1108,7 @@ async function processKubeStorageClassField(context: FieldContext): Promise<void
 		values: storageClasses,
 		defaultValue: defaultStorageClass
 	});
+	storageClassDropdown.labelComponent = label;
 	storageClassDropdown.component.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, storageClassDropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, storageClassDropdown.component, context.fieldInfo);
@@ -1078,6 +1134,7 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAcc
 		label: loc.account
 	});
 	accountDropdown.component.fireOnTextChange = true;
+	accountDropdown.labelComponent = label;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, accountDropdown);
 	const signInButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.signIn, width: '100px' }).component();
 	const refreshButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.refresh, width: '100px' }).component();
@@ -1111,6 +1168,7 @@ function createAzureSubscriptionDropdown(
 		label: loc.subscription
 	});
 	subscriptionDropdown.component.fireOnTextChange = true;
+	subscriptionDropdown.labelComponent = label;
 	context.fieldInfo.subFields!.push({
 		label: label.value!,
 		variableName: context.fieldInfo.subscriptionVariableName
@@ -1121,6 +1179,7 @@ function createAzureSubscriptionDropdown(
 			const inputValue = (await subscriptionDropdown.getValue())?.toString() || '';
 			return subscriptionValueToSubscriptionMap.get(inputValue)?.id || inputValue;
 		},
+		setValue: (value: InputValueType) => setDropdownValue(subscriptionDropdown.component, value?.toString()),
 		getDisplayValue: subscriptionDropdown.getDisplayValue,
 		onValueChanged: subscriptionDropdown.onValueChanged
 	});
@@ -1245,6 +1304,7 @@ function createAzureResourceGroupsDropdown(
 		label: loc.resourceGroup
 	});
 	resourceGroupDropdown.component.fireOnTextChange = true;
+	resourceGroupDropdown.labelComponent = label;
 	context.fieldInfo.subFields!.push({
 		label: label.value!,
 		variableName: context.fieldInfo.resourceGroupVariableName
@@ -1330,6 +1390,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 		values: locationValues
 	});
 	locationDropdown.component.fireOnTextChange = true;
+	locationDropdown.labelComponent = label;
 	context.fieldInfo.subFields = context.fieldInfo.subFields || [];
 	if (context.fieldInfo.locationVariableName) {
 		context.fieldInfo.subFields!.push({
@@ -1378,5 +1439,20 @@ export async function setModelValues(inputComponents: InputComponents, model: Mo
 
 export function isInputBoxEmpty(input: azdata.InputBoxComponent): boolean {
 	return input.value === undefined || input.value === '';
+}
+
+/**
+ * Sets the dropdown value to the corresponding value from the list of current values, converting
+ * into a CategoryValue if necessary (using the name field).
+ * @param dropdown The dropdown component to set the value for
+ * @param value The value to set - either the direct string value or the name of the CategoryValue to use
+ */
+function setDropdownValue(dropdown: azdata.DropDownComponent, value: string = ''): void {
+	const values = dropdown.values ?? [];
+	if (typeof values[0] === 'object') {
+		dropdown.value = (<azdata.CategoryValue[]>values).find(v => v.name === value);
+	} else {
+		dropdown.value = value;
+	}
 }
 

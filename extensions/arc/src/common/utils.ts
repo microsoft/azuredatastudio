@@ -9,8 +9,6 @@ import * as vscode from 'vscode';
 import { ConnectionMode, IconPath, IconPathHelper } from '../constants';
 import * as loc from '../localizedConstants';
 
-export class UserCancelledError extends Error { }
-
 /**
  * Converts the resource type name into the localized Display Name for that type.
  * @param resourceType The resource type name to convert
@@ -67,7 +65,7 @@ export function getResourceTypeIcon(resourceType: string | undefined): IconPath 
 
 /**
  * Returns the text to display for known connection modes
- * @param connectionMode The string repsenting the connection mode
+ * @param connectionMode The string representing the connection mode
  */
 export function getConnectionModeDisplayText(connectionMode: string | undefined): string {
 	connectionMode = connectionMode ?? '';
@@ -282,8 +280,18 @@ export function convertToGibibyteString(value: string): string {
  * @param condition
  * @param message
  */
-export function throwUnless(condition: boolean, message?: string): asserts condition {
+export function throwUnless(condition: any, message?: string): asserts condition {
 	if (!condition) {
 		throw new Error(message);
 	}
+}
+
+export async function tryExecuteAction<T>(action: () => T | PromiseLike<T>): Promise<{ result: T | undefined, error: any }> {
+	let error: any, result: T | undefined;
+	try {
+		result = await action();
+	} catch (e) {
+		error = e;
+	}
+	return { result, error };
 }
