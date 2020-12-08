@@ -62,8 +62,6 @@
   not_numbered: true
   expand_sections: false
   sections:
-  - title: Create SQL Backups
-    url: offline-migration/create-sql-backups
   - title: Migrate Instance to Azure SQL VM
     url: offline-migration/instance-to-VM
   - title: Migrate Database to Azure SQL VM
