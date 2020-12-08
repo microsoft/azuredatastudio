@@ -74,10 +74,6 @@ declare module 'azdata' {
 			data: any;
 		}
 
-		export interface ICellOutputMetadata {
-			resultSet?: ResultSetSummary;
-		}
-
 		export interface INotebookMetadata {
 			connection_name?: string;
 		}

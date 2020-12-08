@@ -51,13 +51,14 @@ suite('SQL Future', function () {
 			},
 			content: <nb.IExecuteResult>{
 				output_type: 'execute_result',
-				metadata: {
-					resultSet: resultSet
-				},
+				metadata: undefined,
 				execution_count: this._executionCount,
 				data: expectedData
 			},
-			metadata: undefined,
+			metadata: {
+				batchId: 0,
+				id: 0
+			},
 			parent_header: undefined
 		};
 

@@ -5,14 +5,18 @@
 
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
+import axios, { AxiosRequestConfig } from 'axios';
 import * as azdata from 'azdata';
-import { GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult } from 'azurecore';
+import { HttpGetRequestResult, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult } from 'azurecore';
 import { azureResource } from 'azureResource';
+import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { AppContext } from '../appContext';
+import { invalidAzureAccount, invalidTenant, unableToFetchTokenError } from '../localizedConstants';
 import { AzureResourceServiceNames } from './constants';
 import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionService } from './interfaces';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
+import { StorageManagementClient } from '@azure/arm-storage';
 
 const localize = nls.loadMessageBundle();
 
@@ -106,7 +110,7 @@ export function equals(one: any, other: any): boolean {
 export async function getResourceGroups(appContext: AppContext, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false): Promise<GetResourceGroupsResult> {
 	const result: GetResourceGroupsResult = { resourceGroups: [], errors: [] };
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants) || !subscription) {
-		const error = new Error(localize('azure.accounts.getResourceGroups.invalidParamsError', "Invalid account or subscription"));
+		const error = new Error(invalidAzureAccount);
 		if (!ignoreErrors) {
 			throw error;
 		}
@@ -146,7 +150,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 	query: string): Promise<ResourceQueryResult<T>> {
 	const result: ResourceQueryResult<T> = { resources: [], errors: [] };
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
-		const error = new Error(localize('azure.accounts.runResourceQuery.errors.invalidAccount', "Invalid account"));
+		const error = new Error(invalidAzureAccount);
 		if (!ignoreErrors) {
 			throw error;
 		}
@@ -157,7 +161,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 	// Check our subscriptions to ensure we have valid ones
 	subscriptions.forEach(subscription => {
 		if (!subscription.tenant) {
-			const error = new Error(localize('azure.accounts.runResourceQuery.errors.noTenantSpecifiedForSubscription', "Invalid tenant for subscription"));
+			const error = new Error(invalidTenant);
 			if (!ignoreErrors) {
 				throw error;
 			}
@@ -188,7 +192,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 			resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 		} catch (err) {
 			console.error(err);
-			const error = new Error(localize('azure.accounts.runResourceQuery.errors.unableToFetchToken', "Unable to get token for tenant {0}", tenant.id));
+			const error = new Error(unableToFetchTokenError(tenant.id));
 			result.errors.push(error);
 			continue;
 		}
@@ -227,7 +231,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 export async function getSubscriptions(appContext: AppContext, account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> {
 	const result: GetSubscriptionsResult = { subscriptions: [], errors: [] };
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
-		const error = new Error(localize('azure.accounts.getSubscriptions.invalidParamsError', "Invalid account"));
+		const error = new Error(invalidAzureAccount);
 		if (!ignoreErrors) {
 			throw error;
 		}
@@ -261,7 +265,7 @@ export async function getSubscriptions(appContext: AppContext, account?: azdata.
 export async function getSelectedSubscriptions(appContext: AppContext, account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> {
 	const result: GetSubscriptionsResult = { subscriptions: [], errors: [] };
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
-		const error = new Error(localize('azure.accounts.getSelectedSubscriptions.invalidParamsError', "Invalid account"));
+		const error = new Error(invalidAzureAccount);
 		if (!ignoreErrors) {
 			throw error;
 		}
@@ -284,3 +288,189 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
 	}
 	return result;
 }
+
+/**
+ * makes a GET request to Azure REST apis. Currently, it only supports GET ARM queries.
+ */
+export async function makeHttpGetRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false, url: string): Promise<HttpGetRequestResult> {
+	const result: HttpGetRequestResult = { response: {}, errors: [] };
+
+	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
+		const error = new Error(invalidAzureAccount);
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+
+	if (!subscription.tenant) {
+		const error = new Error(invalidTenant);
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+	if (result.errors.length > 0) {
+		return result;
+	}
+
+	let securityToken: { token: string, tokenType?: string };
+	try {
+		securityToken = await azdata.accounts.getAccountSecurityToken(
+			account,
+			subscription.tenant!,
+			azdata.AzureResource.ResourceManagement
+		);
+	} catch (err) {
+		console.error(err);
+		const error = new Error(unableToFetchTokenError(subscription.tenant));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+	if (result.errors.length > 0) {
+		return result;
+	}
+
+	const config: AxiosRequestConfig = {
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${securityToken.token}`
+		},
+		validateStatus: () => true // Never throw
+	};
+
+	const response = await axios.get(url, config);
+
+	if (response.status !== 200) {
+		let errorMessage: string[] = [];
+		errorMessage.push(response.status.toString());
+		errorMessage.push(response.statusText);
+		if (response.data && response.data.error) {
+			errorMessage.push(`${response.data.error.code} : ${response.data.error.message}`);
+		}
+		const error = new Error(errorMessage.join(EOL));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+
+	result.response = response;
+
+	return result;
+}
+
+export async function getBlobContainers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccounts: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetBlobContainersResult> {
+	let result: GetBlobContainersResult = { blobContainer: undefined, errors: [] };
+
+	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
+		const error = new Error(invalidAzureAccount);
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+
+	if (!subscription.tenant) {
+		const error = new Error(invalidTenant);
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+	if (result.errors.length > 0) {
+		return result;
+	}
+
+	let securityToken: { token: string, tokenType?: string };
+	let credential: TokenCredentials;
+	try {
+		securityToken = await azdata.accounts.getAccountSecurityToken(
+			account,
+			subscription.tenant!,
+			azdata.AzureResource.ResourceManagement
+		);
+		const token = securityToken.token;
+		const tokenType = securityToken.tokenType;
+		credential = new TokenCredentials(token, tokenType);
+
+	} catch (err) {
+		console.error(err);
+		const error = new Error(unableToFetchTokenError(subscription.tenant));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+
+	try {
+		const client = new StorageManagementClient(<any>credential, subscription.id);
+		result.blobContainer = await client.blobContainers.list(storageAccounts.resourceGroup, storageAccounts.name);
+	} catch (err) {
+		console.error(err);
+		if (!ignoreErrors) {
+			throw err;
+		}
+		result.errors.push(err);
+	}
+	return result;
+}
+
+export async function getFileShares(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccounts: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetFileSharesResult> {
+	let result: GetFileSharesResult = { fileShares: undefined, errors: [] };
+
+	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
+		const error = new Error(invalidAzureAccount);
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+
+	if (!subscription.tenant) {
+		const error = new Error(invalidTenant);
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+	if (result.errors.length > 0) {
+		return result;
+	}
+
+	let securityToken: { token: string, tokenType?: string };
+	let credential: TokenCredentials;
+	try {
+		securityToken = await azdata.accounts.getAccountSecurityToken(
+			account,
+			subscription.tenant!,
+			azdata.AzureResource.ResourceManagement
+		);
+		const token = securityToken.token;
+		const tokenType = securityToken.tokenType;
+		credential = new TokenCredentials(token, tokenType);
+
+	} catch (err) {
+		console.error(err);
+		const error = new Error(unableToFetchTokenError(subscription.tenant));
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
+
+	try {
+		const client = new StorageManagementClient(<any>credential, subscription.id);
+		result.fileShares = await client.fileShares.list(storageAccounts.resourceGroup, storageAccounts.name);
+	} catch (err) {
+		console.error(err);
+		if (!ignoreErrors) {
+			throw err;
+		}
+		result.errors.push(err);
+	}
+	return result;
+}
+
