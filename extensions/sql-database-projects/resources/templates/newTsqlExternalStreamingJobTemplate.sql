@@ -5,6 +5,5 @@
 
 EXEC sys.sp_create_streaming_job @NAME = '@@OBJECT_NAME@@', @STATEMENT = 'INSERT INTO SqlOutputStream SELECT
     timeCreated,
-    streamColumn1 as column1,
-    streamColumn2 as column2
+    streamColumn1 as Id
 FROM EdgeHubInputStream'

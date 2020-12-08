@@ -378,12 +378,13 @@ function hasWorkspaceFolders(): boolean {
 	return workspaceFolders && workspaceFolders.length > 0;
 }
 
-export function setPinnedBookPathsInConfig(pinnedNotebookPaths: IBookNotebook[]) {
+export async function setPinnedBookPathsInConfig(pinnedNotebookPaths: IBookNotebook[]): Promise<void> {
 	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
 	let storeInWorspace: boolean = hasWorkspaceFolders();
 
-	config.update(pinnedBooksConfigKey, pinnedNotebookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
+	await config.update(pinnedBooksConfigKey, pinnedNotebookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
 }
+
 
 export interface IBookNotebook {
 	bookPath?: string;

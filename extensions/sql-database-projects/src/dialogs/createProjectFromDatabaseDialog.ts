@@ -112,7 +112,8 @@ export class CreateProjectFromDatabaseDialog {
 					titleFontSize: cssStyles.titleFontSize
 				})
 				.withLayout({
-					width: '100%'
+					width: '100%',
+					padding: '10px 10px 0 20px'
 				});
 
 			let formModel = this.formBuilder.component();
@@ -129,12 +130,11 @@ export class CreateProjectFromDatabaseDialog {
 		const serverLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.server,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth,
-			CSSStyles: cssStyles.fontWeightBold
+			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();
 
-		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, sourceConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px', 'margin-top': '-20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-		connectionRow.insertItem(selectConnectionButton, 2, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '-10px', 'margin-top': '-20px' } });
+		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, sourceConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-5px', 'margin-top': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		connectionRow.insertItem(selectConnectionButton, 2, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '-5px', 'margin-top': '-10px' } });
 
 		return connectionRow;
 	}
@@ -143,7 +143,7 @@ export class CreateProjectFromDatabaseDialog {
 		this.sourceDatabaseDropDown = view.modelBuilder.dropDown().withProperties({
 			ariaLabel: constants.databaseNameLabel,
 			required: true,
-			width: cssStyles.textboxWidth,
+			width: cssStyles.createProjectFromDatabaseTextboxWidth,
 			editable: true,
 			fireOnTextChange: true
 		}).component();
@@ -156,8 +156,7 @@ export class CreateProjectFromDatabaseDialog {
 		const databaseLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.databaseNameLabel,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth,
-			CSSStyles: cssStyles.fontWeightBold
+			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();
 
 		const databaseRow = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdata.DropDownComponent>this.sourceDatabaseDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
@@ -173,7 +172,7 @@ export class CreateProjectFromDatabaseDialog {
 		this.sourceConnectionTextBox = view.modelBuilder.inputBox().withProperties({
 			value: '',
 			placeHolder: constants.selectConnection,
-			width: cssStyles.textboxWidth,
+			width: cssStyles.createProjectFromDatabaseTextboxWidth,
 			enabled: false
 		}).component();
 
@@ -229,8 +228,9 @@ export class CreateProjectFromDatabaseDialog {
 	private createProjectNameRow(view: azdata.ModelView): azdata.FlexContainer {
 		this.projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.projectNamePlaceholderText,
+			placeHolder: constants.projectNamePlaceholderText,
 			required: true,
-			width: cssStyles.textboxWidth,
+			width: cssStyles.createProjectFromDatabaseTextboxWidth,
 			validationErrorMessage: constants.projectNameRequired
 		}).component();
 
@@ -242,11 +242,10 @@ export class CreateProjectFromDatabaseDialog {
 		const projectNameLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.projectNameLabel,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth,
-			CSSStyles: cssStyles.fontWeightBold
+			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();
 
-		const projectNameRow = view.modelBuilder.flexContainer().withItems([projectNameLabel, this.projectNameTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px', 'margin-top': '-20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const projectNameRow = view.modelBuilder.flexContainer().withItems([projectNameLabel, this.projectNameTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-5px', 'margin-top': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		return projectNameRow;
 	}
@@ -258,7 +257,7 @@ export class CreateProjectFromDatabaseDialog {
 			value: '',
 			ariaLabel: constants.projectLocationLabel,
 			placeHolder: constants.projectLocationPlaceholderText,
-			width: cssStyles.textboxWidth,
+			width: cssStyles.createProjectFromDatabaseTextboxWidth,
 			validationErrorMessage: constants.projectLocationRequired
 		}).component();
 
@@ -270,8 +269,7 @@ export class CreateProjectFromDatabaseDialog {
 		const projectLocationLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.projectLocationLabel,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth,
-			CSSStyles: cssStyles.fontWeightBold
+			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();
 
 		const projectLocationRow = view.modelBuilder.flexContainer().withItems([projectLocationLabel, this.projectLocationTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
@@ -313,7 +311,7 @@ export class CreateProjectFromDatabaseDialog {
 			value: constants.schemaObjectType,
 			ariaLabel: constants.folderStructureLabel,
 			required: true,
-			width: cssStyles.textboxWidth
+			width: cssStyles.createProjectFromDatabaseTextboxWidth
 		}).component();
 
 		this.folderStructureDropDown.onValueChanged(() => {
@@ -323,11 +321,10 @@ export class CreateProjectFromDatabaseDialog {
 		const folderStructureLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.folderStructureLabel,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth,
-			CSSStyles: cssStyles.fontWeightBold
+			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();
 
-		const folderStructureRow = view.modelBuilder.flexContainer().withItems([folderStructureLabel, <azdata.DropDownComponent>this.folderStructureDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '-20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const folderStructureRow = view.modelBuilder.flexContainer().withItems([folderStructureLabel, <azdata.DropDownComponent>this.folderStructureDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		return folderStructureRow;
 	}
