@@ -26,10 +26,6 @@ const retryCount = 24; // 2 minutes
 const folderPath = path.join(os.tmpdir(), 'SchemaCompareTest');
 
 suite('Schema compare integration test suite @DacFx@', () => {
-	before(function () {
-		this.timeout(5 * 60 * 1000);
-	});
-
 	suiteSetup(async function () {
 		let attempts: number = 20;
 		while (attempts > 0) {
@@ -44,6 +40,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		console.log(`Start schema compare tests`);
 	});
 	test('Schema compare dacpac to dacpac comparison and scmp @UNSTABLE@', async function () {
+		this.timeout(5 * 60 * 1000);
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 		const now = new Date();
 		const operationId = 'testOperationId_' + now.getTime().toString();
@@ -86,6 +83,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		assert(openScmpResult.targetEndpointInfo.packageFilePath === target.packageFilePath, `Expected: target packageFilePath to be ${target.packageFilePath}, Actual: ${openScmpResult.targetEndpointInfo.packageFilePath}`);
 	});
 	test('Schema compare database to database comparison, script generation, and scmp @UNSTABLE@', async function () {
+		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
 		const now = new Date();
@@ -157,6 +155,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		}
 	});
 	test('Schema compare dacpac to database comparison, script generation, and scmp @UNSTABLE@', async function () {
+		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
 		const now = new Date();
@@ -216,6 +215,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		}
 	});
 	test('Schema compare dacpac to dacpac comparison with include exclude @UNSTABLE@', async function () {
+		this.timeout(5 * 60 * 1000);
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 		const operationId = 'testOperationId_' + new Date().getTime().toString();
 

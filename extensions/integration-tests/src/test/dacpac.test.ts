@@ -20,16 +20,13 @@ const dacpac1: string = path.join(__dirname, '../../testData/Database1.dacpac');
 
 
 suite('Dacpac integration test suite @DacFx@', () => {
-	before(function () {
-		this.timeout(5 * 60 * 1000);
-	});
-
 	suiteSetup(async function () {
 		await utils.sleep(5000); // To ensure the providers are registered.
 		console.log(`Start dacpac tests`);
 	});
 
 	test('Deploy and extract dacpac @UNSTABLE@', async function () {
+		this.timeout(5 * 60 * 1000);
 		const server = await getStandaloneServer();
 		const connectionId = await utils.connectToServer(server);
 		assert(connectionId, `Failed to connect to "${server.serverName}"`);
@@ -75,6 +72,7 @@ suite('Dacpac integration test suite @DacFx@', () => {
 
 	const bacpac1: string = path.join(__dirname, '..', '..', 'testData', 'Database1.bacpac');
 	test('Import and export bacpac @UNSTABLE@', async function () {
+		this.timeout(5 * 60 * 1000);
 		const server = await getStandaloneServer();
 		await utils.connectToServer(server);
 
