@@ -112,7 +112,7 @@ export class AddNewPackageTab {
 			});
 			await this.setFieldsToEmpty();
 		} catch (err) {
-			console.error(`Exception encountered when resetting new package page fields: ${err}`);
+			console.error('Exception encountered when resetting new package page fields: ', err);
 		} finally {
 			await this.toggleNewPackagesFields(true);
 		}
