@@ -57,8 +57,8 @@ export class NotebookCompletionItemProvider implements vscode.CompletionItemProv
 					return session.kernel;
 				}
 			}
-		} catch {
-			// If an exception occurs, swallow it currently
+		} catch (err) {
+			console.error(`Exception encountered finding document's kernel: ${err}`);
 			return undefined;
 		}
 		return undefined;
