@@ -311,7 +311,7 @@
                         {
                           "label": "%arc.data.controller.sptenantid%",
                           "description": "%arc.data.controller.sptenantid.description%",
-                          "variableName": "AZDATA_NB_VAR_SP_CLIENT_TENANTID",
+                          "variableName": "AZDATA_NB_VAR_SP_TENANT_ID",
                           "type": "text",
                           "required": true,
                           "defaultValue": "",
