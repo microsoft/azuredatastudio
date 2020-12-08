@@ -15,26 +15,28 @@ import { isNullOrUndefined } from 'util';
 import { generateTestFolderPath } from './testUtils';
 
 describe('NetCoreTool: Net core tests', function (): void {
+	afterEach(function (): void {
+		sinon.restore();
+	});
 
 	it('Should override dotnet default value with settings', async function (): Promise<void> {
 		try {
 			// update settings and validate
 			await vscode.workspace.getConfiguration(DBProjectConfigurationKey).update(NetCoreInstallLocationKey, 'test value path', true);
 			const netcoreTool = new NetCoreTool();
-			sinon.stub(netcoreTool, 'showInstallDialog').returns(<any>Promise.resolve());
+			sinon.stub(netcoreTool, 'showInstallDialog').returns(Promise.resolve());
 			should(netcoreTool.netcoreInstallLocation).equal('test value path'); // the path in settings should be taken
 			should(await netcoreTool.findOrInstallNetCore()).equal(false); // dotnet can not be present at dummy path in settings
 		}
 		finally {
 			// clean again
 			await vscode.workspace.getConfiguration(DBProjectConfigurationKey).update(NetCoreInstallLocationKey, '', true);
-			sinon.restore();
 		}
 	});
 
 	it('Should find right dotnet default paths', async function (): Promise<void> {
 		const netcoreTool = new NetCoreTool();
-		sinon.stub(netcoreTool, 'showInstallDialog').returns(<any>Promise.resolve());
+		sinon.stub(netcoreTool, 'showInstallDialog').returns(Promise.resolve());
 		await netcoreTool.findOrInstallNetCore();
 
 		if (os.platform() === 'win32') {
@@ -48,7 +50,6 @@ describe('NetCoreTool: Net core tests', function (): void {
 			let result = isNullOrUndefined(netcoreTool.netcoreInstallLocation) || netcoreTool.netcoreInstallLocation.toLowerCase().startsWith(NextCoreNonWindowsDefaultPath);
 			should(result).true('dotnet is either not present or in /usr/local/share by default');
 		}
-		sinon.restore();
 	});
 
 	it('should run a command successfully', async function (): Promise<void> {
