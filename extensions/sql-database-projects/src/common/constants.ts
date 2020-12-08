@@ -133,6 +133,10 @@ export const projectLocationLabel = localize('projectLocationLabel', "Location")
 export const projectLocationPlaceholderText = localize('projectLocationPlaceholderText', "Select location to create project");
 export const browseButtonText = localize('browseButtonText', "Browse folder");
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
+export const addProjectToCurrentWorkspace = localize('addProjectToCurrentWorkspace', "This project will be added to the current workspace.");
+export const newWorkspaceWillBeCreated = localize('newWorkspaceWillBeCreated', "A new workspace will be created for this project.");
+export const workspaceLocationTitle = localize('workspaceLocationTitle', "Workspace location");
+export const workspace = localize('workspace', "Workspace");
 
 
 // Error messages
