@@ -272,40 +272,28 @@ export class PostgresParametersPage extends DashboardPage {
 		this.disposables.push(
 			this.connectToServerButton!.onDidClick(async () => {
 				this.connectToServerButton!.enabled = false;
-				try {
-					if (!vscode.extensions.getExtension('microsoft.azuredatastudio-postgresql')) {
-						vscode.window.showErrorMessage(loc.missingExtension('PostgreSQL'));
+				if (!vscode.extensions.getExtension('microsoft.azuredatastudio-postgresql')) {
+					vscode.window.showErrorMessage(loc.missingExtension('PostgreSQL'));
+					this.connectToServerButton!.enabled = true;
+				} else {
+					await this._postgresModel.getEngineSettings().catch(err => {
+						// If an error occurs show a message so the user knows something failed but still
+						// fire the event so callers can know to update (e.g. so dashboards don't show the
+						// loading icon forever)
+						if (err instanceof UserCancelledError) {
+							vscode.window.showWarningMessage(loc.pgConnectionRequired);
+						} else {
+							vscode.window.showErrorMessage(loc.fetchEngineSettingsFailed(this._postgresModel.info.name, err));
+						}
+						this._postgresModel.engineSettingsLastUpdated = new Date();
+						this._postgresModel._onEngineSettingsUpdated.fire(this._postgresModel._engineSettings);
 						this.connectToServerButton!.enabled = true;
-					} else {
-						await this._postgresModel.getEngineSettings().catch(err => {
-							// If an error occurs show a message so the user knows something failed but still
-							// fire the event so callers can know to update (e.g. so dashboards don't show the
-							// loading icon forever)
-							if (err instanceof UserCancelledError) {
-								vscode.window.showWarningMessage(loc.pgConnectionRequired);
-							}
-							this._postgresModel.engineSettingsLastUpdated = new Date();
-							this._postgresModel._onEngineSettingsUpdated.fire(this._postgresModel._engineSettings);
-							this.connectToServerButton!.enabled = true;
-							throw err;
-						});
+						throw err;
+					});
 
-						this.parameterContainer!.clearItems();
-						this.parameterContainer!.addItem(this.parametersTable);
-					}
-
-
-
-
-				} catch (error) {
-					vscode.window.showErrorMessage(loc.fetchEngineSettingsFailed(this._postgresModel.info.name, error));
-				} finally {
-
+					this.parameterContainer!.clearItems();
+					this.parameterContainer!.addItem(this.parametersTable);
 				}
-
-
-
-
 			}));
 	}
 

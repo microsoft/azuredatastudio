@@ -185,7 +185,7 @@ export class PostgresModel extends ResourceModel {
 					}
 				}
 			} catch (err) {
-				console.warn(`Unexpected error fetching password for MIAA instance ${err}`);
+				console.warn(`Unexpected error fetching password for Postgres instance ${err}`);
 				// ignore - something happened fetching the password so just reprompt
 			}
 		}
