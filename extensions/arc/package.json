@@ -189,7 +189,9 @@
                           "editable": false,
                           "options": {
                             "source": {
-                              "providerId": "arc.controller.config.profiles"
+                              "providerId": "arc.controller.config.profiles",
+                              "loadingText": "%arc.data.controller.cluster.config.profile.loading%",
+                              "loadingCompletedText": "%arc.data.controller.cluster.config.profile.loadingcompleted%"
                             },
                             "defaultValue": "azure-arc-aks-default-storage",
                             "optionsType": "radio"
