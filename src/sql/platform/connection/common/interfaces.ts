@@ -38,5 +38,7 @@ export enum ConnectionOptionSpecialType {
 	authType = 'authType',
 	userName = 'userName',
 	password = 'password',
+	host = 'host',
+	port = 'port',
 	appName = 'appName'
 }

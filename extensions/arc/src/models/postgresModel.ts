@@ -130,6 +130,8 @@ export class PostgresModel extends ResourceModel {
 		await this.getConnectionProfile();
 		if (this._connectionProfile) {
 			// TODO
+			// select * from pg_settings;
+
 
 			this.engineSettingsLastUpdated = new Date();
 		}
@@ -154,6 +156,8 @@ export class PostgresModel extends ResourceModel {
 			userName: this._pgInfo.userName || '',
 			password: '',
 			savePassword: true,
+			host: `${ipAndPort.ip}`,
+			port: `${ipAndPort.port}`,
 			groupFullName: undefined,
 			saveProfile: true,
 			id: '',

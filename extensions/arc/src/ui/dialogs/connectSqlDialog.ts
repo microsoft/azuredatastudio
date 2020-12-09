@@ -20,6 +20,8 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 	protected usernameInputBox!: azdata.InputBoxComponent;
 	protected passwordInputBox!: azdata.InputBoxComponent;
 	protected rememberPwCheckBox!: azdata.CheckBoxComponent;
+	private host?: string;
+	private port?: string;
 
 	protected _completionPromise = new Deferred<azdata.IConnectionProfile | undefined>();
 
@@ -84,6 +86,8 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 		dialog.registerCloseValidator(async () => await this.validate());
 		dialog.okButton.label = loc.connect;
 		dialog.cancelButton.label = loc.cancel;
+		this.host = connectionProfile?.host;
+		this.port = connectionProfile?.port;
 		azdata.window.openDialog(dialog);
 		return dialog;
 	}
@@ -101,6 +105,8 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 			userName: this.usernameInputBox.value,
 			password: this.passwordInputBox.value,
 			savePassword: !!this.rememberPwCheckBox.checked,
+			host: this.host,
+			port: this.port,
 			groupFullName: undefined,
 			saveProfile: true,
 			id: '',

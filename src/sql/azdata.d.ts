@@ -100,6 +100,8 @@ declare module 'azdata' {
 			password: string;
 			authenticationType: string;
 			savePassword: boolean;
+			host: string;
+			port: string;
 			groupFullName: string;
 			groupId: string;
 			saveProfile: boolean;
@@ -327,6 +329,8 @@ declare module 'azdata' {
 		password: string;
 		authenticationType: string;
 		savePassword: boolean;
+		host?: string;
+		port?: string;
 		groupFullName?: string;
 		groupId?: string;
 		providerName: string;
@@ -528,6 +532,8 @@ declare module 'azdata' {
 	export enum ConnectionOptionSpecialType {
 		connectionName = 'connectionName',
 		serverName = 'serverName',
+		host = 'host',
+		port = 'port',
 		databaseName = 'databaseName',
 		authType = 'authType',
 		userName = 'userName',

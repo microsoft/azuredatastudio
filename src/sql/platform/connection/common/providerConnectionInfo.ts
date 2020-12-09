@@ -12,7 +12,7 @@ import { ICapabilitiesService, ConnectionProviderProperties } from 'sql/platform
 import { assign } from 'vs/base/common/objects';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 
-type SettableProperty = 'serverName' | 'authenticationType' | 'databaseName' | 'password' | 'connectionName' | 'userName';
+type SettableProperty = 'serverName' | 'authenticationType' | 'databaseName' | 'password' | 'connectionName' | 'userName' | 'host' | 'port';
 
 export class ProviderConnectionInfo extends Disposable implements azdata.ConnectionInfo {
 
@@ -46,6 +46,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 				this.updateSpecialValueType('databaseName', model);
 				this.updateSpecialValueType('password', model);
 				this.updateSpecialValueType('userName', model);
+				this.updateSpecialValueType('host', model);
+				this.updateSpecialValueType('port', model);
 				this.updateSpecialValueType('connectionName', model);
 			}
 		}
