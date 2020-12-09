@@ -6,7 +6,6 @@
 declare module 'azurecore' {
 	import * as azdata from 'azdata';
 	import { azureResource } from 'azureResource';
-	import { BlobContainersListResponse, FileSharesListResponse } from '@azure/arm-storage/esm/models';
 
 	/**
 	 * Covers defining what the azurecore extension exports to other extensions
@@ -93,8 +92,8 @@ declare module 'azurecore' {
 	export type GetSqlServersResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
 	export type GetSqlVMServersResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
 	export type GetStorageAccountResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
-	export type GetBlobContainersResult = {blobContainer: BlobContainersListResponse | undefined, errors: Error[]};
-	export type GetFileSharesResult = {fileShares: FileSharesListResponse | undefined, errors: Error[]};
+	export type GetBlobContainersResult = {blobContainers: azureResource.BlobContainer[] | undefined, errors: Error[]};
+	export type GetFileSharesResult = {fileShares: azureResource.FileShare[] | undefined, errors: Error[]};
 
 	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
 	export type HttpGetRequestResult = { response: any, errors: Error[] };

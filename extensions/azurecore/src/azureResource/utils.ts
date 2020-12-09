@@ -363,7 +363,7 @@ export async function makeHttpGetRequest(account: azdata.Account, subscription: 
 }
 
 export async function getBlobContainers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccounts: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetBlobContainersResult> {
-	let result: GetBlobContainersResult = { blobContainer: undefined, errors: [] };
+	let result: GetBlobContainersResult = { blobContainers: undefined, errors: [] };
 
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
 		const error = new Error(invalidAzureAccount);
@@ -407,7 +407,7 @@ export async function getBlobContainers(account: azdata.Account, subscription: a
 
 	try {
 		const client = new StorageManagementClient(<any>credential, subscription.id);
-		result.blobContainer = await client.blobContainers.list(storageAccounts.resourceGroup, storageAccounts.name);
+		result.blobContainers = await client.blobContainers.list(storageAccounts.resourceGroup, storageAccounts.name);
 	} catch (err) {
 		console.error(err);
 		if (!ignoreErrors) {
