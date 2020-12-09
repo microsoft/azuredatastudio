@@ -35,6 +35,8 @@ export const mockConnectionProfile: azdata.connection.ConnectionProfile = {
 	password: 'My Pwd',
 	authenticationType: 'SqlLogin',
 	savePassword: false,
+	host: 'host',
+	port: 'port',
 	groupFullName: 'My groupName',
 	groupId: 'My GroupId',
 	saveProfile: true,

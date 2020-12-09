@@ -102,7 +102,7 @@ export class ControllerTreeNode extends TreeNode {
 
 				switch (registration.instanceType) {
 					case ResourceType.postgresInstances:
-						const postgresModel = new PostgresModel(this.model, resourceInfo, registration);
+						const postgresModel = new PostgresModel(this.model, resourceInfo, registration, this._treeDataProvider);
 						node = new PostgresTreeNode(postgresModel, this.model, this._context);
 						break;
 					case ResourceType.sqlManagedInstances:

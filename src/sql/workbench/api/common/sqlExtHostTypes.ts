@@ -20,6 +20,8 @@ export enum ServiceOptionType {
 export enum ConnectionOptionSpecialType {
 	connectionName = 'connectionName',
 	serverName = 'serverName',
+	host = 'host',
+	port = 'port',
 	databaseName = 'databaseName',
 	authType = 'authType',
 	userName = 'userName',
@@ -673,6 +675,23 @@ export class ConnectionProfile {
 	set savePassword(value: boolean) {
 		this.options['savePassword'] = value;
 	}
+
+	get host(): string {
+		return this.options['host'];
+	}
+
+	set host(value: string) {
+		this.options['host'] = value;
+	}
+
+	get port(): string {
+		return this.options['port'];
+	}
+
+	set port(value: string) {
+		this.options['port'] = value;
+	}
+
 
 	get groupFullName(): string {
 		return this.options['groupFullName'];

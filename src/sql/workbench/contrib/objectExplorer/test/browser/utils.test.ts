@@ -22,6 +22,8 @@ suite('Connection Utilities tests', () => {
 		password: 'test',
 		userName: 'testUsername',
 		groupId: undefined,
+		host: undefined,
+		port: undefined,
 		providerName: mssqlProviderName,
 		options: {},
 		saveProfile: true,
