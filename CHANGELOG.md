@@ -1,5 +1,14 @@
 # Change Log
 
+## Version 1.25.0
+* Release date: December 8, 2020
+* Release status: General Availability
+* Kusto extension improvements
+* SQL Project extension improvements
+* Notebook improvements
+* Azure Browse Connections Preview performance improvements
+* Bug Fixes
+
 ## Version 1.24.0
 * Release date: November 12, 2020
 * Release status: General Availability
