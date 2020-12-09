@@ -407,7 +407,14 @@ export async function getBlobContainers(account: azdata.Account, subscription: a
 
 	try {
 		const client = new StorageManagementClient(<any>credential, subscription.id);
-		result.blobContainers = await client.blobContainers.list(storageAccounts.resourceGroup, storageAccounts.name);
+		result.blobContainers = (await client.blobContainers.list(storageAccounts.resourceGroup, storageAccounts.name)).map(blobContainer => {
+			return {
+				...blobContainer,
+				id: blobContainer.id ?? '',
+				name: blobContainer.name ?? '',
+				subscription: subscription
+			};
+		});
 	} catch (err) {
 		console.error(err);
 		if (!ignoreErrors) {
@@ -463,7 +470,14 @@ export async function getFileShares(account: azdata.Account, subscription: azure
 
 	try {
 		const client = new StorageManagementClient(<any>credential, subscription.id);
-		result.fileShares = await client.fileShares.list(storageAccounts.resourceGroup, storageAccounts.name);
+		result.fileShares = (await client.fileShares.list(storageAccounts.resourceGroup, storageAccounts.name)).map(fileShare => {
+			return {
+				...fileShare,
+				id: fileShare.id ?? '',
+				name: fileShare.name ?? '',
+				subscription: subscription
+			};
+		});
 	} catch (err) {
 		console.error(err);
 		if (!ignoreErrors) {

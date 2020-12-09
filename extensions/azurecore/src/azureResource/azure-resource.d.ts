@@ -6,7 +6,6 @@
 declare module 'azureResource' {
 	import { TreeDataProvider } from 'vscode';
 	import { DataProvider, Account, TreeItem } from 'azdata';
-	import { FileShareItem, ListContainerItem } from '@azure/arm-storage/esm/models';
 	export namespace azureResource {
 
 		export const enum AzureResourceType {
@@ -77,10 +76,8 @@ declare module 'azureResource' {
 			fullName: string;
 			defaultDatabaseName: string;
 		}
-		export interface BlobContainer extends ListContainerItem {
-		}
+		export interface BlobContainer extends AzureResource { }
 
-		export interface FileShare extends FileShareItem {
-		}
+		export interface FileShare extends AzureResource { }
 	}
 }
