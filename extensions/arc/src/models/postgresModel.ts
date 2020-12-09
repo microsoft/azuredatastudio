@@ -108,15 +108,6 @@ export class PostgresModel extends ResourceModel {
 			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name)).result;
 			this.configLastUpdated = new Date();
 			this._onConfigUpdated.fire(this._config);
-
-			// If we have an external endpoint configured then fetch the engine settings now
-			if (this._config.status.externalEndpoint) {
-
-				//this.getEngineSettings();
-			}
-
-
-
 			this._refreshPromise.resolve();
 		} catch (err) {
 			this._refreshPromise.reject(err);
@@ -131,8 +122,6 @@ export class PostgresModel extends ResourceModel {
 		if (this._connectionProfile) {
 			// TODO
 			// select * from pg_settings;
-
-
 			this.engineSettingsLastUpdated = new Date();
 		}
 	}
