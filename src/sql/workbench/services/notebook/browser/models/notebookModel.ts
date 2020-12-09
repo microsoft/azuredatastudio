@@ -285,8 +285,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public set viewMode(mode: ViewMode) {
-		this._viewMode = mode;
-		this._viewModeChangedEmitter.fire(mode);
+		if (mode !== this._viewMode) {
+			this._viewMode = mode;
+			this._viewModeChangedEmitter.fire(mode);
+		}
 	}
 
 	/**
