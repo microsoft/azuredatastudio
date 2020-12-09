@@ -485,11 +485,6 @@ export class PostgresParametersPage extends DashboardPage {
 
 	private selectComponent() {
 		if (!this._postgresModel.engineSettingsLastUpdated) {
-			/* const connectToServerInfo = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-				value: loc.connectToPostgresDescription,
-				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
-			}).component();
-			this.parameterContainer!.addItem(connectToServerInfo); */
 			this.parameterContainer!.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 				value: loc.connectToPostgresDescription,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
