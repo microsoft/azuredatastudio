@@ -10,7 +10,7 @@ import { append, $, addClass, toggleClass, Dimension, IFocusTracker, getTotalHei
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IThemeService, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
@@ -443,7 +443,7 @@ export const NOTEBOOK_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(View
 	id: VIEWLET_ID,
 	name: localize('notebookExplorer.name', "Notebooks"),
 	ctorDescriptor: new SyncDescriptor(NotebookExplorerViewPaneContainer),
-	icon: 'book',
+	icon: { id: 'book' },
 	order: 6,
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Sidebar);

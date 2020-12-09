@@ -72,7 +72,15 @@ export namespace ThemeIcon {
 			return undefined;
 		}
 		let [, , name, modifier] = match;
-		let className = `codicon codicon-${name}`;
+		// {{SQL CARBON EDIT}} Modifying method to not add 'codicon' in front of sql carbon icons.
+		let className = '';
+		let sqlCarbonIcons = ['book', 'dataExplorer'];
+		if (sqlCarbonIcons.includes(name)) {
+			className = name;
+		} else {
+			className = `codicon codicon-${name}`;
+		}
+		// {{SQL CARBON EDIT}} End of edit
 		if (modifier) {
 			className += ` ${modifier.substr(1)}`;
 		}

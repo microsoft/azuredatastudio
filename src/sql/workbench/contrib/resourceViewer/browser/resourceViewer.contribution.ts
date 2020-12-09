@@ -23,6 +23,7 @@ import { localize } from 'vs/nls';
 import { Extensions as ViewContainerExtensions, IViewsRegistry, IViewContainersRegistry, ViewContainerLocation } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 
 CommandsRegistry.registerCommand({
 	id: 'resourceViewer.openResourceViewer',
@@ -68,10 +69,10 @@ function registerResourceViewerContainer() {
 		id: RESOURCE_VIEWER_VIEW_CONTAINER_ID,
 		name: localize('resourceViewer', "Resource Viewer"),
 		ctorDescriptor: new SyncDescriptor(ResourceViewerViewlet),
-		icon: Codicon.database.classNames,
+		icon: ThemeIcon.fromCodicon(Codicon.database),
 		alwaysUseContainerInfo: true
 	}, ViewContainerLocation.Sidebar);
 
 	const viewsRegistry = Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry);
-	viewsRegistry.registerViews([{ id: RESOURCE_VIEWER_VIEW_ID, name: localize('resourceViewer', "Resource Viewer"), containerIcon: Codicon.database.classNames, ctorDescriptor: new SyncDescriptor(ResourceViewerView), canToggleVisibility: false, canMoveView: false }], viewContainer);
+	viewsRegistry.registerViews([{ id: RESOURCE_VIEWER_VIEW_ID, name: localize('resourceViewer', "Resource Viewer"), containerIcon: ThemeIcon.fromCodicon(Codicon.database), ctorDescriptor: new SyncDescriptor(ResourceViewerView), canToggleVisibility: false, canMoveView: false }], viewContainer);
 }
