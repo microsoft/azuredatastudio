@@ -238,9 +238,7 @@ export class PerFolderServerInstance implements IServerInstance {
 			this.childProcess.on('exit', onExitBeforeStart);
 
 			// Add listener for the process to emit its web address
-			let handleStdout = (data: string | Buffer) => {
-				install.outputChannel.appendLine(data.toString());
-			};
+			let handleStdout = (data: string | Buffer) => { install.outputChannel.appendLine(data.toString()); };
 			let handleStdErr = (data: string | Buffer) => {
 				// For some reason, URL info is sent on StdErr
 				let port: string = this.getPort(data);
@@ -298,7 +296,7 @@ export class PerFolderServerInstance implements IServerInstance {
 		return path.dirname(this.options.documentPath);
 	}
 
-	private getPort(data: string | Buffer): string {
+	private getPort(data: string | Buffer): string | undefined {
 		// regex: Looks for the successful startup log message like:
 		//        [C 12:08:51.947 NotebookApp]
 		//
