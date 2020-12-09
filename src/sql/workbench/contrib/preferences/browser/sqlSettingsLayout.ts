@@ -7,8 +7,8 @@ import { localize } from 'vs/nls';
 import { tocData as vstocData, ITOCEntry } from 'vs/workbench/contrib/preferences/browser/settingsLayout';
 
 // Copy existing table of contents and append
-export const tocData: ITOCEntry = Object.assign({}, vstocData);
-let sqlTocItems: ITOCEntry[] = [{
+export const tocData: ITOCEntry<string> = Object.assign({}, vstocData);
+let sqlTocItems: ITOCEntry<string>[] = [{
 	id: 'data',
 	label: localize('data', "Data"),
 	children: [
