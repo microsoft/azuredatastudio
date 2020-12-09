@@ -332,7 +332,7 @@ export class Code {
 	// {{SQL CARBON EDIT}}
 	async isActiveElement(selector: string): Promise<boolean> {
 		const windowId = await this.getActiveWindowId();
-		return this.driver.isActiveElement(windowId, selector);
+		return await this.driver.isActiveElement(windowId, selector);
 	}
 
 	async waitForTitle(fn: (title: string) => boolean): Promise<void> {

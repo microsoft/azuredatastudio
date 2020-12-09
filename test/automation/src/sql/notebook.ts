@@ -22,9 +22,7 @@ export class Notebook {
 	async openFile(fileName: string): Promise<void> {
 		await this.quickAccess.openQuickAccess(fileName);
 		await this.quickInput.waitForQuickInputElements(names => names[0] === fileName);
-		this.code.isActiveElement('.quick-input-widget .quick-input-box input').catch(e => {
-			this.code.logger.log(e);
-		});
+		await this.code.isActiveElement('.quick-input-widget .quick-input-box input');
 		await this.code.dispatchKeybinding('enter');
 		await this.editors.waitForActiveTab(fileName);
 		await this.code.waitForElement('.notebookEditor');
