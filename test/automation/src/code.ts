@@ -329,12 +329,6 @@ export class Code {
 		await poll(() => this.driver.isActiveElement(windowId, selector), r => r, `is active element '${selector}'`, retryCount);
 	}
 
-	// {{SQL CARBON EDIT}}
-	async isActiveElement(selector: string): Promise<boolean> {
-		const windowId = await this.getActiveWindowId();
-		return await this.driver.isActiveElement(windowId, selector);
-	}
-
 	async waitForTitle(fn: (title: string) => boolean): Promise<void> {
 		const windowId = await this.getActiveWindowId();
 		await poll(() => this.driver.getTitle(windowId), fn, `get title`);
