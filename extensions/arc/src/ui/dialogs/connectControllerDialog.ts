@@ -36,6 +36,7 @@ abstract class ControllerDialogBase extends InitializingComponent {
 
 	protected dispose(): void {
 		this._toDispose.forEach(disposable => disposable.dispose());
+		this._toDispose.length = 0; // clear the _toDispose array
 	}
 
 	protected getComponents(): (azdata.FormComponent<azdata.Component> & { layout?: azdata.FormItemLayout | undefined; })[] {
@@ -114,7 +115,7 @@ abstract class ControllerDialogBase extends InitializingComponent {
 		this.dialog = azdata.window.createModelViewDialog(title);
 	}
 
-	private loadRadioGroup(previousClusterContext?: string) {
+	private loadRadioGroup(previousClusterContext?: string): void {
 		this.clusterContextRadioGroup.load(async () => {
 			const clusters = await getKubeConfigClusterContexts(this.kubeConfigInputBox.value!);
 			return {
@@ -180,7 +181,6 @@ abstract class ControllerDialogBase extends InitializingComponent {
 	}
 }
 
-//const currentClusterContext = (await getKubeConfigClusterContexts(getDefaultKubeConfigPath())).filter(c => c.isCurrentContext).pop()!.name;
 export class ConnectToControllerDialog extends ControllerDialogBase {
 	protected rememberPwCheckBox!: azdata.CheckBoxComponent;
 
@@ -299,5 +299,3 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 		return dialog;
 	}
 }
-
-
