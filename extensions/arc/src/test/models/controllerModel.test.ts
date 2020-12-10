@@ -34,6 +34,7 @@ describe('ControllerModel', function (): void {
 
 		beforeEach(function (): void {
 			sinon.stub(ConnectToControllerDialog.prototype, 'showDialog');
+			sinon.stub(vscode.window, 'showErrorMessage').resolves(<any>loc.yes);
 		});
 
 		it('Rejected with expected error when user cancels', async function (): Promise<void> {

@@ -7,6 +7,7 @@ import { ControllerInfo, ResourceType } from 'arc';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { UserCancelledError } from '../common/api';
+import { getCurrentClusterContext, getKubeConfigClusterContexts } from '../common/kubeUtils';
 import * as loc from '../localizedConstants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
@@ -50,7 +51,7 @@ export class ControllerModel {
 		this._onInfoUpdated.fire(this._info);
 	}
 
-	public get azdataAdditionalEnvVars() {
+	public get azdataAdditionalEnvVars(): { [key: string]: string } {
 		return {
 			'KUBECONFIG': this.info.kubeConfigFilePath,
 			'KUBECTL_CONTEXT': this.info.kubeClusterContext
@@ -62,14 +63,26 @@ export class ControllerModel {
 	 * @param promptReconnect
 	 */
 	public async azdataLogin(promptReconnect: boolean = false): Promise<void> {
-		// We haven't gotten our password yet or we want to prompt for a reconnect
-		if (!this._password || promptReconnect) {
+		let promptForValidClusterContext: boolean = false;
+		try {
+			const contexts = await getKubeConfigClusterContexts(this.info.kubeConfigFilePath);
+			promptForValidClusterContext = getCurrentClusterContext(contexts, this.info.kubeClusterContext, true) === this.info.kubeClusterContext;
+		} catch (error) {
+			const response = await vscode.window.showErrorMessage(loc.clusterContextConfigNoLongerValid(this.info.kubeConfigFilePath, this.info.kubeClusterContext, error), ...[loc.yes, loc.no]);
+			if (response === loc.yes) {
+				promptForValidClusterContext = true;
+			} else {
+				throw error;
+			}
+		}
+		// If we don't have password or valid cluster context information then prompt for a reconnect
+		if (!this._password || promptReconnect || promptForValidClusterContext) {
 			this._password = '';
 			if (this.info.rememberPassword) {
 				// It should be in the credentials store, get it from there
 				this._password = await this.treeDataProvider.getPassword(this.info);
 			}
-			if (promptReconnect || !this._password) {
+			if (promptReconnect || !this._password || promptForValidClusterContext) {
 				// No password yet or we want to re-prompt for credentials so prompt for it from the user
 				const dialog = new ConnectToControllerDialog(this.treeDataProvider);
 				dialog.showDialog(this.info, this._password);
@@ -77,6 +90,7 @@ export class ControllerModel {
 				if (model) {
 					await this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
 					this._password = model.password;
+					this._info = model.controllerModel.info;
 				} else {
 					throw new UserCancelledError(loc.userCancelledError);
 				}
@@ -101,7 +115,7 @@ export class ControllerModel {
 		await this.azdataLogin(promptReconnect);
 		const newRegistrations: Registration[] = [];
 		await Promise.all([
-			this._azdataApi.azdata.arc.dc.config.show(this.azdataAdditionalEnvVars).then(result => {
+			this._azdataApi.azdata.arc.dc.config.show().then(result => {
 				this._controllerConfig = result.result;
 				this.configLastUpdated = new Date();
 				this._onConfigUpdated.fire(this._controllerConfig);

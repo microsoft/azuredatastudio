@@ -5,14 +5,18 @@
 
 import { ResourceInfo } from 'arc';
 import * as vscode from 'vscode';
-import { Registration } from './controllerModel';
+import { ControllerModel, Registration } from './controllerModel';
 
 export abstract class ResourceModel {
 
 	private readonly _onRegistrationUpdated = new vscode.EventEmitter<Registration>();
 	public onRegistrationUpdated = this._onRegistrationUpdated.event;
 
-	constructor(public info: ResourceInfo, private _registration: Registration) { }
+	constructor(private _controllerModel: ControllerModel, public info: ResourceInfo, private _registration: Registration) { }
+
+	public get controllerModel(): ControllerModel {
+		return this._controllerModel;
+	}
 
 	public get registration(): Registration {
 		return this._registration;

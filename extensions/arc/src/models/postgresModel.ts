@@ -22,14 +22,11 @@ export class PostgresModel extends ResourceModel {
 
 	private _refreshPromise?: Deferred<void>;
 
-	constructor(private _controllerModel: ControllerModel, info: ResourceInfo, registration: Registration) {
-		super(info, registration);
+	constructor(controllerModel: ControllerModel, info: ResourceInfo, registration: Registration) {
+		super(controllerModel, info, registration);
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
 
-	public get azdataAdditionalEnvVars() {
-		return this._controllerModel.azdataAdditionalEnvVars;
-	}
 
 	/** Returns the configuration of Postgres */
 	public get config(): azdataExt.PostgresServerShowResult | undefined {
@@ -95,8 +92,8 @@ export class PostgresModel extends ResourceModel {
 		this._refreshPromise = new Deferred();
 
 		try {
-			await this._controllerModel.azdataLogin();
-			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name, this.azdataAdditionalEnvVars)).result;
+			await this.controllerModel.azdataLogin();
+			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name)).result;
 			this.configLastUpdated = new Date();
 			this._onConfigUpdated.fire(this._config);
 			this._refreshPromise.resolve();
