@@ -7,7 +7,19 @@ import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
 
-export function createModelViewMock(buttonClickEmitter?: vscode.EventEmitter<any>) {
+interface ModelViewMocks {
+	mockModelView: TypeMoq.IMock<azdata.ModelView>,
+	mockModelBuilder: TypeMoq.IMock<azdata.ModelBuilder>,
+	mockTextBuilder: TypeMoq.IMock<azdata.ComponentBuilder<azdata.TextComponent, azdata.TextComponentProperties>>,
+	mockInputBoxBuilder: TypeMoq.IMock<azdata.ComponentBuilder<azdata.InputBoxComponent, azdata.InputBoxProperties>>,
+	mockButtonBuilder: TypeMoq.IMock<azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties>>,
+	mockRadioButtonBuilder: TypeMoq.IMock<azdata.ComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties>>,
+	mockDivBuilder: TypeMoq.IMock<azdata.DivBuilder>,
+	mockFlexBuilder: TypeMoq.IMock<azdata.FlexBuilder>,
+	mockLoadingBuilder: TypeMoq.IMock<azdata.LoadingComponentBuilder>
+}
+
+export function createModelViewMock(buttonClickEmitter?: vscode.EventEmitter<any>): ModelViewMocks {
 	const mockModelBuilder = TypeMoq.Mock.ofType<azdata.ModelBuilder>();
 	const mockTextBuilder = setupMockComponentBuilder<azdata.TextComponent, azdata.TextComponentProperties>();
 	const mockInputBoxBuilder = setupMockComponentBuilder<azdata.InputBoxComponent, azdata.InputBoxProperties>();
@@ -29,10 +41,9 @@ export function createModelViewMock(buttonClickEmitter?: vscode.EventEmitter<any
 	return { mockModelView, mockModelBuilder, mockTextBuilder, mockInputBoxBuilder, mockButtonBuilder, mockRadioButtonBuilder, mockDivBuilder, mockFlexBuilder, mockLoadingBuilder };
 }
 
-function setupMockButtonBuilderWithClickEmitter(buttonClickEmitter: vscode.EventEmitter<any>) {
-	const { mockComponentBuilder, mockComponent } = setupMockComponentBuilderAndComponent<azdata.ButtonComponent, azdata.ButtonProperties>();
-	mockComponent.setup(b => b.onDidClick(TypeMoq.It.isAny())).returns(buttonClickEmitter.event);
-	const mockButtonBuilder = mockComponentBuilder;
+function setupMockButtonBuilderWithClickEmitter(buttonClickEmitter: vscode.EventEmitter<any>): TypeMoq.IMock<azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties>> {
+	const { mockComponentBuilder: mockButtonBuilder, mockComponent: mockButtonComponent } = setupMockComponentBuilderAndComponent<azdata.ButtonComponent, azdata.ButtonProperties>();
+	mockButtonComponent.setup(b => b.onDidClick(TypeMoq.It.isAny())).returns(buttonClickEmitter.event);
 	return mockButtonBuilder;
 }
 
@@ -58,7 +69,7 @@ export function setupMockComponentBuilder<T extends azdata.Component, P extends 
 function setupMockComponentBuilderAndComponent<T extends azdata.Component, P extends azdata.ComponentProperties, B extends azdata.ComponentBuilder<T, P> = azdata.ComponentBuilder<T, P>>(
 	mockComponentBuilder?: TypeMoq.IMock<B>,
 	componentGetter?: ((props: P) => T)
-) {
+): { mockComponentBuilder: TypeMoq.IMock<B>, mockComponent: TypeMoq.IMock<T> } {
 	mockComponentBuilder = mockComponentBuilder ?? TypeMoq.Mock.ofType<B>();
 	const mockComponent = createComponentMock<T>();
 	let compProps: P;
@@ -72,7 +83,7 @@ function setupMockComponentBuilderAndComponent<T extends azdata.Component, P ext
 	return { mockComponentBuilder, mockComponent };
 }
 
-function createComponentMock<T extends azdata.Component>() {
+function createComponentMock<T extends azdata.Component>(): TypeMoq.IMock<T> {
 	const mockComponent = TypeMoq.Mock.ofType<T>();
 	// Need to setup 'then' for when a mocked object is resolved otherwise the test will hang : https://github.com/florinn/typemoq/issues/66
 	mockComponent.setup((x: any) => x.then).returns(() => { });
@@ -86,7 +97,6 @@ export function setupMockContainerBuilder<T extends azdata.Container<any, any>, 
 	const mockContainer = createComponentMock<T>(); // T is azdata.Container type so this creates a azdata.Container mock
 	mockContainer.setup(c => c.items).returns(() => items);
 	mockContainerBuilder = mockContainerBuilder ?? setupMockComponentBuilder<T, P, B>((_props) => mockContainer.object);
-
 	mockContainerBuilder.setup(b => b.withItems(TypeMoq.It.isAny(), TypeMoq.It.isAny())).callback((_items, _itemsStyle) => items.push(..._items)).returns(() => mockContainerBuilder!.object);
 	// For now just have these be passthrough - can hook up additional functionality later if needed
 	mockContainerBuilder.setup(b => b.withLayout(TypeMoq.It.isAny())).returns(() => mockContainerBuilder!.object);

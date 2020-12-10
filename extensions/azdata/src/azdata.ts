@@ -118,8 +118,8 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 						replaceEngineSettings?: boolean,
 						workers?: number
 					},
-					additionalEnvVars?: { [key: string]: string }
-				): Promise<azdataExt.AzdataOutput<void>> => {
+					engineVersion?: string,
+					additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<void>> => {
 					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', name];
 					if (args.adminPassword) { argsArray.push('--admin-password'); }
 					if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
@@ -132,6 +132,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 					if (args.port) { argsArray.push('--port', args.port.toString()); }
 					if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
 					if (args.workers) { argsArray.push('--workers', args.workers.toString()); }
+					if (engineVersion) { argsArray.push('--engine-version', engineVersion); }
 					return this.executeCommand<void>(argsArray, additionalEnvVars);
 				}
 			}

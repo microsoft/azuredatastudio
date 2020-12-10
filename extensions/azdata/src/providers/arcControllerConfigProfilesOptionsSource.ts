@@ -10,7 +10,7 @@ import * as azdataExt from 'azdata-ext';
  * Class that provides options sources for an Arc Data Controller
  */
 export class ArcControllerConfigProfilesOptionsSource implements rd.IOptionsSourceProvider {
-	readonly optionsSourceId = 'arc.controller.config.profiles';
+	readonly id = 'arc.controller.config.profiles';
 	constructor(private _azdataExtApi: azdataExt.IExtension) { }
 	async getOptions(): Promise<string[]> {
 		const isEulaAccepted = await this._azdataExtApi.isEulaAccepted();

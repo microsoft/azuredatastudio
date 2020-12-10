@@ -52,7 +52,7 @@ export function getKubeConfigClusterContexts(configFile: string): Promise<KubeCl
  */
 export function getCurrentClusterContext(clusterContexts: KubeClusterContext[], previousClusterContext?: string, throwIfNotFound: boolean = false): string {
 	if (previousClusterContext) {
-		if (clusterContexts.filter(c => c.name === previousClusterContext).length > 0) { // if previous cluster context value is found in clusters then return that value
+		if (clusterContexts.find(c => c.name === previousClusterContext)) { // if previous cluster context value is found in clusters then return that value
 			return previousClusterContext;
 		} else {
 			if (throwIfNotFound) {
@@ -62,7 +62,7 @@ export function getCurrentClusterContext(clusterContexts: KubeClusterContext[], 
 	}
 
 	// if not previousClusterContext or throwIfNotFound was false when previousCLusterContext was not found in the clusterContexts
-	const currentClusterContext = clusterContexts.filter(c => c.isCurrentContext).pop()?.name;
+	const currentClusterContext = clusterContexts.find(c => c.isCurrentContext)?.name;
 	throwUnless(currentClusterContext !== undefined, loc.noCurrentClusterContext);
 	return currentClusterContext;
 }

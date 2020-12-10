@@ -67,7 +67,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 
 	// register option sources
 	const rdApi = <rd.IExtension>vscode.extensions.getExtension(rd.extension.name)?.exports;
-	rdApi.registerOptionsSourceProvider(new ArcControllersOptionsSourceProvider(treeDataProvider));
+	context.subscriptions.push(rdApi.registerOptionsSourceProvider(new ArcControllersOptionsSourceProvider(treeDataProvider)));
 
 	return arcApi(treeDataProvider);
 }

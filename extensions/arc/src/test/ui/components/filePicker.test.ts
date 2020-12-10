@@ -36,14 +36,10 @@ describe('filePicker', function (): void {
 		filePicker.value!.should.equal(initialPath);
 		flexContainer.items.should.deepEqual([filePathInputBox, browseButton]);
 		const deferred = new Deferred();
-		sinon.stub(vscode.window, 'showOpenDialog').callsFake((_options) =>
-			Promise.resolve([<vscode.Uri>{ fsPath: newFilePath }])
-				.then((_value => {
-					deferred.resolve();
-					return _value;
-				})
-				)
-		);
+		sinon.stub(vscode.window, 'showOpenDialog').callsFake(async (_options) => {
+			deferred.resolve();
+			return [vscode.Uri.file(newFilePath)];
+		});
 		browseButtonEmitter.fire(undefined); //simulate the click of the browseButton
 		await deferred;
 		filePicker.value!.should.equal(newFilePath);

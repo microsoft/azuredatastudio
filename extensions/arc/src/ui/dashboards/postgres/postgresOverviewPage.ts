@@ -157,6 +157,7 @@ export class PostgresOverviewPage extends DashboardPage {
 								adminPassword: true,
 								noWait: true
 							},
+							this._postgresModel.engineVersion,
 							Object.assign(this._postgresModel.azdataAdditionalEnvVars, { 'AZDATA_PASSWORD': password })
 						);
 						vscode.window.showInformationMessage(loc.passwordReset);

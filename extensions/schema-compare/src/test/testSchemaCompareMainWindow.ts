@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import * as should from 'should';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
-import { ApiWrapper } from '../common/apiWrapper';
 
 export interface ButtonState {
 	compareButtonState: boolean;
@@ -24,10 +23,9 @@ export interface ButtonState {
 export class SchemaCompareMainWindowTest extends SchemaCompareMainWindow {
 
 	constructor(
-		apiWrapper: ApiWrapper,
 		schemaCompareService: mssql.ISchemaCompareService,
 		extensionContext: vscode.ExtensionContext) {
-		super(apiWrapper, schemaCompareService, extensionContext);
+		super(schemaCompareService, extensionContext);
 	}
 
 	// only for test

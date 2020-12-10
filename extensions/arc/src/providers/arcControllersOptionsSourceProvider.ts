@@ -17,7 +17,7 @@ import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
  */
 export class ArcControllersOptionsSourceProvider implements rd.IOptionsSourceProvider {
 	private _cacheManager = new CacheManager<string, string>();
-	readonly optionsSourceId = 'arc.controllers';
+	readonly id = 'arc.controllers';
 	constructor(private _treeProvider: AzureArcTreeDataProvider) { }
 
 	async getOptions(): Promise<string[] | azdata.CategoryValue[]> {
