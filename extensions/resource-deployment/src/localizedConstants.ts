@@ -7,7 +7,7 @@ import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { getErrorMessage } from './common/utils';
 import { ResourceTypeCategories } from './constants';
-import { FieldType, OptionsType } from './interfaces';
+import { FieldType, ITool, OptionsType } from './interfaces';
 const localize = nls.loadMessageBundle();
 
 export const account = localize('azure.account', "Azure Account");
@@ -81,3 +81,7 @@ export const discoverPathOrAdditionalInformationText = localize('resourceDeploym
 export const requiredToolsText = localize('resourceDeployment.requiredTools', "Required tools");
 export const installToolsText = localize('resourceDeployment.InstallTools', "Install tools");
 export const optionsText = localize('resourceDeployment.Options', "Options");
+
+export function getToolInstallingMessage(tool: ITool): string {
+	return localize('deploymentDialog.InstallingTool', "Required tool '{0}' [ {1} ] is being installed now.", tool.displayName, tool.homePage);
+}
