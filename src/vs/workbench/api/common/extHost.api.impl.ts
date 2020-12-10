@@ -81,6 +81,7 @@ import { ExtHostCustomEditors } from 'vs/workbench/api/common/extHostCustomEdito
 import { ExtHostWebviewPanels } from 'vs/workbench/api/common/extHostWebviewPanels';
 import { ExtHostBulkEdits } from 'vs/workbench/api/common/extHostBulkEdits';
 import { IExtHostFileSystemInfo } from 'vs/workbench/api/common/extHostFileSystemInfo';
+import { ExtHostTesting } from 'vs/workbench/api/common/extHostTesting';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -152,6 +153,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostWebviewPanels = rpcProtocol.set(ExtHostContext.ExtHostWebviewPanels, new ExtHostWebviewPanels(rpcProtocol, extHostWebviews, extHostWorkspace));
 	const extHostCustomEditors = rpcProtocol.set(ExtHostContext.ExtHostCustomEditors, new ExtHostCustomEditors(rpcProtocol, extHostDocuments, extensionStoragePaths, extHostWebviews, extHostWebviewPanels));
 	const extHostWebviewViews = rpcProtocol.set(ExtHostContext.ExtHostWebviewViews, new ExtHostWebviewViews(rpcProtocol, extHostWebviews));
+	const extHostTesting = rpcProtocol.set(ExtHostContext.ExtHostTesting, new ExtHostTesting(rpcProtocol, extHostDocumentsAndEditors, extHostWorkspace));
 
 	// Check that no named customers are missing
 	// {{SQL CARBON EDIT}} filter out the services we don't expose
@@ -335,6 +337,25 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 		const extensionKind = initData.remote.isRemote
 			? extHostTypes.ExtensionKind.Workspace
 			: extHostTypes.ExtensionKind.UI;
+
+		const test: typeof vscode.test = {
+			registerTestProvider(provider) {
+				checkProposedApiEnabled(extension);
+				return extHostTesting.registerTestProvider(provider);
+			},
+			createDocumentTestObserver(document) {
+				checkProposedApiEnabled(extension);
+				return extHostTesting.createTextDocumentTestObserver(document);
+			},
+			createWorkspaceTestObserver(workspaceFolder) {
+				checkProposedApiEnabled(extension);
+				return extHostTesting.createWorkspaceTestObserver(workspaceFolder);
+			},
+			runTests(provider) {
+				checkProposedApiEnabled(extension);
+				return extHostTesting.runTests(provider);
+			},
+		};
 
 		// namespace: extensions
 		const extensions: typeof vscode.extensions = {
@@ -1090,6 +1111,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			extensions,
 			languages,
 			scm,
+			test,
 			comment,
 			comments,
 			tasks,
@@ -1215,7 +1237,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			NotebookEditorRevealType: extHostTypes.NotebookEditorRevealType,
 			NotebookCellOutput: extHostTypes.NotebookCellOutput,
 			NotebookCellOutputItem: extHostTypes.NotebookCellOutputItem,
-			OnTypeRenameRanges: extHostTypes.OnTypeRenameRanges
+			OnTypeRenameRanges: extHostTypes.OnTypeRenameRanges,
+			TestRunState: extHostTypes.TestRunState,
+			TestMessageSeverity: extHostTypes.TestMessageSeverity,
+			TestState: extHostTypes.TestState,
 		};
 	};
 }
