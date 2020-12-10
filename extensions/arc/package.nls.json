@@ -21,7 +21,7 @@
 	"arc.data.controller.cluster.config.profile.title": "Choose the config profile",
 	"arc.data.controller.cluster.config.profile": "Config profile",
 	"arc.data.controller.cluster.config.profile.loading": "Loading config profiles",
-	"arc.data.controller.cluster.config.profile.loadingcompleted": "Done loading config profiles",
+	"arc.data.controller.cluster.config.profile.loadingcompleted": "Loading config profiles complete",
 	"arc.data.controller.create.azureconfig.title": "Azure and Connectivity Configuration",
 	"arc.data.controller.connectivitymode.description": "Select the connectivity mode for the controller.",
 	"arc.data.controller.create.controllerconfig.title": "Controller Configuration",
