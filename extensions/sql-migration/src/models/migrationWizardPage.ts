@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { MigrationStateModel, StateChangeEvent } from './stateMachine';
 export abstract class MigrationWizardPage {
 	constructor(
-		protected readonly wizard: azdata.window.Wizard,
+		private readonly wizard: azdata.window.Wizard,
 		protected readonly wizardPage: azdata.window.WizardPage,
 		protected readonly migrationStateModel: MigrationStateModel
 	) { }
