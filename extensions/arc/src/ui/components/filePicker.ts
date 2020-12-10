@@ -44,7 +44,7 @@ export class FilePicker implements IReadOnly {
 			});
 
 			if (!fileUris || fileUris.length === 0) {
-				return; // TODO: Should we throw here. It is unclear whey showOpenDialog above will return undefined or an empty array
+				return; // This can happen when a user cancels out.  we don't throw and the user just won't be able to move on until they select something.
 			}
 			const fileUri = fileUris[0]; //we allow the user to select only one file in the dialog
 			this._filePathInputBox.value = fileUri.fsPath;
@@ -86,15 +86,6 @@ function createFlexContainer(modelBuilder: azdata.ModelBuilder, items: azdata.Co
 	const flexFlow = rowLayout ? 'row' : 'column';
 	alignItems = alignItems || (rowLayout ? 'center' : undefined);
 	const itemsStyle = rowLayout ? { CSSStyles: { 'margin-right': '5px', } } : {};
-	const flexLayout: azdata.FlexLayout = { flexFlow: flexFlow };
-	if (height) {
-		flexLayout.height = height;
-	}
-	if (width) {
-		flexLayout.width = width;
-	}
-	if (alignItems) {
-		flexLayout.alignItems = alignItems;
-	}
+	const flexLayout: azdata.FlexLayout = { flexFlow: flexFlow, height: height, width: width, alignItems: alignItems };
 	return modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout(flexLayout).withProperties<azdata.ComponentProperties>({ CSSStyles: cssStyles || {} }).component();
 }
