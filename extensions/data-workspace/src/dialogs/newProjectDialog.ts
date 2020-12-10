@@ -89,8 +89,8 @@ export class NewProjectDialog extends DialogBase {
 					]
 				};
 			}),
-			iconHeight: '50px',
-			iconWidth: '50px',
+			iconHeight: '75px',
+			iconWidth: '75px',
 			cardWidth: '170px',
 			cardHeight: '170px',
 			ariaLabel: constants.TypeTitle,

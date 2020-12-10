@@ -527,6 +527,10 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this._dataToSaveMap.set(key, data);
 			this._rowsMap.set(key, []);
 			this.sendIOPubMessage(data, set);
+			// If rows are returned in the initial result set, make sure to convert and send to notebook
+			if (set.rowCount > 0) {
+				this.handleResultSetUpdate(set);
+			}
 		}
 	}
 
@@ -593,13 +597,14 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			},
 			content: <nb.IExecuteResult>{
 				output_type: 'execute_result',
-				metadata: {
-					resultSet: resultSet
-				},
+				metadata: undefined,
 				execution_count: this._executionCount,
 				data: data
 			},
-			metadata: undefined,
+			metadata: {
+				batchId: resultSet.batchId,
+				id: resultSet.id
+			},
 			parent_header: undefined
 		};
 		this.ioHandler.handle(msg);

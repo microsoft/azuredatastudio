@@ -22,16 +22,10 @@ export class OpenExistingDialog extends DialogBase {
 	private _targetTypes = [
 		{
 			name: constants.Project,
-			icon: {
-				dark: this.extensionContext.asAbsolutePath('images/file_inverse.svg'),
-				light: this.extensionContext.asAbsolutePath('images/file.svg')
-			}
+			icon: this.extensionContext.asAbsolutePath('images/Open_existing_Project.svg')
 		}, {
 			name: constants.Workspace,
-			icon: {
-				dark: this.extensionContext.asAbsolutePath('images/file_inverse.svg'), // temporary - still waiting for real icon from UX
-				light: this.extensionContext.asAbsolutePath('images/file.svg')
-			}
+			icon: this.extensionContext.asAbsolutePath('images/Open_existing_Workspace.svg')
 		}
 	];
 
@@ -101,8 +95,8 @@ export class OpenExistingDialog extends DialogBase {
 					]
 				};
 			}),
-			iconHeight: '50px',
-			iconWidth: '50px',
+			iconHeight: '100px',
+			iconWidth: '100px',
 			cardWidth: '170px',
 			cardHeight: '170px',
 			ariaLabel: constants.TypeTitle,

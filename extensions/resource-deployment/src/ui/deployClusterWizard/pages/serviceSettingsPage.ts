@@ -6,7 +6,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { FieldType, SectionInfo } from '../../../interfaces';
-import { createFlexContainer, createGroupContainer, createLabel, createNumberInput, createSection, createInputBox, getCheckboxComponent, getDropdownComponent, getInputBoxComponent, InputComponentInfo, InputComponents, setModelValues, Validator, InputComponent } from '../../modelViewUtils';
+import { createFlexContainer, createGroupContainer, createLabel, createNumberInputBoxInputInfo, createSection, createInputBoxInputInfo, getCheckboxComponent, getDropdownComponent, getInputBoxComponent, InputComponentInfo, InputComponents, setModelValues, Validator, InputComponent } from '../../modelViewUtils';
 import { ResourceTypePage } from '../../resourceTypePage';
 import * as VariableNames from '../constants';
 import { AuthenticationMode, DeployClusterWizardModel } from '../deployClusterWizardModel';
@@ -175,54 +175,54 @@ export class ServiceSettingsPage extends ResourceTypePage {
 		this.endpointHeaderRow = createFlexContainer(view, [this.endpointNameColumnHeader, this.dnsColumnHeader, this.portColumnHeader]);
 
 		this.controllerNameLabel = createLabel(view, { text: localize('deployCluster.ControllerText', "Controller"), width: labelWidth, required: true });
-		const controllerDNSInput = createInputBox(view, { ariaLabel: localize('deployCluster.ControllerDNSName', "Controller DNS name"), required: false, width: inputWidth });
+		const controllerDNSInput = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.ControllerDNSName', "Controller DNS name"), required: false, width: inputWidth });
 		this.controllerDNSInput = controllerDNSInput.component;
-		const controllerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ControllerPortName', "Controller port"), required: true, width: NumberInputWidth, min: 1 });
+		const controllerPortInput = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.ControllerPortName', "Controller port"), required: true, width: NumberInputWidth, min: 1 });
 		this.controllerPortInput = controllerPortInput.component;
 		this.controllerEndpointRow = createFlexContainer(view, [this.controllerNameLabel, this.controllerDNSInput, this.controllerPortInput]);
 		this.onNewInputComponentCreated(VariableNames.ControllerDNSName_VariableName, controllerDNSInput);
 		this.onNewInputComponentCreated(VariableNames.ControllerPort_VariableName, controllerPortInput);
 
 		this.SqlServerNameLabel = createLabel(view, { text: localize('deployCluster.MasterSqlText', "SQL Server Master"), width: labelWidth, required: true });
-		const sqlServerDNSInput = createInputBox(view, { ariaLabel: localize('deployCluster.MasterSQLServerDNSName', "SQL Server Master DNS name"), required: false, width: inputWidth });
+		const sqlServerDNSInput = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.MasterSQLServerDNSName', "SQL Server Master DNS name"), required: false, width: inputWidth });
 		this.sqlServerDNSInput = sqlServerDNSInput.component;
-		const sqlServerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerPortName', "SQL Server Master port"), required: true, width: NumberInputWidth, min: 1 });
+		const sqlServerPortInput = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.MasterSQLServerPortName', "SQL Server Master port"), required: true, width: NumberInputWidth, min: 1 });
 		this.sqlServerPortInput = sqlServerPortInput.component;
 		this.sqlServerEndpointRow = createFlexContainer(view, [this.SqlServerNameLabel, this.sqlServerDNSInput, this.sqlServerPortInput]);
 		this.onNewInputComponentCreated(VariableNames.SQLServerDNSName_VariableName, sqlServerDNSInput);
 		this.onNewInputComponentCreated(VariableNames.SQLServerPort_VariableName, sqlServerPortInput);
 
 		this.gatewayNameLabel = createLabel(view, { text: localize('deployCluster.GatewayText', "Gateway"), width: labelWidth, required: true });
-		const gatewayDNSInput = createInputBox(view, { ariaLabel: localize('deployCluster.GatewayDNSName', "Gateway DNS name"), required: false, width: inputWidth });
+		const gatewayDNSInput = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.GatewayDNSName', "Gateway DNS name"), required: false, width: inputWidth });
 		this.gatewayDNSInput = gatewayDNSInput.component;
-		const gatewayPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.GatewayPortName', "Gateway port"), required: true, width: NumberInputWidth, min: 1 });
+		const gatewayPortInput = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.GatewayPortName', "Gateway port"), required: true, width: NumberInputWidth, min: 1 });
 		this.gatewayPortInput = gatewayPortInput.component;
 		this.gatewayEndpointRow = createFlexContainer(view, [this.gatewayNameLabel, this.gatewayDNSInput, this.gatewayPortInput]);
 		this.onNewInputComponentCreated(VariableNames.GatewayDNSName_VariableName, gatewayDNSInput);
 		this.onNewInputComponentCreated(VariableNames.GateWayPort_VariableName, gatewayPortInput);
 
 		this.serviceProxyNameLabel = createLabel(view, { text: localize('deployCluster.ServiceProxyText', "Management proxy"), width: labelWidth, required: true });
-		const serviceProxyDNSInput = createInputBox(view, { ariaLabel: localize('deployCluster.ServiceProxyDNSName', "Management proxy DNS name"), required: false, width: inputWidth });
+		const serviceProxyDNSInput = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.ServiceProxyDNSName', "Management proxy DNS name"), required: false, width: inputWidth });
 		this.serviceProxyDNSInput = serviceProxyDNSInput.component;
-		const serviceProxyPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ServiceProxyPortName', "Management proxy port"), required: true, width: NumberInputWidth, min: 1 });
+		const serviceProxyPortInput = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.ServiceProxyPortName', "Management proxy port"), required: true, width: NumberInputWidth, min: 1 });
 		this.serviceProxyPortInput = serviceProxyPortInput.component;
 		this.serviceProxyEndpointRow = createFlexContainer(view, [this.serviceProxyNameLabel, this.serviceProxyDNSInput, this.serviceProxyPortInput]);
 		this.onNewInputComponentCreated(VariableNames.ServiceProxyDNSName_VariableName, serviceProxyDNSInput);
 		this.onNewInputComponentCreated(VariableNames.ServiceProxyPort_VariableName, serviceProxyPortInput);
 
 		this.appServiceProxyNameLabel = createLabel(view, { text: localize('deployCluster.AppServiceProxyText', "Application proxy"), width: labelWidth, required: true });
-		const appServiceProxyDNSInput = createInputBox(view, { ariaLabel: localize('deployCluster.AppServiceProxyDNSName', "Application proxy DNS name"), required: false, width: inputWidth });
+		const appServiceProxyDNSInput = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.AppServiceProxyDNSName', "Application proxy DNS name"), required: false, width: inputWidth });
 		this.appServiceProxyDNSInput = appServiceProxyDNSInput.component;
-		const appServiceProxyPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.AppServiceProxyPortName', "Application proxy port"), required: true, width: NumberInputWidth, min: 1 });
+		const appServiceProxyPortInput = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.AppServiceProxyPortName', "Application proxy port"), required: true, width: NumberInputWidth, min: 1 });
 		this.appServiceProxyPortInput = appServiceProxyPortInput.component;
 		this.appServiceProxyEndpointRow = createFlexContainer(view, [this.appServiceProxyNameLabel, this.appServiceProxyDNSInput, this.appServiceProxyPortInput]);
 		this.onNewInputComponentCreated(VariableNames.AppServiceProxyDNSName_VariableName, appServiceProxyDNSInput);
 		this.onNewInputComponentCreated(VariableNames.AppServiceProxyPort_VariableName, appServiceProxyPortInput);
 
 		this.readableSecondaryNameLabel = createLabel(view, { text: localize('deployCluster.ReadableSecondaryText', "Readable secondary"), width: labelWidth, required: true });
-		const readableSecondaryDNSInput = createInputBox(view, { ariaLabel: localize('deployCluster.ReadableSecondaryDNSName', "Readable secondary DNS name"), required: false, width: inputWidth });
+		const readableSecondaryDNSInput = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.ReadableSecondaryDNSName', "Readable secondary DNS name"), required: false, width: inputWidth });
 		this.readableSecondaryDNSInput = readableSecondaryDNSInput.component;
-		const readableSecondaryPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryPortName', "Readable secondary port"), required: false, width: NumberInputWidth, min: 1 });
+		const readableSecondaryPortInput = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.ReadableSecondaryPortName', "Readable secondary port"), required: false, width: NumberInputWidth, min: 1 });
 		this.readableSecondaryPortInput = readableSecondaryPortInput.component;
 		this.readableSecondaryEndpointRow = createFlexContainer(view, [this.readableSecondaryNameLabel, this.readableSecondaryDNSInput, this.readableSecondaryPortInput]);
 		this.onNewInputComponentCreated(VariableNames.ReadableSecondaryDNSName_VariableName, readableSecondaryDNSInput);
@@ -243,10 +243,10 @@ export class ServiceSettingsPage extends ResourceTypePage {
 				required: true,
 				description: localize('deployCluster.AdvancedStorageDescription', "By default Controller storage settings will be applied to other services as well, you can expand the advanced storage settings to configure storage for other services.")
 			});
-		const controllerDataStorageClassInput = createInputBox(view, { ariaLabel: localize('deployCluster.controllerDataStorageClass', "Controller's data storage class"), width: inputWidth, required: true });
-		const controllerDataStorageClaimSizeInput = createNumberInput(view, { ariaLabel: localize('deployCluster.controllerDataStorageClaimSize', "Controller's data storage claim size"), width: inputWidth, required: true, min: 1 });
-		const controllerLogsStorageClassInput = createInputBox(view, { ariaLabel: localize('deployCluster.controllerLogsStorageClass', "Controller's logs storage class"), width: inputWidth, required: true });
-		const controllerLogsStorageClaimSizeInput = createNumberInput(view, { ariaLabel: localize('deployCluster.controllerLogsStorageClaimSize', "Controller's logs storage claim size"), width: inputWidth, required: true, min: 1 });
+		const controllerDataStorageClassInputInfo = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.controllerDataStorageClass', "Controller's data storage class"), width: inputWidth, required: true });
+		const controllerDataStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.controllerDataStorageClaimSize', "Controller's data storage claim size"), width: inputWidth, required: true, min: 1 });
+		const controllerLogsStorageClassInputInfo = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.controllerLogsStorageClass', "Controller's logs storage class"), width: inputWidth, required: true });
+		const controllerLogsStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.controllerLogsStorageClaimSize', "Controller's logs storage claim size"), width: inputWidth, required: true, min: 1 });
 
 		const storagePoolLabel = createLabel(view,
 			{
@@ -254,10 +254,11 @@ export class ServiceSettingsPage extends ResourceTypePage {
 				width: inputWidth,
 				required: false
 			});
-		const storagePoolDataStorageClassInput = createInputBox(view, { ariaLabel: localize('deployCluster.storagePoolDataStorageClass', "Storage pool's data storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
-		const storagePoolDataStorageClaimSizeInput = createNumberInput(view, { ariaLabel: localize('deployCluster.storagePoolDataStorageClaimSize', "Storage pool's data storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
-		const storagePoolLogsStorageClassInput = createInputBox(view, { ariaLabel: localize('deployCluster.storagePoolLogsStorageClass', "Storage pool's logs storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
-		const storagePoolLogsStorageClaimSizeInput = createNumberInput(view, { ariaLabel: localize('deployCluster.storagePoolLogsStorageClaimSize', "Storage pool's logs storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
+
+		const storagePoolDataStorageClassInputInfo = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.storagePoolDataStorageClass', "Storage pool's data storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
+		const storagePoolDataStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.storagePoolDataStorageClaimSize', "Storage pool's data storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
+		const storagePoolLogsStorageClassInputInfo = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.storagePoolLogsStorageClass', "Storage pool's logs storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
+		const storagePoolLogsStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.storagePoolLogsStorageClaimSize', "Storage pool's logs storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
 
 		const dataPoolLabel = createLabel(view,
 			{
@@ -265,10 +266,10 @@ export class ServiceSettingsPage extends ResourceTypePage {
 				width: inputWidth,
 				required: false
 			});
-		const dataPoolDataStorageClassInput = createInputBox(view, { ariaLabel: localize('deployCluster.dataPoolDataStorageClass', "Data pool's data storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
-		const dataPoolDataStorageClaimSizeInput = createNumberInput(view, { ariaLabel: localize('deployCluster.dataPoolDataStorageClaimSize', "Data pool's data storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
-		const dataPoolLogsStorageClassInput = createInputBox(view, { ariaLabel: localize('deployCluster.dataPoolLogsStorageClass', "Data pool's logs storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
-		const dataPoolLogsStorageClaimSizeInput = createNumberInput(view, { ariaLabel: localize('deployCluster.dataPoolLogsStorageClaimSize', "Data pool's logs storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
+		const dataPoolDataStorageClassInputInfo = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.dataPoolDataStorageClass', "Data pool's data storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
+		const dataPoolDataStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.dataPoolDataStorageClaimSize', "Data pool's data storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
+		const dataPoolLogsStorageClassInputInfo = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.dataPoolLogsStorageClass', "Data pool's logs storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
+		const dataPoolLogsStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.dataPoolLogsStorageClaimSize', "Data pool's logs storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
 
 
 		const sqlServerMasterLabel = createLabel(view,
@@ -277,27 +278,28 @@ export class ServiceSettingsPage extends ResourceTypePage {
 				width: inputWidth,
 				required: false
 			});
-		const sqlServerMasterDataStorageClassInput = createInputBox(view, { ariaLabel: localize('deployCluster.sqlServerMasterDataStorageClass', "SQL Server master's data storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
-		const sqlServerMasterDataStorageClaimSizeInput = createNumberInput(view, { ariaLabel: localize('deployCluster.sqlServerMasterDataStorageClaimSize', "SQL Server master's data storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
-		const sqlServerMasterLogsStorageClassInput = createInputBox(view, { ariaLabel: localize('deployCluster.sqlServerMasterLogsStorageClass', "SQL Server master's logs storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
-		const sqlServerMasterLogsStorageClaimSizeInput = createNumberInput(view, { ariaLabel: localize('deployCluster.sqlServerMasterLogsStorageClaimSize', "SQL Server master's logs storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
 
-		this.onNewInputComponentCreated(VariableNames.ControllerDataStorageClassName_VariableName, controllerDataStorageClassInput);
-		this.onNewInputComponentCreated(VariableNames.ControllerDataStorageSize_VariableName, controllerDataStorageClaimSizeInput);
-		this.onNewInputComponentCreated(VariableNames.ControllerLogsStorageClassName_VariableName, controllerLogsStorageClassInput);
-		this.onNewInputComponentCreated(VariableNames.ControllerLogsStorageSize_VariableName, controllerLogsStorageClaimSizeInput);
-		this.onNewInputComponentCreated(VariableNames.HDFSDataStorageClassName_VariableName, storagePoolDataStorageClassInput);
-		this.onNewInputComponentCreated(VariableNames.HDFSDataStorageSize_VariableName, storagePoolDataStorageClaimSizeInput);
-		this.onNewInputComponentCreated(VariableNames.HDFSLogsStorageClassName_VariableName, storagePoolLogsStorageClassInput);
-		this.onNewInputComponentCreated(VariableNames.HDFSLogsStorageSize_VariableName, storagePoolLogsStorageClaimSizeInput);
-		this.onNewInputComponentCreated(VariableNames.DataPoolDataStorageClassName_VariableName, dataPoolDataStorageClassInput);
-		this.onNewInputComponentCreated(VariableNames.DataPoolDataStorageSize_VariableName, dataPoolDataStorageClaimSizeInput);
-		this.onNewInputComponentCreated(VariableNames.DataPoolLogsStorageClassName_VariableName, dataPoolLogsStorageClassInput);
-		this.onNewInputComponentCreated(VariableNames.DataPoolLogsStorageSize_VariableName, dataPoolLogsStorageClaimSizeInput);
-		this.onNewInputComponentCreated(VariableNames.SQLServerDataStorageClassName_VariableName, sqlServerMasterDataStorageClassInput);
-		this.onNewInputComponentCreated(VariableNames.SQLServerDataStorageSize_VariableName, sqlServerMasterDataStorageClaimSizeInput);
-		this.onNewInputComponentCreated(VariableNames.SQLServerLogsStorageClassName_VariableName, sqlServerMasterLogsStorageClassInput);
-		this.onNewInputComponentCreated(VariableNames.SQLServerLogsStorageSize_VariableName, sqlServerMasterLogsStorageClaimSizeInput);
+		const sqlServerMasterDataStorageClassInputInfo = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.sqlServerMasterDataStorageClass', "SQL Server master's data storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
+		const sqlServerMasterDataStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.sqlServerMasterDataStorageClaimSize', "SQL Server master's data storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
+		const sqlServerMasterLogsStorageClassInputInfo = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.sqlServerMasterLogsStorageClass', "SQL Server master's logs storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
+		const sqlServerMasterLogsStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.sqlServerMasterLogsStorageClaimSize', "SQL Server master's logs storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
+
+		this.onNewInputComponentCreated(VariableNames.ControllerDataStorageClassName_VariableName, controllerDataStorageClassInputInfo);
+		this.onNewInputComponentCreated(VariableNames.ControllerDataStorageSize_VariableName, controllerDataStorageClaimSizeInputInfo);
+		this.onNewInputComponentCreated(VariableNames.ControllerLogsStorageClassName_VariableName, controllerLogsStorageClassInputInfo);
+		this.onNewInputComponentCreated(VariableNames.ControllerLogsStorageSize_VariableName, controllerLogsStorageClaimSizeInputInfo);
+		this.onNewInputComponentCreated(VariableNames.HDFSDataStorageClassName_VariableName, storagePoolDataStorageClassInputInfo);
+		this.onNewInputComponentCreated(VariableNames.HDFSDataStorageSize_VariableName, storagePoolDataStorageClaimSizeInputInfo);
+		this.onNewInputComponentCreated(VariableNames.HDFSLogsStorageClassName_VariableName, storagePoolLogsStorageClassInputInfo);
+		this.onNewInputComponentCreated(VariableNames.HDFSLogsStorageSize_VariableName, storagePoolLogsStorageClaimSizeInputInfo);
+		this.onNewInputComponentCreated(VariableNames.DataPoolDataStorageClassName_VariableName, dataPoolDataStorageClassInputInfo);
+		this.onNewInputComponentCreated(VariableNames.DataPoolDataStorageSize_VariableName, dataPoolDataStorageClaimSizeInputInfo);
+		this.onNewInputComponentCreated(VariableNames.DataPoolLogsStorageClassName_VariableName, dataPoolLogsStorageClassInputInfo);
+		this.onNewInputComponentCreated(VariableNames.DataPoolLogsStorageSize_VariableName, dataPoolLogsStorageClaimSizeInputInfo);
+		this.onNewInputComponentCreated(VariableNames.SQLServerDataStorageClassName_VariableName, sqlServerMasterDataStorageClassInputInfo);
+		this.onNewInputComponentCreated(VariableNames.SQLServerDataStorageSize_VariableName, sqlServerMasterDataStorageClaimSizeInputInfo);
+		this.onNewInputComponentCreated(VariableNames.SQLServerLogsStorageClassName_VariableName, sqlServerMasterLogsStorageClassInputInfo);
+		this.onNewInputComponentCreated(VariableNames.SQLServerLogsStorageSize_VariableName, sqlServerMasterLogsStorageClaimSizeInputInfo);
 
 		const storageSettingTable = view.modelBuilder.declarativeTable()
 			.withProperties<azdata.DeclarativeTableProperties>(
@@ -309,10 +311,12 @@ export class ServiceSettingsPage extends ResourceTypePage {
 						this.createStorageSettingColumn(localize('deployCluster.LogStorageClassName', "Storage class for logs")),
 						this.createStorageSettingColumn(localize('deployCluster.LogsClaimSize', "Claim size for logs (GB)"))
 					],
-					data: [[controllerLabel, controllerDataStorageClassInput, controllerDataStorageClaimSizeInput, controllerLogsStorageClassInput, controllerLogsStorageClaimSizeInput],
-					[storagePoolLabel, storagePoolDataStorageClassInput, storagePoolDataStorageClaimSizeInput, storagePoolLogsStorageClassInput, storagePoolLogsStorageClaimSizeInput],
-					[dataPoolLabel, dataPoolDataStorageClassInput, dataPoolDataStorageClaimSizeInput, dataPoolLogsStorageClassInput, dataPoolLogsStorageClaimSizeInput],
-					[sqlServerMasterLabel, sqlServerMasterDataStorageClassInput, sqlServerMasterDataStorageClaimSizeInput, sqlServerMasterLogsStorageClassInput, sqlServerMasterLogsStorageClaimSizeInput]],
+					dataValues: [
+						[{ value: controllerLabel }, { value: controllerDataStorageClassInputInfo.component }, { value: controllerDataStorageClaimSizeInputInfo.component }, { value: controllerLogsStorageClassInputInfo.component }, { value: controllerLogsStorageClaimSizeInputInfo.component }],
+						[{ value: storagePoolLabel }, { value: storagePoolDataStorageClassInputInfo.component }, { value: storagePoolDataStorageClaimSizeInputInfo.component }, { value: storagePoolLogsStorageClassInputInfo.component }, { value: storagePoolLogsStorageClaimSizeInputInfo.component }],
+						[{ value: dataPoolLabel }, { value: dataPoolDataStorageClassInputInfo.component }, { value: dataPoolDataStorageClaimSizeInputInfo.component }, { value: dataPoolLogsStorageClassInputInfo.component }, { value: dataPoolLogsStorageClaimSizeInputInfo.component }],
+						[{ value: sqlServerMasterLabel }, { value: sqlServerMasterDataStorageClassInputInfo.component }, { value: sqlServerMasterDataStorageClaimSizeInputInfo.component }, { value: sqlServerMasterLogsStorageClassInputInfo.component }, { value: sqlServerMasterLogsStorageClaimSizeInputInfo.component }]
+					],
 					ariaLabel: localize('deployCluster.StorageSettings', "Storage settings")
 				})
 			.component();

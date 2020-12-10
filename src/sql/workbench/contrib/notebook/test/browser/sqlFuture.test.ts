@@ -51,13 +51,14 @@ suite('SQL Future', function () {
 			},
 			content: <nb.IExecuteResult>{
 				output_type: 'execute_result',
-				metadata: {
-					resultSet: resultSet
-				},
+				metadata: undefined,
 				execution_count: this._executionCount,
 				data: expectedData
 			},
-			metadata: undefined,
+			metadata: {
+				batchId: 0,
+				id: 0
+			},
 			parent_header: undefined
 		};
 
@@ -69,7 +70,7 @@ suite('SQL Future', function () {
 
 		queryRunner.setup(x => x.getQueryRows(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(subset));
 		sqlFuture.handleResultSet(resultSet);
-		await sqlFuture.queryAndConvertData(resultSet, 0);
+		await sqlFuture.handleDone();
 		sinon.assert.calledWith(handleSpy, expectedMsg);
 	});
 });

@@ -185,7 +185,7 @@ export class SerializationService implements ISerializationService {
 
 	private createContinueRequest(serializationRequest: SerializeDataParams, index: number): azdata.SerializeDataContinueRequestParams {
 		let numberOfRows = getBatchSize(serializationRequest.rowCount, index);
-		let rows = serializationRequest.getRowRange(index, serializationRequest.includeHeaders ?? false, numberOfRows);
+		let rows = serializationRequest.getRowRange(index, false, numberOfRows);
 		let isLastBatch = index + rows.length >= serializationRequest.rowCount;
 		let continueSerializeRequest: azdata.SerializeDataContinueRequestParams = {
 			filePath: serializationRequest.filePath,

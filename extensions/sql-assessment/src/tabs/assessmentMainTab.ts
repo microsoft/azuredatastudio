@@ -106,11 +106,14 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 				dark: this.extensionContext.asAbsolutePath('resources/dark/database.svg'),
 				light: this.extensionContext.asAbsolutePath('resources/light/database.svg')
 			};
+		const iconSize: number = 16;
 
 		const btnInvokeAssessment = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
 				label: this.invokeAssessmentLabel,
 				iconPath: targetIconPath,
+				iconHeight: iconSize,
+				iconWidth: iconSize
 			}).component();
 		const btnInvokeAssessmentLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnInvokeAssessment)
@@ -141,6 +144,8 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 			.withProperties<azdata.ButtonProperties>({
 				label: this.getItemsLabel,
 				iconPath: targetIconPath,
+				iconHeight: iconSize,
+				iconWidth: iconSize
 			}).component();
 		const btnGetAssessmentItemsLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnGetAssessmentItems)
@@ -170,11 +175,13 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		this.btnExportAsScript = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
 				label: localize('btnExportAsScript', "Export as script"),
+				enabled: false,
 				iconPath: {
 					dark: this.extensionContext.asAbsolutePath('resources/dark/newquery_inverse.svg'),
 					light: this.extensionContext.asAbsolutePath('resources/light/newquery.svg')
 				},
-				enabled: false
+				iconHeight: iconSize,
+				iconWidth: iconSize
 			}).component();
 		this.toDispose.push(this.btnExportAsScript.onDidClick(async () => {
 			this.engine.generateAssessmentScript();
@@ -183,11 +190,13 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		this.btnHTMLExport = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
 				label: localize('btnGeneratehtmlreport', "Create HTML Report"),
+				enabled: false,
 				iconPath: {
 					dark: this.extensionContext.asAbsolutePath('resources/dark/book_inverse.svg'),
 					light: this.extensionContext.asAbsolutePath('resources/light/book.svg')
 				},
-				enabled: false
+				iconHeight: iconSize,
+				iconWidth: iconSize
 			}).component();
 
 		this.toDispose.push(this.btnHTMLExport.onDidClick(async () => {
@@ -220,6 +229,8 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 					dark: this.extensionContext.asAbsolutePath('resources/dark/configuredashboard_inverse.svg'),
 					light: this.extensionContext.asAbsolutePath('resources/light/configuredashboard.svg')
 				},
+				iconHeight: iconSize,
+				iconWidth: iconSize
 			}).component();
 
 		this.toDispose.push(btnViewSamples.onDidClick(() => {
@@ -234,6 +245,8 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 					dark: this.extensionContext.asAbsolutePath('resources/dark/status_info.svg'),
 					light: this.extensionContext.asAbsolutePath('resources/light/status_info.svg')
 				},
+				iconHeight: iconSize,
+				iconWidth: iconSize
 			}).component();
 		this.toDispose.push(btnAPIDetails.onDidClick(async () => {
 			let infoArray: azdata.PropertiesContainerItem[] = [];
