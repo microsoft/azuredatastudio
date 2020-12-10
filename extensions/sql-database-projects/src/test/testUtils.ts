@@ -28,6 +28,7 @@ export async function shouldThrowSpecificError(block: Function, expectedMessage:
 }
 
 export async function createTestSqlProjFile(contents: string, folderPath?: string): Promise<string> {
+	folderPath = folderPath ?? path.join(await generateTestFolderPath(), 'TestProject');
 	return await createTestFile(contents, 'TestProject.sqlproj', folderPath);
 }
 
@@ -40,7 +41,7 @@ export async function createTestDataSources(contents: string, folderPath?: strin
 }
 
 export async function generateTestFolderPath(): Promise<string> {
-	const folderPath = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
+	const folderPath = path.join(os.tmpdir(), `TestRun_${new Date().getTime()}`);
 	await fs.mkdir(folderPath, { recursive: true });
 
 	return folderPath;
@@ -55,6 +56,7 @@ export async function createTestFile(contents: string, fileName: string, folderP
 
 	return filePath;
 }
+
 /**
  * TestFolder directory structure
  * 		- file1.sql

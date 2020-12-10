@@ -11,7 +11,8 @@ import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 import { v4 as uuid } from 'uuid';
 import * as vscode from 'vscode';
-import { UserCancelledError } from '../../common/utils';
+import * as loc from '../../localizedConstants';
+import { UserCancelledError } from '../../common/api';
 import { ControllerModel } from '../../models/controllerModel';
 import { ConnectToControllerDialog } from '../../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../../ui/tree/azureArcTreeDataProvider';
@@ -39,7 +40,7 @@ describe('ControllerModel', function (): void {
 			// Returning an undefined model here indicates that the dialog closed without clicking "Ok" - usually through the user clicking "Cancel"
 			sinon.stub(ConnectToControllerDialog.prototype, 'waitForClose').returns(Promise.resolve(undefined));
 			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
-			await should(model.azdataLogin()).be.rejectedWith(new UserCancelledError());
+			await should(model.azdataLogin()).be.rejectedWith(new UserCancelledError(loc.userCancelledError));
 		});
 
 		it('Reads password from cred store', async function (): Promise<void> {
@@ -64,7 +65,7 @@ describe('ControllerModel', function (): void {
 		});
 
 		it('Prompt for password when not in cred store', async function (): Promise<void> {
-			const password = 'password123';
+			const password = 'password123'; // [SuppressMessage("Microsoft.Security", "CS001:SecretInline", Justification="Stub value for testing")]
 
 			// Set up cred store to return empty password
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
@@ -90,7 +91,7 @@ describe('ControllerModel', function (): void {
 		});
 
 		it('Prompt for password when rememberPassword is true but prompt reconnect is true', async function (): Promise<void> {
-			const password = 'password123';
+			const password = 'password123'; // [SuppressMessage("Microsoft.Security", "CS001:SecretInline", Justification="Stub value for testing")]
 			// Set up cred store to return a password to start with
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
 			credProviderMock.setup(x => x.readCredential(TypeMoq.It.isAny())).returns(() => Promise.resolve({ credentialId: 'id', password: 'originalPassword' }));
@@ -116,7 +117,7 @@ describe('ControllerModel', function (): void {
 		});
 
 		it('Prompt for password when we already have a password but prompt reconnect is true', async function (): Promise<void> {
-			const password = 'password123';
+			const password = 'password123'; // [SuppressMessage("Microsoft.Security", "CS001:SecretInline", Justification="Stub value for testing")]
 			// Set up cred store to return a password to start with
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
 			credProviderMock.setup(x => x.readCredential(TypeMoq.It.isAny())).returns(() => Promise.resolve({ credentialId: 'id', password: 'originalPassword' }));
