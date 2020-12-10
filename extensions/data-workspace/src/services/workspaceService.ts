@@ -40,7 +40,7 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	/**
-	 * Creates a new workspace in the same folder as the project. Because the extension host gets restared when
+	 * Creates a new workspace in the same folder as the project. Because the extension host gets restarted when
 	 * a new workspace is created and opened, the project needs to be saved as the temp project that will be loaded
 	 * when the extension gets restarted
 	 * @param projectFileFsPath project to add to the workspace
@@ -49,7 +49,7 @@ export class WorkspaceService implements IWorkspaceService {
 		// save temp project
 		await this._context.globalState.update(TempProject, [projectFileFsPath]);
 
-		// create a new workspace - the workspace file will be created in the same folder as the project
+		// create a new workspace
 		const projectFolder = vscode.Uri.file(path.dirname(projectFileFsPath));
 		await azdata.workspace.createWorkspace(projectFolder, workspaceFile);
 	}
@@ -174,7 +174,7 @@ export class WorkspaceService implements IWorkspaceService {
 		const provider = ProjectProviderRegistry.getProviderByProjectType(projectTypeId);
 		if (provider) {
 			const projectFile = await provider.createProject(name, location, projectTypeId);
-			this.addProjectsToWorkspace([projectFile]);
+			this.addProjectsToWorkspace([projectFile], workspaceFile);
 			this._onDidWorkspaceProjectsChange.fire();
 			return projectFile;
 		} else {

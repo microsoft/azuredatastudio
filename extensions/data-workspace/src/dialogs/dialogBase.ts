@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
-import { directoryExist } from '../common/utils';
+import { directoryExist, fileExist } from '../common/utils';
 
 interface Deferred<T> {
 	resolve: (result: T | Promise<T>) => void;
@@ -106,18 +106,24 @@ export abstract class DialogBase {
 			height: '16px',
 			width: '18px'
 		}).component();
+
 		this.register(browseFolderButton.onDidClick(async () => {
-			let fileUri = await vscode.window.showSaveDialog({
-				defaultUri: vscode.Uri.file(this.workspaceInputBox!.value!),
-				filters: {
-					'workspace Files': [constants.WorkspaceFileExtension],
-				}
+			const currentFileName = path.parse(this.workspaceInputBox!.value!).base;
+
+			let folderUris = await vscode.window.showOpenDialog({
+				canSelectFiles: false,
+				canSelectFolders: true,
+				canSelectMany: false,
+				defaultUri: vscode.Uri.file(path.parse(this.workspaceInputBox!.value!).dir)
 			});
-			if (!fileUri) {
+			if (!folderUris || folderUris.length === 0) {
 				return;
 			}
-			const selectedFile = fileUri.fsPath;
+			const selectedFolder = folderUris[0].fsPath;
+
+			const selectedFile = path.join(selectedFolder, currentFileName);
 			this.workspaceInputBox!.value = selectedFile;
+			this.workspaceInputBox!.title = selectedFile;
 		}));
 
 		if (vscode.workspace.workspaceFile) {
@@ -152,7 +158,7 @@ export abstract class DialogBase {
 		}
 	}
 
-	protected async validateWorkspace(sameFolderAsNewProject: boolean): Promise<boolean> {
+	protected async validateNewWorkspace(sameFolderAsNewProject: boolean): Promise<boolean> {
 		// workspace file should end in .code-workspace
 		const workspaceValid = this.workspaceInputBox!.value!.endsWith(constants.WorkspaceFileExtension);
 		if (!workspaceValid) {
@@ -168,6 +174,14 @@ export abstract class DialogBase {
 				return false;
 			}
 		}
+
+		// workspace file should not be an existing workspace file
+		const workspaceFileExists = await fileExist(this.workspaceInputBox!.value!);
+		if (workspaceFileExists) {
+			this.showErrorMessage(constants.WorkspaceFileAlreadyExistsError(this.workspaceInputBox!.value!));
+			return false;
+		}
+
 		return true;
 	}
 }

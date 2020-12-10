@@ -43,7 +43,7 @@ export class OpenExistingDialog extends DialogBase {
 					return false;
 				}
 
-				if (!await this.validateWorkspace(false)) {
+				if (this.workspaceInputBox!.enabled && !await this.validateNewWorkspace(false)) {
 					return false;
 				}
 			} else if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
