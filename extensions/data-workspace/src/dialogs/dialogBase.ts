@@ -95,7 +95,7 @@ export abstract class DialogBase {
 		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.WorkspaceLocationTitle,
 			width: constants.DefaultInputWidth,
-			enabled: !vscode.workspace.workspaceFile?.fsPath, // want it editable if no workspace is open
+			enabled: !vscode.workspace.workspaceFile, // want it editable if no workspace is open
 			value: vscode.workspace.workspaceFile?.fsPath ?? '',
 			title: vscode.workspace.workspaceFile?.fsPath ?? '' // hovertext for if file path is too long to be seen in textbox
 		}).component();
@@ -110,7 +110,8 @@ export abstract class DialogBase {
 		this.register(browseFolderButton.onDidClick(async () => {
 			const currentFileName = path.parse(this.workspaceInputBox!.value!).base;
 
-			let folderUris = await vscode.window.showOpenDialog({
+			// let user select folder for workspace file to be created in
+			const folderUris = await vscode.window.showOpenDialog({
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
