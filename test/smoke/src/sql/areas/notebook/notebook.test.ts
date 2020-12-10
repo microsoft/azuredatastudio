@@ -6,7 +6,7 @@
 import { Application } from '../../../../../automation';
 
 export function setup() {
-	describe('Notebook', () => {
+	describe.skip('Notebook', () => {
 
 		it('can open new notebook, configure Python, and execute one cell', async function () {
 			const app = this.app as Application;
@@ -54,6 +54,26 @@ export function setup() {
 			await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
 			await app.workbench.sqlNotebook.waitForTrustedIcon();
 			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
+		});
+	});
+
+	describe('Notebook Performance', () => {
+
+		it('Python kernel loading time', async function () {
+			const app = this.app as Application;
+
+			await app.workbench.sqlNotebook.openFile('hello.ipynb');
+			await app.workbench.configurePythonDialog.waitForConfigurePythonDialog();
+			await app.workbench.configurePythonDialog.installPython();
+			await app.workbench.sqlNotebook.waitForKernel('Python 3');
+
+			for (let i = 0; i < 10; i++) {
+				await app.reload();
+				await app.workbench.sqlNotebook.openFile('hello.ipynb');
+				await app.logger.time('python-kernel-ready');
+				await app.workbench.sqlNotebook.waitForKernel('Python 3');
+				await app.logger.timeEnd('python-kernel-ready');
+			}
 		});
 	});
 }

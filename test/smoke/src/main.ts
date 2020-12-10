@@ -61,7 +61,7 @@ const opts = minimist(args, {
 		'web'
 	],
 	default: {
-		verbose: false
+		verbose: true
 	}
 });
 

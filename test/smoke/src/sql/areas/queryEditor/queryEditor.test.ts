@@ -6,7 +6,7 @@
 import { Application } from '../../../../../automation';
 
 export function setup() {
-	describe('Query Editor', () => {
+	describe.skip('Query Editor', () => {
 		setupWeb();
 
 		it('can new file, connect and execute', async function () {
