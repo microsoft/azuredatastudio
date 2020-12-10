@@ -479,7 +479,7 @@ export class OutputContainer extends Disposable {
 						});
 					}
 
-					return;
+					return undefined; // {{SQL CARBON EDIT}} fixing build break
 				},
 				disposeables: new DisposableStore()
 			}
