@@ -39,7 +39,7 @@ describe('ControllerModel', function (): void {
 		it('Rejected with expected error when user cancels', async function (): Promise<void> {
 			// Returning an undefined model here indicates that the dialog closed without clicking "Ok" - usually through the user clicking "Cancel"
 			sinon.stub(ConnectToControllerDialog.prototype, 'waitForClose').returns(Promise.resolve(undefined));
-			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
+			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
 			await should(model.azdataLogin()).be.rejectedWith(new UserCancelledError(loc.userCancelledError));
 		});
 
@@ -58,7 +58,7 @@ describe('ControllerModel', function (): void {
 			azdataMock.setup(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => <any>Promise.resolve(undefined));
 			azdataExtApiMock.setup(x => x.azdata).returns(() => azdataMock.object);
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: azdataExtApiMock.object });
-			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
+			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
 
 			await model.azdataLogin();
 			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password), TypeMoq.Times.once());
@@ -81,10 +81,10 @@ describe('ControllerModel', function (): void {
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: azdataExtApiMock.object });
 
 			// Set up dialog to return new model with our password
-			const newModel = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, password);
+			const newModel = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, password);
 			sinon.stub(ConnectToControllerDialog.prototype, 'waitForClose').returns(Promise.resolve({ controllerModel: newModel, password: password }));
 
-			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
+			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
 
 			await model.azdataLogin();
 			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password), TypeMoq.Times.once());
@@ -106,10 +106,10 @@ describe('ControllerModel', function (): void {
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: azdataExtApiMock.object });
 
 			// Set up dialog to return new model with our new password from the reprompt
-			const newModel = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, password);
+			const newModel = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, password);
 			const waitForCloseStub = sinon.stub(ConnectToControllerDialog.prototype, 'waitForClose').returns(Promise.resolve({ controllerModel: newModel, password: password }));
 
-			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
+			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
 
 			await model.azdataLogin(true);
 			should(waitForCloseStub.called).be.true('waitForClose should have been called');
@@ -132,11 +132,11 @@ describe('ControllerModel', function (): void {
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: azdataExtApiMock.object });
 
 			// Set up dialog to return new model with our new password from the reprompt
-			const newModel = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, password);
+			const newModel = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, password);
 			const waitForCloseStub = sinon.stub(ConnectToControllerDialog.prototype, 'waitForClose').returns(Promise.resolve({ controllerModel: newModel, password: password }));
 
 			// Set up original model with a password
-			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, 'originalPassword');
+			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, 'originalPassword');
 
 			await model.azdataLogin(true);
 			should(waitForCloseStub.called).be.true('waitForClose should have been called');
@@ -166,6 +166,8 @@ describe('ControllerModel', function (): void {
 				{
 					id: uuid(),
 					url: '127.0.0.1',
+					kubeConfigFilePath: '/path/to/.kube/config',
+					kubeClusterContext: 'currentCluster',
 					username: 'admin',
 					name: 'arc',
 					rememberPassword: false,
@@ -178,6 +180,8 @@ describe('ControllerModel', function (): void {
 			const newInfo: ControllerInfo = {
 				id: model.info.id, // The ID stays the same since we're just re-entering information for the same model
 				url: 'newUrl',
+				kubeConfigFilePath: '/path/to/.kube/config',
+				kubeClusterContext: 'currentCluster',
 				username: 'newUser',
 				name: 'newName',
 				rememberPassword: true,
