@@ -986,6 +986,7 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 	}
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const radioGroupLoadingComponentBuilder = new RadioGroupLoadingComponentBuilder(context.view, context.onNewDisposableCreated, context.fieldInfo);
+
 	context.fieldInfo.labelPosition = LabelPosition.Left;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
 		component: radioGroupLoadingComponentBuilder,
@@ -995,8 +996,17 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 		getDisplayValue: async (): Promise<string> => radioGroupLoadingComponentBuilder.displayValue,
 		onValueChanged: radioGroupLoadingComponentBuilder.onValueChanged,
 	});
-	addLabelInputPairToContainer(context.view, context.components, label, radioGroupLoadingComponentBuilder.component(), context.fieldInfo);
 	const options = context.fieldInfo.options as OptionsInfo;
+	let loadingText = options?.source?.loadingText;
+	let loadingCompletedText = options?.source?.loadingCompletedText;
+	if (loadingText || loadingCompletedText) {
+		radioGroupLoadingComponentBuilder.withProps({
+			showText: true,
+			loadingText: loadingText,
+			loadingCompletedText: loadingCompletedText
+		});
+	}
+	addLabelInputPairToContainer(context.view, context.components, label, radioGroupLoadingComponentBuilder.component(), context.fieldInfo);
 	// Start loading the options but continue on so that we can continue setting up the rest of the components - the group
 	// will show a loading spinner while the options are loaded
 	radioGroupLoadingComponentBuilder.loadOptions(

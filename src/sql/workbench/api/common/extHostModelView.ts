@@ -1660,8 +1660,9 @@ class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonCom
 class LoadingComponentWrapper extends ComponentWrapper implements azdata.LoadingComponent {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.LoadingComponent, id);
-		this.properties = {};
-		this.loading = true;
+		this.properties = {
+			loading: true
+		};
 	}
 
 	public get loading(): boolean {
