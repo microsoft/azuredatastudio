@@ -38,7 +38,7 @@ suite('New Project Dialog', function (): void {
 		should.equal(await dialog.validate(), true, 'Validation should pass because name is unique and parent directory exists');
 	});
 
-	test('Should validate workspace location', async function (): Promise<void> {
+	test('Should validate new workspace location', async function (): Promise<void> {
 		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
 		workspaceServiceMock.setup(x => x.getAllProjectTypes()).returns(() => Promise.resolve([testProjectType]));
 
@@ -54,13 +54,19 @@ suite('New Project Dialog', function (): void {
 		dialog.workspaceInputBox!.value = 'invalidLocation/test.code-workspace';
 		should.equal(await dialog.validate(), false, 'Validation should fail because the folder is invalid');
 
+		// use already existing workspace
+		const existingWorkspaceFilePath = path.join(os.tmpdir(), `${dialog.model.name}.code-workspace`);
+		await fs.writeFile(existingWorkspaceFilePath, '');
+		dialog.workspaceInputBox!.value = existingWorkspaceFilePath;
+		should.equal(await dialog.validate(), false, 'Validation should fail because the selected workspace file already exists');
+
 		// same folder as the project should be valid even if the project folder isn't created yet
 		dialog.workspaceInputBox!.value = path.join(dialog.model.location, dialog.model.name, 'test.code-workspace');
 		should.equal(await dialog.validate(), true, 'Validation should pass if the file location is the same folder as the project');
 
 		// change workspace name to something that should pass
-		dialog.workspaceInputBox!.value = path.join(os.tmpdir(), 'test.code-workspace');
-		should.equal(await dialog.validate(), true, 'Validation should pass because the parent directory exists and the file extension is correct');
+		dialog.workspaceInputBox!.value = path.join(os.tmpdir(), `TestWorkspace_${new Date().getTime()}.code-workspace`);
+		should.equal(await dialog.validate(), true, 'Validation should pass because the parent directory exists, workspace filepath is unique, and the file extension is correct');
 	});
 
 	test('Should validate workspace in onComplete', async function (): Promise<void> {
