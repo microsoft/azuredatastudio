@@ -132,7 +132,7 @@ export class CalloutDialog extends Modal {
 		this._insertButton = this.addFooterButton(this.insertButtonText, () => this.insert(this._calloutStyle));
 		attachButtonStyler(this._insertButton, this._themeService);
 
-		this._cancelButton = this.addFooterButton(this.cancelButtonText, () => this.cancel());
+		this._cancelButton = this.addFooterButton(this.cancelButtonText, () => this.cancel(), null, true);
 		attachButtonStyler(this._cancelButton, this._themeService);
 
 		this.registerListeners();

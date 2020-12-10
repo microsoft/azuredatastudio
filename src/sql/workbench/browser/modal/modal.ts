@@ -420,7 +420,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		DOM.append(this.layoutService.container, this._bodyContainer!);
 		this.setInitialFocusedElement();
 
-		this.disposableStore.add(DOM.addDisposableListener(document, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+		this.disposableStore.add(DOM.addDisposableListener(document, DOM.EventType.KEY_UP, (e: KeyboardEvent) => {
 			let context = this._modalShowingContext.get()!;
 			if (context[context.length - 1] === this._staticKey) {
 				let event = new StandardKeyboardEvent(e);
@@ -476,10 +476,11 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Adds a button to the footer of the modal
 	 * @param label Label to show on the button
 	 * @param onSelect The callback to call when the button is selected
+	 * @param isSecondary Set the css class if true
 	 */
-	protected addFooterButton(label: string, onSelect: () => void, orientation: 'left' | 'right' = 'right'): Button {
+	protected addFooterButton(label: string, onSelect: () => void, orientation: 'left' | 'right' = 'right', isSecondary: boolean = false): Button {
 		let footerButton = DOM.$('.footer-button');
-		let button = this._register(new Button(footerButton));
+		let button = this._register(new Button(footerButton, { secondary: isSecondary }));
 		button.label = label;
 		button.onDidClick(() => onSelect()); // @todo this should be registered to dispose but that brakes some dialogs
 		if (orientation === 'left') {
@@ -487,6 +488,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		} else {
 			DOM.append(this._rightFooter!, footerButton);
 		}
+
 		this._footerButtons.push(button);
 		return button;
 	}
