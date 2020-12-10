@@ -11,10 +11,10 @@
     "@azure/ms-rest-js" "^1.8.1"
     tslib "^1.9.3"
 
-"@azure/arm-storage@^15.1.0":
-  version "15.1.0"
-  resolved "https://registry.yarnpkg.com/@azure/arm-storage/-/arm-storage-15.1.0.tgz#fa14b5e532babf39b47c5cffe89de5aa062e1f80"
-  integrity sha512-IWomHlT7eEnCSMDHH/z5/XyPHhGAIPmWYgHkIyYB2YQt+Af+hWvE1NIwI79Eeiu+Am4U8BKUsXWmWKqDYh0Srg==
+"@azure/arm-storage@^13.0.0":
+  version "13.1.0"
+  resolved "https://registry.yarnpkg.com/@azure/arm-storage/-/arm-storage-13.1.0.tgz#7b86730a94bea53c55aa25cac88a82f1aff6c210"
+  integrity sha512-YrsDBG4V7kzfpP75H8MUGmMJUkUkefaq1DvAC2HXllhfCJgf3yljs1Eidx6tlRyYyMHQlP+VP6M8wFIC3oYsDA==
   dependencies:
     "@azure/ms-rest-azure-js" "^2.0.1"
     "@azure/ms-rest-js" "^2.0.4"
