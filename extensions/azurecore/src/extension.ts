@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import * as resourceDeployment from 'resource-deployment';
 
 import { AppContext } from './appContext';
 import { AzureAccountProviderService } from './account-provider/azureAccountProviderService';
@@ -86,10 +87,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
 	const connectionDialogTree = new ConnectionDialogTreeProvider(appContext);
-	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
+	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
-	registerAzureResourceCommands(appContext, [azureResourceTree, connectionDialogTree]);
+	registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree);
 	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
 	vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
 		const portalEndpoint = item.portalEndpoint;
@@ -103,6 +104,40 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			console.log(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
 			vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
 		}
+	});
+
+	// Don't block on this since there's a bit of a circular dependency here with the extension activation since resource deployment
+	// depends on this extension too. It's fine to wait a bit for that to finish before registering the provider
+	vscode.extensions.getExtension(resourceDeployment.extension.name).activate().then((api: resourceDeployment.IExtension) => {
+		context.subscriptions.push(api.registerValueProvider({
+			id: 'subscription-id-to-tenant-id',
+			getValue: async (triggerValue: string) => {
+				if (triggerValue === '') {
+					return '';
+				}
+				let accounts: azdata.Account[] = [];
+				try {
+					accounts = await azdata.accounts.getAllAccounts();
+				} catch (err) {
+					console.warn(`Error fetching accounts for subscription-id-to-tenant-id provider : ${err}`);
+					return '';
+				}
+
+				for (const account of accounts) {
+					// Ignore any errors - they'll be logged in the called function and we still want to look
+					// at any subscriptions that are returned - worst case we'll just return an empty string if we didn't
+					// find the matching subscription
+					const subs = await azureResourceUtils.getSubscriptions(appContext, account, true);
+					const sub = subs.subscriptions.find(sub => sub.id === triggerValue);
+					if (sub) {
+						return sub.tenant;
+					}
+
+				}
+				console.error(`Unable to find subscription with ID ${triggerValue} when mapping subscription ID to tenant ID`);
+				return '';
+			}
+		}));
 	});
 
 	return {

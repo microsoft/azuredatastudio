@@ -74,10 +74,6 @@ declare module 'azdata' {
 			data: any;
 		}
 
-		export interface ICellOutputMetadata {
-			resultSet?: ResultSetSummary;
-		}
-
 		export interface INotebookMetadata {
 			connection_name?: string;
 		}
@@ -419,7 +415,7 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableCellValue {
-		value: string | number | boolean;
+		value: string | number | boolean | Component;
 		ariaLabel?: string;
 		style?: CssStyles
 	}

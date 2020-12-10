@@ -8,9 +8,5 @@ This chapter contains a set of notebooks useful for doing offline migration of d
 
 - [Migrate Database to Azure SQL VM](db-to-VM.ipynb)
 
-- [Migrate Instance to Azure SQL MI](instance-to-MI.ipynb)
-
-- [Migrate Database to Azure SQL MI](db-to-MI.ipynb)
-
 - [Migrate Database to Azure SQL DB](db-to-SQLDB.ipynb)
 

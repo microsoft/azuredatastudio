@@ -3,8 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as events from 'events';
 import * as cp from 'promisify-child-process';
+import * as TypeMoq from 'typemoq';
 import { Readable } from 'stream';
 
 export class TestChildProcessPromise<T> implements cp.ChildProcessPromise {
@@ -102,4 +105,118 @@ export class TestChildProcessPromise<T> implements cp.ChildProcessPromise {
 	listenerCount(type: string | symbol): number {
 		throw new Error('Method not implemented.');
 	}
+}
+
+export type ComponentAndMockComponentBuilder<C, B> = {
+	component: C,
+	mockBuilder: TypeMoq.IMock<B>
+};
+
+export function createModelViewMock(): {
+	modelBuilder: TypeMoq.IMock<azdata.ModelBuilder>,
+	modelView: TypeMoq.IMock<azdata.ModelView>
+} {
+	const mockModelView = TypeMoq.Mock.ofType<azdata.ModelView>();
+	const mockModelBuilder = TypeMoq.Mock.ofType<azdata.ModelBuilder>();
+	const mockTextBuilder = createMockComponentBuilder<azdata.TextComponent>();
+	const mockGroupContainerBuilder = createMockContainerBuilder<azdata.GroupContainer>();
+	const mockFormContainerBuilder = createMockFormContainerBuilder();
+	mockModelBuilder.setup(b => b.text()).returns(() => mockTextBuilder.mockBuilder.object);
+	mockModelBuilder.setup(b => b.groupContainer()).returns(() => mockGroupContainerBuilder.mockBuilder.object);
+	mockModelBuilder.setup(b => b.formContainer()).returns(() => mockFormContainerBuilder.object);
+	mockModelView.setup(mv => mv.modelBuilder).returns(() => mockModelBuilder.object);
+	return {
+		modelBuilder: mockModelBuilder,
+		modelView: mockModelView
+	};
+}
+
+export function createMockComponentBuilder<C extends azdata.Component, B extends azdata.ComponentBuilder<C, any> = azdata.ComponentBuilder<C, any>>(component?: C): ComponentAndMockComponentBuilder<C, B> {
+	const mockComponentBuilder = TypeMoq.Mock.ofType<B>();
+	// Create a mocked dynamic component if we don't have a stub instance to use.
+	// Note that we don't use ofInstance here for the component because there's some limitations around properties that I was
+	// hitting preventing me from easily using TypeMoq. Passing in the stub instance lets users control the object being stubbed - which means
+	// they can use things like sinon to then override specific functions if desired.
+	if (!component) {
+		const mockComponent = TypeMoq.Mock.ofType<C>();
+		// Need to setup then for when a dynamic mocked object is resolved otherwise the test will hang : https://github.com/florinn/typemoq/issues/66
+		mockComponent.setup((x: any) => x.then).returns(() => undefined);
+		component = mockComponent.object;
+	}
+	// For now just have these be passthrough - can hook up additional functionality later if needed
+	mockComponentBuilder.setup(b => b.withProperties(TypeMoq.It.isAny())).returns(() => mockComponentBuilder.object);
+	mockComponentBuilder.setup(b => b.withValidation(TypeMoq.It.isAny())).returns(() => mockComponentBuilder.object);
+	mockComponentBuilder.setup(b => b.component()).returns(() => component! /*mockComponent.object*/);
+	return {
+		component: component!,
+		mockBuilder: mockComponentBuilder
+	};
+}
+
+export function createMockContainerBuilder<C extends azdata.Container<any, any>, B extends azdata.ContainerBuilder<C, any, any, any> = azdata.ContainerBuilder<C, any, any, any>>(): ComponentAndMockComponentBuilder<C, B> {
+	const mockContainerBuilder = createMockComponentBuilder<C, B>();
+	// For now just have these be passthrough - can hook up additional functionality later if needed
+	mockContainerBuilder.mockBuilder.setup(b => b.withItems(TypeMoq.It.isAny(), undefined)).returns(() => mockContainerBuilder.mockBuilder.object);
+	mockContainerBuilder.mockBuilder.setup(b => b.withLayout(TypeMoq.It.isAny())).returns(() => mockContainerBuilder.mockBuilder.object);
+	return mockContainerBuilder;
+}
+
+export function createMockFormContainerBuilder(): TypeMoq.IMock<azdata.FormBuilder> {
+	const mockContainerBuilder = createMockContainerBuilder<azdata.FormContainer, azdata.FormBuilder>();
+	mockContainerBuilder.mockBuilder.setup(b => b.withFormItems(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => mockContainerBuilder.mockBuilder.object);
+	return mockContainerBuilder.mockBuilder;
+}
+
+export class StubInputBox implements azdata.InputBoxComponent {
+	readonly id = 'input-box';
+	public enabled: boolean = false;
+
+	onTextChanged: vscode.Event<any> = undefined!;
+	onEnterKeyPressed: vscode.Event<string> = undefined!;
+
+	updateProperties(properties: { [key: string]: any }): Thenable<void> { throw new Error('Not implemented'); }
+
+	updateProperty(key: string, value: any): Thenable<void> { throw new Error('Not implemented'); }
+
+	updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void> { throw new Error('Not implemented'); }
+
+	readonly onValidityChanged: vscode.Event<boolean> = undefined!;
+
+	readonly valid: boolean = true;
+
+	validate(): Thenable<boolean> { throw new Error('Not implemented'); }
+
+	focus(): Thenable<void> { return Promise.resolve(); }
+}
+
+export class StubCheckbox implements azdata.CheckBoxComponent {
+	private _onChanged = new vscode.EventEmitter<void>();
+	private _checked = false;
+
+	readonly id = 'stub-checkbox';
+	public enabled: boolean = false;
+
+	get checked(): boolean {
+		return this._checked;
+	}
+	set checked(value: boolean) {
+		this._checked = value;
+		this._onChanged.fire();
+	}
+
+	onChanged: vscode.Event<any> = this._onChanged.event;
+
+	updateProperties(properties: { [key: string]: any }): Thenable<void> { throw new Error('Not implemented'); }
+
+	updateProperty(key: string, value: any): Thenable<void> { throw new Error('Not implemented'); }
+
+	updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void> { throw new Error('Not implemented'); }
+
+	readonly onValidityChanged: vscode.Event<boolean> = undefined!;
+
+	readonly valid: boolean = true;
+
+	validate(): Thenable<boolean> { throw new Error('Not implemented'); }
+
+	focus(): Thenable<void> { return Promise.resolve(); }
 }

@@ -22,7 +22,7 @@ declare module 'dataworkspace' {
 		 * Add projects to the workspace
 		 * @param projectFiles Uris of project files to add
 		 */
-		addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void>
+		addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void>;
 
 		/**
 		 * Change focus to Projects view
@@ -33,6 +33,11 @@ declare module 'dataworkspace' {
 		 * Returns the default location to save projects
 		 */
 		defaultProjectSaveLocation: vscode.Uri | undefined;
+
+		/**
+	 	* Verifies that a workspace is open or if it should be automatically created
+	 	*/
+		validateWorkspace(): Promise<boolean>;
 	}
 
 	/**
@@ -55,8 +60,9 @@ declare module 'dataworkspace' {
 		 *
 		 * @param name Create a project
 		 * @param location the parent directory of the project
+		 * @param projectTypeId the identifier of the selected project type
 		 */
-		createProject(name: string, location: vscode.Uri): Promise<vscode.Uri>;
+		createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
 
 		/**
 		 * Gets the supported project types

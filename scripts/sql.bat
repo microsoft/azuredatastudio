@@ -21,7 +21,7 @@ if %errorlevel% neq 0 node .\node_modules\gulp\bin\gulp.js electron
 node build\lib\builtInExtensions.js
 
 :: Build
-if not exist out node .\node_modules\gulp\bin\gulp.js compile
+if not exist out node .\node_modules\gulp\bin\gulp.js compile --max_old_space_size=4095
 
 :: Configuration
 set NODE_ENV=development
