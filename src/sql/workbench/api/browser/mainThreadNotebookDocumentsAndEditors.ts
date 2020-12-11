@@ -38,6 +38,8 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -335,7 +337,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@INotebookService private readonly _notebookService: INotebookService,
 		@IFileService private readonly _fileService: IFileService,
-		@ITextFileService private readonly _textFileService: ITextFileService
+		@ITextFileService private readonly _textFileService: ITextFileService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		super();
 		if (extHostContext) {
@@ -392,7 +395,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		if (!cell || (cell && cell.cellType !== CellTypes.Code)) {
 			return Promise.reject(new Error(localize('runActiveCell', "F5 shortcut key requires a code cell to be selected. Please select a code cell to run.")));
 		}
-
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.RunCell)
+			.withAdditionalProperties({ cell_guid: cell.cellGuid })
+			.send();
 		return editor.runCell(cell);
 	}
 
@@ -411,6 +416,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			let uriString = URI.revive(endCellUri).toString();
 			endCell = editor.cells.find(c => c.cellUri.toString() === uriString);
 		}
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.RunNotebok)
+			.send();
 		return editor.runAllCells(startCell, endCell);
 	}
 

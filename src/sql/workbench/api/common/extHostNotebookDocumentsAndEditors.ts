@@ -14,6 +14,8 @@ import * as typeConverters from 'vs/workbench/api/common/extHostTypeConverters';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ok } from 'vs/base/common/assert';
 import { localize } from 'vs/nls';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 import {
 	SqlMainContext, INotebookDocumentsAndEditorsDelta, ExtHostNotebookDocumentsAndEditorsShape,
@@ -49,6 +51,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 
 	constructor(
 		private readonly _mainContext: IMainContext,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		if (this._mainContext) {
 			this._proxy = this._mainContext.getProxy(SqlMainContext.MainThreadNotebookDocumentsAndEditors);
@@ -211,6 +214,9 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		let id = await this._proxy.$tryShowNotebookDocument(uri, options);
 		let editor = this.getEditor(id);
 		if (editor) {
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.Open)
+				.withAdditionalProperties({ azdata_notebook_guid: id })
+				.send();
 			return editor;
 		} else {
 			throw new Error(`Failed to show notebook document ${uri.toString()}, should show in editor #${id}`);

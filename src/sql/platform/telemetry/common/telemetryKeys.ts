@@ -73,6 +73,8 @@ export enum TelemetryView {
 export enum TelemetryAction {
 	Click = 'Click',
 	Open = 'Open',
-	ModelViewDashboardOpened = 'ModelViewDashboardOpened'
+	ModelViewDashboardOpened = 'ModelViewDashboardOpened',
+	RunCell = 'RunCell',
+	RunNotebok = 'RunNotebook'
 }
 

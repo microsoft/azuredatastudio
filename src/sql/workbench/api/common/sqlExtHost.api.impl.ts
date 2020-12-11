@@ -34,6 +34,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionApiFactory as vsIApiFactory, createApiFactoryAndRegisterActors as vsApiFactory } from 'vs/workbench/api/common/extHost.api.impl';
 import { IExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
 import { ExtHostWorkspace } from 'sql/workbench/api/common/extHostWorkspace';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;
@@ -73,6 +74,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostLogService = accessor.get(ILogService);
 	const logService = accessor.get(ILogService);
 	const commands = accessor.get(IExtHostCommands);
+	const telemetryService = accessor.get(IAdsTelemetryService);
 
 	// Addressable instances
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
@@ -91,7 +93,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView, extHostBackgroundTaskManagement));
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
 	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
-	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
+	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol, telemetryService));
 	const extHostExtensionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostExtensionManagement, new ExtHostExtensionManagement(rpcProtocol));
 	const extHostWorkspace = rpcProtocol.set(SqlExtHostContext.ExtHostWorkspace, new ExtHostWorkspace(rpcProtocol));
 
