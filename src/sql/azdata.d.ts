@@ -2220,12 +2220,33 @@ declare module 'azdata' {
 	}
 
 	export enum AzureResource {
+		/**
+		 * Azure Resource Management (ARM)
+		 */
 		ResourceManagement = 0,
+		/**
+		 * SQL Azure
+		 */
 		Sql = 1,
+		/**
+		 * OSS RDMS
+		 */
 		OssRdbms = 2,
+		/**
+		 * Azure Key Vault
+		 */
 		AzureKeyVault = 3,
+		/**
+		 * Azure AD Graph
+		 */
 		Graph = 4,
+		/**
+		 * Microsoft Resource Management
+		 */
 		MicrosoftResourceManagement = 5,
+		/**
+		 * Azure Dev Ops
+		 */
 		AzureDevOps = 6
 	}
 
