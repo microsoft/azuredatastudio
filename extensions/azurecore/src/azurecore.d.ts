@@ -83,7 +83,6 @@ declare module 'azurecore' {
 		provideResources(): azureResource.IAzureResourceProvider[];
 
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors: boolean, query: string): Promise<ResourceQueryResult<T>>;
-		makeHttpGetRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean, url: string): Promise<HttpGetRequestResult>;
 	}
 
 	export type GetSubscriptionsResult = { subscriptions: azureResource.AzureResourceSubscription[], errors: Error[] };
