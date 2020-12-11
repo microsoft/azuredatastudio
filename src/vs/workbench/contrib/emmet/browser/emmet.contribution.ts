@@ -3,7 +3,5 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerEditorCommand } from 'vs/editor/browser/editorExtensions';
-import { expandEmmetAbbreviationCommand } from './expandEmmetAbbreviation';
+import './actions/expandAbbreviation';
 
-registerEditorCommand(expandEmmetAbbreviationCommand);
