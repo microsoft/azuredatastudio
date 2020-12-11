@@ -27,4 +27,9 @@ export class DataWorkspaceExtension implements IExtension {
 	get defaultProjectSaveLocation(): vscode.Uri | undefined {
 		return defaultProjectSaveLocation();
 	}
+
+	validateWorkspace(): Promise<boolean> {
+		return this.workspaceService.validateWorkspace();
+	}
+
 }
