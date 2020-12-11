@@ -122,13 +122,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				columns: [toolColumn, descriptionColumn, installStatusColumn, versionColumn, minVersionColumn, installedPathColumn],
 				width: tableWidth,
 				ariaLabel: loc.requiredToolsText
-			}).withValidation((component) => {
-				for (let i = 0; i < this._tools.length; i++) {
-					if (this._tools[i].status !== ToolStatus.Installed) {
-						return false;
-					}
-				}
-				return true;
 			}).component();
 
 			const toolsTableWrapper = view.modelBuilder.divContainer().withLayout({ width: tableWidth }).component();
@@ -387,6 +380,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	private setUiControlsEnabled(enable: boolean): void {
 		this._agreementContainer.enabled = enable;
 		this._optionsContainer.enabled = enable;
+		this.wizard.wizardObject.cancelButton.enabled = enable;
 	}
 
 	public async onLeave(): Promise<void> {
