@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.25.1
+* Release date: December 10, 2020
+* Release status: General Availability
+* Fixes https://github.com/microsoft/azuredatastudio/issues/13751
+
 ## Version 1.25.0
 * Release date: December 8, 2020
 * Release status: General Availability
