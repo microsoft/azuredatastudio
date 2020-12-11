@@ -279,7 +279,7 @@ export class PerFolderServerInstance implements IServerInstance {
 	}
 
 	private handleConnectionError(error: Error): void {
-		let action = this.errorHandler.handleError(error);
+		let action = this.errorHandler.handleError();
 		if (action === ErrorAction.Shutdown) {
 			this.notify(this.options.install, localize('jupyterError', "Error sent from Jupyter: {0}", utils.getErrorMessage(error)));
 			this.stop();
@@ -365,7 +365,7 @@ export class PerFolderServerInstance implements IServerInstance {
 class ErrorHandler {
 	private numErrors: number = 0;
 
-	public handleError(error: Error): ErrorAction {
+	public handleError(): ErrorAction {
 		this.numErrors++;
 		return this.numErrors > 3 ? ErrorAction.Shutdown : ErrorAction.Continue;
 	}
