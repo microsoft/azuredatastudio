@@ -1673,6 +1673,30 @@ class LoadingComponentWrapper extends ComponentWrapper implements azdata.Loading
 		this.setProperty('loading', value);
 	}
 
+	public get showText(): boolean {
+		return this.properties['showText'];
+	}
+
+	public set showText(value: boolean) {
+		this.setProperty('showText', value);
+	}
+
+	public get loadingText(): string {
+		return this.properties['loadingText'];
+	}
+
+	public set loadingText(value: string) {
+		this.setProperty('loadingText', value);
+	}
+
+	public get loadingCompletedText(): string {
+		return this.properties['loadingCompletedText'];
+	}
+
+	public set loadingCompletedText(value: string) {
+		this.setProperty('loadingCompletedText', value);
+	}
+
 	public get component(): azdata.Component {
 		return this.items[0];
 	}
