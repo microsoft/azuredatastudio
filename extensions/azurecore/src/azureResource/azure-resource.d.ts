@@ -8,6 +8,10 @@ declare module 'azureResource' {
 	import { DataProvider, Account, TreeItem } from 'azdata';
 	export namespace azureResource {
 
+		/**
+		 * AzureCore core extension supports following resource types of Azure Resource Graph.
+		 * To add more resources, please refer this guide: https://docs.microsoft.com/en-us/azure/governance/resource-graph/reference/supported-tables-resources
+		 */
 		export const enum AzureResourceType {
 			resourceGroup = 'microsoft.resources/subscriptions/resourcegroups',
 			sqlServer = 'microsoft.sql/servers',
