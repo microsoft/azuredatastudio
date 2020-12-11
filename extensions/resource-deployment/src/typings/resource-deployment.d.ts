@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 declare module 'resource-deployment' {
 	import * as azdata from 'azdata';
+	import * as vscode from 'vscode';
 
 	export const enum ErrorType {
 		userCancelled,
@@ -36,7 +37,7 @@ declare module 'resource-deployment' {
 	 */
 
 	export interface IExtension {
-		registerOptionsSourceProvider(provider: IOptionsSourceProvider): void,
-		registerValueProvider(provider: IValueProvider): void
+		registerOptionsSourceProvider(provider: IOptionsSourceProvider): vscode.Disposable,
+		registerValueProvider(provider: IValueProvider): vscode.Disposable
 	}
 }

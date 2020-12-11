@@ -60,7 +60,7 @@ export class GuestSessionManager {
 					connectionOptions['serverName'] = documentState.serverName;
 					connectionOptions['databaseName'] = documentState.databaseName;
 					connectionOptions['userName'] = 'liveshare';
-					connectionOptions['password'] = 'liveshare';
+					connectionOptions['password'] = 'liveshare'; // [SuppressMessage("Microsoft.Security", "CS001:SecretInline", Justification="Stub value for testing")]
 					connectionOptions['authenticationType'] = 'liveshare';
 					connectionOptions['savePassword'] = false;
 					connectionOptions['saveProfile'] = false;
