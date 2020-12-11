@@ -48,7 +48,6 @@ export default class GroupContainer extends ContainerBase<GroupLayout, GroupCont
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(ILogService) logService: ILogService) {
 		super(changeRef, el, logService);
-		this.collapsed = false;
 	}
 
 	ngAfterViewInit(): void {

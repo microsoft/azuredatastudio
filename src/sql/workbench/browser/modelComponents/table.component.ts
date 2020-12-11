@@ -17,7 +17,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
+import { getContentHeight, getContentWidth, Dimension, isAncestor } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
@@ -30,6 +30,7 @@ import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { ButtonColumn, ButtonClickEventArgs } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { IUserFriendlyIcon, createIconCssClass, getIconKey } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
+import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 
 export enum ColumnSizingMode {
@@ -238,13 +239,6 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		this.baseInit();
 	}
 
-	public validate(): Thenable<boolean> {
-		return super.validate().then(valid => {
-			// TODO: table validation?
-			return valid;
-		});
-	}
-
 	ngOnDestroy(): void {
 		this.baseDestroy();
 	}
@@ -346,7 +340,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 
 		this.layoutTable();
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	private updateTableCells(cellInfos): void {
@@ -536,10 +530,22 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				this.appendData(args[0]);
 		}
 	}
+
 	private appendData(data: any[][]) {
+		const tableHasFocus = isAncestor(document.activeElement, <HTMLElement>this._inputContainer.nativeElement);
+		const currentActiveCell = this._table.grid.getActiveCell();
+		const wasFocused = tableHasFocus && this._table.grid.getDataLength() > 0 && currentActiveCell;
+
 		this._tableData.push(this.transformData(data, this.columns));
 		this.data = this._tableData.getItems().map(dataObject => Object.values(dataObject));
 		this.layoutTable();
+
+		if (wasFocused) {
+			if (!this._table.grid.getActiveCell()) {
+				this._table.grid.setActiveCell(currentActiveCell.row, currentActiveCell.cell);
+			}
+			this._table.grid.getActiveCellNode().focus();
+		}
 	}
 }
 

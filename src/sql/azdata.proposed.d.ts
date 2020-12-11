@@ -6,7 +6,6 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
-import { LoadingComponentProperties } from 'azdata';
 
 declare module 'azdata' {
 	/**
@@ -72,10 +71,6 @@ declare module 'azdata' {
 			output_type: string;
 			resultSet: ResultSetSummary;
 			data: any;
-		}
-
-		export interface ICellOutputMetadata {
-			resultSet?: ResultSetSummary;
 		}
 
 		export interface INotebookMetadata {
@@ -270,9 +265,13 @@ declare module 'azdata' {
 
 	export interface HyperlinkComponent {
 		/**
-		 * An event called when the text is clicked
+		 * An event called when the hyperlink is clicked
 		 */
 		onDidClick: vscode.Event<any>;
+	}
+
+	export interface HyperlinkComponentProperties {
+		showLinkIcon?: boolean;
 	}
 
 	export interface DeclarativeTableColumn {
@@ -415,7 +414,7 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableCellValue {
-		value: string | number | boolean;
+		value: string | number | boolean | Component;
 		ariaLabel?: string;
 		style?: CssStyles
 	}
@@ -813,6 +812,19 @@ declare module 'azdata' {
 		 * Title of editor
 		 */
 		title: string;
+	}
+
+	export namespace workspace {
+		/**
+		 * Creates and enters a workspace at the specified location
+		 */
+		export function createWorkspace(location: vscode.Uri, workspaceFile?: vscode.Uri): Promise<void>;
+
+		/**
+		 * Enters the workspace with the provided path
+		 * @param workspacefile
+		 */
+		export function enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 	}
 
 	export interface TableComponentProperties {

@@ -116,7 +116,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async pinNotebook(bookTreeItem: BookTreeItem): Promise<void> {
 		let bookPathToUpdate = bookTreeItem.book?.contentPath;
 		if (bookPathToUpdate) {
-			let pinStatusChanged = this.bookPinManager.pinNotebook(bookTreeItem);
+			let pinStatusChanged = await this.bookPinManager.pinNotebook(bookTreeItem);
 			if (pinStatusChanged) {
 				bookTreeItem.contextValue = 'pinnedNotebook';
 			}
@@ -126,7 +126,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async unpinNotebook(bookTreeItem: BookTreeItem): Promise<void> {
 		let bookPathToUpdate = bookTreeItem.book?.contentPath;
 		if (bookPathToUpdate) {
-			let pinStatusChanged = this.bookPinManager.unpinNotebook(bookTreeItem);
+			let pinStatusChanged = await this.bookPinManager.unpinNotebook(bookTreeItem);
 			if (pinStatusChanged) {
 				bookTreeItem.contextValue = 'savedNotebook';
 			}
@@ -386,7 +386,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (shouldReveal || this._bookViewer?.visible) {
 			bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath) : undefined;
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
-			if (bookItem?.contextValue !== 'pinnedNotebook') {
+			if (bookItem?.contextValue && bookItem.contextValue !== 'pinnedNotebook') {
 				// Note: 3 is the maximum number of levels that the vscode APIs let you expand to
 				await this._bookViewer.reveal(bookItem, { select: true, focus: true, expand: true });
 			}

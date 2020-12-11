@@ -103,7 +103,7 @@
       <DatabaseSqlCmdVariable>TestProjectName</DatabaseSqlCmdVariable>
     </ProjectReference>
   </ItemGroup>
-  <Target Name="AfterClean">
+  <Target Name="BeforeBuild">
     <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
   </Target>
 </Project>

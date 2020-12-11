@@ -7,7 +7,7 @@ import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { NotebookWizardPageInfo } from '../../interfaces';
-import { initializeWizardPage, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
+import { initializeWizardPage, InputComponent, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
 import { ResourceTypePage } from '../resourceTypePage';
 import { WizardPageInfo } from '../wizardPageInfo';
 import { NotebookWizardModel } from './notebookWizardModel';
@@ -59,7 +59,7 @@ export class NotebookWizardPage extends ResourceTypePage {
 			},
 			onNewInputComponentCreated: (
 				name: string,
-				inputComponentInfo: InputComponentInfo
+				inputComponentInfo: InputComponentInfo<InputComponent>
 			): void => {
 				if (name) {
 					this._model.inputComponents[name] = inputComponentInfo;
@@ -99,6 +99,12 @@ export class NotebookWizardPage extends ResourceTypePage {
 		if (this.pageInfo.isSummaryPage) {
 			await setModelValues(this._model.inputComponents, this.wizard.model);
 		}
+
+		/**
+		 * Enabling or disabling the generate script button based on page validity.
+		 * Since it is a shared button, we have to run this logic every time the user enters the page to reflect the current page status.
+		 */
+		this.wizard.wizardObject.generateScriptButton.enabled = this.pageObject.valid;
 
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };

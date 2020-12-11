@@ -1,0 +1,18 @@
+<svg id="f43e4801-4f55-4d5f-909d-6739feccec92" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="b7240381-76e4-42bd-96fb-e944ca59ba0a" x1="50" y1="87.092" x2="50" y2="31.71" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0078d4"/>
+      <stop offset="1" stop-color="#5ea0ef"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <path d="M22.615,39.642h54.77V70.185a1.836,1.836,0,0,1-1.836,1.836h-51.1a1.836,1.836,0,0,1-1.836-1.836Z" fill="url(#b7240381-76e4-42bd-96fb-e944ca59ba0a)"/>
+    <path d="M24.451,27.979h51.1a1.836,1.836,0,0,1,1.836,1.836v9.827H22.615V29.783A1.835,1.835,0,0,1,24.451,27.979Z" fill="#8fc9f9"/>
+    <g>
+      <circle cx="27.869" cy="34.304" r="1.713" fill="#0078d4"/>
+      <circle cx="34.364" cy="34.304" r="1.713" fill="#0078d4"/>
+      <circle cx="40.86" cy="34.304" r="1.713" fill="#0078d4"/>
+    </g>
+    <path d="M22.615,39.642h54.77V70.185a1.836,1.836,0,0,1-1.836,1.836h-51.1a1.836,1.836,0,0,1-1.836-1.836Z" fill="#feffff" opacity="0.07"/>
+  </g>
+</svg>

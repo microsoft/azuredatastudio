@@ -23,12 +23,17 @@ export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.S
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
 // Project Provider
-export const projectTypeDisplayName = localize('projectTypeDisplayName', 'Database Project');
+export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
+export const emptyProjectTypeDisplayName = localize('emptyProjectTypeDisplayName', "SQL Database");
+export const emptyProjectTypeDescription = localize('emptyProjectTypeDescription', "Develop and publish schemas for SQL databases starting from an empty project");
+
+export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
+export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Edge");
+export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for SQL Edge");
 
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';
-export const sqlDatabaseProjectsViewFocusCommand = 'sqlDatabaseProjectsView.focus';
 export const vscodeOpenCommand = 'vscode.open';
 
 // UI Strings
@@ -54,10 +59,6 @@ export const objectType = localize('objectType', "Object Type");
 export const schema = localize('schema', "Schema");
 export const schemaObjectType = localize('schemaObjectType', "Schema/Object Type");
 export const defaultProjectNameStarter = localize('defaultProjectNameStarter', "DatabaseProject");
-export const newDefaultProjectSaveLocation = localize('newDefaultProjectSaveLocation', "Would you like to update the default location to save new database projects?");
-export const invalidDefaultProjectSaveLocation = localize('invalidDefaultProjectSaveLocation', "Default location to save new database projects is invalid. Would you like to update it?");
-export const openWorkspaceSettings = localize('openWorkspaceSettings', "Yes, open Settings");
-export const doNotPromptAgain = localize('doNotPromptAgain', "Don't ask again");
 export const reloadProject = localize('reloadProject', "Would you like to reload your database project?");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
@@ -95,7 +96,7 @@ export const defaultUser = localize('default', "default");
 export const addDatabaseReferenceDialogName = localize('addDatabaseReferencedialogName', "Add database reference");
 export const addDatabaseReferenceOkButtonText = localize('addDatabaseReferenceOkButtonText', "Add reference");
 export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Type");
-export const projectRadioButtonTitle = localize('projectRadioButtonTitle', "Database project in folder");
+export const projectRadioButtonTitle = localize('projectRadioButtonTitle', "Project");
 export const systemDatabaseRadioButtonTitle = localize('systemDatabaseRadioButtonTitle', "System database");
 export const dacpacText = localize('dacpacText', "Data-tier application (.dacpac)");
 export const dacpacPlaceholder = localize('dacpacPlaceholder', "Select .dacpac");
@@ -119,6 +120,25 @@ export const otherServer = 'OtherServer';
 export const otherSeverVariable = 'OtherServer';
 export const databaseProject = localize('databaseProject', "Database project");
 
+// Create Project From Database dialog strings
+
+export const createProjectFromDatabaseDialogName = localize('createProjectFromDatabaseDialogName', "Create project from database");
+export const createProjectDialogOkButtonText = localize('createProjectDialogOkButtonText', "Create");
+export const sourceDatabase = localize('sourceDatabase', "Source database");
+export const targetProject = localize('targetProject', "Target project");
+export const createProjectSettings = localize('createProjectSettings', "Settings");
+export const projectNameLabel = localize('projectNameLabel', "Name");
+export const projectNamePlaceholderText = localize('projectNamePlaceholderText', "Enter project name");
+export const projectLocationLabel = localize('projectLocationLabel', "Location");
+export const projectLocationPlaceholderText = localize('projectLocationPlaceholderText', "Select location to create project");
+export const browseButtonText = localize('browseButtonText', "Browse folder");
+export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
+export const addProjectToCurrentWorkspace = localize('addProjectToCurrentWorkspace', "This project will be added to the current workspace.");
+export const newWorkspaceWillBeCreated = localize('newWorkspaceWillBeCreated', "A new workspace will be created for this project.");
+export const workspaceLocationTitle = localize('workspaceLocationTitle', "Workspace location");
+export const workspace = localize('workspace', "Workspace");
+
+
 // Error messages
 
 export const multipleSqlProjFiles = localize('multipleSqlProjFilesSelected', "Multiple .sqlproj files selected; please select only one.");
@@ -130,7 +150,6 @@ export const unknownDataSourceType = localize('unknownDataSourceType', "Unknown 
 export const invalidSqlConnectionString = localize('invalidSqlConnectionString', "Invalid SQL connection string");
 export const projectNameRequired = localize('projectNameRequired', "Name is required to create a new database project.");
 export const projectLocationRequired = localize('projectLocationRequired', "Location is required to create a new database project.");
-export const projectLocationNotEmpty = localize('projectLocationNotEmpty', "Current project location is not empty. Select an empty folder for precise extraction.");
 export const extractTargetRequired = localize('extractTargetRequired', "Target information for extract is required to create database project.");
 export const schemaCompareNotInstalled = localize('schemaCompareNotInstalled', "Schema compare extension installation is required to run schema compare");
 export const buildFailedCannotStartSchemaCompare = localize('buildFailedCannotStartSchemaCompare', "Schema compare could not start because build failed");
@@ -185,6 +204,9 @@ export const scriptFriendlyName = localize('scriptFriendlyName', "Script");
 export const tableFriendlyName = localize('tableFriendlyName', "Table");
 export const viewFriendlyName = localize('viewFriendlyName', "View");
 export const storedProcedureFriendlyName = localize('storedProcedureFriendlyName', "Stored Procedure");
+export const dataSourceFriendlyName = localize('dataSource', "Data Source");
+export const fileFormatFriendlyName = localize('fileFormat', "File Format");
+export const externalStreamFriendlyName = localize('externalStream', "External Stream");
 export const externalStreamingJobFriendlyName = localize('externalStreamingJobFriendlyName', "External Streaming Job");
 export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "Script.PreDeployment");
 export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "Script.PostDeployment");
@@ -199,7 +221,7 @@ export const Project = 'Project';
 export const Condition = 'Condition';
 export const Target = 'Target';
 export const Name = 'Name';
-export const AfterCleanTarget = 'AfterClean';
+export const BeforeBuildTarget = 'BeforeBuild';
 export const Delete = 'Delete';
 export const Files = 'Files';
 export const PackageReference = 'PackageReference';
@@ -258,11 +280,6 @@ export const authenticationSetting = 'Authentication';
 export const activeDirectoryInteractive = 'active directory interactive';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
-
-// Workspace settings for saving new database projects
-export const dbProjectConfigurationKey = 'sqlDatabaseProjects';
-export const projectSaveLocationKey = 'defaultProjectSaveLocation';
-export const showUpdatePromptKey = 'showUpdateSaveLocationPrompt';
 
 // Authentication types
 export const integratedAuth = 'Integrated';

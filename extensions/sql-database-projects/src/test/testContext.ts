@@ -110,7 +110,7 @@ export class MockDacFxService implements mssql.IDacFxService {
 	public exportBacpac(_: string, __: string, ___: string, ____: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
 	public importBacpac(_: string, __: string, ___: string, ____: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
 	public extractDacpac(_: string, __: string, ___: string, ____: string, _____: string, ______: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
-	public importDatabaseProject(_: string, __: string, ___: string, ____: string, _____: string, ______: mssql.ExtractTarget, _______: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
+	public createProjectFromDatabase(_: string, __: string, ___: string, ____: string, _____: string, ______: mssql.ExtractTarget, _______: azdata.TaskExecutionMode): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
 	public deployDacpac(_: string, __: string, ___: boolean, ____: string, _____: azdata.TaskExecutionMode, ______?: Record<string, string>): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
 	public generateDeployScript(_: string, __: string, ___: string, ____: azdata.TaskExecutionMode, ______?: Record<string, string>): Thenable<mssql.DacFxResult> { return Promise.resolve(mockDacFxResult); }
 	public generateDeployPlan(_: string, __: string, ___: string, ____: azdata.TaskExecutionMode): Thenable<mssql.GenerateDeployPlanResult> { return Promise.resolve(mockDacFxResult); }
@@ -147,3 +147,26 @@ export function createContext(): TestContext {
 		dacFxService: TypeMoq.Mock.ofType(MockDacFxService)
 	};
 }
+
+// Mock test data
+export const mockConnectionProfile: azdata.IConnectionProfile = {
+	connectionName: 'My Connection',
+	serverName: 'My Server',
+	databaseName: 'My Database',
+	userName: 'My User',
+	password: 'My Pwd',
+	authenticationType: 'SqlLogin',
+	savePassword: false,
+	groupFullName: 'My groupName',
+	groupId: 'My GroupId',
+	providerName: 'My Server',
+	saveProfile: true,
+	id: 'My Id',
+	options: {
+		server: 'My Server',
+		database: 'My Database',
+		user: 'My User',
+		password: 'My Pwd',
+		authenticationType: 'SqlLogin'
+	}
+};

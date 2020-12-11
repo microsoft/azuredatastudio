@@ -5,9 +5,11 @@
 
 import 'mocha';
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import * as sinon from 'sinon';
 import * as should from 'should';
 import * as path from 'path';
+import * as TypeMoq from 'typemoq';
 import { WorkspaceService } from '../services/workspaceService';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import { createProjectProvider } from './projectProviderRegistry.test';
@@ -61,7 +63,12 @@ function createMockExtension(id: string, isActive: boolean, projectTypes: string
 }
 
 suite('WorkspaceService Tests', function (): void {
-	const service = new WorkspaceService();
+	const mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+	const mockGlobalState = TypeMoq.Mock.ofType<vscode.Memento>();
+	mockGlobalState.setup(x => x.update(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
+	mockExtensionContext.setup(x => x.globalState).returns(() => mockGlobalState.object);
+
+	const service = new WorkspaceService(mockExtensionContext.object);
 
 	this.afterEach(() => {
 		sinon.restore();
@@ -111,10 +118,14 @@ suite('WorkspaceService Tests', function (): void {
 
 		const provider1 = createProjectProvider([
 			{
+				id: 'tp1',
+				description: '',
 				projectFileExtension: 'testproj',
 				icon: '',
 				displayName: 'test project'
 			}, {
+				id: 'tp2',
+				description: '',
 				projectFileExtension: 'testproj1',
 				icon: '',
 				displayName: 'test project 1'
@@ -122,6 +133,8 @@ suite('WorkspaceService Tests', function (): void {
 		]);
 		const provider2 = createProjectProvider([
 			{
+				id: 'sp1',
+				description: '',
 				projectFileExtension: 'sqlproj',
 				icon: '',
 				displayName: 'sql project'
@@ -149,10 +162,12 @@ suite('WorkspaceService Tests', function (): void {
 		const extension2 = createMockExtension('ext2', false, ['sqlproj']);
 		const extension3 = createMockExtension('ext3', false, ['dbproj']);
 		stubAllExtensions([extension1, extension2, extension3].map(ext => ext.extension));
-		const getProviderByProjectTypeStub = sinon.stub(ProjectProviderRegistry, 'getProviderByProjectType');
+		const getProviderByProjectTypeStub = sinon.stub(ProjectProviderRegistry, 'getProviderByProjectExtension');
 		getProviderByProjectTypeStub.onFirstCall().returns(undefined);
 		getProviderByProjectTypeStub.onSecondCall().returns(createProjectProvider([
 			{
+				id: 'sp1',
+				description: '',
 				projectFileExtension: 'sqlproj',
 				icon: '',
 				displayName: 'test project'
@@ -167,6 +182,8 @@ suite('WorkspaceService Tests', function (): void {
 
 		getProviderByProjectTypeStub.reset();
 		getProviderByProjectTypeStub.returns(createProjectProvider([{
+			id: 'tp2',
+			description: '',
 			projectFileExtension: 'csproj',
 			icon: '',
 			displayName: 'test cs project'
@@ -211,6 +228,45 @@ suite('WorkspaceService Tests', function (): void {
 		should.strictEqual(updateWorkspaceFoldersStub.calledWith(1, null, sinon.match((arg) => {
 			return arg.uri.path === '/test/other';
 		})), true, 'updateWorkspaceFolder parameters does not match expectation');
+		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, true, 'the onDidWorkspaceProjectsChange event should have been fired');
+		onWorkspaceProjectsChangedDisposable.dispose();
+	});
+
+	test('test addProjectsToWorkspace when no workspace open', async () => {
+		stubWorkspaceFile(undefined);
+		const onWorkspaceProjectsChangedStub = sinon.stub();
+		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
+			onWorkspaceProjectsChangedStub();
+		});
+		const createWorkspaceStub = sinon.stub(azdata.workspace, 'createWorkspace').resolves(undefined);
+
+		await service.addProjectsToWorkspace([
+			vscode.Uri.file('/test/folder/proj1.sqlproj')
+		]);
+
+		should.strictEqual(createWorkspaceStub.calledOnce, true, 'createWorkspace should have been called once');
+		should.strictEqual(onWorkspaceProjectsChangedStub.notCalled, true, 'the onDidWorkspaceProjectsChange event should not have been fired');
+		onWorkspaceProjectsChangedDisposable.dispose();
+	});
+
+	test('test loadTempProjects', async () => {
+		const processPath = (original: string): string => {
+			return original.replace(/\//g, path.sep);
+		};
+		stubWorkspaceFile('/test/folder/proj1.code-workspace');
+		const updateConfigurationStub = sinon.stub();
+		const getConfigurationStub = sinon.stub().returns([processPath('folder1/proj2.sqlproj')]);
+		const onWorkspaceProjectsChangedStub = sinon.stub();
+		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
+			onWorkspaceProjectsChangedStub();
+		});
+		stubGetConfigurationValue(getConfigurationStub, updateConfigurationStub);
+		sinon.stub(azdata.workspace, 'createWorkspace').resolves(undefined);
+		sinon.stub(vscode.workspace, 'workspaceFolders').value(['folder1']);
+		mockGlobalState.setup(x => x.get(TypeMoq.It.isAny())).returns(() => [processPath('folder1/proj2.sqlproj')]);
+
+		await service.loadTempProjects();
+
 		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, true, 'the onDidWorkspaceProjectsChange event should have been fired');
 		onWorkspaceProjectsChangedDisposable.dispose();
 	});

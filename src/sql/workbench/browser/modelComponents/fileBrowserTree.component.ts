@@ -91,13 +91,6 @@ export default class FileBrowserTreeComponent extends ComponentBase<azdata.FileB
 		}
 	}
 
-	public validate(): Thenable<boolean> {
-		return super.validate().then(valid => {
-			// TODO: tree validation?
-			return valid;
-		});
-	}
-
 	ngOnDestroy(): void {
 		this.baseDestroy();
 	}
@@ -115,7 +108,6 @@ export default class FileBrowserTreeComponent extends ComponentBase<azdata.FileB
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this.validate();
 		if (this.ownerUri) {
 			this.initialize();
 		}

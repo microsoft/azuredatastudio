@@ -369,18 +369,16 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 			});
 		endpoints.unshift(...sqlServerMasterEndpoints);
 
-		this.endpointsTable.data = endpoints.map(e => {
+		this.endpointsTable.dataValues = endpoints.map(e => {
 			const copyValueCell = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({ title: loc.copy }).component();
 			copyValueCell.iconPath = IconPathHelper.copy;
 			copyValueCell.onDidClick(() => {
 				vscode.env.clipboard.writeText(e.endpoint);
 				vscode.window.showInformationMessage(loc.copiedEndpoint(getEndpointDisplayText(e.name, e.description)));
 			});
-			copyValueCell.iconHeight = '14px';
-			copyValueCell.iconWidth = '14px';
-			return [getEndpointDisplayText(e.name, e.description),
-			createEndpointComponent(this.modelView.modelBuilder, e, this.model, hyperlinkedEndpoints.some(he => he === e.name)),
-				copyValueCell];
+			return [{ value: getEndpointDisplayText(e.name, e.description) },
+			{ value: createEndpointComponent(this.modelView.modelBuilder, e, this.model, hyperlinkedEndpoints.some(he => he === e.name)) },
+			{ value: copyValueCell }];
 		});
 
 		this.endpointsDisplayContainer.removeItem(this.endpointsLoadingComponent);

@@ -20,3 +20,4 @@ import './mainThreadObjectExplorer';
 import './mainThreadQueryEditor';
 import './mainThreadResourceProvider';
 import './mainThreadTasks';
+import './mainThreadWorkspace';

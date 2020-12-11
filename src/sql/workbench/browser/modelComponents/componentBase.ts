@@ -20,6 +20,7 @@ import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IComponentDescriptor, IComponent, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 
 export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
@@ -97,7 +98,7 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 		this.properties = properties;
 		this.updateStyles();
 		this.layout();
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	// Helper Function to update single property
@@ -106,7 +107,7 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 			this.properties[key] = value;
 			this.updateStyles();
 			this.layout();
-			this.validate();
+			this.validate().catch(onUnexpectedError);
 		}
 	}
 
@@ -125,7 +126,7 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 			eventType: ComponentEventType.PropertiesChanged,
 			args: this.getProperties()
 		});
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	public get enabled(): boolean {
@@ -246,19 +247,18 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 		}
 	}
 
-	public validate(): Thenable<boolean> {
+	public async validate(): Promise<boolean> {
 		let validations = this._validations.map(validation => Promise.resolve(validation()));
-		return Promise.all(validations).then(values => {
-			let isValid = values.every(value => value === true);
-			if (this._valid !== isValid) {
-				this._valid = isValid;
-				this.fireEvent({
-					eventType: ComponentEventType.validityChanged,
-					args: this._valid
-				});
-			}
-			return isValid;
-		});
+		const validationResults = await Promise.all(validations);
+		const isValid = validationResults.every(value => value === true);
+		if (this._valid !== isValid) {
+			this._valid = isValid;
+			this.fireEvent({
+				eventType: ComponentEventType.validityChanged,
+				args: this._valid
+			});
+		}
+		return isValid;
 	}
 
 	public focus(): void {
@@ -320,7 +320,7 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 			component.registerEventHandler(async event => {
 				if (event.eventType === ComponentEventType.validityChanged) {
 					this.logService.debug(`Running validation on container ${this.descriptor.id} because validity of child component ${componentDescriptor.id} changed`);
-					this.validate();
+					this.validate().catch(onUnexpectedError);
 				}
 			});
 		}, true);
@@ -347,26 +347,27 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 		this.items = [];
 		this.onItemsUpdated();
 		this._changeRef.detectChanges();
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.items.forEach(item => {
 			let component = this.modelStore.getComponent(item.descriptor.id);
-			if (component) {
+			// Let child components control their own enabled status if we don't have one specifically set
+			if (component && properties.enabled !== undefined) {
 				component.enabled = this.enabled;
 			}
 		});
 	}
 
 	public layout(): void {
+		super.layout();
 		if (this._componentWrappers) {
 			this._componentWrappers.forEach(wrapper => {
 				wrapper.layout();
 			});
 		}
-		super.layout();
 	}
 
 	abstract setLayout(layout: any): void;

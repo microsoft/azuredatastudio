@@ -99,7 +99,7 @@ export interface IComponent extends IDisposable {
 	setProperties?: (properties: { [key: string]: any; }) => void;
 	enabled: boolean;
 	readonly valid?: boolean;
-	validate(): Thenable<boolean>;
+	validate(): Promise<boolean>;
 	setDataProvider(handle: number, componentId: string, context: any): void;
 	refreshDataProvider(item: any): void;
 	focus(): void;
