@@ -61,7 +61,7 @@ export const yes = localize('arc.yes', "Yes");
 export const no = localize('arc.no', "No");
 export const feedback = localize('arc.feedback', "Feedback");
 export const selectConnectionString = localize('arc.selectConnectionString', "Select from available client connection strings below.");
-export const addingWokerNodes = localize('arc.addingWokerNodes', "adding worker nodes");
+export const addingWorkerNodes = localize('arc.addingWorkerNodes', "adding worker nodes");
 export const workerNodesDescription = localize('arc.workerNodesDescription', "Expand your server group and scale your database by adding worker nodes.");
 export const postgresConfigurationInformation = localize('arc.postgres.configurationInformation', "You can configure the number of CPU cores and storage size that will apply to both worker nodes and coordinator node. Each worker node will have the same configuration. Adjust the number of CPU cores and memory settings for your server group.");
 export const workerNodesInformation = localize('arc.workerNodeInformation', "In preview it is not possible to reduce the number of worker nodes. Please refer to documentation linked above for more information.");
@@ -85,6 +85,8 @@ export const passwordToController = localize('arc.passwordToController', "Provid
 export const controllerUrl = localize('arc.controllerUrl', "Controller URL");
 export const serverEndpoint = localize('arc.serverEndpoint', "Server Endpoint");
 export const controllerName = localize('arc.controllerName', "Name");
+export const controllerKubeConfig = localize('arc.controllerKubeConfig', "Kube Config File Path");
+export const controllerClusterContext = localize('arc.controllerClusterContext', "Cluster Context");
 export const defaultControllerName = localize('arc.defaultControllerName', "arc-dc");
 export const username = localize('arc.username', "Username");
 export const password = localize('arc.password', "Password");
@@ -139,7 +141,6 @@ export const coresRequest = localize('arc.coresRequest', "CPU request:");
 export const memoryLimit = localize('arc.memoryLimit', "Memory limit (in GB):");
 export const memoryRequest = localize('arc.memoryRequest', "Memory request (in GB):");
 export const workerValidationErrorMessage = localize('arc.workerValidationErrorMessage', "The number of workers cannot be decreased.");
-export const coresValidationErrorMessage = localize('arc.coresValidationErrorMessage', "Valid CPU resource quantities are strictly positive.");
 export const memoryRequestValidationErrorMessage = localize('arc.memoryRequestValidationErrorMessage', "Memory request must be at least 0.25Gib");
 export const memoryLimitValidationErrorMessage = localize('arc.memoryLimitValidationErrorMessage', "Memory limit must be at least 0.25Gib");
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
@@ -172,6 +173,7 @@ export function numVCores(vCores: string | undefined): string {
 	}
 }
 export function updated(when: string): string { return localize('arc.updated', "Updated {0}", when); }
+export function validationMin(min: number): string { return localize('arc.validationMin', "Value must be greater than or equal to {0}.", min); }
 
 // Errors
 export const connectionRequired = localize('arc.connectionRequired', "A connection is required to show all properties. Click refresh to re-enter connection information");
@@ -202,6 +204,11 @@ export const variableValueFetchForUnsupportedVariable = (variableName: string) =
 export const isPasswordFetchForUnsupportedVariable = (variableName: string) => localize('getIsPassword.unknownVariableName', "Attempt to get isPassword for unknown variable:{0}", variableName);
 export const noControllerInfoFound = (name: string) => localize('noControllerInfoFound', "Controller Info could not be found with name: {0}", name);
 export const noPasswordFound = (controllerName: string) => localize('noPasswordFound', "Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.", controllerName);
+export const clusterContextNotFound = (clusterContext: string) => localize('clusterContextNotFound', "Cluster Context with name: {0} not found in the Kube config file", clusterContext);
+export const noCurrentClusterContext = localize('noCurrentClusterContext', "No current cluster context was found in the kube config file");
+export const browse = localize('filePicker.browse', "Browse");
+export const select = localize('button.label', "Select");
 export const noContextFound = (configFile: string) => localize('noContextFound', "No 'contexts' found in the config file: {0}", configFile);
 export const noCurrentContextFound = (configFile: string) => localize('noCurrentContextFound', "No context is marked as 'current-context' in the config file: {0}", configFile);
 export const noNameInContext = (configFile: string) => localize('noNameInContext', "No name field was found in a cluster context in the config file: {0}", configFile);
+export const userCancelledError = localize('userCancelledError', "User cancelled the dialog");

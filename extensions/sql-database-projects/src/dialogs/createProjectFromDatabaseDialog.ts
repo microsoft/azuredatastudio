@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as newProjectTool from '../tools/newProjectTool';
 import * as mssql from '../../../mssql';
+import * as path from 'path';
 
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
@@ -24,6 +25,7 @@ export class CreateProjectFromDatabaseDialog {
 	public projectNameTextBox: azdata.InputBoxComponent | undefined;
 	public projectLocationTextBox: azdata.InputBoxComponent | undefined;
 	public folderStructureDropDown: azdata.DropDownComponent | undefined;
+	public workspaceInputBox: azdata.InputBoxComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
 	private connectionId: string | undefined;
 	private toDispose: vscode.Disposable[] = [];
@@ -81,6 +83,10 @@ export class CreateProjectFromDatabaseDialog {
 			const createProjectSettingsFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			createProjectSettingsFormSection.addItems([folderStructureRow]);
 
+			const workspaceContainerRow = this.createWorkspaceContainerRow(view);
+			const createworkspaceContainerFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+			createworkspaceContainerFormSection.addItems([workspaceContainerRow]);
+
 			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
@@ -106,13 +112,22 @@ export class CreateProjectFromDatabaseDialog {
 								component: createProjectSettingsFormSection,
 							}
 						]
+					},
+					{
+						title: constants.workspace,
+						components: [
+							{
+								component: createworkspaceContainerFormSection,
+							}
+						]
 					}
 				], {
 					horizontal: false,
 					titleFontSize: cssStyles.titleFontSize
 				})
 				.withLayout({
-					width: '100%'
+					width: '100%',
+					padding: '10px 10px 0 20px'
 				});
 
 			let formModel = this.formBuilder.component();
@@ -129,12 +144,11 @@ export class CreateProjectFromDatabaseDialog {
 		const serverLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.server,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth,
-			CSSStyles: cssStyles.fontWeightBold
+			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();
 
-		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, sourceConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px', 'margin-top': '-20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-		connectionRow.insertItem(selectConnectionButton, 2, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '-10px', 'margin-top': '-20px' } });
+		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, sourceConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-5px', 'margin-top': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		connectionRow.insertItem(selectConnectionButton, 2, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '-5px', 'margin-top': '-10px' } });
 
 		return connectionRow;
 	}
@@ -143,21 +157,21 @@ export class CreateProjectFromDatabaseDialog {
 		this.sourceDatabaseDropDown = view.modelBuilder.dropDown().withProperties({
 			ariaLabel: constants.databaseNameLabel,
 			required: true,
-			width: cssStyles.textboxWidth,
+			width: cssStyles.createProjectFromDatabaseTextboxWidth,
 			editable: true,
 			fireOnTextChange: true
 		}).component();
 
 		this.sourceDatabaseDropDown.onValueChanged(() => {
 			this.setProjectName();
+			this.updateWorkspaceInputbox(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!);
 			this.tryEnableCreateButton();
 		});
 
 		const databaseLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.databaseNameLabel,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth,
-			CSSStyles: cssStyles.fontWeightBold
+			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();
 
 		const databaseRow = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdata.DropDownComponent>this.sourceDatabaseDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
@@ -173,7 +187,7 @@ export class CreateProjectFromDatabaseDialog {
 		this.sourceConnectionTextBox = view.modelBuilder.inputBox().withProperties({
 			value: '',
 			placeHolder: constants.selectConnection,
-			width: cssStyles.textboxWidth,
+			width: cssStyles.createProjectFromDatabaseTextboxWidth,
 			enabled: false
 		}).component();
 
@@ -229,24 +243,26 @@ export class CreateProjectFromDatabaseDialog {
 	private createProjectNameRow(view: azdata.ModelView): azdata.FlexContainer {
 		this.projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.projectNamePlaceholderText,
+			placeHolder: constants.projectNamePlaceholderText,
 			required: true,
-			width: cssStyles.textboxWidth,
+			width: cssStyles.createProjectFromDatabaseTextboxWidth,
 			validationErrorMessage: constants.projectNameRequired
 		}).component();
 
 		this.projectNameTextBox.onTextChanged(() => {
 			this.projectNameTextBox!.value = this.projectNameTextBox!.value?.trim();
+			this.projectNameTextBox!.updateProperty('title', this.projectNameTextBox!.value);
+			this.updateWorkspaceInputbox(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!);
 			this.tryEnableCreateButton();
 		});
 
 		const projectNameLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.projectNameLabel,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth,
-			CSSStyles: cssStyles.fontWeightBold
+			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();
 
-		const projectNameRow = view.modelBuilder.flexContainer().withItems([projectNameLabel, this.projectNameTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px', 'margin-top': '-20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const projectNameRow = view.modelBuilder.flexContainer().withItems([projectNameLabel, this.projectNameTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-5px', 'margin-top': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		return projectNameRow;
 	}
@@ -258,20 +274,20 @@ export class CreateProjectFromDatabaseDialog {
 			value: '',
 			ariaLabel: constants.projectLocationLabel,
 			placeHolder: constants.projectLocationPlaceholderText,
-			width: cssStyles.textboxWidth,
+			width: cssStyles.createProjectFromDatabaseTextboxWidth,
 			validationErrorMessage: constants.projectLocationRequired
 		}).component();
 
 		this.projectLocationTextBox.onTextChanged(() => {
 			this.projectLocationTextBox!.updateProperty('title', this.projectLocationTextBox!.value);
+			this.updateWorkspaceInputbox(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!);
 			this.tryEnableCreateButton();
 		});
 
 		const projectLocationLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.projectLocationLabel,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth,
-			CSSStyles: cssStyles.fontWeightBold
+			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();
 
 		const projectLocationRow = view.modelBuilder.flexContainer().withItems([projectLocationLabel, this.projectLocationTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
@@ -302,6 +318,7 @@ export class CreateProjectFromDatabaseDialog {
 
 			this.projectLocationTextBox!.value = folderUris[0].fsPath;
 			this.projectLocationTextBox!.updateProperty('title', folderUris[0].fsPath);
+			this.updateWorkspaceInputbox(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!);
 		});
 
 		return browseFolderButton;
@@ -313,7 +330,7 @@ export class CreateProjectFromDatabaseDialog {
 			value: constants.schemaObjectType,
 			ariaLabel: constants.folderStructureLabel,
 			required: true,
-			width: cssStyles.textboxWidth
+			width: cssStyles.createProjectFromDatabaseTextboxWidth
 		}).component();
 
 		this.folderStructureDropDown.onValueChanged(() => {
@@ -323,13 +340,48 @@ export class CreateProjectFromDatabaseDialog {
 		const folderStructureLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.folderStructureLabel,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth,
-			CSSStyles: cssStyles.fontWeightBold
+			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();
 
-		const folderStructureRow = view.modelBuilder.flexContainer().withItems([folderStructureLabel, <azdata.DropDownComponent>this.folderStructureDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '-20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const folderStructureRow = view.modelBuilder.flexContainer().withItems([folderStructureLabel, <azdata.DropDownComponent>this.folderStructureDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		return folderStructureRow;
+	}
+
+	/**
+	 * Creates container with information on which workspace the project will be added to and where the workspace will be
+	 * created if no workspace is currently open
+	 * @param view
+	 */
+	private createWorkspaceContainerRow(view: azdata.ModelView): azdata.FlexContainer {
+		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties({
+			ariaLabel: constants.workspaceLocationTitle,
+			enabled: false,
+			value: vscode.workspace.workspaceFile?.fsPath ?? '',
+			title: vscode.workspace.workspaceFile?.fsPath ?? '' // hovertext for if file path is too long to be seen in textbox
+		}).component();
+
+		const workspaceLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: vscode.workspace.workspaceFile ? constants.addProjectToCurrentWorkspace : constants.newWorkspaceWillBeCreated,
+			CSSStyles: { 'margin-top': '-10px', 'margin-bottom': '5px' }
+		}).component();
+
+		const workspaceContainerRow = view.modelBuilder.flexContainer().withItems([workspaceLabel, this.workspaceInputBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '0px' } }).withLayout({ flexFlow: 'column' }).component();
+
+		return workspaceContainerRow;
+	}
+
+	/**
+	 * Update the workspace inputbox based on the passed in location and name if there isn't a workspace currently open
+	 * @param location
+	 * @param name
+	 */
+	public updateWorkspaceInputbox(location: string, name: string): void {
+		if (!vscode.workspace.workspaceFile) {
+			const fileLocation = location && name ? path.join(location, `${name}.code-workspace`) : '';
+			this.workspaceInputBox!.value = fileLocation;
+			this.workspaceInputBox!.title = fileLocation;
+		}
 	}
 
 	// only enable Create button if all fields are filled
