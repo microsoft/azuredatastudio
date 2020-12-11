@@ -5,6 +5,7 @@
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { BasePage } from './basePage';
 import { ConfigurePathPage } from './configurePathPage';
 import { PickPackagesPage } from './pickPackagesPage';
@@ -36,9 +37,9 @@ export class ConfigurePythonWizard {
 	private _setupComplete: Deferred<void>;
 	private pythonPathsPromise: Promise<PythonPathInfo[]>;
 
-	constructor(private jupyterInstallation: JupyterServerInstallation) {
+	constructor(private jupyterInstallation: JupyterServerInstallation, private readonly _outputChannel: vscode.OutputChannel) {
 		this._setupComplete = new Deferred<void>();
-		this.pythonPathsPromise = (new PythonPathLookup()).getSuggestions();
+		this.pythonPathsPromise = (new PythonPathLookup(this._outputChannel)).getSuggestions();
 	}
 
 	public get wizard(): azdata.window.Wizard {
@@ -49,7 +50,7 @@ export class ConfigurePythonWizard {
 		return this._setupComplete.promise;
 	}
 
-	public async start(kernelName?: string, rejectOnCancel?: boolean, ...args: any[]): Promise<void> {
+	public async start(kernelName?: string, rejectOnCancel?: boolean): Promise<void> {
 		this.model = <ConfigurePythonModel>{
 			kernelName: kernelName,
 			pythonPathsPromise: this.pythonPathsPromise,
