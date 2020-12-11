@@ -361,6 +361,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 	}
 
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.Open)
+			.withAdditionalProperties({ azdata_notebook_path: resource.path })
+			.send();
 		return Promise.resolve(this.doOpenEditor(resource, options));
 	}
 
@@ -396,7 +399,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			return Promise.reject(new Error(localize('runActiveCell', "F5 shortcut key requires a code cell to be selected. Please select a code cell to run.")));
 		}
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.RunCell)
-			.withAdditionalProperties({ cell_guid: cell.cellGuid })
+			.withAdditionalProperties({ cell_language: cell.language })
 			.send();
 		return editor.runCell(cell);
 	}
@@ -416,8 +419,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			let uriString = URI.revive(endCellUri).toString();
 			endCell = editor.cells.find(c => c.cellUri.toString() === uriString);
 		}
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.RunNotebok)
-			.send();
+		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.RunNotebok);
 		return editor.runAllCells(startCell, endCell);
 	}
 
