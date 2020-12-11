@@ -13,6 +13,11 @@
 	z-index: 500;
 }
 
+.modal .btn-secondary {
+	border-style: solid;
+	border-width: 1px;
+}
+
 .modal:not(.flyout-dialog):not(.callout-dialog) .modal-dialog {
 	margin: auto;
 	width: 640px;
@@ -31,22 +36,6 @@
 }
 .modal.callout-dialog.compact .modal-dialog {
 	width: 288px;
-}
-
-.modal.callout-dialog .modal-content.arrow:before {
-	border-width: 1em;
-	border-style: solid;
-	border-color:
-		transparent
-		transparent
-		var(--bodybackground)
-		var(--bodybackground);
-	box-shadow: -3px 3px 3px 0 rgba(var(--foreground));
-	content: '';
-	display: block;
-	height: 0;
-	position: absolute;
-	width: 0;
 }
 
 .modal.callout-dialog .modal-content .insert-image .flex-container {
@@ -78,39 +67,59 @@
 .hc-black .modal.callout-dialog .modal-dialog {
 	box-shadow: none;
 }
-.hc-black .modal.callout-dialog .modal-content.arrow:before {
-	background-color: var(--bodybackground);
-	border-top: var(--border) solid 1px;
-	border-left: var(--border) solid 1px;
-	border-bottom: none;
-	border-right: none;
-	box-shadow: none;
-	height: 2em;
-	width: 2em;
-}
 
-.modal.callout-dialog .modal-content.arrow.from-below:before {
+/* Correct the arrow appearance for HC theme */
+.arrow:before {
+	border-width: 1px;
+	border-style: solid;
+	border-color:
+		transparent
+		transparent
+		var(--bodybackground)
+		var(--bodybackground);
+	box-shadow: -3px 3px 3px 0 rgba(var(--foreground));
+	content: '';
+	display: block;
+	height: 0;
+	position: absolute;
+	width: 0;
+}
+.arrow.from-below:before {
 	border-width: 0.5em;
 	left: 2em;
 	top: -0.2em;
 	transform: rotate(135deg);
 }
-.hc-black .modal.callout-dialog .modal-content.arrow.from-below:before {
-	left: 2em;
-	top: -1.1em;
-	transform: rotate(45deg);
-}
-
-.modal.callout-dialog .modal-content.arrow.from-left:before {
+.arrow.from-left:before {
+	background-color: var(--bodybackground);
+	height: 2em;
 	right: -1em;
 	top: 2em;
 	transform: rotate(-135deg);
+	width: 2em;
 }
-.hc-black .modal.callout-dialog .modal-content.arrow.from-left:before {
-	right: -1.1em;
-	top: 2em;
-	transform: rotate(135deg);
+
+.hc-black .arrow:before {
+	background-color: var(--bodybackground);
+	border-color:
+		transparent
+		transparent
+		var(--border)
+		var(--border);
+	border-width: 0.1em;
+	box-shadow: none;
+	height: 0.8em;
+	width: 0.8em;
 }
+.hc-black .arrow.from-below:before {
+	top: -0.4em;
+}
+.hc-black .arrow.from-left:before {
+	height: 2em;
+	right: -1.2em;
+	width: 2em;
+}
+
 
 .modal .modal-header {
 	padding: 15px;
@@ -262,9 +271,11 @@
 }
 
 .modal .footer-button a.monaco-button.monaco-text-button {
-	min-width: 100px;
+	border-radius: 2px;
+	height: 24px;
 	padding-left: 20px;
 	padding-right: 20px;
+	width: 80px;
 }
 
 .vs .monaco-text-button:focus {
@@ -272,7 +283,7 @@
 }
 
 .modal .footer-button {
-	margin-left: 5px;
+	margin-left: 8px;
 }
 
 .modal .right-footer .footer-button:last-of-type {

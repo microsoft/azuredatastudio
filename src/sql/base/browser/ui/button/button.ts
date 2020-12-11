@@ -13,9 +13,18 @@ export interface IButtonStyles extends vsIButtonStyles {
 
 export class Button extends vsButton {
 	protected buttonFocusOutline?: Color;
+	private _options: IButtonOptions;
 
 	constructor(container: HTMLElement, options?: IButtonOptions) {
 		super(container, options);
+
+		this._options = options;
+
+		if (this._options) {
+			if (this._options.secondary) {
+				this.element.classList.add('btn-secondary');
+			}
+		}
 
 		this._register(DOM.addDisposableListener(this.element, DOM.EventType.FOCUS, () => {
 			this.element.style.outlineColor = this.buttonFocusOutline ? this.buttonFocusOutline.toString() : '';

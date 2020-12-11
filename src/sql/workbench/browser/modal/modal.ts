@@ -27,7 +27,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { editorWidgetForeground, contrastBorder, editorBackground } from 'vs/platform/theme/common/colorRegistry';
+import { editorWidgetForeground, editorBackground } from 'vs/platform/theme/common/colorRegistry';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 
 export enum MessageLevel {
@@ -632,7 +632,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	public style(styles: IModalDialogStyles): void {
 		this._dialogForeground = styles.dialogForeground ? styles.dialogForeground : this.getThemeColor(editorWidgetForeground);
 
-		this._dialogBorder = styles.dialogBorder ? styles.dialogBorder : this.getThemeColor(contrastBorder);
+		this._dialogBorder = styles.dialogBorder;
 
 		if (this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact') {
 			this._dialogHeaderAndFooterBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : this.getThemeColor(SIDE_BAR_BACKGROUND);
@@ -656,12 +656,9 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	private applyStyles(): void {
 		const foreground = this._dialogForeground.toString();
-		const border = this._dialogBorder ? this._dialogBorder.toString() : '';
+		const border = this._dialogBorder ? this._dialogBorder.toString() : null;
 		const headerAndFooterBackground = this._dialogHeaderAndFooterBackground.toString();
 		const bodyBackground = this._dialogBodyBackground.toString();
-
-		const footerBorderTopWidth = border ? '1px' : '';
-		const footerBorderTopStyle = border ? 'solid' : '';
 		const calloutStyle: CSSStyleDeclaration = this._modalDialog.style;
 		const foregroundRgb: Color = Color.Format.CSS.parseHex(foreground);
 
@@ -674,7 +671,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalDialog.style.borderStyle = border ? 'solid' : '';
 			this._modalDialog.style.borderColor = border;
 
-			calloutStyle.setProperty('--border', `${bodyBackground}`);
+			calloutStyle.setProperty('--border', `${border}`);
 			calloutStyle.setProperty('--bodybackground', `${bodyBackground}`);
 			calloutStyle.setProperty('--foreground', `
 				${foregroundRgb.rgba.r},
@@ -686,8 +683,10 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (this._modalHeaderSection) {
 			this._modalHeaderSection.style.backgroundColor = headerAndFooterBackground;
-			this._modalHeaderSection.style.borderBottomWidth = border ? '1px' : '';
-			this._modalHeaderSection.style.borderBottomStyle = border ? 'solid' : '';
+			if (!(this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact')) {
+				this._modalHeaderSection.style.borderBottomWidth = border ? '1px' : '';
+				this._modalHeaderSection.style.borderBottomStyle = border ? 'solid' : '';
+			}
 			this._modalHeaderSection.style.borderBottomColor = border;
 		}
 
@@ -704,8 +703,8 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (this._modalFooterSection) {
 			this._modalFooterSection.style.backgroundColor = headerAndFooterBackground;
-			this._modalFooterSection.style.borderTopWidth = footerBorderTopWidth;
-			this._modalFooterSection.style.borderTopStyle = footerBorderTopStyle;
+			this._modalFooterSection.style.borderTopWidth = border ? '1px' : '';
+			this._modalFooterSection.style.borderTopStyle = border ? 'solid' : '';
 			this._modalFooterSection.style.borderTopColor = border;
 		}
 	}
