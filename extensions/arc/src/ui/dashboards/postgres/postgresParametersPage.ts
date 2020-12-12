@@ -438,7 +438,7 @@ export class PostgresParametersPage extends DashboardPage {
 
 		// Can reset individual component
 		const resetParameter = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			iconPath: IconPathHelper.ellipse,
+			iconPath: IconPathHelper.reset,
 			title: loc.resetToDefault,
 			width: '20px',
 			height: '20px',
