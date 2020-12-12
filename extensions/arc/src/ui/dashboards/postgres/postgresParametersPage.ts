@@ -131,7 +131,9 @@ export class PostgresParametersPage extends DashboardPage {
 			],
 			data: [
 				this.parameterComponents('TEST NAME', 'string'),
-				this.parameterComponents('TEST NAME 2', 'real')]
+				this.parameterComponents('TEST NAME 2', 'real'),
+				this.createParametersTable()]
+
 		}).component();
 
 		this._parametersTableLoading = this.modelView.modelBuilder.loadingComponent().component();
@@ -319,7 +321,7 @@ export class PostgresParametersPage extends DashboardPage {
 		//TODO
 	}
 
-	private createParametersTable() {
+	private createParametersTable(): any[] {
 		// Define server settings that shouldn't be modified. we block archive_*, restore_*, and synchronous_commit to prevent the user
 		// from messing up our backups. (we rely on synchronous_commit to ensure WAL changes are written immediately.)
 		// we block log_* to protect our logging. we block wal_level because Citus needs a particular wal_Level to rebalance shards
@@ -328,6 +330,23 @@ export class PostgresParametersPage extends DashboardPage {
 			"archive_command", "archive_timeout", "log_directory", "log_file_mode", "log_filename", "restore_command",
 			"shared_preload_libraries", "synchronous_commit", "ssl", "unix_socket_permissions", "wal_level" */
 
+		this.createParameters();
+		return [];
+	}
+
+	private createParameters() {
+		//TODO
+		/* {
+			parameterName: 'name',
+			value: 'settings',
+			description: 'short_desc',
+			default: 'reset_val',
+			min: 'min_val',
+			max: 'max_val',
+			options: 'enumvals',
+			type: 'vartype',
+			row: 'data[]'
+		}; */
 	}
 
 	private parameterComponents(name: string, type: string): any[] {
@@ -470,22 +489,6 @@ export class PostgresParametersPage extends DashboardPage {
 			}));
 
 		return data;
-	}
-
-	// Maybe place in postgres model
-	private getPGSettings(): any {
-
-		return {
-			parameterName: 'name',
-			value: 'settings',
-			description: 'short_desc',
-			default: 'reset_val',
-			min: 'min_val',
-			max: 'max_val',
-			options: 'enumvals',
-			type: 'vartype',
-			row: 'data[]'
-		};
 	}
 
 	private selectComponent() {
