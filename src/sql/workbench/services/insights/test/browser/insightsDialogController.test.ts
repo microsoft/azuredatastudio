@@ -74,8 +74,6 @@ suite('Insights Dialog Controller Tests', () => {
 			password: '',
 			authenticationType: '',
 			savePassword: true,
-			host: '',
-			port: '',
 			groupFullName: '',
 			groupId: '',
 			getOptionsKey: () => '',

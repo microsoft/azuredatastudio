@@ -197,7 +197,7 @@ export class PostgresParametersPage extends DashboardPage {
 		this.discardButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.discardText,
 			iconPath: IconPathHelper.discard,
-			enabled: true //TODO
+			enabled: false
 		}).component();
 
 		this.disposables.push(
@@ -205,8 +205,7 @@ export class PostgresParametersPage extends DashboardPage {
 				this.discardButton!.enabled = false;
 				try {
 					// TODO
-					this.parametersTable.data = [
-						this.parameterComponents('TEST NAME', 'string')];
+					// this.parametersTable.data = [];
 					this.engineSettingUpdates!.clear();
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
@@ -273,27 +272,33 @@ export class PostgresParametersPage extends DashboardPage {
 			this.connectToServerButton!.onDidClick(async () => {
 				this.connectToServerButton!.enabled = false;
 				if (!vscode.extensions.getExtension('microsoft.azuredatastudio-postgresql')) {
-					vscode.window.showErrorMessage(loc.missingExtension('PostgreSQL'));
-					this.connectToServerButton!.enabled = true;
-				} else {
-					await this._postgresModel.getEngineSettings().catch(err => {
-						// If an error occurs show a message so the user knows something failed but still
-						// fire the event so callers can know to update (e.g. so dashboards don't show the
-						// loading icon forever)
-						if (err instanceof UserCancelledError) {
-							vscode.window.showWarningMessage(loc.pgConnectionRequired);
-						} else {
-							vscode.window.showErrorMessage(loc.fetchEngineSettingsFailed(this._postgresModel.info.name, err));
-						}
-						this._postgresModel.engineSettingsLastUpdated = new Date();
-						this._postgresModel._onEngineSettingsUpdated.fire(this._postgresModel._engineSettings);
+					const response = await vscode.window.showErrorMessage(loc.missingExtension('PostgreSQL'), loc.yes, loc.no);
+					if (response !== loc.yes) {
 						this.connectToServerButton!.enabled = true;
-						throw err;
-					});
+						return;
+					}
 
-					this.parameterContainer!.clearItems();
-					this.parameterContainer!.addItem(this.parametersTable);
+					await vscode.commands.executeCommand('workbench.extensions.installExtension', 'microsoft.azuredatastudio-postgresql');
 				}
+
+				await this._postgresModel.getEngineSettings().catch(err => {
+					// If an error occurs show a message so the user knows something failed but still
+					// fire the event so callers can know to update (e.g. so dashboards don't show the
+					// loading icon forever)
+					if (err instanceof UserCancelledError) {
+						vscode.window.showWarningMessage(loc.pgConnectionRequired);
+					} else {
+						vscode.window.showErrorMessage(loc.fetchEngineSettingsFailed(this._postgresModel.info.name, err));
+					}
+					this._postgresModel.engineSettingsLastUpdated = new Date();
+					this._postgresModel._onEngineSettingsUpdated.fire(this._postgresModel._engineSettings);
+					this.connectToServerButton!.enabled = true;
+					throw err;
+				});
+
+				this.parameterContainer!.clearItems();
+				this.parameterContainer!.addItem(this.parametersTable);
+
 			}));
 	}
 

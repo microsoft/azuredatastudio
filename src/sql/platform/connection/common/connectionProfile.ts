@@ -35,9 +35,6 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	public groupId?: string;
 	public saveProfile: boolean;
 
-	public host: string;
-	public port: string;
-
 	public iconPath?: IconPath;
 
 	public isDisconnecting: boolean = false;
@@ -50,8 +47,6 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			this.groupId = model.groupId;
 			this.groupFullName = model.groupFullName;
 			this.savePassword = model.savePassword;
-			this.host = model.host;
-			this.port = model.port;
 			this.saveProfile = model.saveProfile;
 			this._id = model.id;
 			this.azureTenantId = model.azureTenantId;
@@ -240,8 +235,6 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			password: this.password,
 			providerName: this.providerName,
 			savePassword: this.savePassword,
-			host: this.host,
-			port: this.port,
 			userName: this.userName,
 			options: this.options,
 			saveProfile: this.saveProfile,

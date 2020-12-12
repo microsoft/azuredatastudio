@@ -33,8 +33,6 @@ suite('AsyncServerTreeDragAndDrop', () => {
 		password: 'password',
 		authenticationType: '',
 		savePassword: true,
-		host: '',
-		port: '',
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
 		getOptionsKey: undefined!,

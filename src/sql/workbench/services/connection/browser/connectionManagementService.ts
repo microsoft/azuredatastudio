@@ -440,8 +440,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private async connectWithOptions(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		connection.options['groupId'] = connection.groupId;
 		connection.options['databaseDisplayName'] = connection.databaseName;
-		connection.options['host'] = connection.host;
-		connection.options['port'] = connection.port;
 
 		let isEdit = options?.params?.isEditConnection ?? false;
 

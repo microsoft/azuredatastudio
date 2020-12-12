@@ -145,13 +145,14 @@ export class PostgresModel extends ResourceModel {
 			userName: this._pgInfo.userName || '',
 			password: '',
 			savePassword: true,
-			host: `${ipAndPort.ip}`,
-			port: `${ipAndPort.port}`,
 			groupFullName: undefined,
 			saveProfile: true,
 			id: '',
 			groupId: undefined,
-			options: {}
+			options: {
+				host: `${ipAndPort.ip}`,
+				port: `${ipAndPort.port}`,
+			}
 		};
 
 		// If we have the ID stored then try to retrieve the password from previous connections
