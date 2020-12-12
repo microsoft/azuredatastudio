@@ -155,7 +155,7 @@ describe('File config page', function () {
 			providerName: 'MSSQL',
 			connectionId: 'testConnection2Id',
 			options: {
-				// default database. This datatase will be the first value in the database dropdown
+				// default database. This database will be the first value in the database dropdown
 				database: 'testdb2',
 				user: 'testcon2user',
 				server: 'testcon2server'
