@@ -761,7 +761,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private navigateToSectionIfURIFragmentExists(): void {
-		if (this.notebookParams.notebookUri?.fragment?.length > 0) {
+		if (this.notebookParams.notebookUri?.fragment) {
 			this.navigateToSection(this.notebookParams.notebookUri.fragment);
 		}
 	}
