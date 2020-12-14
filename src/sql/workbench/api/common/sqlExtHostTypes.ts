@@ -411,7 +411,8 @@ export enum AzureResource {
 	AzureKeyVault = 3,
 	Graph = 4,
 	MicrosoftResourceManagement = 5,
-	AzureDevOps = 6
+	AzureDevOps = 6,
+	MsGraph = 7
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {

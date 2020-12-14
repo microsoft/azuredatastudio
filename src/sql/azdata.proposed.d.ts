@@ -856,4 +856,11 @@ declare module 'azdata' {
 		**/
 		name?: string;
 	}
+
+	export enum AzureResource {
+		/**
+		 * Microsoft Graph
+		 */
+		MsGraph = 7
+	}
 }
