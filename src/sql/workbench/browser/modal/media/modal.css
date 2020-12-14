@@ -235,20 +235,10 @@
 	padding-left: 4px;
 }
 
-.vs-dark .modal.flyout-dialog .input {
-	background-color: #3c3c3c;
-}
-
-.vs-dark .modal.flyout-dialog input:disabled {
-	background-color: #e1e1e1;
-	color: #3c3c3c;
-}
-
 .modal .select-box,
 .modal .monaco-select-box {
 	width: 100%;
 	height: 25px;
-	color: #6c6c6c;
 	font-size: 11px;
 	border: 1px solid transparent;
 }
