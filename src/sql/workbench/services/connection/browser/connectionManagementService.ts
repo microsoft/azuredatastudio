@@ -810,6 +810,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private async fillInOrClearAzureToken(connection: interfaces.IConnectionProfile): Promise<boolean> {
 		if (connection.authenticationType !== Constants.azureMFA && connection.authenticationType !== Constants.azureMFAAndUser) {
 			connection.options['azureAccountToken'] = undefined;
+
+			if (connection.authenticationType === 'dstsAuth') {
+				connection.options.dstsToken = await this._accountManagementService.getDstsToken(connection.serverName, connection.databaseName);
+			}
+
 			return true;
 		}
 		let azureResource = this.getAzureResourceForConnection(connection);

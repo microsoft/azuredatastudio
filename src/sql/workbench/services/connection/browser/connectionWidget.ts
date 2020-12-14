@@ -40,7 +40,8 @@ export enum AuthenticationType {
 	SqlLogin = 'SqlLogin',
 	Integrated = 'Integrated',
 	AzureMFA = 'AzureMFA',
-	AzureMFAAndUser = 'AzureMFAAndUser'
+	AzureMFAAndUser = 'AzureMFAAndUser',
+	dSTSAuth = 'dstsAuth'
 }
 
 export class ConnectionWidget extends lifecycle.Disposable {
@@ -65,6 +66,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _defaultDatabaseName: string = localize('defaultDatabaseOption', "<Default>");
 	private _loadingDatabaseName: string = localize('loadingDatabaseOption', "Loading...");
 	private _serverGroupDisplayString: string = localize('serverGroup', "Server group");
+	private dstsToken: string;
 	protected _container: HTMLElement;
 	protected _serverGroupSelectBox: SelectBox;
 	protected _authTypeSelectBox: SelectBox;
@@ -75,7 +77,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _databaseNameInputBox: Dropdown;
 	protected _advancedButton: Button;
 	private static readonly _authTypes: AuthenticationType[] =
-		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin];
+		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.dSTSAuth];
 	private static readonly _osByName = {
 		Windows: OperatingSystem.Windows,
 		Macintosh: OperatingSystem.Macintosh,
@@ -364,7 +366,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				this._databaseDropdownExpanded = true;
 				if (this.serverName) {
 					this._databaseNameInputBox.values = [this._loadingDatabaseName];
-					this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password, this.azureAccount).then(databases => {
+					this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password, this.azureAccount, this.dstsToken).then(databases => {
 						if (databases) {
 							this._databaseNameInputBox.values = databases.sort((a, b) => a.localeCompare(b));
 						} else {
@@ -504,6 +506,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._tableContainer.classList.remove('hide-username');
 			this._tableContainer.classList.add('hide-password');
 			this._tableContainer.classList.remove('hide-azure-accounts');
+		} else if (currentAuthType === AuthenticationType.dSTSAuth) {
+			this._accountManagementService.getDstsToken(this.serverName, this.databaseName).then(token => {
+				this.dstsToken = token;
+			});
+			this._tableContainer.classList.add('hide-username');
+			this._tableContainer.classList.add('hide-password');
+			this._tableContainer.classList.add('hide-azure-accounts');
 		} else {
 			this._azureAccountDropdown.disable();
 			this._azureAccountDropdown.hideMessage();

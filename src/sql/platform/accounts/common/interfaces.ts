@@ -21,6 +21,7 @@ export interface IAccountManagementService {
 	getAccountProviderMetadata(): Promise<azdata.AccountProviderMetadata[]>;
 	getAccountsForProvider(providerId: string): Promise<azdata.Account[]>;
 	getAccounts(): Promise<azdata.Account[]>;
+	getDstsToken(serverName, databaseName): Promise<string>;
 	/**
 	 * @deprecated
 	 */

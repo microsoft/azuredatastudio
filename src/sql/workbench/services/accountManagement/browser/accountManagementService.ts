@@ -15,7 +15,7 @@ import AccountStore from 'sql/platform/accounts/common/accountStore';
 import { AccountDialogController } from 'sql/workbench/services/accountManagement/browser/accountDialogController';
 import { AutoOAuthDialogController } from 'sql/workbench/services/accountManagement/browser/autoOAuthDialogController';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
-import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { AzureResource, IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { localize } from 'vs/nls';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
@@ -229,6 +229,20 @@ export class AccountManagementService implements IAccountManagementService {
 	 */
 	public getAccounts(): Promise<azdata.Account[]> {
 		return this._accountStore.getAllAccounts();
+	}
+
+	public async getDstsToken(serverName, databaseName): Promise<string> {
+		let accounts = await this.getAccountsForProvider('dstsAuth');
+
+		accounts[0].key.providerArgs = {
+			serverName: serverName,
+			databaseName: databaseName
+		};
+
+		let provider = this._providers['dstsAuth'];
+		let token = (await provider.provider.getAccountSecurityToken(accounts[0], '', AzureResource.Sql)).token;
+
+		return Promise.resolve(token);
 	}
 
 	/**
