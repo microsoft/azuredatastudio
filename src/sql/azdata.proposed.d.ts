@@ -911,4 +911,11 @@ declare module 'azdata' {
 	export interface CheckboxColumn extends TableColumn {
 		action: ActionOnCellCheckboxCheck;
 	}
+
+	export enum AzureResource {
+		/**
+		 * Microsoft Graph
+		 */
+		MsGraph = 7
+	}
 }

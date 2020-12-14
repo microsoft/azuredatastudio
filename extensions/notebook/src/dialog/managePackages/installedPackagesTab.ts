@@ -65,7 +65,6 @@ export class InstalledPackagesTab {
 				}
 				catch (err) {
 					this.dialog.showErrorMessage(utils.getErrorMessage(err));
-
 				}
 
 			});

@@ -74,3 +74,10 @@ export const azureArcPostgresServer = localize('azurecore.azureArcPostgres', "Az
 
 export const unableToOpenAzureLink = localize('azure.unableToOpenAzureLink', "Unable to open link, missing required values");
 export const azureResourcesGridTitle = localize('azure.azureResourcesGridTitle', "Azure Resources (Preview)");
+
+// Azure Request Errors
+export const invalidAzureAccount = localize('azurecore.invalidAzureAccount', "Invalid account");
+export const invalidTenant = localize('azurecore.invalidTenant', "Invalid tenant for subscription");
+export function unableToFetchTokenError(tenant: string): string {
+	return localize('azurecore.unableToFetchToken', "Unable to get token for tenant {0}", tenant);
+}
