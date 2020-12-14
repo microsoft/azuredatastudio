@@ -163,8 +163,7 @@
 	color: #FFFFFF;
 }
 
-.slick-icon-cell-content,
-.slick-button-cell-content {
+.slick-icon-cell-content {
 	background-position: 5px center !important;
 	background-repeat: no-repeat;
 	background-size: 16px !important;
@@ -174,10 +173,4 @@
 	color: inherit !important;
 	display: flex;
 	align-items: center;
-}
-
-.slick-button-cell-content {
-	cursor: pointer;
-	border-width: 0px;
-	padding: 0px;
 }

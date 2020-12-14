@@ -3,21 +3,23 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.center-align
-{
+.slick-plugin-button {
+	cursor: pointer;
+	height: 100%;
+	width: 100%;
 	text-align: center;
 }
 
-.align-with-header
-{
-	padding-left:3px !important;
+.slick-plugin-button.slick-plugin-text-button {
+	border-width: 1px;
 }
 
-.no-borders
-{
-	border: none !important
+.slick-plugin-icon.slick-plugin-button.slick-plugin-text-button {
+	text-align: left;
 }
 
-.display-none {
-	display: none;
+.slick-plugin-button.slick-plugin-image-only-button {
+	border-width: 0px;
+	background-color: transparent;
 }
+

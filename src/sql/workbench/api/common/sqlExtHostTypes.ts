@@ -812,7 +812,8 @@ export enum ColumnType {
 	text = 0,
 	checkBox = 1,
 	button = 2,
-	icon = 3
+	icon = 3,
+	hyperlink = 4
 }
 
 export enum ActionOnCellCheckboxCheck {

@@ -3201,6 +3201,9 @@ declare module 'azdata' {
 		headerCssClass?: string;
 		toolTip?: string;
 		type?: ColumnType;
+		/**
+		 * @deprecated options property is deprecated, use specific column types to access the options directly
+		 */
 		options?: CheckboxColumnOption | TextColumnOption;
 	}
 
