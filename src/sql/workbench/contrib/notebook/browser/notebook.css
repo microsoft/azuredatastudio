@@ -203,12 +203,6 @@
 	margin-left: -12px;
 }
 
-.notebookEditor .notebook-cellTable {
-	margin-left: 20px;
-	margin-top: 10px;
-	margin-bottom: 10px;
-}
-
 .notebookEditor .notebook-cellTable .ui-widget-content.slick-row {
 	border-left: 1px silver dotted;
 }

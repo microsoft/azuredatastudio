@@ -703,7 +703,8 @@ export class CellModel extends Disposable implements ICellModel {
 				if (this._outputs.length > 0) {
 					for (let i = 0; i < this._outputs.length; i++) {
 						if (this._outputs[i].output_type === 'execute_result') {
-							this._outputs.splice(i, 0, this.rewriteOutputUrls(output));
+							// this._outputs.splice(i, 0, this.rewriteOutputUrls(output));
+							this._outputs.push(this.rewriteOutputUrls(output));
 							this.fireOutputsChanged();
 							added = true;
 							break;
