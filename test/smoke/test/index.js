@@ -17,7 +17,7 @@ const suite = opts['web'] ? 'Browser Smoke Tests' : 'Smoke Tests';
 
 const options = {
 	color: true,
-	timeout: 300000,
+	timeout: 3600000, // 1 hour
 	slow: 30000,
 	grep: opts['f'] || opts['g']
 };

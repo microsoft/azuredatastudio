@@ -240,6 +240,7 @@ function createOptions(): ApplicationOptions {
 		loggers.push(new FileLogger(opts.log));
 		log = 'trace';
 	}
+	loggers.push(new FileLogger('/Users/lucyzhang/GitProjects/azuredatastudio/smoke_log.txt'));
 	return {
 		quality,
 		codePath: opts.build,
