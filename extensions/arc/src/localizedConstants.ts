@@ -98,6 +98,7 @@ export const connect = localize('arc.connect', "Connect");
 export const cancel = localize('arc.cancel', "Cancel");
 export const ok = localize('arc.ok', "Ok");
 export const on = localize('arc.on', "On");
+export const off = localize('arc.off', "Off");
 export const notConfigured = localize('arc.notConfigured', "Not Configured");
 
 // Database States - see https://docs.microsoft.com/sql/relational-databases/databases/database-states
@@ -162,10 +163,10 @@ export const details = localize('arc.details', "Details");
 export const lastUpdated = localize('arc.lastUpdated', "Last updated");
 export const noExternalEndpoint = localize('arc.noExternalEndpoint', "No External Endpoint has been configured so this information isn't available.");
 export const podsReady = localize('arc.podsReady', "pods ready");
-export const connectToPostgresDescription = localize('arc.connectToPostgresDescription', "A connection to server is required to show and set database engine settings. Make sure to have installed PostgreSQL extension for Azure Data Studio.");
+export const connectToPostgresDescription = localize('arc.connectToPostgresDescription', "A connection to server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.");
 
 export function rangeSetting(min: string, max: string): string { return localize('arc.rangeSetting', "Allowed value should be: {0} - {1}", min, max); }
-export function optionsSetting(options: string): string { return localize('arc.optionsSetting', "Allowed value should be: {0}", options); }
+export function allowedValues(values: string): string { return localize('arc.allowedValues', "Allowed value should be: {0}", values); }
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
 export function deletingInstance(name: string): string { return localize('arc.deletingInstance', "Deleting instance '{0}'...", name); }
 export function updatingInstance(name: string): string { return localize('arc.updatingInstance', "Updating instance '{0}'...", name); }
@@ -200,7 +201,7 @@ export function databaseCreationFailed(name: string, error: any): string { retur
 export function connectToControllerFailed(url: string, error: any): string { return localize('arc.connectToControllerFailed', "Could not connect to controller {0}. {1}", url, getErrorMessage(error)); }
 export function connectToMSSqlFailed(serverName: string, error: any): string { return localize('arc.connectToMSSqlFailed', "Could not connect to SQL managed instance - Azure Arc Instance {0}. {1}", serverName, getErrorMessage(error)); }
 export function connectToPGSqlFailed(serverName: string, error: any): string { return localize('arc.connectToPGSqlFailed', "Could not connect to PostgreSQL Hyperscale - Azure Arc Instance {0}. {1}", serverName, getErrorMessage(error)); }
-export function missingExtension(extensionName: string): string { return localize('arc.missingExtension', "Need {0} extension for Azure Data Studio. Do you wish to install? ", extensionName); }
+export function missingExtension(extensionName: string): string { return localize('arc.missingExtension', "The {0} extension is required to view engine settings. Do you wish to install it now?", extensionName); }
 export function fetchConfigFailed(name: string, error: any): string { return localize('arc.fetchConfigFailed', "An unexpected error occurred retrieving the config for '{0}'. {1}", name, getErrorMessage(error)); }
 export function fetchEndpointsFailed(name: string, error: any): string { return localize('arc.fetchEndpointsFailed', "An unexpected error occurred retrieving the endpoints for '{0}'. {1}", name, getErrorMessage(error)); }
 export function fetchRegistrationsFailed(name: string, error: any): string { return localize('arc.fetchRegistrationsFailed', "An unexpected error occurred retrieving the registrations for '{0}'. {1}", name, getErrorMessage(error)); }

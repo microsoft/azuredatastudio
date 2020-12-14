@@ -59,17 +59,17 @@ export class PostgresParametersPage extends DashboardPage {
 		const content = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '20px' } });
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.nodeParameters,
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
-		const info = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const info = this.modelView.modelBuilder.text().withProps({
 			value: loc.nodeParametersDescription,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const link = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+		const link = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.learnAboutNodeParameters,
 			url: 'https://docs.microsoft.com/azure/azure-arc/data/configure-server-parameters-postgresql-hyperscale',
 		}).component();
@@ -81,7 +81,7 @@ export class PostgresParametersPage extends DashboardPage {
 
 		content.addItem(this.searchBox!, { CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'margin-bottom': '20px' } });
 
-		this.parametersTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+		this.parametersTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
 			columns: [
 				{
@@ -150,7 +150,7 @@ export class PostgresParametersPage extends DashboardPage {
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
 		// Save Edits
-		this.saveButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.saveButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.saveText,
 			iconPath: IconPathHelper.save,
 			enabled: false
@@ -196,7 +196,7 @@ export class PostgresParametersPage extends DashboardPage {
 			}));
 
 		// Discard
-		this.discardButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.discardButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.discardText,
 			iconPath: IconPathHelper.discard,
 			enabled: false
@@ -217,7 +217,7 @@ export class PostgresParametersPage extends DashboardPage {
 			}));
 
 		// Reset
-		this.resetButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.resetButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.resetAllToDefault,
 			iconPath: IconPathHelper.reset,
 			enabled: true
@@ -264,7 +264,7 @@ export class PostgresParametersPage extends DashboardPage {
 
 	private initializeConnectButton() {
 
-		this.connectToServerButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.connectToServerButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.connectToServer,
 			enabled: false,
 			CSSStyles: { 'max-width': '125px' }
@@ -305,7 +305,7 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private initializeSearchBox() {
-		this.searchBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.searchBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			placeHolder: loc.searchToFilter
 		}).component();
@@ -353,7 +353,7 @@ export class PostgresParametersPage extends DashboardPage {
 		let data = [];
 
 		// Set parameter name
-		const parameterName = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const parameterName = this.modelView.modelBuilder.text().withProps({
 			value: name,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -363,7 +363,7 @@ export class PostgresParametersPage extends DashboardPage {
 		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 
 		// Information bubble title to be set depening on type of input
-		let information = this.modelView.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+		let information = this.modelView.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.information,
 			width: '12px',
 			height: '12px',
@@ -372,7 +372,7 @@ export class PostgresParametersPage extends DashboardPage {
 
 		if (type === 'enum') {
 			// If type is enum, component should be drop down menu
-			let valueBox = this.modelView.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+			let valueBox = this.modelView.modelBuilder.dropDown().withProps({
 				values: [], //TODO,
 				value: '', //TODO
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
@@ -386,10 +386,10 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 
-			information.updateProperty('title', loc.optionsSetting('enums'));	//TODO
+			information.updateProperty('title', loc.allowedValues('enums'));	//TODO
 		} else if (type === 'bool') {
 			// If type is bool, component should be checkbox to turn on or off
-			let valueBox = this.modelView.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+			let valueBox = this.modelView.modelBuilder.checkBox().withProps({
 				label: loc.on,
 				checked: true, //TODO
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
@@ -399,18 +399,18 @@ export class PostgresParametersPage extends DashboardPage {
 			this.disposables.push(
 				valueBox.onChanged(() => {
 					if (valueBox.checked) {
-						this.engineSettingUpdates!.set(name, 'on');
+						this.engineSettingUpdates!.set(name, loc.on);
 					} else {
-						this.engineSettingUpdates!.set(name, 'off');
+						this.engineSettingUpdates!.set(name, loc.off);
 					}
 				})
 			);
 
-			information.updateProperty('title', loc.optionsSetting('on,off'));	//TODO
+			information.updateProperty('title', loc.allowedValues('on,off'));	//TODO
 		} else if (type === 'string') {
 			// If type is string, component should be text inputbox
 			// How to add validation: .withValidation(component => component.value?.search('[0-9]') == -1)
-			let valueBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
 				readOnly: false,
 				value: '', //TODO
 				CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '200px' }
@@ -423,10 +423,10 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 
-			information.updateProperty('title', loc.optionsSetting(loc.optionsSetting('[A-Za-z._]+')));	//TODO
+			information.updateProperty('title', loc.allowedValues(loc.allowedValues('[A-Za-z._]+')));	//TODO
 		} else {
 			// If type is real or interger, component should be inputbox set to inputType of number. Max and min values also set.
-			let valueBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
 				readOnly: false,
 				min: 0, //TODO
 				max: 10000,
@@ -443,20 +443,20 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 
-			information.updateProperty('title', loc.optionsSetting(loc.rangeSetting('min', 'max')));	//TODO
+			information.updateProperty('title', loc.allowedValues(loc.rangeSetting('min', 'max')));	//TODO
 		}
 
 		valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
 		data.push(valueContainer);
 
-		const parameterDescription = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const parameterDescription = this.modelView.modelBuilder.text().withProps({
 			value: 'TEST DESCRIPTION HERE ...............................ytgbyugvtyvctyrcvytjv ycrtctyv tyfty ftyuvuyvuy', // TODO
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 		data.push(parameterDescription);
 
 		// Can reset individual component
-		const resetParameter = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const resetParameter = this.modelView.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.reset,
 			title: loc.resetToDefault,
 			width: '20px',
@@ -493,7 +493,7 @@ export class PostgresParametersPage extends DashboardPage {
 
 	private selectComponent() {
 		if (!this._postgresModel.engineSettingsLastUpdated) {
-			this.parameterContainer!.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			this.parameterContainer!.addItem(this.modelView.modelBuilder.text().withProps({
 				value: loc.connectToPostgresDescription,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component());
