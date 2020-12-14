@@ -179,12 +179,11 @@ export class PublishDatabaseDialog {
 	}
 
 	public async publishClick(): Promise<void> {
-		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
 		const settings: IPublishSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: sqlCmdVars,
+			sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 			deploymentOptions: await this.getDeploymentOptions()
 		};
 
@@ -212,7 +211,7 @@ export class PublishDatabaseDialog {
 		this.dispose();
 	}
 
-	private async getDeploymentOptions(): Promise<DeploymentOptions> {
+	public async getDeploymentOptions(): Promise<DeploymentOptions> {
 		// eventually, database options will be configurable in this dialog
 		// but for now, just send the default DacFx deployment options if no options were loaded from a publish profile
 		if (!this.deploymentOptions) {
@@ -230,7 +229,7 @@ export class PublishDatabaseDialog {
 		return this.deploymentOptions;
 	}
 
-	private getSqlCmdVariablesForPublish(): Record<string, string> {
+	public getSqlCmdVariablesForPublish(): Record<string, string> {
 		// get SQLCMD variables from table
 		let sqlCmdVariables = { ...this.sqlCmdVars };
 		return sqlCmdVariables;

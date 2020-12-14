@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -189,7 +189,9 @@
                           "editable": false,
                           "options": {
                             "source": {
-                              "providerId": "arc.controller.config.profiles"
+                              "providerId": "arc.controller.config.profiles",
+                              "loadingText": "%arc.data.controller.cluster.config.profile.loading%",
+                              "loadingCompletedText": "%arc.data.controller.cluster.config.profile.loadingcompleted%"
                             },
                             "defaultValue": "azure-arc-aks-default-storage",
                             "optionsType": "radio"
@@ -608,7 +610,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.0"
+                "version": "20.2.5"
               }
             ],
             "when": true
@@ -787,7 +789,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.0"
+                "version": "20.2.5"
               }
             ],
             "when": "true"
@@ -1035,7 +1037,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.0"
+                "version": "20.2.5"
               }
             ],
             "when": "true"

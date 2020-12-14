@@ -3,33 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as fs from 'fs';
-
-export async function directoryExist(directoryPath: string): Promise<boolean> {
-	const stats = await getFileStatus(directoryPath);
-	return stats ? stats.isDirectory() : false;
-}
-
-export async function fileExist(filePath: string): Promise<boolean> {
-	const stats = await getFileStatus(filePath);
-	return stats ? stats.isFile() : false;
-}
-
-async function getFileStatus(path: string): Promise<fs.Stats | undefined> {
-	try {
-		const stats = await fs.promises.stat(path);
-		return stats;
-	}
-	catch (e) {
-		if (e.code === 'ENOENT') {
-			return undefined;
-		}
-		else {
-			throw e;
-		}
-	}
-}
-
 export interface IPackageInfo {
 	name: string;
 	version: string;
@@ -46,4 +19,17 @@ export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
 	}
 
 	return undefined;
+}
+
+/**
+ * Map an error message into a short name for the type of error.
+ * @param msg The error message to map
+ */
+export function getTelemetryErrorType(msg: string): string {
+	if (msg && msg.indexOf('Object reference not set to an instance of an object') !== -1) {
+		return 'ObjectReferenceNotSet';
+	}
+	else {
+		return 'Other';
+	}
 }

@@ -17,8 +17,9 @@ import { Project } from '../../models/project';
 import { ProjectsController } from '../../controllers/projectController';
 import { IPublishSettings, IGenerateScriptSettings } from '../../models/IPublishSettings';
 import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
+import { mockDacFxOptionsResult } from '../testContext';
 
-describe.skip('Publish Database Dialog', () => {
+describe('Publish Database Dialog', () => {
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
@@ -64,6 +65,8 @@ describe.skip('Publish Database Dialog', () => {
 		const dialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, proj);
 		dialog.setup(x => x.getConnectionUri()).returns(() => { return Promise.resolve('Mock|Connection|Uri'); });
 		dialog.setup(x => x.getTargetDatabaseName()).returns(() => 'MockDatabaseName');
+		dialog.setup(x => x.getSqlCmdVariablesForPublish()).returns(() => proj.sqlCmdVariables);
+		dialog.setup(x => x.getDeploymentOptions()).returns(() => { return Promise.resolve(mockDacFxOptionsResult.deploymentOptions); });
 		dialog.callBase = true;
 
 		let profile: IPublishSettings | IGenerateScriptSettings | undefined;
@@ -75,7 +78,8 @@ describe.skip('Publish Database Dialog', () => {
 			sqlCmdVariables: {
 				'ProdDatabaseName': 'MyProdDatabase',
 				'BackupDatabaseName': 'MyBackupDatabase'
-			}
+			},
+			deploymentOptions: mockDacFxOptionsResult.deploymentOptions
 		};
 
 		dialog.object.publish = (_, prof) => { profile = prof; };
@@ -89,7 +93,8 @@ describe.skip('Publish Database Dialog', () => {
 			sqlCmdVariables: {
 				'ProdDatabaseName': 'MyProdDatabase',
 				'BackupDatabaseName': 'MyBackupDatabase'
-			}
+			},
+			deploymentOptions: mockDacFxOptionsResult.deploymentOptions
 		};
 
 		dialog.object.generateScript = (_, prof) => { profile = prof; };

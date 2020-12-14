@@ -2220,12 +2220,33 @@ declare module 'azdata' {
 	}
 
 	export enum AzureResource {
+		/**
+		 * Azure Resource Management (ARM)
+		 */
 		ResourceManagement = 0,
+		/**
+		 * SQL Azure
+		 */
 		Sql = 1,
+		/**
+		 * OSS RDMS
+		 */
 		OssRdbms = 2,
+		/**
+		 * Azure Key Vault
+		 */
 		AzureKeyVault = 3,
+		/**
+		 * Azure AD Graph
+		 */
 		Graph = 4,
+		/**
+		 * Microsoft Resource Management
+		 */
 		MicrosoftResourceManagement = 5,
+		/**
+		 * Azure Dev Ops
+		 */
 		AzureDevOps = 6
 	}
 
@@ -3400,9 +3421,22 @@ declare module 'azdata' {
 	}
 
 	export interface LoadingComponentProperties extends ComponentProperties {
+		/**
+		 * Whether to show the loading spinner instead of the contained component. True by default
+		 */
 		loading?: boolean;
+		/**
+		 * Whether to show the loading text next to the spinner
+		 */
 		showText?: boolean;
+		/**
+		 * The text to display while loading is set to true
+		 */
 		loadingText?: string;
+		/**
+		 * The text to display while loading is set to false. Will also be announced through screen readers
+		 * once loading is completed.
+		 */
 		loadingCompletedText?: string;
 	}
 
@@ -3595,7 +3629,7 @@ declare module 'azdata' {
 	 * Component used to wrap another component that needs to be loaded, and show a loading spinner
 	 * while the contained component is loading
 	 */
-	export interface LoadingComponent extends Component {
+	export interface LoadingComponent extends Component, LoadingComponentProperties {
 		/**
 		 * Whether to show the loading spinner instead of the contained component. True by default
 		 */

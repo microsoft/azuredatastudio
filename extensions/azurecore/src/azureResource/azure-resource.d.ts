@@ -6,9 +6,12 @@
 declare module 'azureResource' {
 	import { TreeDataProvider } from 'vscode';
 	import { DataProvider, Account, TreeItem } from 'azdata';
-	import { FileShareItem, ListContainerItem } from '@azure/arm-storage/esm/models';
 	export namespace azureResource {
 
+		/**
+		 * AzureCore core extension supports following resource types of Azure Resource Graph.
+		 * To add more resources, please refer this guide: https://docs.microsoft.com/en-us/azure/governance/resource-graph/reference/supported-tables-resources
+		 */
 		export const enum AzureResourceType {
 			resourceGroup = 'microsoft.resources/subscriptions/resourcegroups',
 			sqlServer = 'microsoft.sql/servers',
@@ -77,10 +80,8 @@ declare module 'azureResource' {
 			fullName: string;
 			defaultDatabaseName: string;
 		}
-		export interface BlobContainer extends ListContainerItem {
-		}
+		export interface BlobContainer extends AzureResource { }
 
-		export interface FileShare extends FileShareItem {
-		}
+		export interface FileShare extends AzureResource { }
 	}
 }

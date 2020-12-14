@@ -6,7 +6,6 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
-import { LoadingComponentProperties } from 'azdata';
 
 declare module 'azdata' {
 	/**
@@ -856,5 +855,12 @@ declare module 'azdata' {
 		* The text to display on the column heading. 'value' property will be used, if not specified
 		**/
 		name?: string;
+	}
+
+	export enum AzureResource {
+		/**
+		 * Microsoft Graph
+		 */
+		MsGraph = 7
 	}
 }
