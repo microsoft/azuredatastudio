@@ -58,6 +58,12 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "dataworkspace.close",
+        "title": "%close-workspace-command%",
+        "category": "",
+        "icon": "$(close)"
+      },
+      {
         "command": "projects.removeProject",
         "title": "%remove-project-command%"
       }
@@ -68,6 +74,11 @@
           "command": "dataworkspace.refresh",
           "when": "view == dataworkspace.views.main",
           "group": "secondary"
+        },
+        {
+          "command": "dataworkspace.close",
+          "when": "view == dataworkspace.views.main && workbenchState == workspace",
+          "group": "tertiary"
         },
         {
           "command": "projects.new",
@@ -86,6 +97,10 @@
         },
         {
           "command": "dataworkspace.refresh",
+          "when": "false"
+        },
+        {
+          "command": "dataworkspace.close",
           "when": "false"
         },
         {
