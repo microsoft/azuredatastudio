@@ -27,6 +27,7 @@ A list of terms and their definitions can be found below
 * **Juptyer Project** - a non-profit, OSS project that supports interactive data science computing across all programming languages
 * **Markdown** - lightweight markup language with text formatting widely used in web documents
 * **Microsoft PowerShell** - a task automation and configuration management framework. ADS Notebooks feature a PowerShell kernel in order to interface with the PS environment. PS is often used by systems engineers and admins. 
+* **Offline Migration** - moving data between environments in a manner that is disruptive to the operation of the database, usually when a system is able to tolerate the downtime required as a trade-off for simplicity
 * **OSS** - *open source software* is a decentralized software development model that encourages open collaboration and sharing.   
 * **PaaS** - *Platform-as-a-Service* is a cloud service that allows the use of an application without the complexity of building and maintaining the hardware infrastructure required by the application
 * **Point-to-Site (P2S) VPN** - a VPN solution that allows a secure connection from an individual client computer to a remote network on the VPN. 
