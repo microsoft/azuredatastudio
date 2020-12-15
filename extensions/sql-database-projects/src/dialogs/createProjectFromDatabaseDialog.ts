@@ -164,7 +164,7 @@ export class CreateProjectFromDatabaseDialog {
 
 		this.sourceDatabaseDropDown.onValueChanged(() => {
 			this.setProjectName();
-			this.updateWorkspaceInputbox(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!);
+			this.updateWorkspaceInputbox(path.join(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!), this.projectNameTextBox!.value!);
 			this.tryEnableCreateButton();
 		});
 
@@ -252,7 +252,7 @@ export class CreateProjectFromDatabaseDialog {
 		this.projectNameTextBox.onTextChanged(() => {
 			this.projectNameTextBox!.value = this.projectNameTextBox!.value?.trim();
 			this.projectNameTextBox!.updateProperty('title', this.projectNameTextBox!.value);
-			this.updateWorkspaceInputbox(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!);
+			this.updateWorkspaceInputbox(path.join(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!), this.projectNameTextBox!.value!);
 			this.tryEnableCreateButton();
 		});
 
@@ -280,7 +280,7 @@ export class CreateProjectFromDatabaseDialog {
 
 		this.projectLocationTextBox.onTextChanged(() => {
 			this.projectLocationTextBox!.updateProperty('title', this.projectLocationTextBox!.value);
-			this.updateWorkspaceInputbox(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!);
+			this.updateWorkspaceInputbox(path.join(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!), this.projectNameTextBox!.value!);
 			this.tryEnableCreateButton();
 		});
 
@@ -318,7 +318,7 @@ export class CreateProjectFromDatabaseDialog {
 
 			this.projectLocationTextBox!.value = folderUris[0].fsPath;
 			this.projectLocationTextBox!.updateProperty('title', folderUris[0].fsPath);
-			this.updateWorkspaceInputbox(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!);
+			this.updateWorkspaceInputbox(path.join(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!), this.projectNameTextBox!.value!);
 		});
 
 		return browseFolderButton;
@@ -356,17 +356,54 @@ export class CreateProjectFromDatabaseDialog {
 	private createWorkspaceContainerRow(view: azdata.ModelView): azdata.FlexContainer {
 		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties({
 			ariaLabel: constants.workspaceLocationTitle,
-			enabled: false,
+			enabled: !vscode.workspace.workspaceFile, // want it editable if no workspace is open
 			value: vscode.workspace.workspaceFile?.fsPath ?? '',
-			title: vscode.workspace.workspaceFile?.fsPath ?? '' // hovertext for if file path is too long to be seen in textbox
+			title: vscode.workspace.workspaceFile?.fsPath ?? '', // hovertext for if file path is too long to be seen in textbox
+			width: '100%'
 		}).component();
+
+		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			ariaLabel: constants.browseButtonText,
+			iconPath: IconPathHelper.folder_blue,
+			height: '16px',
+			width: '18px'
+		}).component();
+
+		this.toDispose.push(browseFolderButton.onDidClick(async () => {
+			const currentFileName = path.parse(this.workspaceInputBox!.value!).base;
+
+			// let user select folder for workspace file to be created in
+			const folderUris = await vscode.window.showOpenDialog({
+				canSelectFiles: false,
+				canSelectFolders: true,
+				canSelectMany: false,
+				defaultUri: vscode.Uri.file(path.parse(this.workspaceInputBox!.value!).dir)
+			});
+			if (!folderUris || folderUris.length === 0) {
+				return;
+			}
+			const selectedFolder = folderUris[0].fsPath;
+
+			const selectedFile = path.join(selectedFolder, currentFileName);
+			this.workspaceInputBox!.value = selectedFile;
+			this.workspaceInputBox!.title = selectedFile;
+		}));
 
 		const workspaceLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: vscode.workspace.workspaceFile ? constants.addProjectToCurrentWorkspace : constants.newWorkspaceWillBeCreated,
 			CSSStyles: { 'margin-top': '-10px', 'margin-bottom': '5px' }
 		}).component();
 
-		const workspaceContainerRow = view.modelBuilder.flexContainer().withItems([workspaceLabel, this.workspaceInputBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '0px' } }).withLayout({ flexFlow: 'column' }).component();
+		let workspaceContainerRow;
+		if (vscode.workspace.workspaceFile) {
+			workspaceContainerRow = view.modelBuilder.flexContainer().withItems([workspaceLabel, this.workspaceInputBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '0px' } }).withLayout({ flexFlow: 'column' }).component();
+
+		} else {
+			// have browse button to help select where the workspace file should be created
+			const workspaceInput = view.modelBuilder.flexContainer().withItems([this.workspaceInputBox], { CSSStyles: { 'margin-right': '10px', 'margin-bottom': '10px', 'width': '100%' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+			workspaceInput.addItem(browseFolderButton, { CSSStyles: { 'margin-top': '-10px' } });
+			workspaceContainerRow = view.modelBuilder.flexContainer().withItems([workspaceLabel, workspaceInput], { flex: '0 0 auto', CSSStyles: { 'margin-top': '0px' } }).withLayout({ flexFlow: 'column' }).component();
+		}
 
 		return workspaceContainerRow;
 	}
@@ -401,7 +438,8 @@ export class CreateProjectFromDatabaseDialog {
 			projName: this.projectNameTextBox!.value!,
 			filePath: this.projectLocationTextBox!.value!,
 			version: '1.0.0.0',
-			extractTarget: this.mapExtractTargetEnum(<string>this.folderStructureDropDown!.value)
+			extractTarget: this.mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
+			newWorkspaceFilePath: this.workspaceInputBox!.enabled ? vscode.Uri.file(this.workspaceInputBox!.value!) : undefined
 		};
 
 		azdata.window.closeDialog(this.dialog);
