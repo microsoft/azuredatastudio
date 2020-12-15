@@ -22,11 +22,11 @@ IF NOT EXISTS (SELECT * FROM sys.dm_xe_sessions  WHERE name = 'ObjectContention'
         ALTER EVENT SESSION [ObjectContention] ON SERVER
         STATE =  START
     END
-SELECT 0 AS RESULTCODE, 'XEvent sessions started for PageContention and ObjectContention' AS RESULTMSG
+SELECT 0 AS RESULTCODE
 END TRY
 BEGIN CATCH
     PRINT 'XEvent fields not supported'
-    SELECT 1 AS RESULTCODE, 'XEvent sessions not supported' AS RESULTMSG
+    SELECT 1 AS RESULTCODE
 END CATCH
 GO
 

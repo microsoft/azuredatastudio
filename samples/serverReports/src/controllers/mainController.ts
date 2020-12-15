@@ -11,12 +11,13 @@ import ControllerBase from './controllerBase';
 import { promises } from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
-
+import * as constants from '../constants';
 
 /**
  * The main controller class that initializes the extension
  */
 export default class MainController extends ControllerBase {
+	private autoRefreshState: boolean = false;
 
 	public apiWrapper;
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -49,21 +50,22 @@ export default class MainController extends ControllerBase {
 		let sqlContent: string = await promises.readFile(path.join(__dirname, '..', 'sql', fileName), {encoding: 'utf8'});
 		let seResult = await queryProvider.runQueryAndReturn(connectionUri, sqlContent);
 		if (seResult.rowCount > 0 && seResult.rows[0][0].displayValue === '0') {
-			vscode.window.showInformationMessage(seResult.rows[0][1].displayValue);
-			let setRefreshState = ( fileName === 'startEvent.sql' ) ? true : false;
-			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'type-of-contention', connection.id, setRefreshState);
-			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'metadata-contention', connection.id, setRefreshState);
-			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'allocation-contention', connection.id, setRefreshState);
+			vscode.window.showInformationMessage( ( fileName === 'startEvent.sql' ) ? constants.XEventsStarted : constants.XEventsStopped );
+			this.autoRefreshState = ( fileName === 'startEvent.sql' ) ? true : false;
+			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'type-of-contention', connection.id, this.autoRefreshState);
+			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'metadata-contention', connection.id, this.autoRefreshState);
+			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'allocation-contention', connection.id, this.autoRefreshState);
 		} else if (seResult.rowCount > 0 && seResult.rows[0][0].displayValue === '1') {
-			vscode.window.showErrorMessage(seResult.rows[0][1].displayValue);
+			vscode.window.showErrorMessage(constants.XEventsNotSupported);
 		} else {
-			vscode.window.showErrorMessage('Something has gone wrong, better error msg here.');
+			vscode.window.showErrorMessage(constants.XEventsFailed);
 		}
 	}
 
 	private stopAutoRefresh(connection: azdata.IConnectionProfile): void {
-		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'type-of-contention', connection.id, false);
-		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'metadata-contention', connection.id, false);
-		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'allocation-contention', connection.id, false);
+		this.autoRefreshState = !this.autoRefreshState === true;
+		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'type-of-contention', connection.id, this.autoRefreshState);
+		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'metadata-contention', connection.id, this.autoRefreshState);
+		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'allocation-contention', connection.id, this.autoRefreshState);
 	}
 }
