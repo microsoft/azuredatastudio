@@ -40,8 +40,8 @@
 }
 
 .server-explorer-viewlet .server-group {
-	height: 38px;
-	line-height: 38px;
+	height: 23px;
+	line-height: 23px;
 	color: #ffffff;
 }
 
@@ -95,6 +95,23 @@
 	padding-bottom: 3px;
 	overflow: hidden;
 }
+
+/* OE server group */
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content.server-group,
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content.server-group > .server-group {
+	padding-left: 5px;
+}
+
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content.server-group {
+	padding-right: 5px;
+	padding-top: 5px;
+}
+
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content.server-group > .server-group > .name {
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
 
 /* OE and connection label */
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .connection-tile > .label,
@@ -159,16 +176,6 @@
 .monaco-list .connection-tile .connection-status-badge.disconnected {
 	border: 0.12rem solid rgba(208, 46, 0, 100%);
 	background: rgba(255, 255, 255, 80%);
-}
-
-.monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.expanded.has-children > .content.server-group:before,
-.monaco-list .monaco-list-rows.show-twisties > .monaco-list-row.expanded.has-children > .content.server-group:before {
-	background: url('expanded-dark.svg') 50% 50% no-repeat;
-}
-
-.monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content.server-group:before,
-.monaco-list .monaco-list-rows.show-twisties > .monaco-list-row.has-children > .content.server-group:before {
-	background: url('collapsed-dark.svg') 50% 50% no-repeat;
 }
 
 /* Add connection button */

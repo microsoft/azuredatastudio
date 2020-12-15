@@ -114,6 +114,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 				cellType = selection.id;
 			}
 		} catch (err) {
+			console.error('Unexpected error adding new cell: ', err);
 			return;
 		}
 		if (cellType) {

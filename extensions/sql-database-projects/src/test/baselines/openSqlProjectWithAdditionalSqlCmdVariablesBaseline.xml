@@ -52,30 +52,30 @@
     <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
     <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
   </PropertyGroup>
-  <Import Condition="'$(NetCoreBuild)' == 'true'" Project="$(NETCoreTargetsPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets"/>
-  <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets"/>
-  <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets"/>
+  <Import Condition="'$(NetCoreBuild)' == 'true'" Project="$(NETCoreTargetsPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
-    <PackageReference Condition="'$(NetCoreBuild)' == 'true'" Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All"/>
+    <PackageReference Condition="'$(NetCoreBuild)' == 'true'" Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties"/>
-    <Folder Include="Tables"/>
-    <Folder Include="Views"/>
-    <Folder Include="Views\Maintenance"/>
+    <Folder Include="Properties" />
+    <Folder Include="Tables" />
+    <Folder Include="Views" />
+    <Folder Include="Views\Maintenance" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Tables\Users.sql"/>
-    <Build Include="Tables\Action History.sql"/>
-    <Build Include="Views\Maintenance\Database Performance.sql"/>
-    <Build Include="..\Test\Test.sql"/>
+    <Build Include="Tables\Users.sql" />
+    <Build Include="Tables\Action History.sql" />
+    <Build Include="Views\Maintenance\Database Performance.sql" />
+    <Build Include="..\Test\Test.sql" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\User"/>
-    <Build Include="Views\User\Profile.sql"/>
+    <Folder Include="Views\User" />
+    <Build Include="Views\User\Profile.sql" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="MyExternalStreamingJob.sql" Type="ExternalStreamingJob"/>
+    <Build Include="MyExternalStreamingJob.sql" Type="ExternalStreamingJob" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="BackupDatabaseName">
@@ -102,14 +102,14 @@
     </ArtifactReference>
   </ItemGroup>
   <ItemGroup>
-    <PreDeploy Include="Script.PreDeployment1.sql"/>
-    <None Include="Script.PreDeployment2.sql"/>
+    <PreDeploy Include="Script.PreDeployment1.sql" />
+    <None Include="Script.PreDeployment2.sql" />
   </ItemGroup>
   <ItemGroup>
-    <PostDeploy Include="Script.PostDeployment1.sql"/>
-    <None Include="Tables\Script.PostDeployment1.sql"/>
+    <PostDeploy Include="Script.PostDeployment1.sql" />
+    <None Include="Tables\Script.PostDeployment1.sql" />
   </ItemGroup>
-  <Target Name="AfterClean">
-    <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json"/>
+  <Target Name="BeforeBuild">
+    <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
   </Target>
 </Project>

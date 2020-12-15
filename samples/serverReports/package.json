@@ -48,7 +48,7 @@
       },
       {
         "command": "tempdb.pauseEvent",
-        "title": "Pause",
+        "title": "Toggle Auto Refresh",
         "icon": {
           "light": "./out/src/media/insights.svg",
           "dark": "./out/src/media/insights_inverse.svg"
@@ -387,7 +387,8 @@
   "dependencies": {
     "fs-extra": "^8.1.0",
     "handlebars": "^4.5.3",
-    "openurl": "^1.1.1"
+    "openurl": "^1.1.1",
+    "vscode-nls": "^5.0.0"
   },
   "devDependencies": {
     "azdata": "^1.0.0",
