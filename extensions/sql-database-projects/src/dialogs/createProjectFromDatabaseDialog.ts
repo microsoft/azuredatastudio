@@ -15,6 +15,7 @@ import { cssStyles } from '../common/uiConstants';
 import { ImportDataModel } from '../models/api/import';
 import { Deferred } from '../common/promise';
 import { getConnectionName } from './utils';
+import { exists } from '../common/utils';
 
 export class CreateProjectFromDatabaseDialog {
 	public dialog: azdata.window.Dialog;
@@ -37,6 +38,9 @@ export class CreateProjectFromDatabaseDialog {
 	constructor(private profile: azdata.IConnectionProfile | undefined) {
 		this.dialog = azdata.window.createModelViewDialog(constants.createProjectFromDatabaseDialogName);
 		this.createProjectFromDatabaseTab = azdata.window.createTab(constants.createProjectFromDatabaseDialogName);
+		this.dialog.registerCloseValidator(async () => {
+			return this.validate();
+		});
 	}
 
 	public async openDialog(): Promise<void> {
@@ -461,5 +465,68 @@ export class CreateProjectFromDatabaseDialog {
 		} else {
 			throw new Error(constants.extractTargetRequired);
 		}
+	}
+
+	async validate(): Promise<boolean> {
+		try {
+			// the selected location should be an existing directory
+			const parentDirectoryExists = await exists(this.projectLocationTextBox!.value!);
+			if (!parentDirectoryExists) {
+				this.showErrorMessage(constants.ProjectParentDirectoryNotExistError(this.projectLocationTextBox!.value!));
+				return false;
+			}
+
+			// there shouldn't be an existing sub directory with the same name as the project in the selected location
+			const projectDirectoryExists = await exists(path.join(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!));
+			if (projectDirectoryExists) {
+				this.showErrorMessage(constants.ProjectDirectoryAlreadyExistError(this.projectNameTextBox!.value!, this.projectLocationTextBox!.value!));
+				return false;
+			}
+
+			const sameFolderAsNewProject = path.join(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!) === path.dirname(this.workspaceInputBox!.value!);
+			if (this.workspaceInputBox!.enabled && !await this.validateNewWorkspace(sameFolderAsNewProject)) {
+				return false;
+			}
+
+			return true;
+		}
+		catch (err) {
+			this.showErrorMessage(err?.message ? err.message : err);
+			return false;
+		}
+	}
+
+	protected async validateNewWorkspace(sameFolderAsNewProject: boolean): Promise<boolean> {
+		// workspace file should end in .code-workspace
+		const workspaceValid = this.workspaceInputBox!.value!.endsWith(constants.WorkspaceFileExtension);
+		if (!workspaceValid) {
+			this.showErrorMessage(constants.WorkspaceFileInvalidError(this.workspaceInputBox!.value!));
+			return false;
+		}
+
+		// if the workspace file is not going to be in the same folder as the newly created project, then check that it's a valid folder
+		if (!sameFolderAsNewProject) {
+			const workspaceParentDirectoryExists = await exists(path.dirname(this.workspaceInputBox!.value!));
+			if (!workspaceParentDirectoryExists) {
+				this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(this.workspaceInputBox!.value!));
+				return false;
+			}
+		}
+
+		// workspace file should not be an existing workspace file
+		const workspaceFileExists = await exists(this.workspaceInputBox!.value!);
+		if (workspaceFileExists) {
+			this.showErrorMessage(constants.WorkspaceFileAlreadyExistsError(this.workspaceInputBox!.value!));
+			return false;
+		}
+
+		return true;
+	}
+
+	protected showErrorMessage(message: string): void {
+		this.dialog.message = {
+			text: message,
+			level: azdata.window.MessageLevel.Error
+		};
 	}
 }
