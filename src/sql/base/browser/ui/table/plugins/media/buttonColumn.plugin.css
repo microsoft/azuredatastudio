@@ -6,16 +6,21 @@
 .slick-plugin-button {
 	cursor: pointer;
 	height: 100%;
-	width: 100%;
 	text-align: center;
+	padding-right: 0px;
+	padding-top: 0px;
+	padding-bottom: 0px;
 }
 
 .slick-plugin-button.slick-plugin-text-button {
 	border-width: 1px;
+	width: 100%;
 }
 
 .slick-plugin-icon.slick-plugin-button.slick-plugin-text-button {
 	text-align: left;
+	padding-left: 0px;
+	width: 100%;
 }
 
 .slick-plugin-button.slick-plugin-image-only-button {
