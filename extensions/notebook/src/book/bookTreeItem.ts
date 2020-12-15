@@ -45,7 +45,6 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, book.treeItemCollapsibleState);
-
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
 			this._sections = book.page;
@@ -92,14 +91,14 @@ export class BookTreeItem extends vscode.TreeItem {
 		}
 	}
 
-	private setPageVariables() {
+	private setPageVariables(): void {
 		this.collapsibleState = (this.book.page.sections || this.book.page.subsections) && this.book.page.expand_sections ?
 			vscode.TreeItemCollapsibleState.Expanded :
 			this.book.page.sections || this.book.page.subsections ?
 				vscode.TreeItemCollapsibleState.Collapsed :
 				vscode.TreeItemCollapsibleState.None;
 		this._sections = this.book.page.sections || this.book.page.subsections;
-		this._uri = this.book.version === BookVersion.v1 ? this.book.page.url : this.book.page.file;
+		this._uri = this.book.page.file ? this.book.page.file : this.book.page.url;
 
 		if (this.book.tableOfContents.sections) {
 			let index = (this.book.tableOfContents.sections.indexOf(this.book.page));
@@ -108,7 +107,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		}
 	}
 
-	private setCommand() {
+	private setCommand(): void {
 		if (this.book.type === BookTreeItemType.Notebook) {
 			// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
 			this.command = { command: this.book.isUntitled ? 'bookTreeView.openUntitledNotebook' : 'bookTreeView.openNotebook', title: loc.openNotebookCommand, arguments: [this.book.contentPath], };

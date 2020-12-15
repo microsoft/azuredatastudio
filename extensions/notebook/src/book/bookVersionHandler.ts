@@ -17,9 +17,9 @@ export class BookVersionHandler {
 	 * @param version Version of the section that will be converted
 	 * @param section The section that'll be converted.
 	*/
-	public convertFrom(version: string, section: JupyterBookSection): JupyterBookSection {
+	public static convertFrom(version: string, section: JupyterBookSection): JupyterBookSection {
 		if (version === BookVersion.v1) {
-			return {
+			return Object.assign(section, {
 				title: section.title,
 				file: (section as IJupyterBookSectionV1).external ? undefined : section.url,
 				url: (section as IJupyterBookSectionV1).external ? section.url : undefined,
@@ -29,15 +29,15 @@ export class BookVersionHandler {
 				divider: (section as IJupyterBookSectionV1).divider,
 				header: (section as IJupyterBookSectionV1).header,
 				external: (section as IJupyterBookSectionV1).external
-			};
+			});
 		} else {
-			return {
+			return Object.assign(section, {
 				title: section.title,
 				file: (section as IJupyterBookSectionV2).file,
 				url: section.url,
 				sections: section.sections,
 				expand_sections: section.expand_sections
-			};
+			});
 		}
 	}
 
