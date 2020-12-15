@@ -196,7 +196,8 @@ export class SelectBox extends vsSelectBox {
 	}
 
 	public select(index: number): void {
-		if (this._selectedOption && this._optionsDictionary.get(this._selectedOption) === index) { // Not generating an event if the same value is selected.
+		let selectedOptionIndex = this._optionsDictionary.get(this._selectedOption);
+		if (selectedOptionIndex === undefined && selectedOptionIndex === index) { // Not generating an event if the same value is selected.
 			return;
 		}
 		super.select(index);
