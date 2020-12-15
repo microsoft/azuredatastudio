@@ -134,8 +134,7 @@ export class SelectBox extends vsSelectBox {
 	}
 
 	public onSelect(newInput: ISelectData) {
-		const selected = this._dialogOptions[newInput.index];
-		this._selectedOption = selected.value;
+		this.select(newInput.index);
 	}
 
 	private static createOptions(options: SelectOptionItemSQL[] | string[] | ISelectOptionItem[]): SelectOptionItemSQL[] {
@@ -197,6 +196,9 @@ export class SelectBox extends vsSelectBox {
 	}
 
 	public select(index: number): void {
+		if (this._selectedOption && this._optionsDictionary.get(this._selectedOption) === index) { // Not generating an event if the same value is selected.
+			return;
+		}
 		super.select(index);
 		if (this._dialogOptions !== undefined) {
 			this._selectedOption = this._dialogOptions[index]?.value;
