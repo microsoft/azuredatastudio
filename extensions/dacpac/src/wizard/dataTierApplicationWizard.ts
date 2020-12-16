@@ -242,18 +242,47 @@ export class DataTierApplicationWizard {
 	}
 
 	public async executeOperation(): Promise<mssql.DacFxResult> {
+		let result: mssql.DacFxResult;
+
 		switch (this.selectedOperation) {
 			case Operation.deploy: {
-				return await this.deploy();
+				result = await this.deploy();
+				break;
 			}
 			case Operation.extract: {
-				return await this.extract();
+				result = await this.extract();
+				break;
 			}
 			case Operation.import: {
-				return await this.import();
+				result = await this.import();
+				break;
 			}
 			case Operation.export: {
-				return await this.export();
+				result = await this.export();
+				break;
+			}
+		}
+
+		if (!result.success) {
+			vscode.window.showErrorMessage(this.getOperationErrorMessage(this.selectedOperation, result.errorMessage));
+		}
+
+		return result;
+	}
+
+	private getOperationErrorMessage(operation: Operation, error: any): string {
+		switch (this.selectedOperation) {
+			case Operation.deploy: {
+				return loc.deployOperationErrorMessage(error);
+			}
+			case Operation.extract: {
+				return loc.extractOperationErrorMessage(error);
+			}
+			case Operation.import: {
+				return loc.importOperationErrorMessage(error);
+			}
+			case Operation.export: {
+				return loc.exportOperationErrorMessage(error);
 			}
 		}
 	}
