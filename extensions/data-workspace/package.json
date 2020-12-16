@@ -73,22 +73,22 @@
         {
           "command": "dataworkspace.refresh",
           "when": "view == dataworkspace.views.main",
-          "group": "secondary"
+          "group": "2_currentWorkspace"
         },
         {
           "command": "dataworkspace.close",
           "when": "view == dataworkspace.views.main && workbenchState == workspace",
-          "group": "tertiary"
+          "group": "3_commands"
         },
         {
           "command": "projects.new",
           "when": "view == dataworkspace.views.main",
-          "group": "navigation"
+          "group": "1_navigation"
         },
         {
           "command": "projects.openExisting",
           "when": "view == dataworkspace.views.main",
-          "group": "navigation"
+          "group": "1_navigation"
         }
       ],
       "commandPalette": [
