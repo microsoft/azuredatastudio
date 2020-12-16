@@ -172,7 +172,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 	};
 
 	public login(endpoint: string, username: string, password: string, additionalEnvVars: { [key: string]: string } = {}): Promise<azdataExt.AzdataOutput<void>> {
-		return this.executeCommand<void>(['login', '-e', endpoint, '-u', username], Object.assign(additionalEnvVars, { 'AZDATA_PASSWORD': password }));
+		return this.executeCommand<void>(['login', '-e', endpoint, '-u', username], Object.assign({}, additionalEnvVars, { 'AZDATA_PASSWORD': password }));
 	}
 
 	/**
