@@ -69,8 +69,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 
 		rootContainer.addItem(await this.createToolbar(view), {
 			flex: '0 0 auto', CSSStyles: {
-				'border-top': '3px solid rgb(221, 221, 221)',
-				'height': '32px'
+				'border-top': '3px solid rgb(221, 221, 221)'
 			}
 		});
 
@@ -96,8 +95,14 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		];
 	}
 
-	private async createToolbar(view: azdata.ModelView): Promise<azdata.ToolbarContainer> {
+	private limitLongName(name: string): string {
+		if (name.length > 40) {
+			return name.slice(0, 40) + '...';
+		}
+		return name;
+	}
 
+	private async createToolbar(view: azdata.ModelView): Promise<azdata.ToolbarContainer> {
 		const targetIconPath = this.engine.isServerConnection
 			? {
 				dark: this.extensionContext.asAbsolutePath('resources/dark/server.svg'),
@@ -107,18 +112,20 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 				light: this.extensionContext.asAbsolutePath('resources/light/database.svg')
 			};
 		const iconSize: number = 16;
+		const btnHeight: string = '26px';
 
 		const btnInvokeAssessment = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
-				label: this.invokeAssessmentLabel,
+				label: this.limitLongName(this.invokeAssessmentLabel),
 				iconPath: targetIconPath,
 				iconHeight: iconSize,
-				iconWidth: iconSize
+				iconWidth: iconSize,
+				height: btnHeight
 			}).component();
 		const btnInvokeAssessmentLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnInvokeAssessment)
 			.withProperties<azdata.LoadingComponentProperties>({
-				loadingText: this.invokeAssessmentLabel,
+				loadingText: this.limitLongName(this.invokeAssessmentLabel),
 				showText: true,
 				loading: false
 			}).component();
@@ -142,15 +149,16 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 
 		const btnGetAssessmentItems = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
-				label: this.getItemsLabel,
+				label: this.limitLongName(this.getItemsLabel),
 				iconPath: targetIconPath,
 				iconHeight: iconSize,
-				iconWidth: iconSize
+				iconWidth: iconSize,
+				height: btnHeight
 			}).component();
 		const btnGetAssessmentItemsLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnGetAssessmentItems)
 			.withProperties<azdata.LoadingComponentProperties>({
-				loadingText: this.getItemsLabel,
+				loadingText: this.limitLongName(this.getItemsLabel),
 				showText: true,
 				loading: false
 			}).component();
@@ -181,7 +189,8 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 					light: this.extensionContext.asAbsolutePath('resources/light/newquery.svg')
 				},
 				iconHeight: iconSize,
-				iconWidth: iconSize
+				iconWidth: iconSize,
+				height: btnHeight
 			}).component();
 		this.toDispose.push(this.btnExportAsScript.onDidClick(async () => {
 			this.engine.generateAssessmentScript();
@@ -196,7 +205,8 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 					light: this.extensionContext.asAbsolutePath('resources/light/book.svg')
 				},
 				iconHeight: iconSize,
-				iconWidth: iconSize
+				iconWidth: iconSize,
+				height: btnHeight
 			}).component();
 
 		this.toDispose.push(this.btnHTMLExport.onDidClick(async () => {
@@ -224,13 +234,15 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 
 		let btnViewSamples = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
-				label: localize('btnViewSamples', "View all rules and learn more on GitHub"),
+				label: localize('btnViewSamplesShort', "View all on GitHub"),
 				iconPath: {
 					dark: this.extensionContext.asAbsolutePath('resources/dark/configuredashboard_inverse.svg'),
 					light: this.extensionContext.asAbsolutePath('resources/light/configuredashboard.svg')
 				},
 				iconHeight: iconSize,
-				iconWidth: iconSize
+				iconWidth: iconSize,
+				height: btnHeight,
+				title: localize('btnViewSamples', "View all rules and learn more on GitHub"),
 			}).component();
 
 		this.toDispose.push(btnViewSamples.onDidClick(() => {
@@ -246,7 +258,8 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 					light: this.extensionContext.asAbsolutePath('resources/light/status_info.svg')
 				},
 				iconHeight: iconSize,
-				iconWidth: iconSize
+				iconWidth: iconSize,
+				height: btnHeight
 			}).component();
 		this.toDispose.push(btnAPIDetails.onDidClick(async () => {
 			let infoArray: azdata.PropertiesContainerItem[] = [];
