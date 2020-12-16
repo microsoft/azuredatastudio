@@ -9,7 +9,7 @@ import * as nls from 'vscode-nls';
 import { SqlAssessmentTab } from './sqlAssessmentTab';
 import { AssessmentEngine, AssessmentType } from '../engine';
 import { promises as fs } from 'fs';
-import { suggestReportFile } from '../utils';
+import { suggestReportFile, limitLongName } from '../utils';
 import { HTMLReportBuilder } from '../htmlReportGenerator';
 import { AssessmentResultGrid } from '../assessmentResultGrid';
 import { LocalizedStrings } from '../localized';
@@ -95,12 +95,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		];
 	}
 
-	private limitLongName(name: string): string {
-		if (name.length > 40) {
-			return name.slice(0, 40) + '...';
-		}
-		return name;
-	}
+
 
 	private async createToolbar(view: azdata.ModelView): Promise<azdata.ToolbarContainer> {
 		const targetIconPath = this.engine.isServerConnection
@@ -113,19 +108,21 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 			};
 		const iconSize: number = 16;
 		const btnHeight: string = '26px';
+		const maxNameLength: number = 40;
 
 		const btnInvokeAssessment = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
-				label: this.limitLongName(this.invokeAssessmentLabel),
+				label: limitLongName(this.invokeAssessmentLabel, maxNameLength),
 				iconPath: targetIconPath,
 				iconHeight: iconSize,
 				iconWidth: iconSize,
 				height: btnHeight
+
 			}).component();
 		const btnInvokeAssessmentLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnInvokeAssessment)
 			.withProperties<azdata.LoadingComponentProperties>({
-				loadingText: this.limitLongName(this.invokeAssessmentLabel),
+				loadingText: limitLongName(this.invokeAssessmentLabel, maxNameLength),
 				showText: true,
 				loading: false
 			}).component();
@@ -149,7 +146,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 
 		const btnGetAssessmentItems = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
-				label: this.limitLongName(this.getItemsLabel),
+				label: limitLongName(this.getItemsLabel, maxNameLength),
 				iconPath: targetIconPath,
 				iconHeight: iconSize,
 				iconWidth: iconSize,
@@ -158,7 +155,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		const btnGetAssessmentItemsLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnGetAssessmentItems)
 			.withProperties<azdata.LoadingComponentProperties>({
-				loadingText: this.limitLongName(this.getItemsLabel),
+				loadingText: limitLongName(this.getItemsLabel, maxNameLength),
 				showText: true,
 				loading: false
 			}).component();
