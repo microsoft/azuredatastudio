@@ -69,11 +69,11 @@ suite('New Project Dialog', function (): void {
 		// same folder as the project should be valid even if the project folder isn't created yet
 		fileExistStub.resolves(false);
 		dialog.workspaceInputBox!.value = path.join(dialog.model.location, dialog.model.name, 'test.code-workspace');
-		should.equal(await dialog.validateNewWorkspace(true), true, 'Validation should pass if the file location is the same folder as the project');
+		should.equal(await dialog.validateNewWorkspace(true), true, `Validation should pass if the file location is the same folder as the project. Error was: ${dialog.getErrorMessage().text}`);
 
 		// change workspace name to something that should pass
 		dialog.workspaceInputBox!.value = path.join(os.tmpdir(), `TestWorkspace_${new Date().getTime()}.code-workspace`);
-		should.equal(await dialog.validateNewWorkspace(false), true, 'Validation should pass because the parent directory exists, workspace filepath is unique, and the file extension is correct');
+		should.equal(await dialog.validateNewWorkspace(false), true, `Validation should pass because the parent directory exists, workspace filepath is unique, and the file extension is correct. Error was: ${dialog.getErrorMessage().text}`);
 	});
 
 	test('Should validate workspace in onComplete', async function (): Promise<void> {

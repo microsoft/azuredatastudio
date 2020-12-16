@@ -75,12 +75,12 @@ suite('Open Existing Dialog', function (): void {
 		// use already existing workspace
 		const existingWorkspaceFilePath = path.join(os.tmpdir(), `test.code-workspace`);
 		dialog.workspaceInputBox!.value = existingWorkspaceFilePath;
-		should.equal(await dialog.validateNewWorkspace(false), false, 'Validation should fail because the selected workspace file already exists');
+		should.equal(await dialog.validateNewWorkspace(false), false, 'Validation should fail because the selected workspace file already exists.');
 
 		// change workspace name to something that should pass
 		fileExistStub.resolves(false);
 		dialog.workspaceInputBox!.value = path.join(os.tmpdir(), `TestWorkspace_${new Date().getTime()}.code-workspace`);
-		should.equal(await dialog.validateNewWorkspace(false), true, 'Validation should pass because the parent directory exists, workspace filepath is unique, and the file extension is correct');
+		should.equal(await dialog.validateNewWorkspace(false), true, `Validation should pass because the parent directory exists, workspace filepath is unique, and the file extension is correct. Error was: ${dialog.getErrorMessage().text}`);
 	});
 
 	test('Should validate workspace in onComplete when opening project', async function (): Promise<void> {

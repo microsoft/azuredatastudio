@@ -36,9 +36,7 @@ export abstract class DialogBase {
 
 	protected abstract initialize(view: azdata.ModelView): Promise<void>;
 
-	protected async validate(): Promise<boolean> {
-		return Promise.resolve(true);
-	}
+	abstract validate(): Promise<boolean>;
 
 	public async open(): Promise<void> {
 		const tab = azdata.window.createTab('');
@@ -75,6 +73,10 @@ export abstract class DialogBase {
 			text: message,
 			level: azdata.window.MessageLevel.Error
 		};
+	}
+
+	public getErrorMessage(): azdata.window.DialogMessage {
+		return this._dialogObject.message;
 	}
 
 	protected createHorizontalContainer(view: azdata.ModelView, items: azdata.Component[]): azdata.FlexContainer {
