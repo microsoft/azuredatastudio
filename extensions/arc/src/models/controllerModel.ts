@@ -51,7 +51,7 @@ export class ControllerModel {
 		this._onInfoUpdated.fire(this._info);
 	}
 
-	public get azdataAdditionalEnvVars(): { [key: string]: string } {
+	public get azdataAdditionalEnvVars(): azdataExt.AdditionalEnvVars {
 		return {
 			'KUBECONFIG': this.info.kubeConfigFilePath,
 			'KUBECTL_CONTEXT': this.info.kubeClusterContext
@@ -68,7 +68,7 @@ export class ControllerModel {
 			const contexts = await getKubeConfigClusterContexts(this.info.kubeConfigFilePath);
 			promptForValidClusterContext = getCurrentClusterContext(contexts, this.info.kubeClusterContext, true) === this.info.kubeClusterContext;
 		} catch (error) {
-			const response = await vscode.window.showErrorMessage(loc.clusterContextConfigNoLongerValid(this.info.kubeConfigFilePath, this.info.kubeClusterContext, error), ...[loc.yes, loc.no]);
+			const response = await vscode.window.showErrorMessage(loc.clusterContextConfigNoLongerValid(this.info.kubeConfigFilePath, this.info.kubeClusterContext, error), loc.yes, loc.no);
 			if (response === loc.yes) {
 				promptForValidClusterContext = true;
 			} else {

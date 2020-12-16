@@ -181,7 +181,6 @@ abstract class ControllerDialogBase extends InitializingComponent {
 	}
 }
 
-//const currentClusterContext = (await getKubeConfigClusterContexts(getDefaultKubeConfigPath())).filter(c => c.isCurrentContext).pop()!.name;
 export class ConnectToControllerDialog extends ControllerDialogBase {
 	protected rememberPwCheckBox!: azdata.CheckBoxComponent;
 
@@ -284,7 +283,7 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 		} catch (e) {
 			if (getErrorMessage(e).match(/Wrong username or password/i)) {
 				this.dialog.message = {
-					text: loc.invalidPassword,
+					text: loc.loginFailed,
 					level: azdata.window.MessageLevel.Error
 				};
 				return false;

@@ -15,6 +15,8 @@ declare module 'azdata-ext' {
 	export const enum extension {
 		name = 'Microsoft.azdata'
 	}
+	
+	export type AdditionalEnvVars = { [key: string]: string};
 
 	export interface ErrorWithLink extends Error {
 		messageWithLink: string;
