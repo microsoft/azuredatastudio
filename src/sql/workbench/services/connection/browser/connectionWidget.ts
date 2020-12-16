@@ -366,7 +366,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				this._databaseDropdownExpanded = true;
 				if (this.serverName) {
 					this._databaseNameInputBox.values = [this._loadingDatabaseName];
-					this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password, this.azureAccount, this.dstsToken).then(databases => {
+					this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password, this.token).then(databases => {
 						if (databases) {
 							this._databaseNameInputBox.values = databases.sort((a, b) => a.localeCompare(b));
 						} else {
@@ -507,8 +507,17 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._tableContainer.classList.add('hide-password');
 			this._tableContainer.classList.remove('hide-azure-accounts');
 		} else if (currentAuthType === AuthenticationType.dSTSAuth) {
-			this._accountManagementService.getDstsToken(this.serverName, this.databaseName).then(token => {
-				this.dstsToken = token;
+			this._accountManagementService.getAccountsForProvider('dstsAuth').then(accounts => {
+				if (accounts && accounts.length > 0) {
+					accounts[0].key.providerArgs = {
+						serverName: this.serverName,
+						databaseName: this.databaseName
+					};
+
+					this._accountManagementService.getAccountSecurityToken(accounts[0], '', null).then(securityToken => {
+						this.dstsToken = securityToken.token;
+					});
+				}
 			});
 			this._tableContainer.classList.add('hide-username');
 			this._tableContainer.classList.add('hide-password');
@@ -835,8 +844,14 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		return this._authTypeSelectBox ? this.getAuthTypeName(this._authTypeSelectBox.value) : undefined;
 	}
 
-	public get azureAccount(): string {
-		return this.authenticationType === AuthenticationType.AzureMFAAndUser || this.authenticationType === AuthenticationType.AzureMFA ? this._azureAccountDropdown.value : undefined;
+	public get token(): string {
+		if (this.authenticationType === AuthenticationType.AzureMFAAndUser || this.authenticationType === AuthenticationType.AzureMFA) {
+			return this._azureAccountDropdown.value;
+		}
+		if (this.authenticationType === AuthenticationType.dSTSAuth) {
+			return this.dstsToken;
+		}
+		return undefined;
 	}
 
 	private validateAzureAccountSelection(showMessage: boolean = true): boolean {
@@ -892,7 +907,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			model.userName = this.userName;
 			model.password = this.password;
 			model.authenticationType = this.authenticationType;
-			model.azureAccount = this.azureAccount;
+			model.azureAccount = this.token;
 			model.savePassword = this._rememberPasswordCheckBox.checked;
 			model.connectionName = this.connectionName;
 			model.databaseName = this.databaseName;

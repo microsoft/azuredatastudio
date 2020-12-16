@@ -55,10 +55,6 @@ export class TestAccountManagementService implements IAccountManagementService {
 		return Promise.resolve([]);
 	}
 
-	getDstsToken(serverName, databaseName): Promise<string> {
-		return Promise.resolve('');
-	}
-
 	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<{ token: string }> {
 		return Promise.resolve(undefined!);
 	}
