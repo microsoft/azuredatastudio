@@ -37,9 +37,7 @@ export class OpenExistingDialog extends DialogBase {
 		try {
 			// the selected location should be an existing directory
 			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Project) {
-				const fileExists = await fileExist(this._projectFile);
-				if (!fileExists) {
-					this.showErrorMessage(constants.FileNotExistError(constants.Project.toLowerCase(), this._projectFile));
+				if (!await this.validateFile(this._projectFile, constants.Project.toLowerCase())) {
 					return false;
 				}
 
@@ -47,9 +45,7 @@ export class OpenExistingDialog extends DialogBase {
 					return false;
 				}
 			} else if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
-				const fileExists = await fileExist(this._workspaceFile);
-				if (!fileExists) {
-					this.showErrorMessage(constants.FileNotExistError(constants.Workspace.toLowerCase(), this._workspaceFile));
+				if (!await this.validateFile(this._workspaceFile, constants.Workspace.toLowerCase())) {
 					return false;
 				}
 			}
@@ -60,6 +56,16 @@ export class OpenExistingDialog extends DialogBase {
 			this.showErrorMessage(err?.message ? err.message : err);
 			return false;
 		}
+	}
+
+	public async validateFile(file: string, fileType: string) {
+		const fileExists = await fileExist(file);
+		if (!fileExists) {
+			this.showErrorMessage(constants.FileNotExistError(fileType, file));
+			return false;
+		}
+
+		return true;
 	}
 
 	async onComplete(): Promise<void> {
