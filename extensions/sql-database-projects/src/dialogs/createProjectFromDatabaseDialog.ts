@@ -529,4 +529,8 @@ export class CreateProjectFromDatabaseDialog {
 			level: azdata.window.MessageLevel.Error
 		};
 	}
+
+	public getErrorMessage(): azdata.window.DialogMessage {
+		return this.dialog.message;
+	}
 }

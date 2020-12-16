@@ -145,11 +145,11 @@ describe('Create Project From Database Dialog', () => {
 
 		// same folder as the project should be valid even if the project folder isn't created yet
 		dialog.workspaceInputBox!.value = path.join(dialog.projectLocationTextBox!.value!, dialog.projectNameTextBox!.value!, 'test.code-workspace');
-		should.equal(await dialog.validate(), true, 'Validation should pass if the file location is the same folder as the project');
+		should.equal(await dialog.validate(), true, `Validation should pass if the file location is the same folder as the project. Error was: ${dialog.getErrorMessage()}`);
 
 		// change workspace name to something that should pass
 		dialog.workspaceInputBox!.value = path.join(os.tmpdir(), `TestWorkspace_${new Date().getTime()}.code-workspace`);
-		should.equal(await dialog.validate(), true, 'Validation should pass because the parent directory exists, workspace filepath is unique, and the file extension is correct');
+		should.equal(await dialog.validate(), true, `Validation should pass because the parent directory exists, workspace filepath is unique, and the file extension is correct. Error was: ${dialog.getErrorMessage()}`);
 	});
 
 });
