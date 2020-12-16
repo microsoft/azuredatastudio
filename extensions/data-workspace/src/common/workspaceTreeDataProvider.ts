@@ -25,10 +25,6 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 		this._onDidChangeTreeData?.fire();
 	}
 
-	close(): void {
-		vscode.commands.executeCommand('workbench.action.closeFolder');
-	}
-
 	getTreeItem(element: WorkspaceTreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
 		return element.treeDataProvider.getTreeItem(element.element);
 	}

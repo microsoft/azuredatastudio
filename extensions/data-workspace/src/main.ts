@@ -36,7 +36,7 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 		workspaceTreeDataProvider.refresh();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.close', () => {
-		workspaceTreeDataProvider.close();
+		vscode.commands.executeCommand('workbench.action.closeFolder');
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.removeProject', async (treeItem: WorkspaceTreeItem) => {
 		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
