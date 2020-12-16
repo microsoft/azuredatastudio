@@ -66,7 +66,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _defaultDatabaseName: string = localize('defaultDatabaseOption', "<Default>");
 	private _loadingDatabaseName: string = localize('loadingDatabaseOption', "Loading...");
 	private _serverGroupDisplayString: string = localize('serverGroup', "Server group");
-	private dstsToken: string;
+	private _token: string;
 	protected _container: HTMLElement;
 	protected _serverGroupSelectBox: SelectBox;
 	protected _authTypeSelectBox: SelectBox;
@@ -515,7 +515,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					};
 
 					this._accountManagementService.getAccountSecurityToken(accounts[0], '', null).then(securityToken => {
-						this.dstsToken = securityToken.token;
+						this._token = securityToken.token;
 					});
 				}
 			});
@@ -849,7 +849,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			return this._azureAccountDropdown.value;
 		}
 		if (this.authenticationType === AuthenticationType.dSTSAuth) {
-			return this.dstsToken;
+			return this._token;
 		}
 		return undefined;
 	}
