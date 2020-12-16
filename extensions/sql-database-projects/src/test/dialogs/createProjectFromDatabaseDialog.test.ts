@@ -8,6 +8,9 @@ import * as azdata from 'azdata';
 import * as mssql from '../../../../mssql';
 import * as sinon from 'sinon';
 import * as path from 'path';
+import * as os from 'os';
+import * as vscode from 'vscode';
+import { promises as fs } from 'fs';
 import { CreateProjectFromDatabaseDialog } from '../../dialogs/createProjectFromDatabaseDialog';
 import { mockConnectionProfile } from '../testContext';
 import { ImportDataModel } from '../../models/api/import';
@@ -97,6 +100,8 @@ describe('Create Project From Database Dialog', () => {
 		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
 		await dialog.openDialog();
 
+		dialog.workspaceInputBox!.enabled = false;
+
 		dialog.projectNameTextBox!.value = 'testProject';
 		dialog.projectLocationTextBox!.value = 'testLocation';
 
@@ -108,7 +113,8 @@ describe('Create Project From Database Dialog', () => {
 			projName: 'testProject',
 			filePath: 'testLocation',
 			version: '1.0.0.0',
-			extractTarget: mssql.ExtractTarget['schemaObjectType']
+			extractTarget: mssql.ExtractTarget['schemaObjectType'],
+			newWorkspaceFilePath: undefined
 		};
 
 		dialog.createProjectFromDatabaseCallback = (m) => { model = m; };
@@ -116,4 +122,34 @@ describe('Create Project From Database Dialog', () => {
 
 		should(model!).deepEqual(expectedImportDataModel);
 	});
+
+	it('Should validate new workspace location', async function (): Promise<void> {
+		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
+		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
+		await dialog.openDialog();
+
+		dialog.projectNameTextBox!.value = `TestProject_${new Date().getTime()}`;
+		dialog.projectLocationTextBox!.value = os.tmpdir();
+		dialog.workspaceInputBox!.value = 'test';
+		should.equal(await dialog.validate(), false, 'Validation should fail because workspace does not end in .code-workspace');
+
+		// use invalid folder
+		dialog.workspaceInputBox!.value = 'invalidLocation/test.code-workspace';
+		should.equal(await dialog.validate(), false, 'Validation should fail because the folder is invalid');
+
+		// use already existing workspace
+		const existingWorkspaceFilePath = path.join(os.tmpdir(), `${dialog.projectNameTextBox!.value!}.code-workspace`);
+		await fs.writeFile(existingWorkspaceFilePath, '');
+		dialog.workspaceInputBox!.value = existingWorkspaceFilePath;
+		should.equal(await dialog.validate(), false, 'Validation should fail because the selected workspace file already exists');
+
+		// same folder as the project should be valid even if the project folder isn't created yet
+		dialog.workspaceInputBox!.value = path.join(dialog.projectLocationTextBox!.value!, dialog.projectNameTextBox!.value!, 'test.code-workspace');
+		should.equal(await dialog.validate(), true, 'Validation should pass if the file location is the same folder as the project');
+
+		// change workspace name to something that should pass
+		dialog.workspaceInputBox!.value = path.join(os.tmpdir(), `TestWorkspace_${new Date().getTime()}.code-workspace`);
+		should.equal(await dialog.validate(), true, 'Validation should pass because the parent directory exists, workspace filepath is unique, and the file extension is correct');
+	});
+
 });
