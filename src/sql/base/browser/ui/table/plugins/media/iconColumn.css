@@ -3,21 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.center-align
-{
-	text-align: center;
-}
-
-.align-with-header
-{
-	padding-left:3px !important;
-}
-
-.no-borders
-{
-	border: none !important
-}
-
-.display-none {
-	display: none;
+.slick-plugin-icon {
+	padding-left: 26px;
+	background-size: 16px !important;
+	background-position: 5px 50% !important;
+	background-repeat: no-repeat;
 }
