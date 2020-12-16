@@ -2,14 +2,14 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.6.3",
+  "version": "0.7.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.23.0"
+    "azdata": ">=1.25.0"
   },
   "activationEvents": [
     "onCommand:arc.connectToController",
@@ -189,7 +189,9 @@
                           "editable": false,
                           "options": {
                             "source": {
-                              "providerId": "arc.controller.config.profiles"
+                              "providerId": "arc.controller.config.profiles",
+                              "loadingText": "%arc.data.controller.cluster.config.profile.loading%",
+                              "loadingCompletedText": "%arc.data.controller.cluster.config.profile.loadingcompleted%"
                             },
                             "defaultValue": "azure-arc-aks-default-storage",
                             "optionsType": "radio"
@@ -200,7 +202,7 @@
                   ]
                 },
                 {
-                  "title": "%arc.data.controller.data.controller.create.azureconfig.title%",
+                  "title": "%arc.data.controller.create.azureconfig.title%",
                   "sections": [
                     {
                       "title": "%arc.data.controller.project.details.title%",
@@ -218,7 +220,7 @@
                         },
                         {
                           "type": "azure_locations",
-                          "label": "%arc.data.controller.arc.data.controller.location%",
+                          "label": "%arc.data.controller.location%",
                           "defaultValue": "eastus",
                           "required": true,
                           "locationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION",
@@ -244,7 +246,7 @@
                       "fields": [
                         {
                           "type": "readonly_text",
-                          "label": "%arc.data.controller.data.controller.connectivitymode.description%",
+                          "label": "%arc.data.controller.connectivitymode.description%",
                           "labelWidth": "600px"
                         },
                         {
@@ -268,19 +270,38 @@
                           }
                         },
                         {
-                          "label": "%arc.data.controller.spnclient%",
-                          "variableName": "AZDATA_NB_VAR_SPN_CLIENT_ID",
+                          "type": "readonly_text",
+                          "label": "%arc.data.controller.serviceprincipal.description%",
+                          "labelWidth": "600px",
+                          "links": [
+                            {
+                              "text": "%arc.data.controller.readmore%",
+                              "url": "https://docs.microsoft.com/azure/azure-arc/data/upload-metrics"
+                            }
+                          ]
+                        },
+                        {
+                          "label": "%arc.data.controller.spclientid%",
+                          "description": "%arc.data.controller.spclientid.description%",
+                          "variableName": "AZDATA_NB_VAR_SP_CLIENT_ID",
                           "type": "text",
                           "required": true,
                           "defaultValue": "",
+                          "placeHolder": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                             "value": "direct"
-                          }
+                          },
+                          "validations" : [{
+                            "type": "regex_match",
+                            "regex": "^[0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}$",
+                            "description": "%arc.data.controller.spclientid.validation.description%"
+                          }]
                         },
                         {
-                          "label": "%arc.data.controller.spnclientsecret%",
-                          "variableName": "AZDATA_NB_VAR_SPN_CLIENT_SECRET",
+                          "label": "%arc.data.controller.spclientsecret%",
+                          "description": "%arc.data.controller.spclientsecret.description%",
+                          "variableName": "AZDATA_NB_VAR_SP_CLIENT_SECRET",
                           "type": "password",
                           "required": true,
                           "defaultValue": "",
@@ -290,38 +311,45 @@
                           }
                         },
                         {
-                          "label": "%arc.data.controller.spntenant%",
-                          "variableName": "AZDATA_NB_VAR_SPN_CLIENT_TENANTID",
+                          "label": "%arc.data.controller.sptenantid%",
+                          "description": "%arc.data.controller.sptenantid.description%",
+                          "variableName": "AZDATA_NB_VAR_SP_TENANT_ID",
                           "type": "text",
                           "required": true,
                           "defaultValue": "",
-                          "enabled": {
-                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "direct"
-                          }
+                          "enabled": false,
+                          "valueProvider": {
+                            "providerId": "subscription-id-to-tenant-id",
+                            "triggerField": "AZDATA_NB_VAR_ARC_SUBSCRIPTION"
+                          },
+                          "validations" : [{
+                            "type": "regex_match",
+                            "regex": "^[0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}$",
+                            "description": "%arc.data.controller.sptenantid.validation.description%"
+                          }]
                         }
                       ]
                     }
                   ]
                 },
                 {
-                  "title": "%arc.data.controller.data.controller.create.controllerconfig.title%",
+                  "title": "%arc.data.controller.create.controllerconfig.title%",
                   "sections": [
                     {
-                      "title": "%arc.data.controller.data.controller.details.title%",
+                      "title": "%arc.data.controller.details.title%",
                       "fields": [
                         {
                           "type": "readonly_text",
-                          "label": "%arc.data.controller.data.controller.details.description%",
+                          "label": "%arc.data.controller.details.description%",
                           "labelWidth": "600px"
                         },
                         {
                           "type": "text",
-                          "label": "%arc.data.controller.arc.data.controller.namespace%",
+                          "label": "%arc.data.controller.namespace%",
                           "validations" : [{
                             "type": "regex_match",
                             "regex": "^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$",
-                            "description": "%arc.data.controller.arc.data.controller.namespace.validation.description%"
+                            "description": "%arc.data.controller.namespace.validation.description%"
                           }],
                           "defaultValue": "arc",
                           "required": true,
@@ -329,11 +357,11 @@
                         },
                         {
                           "type": "text",
-                          "label": "%arc.data.controller.arc.data.controller.name%",
+                          "label": "%arc.data.controller.name%",
                           "validations" : [{
                             "type": "regex_match",
                             "regex": "^[a-z0-9]([-.a-z0-9]{0,251}[a-z0-9])?$",
-                            "description": "%arc.data.controller.arc.data.controller.name.validation.description%"
+                            "description": "%arc.data.controller.name.validation.description%"
                           }],
                           "defaultValue": "arc-dc",
                           "required": true,
@@ -374,7 +402,7 @@
                   ]
                 },
                 {
-                  "title": "%arc.data.controller.data.controller.create.summary.title%",
+                  "title": "%arc.data.controller.create.summary.title%",
                   "isSummaryPage": true,
                   "fieldHeight": "16px",
                   "sections": [
@@ -529,18 +557,6 @@
                       "title": "%arc.data.controller.summary.azure%",
                       "fields": [
                         {
-                          "label": "%arc.data.controller.summary.data.controller.namespace%",
-                          "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE)"
-                        },
-                        {
-                          "label": "%arc.data.controller.summary.data.controller.name%",
-                          "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME)"
-                        },
-                        {
                           "label": "%arc.data.controller.summary.subscription%",
                           "type": "readonly_text",
                           "isEvaluated": true,
@@ -565,6 +581,18 @@
                       "title": "%arc.data.controller.summary.controller%",
                       "fields": [
                         {
+                          "label": "%arc.data.controller.summary.data.controller.namespace%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE)"
+                        },
+                        {
+                          "label": "%arc.data.controller.summary.data.controller.name%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME)"
+                        },
+                        {
                           "label": "%arc.data.controller.connectivitymode%",
                           "type": "readonly_text",
                           "isEvaluated": true,
@@ -582,7 +610,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.0"
+                "version": "20.2.5"
               }
             ],
             "when": true
@@ -761,7 +789,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.0"
+                "version": "20.2.5"
               }
             ],
             "when": "true"
@@ -840,7 +868,7 @@
                           "description": "%arc.postgres.server.group.name.validation.description%",
                           "validations" : [{
                             "type": "regex_match",
-                            "regex": "^[a-z]([-a-z0-9]{0,10}[a-z0-9])?$",
+                            "regex": "^[a-z]([-a-z0-9]{0,9}[a-z0-9])?$",
                             "description": "%arc.postgres.server.group.name.validation.description%"
                           }],
                           "required": true
@@ -1009,7 +1037,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.0"
+                "version": "20.2.5"
               }
             ],
             "when": "true"

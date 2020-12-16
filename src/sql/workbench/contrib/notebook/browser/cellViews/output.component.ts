@@ -40,8 +40,6 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	private _initialized: boolean = false;
 	private _activeCellId: string;
 	private _componentInstance: IMimeComponent;
-	private _batchId: number | undefined;
-	private _id: number | undefined;
 	public errorText: string;
 
 	constructor(
@@ -101,14 +99,6 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			this.loadComponent();
 		}
 		return this._componentInstance;
-	}
-
-	@Input() set batchId(value: number | undefined) {
-		this._batchId = value;
-	}
-
-	@Input() set id(value: number | undefined) {
-		this._id = value;
 	}
 
 	get trustedMode(): boolean {
@@ -183,8 +173,6 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			this._componentInstance.cellModel = this.cellModel;
 			this._componentInstance.cellOutput = this.cellOutput;
 			this._componentInstance.bundleOptions = options;
-			this._componentInstance.batchId = this._batchId;
-			this._componentInstance.id = this._id;
 			this._changeref.detectChanges();
 			let el = <HTMLElement>componentRef.location.nativeElement;
 

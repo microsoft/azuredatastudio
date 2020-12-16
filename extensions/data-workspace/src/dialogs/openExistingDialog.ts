@@ -22,16 +22,10 @@ export class OpenExistingDialog extends DialogBase {
 	private _targetTypes = [
 		{
 			name: constants.Project,
-			icon: {
-				dark: this.extensionContext.asAbsolutePath('images/file_inverse.svg'),
-				light: this.extensionContext.asAbsolutePath('images/file.svg')
-			}
+			icon: this.extensionContext.asAbsolutePath('images/Open_existing_Project.svg')
 		}, {
 			name: constants.Workspace,
-			icon: {
-				dark: this.extensionContext.asAbsolutePath('images/file_inverse.svg'), // temporary - still waiting for real icon from UX
-				light: this.extensionContext.asAbsolutePath('images/file.svg')
-			}
+			icon: this.extensionContext.asAbsolutePath('images/Open_existing_Workspace.svg')
 		}
 	];
 
@@ -45,13 +39,17 @@ export class OpenExistingDialog extends DialogBase {
 			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Project) {
 				const fileExists = await fileExist(this._projectFile);
 				if (!fileExists) {
-					this.showErrorMessage(constants.ProjectFileNotExistError(this._projectFile));
+					this.showErrorMessage(constants.FileNotExistError(constants.Project.toLowerCase(), this._projectFile));
+					return false;
+				}
+
+				if (this.workspaceInputBox!.enabled && !await this.validateNewWorkspace(false)) {
 					return false;
 				}
 			} else if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
 				const fileExists = await fileExist(this._workspaceFile);
 				if (!fileExists) {
-					this.showErrorMessage(constants.WorkspaceFileNotExistError(this._workspaceFile));
+					this.showErrorMessage(constants.FileNotExistError(constants.Workspace.toLowerCase(), this._workspaceFile));
 					return false;
 				}
 			}
@@ -71,7 +69,7 @@ export class OpenExistingDialog extends DialogBase {
 			} else {
 				const validateWorkspace = await this.workspaceService.validateWorkspace();
 				if (validateWorkspace) {
-					await this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._projectFile)]);
+					await this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._projectFile)], vscode.Uri.file(this.workspaceInputBox!.value!));
 				}
 			}
 		}
@@ -97,8 +95,8 @@ export class OpenExistingDialog extends DialogBase {
 					]
 				};
 			}),
-			iconHeight: '50px',
-			iconWidth: '50px',
+			iconHeight: '100px',
+			iconWidth: '100px',
 			cardWidth: '170px',
 			cardHeight: '170px',
 			ariaLabel: constants.TypeTitle,
@@ -136,15 +134,19 @@ export class OpenExistingDialog extends DialogBase {
 		this.register(this._targetTypeRadioCardGroup.onSelectionChanged(({ cardId }) => {
 			if (cardId === constants.Project) {
 				this._filePathTextBox!.placeHolder = constants.ProjectFilePlaceholder;
-				this.formBuilder?.addFormItem(this.workspaceFormComponent!);
+				this.formBuilder?.addFormItem(this.workspaceDescriptionFormComponent!);
+				this.formBuilder?.addFormItem(this.workspaceInputFormComponent!);
 			} else if (cardId === constants.Workspace) {
 				this._filePathTextBox!.placeHolder = constants.WorkspacePlaceholder;
-				this.formBuilder?.removeFormItem(this.workspaceFormComponent!);
+				this.formBuilder?.removeFormItem(this.workspaceDescriptionFormComponent!);
+				this.formBuilder?.removeFormItem(this.workspaceInputFormComponent!);
 			}
 
 			// clear selected file textbox
 			this._filePathTextBox!.value = '';
 		}));
+
+		this.createWorkspaceContainer(view);
 
 		this.formBuilder = view.modelBuilder.formContainer().withFormItems([
 			{
@@ -156,14 +158,15 @@ export class OpenExistingDialog extends DialogBase {
 				required: true,
 				component: this.createHorizontalContainer(view, [this._filePathTextBox, browseFolderButton])
 			},
-			this.createWorkspaceContainer(view)
+			this.workspaceDescriptionFormComponent!,
+			this.workspaceInputFormComponent!
 		]);
 		await view.initializeModel(this.formBuilder?.component());
 		this.initDialogComplete?.resolve();
 	}
 
 	public async workspaceBrowse(): Promise<void> {
-		const filters: { [name: string]: string[] } = { [constants.Workspace]: [constants.WorkspaceFileExtension] };
+		const filters: { [name: string]: string[] } = { [constants.Workspace]: [constants.WorkspaceFileExtension.substring(1)] }; // filter already adds a period before the extension
 		const fileUris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
 			canSelectFolders: false,

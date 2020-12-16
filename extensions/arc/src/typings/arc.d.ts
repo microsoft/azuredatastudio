@@ -35,6 +35,8 @@ declare module 'arc' {
 
 	export type ControllerInfo = {
 		id: string,
+		kubeConfigFilePath: string,
+		kubeClusterContext: string
 		url: string,
 		name: string,
 		username: string,

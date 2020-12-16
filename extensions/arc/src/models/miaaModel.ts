@@ -7,6 +7,7 @@ import { MiaaResourceInfo } from 'arc';
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
+import { UserCancelledError } from '../common/api';
 import { Deferred } from '../common/promise';
 import { UserCancelledError } from '../common/utils';
 import * as loc from '../localizedConstants';

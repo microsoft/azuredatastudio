@@ -6,7 +6,6 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
-import { LoadingComponentProperties } from 'azdata';
 
 declare module 'azdata' {
 	/**
@@ -72,10 +71,6 @@ declare module 'azdata' {
 			output_type: string;
 			resultSet: ResultSetSummary;
 			data: any;
-		}
-
-		export interface ICellOutputMetadata {
-			resultSet?: ResultSetSummary;
 		}
 
 		export interface INotebookMetadata {
@@ -847,18 +842,80 @@ declare module 'azdata' {
 	}
 
 	export interface IconColumnCellValue {
+		/**
+		 * The icon to be displayed.
+		 */
 		icon: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
-		ariaLabel: string;
+		/**
+		 * The title of the icon.
+		 */
+		title: string;
+	}
+
+	export interface ButtonColumnCellValue {
+		/**
+		 * The icon to be displayed.
+		 */
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		/**
+		 * The title of the button.
+		 */
+		title?: string;
+	}
+
+	export interface HyperlinkColumnCellValue {
+		/**
+		 * The icon to be displayed.
+		 */
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		/**
+		 * The title of the hyperlink.
+		 */
+		title?: string;
+
+		/**
+		 * The url to open.
+		 */
+		url?: string;
 	}
 
 	export enum ColumnType {
-		icon = 3
+		icon = 3,
+		hyperlink = 4
 	}
 
 	export interface TableColumn {
 		/**
-		* The text to display on the column heading. 'value' property will be used, if not specified
-		**/
+		 * The text to display on the column heading. 'value' property will be used, if not specified
+		 */
 		name?: string;
+	}
+
+	export interface IconColumnOptions {
+		/**
+		 * The icon to use for all the cells in this column.
+		 */
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+	}
+
+	export interface ButtonColumn extends IconColumnOptions, TableColumn {
+		/**
+		 * Whether to show the text, default value is false.
+		 */
+		showText?: boolean;
+	}
+
+	export interface HyperlinkColumn extends IconColumnOptions, TableColumn {
+	}
+
+	export interface CheckboxColumn extends TableColumn {
+		action: ActionOnCellCheckboxCheck;
+	}
+
+	export enum AzureResource {
+		/**
+		 * Microsoft Graph
+		 */
+		MsGraph = 7
 	}
 }

@@ -23,9 +23,13 @@ export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.S
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 
 // Project Provider
-export const sqlDatabaseProjectTypeId = 'sqldbproj';
-export const projectTypeDisplayName = localize('projectTypeDisplayName', "SQL Database");
-export const projectTypeDescription = localize('projectTypeDescription', "Design, edit, and publish schemas for SQL databases");
+export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
+export const emptyProjectTypeDisplayName = localize('emptyProjectTypeDisplayName', "SQL Database");
+export const emptyProjectTypeDescription = localize('emptyProjectTypeDescription', "Develop and publish schemas for SQL databases starting from an empty project");
+
+export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
+export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Edge");
+export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for SQL Edge");
 
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
@@ -118,7 +122,7 @@ export const databaseProject = localize('databaseProject', "Database project");
 
 // Create Project From Database dialog strings
 
-export const createProjectFromDatabaseDialogName = localize('createProjectFromDatabaseDialogName', "Create Project From Database");
+export const createProjectFromDatabaseDialogName = localize('createProjectFromDatabaseDialogName', "Create project from database");
 export const createProjectDialogOkButtonText = localize('createProjectDialogOkButtonText', "Create");
 export const sourceDatabase = localize('sourceDatabase', "Source database");
 export const targetProject = localize('targetProject', "Target project");
@@ -126,9 +130,13 @@ export const createProjectSettings = localize('createProjectSettings', "Settings
 export const projectNameLabel = localize('projectNameLabel', "Name");
 export const projectNamePlaceholderText = localize('projectNamePlaceholderText', "Enter project name");
 export const projectLocationLabel = localize('projectLocationLabel', "Location");
-export const projectLocationPlaceholderText = localize('projectLocationPlaceholderText', "Enter project location");
+export const projectLocationPlaceholderText = localize('projectLocationPlaceholderText', "Select location to create project");
 export const browseButtonText = localize('browseButtonText', "Browse folder");
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
+export const addProjectToCurrentWorkspace = localize('addProjectToCurrentWorkspace', "This project will be added to the current workspace.");
+export const newWorkspaceWillBeCreated = localize('newWorkspaceWillBeCreated', "A new workspace will be created for this project.");
+export const workspaceLocationTitle = localize('workspaceLocationTitle', "Workspace location");
+export const workspace = localize('workspace', "Workspace");
 
 
 // Error messages
@@ -196,6 +204,9 @@ export const scriptFriendlyName = localize('scriptFriendlyName', "Script");
 export const tableFriendlyName = localize('tableFriendlyName', "Table");
 export const viewFriendlyName = localize('viewFriendlyName', "View");
 export const storedProcedureFriendlyName = localize('storedProcedureFriendlyName', "Stored Procedure");
+export const dataSourceFriendlyName = localize('dataSource', "Data Source");
+export const fileFormatFriendlyName = localize('fileFormat', "File Format");
+export const externalStreamFriendlyName = localize('externalStream', "External Stream");
 export const externalStreamingJobFriendlyName = localize('externalStreamingJobFriendlyName', "External Streaming Job");
 export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "Script.PreDeployment");
 export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "Script.PostDeployment");
@@ -210,7 +221,7 @@ export const Project = 'Project';
 export const Condition = 'Condition';
 export const Target = 'Target';
 export const Name = 'Name';
-export const AfterCleanTarget = 'AfterClean';
+export const BeforeBuildTarget = 'BeforeBuild';
 export const Delete = 'Delete';
 export const Files = 'Files';
 export const PackageReference = 'PackageReference';
