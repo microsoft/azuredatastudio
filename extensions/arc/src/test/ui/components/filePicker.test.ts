@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as path from 'path';
 import * as should from 'should';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
@@ -12,8 +13,8 @@ import { FilePicker } from '../../../ui/components/filePicker';
 import { createModelViewMock } from '../../stubs';
 
 let filePicker: FilePicker;
-const initialPath = '/path/to/.kube/config';
-const newFilePath = '/path/to/new/.kube/config';
+const initialPath = path.join('path', 'to', '.kube','config');
+const newFileUri = vscode.Uri.file(path.join('path', 'to', 'new', '.kube', 'config'));
 let filePathInputBox: azdata.InputBoxComponent;
 let browseButton: azdata.ButtonComponent;
 let flexContainer: azdata.FlexContainer;
@@ -38,11 +39,11 @@ describe('filePicker', function (): void {
 		const deferred = new Deferred();
 		sinon.stub(vscode.window, 'showOpenDialog').callsFake(async (_options) => {
 			deferred.resolve();
-			return [vscode.Uri.file(newFilePath)];
+			return [newFileUri];
 		});
 		browseButtonEmitter.fire(undefined); //simulate the click of the browseButton
 		await deferred;
-		filePicker.value!.should.equal(newFilePath);
+		filePicker.value!.should.equal(newFileUri.fsPath);
 	});
 
 	describe('getters and setters', async () => {
