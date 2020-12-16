@@ -159,7 +159,7 @@ export abstract class DialogBase {
 		}
 	}
 
-	protected async validateNewWorkspace(sameFolderAsNewProject: boolean): Promise<boolean> {
+	public async validateNewWorkspace(sameFolderAsNewProject: boolean): Promise<boolean> {
 		// workspace file should end in .code-workspace
 		const workspaceValid = this.workspaceInputBox!.value!.endsWith(constants.WorkspaceFileExtension);
 		if (!workspaceValid) {
