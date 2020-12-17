@@ -138,7 +138,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { .\scripts\test-unstable.bat --build --tfs }
+      exec { .\scripts\test-unstable.bat --tfs }
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
     displayName: Run unstable tests
