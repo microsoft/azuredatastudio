@@ -78,7 +78,7 @@ export async function getFileShares(account: azdata.Account, subscription: Subsc
 export async function getBlobContainers(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<azureResource.BlobContainer[]> {
 	const api = await getAzureCoreAPI();
 	let result = await api.getBlobContainers(account, subscription, storageAccount, true);
-	let blobContainers = result.blobContainer;
+	let blobContainers = result.blobContainers;
 	sortResourceArrayByName(blobContainers!);
 	return blobContainers!;
 }

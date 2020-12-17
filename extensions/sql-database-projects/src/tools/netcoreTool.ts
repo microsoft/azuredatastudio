@@ -42,7 +42,7 @@ export class NetCoreTool {
 		return true;
 	}
 
-	private async showInstallDialog(): Promise<void> {
+	public async showInstallDialog(): Promise<void> {
 		let result = await vscode.window.showInformationMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore);
 		if (result === UpdateNetCoreLocation) {
 			//open settings
@@ -96,7 +96,7 @@ export class NetCoreTool {
 			NetCoreTool._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`);
 		}
 
-		if (!this.findOrInstallNetCore()) {
+		if (!(await this.findOrInstallNetCore())) {
 			throw new Error(NetCoreInstallationConfirmation);
 		}
 

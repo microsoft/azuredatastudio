@@ -27,6 +27,8 @@ suite('Open Existing Dialog', function (): void {
 
 		dialog._targetTypeRadioCardGroup?.updateProperty( 'selectedCardId', constants.Project);
 		dialog._projectFile = '';
+		dialog.workspaceInputBox!.value = 'test.code-workspace';
+
 		should.equal(await dialog.validate(), false, 'Validation fail because project file does not exist');
 
 		// create a project file
@@ -48,6 +50,7 @@ suite('Open Existing Dialog', function (): void {
 		await fs.writeFile(dialog._workspaceFile, '');
 		should.equal(await dialog.validate(), true, 'Validation pass because workspace file exists');
 	});
+
 
 	test('Should validate workspace in onComplete when opening project', async function (): Promise<void> {
 		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();

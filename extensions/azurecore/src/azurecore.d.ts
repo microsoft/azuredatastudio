@@ -6,7 +6,6 @@
 declare module 'azurecore' {
 	import * as azdata from 'azdata';
 	import { azureResource } from 'azureResource';
-	import { BlobContainersListResponse, FileSharesListResponse } from '@azure/arm-storage/esm/models';
 
 	/**
 	 * Covers defining what the azurecore extension exports to other extensions
@@ -84,7 +83,6 @@ declare module 'azurecore' {
 		provideResources(): azureResource.IAzureResourceProvider[];
 
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors: boolean, query: string): Promise<ResourceQueryResult<T>>;
-		makeHttpGetRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean, url: string): Promise<HttpGetRequestResult>;
 	}
 
 	export type GetSubscriptionsResult = { subscriptions: azureResource.AzureResourceSubscription[], errors: Error[] };
@@ -93,8 +91,8 @@ declare module 'azurecore' {
 	export type GetSqlServersResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
 	export type GetSqlVMServersResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
 	export type GetStorageAccountResult = {resources: azureResource.AzureGraphResource[], errors: Error[]};
-	export type GetBlobContainersResult = {blobContainer: BlobContainersListResponse | undefined, errors: Error[]};
-	export type GetFileSharesResult = {fileShares: FileSharesListResponse | undefined, errors: Error[]};
+	export type GetBlobContainersResult = {blobContainers: azureResource.BlobContainer[] | undefined, errors: Error[]};
+	export type GetFileSharesResult = {fileShares: azureResource.FileShare[] | undefined, errors: Error[]};
 
 	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
 	export type HttpGetRequestResult = { response: any, errors: Error[] };

@@ -86,7 +86,7 @@ export function createViewContext(): ViewTestContext {
 		withProps: () => checkBoxBuilder,
 		withValidation: () => checkBoxBuilder
 	};
-	let inputBox: () => azdata.InputBoxComponent = () => Object.assign({}, componentBase, {
+	let inputBox: () => azdata.InputBoxComponent = () => Object.assign(<azdata.InputBoxComponent>Object.assign({}, componentBase), {
 		onTextChanged: onClick.event!,
 		onEnterKeyPressed: undefined!,
 		value: ''
