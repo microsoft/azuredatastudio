@@ -175,7 +175,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 			if (!this._iconClass) {
 				super.updateIcon();
 				this._button.icon = {
-					classNames: this._iconClass + ' icon'
+					id: this._iconClass + ' icon'
 				};
 				this.updateStyler();
 			} else {

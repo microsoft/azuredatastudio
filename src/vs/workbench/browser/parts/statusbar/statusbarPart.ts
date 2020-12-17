@@ -707,7 +707,7 @@ export class StatusbarPart extends Part implements IStatusbarService {
 
 class StatusBarCodiconLabel extends SimpleIconLabel {
 
-	private readonly progressCodicon = renderIcon(syncing);
+	private readonly progressCodicon: any = renderIcon(syncing);
 
 	private currentText = '';
 	private currentShowProgress = false;

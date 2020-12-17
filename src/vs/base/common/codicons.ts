@@ -85,11 +85,20 @@ export namespace CSSIcon {
 			return asClassNameArray(Codicon.error);
 		}
 		let [, , id, modifier] = match;
-		const classNames = ['codicon', 'codicon-' + id];
-		if (modifier) {
-			classNames.push('codicon-modifier-' + modifier);
+
+		// {{SQL CARBON EDIT}} Modifying method to not add 'codicon' in front of sql carbon icons.
+		let sqlCarbonIcons = ['book', 'dataExplorer'];
+		if (sqlCarbonIcons.includes(id)) {
+			return [id];
+			// {{SQL CARBON EDIT}} End of edit
+		} else {
+			const classNames = ['codicon', 'codicon-' + id];
+			if (modifier) {
+				classNames.push('codicon-modifier-' + modifier);
+			}
+			return classNames;
 		}
-		return classNames;
+
 	}
 
 	export function asClassName(icon: CSSIcon): string {

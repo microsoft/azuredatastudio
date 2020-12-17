@@ -355,7 +355,7 @@ export class SearchWidget extends Widget {
 		this.showContextCheckbox = new Checkbox({
 			isChecked: false,
 			title: appendKeyBindingLabel(nls.localize('showContext', "Toggle Context Lines"), this.keyBindingService.lookupKeybinding(ToggleSearchEditorContextLinesCommandId), this.keyBindingService),
-			icon: searchShowContextIcon
+			icon: <any>searchShowContextIcon
 		});
 		this._register(this.showContextCheckbox.onChange(() => this.onContextLinesChanged()));
 

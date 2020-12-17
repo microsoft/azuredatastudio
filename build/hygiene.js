@@ -220,6 +220,7 @@ const tsHygieneFilter = [
 	'!extensions/html-language-features/server/lib/jquery.d.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}}
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts', // {{SQL CARBON EDIT}}
+	'!src/vs/base/common/codicons.ts', // {{SQL CARBON EDIT}}
 	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // {{SQL CARBON EDIT}} skip this because we have no plans on touching this and its not ours
 	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts', // {{SQL CARBON EDIT}} skip this because known issue
 	'!build/**/*' // {{SQL CARBON EDIT}}

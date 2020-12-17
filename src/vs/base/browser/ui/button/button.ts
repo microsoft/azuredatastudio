@@ -275,9 +275,10 @@ export class Button extends Disposable implements IButton {
 		}
 	}
 
+	// {{SQL CARBON EDIT}}
 	set icon(icon: CSSIcon) {
 		this.hasIcon = icon !== undefined;
-		this._element.classList.add(...CSSIcon.asClassNameArray(icon));
+		this._element.classList.add(...icon.id.split(' '));
 		this.applyStyles();
 	}
 

@@ -354,10 +354,10 @@ export class StatefulMarkdownCell extends Disposable {
 				this.templateData.foldingIndicator.innerText = '';
 				break;
 			case CellFoldingState.Collapsed:
-				DOM.reset(this.templateData.foldingIndicator, renderIcon(collapsedIcon));
+				DOM.reset(this.templateData.foldingIndicator, <any>renderIcon(collapsedIcon));
 				break;
 			case CellFoldingState.Expanded:
-				DOM.reset(this.templateData.foldingIndicator, renderIcon(expandedIcon));
+				DOM.reset(this.templateData.foldingIndicator, <any>renderIcon(expandedIcon));
 				break;
 
 			default:

@@ -1053,11 +1053,11 @@ export class RunStateRenderer {
 		}
 
 		if (runState === NotebookCellRunState.Success) {
-			DOM.reset(this.element, renderIcon(successStateIcon));
+			DOM.reset(this.element, <any>renderIcon(successStateIcon));
 		} else if (runState === NotebookCellRunState.Error) {
-			DOM.reset(this.element, renderIcon(errorStateIcon));
+			DOM.reset(this.element, <any>renderIcon(errorStateIcon));
 		} else if (runState === NotebookCellRunState.Running) {
-			DOM.reset(this.element, renderIcon(syncing));
+			DOM.reset(this.element, <any>renderIcon(syncing));
 
 			this.spinnerTimer = setTimeout(() => {
 				this.spinnerTimer = undefined;
