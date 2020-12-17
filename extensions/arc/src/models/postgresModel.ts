@@ -118,16 +118,34 @@ export class PostgresModel extends ResourceModel {
 
 	public async getEngineSettings(): Promise<void> {
 		if (!this._connectionProfile) {
-			try {
-				await this.getConnectionProfile(this.config?.status.externalEndpoint, loc.postgresProviderName, this._pgInfo.userName);
-
-				// TODO
-				// select * from pg_settings;
-				this.engineSettingsLastUpdated = new Date();
-			} catch (err) {
-				throw err;
-			}
+			await this.getConnectionProfile();
 		}
+
+		// TODO
+		// select * from pg_settings;
+		this.engineSettingsLastUpdated = new Date();
+	}
+
+	protected createConnectionProfile(): azdata.IConnectionProfile {
+		const ipAndPort = parseIpAndPort(this.config?.status.externalEndpoint || '');
+		return {
+			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
+			databaseName: '',
+			authenticationType: 'SqlLogin',
+			providerName: loc.postgresProviderName,
+			connectionName: '',
+			userName: this._pgInfo.userName || '',
+			password: '',
+			savePassword: true,
+			groupFullName: undefined,
+			saveProfile: true,
+			id: '',
+			groupId: undefined,
+			options: {
+				host: `${ipAndPort.ip}`,
+				port: `${ipAndPort.port}`,
+			}
+		};
 	}
 
 	protected async promptForConnection(connectionProfile: azdata.IConnectionProfile): Promise<void> {

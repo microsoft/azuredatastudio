@@ -30,26 +30,8 @@ export abstract class ResourceModel {
  * Loads the saved connection profile associated with this model. Will prompt for one if
  * we don't have one or can't find it (it was deleted)
  */
-	protected async getConnectionProfile(externalEndpoint: string | undefined, providerName: string, userName: string | undefined): Promise<void> {
-		const ipAndPort = parseIpAndPort(externalEndpoint || '');
-		let connectionProfile: azdata.IConnectionProfile | undefined = {
-			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
-			databaseName: '',
-			authenticationType: 'SqlLogin',
-			providerName: providerName,
-			connectionName: '',
-			userName: userName || '',
-			password: '',
-			savePassword: true,
-			groupFullName: undefined,
-			saveProfile: true,
-			id: '',
-			groupId: undefined,
-			options: {
-				host: `${ipAndPort.ip}`,
-				port: `${ipAndPort.port}`,
-			}
-		};
+	protected async getConnectionProfile(): Promise<void> {
+		let connectionProfile: azdata.IConnectionProfile | undefined = this.createConnectionProfile();
 
 		// If we have the ID stored then try to retrieve the password from previous connections
 		if (this.info.connectionId) {
@@ -81,6 +63,8 @@ export abstract class ResourceModel {
 	}
 
 	public abstract refresh(): Promise<void>;
+
+	protected abstract createConnectionProfile(): azdata.IConnectionProfile;
 
 	protected abstract promptForConnection(connectionProfile: azdata.IConnectionProfile): Promise<void>;
 }

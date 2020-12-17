@@ -9,7 +9,7 @@ import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { UserCancelledError } from '../common/api';
 import { Deferred } from '../common/promise';
-import { UserCancelledError } from '../common/utils';
+import { parseIpAndPort, UserCancelledError } from '../common/utils';
 import * as loc from '../localizedConstants';
 import { ConnectToMiaaSqlDialog } from '../ui/dialogs/connectMiaaDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
@@ -124,33 +124,50 @@ export class MiaaModel extends ResourceModel {
 
 	private async getDatabases(): Promise<void> {
 		if (!this._connectionProfile) {
-			try {
-				await this.getConnectionProfile(this.config?.status.externalEndpoint, loc.miaaProviderName, this._miaaInfo.userName);
-				if (!this._activeConnectionId) {
-					const result = await azdata.connection.connect(this._connectionProfile!, false, false);
-					if (!result.connected) {
-						throw new Error(result.errorMessage);
-					}
-					this._activeConnectionId = result.connectionId;
-				}
-
-				const provider = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(this._connectionProfile!.providerName, azdata.DataProviderType.MetadataProvider);
-				const ownerUri = await azdata.connection.getUriForConnection(this._activeConnectionId);
-				const databases = await provider.getDatabases(ownerUri);
-				if (!databases) {
-					throw new Error('Could not fetch databases');
-				}
-				if (databases.length > 0 && typeof (databases[0]) === 'object') {
-					this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'] }; });
-				} else {
-					this._databases = (<string[]>databases).map(db => { return { name: db, status: '-' }; });
-				}
-				this.databasesLastUpdated = new Date();
-				this._onDatabasesUpdated.fire(this._databases);
-			} catch (err) {
-				throw err;
-			}
+			await this.getConnectionProfile();
 		}
+
+		// We haven't connected yet so do so now and then store the ID for the active connection
+		if (!this._activeConnectionId) {
+			const result = await azdata.connection.connect(this._connectionProfile!, false, false);
+			if (!result.connected) {
+				throw new Error(result.errorMessage);
+			}
+			this._activeConnectionId = result.connectionId;
+		}
+
+		const provider = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(this._connectionProfile!.providerName, azdata.DataProviderType.MetadataProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this._activeConnectionId);
+		const databases = await provider.getDatabases(ownerUri);
+		if (!databases) {
+			throw new Error('Could not fetch databases');
+		}
+		if (databases.length > 0 && typeof (databases[0]) === 'object') {
+			this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'] }; });
+		} else {
+			this._databases = (<string[]>databases).map(db => { return { name: db, status: '-' }; });
+		}
+		this.databasesLastUpdated = new Date();
+		this._onDatabasesUpdated.fire(this._databases);
+	}
+
+	protected createConnectionProfile(): azdata.IConnectionProfile {
+		const ipAndPort = parseIpAndPort(this.config?.status.externalEndpoint || '');
+		return {
+			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
+			databaseName: '',
+			authenticationType: 'SqlLogin',
+			providerName: loc.miaaProviderName,
+			connectionName: '',
+			userName: this._miaaInfo.userName || '',
+			password: '',
+			savePassword: true,
+			groupFullName: undefined,
+			saveProfile: true,
+			id: '',
+			groupId: undefined,
+			options: {}
+		};
 	}
 
 	protected async promptForConnection(connectionProfile: azdata.IConnectionProfile): Promise<void> {
