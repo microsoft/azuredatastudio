@@ -74,11 +74,11 @@ describe('Dacfx wizard with connection', function (): void {
 		let wizard = new DataTierApplicationWizard(service.object);
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
-		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').returns(<any>Promise.resolve(''));
+		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
 		wizard.selectedOperation = Operation.deploy;
 		await wizard.executeOperation();
 		should(showErrorMessageStub.calledOnce).be.true();
-		should.equal(showErrorMessageStub.getCall(0).args[0], loc.deployOperationErrorMessage('error1'));
+		should.equal(showErrorMessageStub.getCall(0).args[0], loc.operationErrorMessage(loc.deploy, 'error1'));
 	});
 
 	it('executeOperation should show error message if export fails', async () => {
@@ -92,11 +92,11 @@ describe('Dacfx wizard with connection', function (): void {
 		let wizard = new DataTierApplicationWizard(service.object);
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
-		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').returns(<any>Promise.resolve(''));
+		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
 		wizard.selectedOperation = Operation.export;
 		await wizard.executeOperation();
 		should(showErrorMessageStub.calledOnce).be.true();
-		should.equal(showErrorMessageStub.getCall(0).args[0], loc.exportOperationErrorMessage('error1'));
+		should.equal(showErrorMessageStub.getCall(0).args[0], loc.operationErrorMessage(loc.exportText, 'error1'));
 	});
 
 	it('executeOperation should show error message if extract fails', async () => {
@@ -110,11 +110,28 @@ describe('Dacfx wizard with connection', function (): void {
 		let wizard = new DataTierApplicationWizard(service.object);
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
-		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').returns(<any>Promise.resolve(''));
+		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
 		wizard.selectedOperation = Operation.extract;
 		await wizard.executeOperation();
 		should(showErrorMessageStub.calledOnce).be.true();
-		should.equal(showErrorMessageStub.getCall(0).args[0], loc.extractOperationErrorMessage('error1'));
+		should.equal(showErrorMessageStub.getCall(0).args[0], loc.operationErrorMessage(loc.extract, 'error1'));
+	});
+
+	it('Should show error message if generateDeployScript fails', async () => {
+		let service = TypeMoq.Mock.ofInstance(new DacFxTestService());
+		service.setup(x => x.generateDeployScript(TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny())).returns(x => Promise.resolve({
+			errorMessage: 'error1',
+			success: false,
+			operationId: ''
+		}));
+
+		let wizard = new DataTierApplicationWizard(service.object);
+		wizard.model = <DacFxDataModel>{};
+		wizard.model.server = connectionProfileMock;
+		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
+		await wizard.generateDeployScript();
+		should(showErrorMessageStub.calledOnce).be.true();
+		should.equal(showErrorMessageStub.getCall(0).args[0], loc.generateDeployErrorMessage('error1'));
 	});
 
 	it('executeOperation should show error message if import fails', async () => {
@@ -128,11 +145,11 @@ describe('Dacfx wizard with connection', function (): void {
 		let wizard = new DataTierApplicationWizard(service.object);
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
-		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').returns(<any>Promise.resolve(''));
+		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
 		wizard.selectedOperation = Operation.import;
 		await wizard.executeOperation();
 		should(showErrorMessageStub.calledOnce).be.true();
-		should.equal(showErrorMessageStub.getCall(0).args[0], loc.importOperationErrorMessage('error1'));
+		should.equal(showErrorMessageStub.getCall(0).args[0], loc.operationErrorMessage(loc.importText, 'error1'));
 	});
 
 	it('Should call deploy plan generator correctly', async () => {
