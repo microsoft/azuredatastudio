@@ -2352,7 +2352,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-ja/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ja/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
