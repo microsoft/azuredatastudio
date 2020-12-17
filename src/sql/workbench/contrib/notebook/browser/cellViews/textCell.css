@@ -72,7 +72,6 @@ text-cell-component thead {
 text-cell-component td,
 text-cell-component th,
 text-cell-component tr {
-	text-align: left;
 	vertical-align: middle;
 	padding: 0.5em 0.5em;
 	line-height: normal;
