@@ -173,7 +173,7 @@ export abstract class DialogBase {
 		if (!sameFolderAsNewProject) {
 			const workspaceParentDirectoryExists = await directoryExist(path.dirname(this.workspaceInputBox!.value!));
 			if (!workspaceParentDirectoryExists) {
-				this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(this.workspaceInputBox!.value!));
+				this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(path.dirname(this.workspaceInputBox!.value!)));
 				return false;
 			}
 		}

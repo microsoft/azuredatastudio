@@ -7,10 +7,7 @@ import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import * as os from 'os';
-import * as path from 'path';
 import * as constants from '../../common/constants';
-import * as utils from '../../common/utils';
 import { promises as fs } from 'fs';
 import { WorkspaceService } from '../../services/workspaceService';
 import { OpenExistingDialog } from '../../dialogs/openExistingDialog';
@@ -54,35 +51,6 @@ suite('Open Existing Dialog', function (): void {
 		should.equal(await dialog.validate(), true, 'Validation pass because workspace file exists');
 	});
 
-	test('Should validate new workspace location', async function (): Promise<void> {
-		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
-		workspaceServiceMock.setup(x => x.getAllProjectTypes()).returns(() => Promise.resolve([testProjectType]));
-
-		const dialog = new OpenExistingDialog(workspaceServiceMock.object, mockExtensionContext.object);
-		await dialog.open();
-
-		dialog._projectFile = await createProjectFile('testproj');
-		dialog.workspaceInputBox!.value = 'test';
-		should.equal(await dialog.validate(), false, 'Validation should fail because workspace does not end in code-workspace');
-
-		const fileExistStub = sinon.stub(utils, 'fileExist');
-		fileExistStub.resolves(true);
-		sinon.stub(OpenExistingDialog.prototype, 'validateFile').resolves(true);
-
-		// use invalid folder
-		dialog.workspaceInputBox!.value = 'invalidLocation/test.code-workspace';
-		should.equal(await dialog.validate(), false, 'Validation should fail because the folder is invalid');
-
-		// use already existing workspace
-		const existingWorkspaceFilePath = path.join(os.tmpdir(), `test.code-workspace`);
-		dialog.workspaceInputBox!.value = existingWorkspaceFilePath;
-		should.equal(await dialog.validate(), false, 'Validation should fail because the selected workspace file already exists.');
-
-		// change workspace name to something that should pass
-		fileExistStub.resolves(false);
-		dialog.workspaceInputBox!.value = path.join(os.tmpdir(), `TestWorkspace_${new Date().getTime()}.code-workspace`);
-		should.equal(await dialog.validate(), true, `Validation should pass because the parent directory exists, workspace filepath is unique, and the file extension is correct. Error was: ${dialog.getErrorMessage().text}`);
-	});
 
 	test('Should validate workspace in onComplete when opening project', async function (): Promise<void> {
 		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
