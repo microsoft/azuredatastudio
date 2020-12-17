@@ -483,20 +483,20 @@ export class CreateProjectFromDatabaseDialog {
 				return false;
 			}
 
-			const sameFolderAsNewProject = path.join(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!) === path.dirname(this.workspaceInputBox!.value!);
-			if (this.workspaceInputBox!.enabled && !await this.validateNewWorkspace(sameFolderAsNewProject)) {
+			if (this.workspaceInputBox!.enabled && !await this.validateNewWorkspace()) {
 				return false;
 			}
 
 			return true;
-		}
-		catch (err) {
+		} catch (err) {
 			this.showErrorMessage(err?.message ? err.message : err);
 			return false;
 		}
 	}
 
-	protected async validateNewWorkspace(sameFolderAsNewProject: boolean): Promise<boolean> {
+	protected async validateNewWorkspace(): Promise<boolean> {
+		const sameFolderAsNewProject = path.join(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!) === path.dirname(this.workspaceInputBox!.value!);
+
 		// workspace file should end in .code-workspace
 		const workspaceValid = this.workspaceInputBox!.value!.endsWith(constants.WorkspaceFileExtension);
 		if (!workspaceValid) {
@@ -508,7 +508,7 @@ export class CreateProjectFromDatabaseDialog {
 		if (!sameFolderAsNewProject) {
 			const workspaceParentDirectoryExists = await exists(path.dirname(this.workspaceInputBox!.value!));
 			if (!workspaceParentDirectoryExists) {
-				this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(this.workspaceInputBox!.value!));
+				this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(path.dirname(this.workspaceInputBox!.value!)));
 				return false;
 			}
 		}
