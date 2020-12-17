@@ -36,9 +36,7 @@ export abstract class DialogBase {
 
 	protected abstract initialize(view: azdata.ModelView): Promise<void>;
 
-	protected async validate(): Promise<boolean> {
-		return Promise.resolve(true);
-	}
+	abstract validate(): Promise<boolean>;
 
 	public async open(): Promise<void> {
 		const tab = azdata.window.createTab('');
@@ -75,6 +73,10 @@ export abstract class DialogBase {
 			text: message,
 			level: azdata.window.MessageLevel.Error
 		};
+	}
+
+	public getErrorMessage(): azdata.window.DialogMessage {
+		return this._dialogObject.message;
 	}
 
 	protected createHorizontalContainer(view: azdata.ModelView, items: azdata.Component[]): azdata.FlexContainer {
@@ -159,7 +161,7 @@ export abstract class DialogBase {
 		}
 	}
 
-	protected async validateNewWorkspace(sameFolderAsNewProject: boolean): Promise<boolean> {
+	public async validateNewWorkspace(sameFolderAsNewProject: boolean): Promise<boolean> {
 		// workspace file should end in .code-workspace
 		const workspaceValid = this.workspaceInputBox!.value!.endsWith(constants.WorkspaceFileExtension);
 		if (!workspaceValid) {
@@ -171,7 +173,7 @@ export abstract class DialogBase {
 		if (!sameFolderAsNewProject) {
 			const workspaceParentDirectoryExists = await directoryExist(path.dirname(this.workspaceInputBox!.value!));
 			if (!workspaceParentDirectoryExists) {
-				this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(this.workspaceInputBox!.value!));
+				this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(path.dirname(this.workspaceInputBox!.value!)));
 				return false;
 			}
 		}
