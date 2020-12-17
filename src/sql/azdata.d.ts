@@ -3505,7 +3505,7 @@ declare module 'azdata' {
 	}
 
 	export interface DropDownComponent extends Component, DropDownProperties {
-		onValueChanged: vscode.Event<any>;
+		onValueChanged: vscode.Event<string | CategoryValue>;
 	}
 
 	export interface TableCell {
