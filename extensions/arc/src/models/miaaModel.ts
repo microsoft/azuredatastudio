@@ -9,7 +9,7 @@ import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { UserCancelledError } from '../common/api';
 import { Deferred } from '../common/promise';
-import { parseIpAndPort, UserCancelledError } from '../common/utils';
+import { parseIpAndPort } from '../common/utils';
 import * as loc from '../localizedConstants';
 import { ConnectToMiaaSqlDialog } from '../ui/dialogs/connectMiaaDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';

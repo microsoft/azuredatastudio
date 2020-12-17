@@ -11,7 +11,8 @@ import * as loc from '../localizedConstants';
 import { ConnectToPGSqlDialog } from '../ui/dialogs/connectPGDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel, Registration } from './controllerModel';
-import { parseIpAndPort, UserCancelledError } from '../common/utils';
+import { parseIpAndPort } from '../common/utils';
+import { UserCancelledError } from '../common/api';
 import { ResourceModel } from './resourceModel';
 import { Deferred } from '../common/promise';
 
