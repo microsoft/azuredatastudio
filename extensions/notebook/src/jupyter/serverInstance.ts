@@ -215,11 +215,7 @@ export class PerFolderServerInstance implements IServerInstance {
 		this.notifyStarting(this.options.install, startCommand);
 
 		// Execute the command
-		let exeStartCommandBeginTime = Date.now();
 		await this.executeStartCommand(startCommand);
-		let exeStartCommandEndTime = Date.now();
-		let exeStartCommandTime = exeStartCommandEndTime - exeStartCommandBeginTime;
-		console.log('Start Internal: It took ' + exeStartCommandTime.toString() + 'ms to execute start command');
 	}
 
 	private executeStartCommand(startCommand: string): Promise<void> {
