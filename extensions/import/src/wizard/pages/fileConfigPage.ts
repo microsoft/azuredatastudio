@@ -179,7 +179,7 @@ export class FileConfigPage extends ImportPage {
 		}).component();
 
 		// Handle database changes
-		this.databaseDropdown.onValueChanged(async (e) => {
+		this.databaseDropdown.onValueChanged(async () => {
 			const nameValue = this.databaseDropdown.value as azdata.CategoryValue;
 			if (!nameValue) {
 				return;
