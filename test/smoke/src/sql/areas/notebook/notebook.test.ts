@@ -68,7 +68,9 @@ export function setup() {
 			await app.workbench.sqlNotebook.waitForKernel('Python 3');
 
 			for (let i = 0; i < 100; i++) {
-				await app.reload();
+				await app.stop();
+				await app.start();
+				// await app.reload();
 				await app.workbench.sqlNotebook.openFile('hello.ipynb');
 				await app.logger.log('Python kernel started');
 				await app.workbench.sqlNotebook.waitForKernel('Python 3');
