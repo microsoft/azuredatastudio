@@ -3505,7 +3505,8 @@ declare module 'azdata' {
 	}
 
 	export interface DropDownComponent extends Component, DropDownProperties {
-		onValueChanged: vscode.Event<string | CategoryValue>;
+		// Note this is currently returning ISelectData from the non-editable dropdown
+		onValueChanged: vscode.Event<string | { selected: string, index: number }>;
 	}
 
 	export interface TableCell {

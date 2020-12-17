@@ -99,9 +99,11 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 				if (!this.editable) {
 					this.setSelectedValue(e.selected);
 					await this.validate();
+					// This is currently sending the ISelectData as the args, but to change this now would be a breaking
+					// change for extensions using it. So while not ideal this should be left as is for the time being.
 					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
-						args: this.value
+						args: e
 					});
 				}
 			}));

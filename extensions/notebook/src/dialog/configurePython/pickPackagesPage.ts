@@ -46,7 +46,7 @@ export class PickPackagesPage extends BasePage {
 				width: '300px'
 			}).component();
 			this.kernelDropdown.onValueChanged(async value => {
-				await this.updateRequiredPackages(value as string);
+				await this.updateRequiredPackages(value.selected);
 			});
 		}
 
