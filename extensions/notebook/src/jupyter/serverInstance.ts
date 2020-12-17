@@ -301,7 +301,7 @@ export class PerFolderServerInstance implements IServerInstance {
 		//                http://localhost:8888/?token=f5ee846e9bd61c3a8d835ecd9b965591511a331417b997b7
 		let dataString = data.toString();
 		let match = dataString.match(/.+:(\d+)\/.*$/m);
-		return match ? match[1] : undefined;
+		return match && match[1] ? match[1] : undefined;
 	}
 
 	private notifyStarted(install: JupyterServerInstallation, jupyterUri: string): void {
