@@ -25,6 +25,8 @@ export class PostgresModel extends ResourceModel {
 
 	// The saved connection information
 	private _connectionProfile: azdata.IConnectionProfile | undefined = undefined;
+	// The ID of the active connection used to query the server
+	private _activeConnectionId: string | undefined = undefined;
 
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.PostgresServerShowResult>();
 	public readonly _onEngineSettingsUpdated = new vscode.EventEmitter<EngineSettingsModel[]>();
@@ -120,6 +122,23 @@ export class PostgresModel extends ResourceModel {
 	public async getEngineSettings(): Promise<void> {
 		if (!this._connectionProfile) {
 			await this.getConnectionProfile();
+		}
+
+		// We haven't connected yet so do so now and then store the ID for the active connection
+		if (!this._activeConnectionId) {
+			const result = await azdata.connection.connect(this._connectionProfile!, false, false);
+			if (!result.connected) {
+				throw new Error(result.errorMessage);
+			}
+			this._activeConnectionId = result.connectionId;
+		}
+
+		const provider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this._connectionProfile!.providerName, azdata.DataProviderType.QueryProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this._activeConnectionId);
+
+		const engineSettings = provider.runQueryAndReturn(ownerUri, 'select * from pg_settings');
+		if (!engineSettings) {
+			throw new Error('Could not fetch engine settings');
 		}
 
 		// TODO
