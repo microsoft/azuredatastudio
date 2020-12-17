@@ -7,7 +7,7 @@ import { ResourceInfo } from 'arc';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ControllerModel, Registration } from './controllerModel';
-import { createCredentialId, parseIpAndPort } from '../common/utils';
+import { createCredentialId } from '../common/utils';
 import { credentialNamespace } from '../constants';
 
 export abstract class ResourceModel {
