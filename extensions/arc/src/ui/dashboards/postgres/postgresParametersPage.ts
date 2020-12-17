@@ -7,16 +7,21 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as loc from '../../../localizedConstants';
+import { UserCancelledError } from '../../../common/api';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresParametersPage extends DashboardPage {
 	private searchBox?: azdata.InputBoxComponent;
+	private parametersTable!: azdata.DeclarativeTableComponent;
+	private parameterContainer?: azdata.DivContainer;
+	private _parametersTableLoading!: azdata.LoadingComponent;
 
 	private discardButton?: azdata.ButtonComponent;
 	private saveButton?: azdata.ButtonComponent;
 	private resetButton?: azdata.ButtonComponent;
+	private connectToServerButton?: azdata.ButtonComponent;
 
 	private engineSettings = `'`;
 	private engineSettingUpdates?: Map<string, string>;
@@ -27,12 +32,14 @@ export class PostgresParametersPage extends DashboardPage {
 		super(modelView);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
+		this.initializeConnectButton();
 		this.initializeSearchBox();
 
 		this.engineSettingUpdates = new Map();
 
-		this.disposables.push(this._postgresModel.onConfigUpdated(
-			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));
+		this.disposables.push(
+			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())),
+			this._postgresModel.onEngineSettingsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEngineSettingsUpdated())));
 	}
 
 	protected get title(): string {
@@ -52,17 +59,17 @@ export class PostgresParametersPage extends DashboardPage {
 		const content = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '20px' } });
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.nodeParameters,
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
-		const info = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const info = this.modelView.modelBuilder.text().withProps({
 			value: loc.nodeParametersDescription,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const link = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+		const link = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.learnAboutNodeParameters,
 			url: 'https://docs.microsoft.com/azure/azure-arc/data/configure-server-parameters-postgresql-hyperscale',
 		}).component();
@@ -70,12 +77,11 @@ export class PostgresParametersPage extends DashboardPage {
 		const infoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
 		infoAndLink.addItem(info, { CSSStyles: { 'margin-right': '5px' } });
 		infoAndLink.addItem(link);
-		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '25px' } });
+		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '20px' } });
 
-		content.addItem(this.searchBox!, { CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' } });
-		// Add in content
+		content.addItem(this.searchBox!, { CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'margin-bottom': '20px' } });
 
-		const parametersTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+		this.parametersTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
 			columns: [
 				{
@@ -125,11 +131,17 @@ export class PostgresParametersPage extends DashboardPage {
 			],
 			data: [
 				this.parameterComponents('TEST NAME', 'string'),
-				this.parameterComponents('TEST NAME 2', 'real')]
+				this.parameterComponents('TEST NAME 2', 'real'),
+				this.createParametersTable()]
+
 		}).component();
 
-		content.addItem(parametersTable);
+		this._parametersTableLoading = this.modelView.modelBuilder.loadingComponent().component();
 
+		this.parameterContainer = this.modelView.modelBuilder.divContainer().component();
+		this.selectComponent();
+
+		content.addItem(this.parameterContainer);
 
 		this.initialized = true;
 
@@ -138,7 +150,7 @@ export class PostgresParametersPage extends DashboardPage {
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
 		// Save Edits
-		this.saveButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.saveButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.saveText,
 			iconPath: IconPathHelper.save,
 			enabled: false
@@ -184,7 +196,7 @@ export class PostgresParametersPage extends DashboardPage {
 			}));
 
 		// Discard
-		this.discardButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.discardButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.discardText,
 			iconPath: IconPathHelper.discard,
 			enabled: false
@@ -195,6 +207,7 @@ export class PostgresParametersPage extends DashboardPage {
 				this.discardButton!.enabled = false;
 				try {
 					// TODO
+					// this.parametersTable.data = [];
 					this.engineSettingUpdates!.clear();
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
@@ -204,7 +217,7 @@ export class PostgresParametersPage extends DashboardPage {
 			}));
 
 		// Reset
-		this.resetButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.resetButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.resetAllToDefault,
 			iconPath: IconPathHelper.reset,
 			enabled: true
@@ -249,8 +262,50 @@ export class PostgresParametersPage extends DashboardPage {
 		]).component();
 	}
 
+	private initializeConnectButton() {
+
+		this.connectToServerButton = this.modelView.modelBuilder.button().withProps({
+			label: loc.connectToServer,
+			enabled: false,
+			CSSStyles: { 'max-width': '125px' }
+		}).component();
+
+		this.disposables.push(
+			this.connectToServerButton!.onDidClick(async () => {
+				this.connectToServerButton!.enabled = false;
+				if (!vscode.extensions.getExtension('microsoft.azuredatastudio-postgresql')) {
+					const response = await vscode.window.showErrorMessage(loc.missingExtension('PostgreSQL'), loc.yes, loc.no);
+					if (response !== loc.yes) {
+						this.connectToServerButton!.enabled = true;
+						return;
+					}
+
+					await vscode.commands.executeCommand('workbench.extensions.installExtension', 'microsoft.azuredatastudio-postgresql');
+				}
+
+				await this._postgresModel.getEngineSettings().catch(err => {
+					// If an error occurs show a message so the user knows something failed but still
+					// fire the event so callers can know to update (e.g. so dashboards don't show the
+					// loading icon forever)
+					if (err instanceof UserCancelledError) {
+						vscode.window.showWarningMessage(loc.pgConnectionRequired);
+					} else {
+						vscode.window.showErrorMessage(loc.fetchEngineSettingsFailed(this._postgresModel.info.name, err));
+					}
+					this._postgresModel.engineSettingsLastUpdated = new Date();
+					this._postgresModel._onEngineSettingsUpdated.fire(this._postgresModel._engineSettings);
+					this.connectToServerButton!.enabled = true;
+					throw err;
+				});
+
+				this.parameterContainer!.clearItems();
+				this.parameterContainer!.addItem(this.parametersTable);
+
+			}));
+	}
+
 	private initializeSearchBox() {
-		this.searchBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.searchBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			placeHolder: loc.searchToFilter
 		}).component();
@@ -263,10 +318,10 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private filterParameters() {
-
+		//TODO
 	}
 
-	private createParametersTable() {
+	private createParametersTable(): any[] {
 		// Define server settings that shouldn't be modified. we block archive_*, restore_*, and synchronous_commit to prevent the user
 		// from messing up our backups. (we rely on synchronous_commit to ensure WAL changes are written immediately.)
 		// we block log_* to protect our logging. we block wal_level because Citus needs a particular wal_Level to rebalance shards
@@ -275,14 +330,30 @@ export class PostgresParametersPage extends DashboardPage {
 			"archive_command", "archive_timeout", "log_directory", "log_file_mode", "log_filename", "restore_command",
 			"shared_preload_libraries", "synchronous_commit", "ssl", "unix_socket_permissions", "wal_level" */
 
+		this.createParameters();
+		return [];
+	}
 
+	private createParameters() {
+		//TODO
+		/* {
+			parameterName: 'name',
+			value: 'settings',
+			description: 'short_desc',
+			default: 'reset_val',
+			min: 'min_val',
+			max: 'max_val',
+			options: 'enumvals',
+			type: 'vartype',
+			row: 'data[]'
+		}; */
 	}
 
 	private parameterComponents(name: string, type: string): any[] {
 		let data = [];
 
 		// Set parameter name
-		const parameterName = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const parameterName = this.modelView.modelBuilder.text().withProps({
 			value: name,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -292,7 +363,7 @@ export class PostgresParametersPage extends DashboardPage {
 		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 
 		// Information bubble title to be set depening on type of input
-		let information = this.modelView.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+		let information = this.modelView.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.information,
 			width: '12px',
 			height: '12px',
@@ -301,8 +372,9 @@ export class PostgresParametersPage extends DashboardPage {
 
 		if (type === 'enum') {
 			// If type is enum, component should be drop down menu
-			let valueBox = this.modelView.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
-				values: [], //TODO
+			let valueBox = this.modelView.modelBuilder.dropDown().withProps({
+				values: [], //TODO,
+				value: '', //TODO
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
@@ -314,10 +386,10 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 
-			information.updateProperty('title', loc.optionsSetting('enums'));	//TODO
+			information.updateProperty('title', loc.allowedValues('enums'));	//TODO
 		} else if (type === 'bool') {
 			// If type is bool, component should be checkbox to turn on or off
-			let valueBox = this.modelView.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+			let valueBox = this.modelView.modelBuilder.checkBox().withProps({
 				label: loc.on,
 				checked: true, //TODO
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
@@ -327,18 +399,18 @@ export class PostgresParametersPage extends DashboardPage {
 			this.disposables.push(
 				valueBox.onChanged(() => {
 					if (valueBox.checked) {
-						this.engineSettingUpdates!.set(name, 'on');
+						this.engineSettingUpdates!.set(name, loc.on);
 					} else {
-						this.engineSettingUpdates!.set(name, 'off');
+						this.engineSettingUpdates!.set(name, loc.off);
 					}
 				})
 			);
 
-			information.updateProperty('title', loc.optionsSetting('on,off'));	//TODO
+			information.updateProperty('title', loc.allowedValues('on,off'));	//TODO
 		} else if (type === 'string') {
 			// If type is string, component should be text inputbox
 			// How to add validation: .withValidation(component => component.value?.search('[0-9]') == -1)
-			let valueBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
 				readOnly: false,
 				value: '', //TODO
 				CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '200px' }
@@ -351,10 +423,10 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 
-			information.updateProperty('title', loc.optionsSetting(loc.optionsSetting('[A-Za-z._]+')));	//TODO
+			information.updateProperty('title', loc.allowedValues(loc.allowedValues('[A-Za-z._]+')));	//TODO
 		} else {
 			// If type is real or interger, component should be inputbox set to inputType of number. Max and min values also set.
-			let valueBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
 				readOnly: false,
 				min: 0, //TODO
 				max: 10000,
@@ -371,28 +443,27 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 
-			information.updateProperty('title', loc.optionsSetting(loc.rangeSetting('min', 'max')));	//TODO
+			information.updateProperty('title', loc.allowedValues(loc.rangeSetting('min', 'max')));	//TODO
 		}
 
 		valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
 		data.push(valueContainer);
 
-		const parameterDescription = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const parameterDescription = this.modelView.modelBuilder.text().withProps({
 			value: 'TEST DESCRIPTION HERE ...............................ytgbyugvtyvctyrcvytjv ycrtctyv tyfty ftyuvuyvuy', // TODO
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 		data.push(parameterDescription);
 
 		// Can reset individual component
-		const resetParameter = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			iconPath: IconPathHelper.ellipse,
+		const resetParameter = this.modelView.modelBuilder.button().withProps({
+			iconPath: IconPathHelper.reset,
 			title: loc.resetToDefault,
 			width: '20px',
 			height: '20px',
 			enabled: true
 		}).component();
 		data.push(resetParameter);
-
 
 		// azdata arc postgres server edit -n postgres01 -e shared_buffers=
 		this.disposables.push(
@@ -420,25 +491,28 @@ export class PostgresParametersPage extends DashboardPage {
 		return data;
 	}
 
-	private getPGSettings(): any {
-		// Get settings
-
-		return {
-			parameterName: 'name',
-			value: 'settings',
-			description: 'short_desc',
-			default: 'reset_val',
-			min: 'min_val',
-			max: 'max_val',
-			options: 'enumvals',
-			type: 'vartype'
-		};
+	private selectComponent() {
+		if (!this._postgresModel.engineSettingsLastUpdated) {
+			this.parameterContainer!.addItem(this.modelView.modelBuilder.text().withProps({
+				value: loc.connectToPostgresDescription,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+			}).component());
+			this.parameterContainer!.addItem(this.connectToServerButton!, { CSSStyles: { 'max-width': '125px' } });
+			this.parameterContainer!.addItem(this._parametersTableLoading!);
+		} else {
+			this.parameterContainer!.addItem(this.parametersTable!);
+		}
 	}
 
-
-
+	private handleEngineSettingsUpdated(): void {
+		//TODO
+	}
 
 	private handleServiceUpdated() {
 		// TODO
+		if (this._postgresModel.configLastUpdated) {
+			this.connectToServerButton!.enabled = true;
+			this._parametersTableLoading!.loading = false;
+		}
 	}
 }

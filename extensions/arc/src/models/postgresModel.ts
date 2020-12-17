@@ -3,27 +3,40 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ResourceInfo } from 'arc';
+import { PGResourceInfo } from 'arc';
+import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
+import { ConnectToPGSqlDialog } from '../ui/dialogs/connectPGDialog';
+import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel, Registration } from './controllerModel';
+import { parseIpAndPort } from '../common/utils';
+import { UserCancelledError } from '../common/api';
 import { ResourceModel } from './resourceModel';
 import { Deferred } from '../common/promise';
-import { parseIpAndPort } from '../common/utils';
+
+export type EngineSettingsModel = { name: string };
 
 export class PostgresModel extends ResourceModel {
 	private _config?: azdataExt.PostgresServerShowResult;
+	public _engineSettings: EngineSettingsModel[] = [];
 	private readonly _azdataApi: azdataExt.IExtension;
 
+	// The saved connection information
+	private _connectionProfile: azdata.IConnectionProfile | undefined = undefined;
+
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.PostgresServerShowResult>();
+	public readonly _onEngineSettingsUpdated = new vscode.EventEmitter<EngineSettingsModel[]>();
 	public onConfigUpdated = this._onConfigUpdated.event;
+	public onEngineSettingsUpdated = this._onEngineSettingsUpdated.event;
 	public configLastUpdated?: Date;
+	public engineSettingsLastUpdated?: Date;
 
 	private _refreshPromise?: Deferred<void>;
 
-	constructor(private _controllerModel: ControllerModel, info: ResourceInfo, registration: Registration) {
-		super(info, registration);
+	constructor(_controllerModel: ControllerModel, private _pgInfo: PGResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
+		super(_controllerModel, _pgInfo, registration);
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
 
@@ -102,5 +115,56 @@ export class PostgresModel extends ResourceModel {
 		} finally {
 			this._refreshPromise = undefined;
 		}
+	}
+
+	public async getEngineSettings(): Promise<void> {
+		if (!this._connectionProfile) {
+			await this.getConnectionProfile();
+		}
+
+		// TODO
+		// select * from pg_settings;
+		this.engineSettingsLastUpdated = new Date();
+	}
+
+	protected createConnectionProfile(): azdata.IConnectionProfile {
+		const ipAndPort = parseIpAndPort(this.config?.status.externalEndpoint || '');
+		return {
+			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
+			databaseName: '',
+			authenticationType: 'SqlLogin',
+			providerName: loc.postgresProviderName,
+			connectionName: '',
+			userName: this._pgInfo.userName || '',
+			password: '',
+			savePassword: true,
+			groupFullName: undefined,
+			saveProfile: true,
+			id: '',
+			groupId: undefined,
+			options: {
+				host: `${ipAndPort.ip}`,
+				port: `${ipAndPort.port}`,
+			}
+		};
+	}
+
+	protected async promptForConnection(connectionProfile: azdata.IConnectionProfile): Promise<void> {
+		const connectToSqlDialog = new ConnectToPGSqlDialog(this._controllerModel, this);
+		connectToSqlDialog.showDialog(loc.connectToPGSql(this.info.name), connectionProfile);
+		let profileFromDialog = await connectToSqlDialog.waitForClose();
+
+		if (profileFromDialog) {
+			this.updateConnectionProfile(profileFromDialog);
+		} else {
+			throw new UserCancelledError();
+		}
+	}
+
+	private async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
+		this._connectionProfile = connectionProfile;
+		this.info.connectionId = connectionProfile.id;
+		this._pgInfo.userName = connectionProfile.userName;
+		await this._treeDataProvider.saveControllers();
 	}
 }
