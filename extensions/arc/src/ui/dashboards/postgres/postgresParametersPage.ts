@@ -10,7 +10,7 @@ import * as loc from '../../../localizedConstants';
 import { UserCancelledError } from '../../../common/api';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
-import { PostgresModel } from '../../../models/postgresModel';
+import { EngineSettingsModel, PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresParametersPage extends DashboardPage {
 	private searchBox?: azdata.InputBoxComponent;
@@ -129,11 +129,7 @@ export class PostgresParametersPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: [
-				this.parameterComponents('TEST NAME', 'string'),
-				this.parameterComponents('TEST NAME 2', 'real'),
-				this.createParametersTable()]
-
+			data: []
 		}).component();
 
 		this._parametersTableLoading = this.modelView.modelBuilder.loadingComponent().component();
@@ -299,6 +295,7 @@ export class PostgresParametersPage extends DashboardPage {
 				});
 
 				this.parameterContainer!.clearItems();
+				this.parametersTable.data = this.createParametersTable();
 				this.parameterContainer!.addItem(this.parametersTable);
 
 			}));
@@ -322,27 +319,27 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private createParametersTable(): any[] {
-		/*Define server settings that shouldn't be modified. we block archive_*, restore_*, and synchronous_commit to prevent the user
-		from messing up our backups. (we rely on synchronous_commit to ensure WAL changes are written immediately.)
-		we block log_* to protect our logging. we block wal_level because Citus needs a particular wal_Level to rebalance shards
-		TODO: Review list of blacklisted parameters. wal_level should only be blacklisted if sharding is enabled
-		To not be modified
-		"archive_command", "archive_timeout", "log_directory", "log_file_mode", "log_filename", "restore_command",
-		"shared_preload_libraries", "synchronous_commit", "ssl", "unix_socket_permissions", "wal_level" */
+		let parameterData: any[] = [];
 
-		// For ev in this._postgresModel._engineSettings
-		// create row
-		// return rows
-		this.parameterComponents('engineSetting', '');
-		return [];
+		// Crashes once more than 20
+		for (let i = 0; i < 20; i++) {
+			parameterData.push(this.parameterComponents(this._postgresModel._engineSettings[i]));
+		}
+
+		/*
+		this._postgresModel._engineSettings.forEach(parameter => {
+			parameterData.push(this.parameterComponents(parameter));
+		}); */
+
+		return parameterData;
 	}
 
-	private parameterComponents(name: string, type: string): any[] {
+	private parameterComponents(parameter: EngineSettingsModel): any[] {
 		let data = [];
 
 		// Set parameter name
 		const parameterName = this.modelView.modelBuilder.text().withProps({
-			value: name,
+			value: parameter.parameterName,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 		data.push(parameterName);
@@ -358,56 +355,60 @@ export class PostgresParametersPage extends DashboardPage {
 			enabled: false
 		}).component();
 
-		if (type === 'enum') {
+		if (parameter.type === 'enum') {
 			// If type is enum, component should be drop down menu
+			let values = parameter.options?.split(',');
 			let valueBox = this.modelView.modelBuilder.dropDown().withProps({
-				values: [], //TODO,
-				value: '', //TODO
+				values: values,
+				value: parameter.value,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
 
 			this.disposables.push(
 				valueBox.onValueChanged(() => {
-					this.engineSettingUpdates!.set(name, String(valueBox.value));
+					this.engineSettingUpdates!.set(parameter.parameterName!, String(valueBox.value));
 
 				})
 			);
 
-			information.updateProperty('title', loc.allowedValues('enums'));	//TODO
-		} else if (type === 'bool') {
+			information.updateProperty('title', loc.allowedValues(parameter.options!));
+		} else if (parameter.type === 'bool') {
 			// If type is bool, component should be checkbox to turn on or off
 			let valueBox = this.modelView.modelBuilder.checkBox().withProps({
 				label: loc.on,
-				checked: true, //TODO
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
+			if (parameter.value === 'on') {
+				valueBox.checked = true;
+			} else {
+				valueBox.checked = false;
+			}
 
 			this.disposables.push(
 				valueBox.onChanged(() => {
 					if (valueBox.checked) {
-						this.engineSettingUpdates!.set(name, loc.on);
+						this.engineSettingUpdates!.set(parameter.parameterName!, loc.on);
 					} else {
-						this.engineSettingUpdates!.set(name, loc.off);
+						this.engineSettingUpdates!.set(parameter.parameterName!, loc.off);
 					}
 				})
 			);
 
-			information.updateProperty('title', loc.allowedValues('on,off'));	//TODO
-		} else if (type === 'string') {
+			information.updateProperty('title', loc.allowedValues(`${loc.on},${loc.off}`));
+		} else if (parameter.type === 'string') {
 			// If type is string, component should be text inputbox
-			// How to add validation: .withValidation(component => component.value?.search('[0-9]') == -1)
 			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
 				readOnly: false,
-				value: '', //TODO
+				value: parameter.value,
 				CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '200px' }
 			}).component();
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
 
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
-					this.engineSettingUpdates!.set(name, valueBox.value!);
+					this.engineSettingUpdates!.set(parameter.parameterName!, valueBox.value!);
 				})
 			);
 
@@ -416,29 +417,30 @@ export class PostgresParametersPage extends DashboardPage {
 			// If type is real or interger, component should be inputbox set to inputType of number. Max and min values also set.
 			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
 				readOnly: false,
-				min: 0, //TODO
-				max: 10000,
-				validationErrorMessage: loc.outOfRange('min', 'max'), //TODO
+				min: parseInt(parameter.min!),
+				max: parseInt(parameter.max!),
+				validationErrorMessage: loc.outOfRange(parameter.min!, parameter.max!),
 				inputType: 'number',
-				value: '0', //TODO
+				value: parameter.value,
 				CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '200px' }
 			}).component();
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
 
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
-					this.engineSettingUpdates!.set(name, valueBox.value!);
+					this.engineSettingUpdates!.set(parameter.parameterName!, valueBox.value!);
 				})
 			);
 
-			information.updateProperty('title', loc.allowedValues(loc.rangeSetting('min', 'max')));	//TODO
+			information.updateProperty('title', loc.allowedValues(loc.rangeSetting(parameter.min!, parameter.max!)));
 		}
 
 		valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
 		data.push(valueContainer);
 
+		// Look into hoovering
 		const parameterDescription = this.modelView.modelBuilder.text().withProps({
-			value: 'TEST DESCRIPTION HERE ...............................ytgbyugvtyvctyrcvytjv ycrtctyv tyfty ftyuvuyvuy', // TODO
+			value: parameter.description,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 		data.push(parameterDescription);
@@ -453,7 +455,6 @@ export class PostgresParametersPage extends DashboardPage {
 		}).component();
 		data.push(resetParameter);
 
-		// azdata arc postgres server edit -n postgres01 -e shared_buffers=
 		this.disposables.push(
 			resetParameter.onDidClick(async () => {
 				try {
@@ -464,18 +465,17 @@ export class PostgresParametersPage extends DashboardPage {
 							cancellable: false
 						},
 						(_progress, _token) => {
+							// azdata arc postgres server edit -n postgres01 -e shared_buffers=
 							return this._azdataApi.azdata.arc.postgres.server.edit(
-								this._postgresModel.info.name, { engineSettings: name + '=' });
+								this._postgresModel.info.name, { engineSettings: parameter.parameterName + '=' });
 						}
 					);
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
-
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
 				}
 			}));
-
 		return data;
 	}
 
