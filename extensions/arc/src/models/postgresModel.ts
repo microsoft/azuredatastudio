@@ -16,7 +16,15 @@ import { UserCancelledError } from '../common/api';
 import { ResourceModel } from './resourceModel';
 import { Deferred } from '../common/promise';
 
-export type EngineSettingsModel = { name: string };
+export type EngineSettingsModel = {
+	parameterName: string | undefined,
+	value: string | undefined,
+	description: string | undefined,
+	min: string | undefined,
+	max: string | undefined,
+	options: string | undefined,
+	type: string | undefined
+};
 
 export class PostgresModel extends ResourceModel {
 	private _config?: azdataExt.PostgresServerShowResult;
@@ -136,13 +144,25 @@ export class PostgresModel extends ResourceModel {
 		const provider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this._connectionProfile!.providerName, azdata.DataProviderType.QueryProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this._activeConnectionId);
 
-		const engineSettings = provider.runQueryAndReturn(ownerUri, 'select * from pg_settings');
+		const engineSettings = await provider.runQueryAndReturn(ownerUri, 'select name, setting, short_desc,min_val, max_val, enumvals, vartype from pg_settings');
 		if (!engineSettings) {
 			throw new Error('Could not fetch engine settings');
 		}
+		engineSettings.rows.forEach(row => {
+			let rowValues = row.map(c => c.displayValue);
+			let result: EngineSettingsModel = {
+				parameterName: rowValues.shift(),
+				value: rowValues.shift(),
+				description: rowValues.shift(),
+				min: rowValues.shift(),
+				max: rowValues.shift(),
+				options: rowValues.shift(),
+				type: rowValues.shift()
+			};
 
-		// TODO
-		// select * from pg_settings;
+			this._engineSettings.push(result);
+		});
+
 		this.engineSettingsLastUpdated = new Date();
 	}
 
@@ -180,7 +200,7 @@ export class PostgresModel extends ResourceModel {
 		}
 	}
 
-	private async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
+	protected async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
 		this._connectionProfile = connectionProfile;
 		this.info.connectionId = connectionProfile.id;
 		this._pgInfo.userName = connectionProfile.userName;

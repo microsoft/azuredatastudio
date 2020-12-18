@@ -182,7 +182,7 @@ export class MiaaModel extends ResourceModel {
 		}
 	}
 
-	private async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
+	protected async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
 		this._connectionProfile = connectionProfile;
 		this.info.connectionId = connectionProfile.id;
 		this._miaaInfo.userName = connectionProfile.userName;

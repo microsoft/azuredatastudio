@@ -47,6 +47,8 @@ export abstract class ResourceModel {
 						if (!result.connected) {
 							//vscode.window.showErrorMessage(loc.connectToPGSqlFailed(connectionProfile.serverName, result.errorMessage));
 							await this.promptForConnection(connectionProfile);
+						} else {
+							this.updateConnectionProfile(connectionProfile);
 						}
 					}
 				}
@@ -67,4 +69,6 @@ export abstract class ResourceModel {
 	protected abstract createConnectionProfile(): azdata.IConnectionProfile;
 
 	protected abstract promptForConnection(connectionProfile: azdata.IConnectionProfile): Promise<void>;
+
+	protected abstract updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void>;
 }
