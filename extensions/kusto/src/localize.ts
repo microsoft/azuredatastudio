@@ -3,15 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import AdsTelemetryReporter from 'ads-extension-telemetry';
+import * as nls from 'vscode-nls';
 
-import * as Utils from './utils';
-
-const packageJson = require('../package.json');
-
-let packageInfo = Utils.getPackageInfo(packageJson)!;
-
-export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
-
-export enum TelemetryViews {
-}
+export const localize = nls.loadMessageBundle();

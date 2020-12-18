@@ -9,17 +9,6 @@ import { AzureResource } from 'azdata';
 
 const localize = nls.loadMessageBundle();
 
-const enum SettingIds {
-	marm = 'marm',
-	graph = 'graph',
-	msgraph = 'msgraph',
-	arm = 'arm',
-	sql = 'sql',
-	ossrdbms = 'ossrdbms',
-	vault = 'vault',
-	ado = 'ado'
-}
-
 const publicAzureSettings: ProviderSettings = {
 	configKey: 'enablePublicCloud',
 	metadata: {
@@ -29,42 +18,37 @@ const publicAzureSettings: ProviderSettings = {
 			host: 'https://login.microsoftonline.com/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
 			microsoftResource: {
-				id: SettingIds.marm,
+				id: 'marm',
 				endpoint: 'https://management.core.windows.net/',
 				azureResourceId: AzureResource.MicrosoftResourceManagement
 			},
 			graphResource: {
-				id: SettingIds.graph,
-				endpoint: 'https://graph.windows.net',
+				id: 'graph',
+				endpoint: 'https://graph.microsoft.com',
 				azureResourceId: AzureResource.Graph
 			},
-			msGraphResource: {
-				id: SettingIds.msgraph,
-				endpoint: 'https://graph.microsoft.com/',
-				azureResourceId: AzureResource.MsGraph
-			},
 			armResource: {
-				id: SettingIds.arm,
+				id: 'arm',
 				endpoint: 'https://management.azure.com',
 				azureResourceId: AzureResource.ResourceManagement
 			},
 			sqlResource: {
-				id: SettingIds.sql,
+				id: 'sql',
 				endpoint: 'https://database.windows.net/',
 				azureResourceId: AzureResource.Sql
 			},
 			ossRdbmsResource: {
-				id: SettingIds.ossrdbms,
+				id: 'ossrdbms',
 				endpoint: 'https://ossrdbms-aad.database.windows.net',
 				azureResourceId: AzureResource.OssRdbms
 			},
 			azureKeyVaultResource: {
-				id: SettingIds.vault,
+				id: 'vault',
 				endpoint: 'https://vault.azure.net',
 				azureResourceId: AzureResource.AzureKeyVault
 			},
 			azureDevOpsResource: {
-				id: SettingIds.ado,
+				id: 'ado',
 				endpoint: '499b84ac-1321-427f-aa17-267ca6975798',
 				azureResourceId: AzureResource.AzureDevOps,
 			},
@@ -88,32 +72,32 @@ const usGovAzureSettings: ProviderSettings = {
 			host: 'https://login.microsoftonline.us/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
 			microsoftResource: {
-				id: SettingIds.marm,
+				id: 'marm',
 				endpoint: 'https://management.core.usgovcloudapi.net/',
 				azureResourceId: AzureResource.MicrosoftResourceManagement
 			},
 			graphResource: {
-				id: SettingIds.graph,
+				id: 'graph',
 				endpoint: 'https://graph.windows.net',
 				azureResourceId: AzureResource.Graph
 			},
 			armResource: {
-				id: SettingIds.arm,
+				id: 'arm',
 				endpoint: 'https://management.usgovcloudapi.net',
 				azureResourceId: AzureResource.ResourceManagement
 			},
 			sqlResource: {
-				id: SettingIds.sql,
+				id: 'sql',
 				endpoint: 'https://database.usgovcloudapi.net/',
 				azureResourceId: AzureResource.Sql
 			},
 			ossRdbmsResource: {
-				id: SettingIds.ossrdbms,
+				id: 'ossrdbms',
 				endpoint: 'https://ossrdbms-aad.database.usgovcloudapi.net',
 				azureResourceId: AzureResource.OssRdbms
 			},
 			azureKeyVaultResource: {
-				id: SettingIds.vault,
+				id: 'vault',
 				endpoint: 'https://vault.usgovcloudapi.net',
 				azureResourceId: AzureResource.AzureKeyVault
 			},
@@ -136,32 +120,32 @@ const usNatAzureSettings: ProviderSettings = {
 			host: 'https://login.microsoftonline.eaglex.ic.gov/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
 			microsoftResource: {
-				id: SettingIds.marm,
+				id: 'marm',
 				endpoint: 'https://management.azure.eaglex.ic.gov/',
 				azureResourceId: AzureResource.MicrosoftResourceManagement
 			},
 			graphResource: {
-				id: SettingIds.graph,
+				id: 'graph',
 				endpoint: 'https://graph.eaglex.ic.gov',
 				azureResourceId: AzureResource.Graph
 			},
 			armResource: {
-				id: SettingIds.arm,
+				id: 'arm',
 				endpoint: 'https://management.core.eaglex.ic.gov/',
 				azureResourceId: AzureResource.ResourceManagement
 			},
 			sqlResource: {
-				id: SettingIds.sql,
+				id: 'sql',
 				endpoint: 'https://database.cloudapi.eaglex.ic.gov/',
 				azureResourceId: AzureResource.Sql
 			},
 			ossRdbmsResource: {
-				id: SettingIds.ossrdbms,
+				id: 'ossrdbms',
 				endpoint: 'https://ossrdbms-aad.database.cloudapi.eaglex.ic.gov',
 				azureResourceId: AzureResource.OssRdbms
 			},
 			azureKeyVaultResource: {
-				id: SettingIds.vault,
+				id: 'vault',
 				endpoint: 'https://vault.cloudapi.eaglex.ic.gov',
 				azureResourceId: AzureResource.AzureKeyVault
 			},
@@ -185,24 +169,16 @@ const germanyAzureSettings: ProviderSettings = {
 			host: 'https://login.microsoftazure.de/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
 			graphResource: {
-				id: SettingIds.graph,
-				endpoint: 'https://graph.cloudapi.de',
-				azureResourceId: AzureResource.Graph
-			},
-			msGraphResource: {
-				id: SettingIds.msgraph,
-				endpoint: 'https://graph.microsoft.de',
-				azureResourceId: AzureResource.MsGraph
+				id: 'https://graph.cloudapi.de/',
+				endpoint: 'https://graph.cloudapi.de'
 			},
 			armResource: {
-				id: SettingIds.arm,
-				endpoint: 'https://management.microsoftazure.de',
-				azureResourceId: AzureResource.ResourceManagement
+				id: 'https://management.core.cloudapi.de/',
+				endpoint: 'https://management.microsoftazure.de'
 			},
 			azureKeyVaultResource: {
-				id: SettingIds.vault,
-				endpoint: 'https://vault.microsoftazure.de',
-				azureResourceId: AzureResource.AzureKeyVault
+				id: 'https://vault.microsoftazure.de',
+				endpoint: 'https://vault.microsoftazure.de'
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
 		}
@@ -218,24 +194,16 @@ const chinaAzureSettings: ProviderSettings = {
 			host: 'https://login.chinacloudapi.cn/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
 			graphResource: {
-				id: SettingIds.graph,
-				endpoint: 'https://graph.chinacloudapi.cn',
-				azureResourceId: AzureResource.Graph
-			},
-			msGraphResource: {
-				id: SettingIds.msgraph,
-				endpoint: 'https://microsoftgraph.chinacloudapi.cn',
-				azureResourceId: AzureResource.MsGraph
+				id: 'https://graph.chinacloudapi.cn/',
+				endpoint: 'https://graph.chinacloudapi.cn'
 			},
 			armResource: {
-				id: SettingIds.arm,
-				endpoint: 'https://managemement.chinacloudapi.net',
-				azureResourceId: AzureResource.ResourceManagement
+				id: 'https://management.core.chinacloudapi.cn/',
+				endpoint: 'https://managemement.chinacloudapi.net'
 			},
 			azureKeyVaultResource: {
-				id: SettingIds.vault,
-				endpoint: 'https://vault.azure.cn',
-				azureResourceId: AzureResource.AzureKeyVault
+				id: 'https://vault.azure.cn',
+				endpoint: 'https://vault.azure.cn'
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
 

@@ -22,7 +22,6 @@ import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/no
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICellValue, ResultSetSummary } from 'sql/workbench/services/query/common/query';
-import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
 
 export interface ICellRange {
 	readonly start: number;
@@ -470,7 +469,6 @@ export interface ICellModel {
 	executionCount: number | undefined;
 	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
-	getOutputId(output: nb.ICellOutput): QueryResultId | undefined;
 	renderedOutputTextContent?: string[];
 	readonly onOutputsChanged: Event<IOutputChangedEvent>;
 	readonly onTableUpdated: Event<ITableUpdatedEvent>;

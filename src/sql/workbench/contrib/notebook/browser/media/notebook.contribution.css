@@ -19,6 +19,7 @@
 }
 
 .notebookExplorer-viewlet > .header {
+	height: 41px;
 	box-sizing: border-box;
 	padding: 5px 12px 6px 16px;
 }

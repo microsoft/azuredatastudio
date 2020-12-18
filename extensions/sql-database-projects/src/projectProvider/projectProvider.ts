@@ -5,7 +5,7 @@
 
 import * as dataworkspace from 'dataworkspace';
 import * as vscode from 'vscode';
-import * as constants from '../common/constants';
+import { sqlprojExtension, projectTypeDisplayName, projectTypeDescription, sqlDatabaseProjectTypeId } from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
@@ -44,18 +44,11 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	get supportedProjectTypes(): dataworkspace.IProjectType[] {
 		return [{
-			id: constants.emptySqlDatabaseProjectTypeId,
-			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
-			displayName: constants.emptyProjectTypeDisplayName,
-			description: constants.emptyProjectTypeDescription,
+			id: sqlDatabaseProjectTypeId,
+			projectFileExtension: sqlprojExtension.replace(/\./g, ''),
+			displayName: projectTypeDisplayName,
+			description: projectTypeDescription,
 			icon: IconPathHelper.colorfulSqlProject
-		},
-		{
-			id: constants.edgeSqlDatabaseProjectTypeId,
-			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
-			displayName: constants.edgeProjectTypeDisplayName,
-			description: constants.edgeProjectTypeDescription,
-			icon: IconPathHelper.sqlEdgeProject
 		}];
 	}
 
@@ -63,16 +56,10 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * Create a project
 	 * @param name name of the project
 	 * @param location the parent directory
-	 * @param projectTypeId the ID of the project/template
 	 * @returns Uri of the newly created project file
 	 */
-	async createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri> {
-		const projectFile = await this.projectController.createNewProject({
-			newProjName: name,
-			folderUri: location,
-			projectTypeId: projectTypeId
-		});
-
+	async createProject(name: string, location: vscode.Uri, _: string): Promise<vscode.Uri> {
+		const projectFile = await this.projectController.createNewProject(name, location, true);
 		return vscode.Uri.file(projectFile);
 	}
 }

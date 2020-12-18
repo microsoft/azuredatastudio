@@ -47,7 +47,7 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 		throw new Error('Method not implemented.');
 	}
 
-	schemaCompare(operationId: string, sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: mssql.DeploymentOptions): Thenable<mssql.SchemaCompareResult> {
+	schemaCompare(operationId: string, sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaCompareResult> {
 		let result: mssql.SchemaCompareResult;
 		if (this.testState === testStateScmp.FAILURE) {
 			result = {

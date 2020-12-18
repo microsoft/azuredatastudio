@@ -262,7 +262,6 @@ declare module 'azdata-ext' {
 							replaceEngineSettings?: boolean,
 							workers?: number
 						},
-						engineVersion?: string,
 						additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<void>>
 				}
 			},

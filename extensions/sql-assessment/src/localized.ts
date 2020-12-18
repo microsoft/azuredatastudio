@@ -7,7 +7,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 export const LocalizedStrings = {
-	SECTION_TITLE_API: localize('asmt.section.api.title', "Info"),
+	SECTION_TITLE_API: localize('asmt.section.api.title', "API information"),
 	API_VERSION: localize('asmt.apiversion', "API Version"),
 	DEFAULT_RULESET_VERSION: localize('asmt.rulesetversion', "Default Ruleset"),
 	SECTION_TITLE_SQL_SERVER: localize('asmt.section.instance.title', "SQL Server Instance Details"),

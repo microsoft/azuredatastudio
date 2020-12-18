@@ -262,7 +262,7 @@ export function getIgnoreSslVerificationConfigSetting(): boolean {
 		const config = vscode.workspace.getConfiguration(bdcConfigSectionName);
 		return config.get<boolean>(ignoreSslConfigName, true);
 	} catch (error) {
-		console.error('Unexpected error retrieving ${bdcConfigSectionName}.${ignoreSslConfigName} setting : ', error);
+		console.error(`Unexpected error retrieving ${bdcConfigSectionName}.${ignoreSslConfigName} setting : ${error}`);
 	}
 	return true;
 }
@@ -378,13 +378,12 @@ function hasWorkspaceFolders(): boolean {
 	return workspaceFolders && workspaceFolders.length > 0;
 }
 
-export async function setPinnedBookPathsInConfig(pinnedNotebookPaths: IBookNotebook[]): Promise<void> {
+export function setPinnedBookPathsInConfig(pinnedNotebookPaths: IBookNotebook[]) {
 	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
 	let storeInWorspace: boolean = hasWorkspaceFolders();
 
-	await config.update(pinnedBooksConfigKey, pinnedNotebookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
+	config.update(pinnedBooksConfigKey, pinnedNotebookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
 }
-
 
 export interface IBookNotebook {
 	bookPath?: string;

@@ -37,15 +37,15 @@ export class OpenExistingDialog extends DialogBase {
 		try {
 			// the selected location should be an existing directory
 			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Project) {
-				if (!await this.validateFile(this._projectFile, constants.Project.toLowerCase())) {
-					return false;
-				}
-
-				if (this.workspaceInputBox!.enabled && !await this.validateNewWorkspace(false)) {
+				const fileExists = await fileExist(this._projectFile);
+				if (!fileExists) {
+					this.showErrorMessage(constants.ProjectFileNotExistError(this._projectFile));
 					return false;
 				}
 			} else if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
-				if (!await this.validateFile(this._workspaceFile, constants.Workspace.toLowerCase())) {
+				const fileExists = await fileExist(this._workspaceFile);
+				if (!fileExists) {
+					this.showErrorMessage(constants.WorkspaceFileNotExistError(this._workspaceFile));
 					return false;
 				}
 			}
@@ -58,16 +58,6 @@ export class OpenExistingDialog extends DialogBase {
 		}
 	}
 
-	public async validateFile(file: string, fileType: string) {
-		const fileExists = await fileExist(file);
-		if (!fileExists) {
-			this.showErrorMessage(constants.FileNotExistError(fileType, file));
-			return false;
-		}
-
-		return true;
-	}
-
 	async onComplete(): Promise<void> {
 		try {
 			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
@@ -75,7 +65,7 @@ export class OpenExistingDialog extends DialogBase {
 			} else {
 				const validateWorkspace = await this.workspaceService.validateWorkspace();
 				if (validateWorkspace) {
-					await this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._projectFile)], vscode.Uri.file(this.workspaceInputBox!.value!));
+					await this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._projectFile)]);
 				}
 			}
 		}
@@ -140,19 +130,15 @@ export class OpenExistingDialog extends DialogBase {
 		this.register(this._targetTypeRadioCardGroup.onSelectionChanged(({ cardId }) => {
 			if (cardId === constants.Project) {
 				this._filePathTextBox!.placeHolder = constants.ProjectFilePlaceholder;
-				this.formBuilder?.addFormItem(this.workspaceDescriptionFormComponent!);
-				this.formBuilder?.addFormItem(this.workspaceInputFormComponent!);
+				this.formBuilder?.addFormItem(this.workspaceFormComponent!);
 			} else if (cardId === constants.Workspace) {
 				this._filePathTextBox!.placeHolder = constants.WorkspacePlaceholder;
-				this.formBuilder?.removeFormItem(this.workspaceDescriptionFormComponent!);
-				this.formBuilder?.removeFormItem(this.workspaceInputFormComponent!);
+				this.formBuilder?.removeFormItem(this.workspaceFormComponent!);
 			}
 
 			// clear selected file textbox
 			this._filePathTextBox!.value = '';
 		}));
-
-		this.createWorkspaceContainer(view);
 
 		this.formBuilder = view.modelBuilder.formContainer().withFormItems([
 			{
@@ -164,15 +150,14 @@ export class OpenExistingDialog extends DialogBase {
 				required: true,
 				component: this.createHorizontalContainer(view, [this._filePathTextBox, browseFolderButton])
 			},
-			this.workspaceDescriptionFormComponent!,
-			this.workspaceInputFormComponent!
+			this.createWorkspaceContainer(view)
 		]);
 		await view.initializeModel(this.formBuilder?.component());
 		this.initDialogComplete?.resolve();
 	}
 
 	public async workspaceBrowse(): Promise<void> {
-		const filters: { [name: string]: string[] } = { [constants.Workspace]: [constants.WorkspaceFileExtension.substring(1)] }; // filter already adds a period before the extension
+		const filters: { [name: string]: string[] } = { [constants.Workspace]: [constants.WorkspaceFileExtension] };
 		const fileUris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
 			canSelectFolders: false,

@@ -4,14 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import TelemetryReporter from 'vscode-extension-telemetry';
 import { ErrorAction, ErrorHandler, Message, CloseAction } from 'vscode-languageclient';
 
 import * as Utils from './utils';
 import * as Constants from './constants';
-
-const localize = nls.loadMessageBundle();
+import { localize } from './localize';
 
 const packageJson = require('../package.json');
 const viewKnownIssuesAction = localize('viewKnownIssuesText', "View Known Issues");

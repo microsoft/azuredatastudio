@@ -37,9 +37,6 @@
 	min-height: 21px;
 }
 
-.notebookEditor  .editor-toolbar .actions-container .action-item .notebook-button.masked-pseudo {
-	padding-right: 18px;
-}
 .notebookEditor .editor-toolbar .actions-container .action-item .notebook-button {
 	display: inline-block;
 	text-align: center;

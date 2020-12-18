@@ -4,13 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as rd from 'resource-deployment';
-import { valueProviderService } from './services/valueProviderService';
 import { optionsSourcesService } from './services/optionSourcesService';
 
 export function getExtensionApi(): rd.IExtension {
 	return {
-		registerOptionsSourceProvider: (provider: rd.IOptionsSourceProvider) => optionsSourcesService.registerOptionsSourceProvider(provider),
-		registerValueProvider: (provider: rd.IValueProvider) => valueProviderService.registerValueProvider(provider)
+		registerOptionsSourceProvider: (provider: rd.IOptionsSourceProvider) => optionsSourcesService.registerOptionsSourceProvider(provider)
 	};
 }
 

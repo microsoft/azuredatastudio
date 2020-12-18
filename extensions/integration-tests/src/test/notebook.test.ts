@@ -39,7 +39,7 @@ suite('Notebook integration test suite', function () {
 	});
 
 	test('Sql NB test @UNSTABLE@', async function () {
-		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
+		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++, true);
 		await runCell(notebook);
 		const expectedOutput0 = '(1 row affected)';
 		let cellOutputs = notebook.document.cells[0].contents.outputs;

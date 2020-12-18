@@ -185,11 +185,10 @@ export class SchemaCompareOptionsDialog {
 		await this.optionsTable.updateProperties({
 			data: data,
 			columns: [
-				<azdata.CheckboxColumn>
 				{
 					value: 'Include',
 					type: azdata.ColumnType.checkBox,
-					action: azdata.ActionOnCellCheckboxCheck.customAction,
+					options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction },
 					headerCssClass: 'display-none',
 					cssClass: 'no-borders align-with-header',
 					width: 50
@@ -210,11 +209,10 @@ export class SchemaCompareOptionsDialog {
 		await this.objectsTable.updateProperties({
 			data: data,
 			columns: [
-				<azdata.CheckboxColumn>
 				{
 					value: 'Include',
 					type: azdata.ColumnType.checkBox,
-					action: azdata.ActionOnCellCheckboxCheck.customAction,
+					options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction },
 					headerCssClass: 'display-none',
 					cssClass: 'no-borders align-with-header',
 					width: 50

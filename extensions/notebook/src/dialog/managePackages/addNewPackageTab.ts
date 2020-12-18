@@ -111,8 +111,6 @@ export class AddNewPackageTab {
 				placeHolder: this.SearchPlaceholder(this.dialog.model.currentPackageType)
 			});
 			await this.setFieldsToEmpty();
-		} catch (err) {
-			console.error('Exception encountered when resetting new package page fields: ', err);
 		} finally {
 			await this.toggleNewPackagesFields(true);
 		}

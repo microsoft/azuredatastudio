@@ -2,7 +2,7 @@
   "name": "asde-deployment",
   "displayName": "%extension-displayName%",
   "description": "%extension-description%",
-  "version": "0.4.1",
+  "version": "0.4.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",

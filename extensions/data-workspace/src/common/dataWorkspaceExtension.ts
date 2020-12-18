@@ -16,8 +16,8 @@ export class DataWorkspaceExtension implements IExtension {
 		return this.workspaceService.getProjectsInWorkspace();
 	}
 
-	addProjectsToWorkspace(projectFiles: vscode.Uri[], workspaceFilePath?: vscode.Uri): Promise<void> {
-		return this.workspaceService.addProjectsToWorkspace(projectFiles, workspaceFilePath);
+	addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
+		return this.workspaceService.addProjectsToWorkspace(projectFiles);
 	}
 
 	showProjectsView(): void {
@@ -27,9 +27,4 @@ export class DataWorkspaceExtension implements IExtension {
 	get defaultProjectSaveLocation(): vscode.Uri | undefined {
 		return defaultProjectSaveLocation();
 	}
-
-	validateWorkspace(): Promise<boolean> {
-		return this.workspaceService.validateWorkspace();
-	}
-
 }

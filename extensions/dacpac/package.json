@@ -86,7 +86,6 @@
     }
   },
   "dependencies": {
-    "ads-extension-telemetry": "^1.0.0",
     "htmlparser2": "^3.10.1",
     "vscode-nls": "^4.0.0"
   },

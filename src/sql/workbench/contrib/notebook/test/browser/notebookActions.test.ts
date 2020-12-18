@@ -257,7 +257,7 @@ suite('Notebook Actions', function (): void {
 		assert.strictEqual(actualCmdId, NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID);
 	});
 
-	suite('Kernels dropdown', async () => {
+	suite.skip('Kernels dropdown', async () => {
 		let kernelsDropdown: KernelsDropdown;
 		let contextViewProvider: ContextViewProviderStub;
 		let container: HTMLElement;

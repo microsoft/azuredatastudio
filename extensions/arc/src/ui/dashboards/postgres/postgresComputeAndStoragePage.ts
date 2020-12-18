@@ -76,7 +76,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		const workerNodeslink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-			label: loc.addingWorkerNodes,
+			label: loc.addingWokerNodes,
 			url: 'https://docs.microsoft.com/azure/azure-arc/data/scale-up-down-postgresql-hyperscale-server-group-using-cli',
 			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -157,9 +157,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 						async (_progress, _token): Promise<void> => {
 							try {
 								await this._azdataApi.azdata.arc.postgres.server.edit(
-									this._postgresModel.info.name,
-									this.saveArgs,
-									this._postgresModel.engineVersion);
+									this._postgresModel.info.name, this.saveArgs);
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied
@@ -227,6 +225,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.coresLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 1,
+			validationErrorMessage: loc.coresValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
@@ -244,6 +243,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.coresRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 1,
+			validationErrorMessage: loc.coresValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
@@ -448,7 +448,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
-		this.coresRequestBox!.validationErrorMessage = loc.validationMin(this.coresRequestBox!.min!);
 		this.coresRequestBox!.placeHolder = currentCPUSize;
 		this.coresRequestBox!.value = '';
 		this.saveArgs.coresRequest = undefined;
@@ -459,7 +458,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
-		this.coresLimitBox!.validationErrorMessage = loc.validationMin(this.coresLimitBox!.min!);
 		this.coresLimitBox!.placeHolder = currentCPUSize;
 		this.coresLimitBox!.value = '';
 		this.saveArgs.coresLimit = undefined;

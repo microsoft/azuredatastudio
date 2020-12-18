@@ -13,16 +13,13 @@ import { PickPackagesPage } from '../../dialog/configurePython/pickPackagesPage'
 import { python3DisplayName, allKernelsName } from '../../common/constants';
 import { TestContext, createViewContext, TestButton } from '../common';
 import { EventEmitter } from 'vscode';
-import { MockOutputChannel } from '../common/stubs';
 
 describe('Configure Python Wizard', function () {
 	let testWizard: ConfigurePythonWizard;
 	let viewContext: TestContext;
 	let testInstallation: JupyterServerInstallation;
-	let mockOutputChannel: TypeMoq.IMock<MockOutputChannel>;
 
 	beforeEach(() => {
-		mockOutputChannel = TypeMoq.Mock.ofType(MockOutputChannel);
 		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation);
 		mockInstall.setup(i => i.getInstalledPipPackages(TypeMoq.It.isAnyString())).returns(() => Promise.resolve([]));
 		mockInstall.setup(i => i.getRequiredPackagesForKernel(TypeMoq.It.isAnyString())).returns(() => [{ name: 'TestPkg', version: '1.0.0'}]);
@@ -44,21 +41,21 @@ describe('Configure Python Wizard', function () {
 	});
 
 	it('Start wizard test', async () => {
-		let wizard = new ConfigurePythonWizard(testInstallation, mockOutputChannel.object);
+		let wizard = new ConfigurePythonWizard(testInstallation);
 		await wizard.start();
 		await wizard.close();
 		await should(wizard.setupComplete).be.resolved();
 	});
 
 	it('Reject setup on cancel test', async () => {
-		let wizard = new ConfigurePythonWizard(testInstallation, mockOutputChannel.object);
+		let wizard = new ConfigurePythonWizard(testInstallation);
 		await wizard.start(undefined, true);
 		await wizard.close();
 		await should(wizard.setupComplete).be.rejected();
 	});
 
 	it('Error message test', async () => {
-		let wizard = new ConfigurePythonWizard(testInstallation, mockOutputChannel.object);
+		let wizard = new ConfigurePythonWizard(testInstallation);
 		await wizard.start();
 
 		should(wizard.wizard.message).be.undefined();

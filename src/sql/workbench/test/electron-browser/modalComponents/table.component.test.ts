@@ -5,6 +5,7 @@
 
 import * as assert from 'assert';
 import TableComponent from 'sql/workbench/browser/modelComponents/table.component';
+import { CssIconCellValue } from 'sql/base/browser/ui/table/formatters';
 import { NullLogService } from 'vs/platform/log/common/log';
 
 suite('TableComponent Tests', () => {
@@ -21,7 +22,7 @@ suite('TableComponent Tests', () => {
 		let columns = ['c1', 'c2', 'c3'];
 		const tableComponent = new TableComponent(undefined, undefined, undefined, new NullLogService());
 
-		let actual = tableComponent.transformData(data, columns);
+		let actual: { [key: string]: string | CssIconCellValue }[] = tableComponent.transformData(data, columns);
 		let expected: { [key: string]: string }[] = [
 			{
 				'c1': '1',
@@ -41,7 +42,7 @@ suite('TableComponent Tests', () => {
 		let data = undefined;
 		const tableComponent = new TableComponent(undefined, undefined, undefined, new NullLogService());
 		let columns = ['c1', 'c2', 'c3'];
-		let actual = tableComponent.transformData(data, columns);
+		let actual: { [key: string]: string | CssIconCellValue }[] = tableComponent.transformData(data, columns);
 		let expected: { [key: string]: string }[] = [];
 		assert.deepEqual(actual, expected);
 	});
@@ -53,7 +54,7 @@ suite('TableComponent Tests', () => {
 		];
 		let columns;
 		const tableComponent = new TableComponent(undefined, undefined, undefined, new NullLogService());
-		let actual = tableComponent.transformData(data, columns);
+		let actual: { [key: string]: string | CssIconCellValue }[] = tableComponent.transformData(data, columns);
 		let expected: { [key: string]: string }[] = [];
 		assert.deepEqual(actual, expected);
 	});
@@ -65,7 +66,7 @@ suite('TableComponent Tests', () => {
 		];
 		const tableComponent = new TableComponent(undefined, undefined, undefined, new NullLogService());
 		let columns = ['c1', 'c2', 'c3'];
-		let actual = tableComponent.transformData(data, columns);
+		let actual: { [key: string]: string | CssIconCellValue }[] = tableComponent.transformData(data, columns);
 		let expected: { [key: string]: string }[] = [
 			{
 				'c1': '1',

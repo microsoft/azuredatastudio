@@ -11,14 +11,11 @@ export namespace cssStyles {
 	export const fontWeightBold = { 'font-weight': 'bold' };
 	export const titleFontSize = 13;
 
-	export const publishDialogLabelWidth = '205px';
-	export const publishDialogTextboxWidth = '190px';
+	export const labelWidth = '205px';
+	export const textboxWidth = '190px';
 
 	export const addDatabaseReferenceDialogLabelWidth = '215px';
 	export const addDatabaseReferenceInputboxWidth = '220px';
-
-	export const createProjectFromDatabaseLabelWidth = '110px';
-	export const createProjectFromDatabaseTextboxWidth = '320px';
 
 	// font-styles
 	export namespace fontStyle {

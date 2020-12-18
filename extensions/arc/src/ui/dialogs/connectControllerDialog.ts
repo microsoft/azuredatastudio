@@ -14,44 +14,22 @@ import { ControllerModel } from '../../models/controllerModel';
 import { InitializingComponent } from '../components/initializingComponent';
 import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
 import { getErrorMessage } from '../../common/utils';
-import { RadioOptionsGroup } from '../components/radioOptionsGroup';
-import { getCurrentClusterContext, getDefaultKubeConfigPath, getKubeConfigClusterContexts } from '../../common/kubeUtils';
-import { FilePicker } from '../components/filePicker';
 
 export type ConnectToControllerDialogModel = { controllerModel: ControllerModel, password: string };
-export interface IReadOnly {
-	readOnly?: boolean
-}
 abstract class ControllerDialogBase extends InitializingComponent {
-	protected _toDispose: vscode.Disposable[] = [];
 	protected modelBuilder!: azdata.ModelBuilder;
 	protected dialog: azdata.window.Dialog;
 
 	protected urlInputBox!: azdata.InputBoxComponent;
-	protected kubeConfigInputBox!: FilePicker;
-	protected clusterContextRadioGroup!: RadioOptionsGroup;
 	protected nameInputBox!: azdata.InputBoxComponent;
 	protected usernameInputBox!: azdata.InputBoxComponent;
 	protected passwordInputBox!: azdata.InputBoxComponent;
-
-	protected dispose(): void {
-		this._toDispose.forEach(disposable => disposable.dispose());
-		this._toDispose.length = 0; // clear the _toDispose array
-	}
 
 	protected getComponents(): (azdata.FormComponent<azdata.Component> & { layout?: azdata.FormItemLayout | undefined; })[] {
 		return [
 			{
 				component: this.urlInputBox,
 				title: loc.controllerUrl,
-				required: true
-			}, {
-				component: this.kubeConfigInputBox.component(),
-				title: loc.controllerKubeConfig,
-				required: true
-			}, {
-				component: this.clusterContextRadioGroup.component(),
-				title: loc.controllerClusterContext,
 				required: true
 			}, {
 				component: this.nameInputBox,
@@ -70,7 +48,7 @@ abstract class ControllerDialogBase extends InitializingComponent {
 	}
 
 	protected abstract fieldToFocusOn(): azdata.Component;
-	protected readonlyFields(): IReadOnly[] { return []; }
+	protected readonlyFields(): azdata.InputBoxComponent[] { return []; }
 
 	protected initializeFields(controllerInfo: ControllerInfo | undefined, password: string | undefined) {
 		this.urlInputBox = this.modelBuilder.inputBox()
@@ -79,18 +57,6 @@ abstract class ControllerDialogBase extends InitializingComponent {
 				// If we have a model then we're editing an existing connection so don't let them modify the URL
 				readOnly: !!controllerInfo
 			}).component();
-		this.kubeConfigInputBox = new FilePicker(
-			this.modelBuilder,
-			controllerInfo?.kubeConfigFilePath || getDefaultKubeConfigPath(),
-			(disposable) => this._toDispose.push(disposable)
-		);
-		this.modelBuilder.inputBox()
-			.withProperties<azdata.InputBoxProperties>({
-				value: controllerInfo?.kubeConfigFilePath || getDefaultKubeConfigPath()
-			}).component();
-		this.clusterContextRadioGroup = new RadioOptionsGroup(this.modelBuilder, (disposable) => this._toDispose.push(disposable));
-		this.loadRadioGroup(controllerInfo?.kubeClusterContext);
-		this._toDispose.push(this.kubeConfigInputBox.onTextChanged(() => this.loadRadioGroup(controllerInfo?.kubeClusterContext)));
 		this.nameInputBox = this.modelBuilder.inputBox()
 			.withProperties<azdata.InputBoxProperties>({
 				value: controllerInfo?.name
@@ -115,20 +81,10 @@ abstract class ControllerDialogBase extends InitializingComponent {
 		this.dialog = azdata.window.createModelViewDialog(title);
 	}
 
-	private loadRadioGroup(previousClusterContext?: string): void {
-		this.clusterContextRadioGroup.load(async () => {
-			const clusters = await getKubeConfigClusterContexts(this.kubeConfigInputBox.value!);
-			return {
-				values: clusters.map(c => c.name),
-				defaultValue: getCurrentClusterContext(clusters, previousClusterContext, false),
-			};
-		});
-	}
-
 	public showDialog(controllerInfo?: ControllerInfo, password: string | undefined = undefined): azdata.window.Dialog {
 		this.id = controllerInfo?.id ?? uuid();
 		this.resources = controllerInfo?.resources ?? [];
-		this._toDispose.push(this.dialog.cancelButton.onClick(() => this.handleCancel()));
+		this.dialog.cancelButton.onClick(() => this.handleCancel());
 		this.dialog.registerContent(async (view) => {
 			this.modelBuilder = view.modelBuilder;
 			this.initializeFields(controllerInfo, password);
@@ -144,20 +100,14 @@ abstract class ControllerDialogBase extends InitializingComponent {
 			this.initialized = true;
 		});
 
-		this.dialog.registerCloseValidator(async () => {
-			const isValidated = await this.validate();
-			if (isValidated) {
-				this.dispose();
-			}
-			return isValidated;
-		});
+		this.dialog.registerCloseValidator(async () => await this.validate());
 		this.dialog.okButton.label = loc.connect;
 		this.dialog.cancelButton.label = loc.cancel;
 		azdata.window.openDialog(this.dialog);
 		return this.dialog;
 	}
 
-	public abstract validate(): Promise<boolean>;
+	public abstract async validate(): Promise<boolean>;
 
 	private handleCancel(): void {
 		this.completionPromise.resolve(undefined);
@@ -165,19 +115,6 @@ abstract class ControllerDialogBase extends InitializingComponent {
 
 	public waitForClose(): Promise<ConnectToControllerDialogModel | undefined> {
 		return this.completionPromise.promise;
-	}
-
-	protected getControllerInfo(url: string, rememberPassword: boolean = false): ControllerInfo {
-		return {
-			id: this.id,
-			url: url,
-			kubeConfigFilePath: this.kubeConfigInputBox.value!,
-			kubeClusterContext: this.clusterContextRadioGroup.value!,
-			name: this.nameInputBox.value ?? '',
-			username: this.usernameInputBox.value!,
-			rememberPassword: rememberPassword,
-			resources: this.resources
-		};
 	}
 }
 
@@ -227,7 +164,14 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 		if (!/.*:\d*$/.test(url)) {
 			url = `${url}:30080`;
 		}
-		const controllerInfo: ControllerInfo = this.getControllerInfo(url, !!this.rememberPwCheckBox.checked);
+		const controllerInfo: ControllerInfo = {
+			id: this.id,
+			url: url,
+			name: this.nameInputBox.value ?? '',
+			username: this.usernameInputBox.value,
+			rememberPassword: this.rememberPwCheckBox.checked ?? false,
+			resources: this.resources
+		};
 		const controllerModel = new ControllerModel(this.treeDataProvider, controllerInfo, this.passwordInputBox.value);
 		try {
 			// Validate that we can connect to the controller, this also populates the controllerRegistration from the connection response.
@@ -258,8 +202,6 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 	protected readonlyFields() {
 		return [
 			this.urlInputBox,
-			this.kubeConfigInputBox,
-			this.clusterContextRadioGroup,
 			this.nameInputBox,
 			this.usernameInputBox
 		];
@@ -287,7 +229,14 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 				return false;
 			}
 		}
-		const controllerInfo: ControllerInfo = this.getControllerInfo(this.urlInputBox.value!, false);
+		const controllerInfo: ControllerInfo = {
+			id: this.id,
+			url: this.urlInputBox.value!,
+			name: this.nameInputBox.value!,
+			username: this.usernameInputBox.value!,
+			rememberPassword: false,
+			resources: []
+		};
 		const controllerModel = new ControllerModel(this.treeDataProvider, controllerInfo, this.passwordInputBox.value);
 		this.completionPromise.resolve({ controllerModel: controllerModel, password: this.passwordInputBox.value });
 		return true;

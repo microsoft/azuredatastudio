@@ -425,8 +425,7 @@ export enum AzureResource {
 	AzureKeyVault = 3,
 	Graph = 4,
 	MicrosoftResourceManagement = 5,
-	AzureDevOps = 6,
-	MsGraph = 7
+	AzureDevOps = 6
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
@@ -827,8 +826,7 @@ export enum ColumnType {
 	text = 0,
 	checkBox = 1,
 	button = 2,
-	icon = 3,
-	hyperlink = 4
+	icon = 3
 }
 
 export enum ActionOnCellCheckboxCheck {

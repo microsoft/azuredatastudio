@@ -41,12 +41,12 @@ describe('import extension prose preview tests', function () {
 	it('checking if all components are initialized properly', async function () {
 
 		// Opening the wizard and initializing the page as ProsePreviewPage
-		await new Promise<void>(function (resolve) {
+		await new Promise(function (resolve) {
 			page.registerContent(async (view) => {
 				prosePreviewPage = new ProsePreviewPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, prosePreviewPage);
 				await prosePreviewPage.start();
-				prosePreviewPage.setupNavigationValidator();
+				await prosePreviewPage.setupNavigationValidator();
 				await prosePreviewPage.onPageEnter();
 				resolve();
 			});

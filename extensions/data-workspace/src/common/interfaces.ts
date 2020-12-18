@@ -62,9 +62,8 @@ export interface IWorkspaceService {
 	/**
 	 * Adds the projects to workspace, if a project is not in the workspace folder, its containing folder will be added to the workspace
 	 * @param projectFiles the list of project files to be added, the project file should be absolute path.
-	 * @param workspaceFilePath The workspace file to create if a workspace isn't currently open
 	 */
-	addProjectsToWorkspace(projectFiles: vscode.Uri[], workspaceFilePath?: vscode.Uri): Promise<void>;
+	addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void>;
 
 	/**
 	 * Remove the project from workspace
@@ -77,9 +76,8 @@ export interface IWorkspaceService {
 	 * @param name The name of the project
 	 * @param location The location of the project
 	 * @param projectTypeId The project type id
-	 * @param workspaceFile The workspace file to create if a workspace isn't currently open
 	 */
-	createProject(name: string, location: vscode.Uri, projectTypeId: string, workspaceFile?: vscode.Uri): Promise<vscode.Uri>;
+	createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
 
 	readonly isProjectProviderAvailable: boolean;
 

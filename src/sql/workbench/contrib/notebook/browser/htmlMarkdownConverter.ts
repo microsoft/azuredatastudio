@@ -8,28 +8,6 @@ import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
 import * as turndownPluginGfm from 'sql/workbench/contrib/notebook/browser/turndownPluginGfm';
 
-// These replacements apply only to text. Here's how it's handled from Turndown:
-// if (node.nodeType === 3) {
-//	replacement = node.isCode ? node.nodeValue : self.escape(node.nodeValue);
-// }
-const markdownReplacements = [
-	[/\\/g, '\\\\'],
-	[/\*/g, '\\*'],
-	[/^-/g, '\\-'],
-	[/^\+ /g, '\\+ '],
-	[/^(=+)/g, '\\$1'],
-	[/^(#{1,6}) /g, '\\$1 '],
-	[/`/g, '\\`'],
-	[/^~~~/g, '\\~~~'],
-	[/\[/g, '\\['],
-	[/\]/g, '\\]'],
-	[/^>/g, '\\>'],
-	[/_/g, '\\_'],
-	[/^(\d+)\. /g, '$1\\. '],
-	[/</g, '\\<'], // Added to ensure sample text like <hello> is escaped
-	[/>/g, '\\>'], // Added to ensure sample text like <hello> is escaped
-];
-
 export class HTMLMarkdownConverter {
 	private turndownService: TurndownService;
 
@@ -43,28 +21,12 @@ export class HTMLMarkdownConverter {
 	}
 
 	private setTurndownOptions() {
-		this.turndownService.keep(['style']);
+		this.turndownService.keep(['u', 'mark', 'style']);
 		this.turndownService.use(turndownPluginGfm.gfm);
 		this.turndownService.addRule('pre', {
 			filter: 'pre',
 			replacement: function (content, node) {
 				return '\n```\n' + node.textContent + '\n```\n';
-			}
-		});
-		this.turndownService.addRule('mark', {
-			filter: 'mark',
-			replacement: (content, node) => {
-				return '<mark>' + content + '</mark>';
-			}
-		});
-		this.turndownService.addRule('underline', {
-			filter: ['u'],
-			replacement: (content, node, options) => {
-				if (!content.trim()) {
-					return '';
-				}
-				content = addHighlightIfYellowBgExists(node, content);
-				return '<u>' + content + '</u>';
 			}
 		});
 		this.turndownService.addRule('caption', {
@@ -77,6 +39,7 @@ export class HTMLMarkdownConverter {
 		this.turndownService.addRule('span', {
 			filter: 'span',
 			replacement: function (content, node) {
+				let escapedText = escapeAngleBrackets(node.textContent);
 				// There are certain properties that either don't have equivalents in markdown or whose transformations
 				// don't have actions defined in WYSIWYG yet. To unblock users, leaving these elements alone (including their child elements)
 				// Note: the initial list was generated from our TSG Jupyter Book
@@ -112,7 +75,7 @@ export class HTMLMarkdownConverter {
 					beginString = '<u>' + beginString;
 					endString += '</u>';
 				}
-				return beginString + content + endString;
+				return beginString + escapedText + endString;
 			}
 		});
 		this.turndownService.addRule('img', {
@@ -137,6 +100,8 @@ export class HTMLMarkdownConverter {
 				const notebookLink = node.href ? URI.parse(node.href) : URI.file(node.title);
 				const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
 				let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
+				node.innerText = escapeAngleBrackets(node.innerText);
+				content = escapeAngleBrackets(content);
 				if (relativePath) {
 					return `[${node.innerText}](${relativePath})`;
 				}
@@ -150,6 +115,7 @@ export class HTMLMarkdownConverter {
 					.replace(/^\n+/, '') // remove leading newlines
 					.replace(/\n+$/, '\n') // replace trailing newlines with just a single one
 					.replace(/\n/gm, '\n    '); // indent
+				content = escapeAngleBrackets(content);
 				let prefix = options.bulletListMarker + ' ';
 				let parent = node.parentNode;
 				let nestedCount = 0;
@@ -169,22 +135,44 @@ export class HTMLMarkdownConverter {
 				);
 			}
 		});
+		this.turndownService.addRule('p', {
+			filter: 'p',
+			replacement: function (content, node) {
+				let isAnchorElement: boolean = false;
+				node.childNodes.forEach(c => {
+					if (c.nodeType === Node.TEXT_NODE) {
+						c.nodeValue = escapeAngleBrackets(c.textContent);
+					} else if (c.nodeType === Node.ELEMENT_NODE) {
+						c.innerText = escapeAngleBrackets(c.textContent);
+						if (c.nodeName === 'A') {
+							isAnchorElement = true;
+						}
+					}
+				});
+				if (isAnchorElement) {
+					return content;
+				} else {
+					return '\n\n' + node.innerHTML.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&nbsp;/gi, '') + '\n\n';
+				}
+			}
+		});
 		this.turndownService.addRule('heading', {
 			filter: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
 			replacement: function (content, node, options) {
 				let hLevel = Number(node.nodeName.charAt(1));
+				let escapedText = escapeAngleBrackets(content);
 				if (options.headingStyle === 'setext' && hLevel < 3) {
 					let underline = '#'.repeat(hLevel);
-					return '\n\n' + content + '\n' + underline + '\n\n';
+					return '\n\n' + escapedText + '\n' + underline + '\n\n';
 				} else {
-					return '\n\n' + '#'.repeat(hLevel) + ' ' + content + '\n\n';
+					return '\n\n' + '#'.repeat(hLevel) + ' ' + escapedText + '\n\n';
 				}
 			}
 		});
 		this.turndownService.addRule('bold', {
 			filter: ['strong', 'b'],
 			replacement: function (content, node, options) {
-				content = addHighlightIfYellowBgExists(node, content);
+				content = escapeAngleBrackets(content);
 				if (!content.trim()) { return ''; }
 				return options.strongDelimiter + content + options.strongDelimiter;
 			}
@@ -192,7 +180,7 @@ export class HTMLMarkdownConverter {
 		this.turndownService.addRule('italicize', {
 			filter: ['em', 'i'],
 			replacement: function (content, node, options) {
-				content = addHighlightIfYellowBgExists(node, content);
+				content = escapeAngleBrackets(content);
 				if (!content.trim()) { return ''; }
 				return options.emDelimiter + content + options.emDelimiter;
 			}
@@ -204,7 +192,8 @@ export class HTMLMarkdownConverter {
 
 				return node.nodeName === 'CODE' && !isCodeBlock;
 			},
-			replacement: function (content, node, options) {
+			replacement: function (content) {
+				content = escapeAngleBrackets(content);
 				if (!content.trim()) { return ''; }
 
 				let delimiter = '`';
@@ -220,15 +209,7 @@ export class HTMLMarkdownConverter {
 				return delimiter + leadingSpace + content + trailingSpace + delimiter;
 			}
 		});
-		this.turndownService.escape = escapeMarkdown;
 	}
-}
-
-function escapeMarkdown(text) {
-	return markdownReplacements.reduce(
-		(search, replacement) => search.replace(replacement[0], replacement[1]),
-		text,
-	);
 }
 
 export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined): string {
@@ -248,9 +229,15 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 	return '';
 }
 
-export function addHighlightIfYellowBgExists(node, content: string): string {
-	if (node?.style?.backgroundColor === 'yellow') {
-		return '<mark>' + content + '</mark>';
+export function escapeAngleBrackets(textContent: string): string {
+	let text: string = textContent;
+	if (text.includes('<u>') || text.includes('<mark>') || (text.includes('style') && !text.includes('<style>'))) {
+		return text;
 	}
-	return content;
+	let mapTags = { '<': '\\<', '>': '\\>' };
+
+	let escapedText = text.replace(/<|>/gi, function (matched) {
+		return mapTags[matched];
+	});
+	return escapedText;
 }

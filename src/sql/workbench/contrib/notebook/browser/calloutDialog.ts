@@ -31,6 +31,7 @@ export type CalloutStyle = 'LINK' | 'IMAGE';
 
 const LINK = 'LINK_PREVIEW';
 const IMAGE = 'IMAGE_PREVIEW';
+
 export interface ICalloutDialogOptions {
 	insertTitle?: string,
 	calloutStyle?: CalloutStyle,

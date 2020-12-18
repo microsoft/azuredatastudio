@@ -9,7 +9,7 @@ import * as nls from 'vscode-nls';
 import { SqlAssessmentTab } from './sqlAssessmentTab';
 import { AssessmentEngine, AssessmentType } from '../engine';
 import { promises as fs } from 'fs';
-import { suggestReportFile, limitLongName } from '../utils';
+import { suggestReportFile } from '../utils';
 import { HTMLReportBuilder } from '../htmlReportGenerator';
 import { AssessmentResultGrid } from '../assessmentResultGrid';
 import { LocalizedStrings } from '../localized';
@@ -69,7 +69,8 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 
 		rootContainer.addItem(await this.createToolbar(view), {
 			flex: '0 0 auto', CSSStyles: {
-				'border-top': '3px solid rgb(221, 221, 221)'
+				'border-top': '3px solid rgb(221, 221, 221)',
+				'height': '32px'
 			}
 		});
 
@@ -95,9 +96,8 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		];
 	}
 
-
-
 	private async createToolbar(view: azdata.ModelView): Promise<azdata.ToolbarContainer> {
+
 		const targetIconPath = this.engine.isServerConnection
 			? {
 				dark: this.extensionContext.asAbsolutePath('resources/dark/server.svg'),
@@ -107,22 +107,18 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 				light: this.extensionContext.asAbsolutePath('resources/light/database.svg')
 			};
 		const iconSize: number = 16;
-		const btnHeight: string = '26px';
-		const maxNameLength: number = 40;
 
 		const btnInvokeAssessment = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
-				label: limitLongName(this.invokeAssessmentLabel, maxNameLength),
+				label: this.invokeAssessmentLabel,
 				iconPath: targetIconPath,
 				iconHeight: iconSize,
-				iconWidth: iconSize,
-				height: btnHeight
-
+				iconWidth: iconSize
 			}).component();
 		const btnInvokeAssessmentLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnInvokeAssessment)
 			.withProperties<azdata.LoadingComponentProperties>({
-				loadingText: limitLongName(this.invokeAssessmentLabel, maxNameLength),
+				loadingText: this.invokeAssessmentLabel,
 				showText: true,
 				loading: false
 			}).component();
@@ -146,16 +142,15 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 
 		const btnGetAssessmentItems = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
-				label: limitLongName(this.getItemsLabel, maxNameLength),
+				label: this.getItemsLabel,
 				iconPath: targetIconPath,
 				iconHeight: iconSize,
-				iconWidth: iconSize,
-				height: btnHeight
+				iconWidth: iconSize
 			}).component();
 		const btnGetAssessmentItemsLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnGetAssessmentItems)
 			.withProperties<azdata.LoadingComponentProperties>({
-				loadingText: limitLongName(this.getItemsLabel, maxNameLength),
+				loadingText: this.getItemsLabel,
 				showText: true,
 				loading: false
 			}).component();
@@ -186,8 +181,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 					light: this.extensionContext.asAbsolutePath('resources/light/newquery.svg')
 				},
 				iconHeight: iconSize,
-				iconWidth: iconSize,
-				height: btnHeight
+				iconWidth: iconSize
 			}).component();
 		this.toDispose.push(this.btnExportAsScript.onDidClick(async () => {
 			this.engine.generateAssessmentScript();
@@ -202,8 +196,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 					light: this.extensionContext.asAbsolutePath('resources/light/book.svg')
 				},
 				iconHeight: iconSize,
-				iconWidth: iconSize,
-				height: btnHeight
+				iconWidth: iconSize
 			}).component();
 
 		this.toDispose.push(this.btnHTMLExport.onDidClick(async () => {
@@ -231,15 +224,13 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 
 		let btnViewSamples = view.modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
-				label: localize('btnViewSamplesShort', "View all on GitHub"),
+				label: localize('btnViewSamples', "View all rules and learn more on GitHub"),
 				iconPath: {
 					dark: this.extensionContext.asAbsolutePath('resources/dark/configuredashboard_inverse.svg'),
 					light: this.extensionContext.asAbsolutePath('resources/light/configuredashboard.svg')
 				},
 				iconHeight: iconSize,
-				iconWidth: iconSize,
-				height: btnHeight,
-				title: localize('btnViewSamples', "View all rules and learn more on GitHub"),
+				iconWidth: iconSize
 			}).component();
 
 		this.toDispose.push(btnViewSamples.onDidClick(() => {
@@ -255,8 +246,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 					light: this.extensionContext.asAbsolutePath('resources/light/status_info.svg')
 				},
 				iconHeight: iconSize,
-				iconWidth: iconSize,
-				height: btnHeight
+				iconWidth: iconSize
 			}).component();
 		this.toDispose.push(btnAPIDetails.onDidClick(async () => {
 			let infoArray: azdata.PropertiesContainerItem[] = [];

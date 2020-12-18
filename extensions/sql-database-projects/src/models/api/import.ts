@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Uri } from 'vscode';
 import { ExtractTarget } from '../../../../mssql';
 
 /**
@@ -16,5 +15,4 @@ export interface ImportDataModel {
 	filePath: string;
 	version: string;
 	extractTarget: ExtractTarget;
-	newWorkspaceFilePath?: Uri;
 }

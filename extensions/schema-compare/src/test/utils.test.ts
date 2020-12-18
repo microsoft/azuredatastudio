@@ -5,7 +5,6 @@
 
 import * as should from 'should';
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import * as loc from '../localizedConstants';
 import * as TypeMoq from 'typemoq';
@@ -16,15 +15,10 @@ import { promises as fs } from 'fs';
 import { getEndpointName, verifyConnectionAndGetOwnerUri, exists } from '../utils';
 import { mockDacpacEndpoint, mockDatabaseEndpoint, mockFilePath, mockConnectionInfo, shouldThrowSpecificError, mockConnectionResult, mockConnectionProfile } from './testUtils';
 import { createContext, TestContext } from './testContext';
-import * as sinon from 'sinon';
 
 let testContext: TestContext;
 
-describe('utils: Tests to verify getEndpointName @DacFx@', function (): void {
-	afterEach(() => {
-		sinon.restore();
-	});
-
+describe('utils: Tests to verify getEndpointName', function (): void {
 	it('Should generate correct endpoint information', () => {
 		let endpointInfo: mssql.SchemaCompareEndpointInfo;
 
@@ -58,7 +52,7 @@ describe('utils: Basic tests to verify verifyConnectionAndGetOwnerUri', function
 
 	it('Should return undefined for endpoint as dacpac', async function (): Promise<void> {
 		let ownerUri = undefined;
-		ownerUri = await verifyConnectionAndGetOwnerUri(mockDacpacEndpoint, 'test');
+		ownerUri = await verifyConnectionAndGetOwnerUri(mockDacpacEndpoint, 'test', testContext.apiWrapper.object);
 
 		should(ownerUri).equal(undefined);
 	});
@@ -68,7 +62,7 @@ describe('utils: Basic tests to verify verifyConnectionAndGetOwnerUri', function
 		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
 		testDatabaseEndpoint.connectionDetails = undefined;
 
-		ownerUri = await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test');
+		ownerUri = await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test', testContext.apiWrapper.object);
 
 		should(ownerUri).equal(undefined);
 	});
@@ -79,10 +73,6 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 		testContext = createContext();
 	});
 
-	afterEach(() => {
-		sinon.restore();
-	});
-
 	it('Should throw an error asking to make a connection', async function (): Promise<void> {
 		let getConnectionsResults: azdata.connection.ConnectionProfile[] = [];
 		let connection = { ...mockConnectionResult };
@@ -90,14 +80,12 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 		testDatabaseEndpoint.connectionDetails = { ...mockConnectionInfo };
 		const getConnectionString = loc.getConnectionString('test');
 
-		sinon.stub(azdata.connection, 'connect').returns(<any>Promise.resolve(connection));
-		sinon.stub(azdata.connection, 'getUriForConnection').returns(<any>Promise.resolve(undefined));
-		sinon.stub(azdata.connection, 'getConnections').returns(<any>Promise.resolve(getConnectionsResults));
-		sinon.stub(vscode.window, 'showWarningMessage').callsFake((message) => {
-			throw new Error(message);
-		});
+		testContext.apiWrapper.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { return Promise.resolve(connection); });
+		testContext.apiWrapper.setup(x => x.getUriForConnection(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(undefined); });
+		testContext.apiWrapper.setup(x => x.getConnections(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(getConnectionsResults); });
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
-		await shouldThrowSpecificError(async () => await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test'), getConnectionString);
+		await shouldThrowSpecificError(async () => await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test', testContext.apiWrapper.object), getConnectionString);
 	});
 
 	it('Should throw an error for login failure', async function (): Promise<void> {
@@ -106,15 +94,12 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
 		testDatabaseEndpoint.connectionDetails = { ...mockConnectionInfo };
 
-		sinon.stub(azdata.connection, 'connect').returns(<any>Promise.resolve(connection));
-		sinon.stub(azdata.connection, 'getUriForConnection').returns(<any>Promise.resolve(undefined));
-		sinon.stub(azdata.connection, 'getConnections').returns(<any>Promise.resolve(getConnectionsResults));
-		sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(loc.YesButtonText));
-		sinon.stub(vscode.window, 'showErrorMessage').callsFake((message) => {
-			throw new Error(message);
-		});
+		testContext.apiWrapper.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { return Promise.resolve(connection); });
+		testContext.apiWrapper.setup(x => x.getUriForConnection(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(undefined); });
+		testContext.apiWrapper.setup(x => x.getConnections(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(getConnectionsResults); });
+		testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
 
-		await shouldThrowSpecificError(async () => await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test'), connection.errorMessage);
+		await shouldThrowSpecificError(async () => await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test', testContext.apiWrapper.object), connection.errorMessage);
 	});
 
 	it('Should throw an error for login failure with openConnectionDialog but no ownerUri', async function (): Promise<void> {
@@ -123,18 +108,13 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
 		testDatabaseEndpoint.connectionDetails = { ...mockConnectionInfo };
 
-		sinon.stub(azdata.connection, 'connect').returns(<any>Promise.resolve(connection));
-		sinon.stub(azdata.connection, 'getUriForConnection').returns(<any>Promise.resolve(undefined));
-		sinon.stub(azdata.connection, 'openConnectionDialog').returns(<any>Promise.resolve({
-			connectionId: 'id'
-		}));
-		sinon.stub(azdata.connection, 'getConnections').returns(<any>Promise.resolve(getConnectionsResults));
-		sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(loc.YesButtonText));
-		sinon.stub(vscode.window, 'showErrorMessage').callsFake((message) => {
-			throw new Error(message);
-		});
+		testContext.apiWrapper.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { return Promise.resolve(connection); });
+		testContext.apiWrapper.setup(x => x.getUriForConnection(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(undefined); });
+		testContext.apiWrapper.setup(x => x.getConnections(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(getConnectionsResults); });
+		testContext.apiWrapper.setup(x => x.showWarningMessage(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { return Promise.resolve(loc.YesButtonText); });
+		testContext.apiWrapper.setup(x => x.openConnectionDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { return Promise.resolve(undefined); });
 
-		await shouldThrowSpecificError(async () => await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test'), connection.errorMessage);
+		await shouldThrowSpecificError(async () => await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test', testContext.apiWrapper.object), connection.errorMessage);
 	});
 
 	it('Should not throw an error and set ownerUri appropriately', async function (): Promise<void> {
@@ -144,10 +124,10 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 		let expectedOwnerUri: string = 'providerName:MSSQL|authenticationType:SqlLogin|database:My Database|server:My Server|user:My User|databaseDisplayName:My Database';
 		testDatabaseEndpoint.connectionDetails = { ...mockConnectionInfo };
 
-		sinon.stub(azdata.connection, 'connect').returns(<any>Promise.resolve(connection));
-		sinon.stub(azdata.connection, 'getUriForConnection').returns(<any>Promise.resolve(expectedOwnerUri));
+		testContext.apiWrapper.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => { return Promise.resolve(connection); });
+		testContext.apiWrapper.setup(x => x.getUriForConnection(TypeMoq.It.isAny())).returns(() => { return Promise.resolve(expectedOwnerUri); });
 
-		ownerUri = await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test');
+		ownerUri = await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test', testContext.apiWrapper.object);
 
 		should(ownerUri).equal(expectedOwnerUri);
 	});

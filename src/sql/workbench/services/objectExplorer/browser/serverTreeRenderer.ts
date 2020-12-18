@@ -45,7 +45,7 @@ export interface IObjectExplorerTemplateData {
 export class ServerTreeRenderer implements IRenderer {
 
 	public static CONNECTION_HEIGHT = 23;
-	public static CONNECTION_GROUP_HEIGHT = 33;
+	public static CONNECTION_GROUP_HEIGHT = 38;
 	public static CONNECTION_TEMPLATE_ID = 'connectionProfile';
 	public static CONNECTION_GROUP_TEMPLATE_ID = 'connectionProfileGroup';
 	public static OBJECTEXPLORER_HEIGHT = 23;
@@ -231,13 +231,14 @@ export class ServerTreeRenderer implements IRenderer {
 	}
 
 	private renderConnectionProfileGroup(connectionProfileGroup: ConnectionProfileGroup, templateData: IConnectionProfileGroupTemplateData): void {
-		let groupElement = this.findParentElement(templateData.root, 'server-group');
-		if (groupElement) {
+
+		let rowElement = this.findParentElement(templateData.root, 'monaco-tree-row');
+		if (rowElement) {
 			if (connectionProfileGroup.color) {
-				groupElement.style.background = connectionProfileGroup.color;
+				rowElement.style.background = connectionProfileGroup.color;
 			} else {
 				// If the group doesn't contain specific color, assign the default color
-				groupElement.style.background = DefaultServerGroupColor;
+				rowElement.style.background = DefaultServerGroupColor;
 			}
 		}
 		if (connectionProfileGroup.description && (connectionProfileGroup.description !== '')) {
