@@ -191,6 +191,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * If suppressHeader and suppressFooter, do nothing.
 	 */
 	public render() {
+		let hasMacClass: boolean = document.querySelector('body.mac') !== null ? true : false;
 		let builderClass = '.modal.fade';
 		builderClass += this._modalOptions.dialogStyle === 'flyout' ? '.flyout-dialog'
 			: this._modalOptions.dialogStyle === 'callout' ? '.callout-dialog'
@@ -207,13 +208,23 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalContent = DOM.append(this._modalDialog, DOM.$(`.modal-content${arrowClass}`));
 
 			if (this._modalOptions.dialogPosition === 'below') {
-				this._modalDialog.style.left = `${this._modalOptions.positionX - this._modalOptions.dialogXYOffset.xOffset}px`;
-				this._modalDialog.style.top = `${this._modalOptions.positionY + this._modalOptions.dialogXYOffset.xOffset}px`;
+				if (hasMacClass) {
+					this._modalDialog.style.left = `${this._modalOptions.positionX - this._modalOptions.dialogXYOffset.xOffset}px`;
+					this._modalDialog.style.top = `${this._modalOptions.positionY + this._modalOptions.dialogXYOffset.xOffset}px`;
+				} else {
+					this._modalDialog.style.left = `${this._modalOptions.positionX - this._modalOptions.dialogXYOffset.xOffset}px`;
+					this._modalDialog.style.top = `${this._modalOptions.positionY + (this._modalOptions.dialogXYOffset.xOffset - 30)}px`;
+				}
 			}
 
 			if (this._modalOptions.dialogPosition === 'left') {
-				this._modalDialog.style.left = `${this._modalOptions.positionX - this._modalOptions.dialogXYOffset.xOffset}px`;
-				this._modalDialog.style.top = `${this._modalOptions.positionY - this._modalOptions.dialogXYOffset.yOffset}px`;
+				if (hasMacClass) {
+					this._modalDialog.style.left = `${this._modalOptions.positionX - this._modalOptions.dialogXYOffset.xOffset}px`;
+					this._modalDialog.style.top = `${this._modalOptions.positionY - this._modalOptions.dialogXYOffset.yOffset}px`;
+				} else {
+					this._modalDialog.style.left = `${this._modalOptions.positionX - this._modalOptions.dialogXYOffset.xOffset}px`;
+					this._modalDialog.style.top = `${this._modalOptions.positionY - (this._modalOptions.dialogXYOffset.yOffset + 30)}px`;
+				}
 			}
 
 		} else {
