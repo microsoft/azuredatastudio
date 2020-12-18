@@ -322,31 +322,19 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private createParametersTable(): any[] {
-		// Define server settings that shouldn't be modified. we block archive_*, restore_*, and synchronous_commit to prevent the user
-		// from messing up our backups. (we rely on synchronous_commit to ensure WAL changes are written immediately.)
-		// we block log_* to protect our logging. we block wal_level because Citus needs a particular wal_Level to rebalance shards
-		// TODO: Review list of blacklisted parameters. wal_level should only be blacklisted if sharding is enabled
-		/* To not be modified
-			"archive_command", "archive_timeout", "log_directory", "log_file_mode", "log_filename", "restore_command",
-			"shared_preload_libraries", "synchronous_commit", "ssl", "unix_socket_permissions", "wal_level" */
+		/*Define server settings that shouldn't be modified. we block archive_*, restore_*, and synchronous_commit to prevent the user
+		from messing up our backups. (we rely on synchronous_commit to ensure WAL changes are written immediately.)
+		we block log_* to protect our logging. we block wal_level because Citus needs a particular wal_Level to rebalance shards
+		TODO: Review list of blacklisted parameters. wal_level should only be blacklisted if sharding is enabled
+		To not be modified
+		"archive_command", "archive_timeout", "log_directory", "log_file_mode", "log_filename", "restore_command",
+		"shared_preload_libraries", "synchronous_commit", "ssl", "unix_socket_permissions", "wal_level" */
 
-		this.createParameters();
+		// For ev in this._postgresModel._engineSettings
+		// create row
+		// return rows
+		this.parameterComponents('engineSetting', '');
 		return [];
-	}
-
-	private createParameters() {
-		//TODO
-		/* {
-			parameterName: 'name',
-			value: 'settings',
-			description: 'short_desc',
-			default: 'reset_val',
-			min: 'min_val',
-			max: 'max_val',
-			options: 'enumvals',
-			type: 'vartype',
-			row: 'data[]'
-		}; */
 	}
 
 	private parameterComponents(name: string, type: string): any[] {

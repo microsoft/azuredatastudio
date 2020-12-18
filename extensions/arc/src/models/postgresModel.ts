@@ -16,7 +16,15 @@ import { UserCancelledError } from '../common/api';
 import { ResourceModel } from './resourceModel';
 import { Deferred } from '../common/promise';
 
-export type EngineSettingsModel = { name: string };
+export type EngineSettingsModel = {
+	parameterName: string | undefined,
+	value: string | undefined,
+	description: string | undefined,
+	min: string | undefined,
+	max: string | undefined,
+	options: string | undefined,
+	type: string | undefined
+};
 
 export class PostgresModel extends ResourceModel {
 	private _config?: azdataExt.PostgresServerShowResult;
@@ -25,6 +33,8 @@ export class PostgresModel extends ResourceModel {
 
 	// The saved connection information
 	private _connectionProfile: azdata.IConnectionProfile | undefined = undefined;
+	// The ID of the active connection used to query the server
+	private _activeConnectionId: string | undefined = undefined;
 
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.PostgresServerShowResult>();
 	public readonly _onEngineSettingsUpdated = new vscode.EventEmitter<EngineSettingsModel[]>();
@@ -122,8 +132,37 @@ export class PostgresModel extends ResourceModel {
 			await this.getConnectionProfile();
 		}
 
-		// TODO
-		// select * from pg_settings;
+		// We haven't connected yet so do so now and then store the ID for the active connection
+		if (!this._activeConnectionId) {
+			const result = await azdata.connection.connect(this._connectionProfile!, false, false);
+			if (!result.connected) {
+				throw new Error(result.errorMessage);
+			}
+			this._activeConnectionId = result.connectionId;
+		}
+
+		const provider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this._connectionProfile!.providerName, azdata.DataProviderType.QueryProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this._activeConnectionId);
+
+		const engineSettings = await provider.runQueryAndReturn(ownerUri, 'select name, setting, short_desc,min_val, max_val, enumvals, vartype from pg_settings');
+		if (!engineSettings) {
+			throw new Error('Could not fetch engine settings');
+		}
+		engineSettings.rows.forEach(row => {
+			let rowValues = row.map(c => c.displayValue);
+			let result: EngineSettingsModel = {
+				parameterName: rowValues.shift(),
+				value: rowValues.shift(),
+				description: rowValues.shift(),
+				min: rowValues.shift(),
+				max: rowValues.shift(),
+				options: rowValues.shift(),
+				type: rowValues.shift()
+			};
+
+			this._engineSettings.push(result);
+		});
+
 		this.engineSettingsLastUpdated = new Date();
 	}
 
@@ -161,7 +200,7 @@ export class PostgresModel extends ResourceModel {
 		}
 	}
 
-	private async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
+	protected async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
 		this._connectionProfile = connectionProfile;
 		this.info.connectionId = connectionProfile.id;
 		this._pgInfo.userName = connectionProfile.userName;
