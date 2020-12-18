@@ -494,7 +494,7 @@ export class CreateProjectFromDatabaseDialog {
 		}
 	}
 
-	protected async validateNewWorkspace(): Promise<boolean> {
+	protected async validateNewWorkspace(): Promise<void> {
 		const sameFolderAsNewProject = path.join(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!) === path.dirname(this.workspaceInputBox!.value!);
 
 		// workspace file should end in .code-workspace
@@ -516,8 +516,6 @@ export class CreateProjectFromDatabaseDialog {
 		if (workspaceFileExists) {
 			throw new Error(constants.WorkspaceFileAlreadyExistsError(this.workspaceInputBox!.value!));
 		}
-
-		return true;
 	}
 
 	protected showErrorMessage(message: string): void {
