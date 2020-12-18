@@ -34,6 +34,7 @@ export class ExportConfigPage extends DacFxConfigPage {
 				componentWidth: 400
 			}).component();
 		await this.view.initializeModel(this.form);
+
 		return true;
 	}
 

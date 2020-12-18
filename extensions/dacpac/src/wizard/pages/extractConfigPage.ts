@@ -37,12 +37,14 @@ export class ExtractConfigPage extends DacFxConfigPage {
 				componentWidth: 400
 			}).component();
 		await this.view.initializeModel(this.form);
+
 		return true;
 	}
 
 	async onPageEnter(): Promise<boolean> {
 		let r1 = await this.populateServerDropdown();
 		let r2 = await this.populateDatabaseDropdown();
+
 		return r1 && r2;
 	}
 

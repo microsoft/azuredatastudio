@@ -9,6 +9,7 @@ import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
+import { TelemetryReporter, TelemetryViews } from '../../telemetry';
 
 enum deployPlanXml {
 	AlertElement = 'Alert',
@@ -83,6 +84,10 @@ export class DeployPlanPage extends DacFxConfigPage {
 		this.table.data = [];
 		await this.populateTable();
 		this.loader.loading = false;
+
+		//Reporting DeployDacpac selection event to the telemetry report
+		TelemetryReporter.sendActionEvent(TelemetryViews.DeployPlanPage, 'DataTierApplicationWizardDeployDacpacSelected');
+
 		return true;
 	}
 
@@ -117,6 +122,14 @@ export class DeployPlanPage extends DacFxConfigPage {
 			.withProperties({
 				label: loc.proceedDataLossMessage,
 			}).component();
+
+		this.dataLossCheckbox.onChanged(() => {
+			//Dataloss checkbox status
+			TelemetryReporter.createActionEvent(TelemetryViews.DeployPlanPage, 'DataTierApplicationDataLossCheckBoxOnChange')
+				.withAdditionalProperties({
+					'dataLossCheckbox': this.dataLossCheckbox.checked.toString()
+				}).send();
+		});
 
 		return {
 			component: this.dataLossCheckbox,
