@@ -483,8 +483,8 @@ export class CreateProjectFromDatabaseDialog {
 				return false;
 			}
 
-			if (this.workspaceInputBox!.enabled && !await this.validateNewWorkspace()) {
-				return false;
+			if (this.workspaceInputBox!.enabled) {
+				await this.validateNewWorkspace();
 			}
 
 			return true;
@@ -500,24 +500,21 @@ export class CreateProjectFromDatabaseDialog {
 		// workspace file should end in .code-workspace
 		const workspaceValid = this.workspaceInputBox!.value!.endsWith(constants.WorkspaceFileExtension);
 		if (!workspaceValid) {
-			this.showErrorMessage(constants.WorkspaceFileInvalidError(this.workspaceInputBox!.value!));
-			return false;
+			throw new Error(constants.WorkspaceFileInvalidError(this.workspaceInputBox!.value!));
 		}
 
 		// if the workspace file is not going to be in the same folder as the newly created project, then check that it's a valid folder
 		if (!sameFolderAsNewProject) {
 			const workspaceParentDirectoryExists = await exists(path.dirname(this.workspaceInputBox!.value!));
 			if (!workspaceParentDirectoryExists) {
-				this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(path.dirname(this.workspaceInputBox!.value!)));
-				return false;
+				throw new Error(constants.WorkspaceParentDirectoryNotExistError(path.dirname(this.workspaceInputBox!.value!)));
 			}
 		}
 
 		// workspace file should not be an existing workspace file
 		const workspaceFileExists = await exists(this.workspaceInputBox!.value!);
 		if (workspaceFileExists) {
-			this.showErrorMessage(constants.WorkspaceFileAlreadyExistsError(this.workspaceInputBox!.value!));
-			return false;
+			throw new Error(constants.WorkspaceFileAlreadyExistsError(this.workspaceInputBox!.value!));
 		}
 
 		return true;
@@ -528,9 +525,5 @@ export class CreateProjectFromDatabaseDialog {
 			text: message,
 			level: azdata.window.MessageLevel.Error
 		};
-	}
-
-	public getErrorMessage(): azdata.window.DialogMessage {
-		return this.dialog.message;
 	}
 }
