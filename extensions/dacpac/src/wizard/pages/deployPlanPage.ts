@@ -87,7 +87,6 @@ export class DeployPlanPage extends DacFxConfigPage {
 
 		//Reporting DeployDacpac selection event to the telemetry report
 		TelemetryReporter.sendActionEvent(TelemetryViews.DeployPlanPage, 'DataTierApplicationWizardDeployDacpacSelected');
-
 		return true;
 	}
 

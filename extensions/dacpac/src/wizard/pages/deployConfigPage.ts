@@ -49,7 +49,6 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		this.form = this.formBuilder.component();
 		await this.view.initializeModel(this.form);
-
 		return true;
 	}
 
