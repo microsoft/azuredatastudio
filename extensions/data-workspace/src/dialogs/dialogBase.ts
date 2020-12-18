@@ -161,30 +161,25 @@ export abstract class DialogBase {
 		}
 	}
 
-	public async validateNewWorkspace(sameFolderAsNewProject: boolean): Promise<boolean> {
+	public async validateNewWorkspace(sameFolderAsNewProject: boolean): Promise<void> {
 		// workspace file should end in .code-workspace
 		const workspaceValid = this.workspaceInputBox!.value!.endsWith(constants.WorkspaceFileExtension);
 		if (!workspaceValid) {
-			this.showErrorMessage(constants.WorkspaceFileInvalidError(this.workspaceInputBox!.value!));
-			return false;
+			throw new Error(constants.WorkspaceFileInvalidError(this.workspaceInputBox!.value!));
 		}
 
 		// if the workspace file is not going to be in the same folder as the newly created project, then check that it's a valid folder
 		if (!sameFolderAsNewProject) {
 			const workspaceParentDirectoryExists = await directoryExist(path.dirname(this.workspaceInputBox!.value!));
 			if (!workspaceParentDirectoryExists) {
-				this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(path.dirname(this.workspaceInputBox!.value!)));
-				return false;
+				throw new Error(constants.WorkspaceParentDirectoryNotExistError(path.dirname(this.workspaceInputBox!.value!)));
 			}
 		}
 
 		// workspace file should not be an existing workspace file
 		const workspaceFileExists = await fileExist(this.workspaceInputBox!.value!);
 		if (workspaceFileExists) {
-			this.showErrorMessage(constants.WorkspaceFileAlreadyExistsError(this.workspaceInputBox!.value!));
-			return false;
+			throw new Error(constants.WorkspaceFileAlreadyExistsError(this.workspaceInputBox!.value!));
 		}
-
-		return true;
 	}
 }

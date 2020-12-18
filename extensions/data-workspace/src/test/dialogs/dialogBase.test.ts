@@ -35,15 +35,13 @@ suite('DialogBase - workspace validation', function (): void {
 
 	test('Should validate new workspace location missing file extension', async function (): Promise<void> {
 		dialog.workspaceInputBox!.value = 'test';
-		should.equal(await dialog.validateNewWorkspace(false), false, 'Validation should fail because workspace does not end in .code-workspace');
-		should.equal(dialog.getErrorMessage().text, constants.WorkspaceFileInvalidError(dialog.workspaceInputBox!.value));
+		await should(dialog.validateNewWorkspace(false)).be.rejectedWith(constants.WorkspaceFileInvalidError(dialog.workspaceInputBox!.value));
 	});
 
 	test('Should validate new workspace location with invalid location', async function (): Promise<void> {
 		// use invalid folder
 		dialog.workspaceInputBox!.value = 'invalidLocation/test.code-workspace';
-		should.equal(await dialog.validateNewWorkspace(false), false, 'Validation should fail because the folder is invalid');
-		should.equal(dialog.getErrorMessage().text, constants.WorkspaceParentDirectoryNotExistError(path.dirname(dialog.workspaceInputBox!.value)));
+		await should(dialog.validateNewWorkspace(false)).be.rejectedWith(constants.WorkspaceParentDirectoryNotExistError(path.dirname(dialog.workspaceInputBox!.value)));
 	});
 
 	test('Should validate new workspace location that already exists', async function (): Promise<void> {
@@ -52,18 +50,17 @@ suite('DialogBase - workspace validation', function (): void {
 		fileExistStub.resolves(true);
 		const existingWorkspaceFilePath = path.join(os.tmpdir(), `${dialog.model.name}.code-workspace`);
 		dialog.workspaceInputBox!.value = existingWorkspaceFilePath;
-		should.equal(await dialog.validateNewWorkspace(false), false, 'Validation should fail because the selected workspace file already exists');
-		should.equal(dialog.getErrorMessage().text, constants.WorkspaceFileAlreadyExistsError(existingWorkspaceFilePath));
+		await should(dialog.validateNewWorkspace(false)).be.rejectedWith(constants.WorkspaceFileAlreadyExistsError(existingWorkspaceFilePath));
 	});
 
 	test('Should validate new workspace location that is valid', async function (): Promise<void> {
 		// same folder as the project should be valid even if the project folder isn't created yet
 		dialog.workspaceInputBox!.value = path.join(dialog.model.location, dialog.model.name, 'test.code-workspace');
-		should.equal(await dialog.validateNewWorkspace(true), true, `Validation should pass if the file location is the same folder as the project. Error was: ${dialog.getErrorMessage()?.text}`);
+		await should(dialog.validateNewWorkspace(true)).not.be.rejected();
 
 		// a workspace not in the same folder as the project should also be valid
 		dialog.workspaceInputBox!.value = path.join(os.tmpdir(), `TestWorkspace_${new Date().getTime()}.code-workspace`);
-		should.equal(await dialog.validateNewWorkspace(false), true, `Validation should pass because the parent directory exists, workspace filepath is unique, and the file extension is correct. Error was: ${dialog.getErrorMessage()?.text}`);
+		await should(dialog.validateNewWorkspace(false)).not.be.rejected();
 	});
 });
 
