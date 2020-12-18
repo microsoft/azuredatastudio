@@ -12,6 +12,12 @@ import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { EngineSettingsModel, PostgresModel } from '../../../models/postgresModel';
 
+export type ParamDetailsModel = {
+	parameterName: string | undefined,
+	description: string | undefined,
+	row: any[]
+};
+
 export class PostgresParametersPage extends DashboardPage {
 	private searchBox?: azdata.InputBoxComponent;
 	private parametersTable!: azdata.DeclarativeTableComponent;
@@ -25,6 +31,7 @@ export class PostgresParametersPage extends DashboardPage {
 
 	private engineSettings = `'`;
 	private engineSettingUpdates?: Map<string, string>;
+	private _paramDetails: ParamDetailsModel[] = [];
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
@@ -86,7 +93,7 @@ export class PostgresParametersPage extends DashboardPage {
 			columns: [
 				{
 					displayName: 'Parameter Name',
-					valueType: azdata.DeclarativeDataType.component,
+					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: '20%',
 					headerCssStyles: cssStyles.tableHeader,
@@ -108,7 +115,7 @@ export class PostgresParametersPage extends DashboardPage {
 				},
 				{
 					displayName: 'Description',
-					valueType: azdata.DeclarativeDataType.component,
+					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: '50%',
 					headerCssStyles: cssStyles.tableHeader,
@@ -309,27 +316,51 @@ export class PostgresParametersPage extends DashboardPage {
 
 		this.disposables.push(
 			this.searchBox.onTextChanged(() => {
-				this.filterParameters();
+				if (!this.searchBox!.value) {
+					this.parametersTable.data = this.createParametersTable();
+				} else {
+					this.filterParameters(this.searchBox!.value);
+				}
 			})
 		);
 	}
 
-	private filterParameters() {
-		//TODO
+	private filterParameters(search: string) {
+		let parameters: any[] = [];
+
+		this._paramDetails.forEach(param => {
+			if (param.parameterName?.search(search) !== -1 || param.description?.search(search) !== -1) {
+				parameters.push(param.row);
+			}
+		});
+
+
+		this.parametersTable.data = parameters;
 	}
 
 	private createParametersTable(): any[] {
 		let parameterData: any[] = [];
 
+		/* this._postgresModel._engineSettings.forEach(parameter => {
+			parameterData.push(this.parameterComponents(parameter));
+		}); */
+
+
+		/* for (let i = 0; i < 20; i++) {
+			let paramDetail: ParamDetailsModel = {
+				parameterName: this._postgresModel._engineSettings[i].parameterName,
+				description:this._postgresModel._engineSettings[i].description,
+				row: this.parameterComponents(this._postgresModel._engineSettings[i])
+			};
+
+			parameterData.push(paramDetail.row);
+			this._paramDetails.push(paramDetail);
+		} */
+
 		// Crashes once more than 20
 		for (let i = 0; i < 20; i++) {
 			parameterData.push(this.parameterComponents(this._postgresModel._engineSettings[i]));
 		}
-
-		/*
-		this._postgresModel._engineSettings.forEach(parameter => {
-			parameterData.push(this.parameterComponents(parameter));
-		}); */
 
 		return parameterData;
 	}
@@ -338,11 +369,7 @@ export class PostgresParametersPage extends DashboardPage {
 		let data = [];
 
 		// Set parameter name
-		const parameterName = this.modelView.modelBuilder.text().withProps({
-			value: parameter.parameterName,
-			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
-		}).component();
-		data.push(parameterName);
+		data.push(parameter.parameterName);
 
 		// Container to hold input component and information bubble
 		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
@@ -439,11 +466,7 @@ export class PostgresParametersPage extends DashboardPage {
 		data.push(valueContainer);
 
 		// Look into hoovering
-		const parameterDescription = this.modelView.modelBuilder.text().withProps({
-			value: parameter.description,
-			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
-		}).component();
-		data.push(parameterDescription);
+		data.push(parameter.description);
 
 		// Can reset individual component
 		const resetParameter = this.modelView.modelBuilder.button().withProps({
@@ -475,7 +498,9 @@ export class PostgresParametersPage extends DashboardPage {
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
 				}
-			}));
+			})
+		);
+
 		return data;
 	}
 
