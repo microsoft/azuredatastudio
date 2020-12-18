@@ -383,8 +383,10 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		return warningButton;
 	}
 
-	public async openWarningCalloutDialog(dialogHeading: string, dialogName?: string, calloutMessageText?: string, calloutMessageLinkText?: string, calloutMessageLinkUrl?: string) {
-		let dialog = azdata.window.createModelViewDialog(dialogHeading, dialogName, 'narrow', 'calloutCompact', 'left', false, true, { xOffset: 304, yOffset: 30 });
+	public openWarningCalloutDialog(dialogHeading: string, dialogName?: string, calloutMessageText?: string, calloutMessageLinkText?: string, calloutMessageLinkUrl?: string): void {
+		// Included offset values for Mac client.
+		let macClientXYOffset: azdata.window.IDialogXYOffset = { xOffset: 304, yOffset: 30 };
+		let dialog = azdata.window.createModelViewDialog(dialogHeading, dialogName, 'narrow', 'calloutCompact', 'left', false, true, macClientXYOffset);
 		let warningTab: azdata.window.DialogTab = azdata.window.createTab('tab1');
 		warningTab.registerContent(async view => {
 			let warningContentContainer = view.modelBuilder.divContainer().withProperties({
@@ -411,7 +413,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				}).component();
 				warningContentContainer.addItem(messageLinkComponent);
 			}
-			await view.initializeModel(warningContentContainer);
+			view.initializeModel(warningContentContainer);
 		});
 		// set tab as content
 		dialog.content = [warningTab];
