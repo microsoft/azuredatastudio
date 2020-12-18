@@ -125,7 +125,7 @@ export class MarkdownTextTransformer {
 
 			if (type === MarkdownButtonType.IMAGE_PREVIEW || type === MarkdownButtonType.LINK_PREVIEW) {
 				let calloutStyle = MarkdownButtonType[type].toString() as CalloutStyle;
-				beginInsertedText = await this.createCallout(calloutStyle, triggerElement);
+				beginInsertedText = await this.createCallout(type, calloutStyle, triggerElement);
 			} else {
 				beginInsertedText = getStartTextToInsert(type);
 				endInsertedText = getEndTextToInsert(type);
@@ -165,24 +165,21 @@ export class MarkdownTextTransformer {
 	 * Instantiate modal for use as callout when inserting Link or Image into markdown.
 	 * @param calloutStyle Style of callout passed in to determine which callout is rendered
 	 */
-	private async createCallout(calloutStyle: CalloutStyle, triggerElement: HTMLElement) {
+	private async createCallout(type: MarkdownButtonType, calloutStyle: CalloutStyle, triggerElement: HTMLElement): Promise<string> {
 		const posX = triggerElement.getBoundingClientRect().left;
 		const posY = triggerElement.getBoundingClientRect().top;
 		let title = calloutStyle.toString().toLowerCase();
 
-		if (title.includes('image')) {
-			title = this.insertImageHeading;
-		} else {
-			title = this.insertLinkHeading;
-		}
+		title = type === MarkdownButtonType.IMAGE_PREVIEW ? this.insertImageHeading : this.insertLinkHeading;
 
 		if (!this._callout) {
+			// Offset for Mac clients
 			const dialogXYOffset = { xOffset: 22, yOffset: 24 };
 			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutStyle, title, posX, posY, dialogXYOffset);
 			this._callout.render();
 		}
 		let calloutOptions = await this._callout.open();
-		calloutOptions.insertTtitle = title;
+		calloutOptions.insertTitle = title;
 		calloutOptions.calloutStyle = calloutStyle;
 
 		return calloutOptions.insertMarkup;

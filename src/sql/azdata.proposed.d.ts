@@ -656,7 +656,7 @@ declare module 'azdata' {
 
 		export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
 
-		export type DialogPosition = 'left' | 'right' | 'above' | 'below' | undefined;
+		export type DialogPosition = 'left' | 'below' | undefined;
 
 		export interface IDialogXYOffset {
 			xOffset: number;

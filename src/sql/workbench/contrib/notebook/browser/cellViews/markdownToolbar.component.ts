@@ -93,7 +93,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			linkButton.style(buttonStyle);
 
 			this._register(DOM.addDisposableListener(linkButtonContainer, DOM.EventType.CLICK, e => {
-				this.onCustomButtonClick(e, MarkdownButtonType.LINK_PREVIEW);
+				this.onInsertButtonClick(e, MarkdownButtonType.LINK_PREVIEW);
 			}));
 
 			imageButtonContainer = DOM.$('li.action-item');
@@ -104,7 +104,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			imageButton.style(buttonStyle);
 
 			this._register(DOM.addDisposableListener(imageButtonContainer, DOM.EventType.CLICK, e => {
-				this.onCustomButtonClick(e, MarkdownButtonType.IMAGE_PREVIEW);
+				this.onInsertButtonClick(e, MarkdownButtonType.IMAGE_PREVIEW);
 			}));
 		} else {
 			linkButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkText', '', 'insert-link masked-icon', this.buttonLink, this.cellModel, MarkdownButtonType.LINK);
@@ -205,7 +205,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 	}
 
-	public onCustomButtonClick(event, type: MarkdownButtonType) {
+	public onInsertButtonClick(event: any, type: MarkdownButtonType): void {
 		let go = new MarkdownTextTransformer(this._notebookService, this.cellModel, this._instantiationService);
 		let trigger: HTMLElement = event.target;
 		go.transformText(type, trigger);

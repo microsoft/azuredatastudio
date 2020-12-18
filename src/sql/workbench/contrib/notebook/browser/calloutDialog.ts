@@ -27,13 +27,13 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
 
-export type CalloutStyle = 'LINK' | 'IMAGE' | 'TABLE';
+export type CalloutStyle = 'LINK' | 'IMAGE';
 
 const LINK = 'LINK_PREVIEW';
 const IMAGE = 'IMAGE_PREVIEW';
 
 export interface ICalloutDialogOptions {
-	insertTtitle?: string,
+	insertTitle?: string,
 	calloutStyle?: CalloutStyle,
 	insertMarkup?: string,
 	imagePath?: string,
@@ -96,7 +96,7 @@ export class CalloutDialog extends Modal {
 	) {
 		super(
 			title,
-			TelemetryKeys.SelectImage,
+			TelemetryKeys.NotebookCallout,
 			telemetryService,
 			layoutService,
 			clipboardService,
