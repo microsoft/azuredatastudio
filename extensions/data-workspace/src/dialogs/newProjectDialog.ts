@@ -43,9 +43,9 @@ export class NewProjectDialog extends DialogBase {
 				return false;
 			}
 
-			const sameFolderAsNewProject = path.join(this.model.location, this.model.name) === path.dirname(this.workspaceInputBox!.value!);
-			if (this.workspaceInputBox!.enabled && !await this.validateNewWorkspace(sameFolderAsNewProject)) {
-				return false;
+			if (this.workspaceInputBox!.enabled) {
+				const sameFolderAsNewProject = path.join(this.model.location, this.model.name) === path.dirname(this.workspaceInputBox!.value!);
+				await this.validateNewWorkspace(sameFolderAsNewProject);
 			}
 
 			return true;
