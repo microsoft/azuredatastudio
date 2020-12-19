@@ -172,7 +172,7 @@ class DeleteOperation implements IFileOperation {
 			}
 		}
 
-		const useTrash = this._fileService.hasCapability(this.oldUri, FileSystemProviderCapabilities.Trash) && this._configurationService.getValue<boolean>('files.enableTrash');
+		const useTrash = this._fileService.hasCapability(this.oldUri, FileSystemProviderCapabilities.Trash) && this._configurationService.getValue<boolean>('files.enableTrash') && !this.options.doNotUseTrash;
 		await this._workingCopyFileService.delete([this.oldUri], { useTrash, recursive: this.options.recursive, ...this.undoRedoInfo });
 
 		if (typeof this.options.maxSize === 'number' && fileContent && (fileContent?.size > this.options.maxSize)) {
