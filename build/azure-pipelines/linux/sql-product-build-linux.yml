@@ -149,11 +149,14 @@ steps:
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
 
-  - script: |
+  - bash: |
       set -e
       mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
       cd /tmp
-      for f in adsuser*/; { tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$f.tar.gz $f }
+      for f in adsuser*/
+      do
+      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$f.tar.gz $f
+      done
 
     displayName: Archive Logs
     continueOnError: true
