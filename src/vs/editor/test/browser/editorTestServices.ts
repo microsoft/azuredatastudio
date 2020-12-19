@@ -13,6 +13,10 @@ import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class TestCodeEditorService extends AbstractCodeEditorService {
+	// {{SQL CARBON EDIT}} fix build error
+	resolveDecorationCSSRules(decorationTypeKey: string): CSSRuleList {
+		throw new Error('Method not implemented.');
+	}
 	public lastInput?: IResourceEditorInput;
 	public getActiveCodeEditor(): ICodeEditor | null { return null; }
 	public openCodeEditor(input: IResourceEditorInput, source: ICodeEditor | null, sideBySide?: boolean): Promise<ICodeEditor | null> {
