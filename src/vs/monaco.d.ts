@@ -6273,6 +6273,7 @@ declare namespace monaco.languages {
 		recursive?: boolean;
 		copy?: boolean;
 		folder?: boolean;
+		maxSize?: number;
 	}
 
 	export interface WorkspaceFileEdit {
