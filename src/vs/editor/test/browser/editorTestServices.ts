@@ -13,10 +13,6 @@ import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class TestCodeEditorService extends AbstractCodeEditorService {
-	// {{SQL CARBON EDIT}} fix build error
-	resolveDecorationCSSRules(decorationTypeKey: string): CSSRuleList {
-		throw new Error('Method not implemented.');
-	}
 	public lastInput?: IResourceEditorInput;
 	public getActiveCodeEditor(): ICodeEditor | null { return null; }
 	public openCodeEditor(input: IResourceEditorInput, source: ICodeEditor | null, sideBySide?: boolean): Promise<ICodeEditor | null> {
@@ -26,6 +22,7 @@ export class TestCodeEditorService extends AbstractCodeEditorService {
 	public registerDecorationType(key: string, options: IDecorationRenderOptions, parentTypeKey?: string): void { }
 	public removeDecorationType(key: string): void { }
 	public resolveDecorationOptions(decorationTypeKey: string, writable: boolean): IModelDecorationOptions { return {}; }
+	public resolveDecorationCSSRules(decorationTypeKey: string): CSSRuleList | null { return null; }
 }
 
 export class TestCommandService implements ICommandService {
