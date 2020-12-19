@@ -153,9 +153,10 @@ steps:
       set -e
       mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
       cd /tmp
-      for f in adsuser*/
+      for folder in adsuser*/
       do
-      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$f.tar.gz $f
+      folder=${folder%/}
+      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder
       done
 
     displayName: Archive Logs
