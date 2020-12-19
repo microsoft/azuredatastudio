@@ -105,13 +105,7 @@ export class PostgresParametersPage extends DashboardPage {
 					isReadOnly: false,
 					width: '20%',
 					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: {
-						...cssStyles.tableRow,
-						'overflow': 'hidden',
-						'text-overflow': 'ellipsis',
-						'white-space': 'nowrap',
-						'max-width': '0'
-					}
+					rowCssStyles: cssStyles.tableRow
 				},
 				{
 					displayName: 'Description',
@@ -390,7 +384,7 @@ export class PostgresParametersPage extends DashboardPage {
 				value: parameter.value,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
-			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
+			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
 
 			this.disposables.push(
 				valueBox.onValueChanged(() => {
@@ -406,7 +400,7 @@ export class PostgresParametersPage extends DashboardPage {
 				label: loc.on,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
-			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
+			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
 			if (parameter.value === 'on') {
 				valueBox.checked = true;
 			} else {
@@ -429,9 +423,9 @@ export class PostgresParametersPage extends DashboardPage {
 			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
 				readOnly: false,
 				value: parameter.value,
-				CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '200px' }
+				CSSStyles: { 'min-width': '50px', 'max-width': '200px' }
 			}).component();
-			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
+			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
 
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
@@ -449,9 +443,9 @@ export class PostgresParametersPage extends DashboardPage {
 				validationErrorMessage: loc.outOfRange(parameter.min!, parameter.max!),
 				inputType: 'number',
 				value: parameter.value,
-				CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '200px' }
+				CSSStyles: { 'min-width': '50px', 'max-width': '200px' }
 			}).component();
-			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
+			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
 
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
@@ -462,7 +456,7 @@ export class PostgresParametersPage extends DashboardPage {
 			information.updateProperty('title', loc.allowedValues(loc.rangeSetting(parameter.min!, parameter.max!)));
 		}
 
-		valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
+		valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		data.push(valueContainer);
 
 		// Look into hoovering
