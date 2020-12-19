@@ -47,6 +47,11 @@
 	 * @param {string | undefined} appRoot
 	 */
 	function enableASARSupport(appRoot) {
+		if (!path || !Module) {
+			console.warn('enableASARSupport() is only available in node.js environments'); // TODO@sandbox ASAR is currently non-sandboxed only
+			return;
+		}
+
 		let NODE_MODULES_PATH = appRoot ? path.join(appRoot, 'node_modules') : undefined;
 		if (!NODE_MODULES_PATH) {
 			NODE_MODULES_PATH = path.join(__dirname, '../node_modules');
@@ -113,6 +118,10 @@
 	 * @returns {{locale?: string, availableLanguages: {[lang: string]: string;}, pseudo?: boolean } | undefined}
 	 */
 	function setupNLS() {
+		if (!path || !fs) {
+			console.warn('setupNLS() is only available in node.js environments');
+			return { availableLanguages: {} }; // TODO@sandbox NLS is currently non-sandboxed only
+		}
 
 		// Get the nls configuration into the process.env as early as possible.
 		let nlsConfig = { availableLanguages: {} };
@@ -167,13 +176,16 @@
 	 */
 	function configurePortable(product) {
 		if (!path || !fs) {
-			console.warn('configurePortable() is only available in node.js environments');
+			console.warn('configurePortable() is only available in node.js environments'); // TODO@sandbox Portable is currently non-sandboxed only
 			return;
 		}
 
 		const appRoot = path.dirname(__dirname);
 
-		function getApplicationPath() {
+		/**
+		 * @param {import('path')} path
+		 */
+		function getApplicationPath(path) {
 			if (process.env['VSCODE_DEV']) {
 				return appRoot;
 			}
@@ -185,21 +197,24 @@
 			return path.dirname(path.dirname(appRoot));
 		}
 
-		function getPortableDataPath() {
+		/**
+		 * @param {import('path')} path
+		 */
+		function getPortableDataPath(path) {
 			if (process.env['VSCODE_PORTABLE']) {
 				return process.env['VSCODE_PORTABLE'];
 			}
 
 			if (process.platform === 'win32' || process.platform === 'linux') {
-				return path.join(getApplicationPath(), 'data');
+				return path.join(getApplicationPath(path), 'data');
 			}
 
 			// @ts-ignore
 			const portableDataName = product.portable || `${product.applicationName}-portable-data`;
-			return path.join(path.dirname(getApplicationPath()), portableDataName);
+			return path.join(path.dirname(getApplicationPath(path)), portableDataName);
 		}
 
-		const portableDataPath = getPortableDataPath();
+		const portableDataPath = getPortableDataPath(path);
 		const isPortable = !('target' in product) && fs.existsSync(portableDataPath);
 		const portableTempPath = path.join(portableDataPath, 'tmp');
 		const isTempPortable = isPortable && fs.existsSync(portableTempPath);
