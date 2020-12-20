@@ -388,7 +388,7 @@ export class DataTierApplicationWizard {
 		return result;
 	}
 
-	private async generateDeployScript(): Promise<mssql.DacFxResult> {
+	public async generateDeployScript(): Promise<mssql.DacFxResult> {
 		const genScriptStartTime = new Date().getTime();
 		const service = await this.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
