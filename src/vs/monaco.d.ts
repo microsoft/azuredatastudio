@@ -6273,7 +6273,7 @@ declare namespace monaco.languages {
 		recursive?: boolean;
 		copy?: boolean;
 		folder?: boolean;
-		doNotUseTrash?: boolean;
+		skipTrashBin?: boolean;
 		maxSize?: number;
 	}
 
