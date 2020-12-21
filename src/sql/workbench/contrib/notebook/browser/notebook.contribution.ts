@@ -231,6 +231,11 @@ configurationRegistry.registerConfiguration({
 			'default': false,
 			'description': localize('notebook.saveConnectionName', "(Preview) Save connection name in notebook metadata.")
 		},
+		'notebook.markdownPreviewLineHeight': {
+			'type': 'number',
+			'default': 1.5,
+			'description': localize('notebook.markdownPreviewLineHeight', "Set notebook markdown preview line height.")
+		}
 	}
 });
 
