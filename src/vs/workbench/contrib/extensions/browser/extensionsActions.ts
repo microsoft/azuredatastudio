@@ -225,6 +225,7 @@ export class ActionWithDropDownAction extends ExtensionAction {
 		super(id, label);
 		this.update();
 		this._register(Event.any(...actions.map(a => a.onDidChange))(() => this.update(true)));
+		actions.forEach(a => this._register(a));
 	}
 
 	update(donotUpdateActions?: boolean): void {
@@ -1876,18 +1877,17 @@ export class ClearExtensionsInputAction extends ClearExtensionsSearchResultsActi
 		id: string,
 		label: string,
 		onSearchChange: Event<string>,
-		value: string,
+		getValue: () => string,
 		@IViewsService viewsService: IViewsService
 	) {
 		super(id, label, viewsService);
-		this.onSearchChange(value);
+		this.onSearchChange(getValue());
 		this._register(onSearchChange(this.onSearchChange, this));
 	}
 
 	private onSearchChange(value: string): void {
 		this.enabled = !!value;
 	}
-
 }
 
 export class RefreshExtensionsAction extends Action {
