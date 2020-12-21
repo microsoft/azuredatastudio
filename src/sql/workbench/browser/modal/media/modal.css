@@ -265,7 +265,7 @@
 	height: 24px;
 	padding-left: 20px;
 	padding-right: 20px;
-	width: 80px;
+	min-width: 80px;
 }
 
 .vs .monaco-text-button:focus {
