@@ -23,7 +23,8 @@ export type EngineSettingsModel = {
 	min: string | undefined,
 	max: string | undefined,
 	options: string | undefined,
-	type: string | undefined
+	type: string | undefined,
+	components?: any[]
 };
 
 export class PostgresModel extends ResourceModel {
@@ -148,7 +149,23 @@ export class PostgresModel extends ResourceModel {
 		if (!engineSettings) {
 			throw new Error('Could not fetch engine settings');
 		}
-		engineSettings.rows.forEach(row => {
+
+		for (let i = 0; i < 20; i++) {
+			let rowValues = engineSettings.rows[i].map(c => c.displayValue);
+			let result: EngineSettingsModel = {
+				parameterName: rowValues.shift(),
+				value: rowValues.shift(),
+				description: rowValues.shift(),
+				min: rowValues.shift(),
+				max: rowValues.shift(),
+				options: rowValues.shift(),
+				type: rowValues.shift()
+			};
+
+			this._engineSettings.push(result);
+		}
+
+		/* engineSettings.rows.forEach(row => {
 			let rowValues = row.map(c => c.displayValue);
 			let result: EngineSettingsModel = {
 				parameterName: rowValues.shift(),
@@ -161,7 +178,7 @@ export class PostgresModel extends ResourceModel {
 			};
 
 			this._engineSettings.push(result);
-		});
+		}); */
 
 		this.engineSettingsLastUpdated = new Date();
 	}

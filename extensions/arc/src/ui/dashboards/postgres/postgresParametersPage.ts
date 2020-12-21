@@ -12,12 +12,6 @@ import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { EngineSettingsModel, PostgresModel } from '../../../models/postgresModel';
 
-export type ParamDetailsModel = {
-	parameterName: string | undefined,
-	description: string | undefined,
-	row: any[]
-};
-
 export class PostgresParametersPage extends DashboardPage {
 	private searchBox?: azdata.InputBoxComponent;
 	private parametersTable!: azdata.DeclarativeTableComponent;
@@ -30,8 +24,7 @@ export class PostgresParametersPage extends DashboardPage {
 	private connectToServerButton?: azdata.ButtonComponent;
 
 	private engineSettings = `'`;
-	private engineSettingUpdates?: Map<string, string>;
-	private _paramDetails: ParamDetailsModel[] = [];
+	private engineSettingUpdates: Map<string, string> = new Map();
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
@@ -41,8 +34,6 @@ export class PostgresParametersPage extends DashboardPage {
 
 		this.initializeConnectButton();
 		this.initializeSearchBox();
-
-		this.engineSettingUpdates = new Map();
 
 		this.disposables.push(
 			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())),
@@ -205,6 +196,7 @@ export class PostgresParametersPage extends DashboardPage {
 				try {
 					// TODO
 					// this.parametersTable.data = [];
+
 					this.engineSettingUpdates!.clear();
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
@@ -232,11 +224,11 @@ export class PostgresParametersPage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
-							//all
-							// azdata arc postgres server edit -n <server group name> -e '' -re
 							try {
 								await this._azdataApi.azdata.arc.postgres.server.edit(
-									this._postgresModel.info.name, { engineSettings: `'' -re` });
+									this._postgresModel.info.name,
+									{ replaceEngineSettings: true },
+									this._postgresModel.engineVersion);
 							} catch (err) {
 								// If an error occurs while resetting the instance then re-enable the reset button since
 								// the edit wasn't successfully applied
@@ -295,8 +287,12 @@ export class PostgresParametersPage extends DashboardPage {
 					throw err;
 				});
 
+				this.searchBox!.enabled = true;
 				this.parameterContainer!.clearItems();
-				this.parametersTable.data = this.createParametersTable();
+				this.createParameterComponents();
+				this._postgresModel._engineSettings.forEach(param => {
+					this.parametersTable.data?.push(param.components!);
+				});
 				this.parameterContainer!.addItem(this.parametersTable);
 
 			}));
@@ -305,39 +301,48 @@ export class PostgresParametersPage extends DashboardPage {
 	private initializeSearchBox() {
 		this.searchBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
+			enabled: false,
 			placeHolder: loc.searchToFilter
 		}).component();
 
 		this.disposables.push(
 			this.searchBox.onTextChanged(() => {
+				this.parameterContainer!.clearItems();
+				this.parametersTable.data = [];
 				if (!this.searchBox!.value) {
-					this.parametersTable.data = this.createParametersTable();
+					this._postgresModel._engineSettings.forEach(param => {
+						this.parametersTable.data?.push(param.components!);
+					});
 				} else {
 					this.filterParameters(this.searchBox!.value);
 				}
+				this.parameterContainer!.addItem(this.parametersTable);
 			})
 		);
 	}
 
 	private filterParameters(search: string) {
-		let parameters: any[] = [];
 
-		this._paramDetails.forEach(param => {
+		/* for (let i = 0; i < 20; i++) {
+			if (this._postgresModel._engineSettings[i].parameterName?.search(search) !== -1
+				|| this._postgresModel._engineSettings[i].description?.search(search) !== -1) {
+				this.parametersTable.data?.push(this._postgresModel._engineSettings[i].row!);
+			}
+		} */
+
+		this._postgresModel._engineSettings.forEach(param => {
 			if (param.parameterName?.search(search) !== -1 || param.description?.search(search) !== -1) {
-				parameters.push(param.row);
+				this.parametersTable.data?.push(param.components!);
 			}
 		});
 
-
-		this.parametersTable.data = parameters;
 	}
 
-	private createParametersTable(): any[] {
-		let parameterData: any[] = [];
+	private createParameterComponents() {
 
-		/* this._postgresModel._engineSettings.forEach(parameter => {
-			parameterData.push(this.parameterComponents(parameter));
-		}); */
+		this._postgresModel._engineSettings.forEach(parameter => {
+			this.parameterComponents(parameter);
+		});
 
 
 		/* for (let i = 0; i < 20; i++) {
@@ -352,14 +357,12 @@ export class PostgresParametersPage extends DashboardPage {
 		} */
 
 		// Crashes once more than 20
-		for (let i = 0; i < 20; i++) {
-			parameterData.push(this.parameterComponents(this._postgresModel._engineSettings[i]));
-		}
-
-		return parameterData;
+		/* for (let i = 0; i < 20; i++) {
+			this.parameterComponents(this._postgresModel._engineSettings[i])
+		} */
 	}
 
-	private parameterComponents(parameter: EngineSettingsModel): any[] {
+	private parameterComponents(parameter: EngineSettingsModel) {
 		let data = [];
 
 		// Set parameter name
@@ -495,7 +498,7 @@ export class PostgresParametersPage extends DashboardPage {
 			})
 		);
 
-		return data;
+		parameter.components = data;
 	}
 
 	private selectComponent() {
