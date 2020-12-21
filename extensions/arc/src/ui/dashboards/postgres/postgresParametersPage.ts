@@ -227,7 +227,7 @@ export class PostgresParametersPage extends DashboardPage {
 							try {
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
-									{ replaceEngineSettings: true },
+									{ engineSettings: '', replaceEngineSettings: true },
 									this._postgresModel.engineVersion);
 							} catch (err) {
 								// If an error occurs while resetting the instance then re-enable the reset button since
