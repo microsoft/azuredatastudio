@@ -23,7 +23,7 @@ export class PostgresParametersPage extends DashboardPage {
 	private resetButton?: azdata.ButtonComponent;
 	private connectToServerButton?: azdata.ButtonComponent;
 
-	private engineSettings = `'`;
+	private engineSettings: string[] = [];
 	private engineSettingUpdates: Map<string, string> = new Map();
 
 	private readonly _azdataApi: azdataExt.IExtension;
@@ -146,6 +146,7 @@ export class PostgresParametersPage extends DashboardPage {
 
 		this.disposables.push(
 			this.saveButton.onDidClick(async () => {
+				this.saveButton!.enabled = false;
 				try {
 					await vscode.window.withProgress(
 						{
@@ -157,11 +158,13 @@ export class PostgresParametersPage extends DashboardPage {
 							//Edit multiple
 							// azdata arc postgres server edit -n <server group name> -e '<parameter name>=<parameter value>, <parameter name>=<parameter value>,...'
 							try {
-								this.engineSettingUpdates!.forEach((value: string) => {
-									this.engineSettings += value + ', ';
+								this.engineSettingUpdates!.forEach((value, key) => {
+									this.engineSettings.push(`${key}="${value}"`);
 								});
 								await this._azdataApi.azdata.arc.postgres.server.edit(
-									this._postgresModel.info.name, { engineSettings: this.engineSettings + `'` });
+									this._postgresModel.info.name,
+									{ engineSettings: this.engineSettings.toString() },
+									this._postgresModel.engineVersion);
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied
@@ -174,14 +177,15 @@ export class PostgresParametersPage extends DashboardPage {
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 
-					this.engineSettings = `'`;
+					this.engineSettings = [];
 					this.engineSettingUpdates!.clear();
 					this.discardButton!.enabled = false;
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
 				}
-			}));
+			})
+		);
 
 		// Discard
 		this.discardButton = this.modelView.modelBuilder.button().withProps({
@@ -194,16 +198,15 @@ export class PostgresParametersPage extends DashboardPage {
 			this.discardButton.onDidClick(async () => {
 				this.discardButton!.enabled = false;
 				try {
-					// TODO
-					// this.parametersTable.data = [];
-
 					this.engineSettingUpdates!.clear();
+					this.showInitialTable();
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
 					this.saveButton!.enabled = false;
 				}
-			}));
+			})
+		);
 
 		// Reset
 		this.resetButton = this.modelView.modelBuilder.button().withProps({
@@ -216,6 +219,7 @@ export class PostgresParametersPage extends DashboardPage {
 			this.resetButton.onDidClick(async () => {
 				this.resetButton!.enabled = false;
 				this.discardButton!.enabled = false;
+				this.saveButton!.enabled = false;
 				try {
 					await vscode.window.withProgress(
 						{
@@ -227,11 +231,15 @@ export class PostgresParametersPage extends DashboardPage {
 							try {
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
-									{ engineSettings: '', replaceEngineSettings: true },
+									{ engineSettings: `''`, replaceEngineSettings: true },
 									this._postgresModel.engineVersion);
 							} catch (err) {
 								// If an error occurs while resetting the instance then re-enable the reset button since
 								// the edit wasn't successfully applied
+								if (this.engineSettingUpdates.size > 0) {
+									this.discardButton!.enabled = true;
+									this.saveButton!.enabled = true;
+								}
 								this.resetButton!.enabled = true;
 								throw err;
 							}
@@ -239,10 +247,13 @@ export class PostgresParametersPage extends DashboardPage {
 						}
 
 					);
+					this.engineSettingUpdates!.clear();
+
 				} catch (error) {
-					vscode.window.showErrorMessage(loc.refreshFailed(error));
+					vscode.window.showErrorMessage(loc.resetFailed(error));
 				}
-			}));
+			})
+		);
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
 			{ component: this.saveButton },
@@ -288,14 +299,10 @@ export class PostgresParametersPage extends DashboardPage {
 				});
 
 				this.searchBox!.enabled = true;
-				this.parameterContainer!.clearItems();
 				this.createParameterComponents();
-				this._postgresModel._engineSettings.forEach(param => {
-					this.parametersTable.data?.push(param.components!);
-				});
-				this.parameterContainer!.addItem(this.parametersTable);
-
-			}));
+				this.showInitialTable();
+			})
+		);
 	}
 
 	private initializeSearchBox() {
@@ -322,7 +329,6 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private filterParameters(search: string) {
-
 		/* for (let i = 0; i < 20; i++) {
 			if (this._postgresModel._engineSettings[i].parameterName?.search(search) !== -1
 				|| this._postgresModel._engineSettings[i].description?.search(search) !== -1) {
@@ -335,7 +341,6 @@ export class PostgresParametersPage extends DashboardPage {
 				this.parametersTable.data?.push(param.components!);
 			}
 		});
-
 	}
 
 	private createParameterComponents() {
@@ -343,7 +348,6 @@ export class PostgresParametersPage extends DashboardPage {
 		this._postgresModel._engineSettings.forEach(parameter => {
 			this.parameterComponents(parameter);
 		});
-
 
 		/* for (let i = 0; i < 20; i++) {
 			let paramDetail: ParamDetailsModel = {
@@ -381,7 +385,12 @@ export class PostgresParametersPage extends DashboardPage {
 
 		if (parameter.type === 'enum') {
 			// If type is enum, component should be drop down menu
-			let values = parameter.options?.split(',');
+			let options = parameter.options?.slice(1, -1).split(',');
+			let values: string[] = [];
+			options!.forEach(option => {
+				values.push(option.slice(option.indexOf('"') + 1, -1));
+			});
+
 			let valueBox = this.modelView.modelBuilder.dropDown().withProps({
 				values: values,
 				value: parameter.value,
@@ -397,6 +406,7 @@ export class PostgresParametersPage extends DashboardPage {
 			);
 
 			information.updateProperty('title', loc.allowedValues(parameter.options!));
+			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		} else if (parameter.type === 'bool') {
 			// If type is bool, component should be checkbox to turn on or off
 			let valueBox = this.modelView.modelBuilder.checkBox().withProps({
@@ -421,6 +431,7 @@ export class PostgresParametersPage extends DashboardPage {
 			);
 
 			information.updateProperty('title', loc.allowedValues(`${loc.on},${loc.off}`));
+			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		} else if (parameter.type === 'string') {
 			// If type is string, component should be text inputbox
 			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
@@ -432,11 +443,9 @@ export class PostgresParametersPage extends DashboardPage {
 
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
-					this.engineSettingUpdates!.set(parameter.parameterName!, valueBox.value!);
+					this.engineSettingUpdates!.set(parameter.parameterName!, `"${valueBox.value!}"`);
 				})
 			);
-
-			information.updateProperty('title', loc.allowedValues(loc.allowedValues('[A-Za-z._]+')));	//TODO
 		} else {
 			// If type is real or interger, component should be inputbox set to inputType of number. Max and min values also set.
 			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
@@ -457,9 +466,9 @@ export class PostgresParametersPage extends DashboardPage {
 			);
 
 			information.updateProperty('title', loc.allowedValues(loc.rangeSetting(parameter.min!, parameter.max!)));
+			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		}
 
-		valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		data.push(valueContainer);
 
 		// Look into hoovering
@@ -485,9 +494,10 @@ export class PostgresParametersPage extends DashboardPage {
 							cancellable: false
 						},
 						(_progress, _token) => {
-							// azdata arc postgres server edit -n postgres01 -e shared_buffers=
 							return this._azdataApi.azdata.arc.postgres.server.edit(
-								this._postgresModel.info.name, { engineSettings: parameter.parameterName + '=' });
+								this._postgresModel.info.name,
+								{ engineSettings: parameter.parameterName + '=' },
+								this._postgresModel.engineVersion);
 						}
 					);
 
@@ -512,6 +522,14 @@ export class PostgresParametersPage extends DashboardPage {
 		} else {
 			this.parameterContainer!.addItem(this.parametersTable!);
 		}
+	}
+
+	private showInitialTable() {
+		this.parameterContainer!.clearItems();
+		this._postgresModel._engineSettings.forEach(param => {
+			this.parametersTable.data?.push(param.components!);
+		});
+		this.parameterContainer!.addItem(this.parametersTable);
 	}
 
 	private handleEngineSettingsUpdated(): void {

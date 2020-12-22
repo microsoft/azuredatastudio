@@ -197,6 +197,7 @@ export const pgConnectionRequired = localize('arc.pgConnectionRequired', "A conn
 export const couldNotFindControllerRegistration = localize('arc.couldNotFindControllerRegistration', "Could not find controller registration.");
 export function outOfRange(min: string, max: string): string { return localize('arc.outOfRange', "The number must be in range {0} - {1}", min, max); }
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
+export function resetFailed(error: any): string { return localize('arc.resetFailed', "Reset failed. {0}", getErrorMessage(error)); }
 export function openDashboardFailed(error: any): string { return localize('arc.openDashboardFailed', "Error opening dashboard. {0}", getErrorMessage(error)); }
 export function instanceDeletionFailed(name: string, error: any): string { return localize('arc.instanceDeletionFailed', "Failed to delete instance {0}. {1}", name, getErrorMessage(error)); }
 export function instanceUpdateFailed(name: string, error: any): string { return localize('arc.instanceUpdateFailed', "Failed to update instance {0}. {1}", name, getErrorMessage(error)); }
