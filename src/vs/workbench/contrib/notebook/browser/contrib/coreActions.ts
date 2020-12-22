@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Codicon } from 'vs/base/common/codicons';
 import * as glob from 'vs/base/common/glob';
 import { KeyChord, KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import * as platform from 'vs/base/common/platform';
@@ -233,7 +234,7 @@ registerAction2(class extends NotebookCellAction<ICellRange> {
 					}
 				]
 			},
-			icon: { id: 'codicon/play' },
+			icon: Codicon.play
 		});
 	}
 
@@ -267,7 +268,7 @@ registerAction2(class extends NotebookCellAction<ICellRange> {
 		super({
 			id: CANCEL_CELL_COMMAND_ID,
 			title: localize('notebookActions.cancel', "Stop Cell Execution"),
-			icon: { id: 'codicon/primitive-square' },
+			icon: Codicon.primitiveSquare,
 			description: {
 				description: localize('notebookActions.execute', "Execute Cell"),
 				args: [
@@ -326,7 +327,7 @@ export class ExecuteCellAction extends MenuItemAction {
 			{
 				id: EXECUTE_CELL_COMMAND_ID,
 				title: localize('notebookActions.executeCell', "Execute Cell"),
-				icon: { id: 'codicon/play' }
+				icon: Codicon.play
 			},
 			undefined,
 			{ shouldForwardArgs: true },
@@ -344,7 +345,7 @@ export class CancelCellAction extends MenuItemAction {
 			{
 				id: CANCEL_CELL_COMMAND_ID,
 				title: localize('notebookActions.CancelCell', "Cancel Execution"),
-				icon: { id: 'codicon/primitive-square' }
+				icon: Codicon.primitiveSquare
 			},
 			undefined,
 			{ shouldForwardArgs: true },
@@ -362,7 +363,7 @@ export class DeleteCellAction extends MenuItemAction {
 			{
 				id: DELETE_CELL_COMMAND_ID,
 				title: localize('notebookActions.deleteCell', "Delete Cell"),
-				icon: { id: 'codicon/trash' }
+				icon: Codicon.trash,
 			},
 			undefined,
 			{ shouldForwardArgs: true },
@@ -508,7 +509,7 @@ MenuRegistry.appendMenuItem(MenuId.EditorTitle, {
 	command: {
 		id: EXECUTE_NOTEBOOK_COMMAND_ID,
 		title: localize('notebookActions.menu.executeNotebook', "Execute Notebook (Run all cells)"),
-		icon: { id: 'codicon/run-all' }
+		icon: Codicon.runAll,
 	},
 	order: -1,
 	group: 'navigation',
@@ -519,7 +520,7 @@ MenuRegistry.appendMenuItem(MenuId.EditorTitle, {
 	command: {
 		id: CANCEL_NOTEBOOK_COMMAND_ID,
 		title: localize('notebookActions.menu.cancelNotebook', "Stop Notebook Execution"),
-		icon: { id: 'codicon/primitive-square' }
+		icon: Codicon.primitiveSquare,
 	},
 	order: -1,
 	group: 'navigation',
@@ -836,7 +837,7 @@ registerAction2(class extends NotebookCellAction {
 					order: CellToolbarOrder.EditCell,
 					group: CELL_TITLE_CELL_GROUP_ID
 				},
-				icon: { id: 'codicon/pencil' }
+				icon: Codicon.pencil,
 			});
 	}
 
@@ -860,7 +861,7 @@ registerAction2(class extends NotebookCellAction {
 					order: CellToolbarOrder.SaveCell,
 					group: CELL_TITLE_CELL_GROUP_ID
 				},
-				icon: { id: 'codicon/check' },
+				icon: Codicon.check,
 				keybinding: {
 					when: ContextKeyExpr.and(
 						NOTEBOOK_EDITOR_FOCUSED,
@@ -902,7 +903,7 @@ registerAction2(class extends NotebookCellAction {
 					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, ContextKeyExpr.not(InputFocusedContextKey)),
 					weight: KeybindingWeight.WorkbenchContrib
 				},
-				icon: { id: 'codicon/trash' },
+				icon: Codicon.trash
 			});
 	}
 
@@ -946,7 +947,7 @@ registerAction2(class extends NotebookCellAction {
 			{
 				id: MOVE_CELL_UP_COMMAND_ID,
 				title: localize('notebookActions.moveCellUp', "Move Cell Up"),
-				icon: { id: 'codicon/arrow-up' },
+				icon: Codicon.arrowUp,
 				keybinding: {
 					primary: KeyMod.Alt | KeyCode.UpArrow,
 					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, InputFocusedContext.toNegated()),
@@ -966,7 +967,7 @@ registerAction2(class extends NotebookCellAction {
 			{
 				id: MOVE_CELL_DOWN_COMMAND_ID,
 				title: localize('notebookActions.moveCellDown', "Move Cell Down"),
-				icon: { id: 'codicon/arrow-down' },
+				icon: Codicon.arrowDown,
 				keybinding: {
 					primary: KeyMod.Alt | KeyCode.DownArrow,
 					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, InputFocusedContext.toNegated()),
@@ -1409,7 +1410,7 @@ registerAction2(class extends NotebookCellAction {
 				primary: KeyMod.Alt | KeyCode.Delete,
 				weight: KeybindingWeight.WorkbenchContrib
 			},
-			icon: { id: 'codicon/clear-all' },
+			icon: Codicon.clearAll
 		});
 	}
 
@@ -1559,7 +1560,7 @@ registerAction2(class extends NotebookAction {
 				group: 'navigation',
 				order: 0
 			},
-			icon: { id: 'codicon/clear-all' },
+			icon: Codicon.clearAll
 		});
 	}
 
@@ -1619,7 +1620,7 @@ registerAction2(class extends NotebookCellAction {
 					// 	title: localize('notebookActions.joinCellBelow', "Join with Next Cell")
 					// }
 				},
-				icon: { id: 'codicon/split-vertical' },
+				icon: Codicon.splitVertical,
 				keybinding: {
 					when: ContextKeyExpr.and(NOTEBOOK_EDITOR_FOCUSED, NOTEBOOK_EDITOR_EDITABLE, NOTEBOOK_CELL_EDITABLE, NOTEBOOK_CELL_EDITOR_FOCUSED, NOTEBOOK_EDITOR_CURSOR_BEGIN_END.toNegated()),
 					primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.US_BACKSLASH),

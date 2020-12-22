@@ -66,7 +66,6 @@ import { IAction } from 'vs/base/common/actions';
 import { IWorkpsaceExtensionsConfigService } from 'vs/workbench/services/extensionRecommendations/common/workspaceExtensionsConfig';
 import { Schemas } from 'vs/base/common/network';
 import { Codicon, registerIcon } from 'vs/base/common/codicons';
-import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 
 // Singletons
 registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService);
@@ -112,7 +111,7 @@ Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegis
 		id: VIEWLET_ID,
 		name: localize('extensions', "Extensions"),
 		ctorDescriptor: new SyncDescriptor(ExtensionsViewPaneContainer),
-		icon: ThemeIcon.fromCodicon(extensionsViewIcon),
+		icon: extensionsViewIcon,
 		order: 14, // {{SQL CARBON EDIT}}
 		rejectAddedViews: true,
 		alwaysUseContainerInfo: true
