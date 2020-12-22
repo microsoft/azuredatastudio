@@ -15,6 +15,10 @@ export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, pack
 
 export enum TelemetryViews {
 	DataTierApplicationWizard = 'DataTierApplicationWizard',
-	DeployConfigPage = 'DeployConfigPage',
+	DeployDacpac = 'DeployDacpac',
+	DeployDacpacSettings = 'DeployDacpacSettings',
 	DeployPlanPage = 'DeployPlanPage',
+	ExportBacpac = 'ExportBacpac',
+	ExtractDacpac = 'ExtractDacpac',
+	ImportBacpac = 'ImportBacpac'
 }

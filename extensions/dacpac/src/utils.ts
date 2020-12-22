@@ -23,19 +23,6 @@ export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
 }
 
 /**
- * Map an error message into a short name for the type of error.
- * @param msg The error message to map
- */
-export function getTelemetryErrorType(msg: string): string {
-	if (msg && msg.indexOf('Object reference not set to an instance of an object') !== -1) {
-		return 'ObjectReferenceNotSet';
-	}
-	else {
-		return 'Other';
-	}
-}
-
-/**
  * Converts milliseconds to HH:MM:SS:###(milliseconds) and seconds in string format
  * @param ms milliseconds to convert
  */
@@ -44,28 +31,25 @@ export function convertMilliSecondsToTimeFormat(ms: number): string {
 	let sec = ms / 1000;
 
 	// Total hours possible with the seconds
-	let hrs = Math.trunc(sec / 3600);
+	const hrs = Math.trunc(sec / 3600);
 
 	// Remaining seconds after extracting hours
 	sec = sec % 3600;
 
 	// Total Minutes possible with the remaining seconds
-	let min = Math.trunc(sec / 60);
+	const min = Math.trunc(sec / 60);
 
 	// Remaining seconds after extracting minutes
 	sec = sec % 60;
 
 	// Milliseconds left after extracting the seconds
-	let milliSec = Math.round((sec - Math.floor(sec)) * 1000);
+	const milliSec = Math.round((sec - Math.floor(sec)) * 1000);
 
 	// Truncating the seconds
 	sec = Math.trunc(sec);
 
 	// Returns the timespan in HH:MM:SS:###MSEC
-	return (hrs < 10 ? '0' + hrs : hrs) + ':'
-		+ (min < 10 ? '0' + min : min) + ':'
-		+ (sec < 10 ? '0' + sec : sec) + ':'
-		+ milliSec;
+	return (`${hrs < 10 ? '0' + hrs : hrs}:${min < 10 ? '0' + min : min}:${sec < 10 ? '0' + sec : sec}:${milliSec}`);
 }
 
 /**

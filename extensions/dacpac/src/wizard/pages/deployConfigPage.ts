@@ -6,12 +6,12 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as loc from '../../localizedConstants';
+import * as utils from '../../utils';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard, DeployOperationPath, Operation, DeployNewOperationPath, PageName } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
 import { generateDatabaseName } from '../api/utils';
 import { TelemetryReporter, TelemetryViews } from '../../telemetry';
-import * as utils from '../../utils';
 
 export class DeployConfigPage extends DacFxConfigPage {
 	private databaseDropdownComponent: azdata.FormComponent;
@@ -86,7 +86,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.model.filePath = fileUri.fsPath;
 
 			// Reporting dacpac file size on file selection
-			TelemetryReporter.createActionEvent(TelemetryViews.DeployConfigPage, 'DataTierApplicationDeployDacpacFileSize')
+			TelemetryReporter.createActionEvent(TelemetryViews.DeployDacpacSettings, 'DeployDacpacFileSize')
 				.withAdditionalProperties({
 					'fileSize': (await utils.getFileSize(fileUri.fsPath))
 				}).send();
@@ -232,7 +232,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.instance.wizard.addPage(summaryPage.wizardPage, DeployOperationPath.summary);
 
 			// By default Upgrade existing database radio button is selected, placing telemetry inside the if condition means the radio button status has changed
-			TelemetryReporter.sendActionEvent(TelemetryViews.DeployConfigPage, 'DataTierApplicationUpgradeExistingDatabaseSelected');
+			TelemetryReporter.sendActionEvent(TelemetryViews.DeployDacpacSettings, 'DataTierApplicationUpgradeExistingDatabaseSelected');
 		}
 	}
 
@@ -254,7 +254,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 		}
 
 		// New database radio button selected
-		TelemetryReporter.sendActionEvent(TelemetryViews.DeployConfigPage, 'DataTierApplicationDeployOnNewDatabaseSelected');
+		TelemetryReporter.sendActionEvent(TelemetryViews.DeployDacpacSettings, 'DataTierApplicationDeployOnNewDatabaseSelected');
 	}
 
 	/*

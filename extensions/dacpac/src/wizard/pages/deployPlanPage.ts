@@ -85,8 +85,6 @@ export class DeployPlanPage extends DacFxConfigPage {
 		await this.populateTable();
 		this.loader.loading = false;
 
-		//Reporting DeployDacpac selection event to the telemetry report
-		TelemetryReporter.sendActionEvent(TelemetryViews.DeployPlanPage, 'DataTierApplicationWizardDeployDacpacSelected');
 		return true;
 	}
 
@@ -124,7 +122,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 
 		this.dataLossCheckbox.onChanged(() => {
 			//Dataloss checkbox status
-			TelemetryReporter.createActionEvent(TelemetryViews.DeployPlanPage, 'DataTierApplicationDataLossCheckBoxOnChange')
+			TelemetryReporter.createActionEvent(TelemetryViews.DeployPlanPage, 'DataLossCheckBoxOnChange')
 				.withAdditionalProperties({
 					'dataLossCheckbox': this.dataLossCheckbox.checked.toString()
 				}).send();
