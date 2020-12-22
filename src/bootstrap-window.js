@@ -232,6 +232,31 @@
 	}
 
 	/**
+	 * TODO@sandbox this should not use the file:// protocol at all
+	 * and be consolidated with the fileUriFromPath() method in
+	 * bootstrap.js.
+	 *
+	 * @param {string} path
+	 * @returns {string}
+	 */
+	function uriFromPath(path) {
+		let pathName = path.replace(/\\/g, '/');
+		if (pathName.length > 0 && pathName.charAt(0) !== '/') {
+			pathName = `/${pathName}`;
+		}
+
+		/** @type {string} */
+		let uri;
+		if (safeProcess.platform === 'win32' && pathName.startsWith('//')) { // specially handle Windows UNC paths
+			uri = encodeURI(`file:${pathName}`);
+		} else {
+			uri = encodeURI(`file://${pathName}`);
+		}
+
+		return uri.replace(/#/g, '%23');
+	}
+
+	/**
 	 * @return {{ mark: (name: string) => void }}
 	 */
 	function perfLib() {
