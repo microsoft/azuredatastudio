@@ -155,11 +155,9 @@ export class PostgresParametersPage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
-							//Edit multiple
-							// azdata arc postgres server edit -n <server group name> -e '<parameter name>=<parameter value>, <parameter name>=<parameter value>,...'
 							try {
 								this.engineSettingUpdates!.forEach((value, key) => {
-									this.engineSettings.push(`${key}="${value}"`);
+									this.engineSettings.push(`${key}=${value}`);
 								});
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
@@ -180,6 +178,7 @@ export class PostgresParametersPage extends DashboardPage {
 					this.engineSettings = [];
 					this.engineSettingUpdates!.clear();
 					this.discardButton!.enabled = false;
+					this.resetButton!.enabled = true;
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
@@ -366,6 +365,25 @@ export class PostgresParametersPage extends DashboardPage {
 		} */
 	}
 
+	private handleOnTextChanged(component: azdata.InputBoxComponent, currentValue: string | undefined): boolean {
+		if ((!component.value) || (!component.valid)) {
+			// if there is no text found in the inputbox component or value is
+			// invalid return false
+			this.discardButton!.enabled = true;
+			return false;
+		} else if (component.value === currentValue) {
+			return false;
+		} else {
+			// if a valid value has been entered into the input box, enable save and discard buttons
+			// so that user could choose to either edit instance or clear all inputs
+			// return true
+			this.saveButton!.enabled = true;
+			this.discardButton!.enabled = true;
+			return true;
+		}
+
+	}
+
 	private parameterComponents(parameter: EngineSettingsModel) {
 		let data = [];
 
@@ -400,8 +418,13 @@ export class PostgresParametersPage extends DashboardPage {
 
 			this.disposables.push(
 				valueBox.onValueChanged(() => {
-					this.engineSettingUpdates!.set(parameter.parameterName!, String(valueBox.value));
-
+					if (parameter.value !== String(valueBox.value)) {
+						this.engineSettingUpdates!.set(parameter.parameterName!, String(valueBox.value));
+						this.saveButton!.enabled = true;
+						this.discardButton!.enabled = true;
+					} else if (this.engineSettingUpdates!.has(parameter.parameterName!)) {
+						this.engineSettingUpdates!.delete(parameter.parameterName!);
+					}
 				})
 			);
 
@@ -422,10 +445,16 @@ export class PostgresParametersPage extends DashboardPage {
 
 			this.disposables.push(
 				valueBox.onChanged(() => {
-					if (valueBox.checked) {
+					if (valueBox.checked && parameter.value === 'off') {
 						this.engineSettingUpdates!.set(parameter.parameterName!, loc.on);
-					} else {
+						this.saveButton!.enabled = true;
+						this.discardButton!.enabled = true;
+					} else if (!valueBox.checked && parameter.value === 'on') {
 						this.engineSettingUpdates!.set(parameter.parameterName!, loc.off);
+						this.saveButton!.enabled = true;
+						this.discardButton!.enabled = true;
+					} else if (this.engineSettingUpdates!.has(parameter.parameterName!)) {
+						this.engineSettingUpdates!.delete(parameter.parameterName!);
 					}
 				})
 			);
@@ -443,7 +472,11 @@ export class PostgresParametersPage extends DashboardPage {
 
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
-					this.engineSettingUpdates!.set(parameter.parameterName!, `"${valueBox.value!}"`);
+					if ((this.handleOnTextChanged(valueBox, parameter.value))) {
+						this.engineSettingUpdates!.set(parameter.parameterName!, `"${valueBox.value!}"`);
+					} else if (this.engineSettingUpdates!.has(parameter.parameterName!)) {
+						this.engineSettingUpdates!.delete(parameter.parameterName!);
+					}
 				})
 			);
 		} else {
@@ -461,7 +494,11 @@ export class PostgresParametersPage extends DashboardPage {
 
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
-					this.engineSettingUpdates!.set(parameter.parameterName!, valueBox.value!);
+					if ((this.handleOnTextChanged(valueBox, parameter.value))) {
+						this.engineSettingUpdates!.set(parameter.parameterName!, valueBox.value!);
+					} else if (this.engineSettingUpdates!.has(parameter.parameterName!)) {
+						this.engineSettingUpdates!.delete(parameter.parameterName!);
+					}
 				})
 			);
 
