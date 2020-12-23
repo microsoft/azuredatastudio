@@ -15,30 +15,30 @@ export interface RadioOptionsInfo {
 
 export class FilePicker implements IReadOnly {
 	private _flexContainer: azdata.FlexContainer;
-	private _filePathInputBox: azdata.InputBoxComponent;
-	private _filePickerButton: azdata.ButtonComponent;
+	public readonly filePathInputBox: azdata.InputBoxComponent;
+	public readonly filePickerButton: azdata.ButtonComponent;
 	constructor(
 		modelBuilder: azdata.ModelBuilder,
 		initialPath: string, onNewDisposableCreated: (disposable: vscode.Disposable) => void
 	) {
 		const buttonWidth = 80;
-		this._filePathInputBox = modelBuilder.inputBox()
+		this.filePathInputBox = modelBuilder.inputBox()
 			.withProperties<azdata.InputBoxProperties>({
 				value: initialPath,
 				width: 350
 			}).component();
 
-		this._filePickerButton = modelBuilder.button()
+		this.filePickerButton = modelBuilder.button()
 			.withProperties<azdata.ButtonProperties>({
 				label: loc.browse,
 				width: buttonWidth
 			}).component();
-		onNewDisposableCreated(this._filePickerButton.onDidClick(async () => {
+		onNewDisposableCreated(this.filePickerButton.onDidClick(async () => {
 			const fileUris = await vscode.window.showOpenDialog({
 				canSelectFiles: true,
 				canSelectFolders: false,
 				canSelectMany: false,
-				defaultUri: this._filePathInputBox.value ? vscode.Uri.file(path.dirname(this._filePathInputBox.value)) : undefined,
+				defaultUri: this.filePathInputBox.value ? vscode.Uri.file(path.dirname(this.filePathInputBox.value)) : undefined,
 				openLabel: loc.select,
 				filters: undefined /* file type filters */
 			});
@@ -47,21 +47,21 @@ export class FilePicker implements IReadOnly {
 				return; // This can happen when a user cancels out. We don't throw and the user just won't be able to move on until they select something.
 			}
 			const fileUri = fileUris[0]; //we allow the user to select only one file in the dialog
-			this._filePathInputBox.value = fileUri.fsPath;
+			this.filePathInputBox.value = fileUri.fsPath;
 		}));
-		this._flexContainer = createFlexContainer(modelBuilder, [this._filePathInputBox, this._filePickerButton]);
+		this._flexContainer = createFlexContainer(modelBuilder, [this.filePathInputBox, this.filePickerButton]);
 	}
 
-	component(): azdata.Component {
+	component(): azdata.FlexContainer {
 		return this._flexContainer;
 	}
 
 	get onTextChanged() {
-		return this._filePathInputBox.onTextChanged;
+		return this.filePathInputBox.onTextChanged;
 	}
 
 	get value(): string | undefined {
-		return this._filePathInputBox?.value;
+		return this.filePathInputBox?.value;
 	}
 
 	get readOnly(): boolean {

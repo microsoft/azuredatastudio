@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -610,7 +610,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.0"
+                "version": "20.2.5"
               }
             ],
             "when": true
@@ -791,7 +791,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.0"
+                "version": "20.2.5"
               }
             ],
             "when": "true"
@@ -872,7 +872,7 @@
                           "description": "%arc.postgres.server.group.name.validation.description%",
                           "validations" : [{
                             "type": "regex_match",
-                            "regex": "^[a-z]([-a-z0-9]{0,10}[a-z0-9])?$",
+                            "regex": "^[a-z]([-a-z0-9]{0,9}[a-z0-9])?$",
                             "description": "%arc.postgres.server.group.name.validation.description%"
                           }],
                           "required": true
@@ -1041,7 +1041,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.0"
+                "version": "20.2.5"
               }
             ],
             "when": "true"
@@ -1076,6 +1076,7 @@
     "@types/sinon": "^9.0.4",
     "@types/uuid": "^8.3.0",
     "@types/yamljs": "^0.2.31",
+    "azdata-test": "^1.0.0",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",

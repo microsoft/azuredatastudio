@@ -658,7 +658,7 @@ export class ProjectsController {
 
 				// add project to workspace
 				workspaceApi.showProjectsView();
-				await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
+				await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)], model.newWorkspaceFilePath);
 			}
 		}
 		catch (err) {

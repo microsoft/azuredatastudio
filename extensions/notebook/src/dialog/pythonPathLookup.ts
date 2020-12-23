@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as glob from 'glob';
+import * as vscode from 'vscode';
 
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
@@ -15,7 +16,7 @@ export interface PythonPathInfo {
 
 export class PythonPathLookup {
 	private condaLocations: string[];
-	constructor() {
+	constructor(private readonly _outputChannel: vscode.OutputChannel) {
 		if (process.platform !== constants.winPlatform) {
 			let userFolder = process.env['HOME'];
 			this.condaLocations = [
@@ -56,6 +57,7 @@ export class PythonPathLookup {
 			let condaFiles = condaResults.reduce((first, second) => first.concat(second));
 			return condaFiles.filter(condaPath => condaPath && condaPath.length > 0);
 		} catch (err) {
+			this._outputChannel.appendLine(`Problem encountered getting Conda installations: ${err}`);
 		}
 		return [];
 	}
@@ -95,7 +97,7 @@ export class PythonPathLookup {
 				return value;
 			}
 		} catch (err) {
-			// Ignore errors here, since this python version will just be excluded.
+			this._outputChannel.appendLine(`Problem encountered getting Python path: ${err}`);
 		}
 
 		return undefined;
@@ -158,7 +160,7 @@ export class PythonPathLookup {
 				};
 			}
 		} catch (err) {
-			// Ignore errors here, since this python version will just be excluded.
+			this._outputChannel.appendLine(`Problem encountered getting Python info for path: ${err}`);
 		}
 		return undefined;
 	}
