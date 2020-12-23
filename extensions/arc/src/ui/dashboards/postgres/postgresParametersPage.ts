@@ -23,7 +23,6 @@ export class PostgresParametersPage extends DashboardPage {
 	private resetButton?: azdata.ButtonComponent;
 	private connectToServerButton?: azdata.ButtonComponent;
 
-	private engineSettings: string[] = [];
 	private engineSettingUpdates: Map<string, string> = new Map();
 
 	private readonly _azdataApi: azdataExt.IExtension;
@@ -37,7 +36,7 @@ export class PostgresParametersPage extends DashboardPage {
 
 		this.disposables.push(
 			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())),
-			this._postgresModel.onEngineSettingsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEngineSettingsUpdated())));
+			this._postgresModel.onEngineSettingsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshParametersTable())));
 	}
 
 	protected get title(): string {
@@ -144,6 +143,7 @@ export class PostgresParametersPage extends DashboardPage {
 			enabled: false
 		}).component();
 
+		let engineSettings: string[] = [];
 		this.disposables.push(
 			this.saveButton.onDidClick(async () => {
 				this.saveButton!.enabled = false;
@@ -157,11 +157,11 @@ export class PostgresParametersPage extends DashboardPage {
 						async (_progress, _token): Promise<void> => {
 							try {
 								this.engineSettingUpdates!.forEach((value, key) => {
-									this.engineSettings.push(`${key}=${value}`);
+									engineSettings.push(`${key}=${value}`);
 								});
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
-									{ engineSettings: this.engineSettings.toString() },
+									{ engineSettings: engineSettings.toString() },
 									this._postgresModel.engineVersion);
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
@@ -170,12 +170,13 @@ export class PostgresParametersPage extends DashboardPage {
 								throw err;
 							}
 							await this._postgresModel.refresh();
+							await this.callGetEngineSettings();
 						}
 					);
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 
-					this.engineSettings = [];
+					engineSettings = [];
 					this.engineSettingUpdates!.clear();
 					this.discardButton!.enabled = false;
 					this.resetButton!.enabled = true;
@@ -197,8 +198,7 @@ export class PostgresParametersPage extends DashboardPage {
 			this.discardButton.onDidClick(async () => {
 				this.discardButton!.enabled = false;
 				try {
-					this.engineSettingUpdates!.clear();
-					this.showInitialTable();
+					this.refreshParametersTable();
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
@@ -243,6 +243,7 @@ export class PostgresParametersPage extends DashboardPage {
 								throw err;
 							}
 							await this._postgresModel.refresh();
+							await this.callGetEngineSettings();
 						}
 
 					);
@@ -262,7 +263,6 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private initializeConnectButton() {
-
 		this.connectToServerButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.connectToServer,
 			enabled: false,
@@ -278,28 +278,13 @@ export class PostgresParametersPage extends DashboardPage {
 						this.connectToServerButton!.enabled = true;
 						return;
 					}
-
 					await vscode.commands.executeCommand('workbench.extensions.installExtension', 'microsoft.azuredatastudio-postgresql');
 				}
 
-				await this._postgresModel.getEngineSettings().catch(err => {
-					// If an error occurs show a message so the user knows something failed but still
-					// fire the event so callers can know to update (e.g. so dashboards don't show the
-					// loading icon forever)
-					if (err instanceof UserCancelledError) {
-						vscode.window.showWarningMessage(loc.pgConnectionRequired);
-					} else {
-						vscode.window.showErrorMessage(loc.fetchEngineSettingsFailed(this._postgresModel.info.name, err));
-					}
-					this._postgresModel.engineSettingsLastUpdated = new Date();
-					this._postgresModel._onEngineSettingsUpdated.fire(this._postgresModel._engineSettings);
-					this.connectToServerButton!.enabled = true;
-					throw err;
-				});
-
+				await this.callGetEngineSettings();
 				this.searchBox!.enabled = true;
-				this.createParameterComponents();
-				this.showInitialTable();
+				this.parameterContainer!.clearItems();
+				this.parameterContainer!.addItem(this.parametersTable);
 			})
 		);
 	}
@@ -530,11 +515,17 @@ export class PostgresParametersPage extends DashboardPage {
 							title: loc.updatingInstance(this._postgresModel.info.name),
 							cancellable: false
 						},
-						(_progress, _token) => {
-							return this._azdataApi.azdata.arc.postgres.server.edit(
-								this._postgresModel.info.name,
-								{ engineSettings: parameter.parameterName + '=' },
-								this._postgresModel.engineVersion);
+						async (_progress, _token): Promise<void> => {
+							try {
+								await this._azdataApi.azdata.arc.postgres.server.edit(
+									this._postgresModel.info.name,
+									{ engineSettings: parameter.parameterName + '=' },
+									this._postgresModel.engineVersion);
+							} catch (err) {
+								throw err;
+							}
+							await this._postgresModel.refresh();
+							await this.callGetEngineSettings();
 						}
 					);
 
@@ -561,21 +552,30 @@ export class PostgresParametersPage extends DashboardPage {
 		}
 	}
 
-	private showInitialTable() {
-		this.parameterContainer!.clearItems();
-		this._postgresModel._engineSettings.forEach(param => {
-			this.parametersTable.data?.push(param.components!);
+	private async callGetEngineSettings() {
+		await this._postgresModel.getEngineSettings().catch(err => {
+			// If an error occurs show a message so the user knows something failed but still
+			// fire the event so callers can know to update (e.g. so dashboards don't show the
+			// loading icon forever)
+			if (err instanceof UserCancelledError) {
+				vscode.window.showWarningMessage(loc.pgConnectionRequired);
+			} else {
+				vscode.window.showErrorMessage(loc.fetchEngineSettingsFailed(this._postgresModel.info.name, err));
+			}
+			this._postgresModel.engineSettingsLastUpdated = new Date();
+			this._postgresModel._onEngineSettingsUpdated.fire(this._postgresModel._engineSettings);
+			this.connectToServerButton!.enabled = true;
+			throw err;
 		});
-		this.parameterContainer!.addItem(this.parametersTable);
 	}
 
-	private handleEngineSettingsUpdated(): void {
-		//TODO
+	private refreshParametersTable(): void {
+		this.createParameterComponents();
+		this.parametersTable.data = this._postgresModel._engineSettings.map(e => e.components!);
 	}
 
 	private handleServiceUpdated() {
-		// TODO
-		if (this._postgresModel.configLastUpdated) {
+		if (this._postgresModel.configLastUpdated && !this._postgresModel.engineSettingsLastUpdated) {
 			this.connectToServerButton!.enabled = true;
 			this._parametersTableLoading!.loading = false;
 		}

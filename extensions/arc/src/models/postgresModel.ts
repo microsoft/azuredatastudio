@@ -150,6 +150,7 @@ export class PostgresModel extends ResourceModel {
 			throw new Error('Could not fetch engine settings');
 		}
 
+		this._engineSettings = [];
 		for (let i = 0; i < 20; i++) {
 			let rowValues = engineSettings.rows[i].map(c => c.displayValue);
 			let result: EngineSettingsModel = {
@@ -181,6 +182,7 @@ export class PostgresModel extends ResourceModel {
 		}); */
 
 		this.engineSettingsLastUpdated = new Date();
+		this._onEngineSettingsUpdated.fire(this._engineSettings);
 	}
 
 	protected createConnectionProfile(): azdata.IConnectionProfile {
