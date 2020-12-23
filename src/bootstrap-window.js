@@ -87,9 +87,14 @@
 
 		window['MonacoEnvironment'] = {};
 
+		const baseUrl = sandbox ?
+			`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32', scheme: 'vscode-file', fallbackAuthority: 'vscode-app' })}/out` :
+			`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32' })}/out`;
+
 		const loaderConfig = {
-			baseUrl: `${uriFromPath(configuration.appRoot)}/out`,
+			baseUrl,
 			'vs/nls': nlsConfig,
+			preferScriptTags: sandbox,
 			amdModulesPattern: /^(vs|sql)\//, // {{SQL CARBON EDIT}} include sql in regex
 		};
 
