@@ -27,7 +27,6 @@ export class PostgresModel extends ResourceModel {
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
 
-
 	/** Returns the configuration of Postgres */
 	public get config(): azdataExt.PostgresServerShowResult | undefined {
 		return this._config;

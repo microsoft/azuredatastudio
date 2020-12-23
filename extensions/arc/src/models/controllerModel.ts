@@ -66,16 +66,19 @@ export class ControllerModel {
 		let promptForValidClusterContext: boolean = false;
 		try {
 			const contexts = await getKubeConfigClusterContexts(this.info.kubeConfigFilePath);
-			promptForValidClusterContext = getCurrentClusterContext(contexts, this.info.kubeClusterContext, true) === this.info.kubeClusterContext;
+			getCurrentClusterContext(contexts, this.info.kubeClusterContext, true); // this throws if this.info.kubeClusterContext is not found in 'contexts'
 		} catch (error) {
 			const response = await vscode.window.showErrorMessage(loc.clusterContextConfigNoLongerValid(this.info.kubeConfigFilePath, this.info.kubeClusterContext, error), loc.yes, loc.no);
 			if (response === loc.yes) {
 				promptForValidClusterContext = true;
 			} else {
-				throw error;
+				if (!promptReconnect) { //throw unless we are required to prompt for reconnect anyways
+					throw error;
+				}
 			}
 		}
-		// If we don't have password or valid cluster context information then prompt for a reconnect
+
+		// We haven't gotten our password yet or we want to prompt for a reconnect or we want to prompt to reacquire valid cluster context or any and all of these.
 		if (!this._password || promptReconnect || promptForValidClusterContext) {
 			this._password = '';
 			if (this.info.rememberPassword) {
