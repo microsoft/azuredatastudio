@@ -5,7 +5,7 @@
 
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IExtension, IScannedExtension, ExtensionType, ITranslatedScannedExtension } from 'vs/platform/extensions/common/extensions';
+import { IExtension, IScannedExtension, ExtensionType, ITranslatedScannedExtension, IExtensionManifest } from 'vs/platform/extensions/common/extensions';
 import { IExtensionManagementService, IGalleryExtension, IExtensionIdentifier, ILocalExtension, InstallOptions } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspace, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace'; // {{ SQL CARBON EDIT }}
@@ -31,6 +31,7 @@ export interface IWorkbenchExtensioManagementService extends IExtensionManagemen
 	readonly _serviceBrand: undefined;
 	installExtensions(extensions: IGalleryExtension[], installOptions?: InstallOptions): Promise<ILocalExtension[]>;
 	updateFromGallery(gallery: IGalleryExtension, extension: ILocalExtension): Promise<ILocalExtension>;
+	getExtensionManagementServerToInstall(manifest: IExtensionManifest): IExtensionManagementServer | null
 }
 
 export const enum EnablementState {
