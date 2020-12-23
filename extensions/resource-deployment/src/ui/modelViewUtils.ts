@@ -640,6 +640,9 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 		optionsComponent = await processRadioOptionsTypeField(context, getRadioOptions);
 	} else {
 		throwUnless(context.fieldInfo.options.optionsType === OptionsType.Dropdown, loc.optionsTypeRadioOrDropdown);
+		if (optionsSource?.provider) {
+			context.fieldInfo.options.values = await optionsSource.provider.getOptions();
+		}
 		optionsComponent = processDropdownOptionsTypeField(context);
 	}
 
