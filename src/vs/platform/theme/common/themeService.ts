@@ -71,11 +71,10 @@ export namespace ThemeIcon {
 
 	const _regexAsClassName = /^(codicon\/)?([a-z-]+)(~[a-z]+)?$/i;
 
-	export function asClassName(icon: ThemeIcon): string | undefined {
-		// todo@martin,joh -> this should go into the ThemeService
+	export function asClassNameArray(icon: ThemeIcon): string[] {
 		const match = _regexAsClassName.exec(icon.id);
 		if (!match) {
-			return undefined;
+			return ['codicon', 'codicon-error'];
 		}
 		let [, , name, modifier] = match;
 		// {{SQL CARBON EDIT}} Modifying method to not add 'codicon' in front of sql carbon icons.
@@ -84,14 +83,24 @@ export namespace ThemeIcon {
 		if (sqlCarbonIcons.includes(name)) {
 			className = name;
 		} else {
-			className = `codicon codicon-${name}`;
+			className = `codicon-${name}`;
 		}
 		// {{SQL CARBON EDIT}} End of edit
 		if (modifier) {
-			className += ` ${modifier.substr(1)}`;
+			return ['codicon', className, modifier.substr(1)];
 		}
-		return className;
+		return ['codicon', className];
 	}
+
+
+	export function asClassName(icon: ThemeIcon): string {
+		return asClassNameArray(icon).join(' ');
+	}
+
+	export function asCSSSelector(icon: ThemeIcon): string {
+		return '.' + asClassNameArray(icon).join('.');
+	}
+
 
 	export function revive(icon: any): ThemeIcon | undefined {
 		if (ThemeIcon.isThemeIcon(icon)) {
