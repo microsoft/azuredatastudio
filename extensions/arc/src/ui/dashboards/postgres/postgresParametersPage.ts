@@ -281,7 +281,8 @@ export class PostgresParametersPage extends DashboardPage {
 					await vscode.commands.executeCommand('workbench.extensions.installExtension', 'microsoft.azuredatastudio-postgresql');
 				}
 
-				await this.callGetEngineSettings();
+				this._parametersTableLoading!.loading = true;
+				await this.callGetEngineSettings().finally(() => this._parametersTableLoading!.loading = false);
 				this.searchBox!.enabled = true;
 				this.parameterContainer!.clearItems();
 				this.parameterContainer!.addItem(this.parametersTable);
@@ -298,16 +299,17 @@ export class PostgresParametersPage extends DashboardPage {
 
 		this.disposables.push(
 			this.searchBox.onTextChanged(() => {
-				this.parameterContainer!.clearItems();
-				this.parametersTable.data = [];
+				//this.parameterContainer!.clearItems();
+				//this.parametersTable.data = [];
 				if (!this.searchBox!.value) {
-					this._postgresModel._engineSettings.forEach(param => {
+					/* this._postgresModel._engineSettings.forEach(param => {
 						this.parametersTable.data?.push(param.components!);
-					});
+					}); */
+					this.parametersTable.data = this._postgresModel._engineSettings.map(e => e.components!);
 				} else {
 					this.filterParameters(this.searchBox!.value);
 				}
-				this.parameterContainer!.addItem(this.parametersTable);
+				//this.parameterContainer!.addItem(this.parametersTable);
 			})
 		);
 	}
@@ -318,13 +320,23 @@ export class PostgresParametersPage extends DashboardPage {
 				|| this._postgresModel._engineSettings[i].description?.search(search) !== -1) {
 				this.parametersTable.data?.push(this._postgresModel._engineSettings[i].row!);
 			}
-		} */
+		}
 
 		this._postgresModel._engineSettings.forEach(param => {
 			if (param.parameterName?.search(search) !== -1 || param.description?.search(search) !== -1) {
 				this.parametersTable.data?.push(param.components!);
 			}
+		});*/
+
+		let filterData: any[] = [];
+
+		this._postgresModel._engineSettings.forEach(param => {
+			if (param.parameterName?.search(search) !== -1 || param.description?.search(search) !== -1) {
+				filterData.push(param.components!);
+			}
 		});
+
+		this.parametersTable.data = filterData.map(d => d);
 	}
 
 	private createParameterComponents() {
@@ -562,8 +574,6 @@ export class PostgresParametersPage extends DashboardPage {
 			} else {
 				vscode.window.showErrorMessage(loc.fetchEngineSettingsFailed(this._postgresModel.info.name, err));
 			}
-			this._postgresModel.engineSettingsLastUpdated = new Date();
-			this._postgresModel._onEngineSettingsUpdated.fire(this._postgresModel._engineSettings);
 			this.connectToServerButton!.enabled = true;
 			throw err;
 		});
