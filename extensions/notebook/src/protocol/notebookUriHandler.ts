@@ -8,7 +8,6 @@ import * as azdata from 'azdata';
 
 import * as request from 'request';
 import * as path from 'path';
-import * as querystring from 'querystring';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 import { IQuestion, QuestionTypes } from '../prompts/question';
@@ -35,13 +34,13 @@ export class NotebookUriHandler implements vscode.UriHandler {
 	}
 
 	private open(uri: vscode.Uri): Promise<void> {
-		const data = querystring.parse(uri.query);
+		const data = uri.query.toString();
 
-		if (!data.url) {
+		if (!data) {
 			console.warn('Failed to open URI:', uri);
 		}
 
-		return this.openNotebook(data.url);
+		return this.openNotebook(data);
 	}
 
 	private async openNotebook(url: string | string[]): Promise<void> {
@@ -70,14 +69,15 @@ export class NotebookUriHandler implements vscode.UriHandler {
 			}
 
 			let contents = await this.download(url);
-			let untitledUri = this.getUntitledUri(path.basename(uri.fsPath));
+			let untitledUriPath = this.getUntitledUriPath(path.basename(uri.fsPath));
+			let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: untitledUriPath });
 			if (path.extname(uri.fsPath) === '.ipynb') {
 				await azdata.nb.showNotebookDocument(untitledUri, {
 					initialContent: contents,
 					preserveFocus: true
 				});
 			} else {
-				let doc = await vscode.workspace.openTextDocument(untitledUri);
+				let doc = await vscode.workspace.openTextDocument(untitledUriPath);
 				let editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, true);
 				await editor.edit(builder => {
 					builder.insert(new vscode.Position(0, 0), contents);
@@ -112,7 +112,7 @@ export class NotebookUriHandler implements vscode.UriHandler {
 		});
 	}
 
-	private getUntitledUri(originalTitle: string): vscode.Uri {
+	private getUntitledUriPath(originalTitle: string): string {
 		let title = originalTitle;
 		let nextVal = 0;
 		let ext = path.extname(title);
@@ -126,6 +126,6 @@ export class NotebookUriHandler implements vscode.UriHandler {
 			}
 			nextVal++;
 		}
-		return vscode.Uri.parse(`untitled:${title}`);
+		return `${title}`;
 	}
 }

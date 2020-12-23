@@ -363,9 +363,18 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						}
 					});
 				}
+				// Get Notebook URI Params & adjust to string
+				let notebookUriParams: string = this.notebookUri?.query;
+				notebookUriParams = notebookUriParams.split('').join(' ').replace('& ', '\n');
+				let parameterCellIndex = 0;
+				let parameterCell = false;
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
+						if (cellModel.isParameter) {
+							parameterCellIndex = contents.cells.indexOf(c);
+							parameterCell = true;
+						}
 						/*
 						In a parameterized notebook there will be an injected parameter cell.
 						Papermill originally inserts the injected parameter with the comment "# Parameters"
@@ -380,6 +389,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						return cellModel;
 					});
 				}
+				this.addParametersCell(notebookUriParams, parameterCell, parameterCellIndex);
 			}
 
 			// Trust notebook by default if there are no code cells
@@ -394,6 +404,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			throw error;
 		}
 	}
+
 	public async requestModelLoad(): Promise<void> {
 		try {
 			this.setDefaultKernelAndProviderId();
@@ -448,6 +459,27 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		});
 
 		return cell;
+	}
+
+	private addParametersCell(notebookUriParams: string, parameterCell: boolean, parameterCellIndex: number): void {
+		// Add New Parameters Cell
+		if (notebookUriParams) {
+			let uriParamsIndex = parameterCellIndex;
+			if (parameterCell) {
+				uriParamsIndex = parameterCellIndex + 1;
+				this.addUriParameterCell(uriParamsIndex, notebookUriParams);
+				this.cells[uriParamsIndex].isInjectedParameter = true;
+				this.cells[uriParamsIndex].source = ['# Injected-Parameters\n'].concat(this.cells[uriParamsIndex].source);
+			} else {
+				this.addUriParameterCell(uriParamsIndex, notebookUriParams);
+				this.cells[uriParamsIndex].isParameter = true;
+			}
+		}
+	}
+
+	private addUriParameterCell(uriParamsIndex, notebookUriParams): void {
+		this.addCell('code', uriParamsIndex);
+		this._cells[uriParamsIndex].source = [notebookUriParams];
 	}
 
 	moveCell(cell: ICellModel, direction: MoveDirection): void {
