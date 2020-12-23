@@ -16,11 +16,9 @@ import { IServerInstance } from './common';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
-import * as ports from '../common/ports';
 
 const NotebookConfigFilename = 'jupyter_notebook_config.py';
 const CustomJsFilename = 'custom.js';
-const defaultPort = 8888;
 
 type MessageListener = (data: string | Buffer) => void;
 type ErrorListener = (err: any) => void;
@@ -85,6 +83,7 @@ export class PerFolderServerInstance implements IServerInstance {
 
 	private _systemJupyterDir: string;
 	private _port: string;
+	private _token: string;
 	private _uri: vscode.Uri;
 	private _isStarted: boolean = false;
 	private _isStopping: boolean = false;
@@ -211,12 +210,8 @@ export class PerFolderServerInstance implements IServerInstance {
 			return;
 		}
 		let notebookDirectory = this.getNotebookDirectory();
-		// Find a port in a given range. If run into trouble, try another port inside the given range
-		let port = await ports.strictFindFreePort(new ports.StrictPortFindOptions(defaultPort, defaultPort + 1000));
-		let token = await utils.getRandomToken();
-		this._uri = vscode.Uri.parse(`http://localhost:${port}/?token=${token}`);
-		this._port = port.toString();
-		let startCommand = `"${this.options.install.pythonExecutable}" "${this.notebookScriptPath}" --no-browser --no-mathjax --notebook-dir "${notebookDirectory}" --port=${port} --NotebookApp.token=${token}`;
+		this._token = await utils.getRandomToken();
+		let startCommand = `"${this.options.install.pythonExecutable}" "${this.notebookScriptPath}" --no-browser --no-mathjax --notebook-dir "${notebookDirectory}" --NotebookApp.token=${this._token}`;
 		this.notifyStarting(this.options.install, startCommand);
 
 		// Execute the command
@@ -242,14 +237,11 @@ export class PerFolderServerInstance implements IServerInstance {
 			let handleStdout = (data: string | Buffer) => { install.outputChannel.appendLine(data.toString()); };
 			let handleStdErr = (data: string | Buffer) => {
 				// For some reason, URL info is sent on StdErr
-				let [url, port] = this.matchUrlAndPort(data);
-				if (url) {
-					// For now, will verify port matches
-					if (url.authority !== this._uri.authority
-						|| url.query !== this._uri.query) {
-						this._uri = url;
-						this._port = port;
-					}
+				let port: string = this.getPort(data);
+				if (port) {
+					let url: vscode.Uri = vscode.Uri.parse(`http://localhost:${port}/?token=${this._token}`);
+					this._uri = url;
+					this._port = port;
 					this.notifyStarted(install, url.toString(true));
 					this._isStarted = true;
 
@@ -300,7 +292,7 @@ export class PerFolderServerInstance implements IServerInstance {
 		return path.dirname(this.options.documentPath);
 	}
 
-	private matchUrlAndPort(data: string | Buffer): [vscode.Uri, string] {
+	private getPort(data: string | Buffer): string | undefined {
 		// regex: Looks for the successful startup log message like:
 		//        [C 12:08:51.947 NotebookApp]
 		//
@@ -308,18 +300,8 @@ export class PerFolderServerInstance implements IServerInstance {
 		//             to login with a token:
 		//                http://localhost:8888/?token=f5ee846e9bd61c3a8d835ecd9b965591511a331417b997b7
 		let dataString = data.toString();
-		let urlMatch = dataString.match(/\[C[\s\S]+ {8}(.+:(\d+)\/.*)$/m);
-		if (urlMatch) {
-			// Legacy case: manually parse token info if no token/port were passed
-			return [vscode.Uri.parse(urlMatch[1]), urlMatch[2]];
-		} else if (this._uri && dataString.match(/jupyter notebook .*is running at:/im)) {
-			// Default case: detect the notebook started message, indicating our preferred port and token were used
-			//
-			// Newer versions of the notebook package include a version number (e.g. 1.2.3) as part of the "notebook running"
-			// message, thus the regex above.
-			return [this._uri, this._port];
-		}
-		return [undefined, undefined];
+		let match = dataString.match(/.+:(\d+)\/.*$/m);
+		return match && match[1] ? match[1] : undefined;
 	}
 
 	private notifyStarted(install: JupyterServerInstallation, jupyterUri: string): void {

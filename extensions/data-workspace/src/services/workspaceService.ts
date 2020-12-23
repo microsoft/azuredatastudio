@@ -121,6 +121,8 @@ export class WorkspaceService implements IWorkspaceService {
 				if (vscode.Uri.file(relativePath).fsPath === projectFile.fsPath) {
 					newWorkspaceFolders.push(path.dirname(projectFile.path));
 				}
+			} else {
+				vscode.window.showInformationMessage(constants.ProjectAlreadyOpened(projectFile.fsPath));
 			}
 		}
 

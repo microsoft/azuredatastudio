@@ -198,19 +198,22 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						}).component();
 						optionLabel.width = '150px';
 
+						const optionSelectedValue = (this.wizard.toolsEulaPagePresets) ? this.wizard.toolsEulaPagePresets[index] : option.values[0];
 						const optionSelectBox = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 							values: option.values,
-							value: (this.wizard.toolsEulaPagePresets) ? this.wizard.toolsEulaPagePresets[index] : option.values[0],
+							value: optionSelectedValue,
 							width: '300px',
 							ariaLabel: option.displayName
 						}).component();
 
-						resourceTypeOptions.push(option.values[0]);
+						resourceTypeOptions.push(optionSelectedValue);
 
 						this.wizard.registerDisposable(optionSelectBox.onValueChanged(async () => {
-							resourceTypeOptions[index] = <ResourceTypeOptionValue>optionSelectBox.value;
-							this.wizard.provider = this.getCurrentProvider();
-							await this.wizard.open();
+							if (resourceTypeOptions[index].name !== (<ResourceTypeOptionValue>optionSelectBox.value).name) {
+								resourceTypeOptions[index] = <ResourceTypeOptionValue>optionSelectBox.value;
+								this.wizard.provider = this.getCurrentProvider();
+								await this.wizard.open();
+							}
 						}));
 
 						this._optionDropDownMap.set(option.name, optionSelectBox);
