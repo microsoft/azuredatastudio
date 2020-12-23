@@ -12,6 +12,12 @@ import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { EngineSettingsModel, PostgresModel } from '../../../models/postgresModel';
 
+export type ParametersModel = {
+	parameterName: string,
+	description: string,
+	components: any[]
+};
+
 export class PostgresParametersPage extends DashboardPage {
 	private searchBox?: azdata.InputBoxComponent;
 	private parametersTable!: azdata.DeclarativeTableComponent;
@@ -20,10 +26,11 @@ export class PostgresParametersPage extends DashboardPage {
 
 	private discardButton?: azdata.ButtonComponent;
 	private saveButton?: azdata.ButtonComponent;
-	private resetButton?: azdata.ButtonComponent;
+	private resetAllButton?: azdata.ButtonComponent;
 	private connectToServerButton?: azdata.ButtonComponent;
 
-	private engineSettingUpdates: Map<string, string> = new Map();
+	private _parameters: ParametersModel[] = [];
+	private parameterUpdates: Map<string, string> = new Map();
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
@@ -157,7 +164,7 @@ export class PostgresParametersPage extends DashboardPage {
 						},
 						async (_progress, _token): Promise<void> => {
 							try {
-								this.engineSettingUpdates!.forEach((value, key) => {
+								this.parameterUpdates!.forEach((value, key) => {
 									engineSettings.push(`${key}=${value}`);
 								});
 								await this._azdataApi.azdata.arc.postgres.server.edit(
@@ -178,9 +185,9 @@ export class PostgresParametersPage extends DashboardPage {
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 
 					engineSettings = [];
-					this.engineSettingUpdates!.clear();
+					this.parameterUpdates!.clear();
 					this.discardButton!.enabled = false;
-					this.resetButton!.enabled = true;
+					this.resetAllButton!.enabled = true;
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
@@ -208,16 +215,16 @@ export class PostgresParametersPage extends DashboardPage {
 			})
 		);
 
-		// Reset
-		this.resetButton = this.modelView.modelBuilder.button().withProps({
+		// Reset all
+		this.resetAllButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.resetAllToDefault,
 			iconPath: IconPathHelper.reset,
-			enabled: true
+			enabled: false
 		}).component();
 
 		this.disposables.push(
-			this.resetButton.onDidClick(async () => {
-				this.resetButton!.enabled = false;
+			this.resetAllButton.onDidClick(async () => {
+				this.resetAllButton!.enabled = false;
 				this.discardButton!.enabled = false;
 				this.saveButton!.enabled = false;
 				try {
@@ -236,11 +243,11 @@ export class PostgresParametersPage extends DashboardPage {
 							} catch (err) {
 								// If an error occurs while resetting the instance then re-enable the reset button since
 								// the edit wasn't successfully applied
-								if (this.engineSettingUpdates.size > 0) {
+								if (this.parameterUpdates.size > 0) {
 									this.discardButton!.enabled = true;
 									this.saveButton!.enabled = true;
 								}
-								this.resetButton!.enabled = true;
+								this.resetAllButton!.enabled = true;
 								throw err;
 							}
 							await this._postgresModel.refresh();
@@ -248,7 +255,7 @@ export class PostgresParametersPage extends DashboardPage {
 						}
 
 					);
-					this.engineSettingUpdates!.clear();
+					this.parameterUpdates!.clear();
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.resetFailed(error));
@@ -259,7 +266,7 @@ export class PostgresParametersPage extends DashboardPage {
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
 			{ component: this.saveButton },
 			{ component: this.discardButton },
-			{ component: this.resetButton }
+			{ component: this.resetAllButton }
 		]).component();
 	}
 
@@ -285,6 +292,7 @@ export class PostgresParametersPage extends DashboardPage {
 				this._parametersTableLoading!.loading = true;
 				await this.callGetEngineSettings().finally(() => this._parametersTableLoading!.loading = false);
 				this.searchBox!.enabled = true;
+				this.resetAllButton!.enabled = true;
 				this.parameterContainer!.clearItems();
 				this.parameterContainer!.addItem(this.parametersTable);
 			})
@@ -301,7 +309,7 @@ export class PostgresParametersPage extends DashboardPage {
 		this.disposables.push(
 			this.searchBox.onTextChanged(() => {
 				if (!this.searchBox!.value) {
-					this.parametersTable.data = this._postgresModel._engineSettings.map(e => e.components!);
+					this.parametersTable.data = this._parameters.map(p => p.components!);
 				} else {
 					this.filterParameters(this.searchBox!.value);
 				}
@@ -312,7 +320,7 @@ export class PostgresParametersPage extends DashboardPage {
 	private filterParameters(search: string) {
 		let filterData: any[] = [];
 
-		this._postgresModel._engineSettings.forEach(param => {
+		this._parameters.forEach(param => {
 			if (param.parameterName?.search(search) !== -1 || param.description?.search(search) !== -1) {
 				filterData.push(param.components!);
 			}
@@ -321,9 +329,10 @@ export class PostgresParametersPage extends DashboardPage {
 		this.parametersTable.data = filterData;
 	}
 
-	private createParameterModelType() {
-		this._postgresModel._engineSettings.forEach(parameter => {
-			this.createParameterComponents(parameter);
+	private createParameters() {
+		this._parameters = [];
+		this._postgresModel._engineSettings.forEach(engineSetting => {
+			this._parameters.push(this.createParameterComponents(engineSetting));
 		});
 	}
 
@@ -345,11 +354,11 @@ export class PostgresParametersPage extends DashboardPage {
 
 	}
 
-	private createParameterComponents(parameter: EngineSettingsModel) {
+	private createParameterComponents(engineSetting: EngineSettingsModel): ParametersModel {
 		let data = [];
 
 		// Set parameter name
-		data.push(parameter.parameterName);
+		data.push(engineSetting.parameterName);
 
 		// Container to hold input component and information bubble
 		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
@@ -362,9 +371,9 @@ export class PostgresParametersPage extends DashboardPage {
 			enabled: false
 		}).component();
 
-		if (parameter.type === 'enum') {
+		if (engineSetting.type === 'enum') {
 			// If type is enum, component should be drop down menu
-			let options = parameter.options?.slice(1, -1).split(',');
+			let options = engineSetting.options?.slice(1, -1).split(',');
 			let values: string[] = [];
 			options!.forEach(option => {
 				values.push(option.slice(option.indexOf('"') + 1, -1));
@@ -372,33 +381,33 @@ export class PostgresParametersPage extends DashboardPage {
 
 			let valueBox = this.modelView.modelBuilder.dropDown().withProps({
 				values: values,
-				value: parameter.value,
+				value: engineSetting.value,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
 
 			this.disposables.push(
 				valueBox.onValueChanged(() => {
-					if (parameter.value !== String(valueBox.value)) {
-						this.engineSettingUpdates!.set(parameter.parameterName!, String(valueBox.value));
+					if (engineSetting.value !== String(valueBox.value)) {
+						this.parameterUpdates!.set(engineSetting.parameterName!, String(valueBox.value));
 						this.saveButton!.enabled = true;
 						this.discardButton!.enabled = true;
-					} else if (this.engineSettingUpdates!.has(parameter.parameterName!)) {
-						this.engineSettingUpdates!.delete(parameter.parameterName!);
+					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
+						this.parameterUpdates!.delete(engineSetting.parameterName!);
 					}
 				})
 			);
 
-			information.updateProperty('title', loc.allowedValues(parameter.options!));
+			information.updateProperty('title', loc.allowedValues(engineSetting.options!));
 			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
-		} else if (parameter.type === 'bool') {
+		} else if (engineSetting.type === 'bool') {
 			// If type is bool, component should be checkbox to turn on or off
 			let valueBox = this.modelView.modelBuilder.checkBox().withProps({
 				label: loc.on,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
-			if (parameter.value === 'on') {
+			if (engineSetting.value === 'on') {
 				valueBox.checked = true;
 			} else {
 				valueBox.checked = false;
@@ -406,38 +415,38 @@ export class PostgresParametersPage extends DashboardPage {
 
 			this.disposables.push(
 				valueBox.onChanged(() => {
-					if (valueBox.checked && parameter.value === 'off') {
-						this.engineSettingUpdates!.set(parameter.parameterName!, loc.on);
+					if (valueBox.checked && engineSetting.value === 'off') {
+						this.parameterUpdates!.set(engineSetting.parameterName!, loc.on);
 						this.saveButton!.enabled = true;
 						this.discardButton!.enabled = true;
-					} else if (!valueBox.checked && parameter.value === 'on') {
-						this.engineSettingUpdates!.set(parameter.parameterName!, loc.off);
+					} else if (!valueBox.checked && engineSetting.value === 'on') {
+						this.parameterUpdates!.set(engineSetting.parameterName!, loc.off);
 						this.saveButton!.enabled = true;
 						this.discardButton!.enabled = true;
-					} else if (this.engineSettingUpdates!.has(parameter.parameterName!)) {
-						this.engineSettingUpdates!.delete(parameter.parameterName!);
+					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
+						this.parameterUpdates!.delete(engineSetting.parameterName!);
 					}
 				})
 			);
 
 			information.updateProperty('title', loc.allowedValues(`${loc.on},${loc.off}`));
 			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
-		} else if (parameter.type === 'string') {
+		} else if (engineSetting.type === 'string') {
 			// If type is string, component should be text inputbox
 			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
 				required: true,
 				readOnly: false,
-				value: parameter.value,
+				value: engineSetting.value,
 				CSSStyles: { 'min-width': '50px', 'max-width': '200px' }
 			}).component();
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
 
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
-					if ((this.handleOnTextChanged(valueBox, parameter.value))) {
-						this.engineSettingUpdates!.set(parameter.parameterName!, `"${valueBox.value!}"`);
-					} else if (this.engineSettingUpdates!.has(parameter.parameterName!)) {
-						this.engineSettingUpdates!.delete(parameter.parameterName!);
+					if ((this.handleOnTextChanged(valueBox, engineSetting.value))) {
+						this.parameterUpdates!.set(engineSetting.parameterName!, `"${valueBox.value!}"`);
+					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
+						this.parameterUpdates!.delete(engineSetting.parameterName!);
 					}
 				})
 			);
@@ -446,33 +455,33 @@ export class PostgresParametersPage extends DashboardPage {
 			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
 				required: true,
 				readOnly: false,
-				min: parseInt(parameter.min!),
-				max: parseInt(parameter.max!),
-				validationErrorMessage: loc.outOfRange(parameter.min!, parameter.max!),
+				min: parseInt(engineSetting.min!),
+				max: parseInt(engineSetting.max!),
+				validationErrorMessage: loc.outOfRange(engineSetting.min!, engineSetting.max!),
 				inputType: 'number',
-				value: parameter.value,
+				value: engineSetting.value,
 				CSSStyles: { 'min-width': '50px', 'max-width': '200px' }
 			}).component();
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
 
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
-					if ((this.handleOnTextChanged(valueBox, parameter.value))) {
-						this.engineSettingUpdates!.set(parameter.parameterName!, valueBox.value!);
-					} else if (this.engineSettingUpdates!.has(parameter.parameterName!)) {
-						this.engineSettingUpdates!.delete(parameter.parameterName!);
+					if ((this.handleOnTextChanged(valueBox, engineSetting.value))) {
+						this.parameterUpdates!.set(engineSetting.parameterName!, valueBox.value!);
+					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
+						this.parameterUpdates!.delete(engineSetting.parameterName!);
 					}
 				})
 			);
 
-			information.updateProperty('title', loc.allowedValues(loc.rangeSetting(parameter.min!, parameter.max!)));
+			information.updateProperty('title', loc.allowedValues(loc.rangeSetting(engineSetting.min!, engineSetting.max!)));
 			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		}
 
 		data.push(valueContainer);
 
 		// Look into hoovering
-		data.push(parameter.description);
+		data.push(engineSetting.description);
 
 		// Can reset individual component
 		const resetParameter = this.modelView.modelBuilder.button().withProps({
@@ -497,7 +506,7 @@ export class PostgresParametersPage extends DashboardPage {
 							try {
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
-									{ engineSettings: parameter.parameterName + '=' },
+									{ engineSettings: engineSetting.parameterName + '=' },
 									this._postgresModel.engineVersion);
 							} catch (err) {
 								throw err;
@@ -514,7 +523,13 @@ export class PostgresParametersPage extends DashboardPage {
 			})
 		);
 
-		parameter.components = data;
+		let parameter: ParametersModel = {
+			parameterName: engineSetting.parameterName!,
+			description: engineSetting.description!,
+			components: data
+		};
+
+		return parameter;
 	}
 
 	private selectComponent() {
@@ -546,8 +561,8 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private refreshParametersTable() {
-		this.createParameterModelType();
-		this.parametersTable.data = this._postgresModel._engineSettings.map(e => e.components!);
+		this.createParameters();
+		this.parametersTable.data = this._parameters.map(p => p.components!);
 	}
 
 	private handleServiceUpdated() {

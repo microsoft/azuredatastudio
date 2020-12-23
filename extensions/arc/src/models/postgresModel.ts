@@ -23,8 +23,7 @@ export type EngineSettingsModel = {
 	min: string | undefined,
 	max: string | undefined,
 	options: string | undefined,
-	type: string | undefined,
-	components?: any[]
+	type: string | undefined
 };
 
 export class PostgresModel extends ResourceModel {
