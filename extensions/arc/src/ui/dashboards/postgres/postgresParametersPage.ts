@@ -36,7 +36,8 @@ export class PostgresParametersPage extends DashboardPage {
 
 		this.disposables.push(
 			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())),
-			this._postgresModel.onEngineSettingsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshParametersTable())));
+			this._postgresModel.onEngineSettingsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshParametersTable()))
+		);
 	}
 
 	protected get title(): string {
@@ -299,35 +300,16 @@ export class PostgresParametersPage extends DashboardPage {
 
 		this.disposables.push(
 			this.searchBox.onTextChanged(() => {
-				//this.parameterContainer!.clearItems();
-				//this.parametersTable.data = [];
 				if (!this.searchBox!.value) {
-					/* this._postgresModel._engineSettings.forEach(param => {
-						this.parametersTable.data?.push(param.components!);
-					}); */
 					this.parametersTable.data = this._postgresModel._engineSettings.map(e => e.components!);
 				} else {
 					this.filterParameters(this.searchBox!.value);
 				}
-				//this.parameterContainer!.addItem(this.parametersTable);
 			})
 		);
 	}
 
 	private filterParameters(search: string) {
-		/* for (let i = 0; i < 20; i++) {
-			if (this._postgresModel._engineSettings[i].parameterName?.search(search) !== -1
-				|| this._postgresModel._engineSettings[i].description?.search(search) !== -1) {
-				this.parametersTable.data?.push(this._postgresModel._engineSettings[i].row!);
-			}
-		}
-
-		this._postgresModel._engineSettings.forEach(param => {
-			if (param.parameterName?.search(search) !== -1 || param.description?.search(search) !== -1) {
-				this.parametersTable.data?.push(param.components!);
-			}
-		});*/
-
 		let filterData: any[] = [];
 
 		this._postgresModel._engineSettings.forEach(param => {
@@ -336,44 +318,26 @@ export class PostgresParametersPage extends DashboardPage {
 			}
 		});
 
-		this.parametersTable.data = filterData.map(d => d);
+		this.parametersTable.data = filterData;
 	}
 
-	private createParameterComponents() {
-
+	private createParameterModelType() {
 		this._postgresModel._engineSettings.forEach(parameter => {
-			this.parameterComponents(parameter);
+			this.createParameterComponents(parameter);
 		});
-
-		/* for (let i = 0; i < 20; i++) {
-			let paramDetail: ParamDetailsModel = {
-				parameterName: this._postgresModel._engineSettings[i].parameterName,
-				description:this._postgresModel._engineSettings[i].description,
-				row: this.parameterComponents(this._postgresModel._engineSettings[i])
-			};
-
-			parameterData.push(paramDetail.row);
-			this._paramDetails.push(paramDetail);
-		} */
-
-		// Crashes once more than 20
-		/* for (let i = 0; i < 20; i++) {
-			this.parameterComponents(this._postgresModel._engineSettings[i])
-		} */
 	}
 
 	private handleOnTextChanged(component: azdata.InputBoxComponent, currentValue: string | undefined): boolean {
-		if ((!component.value) || (!component.valid)) {
-			// if there is no text found in the inputbox component or value is
-			// invalid return false
+		if (!component.valid) {
+			// If invalid value retun false and enable discard button
 			this.discardButton!.enabled = true;
 			return false;
 		} else if (component.value === currentValue) {
 			return false;
 		} else {
-			// if a valid value has been entered into the input box, enable save and discard buttons
-			// so that user could choose to either edit instance or clear all inputs
-			// return true
+			/* If a valid value has been entered into the input box, enable save and discard buttons
+			so that user could choose to either edit instance or clear all inputs
+			return true */
 			this.saveButton!.enabled = true;
 			this.discardButton!.enabled = true;
 			return true;
@@ -381,7 +345,7 @@ export class PostgresParametersPage extends DashboardPage {
 
 	}
 
-	private parameterComponents(parameter: EngineSettingsModel) {
+	private createParameterComponents(parameter: EngineSettingsModel) {
 		let data = [];
 
 		// Set parameter name
@@ -461,6 +425,7 @@ export class PostgresParametersPage extends DashboardPage {
 		} else if (parameter.type === 'string') {
 			// If type is string, component should be text inputbox
 			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
+				required: true,
 				readOnly: false,
 				value: parameter.value,
 				CSSStyles: { 'min-width': '50px', 'max-width': '200px' }
@@ -479,6 +444,7 @@ export class PostgresParametersPage extends DashboardPage {
 		} else {
 			// If type is real or interger, component should be inputbox set to inputType of number. Max and min values also set.
 			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
+				required: true,
 				readOnly: false,
 				min: parseInt(parameter.min!),
 				max: parseInt(parameter.max!),
@@ -579,8 +545,8 @@ export class PostgresParametersPage extends DashboardPage {
 		});
 	}
 
-	private refreshParametersTable(): void {
-		this.createParameterComponents();
+	private refreshParametersTable() {
+		this.createParameterModelType();
 		this.parametersTable.data = this._postgresModel._engineSettings.map(e => e.components!);
 	}
 
