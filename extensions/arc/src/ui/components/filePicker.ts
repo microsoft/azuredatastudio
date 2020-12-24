@@ -44,7 +44,7 @@ export class FilePicker implements IReadOnly {
 			});
 
 			if (!fileUris || fileUris.length === 0) {
-				return; // This can happen when a user cancels out.  we don't throw and the user just won't be able to move on until they select something.
+				return; // This can happen when a user cancels out. We don't throw and the user just won't be able to move on until they select something.
 			}
 			const fileUri = fileUris[0]; //we allow the user to select only one file in the dialog
 			this.filePathInputBox.value = fileUri.fsPath;
