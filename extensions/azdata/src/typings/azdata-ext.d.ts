@@ -15,7 +15,7 @@ declare module 'azdata-ext' {
 	export const enum extension {
 		name = 'Microsoft.azdata'
 	}
-	
+
 	export type AdditionalEnvVars = { [key: string]: string};
 
 	export interface ErrorWithLink extends Error {
@@ -235,20 +235,20 @@ declare module 'azdata-ext' {
 	export interface IAzdataApi {
 		arc: {
 			dc: {
-				create(namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string, additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<void>>,
+				create(namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<void>>,
 				endpoint: {
-					list(additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<DcEndpointListResult[]>>
+					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<DcEndpointListResult[]>>
 				},
 				config: {
-					list(additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<DcConfigListResult[]>>,
-					show(additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<DcConfigShowResult>>
+					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<DcConfigListResult[]>>,
+					show(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<DcConfigShowResult>>
 				}
 			},
 			postgres: {
 				server: {
-					delete(name: string, additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<void>>,
-					list(additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<PostgresServerListResult[]>>,
-					show(name: string, additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<PostgresServerShowResult>>,
+					delete(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<void>>,
+					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<PostgresServerListResult[]>>,
+					show(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<PostgresServerShowResult>>,
 					edit(
 						name: string,
 						args: {
@@ -265,15 +265,15 @@ declare module 'azdata-ext' {
 							workers?: number
 						},
 						engineVersion?: string,
-						additionalEnvVars?: { [key: string]: string }
+						additionalEnvVars?: AdditionalEnvVars
 					): Promise<AzdataOutput<void>>
 				}
 			},
 			sql: {
 				mi: {
-					delete(name: string, additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<void>>,
-					list(additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<SqlMiListResult[]>>,
-					show(name: string, additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<SqlMiShowResult>>,
+					delete(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<void>>,
+					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<SqlMiListResult[]>>,
+					show(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<SqlMiShowResult>>,
 					edit(
 						name: string,
 						args: {
@@ -283,13 +283,13 @@ declare module 'azdata-ext' {
 							memoryRequest?: string,
 							noWait?: boolean,
 						},
-						additionalEnvVars?: { [key: string]: string }
+						additionalEnvVars?: AdditionalEnvVars
 					): Promise<AzdataOutput<void>>
 				}
 			}
 		},
 		getPath(): Promise<string>,
-		login(endpoint: string, username: string, password: string, additionalEnvVars?: { [key: string]: string }): Promise<AzdataOutput<any>>,
+		login(endpoint: string, username: string, password: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<any>>,
 		/**
 		 * The semVersion corresponding to this installation of azdata. version() method should have been run
 		 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
