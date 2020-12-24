@@ -551,7 +551,7 @@ class CancelSearchAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchStopIcon.classNames);
+		super(id, label, 'search-action ' + searchStopIcon.id);
 		this.update();
 	}
 
@@ -578,7 +578,7 @@ class ExpandAllAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchExpandAllIcon.classNames);
+		super(id, label, 'search-action ' + searchExpandAllIcon.id);
 		this.update();
 	}
 
@@ -607,7 +607,7 @@ class CollapseDeepestExpandedLevelAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchCollapseAllIcon.classNames);
+		super(id, label, 'search-action ' + searchCollapseAllIcon.id);
 		this.update();
 	}
 
@@ -663,7 +663,7 @@ class ClearSearchResultsAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchClearIcon.classNames);
+		super(id, label, 'search-action ' + searchClearIcon.id);
 		this.update();
 	}
 
