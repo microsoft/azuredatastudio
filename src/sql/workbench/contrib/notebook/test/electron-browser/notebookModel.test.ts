@@ -81,7 +81,31 @@ let expectedNotebookContentOneCell: nb.INotebookContents = {
 	nbformat_minor: 5
 };
 
+let expectedParameterizedNotebookContent: nb.INotebookContents = {
+	cells: [{
+		cell_type: CellTypes.Code,
+		source: ['x = 1 \ny = 2'],
+		metadata: { language: 'python', tags: ['parameters'] },
+		execution_count: 1
+	}, {
+		cell_type: CellTypes.Code,
+		source: ['x = 2 \ny = 5)'],
+		metadata: { language: 'python', tags: ['injected-parameters'] },
+		execution_count: 2
+	}],
+	metadata: {
+		kernelspec: {
+			name: 'python3',
+			language: 'python',
+			display_name: 'Python 3'
+		}
+	},
+	nbformat: 4,
+	nbformat_minor: 5
+};
+
 let defaultUri = URI.file('/some/path.ipynb');
+let notebookUriParams = URI.parse('https://hello.ipynb?x=1&y=2');
 
 let mockClientSession: IClientSession;
 let clientSessionOptions: IClientSessionOptions;
@@ -316,6 +340,118 @@ suite('notebook model', function (): void {
 		// Ensure new cell is active cell
 		assert.deepEqual(model.activeCell, newCell, 'Active cell does not match newly created cell');
 		assert.equal(activeCellChangeCount, 5, 'Active cell change count is incorrect; should be 5');
+	});
+
+	test('Should set notebook parameter and injected parameter cell correctly', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedParameterizedNotebookContent));
+		defaultModelOptions.notebookUri = defaultUri;
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.equal(model.cells.length, 2, 'Two cells should be entered');
+
+		// Set parameter cell and injected parameters cell
+		let notebookParamsCell = model.cells[0];
+		let notebookInjectedParamsCell = model.cells[1];
+
+		// Parameters Cell Validation
+		assert.equal(model.cells.indexOf(notebookParamsCell), 0, 'Notebook parameters cell should be first cell in notebook');
+		assert.equal(notebookParamsCell.isParameter, true, 'Notebook parameters cell should be tagged paramter');
+		assert.equal(notebookParamsCell.isInjectedParameter, false, 'Notebook parameters cell should be tagged paramter');
+
+		// Injected Parameters Cell Validation
+		assert.equal(model.cells.indexOf(notebookInjectedParamsCell), 1, 'Notebook injected parameters cell should be first cell in notebook');
+		assert.equal(notebookInjectedParamsCell.isParameter, false, 'Notebook injected parameters cell should not be tagged paramters cell');
+		assert.equal(notebookInjectedParamsCell.isInjectedParameter, true, 'Notebook injected parameters cell should be tagged injected paramter');
+	});
+
+	test('Should set notebookUri parameters to new cell correctly', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContentOneCell));
+		defaultModelOptions.notebookUri = notebookUriParams;
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.equal(model.cells.length, 2, 'Two cells should be entered');
+
+		// Validate notebookUri parameter cell is set as the only parameter cell
+		let notebookUriParamsCell = model.cells[0];
+		assert.equal(model.cells.indexOf(notebookUriParamsCell), 0, 'NotebookURI parameters cell should be first cell in notebook');
+		assert.equal(notebookUriParamsCell.isParameter, true, 'NotebookURI parameters cell should be tagged paramter');
+		assert.equal(notebookUriParamsCell.isInjectedParameter, false, 'NotebookURI parameters Cell should not be injected paramter');
+	});
+
+	test('Should set notebookUri parameters to new cell after parameters cell correctly', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let expectedNotebookContentParameterCell = expectedNotebookContentOneCell;
+		//Set the cell to be tagged as parameter cell
+		expectedNotebookContentParameterCell.cells[0].metadata.tags = ['parameters'];
+
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContentParameterCell));
+		defaultModelOptions.notebookUri = notebookUriParams;
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.equal(model.cells.length, 2, 'Two cells should be entered');
+
+		// Validate notebookUri parameter cell is set as injected parameter
+		let notebookUriParamsCell = model.cells[1];
+		assert.equal(model.cells.indexOf(notebookUriParamsCell), 1, 'NotebookURI parameters cell should be first cell in notebook');
+		assert.equal(notebookUriParamsCell.isParameter, false, 'NotebookURI parameters cell should be tagged paramter');
+		assert.equal(notebookUriParamsCell.isInjectedParameter, true, 'NotebookURI parameters Cell should not be injected paramter');
+	});
+
+	test('Should move first cell below second cell correctly', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.equal(model.cells.length, 2, 'Two cells should be entered');
+
+		let firstCell = model.cells[0];
+		let secondCell = model.cells[1];
+		// Move First Cell down
+		model.moveCell(firstCell, 1);
+		assert.equal(model.cells.indexOf(firstCell), 1, 'First Cell did not move down correctly');
+		assert.equal(model.cells.indexOf(secondCell), 0, 'Second Cell did not move up correctly');
+	});
+
+	test('Should move second cell up above the first cell correctly', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.equal(model.cells.length, 2, 'Two cells should be entered');
+
+		let firstCell = model.cells[0];
+		let secondCell = model.cells[1];
+		// Move Second Cell up
+		model.moveCell(secondCell, 0);
+		assert.equal(model.cells.indexOf(firstCell), 1, 'First Cell did not move down correctly');
+		assert.equal(model.cells.indexOf(secondCell), 0, 'Second Cell did not move up correctly');
 	});
 
 	test('Should delete cells correctly', async function (): Promise<void> {

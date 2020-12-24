@@ -366,6 +366,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				// Get Notebook URI Params & adjust to string
 				let notebookUriParams: string = this.notebookUri?.query;
 				notebookUriParams = notebookUriParams.split('').join(' ').replace('& ', '\n');
+				// Get parameter cell and index to place new notebookUri parameters accordingly
 				let parameterCellIndex = 0;
 				let parameterCell = false;
 				if (contents.cells && contents.cells.length > 0) {
@@ -389,7 +390,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						return cellModel;
 					});
 				}
-				this.addParametersCell(notebookUriParams, parameterCell, parameterCellIndex);
+				// Only add new parameter cell if notebookUri Parameters are found
+				if (notebookUriParams) {
+					this.addParametersCell(notebookUriParams, parameterCell, parameterCellIndex);
+				}
 			}
 
 			// Trust notebook by default if there are no code cells
@@ -461,22 +465,23 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return cell;
 	}
 
+	// Adds Paramters cell based on Notebook URI parameters
 	private addParametersCell(notebookUriParams: string, parameterCell: boolean, parameterCellIndex: number): void {
-		// Add New Parameters Cell
-		if (notebookUriParams) {
-			let uriParamsIndex = parameterCellIndex;
-			if (parameterCell) {
-				uriParamsIndex = parameterCellIndex + 1;
-				this.addUriParameterCell(uriParamsIndex, notebookUriParams);
-				this.cells[uriParamsIndex].isInjectedParameter = true;
-				this.cells[uriParamsIndex].source = ['# Injected-Parameters\n'].concat(this.cells[uriParamsIndex].source);
-			} else {
-				this.addUriParameterCell(uriParamsIndex, notebookUriParams);
-				this.cells[uriParamsIndex].isParameter = true;
-			}
+		let uriParamsIndex = parameterCellIndex;
+		// Set new parameters as Injected Parameters cell after original parameter cell
+		if (parameterCell) {
+			uriParamsIndex = parameterCellIndex + 1;
+			this.addUriParameterCell(uriParamsIndex, notebookUriParams);
+			this.cells[uriParamsIndex].isInjectedParameter = true;
+			this.cells[uriParamsIndex].source = ['# Injected-Parameters\n'].concat(this.cells[uriParamsIndex].source);
+		} else {
+			// Set new parameters as the parameters cell as the first cell in the notebook
+			this.addUriParameterCell(uriParamsIndex, notebookUriParams);
+			this.cells[uriParamsIndex].isParameter = true;
 		}
 	}
 
+	// Add new notebook URI parameters cell to notebook
 	private addUriParameterCell(uriParamsIndex, notebookUriParams): void {
 		this.addCell('code', uriParamsIndex);
 		this._cells[uriParamsIndex].source = [notebookUriParams];
