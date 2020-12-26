@@ -122,7 +122,7 @@ export const databaseProject = localize('databaseProject', "Database project");
 
 // Create Project From Database dialog strings
 
-export const createProjectFromDatabaseDialogName = localize('createProjectFromDatabaseDialogName', "Create Project From Database");
+export const createProjectFromDatabaseDialogName = localize('createProjectFromDatabaseDialogName', "Create project from database");
 export const createProjectDialogOkButtonText = localize('createProjectDialogOkButtonText', "Create");
 export const sourceDatabase = localize('sourceDatabase', "Source database");
 export const targetProject = localize('targetProject', "Target project");
@@ -130,7 +130,7 @@ export const createProjectSettings = localize('createProjectSettings', "Settings
 export const projectNameLabel = localize('projectNameLabel', "Name");
 export const projectNamePlaceholderText = localize('projectNamePlaceholderText', "Enter project name");
 export const projectLocationLabel = localize('projectLocationLabel', "Location");
-export const projectLocationPlaceholderText = localize('projectLocationPlaceholderText', "Enter project location");
+export const projectLocationPlaceholderText = localize('projectLocationPlaceholderText', "Select location to create project");
 export const browseButtonText = localize('browseButtonText', "Browse folder");
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
 
