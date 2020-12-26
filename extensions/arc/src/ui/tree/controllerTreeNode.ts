@@ -5,7 +5,7 @@
 
 import { MiaaResourceInfo, ResourceInfo, ResourceType } from 'arc';
 import * as vscode from 'vscode';
-import { UserCancelledError } from '../../common/utils';
+import { UserCancelledError } from '../../common/api';
 import * as loc from '../../localizedConstants';
 import { ControllerModel, Registration } from '../../models/controllerModel';
 import { MiaaModel } from '../../models/miaaModel';

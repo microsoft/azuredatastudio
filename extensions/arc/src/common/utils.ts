@@ -9,8 +9,6 @@ import * as vscode from 'vscode';
 import { ConnectionMode, IconPath, IconPathHelper } from '../constants';
 import * as loc from '../localizedConstants';
 
-export class UserCancelledError extends Error { }
-
 /**
  * Converts the resource type name into the localized Display Name for that type.
  * @param resourceType The resource type name to convert

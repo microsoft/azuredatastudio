@@ -5,6 +5,14 @@
 declare module 'resource-deployment' {
 	import * as azdata from 'azdata';
 
+	export const enum ErrorType {
+		userCancelled,
+	}
+
+	export interface ErrorWithType extends Error {
+		readonly type: ErrorType;
+	}
+
 	export const enum extension {
 		name = 'Microsoft.resource-deployment'
 	}
