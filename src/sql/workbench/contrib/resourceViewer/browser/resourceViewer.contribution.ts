@@ -18,7 +18,7 @@ import { ResourceViewResourcesExtensionHandler } from 'sql/workbench/contrib/res
 import { ResourceViewerView } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerView';
 import { ResourceViewerViewlet } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerViewlet';
 import { RESOURCE_VIEWER_VIEW_CONTAINER_ID, RESOURCE_VIEWER_VIEW_ID } from 'sql/workbench/contrib/resourceViewer/common/resourceViewer';
-import { Codicon, registerIcon } from 'vs/base/common/codicons';
+import { Codicon, registerCodicon } from 'vs/base/common/codicons';
 import { localize } from 'vs/nls';
 import { Extensions as ViewContainerExtensions, IViewsRegistry, IViewContainersRegistry, ViewContainerLocation } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -65,7 +65,7 @@ Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).regi
 
 function registerResourceViewerContainer() {
 
-	const resourceViewerIcon = registerIcon('reosurce-view', Codicon.database);
+	const resourceViewerIcon = registerCodicon('reosurce-view', Codicon.database);
 	const viewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 		id: RESOURCE_VIEWER_VIEW_CONTAINER_ID,
 		name: localize('resourceViewer', "Resource Viewer"),

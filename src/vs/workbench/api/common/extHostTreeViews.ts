@@ -17,7 +17,6 @@ import { TreeItemCollapsibleState, ThemeIcon, MarkdownString as MarkdownStringTy
 import { isUndefinedOrNull, isString } from 'vs/base/common/types';
 import { equals, coalesce } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
-import { checkProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { MarkdownString } from 'vs/workbench/api/common/extHostTypeConverters';
 import { IMarkdownString } from 'vs/base/common/htmlContent';
@@ -184,7 +183,7 @@ type TreeData<T> = { message: boolean, element: T | Root | false };
 
 export interface TreeNode extends IDisposable { // {{SQL CARBON EDIT}} export interface
 	item: ITreeItem;
-	extensionItem: vscode.TreeItem2;
+	extensionItem: vscode.TreeItem;
 	parent: TreeNode | Root;
 	children?: TreeNode[];
 }
@@ -580,13 +579,12 @@ export class ExtHostTreeView<T> extends Disposable {
 
 	private getTooltip(tooltip?: string | vscode.MarkdownString): string | IMarkdownString | undefined {
 		if (MarkdownStringType.isMarkdownString(tooltip)) {
-			checkProposedApiEnabled(this.extension);
 			return MarkdownString.from(tooltip);
 		}
 		return tooltip;
 	}
 
-	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeItem2, parent: TreeNode | Root): TreeNode { // {{SQL CARBON EDIT}} change to protected, change to azdata.TreeItem
+	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeItem, parent: TreeNode | Root): TreeNode { // {{SQL CARBON EDIT}} change to protected, change to azdata.TreeItem
 		const disposable = new DisposableStore();
 		const handle = this.createHandle(element, extensionTreeItem, parent);
 		const icon = this.getLightIconPath(extensionTreeItem);
@@ -619,7 +617,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		};
 	}
 
-	private getThemeIcon(extensionTreeItem: vscode.TreeItem2): ThemeIcon | undefined {
+	private getThemeIcon(extensionTreeItem: vscode.TreeItem): ThemeIcon | undefined {
 		return extensionTreeItem.iconPath instanceof ThemeIcon ? extensionTreeItem.iconPath : undefined;
 	}
 

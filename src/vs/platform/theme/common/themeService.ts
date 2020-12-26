@@ -108,6 +108,9 @@ export namespace ThemeIcon {
 		};
 	}
 
+	export function asCodiconLabel(icon: ThemeIcon): string {
+		return '$(' + icon.id + ')';
+	}
 
 	export function revive(icon: any): ThemeIcon | undefined {
 		if (ThemeIcon.isThemeIcon(icon)) {

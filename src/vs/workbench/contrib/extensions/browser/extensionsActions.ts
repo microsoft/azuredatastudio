@@ -30,7 +30,7 @@ import { IExtensionService, toExtension, toExtensionDescription } from 'vs/workb
 import { URI } from 'vs/base/common/uri';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { buttonBackground, buttonForeground, buttonHoverBackground, contrastBorder, registerColor, foreground } from 'vs/platform/theme/common/colorRegistry';
 import { IJSONEditingService } from 'vs/workbench/services/configuration/common/jsonEditing';
 import { ITextEditorSelection } from 'vs/platform/editor/common/editor';
@@ -55,7 +55,6 @@ import { ITextFileService } from 'vs/workbench/services/textfile/common/textfile
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IFileDialogService, IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
-import { Codicon } from 'vs/base/common/codicons';
 import { IViewsService } from 'vs/workbench/common/views';
 import { IActionViewItemOptions, ActionViewItem } from 'vs/base/browser/ui/actionbar/actionViewItems';
 import { EXTENSIONS_CONFIG, IExtensionsConfigContent } from 'vs/workbench/services/extensionRecommendations/common/workspaceExtensionsConfig';
@@ -65,6 +64,7 @@ import { ActionWithDropdownActionViewItem, IActionWithDropdownActionViewItemOpti
 import { IContextMenuProvider } from 'vs/base/browser/contextmenu';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as Constants from 'vs/workbench/contrib/logs/common/logConstants';
+import { clearSearchResultsIcon, infoIcon, manageExtensionIcon, refreshIcon, syncEnabledIcon, syncIgnoredIcon, warningIcon } from 'vs/workbench/contrib/extensions/browser/extensionsIcons';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage'; // {{SQL CARBON EDIT}}
 import product from 'vs/platform/product/common/product';
 
@@ -211,6 +211,10 @@ export class ActionWithDropDownAction extends ExtensionAction {
 
 	private _menuActions: IAction[] = [];
 	get menuActions(): IAction[] { return [...this._menuActions]; }
+
+	get extension(): IExtension | null {
+		return super.extension;
+	}
 
 	set extension(extension: IExtension | null) {
 		this.actions.forEach(a => a.extension = extension);
@@ -403,7 +407,9 @@ export class InstallAction extends AbstractInstallAction {
 
 			if (server === this.extensionManagementServerService.remoteExtensionManagementServer) {
 				const host = this.extensionManagementServerService.remoteExtensionManagementServer.label;
-				this.label = isMachineScoped ? localize('install on remote and do not sync', "Install on {0} (Do not sync)", host) : localize('install on remote', "Install on {0}", host);
+				this.label = isMachineScoped
+					? localize({ key: 'install in remote and do not sync', comment: ['This is the name of the action to install an extension in remote server and do not sync it. Placeholder is for the name of remote server.'] }, "Install in {0} (Do not sync)", host)
+					: localize({ key: 'install in remote', comment: ['This is the name of the action to install an extension in remote server. Placeholder is for the name of remote server.'] }, "Install in {0}", host);
 				return;
 			}
 
@@ -433,7 +439,7 @@ export class InstallAndSyncAction extends AbstractInstallAction {
 	) {
 		super(`extensions.installAndSync`, localize('install', "Install"), InstallAndSyncAction.Class,
 			extensionsWorkbenchService, instantiationService, runtimeExtensionService, workbenchThemeService, labelService, localNotificationService);
-		this.tooltip = localize('install everywhere tooltip', "Install this extension in all your synced {0} instances", productService.nameLong);
+		this.tooltip = localize({ key: 'install everywhere tooltip', comment: ['Placeholder is the name of the product. Eg: Azure Data Studio or Azure Data Studio - Insiders'] }, "Install this extension in all your synced {0} instances", productService.nameLong);
 		this._register(Event.any(userDataAutoSyncEnablementService.onDidChangeEnablement,
 			Event.filter(userDataSyncResourceEnablementService.onDidChangeResourceEnablement, e => e[0] === SyncResource.Extensions))(() => this.update()));
 	}
@@ -604,7 +610,9 @@ export class RemoteInstallAction extends InstallInOtherServerAction {
 	}
 
 	protected getInstallLabel(): string {
-		return this.extensionManagementServerService.remoteExtensionManagementServer ? localize('Install on Server', "Install in {0}", this.extensionManagementServerService.remoteExtensionManagementServer.label) : InstallInOtherServerAction.INSTALL_LABEL;
+		return this.extensionManagementServerService.remoteExtensionManagementServer
+			? localize({ key: 'install in remote', comment: ['This is the name of the action to install an extension in remote server. Placeholder is for the name of remote server.'] }, "Install in {0}", this.extensionManagementServerService.remoteExtensionManagementServer.label)
+			: InstallInOtherServerAction.INSTALL_LABEL;
 	}
 
 }
@@ -935,7 +943,7 @@ export class ManageExtensionAction extends ExtensionDropDownAction {
 
 	static readonly ID = 'extensions.manage';
 
-	private static readonly Class = `${ExtensionAction.ICON_ACTION_CLASS} manage codicon-gear`;
+	private static readonly Class = `${ExtensionAction.ICON_ACTION_CLASS} manage ` + ThemeIcon.asClassName(manageExtensionIcon);
 	private static readonly HideManageExtensionClass = `${ManageExtensionAction.Class} hide`;
 
 	constructor(
@@ -1016,7 +1024,7 @@ export class ExtensionEditorManageExtensionAction extends ExtensionDropDownActio
 	constructor(
 		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super('extensionEditor.manageExtension', '', `${ExtensionAction.ICON_ACTION_CLASS} manage codicon-gear`, true, true, instantiationService);
+		super('extensionEditor.manageExtension', '', `${ExtensionAction.ICON_ACTION_CLASS} manage ${ThemeIcon.asClassName(manageExtensionIcon)}`, true, true, instantiationService);
 		this.tooltip = localize('manage', "Manage");
 	}
 
@@ -1119,6 +1127,7 @@ export class EnableForWorkspaceAction extends ExtensionAction {
 		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService
 	) {
 		super(EnableForWorkspaceAction.ID, EnableForWorkspaceAction.LABEL, ExtensionAction.LABEL_ACTION_CLASS);
+		this.tooltip = localize('enableForWorkspaceActionToolTip', "Enable this extension only in this workspace");
 		this.update();
 	}
 
@@ -1149,6 +1158,7 @@ export class EnableGloballyAction extends ExtensionAction {
 		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService
 	) {
 		super(EnableGloballyAction.ID, EnableGloballyAction.LABEL, ExtensionAction.LABEL_ACTION_CLASS);
+		this.tooltip = localize('enableGloballyActionToolTip', "Enable this extension");
 		this.update();
 	}
 
@@ -1180,6 +1190,7 @@ export class DisableForWorkspaceAction extends ExtensionAction {
 		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService
 	) {
 		super(DisableForWorkspaceAction.ID, DisableForWorkspaceAction.LABEL, ExtensionAction.LABEL_ACTION_CLASS);
+		this.tooltip = localize('disableForWorkspaceActionToolTip', "Disable this extension only in this workspace");
 		this.update();
 	}
 
@@ -1216,6 +1227,7 @@ export class DisableGloballyAction extends ExtensionAction {
 		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService
 	) {
 		super(DisableGloballyAction.ID, DisableGloballyAction.LABEL, ExtensionAction.LABEL_ACTION_CLASS);
+		this.tooltip = localize('disableGloballyActionToolTip', "Disable this extension");
 		this.update();
 	}
 
@@ -1851,7 +1863,7 @@ export class ClearExtensionsSearchResultsAction extends Action {
 		label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'codicon-clear-all', true);
+		super(id, label, ThemeIcon.asClassName(clearSearchResultsIcon), true);
 	}
 
 	async run(): Promise<void> {
@@ -1893,7 +1905,7 @@ export class RefreshExtensionsAction extends Action {
 		label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'codicon-refresh', true);
+		super(id, label, ThemeIcon.asClassName(refreshIcon), true);
 	}
 
 	async run(): Promise<void> {
@@ -2561,8 +2573,8 @@ export class MaliciousStatusLabelAction extends ExtensionAction {
 
 export class ToggleSyncExtensionAction extends ExtensionDropDownAction {
 
-	private static readonly IGNORED_SYNC_CLASS = `${ExtensionAction.ICON_ACTION_CLASS} extension-sync codicon-sync-ignored`;
-	private static readonly SYNC_CLASS = `${ToggleSyncExtensionAction.ICON_ACTION_CLASS} extension-sync codicon-sync`;
+	private static readonly IGNORED_SYNC_CLASS = `${ExtensionAction.ICON_ACTION_CLASS} extension-sync ${ThemeIcon.asClassName(syncIgnoredIcon)}`;
+	private static readonly SYNC_CLASS = `${ToggleSyncExtensionAction.ICON_ACTION_CLASS} extension-sync ${ThemeIcon.asClassName(syncEnabledIcon)}`;
 
 	constructor(
 		@IConfigurationService private readonly configurationService: IConfigurationService,
@@ -2679,8 +2691,8 @@ export class ExtensionToolTipAction extends ExtensionAction {
 export class SystemDisabledWarningAction extends ExtensionAction {
 
 	private static readonly CLASS = `${ExtensionAction.ICON_ACTION_CLASS} system-disable`;
-	private static readonly WARNING_CLASS = `${SystemDisabledWarningAction.CLASS} ${Codicon.warning.classNames}`;
-	private static readonly INFO_CLASS = `${SystemDisabledWarningAction.CLASS} ${Codicon.info.classNames}`;
+	private static readonly WARNING_CLASS = `${SystemDisabledWarningAction.CLASS} ${ThemeIcon.asClassName(warningIcon)}`;
+	private static readonly INFO_CLASS = `${SystemDisabledWarningAction.CLASS} ${ThemeIcon.asClassName(infoIcon)}`;
 
 	updateWhenCounterExtensionChanges: boolean = true;
 	private _runningExtensions: IExtensionDescription[] | null = null;

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
+import { IEditorOptions, InDiffEditorState } from 'vs/editor/common/config/editorOptions';
 import * as nls from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
@@ -60,7 +60,7 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 		const options = super.getConfigurationOverrides();
 		options.readOnly = true;
 		if (this.input) {
-			options.inDiffEditor = true;
+			options.inDiffEditor = InDiffEditorState.SideBySideLeft;
 			options.scrollBeyondLastLine = false;
 			options.folding = false;
 			options.renderWhitespace = 'none';
