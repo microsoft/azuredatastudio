@@ -38,7 +38,7 @@ suite('New Project Dialog', function (): void {
 		should.equal(await dialog.validate(), true, 'Validation should pass because name is unique and parent directory exists');
 	});
 
-	test('Should validate new workspace location', async function (): Promise<void> {
+	test('Should validate new workspace location @UNSTABLE@', async function (): Promise<void> {
 		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
 		workspaceServiceMock.setup(x => x.getAllProjectTypes()).returns(() => Promise.resolve([testProjectType]));
 
