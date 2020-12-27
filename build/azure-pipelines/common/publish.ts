@@ -259,7 +259,7 @@ async function retry<T>(fn: () => Promise<T>): Promise<T> {
 			if (!/ECONNRESET/.test(err.message)) {
 				throw err;
 			}
-			console.warn(`Caught error ${err} - ${run}/${RETRY_TIMES}`);
+			console.log(`Caught error ${err} - ${run}/${RETRY_TIMES}`);
 		}
 	}
 
