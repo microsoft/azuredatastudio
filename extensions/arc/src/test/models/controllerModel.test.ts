@@ -69,7 +69,7 @@ describe('ControllerModel', function (): void {
 		});
 
 		it('Prompt for password when not in cred store', async function (): Promise<void> {
-			const password = 'password123';
+			const password = 'password123'; // [SuppressMessage("Microsoft.Security", "CS001:SecretInline", Justification="Stub value for testing")]
 
 			// Set up cred store to return empty password
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
@@ -95,7 +95,7 @@ describe('ControllerModel', function (): void {
 		});
 
 		it('Prompt for password when rememberPassword is true but prompt reconnect is true', async function (): Promise<void> {
-			const password = 'password123';
+			const password = 'password123'; // [SuppressMessage("Microsoft.Security", "CS001:SecretInline", Justification="Stub value for testing")]
 			// Set up cred store to return a password to start with
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
 			credProviderMock.setup(x => x.readCredential(TypeMoq.It.isAny())).returns(() => Promise.resolve({ credentialId: 'id', password: 'originalPassword' }));
@@ -121,7 +121,7 @@ describe('ControllerModel', function (): void {
 		});
 
 		it('Prompt for password when we already have a password but prompt reconnect is true', async function (): Promise<void> {
-			const password = 'password123';
+			const password = 'password123'; // [SuppressMessage("Microsoft.Security", "CS001:SecretInline", Justification="Stub value for testing")]
 			// Set up cred store to return a password to start with
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
 			credProviderMock.setup(x => x.readCredential(TypeMoq.It.isAny())).returns(() => Promise.resolve({ credentialId: 'id', password: 'originalPassword' }));
