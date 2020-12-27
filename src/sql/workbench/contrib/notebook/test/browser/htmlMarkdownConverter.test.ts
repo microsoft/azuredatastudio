@@ -208,6 +208,12 @@ suite('HTML Markdown Converter', function (): void {
 		htmlString = '<table>\n<thead>\n<tr>\n<th>Test</th>\n<th>Test</th>\n<th>Test</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test | Test |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with header failed');
 	});
+
+	test('Should transform table with no thead', () => {
+		htmlString = '<table>\n<tr>\n<th>Test</th>\n<th>Test</th>\n<th>Test</th>\n</tr>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test | Test |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with no thead failed');
+	});
+
 	test('Should transform <b> and <strong> tags', () => {
 		htmlString = '<b>test string</b>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '**test string**', 'Basic bold test failed');
