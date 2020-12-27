@@ -253,3 +253,21 @@ export async function GetDefaultDeploymentOptions(): Promise<mssql.DeploymentOpt
 
 	return result.defaultDeploymentOptions;
 }
+
+export interface IPackageInfo {
+	name: string;
+	version: string;
+	aiKey: string;
+}
+
+export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
+	if (packageJson) {
+		return {
+			name: packageJson.name,
+			version: packageJson.version,
+			aiKey: packageJson.aiKey
+		};
+	}
+
+	return undefined;
+}
