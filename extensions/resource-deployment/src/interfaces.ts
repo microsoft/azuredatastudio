@@ -244,6 +244,8 @@ export type ComponentCSSStyles = {
 
 export interface IOptionsSource {
 	provider?: IOptionsSourceProvider
+	loadingText?: string,
+	loadingCompletedText?: string,
 	readonly variableNames?: { [index: string]: string; };
 	readonly providerId: string;
 }
