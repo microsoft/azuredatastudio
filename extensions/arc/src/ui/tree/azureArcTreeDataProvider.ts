@@ -10,7 +10,7 @@ import { ControllerModel } from '../../models/controllerModel';
 import { ControllerTreeNode } from './controllerTreeNode';
 import { TreeNode } from './treeNode';
 
-const mementoToken = 'arcControllers';
+const mementoToken = 'arcDataControllers';
 
 /**
  * The TreeDataProvider for the Azure Arc view, which displays a list of registered
