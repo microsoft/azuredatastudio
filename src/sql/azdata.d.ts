@@ -3400,9 +3400,22 @@ declare module 'azdata' {
 	}
 
 	export interface LoadingComponentProperties extends ComponentProperties {
+		/**
+		 * Whether to show the loading spinner instead of the contained component. True by default
+		 */
 		loading?: boolean;
+		/**
+		 * Whether to show the loading text next to the spinner
+		 */
 		showText?: boolean;
+		/**
+		 * The text to display while loading is set to true
+		 */
 		loadingText?: string;
+		/**
+		 * The text to display while loading is set to false. Will also be announced through screen readers
+		 * once loading is completed.
+		 */
 		loadingCompletedText?: string;
 	}
 
@@ -3595,7 +3608,7 @@ declare module 'azdata' {
 	 * Component used to wrap another component that needs to be loaded, and show a loading spinner
 	 * while the contained component is loading
 	 */
-	export interface LoadingComponent extends Component {
+	export interface LoadingComponent extends Component, LoadingComponentProperties {
 		/**
 		 * Whether to show the loading spinner instead of the contained component. True by default
 		 */
