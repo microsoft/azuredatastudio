@@ -42,6 +42,9 @@ export default class LoadingComponent extends ComponentBase<azdata.LoadingCompon
 			if (!this._component) {
 				return true;
 			}
+			if (this.loading) {
+				return false;
+			}
 			return this.modelStore.getComponent(this._component.id).validate();
 		});
 	}
