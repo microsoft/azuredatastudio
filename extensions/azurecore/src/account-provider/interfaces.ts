@@ -75,6 +75,11 @@ interface Settings {
 	graphResource?: Resource;
 
 	/**
+	 * Information that describes the MS graph resource
+	 */
+	msGraphResource?: Resource;
+
+	/**
 	 * Information that describes the Azure resource management resource
 	 */
 	armResource?: Resource;

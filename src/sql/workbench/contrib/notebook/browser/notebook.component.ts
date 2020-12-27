@@ -283,7 +283,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					this.setViewInErrorState(localize('displayFailed', "Could not display contents: {0}", getErrorMessage(error)));
 					this.setLoading(false);
 					this._modelReadyDeferred.reject(error);
-
 					this.notebookService.addNotebookEditor(this);
 				}
 			}
@@ -304,6 +303,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(this._model.layoutChanged(() => this.detectChanges()));
 
 		this.setLoading(false);
+		// Check if URI fragment is present; if it is, navigate to section by default
+		this.navigateToSectionIfURIFragmentExists();
 		this.updateToolbarComponents();
 		this.detectChanges();
 	}
@@ -690,6 +691,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			}
 		}
 		return headers;
+	}
+
+	private navigateToSectionIfURIFragmentExists(): void {
+		if (this.notebookParams.notebookUri?.fragment) {
+			this.navigateToSection(this.notebookParams.notebookUri.fragment);
+		}
 	}
 
 	navigateToSection(id: string): void {

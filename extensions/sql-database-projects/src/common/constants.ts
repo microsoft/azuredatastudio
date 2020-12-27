@@ -137,6 +137,12 @@ export const addProjectToCurrentWorkspace = localize('addProjectToCurrentWorkspa
 export const newWorkspaceWillBeCreated = localize('newWorkspaceWillBeCreated', "A new workspace will be created for this project.");
 export const workspaceLocationTitle = localize('workspaceLocationTitle', "Workspace location");
 export const workspace = localize('workspace', "Workspace");
+export const WorkspaceFileExtension = '.code-workspace';
+export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
+export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
+export const WorkspaceFileInvalidError = (workspace: string): string => { return localize('dataworkspace.workspaceFileInvalidError', "The selected workspace file path '{0}' does not have the required file extension {1}.", workspace, WorkspaceFileExtension); };
+export const WorkspaceParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.workspaceParentDirectoryNotExistError', "The selected workspace location '{0}' does not exist or is not a directory.", location); };
+export const WorkspaceFileAlreadyExistsError = (file: string): string => { return localize('dataworkspace.workspaceFileAlreadyExistsError', "The selected workspace file '{0}' already exists. To add the project to an existing workspace, use the Open Existing dialog to first open the workspace.", file); };
 
 
 // Error messages
@@ -221,7 +227,7 @@ export const Project = 'Project';
 export const Condition = 'Condition';
 export const Target = 'Target';
 export const Name = 'Name';
-export const AfterCleanTarget = 'AfterClean';
+export const BeforeBuildTarget = 'BeforeBuild';
 export const Delete = 'Delete';
 export const Files = 'Files';
 export const PackageReference = 'PackageReference';

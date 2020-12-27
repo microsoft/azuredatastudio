@@ -5,6 +5,7 @@
 	"main-view-name": "Projects",
 	"new-command": "New",
 	"refresh-workspace-command": "Refresh",
+	"close-workspace-command": "Close Workspace",
 	"remove-project-command": "Remove Project",
 	"projects-view-no-workspace-content": "No workspace open, create new or open existing to get started.\n[Create new](command:projects.new)\n[Open existing](command:projects.openExisting)\nTo learn more about SQL Database projects [read our docs](https://aka.ms/azuredatastudio-sqlprojects)",
 	"projects-view-no-project-content": "No projects found in current workspace.\n[Create new](command:projects.new)\n[Open existing](command:projects.openExisting)\nTo learn more about SQL Database projects [read our docs](https://aka.ms/azuredatastudio-sqlprojects).\n",

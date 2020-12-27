@@ -26,9 +26,6 @@ export class AzurecoreApiStub implements azurecore.IExtension {
 	getStorageAccounts(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountResult> {
 		throw new Error('Method not implemented.');
 	}
-	makeHttpGetRequest(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _ignoreErrors: boolean, _url: string): Promise<any> {
-		throw new Error('Method not implemented.');
-	}
 	runGraphQuery<T extends azureResource.AzureGraphResource>(_account: azdata.Account, _subscriptions: azureResource.AzureResourceSubscription[], _ignoreErrors: boolean, _query: string): Promise<azurecore.ResourceQueryResult<T>> {
 		throw new Error('Method not implemented.');
 	}

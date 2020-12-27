@@ -664,10 +664,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		if (!storageAccountId.length) {
 			this.setEmptyDropdownPlaceHolder(this._blobContainerBlobDropdown, constants.NO_BLOBCONTAINERS_FOUND);
 		} else {
-			const blobContainer = await getBlobContainers(this.migrationStateModel.azureAccount, this._subscriptionMap.get(this._blob.subscriptionId)!, this._storageAccountMap.get(storageAccountId)!);
-			if (blobContainer && blobContainer.length) {
-				this._blobContainerBlobDropdown.values = blobContainer.map(f => <azdata.CategoryValue>{ name: f.id, displayName: f.name });
-				this._blob.containerId = blobContainer[0].id!;
+			const blobContainers = await getBlobContainers(this.migrationStateModel.azureAccount, this._subscriptionMap.get(this._blob.subscriptionId)!, this._storageAccountMap.get(storageAccountId)!);
+			if (blobContainers && blobContainers.length) {
+				this._blobContainerBlobDropdown.values = blobContainers.map(f => <azdata.CategoryValue>{ name: f.id, displayName: f.name });
+				this._blob.containerId = blobContainers[0].id!;
 			} else {
 				this.setEmptyDropdownPlaceHolder(this._blobContainerBlobDropdown, constants.NO_BLOBCONTAINERS_FOUND);
 			}

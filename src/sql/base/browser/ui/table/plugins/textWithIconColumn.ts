@@ -4,48 +4,28 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { escape } from 'sql/base/common/strings';
+import { getIconCellValue, IconColumnOptions, TableColumn } from 'sql/base/browser/ui/table/plugins/tableColumn';
 
-/**
- * Definition for column with icon on the left of text.
- */
-export interface TextWithIconColumnDefinition<T extends Slick.SlickData> extends Slick.Column<T> {
-	iconCssClassField?: string;
+export interface TextWithIconColumnOptions extends IconColumnOptions {
 }
 
-export interface TextWithIconColumnOptions<T extends Slick.SlickData> {
-	iconCssClassField?: string;
-	field?: string;
-	width?: number;
-	id?: string;
-	resizable?: boolean;
-	name?: string;
-	headerCssClass?: string;
-	formatter?: Slick.Formatter<T>
-}
+export class TextWithIconColumn<T extends Slick.SlickData> implements TableColumn<T> {
+	constructor(private options: TextWithIconColumnOptions) {
+	}
 
-export class TextWithIconColumn<T extends Slick.SlickData> {
-
-	private _definition: TextWithIconColumnDefinition<T>;
-
-	constructor(options: TextWithIconColumnOptions<T>) {
-		this._definition = {
-			id: options.id,
-			field: options.field,
-			resizable: options.resizable,
-			formatter: options.formatter ?? this.formatter,
-			width: options.width,
-			name: options.name,
-			iconCssClassField: options.iconCssClassField,
+	public get definition(): Slick.Column<T> {
+		return {
+			id: this.options.id || this.options.field,
+			field: this.options.field,
+			resizable: this.options.resizable,
+			formatter: (row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string => {
+				const iconValue = getIconCellValue(this.options, dataContext);
+				return `<div class="icon codicon slick-icon-cell-content ${iconValue.iconCssClass ?? ''}">${escape(iconValue.title ?? '')}</div>`;
+			},
+			width: this.options.width,
+			name: this.options.name,
 			cssClass: 'slick-icon-cell',
-			headerCssClass: options.headerCssClass
+			headerCssClass: this.options.headerCssClass
 		};
-	}
-	private formatter(row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string {
-		const iconColumn = columnDef as TextWithIconColumnDefinition<T>;
-		return `<div class="icon codicon slick-icon-cell-content ${iconColumn.iconCssClassField ? dataContext[iconColumn.iconCssClassField] : ''}">${escape(value)}</div>`;
-	}
-
-	public get definition(): TextWithIconColumnDefinition<T> {
-		return this._definition;
 	}
 }

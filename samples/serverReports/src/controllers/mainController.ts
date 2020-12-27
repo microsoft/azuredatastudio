@@ -8,16 +8,16 @@
 import * as azdata from 'azdata';
 import * as Utils from '../utils';
 import ControllerBase from './controllerBase';
-import * as fs from 'fs';
+import { promises } from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import * as openurl from 'openurl';
-
+import * as constants from '../constants';
 
 /**
  * The main controller class that initializes the extension
  */
 export default class MainController extends ControllerBase {
+	private autoRefreshState: boolean = false;
 
 	public apiWrapper;
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -38,26 +38,34 @@ export default class MainController extends ControllerBase {
 	}
 
 	private openurl(link: string): void {
-		openurl.open(link);
+		vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(link));
 	}
 
-	private onExecute(connection: azdata.IConnectionProfile, fileName: string): void {
+	private async onExecute(connection: azdata.IConnectionProfile, fileName: string): Promise<void> {
 		// Command to start/stop autorefresh and run the query
-		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'type-of-contention', connection.id, true);
-		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'metadata-contention', connection.id, true);
-		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'allocation-contention', connection.id, true);
-		let sqlContent = fs.readFileSync(path.join(__dirname, '..', 'sql', fileName)).toString();
-		vscode.workspace.openTextDocument({ language: 'sql', content: sqlContent }).then(doc => {
-			vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, false).then(() => {
-				let filePath = doc.uri.toString();
-				azdata.queryeditor.connect(filePath, connection.id).then(() => azdata.queryeditor.runQuery(filePath, undefined, false));
-			});
-		});
+		let connectionUri = await azdata.connection.getUriForConnection(connection.id);
+		let connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(connection.providerName, azdata.DataProviderType.ConnectionProvider);
+		connectionProvider.changeDatabase(connectionUri, 'tempdb');
+		let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connection.providerName, azdata.DataProviderType.QueryProvider);
+		let sqlContent: string = await promises.readFile(path.join(__dirname, '..', 'sql', fileName), {encoding: 'utf8'});
+		let seResult = await queryProvider.runQueryAndReturn(connectionUri, sqlContent);
+		if (seResult.rowCount > 0 && seResult.rows[0][0].displayValue === '0') {
+			vscode.window.showInformationMessage( ( fileName === 'startEvent.sql' ) ? constants.XEventsStarted : constants.XEventsStopped );
+			this.autoRefreshState = ( fileName === 'startEvent.sql' ) ? true : false;
+			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'type-of-contention', connection.id, this.autoRefreshState);
+			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'metadata-contention', connection.id, this.autoRefreshState);
+			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'allocation-contention', connection.id, this.autoRefreshState);
+		} else if (seResult.rowCount > 0 && seResult.rows[0][0].displayValue === '1') {
+			vscode.window.showErrorMessage(constants.XEventsNotSupported);
+		} else {
+			vscode.window.showErrorMessage(constants.XEventsFailed);
+		}
 	}
 
 	private stopAutoRefresh(connection: azdata.IConnectionProfile): void {
-		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'type-of-contention', connection.id, false);
-		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'metadata-contention', connection.id, false);
-		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'allocation-contention', connection.id, false);
+		this.autoRefreshState = !this.autoRefreshState === true;
+		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'type-of-contention', connection.id, this.autoRefreshState);
+		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'metadata-contention', connection.id, this.autoRefreshState);
+		vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'allocation-contention', connection.id, this.autoRefreshState);
 	}
 }

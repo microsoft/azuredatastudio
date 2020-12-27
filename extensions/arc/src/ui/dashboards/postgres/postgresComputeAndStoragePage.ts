@@ -76,7 +76,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		const workerNodeslink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-			label: loc.addingWokerNodes,
+			label: loc.addingWorkerNodes,
 			url: 'https://docs.microsoft.com/azure/azure-arc/data/scale-up-down-postgresql-hyperscale-server-group-using-cli',
 			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -156,10 +156,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 						},
 						async (_progress, _token): Promise<void> => {
 							try {
+								await this._postgresModel.controllerModel.azdataLogin();
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
 									this.saveArgs,
-									this._postgresModel.engineVersion);
+									this._postgresModel.engineVersion
+								);
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied

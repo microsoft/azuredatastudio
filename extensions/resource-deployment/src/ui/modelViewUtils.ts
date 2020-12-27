@@ -614,7 +614,6 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 	if (context.fieldInfo.options.source?.providerId) {
 		try {
 			context.fieldInfo.options.source.provider = optionsSourcesService.getOptionsSource(context.fieldInfo.options.source.providerId);
-			context.fieldInfo.options.values = await context.fieldInfo.options.source.provider.getOptions();
 		}
 		catch (e) {
 			disableControlButtons(context.container);
@@ -628,16 +627,28 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 		context.fieldInfo.subFields = context.fieldInfo.subFields || [];
 	}
 	let optionsComponent: RadioGroupLoadingComponentBuilder | azdata.DropDownComponent;
+	const options = context.fieldInfo.options;
+	const optionsSource = options.source;
 	if (context.fieldInfo.options.optionsType === OptionsType.Radio) {
-		optionsComponent = await processRadioOptionsTypeField(context);
+		let getRadioOptions: (() => Promise<OptionsInfo>) | undefined = undefined;
+		// If the options are provided for us then set up the callback to load those options async'ly
+		if (optionsSource?.provider) {
+			getRadioOptions = async () => {
+				return { defaultValue: options.defaultValue, values: await optionsSource.provider!.getOptions() };
+			};
+		}
+		optionsComponent = await processRadioOptionsTypeField(context, getRadioOptions);
 	} else {
 		throwUnless(context.fieldInfo.options.optionsType === OptionsType.Dropdown, loc.optionsTypeRadioOrDropdown);
+		if (optionsSource?.provider) {
+			context.fieldInfo.options.values = await optionsSource.provider.getOptions();
+		}
 		optionsComponent = processDropdownOptionsTypeField(context);
 	}
-	const optionsSource = context.fieldInfo.options.source;
+
 	if (optionsSource?.provider) {
 		const optionsSourceProvider = optionsSource.provider;
-		await Promise.all(Object.keys(context.fieldInfo.options.source?.variableNames ?? {}).map(async key => {
+		await Promise.all(Object.keys(optionsSource?.variableNames ?? {}).map(async key => {
 			await configureOptionsSourceSubfields(context, optionsSource, key, optionsComponent, optionsSourceProvider);
 		}));
 	}
@@ -966,8 +977,8 @@ async function processKubeConfigClusterPickerField(context: KubeClusterContextFi
 
 }
 
-async function processRadioOptionsTypeField(context: FieldContext): Promise<RadioGroupLoadingComponentBuilder> {
-	return await createRadioOptions(context);
+async function processRadioOptionsTypeField(context: FieldContext, getRadioButtonInfo?: () => Promise<OptionsInfo>): Promise<RadioGroupLoadingComponentBuilder> {
+	return await createRadioOptions(context, getRadioButtonInfo);
 }
 
 
@@ -978,6 +989,7 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 	}
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const radioGroupLoadingComponentBuilder = new RadioGroupLoadingComponentBuilder(context.view, context.onNewDisposableCreated, context.fieldInfo);
+
 	context.fieldInfo.labelPosition = LabelPosition.Left;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
 		component: radioGroupLoadingComponentBuilder,
@@ -987,10 +999,21 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 		getDisplayValue: async (): Promise<string> => radioGroupLoadingComponentBuilder.displayValue,
 		onValueChanged: radioGroupLoadingComponentBuilder.onValueChanged,
 	});
-	addLabelInputPairToContainer(context.view, context.components, label, radioGroupLoadingComponentBuilder.component(), context.fieldInfo);
 	const options = context.fieldInfo.options as OptionsInfo;
-	await radioGroupLoadingComponentBuilder.loadOptions(
-		getRadioButtonInfo || options); // wait for the radioGroup to be fully initialized
+	let loadingText = options?.source?.loadingText;
+	let loadingCompletedText = options?.source?.loadingCompletedText;
+	if (loadingText || loadingCompletedText) {
+		radioGroupLoadingComponentBuilder.withProps({
+			showText: true,
+			loadingText: loadingText,
+			loadingCompletedText: loadingCompletedText
+		});
+	}
+	addLabelInputPairToContainer(context.view, context.components, label, radioGroupLoadingComponentBuilder.component(), context.fieldInfo);
+	// Start loading the options but continue on so that we can continue setting up the rest of the components - the group
+	// will show a loading spinner while the options are loaded
+	radioGroupLoadingComponentBuilder.loadOptions(
+		getRadioButtonInfo || options).catch(e => console.log('Error loading options for radio group ', e));
 	return radioGroupLoadingComponentBuilder;
 }
 
