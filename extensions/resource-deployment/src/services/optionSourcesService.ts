@@ -9,10 +9,10 @@ import * as loc from '../localizedConstants';
 class OptionsSourcesService {
 	private _optionsSourceStore = new Map<string, rd.IOptionsSourceProvider>();
 	registerOptionsSourceProvider(provider: rd.IOptionsSourceProvider): void {
-		if (this._optionsSourceStore.has(provider.optionsSourceId)) {
-			throw new Error(loc.optionsSourceAlreadyDefined(provider.optionsSourceId));
+		if (this._optionsSourceStore.has(provider.id)) {
+			throw new Error(loc.optionsSourceAlreadyDefined(provider.id));
 		}
-		this._optionsSourceStore.set(provider.optionsSourceId, provider);
+		this._optionsSourceStore.set(provider.id, provider);
 	}
 
 	getOptionsSource(optionsSourceProviderId: string): rd.IOptionsSourceProvider {
