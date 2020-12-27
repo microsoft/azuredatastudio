@@ -46,7 +46,7 @@ describe('import extension prose preview tests', function () {
 				prosePreviewPage = new ProsePreviewPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, prosePreviewPage);
 				await prosePreviewPage.start();
-				await prosePreviewPage.setupNavigationValidator();
+				prosePreviewPage.setupNavigationValidator();
 				await prosePreviewPage.onPageEnter();
 				resolve();
 			});
