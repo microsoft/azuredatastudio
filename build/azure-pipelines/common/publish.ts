@@ -112,7 +112,7 @@ function createOrUpdate(commit: string, quality: string, platform: string, type:
 		});
 	}
 
-	return new Promise<void>((c, e) => {
+	return retry(() => new Promise<void>((c, e) => {
 		client.createDocument(collection, release, err => {
 			if (err && err.code === 409) { return c(update()); }
 			if (err) { return e(err); }
@@ -120,7 +120,7 @@ function createOrUpdate(commit: string, quality: string, platform: string, type:
 			console.log('Build successfully published.');
 			c();
 		});
-	});
+	}));
 }
 
 async function assertContainer(blobService: azure.BlobService, quality: string): Promise<void> {
@@ -188,7 +188,6 @@ async function publish(commit: string, quality: string, platform: string, type: 
 		console.log(`Blob ${quality}, ${blobName} already exists, not publishing again.`);
 		return;
 	}
-
 	console.log('Uploading blobs to Azure storage...');
 
 	await uploadBlob(blobService, quality, blobName, file);
@@ -245,6 +244,22 @@ async function publish(commit: string, quality: string, platform: string, type: 
 	}
 
 	await createOrUpdate(commit, quality, platform, type, release, asset, isUpdate);
+}
+
+const RETRY_TIMES = 10;
+async function retry<T>(fn: () => Promise<T>): Promise<T> {
+	for (let run = 1; run <= RETRY_TIMES; run++) {
+		try {
+			return await fn();
+		} catch (err) {
+			if (!/ECONNRESET/.test(err.message)) {
+				throw err;
+			}
+			console.warn(`Caught error ${err} - ${run}/${RETRY_TIMES}`);
+		}
+	}
+
+	throw new Error('Retried too many times');
 }
 
 function main(): void {
