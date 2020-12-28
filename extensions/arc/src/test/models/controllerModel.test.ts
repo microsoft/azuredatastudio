@@ -12,6 +12,7 @@ import * as TypeMoq from 'typemoq';
 import { v4 as uuid } from 'uuid';
 import * as vscode from 'vscode';
 import * as loc from '../../localizedConstants';
+import * as kubeUtils from '../../common/kubeUtils';
 import { UserCancelledError } from '../../common/api';
 import { ControllerModel } from '../../models/controllerModel';
 import { ConnectToControllerDialog } from '../../ui/dialogs/connectControllerDialog';
@@ -38,6 +39,8 @@ describe('ControllerModel', function (): void {
 
 		beforeEach(function (): void {
 			sinon.stub(ConnectToControllerDialog.prototype, 'showDialog');
+			sinon.stub(kubeUtils, 'getKubeConfigClusterContexts').resolves([{ name: 'currentCluster', isCurrentContext: true }]);
+			sinon.stub(vscode.window, 'showErrorMessage').resolves(<any>loc.yes);
 		});
 
 		it('Rejected with expected error when user cancels', async function (): Promise<void> {
@@ -65,7 +68,7 @@ describe('ControllerModel', function (): void {
 			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
 
 			await model.azdataLogin();
-			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password), TypeMoq.Times.once());
+			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password, TypeMoq.It.isAny()), TypeMoq.Times.once());
 		});
 
 		it('Prompt for password when not in cred store', async function (): Promise<void> {
@@ -91,7 +94,7 @@ describe('ControllerModel', function (): void {
 			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
 
 			await model.azdataLogin();
-			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password), TypeMoq.Times.once());
+			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password, TypeMoq.It.isAny()), TypeMoq.Times.once());
 		});
 
 		it('Prompt for password when rememberPassword is true but prompt reconnect is true', async function (): Promise<void> {
@@ -117,7 +120,7 @@ describe('ControllerModel', function (): void {
 
 			await model.azdataLogin(true);
 			should(waitForCloseStub.called).be.true('waitForClose should have been called');
-			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password), TypeMoq.Times.once());
+			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password, TypeMoq.It.isAny()), TypeMoq.Times.once());
 		});
 
 		it('Prompt for password when we already have a password but prompt reconnect is true', async function (): Promise<void> {
@@ -144,7 +147,7 @@ describe('ControllerModel', function (): void {
 
 			await model.azdataLogin(true);
 			should(waitForCloseStub.called).be.true('waitForClose should have been called');
-			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password), TypeMoq.Times.once());
+			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password, TypeMoq.It.isAny()), TypeMoq.Times.once());
 		});
 
 		it('Model values are updated correctly when modified during reconnect', async function (): Promise<void> {

@@ -663,6 +663,8 @@
                               "variableNames": {
                                 "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
                                 "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
+                                "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",
+                                "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT",
                                 "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
                               }
                             },
@@ -855,6 +857,8 @@
                               "variableNames": {
                                 "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
                                 "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
+                                "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",
+                                "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT",
                                 "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
                               }
                             },
