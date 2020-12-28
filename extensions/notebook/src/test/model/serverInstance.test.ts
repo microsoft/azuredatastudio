@@ -22,6 +22,7 @@ const successMessage = `[I 14:00:38.811 NotebookApp] The Jupyter Notebook is run
 [I 14:00:38.812 NotebookApp] http://localhost:8891/?token=...
 [I 14:00:38.812 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
 `;
+const expectedPort = '8891';
 
 describe('Jupyter server instance', function (): void {
 	let expectedPath = 'mydir/notebook.ipynb';
@@ -89,6 +90,7 @@ describe('Jupyter server instance', function (): void {
 		let hostAndPort = serverInstance.uri.authority.split(':');
 		// verify port was set as expected
 		should(hostAndPort[1]).length(4);
+		should(hostAndPort[1]).equal(expectedPort);
 
 		// And I expect it to be started
 		should(serverInstance.isStarted).be.true();
