@@ -81,8 +81,8 @@ export class SelectBox extends vsSelectBox {
 
 		this._selectedOption = selectedOption;
 		this._register(super.onDidSelect(newSelect => {
-			this._onDidSelect.fire(newSelect);
 			this.onSelect(newSelect);
+			this._onDidSelect.fire(newSelect);
 		}));
 
 		this.enabledSelectBackground = this.selectBackground;
