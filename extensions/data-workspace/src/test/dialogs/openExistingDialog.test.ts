@@ -36,7 +36,7 @@ suite('Open Existing Dialog', function (): void {
 		should.equal(await dialog.validate(), true, 'Validation pass because project file exists');
 	});
 
-	test('Should validate workspace file exists', async function (): Promise<void> {
+	test.skip('Should validate workspace file exists', async function (): Promise<void> {
 		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
 		const dialog = new OpenExistingDialog(workspaceServiceMock.object, mockExtensionContext.object);
 		await dialog.open();
