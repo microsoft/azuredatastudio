@@ -24,6 +24,11 @@ import type { FutureInternal } from 'sql/workbench/services/notebook/browser/int
 import { ICellValue, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
 
+export enum ViewMode {
+	Notebook,
+	Views,
+}
+
 export interface ICellRange {
 	readonly start: number;
 	readonly end: number;
@@ -333,6 +338,12 @@ export interface INotebookModel {
 	 * Current notebook provider id
 	 */
 	providerId: string;
+
+	/**
+	 * View mode for this model. It determines what editor mode
+	 * will be displayed.
+	 */
+	viewMode: ViewMode;
 
 	/**
 	 * Change the current kernel from the Kernel dropdown
