@@ -13,6 +13,7 @@ import * as TypeMoq from 'typemoq';
 import { WorkspaceService } from '../services/workspaceService';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import { createProjectProvider } from './projectProviderRegistry.test';
+import { ProjectAlreadyOpened } from '../common/constants';
 
 const DefaultWorkspaceFilePath = '/test/folder/ws.code-workspace';
 
@@ -208,6 +209,7 @@ suite('WorkspaceService Tests', function (): void {
 		const updateConfigurationStub = sinon.stub();
 		const getConfigurationStub = sinon.stub().returns([processPath('folder1/proj2.sqlproj')]);
 		const onWorkspaceProjectsChangedStub = sinon.stub();
+		const showInformationMessageStub = sinon.stub(vscode.window, 'showInformationMessage');
 		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
 			onWorkspaceProjectsChangedStub();
 		});
@@ -224,6 +226,8 @@ suite('WorkspaceService Tests', function (): void {
 		]);
 		should.strictEqual(updateConfigurationStub.calledOnce, true, 'update configuration should have been called once');
 		should.strictEqual(updateWorkspaceFoldersStub.calledOnce, true, 'updateWorkspaceFolders should have been called once');
+		should.strictEqual(showInformationMessageStub.calledOnce, true, 'showInformationMessage should be called once');
+		should(showInformationMessageStub.calledWith(ProjectAlreadyOpened(processPath('/test/folder/folder1/proj2.sqlproj')))).be.true(`showInformationMessage not called with expected message '${ProjectAlreadyOpened(processPath('/test/folder/folder1/proj2.sqlproj'))}' Actual '${showInformationMessageStub.getCall(0).args[0]}'`);
 		should.strictEqual(updateConfigurationStub.calledWith('projects', sinon.match.array.deepEquals([
 			processPath('folder1/proj2.sqlproj'),
 			processPath('proj1.sqlproj'),
