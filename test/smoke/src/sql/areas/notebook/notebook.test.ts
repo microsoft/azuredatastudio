@@ -8,7 +8,7 @@ import { Application } from '../../../../../automation';
 export function setup() {
 	describe('Notebook', () => {
 
-		it('can open new notebook, configure Python, and execute one cell', async function () {
+		it.skip('can open new notebook, configure Python, and execute one cell', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.addCell('code');
@@ -23,7 +23,7 @@ export function setup() {
 			await app.workbench.sqlNotebook.waitForActiveCellResults();
 		});
 
-		it('can open ipynb file, run all, and save notebook with outputs', async function () {
+		it.skip('can open ipynb file, run all, and save notebook with outputs', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.openFile('hello.ipynb');
 			await app.workbench.sqlNotebook.waitForKernel('Python 3');
@@ -46,8 +46,18 @@ export function setup() {
 			await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
 			await app.workbench.sqlNotebook.waitForKernel('SQL');
 			await app.workbench.sqlNotebook.waitForNotTrustedIcon();
+			await app.code.waitForElementGone('iframe');
+			await app.code.waitForElementGone('dialog');
+			await app.code.waitForElementGone('embed');
+			await app.code.waitForElementGone('svg');
+
 			await app.workbench.sqlNotebook.trustNotebook();
 			await app.workbench.sqlNotebook.waitForTrustedIcon();
+			await app.code.waitForElement('iframe');
+			await app.code.waitForElement('dialog');
+			await app.code.waitForElement('embed');
+			await app.code.waitForElement('svg');
+
 			await app.workbench.quickaccess.runCommand('workbench.action.files.save');
 			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
 
