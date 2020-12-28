@@ -37,17 +37,13 @@ export class OpenExistingDialog extends DialogBase {
 		try {
 			// the selected location should be an existing directory
 			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Project) {
-				if (!await this.validateFile(this._projectFile, constants.Project.toLowerCase())) {
-					return false;
-				}
+				await this.validateFile(this._projectFile, constants.Project.toLowerCase());
 
-				if (this.workspaceInputBox!.enabled && !await this.validateNewWorkspace(false)) {
-					return false;
+				if (this.workspaceInputBox!.enabled) {
+					await this.validateNewWorkspace(false);
 				}
 			} else if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
-				if (!await this.validateFile(this._workspaceFile, constants.Workspace.toLowerCase())) {
-					return false;
-				}
+				await this.validateFile(this._workspaceFile, constants.Workspace.toLowerCase());
 			}
 
 			return true;
@@ -58,14 +54,11 @@ export class OpenExistingDialog extends DialogBase {
 		}
 	}
 
-	public async validateFile(file: string, fileType: string) {
+	public async validateFile(file: string, fileType: string): Promise<void> {
 		const fileExists = await fileExist(file);
 		if (!fileExists) {
-			this.showErrorMessage(constants.FileNotExistError(fileType, file));
-			return false;
+			throw new Error(constants.FileNotExistError(fileType, file));
 		}
-
-		return true;
 	}
 
 	async onComplete(): Promise<void> {
