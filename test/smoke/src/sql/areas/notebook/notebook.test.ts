@@ -8,7 +8,7 @@ import { Application } from '../../../../../automation';
 export function setup() {
 	describe('Notebook', () => {
 
-		it.skip('can open new notebook, configure Python, and execute one cell', async function () {
+		it('can open new notebook, configure Python, and execute one cell', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.addCell('code');
@@ -23,7 +23,7 @@ export function setup() {
 			await app.workbench.sqlNotebook.waitForActiveCellResults();
 		});
 
-		it.skip('can open ipynb file, run all, and save notebook with outputs', async function () {
+		it('can open ipynb file, run all, and save notebook with outputs', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.openFile('hello.ipynb');
 			await app.workbench.sqlNotebook.waitForKernel('Python 3');
