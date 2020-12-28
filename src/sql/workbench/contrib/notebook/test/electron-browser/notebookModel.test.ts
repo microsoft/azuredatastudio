@@ -361,13 +361,13 @@ suite('notebook model', function (): void {
 
 		// Parameters Cell Validation
 		assert.equal(model.cells.indexOf(notebookParamsCell), 0, 'Notebook parameters cell should be first cell in notebook');
-		assert.equal(notebookParamsCell.isParameter, true, 'Notebook parameters cell should be tagged paramter');
-		assert.equal(notebookParamsCell.isInjectedParameter, false, 'Notebook parameters cell should be tagged paramter');
+		assert.equal(notebookParamsCell.isParameter, true, 'Notebook parameters cell should be tagged parameter cell');
+		assert.equal(notebookParamsCell.isInjectedParameter, false, 'Notebook parameters cell should not be tagged injected parameter');
 
 		// Injected Parameters Cell Validation
-		assert.equal(model.cells.indexOf(notebookInjectedParamsCell), 1, 'Notebook injected parameters cell should be first cell in notebook');
-		assert.equal(notebookInjectedParamsCell.isParameter, false, 'Notebook injected parameters cell should not be tagged paramters cell');
-		assert.equal(notebookInjectedParamsCell.isInjectedParameter, true, 'Notebook injected parameters cell should be tagged injected paramter');
+		assert.equal(model.cells.indexOf(notebookInjectedParamsCell), 1, 'Notebook injected parameters cell should be second cell in notebook');
+		assert.equal(notebookInjectedParamsCell.isParameter, false, 'Notebook injected parameters cell should not be tagged parameter cell');
+		assert.equal(notebookInjectedParamsCell.isInjectedParameter, true, 'Notebook injected parameters cell should be tagged injected parameter');
 	});
 
 	test('Should set notebookUri parameters to new cell correctly', async function (): Promise<void> {
@@ -409,9 +409,9 @@ suite('notebook model', function (): void {
 
 		// Validate notebookUri parameter cell is set as injected parameter
 		let notebookUriParamsCell = model.cells[1];
-		assert.equal(model.cells.indexOf(notebookUriParamsCell), 1, 'NotebookURI parameters cell should be first cell in notebook');
-		assert.equal(notebookUriParamsCell.isParameter, false, 'NotebookURI parameters cell should be tagged paramter');
-		assert.equal(notebookUriParamsCell.isInjectedParameter, true, 'NotebookURI parameters Cell should not be injected paramter');
+		assert.equal(model.cells.indexOf(notebookUriParamsCell), 1, 'NotebookURI parameters cell should be second cell in notebook');
+		assert.equal(notebookUriParamsCell.isParameter, false, 'NotebookURI parameters cell should not be tagged paramter cell');
+		assert.equal(notebookUriParamsCell.isInjectedParameter, true, 'NotebookURI parameters Cell should be injected paramter');
 	});
 
 	test('Should move first cell below second cell correctly', async function (): Promise<void> {

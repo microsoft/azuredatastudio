@@ -368,13 +368,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				notebookUriParams = notebookUriParams.split('').join(' ').replace('& ', '\n');
 				// Get parameter cell and index to place new notebookUri parameters accordingly
 				let parameterCellIndex = 0;
-				let parameterCell = false;
+				let hasParameterCell = false;
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
 						if (cellModel.isParameter) {
 							parameterCellIndex = contents.cells.indexOf(c);
-							parameterCell = true;
+							hasParameterCell = true;
 						}
 						/*
 						In a parameterized notebook there will be an injected parameter cell.
@@ -392,7 +392,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 				// Only add new parameter cell if notebookUri Parameters are found
 				if (notebookUriParams) {
-					this.addParametersCell(notebookUriParams, parameterCell, parameterCellIndex);
+					this.addParametersCell(notebookUriParams, hasParameterCell, parameterCellIndex);
 				}
 			}
 
@@ -466,10 +466,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	// Adds Paramters cell based on Notebook URI parameters
-	private addParametersCell(notebookUriParams: string, parameterCell: boolean, parameterCellIndex: number): void {
+	private addParametersCell(notebookUriParams: string, hasParameterCell: boolean, parameterCellIndex: number): void {
 		let uriParamsIndex = parameterCellIndex;
 		// Set new parameters as Injected Parameters cell after original parameter cell
-		if (parameterCell) {
+		if (hasParameterCell) {
 			uriParamsIndex = parameterCellIndex + 1;
 			this.addUriParameterCell(uriParamsIndex, notebookUriParams);
 			this.cells[uriParamsIndex].isInjectedParameter = true;
