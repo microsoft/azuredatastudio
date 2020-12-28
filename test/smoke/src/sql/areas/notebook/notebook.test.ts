@@ -63,6 +63,11 @@ export function setup() {
 
 			await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
 			await app.workbench.sqlNotebook.waitForTrustedIcon();
+			await app.code.waitForElement('iframe');
+			await app.code.waitForElement('dialog');
+			await app.code.waitForElement('embed');
+			await app.code.waitForElement('svg');
+
 			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
 		});
 	});
