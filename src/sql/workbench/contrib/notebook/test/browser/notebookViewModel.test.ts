@@ -32,7 +32,6 @@ import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { NotebookViewModel } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
-import { INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 
 let initialNotebookContent: nb.INotebookContents = {
