@@ -48,6 +48,7 @@ export class OpenExistingDialog extends DialogBase {
 		}
 		catch (err) {
 			this.showErrorMessage(err?.message ? err.message : err);
+			console.log(err?.message ? err.message : err);
 			return false;
 		}
 	}
