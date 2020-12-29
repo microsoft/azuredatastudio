@@ -325,7 +325,7 @@ export class DataTierApplicationWizard {
 			.withAdditionalProperties({
 				'deploymentStatus': result.success.toString(),
 				'error': result.errorMessage,
-				'totalDuration': utils.convertMilliSecondsToTimeFormat(new Date().getTime() - deployStartTime)
+				'totalDuration': (new Date().getTime() - deployStartTime).toString()
 			});
 
 		return result;
@@ -344,7 +344,7 @@ export class DataTierApplicationWizard {
 				'extractedFileSize': await utils.getFileSize(this.model.filePath),
 				'extractStatus': result.success.toString(),
 				'error': result.errorMessage,
-				'totalDuration': utils.convertMilliSecondsToTimeFormat(new Date().getTime() - extractStartTime)
+				'totalDuration': (new Date().getTime() - extractStartTime).toString()
 			});
 
 		return result;
@@ -363,7 +363,7 @@ export class DataTierApplicationWizard {
 				'exportedFileSize': await utils.getFileSize(this.model.filePath),
 				'exportStatus': result.success.toString(),
 				'error': result.errorMessage,
-				'totalDuration': utils.convertMilliSecondsToTimeFormat(new Date().getTime() - exportStartTime)
+				'totalDuration': (new Date().getTime() - exportStartTime).toString()
 			});
 
 		return result;
@@ -382,7 +382,7 @@ export class DataTierApplicationWizard {
 				'importedFileSize': await utils.getFileSize(this.model.filePath),
 				'importStatus': result.success.toString(),
 				'error': result.errorMessage,
-				'totalDuration': utils.convertMilliSecondsToTimeFormat(new Date().getTime() - importStartTime)
+				'totalDuration': (new Date().getTime() - importStartTime).toString()
 			});
 
 		return result;
@@ -410,7 +410,7 @@ export class DataTierApplicationWizard {
 				'targetDatabaseStatus': 'Upgrade Existing Databse',
 				'scriptGenerated': result.success.toString(),
 				'errorMessage': result.errorMessage,
-				'totalDuration': utils.convertMilliSecondsToTimeFormat(new Date().getTime() - genScriptStartTime)
+				'totalDuration': (new Date().getTime() - genScriptStartTime).toString()
 			}).send();
 
 		return result;
@@ -470,7 +470,7 @@ export class DataTierApplicationWizard {
 			.withAdditionalProperties({
 				'planGenerated': result.success.toString(),
 				'errorMessage': result.errorMessage,
-				'totalDuration': utils.convertMilliSecondsToTimeFormat(new Date().getTime() - deployPlanStartTime)
+				'totalDuration': (new Date().getTime() - deployPlanStartTime).toString()
 			}).send();
 
 		return result.report;
