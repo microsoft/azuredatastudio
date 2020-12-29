@@ -32,6 +32,8 @@ import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { NotebookViewModel } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
+import { INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -55,6 +57,21 @@ let initialNotebookContent: nb.INotebookContents = {
 	nbformat_minor: 5
 };
 
+let notebookContentWithoutMeta: nb.INotebookContents = {
+	cells: [{
+		cell_type: CellTypes.Code,
+		source: ['insert into t1 values (c1, c2)'],
+		execution_count: 1
+	}, {
+		cell_type: CellTypes.Markdown,
+		source: ['I am *markdown*'],
+		execution_count: 1
+	}],
+	metadata: {},
+	nbformat: 4,
+	nbformat_minor: 5
+};
+
 let defaultUri = URI.file('/some/path.ipynb');
 let notificationService: TypeMoq.Mock<INotificationService>;
 let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
@@ -74,7 +91,7 @@ suite('NotebookViewModel', function (): void {
 	});
 
 	test('initialize', async function (): Promise<void> {
-		let notebookViews = await initializeNotebookViewsExtension();
+		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
 		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
 		viewModel.initialize();
 
@@ -86,9 +103,38 @@ suite('NotebookViewModel', function (): void {
 		assert.equal(viewModel.name, defaultViewName);
 	});
 
+	test('initialize notebook with no metadata', async function (): Promise<void> {
+		let notebookViews = await initializeNotebookViewsExtension(notebookContentWithoutMeta);
+		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
+		viewModel.initialize();
+
+		let cellsWithNewView = notebookViews.getCells().filter(cell => cell.views.find(v => v.guid === viewModel.guid));
+
+		assert.equal(cellsWithNewView.length, 2);
+		assert.equal(viewModel.cells.length, 2);
+		assert.equal(viewModel.hiddenCells.length, 0);
+		assert.equal(viewModel.name, defaultViewName);
+	});
+
+	test('rename', async function (): Promise<void> {
+		let exceptionThrown = false;
+		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
+
+		const view = notebookViews.createNewView(defaultViewName);
+
+		try {
+			view.name = `${defaultViewName} 1`;
+		} catch (e) {
+			exceptionThrown = true;
+		}
+
+		assert.equal(view.name, `${defaultViewName} 1`);
+		assert(!exceptionThrown);
+	});
+
 	test('duplicate name', async function (): Promise<void> {
 		let exceptionThrown = false;
-		let notebookViews = await initializeNotebookViewsExtension();
+		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
 
 		notebookViews.createNewView(defaultViewName);
 		let viewModel2 = notebookViews.createNewView(`${defaultViewName} 1`);
@@ -104,20 +150,20 @@ suite('NotebookViewModel', function (): void {
 	});
 
 	test('hide cell', async function (): Promise<void> {
-		let notebookViews = await initializeNotebookViewsExtension();
+		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
 		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
 		viewModel.initialize();
 
-		let cellToDelete = viewModel.cells[0];
+		let cellToHide = viewModel.cells[0];
 
-		viewModel.hideCell(cellToDelete);
+		viewModel.hideCell(cellToHide);
 
 		assert.equal(viewModel.hiddenCells.length, 1);
-		assert(viewModel.hiddenCells.includes(cellToDelete));
+		assert(viewModel.hiddenCells.includes(cellToHide));
 	});
 
 	test('insert cell', async function (): Promise<void> {
-		let notebookViews = await initializeNotebookViewsExtension();
+		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
 		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
 		viewModel.initialize();
 
@@ -130,8 +176,48 @@ suite('NotebookViewModel', function (): void {
 		assert(!viewModel.hiddenCells.includes(cellToInsert));
 	});
 
+	test('move cell', async function (): Promise<void> {
+		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
+		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
+		viewModel.initialize();
+
+		let cellToMove = viewModel.cells[0];
+
+		viewModel.moveCell(cellToMove, 98, 99);
+		let cellMeta = viewModel.getCellMetadata(cellToMove);
+
+		assert.equal(cellMeta.x, 98);
+		assert.equal(cellMeta.y, 99);
+	});
+
+	test('resize cell', async function (): Promise<void> {
+		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
+		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
+		viewModel.initialize();
+
+		let cellToResize = viewModel.cells[0];
+
+		viewModel.moveCell(cellToResize, 3, 4);
+		let cellMeta = viewModel.getCellMetadata(cellToResize);
+
+		assert.equal(cellMeta.x, 3);
+		assert.equal(cellMeta.y, 4);
+	});
+
+	test('get cell metadata', async function (): Promise<void> {
+		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
+		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
+		viewModel.initialize();
+
+		let cell = viewModel.cells[0];
+		let cellMeta = notebookViews.getCellMetadata(cell);
+
+		assert(!isUndefinedOrNull(cellMeta.views.find(v => v.guid === viewModel.guid)));
+		assert.deepEqual(viewModel.getCellMetadata(cell), cellMeta.views.find(v => v.guid === viewModel.guid));
+	});
+
 	test('delete', async function (): Promise<void> {
-		let notebookViews = await initializeNotebookViewsExtension();
+		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
 		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
 		viewModel.initialize();
 
@@ -181,9 +267,9 @@ suite('NotebookViewModel', function (): void {
 		};
 	}
 
-	async function initializeNotebookViewsExtension(): Promise<NotebookViewsExtension> {
+	async function initializeNotebookViewsExtension(contents: nb.INotebookContents): Promise<NotebookViewsExtension> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
-		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(initialNotebookContent));
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(contents));
 		defaultModelOptions.contentManager = mockContentManager.object;
 
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
