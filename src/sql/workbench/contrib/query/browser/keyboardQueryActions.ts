@@ -143,6 +143,7 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 		@IEditorService private _editorService: IEditorService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
+		@INotificationService private readonly notificationService: INotificationService
 	) {
 		super(id, label);
 	}
@@ -196,6 +197,11 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 			};
 
 			await this._clipboardService.write(data);
+
+			this.notificationService.notify({
+				severity: Severity.Info,
+				message: nls.localize('queryActions.queryResultsCopySuccess', "Successfully copied query and results.")
+			});
 		}
 	}
 }
