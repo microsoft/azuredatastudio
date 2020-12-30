@@ -132,6 +132,20 @@ export class Notebook {
 		});
 		await this.waitForResultsGone(cellIds);
 	}
+
+	async waitForTrustedElements(): Promise<void> {
+		await this.code.waitForElement('iframe');
+		await this.code.waitForElement('dialog');
+		await this.code.waitForElement('embed');
+		await this.code.waitForElement('svg');
+	}
+
+	async waitForTrustedElementsGone(): Promise<void> {
+		await this.code.waitForElementGone('iframe');
+		await this.code.waitForElementGone('dialog');
+		await this.code.waitForElementGone('embed');
+		await this.code.waitForElementGone('svg');
+	}
 }
 
 export class NotebookToolbar {
