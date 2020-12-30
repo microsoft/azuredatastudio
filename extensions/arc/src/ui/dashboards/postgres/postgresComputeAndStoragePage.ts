@@ -156,7 +156,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 						},
 						async (_progress, _token): Promise<void> => {
 							try {
-								await this._postgresModel.controllerModel.azdataLogin();
+								await this._postgresModel.controllerModel.acquireLogin();
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
 									this.saveArgs,
@@ -167,6 +167,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 								// the edit wasn't successfully applied
 								this.saveButton!.enabled = true;
 								throw err;
+							} finally {
+								this._postgresModel.controllerModel.releaseLogin();
 							}
 							await this._postgresModel.refresh();
 						}

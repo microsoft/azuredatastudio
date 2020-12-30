@@ -91,7 +91,7 @@ export class PostgresModel extends ResourceModel {
 		this._refreshPromise = new Deferred();
 
 		try {
-			await this.controllerModel.azdataLogin();
+			await this.controllerModel.acquireLogin();
 			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name)).result;
 			this.configLastUpdated = new Date();
 			this._onConfigUpdated.fire(this._config);
@@ -100,6 +100,7 @@ export class PostgresModel extends ResourceModel {
 			this._refreshPromise.reject(err);
 			throw err;
 		} finally {
+			this.controllerModel.releaseLogin();
 			this._refreshPromise = undefined;
 		}
 	}
