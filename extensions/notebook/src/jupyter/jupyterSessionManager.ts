@@ -381,6 +381,61 @@ export class JupyterSession implements nb.ISession {
 				silent: true,
 				store_history: false
 			}, true);
+			future.onReply = (msg) => {
+				console.log('~~~~~~~~~~~~~~~~~~onReply: ' + msg.content.toString());
+				// {execution_count: 0, paylod: Array(0) [], status: "ok", user_expressions: Objects {}}
+			};
+			future.onIOPub = (msg) => {
+				console.log('~~~~~~~~~~~~~~~~~~onIOPub: ' + msg.content.toString());
+				// {execution_state: "busy"}
+
+				// {name: "stdout", text: "/Users/lucyzhang
+				// env: ELECTRON_RUN_AS_NODE=1
+				// env: NVM_INC=/Users/lucyzhang/.nvm/versions/node/v10.16.3/include/node
+				// env: VSCODE_CLI=1
+				// env: NVM_CD_FLAGS=-q
+				// env: SHELL=/bin/zsh
+				// env: VSCODE_SKIP_PRELAUNCH=1
+				// env: AMD_ENTRYPOINT=vs/workbench/services/extensions/node/extensionHostProcess
+				// env: TMPDIR=/var/folders/x_/nd1txd_s35l4syc6c4sm85vc0000gn/T/
+				// env: ELECTRON_ENABLE_STACK_DUMPING=1
+				// env: OLDPWD=/Users/lucyzhang/GitProjects/azuredatastudio
+				// env: ORIGINAL_XDG_CURRENT_DESKTOP=undefined
+				// env: NVM_DIR=/Users/lucyzhang/.nvm
+				// env: USER=lucyzhang
+				// env: SSH_AUTH_SOCK=/private/tmp/com.apple.launchd.NW79FXYL5B/Listeners
+				// env: __CF_USER_TEXT_ENCODING=0x1F5:0x0:0x0
+				// env: VSCODE_DEV=1
+				// env: PATH=/Users/lucyzhang/Library/Python/3.8/bin:/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.8/bin:/Users/lucyzhang/.nvm/versions/node/v10.16.3/bin:/Library/Frameworks/Python.framework/Versions/2.7/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/lucyzhang/.dotnet/tools:/usr/local/share/dotnet:~/.dotnet/tools
+				// env: PWD=/Users/lucyzhang/GitProjects/azuredatastudio
+				// env: XPC_FLAGS=0x0
+				// env: NODE_ENV=development
+				// env: XPC_SERVICE_NAME=com.microsoft.VSCode.16048
+				// env: SHLVL=0
+				// env: HOME=/Users/lucyzhang
+				// env: ELECTRON_ENABLE_LOGGING=1
+				// env: PIPE_LOGGING=true
+				// env: LOGNAME=lucyzhang
+				// env: NVM_BIN=/Users/lucyzhang/.nvm/versions/node/v10.16.3/bin
+				// env: VERBOSE_LOGGING=true
+				// env: VSCODE_NLS_CONFIG={"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
+				// env: VSCODE_NODE_CACHED_DATA_DIR=
+				// env: VSCODE_LOGS=/Users/lucyzhang/Library/Application Support/azuredatastudio/logs/20201230T092855
+				// env: ADS_LOGS=/Users/lucyzhang/Library/Application Support/azuredatastudio/logs/20201230T092855
+				// env: VSCODE_IPC_HOOK=/Users/lucyzhang/Library/Application Support/azuredatastudio/1.26.0-main.sock
+				// env: VSCODE_PID=92763
+				// env: VSCODE_IPC_HOOK_EXTHOST=/var/folders/x_/nd1txd_s35l4syc6c4sm85vc0000gn/T/vscode-ipc-f795aea0-70d3-4375-b4f4-f13111121750.sock
+				// env: VSCODE_HANDLES_UNCAUGHT_ERRORS=true
+				// env: VSCODE_LOG_STACK=true
+				// env: APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL=true
+				// "}
+
+				// {execution_state: "idle"}
+
+			};
+			future.onStdin = (msg) => {
+				console.log('~~~~~~~~~~~~~~~~~~onStdin: ' + msg.content.toString());
+			};
 			await future.done;
 		}
 		this._messagesComplete.resolve();
