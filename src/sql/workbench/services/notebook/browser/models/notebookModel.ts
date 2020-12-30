@@ -365,7 +365,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 				// Get Notebook URI Params & adjust to string
 				let notebookUriParams: string = this.notebookUri?.query;
-				notebookUriParams = notebookUriParams.split('').join(' ').replace('& ', '\n');
+				// Format query to code cell format
+				notebookUriParams = notebookUriParams.replace(/&/g, '\n').replace(/=/g, ' = ');
 				// Get parameter cell and index to place new notebookUri parameters accordingly
 				let parameterCellIndex = 0;
 				let hasParameterCell = false;
