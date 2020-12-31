@@ -3766,75 +3766,128 @@
 					"statistics": [],
 					"flags": "preview"
 				},
-				{
-					"extensionId": "77",
-					"extensionName": "pastelin",
-					"displayName": "Pastelin",
-					"shortDescription": "Pastelin - Azure Data Studio Theme (Dark)",
-					"publisher": {
-						"displayName": "Tanyo Georgiev",
-						"publisherId": "tanyogeorgiev",
-						"publisherName": "tanyogeorgiev"
-					},
-					"versions": [
-						{
-							"version": "1.0.1",
-							"lastUpdated": "10/26/2020",
-							"assetUri": "",
-							"fallbackAssetUri": "fallbackAssetUri",
-							"files": [
-								{
-									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/tanyogeorgiev/Pastelin/releases/tag/1.0.1"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/tanyogeorgiev/Pastelin/main/assets/logo.png"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/tanyogeorgiev/Pastelin/main/README.md"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/tanyogeorgiev/Pastelin/main/package.json"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/tanyogeorgiev/Pastelin/main/LICENSE"
-								}
-							],
-							"properties": [
-								{
-									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-									"value": ""
-								},
-								{
-									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/tanyogeorgiev/Pastelin"
-								},
-								{
-									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": "*"
-								}
-							]
-						}
-					],
-					"statistics": [],
-					"flags": ""
-				}
-			],
-			"resultMetadata": [
-				{
-					"metadataType": "ResultCount",
-					"metadataItems": [
-						{
-							"name": "TotalCount",
-							"count": 65
-						}
-					]
-				}
-			]
-		}
+        {
+          "extensionId": "77",
+          "extensionName": "pastelin",
+          "displayName": "Pastelin",
+          "shortDescription": "Pastelin - Azure Data Studio Theme (Dark)",
+          "publisher": {
+            "displayName": "Tanyo Georgiev",
+            "publisherId": "tanyogeorgiev",
+            "publisherName": "tanyogeorgiev"
+          },
+          "versions": [
+            {
+              "version": "1.0.1",
+              "lastUpdated": "10/26/2020",
+              "assetUri": "",
+              "fallbackAssetUri": "fallbackAssetUri",
+              "files": [
+                {
+                  "assetType": "Microsoft.SQLOps.DownloadPage",
+                  "source": "https://github.com/tanyogeorgiev/Pastelin/releases/tag/1.0.1"
+                },
+                {
+                  "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+                  "source": "https://raw.githubusercontent.com/tanyogeorgiev/Pastelin/main/assets/logo.png"
+                },
+                {
+                  "assetType": "Microsoft.VisualStudio.Services.Content.Details",
+                  "source": "https://raw.githubusercontent.com/tanyogeorgiev/Pastelin/main/README.md"
+                },
+                {
+                  "assetType": "Microsoft.VisualStudio.Code.Manifest",
+                  "source": "https://raw.githubusercontent.com/tanyogeorgiev/Pastelin/main/package.json"
+                },
+                {
+                  "assetType": "Microsoft.VisualStudio.Services.Content.License",
+                  "source": "https://raw.githubusercontent.com/tanyogeorgiev/Pastelin/main/LICENSE"
+                }
+              ],
+              "properties": [
+                {
+                  "key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+                  "value": ""
+                },
+                {
+                  "key": "Microsoft.VisualStudio.Services.Links.Source",
+                  "value": "https://github.com/tanyogeorgiev/Pastelin"
+                },
+                {
+                  "key": "Microsoft.VisualStudio.Code.Engine",
+                  "value": "*"
+                }
+              ]
+            }
+          ],
+          "statistics": [],
+          "flags": ""
+        },
+        {
+          "extensionId": "78",
+          "extensionName": "extraSqlScriptAs",
+          "displayName": "Extra Sql Script As",
+          "shortDescription": "This extension adds several missing options to the context menu of the object tree: Script Table as INSERT, Script Table as UPDATE...",
+          "publisher": {
+            "displayName": "pacoweb",
+            "publisherId": "pacoweb",
+            "publisherName": "pacoweb"
+          },
+          "versions": [
+            {
+              "version": "1.0.1",
+              "lastUpdated": "31/12/2020",
+              "assetUri": "",
+              "fallbackAssetUri": "fallbackAssetUri",
+              "files": [
+                {
+                  "assetType": "Microsoft.SQLOps.DownloadPage",
+                  "source": "https://github.com/pacoweb/extraSqlScriptAs/releases/tag/0.1.0"
+                },
+                {
+                  "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+                  "source": "https://raw.githubusercontent.com/pacoweb/extraSqlScriptAs/master/images/default_icon.png"
+                },
+                {
+                  "assetType": "Microsoft.VisualStudio.Services.Content.Details",
+                  "source": "https://raw.githubusercontent.com/pacoweb/extraSqlScriptAs/master/README.md"
+                },
+                {
+                  "assetType": "Microsoft.VisualStudio.Code.Manifest",
+                  "source": "https://raw.githubusercontent.com/pacoweb/extraSqlScriptAs/master/package.json"
+                },
+                {
+                  "assetType": "Microsoft.VisualStudio.Services.Content.License",
+                  "source": "https://github.com/pacoweb/extraSqlScriptAs/blob/master/LICENSE"
+                }
+              ],
+              "properties": [
+                {
+                  "key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+                  "value": ""
+                },
+                {
+                  "key": "Microsoft.VisualStudio.Services.Links.Source",
+                  "value": "https://github.com/pacoweb/extraSqlScriptAs"
+                },
+                {
+                  "key": "Microsoft.VisualStudio.Code.Engine",
+                  "value": "*"
+                }
+              ]
+            }
+          ],
+          "resultMetadata": [
+            {
+              "metadataType": "ResultCount",
+              "metadataItems": [
+                {
+                  "name": "TotalCount",
+                  "count": 66
+                }
+              ]
+            }
+          ]
+        }
 	]
 }
