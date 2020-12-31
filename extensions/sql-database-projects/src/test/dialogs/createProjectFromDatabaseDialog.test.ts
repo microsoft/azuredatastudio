@@ -7,6 +7,7 @@ import * as should from 'should';
 import * as azdata from 'azdata';
 import * as mssql from '../../../../mssql';
 import * as sinon from 'sinon';
+import * as path from 'path';
 import { CreateProjectFromDatabaseDialog } from '../../dialogs/createProjectFromDatabaseDialog';
 import { mockConnectionProfile } from '../testContext';
 import { ImportDataModel } from '../../models/api/import';
@@ -82,10 +83,21 @@ describe('Create Project From Database Dialog', () => {
 		should.equal(dialog.projectNameTextBox!.value, 'DatabaseProjectMy Database');
 	});
 
+	it('Should update default workspace name correctly when location and project name are provided', async function (): Promise<void> {
+		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
+		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
+		await dialog.openDialog();
+		dialog.updateWorkspaceInputbox('testLocation', 'testProjectName');
+
+		should.equal(dialog.workspaceInputBox!.value, path.join('testLocation', 'testProjectName.code-workspace'));
+	});
+
 	it('Should include all info in import data model and connect to appropriate call back properties', async function (): Promise<void> {
 		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
 		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
 		await dialog.openDialog();
+
+		dialog.workspaceInputBox!.enabled = false;
 
 		dialog.projectNameTextBox!.value = 'testProject';
 		dialog.projectLocationTextBox!.value = 'testLocation';
@@ -98,7 +110,8 @@ describe('Create Project From Database Dialog', () => {
 			projName: 'testProject',
 			filePath: 'testLocation',
 			version: '1.0.0.0',
-			extractTarget: mssql.ExtractTarget['schemaObjectType']
+			extractTarget: mssql.ExtractTarget['schemaObjectType'],
+			newWorkspaceFilePath: undefined
 		};
 
 		dialog.createProjectFromDatabaseCallback = (m) => { model = m; };

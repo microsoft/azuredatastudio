@@ -67,3 +67,5 @@ export const reservedValueErrorMessage = localize('dacfx.reservedValueErrorMessa
 export const trailingWhitespaceErrorMessage = localize('dacfx.trailingWhitespaceErrorMessage', "File name cannot end with a whitespace");
 export const tooLongFilenameErrorMessage = localize('dacfx.tooLongFilenameErrorMessage', "File name is over 255 characters");
 export function deployPlanErrorMessage(errorMessage: string): string { return localize('dacfx.deployPlanErrorMessage', "Generating deploy plan failed '{0}'", errorMessage ? errorMessage : 'Unknown'); }
+export function generateDeployErrorMessage(errorMessage: string): string { return localize('dacfx.generateDeployErrorMessage', "Generating deploy script failed '{0}'", errorMessage ? errorMessage : 'Unknown'); }
+export function operationErrorMessage(operation: string, errorMessage: string): string { return localize('dacfx.operationErrorMessage', "{0} operation failed '{1}'", operation, errorMessage ? errorMessage : 'Unknown'); }

@@ -239,18 +239,82 @@ export default class MainController implements vscode.Disposable {
 				form2Model
 			]).component();
 
-		let table = view.modelBuilder.table().withProperties({
+		const checkedRows: number[] = [2];
+
+		const startIcon = path.join(__dirname, '..', 'media', 'start.svg');
+		const monitorIcon = {
+			light: path.join(__dirname, '..', 'media', 'monitor.svg'),
+			dark: path.join(__dirname, '..', 'media', 'monitor_inverse.svg')
+		};
+		let table = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 			data: [
-				['1', '2', '2'],
-				['4', '5', '6'],
-				['7', '8', '9']
-			], columns: ['c1', 'c2', 'c3'],
+				['1', '2', '2', { enabled: false, checked: false },
+					undefined, // for button/hyperlink column, 'undefined' means to use the default information provided by the column definition
+					undefined,
+					undefined,
+					undefined
+				],
+				['4', '5', '6', false,
+					<azdata.ButtonColumnCellValue>{ // use cell specific icon and title
+						icon: monitorIcon,
+						title: 'Monitor'
+					}, <azdata.ButtonColumnCellValue>{ // use cell specific title
+						title: 'Monitor'
+					}, <azdata.HyperlinkColumnCellValue>{
+						icon: monitorIcon,
+						title: 'Monitor'
+					}, <azdata.HyperlinkColumnCellValue>{
+						title: 'Monitor',
+						url: 'https://www.microsoft.com'
+					}],
+				['7', '8', '9', { enabled: true, checked: true }, undefined, undefined, undefined, undefined]
+			],
+			columns: [
+				{ value: 'c1' },
+				{ value: 'c2' },
+				{ value: 'c3' }, {
+					value: 'checkbox',
+					type: azdata.ColumnType.checkBox,
+					options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
+				}, <azdata.ButtonColumn>{ // image button
+					value: 'Start1',
+					icon: startIcon,
+					type: azdata.ColumnType.button
+				}, <azdata.ButtonColumn>{ // text button
+					value: 'Start',
+					showText: true,
+					type: azdata.ColumnType.button,
+					name: 'Button 2'
+				}, <azdata.HyperlinkColumn>{
+					value: 'Start Image Link',
+					icon: startIcon,
+					type: azdata.ColumnType.hyperlink,
+					name: 'Link 1'
+				}, <azdata.HyperlinkColumn>{
+					value: 'Start Link',
+					type: azdata.ColumnType.hyperlink,
+					name: 'Link 2'
+				}],
 			height: 250,
+			width: 800,
 			selectedRows: [0]
 		}).component();
 		table.onRowSelected(e => {
 			// TODO:
 		});
+		table.onCellAction((arg: azdata.ICellActionEventArgs) => {
+			if (arg.column === 3) { // checkbox column
+				if ((<azdata.ICheckboxCellActionEventArgs>arg).checked) {
+					checkedRows.push(arg.row);
+				} else {
+					checkedRows.splice(checkedRows.indexOf(arg.row), 1);
+				}
+				vscode.window.showInformationMessage('checked rows: ' + checkedRows.join(','));
+			} else {
+				vscode.window.showInformationMessage(`cell action triggere. row: ${arg.row}, cell: ${arg.column}`);
+			}
+		});
+
 		let listBox = view.modelBuilder.listBox().withProperties({
 			values: ['1', '2', '3'],
 			selectedRow: 2
@@ -381,7 +445,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private openDialog(): void {
-		let dialog = azdata.window.createModelViewDialog('Test dialog');
+		let dialog = azdata.window.createModelViewDialog('Test dialog', '', 'wide');
 		let tab1 = azdata.window.createTab('Test tab 1');
 
 		let tab2 = azdata.window.createTab('Test tab 2');

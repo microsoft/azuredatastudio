@@ -201,7 +201,7 @@ export class Project {
 				await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
 				await this.updateImportToSupportRoundTrip();
 				await this.updatePackageReferenceInProjFile();
-				await this.updateAfterCleanTargetInProjFile();
+				await this.updateBeforeBuildTargetInProjFile();
 				await this.updateSystemDatabaseReferencesInProjFile();
 			}
 		} else if (this.containsSSDTOnlySystemDatabaseReferences()) {
@@ -232,21 +232,21 @@ export class Project {
 		await this.updateImportedTargetsToProjFile(constants.NetCoreCondition, constants.NetCoreTargets, undefined);
 	}
 
-	private async updateAfterCleanTargetInProjFile(): Promise<void> {
+	private async updateBeforeBuildTargetInProjFile(): Promise<void> {
 		// Search if clean target already present, update it
 		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Target).length; i++) {
-			const afterCleanNode = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Target)[i];
-			const name = afterCleanNode.getAttribute(constants.Name);
-			if (name === constants.AfterCleanTarget) {
-				return await this.createCleanFileNode(afterCleanNode);
+			const beforeBuildNode = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Target)[i];
+			const name = beforeBuildNode.getAttribute(constants.Name);
+			if (name === constants.BeforeBuildTarget) {
+				return await this.createCleanFileNode(beforeBuildNode);
 			}
 		}
 
 		// If clean target not found, create new
-		const afterCleanNode = this.projFileXmlDoc.createElement(constants.Target);
-		afterCleanNode.setAttribute(constants.Name, constants.AfterCleanTarget);
-		this.projFileXmlDoc.documentElement.appendChild(afterCleanNode);
-		await this.createCleanFileNode(afterCleanNode);
+		const beforeBuildNode = this.projFileXmlDoc.createElement(constants.Target);
+		beforeBuildNode.setAttribute(constants.Name, constants.BeforeBuildTarget);
+		this.projFileXmlDoc.documentElement.appendChild(beforeBuildNode);
+		await this.createCleanFileNode(beforeBuildNode);
 	}
 
 	private async createCleanFileNode(parentNode: any): Promise<void> {
@@ -282,19 +282,26 @@ export class Project {
 	 * @param contents Contents to be written to the new file
 	 */
 	public async addScriptItem(relativeFilePath: string, contents?: string, itemType?: string): Promise<FileProjectEntry> {
+		// check if file already exists
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 
+		if (contents !== undefined && contents !== '' && await utils.exists(absoluteFilePath)) {
+			throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
+		}
+
+		// create the file
 		if (contents) {
 			await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
 			await fs.writeFile(absoluteFilePath, contents);
 		}
 
-		//Check that file actually exists
+		// check that file was successfully created
 		let exists = await utils.exists(absoluteFilePath);
 		if (!exists) {
 			throw new Error(constants.noFileExist(absoluteFilePath));
 		}
 
+		// update sqlproj XML
 		const fileEntry = this.createFileProjectEntry(relativeFilePath, EntryType.File);
 
 		let xmlTag;
@@ -895,7 +902,12 @@ export class Project {
 
 	private async serializeToProjFile(projFileContents: any): Promise<void> {
 		let xml = new xmldom.XMLSerializer().serializeToString(projFileContents);
-		xml = xmlFormat(xml, <any>{ collapseContent: true, indentation: '  ', lineSeparator: os.EOL }); // TODO: replace <any>
+		xml = xmlFormat(xml, <any>{
+			collapseContent: true,
+			indentation: '  ',
+			lineSeparator: os.EOL,
+			whiteSpaceAtEndOfSelfclosingTag: true
+		}); // TODO: replace <any>
 
 		await fs.writeFile(this.projectFilePath, xml);
 	}

@@ -7,7 +7,7 @@ import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { getErrorMessage } from './common/utils';
 import { ResourceTypeCategories } from './constants';
-import { FieldType, OptionsType } from './interfaces';
+import { FieldType, ITool, OptionsType } from './interfaces';
 const localize = nls.loadMessageBundle();
 
 export const account = localize('azure.account', "Azure Account");
@@ -28,7 +28,9 @@ export const NewResourceGroupAriaLabel = localize('azure.resourceGroup.NewResour
 export const realm = localize('deployCluster.Realm', "Realm");
 export const unknownFieldTypeError = (type: FieldType) => localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", type);
 export const optionsSourceAlreadyDefined = (optionsSourceId: string) => localize('optionsSource.alreadyDefined', "Options Source with id:{0} is already defined", optionsSourceId);
+export const valueProviderAlreadyDefined = (providerId: string) => localize('valueProvider.alreadyDefined', "Value Provider with id:{0} is already defined", providerId);
 export const noOptionsSourceDefined = (optionsSourceId: string) => localize('optionsSource.notDefined', "No Options Source defined for id: {0}", optionsSourceId);
+export const noValueProviderDefined = (providerId: string) => localize('valueProvider.notDefined', "No Value Provider defined for id: {0}", providerId);
 export const variableValueFetchForUnsupportedVariable = (variableName: string) => localize('getVariableValue.unknownVariableName', "Attempt to get variable value for unknown variable:{0}", variableName);
 export const isPasswordFetchForUnsupportedVariable = (variableName: string) => localize('getIsPassword.unknownVariableName', "Attempt to get isPassword for unknown variable:{0}", variableName);
 export const optionsNotDefined = (fieldType: FieldType) => localize('optionsNotDefined', "FieldInfo.options was not defined for field type: {0}", fieldType);
@@ -79,3 +81,7 @@ export const discoverPathOrAdditionalInformationText = localize('resourceDeploym
 export const requiredToolsText = localize('resourceDeployment.requiredTools', "Required tools");
 export const installToolsText = localize('resourceDeployment.InstallTools', "Install tools");
 export const optionsText = localize('resourceDeployment.Options', "Options");
+
+export function getToolInstallingMessage(tool: ITool): string {
+	return localize('deploymentDialog.InstallingTool', "Required tool '{0}' [ {1} ] is being installed now.", tool.displayName, tool.homePage);
+}
