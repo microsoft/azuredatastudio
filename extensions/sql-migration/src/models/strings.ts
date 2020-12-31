@@ -34,7 +34,7 @@ export const SUBSCRIPTION_SELECTION_AZURE_ACCOUNT_TITLE = localize('sql.migratio
 export const SUBSCRIPTION_SELECTION_AZURE_SUBSCRIPTION_TITLE = localize('sql.migration.wizard.subscription.azure.subscription.title', "Azure Subscription");
 export const SUBSCRIPTION_SELECTION_AZURE_PRODUCT_TITLE = localize('sql.migration.wizard.subscription.azure.product.title', "Azure Product");
 
-export const CONGRATULATIONS = localize('sql.migration.generic.congratulations', "Congratulations");
+export const CONGRATULATIONS = localize('sql.migration.generic.congratulations', "Congratulations!");
 
 
 // Accounts page

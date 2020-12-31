@@ -8,9 +8,10 @@ import * as path from 'path';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import { Product, ProductLookupTable } from '../models/product';
-import { SKU_RECOMMENDATION_PAGE_TITLE, SKU_RECOMMENDATION_CHOOSE_A_TARGET } from '../models/strings';
+import { SKU_RECOMMENDATION_PAGE_TITLE, SKU_RECOMMENDATION_CHOOSE_A_TARGET, CONGRATULATIONS, SKU_RECOMMENDATION_SOME_SUCCESSFUL } from '../models/strings';
 import { Disposable } from 'vscode';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
+// import { SqlMigrationService } from '../../../../extensions/mssql/src/sqlMigration/sqlMigrationService';
 
 export class SKURecommendationPage extends MigrationWizardPage {
 	// For future reference: DO NOT EXPOSE WIZARD DIRECTLY THROUGH HERE.
@@ -95,8 +96,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private constructDetails(): void {
 		this.chooseTargetComponent?.component.clearItems();
 
-		this.igComponent!.component.value = 'Test';
-		this.detailsComponent!.component.value = 'Test';
+		//TODO: Need to take assessment result and insert here
+		//*** What service do I need to call to get the assessment results?
+		this.igComponent!.component.value = CONGRATULATIONS;
+		// either: SKU_RECOMMENDATION_ALL_SUCCESSFUL or SKU_RECOMMENDATION_SOME_SUCCESSFUL or SKU_RECOMMENDATION_NONE_SUCCESSFUL
+		this.detailsComponent!.component.value = SKU_RECOMMENDATION_SOME_SUCCESSFUL(1, 1);
 		this.constructTargets();
 	}
 
