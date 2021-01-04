@@ -58,6 +58,12 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "dataworkspace.close",
+        "title": "%close-workspace-command%",
+        "category": "",
+        "icon": "$(close)"
+      },
+      {
         "command": "projects.removeProject",
         "title": "%remove-project-command%"
       }
@@ -67,17 +73,22 @@
         {
           "command": "dataworkspace.refresh",
           "when": "view == dataworkspace.views.main",
-          "group": "secondary"
+          "group": "2_currentWorkspace"
+        },
+        {
+          "command": "dataworkspace.close",
+          "when": "view == dataworkspace.views.main && workbenchState == workspace",
+          "group": "3_commands"
         },
         {
           "command": "projects.new",
           "when": "view == dataworkspace.views.main",
-          "group": "navigation"
+          "group": "1_navigation"
         },
         {
           "command": "projects.openExisting",
           "when": "view == dataworkspace.views.main",
-          "group": "navigation"
+          "group": "1_navigation"
         }
       ],
       "commandPalette": [
@@ -86,6 +97,10 @@
         },
         {
           "command": "dataworkspace.refresh",
+          "when": "false"
+        },
+        {
+          "command": "dataworkspace.close",
           "when": "false"
         },
         {
@@ -138,6 +153,7 @@
     ]
   },
   "dependencies": {
+    "ads-extension-telemetry": "^1.0.0",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
@@ -146,9 +162,9 @@
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
-    "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.1.0",
     "should": "^13.2.3",
-    "sinon": "^9.0.2"
+    "sinon": "^9.0.2",
+    "typemoq": "^2.1.0",
+    "vscodetestcover": "^1.1.0"
   }
 }

@@ -80,7 +80,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			this._register(attachEditableDropdownStyler(this._editableDropdown, this.themeService));
 			this._register(this._editableDropdown.onValueChange(async e => {
 				if (this.editable) {
-					this.setSelectedValue(this._editableDropdown.value);
+					this.setSelectedValue(e);
 					await this.validate();
 					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
@@ -97,8 +97,10 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			this._register(attachSelectBoxStyler(this._selectBox, this.themeService));
 			this._register(this._selectBox.onDidSelect(async e => {
 				if (!this.editable) {
-					this.setSelectedValue(this._selectBox.value);
+					this.setSelectedValue(e.selected);
 					await this.validate();
+					// This is currently sending the ISelectData as the args, but to change this now would be a breaking
+					// change for extensions using it. So while not ideal this should be left as is for the time being.
 					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
 						args: e

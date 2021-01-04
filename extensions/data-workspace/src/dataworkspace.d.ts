@@ -20,9 +20,10 @@ declare module 'dataworkspace' {
 
 		/**
 		 * Add projects to the workspace
-		 * @param projectFiles Uris of project files to add
+		 * @param projectFiles Uris of project files to add,
+		 * @param workspaceFilePath workspace file to create if no workspace is open
 		 */
-		addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void>
+		addProjectsToWorkspace(projectFiles: vscode.Uri[], workspaceFilePath?: vscode.Uri): Promise<void>;
 
 		/**
 		 * Change focus to Projects view
@@ -33,6 +34,11 @@ declare module 'dataworkspace' {
 		 * Returns the default location to save projects
 		 */
 		defaultProjectSaveLocation: vscode.Uri | undefined;
+
+		/**
+	 	* Verifies that a workspace is open or if it should be automatically created
+	 	*/
+		validateWorkspace(): Promise<boolean>;
 	}
 
 	/**

@@ -244,6 +244,8 @@ export type ComponentCSSStyles = {
 
 export interface IOptionsSource {
 	provider?: IOptionsSourceProvider
+	loadingText?: string,
+	loadingCompletedText?: string,
 	readonly variableNames?: { [index: string]: string; };
 	readonly providerId: string;
 }
@@ -259,6 +261,11 @@ export interface OptionsInfo {
 export interface DynamicEnablementInfo {
 	target: string,
 	value: string
+}
+
+export interface ValueProviderInfo {
+	providerId: string,
+	triggerField: string
 }
 
 export interface FieldInfoBase {
@@ -307,9 +314,8 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean | DynamicEnablementInfo;
 	isEvaluated?: boolean;
-	valueLookup?: string; // for fetching dropdown options
-	validationLookup?: string // for fetching text field validations
 	validations?: ValidationInfo[];
+	valueProvider?: ValueProviderInfo;
 }
 
 export interface KubeClusterContextFieldInfo extends FieldInfo {

@@ -17,7 +17,7 @@ import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
  */
 export class ArcControllersOptionsSourceProvider implements rd.IOptionsSourceProvider {
 	private _cacheManager = new CacheManager<string, string>();
-	readonly optionsSourceId = 'arc.controllers';
+	readonly id = 'arc.controllers';
 	constructor(private _treeProvider: AzureArcTreeDataProvider) { }
 
 	async getOptions(): Promise<string[] | azdata.CategoryValue[]> {
@@ -35,6 +35,8 @@ export class ArcControllersOptionsSourceProvider implements rd.IOptionsSourcePro
 		switch (variableName) {
 			case 'endpoint': return controller.info.url;
 			case 'username': return controller.info.username;
+			case 'kubeConfig': return controller.info.kubeConfigFilePath;
+			case 'clusterContext': return controller.info.kubeClusterContext;
 			case 'password': return this.getPassword(controller);
 			default: throw new Error(loc.variableValueFetchForUnsupportedVariable(variableName));
 		}
@@ -59,6 +61,8 @@ export class ArcControllersOptionsSourceProvider implements rd.IOptionsSourcePro
 		switch (variableName) {
 			case 'endpoint': return false;
 			case 'username': return false;
+			case 'kubeConfig': return false;
+			case 'clusterContext': return false;
 			case 'password': return true;
 			default: throw new Error(loc.isPasswordFetchForUnsupportedVariable(variableName));
 		}

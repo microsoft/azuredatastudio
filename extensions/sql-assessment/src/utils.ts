@@ -96,3 +96,12 @@ export function htmlEscape(html: string): string {
 function escapeFileName(str: string): string {
 	return str.replace(/\*/g, '_');
 }
+
+export function limitLongName(name: string, maxLength: number): string {
+	if (name.length > maxLength) {
+		return name.slice(0, maxLength) + '...';
+	}
+	return name;
+}
+
+
