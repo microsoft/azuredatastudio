@@ -33,6 +33,10 @@ import { CollapseComponent } from 'sql/workbench/contrib/notebook/browser/cellVi
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
 import { NotebookEditorComponent } from 'sql/workbench/contrib/notebook/browser/notebookEditor.component';
+import { NotebookViewComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component';
+import { NotebookViewsCodeCellComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component';
+import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCard.component';
+import { NotebookViewsGridComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsGrid.component';
 
 const outputComponentRegistry = Registry.as<ICellComponentRegistry>(OutputComponentExtensions.CellComponentContributions);
 
@@ -54,6 +58,10 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			PlaceholderCellComponent,
 			NotebookComponent,
 			NotebookEditorComponent,
+			NotebookViewComponent,
+			NotebookViewsCardComponent,
+			NotebookViewsGridComponent,
+			NotebookViewsCodeCellComponent,
 			ComponentHostDirective,
 			OutputAreaComponent,
 			OutputComponent,

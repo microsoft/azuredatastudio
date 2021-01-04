@@ -733,6 +733,7 @@
 					"angular2-grid",
 					"html-query-plan",
 					"turndown",
+					"gridstack",
 					"mark.js"
                 ]
             },
