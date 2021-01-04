@@ -97,6 +97,8 @@ describe('Create Project From Database Dialog', () => {
 		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
 		await dialog.openDialog();
 
+		dialog.workspaceInputBox!.enabled = false;
+
 		dialog.projectNameTextBox!.value = 'testProject';
 		dialog.projectLocationTextBox!.value = 'testLocation';
 
@@ -108,7 +110,8 @@ describe('Create Project From Database Dialog', () => {
 			projName: 'testProject',
 			filePath: 'testLocation',
 			version: '1.0.0.0',
-			extractTarget: mssql.ExtractTarget['schemaObjectType']
+			extractTarget: mssql.ExtractTarget['schemaObjectType'],
+			newWorkspaceFilePath: undefined
 		};
 
 		dialog.createProjectFromDatabaseCallback = (m) => { model = m; };

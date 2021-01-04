@@ -80,7 +80,7 @@ export class JupyterController {
 			{ scheme: 'untitled', language: '*' }
 		];
 		this.registerNotebookProvider();
-		this.extensionContext.subscriptions.push(vscode.languages.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(this._notebookProvider)));
+		this.extensionContext.subscriptions.push(vscode.languages.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(this._notebookProvider), '.'));
 
 		this.registerDefaultPackageManageProviders();
 		return true;

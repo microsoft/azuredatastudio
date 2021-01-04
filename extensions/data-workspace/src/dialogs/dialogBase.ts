@@ -36,9 +36,7 @@ export abstract class DialogBase {
 
 	protected abstract initialize(view: azdata.ModelView): Promise<void>;
 
-	protected async validate(): Promise<boolean> {
-		return Promise.resolve(true);
-	}
+	abstract validate(): Promise<boolean>;
 
 	public async open(): Promise<void> {
 		const tab = azdata.window.createTab('');
@@ -75,6 +73,10 @@ export abstract class DialogBase {
 			text: message,
 			level: azdata.window.MessageLevel.Error
 		};
+	}
+
+	public getErrorMessage(): azdata.window.DialogMessage {
+		return this._dialogObject.message;
 	}
 
 	protected createHorizontalContainer(view: azdata.ModelView, items: azdata.Component[]): azdata.FlexContainer {
@@ -159,30 +161,25 @@ export abstract class DialogBase {
 		}
 	}
 
-	protected async validateNewWorkspace(sameFolderAsNewProject: boolean): Promise<boolean> {
+	public async validateNewWorkspace(sameFolderAsNewProject: boolean): Promise<void> {
 		// workspace file should end in .code-workspace
 		const workspaceValid = this.workspaceInputBox!.value!.endsWith(constants.WorkspaceFileExtension);
 		if (!workspaceValid) {
-			this.showErrorMessage(constants.WorkspaceFileInvalidError(this.workspaceInputBox!.value!));
-			return false;
+			throw new Error(constants.WorkspaceFileInvalidError(this.workspaceInputBox!.value!));
 		}
 
 		// if the workspace file is not going to be in the same folder as the newly created project, then check that it's a valid folder
 		if (!sameFolderAsNewProject) {
 			const workspaceParentDirectoryExists = await directoryExist(path.dirname(this.workspaceInputBox!.value!));
 			if (!workspaceParentDirectoryExists) {
-				this.showErrorMessage(constants.WorkspaceParentDirectoryNotExistError(this.workspaceInputBox!.value!));
-				return false;
+				throw new Error(constants.WorkspaceParentDirectoryNotExistError(path.dirname(this.workspaceInputBox!.value!)));
 			}
 		}
 
 		// workspace file should not be an existing workspace file
 		const workspaceFileExists = await fileExist(this.workspaceInputBox!.value!);
 		if (workspaceFileExists) {
-			this.showErrorMessage(constants.WorkspaceFileAlreadyExistsError(this.workspaceInputBox!.value!));
-			return false;
+			throw new Error(constants.WorkspaceFileAlreadyExistsError(this.workspaceInputBox!.value!));
 		}
-
-		return true;
 	}
 }
