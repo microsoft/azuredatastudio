@@ -17,7 +17,7 @@ interface Deferred<T> {
 
 export abstract class DialogBase {
 	protected _toDispose: vscode.Disposable[] = [];
-	protected _dialogObject: azdata.window.Dialog;
+	public _dialogObject: azdata.window.Dialog;
 	protected initDialogComplete: Deferred<void> | undefined;
 	protected initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
 	protected workspaceDescriptionFormComponent: azdata.FormComponent | undefined;
