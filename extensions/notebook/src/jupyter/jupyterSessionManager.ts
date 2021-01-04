@@ -363,6 +363,7 @@ export class JupyterSession implements nb.ISession {
 		if (!skip && this.sessionImpl?.kernel?.name !== 'powershell') {
 			let allCode: string = '';
 			// Ensure cwd matches notebook path (this follows Jupyter behavior)
+			console.log('Start creating allCode at: ' + Date.now().toString());
 			if (this.path && path.dirname(this.path)) {
 				allCode += `%cd ${path.dirname(this.path)}${EOL}`;
 			}
@@ -375,18 +376,22 @@ export class JupyterSession implements nb.ISession {
 					allCode += `%set_env ${key}=${process.env[key]}${EOL}`;
 				}
 			}
+			console.log('Finish creating allCode at: ' + Date.now().toString());
 
 			let future = this.sessionImpl.kernel.requestExecute({
 				code: allCode,
 				silent: true,
 				store_history: false
 			}, true);
+			console.log('requestExecute at: ' + Date.now().toString());
+
 			future.onReply = (msg) => {
-				console.log('~~~~~~~~~~~~~~~~~~onReply: ' + msg.content.toString());
+				console.log('Get onReply at: ' + Date.now().toString());
 				// {execution_count: 0, paylod: Array(0) [], status: "ok", user_expressions: Objects {}}
 			};
 			future.onIOPub = (msg) => {
-				console.log('~~~~~~~~~~~~~~~~~~onIOPub: ' + msg.content.toString());
+				console.log('Get IOPub at: ' + Date.now().toString());
+
 				// {execution_state: "busy"}
 
 				// {name: "stdout", text: "/Users/lucyzhang
@@ -437,6 +442,7 @@ export class JupyterSession implements nb.ISession {
 				console.log('~~~~~~~~~~~~~~~~~~onStdin: ' + msg.content.toString());
 			};
 			await future.done;
+			console.log('future done at: ' + Date.now().toString());
 		}
 		this._messagesComplete.resolve();
 	}
