@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+import 'vs/css!./cellToolbar';
 import * as DOM from 'vs/base/browser/dom';
 import { Component, OnInit, Input, ViewChild, TemplateRef, ElementRef, Inject, Output, EventEmitter, ChangeDetectorRef, forwardRef } from '@angular/core';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
