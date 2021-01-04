@@ -104,4 +104,8 @@ export class NotebookViewModel implements INotebookView {
 		this._notebookViews.removeView(this.guid);
 		this._onDeleted.fire(this);
 	}
+
+	public toJSON() {
+		return { guid: this.guid, name: this._name } as NotebookViewModel;
+	}
 }
