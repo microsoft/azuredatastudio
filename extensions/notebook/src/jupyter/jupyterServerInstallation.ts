@@ -711,23 +711,23 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return this._runningOnSAW;
 	}
 
-	public async updateKernelSpecPaths(kernelsFolder: string): Promise<void> {
+	public updateKernelSpecPaths(kernelsFolder: string): void {
 		if (!this._runningOnSAW) {
 			return;
 		}
-		let fileNames = await fs.readdir(kernelsFolder);
+		let fileNames = fs.readdirSync(kernelsFolder);
 		let filePaths = fileNames.map(name => path.join(kernelsFolder, name));
-		let fileStats = await Promise.all(filePaths.map(path => fs.stat(path)));
+		let fileStats = filePaths.map(path => fs.statSync(path));
 		let folderPaths = filePaths.filter((value, index) => value && fileStats[index].isDirectory());
 		let kernelFiles = folderPaths.map(folder => path.join(folder, 'kernel.json'));
-		await Promise.all(kernelFiles.map(file => this.updateKernelSpecPath(file)));
+		kernelFiles.map(file => this.updateKernelSpecPath(file));
 	}
 
-	private async updateKernelSpecPath(kernelPath: string): Promise<void> {
-		let fileContents = await fs.readFile(kernelPath);
+	private updateKernelSpecPath(kernelPath: string): void {
+		let fileContents = fs.readFileSync(kernelPath);
 		let kernelSpec = <IKernelInfo>JSON.parse(fileContents.toString());
 		kernelSpec.argv = kernelSpec.argv?.map(arg => arg.replace('{ADS_PYTHONDIR}', this._pythonInstallationPath));
-		await fs.writeFile(kernelPath, JSON.stringify(kernelSpec, undefined, '\t'));
+		fs.writeFileSync(kernelPath, JSON.stringify(kernelSpec, undefined, '\t'));
 	}
 }
 
