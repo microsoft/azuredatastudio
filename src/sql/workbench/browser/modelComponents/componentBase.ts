@@ -86,17 +86,9 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 	public refreshDataProvider(item: any): void {
 	}
 
-	public updateStyles(): void {
-		const element = (<HTMLElement>this._el.nativeElement);
-		for (const style in this.CSSStyles) {
-			element.style[style] = this.CSSStyles[style];
-		}
-	}
-
 	public setProperties(properties: { [key: string]: any; }): void {
 		properties = properties || {};
 		this.properties = properties;
-		this.updateStyles();
 		this.layout();
 		this.validate().catch(onUnexpectedError);
 	}
@@ -105,7 +97,6 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 	public updateProperty(key: string, value: any): void {
 		if (key) {
 			this.properties[key] = value;
-			this.updateStyles();
 			this.layout();
 			this.validate().catch(onUnexpectedError);
 		}
