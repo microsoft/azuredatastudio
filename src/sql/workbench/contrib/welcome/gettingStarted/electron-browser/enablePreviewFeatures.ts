@@ -8,7 +8,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IElectronService } from 'vs/platform/electron/electron-sandbox/electron';
+import { INativeHostService } from 'vs/platform/native/electron-sandbox/native';
 
 export class NativeEnablePreviewFeatures extends AbstractEnablePreviewFeatures {
 
@@ -17,7 +17,7 @@ export class NativeEnablePreviewFeatures extends AbstractEnablePreviewFeatures {
 		@INotificationService notificationService: INotificationService,
 		@IHostService hostService: IHostService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IElectronService private readonly electronService: IElectronService
+		@INativeHostService private readonly electronService: INativeHostService
 	) {
 		super(storageService, notificationService, hostService, configurationService);
 

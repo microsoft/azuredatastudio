@@ -27,7 +27,7 @@ import { ISearchHistoryService } from 'vs/workbench/contrib/search/common/search
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import * as dom from 'vs/base/browser/dom';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
@@ -87,7 +87,7 @@ export class NotebookSearchView extends SearchView {
 		super(options, fileService, editorService, progressService, notificationService, dialogService, contextViewService, instantiationService, viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService, replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService, menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService);
 
 		this.memento = new Memento(this.id, storageService);
-		this.viewletState = this.memento.getMemento(StorageScope.WORKSPACE);
+		this.viewletState = this.memento.getMemento(StorageScope.WORKSPACE, StorageTarget.MACHINE);
 		this.viewActions = [
 			this._register(this.instantiationService.createInstance(ClearSearchResultsAction, ClearSearchResultsAction.ID, ClearSearchResultsAction.LABEL)),
 		];
@@ -146,7 +146,7 @@ export class NotebookSearchView extends SearchView {
 		e.browserEvent.stopPropagation();
 
 		const actions: IAction[] = [];
-		const actionsDisposable = createAndFillInContextMenuActions(this.contextMenu, { shouldForwardArgs: true }, actions, this.contextMenuService);
+		const actionsDisposable = createAndFillInContextMenuActions(this.contextMenu, { shouldForwardArgs: true }, actions);
 
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => e.anchor,
@@ -240,7 +240,7 @@ export class NotebookSearchView extends SearchView {
 	public startSearch(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: NotebookSearchWidget): Thenable<void> {
 		let progressComplete: () => void;
 		this.progressService.withProgress({ location: this.getProgressLocation(), delay: triggeredOnType ? 300 : 0 }, _progress => {
-			return new Promise(resolve => progressComplete = resolve);
+			return new Promise<void>(resolve => progressComplete = resolve);
 		});
 
 		this.state = SearchUIState.Searching;
@@ -551,7 +551,7 @@ class CancelSearchAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchStopIcon.classNames);
+		super(id, label, 'search-action ' + searchStopIcon.id);
 		this.update();
 	}
 
@@ -578,7 +578,7 @@ class ExpandAllAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchExpandAllIcon.classNames);
+		super(id, label, 'search-action ' + searchExpandAllIcon.id);
 		this.update();
 	}
 
@@ -607,7 +607,7 @@ class CollapseDeepestExpandedLevelAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchCollapseAllIcon.classNames);
+		super(id, label, 'search-action ' + searchCollapseAllIcon.id);
 		this.update();
 	}
 
@@ -663,7 +663,7 @@ class ClearSearchResultsAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchClearIcon.classNames);
+		super(id, label, 'search-action ' + searchClearIcon.id);
 		this.update();
 	}
 

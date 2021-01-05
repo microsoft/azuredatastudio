@@ -118,7 +118,7 @@ async function promptInputBox(title: string, options: vscode.InputBoxOptions): P
 	inputBox.value = options.value ?? '';
 	inputBox.ignoreFocusOut = options.ignoreFocusOut ?? false;
 
-	return new Promise(resolve => {
+	return new Promise<any>(resolve => {
 		let valueAccepted = false;
 		inputBox.onDidAccept(async () => {
 			if (options.validateInput) {

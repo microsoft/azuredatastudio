@@ -5,13 +5,11 @@
 
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { IExtension, IScannedExtension, ExtensionType, ITranslatedScannedExtension, IExtensionManifest } from 'vs/platform/extensions/common/extensions';
+import { IExtensionManagementService, IGalleryExtension, IExtensionIdentifier, ILocalExtension, InstallOptions } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { URI } from 'vs/base/common/uri';
-import { IExtension, IScannedExtension, ExtensionType, ITranslatedScannedExtension } from 'vs/platform/extensions/common/extensions';
-import { IExtensionManagementService, IGalleryExtension, IExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IWorkspace, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
-import { IStringDictionary } from 'vs/base/common/collections';
-
-export const IExtensionManagementServerService = createDecorator<IExtensionManagementServerService>('extensionManagementServerService');
+import { IWorkspace, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace'; // {{ SQL CARBON EDIT }}
+import { ExtensionRecommendationReason } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
 
 export interface IExtensionManagementServer {
 	id: string;
@@ -19,12 +17,21 @@ export interface IExtensionManagementServer {
 	extensionManagementService: IExtensionManagementService;
 }
 
+export const IExtensionManagementServerService = createDecorator<IExtensionManagementServerService>('extensionManagementServerService');
 export interface IExtensionManagementServerService {
 	readonly _serviceBrand: undefined;
 	readonly localExtensionManagementServer: IExtensionManagementServer | null;
 	readonly remoteExtensionManagementServer: IExtensionManagementServer | null;
 	readonly webExtensionManagementServer: IExtensionManagementServer | null;
 	getExtensionManagementServer(extension: IExtension): IExtensionManagementServer | null;
+}
+
+export const IWorkbenchExtensioManagementService = createDecorator<IWorkbenchExtensioManagementService>('extensionManagementService');
+export interface IWorkbenchExtensioManagementService extends IExtensionManagementService {
+	readonly _serviceBrand: undefined;
+	installExtensions(extensions: IGalleryExtension[], installOptions?: InstallOptions): Promise<ILocalExtension[]>;
+	updateFromGallery(gallery: IGalleryExtension, extension: ILocalExtension): Promise<ILocalExtension>;
+	getExtensionManagementServerToInstall(manifest: IExtensionManifest): IExtensionManagementServer | null
 }
 
 export const enum EnablementState {
@@ -40,8 +47,6 @@ export const IWorkbenchExtensionEnablementService = createDecorator<IWorkbenchEx
 
 export interface IWorkbenchExtensionEnablementService {
 	readonly _serviceBrand: undefined;
-
-	readonly allUserExtensionsDisabled: boolean;
 
 	/**
 	 * Event to listen on for extension enablement changes
@@ -111,41 +116,9 @@ export interface IExtensionRecommendation {
 	sources: ExtensionRecommendationSource[];
 }
 
-export const enum ExtensionRecommendationReason {
-	Workspace,
-	File,
-	Executable,
-	WorkspaceConfig,
-	DynamicWorkspace,
-	Experimental,
-	Application,
-}
-
-export interface IExtensionRecommendationReson {
+export interface IExtensionRecommendationReason {
 	reasonId: ExtensionRecommendationReason;
 	reasonText: string;
-}
-
-export const IExtensionRecommendationsService = createDecorator<IExtensionRecommendationsService>('extensionRecommendationsService');
-
-export interface IExtensionRecommendationsService {
-	readonly _serviceBrand: undefined;
-
-	getAllRecommendationsWithReason(): IStringDictionary<IExtensionRecommendationReson>;
-	getImportantRecommendations(): Promise<IExtensionRecommendation[]>;
-	getOtherRecommendations(): Promise<IExtensionRecommendation[]>;
-	getFileBasedRecommendations(): IExtensionRecommendation[];
-	getExeBasedRecommendations(exe?: string): Promise<{ important: IExtensionRecommendation[], others: IExtensionRecommendation[] }>;
-	getConfigBasedRecommendations(): Promise<{ important: IExtensionRecommendation[], others: IExtensionRecommendation[] }>;
-	getWorkspaceRecommendations(): Promise<IExtensionRecommendation[]>;
-	getKeymapRecommendations(): IExtensionRecommendation[];
-
-	toggleIgnoredRecommendation(extensionId: string, shouldIgnore: boolean): void;
-	getIgnoredRecommendations(): ReadonlyArray<string>;
-	onRecommendationChange: Event<RecommendationChangeNotification>;
-
-	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]>; // {{SQL CARBON EDIT}}
-	promptRecommendedExtensionsByScenario(scenarioType: string): void; // {{SQL CARBON EDIT}}
 }
 
 export const IWebExtensionsScannerService = createDecorator<IWebExtensionsScannerService>('IWebExtensionsScannerService');
@@ -153,6 +126,7 @@ export interface IWebExtensionsScannerService {
 	readonly _serviceBrand: undefined;
 	scanExtensions(type?: ExtensionType): Promise<IScannedExtension[]>;
 	scanAndTranslateExtensions(type?: ExtensionType): Promise<ITranslatedScannedExtension[]>;
+	scanAndTranslateSingleExtension(extensionLocation: URI, extensionType: ExtensionType): Promise<ITranslatedScannedExtension | null>;
 	canAddExtension(galleryExtension: IGalleryExtension): Promise<boolean>;
 	addExtension(galleryExtension: IGalleryExtension): Promise<IScannedExtension>;
 	removeExtension(identifier: IExtensionIdentifier, version?: string): Promise<void>;

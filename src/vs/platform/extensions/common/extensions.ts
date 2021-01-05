@@ -207,6 +207,7 @@ export const enum ExtensionType {
 
 export interface IExtension {
 	readonly type: ExtensionType;
+	readonly isBuiltin: boolean;
 	readonly identifier: IExtensionIdentifier;
 	readonly manifest: IExtensionManifest;
 	readonly location: URI;
@@ -273,6 +274,7 @@ export interface IExtensionDescription extends IExtensionManifest {
 	readonly identifier: ExtensionIdentifier;
 	readonly uuid?: string;
 	readonly isBuiltin: boolean;
+	readonly isUserBuiltin: boolean;
 	readonly isUnderDevelopment: boolean;
 	readonly extensionLocation: URI;
 	enableProposedApi?: boolean;

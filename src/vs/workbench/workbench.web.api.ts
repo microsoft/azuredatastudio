@@ -13,12 +13,12 @@ import { IURLCallbackProvider } from 'vs/workbench/services/url/browser/urlServi
 import { LogLevel } from 'vs/platform/log/common/log';
 import { IUpdateProvider, IUpdate } from 'vs/workbench/services/update/browser/updateService';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { IWorkspaceProvider, IWorkspace } from 'vs/workbench/services/host/browser/browserHostService';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IProductConfiguration } from 'vs/platform/product/common/productService';
 import { mark } from 'vs/base/common/performance';
-import { ICredentialsProvider } from 'vs/platform/credentials/common/credentials';
+import { ICredentialsProvider } from 'vs/workbench/services/credentials/common/credentials';
 
 interface IResourceUriProvider {
 	(uri: URI): URI;
@@ -52,7 +52,7 @@ interface ITunnelProvider {
 }
 
 interface ITunnelFactory {
-	(tunnelOptions: ITunnelOptions): Promise<ITunnel> | undefined;
+	(tunnelOptions: ITunnelOptions, tunnelCreationOptions: TunnelCreationOptions): Promise<ITunnel> | undefined;
 }
 
 interface ITunnelOptions {
@@ -64,6 +64,13 @@ interface ITunnelOptions {
 	localAddressPort?: number;
 
 	label?: string;
+}
+
+export interface TunnelCreationOptions {
+	/**
+	 * True when the local operating system will require elevation to use the requested local port.
+	 */
+	elevationRequired?: boolean;
 }
 
 interface ITunnel extends IDisposable {
@@ -153,7 +160,6 @@ enum ColorScheme {
 	HIGH_CONTRAST = 'hc'
 }
 
-
 interface IInitialColorTheme {
 
 	/**
@@ -218,10 +224,6 @@ interface IDefaultEditor {
 }
 
 interface IDefaultLayout {
-	/** @deprecated Use views instead (TODO@eamodio remove eventually) */
-	readonly sidebar?: IDefaultSideBarLayout;
-	/** @deprecated Use views instead (TODO@eamodio remove eventually) */
-	readonly panel?: IDefaultPanelLayout;
 	readonly views?: IDefaultView[];
 	readonly editors?: IDefaultEditor[];
 }
@@ -233,6 +235,21 @@ interface IProductQualityChangeHandler {
 	 * `insider` or `stable` product qualities.
 	 */
 	(newQuality: 'insider' | 'stable'): void;
+}
+
+/**
+ * Settings sync options
+ */
+interface ISettingsSyncOptions {
+	/**
+	 * Is settings sync enabled
+	 */
+	readonly enabled: boolean;
+
+	/**
+	 * Handler is being called when the user changes Settings Sync enablement.
+	 */
+	enablementHandler?(enablement: boolean): void;
 }
 
 interface IWorkbenchConstructionOptions {
@@ -251,17 +268,15 @@ interface IWorkbenchConstructionOptions {
 	readonly connectionToken?: string;
 
 	/**
-	 * Session id of the current authenticated user
-	 *
-	 * @deprecated Instead pass current authenticated user info through [credentialsProvider](#credentialsProvider)
-	 */
-	readonly authenticationSessionId?: string;
-
-	/**
 	 * An endpoint to serve iframe content ("webview") from. This is required
 	 * to provide full security isolation from the workbench host.
 	 */
 	readonly webviewEndpoint?: string;
+
+	/**
+	 * An URL pointing to the web worker extension host <iframe> src.
+	 */
+	readonly webWorkerExtensionHostIframeSrc?: string;
 
 	/**
 	 * A factory for web sockets.
@@ -300,17 +315,18 @@ interface IWorkbenchConstructionOptions {
 	readonly workspaceProvider?: IWorkspaceProvider;
 
 	/**
-	 * The user data provider is used to handle user specific application
-	 * state like settings, keybindings, UI state (e.g. opened editors) and snippets.
-	 */
-	userDataProvider?: IFileSystemProvider;
-
-	/**
 	 * Enables Settings Sync by default.
 	 *
 	 * Syncs with the current authenticated user account (provided in [credentialsProvider](#credentialsProvider)) by default.
+	 *
+	 * @deprecated Instead use [settingsSyncOptions](#settingsSyncOptions) to enable/disable settings sync in the workbench.
 	 */
 	readonly enableSyncByDefault?: boolean;
+
+	/**
+	 * Settings sync options
+	 */
+	readonly settingsSyncOptions?: ISettingsSyncOptions;
 
 	/**
 	 * The credentials provider to store and retrieve secrets.
@@ -321,12 +337,6 @@ interface IWorkbenchConstructionOptions {
 	 * Add static extensions that cannot be uninstalled but only be disabled.
 	 */
 	readonly staticExtensions?: ReadonlyArray<IStaticExtension>;
-
-	/**
-	 * [TEMPORARY]: This will be removed soon.
-	 * Service end-point hosting builtin extensions
-	 */
-	readonly builtinExtensionsServiceUrl?: string;
 
 	/**
 	 * [TEMPORARY]: This will be removed soon.
@@ -435,7 +445,8 @@ interface IWorkbenchConstructionOptions {
 interface IWorkbench {
 	commands: {
 		executeCommand(command: string, ...args: any[]): Promise<unknown>;
-	}
+	},
+	shutdown: () => void;
 }
 
 /**
@@ -447,11 +458,10 @@ interface IWorkbench {
 let created = false;
 let workbenchPromiseResolve: Function;
 const workbenchPromise = new Promise<IWorkbench>(resolve => workbenchPromiseResolve = resolve);
-async function create(domElement: HTMLElement, options: IWorkbenchConstructionOptions): Promise<void> {
+function create(domElement: HTMLElement, options: IWorkbenchConstructionOptions): IDisposable {
 
 	// Mark start of workbench
 	mark('didLoadWorkbenchMain');
-	performance.mark('workbench-start');
 
 	// Assert that the workbench is not created more than once. We currently
 	// do not support this and require a full context switch to clean-up.
@@ -460,10 +470,6 @@ async function create(domElement: HTMLElement, options: IWorkbenchConstructionOp
 	} else {
 		created = true;
 	}
-
-	// Startup workbench and resolve waiters
-	const workbench = await main(domElement, options);
-	workbenchPromiseResolve(workbench);
 
 	// Register commands if any
 	if (Array.isArray(options.commands)) {
@@ -475,6 +481,21 @@ async function create(domElement: HTMLElement, options: IWorkbenchConstructionOp
 			});
 		}
 	}
+
+	// Startup workbench and resolve waiters
+	let instantiatedWorkbench: IWorkbench | undefined = undefined;
+	main(domElement, options).then(workbench => {
+		instantiatedWorkbench = workbench;
+		workbenchPromiseResolve(workbench);
+	});
+
+	return toDisposable(() => {
+		if (instantiatedWorkbench) {
+			instantiatedWorkbench.shutdown();
+		} else {
+			workbenchPromise.then(instantiatedWorkbench => instantiatedWorkbench.shutdown());
+		}
+	});
 }
 
 
@@ -540,6 +561,9 @@ export {
 
 	// LogLevel
 	LogLevel,
+
+	// SettingsSync
+	ISettingsSyncOptions,
 
 	// Updates/Quality
 	IUpdateProvider,

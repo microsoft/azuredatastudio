@@ -61,7 +61,7 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService
 	) {
-		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, commandService, contextKeyService, menuService, keybindingService, contextMenuService, themeService);
+		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, commandService, contextKeyService, menuService, keybindingService, themeService);
 
 		// special-case handling for MSSQL data provider
 		const connInfo = this.dashboardService.connectionManagementService.connectionInfo;

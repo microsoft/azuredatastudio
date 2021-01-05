@@ -16,7 +16,7 @@ import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/q
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { TestQueryEditorService } from 'sql/workbench/services/queryEditor/test/common/testQueryEditorService';
-import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { ITestInstantiationService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IUntitledTextResourceEditorInput, EditorInput, IVisibleEditorPane } from 'vs/workbench/common/editor';
@@ -35,12 +35,17 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 const languageAssociations = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
 suite('set mode', () => {
+	let instantiationService: ITestInstantiationService;
 	let disposables: IDisposable[] = [];
+
+	function createFileInput(resource: URI, preferredResource?: URI, preferredMode?: string, preferredName?: string, preferredDescription?: string): FileEditorInput {
+		return instantiationService.createInstance(FileEditorInput, resource, preferredResource, preferredName, preferredDescription, undefined, preferredMode);
+	}
 
 	setup(() => {
 		disposables.push(languageAssociations.registerLanguageAssociation(QueryEditorLanguageAssociation.languages, QueryEditorLanguageAssociation, QueryEditorLanguageAssociation.isDefault));
 		disposables.push(languageAssociations.registerLanguageAssociation(NotebookEditorInputAssociation.languages, NotebookEditorInputAssociation));
-		const instantiationService = workbenchInstantiationService();
+		instantiationService = workbenchInstantiationService();
 		instantiationService.stub(INotebookService, new NotebookServiceStub());
 		const editorService = new MockEditorService(instantiationService);
 		instantiationService.stub(IEditorService, editorService);
@@ -55,13 +60,12 @@ suite('set mode', () => {
 	});
 
 	test('does leave editor alone and change mode when changed from plaintext to json', async () => {
-		const instantiationService = workbenchInstantiationService();
 		const editorService = new MockEditorService(instantiationService, 'plaintext');
 		instantiationService.stub(IEditorService, editorService);
 		const replaceEditorStub = sinon.stub(editorService, 'replaceEditors', () => Promise.resolve());
 		const stub = sinon.stub();
 		const modeSupport = { setMode: stub };
-		const activeEditor = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.txt'), undefined, 'plaintext', undefined);
+		const activeEditor = createFileInput(URI.file('/test/file.txt'), undefined, 'plaintext', undefined);
 		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'json');
 		assert(stub.calledOnce);
 		assert(stub.calledWithExactly('json'));
@@ -75,7 +79,7 @@ suite('set mode', () => {
 		const stub = sinon.stub();
 		const modeSupport = { setMode: stub };
 		const uri = URI.file('/test/file.sql');
-		const textInput = instantiationService.createInstance(FileEditorInput, uri, undefined, 'sql', undefined);
+		const textInput = createFileInput(uri, undefined, 'sql', undefined);
 		const activeEditor = instantiationService.createInstance(FileQueryEditorInput, '', textInput, instantiationService.createInstance(QueryResultsInput, uri.toString()));
 		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'notebooks');
 		assert(stub.calledOnce);
@@ -89,7 +93,7 @@ suite('set mode', () => {
 		const stub = sinon.stub();
 		const modeSupport = { setMode: stub };
 		const uri = URI.file('/test/file.sql');
-		const textInput = instantiationService.createInstance(FileEditorInput, uri, undefined, 'sql', undefined);
+		const textInput = createFileInput(uri, undefined, 'sql', undefined);
 		const activeEditor = instantiationService.createInstance(FileQueryEditorInput, '', textInput, instantiationService.createInstance(QueryResultsInput, uri.toString()));
 		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'plaintext');
 		assert(stub.calledOnce);
@@ -102,7 +106,7 @@ suite('set mode', () => {
 		instantiationService.stub(IEditorService, editorService);
 		const stub = sinon.stub();
 		const modeSupport = { setMode: stub };
-		const activeEditor = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.txt'), undefined, 'plaintext', undefined);
+		const activeEditor = createFileInput(URI.file('/test/file.txt'), undefined, 'plaintext', undefined);
 		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'sql');
 		assert(stub.calledOnce);
 		assert(stub.calledWithExactly('sql'));
@@ -117,7 +121,7 @@ suite('set mode', () => {
 		(instantiationService as TestInstantiationService).stub(INotificationService, 'error', errorStub);
 		const stub = sinon.stub();
 		const modeSupport = { setMode: stub };
-		const activeEditor = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.txt'), undefined, 'plaintext', undefined);
+		const activeEditor = createFileInput(URI.file('/test/file.txt'), undefined, 'plaintext', undefined);
 		sinon.stub(activeEditor, 'isDirty', () => true);
 		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'sql');
 		assert(stub.notCalled);

@@ -10,7 +10,7 @@ import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { Action } from 'vs/base/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncActionDescriptor, MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
-import { IWorkbenchActionRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/actions';
+import { IWorkbenchActionRegistry, Extensions as WorkbenchExtensions, CATEGORIES } from 'vs/workbench/common/actions';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { IWorkbenchLayoutService, Parts, Position, positionToString } from 'vs/workbench/services/layout/browser/layoutService';
 import { ActivityAction, ToggleCompositePinnedAction, ICompositeBar } from 'vs/workbench/browser/parts/compositeBarActions';
@@ -18,11 +18,13 @@ import { IActivity } from 'vs/workbench/common/activity';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { ActivePanelContext, PanelPositionContext } from 'vs/workbench/common/panel';
 import { ContextKeyExpression } from 'vs/platform/contextkey/common/contextkey';
-import { Codicon, registerIcon } from 'vs/base/common/codicons';
+import { Codicon } from 'vs/base/common/codicons';
+import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
+import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 
-const maximizeIcon = registerIcon('panel-maximize', Codicon.chevronUp);
-const restoreIcon = registerIcon('panel-restore', Codicon.chevronDown);
-const closeIcon = registerIcon('panel-close', Codicon.close);
+const maximizeIcon = registerIcon('panel-maximize', Codicon.chevronUp, nls.localize('maximizeIcon', 'Icon to maximize a panel.'));
+const restoreIcon = registerIcon('panel-restore', Codicon.chevronDown, nls.localize('restoreIcon', 'Icon to restore a panel.'));
+const closeIcon = registerIcon('panel-close', Codicon.close, nls.localize('closeIcon', 'Icon to close a panel.'));
 
 export class ClosePanelAction extends Action {
 
@@ -34,7 +36,7 @@ export class ClosePanelAction extends Action {
 		name: string,
 		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService
 	) {
-		super(id, name, closeIcon.classNames);
+		super(id, name, ThemeIcon.asClassName(closeIcon));
 	}
 
 	async run(): Promise<void> {
@@ -106,11 +108,11 @@ export class ToggleMaximizedPanelAction extends Action {
 		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService,
 		@IEditorGroupsService editorGroupsService: IEditorGroupsService
 	) {
-		super(id, label, layoutService.isPanelMaximized() ? restoreIcon.classNames : maximizeIcon.classNames);
+		super(id, label, layoutService.isPanelMaximized() ? ThemeIcon.asClassName(restoreIcon) : ThemeIcon.asClassName(maximizeIcon));
 
 		this.toDispose.add(editorGroupsService.onDidLayout(() => {
 			const maximized = this.layoutService.isPanelMaximized();
-			this.class = maximized ? restoreIcon.classNames : maximizeIcon.classNames;
+			this.class = maximized ? ThemeIcon.asClassName(restoreIcon) : ThemeIcon.asClassName(maximizeIcon);
 			this.label = maximized ? ToggleMaximizedPanelAction.RESTORE_LABEL : ToggleMaximizedPanelAction.MAXIMIZE_LABEL;
 		}));
 	}
@@ -118,9 +120,14 @@ export class ToggleMaximizedPanelAction extends Action {
 	async run(): Promise<void> {
 		if (!this.layoutService.isVisible(Parts.PANEL_PART)) {
 			this.layoutService.setPanelHidden(false);
+			// If the panel is not already maximized, maximize it
+			if (!this.layoutService.isPanelMaximized()) {
+				this.layoutService.toggleMaximizedPanel();
+			}
 		}
-
-		this.layoutService.toggleMaximizedPanel();
+		else {
+			this.layoutService.toggleMaximizedPanel();
+		}
 	}
 }
 
@@ -278,12 +285,12 @@ export class NextPanelViewAction extends SwitchPanelViewAction {
 }
 
 const actionRegistry = Registry.as<IWorkbenchActionRegistry>(WorkbenchExtensions.WorkbenchActions);
-actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(TogglePanelAction, { primary: KeyMod.CtrlCmd | KeyCode.KEY_J }), 'View: Toggle Panel', nls.localize('view', "View"));
-actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(FocusPanelAction), 'View: Focus into Panel', nls.localize('view', "View"));
-actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(ToggleMaximizedPanelAction), 'View: Toggle Maximized Panel', nls.localize('view', "View"));
-actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(ClosePanelAction), 'View: Close Panel', nls.localize('view', "View"));
-actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(PreviousPanelViewAction), 'View: Previous Panel View', nls.localize('view', "View"));
-actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(NextPanelViewAction), 'View: Next Panel View', nls.localize('view', "View"));
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(TogglePanelAction, { primary: KeyMod.CtrlCmd | KeyCode.KEY_J }), 'View: Toggle Panel', CATEGORIES.View.value);
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(FocusPanelAction), 'View: Focus into Panel', CATEGORIES.View.value);
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(ToggleMaximizedPanelAction), 'View: Toggle Maximized Panel', CATEGORIES.View.value);
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(ClosePanelAction), 'View: Close Panel', CATEGORIES.View.value);
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(PreviousPanelViewAction), 'View: Previous Panel View', CATEGORIES.View.value);
+actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(NextPanelViewAction), 'View: Next Panel View', CATEGORIES.View.value);
 
 MenuRegistry.appendMenuItem(MenuId.MenubarAppearanceMenu, {
 	group: '2_workbench_layout',
@@ -298,7 +305,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarAppearanceMenu, {
 function registerPositionPanelActionById(config: PanelActionConfig<Position>) {
 	const { id, label, alias, when } = config;
 	// register the workbench action
-	actionRegistry.registerWorkbenchAction(SyncActionDescriptor.create(SetPanelPositionAction, id, label), alias, nls.localize('view', "View"), when);
+	actionRegistry.registerWorkbenchAction(SyncActionDescriptor.create(SetPanelPositionAction, id, label), alias, CATEGORIES.View.value, when);
 	// register as a menu item
 	MenuRegistry.appendMenuItem(MenuId.MenubarAppearanceMenu, {
 		group: '3_workbench_layout_move',

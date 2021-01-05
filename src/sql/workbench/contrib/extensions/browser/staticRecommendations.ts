@@ -6,7 +6,7 @@
 import { ExtensionRecommendations, ExtensionRecommendation, PromptedExtensionRecommendations } from 'vs/workbench/contrib/extensions/browser/extensionRecommendations';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { localize } from 'vs/nls';
-import { ExtensionRecommendationReason } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { ExtensionRecommendationReason } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
 
 export class StaticRecommendations extends ExtensionRecommendations {
 
@@ -14,8 +14,8 @@ export class StaticRecommendations extends ExtensionRecommendations {
 	get recommendations(): ReadonlyArray<ExtensionRecommendation> { return this._recommendations; }
 
 	constructor(
-		promptedExtensionRecommendations: PromptedExtensionRecommendations,
-		@IProductService productService: IProductService
+		promptedExtensionRecommendations?: PromptedExtensionRecommendations,
+		@IProductService productService?: IProductService
 	) {
 		super(promptedExtensionRecommendations);
 

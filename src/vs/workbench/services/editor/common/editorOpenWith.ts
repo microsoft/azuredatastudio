@@ -9,13 +9,14 @@ import { IConfigurationNode, IConfigurationRegistry, Extensions } from 'vs/platf
 import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuration';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ICustomEditorInfo, IEditorService, IOpenEditorOverrideHandler, IOpenEditorOverrideEntry } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorInput, IEditorPane, IEditorInputFactoryRegistry, Extensions as EditorExtensions } from 'vs/workbench/common/editor';
+import { IEditorInput, IEditorPane, IEditorInputFactoryRegistry, Extensions as EditorExtensions, EditorResourceAccessor } from 'vs/workbench/common/editor';
 import { ITextEditorOptions, IEditorOptions } from 'vs/platform/editor/common/editor';
 import { IEditorGroup, OpenEditorContext } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { URI } from 'vs/base/common/uri';
 import { extname, basename, isEqual } from 'vs/base/common/resources';
+import { Codicon } from 'vs/base/common/codicons';
 
 /**
  * Id of the default editor for open with.
@@ -60,7 +61,8 @@ export async function openEditorWith(
 	}
 
 	// Prompt
-	const resourceExt = extname(resource);
+	const originalResource = EditorResourceAccessor.getOriginalUri(input) || resource;
+	const resourceExt = extname(originalResource);
 
 	const items: (IQuickPickItem & { handler: IOpenEditorOverrideHandler })[] = allEditorOverrides.map(([handler, entry]) => {
 		return {
@@ -70,7 +72,7 @@ export async function openEditorWith(
 			description: entry.active ? nls.localize('promptOpenWith.currentlyActive', 'Currently Active') : undefined,
 			detail: entry.detail,
 			buttons: resourceExt ? [{
-				iconClass: 'codicon-settings-gear',
+				iconClass: Codicon.gear.classNames,
 				tooltip: nls.localize('promptOpenWith.setDefaultTooltip', "Set as default editor for '{0}' files", resourceExt)
 			}] : undefined
 		};
@@ -81,7 +83,7 @@ export async function openEditorWith(
 	if (items.length) {
 		picker.selectedItems = [items[0]];
 	}
-	picker.placeholder = nls.localize('promptOpenWith.placeHolder', "Select editor for '{0}'", basename(resource));
+	picker.placeholder = nls.localize('promptOpenWith.placeHolder', "Select editor for '{0}'", basename(originalResource));
 
 	const pickedItem = await new Promise<(IQuickPickItem & { handler: IOpenEditorOverrideHandler }) | undefined>(resolve => {
 		picker.onDidAccept(() => {
@@ -146,11 +148,12 @@ export function getAllAvailableEditors(
 		overrides.unshift([
 			{
 				open: (input: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup) => {
-					if (!input.resource) {
+					const resource = EditorResourceAccessor.getOriginalUri(input);
+					if (!resource) {
 						return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 					}
 
-					const fileEditorInput = editorService.createEditorInput({ resource: input.resource, forceFile: true });
+					const fileEditorInput = editorService.createEditorInput({ resource, forceFile: true });
 					const textOptions: IEditorOptions | ITextEditorOptions = options ? { ...options, override: false } : { override: false };
 					return { override: editorService.openEditor(fileEditorInput, textOptions, group) };
 				}

@@ -8,7 +8,7 @@ import { Action } from 'vs/base/common/actions';
 import { KeyMod, KeyChord, KeyCode } from 'vs/base/common/keyCodes';
 import { SyncActionDescriptor, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
+import { IWorkbenchActionRegistry, Extensions, CATEGORIES } from 'vs/workbench/common/actions';
 import { IWorkbenchThemeService, IWorkbenchTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { VIEWLET_ID, IExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -22,6 +22,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { IQuickInputService, QuickPickInput } from 'vs/platform/quickinput/common/quickInput';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { DEFAULT_PRODUCT_ICON_THEME_ID } from 'vs/workbench/services/themes/browser/productIconThemeData';
+import { IGettingStartedService } from 'vs/workbench/services/gettingStarted/common/gettingStartedService';
 
 export class SelectColorThemeAction extends Action {
 
@@ -34,6 +35,7 @@ export class SelectColorThemeAction extends Action {
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@IWorkbenchThemeService private readonly themeService: IWorkbenchThemeService,
 		// @IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService, {{SQL CARBON EDIT}} no unused
+		@IGettingStartedService private readonly gettingStartedService: IGettingStartedService,
 		@IViewletService private readonly viewletService: IViewletService
 	) {
 		super(id, label);
@@ -85,6 +87,7 @@ export class SelectColorThemeAction extends Action {
 						openExtensionViewlet(this.viewletService, `category:themes ${quickpick.value}`);
 					} else {
 						selectTheme(theme, true);
+						this.gettingStartedService.progressByEvent('themeSelected');
 					}
 					isCompleted = true;
 					quickpick.hide();
@@ -303,7 +306,7 @@ class GenerateColorThemeAction extends Action {
 		let theme = this.themeService.getColorTheme();
 		let colors = Registry.as<IColorRegistry>(ColorRegistryExtensions.ColorContribution).getColors();
 		let colorIds = colors.map(c => c.id).sort();
-		let resultingColors: { [key: string]: string } = {};
+		let resultingColors: { [key: string]: string | null } = {};
 		let inherited: string[] = [];
 		for (let colorId of colorIds) {
 			const color = theme.getColor(colorId, false);
@@ -313,11 +316,17 @@ class GenerateColorThemeAction extends Action {
 				inherited.push(colorId);
 			}
 		}
+		const nullDefaults = [];
 		for (let id of inherited) {
 			const color = theme.getColor(id);
 			if (color) {
 				resultingColors['__' + id] = Color.Format.CSS.formatHexA(color, true);
+			} else {
+				nullDefaults.push(id);
 			}
+		}
+		for (let id of nullDefaults) {
+			resultingColors['__' + id] = null;
 		}
 		let contents = JSON.stringify({
 			'$schema': colorThemeSchemaId,
@@ -327,7 +336,7 @@ class GenerateColorThemeAction extends Action {
 		}, null, '\t');
 		contents = contents.replace(/\"__/g, '//"');
 
-		return this.editorService.openEditor({ contents, mode: 'jsonc' });
+		return this.editorService.openEditor({ contents, mode: 'jsonc', options: { pinned: true } });
 	}
 }
 
@@ -343,10 +352,8 @@ const productIconThemeDescriptor = SyncActionDescriptor.from(SelectProductIconTh
 Registry.as<IWorkbenchActionRegistry>(Extensions.WorkbenchActions).registerWorkbenchAction(productIconThemeDescriptor, 'Preferences: Product Icon Theme', category);
 
 
-const developerCategory = localize({ key: 'developer', comment: ['A developer on Code itself or someone diagnosing issues in Code'] }, "Developer");
-
 const generateColorThemeDescriptor = SyncActionDescriptor.from(GenerateColorThemeAction);
-Registry.as<IWorkbenchActionRegistry>(Extensions.WorkbenchActions).registerWorkbenchAction(generateColorThemeDescriptor, 'Developer: Generate Color Theme From Current Settings', developerCategory);
+Registry.as<IWorkbenchActionRegistry>(Extensions.WorkbenchActions).registerWorkbenchAction(generateColorThemeDescriptor, 'Developer: Generate Color Theme From Current Settings', CATEGORIES.Developer.value);
 
 MenuRegistry.appendMenuItem(MenuId.MenubarPreferencesMenu, {
 	group: '4_themes',

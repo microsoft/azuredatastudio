@@ -39,7 +39,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
-import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
+import { ILifecycleService } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -57,7 +57,6 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IHostColorSchemeService } from 'vs/workbench/services/themes/common/hostColorSchemeService';
-import { ColorScheme } from 'vs/platform/theme/common/theme';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 
 class NotebookModelStub extends stubs.NotebookModelStub {
@@ -87,7 +86,8 @@ class NotebookModelStub extends stubs.NotebookModelStub {
 suite('Test class NotebookEditor:', () => {
 	let instantiationService = <TestInstantiationService>workbenchInstantiationService();
 	instantiationService.stub(IHostColorSchemeService, {
-		colorScheme: ColorScheme.DARK,
+		dark: true,
+		highContrast: false,
 		onDidChangeColorScheme: new Emitter<void>().event
 	});
 	let workbenchThemeService = instantiationService.createInstance(WorkbenchThemeService);
