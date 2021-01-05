@@ -214,7 +214,6 @@
 	padding: 8px 0 8px 0;
 	margin: 0;
 	width: 16em;
-	position: absolute
 }
 
 .ads-homepage .dropdown-content li a {
@@ -999,7 +998,6 @@
 }
 
 .ads-homepage .ads-homepage-section .links .videos-container {
-	margin-bottom: 20px;
 	display: flex;
 	flex-direction: column
 }
@@ -1038,6 +1036,7 @@
 .ads-homepage .extension-pack-header {
 	font-weight: 600;
 	font-size: 2.33em;
+	line-height: 1;
 	z-index: 9;
 	margin-bottom: 10px
 }

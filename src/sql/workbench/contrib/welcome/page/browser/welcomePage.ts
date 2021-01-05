@@ -327,13 +327,17 @@ class WelcomePage extends Disposable {
 			workspaces = workspaces.filter(recent => !this.contextService.isCurrentWorkspace(isRecentWorkspace(recent) ? recent.workspace : recent.folderUri));
 			if (!workspaces.length) {
 				const recent = container.querySelector('.welcomePage') as HTMLElement;
+				const moreRecent = document.querySelector('.moreRecent') as HTMLElement;
+				moreRecent.remove();
 				recent.classList.add('emptyRecent');
+
 				return;
 			}
 			const ul = container.querySelector('.recent ul') as HTMLElement;
 			if (!ul) {
 				return;
 			}
+
 			const workspacesToShow = workspaces.slice(0, 5);
 			clearNode(ul);
 			await this.mapListEntries(workspacesToShow, fileService, container, ul);
