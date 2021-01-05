@@ -134,17 +134,19 @@ export class Notebook {
 	}
 
 	async waitForTrustedElements(): Promise<void> {
-		await this.code.waitForElement('iframe');
-		await this.code.waitForElement('dialog');
-		await this.code.waitForElement('embed');
-		await this.code.waitForElement('svg');
+		const cellSelector = '.notebookEditor .notebook-cell';
+		await this.code.waitForElement(`${cellSelector} iframe`);
+		await this.code.waitForElement(`${cellSelector} dialog`);
+		await this.code.waitForElement(`${cellSelector} embed`);
+		await this.code.waitForElement(`${cellSelector} svg`);
 	}
 
 	async waitForTrustedElementsGone(): Promise<void> {
-		await this.code.waitForElementGone('iframe');
-		await this.code.waitForElementGone('dialog');
-		await this.code.waitForElementGone('embed');
-		await this.code.waitForElementGone('svg');
+		const cellSelector = '.notebookEditor .notebook-cell';
+		await this.code.waitForElementGone(`${cellSelector} iframe`);
+		await this.code.waitForElementGone(`${cellSelector} dialog`);
+		await this.code.waitForElementGone(`${cellSelector} embed`);
+		await this.code.waitForElementGone(`${cellSelector} svg`);
 	}
 }
 
