@@ -242,8 +242,12 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this.setLoading(false);
 			if (this._previewMode) {
 				let outputElement = <HTMLElement>this.output.nativeElement;
-				outputElement.innerHTML = this.markdownResult.element.innerHTML;
-				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
+				outputElement.innerHTML = this.markdownResult.element.innerHTML; //changes height
+				if (outputElement.innerHTML === '') {
+					outputElement.style.lineHeight = '50px';
+				} else {
+					outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
+				}
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 				outputElement.focus();
 			}
