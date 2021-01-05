@@ -3822,6 +3822,63 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "78",
+					"extensionName": "azuredatastudio-select-top-n",
+					"displayName": "Select Top N",
+					"shortDescription": "Azure data studio extension to select the first N rows from tables/views",
+					"publisher": {
+						"displayName": "Jimmy Stelzer",
+						"publisherId": "jimmystelzer",
+						"publisherName": "jimmystelzer"
+					},
+					"versions": [
+						{
+							"version": "0.0.4",
+							"lastUpdated": "01/01/2021",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/jimmystelzer/azuredatastudio-select-top-n/releases/tag/0.0.4"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/jimmystelzer/azuredatastudio-select-top-n/master/artwork/icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/jimmystelzer/azuredatastudio-select-top-n/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/jimmystelzer/azuredatastudio-select-top-n/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/jimmystelzer/azuredatastudio-select-top-n/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/jimmystelzer/azuredatastudio-select-top-n"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -3830,7 +3887,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 65
+							"count": 66
 						}
 					]
 				}
