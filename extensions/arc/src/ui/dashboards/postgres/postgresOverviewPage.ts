@@ -192,8 +192,12 @@ export class PostgresOverviewPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token) => {
-								await this._postgresModel.controllerModel.acquireLogin();
-								return await this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name);
+								try {
+									await this._postgresModel.controllerModel.acquireLogin();
+									return await this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name);
+								} finally {
+									this._postgresModel.controllerModel.releaseLogin();
+								}
 							}
 						);
 						await this._controllerModel.refreshTreeNode();
