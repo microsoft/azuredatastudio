@@ -18,6 +18,8 @@ export class RadioButton extends Widget {
 	private inputElement: HTMLInputElement;
 	private _onClicked = new Emitter<void>();
 	public readonly onClicked: Event<void> = this._onClicked.event;
+	private _onChanged = new Emitter<void>();
+	public readonly onChange: Event<void> = this._onChanged.event;
 	private _label: HTMLSpanElement;
 
 	constructor(container: HTMLElement, opts: IRadioButtonOptions) {
@@ -33,7 +35,18 @@ export class RadioButton extends Widget {
 		this.label = opts.label;
 		this.enabled = opts.enabled || true;
 		this.checked = opts.checked || false;
-		this.onclick(this.inputElement, () => this._onClicked.fire());
+		this.onclick(this.inputElement, () => {
+			this._onClicked.fire();
+			let buttonGroup = document.getElementsByName(this.name);
+			buttonGroup.forEach((button) => {
+				let event = document.createEvent('HTMLEvents');
+				event.initEvent('change', true, true);
+				button.dispatchEvent(event);
+			});
+		});
+		this.inputElement.addEventListener('change', () => {
+			this._onChanged.fire();
+		});
 
 		container.appendChild(this.inputElement);
 		container.appendChild(this._label);
