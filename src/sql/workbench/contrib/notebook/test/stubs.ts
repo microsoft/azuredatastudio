@@ -100,6 +100,12 @@ export class NotebookModelStub implements INotebookModel {
 	set viewMode(mode: ViewMode) {
 		throw new Error('Method not implemented.');
 	}
+	setMetaValue(key: string, value: any) {
+		throw new Error('Method not implemented.');
+	}
+	getMetaValue(key: string) {
+		throw new Error('Method not implemented.');
+	}
 	addCell(cellType: CellType, index?: number): void {
 		throw new Error('Method not implemented.');
 	}
