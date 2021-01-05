@@ -196,11 +196,11 @@ suite('NotebookViewModel', function (): void {
 
 		let cellToResize = viewModel.cells[0];
 
-		viewModel.moveCell(cellToResize, 3, 4);
+		viewModel.resizeCell(cellToResize, 3, 4);
 		let cellMeta = viewModel.getCellMetadata(cellToResize);
 
-		assert.equal(cellMeta.x, 3);
-		assert.equal(cellMeta.y, 4);
+		assert.equal(cellMeta.width, 3);
+		assert.equal(cellMeta.height, 4);
 	});
 
 	test('get cell metadata', async function (): Promise<void> {
