@@ -385,6 +385,47 @@ export default class MainController implements vscode.Disposable {
 				component: declarativeTable,
 				title: 'Declarative Table'
 			}], formItemLayout);
+
+		const img = view.modelBuilder.image().withProps({
+			iconPath: startIcon,
+			iconHeight: 16,
+			iconWidth: 16,
+			width: 16,
+			height: 16
+		}).component();
+		const text1 = view.modelBuilder.text().withProps({ value: 'text1' }).component();
+		const text2 = view.modelBuilder.text().withProps({ value: 'text2' }).component();
+		const flex = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			alignItems: 'center',
+			width: 100,
+			height: 30
+		}).withProps({
+			CSSStyles: {
+				'border-style': 'solid',
+				'border-width': '1px'
+			},
+			width: 100,
+			height: 40
+		}).component();
+		flex.addItem(img, {
+			flex: '0 0 auto'
+		});
+		flex.addItem(text1, {
+			flex: '1 1 auto'
+		});
+		flex.addItem(text2, {
+			flex: '0 0 auto',
+			CSSStyles: {
+				'font-size': 'large'
+			}
+		});
+		const compositeButton = view.modelBuilder.divContainer().withItems([flex]).withProps({
+			ariaRole: 'button',
+			ariaLabel: 'show status',
+			clickable: true
+		}).component();
+
 		let groupItems = {
 			components: [{
 				component: table,
@@ -392,6 +433,9 @@ export default class MainController implements vscode.Disposable {
 			}, {
 				component: listBox,
 				title: 'List Box'
+			}, {
+				component: compositeButton,
+				title: 'compositeButton'
 			}], title: 'group'
 		};
 		formBuilder.addFormItem(groupItems, formItemLayout);
