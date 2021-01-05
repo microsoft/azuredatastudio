@@ -43,6 +43,11 @@ export class NewProjectDialog extends DialogBase {
 				return false;
 			}
 
+			if (this.workspaceInputBox!.enabled) {
+				const sameFolderAsNewProject = path.join(this.model.location, this.model.name) === path.dirname(this.workspaceInputBox!.value!);
+				await this.validateNewWorkspace(sameFolderAsNewProject);
+			}
+
 			return true;
 		}
 		catch (err) {
@@ -55,7 +60,7 @@ export class NewProjectDialog extends DialogBase {
 		try {
 			const validateWorkspace = await this.workspaceService.validateWorkspace();
 			if (validateWorkspace) {
-				await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId);
+				await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, vscode.Uri.file(this.workspaceInputBox!.value!));
 			}
 		}
 		catch (err) {
@@ -109,7 +114,7 @@ export class NewProjectDialog extends DialogBase {
 			this.model.name = projectNameTextBox.value!;
 			projectNameTextBox.updateProperty('title', projectNameTextBox.value);
 
-			this.updateWorkspaceInputbox(this.model.location, this.model.name);
+			this.updateWorkspaceInputbox(path.join(this.model.location, this.model.name), this.model.name);
 		}));
 
 		const locationTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
@@ -122,7 +127,7 @@ export class NewProjectDialog extends DialogBase {
 		this.register(locationTextBox.onTextChanged(() => {
 			this.model.location = locationTextBox.value!;
 			locationTextBox.updateProperty('title', locationTextBox.value);
-			this.updateWorkspaceInputbox(this.model.location, this.model.name);
+			this.updateWorkspaceInputbox(path.join(this.model.location, this.model.name), this.model.name);
 		}));
 
 		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -145,8 +150,10 @@ export class NewProjectDialog extends DialogBase {
 			locationTextBox.value = selectedFolder;
 			this.model.location = selectedFolder;
 
-			this.updateWorkspaceInputbox(this.model.location, this.model.name);
+			this.updateWorkspaceInputbox(path.join(this.model.location, this.model.name), this.model.name);
 		}));
+
+		this.createWorkspaceContainer(view);
 
 		const form = view.modelBuilder.formContainer().withFormItems([
 			{
@@ -163,7 +170,8 @@ export class NewProjectDialog extends DialogBase {
 				required: true,
 				component: this.createHorizontalContainer(view, [locationTextBox, browseFolderButton])
 			},
-			this.createWorkspaceContainer(view)
+			this.workspaceDescriptionFormComponent!,
+			this.workspaceInputFormComponent!
 		]).component();
 		await view.initializeModel(form);
 		this.initDialogComplete?.resolve();

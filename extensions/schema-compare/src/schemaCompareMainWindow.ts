@@ -305,12 +305,13 @@ export class SchemaCompareMainWindow {
 					cssClass: 'align-with-header',
 					width: 90
 				},
+				<azdata.CheckboxColumn>
 				{
 					value: loc.include,
 					cssClass: 'align-with-header',
 					width: 60,
 					type: azdata.ColumnType.checkBox,
-					options: { actionOnCheckbox: azdata.ActionOnCellCheckboxCheck.customAction }
+					action: azdata.ActionOnCellCheckboxCheck.customAction
 				},
 				{
 					value: loc.action,

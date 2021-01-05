@@ -157,7 +157,7 @@ abstract class ControllerDialogBase extends InitializingComponent {
 		return this.dialog;
 	}
 
-	public abstract async validate(): Promise<boolean>;
+	public abstract validate(): Promise<boolean>;
 
 	private handleCancel(): void {
 		this.completionPromise.resolve(undefined);
@@ -271,11 +271,19 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 		}
 		const azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 		try {
-			await azdataApi.azdata.login(this.urlInputBox.value!, this.usernameInputBox.value!, this.passwordInputBox.value);
+			await azdataApi.azdata.login(
+				this.urlInputBox.value!,
+				this.usernameInputBox.value!,
+				this.passwordInputBox.value,
+				{
+					'KUBECONFIG': this.kubeConfigInputBox.value!,
+					'KUBECTL_CONTEXT': this.clusterContextRadioGroup.value!
+				}
+			);
 		} catch (e) {
 			if (getErrorMessage(e).match(/Wrong username or password/i)) {
 				this.dialog.message = {
-					text: loc.invalidPassword,
+					text: loc.loginFailed,
 					level: azdata.window.MessageLevel.Error
 				};
 				return false;
@@ -299,3 +307,5 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 		return dialog;
 	}
 }
+
+

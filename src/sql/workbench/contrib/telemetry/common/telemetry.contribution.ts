@@ -33,7 +33,8 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 						'tab',
 						'selectNextSuggestion'].some(id => id === e.commandId) &&
 						// Events from src\vs\editor\contrib\wordOperations\wordOperations.ts
-						!e.commandId.startsWith('cursor')) {
+						!e.commandId.startsWith('cursor') &&
+						!e.commandId.startsWith('_vscode_delegate')) {
 						telemetryService.sendActionEvent(TelemetryView.Shell, 'adsCommandExecuted', e.commandId);
 					}
 				}));

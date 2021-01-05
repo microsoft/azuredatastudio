@@ -902,7 +902,12 @@ export class Project {
 
 	private async serializeToProjFile(projFileContents: any): Promise<void> {
 		let xml = new xmldom.XMLSerializer().serializeToString(projFileContents);
-		xml = xmlFormat(xml, <any>{ collapseContent: true, indentation: '  ', lineSeparator: os.EOL }); // TODO: replace <any>
+		xml = xmlFormat(xml, <any>{
+			collapseContent: true,
+			indentation: '  ',
+			lineSeparator: os.EOL,
+			whiteSpaceAtEndOfSelfclosingTag: true
+		}); // TODO: replace <any>
 
 		await fs.writeFile(this.projectFilePath, xml);
 	}
