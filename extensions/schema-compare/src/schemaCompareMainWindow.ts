@@ -1081,7 +1081,7 @@ export class SchemaCompareMainWindow {
 
 	private async getService(): Promise<mssql.ISchemaCompareService> {
 		if (this.schemaCompareService === null || this.schemaCompareService === undefined) {
-			this.schemaCompareService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
+			this.schemaCompareService = (await vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		}
 		return this.schemaCompareService;
 	}
