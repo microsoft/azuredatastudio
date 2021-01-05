@@ -406,7 +406,6 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 	it('Should exit for failing Schema Compare service', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService(testStateScmp.FAILURE);
 
-		//testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns(() => Promise.resolve(''));
 		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object, null);
 
 		await result.start(undefined);
@@ -448,7 +447,7 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		});
 	});
 
-	it('Should disable script button and apply button for Schema Compare service for database', async function (): Promise<void> {
+	it('Should enable script button and apply button for Schema Compare service for database', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService(testStateScmp.SUCCESS_NOT_EQUAL);
 
 		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object, null);
@@ -477,7 +476,7 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		});
 	});
 
-	it('Should disable script button and apply button for Schema Compare service for database2', async function (): Promise<void> {
+	it('Should enable script button and apply button for Schema Compare service for database, using button onClick fire event', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService(testStateScmp.SUCCESS_NOT_EQUAL);
 
 		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object, testContext.viewContext.view);
@@ -493,10 +492,17 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 		await result.promise;
 
 		//Generate script button and apply button should be enabled for database comparison
-		should(result.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
-			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: true,
-			applyButtonState: true} )).equal(true);
+		result.verifyButtonsState({
+			compareButtonState: true,
+			optionsButtonState: true,
+			switchButtonState: true,
+			openScmpButtonState: true,
+			saveScmpButtonState: true,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: true,
+			applyButtonState: true} );
 	});
 
 });
@@ -602,6 +608,13 @@ describe('SchemaCompareMainWindow: Button clicks', function (): void {
 		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
 		testContext = createContext();
 	});
+	this.beforeEach(() => {
+		sinon.restore();
+		showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
+	});
+	this.afterEach(() => {
+		sinon.restore();
+	});
 
 	it('createSwitchButton click to start schema comparison', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
@@ -618,15 +631,31 @@ describe('SchemaCompareMainWindow: Button clicks', function (): void {
 		testContext.viewContext.switchDirectionButtonOnClick.fire(undefined);
 		await result.promise;
 
-		//TODO: Test that it actually got clicked
-		//Generate script button and apply button should be enabled for database comparison
-		should(result.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
-			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
-			applyButtonState: false} )).equal(true);
+		//Verify that switch actually happened
+		should.notEqual(result.sourceEndpointInfo, undefined);
+		should.equal(result.sourceEndpointInfo.endpointType, mssql.SchemaCompareEndpointType.Database);
+		should.equal(result.sourceEndpointInfo.serverName, 'My Server');
+		should.equal(result.sourceEndpointInfo.databaseName, 'My Database');
+		should.notEqual(result.targetEndpointInfo, undefined);
+		should.equal(result.targetEndpointInfo.endpointType, mssql.SchemaCompareEndpointType.Dacpac);
+		should.equal(result.targetEndpointInfo.packageFilePath, 'source.dacpac');
+
+		//Generate script button and apply button should be disabled for database to dacpac comparison
+		result.verifyButtonsState({
+			compareButtonState: true,
+			optionsButtonState: true,
+			switchButtonState: true,
+			openScmpButtonState: true,
+			saveScmpButtonState: true,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: false,
+			applyButtonState: false
+		});
 	});
 
-	it('SourceAndTarget selection to open schemaCompareDialog', async function (): Promise<void> {
+	it('SourceAndTarget selection should open schemaCompareDialog', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
 		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object, testContext.viewContext.view);
@@ -639,31 +668,14 @@ describe('SchemaCompareMainWindow: Button clicks', function (): void {
 		result.targetEndpointInfo = setDatabaseEndpointInfo();
 
 		testContext.viewContext.selectButtonOnClick.fire(undefined);
+		await result.promise;
 
-		//TODO: Test that it actually got clicked
-	});
-
-	it('cancelCompare click to cancel schema comparison, with failure', async function (): Promise<void> {
-		let sc = new SchemaCompareTestService(testStateScmp.FAILURE);
-
-		//testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
-
-		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object, testContext.viewContext.view);
-
-		await result.start(undefined);
-
-		should(result.getComparisonResult() === undefined);
-
-		result.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
-		result.targetEndpointInfo = setDatabaseEndpointInfo();
-		await result.execute();
-
-		testContext.viewContext.cancelCompareButtonOnClick.fire(undefined);
-		//await result.promise;
-
-		//TODO: Verify the error message was thrown
-		//should(err.message).equal(expectedMessage);
-		//testContext.apiWrapper.verify(x => x.showErrorMessage(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		//Verify that Select button click opened a Schema Compare dialog
+		should.notEqual(result.schemaCompareDialog, undefined);
+		should.notEqual(result.schemaCompareDialog.dialog, undefined);
+		should(result.schemaCompareDialog.dialog.title).equal(loc.SchemaCompareLabel);
+		should(result.schemaCompareDialog.dialog.okButton.label).equal(loc.OkButtonText);
+		should(result.schemaCompareDialog.dialog.okButton.enabled).equal(false); // Should be false when open
 	});
 
 	it('cancelCompare click to cancel schema comparison', async function (): Promise<void> {
@@ -680,14 +692,23 @@ describe('SchemaCompareMainWindow: Button clicks', function (): void {
 		await result.execute();
 
 		testContext.viewContext.cancelCompareButtonOnClick.fire(undefined);
-		//await result.promise;
 
-		//TODO: Test that it actually got clicked
+		//Verify no error message was thrown
+		should(showErrorMessageSpy.notCalled).be.true();
+
 		//Generate script button and apply button should be enabled for database comparison
-		should(result.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
-			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
-			applyButtonState: false} )).equal(true);
+		result.verifyButtonsState({
+			compareButtonState: true,
+			optionsButtonState: true,
+			switchButtonState: true,
+			openScmpButtonState: true,
+			saveScmpButtonState: true,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: false,
+			applyButtonState: false
+		});
 	});
 
 	it('generateScript click to generate script for schema comparison', async function (): Promise<void> {
@@ -705,37 +726,21 @@ describe('SchemaCompareMainWindow: Button clicks', function (): void {
 
 		testContext.viewContext.generateScriptButtonOnClick.fire(undefined);
 
-		//TODO: Test that it actually got clicked
-		//Generate script button and apply button should be enabled for database comparison
-		should(result.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
-			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
-			applyButtonState: false} )).equal(true);
+		//Verify no error message was thrown
+		should(showErrorMessageSpy.notCalled).be.true();
+
+		result.verifyButtonsState({
+			compareButtonState: true,
+			optionsButtonState: true,
+			switchButtonState: true,
+			openScmpButtonState: true,
+			saveScmpButtonState: true,
+			cancelCompareButtonState: false,
+			selectSourceButtonState: true,
+			selectTargetButtonState: true,
+			generateScriptButtonState: false,
+			applyButtonState: false
+		});
 	});
-
-	it('generateScript click to generate script for schema comparison, with failure', async function (): Promise<void> {
-		let sc = new SchemaCompareTestService(testStateScmp.FAILURE);
-
-		//testContext.apiWrapper.setup(x => x.showErrorMessage(TypeMoq.It.isAny())).returns((s) => { throw new Error(s); });
-
-		let result = new SchemaCompareMainWindowTest(sc, mockExtensionContext.object, testContext.viewContext.view);
-
-		await result.start(undefined);
-
-		should(result.getComparisonResult() === undefined);
-
-		result.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
-		result.targetEndpointInfo = setDatabaseEndpointInfo();
-		await result.execute();
-
-		testContext.viewContext.generateScriptButtonOnClick.fire(undefined);
-
-		//TODO: Test that it actually got clicked + test for the failure message
-		//Generate script button and apply button should be enabled for database comparison
-		should(result.verifyButtonsState( {compareButtonState: true, optionsButtonState: true, switchButtonState: true,
-			openScmpButtonState: true, saveScmpButtonState: true, cancelCompareButtonState: false,
-			selectSourceButtonState: true, selectTargetButtonState: true, generateScriptButtonState: false,
-			applyButtonState: false} )).equal(true);
-	});
-
 });
+

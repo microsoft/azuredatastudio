@@ -99,9 +99,9 @@ export function createViewContext(): ViewTestContext {
 	};
 	let buttonBuilder = () => {
 		let b = button();
-		let builder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
+		let builder: azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties> = {
 			component: () => b,
-			withProperties: (properties) => {
+			withProperties: (properties: any) => {
 				if ((properties as any).label === loc.compare) {
 					b.label = loc.compare;
 					b.onDidClick = compareButtonOnClick.event;
@@ -118,7 +118,25 @@ export function createViewContext(): ViewTestContext {
 					b.label = loc.generateScript;
 					b.onDidClick = generateScriptButtonOnClick.event;
 				}
-
+				return builder;
+			},
+			withProps: (properties) => {
+				if ((properties as any).label === loc.compare) {
+					b.label = loc.compare;
+					b.onDidClick = compareButtonOnClick.event;
+				} else if ((properties as any).label === '•••') {
+					b.label = '•••';
+					b.onDidClick = selectButtonOnClick.event;
+				} else if ((properties as any).label === loc.switchDirection) {
+					b.label = loc.switchDirection;
+					b.onDidClick = switchDirectionButtonOnClick.event;
+				} else if ((properties as any).label === loc.stop) {
+					b.label = loc.stop;
+					b.onDidClick = cancelCompareButtonOnClick.event;
+				} else if ((properties as any).label === loc.generateScript) {
+					b.label = loc.generateScript;
+					b.onDidClick = generateScriptButtonOnClick.event;
+				}
 				return builder;
 			},
 			withValidation: () => builder
@@ -130,9 +148,10 @@ export function createViewContext(): ViewTestContext {
 		checked: false,
 		onDidClick: onClick.event,
 	});
-	let radioButtonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
+	let radioButtonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties> = {
 		component: () => radioButton,
 		withProperties: () => radioButtonBuilder,
+		withProps: () => radioButtonBuilder,
 		withValidation: () => radioButtonBuilder
 	};
 
@@ -140,9 +159,10 @@ export function createViewContext(): ViewTestContext {
 		checked: true,
 		onChanged: onClick.event
 	});
-	let checkBoxBuilder: azdata.ComponentBuilder<azdata.CheckBoxComponent> = {
+	let checkBoxBuilder: azdata.ComponentBuilder<azdata.CheckBoxComponent, azdata.CheckBoxProperties> = {
 		component: () => checkbox,
 		withProperties: () => checkBoxBuilder,
+		withProps: () => checkBoxBuilder,
 		withValidation: () => checkBoxBuilder
 	};
 
@@ -158,7 +178,8 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => formBuilder,
 		withValidation: () => formBuilder,
 		withItems: () => formBuilder,
-		withLayout: () => formBuilder
+		withLayout: () => formBuilder,
+		withProps: () => formBuilder
 	});
 
 	let toolbar: azdata.ToolbarContainer = Object.assign({}, componentBase, container, {
@@ -171,7 +192,8 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => toolbarBuilder,
 		withValidation: () => toolbarBuilder,
 		withItems: () => toolbarBuilder,
-		withLayout: () => toolbarBuilder
+		withLayout: () => toolbarBuilder,
+		withProps: () => toolbarBuilder
 	});
 
 	let flex: azdata.FlexContainer = Object.assign({}, componentBase, container, {
@@ -181,7 +203,8 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => flexBuilder,
 		withValidation: () => flexBuilder,
 		withItems: () => flexBuilder,
-		withLayout: () => flexBuilder
+		withLayout: () => flexBuilder,
+		withProps: () => flexBuilder
 	});
 
 	let div: azdata.DivContainer = Object.assign({}, componentBase, container, {
@@ -192,7 +215,8 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => divBuilder,
 		withValidation: () => divBuilder,
 		withItems: () => divBuilder,
-		withLayout: () => divBuilder
+		withLayout: () => divBuilder,
+		withProps: () => divBuilder
 	});
 
 	let splitView: azdata.SplitViewContainer = Object.assign({}, componentBase, container, {
@@ -203,7 +227,8 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => splitViewBuilder,
 		withValidation: () => splitViewBuilder,
 		withItems: () => splitViewBuilder,
-		withLayout: () => splitViewBuilder
+		withLayout: () => splitViewBuilder,
+		withProps: () => splitViewBuilder
 	});
 
 	let diffEditor: () => azdata.DiffEditorComponent = () => Object.assign({}, componentBase, {
@@ -215,12 +240,14 @@ export function createViewContext(): ViewTestContext {
 		onContentChanged: onClick.event,
 		onEditorCreated: onClick.event,
 		isAutoResizable: false,
-		minimumHeight: 0
+		minimumHeight: 0,
+		title: ''
 	});
-	let diffEditorBuilder: azdata.ComponentBuilder<azdata.DiffEditorComponent> = {
+	let diffEditorBuilder: azdata.ComponentBuilder<azdata.DiffEditorComponent, azdata.DiffEditorComponent> = {
 		component: () => diffEditor(),
 		withProperties: () => diffEditorBuilder,
-		withValidation: () => diffEditorBuilder
+		withValidation: () => diffEditorBuilder,
+		withProps: () => diffEditorBuilder
 	};
 
 	let inputBox: () => azdata.InputBoxComponent = () => Object.assign({}, componentBase, {
@@ -228,12 +255,13 @@ export function createViewContext(): ViewTestContext {
 		onEnterKeyPressed: onClick.event,
 		value: ''
 	});
-	let inputBoxBuilder: azdata.ComponentBuilder<azdata.InputBoxComponent> = {
+	let inputBoxBuilder: azdata.ComponentBuilder<azdata.InputBoxComponent, azdata.InputBoxProperties> = {
 		component: () => {
 			let r = inputBox();
 			return r;
 		},
 		withProperties: () => inputBoxBuilder,
+		withProps: () => inputBoxBuilder,
 		withValidation: () => inputBoxBuilder
 	};
 
@@ -245,12 +273,13 @@ export function createViewContext(): ViewTestContext {
 		},
 		values: []
 	});
-	let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent> = {
+	let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent, azdata.DropDownProperties> = {
 		component: () => {
 			let r = dropdown();
 			return r;
 		},
 		withProperties: () => dropdownBuilder,
+		withProps: () => dropdownBuilder,
 		withValidation: () => dropdownBuilder
 	};
 
@@ -258,11 +287,13 @@ export function createViewContext(): ViewTestContext {
 		data: [] as any[][],
 		columns: [] as string[],
 		onRowSelected: onClick.event,
-		onCellAction: onClick.event
+		onCellAction: onClick.event,
+		appendData: (data: any[][]) => undefined
 	});
-	let tableBuilder: azdata.ComponentBuilder<azdata.TableComponent> = {
+	let tableBuilder: azdata.ComponentBuilder<azdata.TableComponent, azdata.TableComponentProperties> = {
 		component: () => table(),
 		withProperties: () => tableBuilder,
+		withProps: () => tableBuilder,
 		withValidation: () => tableBuilder
 	};
 
@@ -273,6 +304,7 @@ export function createViewContext(): ViewTestContext {
 	let loadingBuilder: azdata.LoadingComponentBuilder = {
 		component: () => loadingComponent(),
 		withProperties: () => loadingBuilder,
+		withProps: () => loadingBuilder,
 		withValidation: () => loadingBuilder,
 		withItem: () => loadingBuilder
 	};
@@ -286,6 +318,7 @@ export function createViewContext(): ViewTestContext {
 		validate: undefined!,
 		initializeModel: () => { return Promise.resolve(); },
 		modelBuilder: {
+			listView: undefined!,
 			radioCardGroup: undefined!,
 			navContainer: undefined!,
 			divContainer: () => divBuilder,

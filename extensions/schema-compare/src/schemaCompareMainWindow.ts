@@ -70,6 +70,8 @@ export class SchemaCompareMainWindow {
 
 	public promise;
 
+	public schemaCompareDialog: SchemaCompareDialog;
+
 	constructor(private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext, private view?: azdata.ModelView) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Delete] = loc.deleteAction;
@@ -891,8 +893,9 @@ export class SchemaCompareMainWindow {
 
 		this.selectSourceButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSelectSource');
-			let dialog = new SchemaCompareDialog(this);
-			await dialog.openDialog();
+			this.schemaCompareDialog = new SchemaCompareDialog(this);
+			this.promise = this.schemaCompareDialog.openDialog();
+			await this.promise;
 		});
 
 		this.selectTargetButton = this.view.modelBuilder.button().withProperties({
@@ -903,8 +906,9 @@ export class SchemaCompareMainWindow {
 
 		this.selectTargetButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSelectTarget');
-			let dialog = new SchemaCompareDialog(this);
-			await dialog.openDialog();
+			this.schemaCompareDialog = new SchemaCompareDialog(this);
+			this.promise = await this.schemaCompareDialog.openDialog();
+			await this.promise;
 		});
 	}
 
