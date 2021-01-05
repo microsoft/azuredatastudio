@@ -30,6 +30,8 @@ import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/bro
 import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -73,6 +75,7 @@ suite('Notebook Find Model', function (): void {
 	const logService = new NullLogService();
 	let model: NotebookModel;
 	let markdownRenderer: NotebookMarkdownRenderer = new NotebookMarkdownRenderer();
+	let configurationService: IConfigurationService;
 
 	setup(async () => {
 		sessionReady = new Deferred<void>();
@@ -84,6 +87,7 @@ suite('Notebook Find Model', function (): void {
 		queryConnectionService.callBase = true;
 
 		instantiationService = new InstantiationService(serviceCollection, true);
+		configurationService = new TestConfigurationService();
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
@@ -433,7 +437,7 @@ suite('Notebook Find Model', function (): void {
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(contents));
 		defaultModelOptions.contentManager = mockContentManager.object;
 		// Initialize the model
-		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService());
+		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
 		await model.requestModelLoad();
 	}

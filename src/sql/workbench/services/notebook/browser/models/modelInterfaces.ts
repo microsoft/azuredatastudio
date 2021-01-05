@@ -21,6 +21,13 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
+import { ICellValue, ResultSetSummary } from 'sql/workbench/services/query/common/query';
+import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
+
+export enum ViewMode {
+	Notebook,
+	Views,
+}
 
 export interface ICellRange {
 	readonly start: number;
@@ -238,10 +245,6 @@ export interface INotebookModel {
 	 */
 	readonly sessionLoadFinished: Promise<void>;
 	/**
-	 * Promise indicating when output grid data is converted to mimeType and html.
-	 */
-	gridDataConversionComplete: Promise<any>;
-	/**
 	 * LanguageInfo saved in the notebook
 	 */
 	readonly languageInfo: nb.ILanguageInfo | undefined;
@@ -301,6 +304,11 @@ export interface INotebookModel {
 	readonly context: ConnectionProfile | undefined;
 
 	/**
+	 * The connection name (alias) saved in the notebook metadata,
+	 * or undefined if none.
+	 */
+	readonly savedConnectionName: string | undefined;
+	/**
 	 * Event fired on first initialization of the cells and
 	 * on subsequent change events
 	 */
@@ -330,6 +338,12 @@ export interface INotebookModel {
 	 * Current notebook provider id
 	 */
 	providerId: string;
+
+	/**
+	 * View mode for this model. It determines what editor mode
+	 * will be displayed.
+	 */
+	viewMode: ViewMode;
 
 	/**
 	 * Change the current kernel from the Kernel dropdown
@@ -449,6 +463,11 @@ export interface IOutputChangedEvent {
 	shouldScroll: boolean;
 }
 
+export interface ITableUpdatedEvent {
+	resultSet: ResultSetSummary;
+	rows: ICellValue[][];
+}
+
 export interface ICellModel {
 	cellUri: URI;
 	id: string;
@@ -462,8 +481,10 @@ export interface ICellModel {
 	executionCount: number | undefined;
 	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
+	getOutputId(output: nb.ICellOutput): QueryResultId | undefined;
 	renderedOutputTextContent?: string[];
 	readonly onOutputsChanged: Event<IOutputChangedEvent>;
+	readonly onTableUpdated: Event<ITableUpdatedEvent>;
 	readonly onExecutionStateChange: Event<CellExecutionState>;
 	readonly executionState: CellExecutionState;
 	readonly notebookModel: NotebookModel;
@@ -491,9 +512,7 @@ export interface ICellModel {
 	readonly onCellMarkdownModeChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
-	gridDataConversionComplete: Promise<void>;
-	addGridDataConversionPromise(complete: Promise<void>): void;
-	updateOutputData(batchId: number, id: number, data: any): void;
+	readonly savedConnectionName: string | undefined;
 }
 
 export interface IModelFactory {

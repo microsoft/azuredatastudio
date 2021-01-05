@@ -1,0 +1,7 @@
+{
+	"displayName": "Azure SQL Hybrid Cloud Toolkit",
+	"description": "Opens up Azure SQL Hybrid Cloud Toolkit Jupyter Book",
+	"title.openJupyterBook": "Open Azure SQL Hybrid Cloud Toolkit Jupyter Book",
+	"title.cloudHybridBooks": "Azure SQL Hybrid Cloud Toolkit",
+	"books-preview-category": "Jupyter Books"
+}

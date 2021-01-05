@@ -127,7 +127,8 @@ export class PredictService {
 				result.rows.forEach(row => {
 					list.push({
 						columnName: row[0].displayValue,
-						dataType: row[1].displayValue.toLocaleUpperCase()
+						dataType: row[1].displayValue.toLocaleUpperCase(),
+						maxLength: row[2].isNull ? undefined : +row[2].displayValue.toLocaleUpperCase()
 					});
 				});
 			}

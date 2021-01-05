@@ -8,13 +8,17 @@
 	background-color: rgba(255, 255, 255, 0.4);
 }
 
-/* Activity Bar */
+/* Checked */
 .monaco-workbench .activitybar .monaco-action-bar .checked .action-label.book {
 	background-color: rgb(255, 255, 255);
 }
 
+/* Hovered */
+.monaco-workbench .activitybar .monaco-action-bar .action-label.book:hover {
+	background-color: rgba(255, 255, 255);
+}
+
 .notebookExplorer-viewlet > .header {
-	height: 41px;
 	box-sizing: border-box;
 	padding: 5px 12px 6px 16px;
 }

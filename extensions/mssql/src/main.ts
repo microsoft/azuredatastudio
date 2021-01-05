@@ -81,21 +81,29 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	await server.start(appContext);
 
 	vscode.commands.registerCommand('mssql.exportSqlAsNotebook', async (uri: vscode.Uri) => {
-		const result = await appContext.getService<INotebookConvertService>(Constants.NotebookConvertService).convertSqlToNotebook(uri.toString());
-		const title = findNextUntitledEditorName();
-		const untitledUri = vscode.Uri.parse(`untitled:${title}`);
-		await azdata.nb.showNotebookDocument(untitledUri, { initialContent: result.content });
+		try {
+			const result = await appContext.getService<INotebookConvertService>(Constants.NotebookConvertService).convertSqlToNotebook(uri.toString());
+			const title = findNextUntitledEditorName();
+			const untitledUri = vscode.Uri.parse(`untitled:${title}`);
+			await azdata.nb.showNotebookDocument(untitledUri, { initialContent: result.content });
+		} catch (err) {
+			vscode.window.showErrorMessage(localize('mssql.errorConvertingToNotebook', "An error occurred converting the SQL document to a Notebook. Error : {0}", err.toString()));
+		}
 	});
 
 	vscode.commands.registerCommand('mssql.exportNotebookToSql', async (uri: vscode.Uri) => {
-		// SqlToolsService doesn't currently store anything about Notebook documents so we have to pass the raw JSON to it directly
-		// We use vscode.workspace.textDocuments here because the azdata.nb.notebookDocuments don't actually contain their contents
-		// (they're left out for perf purposes)
-		const doc = vscode.workspace.textDocuments.find(doc => doc.uri.toString() === uri.toString());
-		const result = await appContext.getService<INotebookConvertService>(Constants.NotebookConvertService).convertNotebookToSql(doc.getText());
+		try {
+			// SqlToolsService doesn't currently store anything about Notebook documents so we have to pass the raw JSON to it directly
+			// We use vscode.workspace.textDocuments here because the azdata.nb.notebookDocuments don't actually contain their contents
+			// (they're left out for perf purposes)
+			const doc = vscode.workspace.textDocuments.find(doc => doc.uri.toString() === uri.toString());
+			const result = await appContext.getService<INotebookConvertService>(Constants.NotebookConvertService).convertNotebookToSql(doc.getText());
 
-		const sqlDoc = await vscode.workspace.openTextDocument({ language: 'sql', content: result.content });
-		await vscode.commands.executeCommand('vscode.open', sqlDoc.uri);
+			const sqlDoc = await vscode.workspace.openTextDocument({ language: 'sql', content: result.content });
+			await vscode.commands.executeCommand('vscode.open', sqlDoc.uri);
+		} catch (err) {
+			vscode.window.showErrorMessage(localize('mssql.errorConvertingToSQL', "An error occurred converting the Notebook document to SQL. Error : {0}", err.toString()));
+		}
 	});
 
 	return createMssqlApi(appContext);

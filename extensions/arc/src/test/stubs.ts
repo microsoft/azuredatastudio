@@ -19,17 +19,17 @@ export class MockInputBox implements vscode.InputBox {
 	placeholder: string | undefined;
 	password: boolean = false;
 	private _onDidChangeValueCallback: ((e: string) => any) | undefined = undefined;
-	onDidChangeValue: vscode.Event<string> = (listener) => {
+	onDidChangeValue: vscode.Event<string> = (listener: (value: string) => void) => {
 		this._onDidChangeValueCallback = listener;
 		return new vscode.Disposable(() => { });
 	};
 	private _onDidAcceptCallback: ((e: void) => any) | undefined = undefined;
-	public onDidAccept: vscode.Event<void> = (listener) => {
+	public onDidAccept: vscode.Event<void> = (listener: () => void) => {
 		this._onDidAcceptCallback = listener;
 		return new vscode.Disposable(() => { });
 	};
 	buttons: readonly vscode.QuickInputButton[] = [];
-	onDidTriggerButton: vscode.Event<vscode.QuickInputButton> = (_) => { return new vscode.Disposable(() => { }); };
+	onDidTriggerButton: vscode.Event<vscode.QuickInputButton> = () => { return new vscode.Disposable(() => { }); };
 	prompt: string | undefined;
 	validationMessage: string | undefined;
 	title: string | undefined;
@@ -46,7 +46,7 @@ export class MockInputBox implements vscode.InputBox {
 		}
 	}
 	private _onDidHideCallback: ((e: void) => any) | undefined = undefined;
-	onDidHide: vscode.Event<void> = (listener) => {
+	onDidHide: vscode.Event<void> = (listener: () => void) => {
 		this._onDidHideCallback = listener;
 		return new vscode.Disposable(() => { });
 	};

@@ -29,7 +29,7 @@ text-cell-component .show-markdown .notebook-preview {
 	border-left-width: 1px;
 	border-style: solid;
 	border-top-width: 0;
-	width: 50%
+	width: 50%;
 }
 .notebook-preview.actionselect {
 	user-select: text;
@@ -68,7 +68,6 @@ text-cell-component thead {
 text-cell-component td,
 text-cell-component th,
 text-cell-component tr {
-	text-align: left;
 	vertical-align: middle;
 	padding: 0.5em 0.5em;
 	line-height: normal;

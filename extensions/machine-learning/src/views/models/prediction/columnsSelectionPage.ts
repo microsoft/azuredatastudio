@@ -77,7 +77,7 @@ export class ColumnsSelectionPage extends ModelViewBase implements IPageView, ID
 	public async validate(): Promise<boolean> {
 		const data = this.data;
 		const validated = data !== undefined && data.databaseName !== undefined && data.inputColumns !== undefined && data.outputColumns !== undefined
-			&& data.tableName !== undefined && data.databaseName !== constants.selectDatabaseTitle && data.tableName !== constants.selectTableTitle
+			&& data.tableName !== undefined && this.inputColumnsComponent !== undefined && this.inputColumnsComponent?.isDataValue
 			&& !data.inputColumns.find(x => (x.columnName === constants.selectColumnTitle) || !x.columnName);
 		if (!validated) {
 			this.showErrorMessage(constants.invalidModelParametersError);
@@ -94,7 +94,6 @@ export class ColumnsSelectionPage extends ModelViewBase implements IPageView, ID
 			if (modelParameters && this.inputColumnsComponent && this.outputColumnsComponent) {
 				this.inputColumnsComponent.modelParameters = modelParameters;
 				this.outputColumnsComponent.modelParameters = modelParameters;
-				await this.inputColumnsComponent.refresh();
 				await this.outputColumnsComponent.refresh();
 			}
 		} catch (error) {

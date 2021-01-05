@@ -28,32 +28,33 @@ export class KubeService implements IKubeService {
 	}
 }
 
-export function getKubeConfigClusterContexts(configFile: string): Promise<KubeClusterContext[]> {
-	return fs.promises.access(configFile).catch((error) => {
+export async function getKubeConfigClusterContexts(configFile: string): Promise<KubeClusterContext[]> {
+	try {
+		await fs.promises.access(configFile);
+	} catch (error) {
 		if (error && error.code === 'ENOENT') {
 			return [];
 		}
 		else {
 			throw error;
 		}
-	}).then(() => {
-		const config = yamljs.load(configFile);
-		const rawContexts = <any[]>config['contexts'];
-		const currentContext = <string>config['current-context'];
-		const contexts: KubeClusterContext[] = [];
-		if (currentContext && rawContexts && rawContexts.length > 0) {
-			rawContexts.forEach(rawContext => {
-				const name = <string>rawContext['name'];
-				if (name) {
-					contexts.push({
-						name: name,
-						isCurrentContext: name === currentContext
-					});
-				}
-			});
-		}
-		return contexts;
-	});
+	}
+	const config = yamljs.load(configFile);
+	const rawContexts = <any[]>config['contexts'];
+	const currentContext = <string>config['current-context'];
+	const contexts: KubeClusterContext[] = [];
+	if (currentContext && rawContexts && rawContexts.length > 0) {
+		rawContexts.forEach(rawContext => {
+			const name = <string>rawContext['name'];
+			if (name) {
+				contexts.push({
+					name: name,
+					isCurrentContext: name === currentContext
+				});
+			}
+		});
+	}
+	return contexts;
 }
 
 export function getDefaultKubeConfigPath(): string {

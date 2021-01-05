@@ -9,8 +9,8 @@ import { BookTreeItem } from './bookTreeItem';
 import { getPinnedNotebooks, setPinnedBookPathsInConfig, IBookNotebook } from '../common/utils';
 
 export interface IBookPinManager {
-	pinNotebook(notebook: BookTreeItem): boolean;
-	unpinNotebook(notebook: BookTreeItem): boolean;
+	pinNotebook(notebook: BookTreeItem): Promise<boolean>;
+	unpinNotebook(notebook: BookTreeItem): Promise<boolean>;
 }
 
 enum PinBookOperation {
@@ -39,20 +39,20 @@ export class BookPinManager implements IBookPinManager {
 		return false;
 	}
 
-	pinNotebook(notebook: BookTreeItem): boolean {
-		return this.isNotebookPinned(notebook.book.contentPath) ? false : this.updatePinnedBooks(notebook, PinBookOperation.Pin);
+	async pinNotebook(notebook: BookTreeItem): Promise<boolean> {
+		return this.isNotebookPinned(notebook.book.contentPath) ? false : await this.updatePinnedBooks(notebook, PinBookOperation.Pin);
 	}
 
-	unpinNotebook(notebook: BookTreeItem): boolean {
-		return this.updatePinnedBooks(notebook, PinBookOperation.Unpin);
+	async unpinNotebook(notebook: BookTreeItem): Promise<boolean> {
+		return await this.updatePinnedBooks(notebook, PinBookOperation.Unpin);
 	}
 
-	updatePinnedBooks(notebook: BookTreeItem, operation: PinBookOperation) {
+	async updatePinnedBooks(notebook: BookTreeItem, operation: PinBookOperation): Promise<boolean> {
 		let modifiedPinnedBooks = false;
 		let bookPathToChange: string = notebook.book.contentPath;
 
 		let pinnedBooks: IBookNotebook[] = getPinnedNotebooks();
-		let existingBookIndex = pinnedBooks.map(pinnedBookPath => path.normalize(pinnedBookPath?.notebookPath)).indexOf(bookPathToChange);
+		let existingBookIndex = pinnedBooks.map(pinnedBookPath => path.normalize(pinnedBookPath?.notebookPath)).indexOf(path.normalize(bookPathToChange));
 
 		if (existingBookIndex !== -1 && operation === PinBookOperation.Unpin) {
 			pinnedBooks.splice(existingBookIndex, 1);
@@ -63,9 +63,8 @@ export class BookPinManager implements IBookPinManager {
 			modifiedPinnedBooks = true;
 		}
 
-		setPinnedBookPathsInConfig(pinnedBooks);
+		await setPinnedBookPathsInConfig(pinnedBooks);
 		this.setPinnedSectionContext();
-
 		return modifiedPinnedBooks;
 	}
 }

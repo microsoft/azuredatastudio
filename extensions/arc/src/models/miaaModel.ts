@@ -7,8 +7,9 @@ import { MiaaResourceInfo } from 'arc';
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
+import { UserCancelledError } from '../common/api';
 import { Deferred } from '../common/promise';
-import { createCredentialId, parseIpAndPort, UserCancelledError } from '../common/utils';
+import { createCredentialId, parseIpAndPort } from '../common/utils';
 import { credentialNamespace } from '../constants';
 import * as loc from '../localizedConstants';
 import { ConnectToSqlDialog } from '../ui/dialogs/connectSqlDialog';
@@ -37,8 +38,8 @@ export class MiaaModel extends ResourceModel {
 
 	private _refreshPromise: Deferred<void> | undefined = undefined;
 
-	constructor(private _controllerModel: ControllerModel, private _miaaInfo: MiaaResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
-		super(_miaaInfo, registration);
+	constructor(controllerModel: ControllerModel, private _miaaInfo: MiaaResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
+		super(controllerModel, _miaaInfo, registration);
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
 
@@ -76,7 +77,7 @@ export class MiaaModel extends ResourceModel {
 		}
 		this._refreshPromise = new Deferred();
 		try {
-			await this._controllerModel.azdataLogin();
+			await this.controllerModel.azdataLogin();
 			try {
 				const result = await this._azdataApi.azdata.arc.sql.mi.show(this.info.name);
 				this._config = result.result;
@@ -179,7 +180,7 @@ export class MiaaModel extends ResourceModel {
 		if (this.info.connectionId) {
 			try {
 				const credentialProvider = await azdata.credentials.getProvider(credentialNamespace);
-				const credentials = await credentialProvider.readCredential(createCredentialId(this._controllerModel.info.id, this.info.resourceType, this.info.name));
+				const credentials = await credentialProvider.readCredential(createCredentialId(this.controllerModel.info.id, this.info.resourceType, this.info.name));
 				if (credentials.password) {
 					// Try to connect to verify credentials are still valid
 					connectionProfile.password = credentials.password;
@@ -188,7 +189,7 @@ export class MiaaModel extends ResourceModel {
 						const result = await azdata.connection.connect(connectionProfile, false, false);
 						if (!result.connected) {
 							vscode.window.showErrorMessage(loc.connectToSqlFailed(connectionProfile.serverName, result.errorMessage));
-							const connectToSqlDialog = new ConnectToSqlDialog(this._controllerModel, this);
+							const connectToSqlDialog = new ConnectToSqlDialog(this.controllerModel, this);
 							connectToSqlDialog.showDialog(connectionProfile);
 							connectionProfile = await connectToSqlDialog.waitForClose();
 						}
@@ -202,7 +203,7 @@ export class MiaaModel extends ResourceModel {
 
 		if (!connectionProfile?.userName || !connectionProfile?.password) {
 			// Need to prompt user for password since we don't have one stored
-			const connectToSqlDialog = new ConnectToSqlDialog(this._controllerModel, this);
+			const connectToSqlDialog = new ConnectToSqlDialog(this.controllerModel, this);
 			connectToSqlDialog.showDialog(connectionProfile);
 			connectionProfile = await connectToSqlDialog.waitForClose();
 		}

@@ -1,6 +1,4 @@
 --Starts the XEvents sessions and creates the functions needed to find object id and give name to the page types
-use tempdb
-
 BEGIN TRY
 IF NOT EXISTS (SELECT * FROM sys.dm_xe_sessions  WHERE name = 'PageContention')
     BEGIN
@@ -8,7 +6,7 @@ IF NOT EXISTS (SELECT * FROM sys.dm_xe_sessions  WHERE name = 'PageContention')
         ADD EVENT latch_suspend_end(
             WHERE class = 28
             AND (page_type_id = 8
-            OR page_type_id = 9 
+            OR page_type_id = 9
             OR page_type_id = 11))
         ADD TARGET package0.histogram(SET slots=16, filtering_event_name=N'latch_suspend_end', source=N'page_type_id', source_type=(0))
         ALTER EVENT SESSION [PageContention] ON SERVER
@@ -24,9 +22,11 @@ IF NOT EXISTS (SELECT * FROM sys.dm_xe_sessions  WHERE name = 'ObjectContention'
         ALTER EVENT SESSION [ObjectContention] ON SERVER
         STATE =  START
     END
+SELECT 0 AS RESULTCODE
 END TRY
 BEGIN CATCH
     PRINT 'XEvent fields not supported'
+    SELECT 1 AS RESULTCODE
 END CATCH
 GO
 
@@ -38,7 +38,7 @@ CREATE FUNCTION [dbo].[isSystemTable] (@alloc bigint)
 RETURNS bigint
 
 AS BEGIN
-    
+
     DECLARE @index BIGINT;
     DECLARE @objId BIGINT;
 
@@ -47,7 +47,7 @@ AS BEGIN
             CONVERT (FLOAT, @alloc)
                 * (1 / POWER (2.0, 48))
         );
-    SELECT @objId = 
+    SELECT @objId =
         CONVERT (BIGINT,
             CONVERT (FLOAT, @alloc - (@index * CONVERT (BIGINT, POWER (2.0, 48))))
                 * (1 / POWER (2.0, 16))
@@ -55,9 +55,9 @@ AS BEGIN
 
     IF (@objId > 0 AND @objId <= 100 AND @index <= 255)
         return @objId
-    
+
     return 0
-    
+
     END
 GO
 
@@ -74,7 +74,7 @@ AS BEGIN
     ELSE IF @pageTypeId = 9
         return 'SGAM_PAGE'
     ELSE IF @pageTypeId = 11
-        return 'PFS_PAGE'    
+        return 'PFS_PAGE'
     return ''
     END
 GO

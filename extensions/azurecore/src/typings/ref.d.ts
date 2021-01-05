@@ -7,4 +7,5 @@
 /// <reference path='../../../../src/vs/vscode.proposed.d.ts'/>
 /// <reference path='../../../../src/sql/azdata.d.ts'/>
 /// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
+/// <reference path='../../../resource-deployment/src/typings/resource-deployment.d.ts'/>
 /// <reference types='@types/node'/>

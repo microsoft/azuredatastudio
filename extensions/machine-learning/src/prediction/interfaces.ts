@@ -6,6 +6,7 @@
 export interface TableColumn {
 	columnName: string;
 	dataType?: string;
+	maxLength?: number;
 }
 
 export interface PredictColumn extends TableColumn {

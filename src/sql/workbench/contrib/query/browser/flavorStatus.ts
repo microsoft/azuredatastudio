@@ -187,7 +187,7 @@ export class ChangeFlavorAction extends Action {
 
 	public run(): Promise<any> {
 		let activeEditor = this._editorService.activeEditorPane;
-		let currentUri = activeEditor?.input.resource?.toString();
+		let currentUri = activeEditor?.input.resource?.toString(true);
 		if (this._connectionManagementService.isConnected(currentUri)) {
 			let currentProvider = this._connectionManagementService.getProviderIdFromUri(currentUri);
 			return this._showMessage(Severity.Info, nls.localize('alreadyConnected',

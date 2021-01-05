@@ -225,7 +225,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					this._content = localize('addContent', "<i>Add content here...</i>");
 				}
 			} else {
-				this._content = this.cellModel.source[0] === '' ? '<p>&nbsp;</p>' : this.cellModel.source;
+				this._content = this.cellModel.source;
 			}
 			this.markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
 			this.markdownResult = this.markdownRenderer.render({

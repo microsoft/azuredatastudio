@@ -82,11 +82,12 @@ export class ModelPythonClient {
 				if value in type_map:
 					p_type = type_map[value]
 				name = type_list[value]
-				parameters[paramType].append({
-					'name': p.name,
-					'type': p_type,
-					'originalType': name
-				})`,
+				if name != 'undefined':
+					parameters[paramType].append({
+						'name': p.name,
+						'type': p_type,
+						'originalType': name
+					})`,
 
 			'addParameters(onnx_model.graph.input, "inputs")',
 			'addParameters(onnx_model.graph.output, "outputs")',

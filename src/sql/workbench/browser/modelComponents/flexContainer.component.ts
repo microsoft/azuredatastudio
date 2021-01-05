@@ -14,6 +14,7 @@ import { FlexLayout, FlexItemLayout } from 'azdata';
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class FlexItem {
 	constructor(public descriptor: IComponentDescriptor, public config: FlexItemLayout) { }
@@ -45,14 +46,15 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
+		super(changeRef, el, logService);
 		this._flexFlow = '';	// default
 		this._justifyContent = '';	// default
 	}
 
-	ngOnInit(): void {
+	ngAfterViewInit(): void {
 		this.baseInit();
 	}
 

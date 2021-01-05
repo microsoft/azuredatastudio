@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import { IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
+import { ValidationInfo } from './ui/validation/validations';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 
@@ -14,7 +15,7 @@ export interface ResourceType {
 	displayName: string;
 	description: string;
 	platforms: string[] | '*';
-	icon: { light: string; dark: string };
+	icon: { light: string; dark: string } | string;
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
 	agreement?: AgreementInfo;
@@ -210,6 +211,10 @@ export function instanceOfCommandBasedDialogInfo(obj: any): obj is CommandBasedD
 	return obj && 'command' in obj;
 }
 
+export function instanceOfDynamicEnablementInfo(obj: any): obj is DynamicEnablementInfo {
+	return (<DynamicEnablementInfo>obj)?.target !== undefined && (<DynamicEnablementInfo>obj)?.value !== undefined;
+}
+
 export interface DialogInfoBase {
 	title: string;
 	name: string;
@@ -239,6 +244,8 @@ export type ComponentCSSStyles = {
 
 export interface IOptionsSource {
 	provider?: IOptionsSourceProvider
+	loadingText?: string,
+	loadingCompletedText?: string,
 	readonly variableNames?: { [index: string]: string; };
 	readonly providerId: string;
 }
@@ -249,6 +256,16 @@ export interface OptionsInfo {
 	source?: IOptionsSource,
 	defaultValue: string,
 	optionsType?: OptionsType
+}
+
+export interface DynamicEnablementInfo {
+	target: string,
+	value: string
+}
+
+export interface ValueProviderInfo {
+	providerId: string,
+	triggerField: string
 }
 
 export interface FieldInfoBase {
@@ -284,9 +301,6 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	defaultValue?: string;
 	confirmationRequired?: boolean;
 	confirmationLabel?: string;
-	textValidationRequired?: boolean;
-	textValidationRegex?: string;
-	textValidationDescription?: string;
 	min?: number;
 	max?: number;
 	required?: boolean;
@@ -298,17 +312,16 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	fontWeight?: FontWeight;
 	links?: azdata.LinkArea[];
 	editable?: boolean; // for editable drop-down,
-	enabled?: boolean;
+	enabled?: boolean | DynamicEnablementInfo;
 	isEvaluated?: boolean;
-	valueLookup?: string; // for fetching dropdown options
-	validationLookup?: string // for fetching text field validations
+	validations?: ValidationInfo[];
+	valueProvider?: ValueProviderInfo;
 }
 
 export interface KubeClusterContextFieldInfo extends FieldInfo {
 	configFileVariableName?: string;
 }
 export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
-	displaySubscriptionVariableName?: string;
 	subscriptionVariableName?: string;
 	resourceGroupVariableName?: string;
 	allowNewResourceGroup?: boolean;
@@ -318,7 +331,6 @@ export interface AzureAccountFieldInfo extends AzureLocationsFieldInfo {
 
 export interface AzureLocationsFieldInfo extends FieldInfo {
 	locationVariableName?: string;
-	displayLocationVariableName?: string;
 	locations?: string[]
 }
 

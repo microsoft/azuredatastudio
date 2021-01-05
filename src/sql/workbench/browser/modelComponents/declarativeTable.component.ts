@@ -17,6 +17,7 @@ import { equals as arrayEquals } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export enum DeclarativeDataType {
 	string = 'string',
@@ -40,16 +41,14 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(ILogService) logService: ILogService
 	) {
-		super(changeRef, el);
-	}
-
-	ngOnInit(): void {
-		this.baseInit();
+		super(changeRef, el, logService);
 	}
 
 	ngAfterViewInit(): void {
+		this.baseInit();
 	}
 
 	ngOnDestroy(): void {
@@ -139,7 +138,13 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	private onCellDataChanged(newValue: string | number | boolean | any, rowIdx: number, colIdx: number): void {
 		this.data[rowIdx][colIdx].value = newValue;
-		this.setPropertyFromUI<any[][]>((props, value) => props.data = value, this.data);
+
+		if (this.properties.data) {
+			this.setPropertyFromUI<any[][]>((props, value) => props.data = value, this.data);
+		} else {
+			this.setPropertyFromUI<any[][]>((props, value) => props.dataValues = value, this.data);
+		}
+
 		let newCellData: azdata.TableCell = {
 			row: rowIdx,
 			column: colIdx,
@@ -214,6 +219,15 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		return '';
 	}
 
+	public getCheckAllColumnAriaLabel(colIdx: number): string {
+		return localize('checkAllColumnLabel', "check all checkboxes in column: {0}", this.columns[colIdx].displayName);
+	}
+
+	public getHeaderAriaLabel(colIdx: number): string {
+		const column = this.columns[colIdx];
+		return (column.ariaLabel) ? column.ariaLabel : column.displayName;
+	}
+
 	public getItemDescriptor(componentId: string): IComponentDescriptor {
 		return this.modelStore.getComponentDescriptor(componentId);
 	}
@@ -266,7 +280,17 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			this.data?.forEach(row => {
 				for (let i = 0; i < row.length; i++) {
 					if (this.isComponent(i)) {
-						this.addToContainer(this.getItemDescriptor(row[i].value as string), undefined);
+						const itemDescriptor = this.getItemDescriptor(row[i].value as string);
+						if (itemDescriptor) {
+							this.addToContainer(itemDescriptor, {});
+						} else {
+							// This should ideally never happen but it's possible for a race condition to happen when adding/removing components quickly where
+							// the child component is unregistered after it is defined because a component is only unregistered when it's destroyed by Angular
+							// which can take a while and we don't wait on that to happen currently.
+							// While this happening isn't desirable it typically doesn't have a huge impact since the component will still be displayed properly in
+							// most cases
+							this.logService.warn(`Could not find ItemDescriptor for component ${row[i].value} when adding to DeclarativeTable ${this.descriptor.id}`);
+						}
 					}
 				}
 			});

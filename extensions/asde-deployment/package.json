@@ -2,7 +2,7 @@
   "name": "asde-deployment",
   "displayName": "%extension-displayName%",
   "description": "%extension-description%",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -24,10 +24,7 @@
         "displayName": "%resource-type-sql-edge-display-name%",
         "description": "%resource-type-sql-edge-description%",
         "platforms": "*",
-        "icon": {
-          "light": "./images/sqldb_edge.svg",
-          "dark": "./images/sqldb_edge_inverse.svg"
-        },
+        "icon": "./images/sqldb_edge.svg",
         "tags": [
           "Hybrid",
           "SQL Server"
@@ -299,7 +296,6 @@
                           "defaultValue": "westus",
                           "required": true,
                           "locationVariableName": "AZDATA_NB_VAR_ASDE_AZURE_LOCATION",
-                          "displayLocationVariableName": "AZDATA_NB_VAR_ASDE_AZURE_LOCATION_TEXT",
                           "locations": [
                             "australiaeast",
                             "australiasoutheast",
@@ -342,9 +338,11 @@
                           "confirmationRequired": true,
                           "confirmationLabel": "%vm_password_confirm%",
                           "required": true,
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])[A-Za-z\\d\\W_]{12,123}$",
-                          "textValidationDescription": "%vm_password_validation_error_message%"
+                          "validations" : [{
+                            "type": "regex_match",
+                            "regex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])[A-Za-z\\d\\W_]{12,123}$",
+                            "description": "%vm_password_validation_error_message%"
+                          }]
                         }
                       ]
                     },

@@ -108,7 +108,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		let powershellPkg = {
 			name: 'powershell-kernel',
-			version: '0.1.3'
+			version: '0.1.4'
 		};
 		this._requiredKernelPackages.set(constants.powershellDisplayName, [jupyterPkg, powershellPkg]);
 
@@ -120,9 +120,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			}, {
 				name: 'pandas',
 				version: '0.24.2'
-			}, {
-				name: 'prose-codeaccelerator',
-				version: '1.3.0'
 			}];
 		this._requiredKernelPackages.set(constants.pysparkDisplayName, sparkPackages);
 		this._requiredKernelPackages.set(constants.sparkScalaDisplayName, sparkPackages);
@@ -288,6 +285,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public async configurePackagePaths(): Promise<void> {
+		// Delete existing Python variables in ADS to prevent conflict with other installs
+		delete process.env['PYTHONPATH'];
+		delete process.env['PYTHONSTARTUP'];
+		delete process.env['PYTHONHOME'];
+
 		//Python source path up to bundle version
 		let pythonSourcePath = this._usingExistingPython
 			? this._pythonInstallationPath
@@ -328,11 +330,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
 			}
 		}
-
-		// Delete existing Python variables in ADS to prevent conflict with other installs
-		delete process.env['PYTHONPATH'];
-		delete process.env['PYTHONSTARTUP'];
-		delete process.env['PYTHONHOME'];
 
 		// Store the executable options to run child processes with env var without interfering parent env var.
 		let env = Object.assign({}, process.env);
@@ -438,7 +435,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled();
 		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
 		if (!isPythonInstalled || !areRequiredPackagesInstalled) {
-			let pythonWizard = new ConfigurePythonWizard(this);
+			let pythonWizard = new ConfigurePythonWizard(this, this.outputChannel);
 			await pythonWizard.start(kernelDisplayName, true);
 			return pythonWizard.setupComplete.then(() => {
 				this._kernelSetupCache.set(kernelDisplayName, true);
@@ -526,7 +523,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		let versionSpecifier = useMinVersion ? '>=' : '==';
 		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
-		let cmd = `"${this.pythonExecutable}" -m pip install --user ${packagesStr} --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		let cmd = `"${this.pythonExecutable}" -m pip install --user ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 

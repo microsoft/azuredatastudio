@@ -14,12 +14,12 @@ export const WizardDoneButtonLabel = localize('deployAzureSQLDB.ScriptToNotebook
 export const MissingRequiredInformationErrorMessage = localize('deployAzureSQLDB.MissingRequiredInfoError', "Please fill out the required fields marked with red asterisks.");
 
 // Azure settings page constants
-export const AzureSettingsPageTitle = localize('deployAzureSQLDB.AzureSettingsPageTitle', "Azure SQL Database - Azure Account Settings");
-export const AzureSettingsSummaryPageTitle = localize('deployAzureSQLDB.AzureSettingsSummaryPageTitle', "Azure Account Settings");
-export const AzureAccountDropdownLabel = localize('deployAzureSQLDB.AzureAccountDropdownLabel', "Azure Account");
+export const AzureSettingsPageTitle = localize('deployAzureSQLDB.AzureSettingsPageTitle', "Azure SQL Database - Azure account settings");
+export const AzureSettingsSummaryPageTitle = localize('deployAzureSQLDB.AzureSettingsSummaryPageTitle', "Azure account settings");
+export const AzureAccountDropdownLabel = localize('deployAzureSQLDB.AzureAccountDropdownLabel', "Azure account");
 export const AzureAccountSubscriptionDropdownLabel = localize('deployAzureSQLDB.AzureSubscriptionDropdownLabel', "Subscription");
 export const AzureAccountDatabaseServersDropdownLabel = localize('deployAzureSQLDB.AzureDatabaseServersDropdownLabel', "Server");
-export const AzureAccountResourceGroupDropdownLabel = localize('deployAzureSQLDB.ResourceGroup', "Resource Group");
+export const AzureAccountResourceGroupDropdownLabel = localize('deployAzureSQLDB.ResourceGroup', "Resource group");
 //@todo alma1 9/8/20 Region label used for upcoming server creation feature.
 //export const AzureAccountRegionDropdownLabel = localize('deployAzureSQLDB.AzureRegionDropdownLabel', "Region (for Public IP Address)");
 
@@ -38,8 +38,10 @@ export const FirewallRuleNameLabel = localize('deployAzureSQLDB.FirewallRuleName
 export const DatabaseNameLabel = localize('deployAzureSQLDB.DatabaseNameLabel', "SQL database name");
 export const CollationNameLabel = localize('deployAzureSQLDB.CollationNameLabel', "Database collation");
 export const CollationNameSummaryLabel = localize('deployAzureSQLDB.CollationNameSummaryLabel', "Collation for database");
-export const IpAddressInfoLabel = localize('deployAzureSQLDB.IpAddressInfoLabel', "Enter IP Addresses in IPv4 format.");
-export const StartIpAddressLabel = localize('deployAzureSQLDB.StartIpAddressLabel', "Min IP Address in firewall Ip Range");
-export const EndIpAddressLabel = localize('deployAzureSQLDB.EndIpAddressLabel', "Max IP Address in firewall IP Range");
-export const StartIpAddressShortLabel = localize('deployAzureSQLDB.StartIpAddressShortLabel', "Min IP Address");
-export const EndIpAddressShortLabel = localize('deployAzureSQLDB.EndIpAddressShortLabel', "Max IP Address");
+export const IpAddressInfoLabel = localize('deployAzureSQLDB.IpAddressInfoLabel', "Enter IP addresses in IPv4 format.");
+export const StartIpAddressLabel = localize('deployAzureSQLDB.StartIpAddressLabel', "Min IP address in firewall IP range");
+export const EndIpAddressLabel = localize('deployAzureSQLDB.EndIpAddressLabel', "Max IP address in firewall IP range");
+export const StartIpAddressShortLabel = localize('deployAzureSQLDB.StartIpAddressShortLabel', "Min IP address");
+export const EndIpAddressShortLabel = localize('deployAzureSQLDB.EndIpAddressShortLabel', "Max IP address");
+export const FirewallRuleDescription = localize('deployAzureSQLDB.FirewallRuleDescription', "Create a firewall rule for your local client IP in order to connect to your database through Azure Data Studio after creation is completed.");
+export const FirewallToggleLabel = localize('deployAzureSQLDB.FirewallToggleLabel', "Create a firewall rule");

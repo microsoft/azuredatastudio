@@ -74,44 +74,29 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 		}, {
 			title: constants.azureModelWorkspace,
 			component: this._workspaces
-		}]).component();
+		}], {
+			titleFontSize: '13px',
+			horizontal: true,
+		}).component();
+		this._form.setLayout({
+			padding: '0'
+		});
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
-		if (this._accounts && this._subscriptions && this._groups && this._workspaces) {
+		if (this._form) {
 			formBuilder.addFormItems([{
-				title: constants.azureAccount,
-				component: this._accounts
-			}, {
-				title: constants.azureSubscription,
-				component: this._subscriptions
-			}, {
-				title: constants.azureGroup,
-				component: this._groups
-			}, {
-				title: constants.azureModelWorkspace,
-				component: this._workspaces
+				title: '',
+				component: this._form
 			}]);
 		}
 	}
 
 	public removeComponents(formBuilder: azdata.FormBuilder) {
-		if (this._accounts && this._subscriptions && this._groups && this._workspaces) {
+		if (this._form) {
 			formBuilder.removeFormItem({
-				title: constants.azureAccount,
-				component: this._accounts
-			});
-			formBuilder.removeFormItem({
-				title: constants.azureSubscription,
-				component: this._subscriptions
-			});
-			formBuilder.removeFormItem({
-				title: constants.azureGroup,
-				component: this._groups
-			});
-			formBuilder.removeFormItem({
-				title: constants.azureModelWorkspace,
-				component: this._workspaces
+				title: '',
+				component: this._form
 			});
 		}
 	}
@@ -149,6 +134,10 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			this._accounts.value = undefined;
 		}
 		await this.onAccountSelected();
+	}
+
+	public get accountIsValid(): boolean {
+		return this._azureAccounts !== undefined && this._azureAccounts.length > 0 && this._azureSubscriptions !== undefined && this._azureSubscriptions.length > 0;
 	}
 
 	/**

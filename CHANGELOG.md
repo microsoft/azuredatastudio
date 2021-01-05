@@ -1,5 +1,29 @@
 # Change Log
 
+## Version 1.25.1
+* Release date: December 10, 2020
+* Release status: General Availability
+* Fixes https://github.com/microsoft/azuredatastudio/issues/13751
+
+## Version 1.25.0
+* Release date: December 8, 2020
+* Release status: General Availability
+* Kusto extension improvements
+* SQL Project extension improvements
+* Notebook improvements
+* Azure Browse Connections Preview performance improvements
+* Bug Fixes
+
+## Version 1.24.0
+* Release date: November 12, 2020
+* Release status: General Availability
+* SQL Project improvements
+* Notebook improvements, including in WYSIWYG editor enhancements
+* Azure Arc improvements
+* Azure SQL Deployment UX improvements
+* Azure Browse Connections Preview
+* Bug Fixes
+
 ## Version 1.23.0
 * Release date: October 14, 2020
 * Release status: General Availability

@@ -49,6 +49,14 @@ export class OutputColumnsComponent extends ModelViewBase implements IDataCompon
 				title: constants.outputColumns,
 				component: this._columns.component
 			}]);
+			if (this._form) {
+				this._form.updateCssStyles({
+					'font-size': '16px'
+				});
+			}
+			this._columns.component.updateCssStyles({
+				'font-size': '12px'
+			});
 		}
 	}
 
