@@ -3,16 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./cellToolbar';
-import * as DOM from 'vs/base/browser/dom';
 import { Component, OnInit, Input, ViewChild, TemplateRef, ElementRef, Inject, Output, EventEmitter, ChangeDetectorRef, forwardRef } from '@angular/core';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { HideCellAction, RunCellAction, ViewCellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions';
-import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
-import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { DEFAULT_VIEW_CARD_HEIGHT, DEFAULT_VIEW_CARD_WIDTH } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { CellChangeEventType, INotebookView, INotebookViewCellMetadata } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
@@ -22,11 +16,8 @@ import { CellChangeEventType, INotebookView, INotebookViewCellMetadata } from 's
 	templateUrl: decodeURI(require.toUrl('./notebookViewsCard.component.html'))
 })
 export class NotebookViewsCardComponent implements OnInit {
-	private _actionbar: Taskbar;
 	private _metadata: INotebookViewCellMetadata;
 	private _activeView: INotebookView;
-
-	public _cellToggleMoreActions: ViewCellToggleMoreActions;
 
 	@Input() cell: ICellModel;
 	@Input() model: NotebookModel;
@@ -36,16 +27,12 @@ export class NotebookViewsCardComponent implements OnInit {
 
 	@ViewChild('templateRef') templateRef: TemplateRef<any>;
 	@ViewChild('item', { read: ElementRef }) private _item: ElementRef;
-	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 	) { }
 
-	ngOnInit() {
-		this.initActionBar();
-	}
+	ngOnInit() { }
 
 	ngOnChanges() {
 		if (this.views) {
@@ -62,33 +49,7 @@ export class NotebookViewsCardComponent implements OnInit {
 	}
 
 	ngAfterViewInit() {
-		this.initActionBar();
 		this.detectChanges();
-	}
-
-	initActionBar() {
-		if (this._actionbarRef) {
-			let taskbarContent: ITaskbarContent[] = [];
-			let context = new CellContext(this.model, this.cell);
-
-			this._actionbar = new Taskbar(this._actionbarRef.nativeElement);
-			this._actionbar.context = { target: this._actionbarRef.nativeElement };
-
-			if (this.cell.cellType === CellTypes.Code) {
-				let runCellAction = this._instantiationService.createInstance(RunCellAction, context);
-				taskbarContent.push({ action: runCellAction });
-			}
-
-			let hideButton = new HideCellAction(this.hide, this);
-			taskbarContent.push({ action: hideButton });
-
-			let moreActionsContainer = DOM.$('li.action-item');
-			this._cellToggleMoreActions = this._instantiationService.createInstance(ViewCellToggleMoreActions);
-			this._cellToggleMoreActions.onInit(moreActionsContainer, context);
-			taskbarContent.push({ element: moreActionsContainer });
-
-			this._actionbar.setContent(taskbarContent);
-		}
 	}
 
 	get elementRef(): ElementRef {

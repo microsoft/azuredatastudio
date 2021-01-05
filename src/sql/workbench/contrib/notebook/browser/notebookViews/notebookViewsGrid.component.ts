@@ -94,7 +94,6 @@ export class NotebookViewsGridComponent implements OnInit {
 				this._grid.resizable(el, true);
 				this._grid.movable(el, true);
 
-				component.initActionBar();
 				component.detectChanges();
 			}
 			this.detectChanges();
