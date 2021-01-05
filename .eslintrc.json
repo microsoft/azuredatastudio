@@ -734,6 +734,7 @@
 					"html-query-plan",
 					"turndown",
 					"gridstack",
+					"gridstack/**",
 					"mark.js"
                 ]
             },

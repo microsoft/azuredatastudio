@@ -10,6 +10,7 @@ import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/brows
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { GridStack } from 'gridstack';
+import 'gridstack/dist/h5/gridstack-dd-native';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
