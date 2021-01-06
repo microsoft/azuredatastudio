@@ -34,7 +34,7 @@ export class NotebookUriHandler implements vscode.UriHandler {
 	}
 
 	private open(uri: vscode.Uri): Promise<void> {
-		const data = uri.query.toString();
+		const data = uri.query.toString().split('url=')[1];
 
 		if (!data) {
 			console.warn('Failed to open URI:', uri);
@@ -77,7 +77,7 @@ export class NotebookUriHandler implements vscode.UriHandler {
 					preserveFocus: true
 				});
 			} else {
-				let doc = await vscode.workspace.openTextDocument(untitledUriPath);
+				let doc = await vscode.workspace.openTextDocument(untitledUri);
 				let editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, true);
 				await editor.edit(builder => {
 					builder.insert(new vscode.Position(0, 0), contents);
