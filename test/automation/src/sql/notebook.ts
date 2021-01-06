@@ -133,6 +133,22 @@ export class Notebook {
 		});
 		await this.waitForResultsGone(cellIds);
 	}
+
+	async waitForTrustedElements(): Promise<void> {
+		const cellSelector = '.notebookEditor .notebook-cell';
+		await this.code.waitForElement(`${cellSelector} iframe`);
+		await this.code.waitForElement(`${cellSelector} dialog`);
+		await this.code.waitForElement(`${cellSelector} embed`);
+		await this.code.waitForElement(`${cellSelector} svg`);
+	}
+
+	async waitForTrustedElementsGone(): Promise<void> {
+		const cellSelector = '.notebookEditor .notebook-cell';
+		await this.code.waitForElementGone(`${cellSelector} iframe`);
+		await this.code.waitForElementGone(`${cellSelector} dialog`);
+		await this.code.waitForElementGone(`${cellSelector} embed`);
+		await this.code.waitForElementGone(`${cellSelector} svg`);
+	}
 }
 
 export class NotebookToolbar {
