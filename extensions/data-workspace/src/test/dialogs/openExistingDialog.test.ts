@@ -32,12 +32,12 @@ suite('Open Existing Dialog', function (): void {
 		const validateResult = await dialog.validate();
 
 		const msg = constants.FileNotExistError('project', 'nonExistentProjectFile');
-		should.equal(dialog._dialogObject.message.text, msg);
+		should.equal(dialog.dialogObject.message.text, msg);
 		should.equal(validateResult, false, 'Validation should fail because project file does not exist, but passed');
 
 		// create a project file
 		dialog._filePathTextBox!.value = await createProjectFile('testproj');
-		should.equal(await dialog.validate(), true, `Validation should pass because project file exists, but failed with: ${dialog._dialogObject.message.text}`);
+		should.equal(await dialog.validate(), true, `Validation should pass because project file exists, but failed with: ${dialog.dialogObject.message.text}`);
 	});
 
 	test('Should validate workspace file exists', async function (): Promise<void> {
@@ -51,13 +51,13 @@ suite('Open Existing Dialog', function (): void {
 		const validateResult = await dialog.validate();
 
 		const msg = constants.FileNotExistError('workspace', 'nonExistentWorkspaceFile');
-		should.equal(dialog._dialogObject.message.text, msg);
+		should.equal(dialog.dialogObject.message.text, msg);
 		should.equal(validateResult, false, 'Validation should fail because workspace file does not exist, but passed');
 
 		// create a workspace file
 		dialog._filePathTextBox!.value = generateUniqueWorkspaceFilePath();
 		await fs.writeFile(dialog._filePathTextBox!.value , '');
-		should.equal(await dialog.validate(), true, `Validation should pass because workspace file exists, but failed with: ${dialog._dialogObject.message.text}`);
+		should.equal(await dialog.validate(), true, `Validation should pass because workspace file exists, but failed with: ${dialog.dialogObject.message.text}`);
 	});
 
 
