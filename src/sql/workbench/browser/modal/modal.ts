@@ -28,6 +28,7 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { editorWidgetForeground, editorBackground } from 'vs/platform/theme/common/colorRegistry';
+import { notebookToolbarLines } from 'sql/platform/theme/common/colorRegistry';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 
 export enum MessageLevel {
@@ -640,7 +641,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	public style(styles: IModalDialogStyles): void {
 		this._dialogForeground = styles.dialogForeground ? styles.dialogForeground : getThemeColor(editorWidgetForeground);
 
-		this._dialogBorder = styles.dialogBorder ? styles.dialogBorder : Color.transparent;
+		this._dialogBorder = styles.dialogBorder ? styles.dialogBorder : getThemeColor(notebookToolbarLines);
 
 		if (this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact') {
 			this._dialogHeaderAndFooterBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : getThemeColor(SIDE_BAR_BACKGROUND);
