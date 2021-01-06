@@ -370,6 +370,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				// Get parameter cell and index to place new notebookUri parameters accordingly
 				let parameterCellIndex = 0;
 				let hasParameterCell = false;
+				let hasInjectedCell = false;
 				let injectedParametersMsg = localize('injectedParametersMsg', '# Injected-Parameters\n');
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
@@ -385,6 +386,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						So to make it clear we edit the injected parameters comment to indicate it is the Injected-Parameters cell.
 						*/
 						if (cellModel.isInjectedParameter) {
+							hasInjectedCell = true;
 							cellModel.source = cellModel.source.slice(1);
 							cellModel.source = [injectedParametersMsg].concat(cellModel.source);
 						}
@@ -394,7 +396,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 				// Only add new parameter cell if notebookUri Parameters are found
 				if (notebookUriParams) {
-					this.addParametersCell(notebookUriParams, hasParameterCell, parameterCellIndex);
+					this.addParametersCell(notebookUriParams, hasParameterCell, parameterCellIndex, hasInjectedCell);
 				}
 			}
 
@@ -468,12 +470,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	/* Adds Paramters cell based on Notebook URI parameters */
-	private addParametersCell(notebookUriParams: string, hasParameterCell: boolean, parameterCellIndex: number): void {
+	private addParametersCell(notebookUriParams: string, hasParameterCell: boolean, parameterCellIndex: number, hasInjectedCell: boolean): void {
 		let injectedParametersMsg = localize('injectedParametersMsg', '# Injected-Parameters\n');
 		let uriParamsIndex = parameterCellIndex;
-		// Set new parameters as Injected Parameters cell after original parameter cell
+		// Set new uri parameters as a Injected Parameters cell after original parameter cell
 		if (hasParameterCell) {
 			uriParamsIndex = parameterCellIndex + 1;
+			// Set the uri parameters after the injected parameter cell
+			if (hasInjectedCell) {
+				uriParamsIndex = uriParamsIndex + 1;
+			}
 			this.addUriParameterCell(uriParamsIndex, notebookUriParams);
 			this.cells[uriParamsIndex].isInjectedParameter = true;
 			this.cells[uriParamsIndex].source = [injectedParametersMsg].concat(this.cells[uriParamsIndex].source);
