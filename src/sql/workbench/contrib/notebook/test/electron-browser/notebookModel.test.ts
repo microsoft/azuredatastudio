@@ -353,7 +353,7 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
-		assert.equal(model.cells.length, 2, 'Two cells should be entered');
+		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
 
 		// Set parameter cell and injected parameters cell
 		let notebookParamsCell = model.cells[0];
@@ -381,7 +381,7 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
-		assert.equal(model.cells.length, 2, 'Two cells should be entered');
+		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
 
 		// Validate notebookUri parameter cell is set as the only parameter cell
 		let notebookUriParamsCell = model.cells[0];
@@ -405,11 +405,32 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
-		assert.equal(model.cells.length, 2, 'Two cells should be entered');
+		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
 
 		// Validate notebookUri parameter cell is set as injected parameter
 		let notebookUriParamsCell = model.cells[1];
 		assert.equal(model.cells.indexOf(notebookUriParamsCell), 1, 'NotebookURI parameters cell should be second cell in notebook');
+		assert.equal(notebookUriParamsCell.isParameter, false, 'NotebookURI parameters cell should not be tagged parameter cell');
+		assert.equal(notebookUriParamsCell.isInjectedParameter, true, 'NotebookURI parameters Cell should be injected parameter');
+	});
+
+	test('Should set notebookUri parameters to new cell after injected parameters cell correctly', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedParameterizedNotebookContent));
+		defaultModelOptions.notebookUri = notebookUriParams;
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.equal(model.cells.length, 3, 'Cell count in notebook model is not correct');
+
+		// Validate notebookUri parameter cell is set as an injected parameter after parameter and injected parameter cells
+		let notebookUriParamsCell = model.cells[2];
+		assert.equal(model.cells.indexOf(notebookUriParamsCell), 2, 'NotebookURI parameters cell should be third cell in notebook');
 		assert.equal(notebookUriParamsCell.isParameter, false, 'NotebookURI parameters cell should not be tagged parameter cell');
 		assert.equal(notebookUriParamsCell.isInjectedParameter, true, 'NotebookURI parameters Cell should be injected parameter');
 	});
@@ -424,7 +445,7 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
-		assert.equal(model.cells.length, 2, 'Two cells should be entered');
+		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
 
 		let firstCell = model.cells[0];
 		let secondCell = model.cells[1];
@@ -444,7 +465,7 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
-		assert.equal(model.cells.length, 2, 'Two cells should be entered');
+		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
 
 		let firstCell = model.cells[0];
 		let secondCell = model.cells[1];
