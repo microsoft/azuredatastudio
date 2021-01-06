@@ -233,7 +233,8 @@ configurationRegistry.registerConfiguration({
 		},
 		'notebook.markdownPreviewLineHeight': {
 			'type': 'number',
-			'default': 1.6,
+			'default': 1.5,
+			'minimum': 1,
 			'description': localize('notebook.markdownPreviewLineHeight', "Controls the line height used in the notebook markdown preview. This number is relative to the font size.")
 		}
 	}
