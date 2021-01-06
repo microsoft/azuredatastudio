@@ -256,7 +256,27 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		id: commands.ExplorerScriptSelectAction.ID,
 		title: commands.ExplorerScriptSelectAction.LABEL
 	},
-	when: ContextKeyExpr.or(ItemContextKey.ItemType.isEqualTo('view'), ItemContextKey.ItemType.isEqualTo('table')),
+	when:
+		ContextKeyExpr.and(
+			ItemContextKey.ConnectionProvider.notEqualsTo('kusto'),
+			ContextKeyExpr.or(
+				ItemContextKey.ItemType.isEqualTo('view'),
+				ItemContextKey.ItemType.isEqualTo('table')
+			)
+		),
+	order: 2
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: commands.ExplorerScriptSelectAction.ID,
+		title: commands.ExplorerScriptSelectAction.KUSTOLABEL
+	},
+	when:
+		ContextKeyExpr.and(
+			ItemContextKey.ConnectionProvider.isEqualTo('kusto'),
+			ItemContextKey.ItemType.isEqualTo('table')
+		),
 	order: 2
 });
 
