@@ -3879,7 +3879,64 @@
 					],
 					"statistics": [],
 					"flags": ""
-				}
+				},
+				{
+					"extensionId": "79",
+					"extensionName": "extra-sql-script-as",
+					"displayName": "Extra Sql Script As",
+					"shortDescription": "This extension adds several missing options to the context menu of the object tree: Script Table as INSERT, Script Table as UPDATE...",
+					"publisher": {
+					  "displayName": "pacoweb",
+					  "publisherId": "pacoweb",
+					  "publisherName": "pacoweb"
+					},
+					"versions": [
+					  {
+						"version": "0.3.0",
+						"lastUpdated": "01/01/2021",
+						"assetUri": "",
+						"fallbackAssetUri": "fallbackAssetUri",
+						"files": [
+						  {
+							"assetType": "Microsoft.SQLOps.DownloadPage",
+							"source": "https://github.com/pacoweb/extraSqlScriptAs/releases/tag/0.3.0"
+						  },
+						  {
+							"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+							"source": "https://raw.githubusercontent.com/pacoweb/extraSqlScriptAs/master/images/default_icon.png"
+						  },
+						  {
+							"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+							"source": "https://raw.githubusercontent.com/pacoweb/extraSqlScriptAs/master/README.md"
+						  },
+						  {
+							"assetType": "Microsoft.VisualStudio.Code.Manifest",
+							"source": "https://raw.githubusercontent.com/pacoweb/extraSqlScriptAs/master/package.json"
+						  },
+						  {
+							"assetType": "Microsoft.VisualStudio.Services.Content.License",
+							"source": "https://github.com/pacoweb/extraSqlScriptAs/blob/master/LICENSE"
+						  }
+						],
+						"properties": [
+						  {
+							"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+							"value": ""
+						  },
+						  {
+							"key": "Microsoft.VisualStudio.Services.Links.Source",
+							"value": "https://github.com/pacoweb/extraSqlScriptAs"
+						  },
+						  {
+							"key": "Microsoft.VisualStudio.Code.Engine",
+							"value": "*"
+						  }
+						]
+					  }
+					],
+					"statistics": [],
+					"flags": ""
+				  }
 			],
 			"resultMetadata": [
 				{
@@ -3887,7 +3944,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 66
+							"count": 67
 						}
 					]
 				}
