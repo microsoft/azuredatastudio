@@ -30,6 +30,7 @@ import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialo
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
+import { TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 /**
  * Controller for managing project lifecycle
@@ -38,7 +39,7 @@ export class ProjectsController {
 	private netCoreTool: NetCoreTool;
 	private buildHelper: BuildHelper;
 
-	projects: Project[] = [];
+	//projects: Project[] = [];
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
 	constructor() {
@@ -57,6 +58,8 @@ export class ProjectsController {
 	 * @param projectGuid
 	 */
 	public async createNewProject(creationParams: NewProjectParams): Promise<string> {
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'createNewProject').withAdditionalProperties({ template: creationParams.projectTypeId }).send();
+
 		if (creationParams.projectGuid && !UUID.isUUID(creationParams.projectGuid)) {
 			throw new Error(`Specified GUID is invalid: '${creationParams.projectGuid}'`);
 		}
@@ -103,6 +106,9 @@ export class ProjectsController {
 	public async buildProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<string> {
 		const project: Project = this.getProjectFromContext(context);
 
+		const date = new Date();
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'buildStarted').send();
+
 		// Check mssql extension for project dlls (tracking issue #10273)
 		await this.buildHelper.createBuildDirFolder();
 
@@ -114,9 +120,19 @@ export class ProjectsController {
 		try {
 			await this.netCoreTool.runDotnetCommand(options);
 
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'buildSucceeded').withAdditionalProperties({
+				duration: (new Date().getMilliseconds() - date.getMilliseconds()).toString(),
+			}).send();
+
 			return project.dacpacOutputPath;
 		}
 		catch (err) {
+
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'buildFailed').withAdditionalProperties({
+				duration: (new Date().getMilliseconds() - date.getMilliseconds()).toString(),
+				error: utils.getErrorMessage(err)
+			}).send();
+
 			vscode.window.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
 			return '';
 		}
@@ -146,6 +162,7 @@ export class ProjectsController {
 	}
 
 	public async publishProjectCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
+		//TelemetryReporter.
 		const dacpacPath = await this.buildProject(project);
 
 		if (!dacpacPath) {
