@@ -270,7 +270,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 	command: {
 		id: commands.ExplorerScriptSelectAction.ID,
-		title: 'Take 10'
+		title: commands.ExplorerScriptSelectAction.KUSTOLABEL
 	},
 	when:
 		ContextKeyExpr.and(
