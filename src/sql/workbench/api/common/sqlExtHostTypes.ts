@@ -259,8 +259,8 @@ export interface IModelViewDialogDetails {
 	width: DialogWidth;
 	dialogStyle: DialogStyle;
 	dialogPosition: DialogPosition;
-	suppressHeader: boolean;
-	suppressFooter: boolean;
+	renderHeader: boolean;
+	renderFooter: boolean;
 	dialogXYOffset: IDialogXYOffset;
 }
 

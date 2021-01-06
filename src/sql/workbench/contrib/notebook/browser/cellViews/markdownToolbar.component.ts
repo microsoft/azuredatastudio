@@ -205,9 +205,9 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 	}
 
-	public onInsertButtonClick(event: any, type: MarkdownButtonType): void {
+	public onInsertButtonClick(event: MouseEvent, type: MarkdownButtonType): void {
 		let go = new MarkdownTextTransformer(this._notebookService, this.cellModel, this._instantiationService);
-		let trigger: HTMLElement = event.target;
+		let trigger = event.target as HTMLElement;
 		go.transformText(type, trigger);
 	}
 

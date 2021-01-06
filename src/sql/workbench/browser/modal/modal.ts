@@ -77,8 +77,8 @@ export interface IModalOptions {
 	hasErrors?: boolean;
 	hasSpinner?: boolean;
 	spinnerTitle?: string;
-	suppressHeader?: boolean;
-	suppressFooter?: boolean;
+	renderHeader?: boolean;
+	renderFooter?: boolean;
 	dialogXYOffset?: IDialogXYOffset;
 }
 
@@ -93,8 +93,8 @@ const defaultOptions: IModalOptions = {
 	hasTitleIcon: false,
 	hasErrors: false,
 	hasSpinner: false,
-	suppressHeader: false,
-	suppressFooter: false,
+	renderHeader: true,
+	renderFooter: true,
 	dialogXYOffset: undefined
 };
 
@@ -188,7 +188,7 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	/**
 	 * Build and render the modal, will call {@link Modal#renderBody}
-	 * If suppressHeader and suppressFooter, do nothing.
+	 *
 	 */
 	public render() {
 		let hasMacClass: boolean = document.querySelector('body.mac') !== null ? true : false;
@@ -242,7 +242,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 
 		if (!isUndefinedOrNull(this._title)) {
-			if (!this._modalOptions.suppressHeader) {
+			if (this._modalOptions.renderHeader || this._modalOptions.renderHeader === undefined) {
 				this._modalHeaderSection = DOM.append(this._modalContent, DOM.$('.modal-header'));
 				if (this._modalOptions.hasBackButton) {
 					const container = DOM.append(this._modalHeaderSection, DOM.$('.modal-go-back'));
@@ -257,8 +257,6 @@ export abstract class Modal extends Disposable implements IThemable {
 
 				this._modalTitle = DOM.append(this._modalHeaderSection, DOM.$('h1.modal-title'));
 				this._modalTitle.innerText = this._title;
-			} else {
-				// Do nothing
 			}
 		}
 
@@ -299,8 +297,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._modalBodySection = DOM.append(this._modalContent, DOM.$(`.${modalBodyClass}`));
 		this.renderBody(this._modalBodySection);
 
-		// This modal footer section refers to the footer of of the dialog
-		if (!this._modalOptions.suppressFooter) {
+		if (this._modalOptions.renderFooter || this._modalOptions.renderFooter === undefined) {
 			if (!this._modalOptions.isAngular) {
 				this._modalFooterSection = DOM.append(this._modalContent, DOM.$('.modal-footer'));
 				if (this._modalOptions.hasSpinner) {
@@ -641,33 +638,25 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Called by the theme registry on theme change to style the component
 	 */
 	public style(styles: IModalDialogStyles): void {
-		this._dialogForeground = styles.dialogForeground ? styles.dialogForeground : this.getThemeColor(editorWidgetForeground);
+		this._dialogForeground = styles.dialogForeground ? styles.dialogForeground : getThemeColor(editorWidgetForeground);
 
-		this._dialogBorder = styles.dialogBorder;
+		this._dialogBorder = styles.dialogBorder ? styles.dialogBorder : Color.transparent;
 
 		if (this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact') {
-			this._dialogHeaderAndFooterBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : this.getThemeColor(SIDE_BAR_BACKGROUND);
+			this._dialogHeaderAndFooterBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : getThemeColor(SIDE_BAR_BACKGROUND);
 
 		} else {
-			this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground ? styles.dialogHeaderAndFooterBackground : this.getThemeColor(SIDE_BAR_BACKGROUND);
+			this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground ? styles.dialogHeaderAndFooterBackground : getThemeColor(SIDE_BAR_BACKGROUND);
 		}
 
-		this._dialogBodyBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : this.getThemeColor(editorBackground);
+		this._dialogBodyBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : getThemeColor(editorBackground);
 
 		this.applyStyles();
 	}
 
-	public getThemeColor(themeColorName: string): Color {
-		let themeColor: Color;
-		registerThemingParticipant((theme) => {
-			themeColor = theme.getColor(themeColorName);
-		});
-		return themeColor;
-	}
-
 	private applyStyles(): void {
 		const foreground = this._dialogForeground.toString();
-		const border = this._dialogBorder ? this._dialogBorder.toString() : null;
+		const border = this._dialogBorder.toString();
 		const headerAndFooterBackground = this._dialogHeaderAndFooterBackground.toString();
 		const bodyBackground = this._dialogBodyBackground.toString();
 		const calloutStyle: CSSStyleDeclaration = this._modalDialog.style;
@@ -724,4 +713,12 @@ export abstract class Modal extends Disposable implements IThemable {
 		super.dispose();
 		this._footerButtons = [];
 	}
+}
+
+function getThemeColor(themeColorName: string): Color {
+	let themeColor: Color;
+	registerThemingParticipant((theme) => {
+		themeColor = theme.getColor(themeColorName);
+	});
+	return themeColor;
 }

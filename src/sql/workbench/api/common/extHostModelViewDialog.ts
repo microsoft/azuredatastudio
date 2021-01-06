@@ -129,8 +129,8 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 	private _width: DialogWidth;
 	private _dialogStyle: DialogStyle;
 	private _dialogPosition: DialogPosition;
-	private _suppressHeader: boolean;
-	private _suppressFooter: boolean;
+	private _renderHeader: boolean;
+	private _renderFooter: boolean;
 	private _dialogXYOffset: IDialogXYOffset;
 
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
@@ -162,20 +162,20 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 		this._dialogPosition = value;
 	}
 
-	public get suppressHeader(): boolean {
-		return this._suppressHeader;
+	public get renderHeader(): boolean {
+		return this._renderHeader;
 	}
 
-	public set suppressHeader(value: boolean) {
-		this._suppressHeader = value;
+	public set renderHeader(value: boolean) {
+		this._renderHeader = value;
 	}
 
-	public get suppressFooter(): boolean {
-		return this._suppressFooter;
+	public get renderFooter(): boolean {
+		return this._renderFooter;
 	}
 
-	public set suppressFooter(value: boolean) {
-		this._suppressFooter = value;
+	public set renderFooter(value: boolean) {
+		this._renderFooter = value;
 	}
 
 	public get dialogXYOffset(): IDialogXYOffset {
@@ -711,8 +711,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		let dialogWidth: DialogWidth = 'narrow';
 		let dialogStyle: DialogStyle;
 		let dialogPosition: DialogPosition;
-		let suppressHeader: boolean;
-		let suppressFooter: boolean;
+		let renderHeader: boolean;
+		let renderFooter: boolean;
 		let dialogXYOffset: IDialogXYOffset;
 		let handle = this.getHandle(dialog);
 		let tabs = dialog.content;
@@ -723,11 +723,11 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		if (dialog.dialogPosition) {
 			dialogPosition = dialog.dialogPosition;
 		}
-		if (dialog.suppressHeader) {
-			suppressHeader = dialog.suppressHeader;
+		if (dialog.renderHeader) {
+			renderHeader = dialog.renderHeader;
 		}
-		if (dialog.suppressFooter) {
-			suppressFooter = dialog.suppressFooter;
+		if (dialog.renderFooter) {
+			renderFooter = dialog.renderFooter;
 		}
 		if (dialog.dialogXYOffset) {
 			dialogXYOffset = dialog.dialogXYOffset;
@@ -735,11 +735,18 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		if (tabs && typeof tabs !== 'string') {
 			tabs.forEach(tab => this.updateTabContent(tab));
 		}
+
 		if (dialog.customButtons) {
 			dialog.customButtons.forEach(button => this.updateButton(button));
 		}
-		this.updateButton(dialog.okButton);
-		this.updateButton(dialog.cancelButton);
+
+		/**
+		 * Only peform actions on footer if it is shown.
+		 */
+		if (dialog.renderFooter === undefined || dialog.renderFooter) {
+			this.updateButton(dialog.okButton);
+			this.updateButton(dialog.cancelButton);
+		}
 
 		if (dialog.isWide !== undefined) {
 			dialogWidth = dialog.isWide ? 'wide' : 'narrow';
@@ -753,8 +760,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			width: dialogWidth,
 			dialogStyle: dialogStyle,
 			dialogPosition: dialogPosition,
-			suppressHeader: suppressHeader,
-			suppressFooter: suppressFooter,
+			renderHeader: renderHeader,
+			renderFooter: renderFooter,
 			dialogXYOffset: dialogXYOffset,
 			okButton: this.getHandle(dialog.okButton),
 			cancelButton: this.getHandle(dialog.cancelButton),
@@ -788,7 +795,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._onClickCallbacks.set(handle, callback);
 	}
 
-	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, suppressHeader?: boolean, suppressFooter?: boolean, dialogXYOffset?: IDialogXYOffset): azdata.window.Dialog {
+	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogXYOffset?: IDialogXYOffset): azdata.window.Dialog {
 
 		let dialog = new DialogImpl(this, this._extHostModelView, this._extHostTaskManagement, extension);
 
@@ -804,9 +811,11 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		if (dialogXYOffset) {
 			dialog.dialogXYOffset = dialogXYOffset;
 		}
-		dialog.suppressHeader = suppressHeader;
-		dialog.suppressFooter = suppressFooter;
-		dialog.title = title;
+		dialog.renderHeader = renderHeader;
+		dialog.renderFooter = renderFooter;
+		if (title) {
+			dialog.title = title;
+		}
 		dialog.width = width ?? 'narrow';
 		dialog.handle = this.getHandle(dialog);
 		return dialog;

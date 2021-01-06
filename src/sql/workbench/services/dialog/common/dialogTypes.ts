@@ -45,8 +45,8 @@ export class Dialog extends ModelViewPane {
 	public content: string | DialogTab[] = '';
 	public dialogStyle: DialogStyle;
 	public dialogPosition: DialogPosition;
-	public suppressHeader: boolean;
-	public suppressFooter: boolean;
+	public renderHeader: boolean;
+	public renderFooter: boolean;
 	public dialogXYOffset: IDialogXYOffset;
 	public okButton: DialogButton = new DialogButton(Dialog.DONE_BUTTON_LABEL, true);
 	public cancelButton: DialogButton = new DialogButton(Dialog.CANCEL_BUTTON_LABEL, true);
@@ -56,7 +56,7 @@ export class Dialog extends ModelViewPane {
 	private _message: DialogMessage | undefined;
 	private _closeValidator: CloseValidator | undefined;
 
-	constructor(public title: string, public width: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, suppressHeader?: boolean, suppressFooter?: boolean, dialogXYOffset?: IDialogXYOffset, content?: string | DialogTab[]) {
+	constructor(public title: string, public width: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogXYOffset?: IDialogXYOffset, content?: string | DialogTab[]) {
 		super();
 		if (content) {
 			this.content = content;
@@ -67,11 +67,11 @@ export class Dialog extends ModelViewPane {
 		if (dialogPosition) {
 			this.dialogPosition = dialogPosition;
 		}
-		if (suppressHeader) {
-			this.suppressHeader = suppressHeader;
+		if (renderHeader) {
+			this.renderHeader = renderHeader;
 		}
-		if (suppressFooter) {
-			this.suppressFooter = suppressFooter;
+		if (renderFooter) {
+			this.renderFooter = renderFooter;
 		}
 		if (dialogXYOffset) {
 			this.dialogXYOffset = dialogXYOffset;

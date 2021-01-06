@@ -629,15 +629,25 @@ declare module 'azdata' {
 			 * Width of the dialog
 			 */
 			width?: DialogWidth;
-
+			/**
+			 * Dialog style type: normal, flyout, callout and calloutCompact
+			 */
 			dialogStyle?: DialogStyle;
-
+			/**
+			 * Dialog position type: left, below and undefined.
+			 */
 			dialogPosition?: DialogPosition;
-
-			suppressHeader?: boolean;
-
-			suppressFooter?: boolean;
-
+			/**
+			 * Render Dialog header
+			 */
+			renderHeader?: boolean;
+			/**
+			 * Render Dialog footer
+			 */
+			renderFooter?: boolean;
+			/**
+			 * x/y values used for positioning Dialog when displayed as a callout
+			 */
 			dialogXYOffset?: IDialogXYOffset;
 		}
 
@@ -670,11 +680,11 @@ declare module 'azdata' {
 		 * @param width width of the dialog, default is 'wide'
 		 * @param dialogStyle Defines the dialog style, default is 'Flyout'
 		 * @param dialogPosition Defines the dialog position, default is null
-		 * @param suppressHeader Prevents render of Dialog header
-		 * @param suppressFooter Prevents render of Dialog
+		 * @param renderHeader Render Dialog header
+		 * @param renderFooter Render Dialog footer
 		 * @param dialogXYOffset Custom offset for positioning callout
 		 */
-		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, suppressHeader?: boolean, suppressFooter?: boolean, dialogXYOffset?: IDialogXYOffset): Dialog;
+		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogXYOffset?: IDialogXYOffset): Dialog;
 
 		/**
 		 * Create a wizard with the given title and width

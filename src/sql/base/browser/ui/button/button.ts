@@ -20,10 +20,8 @@ export class Button extends vsButton {
 
 		this._options = options;
 
-		if (this._options) {
-			if (this._options.secondary) {
-				this.element.classList.add('btn-secondary');
-			}
+		if (this._options?.secondary) {
+			this.element.classList.add('btn-secondary');
 		}
 
 		this._register(DOM.addDisposableListener(this.element, DOM.EventType.FOCUS, () => {

@@ -58,19 +58,19 @@ export class DialogModal extends Modal {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
-		if (!this._modalOptions.suppressFooter && this.backButton) {
+		if (this._modalOptions.renderFooter && this.backButton) {
 			this.backButton.onDidClick(() => this.cancel());
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 
-		if (!this._modalOptions.suppressFooter && this._dialog.customButtons) {
+		if (this._modalOptions.renderFooter && this._dialog.customButtons) {
 			this._dialog.customButtons.forEach(button => {
 				let buttonElement = this.addDialogButton(button);
 				this.updateButtonElement(buttonElement, button);
 			});
 		}
 
-		if (!this._modalOptions.suppressFooter) {
+		if (this._modalOptions.renderFooter) {
 			this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done(), false, true);
 			this._dialog.okButton.registerClickEvent(this._onDone.event);
 			this._dialog.onValidityChanged(valid => {

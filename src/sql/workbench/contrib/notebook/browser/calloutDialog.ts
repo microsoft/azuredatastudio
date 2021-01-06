@@ -27,21 +27,17 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
 
-export type CalloutStyle = 'LINK' | 'IMAGE';
-
-const LINK = 'LINK_PREVIEW';
-const IMAGE = 'IMAGE_PREVIEW';
+export type ICalloutType = 'IMAGE' | 'LINK';
 
 export interface ICalloutDialogOptions {
 	insertTitle?: string,
-	calloutStyle?: CalloutStyle,
+	calloutType?: ICalloutType,
 	insertMarkup?: string,
 	imagePath?: string,
 	embedImage?: boolean
 }
-
 export class CalloutDialog extends Modal {
-	private _calloutStyle: CalloutStyle;
+	private _calloutType: ICalloutType;
 	private _selectionComplete: Deferred<ICalloutDialogOptions>;
 	private _insertButton: Button;
 	private _cancelButton: Button;
@@ -78,7 +74,7 @@ export class CalloutDialog extends Modal {
 	private readonly embedImageLabel = localize('callout.embedImageLabel', "Attach image to notebook");
 
 	constructor(
-		calloutInstance: CalloutStyle,
+		calloutType: ICalloutType,
 		title: string,
 		posX: number,
 		posY: number,
@@ -113,7 +109,7 @@ export class CalloutDialog extends Modal {
 			});
 
 		this._selectionComplete = new Deferred<ICalloutDialogOptions>();
-		this._calloutStyle = calloutInstance;
+		this._calloutType = calloutType;
 	}
 
 	/**
@@ -129,7 +125,7 @@ export class CalloutDialog extends Modal {
 
 		attachModalDialogStyler(this, this._themeService);
 
-		this._insertButton = this.addFooterButton(this.insertButtonText, () => this.insert(this._calloutStyle));
+		this._insertButton = this.addFooterButton(this.insertButtonText, () => this.insert());
 		attachButtonStyler(this._insertButton, this._themeService);
 
 		this._cancelButton = this.addFooterButton(this.cancelButtonText, () => this.cancel(), null, true);
@@ -139,141 +135,148 @@ export class CalloutDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
+		if (this._calloutType === 'IMAGE') {
+			this.buildInsertImageCallout(container);
+		}
 
-		if (this._calloutStyle === `${IMAGE}`) {
-			let imageContentColumn = DOM.$('.column.insert-image');
-			DOM.append(container, imageContentColumn);
+		if (this._calloutType === 'LINK') {
+			this.buildInsertLinkCallout(container);
+		}
+	}
 
-			let locationRow = DOM.$('.row');
-			DOM.append(imageContentColumn, locationRow);
+	private async buildInsertImageCallout(container: HTMLElement): Promise<void> {
+		let imageContentColumn = DOM.$('.column.insert-image');
+		DOM.append(container, imageContentColumn);
 
-			this._imageLocationLabel = DOM.$('p');
-			this._imageLocationLabel.innerText = this.locationLabel;
-			DOM.append(locationRow, this._imageLocationLabel);
+		let locationRow = DOM.$('.row');
+		DOM.append(imageContentColumn, locationRow);
 
-			let radioButtonGroup = DOM.$('.radio-group');
-			this._imageLocalRadioButton = new RadioButton(radioButtonGroup, {
-				label: this.localImageLabel,
-				enabled: true,
-				checked: true
+		this._imageLocationLabel = DOM.$('p');
+		this._imageLocationLabel.innerText = this.locationLabel;
+		DOM.append(locationRow, this._imageLocationLabel);
+
+		let radioButtonGroup = DOM.$('.radio-group');
+		this._imageLocalRadioButton = new RadioButton(radioButtonGroup, {
+			label: this.localImageLabel,
+			enabled: true,
+			checked: true
+		});
+		this._imageRemoteRadioButton = new RadioButton(radioButtonGroup, {
+			label: this.remoteImageLabel,
+			enabled: true,
+			checked: false
+		});
+		this._imageLocalRadioButton.value = 'local';
+		this._imageLocalRadioButton.name = 'group1';
+		this._imageRemoteRadioButton.value = 'remote';
+		this._imageRemoteRadioButton.name = 'group1';
+		DOM.append(locationRow, radioButtonGroup);
+
+		let pathRow = DOM.$('.row');
+		DOM.append(imageContentColumn, pathRow);
+		this._imageUrlLabel = DOM.$('p');
+		if (this._imageLocalRadioButton.checked === true) {
+			this._imageUrlLabel.innerText = this.pathPlaceholder;
+		} else {
+			this._imageUrlLabel.innerText = this.urlPlaceholder;
+		}
+		DOM.append(pathRow, this._imageUrlLabel);
+
+		let inputContainer = DOM.$('.flex-container');
+		this._imageUrlInputBox = new InputBox(
+			inputContainer,
+			this.contextViewService,
+			{
+				placeholder: this.pathPlaceholder,
+				ariaLabel: this.pathInputLabel
 			});
-			this._imageRemoteRadioButton = new RadioButton(radioButtonGroup, {
-				label: this.remoteImageLabel,
-				enabled: true,
-				checked: false
-			});
-			this._imageLocalRadioButton.value = 'local';
-			this._imageLocalRadioButton.name = 'group1';
-			this._imageRemoteRadioButton.value = 'remote';
-			this._imageRemoteRadioButton.name = 'group1';
-			DOM.append(locationRow, radioButtonGroup);
+		let browseButtonContainer = DOM.$('.button-icon');
+		this._imageBrowseButton = DOM.$('a.notebook-button.codicon.masked-icon.browse-local');
+		this._imageBrowseButton.title = this.browseAltText;
+		DOM.append(inputContainer, browseButtonContainer);
+		DOM.append(browseButtonContainer, this._imageBrowseButton);
 
-			let pathRow = DOM.$('.row');
-			DOM.append(imageContentColumn, pathRow);
-			this._imageUrlLabel = DOM.$('p');
-			if (this._imageLocalRadioButton.checked === true) {
-				this._imageUrlLabel.innerText = this.pathPlaceholder;
-			} else {
-				this._imageUrlLabel.innerText = this.urlPlaceholder;
+		this._register(DOM.addDisposableListener(this._imageBrowseButton, DOM.EventType.CLICK, async () => {
+			let selectedUri = await this.handleBrowse();
+			if (selectedUri) {
+				this._imageUrlInputBox.value = selectedUri.fsPath;
 			}
-			DOM.append(pathRow, this._imageUrlLabel);
+		}, true));
 
-			let inputContainer = DOM.$('.flex-container');
-			this._imageUrlInputBox = new InputBox(
-				inputContainer,
-				this.contextViewService,
-				{
-					placeholder: this.pathPlaceholder,
-					ariaLabel: this.pathInputLabel
-				});
-			let browseButtonContainer = DOM.$('.button-icon');
-			this._imageBrowseButton = DOM.$('a.notebook-button.codicon.masked-icon.browse-local');
-			this._imageBrowseButton.title = this.browseAltText;
-			DOM.append(inputContainer, browseButtonContainer);
-			DOM.append(browseButtonContainer, this._imageBrowseButton);
+		this._register(this._imageRemoteRadioButton.onClicked(e => {
+			this._imageBrowseButton.style.display = 'none';
+			this._imageUrlLabel.innerText = this.urlPlaceholder;
+			this._imageUrlInputBox.setPlaceHolder(this.urlPlaceholder);
+		}));
+		this._register(this._imageLocalRadioButton.onClicked(e => {
+			this._imageBrowseButton.style.display = 'block';
+			this._imageUrlLabel.innerText = this.pathPlaceholder;
+			this._imageUrlInputBox.setPlaceHolder(this.pathPlaceholder);
+		}));
+		DOM.append(pathRow, inputContainer);
 
-			this._register(DOM.addDisposableListener(this._imageBrowseButton, DOM.EventType.CLICK, async () => {
-				let selectedUri = await this.handleBrowse();
-				if (selectedUri) {
-					this._imageUrlInputBox.value = selectedUri.fsPath;
-				}
-			}, true));
+		let embedRow = DOM.$('.row');
+		DOM.append(imageContentColumn, embedRow);
+		this._imageEmbedLabel = DOM.append(embedRow, DOM.$('.checkbox'));
+		this._imageEmbedCheckbox = new Checkbox(
+			this._imageEmbedLabel,
+			{
+				label: this.embedImageLabel,
+				checked: false,
+				onChange: (viaKeyboard) => { },
+				ariaLabel: this.embedImageLabel
+			});
+		DOM.append(embedRow, this._imageEmbedLabel);
+	}
 
-			this._register(this._imageRemoteRadioButton.onClicked(e => {
-				this._imageBrowseButton.style.display = 'none';
-				this._imageUrlLabel.innerText = this.urlPlaceholder;
-				this._imageUrlInputBox.setPlaceHolder(this.urlPlaceholder);
-			}));
-			this._register(this._imageLocalRadioButton.onClicked(e => {
-				this._imageBrowseButton.style.display = 'block';
-				this._imageUrlLabel.innerText = this.pathPlaceholder;
-				this._imageUrlInputBox.setPlaceHolder(this.pathPlaceholder);
-			}));
-			DOM.append(pathRow, inputContainer);
+	private buildInsertLinkCallout(container: HTMLElement): void {
+		let linkContentColumn = DOM.$('.column.insert-link');
+		DOM.append(container, linkContentColumn);
 
-			let embedRow = DOM.$('.row');
-			DOM.append(imageContentColumn, embedRow);
-			this._imageEmbedLabel = DOM.append(embedRow, DOM.$('.checkbox'));
-			this._imageEmbedCheckbox = new Checkbox(
-				this._imageEmbedLabel,
-				{
-					label: this.embedImageLabel,
-					checked: false,
-					onChange: (viaKeyboard) => { },
-					ariaLabel: this.embedImageLabel
-				});
-			DOM.append(embedRow, this._imageEmbedLabel);
-		}
+		let linkTextRow = DOM.$('.row');
+		DOM.append(linkContentColumn, linkTextRow);
 
-		if (this._calloutStyle === `${LINK}`) {
-			let linkContentColumn = DOM.$('.column.insert-link');
-			DOM.append(container, linkContentColumn);
+		this._linkTextLabel = DOM.$('p');
+		this._linkTextLabel.innerText = this.linkTextLabel;
+		DOM.append(linkTextRow, this._linkTextLabel);
 
-			let linkTextRow = DOM.$('.row');
-			DOM.append(linkContentColumn, linkTextRow);
+		const linkTextInputContainer = DOM.$('.input-field');
+		this._linkTextInputBox = new InputBox(
+			linkTextInputContainer,
+			this.contextViewService,
+			{
+				placeholder: this.linkTextPlaceholder,
+				ariaLabel: this.linkTextLabel
+			});
+		DOM.append(linkTextRow, linkTextInputContainer);
 
-			this._linkTextLabel = DOM.$('p');
-			this._linkTextLabel.innerText = this.linkTextLabel;
-			DOM.append(linkTextRow, this._linkTextLabel);
+		let linkAddressRow = DOM.$('.row');
+		DOM.append(linkContentColumn, linkAddressRow);
+		this._linkAddressLabel = DOM.$('p');
+		this._linkAddressLabel.innerText = this.linkAddressLabel;
+		DOM.append(linkAddressRow, this._linkAddressLabel);
 
-			const linkTextInputContainer = DOM.$('.input-field');
-			this._linkTextInputBox = new InputBox(
-				linkTextInputContainer,
-				this.contextViewService,
-				{
-					placeholder: this.linkTextPlaceholder,
-					ariaLabel: this.linkTextLabel
-				});
-			DOM.append(linkTextRow, linkTextInputContainer);
-
-			let linkAddressRow = DOM.$('.row');
-			DOM.append(linkContentColumn, linkAddressRow);
-			this._linkAddressLabel = DOM.$('p');
-			this._linkAddressLabel.innerText = this.linkAddressLabel;
-			DOM.append(linkAddressRow, this._linkAddressLabel);
-
-			const linkAddressInputContainer = DOM.$('.input-field');
-			this._linkAddressInputBox = new InputBox(
-				linkAddressInputContainer,
-				this.contextViewService,
-				{
-					placeholder: this.linkAddressPlaceholder,
-					ariaLabel: this.linkAddressLabel
-				});
-			DOM.append(linkAddressRow, linkAddressInputContainer);
-		}
+		const linkAddressInputContainer = DOM.$('.input-field');
+		this._linkAddressInputBox = new InputBox(
+			linkAddressInputContainer,
+			this.contextViewService,
+			{
+				placeholder: this.linkAddressPlaceholder,
+				ariaLabel: this.linkAddressLabel
+			});
+		DOM.append(linkAddressRow, linkAddressInputContainer);
 	}
 
 	private registerListeners(): void {
 		// Theme styler
 		this._register(attachButtonStyler(this._insertButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
-		if (this._calloutStyle === `${IMAGE}`) {
+		if (this._calloutType === 'IMAGE') {
 			this._register(styler.attachInputBoxStyler(this._imageUrlInputBox, this._themeService));
 			this._register(styler.attachButtonStyler(this._imageEmbedCheckbox, this._themeService));
 			this._register(styler.attachCheckboxStyler(this._imageEmbedCheckbox, this._themeService));
 		}
-		if (this._calloutStyle === `${LINK}`) {
+		if (this._calloutType === 'LINK') {
 			this._register(styler.attachInputBoxStyler(this._linkTextInputBox, this._themeService));
 			this._register(styler.attachInputBoxStyler(this._linkAddressInputBox, this._themeService));
 		}
@@ -282,16 +285,16 @@ export class CalloutDialog extends Modal {
 	protected layout(height?: number): void {
 	}
 
-	public insert(calloutStyle: string) {
+	public insert() {
 		this.hide();
-		if (calloutStyle === `${IMAGE}`) {
+		if (this._calloutType === 'IMAGE') {
 			this._selectionComplete.resolve({
 				insertMarkup: `<img src="${this._imageUrlInputBox.value}">`,
 				imagePath: this._imageUrlInputBox.value,
 				embedImage: this._imageEmbedCheckbox.checked
 			});
 		}
-		if (calloutStyle === `${LINK}`) {
+		if (this._calloutType === 'LINK') {
 			this._selectionComplete.resolve({
 				insertMarkup: `[${this._linkTextInputBox.value}](${this._linkAddressInputBox.value})`,
 			});

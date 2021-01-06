@@ -77,8 +77,8 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		options.width = dialog.width;
 		options.dialogStyle = dialog.dialogStyle;
 		options.dialogPosition = dialog.dialogPosition;
-		options.suppressHeader = dialog.suppressHeader;
-		options.suppressFooter = dialog.suppressFooter;
+		options.renderHeader = dialog.renderHeader;
+		options.renderFooter = dialog.renderFooter;
 		options.dialogXYOffset = dialog.dialogXYOffset;
 		this._dialogService.showDialog(dialog, dialogName, options);
 		return Promise.resolve();
@@ -93,12 +93,18 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	public $setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void> {
 		let dialog = this._dialogs.get(handle);
 		if (!dialog) {
-			dialog = new Dialog(details.title, details.width, details.dialogStyle, details.dialogPosition, details.suppressHeader, details.suppressFooter, details.dialogXYOffset);
+			dialog = new Dialog(details.title, details.width, details.dialogStyle, details.dialogPosition, details.renderHeader, details.renderFooter, details.dialogXYOffset);
 
-			let okButton = this.getButton(details.okButton);
-			let cancelButton = this.getButton(details.cancelButton);
-			dialog.okButton = okButton;
-			dialog.cancelButton = cancelButton;
+			/**
+			 * Only peform actions on footer if it is shown.
+			 */
+			if (details.renderFooter === true || details.renderFooter === undefined) {
+				let okButton = this.getButton(details.okButton);
+				let cancelButton = this.getButton(details.cancelButton);
+				dialog.okButton = okButton;
+				dialog.cancelButton = cancelButton;
+			}
+
 			dialog.onValidityChanged(valid => this._proxy.$onPanelValidityChanged(handle, valid));
 			dialog.registerCloseValidator(() => this.validateDialogClose(handle));
 			this._dialogs.set(handle, dialog);

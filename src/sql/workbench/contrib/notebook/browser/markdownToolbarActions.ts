@@ -16,7 +16,7 @@ import { Selection } from 'vs/editor/common/core/selection';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
-import { CalloutDialog, CalloutStyle } from 'sql/workbench/contrib/notebook/browser/calloutDialog';
+import { CalloutDialog, ICalloutType } from 'sql/workbench/contrib/notebook/browser/calloutDialog';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class TransformMarkdownAction extends Action {
@@ -124,8 +124,7 @@ export class MarkdownTextTransformer {
 			let endInsertedText: string;
 
 			if (type === MarkdownButtonType.IMAGE_PREVIEW || type === MarkdownButtonType.LINK_PREVIEW) {
-				let calloutStyle = MarkdownButtonType[type].toString() as CalloutStyle;
-				beginInsertedText = await this.createCallout(type, calloutStyle, triggerElement);
+				beginInsertedText = await this.createCallout(type, triggerElement);
 			} else {
 				beginInsertedText = getStartTextToInsert(type);
 				endInsertedText = getEndTextToInsert(type);
@@ -165,22 +164,24 @@ export class MarkdownTextTransformer {
 	 * Instantiate modal for use as callout when inserting Link or Image into markdown.
 	 * @param calloutStyle Style of callout passed in to determine which callout is rendered
 	 */
-	private async createCallout(type: MarkdownButtonType, calloutStyle: CalloutStyle, triggerElement: HTMLElement): Promise<string> {
+	private async createCallout(type: MarkdownButtonType, triggerElement: HTMLElement): Promise<string> {
 		const posX = triggerElement.getBoundingClientRect().left;
 		const posY = triggerElement.getBoundingClientRect().top;
-		let title = calloutStyle.toString().toLowerCase();
 
-		title = type === MarkdownButtonType.IMAGE_PREVIEW ? this.insertImageHeading : this.insertLinkHeading;
+		let calloutString: unknown = type === MarkdownButtonType.IMAGE_PREVIEW ? 'IMAGE' : 'LINK';
+		let calloutType = (calloutString as ICalloutType);
+
+		let title = type === MarkdownButtonType.IMAGE_PREVIEW ? this.insertImageHeading : this.insertLinkHeading;
 
 		if (!this._callout) {
 			// Offset for Mac clients
 			const dialogXYOffset = { xOffset: 22, yOffset: 24 };
-			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutStyle, title, posX, posY, dialogXYOffset);
+			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutType, title, posX, posY, dialogXYOffset);
 			this._callout.render();
 		}
 		let calloutOptions = await this._callout.open();
 		calloutOptions.insertTitle = title;
-		calloutOptions.calloutStyle = calloutStyle;
+		calloutOptions.calloutType = calloutType;
 
 		return calloutOptions.insertMarkup;
 	}
