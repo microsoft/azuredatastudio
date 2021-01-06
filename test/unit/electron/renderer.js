@@ -49,6 +49,7 @@ function initLoader(opts) {
 			'@angular/platform-browser-dynamic',
 			'@angular/router',
 			'angular2-grid',
+			'gridstack/dist/h5/gridstack-dd-native',
 			'ng2-charts',
 			'rxjs/add/observable/of',
 			'rxjs/add/observable/fromPromise',
