@@ -144,7 +144,7 @@ export class CalloutDialog extends Modal {
 		}
 	}
 
-	private async buildInsertImageCallout(container: HTMLElement): Promise<void> {
+	private buildInsertImageCallout(container: HTMLElement): void {
 		let imageContentColumn = DOM.$('.column.insert-image');
 		DOM.append(container, imageContentColumn);
 
