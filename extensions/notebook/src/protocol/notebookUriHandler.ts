@@ -126,6 +126,6 @@ export class NotebookUriHandler implements vscode.UriHandler {
 			}
 			nextVal++;
 		}
-		return `${title}`;
+		return title;
 	}
 }

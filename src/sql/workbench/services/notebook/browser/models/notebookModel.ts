@@ -49,6 +49,8 @@ export class ErrorInfo {
 }
 
 const saveConnectionNameConfigName = 'notebook.saveConnectionName';
+const injectedParametersMsg = localize('injectedParametersMsg', '# Injected-Parameters\n');
+
 
 export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
@@ -371,7 +373,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let parameterCellIndex = 0;
 				let hasParameterCell = false;
 				let hasInjectedCell = false;
-				let injectedParametersMsg = localize('injectedParametersMsg', '# Injected-Parameters\n');
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
@@ -469,9 +470,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return cell;
 	}
 
-	/* Adds Paramters cell based on Notebook URI parameters */
+	/** Adds Paramters cell based on Notebook URI parameters */
 	private addParametersCell(notebookUriParams: string, hasParameterCell: boolean, parameterCellIndex: number, hasInjectedCell: boolean): void {
-		let injectedParametersMsg = localize('injectedParametersMsg', '# Injected-Parameters\n');
 		let uriParamsIndex = parameterCellIndex;
 		// Set new uri parameters as a Injected Parameters cell after original parameter cell
 		if (hasParameterCell) {
