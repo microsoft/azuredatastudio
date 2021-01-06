@@ -34,7 +34,7 @@ export class NotebookUriHandler implements vscode.UriHandler {
 	}
 
 	private open(uri: vscode.Uri): Promise<void> {
-		const data = uri.query.toString().split('url=')[1];
+		const data = uri.query.substr(uri.query.indexOf('url=') + 4);
 
 		if (!data) {
 			console.warn('Failed to open URI:', uri);
