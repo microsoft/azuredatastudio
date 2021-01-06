@@ -3495,6 +3495,7 @@ declare module 'azdata' {
 
 	export interface RadioButtonComponent extends Component, RadioButtonProperties {
 		/**
+		 * @deprecated use onChanged event instead
 		 * An event called when the radio button is clicked
 		 */
 		onDidClick: vscode.Event<any>;

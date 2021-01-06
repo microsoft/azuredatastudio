@@ -88,6 +88,7 @@ export function createViewContext(): ViewTestContext {
 			label: '',
 			checked: false,
 			onDidClick: onClick.event,
+			onChanged: onValueChanged.event
 		});
 		return button;
 	};

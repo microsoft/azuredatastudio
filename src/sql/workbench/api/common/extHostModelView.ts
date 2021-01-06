@@ -1271,6 +1271,7 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 		super(proxy, handle, ModelComponentTypes.RadioButton, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
 	}
 
 	public get name(): string {
@@ -1302,6 +1303,11 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+
+	public get onChanged(): vscode.Event<boolean> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
 }
