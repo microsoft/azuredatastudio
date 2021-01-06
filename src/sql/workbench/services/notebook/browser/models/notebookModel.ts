@@ -51,7 +51,6 @@ export class ErrorInfo {
 const saveConnectionNameConfigName = 'notebook.saveConnectionName';
 const injectedParametersMsg = localize('injectedParametersMsg', '# Injected-Parameters\n');
 
-
 export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
 	private _contextsLoadingEmitter = new Emitter<void>();
