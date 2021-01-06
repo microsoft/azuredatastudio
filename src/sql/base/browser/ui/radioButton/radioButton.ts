@@ -21,7 +21,7 @@ export class RadioButton extends Widget {
 	private _onChanged = new Emitter<boolean>();
 	public readonly onChange: Event<boolean> = this._onChanged.event;
 	private _label: HTMLSpanElement;
-	private _internalCheckedStateTracker: boolean;
+	private _internalCheckedStateTracker: boolean = false;
 
 	constructor(container: HTMLElement, opts: IRadioButtonOptions) {
 		super();
@@ -39,9 +39,9 @@ export class RadioButton extends Widget {
 		this.onclick(this.inputElement, () => {
 			this._onClicked.fire();
 			if (this.name) {
-				let buttonGroup = document.getElementsByName(this.name);
+				const buttonGroup = document.getElementsByName(this.name);
 				buttonGroup.forEach((button) => {
-					let event = document.createEvent('HTMLEvents');
+					const event = document.createEvent('HTMLEvents');
 					event.initEvent('change', true, true);
 					button.dispatchEvent(event);
 				});

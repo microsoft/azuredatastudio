@@ -1271,7 +1271,7 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 		super(proxy, handle, ModelComponentTypes.RadioButton, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<boolean>());
 	}
 
 	public get name(): string {
