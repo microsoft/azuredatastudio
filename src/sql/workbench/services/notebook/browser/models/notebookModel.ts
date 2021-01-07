@@ -364,9 +364,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						}
 					});
 				}
-				// Get Notebook URI Params & adjust to string
+				// Modify Notebook URI Params format from URI query to string space delimited format
 				let notebookUriParams: string = this.notebookUri.query;
-				// Format query to code cell format
 				notebookUriParams = notebookUriParams.replace(/&/g, '\n').replace(/=/g, ' = ');
 				// Get parameter cell and index to place new notebookUri parameters accordingly
 				let parameterCellIndex = 0;
@@ -396,7 +395,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 				// Only add new parameter cell if notebookUri Parameters are found
 				if (notebookUriParams) {
-					this.addParametersCell(notebookUriParams, hasParameterCell, parameterCellIndex, hasInjectedCell);
+					this.addUriParameterCell(notebookUriParams, hasParameterCell, parameterCellIndex, hasInjectedCell);
 				}
 			}
 
@@ -469,8 +468,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return cell;
 	}
 
-	/** Adds Paramters cell based on Notebook URI parameters */
-	private addParametersCell(notebookUriParams: string, hasParameterCell: boolean, parameterCellIndex: number, hasInjectedCell: boolean): void {
+	/**
+	 * Adds Parameters cell based on Notebook URI parameters
+	 * @param notebookUriParams contains the parameters from Notebook URI
+	 * @param hasParameterCell notebook contains a parameter cell
+	 * @param parameterCellIndex index of the parameter cell in notebook
+	 * @param hasInjectedCell notebook contains a injected parameter cell
+	 */
+	private addUriParameterCell(notebookUriParams: string, hasParameterCell: boolean, parameterCellIndex: number, hasInjectedCell: boolean): void {
 		let uriParamsIndex = parameterCellIndex;
 		// Set new uri parameters as a Injected Parameters cell after original parameter cell
 		if (hasParameterCell) {
@@ -479,20 +484,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (hasInjectedCell) {
 				uriParamsIndex = uriParamsIndex + 1;
 			}
-			this.addUriParameterCell(uriParamsIndex, notebookUriParams);
+			this.addCell('code', uriParamsIndex);
 			this.cells[uriParamsIndex].isInjectedParameter = true;
-			this.cells[uriParamsIndex].source = [injectedParametersMsg].concat(this.cells[uriParamsIndex].source);
+			this.cells[uriParamsIndex].source = [injectedParametersMsg].concat(notebookUriParams);
 		} else {
 			// Set new parameters as the parameters cell as the first cell in the notebook
-			this.addUriParameterCell(uriParamsIndex, notebookUriParams);
+			this.addCell('code', uriParamsIndex);
 			this.cells[uriParamsIndex].isParameter = true;
+			this.cells[uriParamsIndex].source = [notebookUriParams];
 		}
-	}
-
-	/** Add new notebook URI parameters cell to notebook */
-	private addUriParameterCell(uriParamsIndex, notebookUriParams): void {
-		this.addCell('code', uriParamsIndex);
-		this._cells[uriParamsIndex].source = [notebookUriParams];
 	}
 
 	moveCell(cell: ICellModel, direction: MoveDirection): void {

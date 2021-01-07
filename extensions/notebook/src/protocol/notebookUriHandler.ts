@@ -33,8 +33,25 @@ export class NotebookUriHandler implements vscode.UriHandler {
 		}
 	}
 	/**
-	 * Our Azuredatastudio URIs follow the standard URI format of
-	 * azuredatastudio://microsoft.notebook/open?url=...
+	 * Our Azure Data Studio URIs follow the standard URI format, and we currently only support https and http URI schemes
+	 * azuredatastudio://microsoft.notebook/open?url=https://
+	 * azuredatastudio://microsoft.notebook/open?url=http://
+	 *
+	 * Example of URI (encoded):
+	 * azuredatastudio://microsoft.notebook/open?url=https%3A%2F%2Fraw.githubusercontent.com%2FVasuBhog%2FAzureDataStudio-Notebooks%2Fmain%2FDemo_Parameterization%2FInput.ipynb
+	 *
+	 * We also support parameters added to the URI for parameterization scenarios
+	 *
+	 * Parameters via the URI are formatted by adding the parameters after the .ipynb with a
+	 * query '?' and use '&' to distinguish a new parameter
+	 *
+	 * Example of Parameters query:
+	 * ...Input.ipynb?x=1&y=2'
+	 *
+	 * Encoded URI with parameters:
+	 * azuredatastudio://microsoft.notebook/open?url=https%3A%2F%2Fraw.githubusercontent.com%2FVasuBhog%2FAzureDataStudio-Notebooks%2Fmain%2FDemo_Parameterization%2FInput.ipynb%3Fx%3D1%26y%3D2
+	 * Decoded URI with parameters:
+	 * azuredatastudio://microsoft.notebook/open?url=https://raw.githubusercontent.com/VasuBhog/AzureDataStudio-Notebooks/main/Demo_Parameterization/Input.ipynb?x=1&y=2
 	 */
 	private open(uri: vscode.Uri): Promise<void> {
 		let data: string;
@@ -48,6 +65,7 @@ export class NotebookUriHandler implements vscode.UriHandler {
 
 		if (!data) {
 			console.warn('Failed to open URI:', uri);
+			return;
 		}
 
 		return this.openNotebook(data);
