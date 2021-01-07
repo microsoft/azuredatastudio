@@ -479,7 +479,7 @@ export class CellModel extends Disposable implements ICellModel {
 			}
 			// Add telemtry for the run cell
 			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunCell)
-				.withAdditionalProperties({ source: this._cellUri, cell_language: kernel.name })
+				.withAdditionalProperties({ cell_language: kernel.name })
 				.send();
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
