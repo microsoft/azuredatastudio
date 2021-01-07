@@ -32,9 +32,19 @@ export class NotebookUriHandler implements vscode.UriHandler {
 				vscode.window.showErrorMessage(localize('notebook.unsupportedAction', "Action {0} is not supported for this handler", uri.path));
 		}
 	}
-
+	/**
+	 * Our Azuredatastudio URIs follow the standard URI format of
+	 * azuredatastudio://microsoft.notebook/open?url=...
+	 */
 	private open(uri: vscode.Uri): Promise<void> {
-		const data = uri.query.substr(uri.query.indexOf('url=') + 4);
+		let data: string;
+		// We ensure that the URI is formatted properly
+		let urlIndex = uri.query.indexOf('url=');
+		if (urlIndex > 0) {
+			// Querystring can not be used as it incorrectly turns parameters attached
+			// to the URI query into key/value pairs and would then fail to open the URI
+			data = uri.query.substr(urlIndex + 4);
+		}
 
 		if (!data) {
 			console.warn('Failed to open URI:', uri);
