@@ -65,6 +65,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private createStatusComponent(view: azdata.ModelView): azdata.FormComponent<azdata.TextComponent> {
 		const component = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: '',
+			CSSStyles: {
+				'font-size': '18px'
+			}
 		});
 
 		return {
@@ -107,11 +110,18 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private constructTargets(): void {
 		const products: Product[] = Object.values(ProductLookupTable);
 
-		const rbg = this.view!.modelBuilder.radioCardGroup();
-		rbg.component().cards = [];
-		rbg.component().orientation = azdata.Orientation.Vertical;
-		rbg.component().iconHeight = '30px';
-		rbg.component().iconWidth = '30px';
+		const rbg = this.view!.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
+			cards: [],
+			cardWidth: '600px',
+			cardHeight: '60px',
+			orientation: azdata.Orientation.Vertical,
+			iconHeight: '30px',
+			iconWidth: '30px'
+		});
+		// rbg.component().cards = [];
+		// rbg.component().orientation = azdata.Orientation.Vertical;
+		// rbg.component().iconHeight = '30px';
+		// rbg.component().iconWidth = '30px';
 
 		products.forEach((product) => {
 			const imagePath = path.resolve(this.migrationStateModel.getExtensionPath(), 'media', product.icon ?? 'ads.svg');
