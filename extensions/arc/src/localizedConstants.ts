@@ -166,10 +166,10 @@ export const details = localize('arc.details', "Details");
 export const lastUpdated = localize('arc.lastUpdated', "Last updated");
 export const noExternalEndpoint = localize('arc.noExternalEndpoint', "No External Endpoint has been configured so this information isn't available.");
 export const podsReady = localize('arc.podsReady', "pods ready");
-export const connectToPostgresDescription = localize('arc.connectToPostgresDescription', "A connection to server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.");
+export const connectToPostgresDescription = localize('arc.connectToPostgresDescription', "A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.");
 
-export function rangeSetting(min: string, max: string): string { return localize('arc.rangeSetting', "Allowed value should be: {0} - {1}", min, max); }
-export function allowedValues(values: string): string { return localize('arc.allowedValues', "Allowed value should be: {0}", values); }
+export function rangeSetting(min: string, max: string): string { return localize('arc.rangeSetting', "Value is expected to be in the range {0} - {1}", min, max); }
+export function allowedValue(value: string): string { return localize('arc.allowedValue', "Value is expected to be {0}", value); }
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
 export function deletingInstance(name: string): string { return localize('arc.deletingInstance', "Deleting instance '{0}'...", name); }
 export function updatingInstance(name: string): string { return localize('arc.updatingInstance', "Updating instance '{0}'...", name); }

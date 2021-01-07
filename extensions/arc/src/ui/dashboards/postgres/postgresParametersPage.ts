@@ -51,7 +51,7 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	protected get icon(): { dark: string; light: string; } {
-		return IconPathHelper.nodeParameters;
+		return IconPathHelper.gear;
 	}
 
 	protected get container(): azdata.Component {
@@ -374,7 +374,7 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 
-			information.updateProperty('title', loc.allowedValues('enums'));	//TODO
+			information.updateProperty('title', loc.allowedValue('enums'));	//TODO
 		} else if (type === 'bool') {
 			// If type is bool, component should be checkbox to turn on or off
 			let valueBox = this.modelView.modelBuilder.checkBox().withProps({
@@ -394,7 +394,7 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 
-			information.updateProperty('title', loc.allowedValues('on,off'));	//TODO
+			information.updateProperty('title', loc.allowedValue('on,off'));	//TODO
 		} else if (type === 'string') {
 			// If type is string, component should be text inputbox
 			// How to add validation: .withValidation(component => component.value?.search('[0-9]') == -1)
@@ -411,7 +411,7 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 
-			information.updateProperty('title', loc.allowedValues(loc.allowedValues('[A-Za-z._]+')));	//TODO
+			information.updateProperty('title', loc.allowedValue(loc.allowedValue('[A-Za-z._]+')));	//TODO
 		} else {
 			// If type is real or interger, component should be inputbox set to inputType of number. Max and min values also set.
 			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
@@ -431,7 +431,7 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 
-			information.updateProperty('title', loc.allowedValues(loc.rangeSetting('min', 'max')));	//TODO
+			information.updateProperty('title', loc.allowedValue(loc.rangeSetting('min', 'max')));	//TODO
 		}
 
 		valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
