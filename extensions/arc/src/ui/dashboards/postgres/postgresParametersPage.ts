@@ -14,19 +14,20 @@ import { EngineSettingsModel, PostgresModel } from '../../../models/postgresMode
 
 export type ParametersModel = {
 	parameterName: string,
+	valueContainer: azdata.FlexContainer,
 	description: string,
-	components: any[]
+	resetButton: azdata.ButtonComponent
 };
 
 export class PostgresParametersPage extends DashboardPage {
-	private searchBox?: azdata.InputBoxComponent;
+	private searchBox!: azdata.InputBoxComponent;
 	private parametersTable!: azdata.DeclarativeTableComponent;
 	private parameterContainer?: azdata.DivContainer;
 	private _parametersTableLoading!: azdata.LoadingComponent;
 
-	private discardButton?: azdata.ButtonComponent;
-	private saveButton?: azdata.ButtonComponent;
-	private resetAllButton?: azdata.ButtonComponent;
+	private discardButton!: azdata.ButtonComponent;
+	private saveButton!: azdata.ButtonComponent;
+	private resetAllButton!: azdata.ButtonComponent;
 	private connectToServerButton?: azdata.ButtonComponent;
 
 	private _parameters: ParametersModel[] = [];
@@ -270,7 +271,7 @@ export class PostgresParametersPage extends DashboardPage {
 		]).component();
 	}
 
-	private initializeConnectButton() {
+	private initializeConnectButton(): void {
 		this.connectToServerButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.connectToServer,
 			enabled: false,
@@ -299,7 +300,7 @@ export class PostgresParametersPage extends DashboardPage {
 		);
 	}
 
-	private initializeSearchBox() {
+	private initializeSearchBox(): void {
 		this.searchBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			enabled: false,
@@ -309,7 +310,7 @@ export class PostgresParametersPage extends DashboardPage {
 		this.disposables.push(
 			this.searchBox.onTextChanged(() => {
 				if (!this.searchBox!.value) {
-					this.parametersTable.data = this._parameters.map(p => p.components!);
+					this.parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
 				} else {
 					this.filterParameters(this.searchBox!.value);
 				}
@@ -317,19 +318,19 @@ export class PostgresParametersPage extends DashboardPage {
 		);
 	}
 
-	private filterParameters(search: string) {
-		let filterData: any[] = [];
+	private filterParameters(search: string): void {
+		let filterData: ParametersModel[] = [];
 
 		this._parameters.forEach(param => {
 			if (param.parameterName?.search(search) !== -1 || param.description?.search(search) !== -1) {
-				filterData.push(param.components!);
+				filterData.push(param);
 			}
 		});
 
-		this.parametersTable.data = filterData;
+		this.parametersTable.data = filterData.map(f => [f.parameterName, f.valueContainer, f.description, f.resetButton]);
 	}
 
-	private createParameters() {
+	private createParameters(): void {
 		this._parameters = [];
 		this._postgresModel._engineSettings.forEach(engineSetting => {
 			this._parameters.push(this.createParameterComponents(engineSetting));
@@ -355,10 +356,6 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private createParameterComponents(engineSetting: EngineSettingsModel): ParametersModel {
-		let data = [];
-
-		// Set parameter name
-		data.push(engineSetting.parameterName);
 
 		// Container to hold input component and information bubble
 		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
@@ -478,23 +475,17 @@ export class PostgresParametersPage extends DashboardPage {
 			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		}
 
-		data.push(valueContainer);
-
-		// Look into hoovering
-		data.push(engineSetting.description);
-
 		// Can reset individual component
-		const resetParameter = this.modelView.modelBuilder.button().withProps({
+		const resetParameterButton = this.modelView.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.reset,
 			title: loc.resetToDefault,
 			width: '20px',
 			height: '20px',
 			enabled: true
 		}).component();
-		data.push(resetParameter);
 
 		this.disposables.push(
-			resetParameter.onDidClick(async () => {
+			resetParameterButton.onDidClick(async () => {
 				try {
 					await vscode.window.withProgress(
 						{
@@ -525,14 +516,15 @@ export class PostgresParametersPage extends DashboardPage {
 
 		let parameter: ParametersModel = {
 			parameterName: engineSetting.parameterName!,
+			valueContainer: valueContainer,
 			description: engineSetting.description!,
-			components: data
+			resetButton: resetParameterButton
 		};
 
 		return parameter;
 	}
 
-	private selectComponent() {
+	private selectComponent(): void {
 		if (!this._postgresModel.engineSettingsLastUpdated) {
 			this.parameterContainer!.addItem(this.modelView.modelBuilder.text().withProps({
 				value: loc.connectToPostgresDescription,
@@ -545,7 +537,7 @@ export class PostgresParametersPage extends DashboardPage {
 		}
 	}
 
-	private async callGetEngineSettings() {
+	private async callGetEngineSettings(): Promise<void> {
 		await this._postgresModel.getEngineSettings().catch(err => {
 			// If an error occurs show a message so the user knows something failed but still
 			// fire the event so callers can know to update (e.g. so dashboards don't show the
@@ -560,12 +552,12 @@ export class PostgresParametersPage extends DashboardPage {
 		});
 	}
 
-	private refreshParametersTable() {
+	private refreshParametersTable(): void {
 		this.createParameters();
-		this.parametersTable.data = this._parameters.map(p => p.components!);
+		this.parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
 	}
 
-	private handleServiceUpdated() {
+	private handleServiceUpdated(): void {
 		if (this._postgresModel.configLastUpdated && !this._postgresModel.engineSettingsLastUpdated) {
 			this.connectToServerButton!.enabled = true;
 			this._parametersTableLoading!.loading = false;

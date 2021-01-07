@@ -150,22 +150,8 @@ export class PostgresModel extends ResourceModel {
 		}
 
 		this._engineSettings = [];
-		for (let i = 0; i < 20; i++) {
-			let rowValues = engineSettings.rows[i].map(c => c.displayValue);
-			let result: EngineSettingsModel = {
-				parameterName: rowValues.shift(),
-				value: rowValues.shift(),
-				description: rowValues.shift(),
-				min: rowValues.shift(),
-				max: rowValues.shift(),
-				options: rowValues.shift(),
-				type: rowValues.shift()
-			};
 
-			this._engineSettings.push(result);
-		}
-
-		/* engineSettings.rows.forEach(row => {
+		engineSettings.rows.forEach(row => {
 			let rowValues = row.map(c => c.displayValue);
 			let result: EngineSettingsModel = {
 				parameterName: rowValues.shift(),
@@ -178,7 +164,7 @@ export class PostgresModel extends ResourceModel {
 			};
 
 			this._engineSettings.push(result);
-		}); */
+		});
 
 		this.engineSettingsLastUpdated = new Date();
 		this._onEngineSettingsUpdated.fire(this._engineSettings);
