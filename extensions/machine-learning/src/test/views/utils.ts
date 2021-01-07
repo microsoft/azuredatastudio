@@ -16,7 +16,7 @@ export interface ViewTestContext {
 
 export function createViewContext(): ViewTestContext {
 	let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
-	let onChange: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let onChange: vscode.EventEmitter<boolean> = new vscode.EventEmitter<boolean>();
 
 	let apiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	let componentBase: azdata.Component = {

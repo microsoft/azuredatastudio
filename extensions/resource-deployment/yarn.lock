@@ -285,10 +285,10 @@ argparse@^1.0.7:
   dependencies:
     sprintf-js "~1.0.2"
 
-azdata-test@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/azdata-test/-/azdata-test-1.0.0.tgz#b8821a5a313e6919dac8b8ef56f22dc8592cad2c"
-  integrity sha512-/QZkHeVKc0HbJtx45nFXNQLTe3lY8la37Re+YfBIzybMIul3FmBszwIyq9/MPHMhrjkvf5xDkEF+CuSlI4KeIA==
+azdata-test@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/azdata-test/-/azdata-test-1.1.0.tgz#2393cb08ace917886efaca1f0e5fc8958e936e51"
+  integrity sha512-1gedJxyITR+Qlknn1eBnEizSf3PpJgH/AWzuBuhfmoySbwwJNiSEjoh//vsXI/GlS2zMvB2Vg/B37s4yO0npBA==
   dependencies:
     http-proxy-agent "^2.1.0"
     https-proxy-agent "^2.2.4"

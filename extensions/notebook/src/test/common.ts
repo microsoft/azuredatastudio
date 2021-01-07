@@ -359,11 +359,11 @@ class TestButtonComponent extends TestComponentBase implements azdata.ButtonComp
 }
 
 class TestRadioButtonComponent extends TestComponentBase implements azdata.RadioButtonComponent {
-	constructor(private onClick: vscode.EventEmitter<any>, private onChange: vscode.EventEmitter<any>) {
+	constructor(private onClick: vscode.EventEmitter<any>, private onChange: vscode.EventEmitter<boolean>) {
 		super();
 	}
 	onDidClick: vscode.Event<any> = this.onClick.event;
-	onChanged: vscode.Event<any> = this.onChange.event;
+	onChanged: vscode.Event<boolean> = this.onChange.event;
 }
 
 class TestTextComponent extends TestComponentBase implements azdata.TextComponent {
@@ -461,7 +461,7 @@ class TestLoadingBuilder extends TestComponentBuilder<azdata.LoadingComponent, a
 
 export function createViewContext(): TestContext {
 	let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
-	let onChange: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let onChange: vscode.EventEmitter<boolean> = new vscode.EventEmitter<boolean>();
 
 	let form: azdata.FormContainer = new TestFormContainer();
 	let textBuilder: azdata.ComponentBuilder<azdata.TextComponent, azdata.TextComponentProperties> = new TestComponentBuilder(new TestTextComponent());

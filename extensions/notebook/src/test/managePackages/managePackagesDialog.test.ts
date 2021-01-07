@@ -117,7 +117,7 @@ describe('Manage Package Dialog', () => {
 		dialog.setup(x => x.model).returns(() => model.object);
 
 		let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
-		let onChange: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+		let onChange: vscode.EventEmitter<boolean> = new vscode.EventEmitter<boolean>();
 
 		let componentBase: azdata.Component = {
 			id: '',
