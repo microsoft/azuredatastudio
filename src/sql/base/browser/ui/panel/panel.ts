@@ -311,7 +311,7 @@ export class TabbedPanel extends Disposable {
 		}
 	}
 
-	private focusCurrentTab(): void {
+	public focusCurrentTab(): void {
 		if (this._shownTabId) {
 			const tab = this._tabMap.get(this._shownTabId);
 			if (tab) {

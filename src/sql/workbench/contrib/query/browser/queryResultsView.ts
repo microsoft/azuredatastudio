@@ -432,6 +432,6 @@ export class QueryResultsView extends Disposable {
 	}
 
 	public focus(): void {
-		this._panelView.focus();
+		this._panelView.focusCurrentTab();
 	}
 }
