@@ -9,7 +9,6 @@ import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
-import { TelemetryReporter, TelemetryViews } from '../../telemetry';
 
 enum deployPlanXml {
 	AlertElement = 'Alert',
@@ -78,6 +77,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 		this.formBuilder.addFormItem(this.dataLossComponentGroup, { horizontal: true, componentWidth: 400 });
 		this.dataLossCheckbox.checked = false;
 		this.dataLossCheckbox.enabled = false;
+		this.model.dataLossCheck = false;
 		this.formBuilder.removeFormItem(this.noDataLossTextComponent);
 
 		this.loader.loading = true;
@@ -104,10 +104,10 @@ export class DeployPlanPage extends DacFxConfigPage {
 			this.dataLossText.updateProperties({
 				value: loc.dataLossTextWithCount(result.dataLossAlerts.size)
 			});
-			this.dataLossCheckbox.enabled = true;
+			this.model.dataLossCheck = this.dataLossCheckbox.enabled = true;
 		} else {
 			// check checkbox to enable Next button and remove checkbox because there won't be any possible data loss
-			this.dataLossCheckbox.checked = true;
+			this.model.dataLossCheck = this.dataLossCheckbox.checked = true;
 			this.formBuilder.removeFormItem(this.dataLossComponentGroup);
 			this.formBuilder.addFormItem(this.noDataLossTextComponent, { componentWidth: 300, horizontal: true });
 		}
@@ -119,14 +119,6 @@ export class DeployPlanPage extends DacFxConfigPage {
 			.withProperties({
 				label: loc.proceedDataLossMessage,
 			}).component();
-
-		this.dataLossCheckbox.onChanged(() => {
-			//Dataloss checkbox status
-			TelemetryReporter.createActionEvent(TelemetryViews.DeployPlanPage, 'DataLossCheckBoxOnChange')
-				.withAdditionalProperties({
-					'dataLossCheckbox': this.dataLossCheckbox.checked.toString()
-				}).send();
-		});
 
 		return {
 			component: this.dataLossCheckbox,

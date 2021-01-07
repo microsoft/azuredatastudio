@@ -84,7 +84,6 @@ export class DataTierApplicationWizard {
 	public model: DacFxDataModel;
 	public pages: Map<string, Page> = new Map<string, Page>();
 	public selectedOperation: Operation;
-	private currentPage: string | undefined;
 
 	constructor(dacfxInputService?: mssql.IDacFxService) {
 		this.wizard = azdata.window.createWizard(loc.wizardTitle);
@@ -124,16 +123,6 @@ export class DataTierApplicationWizard {
 		this.configureButtons();
 
 		this.wizard.open();
-
-		// Data tier wizard cancel button click event
-		this.wizard.cancelButton.onClick(() => {
-			TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, 'DataTierApplicationWizardClosed')
-				.withAdditionalProperties({
-					'dacpacWizardClosedPage': this.currentPage
-				}).send();
-		});
-		//Reporting Dacpac wizard successful event to Telemetry
-		TelemetryReporter.sendActionEvent(TelemetryViews.DataTierApplicationWizard, 'DataTierApplicationWizardLaunched');
 		return true;
 	}
 
@@ -213,14 +202,12 @@ export class DataTierApplicationWizard {
 				page.dacFxPage.onPageEnter();
 			}
 
-			// Keeping track of the opened page, which is also useful for telemetry event for close wizard
-			this.currentPage = page === undefined ? loc.selectOperationPageName : page.wizardPage.title;
 			// Telemetry event for each page change, if idxLast page is -1, means the wizard instance just started
 			if (idxLast !== -1) {
 				TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, 'DacpacPageChangeEvents')
 					.withAdditionalProperties({
-						'fromPage': lastPage === undefined ? loc.selectOperationPageName : lastPage.wizardPage.title,
-						'toPage': this.currentPage
+						fromPage: lastPage === undefined ? loc.selectOperationPageName : lastPage.wizardPage.title,
+						toPage: page === undefined ? loc.selectOperationPageName : page.wizardPage.title
 					}).send();
 			}
 		});
@@ -323,10 +310,14 @@ export class DataTierApplicationWizard {
 		// Deploy Dacpac: 'Deploy button' clicked in deploy summary page, Reporting the event selection to the telemetry
 		TelemetryReporter.createActionEvent(TelemetryViews.DeployDacpac, 'DeployDacpacOperation')
 			.withAdditionalProperties({
-				'deploymentStatus': result.success.toString(),
-				'error': result.errorMessage,
-				'totalDuration': (new Date().getTime() - deployStartTime).toString()
-			});
+				deploymentStatus: result.success.toString(),
+				error: result.errorMessage,
+				upgradeExistingDatabase: this.model.upgradeExisting.toString(),
+				dataLossCheck: this.model.dataLossCheck.toString()
+			}).withAdditionalMeasurements({
+				deployDacpacFileSizeBytes: await utils.getFileSize(this.model.filePath),
+				totalDurationMs: (new Date().getTime() - deployStartTime)
+			}).send();
 
 		return result;
 	}
@@ -341,11 +332,12 @@ export class DataTierApplicationWizard {
 		// Extract Dacpac: 'Extract button' clicked in extract summary page, Reporting the event selection to the telemetry
 		TelemetryReporter.createActionEvent(TelemetryViews.ExtractDacpac, 'ExtractDacpacOperation')
 			.withAdditionalProperties({
-				'extractedFileSize': await utils.getFileSize(this.model.filePath),
-				'extractStatus': result.success.toString(),
-				'error': result.errorMessage,
-				'totalDuration': (new Date().getTime() - extractStartTime).toString()
-			});
+				extractStatus: result.success.toString(),
+				error: result.errorMessage
+			}).withAdditionalMeasurements({
+				extractedDacpacFileSizeBytes: await utils.getFileSize(this.model.filePath),
+				totalDurationMs: (new Date().getTime() - extractStartTime)
+			}).send();
 
 		return result;
 	}
@@ -360,11 +352,12 @@ export class DataTierApplicationWizard {
 		// Export Bacpac: 'Export button' clicked in Export summary page, Reporting the event selection to the telemetry
 		TelemetryReporter.createActionEvent(TelemetryViews.ExportBacpac, 'ExportBacpacOperation')
 			.withAdditionalProperties({
-				'exportedFileSize': await utils.getFileSize(this.model.filePath),
-				'exportStatus': result.success.toString(),
-				'error': result.errorMessage,
-				'totalDuration': (new Date().getTime() - exportStartTime).toString()
-			});
+				exportStatus: result.success.toString(),
+				error: result.errorMessage
+			}).withAdditionalMeasurements({
+				exportedBacpacFileSizeBytes: await utils.getFileSize(this.model.filePath),
+				totalDurationMs: (new Date().getTime() - exportStartTime)
+			}).send();
 
 		return result;
 	}
@@ -379,11 +372,12 @@ export class DataTierApplicationWizard {
 		// Import Bacpac: 'Import button' clicked in Import summary page, Reporting the event selection to the telemetry
 		TelemetryReporter.createActionEvent(TelemetryViews.ImportBacpac, 'ImportBacpacOperation')
 			.withAdditionalProperties({
-				'importedFileSize': await utils.getFileSize(this.model.filePath),
-				'importStatus': result.success.toString(),
-				'error': result.errorMessage,
-				'totalDuration': (new Date().getTime() - importStartTime).toString()
-			});
+				importStatus: result.success.toString(),
+				error: result.errorMessage
+			}).withAdditionalMeasurements({
+				importedBacpacFileSizeBytes: await utils.getFileSize(this.model.filePath),
+				totalDurationMs: (new Date().getTime() - importStartTime)
+			}).send();
 
 		return result;
 	}
@@ -407,10 +401,13 @@ export class DataTierApplicationWizard {
 		// Deploy Dacpac 'generate script' button clicked in DeployPlanPage, Reporting the event selection to the telemetry with fail/sucess status
 		TelemetryReporter.createActionEvent(TelemetryViews.DeployDacpac, 'GenerateDeployScriptOperation')
 			.withAdditionalProperties({
-				'targetDatabaseStatus': 'Upgrade Existing Databse',
-				'scriptGenerated': result.success.toString(),
-				'errorMessage': result.errorMessage,
-				'totalDuration': (new Date().getTime() - genScriptStartTime).toString()
+				targetDatabaseStatus: 'Upgrade Existing Databse',
+				scriptGenerated: result.success.toString(),
+				errorMessage: result.errorMessage,
+				dataLossCheck: this.model.dataLossCheck.toString()
+			}).withAdditionalMeasurements({
+				deployDacpacFileSizeBytes: await utils.getFileSize(this.model.filePath),
+				totalDurationMs: (new Date().getTime() - genScriptStartTime)
 			}).send();
 
 		return result;
@@ -468,9 +465,10 @@ export class DataTierApplicationWizard {
 		// Generate deploy plan error/succes
 		TelemetryReporter.createActionEvent(TelemetryViews.DeployPlanPage, 'GenerateDeployPlanOperation')
 			.withAdditionalProperties({
-				'planGenerated': result.success.toString(),
-				'errorMessage': result.errorMessage,
-				'totalDuration': (new Date().getTime() - deployPlanStartTime).toString()
+				planGenerated: result.success.toString(),
+				errorMessage: result.errorMessage
+			}).withAdditionalMeasurements({
+				totalDurationMs: (new Date().getTime() - deployPlanStartTime)
 			}).send();
 
 		return result.report;

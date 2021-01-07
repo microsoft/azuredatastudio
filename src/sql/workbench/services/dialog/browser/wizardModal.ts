@@ -268,9 +268,11 @@ export class WizardModal extends Modal {
 	}
 
 	public cancel(): void {
+		//currentPage title will be used for Telemetry
+		const currentPage = this._wizard.pages[this._wizard.currentPage];
 		this._onCancel.fire();
 		this.dispose();
-		this.hide('cancel');
+		this.hide('cancel', currentPage.title);
 	}
 
 	private async validateNavigation(newPage: number): Promise<boolean> {
