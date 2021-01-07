@@ -28,6 +28,8 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -83,7 +85,8 @@ export class CellModel extends Disposable implements ICellModel {
 		private _options: ICellModelOptions,
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
-		@optional(IConfigurationService) private _configurationService?: IConfigurationService
+		@optional(IConfigurationService) private _configurationService?: IConfigurationService,
+		@optional(IAdsTelemetryService) private _telemetryService?: IAdsTelemetryService,
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -474,6 +477,10 @@ export class CellModel extends Disposable implements ICellModel {
 			if (!kernel) {
 				return false;
 			}
+			// Add telemtry for the run cell
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunCell)
+				.withAdditionalProperties({ source: this._cellUri, cell_language: kernel.name })
+				.send();
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
 			if (this.future && this.future.inProgress) {

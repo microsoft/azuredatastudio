@@ -57,6 +57,7 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -677,6 +678,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			if (!isUndefinedOrNull(endCell)) {
 				endIndex = codeCells.findIndex(c => c.id === endCell.id);
 			}
+			this.adstelemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunAll);
 			for (let i = startIndex; i < endIndex; i++) {
 				let cellStatus = await this.runCell(codeCells[i]);
 				if (!cellStatus) {

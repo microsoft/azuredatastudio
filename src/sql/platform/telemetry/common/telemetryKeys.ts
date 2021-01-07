@@ -78,3 +78,10 @@ export enum TelemetryAction {
 	RunNotebok = 'RunNotebook'
 }
 
+export enum NbTelemetryAction {
+	Click = 'Click',
+	Open = 'OpenNotebook',
+	RunCell = 'RunCell',
+	RunAll = 'RunNotebook'
+}
+
