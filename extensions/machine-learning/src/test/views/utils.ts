@@ -40,7 +40,7 @@ export function createViewContext(): ViewTestContext {
 	let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
 		checked: true,
 		onDidClick: onClick.event,
-		onChanged: onChange.event,
+		onDidChangeCheckedState: onChange.event,
 	});
 	let checkbox: azdata.CheckBoxComponent = Object.assign({}, componentBase, {
 		checked: true,

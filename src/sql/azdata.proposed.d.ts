@@ -278,7 +278,7 @@ declare module 'azdata' {
 		/**
 		 * An event called when the value of radio button changes
 		 */
-		onChanged: vscode.Event<boolean>;
+		onDidChangeCheckedState: vscode.Event<boolean>;
 	}
 
 	export interface DeclarativeTableColumn {

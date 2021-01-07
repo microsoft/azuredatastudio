@@ -345,10 +345,10 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.9.1.tgz#7e33d8f7d449b3f673cd72deb9abdc552dbe528e"
   integrity sha512-wMHVg2EOHaMRxbzgFJ9gtjOOCrI80OHLG14rxi28XwOW8ux6IiEbRCGGGqCtdAIg4FQCbW20k9RsT4y3gJlFug==
 
-azdata-test@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/azdata-test/-/azdata-test-1.1.0.tgz#2393cb08ace917886efaca1f0e5fc8958e936e51"
-  integrity sha512-1gedJxyITR+Qlknn1eBnEizSf3PpJgH/AWzuBuhfmoySbwwJNiSEjoh//vsXI/GlS2zMvB2Vg/B37s4yO0npBA==
+azdata-test@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/azdata-test/-/azdata-test-1.1.1.tgz#0feb13ec01397841f7bbce0ad25a41e4a3afb5b5"
+  integrity sha512-+jZ5/4Orqt5Q2MLPqmV+iQjGYxG5FK4pC3UqTOPdSzlbs0JQhOXckC8Hmw8ZOS0N6Cn7mNDCpfaqEU9coTyVsw==
   dependencies:
     http-proxy-agent "^2.1.0"
     https-proxy-agent "^2.2.4"

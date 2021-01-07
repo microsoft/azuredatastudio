@@ -363,7 +363,7 @@ class TestRadioButtonComponent extends TestComponentBase implements azdata.Radio
 		super();
 	}
 	onDidClick: vscode.Event<any> = this.onClick.event;
-	onChanged: vscode.Event<boolean> = this.onChange.event;
+	onDidChangeCheckedState: vscode.Event<boolean> = this.onChange.event;
 }
 
 class TestTextComponent extends TestComponentBase implements azdata.TextComponent {

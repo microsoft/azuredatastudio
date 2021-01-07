@@ -18,8 +18,8 @@ export class RadioButton extends Widget {
 	private inputElement: HTMLInputElement;
 	private _onClicked = new Emitter<void>();
 	public readonly onClicked: Event<void> = this._onClicked.event;
-	private _onChanged = new Emitter<boolean>();
-	public readonly onChange: Event<boolean> = this._onChanged.event;
+	private _onChangedCheckedState = new Emitter<boolean>();
+	public readonly onDidChangeCheckedState: Event<boolean> = this._onChangedCheckedState.event;
 	private _label: HTMLSpanElement;
 	private _internalCheckedStateTracker: boolean = false;
 
@@ -77,7 +77,7 @@ export class RadioButton extends Widget {
 		if (this.inputElement.checked !== this._internalCheckedStateTracker) {
 			this.inputElement.checked = val;
 			this._internalCheckedStateTracker = val;
-			this._onChanged.fire(this.checked);
+			this._onChangedCheckedState.fire(this.checked);
 		}
 	}
 

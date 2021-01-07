@@ -134,7 +134,7 @@ describe('Manage Package Dialog', () => {
 		});
 		let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
 			onDidClick: onClick.event,
-			onChanged: onChange.event
+			onDidChangeCheckedState: onChange.event
 		});
 
 		const components: azdata.Component[] = [];

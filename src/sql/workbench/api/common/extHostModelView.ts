@@ -1306,7 +1306,7 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 		return emitter && emitter.event;
 	}
 
-	public get onChanged(): vscode.Event<boolean> {
+	public get onDidChangeCheckedState(): vscode.Event<boolean> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
