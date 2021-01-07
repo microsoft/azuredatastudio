@@ -368,7 +368,23 @@ suite('notebook model', function (): void {
 		model.deleteCell(model.cells[0]);
 		assert.equal(errorCount, 2, 'Error count should be 2 after trying to delete a cell that does not exist a second time');
 		assert(isUndefinedOrNull(notebookContentChange), 'There still should be no content change after an error is recorded');
+	});
 
+	test('Should notify cell on metadata change', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initalize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		let notebookContentChange: NotebookContentChange;
+		model.contentChanged(c => notebookContentChange = c);
+
+		model.cells[0].metadata = { 'test-field': 'test-value' };
+		assert(!isUndefinedOrNull(notebookContentChange));
+		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellMetadataUpdated, 'notebookContentChange changeType should indicate ');
 	});
 
 	test('Should load contents but then go to error state if client session startup fails', async function (): Promise<void> {

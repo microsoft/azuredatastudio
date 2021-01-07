@@ -11,6 +11,7 @@ import * as sinon from 'sinon';
 import { v4 as uuid } from 'uuid';
 import * as vscode from 'vscode';
 import * as azdataExt from 'azdata-ext';
+import * as kubeUtils from '../../../common/kubeUtils';
 import { ControllerModel } from '../../../models/controllerModel';
 import { MiaaModel } from '../../../models/miaaModel';
 import { AzureArcTreeDataProvider } from '../../../ui/tree/azureArcTreeDataProvider';
@@ -102,13 +103,14 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 			mockArcApi.setup(x => x.azdata).returns(() => fakeAzdataApi);
 
 			sinon.stub(vscode.extensions, 'getExtension').returns(mockArcExtension.object);
+			sinon.stub(kubeUtils, 'getKubeConfigClusterContexts').resolves([{ name: 'currentCluster', isCurrentContext: true }]);
 			const controllerModel = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] }, 'mypassword');
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			const controllerNode = treeDataProvider.getControllerNode(controllerModel);
 			const children = await treeDataProvider.getChildren(controllerNode);
 			should(children.filter(c => c.label === fakeAzdataApi.postgresInstances[0].name).length).equal(1, 'Should have a Postgres child');
 			should(children.filter(c => c.label === fakeAzdataApi.miaaInstances[0].name).length).equal(1, 'Should have a MIAA child');
-			should(children.length).equal(2, 'Should have excatly 2 children');
+			should(children.length).equal(2, 'Should have exactly 2 children');
 		});
 	});
 

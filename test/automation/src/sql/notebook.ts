@@ -22,6 +22,7 @@ export class Notebook {
 	async openFile(fileName: string): Promise<void> {
 		await this.quickAccess.openQuickAccess(fileName);
 		await this.quickInput.waitForQuickInputElements(names => names[0] === fileName);
+		await this.code.waitForActiveElement('.quick-input-widget .quick-input-box input');
 		await this.code.dispatchKeybinding('enter');
 		await this.editors.waitForActiveTab(fileName);
 		await this.code.waitForElement('.notebookEditor');
@@ -131,6 +132,22 @@ export class Notebook {
 			return true;
 		});
 		await this.waitForResultsGone(cellIds);
+	}
+
+	async waitForTrustedElements(): Promise<void> {
+		const cellSelector = '.notebookEditor .notebook-cell';
+		await this.code.waitForElement(`${cellSelector} iframe`);
+		await this.code.waitForElement(`${cellSelector} dialog`);
+		await this.code.waitForElement(`${cellSelector} embed`);
+		await this.code.waitForElement(`${cellSelector} svg`);
+	}
+
+	async waitForTrustedElementsGone(): Promise<void> {
+		const cellSelector = '.notebookEditor .notebook-cell';
+		await this.code.waitForElementGone(`${cellSelector} iframe`);
+		await this.code.waitForElementGone(`${cellSelector} dialog`);
+		await this.code.waitForElementGone(`${cellSelector} embed`);
+		await this.code.waitForElementGone(`${cellSelector} svg`);
 	}
 }
 

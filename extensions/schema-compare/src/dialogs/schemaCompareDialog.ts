@@ -464,7 +464,7 @@ export class SchemaCompareDialog {
 			}
 		).component();
 		this.sourceServerDropdown.onValueChanged(async (value) => {
-			if (this.sourceServerDropdown.values.findIndex(x => this.matchesValue(x, value)) === -1) {
+			if (this.sourceServerDropdown.values.findIndex(x => this.matchesValue(x, value as string)) === -1) {
 				await this.sourceDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
@@ -493,7 +493,7 @@ export class SchemaCompareDialog {
 			}
 		).component();
 		this.targetServerDropdown.onValueChanged(async (value) => {
-			if (this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value)) === -1) {
+			if (this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value as string)) === -1) {
 				await this.targetDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
@@ -599,7 +599,7 @@ export class SchemaCompareDialog {
 			}
 		).component();
 		this.sourceDatabaseDropdown.onValueChanged(async (value) => {
-			this.sourceDbEditable = value;
+			this.sourceDbEditable = value as string;
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
@@ -618,7 +618,7 @@ export class SchemaCompareDialog {
 			}
 		).component();
 		this.targetDatabaseDropdown.onValueChanged(async (value) => {
-			this.targetDbEditable = value;
+			this.targetDbEditable = value as string;
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 

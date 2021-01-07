@@ -131,6 +131,15 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._onCellModeChanged.event;
 	}
 
+	public set metadata(data: any) {
+		this._metadata = data;
+		this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
+	}
+
+	public get metadata(): any {
+		return this._metadata;
+	}
+
 	public get isEditMode(): boolean {
 		return this._isEditMode;
 	}

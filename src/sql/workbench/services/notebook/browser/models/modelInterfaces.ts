@@ -24,6 +24,11 @@ import type { FutureInternal } from 'sql/workbench/services/notebook/browser/int
 import { ICellValue, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
 
+export enum ViewMode {
+	Notebook,
+	Views,
+}
+
 export interface ICellRange {
 	readonly start: number;
 	readonly end: number;
@@ -335,6 +340,22 @@ export interface INotebookModel {
 	providerId: string;
 
 	/**
+	 * View mode for this model. It determines what editor mode
+	 * will be displayed.
+	 */
+	viewMode: ViewMode;
+
+	/**
+	 * Add custom metadata values to the notebook
+	 */
+	setMetaValue(key: string, value: any);
+
+	/**
+	 * Get a custom metadata value from the notebook
+	 */
+	getMetaValue(key: string): any;
+
+	/**
 	 * Change the current kernel from the Kernel dropdown
 	 * @param displayName kernel name (as displayed in Kernel dropdown)
 	 */
@@ -465,6 +486,7 @@ export interface ICellModel {
 	source: string | string[];
 	cellType: CellType;
 	trustedMode: boolean;
+	metadata: any | undefined;
 	active: boolean;
 	hover: boolean;
 	executionCount: number | undefined;

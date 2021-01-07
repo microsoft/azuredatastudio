@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import * as should from 'should';
@@ -24,8 +25,9 @@ export class SchemaCompareMainWindowTest extends SchemaCompareMainWindow {
 
 	constructor(
 		schemaCompareService: mssql.ISchemaCompareService,
-		extensionContext: vscode.ExtensionContext) {
-		super(schemaCompareService, extensionContext);
+		extensionContext: vscode.ExtensionContext,
+		view: azdata.ModelView) {
+		super(schemaCompareService, extensionContext, view);
 	}
 
 	// only for test
