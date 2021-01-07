@@ -392,6 +392,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		if (!cell || (cell && cell.cellType !== CellTypes.Code)) {
 			return Promise.reject(new Error(localize('runActiveCell', "F5 shortcut key requires a code cell to be selected. Please select a code cell to run.")));
 		}
+
 		return editor.runCell(cell);
 	}
 
