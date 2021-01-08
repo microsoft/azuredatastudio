@@ -476,7 +476,7 @@ export class PostgresParametersPage extends DashboardPage {
 			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		}
 
-		// Can reset individual component
+		// Can reset individual parameter
 		const resetParameterButton = this.modelView.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.reset,
 			title: loc.resetToDefault,
