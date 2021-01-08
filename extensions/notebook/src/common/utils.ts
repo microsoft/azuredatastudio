@@ -30,6 +30,14 @@ export async function mkDir(dirPath: string, outputChannel?: vscode.OutputChanne
 		await fs.ensureDir(dirPath);
 	}
 }
+export function mkDirSync(dirPath: string, outputChannel?: vscode.OutputChannel): void {
+	if (!fs.pathExistsSync(dirPath)) {
+		if (outputChannel) {
+			outputChannel.appendLine(localize('mkdirOutputMsg', "... Creating {0}", dirPath));
+		}
+		fs.ensureDirSync(dirPath);
+	}
+}
 
 export function getErrorMessage(error: Error | string): string {
 	return (error instanceof Error) ? error.message : error;
@@ -245,6 +253,15 @@ export function setHostAndPort(delimeter: string, connection: azdata.IConnection
 export async function exists(path: string): Promise<boolean> {
 	try {
 		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
+}
+
+export function existsSync(path: string): boolean {
+	try {
+		fs.accessSync(path);
 		return true;
 	} catch (e) {
 		return false;
