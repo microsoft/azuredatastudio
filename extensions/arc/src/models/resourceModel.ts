@@ -27,9 +27,9 @@ export abstract class ResourceModel {
 	}
 
 	/**
- * Loads the saved connection profile associated with this model. Will prompt for one if
- * we don't have one or can't find it (it was deleted)
- */
+	 * Loads the saved connection profile associated with this model. Will prompt for one if
+	 * we don't have one or can't find it (it was deleted)
+	 */
 	protected async getConnectionProfile(): Promise<void> {
 		let connectionProfile: azdata.IConnectionProfile | undefined = this.createConnectionProfile();
 
@@ -45,7 +45,6 @@ export abstract class ResourceModel {
 					if (connectionProfile.userName) {
 						const result = await azdata.connection.connect(connectionProfile, false, false);
 						if (!result.connected) {
-							//vscode.window.showErrorMessage(loc.connectToPGSqlFailed(connectionProfile.serverName, result.errorMessage));
 							await this.promptForConnection(connectionProfile);
 						} else {
 							this.updateConnectionProfile(connectionProfile);
@@ -53,7 +52,7 @@ export abstract class ResourceModel {
 					}
 				}
 			} catch (err) {
-				console.warn(`Unexpected error fetching password for Postgres instance ${err}`);
+				console.warn(`Unexpected error fetching password for instance ${err}`);
 				// ignore - something happened fetching the password so just reprompt
 			}
 		}

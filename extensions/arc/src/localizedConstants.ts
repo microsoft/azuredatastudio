@@ -167,6 +167,7 @@ export const lastUpdated = localize('arc.lastUpdated', "Last updated");
 export const noExternalEndpoint = localize('arc.noExternalEndpoint', "No External Endpoint has been configured so this information isn't available.");
 export const podsReady = localize('arc.podsReady', "pods ready");
 export const connectToPostgresDescription = localize('arc.connectToPostgresDescription', "A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.");
+export const postgresExtension = localize('arc.postgresExtension', "microsoft.azuredatastudio-postgresql");
 
 export function rangeSetting(min: string, max: string): string { return localize('arc.rangeSetting', "Value is expected to be in the range {0} - {1}", min, max); }
 export function allowedValue(value: string): string { return localize('arc.allowedValue', "Value is expected to be {0}", value); }

@@ -273,14 +273,14 @@ export class PostgresParametersPage extends DashboardPage {
 		this.disposables.push(
 			this.connectToServerButton!.onDidClick(async () => {
 				this.connectToServerButton!.enabled = false;
-				if (!vscode.extensions.getExtension('microsoft.azuredatastudio-postgresql')) {
+				if (!vscode.extensions.getExtension(loc.postgresExtension)) {
 					const response = await vscode.window.showErrorMessage(loc.missingExtension('PostgreSQL'), loc.yes, loc.no);
 					if (response !== loc.yes) {
 						this.connectToServerButton!.enabled = true;
 						return;
 					}
 
-					await vscode.commands.executeCommand('workbench.extensions.installExtension', 'microsoft.azuredatastudio-postgresql');
+					await vscode.commands.executeCommand('workbench.extensions.installExtension', loc.postgresExtension);
 				}
 
 				await this._postgresModel.getEngineSettings().catch(err => {
