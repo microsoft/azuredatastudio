@@ -66,6 +66,7 @@ export function createViewContext(): ViewTestContext {
 	let switchDirectionButtonOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 	let cancelCompareButtonOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 	let generateScriptButtonOnClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let onChangeCheckedState: vscode.EventEmitter<boolean> = new vscode.EventEmitter<boolean>();
 
 	let componentBase: azdata.Component = {
 		id: '',
@@ -147,8 +148,9 @@ export function createViewContext(): ViewTestContext {
 	let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
 		checked: false,
 		onDidClick: onClick.event,
+		onDidChangeCheckedState: onChangeCheckedState.event
 	});
-	let radioButtonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties> = {
+	let radioButtonBuilder: azdata.ComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties> = {
 		component: () => radioButton,
 		withProperties: () => radioButtonBuilder,
 		withProps: () => radioButtonBuilder,
