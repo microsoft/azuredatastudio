@@ -205,7 +205,7 @@ actionRegistry.registerWorkbenchAction(
 		ToggleFocusBetweenQueryEditorAndResultsAction,
 		ToggleFocusBetweenQueryEditorAndResultsAction.ID,
 		ToggleFocusBetweenQueryEditorAndResultsAction.LABEL,
-		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_N },
+		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_F },
 		QueryEditorVisibleCondition
 	),
 	ToggleFocusBetweenQueryEditorAndResultsAction.LABEL

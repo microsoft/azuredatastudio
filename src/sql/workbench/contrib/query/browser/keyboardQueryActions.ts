@@ -324,12 +324,11 @@ export class ToggleFocusBetweenQueryEditorAndResultsAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): Promise<void> {
+	public async run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			editor.toggleFocusBetweenQueryEditorAndResults();
 		}
-		return Promise.resolve();
 	}
 }
 
