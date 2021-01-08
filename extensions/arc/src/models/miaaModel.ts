@@ -76,7 +76,7 @@ export class MiaaModel extends ResourceModel {
 		}
 		this._refreshPromise = new Deferred();
 		try {
-			await this._controllerModel.azdataLogin();
+			await this.controllerModel.azdataLogin();
 			try {
 				const result = await this._azdataApi.azdata.arc.sql.mi.show(this.info.name);
 				this._config = result.result;

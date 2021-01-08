@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
@@ -56,6 +56,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelsChangedEmitter = new Emitter<nb.IKernel>();
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
+	private _viewModeChangedEmitter = new Emitter<ViewMode>();
 	private _layoutChanged = new Emitter<void>();
 	private _inErrorState: boolean = false;
 	private _activeClientSession: IClientSession | undefined;
@@ -71,6 +72,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _tags: string[] | undefined;
 	private _existingMetadata: nb.INotebookMetadata = {};
 	private _language: string = '';
+	private _viewMode: ViewMode = ViewMode.Notebook;
 	private _onErrorEmitter = new Emitter<INotification>();
 	private _savedKernelInfo: nb.IKernelSpec | undefined;
 	private _savedConnectionName: string | undefined;
@@ -272,6 +274,41 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.TrustChanged
 		});
+	}
+
+	public get viewModeChanged(): Event<ViewMode> {
+		return this._viewModeChangedEmitter.event;
+	}
+
+	public get viewMode() {
+		return this._viewMode;
+	}
+
+	/**
+	 * Add custom metadata values to the notebook
+	 */
+	public setMetaValue(key: string, value: any) {
+		this._existingMetadata[key] = value;
+		let changeInfo: NotebookContentChange = {
+			changeType: NotebookChangeType.MetadataChanged,
+			isDirty: true,
+			cells: [],
+		};
+		this._contentChangedEmitter.fire(changeInfo);
+	}
+
+	/**
+	 * Get a custom metadata value from the notebook
+	 */
+	public getMetaValue(key: string): any {
+		return this._existingMetadata[key];
+	}
+
+	public set viewMode(mode: ViewMode) {
+		if (mode !== this._viewMode) {
+			this._viewMode = mode;
+			this._viewModeChangedEmitter.fire(mode);
+		}
 	}
 
 	/**

@@ -14,7 +14,6 @@ export const sqlFileExtension = '.sql';
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
 export const sqlDatabaseProjectExtensionId = 'microsoft.sql-database-projects';
 export const mssqlExtensionId = 'microsoft.mssql';
-export const dacpac = 'dacpac';
 export const master = 'master';
 export const masterDacpac = 'master.dacpac';
 export const msdb = 'msdb';
@@ -38,21 +37,15 @@ export const vscodeOpenCommand = 'vscode.open';
 
 // UI Strings
 
-export const projectNodeName = localize('projectNodeName', "Database Project");
 export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources");
 export const databaseReferencesNodeName = localize('databaseReferencesNodeName', "Database References");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
-export const newDatabaseProjectName = localize('newDatabaseProjectName', "New database project name:");
-export const sqlDatabaseProject = localize('sqlDatabaseProject', "SQL database project");
 export const yesString = localize('yesString', "Yes");
 export const noString = localize('noString', "No");
 export const okString = localize('okString', "Ok");
-export const extractTargetInput = localize('extractTargetInput', "Select folder structure for SQL files");
-export const extractDatabaseSelection = localize('extractDatabaseSelection', "Select database to create project from");
 export const selectString = localize('selectString', "Select");
 export const dacpacFiles = localize('dacpacFiles', "dacpac Files");
 export const publishSettingsFiles = localize('publishSettingsFiles', "Publish Settings File");
-export const systemDatabase = localize('systemDatabase', "System Database");
 export const file = localize('file', "File");
 export const flat = localize('flat', "Flat");
 export const objectType = localize('objectType', "Object Type");
@@ -77,7 +70,6 @@ export const databaseNameLabel = localize('databaseNameLabel', "Database");
 export const targetConnectionLabel = localize('targetConnectionLabel', "Connection");
 export const dataSourceRadioButtonLabel = localize('dataSourceRadioButtonLabel', "Data sources");
 export const connectionRadioButtonLabel = localize('connectionRadioButtonLabel', "Connections");
-export const selectConnectionRadioButtonsTitle = localize('selectconnectionRadioButtonsTitle', "Specify connection from:");
 export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
 export const loadProfilePlaceholderText = localize('loadProfilePlaceholderText', "Load profile...");
@@ -137,6 +129,12 @@ export const addProjectToCurrentWorkspace = localize('addProjectToCurrentWorkspa
 export const newWorkspaceWillBeCreated = localize('newWorkspaceWillBeCreated', "A new workspace will be created for this project.");
 export const workspaceLocationTitle = localize('workspaceLocationTitle', "Workspace location");
 export const workspace = localize('workspace', "Workspace");
+export const WorkspaceFileExtension = '.code-workspace';
+export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
+export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
+export const WorkspaceFileInvalidError = (workspace: string): string => { return localize('dataworkspace.workspaceFileInvalidError', "The selected workspace file path '{0}' does not have the required file extension {1}.", workspace, WorkspaceFileExtension); };
+export const WorkspaceParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.workspaceParentDirectoryNotExistError', "The selected workspace location '{0}' does not exist or is not a directory.", location); };
+export const WorkspaceFileAlreadyExistsError = (file: string): string => { return localize('dataworkspace.workspaceFileAlreadyExistsError', "The selected workspace file '{0}' already exists. To add the project to an existing workspace, use the Open Existing dialog to first open the workspace.", file); };
 
 
 // Error messages
@@ -295,7 +293,6 @@ export enum DatabaseProjectItemType {
 	referencesRoot = 'databaseProject.itemType.referencesRoot',
 	reference = 'databaseProject.itemType.reference',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
-	dataSource = 'databaseProject.itemType.dataSource'
 }
 
 // System dbs

@@ -38,9 +38,9 @@ export const NewWorkspaceWillBeCreated = localize('dataworkspace.NewWorkspaceWil
 export const WorkspaceLocationTitle = localize('dataworkspace.workspaceLocationTitle', "Workspace location");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
-export const WorkspaceFileInvalidError = (workspace: string): string => { return localize('dataworkspace.workspaceFileInvalidError', "The selected workspace file path '{0}' does not have the required file extension {1}", workspace, WorkspaceFileExtension); };
-export const WorkspaceParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.workspaceParentDirectoryNotExistError', "The selected workspace location '{0}' does not exist or is not a directory", location); };
-export const WorkspaceFileAlreadyExistsError = (file: string): string => { return localize('dataworkspace.workspaceFileAlreadyExistsError', "The selected workspace file '{0}' already exists. To add the project to an existing workspace, use the Open Existing dialog to first open the workspace", file); };
+export const WorkspaceFileInvalidError = (workspace: string): string => { return localize('dataworkspace.workspaceFileInvalidError', "The selected workspace file path '{0}' does not have the required file extension {1}.", workspace, WorkspaceFileExtension); };
+export const WorkspaceParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.workspaceParentDirectoryNotExistError', "The selected workspace location '{0}' does not exist or is not a directory.", location); };
+export const WorkspaceFileAlreadyExistsError = (file: string): string => { return localize('dataworkspace.workspaceFileAlreadyExistsError', "The selected workspace file '{0}' already exists. To add the project to an existing workspace, use the Open Existing dialog to first open the workspace.", file); };
 
 //Open Existing Dialog
 export const OpenExistingDialogTitle = localize('dataworkspace.openExistingDialogTitle', "Open existing");
@@ -50,6 +50,7 @@ export const Workspace = localize('dataworkspace.workspace', "Workspace");
 export const LocationSelectorTitle = localize('dataworkspace.locationSelectorTitle', "Location");
 export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Select project (.sqlproj) file");
 export const WorkspacePlaceholder = localize('dataworkspace.workspacePlaceholder', "Select workspace ({0}) file", WorkspaceFileExtension);
+export const ProjectAlreadyOpened = (path: string): string => { return localize('dataworkspace.projectAlreadyOpened', "Project '{0}' is already opened.", path); };
 
 // Workspace settings for saving new projects
 export const ProjectConfigurationKey = 'projects';
