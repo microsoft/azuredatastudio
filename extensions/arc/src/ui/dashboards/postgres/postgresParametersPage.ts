@@ -57,7 +57,7 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	protected get icon(): { dark: string; light: string; } {
-		return IconPathHelper.nodeParameters;
+		return IconPathHelper.gear;
 	}
 
 	protected get container(): azdata.Component {
@@ -281,13 +281,14 @@ export class PostgresParametersPage extends DashboardPage {
 		this.disposables.push(
 			this.connectToServerButton!.onDidClick(async () => {
 				this.connectToServerButton!.enabled = false;
-				if (!vscode.extensions.getExtension('microsoft.azuredatastudio-postgresql')) {
+				if (!vscode.extensions.getExtension(loc.postgresExtension)) {
 					const response = await vscode.window.showErrorMessage(loc.missingExtension('PostgreSQL'), loc.yes, loc.no);
 					if (response !== loc.yes) {
 						this.connectToServerButton!.enabled = true;
 						return;
 					}
-					await vscode.commands.executeCommand('workbench.extensions.installExtension', 'microsoft.azuredatastudio-postgresql');
+
+					await vscode.commands.executeCommand('workbench.extensions.installExtension', loc.postgresExtension);
 				}
 
 				this._parametersTableLoading!.loading = true;
@@ -395,7 +396,7 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 
-			information.updateProperty('title', loc.allowedValues(engineSetting.options!));
+			information.updateProperty('title', loc.allowedValue(engineSetting.options!));
 			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		} else if (engineSetting.type === 'bool') {
 			// If type is bool, component should be checkbox to turn on or off
@@ -426,7 +427,7 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 
-			information.updateProperty('title', loc.allowedValues(`${loc.on},${loc.off}`));
+			information.updateProperty('title', loc.allowedValue(`${loc.on},${loc.off}`));
 			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		} else if (engineSetting.type === 'string') {
 			// If type is string, component should be text inputbox
@@ -471,7 +472,7 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 
-			information.updateProperty('title', loc.allowedValues(loc.rangeSetting(engineSetting.min!, engineSetting.max!)));
+			information.updateProperty('title', loc.allowedValue(loc.rangeSetting(engineSetting.min!, engineSetting.max!)));
 			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		}
 

@@ -76,7 +76,7 @@ export class MiaaModel extends ResourceModel {
 		}
 		this._refreshPromise = new Deferred();
 		try {
-			await this._controllerModel.azdataLogin();
+			await this.controllerModel.azdataLogin();
 			try {
 				const result = await this._azdataApi.azdata.arc.sql.mi.show(this.info.name);
 				this._config = result.result;
@@ -172,7 +172,7 @@ export class MiaaModel extends ResourceModel {
 
 	protected async promptForConnection(connectionProfile: azdata.IConnectionProfile): Promise<void> {
 		const connectToSqlDialog = new ConnectToMiaaSqlDialog(this._controllerModel, this);
-		connectToSqlDialog.showDialog(loc.connectToPGSql(this.info.name), connectionProfile);
+		connectToSqlDialog.showDialog(loc.connectToMSSql(this.info.name), connectionProfile);
 		let profileFromDialog = await connectToSqlDialog.waitForClose();
 
 		if (profileFromDialog) {

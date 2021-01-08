@@ -166,10 +166,11 @@ export const details = localize('arc.details', "Details");
 export const lastUpdated = localize('arc.lastUpdated', "Last updated");
 export const noExternalEndpoint = localize('arc.noExternalEndpoint', "No External Endpoint has been configured so this information isn't available.");
 export const podsReady = localize('arc.podsReady', "pods ready");
-export const connectToPostgresDescription = localize('arc.connectToPostgresDescription', "A connection to server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.");
+export const connectToPostgresDescription = localize('arc.connectToPostgresDescription', "A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.");
+export const postgresExtension = localize('arc.postgresExtension', "microsoft.azuredatastudio-postgresql");
 
-export function rangeSetting(min: string, max: string): string { return localize('arc.rangeSetting', "Allowed value should be: {0} - {1}", min, max); }
-export function allowedValues(values: string): string { return localize('arc.allowedValues', "Allowed value should be: {0}", values); }
+export function rangeSetting(min: string, max: string): string { return localize('arc.rangeSetting', "Value is expected to be in the range {0} - {1}", min, max); }
+export function allowedValue(value: string): string { return localize('arc.allowedValue', "Value is expected to be {0}", value); }
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
 export function deletingInstance(name: string): string { return localize('arc.deletingInstance', "Deleting instance '{0}'...", name); }
 export function updatingInstance(name: string): string { return localize('arc.updatingInstance', "Updating instance '{0}'...", name); }
@@ -218,9 +219,8 @@ export function couldNotFindAzureResource(name: string): string { return localiz
 export function passwordResetFailed(error: any): string { return localize('arc.passwordResetFailed', "Failed to reset password. {0}", getErrorMessage(error)); }
 export function errorConnectingToController(error: any): string { return localize('arc.errorConnectingToController', "Error connecting to controller. {0}", getErrorMessage(error, true)); }
 export function passwordAcquisitionFailed(error: any): string { return localize('arc.passwordAcquisitionFailed', "Failed to acquire password. {0}", getErrorMessage(error)); }
-export const invalidPassword = localize('arc.invalidPassword', "The password did not work, try again.");
+export const loginFailed = localize('arc.loginFailed', "Error logging into controller, try again.");
 export function errorVerifyingPassword(error: any): string { return localize('arc.errorVerifyingPassword', "Error encountered while verifying password. {0}", getErrorMessage(error)); }
-export const onlyOneControllerSupported = localize('arc.onlyOneControllerSupported', "Only one controller connection is currently supported at this time. Do you wish to remove the existing connection and add a new one?");
 export const noControllersConnected = localize('noControllersConnected', "No Azure Arc controllers are currently connected. Please run the command: 'Connect to Existing Azure Arc Controller' and then try again");
 export const variableValueFetchForUnsupportedVariable = (variableName: string) => localize('getVariableValue.unknownVariableName', "Attempt to get variable value for unknown variable:{0}", variableName);
 export const isPasswordFetchForUnsupportedVariable = (variableName: string) => localize('getIsPassword.unknownVariableName', "Attempt to get isPassword for unknown variable:{0}", variableName);
@@ -233,4 +233,5 @@ export const select = localize('button.label', "Select");
 export const noContextFound = (configFile: string) => localize('noContextFound', "No 'contexts' found in the config file: {0}", configFile);
 export const noCurrentContextFound = (configFile: string) => localize('noCurrentContextFound', "No context is marked as 'current-context' in the config file: {0}", configFile);
 export const noNameInContext = (configFile: string) => localize('noNameInContext', "No name field was found in a cluster context in the config file: {0}", configFile);
-export const userCancelledError = localize('userCancelledError', "User cancelled the dialog");
+export const userCancelledError = localize('arc.userCancelledError', "User cancelled the dialog");
+export const clusterContextConfigNoLongerValid = (configFile: string, clusterContext: string, error: any) => localize('clusterContextConfigNoLongerValid', "The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:\n\t{2}\n Do you want to update this information?", configFile, clusterContext, getErrorMessage(error));
