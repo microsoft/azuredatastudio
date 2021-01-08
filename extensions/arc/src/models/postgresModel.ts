@@ -31,11 +31,6 @@ export class PostgresModel extends ResourceModel {
 	public _engineSettings: EngineSettingsModel[] = [];
 	private readonly _azdataApi: azdataExt.IExtension;
 
-	// The saved connection information
-	private _connectionProfile: azdata.IConnectionProfile | undefined = undefined;
-	// The ID of the active connection used to query the server
-	private _activeConnectionId: string | undefined = undefined;
-
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.PostgresServerShowResult>();
 	public readonly _onEngineSettingsUpdated = new vscode.EventEmitter<EngineSettingsModel[]>();
 	public onConfigUpdated = this._onConfigUpdated.event;
@@ -114,7 +109,7 @@ export class PostgresModel extends ResourceModel {
 		this._refreshPromise = new Deferred();
 
 		try {
-			await this._controllerModel.azdataLogin();
+			await this.controllerModel.azdataLogin();
 			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name)).result;
 			this.configLastUpdated = new Date();
 			this._onConfigUpdated.fire(this._config);
@@ -193,7 +188,7 @@ export class PostgresModel extends ResourceModel {
 	}
 
 	protected async promptForConnection(connectionProfile: azdata.IConnectionProfile): Promise<void> {
-		const connectToSqlDialog = new ConnectToPGSqlDialog(this._controllerModel, this);
+		const connectToSqlDialog = new ConnectToPGSqlDialog(this.controllerModel, this);
 		connectToSqlDialog.showDialog(loc.connectToPGSql(this.info.name), connectionProfile);
 		let profileFromDialog = await connectToSqlDialog.waitForClose();
 

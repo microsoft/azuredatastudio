@@ -22,10 +22,6 @@ export class MiaaModel extends ResourceModel {
 
 	private _config: azdataExt.SqlMiShowResult | undefined;
 	private _databases: DatabaseModel[] = [];
-	// The saved connection information
-	private _connectionProfile: azdata.IConnectionProfile | undefined = undefined;
-	// The ID of the active connection used to query the server
-	private _activeConnectionId: string | undefined = undefined;
 
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.SqlMiShowResult | undefined>();
 	private readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
@@ -76,7 +72,7 @@ export class MiaaModel extends ResourceModel {
 		}
 		this._refreshPromise = new Deferred();
 		try {
-			await this._controllerModel.azdataLogin();
+			await this.controllerModel.azdataLogin();
 			try {
 				const result = await this._azdataApi.azdata.arc.sql.mi.show(this.info.name);
 				this._config = result.result;
@@ -171,7 +167,7 @@ export class MiaaModel extends ResourceModel {
 	}
 
 	protected async promptForConnection(connectionProfile: azdata.IConnectionProfile): Promise<void> {
-		const connectToSqlDialog = new ConnectToMiaaSqlDialog(this._controllerModel, this);
+		const connectToSqlDialog = new ConnectToMiaaSqlDialog(this.controllerModel, this);
 		connectToSqlDialog.showDialog(loc.connectToMSSql(this.info.name), connectionProfile);
 		let profileFromDialog = await connectToSqlDialog.waitForClose();
 

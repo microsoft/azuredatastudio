@@ -15,7 +15,12 @@ export abstract class ResourceModel {
 	private readonly _onRegistrationUpdated = new vscode.EventEmitter<Registration>();
 	public onRegistrationUpdated = this._onRegistrationUpdated.event;
 
-	constructor(protected _controllerModel: ControllerModel, public info: ResourceInfo, private _registration: Registration) { }
+	// The saved connection information
+	protected _connectionProfile: azdata.IConnectionProfile | undefined = undefined;
+	// The ID of the active connection used to query the server
+	protected _activeConnectionId: string | undefined = undefined;
+
+	constructor(public readonly controllerModel: ControllerModel, public info: ResourceInfo, private _registration: Registration) { }
 
 	public get registration(): Registration {
 		return this._registration;
@@ -37,7 +42,7 @@ export abstract class ResourceModel {
 		if (this.info.connectionId) {
 			try {
 				const credentialProvider = await azdata.credentials.getProvider(credentialNamespace);
-				const credentials = await credentialProvider.readCredential(createCredentialId(this._controllerModel.info.id, this.info.resourceType, this.info.name));
+				const credentials = await credentialProvider.readCredential(createCredentialId(this.controllerModel.info.id, this.info.resourceType, this.info.name));
 				if (credentials.password) {
 					// Try to connect to verify credentials are still valid
 					connectionProfile.password = credentials.password;
