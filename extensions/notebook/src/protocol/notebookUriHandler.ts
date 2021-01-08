@@ -57,7 +57,7 @@ export class NotebookUriHandler implements vscode.UriHandler {
 		let data: string;
 		// We ensure that the URI is formatted properly
 		let urlIndex = uri.query.indexOf('url=');
-		if (urlIndex > 0) {
+		if (urlIndex >= 0) {
 			// Querystring can not be used as it incorrectly turns parameters attached
 			// to the URI query into key/value pairs and would then fail to open the URI
 			data = uri.query.substr(urlIndex + 4);
@@ -65,7 +65,6 @@ export class NotebookUriHandler implements vscode.UriHandler {
 
 		if (!data) {
 			console.warn('Failed to open URI:', uri);
-			return;
 		}
 
 		return this.openNotebook(data);
