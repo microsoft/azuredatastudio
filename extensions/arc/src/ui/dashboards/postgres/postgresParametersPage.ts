@@ -288,6 +288,7 @@ export class PostgresParametersPage extends DashboardPage {
 						return;
 					}
 
+					this._parametersTableLoading!.loading = true;
 					await vscode.commands.executeCommand('workbench.extensions.installExtension', loc.postgresExtension);
 				}
 
